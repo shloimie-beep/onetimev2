@@ -194,6 +194,17 @@ export const routeBranding: RouteBranding[] = [
     evidenceSelector: '#crm-root, [data-ot-primitive="Header"]',
   },
   {
+    route: '/app/launch-status',
+    shell: 'owner-admin',
+    role: 'owner-admin',
+    bundle: 'app-crm',
+    ticker: false,
+    states: appStates,
+    navigationLabel: 'Launch Status',
+    navigationGroup: 'owner-admin',
+    evidenceSelector: '#crm-root, .launch-status',
+  },
+  {
     route: '/app/crm',
     shell: 'owner-admin',
     role: 'owner-admin',

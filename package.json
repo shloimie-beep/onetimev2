@@ -63,6 +63,8 @@
     "highlevel:workflow-control:sync": "tsx scripts/highlevel/sync-workflow-control-projections.ts --write",
     "goal:validate": "tsx scripts/ops/validate-ot-launch-governance.ts",
     "goal:pointer:sync": "tsx scripts/ops/validate-ot-launch-governance.ts --write-pointer",
+    "goal:launch-status:check": "tsx scripts/ops/generate-operator-launch-status.ts --check",
+    "goal:launch-status:sync": "tsx scripts/ops/generate-operator-launch-status.ts --write",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",

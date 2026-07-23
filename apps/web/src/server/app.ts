@@ -95,6 +95,7 @@ import {
   parentRewardGoalSchema,
   ot86bReadinessResponseSchema,
   ot86bSocialDraftListResponseSchema,
+  operatorLaunchStatusResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
 import {
   providerCanaryPlanResponseSchema,
@@ -251,6 +252,7 @@ import { createHighLevelActionsRouter } from './features/highlevel/actions-route
 import { registerSupportRoutes } from './features/support/router.ts';
 import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
+import { operatorLaunchStatusProjection } from './generated/operator-launch-status.js';
 
 type AppDeps = {
   config: AppConfig;
@@ -857,7 +859,7 @@ export function createApp({
   );
 
   app.get(
-    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support)(?:\/.*)?$/,
+    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|launch-status)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await sessionFromRequest(req, pool, config);
       if (!session) {
@@ -1420,6 +1422,24 @@ export function createApp({
     } catch (error) {
       handleApiError(error, req, res);
     }
+  });
+
+  app.get('/api/v1/launch-status', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canUseOwnerDashboard(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view launch status.', req.traceId));
+      return;
+    }
+    res.json(
+      operatorLaunchStatusResponseSchema.parse({
+        success: true,
+        launch_status: operatorLaunchStatusProjection,
+      }),
+    );
   });
 
   app.get(

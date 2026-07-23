@@ -43,6 +43,48 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   });
 
   await page.goto(`${staging.baseUrl}/app/dashboard`);
+  const appNavigation = page.getByLabel('One Time app');
+  await expect(appNavigation.getByRole('link', { name: 'Launch Status' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Launch Status' })).toBeVisible();
+  await page.getByRole('button', { name: 'Open Launch Status' }).click();
+  await expect(page).toHaveURL(`${staging.baseUrl}/app/launch-status`);
+  const launchStatusResponse = await page.request.get(`${staging.baseUrl}/api/v1/launch-status`);
+  expect(launchStatusResponse.ok()).toBe(true);
+  const launchStatusPayload = (await launchStatusResponse.json()) as {
+    launch_status: {
+      current_milestone: {
+        acceptance_complete: number;
+        acceptance_total: number;
+      };
+    };
+  };
+  const milestone = launchStatusPayload.launch_status.current_milestone;
+  const launchStatus = page.locator('.launch-status');
+  await expect(launchStatus.getByRole('heading', { name: 'Launch Status' })).toBeVisible();
+  await expect(
+    launchStatus.getByRole('progressbar', { name: 'Current launch milestone progress' }),
+  ).toHaveAttribute('max', String(milestone.acceptance_total));
+  await expect(
+    launchStatus.getByText(
+      `${milestone.acceptance_complete} of ${milestone.acceptance_total} assigned acceptance checks are complete.`,
+    ),
+  ).toBeVisible();
+  await expect(launchStatus.getByRole('heading', { name: 'Exact blockers' })).toBeVisible();
+  await expect(
+    launchStatus.getByRole('heading', { name: 'Remaining and in progress' }),
+  ).toBeVisible();
+  await expect(launchStatus.getByRole('heading', { name: 'Next executable task' })).toBeVisible();
+  for (const label of [
+    'Launch Status',
+    'Preview Parent & Student portals',
+    'Rabbi Live Console',
+    'Content Factory',
+  ]) {
+    await expect(launchStatus.getByRole('link', { name: label })).toBeVisible();
+  }
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+  await appNavigation.getByRole('link', { name: 'Dashboard' }).click();
+  await expect(page).toHaveURL(`${staging.baseUrl}/app/dashboard`);
   await expect(
     page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
   ).toBeVisible();
@@ -51,7 +93,6 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   await expect(
     page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
   ).toBeVisible();
-  const appNavigation = page.getByLabel('One Time app');
   await expect(appNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
   await expect(appNavigation.getByRole('link', { name: 'Live Console' })).toBeVisible();
 
@@ -94,13 +135,22 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
 
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto(`${staging.baseUrl}/app/dashboard`);
+  await expect(page.getByRole('heading', { name: 'Launch Status' })).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Open navigation' }).click();
   const drawer = page.getByRole('dialog', { name: 'One Time navigation' });
+  await expect(drawer.getByRole('link', { name: 'Launch Status' })).toBeVisible();
   await expect(drawer.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
   await drawer.getByRole('button', { name: 'Close navigation' }).click();
+  await page.getByRole('button', { name: 'Open Launch Status' }).click();
+  await expect(page).toHaveURL(`${staging.baseUrl}/app/launch-status`);
+  await expect(
+    page.getByRole('progressbar', { name: 'Current launch milestone progress' }),
+  ).toBeVisible();
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+  await page.goto(`${staging.baseUrl}/app/dashboard`);
   await page.getByRole('button', { name: 'Open portal preview' }).click();
   await expect(
     page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
@@ -119,6 +169,16 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   const productionContext = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   await useAdminSession(productionContext, production);
   const productionPage = await productionContext.newPage();
+  await productionPage.goto(`${production.baseUrl}/app/dashboard`);
+  await expect(productionPage.getByRole('heading', { name: 'Launch Status' })).toBeVisible();
+  await expect(
+    productionPage.getByLabel('One Time app').getByRole('link', { name: 'Launch Status' }),
+  ).toBeVisible();
+  await productionPage.getByRole('button', { name: 'Open Launch Status' }).click();
+  await expect(productionPage).toHaveURL(`${production.baseUrl}/app/launch-status`);
+  await expect(
+    productionPage.getByRole('progressbar', { name: 'Current launch milestone progress' }),
+  ).toBeVisible();
   await productionPage.goto(`${production.baseUrl}/app/dashboard`);
   await expect(
     productionPage.getByRole('heading', { name: 'Preview Parent & Student portals' }),

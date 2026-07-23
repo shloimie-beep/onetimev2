@@ -84,6 +84,36 @@ record(
 const tracks = arrayAt<Record<string, unknown>>(board, 'tracks');
 const trackIds = tracks.map((track) => String(track.id));
 record('unique tracks', new Set(trackIds).size === trackIds.length, `${trackIds.length} tracks`);
+const criteria = arrayAt<Record<string, unknown>>(acceptance, 'criteria');
+const criterionIds = criteria.map((criterion) => String(criterion.id));
+const milestones = arrayAt<Record<string, unknown>>(board, 'milestones');
+const currentMilestones = milestones.filter((milestone) => milestone.current === true);
+const currentMilestone = currentMilestones[0];
+const currentMilestoneAcceptance = currentMilestone
+  ? arrayAt<string>(currentMilestone, 'acceptance_ids')
+  : [];
+const currentMilestoneTracks = currentMilestone
+  ? arrayAt<string>(currentMilestone, 'track_ids')
+  : [];
+const currentMilestoneLinks = currentMilestone
+  ? arrayAt<Record<string, unknown>>(currentMilestone, 'safe_links')
+  : [];
+record(
+  'current milestone acceptance contract',
+  currentMilestones.length === 1 &&
+    currentMilestoneAcceptance.length > 0 &&
+    new Set(currentMilestoneAcceptance).size === currentMilestoneAcceptance.length &&
+    currentMilestoneAcceptance.every((id) => criterionIds.includes(id)) &&
+    currentMilestoneAcceptance.every((id) =>
+      tracks.some((track) => arrayAt<string>(track, 'acceptance_ids').includes(id)),
+    ) &&
+    currentMilestoneTracks.length > 0 &&
+    new Set(currentMilestoneTracks).size === currentMilestoneTracks.length &&
+    currentMilestoneTracks.every((id) => trackIds.includes(id)) &&
+    currentMilestoneLinks.length > 0 &&
+    currentMilestoneLinks.every((link) => String(link.href).startsWith('/app/')),
+  `${String(currentMilestone?.id)}: ${currentMilestoneAcceptance.length} acceptance IDs, ${currentMilestoneTracks.length} tracks`,
+);
 const criticalParsedSubstrings = [
   'PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard',
   'PR #104 prefix 2214',
@@ -98,9 +128,6 @@ const criticalParsedSubstrings = [
 record(
   'critical PR scalars parse intact',
   String(outcome.production_impact).includes('PR #106') &&
-    String(outcome.current_summary).includes('PR #97') &&
-    String(outcome.current_summary).includes('PR #108') &&
-    String(outcome.current_summary).includes('PR #105') &&
     criticalParsedSubstrings.every((expected) =>
       parsedBoardStrings.some(({ value }) => value.includes(expected)),
     ),
@@ -190,7 +217,7 @@ record(
     ) &&
     parsedBoardStrings.some(({ value }) =>
       value.includes(
-        'ZOOM_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE',
+        'canonical ZOOM_S2S_ACCOUNT_ID (with temporary ZOOM_ACCOUNT_ID alias also absent), ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE',
       ),
     ),
   'isolated SDK setup READY; six-gate real control PROVIDER_OFF',

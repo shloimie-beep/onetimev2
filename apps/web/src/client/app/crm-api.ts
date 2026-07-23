@@ -6,6 +6,7 @@ import type {
   ContactListItem,
   ContentLibraryItemSummary,
   OwnerDashboardResponse,
+  OperatorLaunchStatusResponse,
   SessionUser,
   ContactNote,
   ContactTag,
@@ -424,6 +425,10 @@ export async function submitSupportTicket(csrfToken: string, payload: Record<str
 
 export async function getOwnerDashboard() {
   return authenticatedJson<OwnerDashboardResponse>('/api/v1/dashboard/owner');
+}
+
+export async function getOperatorLaunchStatus() {
+  return authenticatedJson<OperatorLaunchStatusResponse>('/api/v1/launch-status');
 }
 
 export async function getGamificationAdminDashboard() {

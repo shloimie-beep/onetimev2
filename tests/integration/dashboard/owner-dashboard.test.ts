@@ -11,6 +11,7 @@ import {
   decryptAuthEmailChallengeDeliveryPayloadForTests,
 } from '../../../packages/domain/src/index.ts';
 import type { OwnerDashboardResponse } from '../../../packages/contracts/src/dashboard/index.ts';
+import type { OperatorLaunchStatusResponse } from '../../../packages/contracts/src/ops/index.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -65,7 +66,13 @@ describe('OT-71 owner/admin dashboard shell', () => {
       expect(anonymous.headers.get('location')).toContain('return_to=%2Fapp%2Fdashboard');
 
       const owner = await loginAs(server.baseUrl, 'owner@example.test', 'OwnerPass!234');
-      for (const appPath of ['/app/dashboard', '/app/classes', '/app/content', '/app/billing']) {
+      for (const appPath of [
+        '/app/dashboard',
+        '/app/classes',
+        '/app/content',
+        '/app/billing',
+        '/app/launch-status',
+      ]) {
         const shell = await fetch(`${server.baseUrl}${appPath}`, {
           headers: { cookie: owner.cookies },
         });
@@ -146,6 +153,25 @@ describe('OT-71 owner/admin dashboard shell', () => {
       }
       expect(actionIds.join(' ')).not.toMatch(/studio|agent|bna|coming|report|task/i);
 
+      const launchStatus = await fetch(`${server.baseUrl}/api/v1/launch-status`, {
+        headers: { cookie: owner.cookies },
+      });
+      const launchStatusText = await launchStatus.text();
+      expect(launchStatus.status, launchStatusText).toBe(200);
+      expect(launchStatus.headers.get('cache-control')).toContain('no-store');
+      expect(launchStatusText).not.toMatch(
+        /https?:\/\/|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|provider_secret|password=/iu,
+      );
+      const launchStatusJson = JSON.parse(launchStatusText) as OperatorLaunchStatusResponse;
+      expect(launchStatusJson.launch_status.board_source_hash).toMatch(/^sha256:[a-f0-9]{64}$/);
+      expect(launchStatusJson.launch_status.current_milestone.acceptance_total).toBeGreaterThan(0);
+      expect(launchStatusJson.launch_status.remaining.length).toBeGreaterThan(0);
+      expect(launchStatusJson.launch_status.safe_links.length).toBeGreaterThan(0);
+      expect(
+        launchStatusJson.launch_status.safe_links.every((link) => link.href.startsWith('/app/')),
+      ).toBe(true);
+      expect(launchStatusJson.launch_status.next_executable_task.action).toBeTruthy();
+
       const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');
       const deniedApi = await fetch(`${server.baseUrl}/api/v1/dashboard/owner`, {
         headers: { cookie: viewer.cookies },
@@ -155,6 +181,14 @@ describe('OT-71 owner/admin dashboard shell', () => {
         headers: { cookie: viewer.cookies },
       });
       expect(deniedShell.status).toBe(403);
+      const deniedLaunchStatusApi = await fetch(`${server.baseUrl}/api/v1/launch-status`, {
+        headers: { cookie: viewer.cookies },
+      });
+      expect(deniedLaunchStatusApi.status).toBe(403);
+      const deniedLaunchStatusShell = await fetch(`${server.baseUrl}/app/launch-status`, {
+        headers: { cookie: viewer.cookies },
+      });
+      expect(deniedLaunchStatusShell.status).toBe(403);
       const crmShell = await fetch(`${server.baseUrl}/app/crm`, {
         headers: { cookie: viewer.cookies },
       });

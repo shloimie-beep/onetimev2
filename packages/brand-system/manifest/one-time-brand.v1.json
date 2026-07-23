@@ -210,6 +210,7 @@
     "/app/crm/contacts/:contactId": "owner-admin",
     "/app/crm/contacts/:contactId/communications": "owner-admin",
     "/app/dashboard": "owner-admin",
+    "/app/launch-status": "owner-admin",
     "/app/classes": "owner-admin",
     "/app/content": "owner-admin",
     "/app/billing": "owner-admin",

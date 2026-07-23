@@ -9,6 +9,7 @@ import type {
   OwnerDashboardResponse,
   SessionUser,
 } from '@onetime/contracts';
+import { Button, Card } from '@onetime/brand-system/react';
 import {
   communicationsRouteDescriptor,
   contactCommunicationsTabDescriptor,
@@ -60,6 +61,12 @@ const ExperiencePreview = React.lazy(() =>
   })),
 );
 
+const LaunchStatus = React.lazy(() =>
+  import('./launch-status/LaunchStatus.js').then((module) => ({
+    default: module.LaunchStatus,
+  })),
+);
+
 type ContactFormState = {
   display_name: string;
   family_school_classification: 'family' | 'school';
@@ -87,6 +94,7 @@ type OwnerSurface =
   | 'billing'
   | 'rewards'
   | 'support'
+  | 'launch-status'
   | 'experience-preview';
 type AsyncPanelState = {
   loading: boolean;
@@ -669,6 +677,12 @@ function CrmApp() {
             href: '/app/rewards',
             current: surface === 'rewards',
           },
+          {
+            id: 'launch-status',
+            label: 'Launch Status',
+            href: '/app/launch-status',
+            current: surface === 'launch-status',
+          },
           ...(session?.capabilities?.operator_experience?.experience_preview
             ? [
                 {
@@ -769,6 +783,7 @@ function CrmApp() {
         onRefresh={() => void loadGamificationDashboard()}
       />
     ) : surface === 'support' ||
+      surface === 'launch-status' ||
       surface === 'experience-preview' ? null : communicationsMode?.kind === 'contact' ? (
       <ContactCommunicationsToolbar
         onBack={() => {
@@ -904,6 +919,11 @@ function CrmApp() {
             csrfToken={session?.csrf_token ?? ''}
             onProtectedStateCleared={clearProtectedState}
           />
+        </Suspense>
+      )}
+      {surface === 'launch-status' && (
+        <Suspense fallback={<ReadOnlySkeleton label="Loading Launch Status" />}>
+          <LaunchStatus onProtectedStateCleared={clearProtectedState} />
         </Suspense>
       )}
       {surface === 'support' && (
@@ -1072,6 +1092,25 @@ function DashboardPanel({
   return (
     <section className="dashboard-surface" data-usable="owner-dashboard" aria-busy={loading}>
       <div className="dashboard-grid">
+        <Card className="dashboard-card launch-status-dashboard-card state-ready">
+          <header>
+            <h2>Launch Status</h2>
+            <Chip label="Board-derived" tone="status" />
+          </header>
+          <strong>See what works and what comes next</strong>
+          <p>
+            Review the current launch milestone, objective progress, exact blockers, safe routes,
+            and one executable next task.
+          </p>
+          <Button
+            type="button"
+            variant="primary"
+            data-action-id="dashboard.open_launch_status.button"
+            onClick={() => onOpen('/app/launch-status')}
+          >
+            Open Launch Status
+          </Button>
+        </Card>
         {showExperiencePreview && (
           <article className="dashboard-card experience-preview-dashboard-card state-ready">
             <header>
@@ -2449,6 +2488,7 @@ function sourceLabel(value: string) {
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/dashboard') return 'dashboard';
+  if (pathname === '/app/launch-status') return 'launch-status';
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
@@ -2470,6 +2510,7 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 
 function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'dashboard') return 'Dashboard';
+  if (surface === 'launch-status') return 'Launch Status';
   if (surface === 'classes') return 'Classes';
   if (surface === 'content') return 'Content Workspace';
   if (surface === 'billing') return 'Products/Billing status';
@@ -2482,6 +2523,9 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
     return 'Workspace snapshot for leads, classes, communications, content, members, support, and billing.';
+  }
+  if (surface === 'launch-status') {
+    return 'Board-derived launch milestone, working capabilities, exact blockers, and next task.';
   }
   if (surface === 'classes')
     return 'Class schedule, access, content, questions, and learner readiness.';

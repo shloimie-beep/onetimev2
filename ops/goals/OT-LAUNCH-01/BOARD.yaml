@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T10:32:47Z
+updated_at: 2026-07-23T11:04:17Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -11,6 +11,91 @@ status_definitions:
   provider_off: Provider activation gates are intentionally off and the UI must say so.
   needs_operator_decision: Work cannot proceed without an explicit product or send authorization.
   superseded: Another canonical track or handoff replaced this work.
+
+milestones:
+  - id: controlled_live_pilot
+    label: Controlled live pilot
+    current: true
+    outcome: The operator can use real Admin, Parent, and Student access, approved playback, and one real Zoom class on separate devices with free-pilot access and rollback.
+    acceptance_ids:
+      [
+        GOAL-001,
+        OPS-LAUNCH-001,
+        LANDING-001,
+        LANDING-002,
+        ACCESS-001,
+        EXP-001,
+        EXP-002,
+        EXP-003,
+        EXP-004,
+        ROLE-001,
+        ROLE-002,
+        ROLE-003,
+        PORTAL-IA-001,
+        PORTAL-IA-002,
+        DEMO-001,
+        CONTENT-001,
+        CONTENT-002,
+        ZOOM-SDK-001,
+        ZOOM-S2S-001,
+        DEPLOY-001,
+        PROD-PILOT-001,
+      ]
+    track_ids:
+      [
+        goal_system,
+        operator_launch_dashboard,
+        main_landing_polish,
+        ghl_access_entitlement_projection,
+        production_pilot,
+        admin_experience_preview,
+        fictional_student_session,
+        coherent_demo,
+        parent_student_portal_information_architecture,
+        media_staging_integration,
+        media_external_canary,
+        zoom_meeting_sdk,
+        zoom_s2s_host_control,
+        zoom_real_control_operator_change_set,
+        persistent_staging,
+      ]
+    safe_links:
+      - id: launch_status
+        label: Launch Status
+        href: /app/launch-status
+      - id: experience_preview
+        label: Preview Parent & Student portals
+        href: /app/experience-preview
+      - id: live_console
+        label: Rabbi Live Console
+        href: /app/live-console
+      - id: content_factory
+        label: Content Factory
+        href: /app/content
+  - id: operational_automation
+    label: Operational automation
+    current: false
+    outcome: Durable occurrence-scoped media, private Telegram-to-GHL question flow, public lead capture, and governed GHL access/workflow activation are accepted.
+    acceptance_ids: [VIDEO-E2E-001, TELEGRAM-001, TELEGRAM-002, LEAD-001, GHL-003, GHL-004, GHL-006]
+    track_ids:
+      [
+        VIDEO-TO-CLASSROOM-E2E,
+        telegram_foundation,
+        telegram_customer_bridge,
+        public_lead_capture_bot,
+        ghl_app_contract_shells,
+        ghl_event_dispatcher,
+      ]
+    safe_links:
+      - id: launch_status
+        label: Launch Status
+        href: /app/launch-status
+      - id: content_factory
+        label: Content Factory
+        href: /app/content
+      - id: live_console
+        label: Rabbi Live Console
+        href: /app/live-console
 
 outcome:
   status: active
@@ -23,7 +108,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'The operator has moved OT-LAUNCH-01 from a staging-only objective to a controlled free production pilot. GHL remains the payment-history and payment-operations authority; One Time will project only access state and may grant an explicit free-pilot entitlement. Starting remote PR #97 head de2d0f89b1e2b73de035a80607429dacdf88e001 is clean and source-stable. The accepted full-app product remains 99c60d3aed91ea42fb9d18d819093c95efe17e3f with healthy persistent staging, focused Parent/Student workspaces, protected role previews, synthetic approved content, integrated fail-closed PR #108 HighLevel contracts, and integrated fake/provider-off PR #105 Zoom. Newly active work is the Board-derived Admin launch summary, main landing repair, reviewed Zoom staging canary preparation, and production release-candidate convergence. No new provider mutation, customer message, payment change, production change, or protected-value disclosure is claimed by this update.'
+  current_summary: 'The controlled live-pilot governance checkpoint is pushed and the first implementation slice is locally green. GHL remains the payment-history and payment-operations authority; One Time will project only current access state and may grant an explicit free-pilot entitlement. Main landing repair passed build, typecheck, brand, bundle, accessibility/performance, and responsive browser checks at commit ca191971a150aeecfb2ae81271c96f8668ab4ec3. The Board-derived Admin Launch Status route passed focused authorization, generation, source-hash, desktop, and 360px browser checks and is ready for the next scoped commit. A sanitized real-Zoom staging canary job is prepared but has not changed Zoom, Railway configuration, provider gates, or production. No customer message, payment change, production mutation, or protected-value disclosure is claimed by this update.'
   external_action_count: 8
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -43,13 +128,13 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: de2d0f89b1e2b73de035a80607429dacdf88e001
-    resolution: 'Remote PR #97 head de2d0f89b1e2b73de035a80607429dacdf88e001 is the clean starting point for the controlled-live-pilot governance and implementation pass. It is an evidence-only descendant of accepted product source 99c60d3aed91ea42fb9d18d819093c95efe17e3f; product-runtime acceptance is not silently reassigned to the new uncommitted work.'
+    last_verified_commit: ca191971a150aeecfb2ae81271c96f8668ab4ec3
+    resolution: 'Main landing implementation commit ca191971a150aeecfb2ae81271c96f8668ab4ec3 is the latest locally verified product checkpoint. It descends from pushed governance head 069d18d6adf0b3bdf4516fe44338b33e2e303556; the launch-dashboard and Zoom-job changes remain uncommitted until their own scoped checks and commits complete.'
   system: One Time persistent staging
 
 tracks:
   - id: goal_system
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -69,12 +154,13 @@ tracks:
       - Both unchanged repository skill packages retain their earlier independent official-validator pass. Modified goal, Board, and pointer files use repository-native YAML/JSON validation; no current PyYAML-dependent command is claimed as passed and no package was installed or vendored.
       - 'The 2026-07-23 live-pilot intake records GHL-owned payment history, One Time access projection, the free-pilot target, authorized staging canaries, landing-helper removal, and a Board-derived operator summary without creating a second goal or status model.'
       - 'The expanded 30-track Board, SPEC, ACCEPTANCE, DECISIONS, intake, skill metadata, and source-hashed pointer pass the repository-native goal validator. The bundled Python quick validator cannot import yaml; no dependency was installed and no official-Python pass is claimed for the changed skill.'
+      - 'The Board now declares one explicit controlled_live_pilot milestone with a fixed acceptance denominator, ordered contributing tracks, and safe Admin routes; the generated Launch Status projection fails closed if this contract is absent, duplicated, or stale.'
     blocker: null
-    remaining_work: Validate the expanded goal/spec/acceptance/decisions, generate the exact pointer, and close the governance checkpoint before a release or provider job consumes it.
-    next_action: Run repository-native goal validation and the repository skill validator on the changed executor skill, then commit one scoped governance checkpoint.
+    remaining_work: null
+    next_action: null
 
   - id: operator_launch_dashboard
-    status: active
+    status: ready_for_convergence
     owner:
       task_id: OT-LAUNCH-01-OPERATOR-LAUNCH-DASHBOARD
       repository: shloimie-beep/onetimev2
@@ -88,12 +174,13 @@ tracks:
     evidence:
       - The operator explicitly requested one clickable summary of what just changed, how close the current milestone is, what works, and the next task.
       - The goal executor contract now forbids hand-maintained percentage/status and requires a source-hashed BOARD acceptance projection.
+      - 'The Admin-only Launch Status route, navigation item, Dashboard card, generated projection, remaining-work list, safe links, exact blockers, and next-task readback pass 6/6 focused unit/UI tests, 1/1 owner authorization integration, scoped lint/Prettier/brand checks, typecheck, and a real Chromium Dashboard-to-Launch-Status journey at desktop and 360px.'
     blocker: null
-    remaining_work: Implement the generated projection and Admin-only desktop/mobile surface without exposing provider values, credentials, private destinations, customer data, or diagnostic controls.
-    next_action: Inspect existing Admin Dashboard/navigation and build the smallest canonical brand-system route and generated-data contract.
+    remaining_work: Commit the source-hashed projection and deploy the exact descendant to persistent staging, then re-read the normal Admin Dashboard card, navigation entry, percentage, remaining work, safe routes, and preserved Experience Preview flow.
+    next_action: Generate from final Board bytes, commit the scoped Admin surface, and verify the exact persistent-staging deployment.
 
   - id: main_landing_polish
-    status: active
+    status: ready_for_convergence
     owner:
       task_id: OT-LAUNCH-01-MAIN-LANDING-POLISH
       repository: shloimie-beep/onetimev2
@@ -107,9 +194,11 @@ tracks:
     evidence:
       - Read-only live/source audit confirms the reversed hero hierarchy, fixed build-time ticker, auto-opening offline WhatsApp helper, letterboxed Retention image, manual-only gallery, small translucent publication cards, old section order, nonsquare Rabbi media, and cyan landing eyebrow.
       - Built public CSS is 34,586 bytes against the unchanged 35,000-byte gate; removing the assistant and unused landing rules must fund the scoped repair.
+      - 'Commit ca191971a150aeecfb2ae81271c96f8668ab4ec3 implements the exact two-line hero, smaller supporting copy, single CTA, in-flow Jerusalem countdown, no WhatsApp/offline helper, equal outcome media with tested Retention crop, reduced-motion-safe reveal, corrected section order, automatic pausable gallery, full-width equal white publication cards, square Rabbi media, and yellow/black/white landing accents.'
+      - 'The stable shared snapshot passes build/typecheck, brand and bundle checks, 8/8 focused units, 15/15 landing browser checks, one focused performance run, 2/2 public-shell/reduced-motion checks across 360/390/768/1440, scoped lint/Prettier, secret scan, and diff check. Built public.css is 33,899 bytes and public.js is 18,904 bytes.'
     blocker: null
-    remaining_work: Implement the exact landing hierarchy and responsive behavior, update focused assertions, pass size/performance/accessibility gates, and deploy to persistent staging before any narrow production promotion.
-    next_action: Apply the landing-only repair with no real form submission, GHL mutation, provider action, or Tisha regression.
+    remaining_work: Push the exact descendant, verify the live persistent-staging public page at the recorded breakpoints, and keep production unchanged until a separate reviewed production candidate is accepted.
+    next_action: 'Deploy the exact PR #97 descendant to persistent staging and run the bounded landing browser readback without submitting a form.'
 
   - id: ghl_access_entitlement_projection
     status: unclaimed
@@ -566,7 +655,7 @@ tracks:
       - 'Independent audit accepted PR #105 exact successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885: the 17-file 50989b3..e81de91 delta contains no migration or secret value, enforces the four SDK/origin, S2S-meeting, host-authorization, and canary-authorization phases before provider construction, and passed exact LF format, typecheck, secret scan, 39/39 focused tests, and all five GitHub suites.'
       - 'That exact successor delta is semantically integrated once in PR #97 head 312097c0d8707b48b68cf282169b04d62b71ba6d. Persistent staging remains sink/real-provider-false/canary-false; all canonical SDK, allowed-origin, S2S, host, meeting, and passcode values read absent.'
     blocker: null
-    remaining_work: 'Persistent staging requires its exact origin allowlist plus canonical Meeting SDK values before any real UI preview; real control additionally depends on the separate S2S/host/meeting track and a separately authorized human canary.'
+    remaining_work: 'Persistent staging requires its exact origin allowlist plus canonical Meeting SDK values before any real UI preview; real control additionally depends on the separate S2S/host/meeting track and the now-authorized human canary.'
     next_action: Preserve the READY isolated-preview SDK setup and do not infer persistent-staging or real-control readiness from it.
 
   - id: zoom_s2s_host_control
@@ -587,18 +676,18 @@ tracks:
     evidence:
       - 'PR #105 corrected code head 50989b336838d2029a0e0abc075bfd209b9c65ef passed 39/39 independent focused tests for the provider-off host-control implementation and is semantically integrated and deployed in PR #97 exact head fc1220741dfe0dd00757a4e5013a9cef4438baa8.'
       - 'The admin-managed General app and canonical Meeting SDK credentials exist only for the PR #105 isolated preview; persistent staging is not allowlisted.'
-      - Independent isolated-Railway readback finds all six canonical host-control prerequisites absent: ZOOM_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE. Meeting SDK credentials remain separate from S2S OAuth and host/meeting identity.
+      - Independent isolated-Railway readback finds all six host-control prerequisites absent: canonical ZOOM_S2S_ACCOUNT_ID (with temporary ZOOM_ACCOUNT_ID alias also absent), ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE. Meeting SDK credentials remain separate from S2S OAuth and host/meeting identity.
       - 'Exact-head fc122074 live readback reconfirms all nine canonical SDK/S2S/host/meeting values absent from persistent staging. The Rabbi preview and Live Console state Provider off: required Zoom provider prerequisites are incomplete, while fake mode remains usable.'
       - A protected staging class-link value was unintentionally rendered by a scoped environment diagnostic during this acceptance turn. The value is treated as exposed, is not repeated or committed, and must be rotated or revoked before any later real-provider canary.
       - 'PR #105 successor e81de91a7372114c6b0a67a7cbb0abc9cb548885 is integrated in PR #97 head 312097c. Exact web deployment 763375f7-2bcd-40d8-94af-a9342fa3892c and worker deployment 926fee2f-fb2d-496b-aae7-8dc468f880d6 are healthy at schema 2220; staging readback keeps every real Zoom and canary gate off.'
     blocker:
       code: ZOOM_PROVIDER_CONFIG_AND_HUMAN_CANARY_BARRIER
-      reason: 'The six S2S/host/meeting values are absent, persistent staging is not allowlisted or configured with Meeting SDK values, the exposed protected staging class link requires rotation/revocation, and a separately authorized human canary is still blocked by Zoom reCAPTCHA/rate limiting.'
-    remaining_work: 'Require the six protected real-control prerequisites, canonical Meeting SDK values, the exact persistent-staging allowlist, and rotation/revocation of the exposed staging class link; then run one separately authorized human-cleared exact-occurrence host and Student join/control canary.'
+      reason: 'The six S2S/host/meeting values are absent, persistent staging is not allowlisted or configured with Meeting SDK values, the exposed protected staging class link requires rotation/revocation, and the now-authorized human canary still requires a human-cleared Zoom login because prior attempts met reCAPTCHA/rate limiting.'
+    remaining_work: 'Require the six protected real-control prerequisites, canonical Meeting SDK values, the exact persistent-staging allowlist, and rotation/revocation of the exposed staging class link; then run the authorized human-cleared exact-occurrence host and Student join/control canary.'
     next_action: Keep provider controls unavailable and never infer host control from partial SDK configuration.
 
   - id: zoom_real_control_operator_change_set
-    status: active
+    status: waiting_external
     owner:
       task_id: OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP
       repository: shloimie-beep/onetimev2
@@ -614,9 +703,11 @@ tracks:
       - 'Persistent staging lacks the canonical Meeting SDK client ID/secret/allowed-origin and all six S2S/host/meeting prerequisites; provider mode is sink, real-provider is false, and canary is false.'
       - 'The previously rendered protected staging class target must be revoked or rotated before any later real-provider test. Zoom reCAPTCHA/rate limiting still requires a separately authorized human-cleared host-and-Student canary.'
       - 'The operator explicitly authorized the bounded staging-only configuration and human canary on 2026-07-23; this removes the authority blocker but does not supply or validate protected prerequisites.'
+      - 'Reviewed provider-action job OT-LAUNCH-01-ZOOM-STAGING-CANARY-01 now fixes the exact staging origin, canonical SDK/S2S variable contract, four readiness phases, final canary gate, protected-value handling, old-target rotation, separate-device host/Student proof, consent, mute/unmute, spotlight/reset, replay/expiry/sibling/idempotency denials, sanitized evidence, and mandatory post-canary return to sink/real-false/canary-false.'
+      - 'Preparation validation passed 26/26 Zoom units, 7/7 classroom integration tests, scoped Prettier/diff check, JSON parse, and a 2,034-file secret scan. The preparation task executed zero Zoom/Railway/provider/deployment/credential/production mutation and records OBS as unnecessary for the Meeting SDK control proof.'
     blocker: null
-    remaining_work: 'Write and validate the exact provider-action job, confirm the private prerequisite sources without printing values, then execute through the separately scoped provider task; prove SDK join plus exact fictional host mute/unmute/spotlight and replay/cross-student denial before returning real/canary gates off.'
-    next_action: 'Prepare the reviewed staging-only job now; stop only at a missing protected value, Zoom login/reCAPTCHA, or the required human host/Student participation.'
+    remaining_work: 'A separately scoped provider executor must rotate/revoke the exposed target, validate protected prerequisite sources without printing values, add only the exact staging origin, install staging-only values, run the human host/Student canary and negative cases, return all real/canary gates off, and commit one sanitized result.'
+    next_action: 'Start the reviewed ZOOM-STAGING-CANARY packet in a separate provider-authorized Codex task. Its first external action is old-target rotation and denial proof; stop only at a missing protected source, Zoom login/reCAPTCHA, or required human host/Student participation.'
 
   - id: bna_foundation
     status: done

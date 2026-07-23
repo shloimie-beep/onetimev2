@@ -251,6 +251,98 @@
   justify-self: start;
 }
 
+.launch-status-dashboard-card {
+  border-color: var(--ot-color-action-auth);
+}
+
+.launch-status-dashboard-card .button-primary {
+  justify-self: start;
+}
+
+.launch-status {
+  display: grid;
+  gap: var(--ot-space-4);
+  min-width: 0;
+}
+
+.launch-status__hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ot-space-4);
+}
+
+.launch-status__hero > div {
+  display: grid;
+  gap: var(--ot-space-2);
+}
+
+.launch-status__hero h2,
+.launch-status__hero p,
+.launch-status h3,
+.launch-status__source {
+  margin: 0;
+}
+
+.launch-status__hero > div > p:last-child,
+.launch-status__source {
+  color: var(--ot-color-text-muted);
+}
+
+.launch-status__progress header {
+  align-items: center;
+}
+
+.launch-status__progress progress {
+  width: 100%;
+  height: var(--ot-space-3);
+  accent-color: var(--ot-color-action-auth);
+}
+
+.launch-status__grid {
+  display: grid;
+  gap: var(--ot-space-3);
+}
+
+.launch-status__list {
+  display: grid;
+  gap: var(--ot-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.launch-status__list li {
+  display: grid;
+  gap: var(--ot-space-1);
+  border-top: 1px solid var(--ot-color-border);
+  padding-top: var(--ot-space-3);
+}
+
+.launch-status__list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.launch-status__list span,
+.launch-status__list small {
+  color: var(--ot-color-text-muted);
+}
+
+.launch-status__list small {
+  overflow-wrap: anywhere;
+}
+
+.launch-status__next {
+  border-color: var(--ot-color-action-auth);
+}
+
+.launch-status__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ot-space-2);
+}
+
 .experience-role-card small[data-state='ready'],
 .experience-section small[data-state='ready'] {
   color: var(--ot-color-success);
@@ -430,6 +522,20 @@
 }
 
 @media (max-width: 480px) {
+  .launch-status__hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .launch-status__links {
+    display: grid;
+  }
+
+  .launch-status__links a,
+  .launch-status-dashboard-card .button-primary {
+    width: 100%;
+  }
+
   .experience-preview-intro,
   .experience-role-preview > header,
   .experience-preview-banner {
@@ -446,5 +552,11 @@
   .experience-session-action .button-primary,
   .experience-preview-dashboard-card .button-primary {
     width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  .launch-status__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
