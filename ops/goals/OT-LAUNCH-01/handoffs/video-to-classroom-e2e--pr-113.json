@@ -3,7 +3,7 @@
   "goal_id": "OT-LAUNCH-01",
   "track_id": "video_to_classroom_e2e",
   "task_id": "VIDEO-TO-CLASSROOM-E2E",
-  "verified_at": "2026-07-23T18:05:40Z",
+  "verified_at": "2026-07-23T18:19:40Z",
   "result": {
     "repository": "shloimie-beep/onetimev2",
     "branch": "codex/video-to-classroom-e2e",
@@ -11,7 +11,9 @@
     "pull_request_state": "draft",
     "governed_base": "69e451184ea2a80d13b12ccaf3da20db0c2684cf",
     "runtime_acceptance_base": "fc1220741dfe0dd00757a4e5013a9cef4438baa8",
-    "implementation_head_before_handoff": "bafd1e3110a529f538a823ea1ec15892630710bf",
+    "superseded_head": "41d4d30af09fca44d12fb47f527fc4f4e37b3820",
+    "superseded_reason": "Independent exact-head audit found failStage was not fenced by lease generation.",
+    "implementation_head_before_handoff": "e7f001ee9496109bac0ea20af5065bdabe7de122",
     "terminal_pr_head": "resolve from the immutable PR checkpoint created after this handoff commit",
     "semantic_patch_boundary": [
       {
@@ -57,6 +59,14 @@
       {
         "commit": "bafd1e3110a529f538a823ea1ec15892630710bf",
         "subject": "style(content): format migration assertion"
+      },
+      {
+        "commit": "41d4d30af09fca44d12fb47f527fc4f4e37b3820",
+        "subject": "docs(ops): record video classroom integration handoff"
+      },
+      {
+        "commit": "e7f001ee9496109bac0ea20af5065bdabe7de122",
+        "subject": "fix(content): fence failed lease generations"
       }
     ],
     "changed_file_boundary": [
@@ -155,6 +165,11 @@
     "acceptance": {
       "private_intake_persists_across_restart_and_redeploy": "pass",
       "lease_expiry_and_worker_restart_recovery": "pass",
+      "lease_failure_fencing": {
+        "state": "pass",
+        "contract": "failStage mutates the job only when owner digest and lease generation both match, and mutates the intake only after exactly one fenced job row was updated",
+        "adversarial_case": "An expired generation cannot fail a generation-2 lease or its intake when the same worker identity and digest are reused."
+      },
       "idempotent_logical_output": "pass",
       "manual_retry_budget": {
         "maximum_manual_windows": 3,
@@ -211,7 +226,7 @@
       }
     },
     "verification": {
-      "focused_unit_and_integration": "pass",
+      "focused_unit_and_integration": "pass, including the same-identity stale-generation adversarial lease test",
       "chromium_admin_to_unpublish": "pass on the one existing synthetic item",
       "chromium_restart_revocation": "pass",
       "typecheck": "pass",
