@@ -643,24 +643,26 @@ async function failStage(input: {
       300_000,
       1_000 * 2 ** Math.min(8, Number(current.rows[0].attempt_count)),
     );
-    await client.query(
+    const failedJob = await client.query(
       `UPDATE onetime.learning_delivery_content_factory_jobs
-          SET job_state = $6, next_attempt_at = $7::timestamptz,
+          SET job_state = $7, next_attempt_at = $8::timestamptz,
               lease_owner_digest = NULL, lease_expires_at = NULL, heartbeat_at = NULL,
-              last_safe_error_code = $8, updated_at = $5::timestamptz
+              last_safe_error_code = $9, updated_at = $6::timestamptz
         WHERE account_key = $1 AND product_key = $2 AND job_key = $3
-          AND lease_owner_digest = $4`,
+          AND lease_owner_digest = $4 AND lease_generation = $5`,
       [
         input.config.accountKey,
         input.config.productKey,
         input.job.jobKey,
         input.job.leaseOwnerDigest,
+        input.job.leaseGeneration,
         input.now.toISOString(),
         terminal ? 'dead_letter' : 'retry_wait',
         new Date(input.now.getTime() + delayMs).toISOString(),
         input.safeErrorCode,
       ],
     );
+    if (failedJob.rowCount !== 1) return;
     await client.query(
       `UPDATE onetime.learning_delivery_content_factory_intakes
           SET intake_state = 'failed', last_safe_error_code = $4,
