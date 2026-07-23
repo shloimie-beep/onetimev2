@@ -46,6 +46,105 @@ afterEach(async () => {
 });
 
 describe('durable occurrence-scoped content factory', () => {
+  it('prevents an expired lease generation from failing a re-leased job or intake', async () => {
+    const owner = await createUserSession('owner', 'factory-lease-fence-owner@example.test');
+    await seedOccurrenceRoster({
+      parentUserKey: 'unused_parent',
+      studentOneUserKey: 'unused_student',
+      siblingUserKey: 'unused_sibling',
+      relationships: false,
+    });
+    const server = await listenForTest(createApp({ config, pool }));
+    let intakeKey = '';
+    try {
+      const response = await upload(
+        server.baseUrl,
+        owner,
+        syntheticMp4('lease-fence'),
+        'intake-lease-fence-01',
+      );
+      const body = await response.text();
+      expect(response.status, body).toBe(201);
+      intakeKey = (JSON.parse(body) as { intake: { intake_key: string } }).intake.intake_key;
+    } finally {
+      await server.close();
+    }
+
+    let rejectStaleInspection: (reason: Error) => void = () => undefined;
+    let markInspectionStarted: () => void = () => undefined;
+    const inspectionStarted = new Promise<void>((resolve) => {
+      markInspectionStarted = resolve;
+    });
+    const staleInspection = new Promise<never>((_resolve, reject) => {
+      rejectStaleInspection = reject;
+    });
+    const blockingStorage = contentFactoryStorageFromEnv();
+    blockingStorage.inspect = async () => {
+      markInspectionStarted();
+      return staleInspection;
+    };
+
+    const leaseStartMs = Date.now() + 1_000;
+    const staleRun = runContentFactoryWorkerOnce({
+      pool,
+      config,
+      storage: blockingStorage,
+      workerIdentity: 'reused-worker-identity',
+      now: new Date(leaseStartMs),
+      leaseMs: 1_000,
+      mode: 'synthetic',
+    });
+    await inspectionStarted;
+
+    const firstLease = await pool.query(
+      `SELECT lease_generation, lease_owner_digest
+         FROM onetime.learning_delivery_content_factory_jobs WHERE intake_key = $1`,
+      [intakeKey],
+    );
+    expect(firstLease.rows[0]).toMatchObject({ lease_generation: 1 });
+
+    const reclaimed = await claimContentFactoryJob({
+      pool,
+      config,
+      workerIdentity: 'reused-worker-identity',
+      now: new Date(leaseStartMs + 2_000),
+      leaseMs: 60_000,
+    });
+    expect(reclaimed).toMatchObject({
+      intakeKey,
+      leaseGeneration: 2,
+      leaseOwnerDigest: firstLease.rows[0].lease_owner_digest,
+    });
+
+    rejectStaleInspection(new Error('synthetic stale worker failure'));
+    await expect(staleRun).resolves.toMatchObject({
+      claimed: true,
+      completed: false,
+      safeErrorCode: 'content_factory_processing_failed',
+    });
+
+    const preserved = await pool.query(
+      `SELECT job.job_state, job.lease_generation, job.lease_owner_digest,
+              job.last_safe_error_code AS job_safe_error_code, intake.intake_state,
+              intake.last_safe_error_code AS intake_safe_error_code
+         FROM onetime.learning_delivery_content_factory_jobs job
+         JOIN onetime.learning_delivery_content_factory_intakes intake
+           ON intake.account_key = job.account_key
+          AND intake.product_key = job.product_key
+          AND intake.intake_key = job.intake_key
+        WHERE job.intake_key = $1`,
+      [intakeKey],
+    );
+    expect(preserved.rows[0]).toMatchObject({
+      job_state: 'leased',
+      lease_generation: 2,
+      lease_owner_digest: firstLease.rows[0].lease_owner_digest,
+      job_safe_error_code: null,
+      intake_state: 'inspecting',
+      intake_safe_error_code: null,
+    });
+  });
+
   it('survives restart and lease expiry, publishes to one learner, denies a sibling, and revokes on unpublish', async () => {
     const owner = await createUserSession('owner', 'factory-owner@example.test');
     const parent = await createUserSession('parent', 'factory-parent@example.test');
