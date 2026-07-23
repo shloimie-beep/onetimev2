@@ -271,10 +271,10 @@
       "publishedSwitchObserved": true,
       "immediateConfirmationAction": "disabled",
       "subsequentOneHourWaitAndReminderVisible": true,
-      "readbackAt": "2026-07-23T18:40:42.355Z",
+      "readbackAt": "2026-07-23T19:12:15.375Z",
       "mutationApplied": false,
       "protectedClassLink": "sanitized_presence_not_reverified_in_this_track",
-      "blocker": "Published workflow currently has Email A - Immediate Confirmation disabled; this track was instructed to preserve the asset and made no mutation."
+      "blocker": "GHL did not render the disabled action subject, sender, body, or link controls, so identity against the accepted configuration could not be proven and the action was not re-enabled or saved."
     },
     "OT-C01": {
       "canonicalCampaign": {
@@ -315,6 +315,50 @@
       "disposition": "protectively paused; not deleted, moved, renamed, enrolled, or otherwise configured"
     }
   ],
+  "otE01RepairSubphase": {
+    "requestedAt": "2026-07-23T18:55:26Z",
+    "completedAt": "2026-07-23T19:12:15.375Z",
+    "workflowId": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+    "exactVisibleIdMatches": 1,
+    "fullFolderPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+    "acceptedActionIdentity": {
+      "name": "Email A - Immediate Confirmation",
+      "senderKey": "rabbi_campaign",
+      "replyToKey": "one_time_default_reply_to",
+      "publicLinkKey": "one_time_tisha_bav_landing_url",
+      "permissionClass": "event_registration_only",
+      "suppressionGates": [
+        "email DND off",
+        "not suppressed",
+        "not unsubscribed",
+        "no complaint",
+        "no hard bounce"
+      ]
+    },
+    "observed": {
+      "workflowPublished": true,
+      "actionDisabled": true,
+      "actionSettingsDrawerOpened": true,
+      "subjectControlRendered": false,
+      "senderControlRendered": false,
+      "replyToControlRendered": false,
+      "bodyControlRendered": false,
+      "linkControlRendered": false,
+      "saveWorkflowControlRemainedSavedAndDisabled": true,
+      "freshReopenActionDisabled": true
+    },
+    "result": "BLOCKED",
+    "blocker": "ACTION_IDENTITY_UNVERIFIED: the GHL editor did not render the disabled action's subject, sender, body, or link controls, so exact identity could not be proven.",
+    "actionReenabled": false,
+    "actionSaved": false,
+    "workflowSaved": false,
+    "workflowPublishedOrRepublished": false,
+    "contactMutations": 0,
+    "enrollmentMutations": 0,
+    "messagesSent": 0,
+    "reminderTimingOrHistoryChanged": false,
+    "otC01Touched": false
+  },
   "validationPlan": [
     "npm run highlevel:registry:check",
     "npm run highlevel:workflow-control:sync",
