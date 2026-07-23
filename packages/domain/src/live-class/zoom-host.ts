@@ -21,7 +21,7 @@ export const ZOOM_MEETING_SDK_APP_VARIABLES = [
 ] as const;
 
 export const ZOOM_S2S_MEETING_PROVISIONING_VARIABLES = [
-  'ZOOM_ACCOUNT_ID',
+  'ZOOM_S2S_ACCOUNT_ID',
   'ZOOM_S2S_CLIENT_ID',
   'ZOOM_S2S_CLIENT_SECRET',
   'ZOOM_REAL_CONTROL_MEETING_ID',
@@ -32,6 +32,7 @@ export const ZOOM_HOST_AUTHORIZATION_VARIABLES = ['ZOOM_HOST_USER_ID'] as const;
 
 export const ZOOM_REAL_CONTROL_CANARY_AUTHORIZATION_VARIABLES = [
   'ZOOM_CLASSROOM_CANARY_ENABLED',
+  'ZOOM_CLASSROOM_CANARY_LEARNER_KEY',
 ] as const;
 
 export const ZOOM_HOST_CONTROL_READINESS_VARIABLES = [
@@ -113,8 +114,8 @@ export function inspectZoomHostControlReadiness(config: AppConfig): ZoomHostCont
   if (!config.zoomMeetingSdkWebVersionConfigured) {
     sdkAppBlockers.push('ZOOM_MEETING_SDK_WEB_VERSION');
   }
-  if (!hasValue(config.zoomAccountId)) {
-    s2sMeetingProvisioningBlockers.push('ZOOM_ACCOUNT_ID');
+  if (!config.zoomS2sAccountIdConfigured) {
+    s2sMeetingProvisioningBlockers.push('ZOOM_S2S_ACCOUNT_ID');
   }
   if (!hasValue(config.zoomServerToServerClientId)) {
     s2sMeetingProvisioningBlockers.push('ZOOM_S2S_CLIENT_ID');
@@ -133,6 +134,9 @@ export function inspectZoomHostControlReadiness(config: AppConfig): ZoomHostCont
   }
   if (!config.zoomClassroomCanaryEnabled) {
     canaryAuthorizationBlockers.push('ZOOM_CLASSROOM_CANARY_ENABLED');
+  }
+  if (!hasValue(config.zoomClassroomCanaryLearnerKey)) {
+    canaryAuthorizationBlockers.push('ZOOM_CLASSROOM_CANARY_LEARNER_KEY');
   }
 
   const readinessBlockers = [

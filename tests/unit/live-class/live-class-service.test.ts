@@ -6,9 +6,7 @@ import { createLiveClassRepository } from '../../../packages/db/src/live-class/r
 import {
   createLiveClassService,
   createZoomHostLaunchPort,
-  stableKey,
   verifySignedLiveClassCommand,
-  ZOOM_CUSTOMER_KEY_MAX_LENGTH,
   type LiveClassRepository,
   type LiveClassService,
 } from '../../../packages/domain/src/index.ts';
@@ -30,13 +28,14 @@ const realZoomHostEnv = {
   ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
   ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
   ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
-  ZOOM_ACCOUNT_ID: 'zoom_account_test',
+  ZOOM_S2S_ACCOUNT_ID: 'zoom_account_test',
   ZOOM_S2S_CLIENT_ID: 's2s_client_test',
   ZOOM_S2S_CLIENT_SECRET: 's2s_secret_test',
   ZOOM_HOST_USER_ID: 'host_user_test',
   ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
   ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
+  ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
 } as const;
 
 beforeEach(async () => {
@@ -449,7 +448,7 @@ describe('live class question lifecycle', () => {
     ).rejects.toMatchObject({ code: 'FORBIDDEN' });
   });
 
-  it('issues a role-zero protected join for only the three isolated fictional learners', async () => {
+  it('refuses Admin-minted learner join material for every fictional Student', async () => {
     const realConfig = loadConfig({
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
@@ -465,59 +464,17 @@ describe('live class question lifecycle', () => {
       clock: () => clockNow,
     });
 
-    const launch = await realService.zoomTestParticipantBootstrap(rabbiActor(), 1);
-    expect(launch).toMatchObject({
-      user_name: 'Student 1',
-      video_start_model: 'PARTICIPANT_CONSENT',
-    });
-    expect(launch.customer_key).not.toContain('Student 1');
-    expect(launch.customer_key).toMatch(/^zoom_ck_[a-f0-9]{24}$/);
-    expect(launch.customer_key.length).toBeLessThanOrEqual(ZOOM_CUSTOMER_KEY_MAX_LENGTH);
-
-    const legacyCustomerKey = stableKey('zoom_customer_key', [
-      launch.occurrence_key,
-      'live_demo_learner_1',
-    ]);
-    expect(legacyCustomerKey.length).toBeGreaterThan(ZOOM_CUSTOMER_KEY_MAX_LENGTH);
-    await pool.query(
-      `UPDATE onetime.live_class_questions
-          SET customer_key = $1
-        WHERE account_key = $2
-          AND product_key = $3
-          AND occurrence_key = $4
-          AND learner_key = 'live_demo_learner_1'`,
-      [legacyCustomerKey, config.accountKey, config.productKey, launch.occurrence_key],
-    );
-    await pool.query(
-      `UPDATE onetime.live_class_participants
-          SET participant_key = $1,
-              customer_key = $2
-        WHERE account_key = $3
-          AND product_key = $4
-          AND occurrence_key = $5
-          AND learner_key = 'live_demo_learner_1'`,
-      [
-        stableKey('zoom_participant', [launch.occurrence_key, legacyCustomerKey]),
-        legacyCustomerKey,
-        config.accountKey,
-        config.productKey,
-        launch.occurrence_key,
-      ],
-    );
-    const reseededLaunch = await realService.zoomTestParticipantBootstrap(rabbiActor(), 1);
-    expect(reseededLaunch.customer_key).toBe(launch.customer_key);
-    expect(reseededLaunch.customer_key.length).toBeLessThanOrEqual(ZOOM_CUSTOMER_KEY_MAX_LENGTH);
-    const payload = JSON.parse(
-      Buffer.from(launch.signature.split('.')[1]!, 'base64url').toString('utf8'),
-    ) as { role: number; mn: string };
-    expect(payload).toMatchObject({ role: 0, mn: '987654321' });
-
+    for (const studentNumber of [1, 2, 3]) {
+      await expect(
+        realService.zoomTestParticipantBootstrap(rabbiActor(), studentNumber),
+      ).rejects.toMatchObject({
+        code: 'FORBIDDEN',
+        message: 'Zoom learners must join from their own protected Student session.',
+      });
+    }
     await expect(
       realService.zoomTestParticipantBootstrap(studentActor('learner_alpha', 'household_alpha'), 1),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' });
-    await expect(realService.zoomTestParticipantBootstrap(rabbiActor(), 4)).rejects.toMatchObject({
-      code: 'FORBIDDEN',
-    });
   });
 });
 

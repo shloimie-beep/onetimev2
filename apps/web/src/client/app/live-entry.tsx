@@ -427,19 +427,10 @@ function ZoomHealth({ data }: { data: ConsoleData | null }) {
           >
             Open Protected Zoom Host
           </a>
-          <div className="live-action-grid" aria-label="Isolated fictional student joins">
-            {[1, 2, 3].map((student) => (
-              <a
-                key={student}
-                className="ot-button secondary"
-                href={`/app/live-console/zoom-participant/${student}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Join Class — Student {student}
-              </a>
-            ))}
-          </div>
+          <p>
+            Student 1 joins from the separate protected Student portal. The Admin session never
+            mints or impersonates a learner session.
+          </p>
         </>
       ) : (
         <p>{zoomProviderOffSummary(data?.zoom.readiness)}</p>

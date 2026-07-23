@@ -25,7 +25,7 @@ import type {
 } from '../../../contracts/src/telegram/types.ts';
 import { stableKey } from '../lead/normalize.ts';
 import { PortalServiceError } from '../portals/services.ts';
-import { assertZoomCustomerKey, zoomCustomerKey } from './zoom-identifiers.ts';
+import { zoomCustomerKey } from './zoom-identifiers.ts';
 import { inspectZoomHostControlReadiness } from './zoom-host.ts';
 
 export const LIVE_CLASS_POLICY_VERSION = 'ot-live-class-control-v1';
@@ -259,44 +259,14 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
 
     async zoomTestParticipantBootstrap(
       actor: PortalActorContext,
-      studentNumber: number,
-      occurrenceKey?: string | undefined,
+      _studentNumber: number,
+      _occurrenceKey?: string | undefined,
     ) {
       requireRabbi(actor);
-      requireZoomHostControl(deps.config);
-      if (!deps.zoomHostLaunchPort) {
-        throw new PortalServiceError(
-          'PROVIDER_NOT_READY',
-          'Meeting SDK participant control is not ready.',
-        );
-      }
-      if (!liveClassFakeAdapterEnabled(deps.config) || ![1, 2, 3].includes(studentNumber)) {
-        throw new PortalServiceError(
-          'FORBIDDEN',
-          'The isolated fictional-participant surface is unavailable.',
-        );
-      }
-      const now = clock();
-      const session = await ensureSession(deps, actor, now, occurrenceKey, true);
-      const participants = await deps.repository.listParticipants({
-        actor,
-        occurrence_key: session.occurrence_key,
-      });
-      const participant = participants.find(
-        (item) => item.learner_key === `live_demo_learner_${studentNumber}`,
+      throw new PortalServiceError(
+        'FORBIDDEN',
+        'Zoom learners must join from their own protected Student session.',
       );
-      if (!participant) {
-        throw new PortalServiceError(
-          'NOT_FOUND',
-          'The isolated fictional participant was not found.',
-        );
-      }
-      return deps.zoomHostLaunchPort.resolveTestParticipantLaunch({
-        occurrenceKey: session.occurrence_key,
-        customerKey: assertZoomCustomerKey(participant.customer_key),
-        userName: participant.approved_display_name,
-        now,
-      });
     },
 
     async syncZoomParticipants(
@@ -377,12 +347,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         session.occurrence_key,
         payload.idempotency_key,
       ]);
-      const customerKey = zoomCustomerKey([
-        actor.account_key,
-        actor.product_key,
-        session.occurrence_key,
-        learner.learner_key,
-      ]);
+      const customerKey = zoomCustomerKey([session.occurrence_key, learner.learner_key]);
       const protectedBody = deps.questionCodec
         ? await deps.questionCodec.encrypt(
             { body: payload.body, preview: questionPreview },
@@ -1162,7 +1127,8 @@ function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['s
       'Use only ZOOM_MEETING_SDK_CLIENT_ID, ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION as the canonical SDK contract.',
       'After rotating the exposed protected class target, configure the protected S2S account/client, host, isolated meeting, and passcode prerequisites.',
       'Confirm the protected host is authorized for the isolated meeting without using the Rabbi recurring meeting.',
-      'Set ZOOM_CLASSROOM_CANARY_ENABLED=true only for an explicitly authorized isolated-staging canary, then disable it after proof.',
+      'Bind ZOOM_CLASSROOM_CANARY_LEARNER_KEY to the one authorized fictional Student before enabling the canary.',
+      'Set ZOOM_CLASSROOM_CANARY_ENABLED=true only for that explicitly authorized isolated-staging canary, then disable it after proof.',
     ],
   };
 }

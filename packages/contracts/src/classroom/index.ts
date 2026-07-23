@@ -72,21 +72,52 @@ export type ClassroomLaunchBootstrapPayload = z.infer<typeof classroomLaunchBoot
 export const classroomSelectedViewSchema = z.enum(['client', 'component']);
 export type ClassroomSelectedView = z.infer<typeof classroomSelectedViewSchema>;
 
+const classroomSinkSdkLaunchSchema = z.object({
+  mode: z.literal('sink'),
+  sdk_key_ref: opaqueIdSchema,
+  meeting_number: z.string().trim().min(9).max(32),
+  signature: z.string().trim().min(16).max(240),
+  password_ref: opaqueIdSchema,
+  registrant_token_ref: opaqueIdSchema,
+  role: z.literal(0),
+  user_display_name: z.string().trim().min(1).max(160),
+  user_email_required: z.literal(false),
+  leave_url: z
+    .string()
+    .trim()
+    .regex(/^\/app(?:\/|$)/)
+    .max(160),
+});
+
+const classroomRealSdkLaunchSchema = z.object({
+  mode: z.literal('real'),
+  sdk_web_version: z.string().regex(/^\d+\.\d+\.\d+$/),
+  meeting_number: z
+    .string()
+    .trim()
+    .regex(/^\d{9,32}$/),
+  signature: z.string().trim().min(16).max(2048),
+  meeting_password: z.string().min(1).max(32),
+  customer_key: z
+    .string()
+    .regex(/^zoom_ck_[a-f0-9]{24}$/)
+    .max(36),
+  role: z.literal(0),
+  user_display_name: z.string().trim().min(1).max(160),
+  user_email_required: z.literal(false),
+  leave_url: z
+    .string()
+    .trim()
+    .regex(/^\/app(?:\/|$)/)
+    .max(160),
+  video_start_model: z.literal('PARTICIPANT_CONSENT'),
+});
+
 export const classroomLaunchBootstrapResponseSchema = z.object({
   occurrence: classroomOccurrenceProjectionSchema,
   selected_view: classroomSelectedViewSchema,
   attempt_key: opaqueIdSchema,
-  sdk: z.object({
-    sdk_key_ref: opaqueIdSchema,
-    meeting_number: z.string().trim().min(9).max(32),
-    signature: z.string().trim().min(16).max(240),
-    password_ref: opaqueIdSchema,
-    registrant_token_ref: opaqueIdSchema,
-    role: z.literal(0),
-    user_display_name: z.string().trim().min(1).max(160),
-    user_email_required: z.literal(false),
-    leave_url: z.string().trim().min(1).max(160),
-  }),
+  sdk: z.discriminatedUnion('mode', [classroomSinkSdkLaunchSchema, classroomRealSdkLaunchSchema]),
   provider: z.object({
     mode: classroomProviderModeSchema,
     state: classroomProviderStateSchema,

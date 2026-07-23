@@ -115,6 +115,9 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       expect(launchPage.status, launchHtml).toBe(200);
       expect(launchPage.headers.get('cache-control')).toContain('no-store');
       expect(launchPage.headers.get('referrer-policy')).toBe('no-referrer');
+      expect(launchPage.headers.get('content-security-policy')).not.toContain(
+        'https://source.zoom.us',
+      );
       expect(launchHtml).not.toMatch(/meeting_number|signature|registrant|https?:\/\/|zoom\.us/i);
 
       const bootstrap = await fetch(`${server.baseUrl}/api/v1/classroom/launch/bootstrap`, {
@@ -145,6 +148,240 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       expect(rows.rows).toHaveLength(1);
       expect(rows.rows[0].secret_digest).toMatch(/^[a-f0-9]{64}$/);
       expect(JSON.stringify(rows.rows)).not.toContain(launchPath.split('/').at(-1));
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('binds the normal Student session to a gated real role-0 SDK launch without provider URLs or sibling reuse', async () => {
+    config = loadConfig({
+      NODE_ENV: 'test',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ZOOM_CLASSROOM_ENABLED: 'true',
+      ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
+      ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+      ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
+      ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'learner_alpha',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk-client-fixture',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret-fixture',
+      ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
+      ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+      ZOOM_S2S_ACCOUNT_ID: 's2s-account-fixture',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-fixture',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-secret-fixture',
+      ZOOM_HOST_USER_ID: 'host-fixture',
+      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
+    });
+    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const issued = await issueLaunch(server.baseUrl, student, 'ot88-real-student-001');
+      const studentDashboard = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
+        headers: { cookie: student.cookies },
+      });
+      const studentDashboardJson = await studentDashboard.json();
+      expect(studentDashboard.status).toBe(200);
+      expect(studentDashboardJson.data.upcoming_classes[0]).toMatchObject({
+        provider_state: 'configured',
+        status: 'live',
+        launch_action: { label: 'Join class' },
+      });
+
+      const launchPage = await fetch(`${server.baseUrl}${issued.launchPath}`, {
+        headers: { cookie: student.cookies },
+      });
+      expect(launchPage.status).toBe(200);
+      expect(launchPage.headers.get('cache-control')).toContain('no-store');
+      expect(launchPage.headers.get('content-security-policy')).toContain('https://source.zoom.us');
+      expect(launchPage.headers.get('content-security-policy')).toContain('wss://*.zoom.us');
+
+      const sibling = await loginAs(server.baseUrl, 'sibling@example.test', 'StudentPass!234');
+      const siblingDashboard = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
+        headers: { cookie: sibling.cookies },
+      });
+      const siblingDashboardJson = await siblingDashboard.json();
+      expect(siblingDashboard.status).toBe(200);
+      expect(siblingDashboardJson.data.upcoming_classes[0]).toMatchObject({
+        provider_state: 'not_configured',
+        status: 'unavailable',
+        launch_action: null,
+      });
+      const siblingLaunchPage = await fetch(`${server.baseUrl}${issued.launchPath}`, {
+        headers: { cookie: sibling.cookies },
+      });
+      expect(siblingLaunchPage.status).toBe(200);
+      expect(siblingLaunchPage.headers.get('content-security-policy')).not.toContain(
+        'source.zoom.us',
+      );
+      const siblingTheft = await bootstrapLaunch(server.baseUrl, sibling, issued.launchPath, 390);
+      expect(siblingTheft.status, siblingTheft.text).toBe(403);
+      expect(siblingTheft.json.code).toBe('FORBIDDEN');
+      expect(siblingTheft.text).not.toMatch(
+        /sdk-client-fixture|sdk-secret-fixture|s2s-secret-fixture|meeting-passcode-fixture/,
+      );
+
+      const bootstrap = await bootstrapLaunch(server.baseUrl, student, issued.launchPath, 1200);
+      expect(bootstrap.status, bootstrap.text).toBe(200);
+      expect(bootstrap.json.data).toMatchObject({
+        selected_view: 'client',
+        provider: { mode: 'real', state: 'ready', raw_join_url_present: false },
+        policy: { mute_on_join: true, participant_role: 0 },
+        sdk: {
+          mode: 'real',
+          sdk_web_version: '6.2.0',
+          meeting_number: '987654321',
+          role: 0,
+          user_display_name: 'Alpha Learner',
+          user_email_required: false,
+          leave_url: '/app/student',
+          video_start_model: 'PARTICIPANT_CONSENT',
+        },
+      });
+      expect(bootstrap.json.data.sdk.customer_key).toMatch(/^zoom_ck_[a-f0-9]{24}$/);
+      expect(bootstrap.json.data.sdk.customer_key.length).toBeLessThanOrEqual(36);
+      expect(bootstrap.text).not.toMatch(/https?:\/\/|\/j\/|sdk-secret-fixture|s2s-secret-fixture/);
+
+      const participant = await pool.query(
+        `SELECT learner_key, customer_key, approved_display_name, join_state, audio_state,
+                video_state
+           FROM onetime.live_class_participants
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = $3`,
+        [config.accountKey, config.productKey, bootstrap.json.data.occurrence.class_key],
+      );
+      expect(participant.rows).toHaveLength(1);
+      expect(participant.rows[0]).toMatchObject({
+        learner_key: 'learner_alpha',
+        customer_key: bootstrap.json.data.sdk.customer_key,
+        approved_display_name: 'Alpha Learner',
+        join_state: 'waiting',
+        audio_state: 'muted',
+        video_state: 'off',
+      });
+
+      const questionResponse = await fetch(`${server.baseUrl}/api/v1/live-class/questions`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': student.json.csrf_token,
+        },
+        body: JSON.stringify({
+          occurrence_key: bootstrap.json.data.occurrence.class_key,
+          body: 'Can the Rabbi explain this Mishnah?',
+          idempotency_key: 'ot88-real-student-question-001',
+        }),
+      });
+      const questionText = await questionResponse.text();
+      expect(questionResponse.status, questionText).toBe(201);
+      const mapped = await pool.query(
+        `SELECT questions.customer_key,
+                COUNT(participants.participant_key)::int AS participant_count
+           FROM onetime.live_class_questions AS questions
+           JOIN onetime.live_class_participants AS participants
+             ON participants.account_key = questions.account_key
+            AND participants.product_key = questions.product_key
+            AND participants.occurrence_key = questions.occurrence_key
+            AND participants.customer_key = questions.customer_key
+          WHERE questions.account_key = $1
+            AND questions.product_key = $2
+            AND questions.occurrence_key = $3
+            AND questions.learner_key = $4
+          GROUP BY questions.customer_key`,
+        [
+          config.accountKey,
+          config.productKey,
+          bootstrap.json.data.occurrence.class_key,
+          'learner_alpha',
+        ],
+      );
+      expect(mapped.rows).toEqual([
+        {
+          customer_key: bootstrap.json.data.sdk.customer_key,
+          participant_count: 1,
+        },
+      ]);
+
+      const replay = await bootstrapLaunch(server.baseUrl, student, issued.launchPath, 390);
+      expect(replay.status, replay.text).toBe(410);
+      expect(replay.json.code).toBe('LAUNCH_EXPIRED');
+      expect(replay.text).not.toMatch(
+        /meeting_number|signature|meeting_password|customer_key|sdk-secret-fixture/,
+      );
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('keeps normal Student real mode provider-off when the final canary gate is absent', async () => {
+    config = loadConfig({
+      NODE_ENV: 'test',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ZOOM_CLASSROOM_ENABLED: 'true',
+      ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
+      ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+      ZOOM_CLASSROOM_CANARY_ENABLED: 'false',
+      ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'learner_alpha',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk-client-fixture',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret-fixture',
+      ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
+      ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+      ZOOM_S2S_ACCOUNT_ID: 's2s-account-fixture',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-fixture',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-secret-fixture',
+      ZOOM_HOST_USER_ID: 'host-fixture',
+      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
+    });
+    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const dashboard = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
+        headers: { cookie: student.cookies },
+      });
+      const dashboardJson = await dashboard.json();
+      expect(dashboard.status).toBe(200);
+      const classSummary = dashboardJson.data.upcoming_classes[0];
+      expect(classSummary).toMatchObject({
+        provider_state: 'not_configured',
+        status: 'unavailable',
+        launch_action: null,
+      });
+
+      const deniedLaunch = await postLaunch(
+        server.baseUrl,
+        student,
+        `/api/v1/portals/student/classes/${encodeURIComponent(classSummary.class_key)}/launch`,
+        'ot88-provider-off-001',
+      );
+      expect(deniedLaunch.status, deniedLaunch.text).toBe(503);
+      expect(deniedLaunch.json.code).toBe('ADAPTER_UNAVAILABLE');
+
+      const launchPage = await fetch(
+        `${server.baseUrl}/classroom/launch/unissued-grant/unissued-secret`,
+        { headers: { cookie: student.cookies } },
+      );
+      expect(launchPage.status).toBe(200);
+      const csp = launchPage.headers.get('content-security-policy') ?? '';
+      expect(csp).not.toContain('source.zoom.us');
+      expect(csp).not.toContain('wss://*.zoom.us');
+
+      const [grants, participants] = await Promise.all([
+        pool.query(`SELECT grant_key FROM onetime.classroom_launch_grants`),
+        pool.query(`SELECT participant_key FROM onetime.live_class_participants`),
+      ]);
+      expect(grants.rows).toEqual([]);
+      expect(participants.rows).toEqual([]);
     } finally {
       await server.close();
     }
@@ -195,6 +432,64 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       );
       expect(rejoinBootstrap.status, rejoinBootstrap.text).toBe(200);
       expect(rejoinBootstrap.json.data.selected_view).toBe('client');
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('does not consume another account’s launch grant even with exact stored digests', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const issued = await issueLaunch(server.baseUrl, student, 'ot88-cross-account-001');
+      const grantKey = grantKeyFromLaunchPath(issued.launchPath);
+      const stored = await pool.query(
+        `SELECT actor_user_ref, secret_digest, session_key_digest, status
+           FROM onetime.classroom_launch_grants
+          WHERE grant_key = $1`,
+        [grantKey],
+      );
+      expect(stored.rows[0]?.status).toBe('issued');
+
+      const crossAccount = await createClassroomRepository(pool).consumeLaunchGrant({
+        actor: {
+          account_key: 'another_account',
+          product_key: config.productKey,
+          actor_user_ref: String(stored.rows[0]?.actor_user_ref),
+          actor_role: 'student',
+          session_key: 'another_account_session',
+          capabilities: ['student:class:launch'],
+          authorized_households: [],
+          student_learner: {
+            learner_key: 'learner_alpha',
+            household_key: 'household_alpha',
+            access_state_key: 'access_alpha',
+          },
+        },
+        grant_key: grantKey,
+        secret_digest: String(stored.rows[0]?.secret_digest),
+        session_key_digest: String(stored.rows[0]?.session_key_digest),
+        now: openClassClock(),
+      });
+      expect(crossAccount).toBeNull();
+
+      const stillIssued = await pool.query(
+        `SELECT status
+           FROM onetime.classroom_launch_grants
+          WHERE grant_key = $1`,
+        [grantKey],
+      );
+      expect(stillIssued.rows[0]?.status).toBe('issued');
+
+      const rightful = await bootstrapLaunch(server.baseUrl, student, issued.launchPath, 390);
+      expect(rightful.status, rightful.text).toBe(200);
+      const consumed = await pool.query(
+        `SELECT status
+           FROM onetime.classroom_launch_grants
+          WHERE grant_key = $1`,
+        [grantKey],
+      );
+      expect(consumed.rows[0]?.status).toBe('consumed');
     } finally {
       await server.close();
     }

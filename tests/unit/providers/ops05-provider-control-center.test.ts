@@ -110,13 +110,14 @@ describe('OPS-05 provider control center projection', () => {
       ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret-control-center-fixture',
       ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
       ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
-      ZOOM_ACCOUNT_ID: 'zoom-account-control-center-fixture',
+      ZOOM_S2S_ACCOUNT_ID: 'zoom-account-control-center-fixture',
       ZOOM_S2S_CLIENT_ID: 's2s-client-control-center-fixture',
       ZOOM_S2S_CLIENT_SECRET: 's2s-secret-control-center-fixture',
       ZOOM_HOST_USER_ID: 'host-control-center-fixture',
       ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
       ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-control-center-fixture',
       ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
+      ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
       PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
     };
     const matrix = buildProviderControlCenter({ config: loadConfig(env), env, now });
@@ -145,13 +146,14 @@ describe('OPS-05 provider control center projection', () => {
       ZOOM_MEETING_SDK_SECRET: 'legacy-sdk-secret-fixture',
       ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
       ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
-      ZOOM_ACCOUNT_ID: 'zoom-account-fixture',
+      ZOOM_S2S_ACCOUNT_ID: 'zoom-account-fixture',
       ZOOM_S2S_CLIENT_ID: 's2s-client-fixture',
       ZOOM_S2S_CLIENT_SECRET: 's2s-secret-fixture',
       ZOOM_HOST_USER_ID: 'host-fixture',
       ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
       ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
       ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
+      ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
       PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
     };
     const zoom = buildProviderControlCenter({ config: loadConfig(env), env, now }).providers.find(

@@ -54,6 +54,7 @@ describe('OT-88 classroom contracts and policy', () => {
       selected_view: 'client',
       attempt_key: 'classroom_attempt_contract',
       sdk: {
+        mode: 'sink',
         sdk_key_ref: 'sdk_key_contract',
         meeting_number: '9123456789',
         signature: 'sink_sig_contract_1234567890',
@@ -85,6 +86,36 @@ describe('OT-88 classroom contracts and policy', () => {
         provider: { ...base.provider, raw_join_url_present: true },
       }),
     ).toThrow();
+
+    const real = classroomLaunchBootstrapResponseSchema.parse({
+      ...base,
+      occurrence: { ...base.occurrence, provider_state: 'ready' },
+      sdk: {
+        mode: 'real',
+        sdk_web_version: '6.2.0',
+        meeting_number: '9123456789',
+        signature: 'real_signature_contract_1234567890',
+        meeting_password: 'protected-passcode',
+        customer_key: 'zoom_ck_1234567890abcdef12345678',
+        role: 0,
+        user_display_name: 'Learner',
+        user_email_required: false,
+        leave_url: '/app/student',
+        video_start_model: 'PARTICIPANT_CONSENT',
+      },
+      provider: { mode: 'real', state: 'ready', raw_join_url_present: false },
+    });
+    expect(real.sdk).toMatchObject({
+      mode: 'real',
+      role: 0,
+      video_start_model: 'PARTICIPANT_CONSENT',
+    });
+    expect(() =>
+      classroomLaunchBootstrapResponseSchema.parse({
+        ...real,
+        sdk: { ...real.sdk, customer_key: 'wrong-or-cross-account-key' },
+      }),
+    ).toThrow();
   });
 
   it('keeps real provider mode fail-closed and only enables sink readiness', () => {
@@ -93,6 +124,7 @@ describe('OT-88 classroom contracts and policy', () => {
       ZOOM_CLASSROOM_ENABLED: 'true',
       ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
       ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+      ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'learner_contract',
       ZOOM_MEETING_SDK_CLIENT_ID: 'configured',
       ZOOM_MEETING_SDK_CLIENT_SECRET: 'configured',
       ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
@@ -107,6 +139,7 @@ describe('OT-88 classroom contracts and policy', () => {
     });
 
     expect(serviceFor(realConfig).providerState()).toBe('unconfigured');
+    expect(serviceFor(realConfig, true).providerState()).toBe('ready');
     expect(serviceFor(sinkConfig).providerState()).toBe('sink_ready');
   });
 
@@ -123,7 +156,9 @@ describe('OT-88 classroom contracts and policy', () => {
       zoomMeetingSdkClientSecretConfigured: true,
       zoomMeetingSdkWebVersionConfigured: true,
       zoomMeetingSdkLegacyAliasUsed: true,
-      zoomS2sAccountIdConfigured: true,
+      zoomAccountId: 'legacy-s2s-account-id-alias',
+      zoomAccountIdConfigured: true,
+      zoomS2sAccountIdConfigured: false,
       zoomS2sClientIdConfigured: false,
       zoomS2sClientSecretConfigured: false,
     });
@@ -310,11 +345,12 @@ describe('OT-88 classroom contracts and policy', () => {
   });
 });
 
-function serviceFor(config: ReturnType<typeof loadConfig>) {
+function serviceFor(config: ReturnType<typeof loadConfig>, zoomRealProviderReady = false) {
   return createClassroomService({
     config,
     repository: failingRepository(),
     questionCodec: new DeterministicTestPayloadCodec(),
+    zoomRealProviderReady,
   });
 }
 

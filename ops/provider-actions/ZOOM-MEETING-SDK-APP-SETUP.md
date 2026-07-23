@@ -62,9 +62,10 @@ The current code enforces four provider gates before Zoom client construction:
 3. `ZOOM_CLASSROOM_PROVIDER_MODE=real`
 4. `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=true`
 
-`ZOOM_CLASSROOM_CANARY_ENABLED=true` is an additional, final authorization gate. It is never
-inferred from the four provider gates. The canary flag remains false until every prerequisite and
-negative preflight passes.
+`ZOOM_CLASSROOM_CANARY_ENABLED=true` and an exact
+`ZOOM_CLASSROOM_CANARY_LEARNER_KEY=full_app_preview_student_1` binding are additional, final
+authorization gates. They are never inferred from the four provider gates. The canary flag
+remains false until every prerequisite and negative preflight passes.
 
 The four separately reported readiness phases are:
 
@@ -114,6 +115,18 @@ state must remain outside the repository, and its sanitized output must confirm 
 join URL, passcode, token, or private destination were printed. Do not substitute the Rabbi's
 regular meeting when registration or licensing is not ready.
 
+The one-off provisioner must stop before constructing a provider client unless all four
+non-secret preflight values are exact:
+
+- `ONE_TIME_RUNTIME_ENVIRONMENT=isolated_staging`
+- `ZOOM_CLASSROOM_CANARY_LEARNER_KEY=full_app_preview_student_1`
+- `ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION=PROVISION_FICTIONAL_STUDENT_1_ONCE`
+- `ZOOM_PROTECTED_TARGET_ROTATION_ATTESTATION=OLD_TARGET_REVOKED_REPLACEMENT_VALID`
+
+Clear the two one-off authorization/attestation values after provisioning. The script accepts
+only a new schema-v2 Student-1 state outside Git and rejects legacy or multi-Student state before
+any provider request.
+
 ### Protected class target
 
 - `ONE_TIME_PROTECTED_CLASS_TARGET_URL`
@@ -135,6 +148,7 @@ Read back names/status only and require:
 - `ZOOM_CLASSROOM_PROVIDER_MODE=sink`
 - `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=false`
 - `ZOOM_CLASSROOM_CANARY_ENABLED=false`
+- `ZOOM_CLASSROOM_CANARY_LEARNER_KEY` is absent or already bound only to fictional Student 1
 - production has no change associated with this job
 - the exact fictional occurrence and fictional Student 1 are active and eligible in the current
   staging account/product
@@ -177,7 +191,8 @@ weaken strict origin checking.
 1. Copy the canonical SDK values and six S2S/host/meeting values into the persistent-staging web
    service's protected variables.
 2. Set `PUBLIC_BASE_URL` and `ZOOM_MEETING_SDK_ALLOWED_ORIGIN` to the exact staging origin.
-3. Leave provider mode `sink`, real provider `false`, and canary `false`.
+3. Bind `ZOOM_CLASSROOM_CANARY_LEARNER_KEY=full_app_preview_student_1`, while leaving provider
+   mode `sink`, real provider `false`, and canary `false`.
 4. Redeploy the exact pinned source.
 5. Verify `/version`, `/health`, and `/ready`; verify no raw value appears in logs or readiness.
 6. Read the four readiness phases by name. Configuration phases may be ready while provider
@@ -197,9 +212,9 @@ disable the real gates and stop.
 
 ### 6. Run one bounded real canary
 
-Set `ZOOM_CLASSROOM_CANARY_ENABLED=true` only on the staging web service and redeploy the exact
-source. Use a current supported Chrome or Edge browser; allow microphone/camera only for this
-test.
+With the exact Student-1 learner binding still present, set `ZOOM_CLASSROOM_CANARY_ENABLED=true`
+only on the staging web service and redeploy the exact source. Use a current supported Chrome or
+Edge browser; allow microphone/camera only for this test.
 
 1. On the host device, sign in as the authorized fictional Administrator and open
    `/app/live-console`.

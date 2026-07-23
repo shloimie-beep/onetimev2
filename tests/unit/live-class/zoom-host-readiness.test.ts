@@ -7,6 +7,7 @@ import {
   inspectZoomHostControlReadiness,
   ZOOM_HOST_CONTROL_PROVIDER_GATE_VARIABLES,
   ZOOM_HOST_CONTROL_READINESS_VARIABLES,
+  ZOOM_REAL_CONTROL_CANARY_AUTHORIZATION_VARIABLES,
 } from '../../../packages/domain/src/index.ts';
 import type { ZoomHostLaunchDependencies } from '../../../packages/domain/src/live-class/zoom-host.ts';
 
@@ -20,13 +21,14 @@ const fullyConfiguredEnv: NodeJS.ProcessEnv = {
   ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret-fixture',
   ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
   ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
-  ZOOM_ACCOUNT_ID: 'account-fixture',
+  ZOOM_S2S_ACCOUNT_ID: 'account-fixture',
   ZOOM_S2S_CLIENT_ID: 's2s-client-fixture',
   ZOOM_S2S_CLIENT_SECRET: 's2s-secret-fixture',
   ZOOM_HOST_USER_ID: 'host-fixture',
   ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
   ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
+  ZOOM_CLASSROOM_CANARY_LEARNER_KEY: 'full_app_preview_student_1',
   PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
 };
 
@@ -99,6 +101,56 @@ describe('Zoom real host-control readiness', () => {
     });
   });
 
+  it('keeps the legacy S2S account alias compatible without letting it satisfy readiness', () => {
+    const env = without('ZOOM_S2S_ACCOUNT_ID');
+    env.ZOOM_ACCOUNT_ID = 'legacy-account-fixture';
+    const config = loadConfig(env);
+    const createRestClient = vi.fn() as unknown as NonNullable<
+      ZoomHostLaunchDependencies['createRestClient']
+    >;
+
+    expect(config).toMatchObject({
+      zoomAccountId: 'legacy-account-fixture',
+      zoomAccountIdConfigured: true,
+      zoomS2sAccountIdConfigured: false,
+    });
+    expect(inspectZoomHostControlReadiness(config)).toMatchObject({
+      ready: false,
+      code: 'PROVIDER_NOT_READY',
+      readiness_blockers: expect.arrayContaining(['ZOOM_S2S_ACCOUNT_ID']),
+    });
+    expect(createZoomHostLaunchPort(config, { createRestClient })).toBeUndefined();
+    expect(createRestClient).not.toHaveBeenCalled();
+  });
+
+  it('prefers the canonical S2S account ID when both names are present', () => {
+    const createRestClient: NonNullable<ZoomHostLaunchDependencies['createRestClient']> = vi.fn(
+      () => ({ getHostZakToken: vi.fn(async () => 'fake-zak-token') }),
+    );
+    const config = loadConfig({
+      ...fullyConfiguredEnv,
+      ZOOM_ACCOUNT_ID: 'legacy-account-fixture',
+      ZOOM_S2S_ACCOUNT_ID: 'canonical-account-fixture',
+    });
+
+    expect(config.zoomAccountId).toBe('canonical-account-fixture');
+    expect(config.zoomS2sAccountIdConfigured).toBe(true);
+    expect(
+      createZoomHostLaunchPort(config, {
+        createRestClient,
+        createHostSignature: () => 'fake-host-signature',
+        createLearnerSignature: () => 'fake-learner-signature',
+      }),
+    ).toBeDefined();
+    expect(createRestClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        credentials: expect.objectContaining({
+          accountId: 'canonical-account-fixture',
+        }),
+      }),
+    );
+  });
+
   it.each([
     'https://another-origin.example.test',
     'http://isolated-pr.example.test',
@@ -130,7 +182,7 @@ describe('Zoom real host-control readiness', () => {
   it('separates the known S2S meeting and host blockers from SDK readiness', () => {
     const config = loadConfig(
       without(
-        'ZOOM_ACCOUNT_ID',
+        'ZOOM_S2S_ACCOUNT_ID',
         'ZOOM_S2S_CLIENT_ID',
         'ZOOM_S2S_CLIENT_SECRET',
         'ZOOM_HOST_USER_ID',
@@ -147,7 +199,7 @@ describe('Zoom real host-control readiness', () => {
         s2s_meeting_provisioning: {
           ready: false,
           blocker_variable_names: [
-            'ZOOM_ACCOUNT_ID',
+            'ZOOM_S2S_ACCOUNT_ID',
             'ZOOM_S2S_CLIENT_ID',
             'ZOOM_S2S_CLIENT_SECRET',
             'ZOOM_REAL_CONTROL_MEETING_ID',
@@ -162,28 +214,31 @@ describe('Zoom real host-control readiness', () => {
     });
   });
 
-  it('keeps canary authorization separate and fail-closed', () => {
-    const createRestClient = vi.fn() as unknown as NonNullable<
-      ZoomHostLaunchDependencies['createRestClient']
-    >;
-    const config = loadConfig(without('ZOOM_CLASSROOM_CANARY_ENABLED'));
-    const readiness = inspectZoomHostControlReadiness(config);
+  it.each(ZOOM_REAL_CONTROL_CANARY_AUTHORIZATION_VARIABLES)(
+    'keeps canary authorization separate and fail-closed when %s is missing',
+    (variableName) => {
+      const createRestClient = vi.fn() as unknown as NonNullable<
+        ZoomHostLaunchDependencies['createRestClient']
+      >;
+      const config = loadConfig(without(variableName));
+      const readiness = inspectZoomHostControlReadiness(config);
 
-    expect(readiness).toMatchObject({
-      ready: false,
-      code: 'PROVIDER_OFF',
-      readiness_blockers: [],
-      canary_authorization_blockers: ['ZOOM_CLASSROOM_CANARY_ENABLED'],
-      phases: {
-        sdk_app: { ready: true },
-        s2s_meeting_provisioning: { ready: true },
-        host_authorization: { ready: true },
-        real_control_canary_authorization: { ready: false },
-      },
-    });
-    expect(createZoomHostLaunchPort(config, { createRestClient })).toBeUndefined();
-    expect(createRestClient).not.toHaveBeenCalled();
-  });
+      expect(readiness).toMatchObject({
+        ready: false,
+        code: 'PROVIDER_OFF',
+        readiness_blockers: [],
+        canary_authorization_blockers: [variableName],
+        phases: {
+          sdk_app: { ready: true },
+          s2s_meeting_provisioning: { ready: true },
+          host_authorization: { ready: true },
+          real_control_canary_authorization: { ready: false },
+        },
+      });
+      expect(createZoomHostLaunchPort(config, { createRestClient })).toBeUndefined();
+      expect(createRestClient).not.toHaveBeenCalled();
+    },
+  );
 
   it('returns typed provider-off and readiness errors before repository or provider work', async () => {
     const providerOffService = createLiveClassService({
@@ -191,7 +246,7 @@ describe('Zoom real host-control readiness', () => {
       repository: {} as never,
     });
     const notReadyService = createLiveClassService({
-      config: loadConfig(without('ZOOM_ACCOUNT_ID')),
+      config: loadConfig(without('ZOOM_S2S_ACCOUNT_ID')),
       repository: {} as never,
     });
 

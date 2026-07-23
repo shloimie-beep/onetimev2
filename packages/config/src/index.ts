@@ -170,6 +170,7 @@ const envSchema = z.object({
   ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED: booleanFromString.default(true),
   ZOOM_CLASSROOM_MUTE_ON_JOIN: booleanFromString.default(true),
   ZOOM_CLASSROOM_CANARY_ENABLED: booleanFromString,
+  ZOOM_CLASSROOM_CANARY_LEARNER_KEY: optionalTrimmedString(1, 160),
   ZOOM_CLASSROOM_JOIN_GRANT_TTL_SECONDS: numberFromString.default(90),
   ZOOM_CLASSROOM_CLASS_DURATION_MINUTES: numberFromString.default(60),
   ZOOM_CLASSROOM_JOIN_OPEN_OFFSET_MINUTES: numberFromString.default(15),
@@ -240,6 +241,9 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   const parsed = envSchema.parse(source);
   const deliveryEnvironment =
     parsed.DELIVERY_ENVIRONMENT ?? defaultDeliveryEnvironment(parsed.NODE_ENV);
+  const canonicalZoomS2sAccountId = parsed.ZOOM_S2S_ACCOUNT_ID?.trim() || undefined;
+  const legacyZoomS2sAccountId = parsed.ZOOM_ACCOUNT_ID?.trim() || undefined;
+  const zoomS2sAccountId = canonicalZoomS2sAccountId ?? legacyZoomS2sAccountId;
   const guardedStripeTestTransport =
     parsed.ENABLE_PAYMENT_TRANSPORT && parsed.LIVE_STRIPE_CHARGES_AUTHORIZED === 'NO';
   const realTransportsEnabled =
@@ -580,6 +584,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomClassroomComponentViewEnabled: parsed.ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED,
     zoomClassroomMuteOnJoin: parsed.ZOOM_CLASSROOM_MUTE_ON_JOIN,
     zoomClassroomCanaryEnabled: parsed.ZOOM_CLASSROOM_CANARY_ENABLED,
+    zoomClassroomCanaryLearnerKey: parsed.ZOOM_CLASSROOM_CANARY_LEARNER_KEY,
     zoomClassroomJoinGrantTtlSeconds: parsed.ZOOM_CLASSROOM_JOIN_GRANT_TTL_SECONDS,
     zoomClassroomClassDurationMinutes: parsed.ZOOM_CLASSROOM_CLASS_DURATION_MINUTES,
     zoomClassroomJoinOpenOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_OPEN_OFFSET_MINUTES,
@@ -610,14 +615,14 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkSecretConfigured: Boolean(
       parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
     ),
-    zoomAccountId: parsed.ZOOM_ACCOUNT_ID ?? parsed.ZOOM_S2S_ACCOUNT_ID,
-    zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID ?? parsed.ZOOM_S2S_ACCOUNT_ID),
+    zoomAccountId: zoomS2sAccountId,
+    zoomAccountIdConfigured: Boolean(zoomS2sAccountId),
     zoomServerToServerClientId: parsed.ZOOM_S2S_CLIENT_ID,
     zoomServerToServerClientSecret: parsed.ZOOM_S2S_CLIENT_SECRET,
     zoomHostUserId: parsed.ZOOM_HOST_USER_ID,
     zoomRealControlMeetingId: parsed.ZOOM_REAL_CONTROL_MEETING_ID,
     zoomRealControlMeetingPasscode: parsed.ZOOM_REAL_CONTROL_MEETING_PASSCODE,
-    zoomS2sAccountIdConfigured: Boolean(parsed.ZOOM_S2S_ACCOUNT_ID ?? parsed.ZOOM_ACCOUNT_ID),
+    zoomS2sAccountIdConfigured: Boolean(canonicalZoomS2sAccountId),
     zoomS2sClientIdConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_ID),
     zoomS2sClientSecretConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_SECRET),
     oneTimeEventEmailFallback: parsed.ONE_TIME_EVENT_EMAIL_FALLBACK,

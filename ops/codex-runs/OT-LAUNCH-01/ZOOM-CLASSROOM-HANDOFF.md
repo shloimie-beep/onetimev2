@@ -3,7 +3,8 @@
 > Historical isolated-preview evidence only. Current status and acceptance live exclusively in
 > `ops/goals/OT-LAUNCH-01/BOARD.yaml`. The accepted provider-off integration source is PR #105 head
 > `50989b336838d2029a0e0abc075bfd209b9c65ef`; this document must not be used as current readiness
-> proof.
+> proof. The only executable provider-action job is
+> `ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md`.
 
 ## Scope
 
@@ -23,7 +24,7 @@
 - `ZOOM_MEETING_SDK_KEY` and `ZOOM_MEETING_SDK_SECRET` are compatibility aliases only and never
   satisfy real-control readiness.
 - The existing Server-to-Server OAuth app was not modified by this continuation.
-- The current isolated runtime lacks `ZOOM_ACCOUNT_ID`, `ZOOM_S2S_CLIENT_ID`,
+- The current isolated runtime lacks `ZOOM_S2S_ACCOUNT_ID`, `ZOOM_S2S_CLIENT_ID`,
   `ZOOM_S2S_CLIENT_SECRET`, `ZOOM_HOST_USER_ID`, `ZOOM_REAL_CONTROL_MEETING_ID`, and
   `ZOOM_REAL_CONTROL_MEETING_PASSCODE`.
 - A protected staging class target was exposed in private diagnostic output. The protected
@@ -39,8 +40,9 @@ Real host control stays unavailable until all four independently reported phases
 2. **S2S meeting provisioning** — account ID, S2S client ID/secret, isolated meeting ID, and
    meeting passcode.
 3. **Host authorization** — protected host user ID.
-4. **Real-control canary authorization** — `ZOOM_CLASSROOM_CANARY_ENABLED=true` in an explicitly
-   authorized `isolated_staging` runtime only.
+4. **Real-control canary authorization** — the exact fictional Student-1 learner binding plus
+   `ZOOM_CLASSROOM_CANARY_ENABLED=true` in an explicitly authorized `isolated_staging` runtime
+   only.
 
 The broader runtime/classroom/real-provider gates must also be active. Missing setup or
 authorization returns typed provider-off/not-ready responses before Zoom client construction or

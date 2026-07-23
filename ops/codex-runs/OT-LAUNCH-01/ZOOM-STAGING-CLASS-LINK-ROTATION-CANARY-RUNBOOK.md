@@ -1,7 +1,10 @@
 # Zoom staging class-link rotation and S2S canary runbook
 
-Status: **planned — no rotation, provider mutation, variable write, deployment, or canary was
-performed by this runbook authoring task**.
+Status: **SUPERSEDED HISTORICAL PLAN — DO NOT EXECUTE**.
+
+The authoritative reviewed job is
+`ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md`. Current execution status remains only in
+`ops/goals/OT-LAUNCH-01/BOARD.yaml`.
 
 ## Protected resource to rotate
 
@@ -33,8 +36,8 @@ incident specifically requires it.
 2. Move the replacement through the source's native protected-copy control directly into the
    protected `ONE_TIME_PROTECTED_CLASS_TARGET_URL` variable. Do not read it back into diagnostics.
 3. Verify the old target is denied and the replacement reaches only the intended protected class
-   destination. Record status, timestamp, and a non-reversible evidence digest only; never record
-   either URL.
+   destination. Record only sanitized status/timestamp booleans; never record either URL or a
+   digest derived from protected material.
 4. If either verification is ambiguous, clear `ONE_TIME_PROTECTED_CLASS_TARGET_URL`, keep all Zoom
    real-provider/canary flags false, and stop.
 
@@ -50,7 +53,7 @@ Canonical SDK app and origin binding:
 
 S2S meeting provisioning:
 
-- `ZOOM_ACCOUNT_ID`
+- `ZOOM_S2S_ACCOUNT_ID`
 - `ZOOM_S2S_CLIENT_ID`
 - `ZOOM_S2S_CLIENT_SECRET`
 - `ZOOM_REAL_CONTROL_MEETING_ID`
@@ -66,6 +69,7 @@ Provider and canary gates:
 - `ZOOM_CLASSROOM_ENABLED=true`
 - `ZOOM_CLASSROOM_PROVIDER_MODE=real`
 - `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=true`
+- `ZOOM_CLASSROOM_CANARY_LEARNER_KEY=full_app_preview_student_1`
 - `ZOOM_CLASSROOM_CANARY_ENABLED=true`
 
 ## Exact General-app origin requirement
@@ -96,7 +100,7 @@ Record only:
 - HTTP status and safe application/provider error category;
 - fictional participant labels;
 - command type and executed/rejected status;
-- non-reversible digests for the rotated resource and meeting reference;
+- `old_target_denied`, `replacement_target_valid`, and `target_value_recorded=false`;
 - confirmation that secret values, links, tokens, ZAK, passcodes, and raw participant identifiers
   are absent.
 

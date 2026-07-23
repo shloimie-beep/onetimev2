@@ -196,6 +196,7 @@ export type ClassroomServiceDeps = {
   questionCodec: SensitivePayloadCodec;
   zoomMeetingLaunchPort?: ZoomMeetingLaunchPort;
   zoomRegistrantPort?: ZoomRegistrantPort;
+  zoomRealProviderReady?: boolean;
   zoomProviderReadinessPort?: ZoomProviderReadinessPort;
   zoomAttendanceReconciliationPort?: ZoomAttendanceReconciliationPort;
   zoomFeatureParticipantPort?: ZoomFeatureParticipantPort;
@@ -224,7 +225,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
   void reminderDeliveryPort;
 
   return {
-    providerState: () => providerState(deps.config),
+    providerState: () => providerState(deps.config, deps.zoomRealProviderReady === true),
 
     async upcomingForLearner(args: { actor: PortalActorContext; learner: LearnerProfile }) {
       const now = clock();
@@ -238,6 +239,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       }
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
         eligibility,
         now,
@@ -281,6 +283,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       }
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
         eligibility,
         now,
@@ -394,19 +397,25 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       }
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
         eligibility,
         now,
       });
       assertCanJoin(projection.state);
-      const selectedView = selectView(args.payload.viewport_width, deps.config);
+      const selectedView =
+        deps.config.zoomClassroomProviderMode === 'real'
+          ? ('client' as const)
+          : selectView(args.payload.viewport_width, deps.config);
       const registrant = await zoomRegistrantPort.resolveRegistrant({
         config: deps.config,
         occurrence,
         eligibility,
         grant,
       });
-      if (registrant.registration_state !== 'sink_ready') {
+      const expectedRegistrantState =
+        deps.config.zoomClassroomProviderMode === 'real' ? 'real_ready' : 'sink_ready';
+      if (registrant.registration_state !== expectedRegistrantState) {
         throw new PortalServiceError(
           'ADAPTER_UNAVAILABLE',
           'Classroom provider is not configured.',
@@ -445,7 +454,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         sdk,
         provider: {
           mode: deps.config.zoomClassroomProviderMode,
-          state: providerState(deps.config),
+          state: providerState(deps.config, deps.zoomRealProviderReady === true),
           raw_join_url_present: false,
         },
         policy: {
@@ -486,6 +495,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       }
       const projection = occurrenceProjection({
         config: deps.config,
+        realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
         eligibility,
         now,
@@ -601,9 +611,11 @@ export function createClassroomPortalAccessAdapter(input: {
           provider_state:
             projection.provider_state === 'sink_ready'
               ? ('sink_ready' as const)
-              : projection.provider_state === 'disabled'
-                ? ('disabled' as const)
-                : ('not_configured' as const),
+              : projection.provider_state === 'ready'
+                ? ('configured' as const)
+                : projection.provider_state === 'disabled'
+                  ? ('disabled' as const)
+                  : ('not_configured' as const),
           status:
             projection.state === 'open'
               ? 'live'
@@ -667,19 +679,24 @@ async function nextOccurrence(
   });
 }
 
-function providerState(config: AppConfig): ClassroomProviderState {
+function providerState(config: AppConfig, realProviderReady = false): ClassroomProviderState {
   if (!config.zoomClassroomEnabled) return 'disabled';
   if (config.zoomClassroomProviderMode === 'sink') return 'sink_ready';
-  return 'unconfigured';
+  return realProviderReady ? 'ready' : 'unconfigured';
 }
 
 function occurrenceProjection(input: {
   config: AppConfig;
+  realProviderReady?: boolean | undefined;
   occurrence: ClassroomOccurrenceRecord;
   eligibility: ClassroomEligibility;
   now: Date;
 }) {
-  const provider = providerState(input.config);
+  const provider =
+    input.config.zoomClassroomProviderMode === 'real' &&
+    input.config.zoomClassroomCanaryLearnerKey !== input.eligibility.learner_key
+      ? 'unconfigured'
+      : providerState(input.config, input.realProviderReady === true);
   const state = joinState({
     provider,
     eligibility: input.eligibility,

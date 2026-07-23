@@ -195,6 +195,7 @@ import {
   receiveWhatsAppWebhook,
   requestTishaBavJoin,
   resolveTishaBavRedirect,
+  stableKey,
   updateContact,
   editContentFactoryItem,
   inspectLearningDeliveryInputAdapters,
@@ -205,12 +206,19 @@ import {
   verifyRecentEmailAssurance,
   verifySessionCsrf,
   verifyWhatsAppWebhookChallenge,
+  zoomCustomerKey,
   TishaBavIdempotencyConflictError,
   TishaBavJoinError,
+  type LiveClassRepository,
   type AuthenticatedSession,
   PortalServiceError,
   type PortalServiceDeps,
+  type ZoomHostLaunchPort,
 } from '../../../../packages/domain/src/index.ts';
+import type {
+  ZoomMeetingLaunchPort,
+  ZoomRegistrantPort,
+} from '../../../../packages/domain/src/providers/zoom.ts';
 import {
   buildProviderControlCenter,
   planProviderCanary,
@@ -968,32 +976,8 @@ export function createApp({
       res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
       return;
     }
-    const student = Number(req.params.student);
-    if (![1, 2, 3].includes(student)) {
-      res.status(404).type('text').send('Fictional student not found.');
-      return;
-    }
-    await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
-    res.setHeader('Referrer-Policy', 'no-referrer');
-    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
-    res.setHeader(
-      'Content-Security-Policy',
-      [
-        "default-src 'self'",
-        "img-src 'self' data: blob: https://source.zoom.us",
-        "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
-        "style-src 'self' 'unsafe-inline' https://source.zoom.us",
-        "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
-        "worker-src 'self' blob:",
-        "media-src 'self' blob: mediastream:",
-        "object-src 'none'",
-        "base-uri 'self'",
-        "frame-ancestors 'none'",
-      ].join('; '),
-    );
-    res.status(200).type('html').send(zoomParticipantHtml(student));
+    res.status(404).type('text').send('Use the protected Student portal to join class.');
   });
 
   app.get(/^\/app\/live-console(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
@@ -1531,15 +1515,22 @@ export function createApp({
   );
 
   const portalRepository = createPortalRepository(pool);
+  const liveClassRepository = createLiveClassRepository(pool);
+  const zoomHostLaunchPort = createZoomHostLaunchPort(config);
+  const classroomZoomPorts = createClassroomZoomPorts({
+    config,
+    liveClassRepository,
+    zoomHostLaunchPort,
+    clock: clock ?? (() => new Date()),
+  });
   const classroomRepository = createClassroomRepository(pool);
   const classroomService = createClassroomService({
     config,
     repository: classroomRepository,
     questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
+    ...classroomZoomPorts,
     ...(clock ? { clock } : {}),
   });
-  const liveClassRepository = createLiveClassRepository(pool);
-  const zoomHostLaunchPort = createZoomHostLaunchPort(config);
   const liveClassService = createLiveClassService({
     config,
     repository: liveClassRepository,
@@ -1624,6 +1615,11 @@ export function createApp({
       res.status(403).type('html').send(forbiddenAppHtml('student'));
       return;
     }
+    const actor = await resolvePortalActor(req);
+    const zoomSdkAllowedForStudent =
+      zoomHostLaunchPort !== undefined &&
+      actor?.actor_role === 'student' &&
+      actor.student_learner?.learner_key === config.zoomClassroomCanaryLearnerKey;
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
     res.setHeader('Referrer-Policy', 'no-referrer');
@@ -1631,16 +1627,30 @@ export function createApp({
     res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
     res.setHeader(
       'Content-Security-Policy',
-      [
-        "default-src 'self'",
-        "img-src 'self' data:",
-        "script-src 'self'",
-        "style-src 'self'",
-        "connect-src 'self'",
-        "object-src 'none'",
-        "base-uri 'self'",
-        "frame-ancestors 'none'",
-      ].join('; '),
+      (zoomSdkAllowedForStudent
+        ? [
+            "default-src 'self'",
+            "img-src 'self' data: blob: https://source.zoom.us",
+            "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+            "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+            "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+            "worker-src 'self' blob:",
+            "media-src 'self' blob: mediastream:",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+        : [
+            "default-src 'self'",
+            "img-src 'self' data:",
+            "script-src 'self'",
+            "style-src 'self'",
+            "connect-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "frame-ancestors 'none'",
+          ]
+      ).join('; '),
     );
     res.status(200).type('html').send(classroomLaunchHtml());
   });
@@ -4757,6 +4767,119 @@ function resetPasswordPageHtml(csrfToken: string) {
 </html>`;
 }
 
+function createClassroomZoomPorts(input: {
+  config: AppConfig;
+  liveClassRepository: LiveClassRepository;
+  zoomHostLaunchPort: ZoomHostLaunchPort | undefined;
+  clock: () => Date;
+}):
+  | {
+      zoomMeetingLaunchPort: ZoomMeetingLaunchPort;
+      zoomRegistrantPort: ZoomRegistrantPort;
+      zoomRealProviderReady: true;
+    }
+  | Record<string, never> {
+  const zoomHostLaunchPort = input.zoomHostLaunchPort;
+  if (!zoomHostLaunchPort) return {};
+
+  const zoomRegistrantPort: ZoomRegistrantPort = {
+    async resolveRegistrant({ config, occurrence, eligibility, grant }) {
+      if (
+        config.zoomClassroomProviderMode !== 'real' ||
+        !config.zoomClassroomRealProviderEnabled ||
+        !config.zoomClassroomCanaryEnabled ||
+        config.zoomClassroomCanaryLearnerKey !== eligibility.learner_key
+      ) {
+        return {
+          provider: 'zoom',
+          mode: 'real',
+          registration_state: 'not_configured',
+          registrant_token_ref: stableKey('zoom_real_registrant_unavailable', [
+            occurrence.occurrence_key,
+            eligibility.learner_key,
+          ]),
+          provider_registrant_ref_digest: createHash('sha256')
+            .update(`unavailable:${occurrence.occurrence_key}:${eligibility.learner_key}`)
+            .digest('hex'),
+          raw_join_url_present: false,
+        };
+      }
+      const tokenRef = stableKey('zoom_real_registrant', [
+        occurrence.occurrence_key,
+        eligibility.learner_key,
+        grant.grant_key,
+      ]);
+      return {
+        provider: 'zoom',
+        mode: 'real',
+        registration_state: 'real_ready',
+        registrant_token_ref: tokenRef,
+        provider_registrant_ref_digest: createHash('sha256').update(tokenRef).digest('hex'),
+        raw_join_url_present: false,
+      };
+    },
+  };
+
+  const zoomMeetingLaunchPort: ZoomMeetingLaunchPort = {
+    async resolveLaunchMaterial({ config, occurrence, eligibility, registrant, selectedView }) {
+      if (
+        config.zoomClassroomProviderMode !== 'real' ||
+        registrant.registration_state !== 'real_ready' ||
+        selectedView !== 'client'
+      ) {
+        throw new PortalServiceError('PROVIDER_NOT_READY', 'Classroom provider is not configured.');
+      }
+      const customerKey = zoomCustomerKey([occurrence.occurrence_key, eligibility.learner_key]);
+      await input.liveClassRepository.upsertParticipant({
+        actor: {
+          account_key: config.accountKey,
+          product_key: config.productKey,
+        },
+        occurrence_key: occurrence.occurrence_key,
+        participant_key: stableKey('zoom_participant', [occurrence.occurrence_key, customerKey]),
+        learner_key: eligibility.learner_key,
+        customer_key: customerKey,
+        approved_display_name: eligibility.display_name,
+        join_state: 'waiting',
+        audio_state: 'muted',
+        video_state: 'off',
+        active_speaker: false,
+        spotlighted: false,
+      });
+      const launch = await zoomHostLaunchPort.resolveTestParticipantLaunch({
+        occurrenceKey: occurrence.occurrence_key,
+        customerKey,
+        userName: eligibility.display_name,
+        now: input.clock(),
+      });
+      return {
+        mode: 'real',
+        sdk_web_version: launch.sdk_web_version,
+        meeting_number: launch.meeting_number,
+        signature: launch.signature,
+        meeting_password: launch.password,
+        customer_key: launch.customer_key,
+        role: 0,
+        user_display_name: launch.user_name,
+        user_email_required: false,
+        leave_url: '/app/student',
+        video_start_model: 'PARTICIPANT_CONSENT',
+        provider_meeting_ref_digest: createHash('sha256')
+          .update(`zoom-meeting:${launch.meeting_number}`)
+          .digest('hex'),
+        official_sdk_view: 'client',
+        official_client_method: 'ZoomMtg.preLoadWasm.prepareWebSDK.init.join',
+      };
+    },
+  };
+
+  return {
+    zoomMeetingLaunchPort,
+    zoomRegistrantPort,
+    zoomRealProviderReady: true,
+  };
+}
+
 function classroomLaunchHtml() {
   return `<!doctype html>
 <html lang="en">
@@ -4774,7 +4897,7 @@ function classroomLaunchHtml() {
     <section class="state-panel" aria-labelledby="classroom-launch-title">
       <h1 id="classroom-launch-title">Classroom</h1>
       <p data-classroom-status role="status">Opening protected classroom.</p>
-      <div data-classroom-sdk-root aria-live="polite"></div>
+      <div id="zmmtg-root" data-classroom-sdk-root aria-live="polite"></div>
       <button class="button button-primary" type="button" data-classroom-retry hidden>Retry</button>
       <button class="button" type="button" data-classroom-leave hidden>Leave</button>
     </section>
@@ -4885,34 +5008,6 @@ function contentFactoryDemoEmbedHtml(
       </div>
     </section>
   </main>
-</body>
-</html>`;
-}
-
-function zoomParticipantHtml(student: number) {
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="referrer" content="no-referrer">
-  <meta name="theme-color" content="#050505">
-  <title>Student ${student} Join Class | One Time Mishnayos</title>
-  <link rel="stylesheet" href="/assets/app-crm.css">
-</head>
-<body>
-  <main class="app-workspace classroom-launch-page">
-    <section class="state-panel" aria-labelledby="zoom-participant-title">
-      <p class="ot-kicker">Isolated Zoom test</p>
-      <h1 id="zoom-participant-title">Student ${student} — Join Class</h1>
-      <p>Audio and video remain participant-controlled. Zoom may ask for permission; One Time does not start the camera silently.</p>
-      <p data-zoom-participant-status role="status">Preparing the protected participant join.</p>
-      <div id="zmmtg-root" aria-live="polite"></div>
-      <a class="button" href="/app/live-console">Return to Rabbi Live Console</a>
-    </section>
-  </main>
-  <script type="module" src="/assets/app-zoom-participant.js?v=zoom-real-control-3"></script>
 </body>
 </html>`;
 }
