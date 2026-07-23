@@ -123,6 +123,8 @@ const criticalParsedSubstrings = [
   'PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad',
   'PR #109 head 1779254768dacebb84aeac5d71b56b5abfba2534',
   'PR #110 exact head 38358961cff6c6bf44621ab9e3f6b88061586618',
+  'Accepted PR #113 head 45b213a5ddfde97d60f220ae3eb0bdff5cda51ed',
+  'Terminal PR #115 head 06c14e9b59c5e7c963397fb961634fe711b00e0c',
   'PR #141 exact head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe',
 ];
 record(
@@ -156,14 +158,30 @@ record(
   'task_id/repository/branch/pr/system present for every track',
 );
 record(
-  'queued video track',
-  tracks.some(
-    (track) =>
+  'accepted occurrence-scoped video track',
+  tracks.some((track) => {
+    const owner = objectAt(track, 'owner');
+    return (
       track.id === 'VIDEO-TO-CLASSROOM-E2E' &&
-      track.status === 'unclaimed' &&
-      arrayAt<string>(track, 'acceptance_ids').includes('VIDEO-E2E-001'),
-  ),
-  'VIDEO-TO-CLASSROOM-E2E remains unclaimed',
+      track.status === 'done' &&
+      owner.repository === 'shloimie-beep/onetimev2' &&
+      owner.branch === 'codex/video-to-classroom-e2e' &&
+      owner.pr === 113 &&
+      owner.head === '45b213a5ddfde97d60f220ae3eb0bdff5cda51ed' &&
+      track.handoff_path ===
+        'ops/goals/OT-LAUNCH-01/handoffs/video-to-classroom-e2e--pr-113.json' &&
+      arrayAt<string>(track, 'acceptance_ids').includes('VIDEO-E2E-001')
+    );
+  }) &&
+    parsedBoardStrings.some(({ value }) =>
+      value.includes('5556c4ab78e01d367666694459eb2ea97f4028ef'),
+    ) &&
+    parsedBoardStrings.some(({ value }) =>
+      value.includes(
+        '2224_content_factory_publish_ready_constraint.sql; SQL bytes and checksum 59ac22d69f56382669d70d1e78c7556e162efcc3183a5552b111f3d7b9953a65 are unchanged',
+      ),
+    ),
+  'PR #113 accepted at 45b213a and deployed in product source 5556c4a with exact 2224 checksum',
 );
 record(
   'accepted Tisha production plus isolated preview block',

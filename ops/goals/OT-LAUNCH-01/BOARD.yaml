@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T17:20:21Z
+updated_at: 2026-07-23T20:16:33Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -71,7 +71,7 @@ milestones:
         href: /app/live-console
       - id: content_factory
         label: Content Factory
-        href: /app/content
+        href: /app/content/factory
   - id: operational_automation
     label: Operational automation
     current: false
@@ -108,12 +108,12 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'Persistent staging product checkpoint 662298075a250d2a2e6e21decf8d5aa9a83f86f3 is deployed through exact web 93943d10-7b27-4aab-9b0b-6318e5e32082 and worker 33884f85-c5b7-4b10-97c1-73e873ba1cd1 sources. /version is full-app-staging-live-6622980 with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2223_account_product_access_projection. The normal fictional Student 1 path retains its fail-closed role-0 Zoom Meeting SDK branch, while a new independently audited read-only classifier proves the exposed value is the protected Tisha event meeting and therefore not a disposable canary target; its server-side proof made zero Zoom requests or mutations and the disposable Railway sandbox was destroyed. Real Zoom remains sink/real-false/canary-false until a distinct disposable canary meeting is provisioned, the exact staging origin and protected prerequisites are installed, and the host/Student proof passes. GHL remains the sole payment-history ledger while One Time owns current access state and the exact fictional household has an active 30-day free-pilot projection. Real private-Vimeo playback, the separate real Zoom canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.'
-  external_action_count: 10
+  current_summary: 'Persistent-staging product source 5556c4ab78e01d367666694459eb2ea97f4028ef is live through exact web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0. /version is full-app-staging-live-5556c4a with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2224_content_factory_publish_ready_constraint. The occurrence-scoped synthetic video pipeline is accepted: durable intake, restart-safe worker processing, Admin review/publish, entitled Student playback, sibling denial, unpublish revocation, and restart persistence passed with zero external provider calls. Normal Admin Dashboard discovery exposes Preview Parent & Student portals, all five fictional roles, and isolated read-only Student shells while retaining the Admin session. Current GHL truth is intentionally fail-closed: OT-E01 remains Published but DRIFTED because Email A is disabled, OT-C01 campaign remains Draft/unsent, its separate workflow wrapper was protectively paused back to Draft, and the reviewed application-contract targets remain empty Draft shells. Real OpenAI/private-Vimeo, the distinct disposable real Zoom canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.'
+  external_action_count: 13
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
-      count: 7
-      scope: Seven bounded operator-owned staging login-code emails only. The latest challenge authenticated the freshly rotated fictional Admin for exact deployed role-preview and Launch Status proof without committing the replacement credential, private destination, or code; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
+      count: 9
+      scope: Nine bounded operator-owned staging login-code emails only. In the latest acceptance, the first code expired while the hidden legacy control was rejected and one fresh challenge authenticated the rotated fictional Admin through the visible Verify code action. No replacement credential, private destination, or code entered Git or screenshots; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
     - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
       scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
@@ -123,6 +123,9 @@ outcome:
     - kind: zoom_protected_target_source_scope_inspection
       count: 1
       scope: 'One disposable Railway sandbox performed only a server-side canonical meeting-reference comparison at exact PR #97 source 662298075a250d2a2e6e21decf8d5aa9a83f86f3. It classified the exposed Tisha event source as forbidden for canary revocation with zero OAuth requests, zero Zoom meeting reads, zero resource mutations, and no customer/provider/production effect; the sandbox was destroyed and is absent from the active inventory.'
+    - kind: ghl_ot_c01_protective_pause
+      count: 1
+      scope: 'The sole GHL writer found the separate OT-C01 workflow wrapper unexpectedly Published and protectively returned that exact wrapper to Draft, then saved/reopened it. The separate Email Marketing campaign was untouched; customer/broad messages, contact mutations, enrollment mutations, target workflow configuration changes, and publications were zero.'
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -131,8 +134,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 662298075a250d2a2e6e21decf8d5aa9a83f86f3
-    resolution: 'Exact product checkpoint 662298075a250d2a2e6e21decf8d5aa9a83f86f3 is the deployed acceptance source. It preserves the governed access/playback and provider-off normal-Student Zoom SDK boundary, then adds an independently accepted GET-only target classifier whose source-scope guard runs before credentials/provider construction and rejects the event-specific Tisha meeting at exact 0/0/0 request counts. Any later commit containing only this Board and its generated pointer/projection is an evidence descendant, not a different deployed product acceptance source.'
+    last_verified_commit: 5556c4ab78e01d367666694459eb2ea97f4028ef
+    resolution: 'Exact product checkpoint 5556c4ab78e01d367666694459eb2ea97f4028ef is the deployed acceptance source. It preserves every prior access, Experience Preview, HighLevel-disabled, and Zoom provider-off boundary while integrating the accepted PR #113 semantic range with a globally unique 2224 migration. Later commits containing the PR #115 result-only evidence, this Board, screenshots, or generated pointer/projection are evidence/control descendants, not different deployed product acceptance sources.'
   system: One Time persistent staging
 
 tracks:
@@ -311,6 +314,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
+      head: 5556c4ab78e01d367666694459eb2ea97f4028ef
       system: One Time web
     write_scope: Experience Preview config, server catalog/routes, Admin Dashboard discovery CTA, actual read-only fictional Student portal rendering, contracts, migration, and focused browser/security tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/experience-preview--persistent-staging-conductor.json
@@ -335,6 +339,8 @@ tracks:
       - 'Exact product head 7dcb137c adds a synchronous fail-closed opener-detachment guard before the dedicated Student React shell renders. Focused Experience Preview/security tests pass 18/18; scoped lint/Prettier, full build/typecheck, secret scan, diff check, and the real Chromium Experience Preview scenario pass. That scenario directly proves null opener, two sibling tabs, unchanged Admin session, production 404/nav gating, and 360px layout.'
       - 'Live deployment fb693d23 followed normal Admin Dashboard -> Preview Parent & Student portals -> Open portal preview and displayed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom. Parent and Rabbi/Classroom selected their exact fictional projections; Ari, Dovid, and Noam each rendered only their own actual read-only Student portal with no Admin navigation/logout, and the original Admin Experience Preview remained usable. The in-app automation layer did not surface the target-blank popup as a bindable new tab, so null-opener is cited from exact-source Chromium rather than overstated as an in-app popup readback.'
       - 'Current-source live proof at 6b6640d6 followed normal Admin Dashboard -> Preview Parent & Student portals -> Open portal preview and re-read Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom. All three sibling-scoped Student shells rendered Today and Library inside inert read-only actual portal components with no Admin shell, navigation, or logout; the originating Admin Experience Preview remained authenticated. The in-app browser again did not surface target-blank as a bindable popup, so null-opener remains proven by the exact-source Chromium suite rather than this controlled-tab fallback.'
+      - 'Exact deployed product source 5556c4ab78e01d367666694459eb2ea97f4028ef passed the operator-visible click path Admin Dashboard -> Preview Parent & Student portals -> Open portal preview. The destination visibly lists Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom; mobile Open navigation also exposes Experience Preview. Student 1 and Student 2 rendered their actual sibling-scoped portals inside the dedicated read-only shell with zero Admin navigation, logout, or mutation controls, and the originating Admin session remained authenticated.'
+      - 'Sanitized screenshot evidence is committed under ops/evidence/ot-launch-01-pr113-persistent-staging-5556c4a/, including the Dashboard launcher, mobile navigation, all explicit role choices, the dedicated Student shell, occurrence entitlement/sibling isolation, protected playback, and post-unpublish revocation. No credentials, login codes, private destinations, exchange identifiers, or provider URLs appear in those images.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -346,6 +352,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
+      head: 5556c4ab78e01d367666694459eb2ea97f4028ef
       system: One Time web
     write_scope: Preview-only exchange/session and dedicated GET-only client shell
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/fictional-student-session--persistent-staging-conductor.json
@@ -357,6 +364,7 @@ tracks:
       - Live persistent-staging proof at fc122074 prepared and opened Ari, Dovid, and Noam in dedicated fictional Student shells with no Admin controls; Ari retained his own route scope after both sibling tabs opened, and the original Admin tab remained authenticated. Null-opener behavior is proven by the same-snapshot real-Chromium suite because the in-app browser did not surface the target-blank popup.
       - 'Exact-head 312097c browser work prepared Student 1 from the visible Dashboard-discovered preview, then stopped after the browser lost the new-tab binding and a diagnostic exposed the fictional Admin credential. The credential was rotated and all Admin sessions revoked before any further browser action.'
       - 'Exact product head 7dcb137c live proof rendered Ari, Dovid, and Noam in three distinct route-scoped, read-only actual Student portal shells. Each shell omitted Admin navigation/logout and every sibling identity, while the originating Admin role selector remained usable. Exact-source real Chromium directly passed the target-blank null-opener assertion after the client-side fail-closed detachment guard was added.'
+      - 'At exact deployed source 5556c4ab78e01d367666694459eb2ea97f4028ef, Student 2 direct credential login opened the occurrence-scoped published lesson through a first-party protected route/embed with captions and review questions and no raw Vimeo, storage locator, Admin, or sibling data. Student 1 direct credential login reached its own portal; its bounded direct-Library denial retry timed out in the test harness, while a fresh sibling-scoped preview independently showed only the original one-item library and no Student 2 occurrence lesson. Exact-source automated sibling-denial coverage remains green.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -460,11 +468,13 @@ tracks:
     evidence:
       - 'Exact PR #107 head c9f779495ea40a61684c5f01c02ce3f68e450227 contributes only sanitized artifact GHL-GOVERNANCE-CLOSEOUT-20260722.result.json; its Git blob is d4e3e92a0d8ce0227139dd58ae4c02c49431c836.'
       - Read-only UI inventory verifies literal root One Time, exact ten direct folders, all visible nested workflow folders, every visible workflow row, the empty Deleted view, 99 Deprecated, Email Campaigns Home, the visible Conversation AI list, and knowledge bases. No separate archived view or hidden/backend Conversation AI inventory was exposed.
-      - Live truth is 19 visible workflows plus one separate Email Marketing campaign. Seventeen non-Tisha workflows are empty Draft canvases with zero triggers, actions, and enrollments; OT-07 and OT-08 each read back 0 total / 0 active. OT-E01 is the sole ACTIVE_TESTED workflow.
+      - 'The exhaustive 2026-07-22 snapshot found 19 visible workflows plus one separate Email Marketing campaign. Seventeen non-Tisha workflows were empty Draft canvases with zero triggers, actions, and enrollments; OT-07 and OT-08 each read back 0 total / 0 active. That snapshot recorded OT-E01 ACTIVE_TESTED, while the newer exact-ID PR #115 readback supersedes only its current status to DRIFTED because Email A is disabled.'
       - The same OT-C01 name identifies two different Draft unsent assets: workflow wrapper f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae at One Time / 45 - Events / 2026 / Tisha B'Av 2026 and campaign 6a5f750b557817806a14b19e at Marketing / Email Campaigns / Home. They are never collapsed.
       - The canonical KB ps6jttZ8WUGycLeQX6uF is visible; one legacy Existing knowledge base has no exposed ID. OT-A1 0Z5YvlziuXqZmBntYFU0 is not visible in the current list, so current live status remains unverified rather than inherited as Off.
       - workflow-registry.yaml remains the only editable Git desired-state inventory. Generated current.json/workflows.yaml projections and WORKFLOW-CONTROL-REPORT.md are LF/CRLF-portable and compare exact folder topology, IDs, asset kinds, observed empty/configured actions, timing/essential values, canaries, blockers, unknown assets, and human approval gates.
       - Closeout safety is zero GHL mutations, imports/contact changes, workflow enrollments, proof/customer emails, WhatsApp actions/sends, or raw provider URLs recorded.
+      - 'Terminal PR #115 head 06c14e9b59c5e7c963397fb961634fe711b00e0c contributes sanitized result GHL-UI-14-18-20260723.result.json plus canonical registry/control projections. It preserves the earlier exhaustive inventory, records one intentional OT-E01 live-state disagreement instead of hiding it, and adds no credential, contact identity, private link, or customer message.'
+      - 'Canonical projection check passes from the single YAML authority. Registry/control checks intentionally remain fail-closed with reportMatches=true on exactly one OT-E01 status disagreement (registry DRIFTED versus older exhaustive snapshot ACTIVE_TESTED), the separate OT-C01 workflow wrapper, one legacy knowledge base, and unverified archived/hidden-AI inventory; this red state is current truth, not suppressed validation noise.'
     blocker:
       code: GHL_ARCHIVED_AND_HIDDEN_AI_SCOPE_UNVERIFIED
       reason: Archived workflows and hidden/backend Conversation AI rows were not exposed by the live UI; visible unknown/cross-kind assets also require dependency review before any separately authorized quarantine decision.
@@ -476,16 +486,16 @@ tracks:
     owner:
       task_id: 019f84c1-956f-7e82-8e8b-fd940588e440
       repository: shloimie-beep/onetimev2
-      branch: codex/highlevel-final-results-20260722
-      pr: 107
-      head: 1e247c70004dffb6247fc1ee407f1153d753bd7d
+      branch: codex/ghl-ui-14-18-activation-results
+      pr: 115
+      head: 06c14e9b59c5e7c963397fb961634fe711b00e0c
       system: HighLevel Agent Mode
     write_scope: Exact OT-E01 production registration-handoff readback and the reviewed Email A registered-attendee copy only; no substitute, fallback, duplicate signup, OT-C01 action, audience mutation, or customer test/send
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json
     dependencies: [ghl_organization]
     acceptance_ids: [GHL-002]
     evidence:
-      - OT-E01 a34ea513-4612-4f53-8bd8-49e89e6610f9 is PUBLISHED/ACTIVE_TESTED; raw Zoom URL removed, protected event URL survived reload, scheduling and idempotency passed.
+      - Historical governed proof for OT-E01 a34ea513-4612-4f53-8bd8-49e89e6610f9 passed its bounded execution, protected-link, scheduling, and idempotency canary; this remains historical evidence and is not current operational proof.
       - 'Terminal PR #107 readback verifies immediate, exact one-hour, and exact ten-minute emails contain the protected direct class link, legacy 24-hour delivery is absent, expired outbound actions are skipped, in-flight enrollment is preserved, and no new email was sent in the run. No protected URL enters Git or evidence.'
       - Eligibility is exact event-registration permission only, never newsletter/general-marketing consent; DND, suppression, unsubscribe, complaint, and hard-bounce gates win, Student contacts are forbidden, and WhatsApp is absent.
       - Fresh read-only closeout confirms the exact tag trigger, immediate / fixed one-hour / fixed ten-minute email sequence, no current legacy 24-hour action, no reentry, two historical enrollments and one existing operator row active at the one-hour wait. One older finished pre-repair row retains only historical legacy-wait history; no new enrollment or duplicate was created.
@@ -495,23 +505,25 @@ tracks:
       - No substitute or manual email, duplicate signup, fallback send, customer test, OT-C01 send, or WhatsApp action is authorized while this failure is diagnosed.
       - "Terminal PR #107 head 1e247c70004dffb6247fc1ee407f1153d753bd7d preserves exact ancestry One Time / 45 - Events / 2026 / Tisha B'Av 2026 and exact Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered trigger. On a fresh server version, the same workflow ID saved and reopened with the approved Email A subject/preheader/body, registered Rabbi campaign sender, canonical One Time Tisha page, Published toggle, and no provider link in Email A."
       - The first workflow save was correctly rejected as an outdated-version conflict after a concurrent user edit. The executor refreshed, applied only the governed Email A fields once, and did not overwrite the user's newer version. Existing enrollment stayed at the one-hour wait; counts remain one active / two historical; zero new enrollment, zero message this run, and no manual tag/enrollment/send occurred.
+      - 'Newest exact-ID readback at PR #115 head 06c14e9b59c5e7c963397fb961634fe711b00e0c finds the workflow still Published but Email A - Immediate Confirmation disabled. The action editor did not render subject, sender, body, or link controls, so exact action identity could not be proven; the executor correctly made no re-enable, save, publication, enrollment, or message mutation. Fresh reopen remained Saved/disabled.'
+      - 'The terminal PR #115 run observed zero customer/broad messages, contact mutations, enrollment mutations, target workflow configuration changes, or publications. The historical passed canary remains historical while current observed status is DRIFTED.'
     blocker:
-      code: LIVE_TISHA_REGISTRATION_DID_NOT_TRIGGER_OT_E01
-      reason: The newest real production signup produced the wrong message class; GHL readback shows no new enrollment because the canonical registered-event tag never arrived from the application handoff.
-    remaining_work: OT-TISHA-HANDOFF-01 must repair and prove the server registration/tag/enrollment boundary without a duplicate signup or substitute send, then safely reprocess the one affected existing operator contact after the repair proof and verify one event confirmation without duplicate enrollment/delivery.
-    next_action: Preserve the existing workflow ID and in-flight history; make no manual GHL tag/enrollment/send and fail closed until exact repaired registered-tag, enrollment, affected-contact reprocessing, and event-confirmation evidence returns.
+      code: DRIFTED_EMAIL_A_DISABLED_ACTION_IDENTITY_UNVERIFIED
+      reason: OT-E01 remains Published but its immediate confirmation action is disabled, and GHL did not render the action identity fields needed to prove that re-enabling the exact governed action was safe.
+    remaining_work: First re-read and prove the exact disabled Email A identity without inference, then separately repair/prove the application registered-tag/enrollment handoff and reprocess only the one affected operator contact without duplicate delivery.
+    next_action: Preserve the existing workflow ID and in-flight history; do not manually tag, enroll, re-enable, save, or send until an exact rendered action identity and the repaired application handoff are both proven.
 
   - id: ghl_ot_c01_tisha_invitation
     status: blocked
     owner:
       task_id: 019f84c1-956f-7e82-8e8b-fd940588e440
       repository: shloimie-beep/onetimev2
-      branch: codex/highlevel-final-results-20260722
-      pr: 107
-      head: c9f779495ea40a61684c5f01c02ce3f68e450227
+      branch: codex/ghl-ui-14-18-activation-results
+      pr: 115
+      head: 06c14e9b59c5e7c963397fb961634fe711b00e0c
       system: HighLevel read-only invitation governance
     write_scope: Read-only OT-C01 campaign/wrapper identity, audience classification, and zero-send readback
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json
     dependencies: [ghl_organization, event_service_email_permission, tisha_landing_polish]
     acceptance_ids: [GHL-001, GHL-005, GHL-006]
     desired_status: DRAFT_NOT_SENT_READ_ONLY_AUDIENCE_CLASSIFICATION
@@ -523,6 +535,7 @@ tracks:
       - The nine-gate saved audience classification has zero unique eligible contacts, is not selected in the campaign, and was not used for proof or send. The historical 1,415-source / 1,312-file-exclusion counts are file-only candidates, never live eligibility or import authorization.
       - The 207 provider-email-capable contacts remain deliverability-only, not consented. No new contact list was found in fresh Gmail sent/attachment searches and no import, list mutation, seed, schedule, enrollment, customer email, WhatsApp, or provider mutation occurred.
       - OT-C01 never contains the protected direct class link. The narrow OT-E01 exception remains sanitized and applies only to already registered event-service communication.
+      - 'Terminal PR #115 readback found the separate same-name workflow wrapper unexpectedly Published with 2,677 historical total / 0 active. The sole GHL writer protectively paused only that wrapper, saved, and reopened it Draft. The canonical Email Marketing campaign stayed Draft and untouched; customer/broad messages, contact/enrollment mutations, target workflow configuration changes, and publications were zero.'
     blocker:
       code: NO_INDEPENDENTLY_PERMISSIONED_INVITATION_AUDIENCE
       reason: Exact eligible audience is zero, send authority is withdrawn, and durable event-permission projection/readback is not accepted; the same-name workflow wrapper and campaign must remain separate Draft assets.
@@ -530,16 +543,16 @@ tracks:
     next_action: Do not activate, quarantine, delete, test, enroll, schedule, import, send, or collapse either asset.
 
   - id: ghl_app_contract_shells
-    status: waiting_external
+    status: blocked
     owner:
-      task_id: GHL-UI-14-THROUGH-23-FUTURE
+      task_id: 019f84c1-956f-7e82-8e8b-fd940588e440
       repository: shloimie-beep/onetimev2
-      branch: codex/ot-launch-01-highlevel-app-contracts
-      pr: 108
-      head: 4540861a7f7ad950041e4ae58202537055fe59ad
+      branch: codex/ghl-ui-14-18-activation-results
+      pr: 115
+      head: 06c14e9b59c5e7c963397fb961634fe711b00e0c
       system: HighLevel UI jobs after governed app-contract convergence
     write_scope: 'Future reviewed GHL-UI-14..23 jobs only; no shell configuration, publication, enrollment, or send in PR #97'
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json
     dependencies: [ghl_event_dispatcher, event_service_email_permission]
     acceptance_ids: [GHL-003]
     evidence:
@@ -549,9 +562,12 @@ tracks:
       - "PR #108's accepted dispatcher/application-contract foundation is integrated. The reviewed GHL-UI-14..23 jobs remain the future execution path only after the event-permission lane converges; this track does not infer that empty Draft shells are configured or operational."
       - Closeout sends, enrollments, contact changes, and provider mutations are zero.
       - 'Accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad is semantically integrated and deployed in PR #97 exact head fc1220741dfe0dd00757a4e5013a9cef4438baa8 with GHL-UI-14..23 still review-only and every provider/publication/enrollment gate closed.'
-    blocker: null
-    remaining_work: Independently accept the durable event-permission contract, then run one reviewed GHL UI job at a time with save/reopen/readback and bounded canary evidence.
-    next_action: 'Keep every shell Draft and empty; do not create a duplicate delivery path or publish/configure them from PR #97.'
+      - 'Terminal PR #115 readback proves OT-01, OT-07, OT-08, OT-09, and OT-10 remain unique exact-ID DRAFT_SHELL assets with empty triggers/actions and 0 total / 0 active. The reviewed jobs were not executable-complete because exact action/template details were absent; the executor made no target workflow mutation, publication, enrollment, or message.'
+    blocker:
+      code: GHL_UI_JOBS_NOT_EXECUTABLE_COMPLETE
+      reason: The reviewed job files describe trigger and gate intent but do not provide the exact action/template details required to configure live workflows without invention.
+    remaining_work: Complete and review exact executable actions/templates after the durable event-permission contract is accepted, then run one job at a time with save/reopen/readback and bounded canary evidence.
+    next_action: 'Keep every shell Draft and empty; do not create a duplicate delivery path, infer missing content, or publish/configure them from PR #97.'
 
   - id: ghl_event_dispatcher
     status: done
@@ -650,9 +666,10 @@ tracks:
     evidence:
       - Staging content-factory work is ready independently of external approval.
       - The operator explicitly authorized one bounded operator-owned OpenAI/private-Vimeo staging canary on 2026-07-23; authority is no longer the blocker.
+      - 'Accepted PR #113 and deployed PR #97 product source 5556c4ab78e01d367666694459eb2ea97f4028ef now provide the durable occurrence-scoped intake, restart-safe worker, protected storage, Admin review, publication/revocation, and sibling-isolation prerequisite. This is synthetic provider-off proof only; no real OpenAI or private-Vimeo canary has run.'
     blocker: null
-    remaining_work: Assign a reviewed canary job after the durable occurrence-scoped pipeline is ready, then prove private provider state and protected playback without exposing a provider URL.
-    next_action: Keep truthful provider-off UI until the reviewed canary job is assigned and its protected prerequisites are validated.
+    remaining_work: Assign one reviewed operator-owned canary job, validate protected provider prerequisites, prove private provider state and protected playback without exposing a provider URL, then return provider gates off.
+    next_action: Keep truthful provider-off UI until the reviewed canary job is assigned; do not infer real provider acceptance from the synthetic pipeline.
 
   - id: zoom_meeting_sdk
     status: provider_off
@@ -841,24 +858,29 @@ tracks:
     next_action: Keep the GHL bridge provider_off and customer sends disabled; resume only after one exact existing contact is privately supplied/proven or HighLevel exact lookup becomes available under a separately reviewed retry, and do not infer a contact or treat the private Telegram canary as customer-bridge proof.
 
   - id: VIDEO-TO-CLASSROOM-E2E
-    status: unclaimed
+    status: done
     owner:
-      task_id: null
+      task_id: VIDEO-TO-CLASSROOM-E2E
       repository: shloimie-beep/onetimev2
-      branch: null
-      pr: null
-      system: One Time durable video-to-Classroom pipeline
-    write_scope: Queued only; future durable upload storage, idempotent worker pipeline, occurrence-scoped publication, revocation, and synthetic provider-off acceptance
-    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/video-to-classroom-e2e--queued.json
+      branch: codex/video-to-classroom-e2e
+      pr: 113
+      head: 45b213a5ddfde97d60f220ae3eb0bdff5cda51ed
+      system: One Time durable occurrence-scoped video-to-Classroom pipeline
+    write_scope: Durable upload storage, lease-fenced idempotent worker, occurrence-scoped publication/revocation, protected playback, and synthetic provider-off acceptance
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/video-to-classroom-e2e--pr-113.json
     dependencies: [goal_system, persistent_staging, ghl_event_dispatcher]
     acceptance_ids: [VIDEO-E2E-001]
     evidence:
-      - Current Admin upload copies a randomly named file and creates an intake without a retained durable opaque locator; no durable worker consumes it and the demo seed bypasses intake/processing.
-      - Current publication targets all active learners rather than one selected occurrence, and durable Railway storage/redeploy survival is unproven.
-      - The queued contract requires occurrence selection, protected opaque storage, idempotent restart-safe processing through Admin review, occurrence-only publish/unpublish with sibling denial, a fully usable synthetic provider-off staging path, and production unchanged.
+      - 'Upstream PR #113 head 41d4d30af09fca44d12fb47f527fc4f4e37b3820 is rejected/superseded because stale failStage work could mark an intake failed after a newer lease generation reclaimed the same worker identity.'
+      - 'Accepted PR #113 head 45b213a5ddfde97d60f220ae3eb0bdff5cda51ed fixes failStage fencing on lease owner digest plus lease generation and changes intake failure only after exactly one fenced job row updates. The adversarial same-worker-identity generation race passes.'
+      - 'The complete semantic range 69e451184ea2a80d13b12ccaf3da20db0c2684cf..45b213a5ddfde97d60f220ae3eb0bdff5cda51ed is integrated in exact PR #97 product source 5556c4ab78e01d367666694459eb2ea97f4028ef; no UI-only or repair-only subset was used.'
+      - 'Immutable 2214_learning_delivery_content_factory remains unchanged. Migrations 2221 and 2222 retain checksums 25559ae6b514864c02e2e9ef2139a4906733cdeb9fe2208ca2db1b0a42f40536 and 79a3f3f60a2cd9b4c08bcd08b4d694f1d652f90ab288da79d578d87ce1cd32c0. Upstream PR #113 migration 2223 was renumbered only on PR #97 to globally free 2224_content_factory_publish_ready_constraint.sql; SQL bytes and checksum 59ac22d69f56382669d70d1e78c7556e162efcc3183a5552b111f3d7b9953a65 are unchanged, and existing 2223_account_product_access_projection remains untouched.'
+      - 'Same-snapshot acceptance passed 127/127 focused tests, typecheck, build, scoped lint/format, secret scan, migration safety/checksums, conflict-marker scan, and git diff check.'
+      - 'Persistent-staging Admin selected the exact fictional class occurrence, uploaded one protected synthetic video, observed worker processing through Review, edited metadata, approved, and published. Student 2 direct credential login opened the first-party protected playback with captions/review questions; Student 1 sibling scope omitted the lesson. After exact-source web restart the lesson persisted. Unpublish removed the route and a fresh Student 2 preview immediately returned to the original one-item library.'
+      - 'The persistent volume is mounted only on the co-located narrow worker/web service at /var/lib/onetime/content-factory. Processing mode remained synthetic/provider-off; OpenAI/Vimeo and all other external provider calls were zero, and production was unchanged.'
     blocker: null
-    remaining_work: 'PR #108 is integrated and the operator authorized the bounded media canary. Assign the durable upload/storage/worker/occurrence-publication implementation after the current governance checkpoint.'
-    next_action: 'Assign one implementation task for durable synthetic acceptance first; execute the separately reviewed OpenAI/private-Vimeo canary only after retry/restart and occurrence isolation pass.'
+    remaining_work: null
+    next_action: null
 
   - id: persistent_staging
     status: done
@@ -867,7 +889,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: 662298075a250d2a2e6e21decf8d5aa9a83f86f3
+      head: 5556c4ab78e01d367666694459eb2ea97f4028ef
       system: Railway isolated persistent staging
     write_scope: 'PR #97 exact-head commit, staging-only variables, web/worker deploy, seed, and read-only production comparison'
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/persistent-staging--persistent-staging-conductor.json
@@ -878,6 +900,7 @@ tracks:
         fictional_student_session,
         coherent_demo,
         media_staging_integration,
+        VIDEO-TO-CLASSROOM-E2E,
       ]
     acceptance_ids: [DEPLOY-001]
     evidence:
@@ -918,6 +941,11 @@ tracks:
       - 'Only the stale staging APP_VERSION label was corrected after the first exact automatic deployment; the label-only redeploy retained the same Git source and changed no Zoom/GHL/payment/database/production control. Exact-name readback confirms isolated_staging, sink, real-provider disabled, canary disabled, and every SDK/S2S/host/meeting value absent.'
       - 'Exact protected-target-inspection source 662298075a250d2a2e6e21decf8d5aa9a83f86f3 is live through staging web 93943d10-7b27-4aab-9b0b-6318e5e32082 and worker 33884f85-c5b7-4b10-97c1-73e873ba1cd1. /version is full-app-staging-live-6622980 with exact commit_sha; /health and /ready return 200, blockers=[], and latest=2223_account_product_access_projection.'
       - 'Only the exact staging APP_VERSION labels were corrected after automatic deployment. No source, production, database, GHL, payment, Telegram, Zoom provider, meeting, contact, or customer setting changed; real Zoom/canary gates remain off.'
+      - 'Exact PR #113-integrated product source 5556c4ab78e01d367666694459eb2ea97f4028ef is live through current web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0. /version reports full-app-staging-live-5556c4a with exact commit_sha and Railway git_commit_sha; /health and /ready return 200, blockers=[], database query healthy, and latest=2224_content_factory_publish_ready_constraint.'
+      - 'A dedicated 5 GB staging-only volume 52de07a9-bfc8-4830-b943-32c3804b2732 is mounted on ot99-web at /var/lib/onetime/content-factory. The co-located narrow worker started on both the original deploy and same-source restart; the standalone worker remained unchanged. CONTENT_FACTORY_PROCESSING_MODE stayed synthetic, HighLevel event/actions stayed disabled with budget zero, and real Zoom/provider/canary gates stayed off.'
+      - 'Live browser acceptance followed Admin Dashboard -> Preview Parent & Student portals -> Open portal preview, listed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom, opened sibling-scoped actual read-only Student portals, and retained the originating Admin session. Sanitized screenshots under ops/evidence/ot-launch-01-pr113-persistent-staging-5556c4a/ prove the dashboard/mobile entry, role choices, isolated shells, occurrence entitlement, protected playback, sibling isolation, and post-unpublish revocation.'
+      - 'Live content acceptance selected the exact 3-learner occurrence, uploaded a protected synthetic video, observed the narrow worker reach Review, edited/approved/published it, opened first-party protected playback with captions/questions through Student 2 direct credentials, and showed the lesson absent from Student 1 sibling scope. Exact-source restart preserved the lesson; final unpublish made the old route metadata-safe unavailable and a fresh Student 2 preview returned to one library item.'
+      - 'This acceptance created no OpenAI/Vimeo/Zoom/Telegram/HighLevel provider call, customer email/WhatsApp, broad contact operation, public database proxy, or production mutation. The only new external effects were two operator-owned staging login-code emails and one separately reported protective OT-C01 wrapper pause by the sole GHL writer.'
     blocker: null
     remaining_work: null
     next_action: null

@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:230ee3eeb8644bdfd4cf1c9cd9558a85373e0fc01c77fd800608f8efccb816f1',
-  generated_at: '2026-07-23T17:20:21.000Z',
+  board_source_hash: 'sha256:dea753ca94eec2f2c20a33061f21b6e631c7b2e59240cc82a00c3cf8b97a333a',
+  generated_at: '2026-07-23T20:16:33.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 17,
@@ -14,7 +14,7 @@ export const operatorLaunchStatusProjection = {
     percentage: 81,
   },
   what_changed:
-    'Persistent staging product checkpoint 4d484c167ab332a6f82b97c7fc4f758c58bb391b is deployed through exact web ddb811ed-2dff-48a7-be73-c91bd5bf1865 and worker 9528ca81-5329-4fa0-82ef-66dd48b14fe1 sources. /version is full-app-staging-live-4d484c1 with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2223_account_product_access_projection. The normal fictional Student 1 path now contains the fail-closed role-0 Zoom Meeting SDK branch with session-bound single-use grants, retry without grant replay, exact sibling/cross-account isolation, and no Admin impersonation; staging remains sink mode with real-provider and canary gates off and every SDK/S2S/host/meeting value absent. GHL remains the sole payment-history ledger while One Time owns current access state and the exact fictional household has an active 30-day free-pilot projection. Real private-Vimeo playback, protected Zoom target rotation plus staging configuration and the human host/Student canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.',
+    'Persistent-staging product source 5556c4ab78e01d367666694459eb2ea97f4028ef is live through exact web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0. /version is full-app-staging-live-5556c4a with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2224_content_factory_publish_ready_constraint. The occurrence-scoped synthetic video pipeline is accepted: durable intake, restart-safe worker processing, Admin review/publish, entitled Student playback, sibling denial, unpublish revocation, and restart persistence passed with zero external provider calls. Normal Admin Dashboard discovery exposes Preview Parent & Student portals, all five fictional roles, and isolated read-only Student shells while retaining the Admin session. Current GHL truth is intentionally fail-closed: OT-E01 remains Published but DRIFTED because Email A is disabled, OT-C01 campaign remains Draft/unsent, its separate workflow wrapper was protectively paused back to Draft, and the reviewed application-contract targets remain empty Draft shells. Real OpenAI/private-Vimeo, the distinct disposable real Zoom canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.',
   works_now: [
     {
       track_id: 'goal_system',
@@ -83,28 +83,28 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
       next_action:
-        'Begin the reviewed external packet with protected-target rotation and old-target denial proof; never reuse or render the exposed target.',
+        'Preserve the protected Tisha event target as excluded from this canary job; provision a fresh disposable canary meeting and never reuse or render the exposed event value.',
     },
     {
       track_id: 'zoom_s2s_host_control',
       label: 'Zoom host controls',
       status: 'provider_off',
       next_action:
-        'Keep provider controls unavailable and never infer host control from partial SDK configuration.',
+        'Keep provider controls unavailable; create a separate disposable canary meeting and never infer host control from partial SDK configuration or the Tisha event link.',
     },
     {
       track_id: 'zoom_real_control_operator_change_set',
       label: 'Zoom Real Control Operator Change Set',
       status: 'active',
       next_action:
-        'Rotate/revoke the compromised protected target and prove the old target denied without rendering either value; only then install or enable the bounded Student 1 canary prerequisites.',
+        'Use the approved protected S2S/host source to provision one distinct disposable Student 1 canary meeting; keep the Tisha event target excluded and every runtime real/canary gate off until the installation preflight passes.',
     },
     {
       track_id: 'media_external_canary',
       label: 'Media External Canary',
       status: 'unclaimed',
       next_action:
-        'Keep truthful provider-off UI until the reviewed canary job is assigned and its protected prerequisites are validated.',
+        'Keep truthful provider-off UI until the reviewed canary job is assigned; do not infer real provider acceptance from the synthetic pipeline.',
     },
     {
       track_id: 'production_pilot',
@@ -121,7 +121,7 @@ export const operatorLaunchStatusProjection = {
       status: 'provider_off',
       code: 'ZOOM_PROVIDER_CONFIG_AND_HUMAN_CANARY_BARRIER',
       reason:
-        'The six S2S/host/meeting values are absent, persistent staging is not allowlisted or configured with Meeting SDK values, the exposed protected staging class link requires rotation/revocation, and the now-authorized human canary still requires a human-cleared Zoom login because prior attempts met reCAPTCHA/rate limiting.',
+        'Persistent staging still lacks the canonical SDK/S2S/host/meeting values and exact Zoom origin allowlist; the known Tisha event meeting is forbidden as the canary target, and the authorized host/Student proof still needs one fresh disposable meeting plus a human-cleared Zoom login because prior attempts met reCAPTCHA/rate limiting.',
     },
   ],
   safe_links: [
@@ -143,13 +143,13 @@ export const operatorLaunchStatusProjection = {
     {
       id: 'content_factory',
       label: 'Content Factory',
-      href: '/app/content',
+      href: '/app/content/factory',
     },
   ],
   next_executable_task: {
     track_id: 'zoom_real_control_operator_change_set',
     label: 'Zoom Real Control Operator Change Set',
     action:
-      'Rotate/revoke the compromised protected target and prove the old target denied without rendering either value; only then install or enable the bounded Student 1 canary prerequisites.',
+      'Use the approved protected S2S/host source to provision one distinct disposable Student 1 canary meeting; keep the Tisha event target excluded and every runtime real/canary gate off until the installation preflight passes.',
   },
 } as const satisfies OperatorLaunchStatusProjection;

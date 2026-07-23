@@ -40,7 +40,7 @@ decisions:
   - id: zoom-config-contract
     decision: Meeting SDK uses canonical ZOOM_MEETING_SDK_CLIENT_ID/CLIENT_SECRET/WEB_VERSION with KEY/SECRET temporary aliases only; S2S OAuth uses separate ZOOM_S2S_ACCOUNT_ID/CLIENT_ID/CLIENT_SECRET with ZOOM_ACCOUNT_ID as a temporary account-ID alias, and ZOOM_UI_PREVIEW never implies ZOOM_REAL_CONTROL.
   - id: queued-video-to-classroom
-    decision: VIDEO-TO-CLASSROOM-E2E is the next queued implementation after PR #97 governance and independently accepted PR #108 convergence; this conductor pass records its acceptance contract but does not implement it.
+    decision: 'VIDEO-TO-CLASSROOM-E2E is implemented and accepted from PR #113 head 45b213a5ddfde97d60f220ae3eb0bdff5cda51ed in deployed PR #97 product source 5556c4ab78e01d367666694459eb2ea97f4028ef. Synthetic occurrence-scoped intake, restart-safe processing, approval, publication/revocation, and sibling isolation are complete; the real OpenAI/private-Vimeo canary remains separately gated by CONTENT-002.'
   - id: tisha-ot-c01-email-invitation-20260722
     decision: Historical authorization named f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae, which terminal readback later proved is the Draft workflow wrapper rather than the separate Email Marketing campaign 6a5f750b557817806a14b19e. No send occurred. This decision is fully superseded by tisha-event-permission-supersedes-ot-c01-send-20260722 and grants no current mutation, audience, schedule, or send authority to either asset.
   - id: tisha-ot-e01-registered-direct-class-link-exception-20260722

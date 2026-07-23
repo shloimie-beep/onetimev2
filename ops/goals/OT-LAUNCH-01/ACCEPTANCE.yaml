@@ -172,7 +172,7 @@ criteria:
       [browser_mobile, browser_desktop, asset_http_readback, persistent_staging_url, production_url]
   - id: VIDEO-E2E-001
     track: VIDEO-TO-CLASSROOM-E2E
-    observable: Admin selects an exact class occurrence, uploads to durable opaque source storage, and an idempotent restart-safe worker reaches editable review without duplicate transcription/upload; publish/unpublish grants/revokes only occurrence-enrolled Parent/Student Classroom access and denies unrelated siblings, with a fully usable synthetic provider-off path and one bounded operator-owned external canary.
+    observable: Admin selects an exact class occurrence, uploads to durable opaque source storage, and an idempotent restart-safe worker reaches editable review without duplicate transcription/upload; publish/unpublish grants/revokes only occurrence-enrolled Parent/Student Classroom access and denies unrelated siblings, with a fully usable synthetic provider-off path. The separately gated real OpenAI/private-Vimeo canary remains CONTENT-002 and is not required to accept this synthetic pipeline.
     proof:
       [
         integration_test,
