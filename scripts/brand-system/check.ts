@@ -56,6 +56,13 @@ function rel(filePath: string) {
   return path.relative(root, filePath).replaceAll('\\', '/');
 }
 
+function hasRawColor(text: string) {
+  // Governance and release notes use references such as "PR #104". Those are
+  // issue identifiers, not three-digit CSS colors, and must not mask the
+  // actual client/style color scan.
+  return rawColorPattern.test(text.replaceAll(/\bPR\s+#\d+\b/g, ''));
+}
+
 function isCanonical(relPath: string) {
   const normalized = path.normalize(relPath);
   return canonicalSourcePrefixes.some((prefix) => normalized.startsWith(prefix));
@@ -208,7 +215,7 @@ async function main() {
     const text = await readFile(file, 'utf8');
     const shippingSource =
       relativePath.startsWith('apps/web/src/client/') || relativePath.startsWith('scripts/');
-    if (!isCanonical(relativePath) && shippingSource && rawColorPattern.test(text)) {
+    if (!isCanonical(relativePath) && shippingSource && hasRawColor(text)) {
       fail(`Raw UI color outside canonical brand system: ${relativePath}`);
     }
     if (!isCanonical(relativePath) && shippingSource && fontFamilyPattern.test(text)) {

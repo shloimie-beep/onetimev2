@@ -11,9 +11,13 @@ import type {
   StudentPortalDashboard,
 } from '@onetime/contracts';
 import {
+  PARENT_PORTAL_SECTIONS,
   ParentPortalFeature,
+  STUDENT_PORTAL_SECTIONS,
   StudentPortalFeature,
+  type ParentPortalSection,
   type PortalViewState,
+  type StudentPortalSection,
 } from '../features/portals/PortalFeatures.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
@@ -81,6 +85,9 @@ type PortalDialog =
 
 function PortalApp() {
   const portalRole = location.pathname.startsWith('/app/student') ? 'student' : 'parent';
+  const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
+    () => portalSectionFromLocation(portalRole),
+  );
   const [session, setSession] = useState<Awaited<ReturnType<typeof getSession>> | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [viewState, setViewState] = useState<PortalViewState>('loading');
@@ -515,13 +522,16 @@ function PortalApp() {
     window.location.assign('/login');
   }
 
-  const navItems = useMemo<ShellNavItem[]>(
-    () =>
-      portalRole === 'parent'
-        ? [{ id: 'parent', label: 'Parent Portal', href: '/app/parent', current: true }]
-        : [{ id: 'student', label: 'Student Portal', href: '/app/student', current: true }],
-    [portalRole],
-  );
+  const navItems = useMemo<ShellNavItem[]>(() => {
+    const sections = portalRole === 'parent' ? PARENT_PORTAL_SECTIONS : STUDENT_PORTAL_SECTIONS;
+    const route = portalRole === 'parent' ? '/app/parent' : '/app/student';
+    return sections.map((section) => ({
+      id: `${portalRole}-${section.id}`,
+      label: section.label,
+      href: `${route}?section=${section.id}`,
+      current: activeSection === section.id,
+    }));
+  }, [activeSection, portalRole]);
   const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
   const description =
     portalRole === 'parent'
@@ -534,8 +544,20 @@ function PortalApp() {
       navItems={navItems}
       title={title}
       description={description}
+      workspaceClassName="app-workspace--portal"
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
+        const target = new URL(href, location.origin);
+        const section = target.searchParams.get('section');
+        if (
+          target.pathname === location.pathname &&
+          section &&
+          isPortalSection(portalRole, section)
+        ) {
+          history.pushState({}, '', target);
+          setActiveSection(section);
+          return;
+        }
         history.pushState({}, '', href);
         void load();
       }}
@@ -548,8 +570,13 @@ function PortalApp() {
           viewState={viewState}
           dashboard={parentDashboard}
           selectedLearnerKey={selectedLearner?.learner_key ?? null}
+          activeSection={activeSection as ParentPortalSection}
           learnerMaterials={parentMaterials}
           actorFingerprint={actorFingerprint}
+          onSelectSection={(section) => {
+            history.pushState({}, '', `/app/parent?section=${section}`);
+            setActiveSection(section);
+          }}
           onSelectLearner={setSelectedLearnerKey}
           onCreateLearner={openCreateLearnerDialog}
           onEditLearner={openEditLearnerDialog}
@@ -568,7 +595,12 @@ function PortalApp() {
         <StudentPortalFeature
           viewState={viewState}
           dashboard={studentDashboard}
+          activeSection={activeSection as StudentPortalSection}
           actorFingerprint={actorFingerprint}
+          onSelectSection={(section) => {
+            history.pushState({}, '', `/app/student?section=${section}`);
+            setActiveSection(section);
+          }}
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
           onQueryHelper={(question) => handleStudentHelper(question)}
@@ -1001,6 +1033,22 @@ function studentAccessLabel(action: StudentAccessOperationType) {
 
 function label(value: string) {
   return value.replaceAll('_', ' ').replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
+function portalSectionFromLocation(
+  role: 'parent' | 'student',
+): ParentPortalSection | StudentPortalSection {
+  const requested = new URLSearchParams(location.search).get('section');
+  if (requested && isPortalSection(role, requested)) return requested;
+  return role === 'parent' ? 'learners' : 'today';
+}
+
+function isPortalSection(
+  role: 'parent' | 'student',
+  value: string,
+): value is ParentPortalSection | StudentPortalSection {
+  const sections = role === 'parent' ? PARENT_PORTAL_SECTIONS : STUDENT_PORTAL_SECTIONS;
+  return sections.some((section) => section.id === value);
 }
 
 const root = document.getElementById('portal-root');

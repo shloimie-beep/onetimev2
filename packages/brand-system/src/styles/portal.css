@@ -11,8 +11,202 @@
 .ot-portal {
   color: var(--ot-portal-ink);
   background: var(--ot-portal-bg);
-  min-height: 100%;
-  padding: 24px;
+  min-height: calc(100vh - 160px);
+  padding: 18px 24px 24px;
+}
+.ot-portal-layout {
+  display: grid;
+  grid-template-columns: minmax(190px, 230px) minmax(0, 1fr);
+  gap: 18px;
+  min-width: 0;
+}
+.ot-portal-menu {
+  position: sticky;
+  top: 82px;
+  align-self: start;
+  max-height: calc(100vh - 106px);
+  overflow-y: auto;
+  border: 1px solid rgba(255, 210, 31, 0.24);
+  border-radius: 8px;
+  background: var(--ot-portal-panel);
+  padding: 14px;
+}
+.ot-portal-section-buttons {
+  display: grid;
+  gap: 8px;
+}
+.ot-portal-section-buttons button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  padding: 10px 12px;
+  text-align: left;
+}
+.ot-portal-section-buttons button[aria-current='page'] {
+  border-color: var(--ot-portal-yellow);
+  background: rgba(255, 210, 31, 0.12);
+  box-shadow: inset 3px 0 0 var(--ot-portal-yellow);
+}
+.ot-portal-section-buttons span {
+  font-weight: 800;
+}
+.ot-portal-section-buttons small {
+  color: var(--ot-portal-muted);
+  line-height: 1.35;
+}
+.ot-portal-workspace {
+  display: grid;
+  min-width: 0;
+  min-height: calc(100vh - 178px);
+  align-content: start;
+  gap: 14px;
+}
+.ot-portal-workspace-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.ot-portal-workspace-head h2,
+.ot-portal-workspace-head p {
+  margin: 0 0 6px;
+}
+.ot-portal-workspace-head h2 {
+  color: var(--ot-portal-yellow);
+  font-size: clamp(1.45rem, 2vw, 2rem);
+}
+.ot-portal-workspace-head > div:first-child {
+  max-width: 760px;
+}
+.ot-portal-identity {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+.ot-portal-identity span {
+  color: var(--ot-portal-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ot-portal-identity strong {
+  color: var(--ot-portal-ink);
+  font-size: 1.1rem;
+}
+.ot-portal-subnav {
+  min-width: 0;
+  overflow-x: auto;
+}
+.ot-portal-subnav .ot-portal-section-buttons {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+}
+.ot-portal-subnav .ot-portal-section-buttons button {
+  width: auto;
+  min-width: 130px;
+  min-height: 44px;
+  white-space: nowrap;
+}
+.ot-portal-subnav .ot-portal-section-buttons small {
+  display: none;
+}
+.ot-portal-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  min-height: 170px;
+}
+.ot-portal-summary-card {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #111111;
+  padding: 14px;
+}
+.ot-portal-summary-card[data-active='true'] {
+  border-color: rgba(255, 210, 31, 0.54);
+  background: rgba(255, 210, 31, 0.08);
+}
+.ot-portal-summary-card h3,
+.ot-portal-summary-card p {
+  margin: 0;
+}
+.ot-portal-summary-card h3 {
+  color: var(--ot-portal-yellow);
+  font-size: 0.9rem;
+}
+.ot-portal-summary-card strong {
+  color: #ffffff;
+  font-size: clamp(1.15rem, 1.7vw, 1.55rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.ot-portal-summary-card p {
+  color: var(--ot-portal-muted);
+  overflow-wrap: anywhere;
+}
+.ot-portal-summary-card .ot-text-button {
+  justify-self: start;
+  margin-top: auto;
+}
+.ot-portal-focus {
+  min-height: clamp(360px, 45vh, 680px);
+  overflow: hidden;
+}
+.ot-focus-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.ot-focus-columns > section {
+  min-width: 0;
+}
+.ot-learner-switcher {
+  display: grid;
+  gap: 8px;
+  min-width: min(100%, 520px);
+}
+.ot-learner-switcher > span {
+  color: var(--ot-portal-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.ot-learner-switcher > div {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ot-learner-switcher > div button {
+  display: grid;
+  min-height: 48px;
+  gap: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  padding: 7px 12px;
+  text-align: left;
+}
+.ot-learner-switcher > div button small {
+  color: var(--ot-portal-muted);
+}
+.ot-learner-switcher button[aria-pressed='true'] {
+  border-color: var(--ot-portal-yellow);
+  background: rgba(255, 210, 31, 0.14);
 }
 .ot-topline {
   display: flex;
@@ -542,10 +736,12 @@
 }
 @media (max-width: 760px) {
   .ot-portal {
-    padding: 14px;
+    min-height: calc(100vh - 126px);
+    padding: 12px 14px 18px;
   }
   .ot-topline,
   .ot-panel-head,
+  .ot-portal-workspace-head,
   .ot-dialog-head,
   .ot-subsection,
   .ot-item,
@@ -554,9 +750,39 @@
     align-items: stretch;
     flex-direction: column;
   }
+  .ot-portal-layout,
   .ot-grid-parent,
   .ot-grid {
     grid-template-columns: 1fr;
+  }
+  .ot-portal-menu {
+    display: none;
+  }
+  .ot-portal-workspace {
+    min-height: calc(100vh - 142px);
+  }
+  .ot-portal-summary-grid,
+  .ot-focus-columns {
+    grid-template-columns: 1fr;
+  }
+  .ot-portal-summary-grid {
+    min-height: 0;
+  }
+  .ot-portal-summary-card {
+    min-height: 142px;
+  }
+  .ot-portal-identity {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .ot-portal-focus {
+    min-height: 54vh;
+    overflow: visible;
+  }
+  .ot-learner-switcher > div {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
   .ot-streak-grid,
   .ot-progress-meter,
@@ -566,7 +792,19 @@
   }
 }
 @media (min-width: 761px) and (max-width: 980px) {
+  .ot-portal-layout,
   .ot-grid-parent {
+    grid-template-columns: 1fr;
+  }
+  .ot-portal-menu {
+    display: none;
+  }
+  .ot-portal-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 981px) and (max-width: 1280px) {
+  .ot-portal-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

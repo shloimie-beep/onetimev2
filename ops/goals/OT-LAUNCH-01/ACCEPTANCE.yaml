@@ -109,6 +109,22 @@ criteria:
     track: coherent_demo
     observable: Each Student landing shows only that sibling, protected class/content/progress/question state, and no sibling or engineering/test cards.
     proof: [browser_desktop, browser_mobile, sibling_isolation_test]
+  - id: PORTAL-IA-001
+    track: parent_student_portal_information_architecture
+    observable: Parent uses the exact Learners, Classes & materials, Progress & rewards, Billing, and Updates categories; desktop provides persistent category navigation, one contextual learner filter, a four-card upper summary grid, and one wide focused lower workspace with no duplicate role controls or simultaneous category bodies.
+    proof: [component_contract_test, browser_desktop, screenshot_review]
+  - id: PORTAL-IA-002
+    track: parent_student_portal_information_architecture
+    observable: Student uses the exact Today, Library, Class Helper, Progress, Questions, and Updates categories; selecting one replaces the focused workspace body while preserving approved-content, entitlement, sibling-isolation, private-question, and provider-off boundaries at 360x800, 390x844, 768x1024, and 1440x1000 with no horizontal page overflow or serious accessibility violation.
+    proof:
+      [
+        component_contract_test,
+        browser_desktop,
+        browser_mobile,
+        screenshot_review,
+        sibling_isolation_test,
+        accessibility_scan,
+      ]
   - id: DEMO-001
     track: coherent_demo
     observable: Exact fictional seed/readback includes one Admin, one Parent, three separate Student credentials, one upcoming class/occurrence, approved prepared lesson, three progress projections, three approved review questions, one exact private question, and one Tisha registration.

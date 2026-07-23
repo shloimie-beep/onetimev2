@@ -61,11 +61,11 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
   await expect(parentPage.getByText('3/3 active learners')).toBeVisible();
+  await parentPage.getByRole('link', { name: 'Billing' }).click();
   await expect(parentPage.getByRole('heading', { name: 'Billing' })).toBeVisible();
   await expect(parentPage.getByText(/Billing is unavailable|Family plan/i)).toBeVisible();
+  await parentPage.getByRole('link', { name: 'Learners' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner One/i }).click();
-  await expect(parentPage.getByText('W12 Fictional Recording')).toBeVisible();
-  await expect(parentPage.getByText('W12 Fictional Review Sheet')).toBeVisible();
 
   await parentPage.getByRole('button', { name: 'Reset' }).click();
   let dialog = parentPage.getByRole('dialog', { name: 'Reset student access' });
@@ -82,6 +82,11 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   dialog = parentPage.getByRole('dialog', { name: 'Restore student access' });
   await dialog.getByRole('button', { name: 'Restore' }).click();
   await expect(parentPage.getByText('Status: Active')).toBeVisible();
+
+  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
+  const parentMaterials = parentPage.getByRole('region', { name: 'Classes & materials' });
+  await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
+  await expect(parentMaterials.getByText('W12 Fictional Review Sheet')).toBeVisible();
 
   const parentLaunch = await samePagePostJson(
     parentPage,
@@ -113,16 +118,21 @@ test('W12-03 parent and three separate learners complete portal journeys', async
       await expect(studentPage.getByText(sibling.displayName)).toHaveCount(0);
       await expect(studentPage.getByText(sibling.learnerKey)).toHaveCount(0);
     }
-    await expect(studentPage.getByText('W12 Fictional Recording')).toBeVisible();
-    await expect(studentPage.getByText('W12 Fictional Review Sheet')).toBeVisible();
+    await studentPage.getByRole('link', { name: 'Library' }).click();
+    const studentLibrary = studentPage.getByRole('region', { name: 'Library' });
+    await expect(studentLibrary.getByText('W12 Fictional Recording')).toBeVisible();
+    await expect(studentLibrary.getByText('W12 Fictional Review Sheet')).toBeVisible();
+    await studentPage.getByRole('link', { name: 'Progress' }).click();
     const progress = studentPage.getByRole('region', { name: 'Progress' });
     const metrics = progress.locator('.ot-metrics');
     await expect(metrics.locator('div').nth(0)).toHaveText('Classes1');
     await expect(metrics.locator('div').nth(3)).toHaveText('Points5');
+    await studentPage.getByRole('link', { name: 'Questions' }).click();
     await expect(
       studentPage.getByText(/What should I review before the next fictional class/i),
     ).toBeVisible();
 
+    await studentPage.getByRole('link', { name: 'Class Helper' }).click();
     await studentPage
       .getByRole('textbox', { name: 'Ask Class Helper' })
       .fill('What should I review from the Mishnah lesson?');
@@ -189,6 +199,9 @@ async function captureResponsiveA11y(page: Page, name: string, route: string) {
     await page.setViewportSize({ width: size.width, height: size.height });
     if (!page.url().endsWith(route)) await page.goto(route);
     await page.waitForLoadState('domcontentloaded');
+    if (route === '/app/parent' || route === '/app/student') {
+      await page.locator('[data-portal-role][data-state="ready"]').waitFor();
+    }
     await page.evaluate(() => {
       if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     });

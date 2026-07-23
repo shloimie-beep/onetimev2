@@ -1,6 +1,6 @@
 {
   "status": "completed",
-  "generated_at": "2026-07-17T19:03:38.297Z",
+  "generated_at": "2026-07-23T08:15:48.632Z",
   "journeys": [
     "parent add/fourth-seat denial/edit/archive/restore/student-access/content-open",
     "student content-open/questions/session-expiry/sibling-household-role-denial/provider-url-guard"
@@ -9,7 +9,7 @@
     {
       "name": "parent-after-journey",
       "viewport": "360x800",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-360x800.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-360x800.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false
@@ -17,7 +17,7 @@
     {
       "name": "parent-after-journey",
       "viewport": "390x844",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-390x844.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-390x844.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false
@@ -25,7 +25,7 @@
     {
       "name": "parent-after-journey",
       "viewport": "768x1024",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-768x1024.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-768x1024.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false
@@ -33,7 +33,7 @@
     {
       "name": "parent-after-journey",
       "viewport": "1440x1000",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-1440x1000.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-1440x1000.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false
@@ -41,7 +41,7 @@
     {
       "name": "student-after-journey",
       "viewport": "360x800",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-360x800.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-360x800.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false
@@ -49,7 +49,7 @@
     {
       "name": "student-after-journey",
       "viewport": "390x844",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-390x844.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-390x844.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false
@@ -57,7 +57,7 @@
     {
       "name": "student-after-journey",
       "viewport": "768x1024",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-768x1024.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-768x1024.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false
@@ -65,7 +65,7 @@
     {
       "name": "student-after-journey",
       "viewport": "1440x1000",
-      "screenshot": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-1440x1000.png",
+      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-1440x1000.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "provider_url_leakage": false

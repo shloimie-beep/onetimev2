@@ -21,6 +21,7 @@ type AppShellProps = {
   description?: string;
   toolbar?: React.ReactNode;
   notice?: React.ReactNode;
+  workspaceClassName?: string;
   children: React.ReactNode;
   onNavigate: (href: string) => void;
   onLogout?: (() => void) | undefined;
@@ -35,6 +36,7 @@ export function AppShell({
   description,
   toolbar,
   notice,
+  workspaceClassName,
   children,
   onNavigate,
   onLogout,
@@ -160,7 +162,9 @@ export function AppShell({
         <aside className="app-sidebar" aria-label="Primary navigation">
           <ShellNavigation items={navItems} onNavigate={onNavigate} />
         </aside>
-        <div className="app-workspace">
+        <div
+          className={workspaceClassName ? `app-workspace ${workspaceClassName}` : 'app-workspace'}
+        >
           <section className="page-header" aria-labelledby="page-title">
             <div>
               <p className="breadcrumb">One Time</p>

@@ -152,10 +152,14 @@ async function openStudentPreview(
 async function assertDedicatedStudentShell(page: Page, learnerName: string) {
   await expect(page.getByRole('heading', { name: 'Student Portal' })).toBeVisible();
   await expect(page.getByText(learnerName, { exact: true }).first()).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Library' })).toBeVisible();
+  await expect(
+    page.locator('.ot-portal-focus').getByRole('heading', { name: 'Today' }),
+  ).toBeVisible();
+  await expect(
+    page.locator('.ot-portal-menu').getByRole('button', { name: /^Library/ }),
+  ).toBeVisible();
   await expect(page.locator('.fictional-student-portal-preview')).toHaveAttribute('inert', '');
-  await expect(page.locator('nav')).toHaveCount(0);
+  await expect(page.getByRole('navigation', { name: 'One Time app' })).toHaveCount(0);
   await expect(page.locator('#crm-root')).toHaveCount(0);
   await expect(page.locator('.crm-shell')).toHaveCount(0);
   await expect(page.getByRole('link', { name: /logout/i })).toHaveCount(0);

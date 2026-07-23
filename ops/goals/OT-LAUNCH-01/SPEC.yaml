@@ -8,6 +8,30 @@ runtime:
     allowed_preview_values: [isolated_staging, test]
     enable_flag: ONE_TIME_EXPERIENCE_PREVIEW_ENABLED
     production_behavior: fail_closed_404
+  production_rollout:
+    policy: independently_accepted_slice_only
+    operator_authorized_at: 2026-07-23T08:06:52Z
+    requirements:
+      - Exact immutable staging head and deployed version agree.
+      - Focused automated and desktop/mobile browser acceptance passes.
+      - Rollback target and scope are explicit before promotion.
+      - Promotion changes only the accepted slice and verifies the live route after deployment.
+    exclusions:
+      - broad or customer provider sends
+      - payment collection or price changes
+      - destructive cleanup
+      - unrelated provider activation
+      - DNS or domain changes
+  provider_canary_authorization:
+    operator_authorized_at: 2026-07-23T08:06:52Z
+    allowed:
+      - Zoom staging configuration plus one bounded human host-and-Student canary
+      - BNA disposable preview database plus one private synthetic Telegram bridge canary
+      - one bounded operator-owned media staging canary
+    invariants:
+      - Protected values remain outside Git, logs, screenshots, and reports.
+      - Canary authority does not authorize customer or broad messages.
+      - Each provider is returned to its safe fail-closed state after proof unless exact production activation is separately accepted.
 
 golden_paths:
   goal_control:
@@ -132,6 +156,15 @@ golden_paths:
       - Student preview sessions use an opaque single-use exchange, a route-scoped Secure HttpOnly
         SameSite=Strict cookie, a five-minute maximum lifetime, and a dedicated GET-only shell.
       - Separate Student tabs remain sibling-isolated and the originating Admin session remains usable.
+      - >-
+        Parent and Student portals fill the application workspace instead of rendering every category
+        simultaneously: category navigation is on the left at desktop widths, contextual controls are
+        above the content, a compact summary grid occupies the upper region, and one wide focused
+        workspace occupies the lower region.
+      - >-
+        At tablet/mobile widths the same categories remain discoverable through the application
+        navigation and a compact horizontal category control; the focused body replaces rather than
+        accumulates content, preserves native control semantics, and never introduces page overflow.
   coherent_demo:
     requirements:
       - One fictional Cohen household supplies one Administrator, one Parent, three separately

@@ -75,13 +75,15 @@ test('OT83R parent portal routes add, fourth-seat denial, edit, archive, restore
   await dialog.getByRole('button', { name: 'Restore' }).click();
   await expect(page.getByText('Status: Active')).toBeVisible();
 
-  await expect(page.getByText('E2E Recording')).toBeVisible();
+  await page.getByRole('link', { name: 'Classes & materials' }).click();
+  const materialsWorkspace = page.getByRole('region', { name: 'Classes & materials' });
+  await expect(materialsWorkspace.getByText('E2E Recording')).toBeVisible();
   const contentResponse = page.waitForResponse(
     (response) =>
       response.url().includes('/api/v1/portals/parent/households/') &&
       response.url().includes('/content/e2e_recording_001/open'),
   );
-  await page
+  await materialsWorkspace
     .locator('article', { hasText: 'E2E Recording' })
     .getByRole('button', { name: 'Open' })
     .click();
@@ -108,13 +110,15 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
   await expect(
     studentPage.locator('#app-main').getByRole('heading', { name: 'Student Portal' }),
   ).toBeVisible();
-  await expect(studentPage.getByText('E2E Recording')).toBeVisible();
+  await studentPage.getByRole('link', { name: 'Library' }).click();
+  const libraryWorkspace = studentPage.getByRole('region', { name: 'Library' });
+  await expect(libraryWorkspace.getByText('E2E Recording')).toBeVisible();
   await expect(studentPage.getByText(/Sibling Private Recording/i)).toHaveCount(0);
 
   const openResponse = studentPage.waitForResponse((response) =>
     response.url().includes('/api/v1/portals/student/content/e2e_recording_001/open'),
   );
-  await studentPage
+  await libraryWorkspace
     .locator('article', { hasText: 'E2E Recording' })
     .getByRole('button', { name: 'Open' })
     .click();
@@ -122,6 +126,7 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
     /https?:\/\/|zoom|vimeo|drive|meet/i,
   );
 
+  await studentPage.getByRole('link', { name: 'Questions' }).click();
   const privateQuestion = 'What should I review before the next class?';
   await studentPage
     .getByRole('textbox', { name: 'Ask privately', exact: true })

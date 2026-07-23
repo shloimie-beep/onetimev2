@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T07:28:42Z
+updated_at: 2026-07-23T08:06:52Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -157,6 +157,28 @@ tracks:
     blocker: null
     remaining_work: null
     next_action: Preserve the latest rotated protected handoff and never render fictional credentials, private destinations, or login codes in DOM/tool diagnostics.
+
+  - id: parent_student_portal_information_architecture
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: One Time Parent and Student portals
+    write_scope: Focused full-screen Parent/Student workspace, role category navigation, responsive layout, tests, and sanitized browser evidence
+    handoff_path: ops/goals/OT-LAUNCH-01/inputs/20260723T080652Z-portal-provider-rollout.yaml
+    dependencies: [coherent_demo, admin_experience_preview]
+    acceptance_ids: [PORTAL-IA-001, PORTAL-IA-002]
+    evidence:
+      - 'The operator request was captured without private credentials in 20260723T080652Z-portal-provider-rollout.yaml and assigned to the existing PR #97 conductor.'
+      - 'Focused component/integration tests pass 16/16 for the category contract, actual preview projection, identity fixture boundary, and approved content projection.'
+      - 'Build-backed Chromium passes 5/5 across Experience Preview plus the Parent/Student real-app and portal-test-lab journeys. Desktop proof at 1440x1000 shows persistent role categories, contextual controls, a four-card upper summary, one visible learner identity, and one wide focused lower workspace; 360x800, 390x844, and 768x1024 proof shows compact category navigation with no page overflow or serious accessibility violation.'
+      - Parent category contract is Learners, Classes & materials, Progress & rewards, Billing, and Updates; Student category contract is Today, Library, Class Helper, Progress, Questions, and Updates.
+      - 'The exact checkpoint passes full build/typecheck, full lint, repository secret scan across 2,028 text files, brand validation, goal/pointer validation, scoped Prettier, and git diff --check.'
+    blocker: null
+    remaining_work: Commit/push the immutable checkpoint, deploy it to persistent staging, and re-read Parent/Student desktop/mobile routes before marking done.
+    next_action: Push and deploy the governed portal checkpoint for exact-head persistent-staging browser acceptance; then assign the authorized BNA/Telegram canary track.
 
   - id: git_history_privacy_remediation
     status: needs_operator_decision
@@ -446,7 +468,7 @@ tracks:
     next_action: Keep provider controls unavailable and never infer host control from partial SDK configuration.
 
   - id: zoom_real_control_operator_change_set
-    status: needs_operator_decision
+    status: unclaimed
     owner:
       task_id: OT-LAUNCH-01-ZOOM-REAL-CONTROL-OPERATOR-DECISION
       repository: shloimie-beep/onetimev2
@@ -461,11 +483,10 @@ tracks:
       - 'PR #105 exact successor e81de91a7372114c6b0a67a7cbb0abc9cb548885 is integrated provider-off at PR #97 head 312097c; no Zoom provider call, meeting mutation, customer notification, credential installation, origin allowlist change, or production change occurred.'
       - 'Persistent staging lacks the canonical Meeting SDK client ID/secret/allowed-origin and all six S2S/host/meeting prerequisites; provider mode is sink, real-provider is false, and canary is false.'
       - 'The previously rendered protected staging class target must be revoked or rotated before any later real-provider test. Zoom reCAPTCHA/rate limiting still requires a separately authorized human-cleared host-and-Student canary.'
-    blocker:
-      code: ZOOM_REAL_CONTROL_OPERATOR_CHANGE_SET_NOT_AUTHORIZED
-      reason: 'Installing protected values, changing the General-app origin allowlist, rotating the protected class target, and executing one real human canary are external/provider mutations requiring one exact operator decision.'
-    remaining_work: 'After explicit authorization, execute the atomic staging-only change set, prove SDK join plus exact fictional host mute/unmute/spotlight and replay/cross-student denial, then disable real/canary gates and preserve sanitized readback.'
-    next_action: 'Do not install values, change Zoom configuration, rotate the protected provider target, or run a canary until the operator authorizes this exact combined change set.'
+      - 'The operator explicitly authorized the bounded staging-only configuration and human canary on 2026-07-23; this removes the authority blocker but does not supply or validate protected prerequisites.'
+    blocker: null
+    remaining_work: 'After the active portal checkpoint, execute the atomic staging-only change set, prove SDK join plus exact fictional host mute/unmute/spotlight and replay/cross-student denial, then disable real/canary gates and preserve sanitized readback.'
+    next_action: 'Remain unclaimed until the conductor closes the active portal track; then validate protected prerequisites and continue until the exact external or technical blocker.'
 
   - id: bna_foundation
     status: done
@@ -488,7 +509,7 @@ tracks:
     next_action: Preserve the canonical registry and do not create a second job model.
 
   - id: bna_durability
-    status: needs_operator_decision
+    status: unclaimed
     owner:
       task_id: BNA-PR-141-RECONCILIATION
       repository: shloimie-beep/bnei-neviim-academy
@@ -505,11 +526,10 @@ tracks:
       - Isolated preview deployment 79e7235c-03fc-44ed-a9e9-ba2cfb6c1e57 passed 46/46 focused tests and fail-closed UI/browser smoke.
       - Queue readback contains 31 unique jobs: 9 verified, 2 superseded, and 20 blocked; customer, GHL, and provider sends are zero.
       - The live isolated preview returns sanitized fail-closed 503 because no Postgres service/DATABASE_URL is linked; durable claim/save/restart/readback, DB-backed Telegram lease, and synthetic Telegram-to-GHL draft canary are not accepted.
-    blocker:
-      code: BNA_PREVIEW_DATABASE_URL_MISSING
-      reason: Attaching a disposable Postgres service and injecting DATABASE_URL into the isolated preview requires one exact operator authorization.
-    remaining_work: 'After authorization, attach Postgres only to bna-agent-actions-preview, apply preview tables, prove save -> restart -> identical readback, run one operator-owned synthetic Telegram-to-GHL draft/save/readback canary with customer sends zero, then repin/import only an accepted PR #108 head.'
-    next_action: 'Await the exact authorization for one disposable Postgres service; do not mutate production or substitute PR #107 jobs for PR #108.'
+      - 'The operator explicitly authorized the disposable preview database and private synthetic canary on 2026-07-23; this removes the authority blocker while preserving zero customer sends and the isolated-preview boundary.'
+    blocker: null
+    remaining_work: 'Attach Postgres only to bna-agent-actions-preview, apply preview tables, prove save -> restart -> identical readback, run one operator-owned synthetic Telegram-to-GHL draft/save/readback canary with customer sends zero, then repin/import only the accepted PR #108 result.'
+    next_action: 'Remain unclaimed until the conductor closes the active portal track; then attach one disposable preview Postgres service without touching production.'
 
   - id: telegram_foundation
     status: provider_off

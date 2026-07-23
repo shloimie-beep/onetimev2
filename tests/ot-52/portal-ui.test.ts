@@ -40,11 +40,15 @@ describe('OT-52P portal UI modules', () => {
       }),
     );
 
-    expect(markup).toContain('Parent Portal');
+    expect(markup).toContain('Family workspace');
     expect(markup).toContain('Household');
     expect(markup).toContain('Student access');
-    expect(markup).toContain('Progress And Rewards');
-    expect(markup).toContain('aria-label="Add learner"');
+    expect(markup).toContain('Classes &amp; materials');
+    expect(markup).toContain('Progress &amp; rewards');
+    expect(markup).toContain('Billing');
+    expect(markup).toContain('Updates');
+    expect(markup).toContain('aria-label="Choose learner"');
+    expect(markup).toContain('Open approved materials');
     expect(markup).toContain('Edit');
     expect(markup).toContain('Archive');
     expect(markup).not.toContain('unavailable in V1');
@@ -61,14 +65,57 @@ describe('OT-52P portal UI modules', () => {
       }),
     );
 
-    expect(markup).toContain('Student Portal');
+    expect(markup).toContain('My learning');
     expect(markup).toContain('Today');
     expect(markup).toContain('Library');
+    expect(markup).toContain('Class Helper');
+    expect(markup).toContain('Progress');
+    expect(markup).toContain('Questions');
+    expect(markup).toContain('Updates');
+    expect(markup).toContain('Open library');
     expect(markup).not.toMatch(
       /Sibling|Household|Billing|Student access|Archive|Restore|Parent Portal/i,
     );
     expect(markup).not.toContain('learner_sibling');
     expect(markup).not.toMatch(/https?:\/\/|zoom|meet|provider/i);
+  });
+
+  it('renders one focused workspace while keeping every category discoverable', () => {
+    const parentMarkup = renderToStaticMarkup(
+      React.createElement(ParentPortalFeature, {
+        viewState: 'ready',
+        dashboard: parentDashboard(),
+        learnerMaterials: {
+          learner_alpha: {
+            learner: learner('learner_alpha', 'Alpha Learner'),
+            library: studentDashboard().library_items,
+            review_sheets: [],
+            progress: studentDashboard().progress,
+            rewards: { learner_key: 'learner_alpha', balance: 8, event_count: 2 },
+            updates: [],
+          },
+        },
+        activeSection: 'classes',
+        actorFingerprint: 'parent-class-workspace',
+        onOpenContent: () => undefined,
+      }),
+    );
+    const studentMarkup = renderToStaticMarkup(
+      React.createElement(StudentPortalFeature, {
+        viewState: 'ready',
+        dashboard: studentDashboard(),
+        activeSection: 'library',
+        actorFingerprint: 'student-library-workspace',
+        onOpenContent: () => undefined,
+      }),
+    );
+
+    expect(parentMarkup).toContain('Upcoming classes');
+    expect(parentMarkup).toContain('Weekly recording');
+    expect(parentMarkup).not.toContain('id="student-access-heading"');
+    expect(studentMarkup).toContain('id="student-library-heading"');
+    expect(studentMarkup).toContain('Weekly recording');
+    expect(studentMarkup).not.toContain('id="student-dashboard-heading"');
   });
 
   it('uses alert/status roles for non-ready states', () => {
