@@ -3429,7 +3429,7 @@
       "aliases": [],
       "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-22",
+      "lastVerifiedDate": "2026-07-23",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md",
@@ -3463,20 +3463,29 @@
       ],
       "observedTriggers": [],
       "observedActions": [],
+      "enrollmentReadback": {
+        "status": "available",
+        "at": "2026-07-23T18:39:39.794Z",
+        "total": 0,
+        "active": 0,
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "reason": "Exact visible Draft workflow enrollment counters were read back as zero."
+      },
       "lastReadback": {
-        "at": "2026-07-22T14:00:12.763Z",
-        "method": "read-only exhaustive visible UI inventory and exact empty-canvas readback",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
+        "at": "2026-07-23T18:39:39.794Z",
+        "method": "live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       },
       "canary": {
         "result": "not_run",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
-        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "detail": "GHL-UI-14 is not in the reviewed queue/export and does not define the exact bounded delivery action or message template; no safe configuration or test was possible."
       },
-      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: deployed adult signup event dispatcher is absent.",
+      "blocker": "BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-14 defines the trigger and gates but not an exact bounded delivery action/template, and it is absent from the reviewed queue/export; keep the empty Draft shell.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
-        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       ]
     },
     {
@@ -3912,7 +3921,7 @@
       "aliases": [],
       "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-22",
+      "lastVerifiedDate": "2026-07-23",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md",
@@ -3944,26 +3953,27 @@
       "observedActions": [],
       "enrollmentReadback": {
         "status": "available",
-        "at": "2026-07-22T14:00:12.763Z",
+        "at": "2026-07-23T18:40:09.780Z",
         "total": 0,
         "active": 0,
-        "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
         "reason": "Exact visible Draft workflow enrollment counters were read back as zero."
       },
       "lastReadback": {
-        "at": "2026-07-22T14:00:12.763Z",
-        "method": "read-only exhaustive visible UI inventory and exact empty-canvas/read-count readback",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
+        "at": "2026-07-23T18:40:09.780Z",
+        "method": "live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       },
       "canary": {
         "result": "not_run",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
-        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "detail": "GHL-UI-15 is not in the reviewed queue/export and does not define the exact non-token companion action or message template; no safe configuration or test was possible."
       },
-      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: access-confirmation companion event is absent.",
+      "blocker": "BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-15 defines the trigger and gates but not an exact non-token companion action/template, and it is absent from the reviewed queue/export; keep the empty Draft shell.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
-        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       ]
     },
     {
@@ -3987,7 +3997,7 @@
       "aliases": [],
       "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-22",
+      "lastVerifiedDate": "2026-07-23",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md",
@@ -4019,26 +4029,27 @@
       "observedActions": [],
       "enrollmentReadback": {
         "status": "available",
-        "at": "2026-07-22T14:00:12.763Z",
+        "at": "2026-07-23T18:40:19.523Z",
         "total": 0,
         "active": 0,
-        "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
         "reason": "Exact visible Draft workflow enrollment counters were read back as zero."
       },
       "lastReadback": {
-        "at": "2026-07-22T14:00:12.763Z",
-        "method": "read-only exhaustive visible UI inventory and exact empty-canvas/read-count readback",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
+        "at": "2026-07-23T18:40:19.523Z",
+        "method": "live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       },
       "canary": {
         "result": "not_run",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
-        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "detail": "GHL-UI-16 is not in the reviewed queue/export and does not define the exact bounded delivery action or message template; no safe configuration or test was possible."
       },
-      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: parent-activation projection is absent.",
+      "blocker": "BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-16 defines the trigger and gates but not an exact bounded delivery action/template, and it is absent from the reviewed queue/export; keep the empty Draft shell.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
-        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       ]
     },
     {
@@ -4062,7 +4073,7 @@
       "aliases": [],
       "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-22",
+      "lastVerifiedDate": "2026-07-23",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md",
@@ -4094,20 +4105,29 @@
       ],
       "observedTriggers": [],
       "observedActions": [],
+      "enrollmentReadback": {
+        "status": "available",
+        "at": "2026-07-23T18:38:15.108Z",
+        "total": 0,
+        "active": 0,
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "reason": "Exact visible Draft workflow enrollment counters were read back as zero."
+      },
       "lastReadback": {
-        "at": "2026-07-22T14:00:12.763Z",
-        "method": "read-only exhaustive visible UI inventory and exact empty-canvas readback",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
+        "at": "2026-07-23T18:38:15.108Z",
+        "method": "live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       },
       "canary": {
         "result": "not_run",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
-        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "detail": "GHL-UI-17 is not in the reviewed queue/export and does not define an exact email action/template or UI wait/offset semantics; no safe configuration or test was possible."
       },
-      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: confirmed-class reminder event projection is absent.",
+      "blocker": "BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-17 defines the trigger and gates but not an exact reminder action/template or UI wait/offset, and it is absent from the reviewed queue/export; keep the empty Draft shell.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
-        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       ]
     },
     {
@@ -4131,7 +4151,7 @@
       "aliases": [],
       "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-22",
+      "lastVerifiedDate": "2026-07-23",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md",
@@ -4163,20 +4183,29 @@
       ],
       "observedTriggers": [],
       "observedActions": [],
+      "enrollmentReadback": {
+        "status": "available",
+        "at": "2026-07-23T18:39:15.410Z",
+        "total": 0,
+        "active": 0,
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "reason": "Exact visible Draft workflow enrollment counters were read back as zero."
+      },
       "lastReadback": {
-        "at": "2026-07-22T14:00:12.763Z",
-        "method": "read-only exhaustive visible UI inventory and exact empty-canvas readback",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
+        "at": "2026-07-23T18:39:15.410Z",
+        "method": "live authenticated UI exact-ID, folder, status, enrollment-counter, and empty-canvas readback; no workflow mutation",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       },
       "canary": {
         "result": "not_run",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
-        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+        "detail": "GHL-UI-18 is not in the reviewed queue/export, does not define the exact email action/template, and the protected recording portal custom value is unresolved; no safe configuration or test was possible."
       },
-      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: recording.available producer and GHL dispatcher are absent.",
+      "blocker": "BLOCKED_GIT_JOB_INCOMPLETE: GHL-UI-18 defines the trigger and gates but not an exact delivery action/template, is absent from the reviewed queue/export, and one_time_recording_portal_url has no verified ID or value; keep the empty Draft shell.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
-        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       ]
     },
     {
@@ -4350,7 +4379,7 @@
       "aliases": [],
       "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-22",
+      "lastVerifiedDate": "2026-07-23",
       "lastTestedDate": "2026-07-22",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
@@ -4361,7 +4390,7 @@
       "companionDelivery": "",
       "displayOrder": 13,
       "desiredStatus": "ACTIVE_TESTED",
-      "observedStatus": "ACTIVE_TESTED",
+      "observedStatus": "DRIFTED",
       "exactOrderedTriggers": [
         "Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered.",
         "Require exact event-registration communications permission plus no email DND, suppression, unsubscribe, complaint, or hard-bounce state; do not require or create newsletter/general marketing consent.",
@@ -4382,7 +4411,8 @@
       "observedActions": [
         "Email A saved and reopened on the same workflow ID with the approved copy, rabbi_campaign sender, canonical One Time Tisha page, and no provider link.",
         "Workflow remained Published; existing operator enrollment remained at the one-hour wait; counts stayed one active / two historical.",
-        "Terminal run sent zero messages and applied no manual tag, enrollment, fallback, or duplicate signup."
+        "Terminal run sent zero messages and applied no manual tag, enrollment, fallback, or duplicate signup.",
+        "Current live readback found Email A - Immediate Confirmation disabled while the workflow remained Published; current immediate delivery is not operational."
       ],
       "essentialValues": {
         "registration_trigger_tag": "OT | Event | Tisha B'Av 2026 | Registered",
@@ -4393,6 +4423,7 @@
         "immediate_email_link_custom_value_key": "one_time_tisha_bav_landing_url",
         "immediate_email_live_link_readback": "sanitized_present_valid",
         "immediate_email_provider_link_present": false,
+        "immediate_email_action_enabled": false,
         "one_hour_reminder_scheduled_at": "2026-07-23T21:00:00+03:00",
         "ten_minute_reminder_scheduled_at": "2026-07-23T21:50:00+03:00",
         "historical_enrollments": 2,
@@ -4415,21 +4446,22 @@
         "whatsapp_allowed": false
       },
       "lastReadback": {
-        "at": "2026-07-22T17:47:25.2776573+03:00",
-        "method": "fresh server-version save plus exact builder reopen/readback and production-signup enrollment readback",
-        "reference": "integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json"
+        "at": "2026-07-23T18:40:42.355Z",
+        "method": "live authenticated exact-ID builder reopen/readback; Published switch on and Email A immediate-confirmation action visibly disabled; no mutation",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       },
       "canary": {
         "result": "passed",
         "reference": "GHL-E01-operator-fab156df2719852d",
-        "detail": "Historical bounded GHL-only execution/replay proof passed; newest production application registration did not add the trigger tag or create an enrollment, so end-to-end signup is failed and not claimed."
+        "detail": "Historical bounded GHL-only execution/replay proof passed, but current live readback is DRIFTED because Email A is disabled; historical proof is not treated as current operational readiness."
       },
-      "blocker": "P0_APP_HANDOFF: fresh production signup added no canonical registered-event tag and created no OT-E01 enrollment; OT-TISHA-HANDOFF-01 must repair/prove the application handoff before reprocessing the one affected operator contact.",
+      "blocker": "DRIFTED: the workflow is Published but Email A - Immediate Confirmation is disabled; this track was instructed to preserve OT-E01 and made no mutation.",
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
         "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
         "integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json",
-        "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json"
+        "integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json"
       ]
     }
   ],
@@ -6034,7 +6066,7 @@
   },
   "workflow_projection": {
     "generated_from": "integrations/highlevel/registry/workflow-registry.yaml",
-    "source_sha256": "729e5e6ae071adc5520c98071161eb1f66ad462557ba014ad575de423efabfc3",
+    "source_sha256": "e69e14246d545b6e7959f8f992c1d05980b02fd8e69c5b36a4798cbea6ca8d0a",
     "editable": false
   },
   "workflow_control": {
