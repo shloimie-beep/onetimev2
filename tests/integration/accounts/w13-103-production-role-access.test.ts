@@ -7,6 +7,7 @@ import {
   acceptParentActivation,
   acceptStudentSetup,
 } from '../../../packages/domain/src/accounts/lifecycle.ts';
+import { readHouseholdAccess } from '../../../packages/domain/src/access/service.ts';
 import { hashPassword } from '../../../packages/domain/src/auth/service.ts';
 import { normalizeEmail, stableKey } from '../../../packages/domain/src/lead/normalize.ts';
 import { runW13ProductionRoleAccessTask } from '../../../scripts/w13-103/identity/production-role-access.ts';
@@ -153,6 +154,22 @@ describe('W13-103 production role access command', () => {
         password: 'ParentW13!2345',
       },
     });
+    const parentAccess = await readHouseholdAccess({
+      db: pool,
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      householdKey: 'w13_103_operator_test_household',
+      now: new Date('2026-07-19T05:06:00.000Z'),
+    });
+    expect(parentAccess).toEqual(
+      expect.objectContaining({
+        state: 'active',
+        source_kind: 'free_pilot',
+        grants_access: true,
+        expires_at: '2026-09-17T05:00:00.000Z',
+        opaque_source_reference: 'w13_103_operator_free_pilot_v1',
+      }),
+    );
 
     const student = await runW13ProductionRoleAccessTask({
       pool,
@@ -264,6 +281,11 @@ function manifest() {
         relationship_key: 'w13_103_operator_parent',
         relationship_label: 'Parent',
         authority: 'primary_guardian',
+        free_pilot: {
+          expires_at: '2026-09-17T05:00:00.000Z',
+          policy_version: 'w13-103-controlled-free-pilot-v1',
+          opaque_source_reference: 'w13_103_operator_free_pilot_v1',
+        },
       },
       student: {
         destination: STUDENT_EMAIL,

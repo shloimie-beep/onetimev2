@@ -501,8 +501,14 @@ async function portalItemsForLearner(input: {
         AND entitlements.entitlement_state = 'active'
         AND (
           entitlements.audience = 'all_active_learners'
-          OR entitlements.learner_key = $4
-          OR entitlements.household_key = $5
+          OR (
+            entitlements.audience = 'learner'
+            AND entitlements.learner_key = $4
+          )
+          OR (
+            entitlements.audience = 'household'
+            AND entitlements.household_key = $5
+          )
         )
         AND (
           $6::text <> 'student'

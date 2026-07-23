@@ -40,7 +40,7 @@ type EntitlementProof = {
   entitlementId: string;
   checkedAt: string;
   validUntil: string | null;
-  policyVersion: 'ot114-subscriber-support-v1' | 'ot114-owner-admin-support-v1';
+  policyVersion: 'ot-launch-01-current-access-v1' | 'ot114-owner-admin-support-v1';
 };
 
 export class SupportSubmissionError extends Error {
@@ -165,7 +165,7 @@ export async function createSupportSubmission(input: {
       throw new SupportSubmissionError(
         'SUBSCRIBER_REQUIRED',
         403,
-        'Subscriber support requires an active One Time entitlement.',
+        'Support requires current One Time learning access.',
       );
     }
 
@@ -629,38 +629,45 @@ async function resolveActiveSupportEntitlement(input: {
 }): Promise<EntitlementProof | null> {
   const now = input.now ?? new Date();
   const entitlements = await input.target.query(
-    `SELECT entitlement_key, evaluated_at
-       FROM onetime.billing_entitlement_projections
-      WHERE account_key = $1
-        AND product_key = $2
-        AND principal_key = $3
-        AND principal_type = 'account_user'
-        AND status = 'active'
-      ORDER BY evaluated_at DESC, updated_at DESC
+    `SELECT access.access_key, access.expires_at, access.updated_at
+       FROM onetime.account_access_projections AS access
+       JOIN onetime.portal_guardian_relationships AS guardians
+         ON guardians.account_key = access.account_key
+        AND guardians.product_key = access.product_key
+        AND guardians.household_key = access.household_key
+        AND guardians.guardian_user_ref = $3
+        AND guardians.status = 'active'
+      WHERE access.account_key = $1
+        AND access.product_key = $2
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
+      UNION ALL
+     SELECT access.access_key, access.expires_at, access.updated_at
+       FROM onetime.account_access_projections AS access
+       JOIN onetime.account_learner_identity_links AS links
+         ON links.account_key = access.account_key
+        AND links.product_key = access.product_key
+        AND links.household_key = access.household_key
+        AND links.user_key = $3
+        AND links.link_state = 'active'
+      WHERE access.account_key = $1
+        AND access.product_key = $2
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
+      ORDER BY updated_at DESC
       LIMIT 1`,
-    [input.config.accountKey, input.config.productKey, input.userKey],
+    [input.config.accountKey, input.config.productKey, input.userKey, now],
   );
   const entitlement = entitlements.rows[0];
   if (!entitlement) return null;
-  const subscription = await input.target.query(
-    `SELECT current_period_end
-       FROM onetime.billing_subscription_projections
-      WHERE account_key = $1
-        AND product_key = $2
-        AND principal_key = $3
-        AND principal_type = 'account_user'
-      ORDER BY provider_updated_at DESC, updated_at DESC
-      LIMIT 1`,
-    [input.config.accountKey, input.config.productKey, input.userKey],
-  );
-  const periodEnd = subscription.rows[0]?.current_period_end;
-  const validUntil = periodEnd ? toIso(periodEnd) : null;
-  if (validUntil && new Date(validUntil).getTime() <= now.getTime()) return null;
+  const validUntil = entitlement.expires_at ? toIso(entitlement.expires_at) : null;
   return {
-    entitlementId: String(entitlement.entitlement_key),
+    entitlementId: String(entitlement.access_key),
     checkedAt: now.toISOString(),
     validUntil,
-    policyVersion: 'ot114-subscriber-support-v1',
+    policyVersion: 'ot-launch-01-current-access-v1',
   };
 }
 

@@ -1,10 +1,10 @@
 # OPS-06 Migration Safety
 
-Generated: 2026-07-23T11:10:58.136Z
+Generated: 2026-07-23T14:14:38.051Z
 
 Status: passed
 
-- Local migrations: 52
+- Local migrations: 53
 - Remote sources scanned: 120
 - Duplicate IDs: 0
 - Cross-branch checksum collisions reported: 53

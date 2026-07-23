@@ -122,7 +122,7 @@ describe('W12-100 account and portal identity provisioning', () => {
         ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'production-delivery-key-for-test-only-32',
         PORTAL_TEST_LAB_ENABLED: 'true',
       }),
-    ).toThrow('Portal Test Lab is forbidden in production');
+    ).toThrow('Portal Test Lab requires explicit test or isolated_staging runtime classification.');
   });
 
   it('emits redacted idempotent outcomes and blocks student setup until parent activation', async () => {
@@ -502,19 +502,29 @@ async function exercisePortalJourneys() {
 
 async function seedVisibilityFixtures() {
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES ('w12_100_identity_billing',$1,$2,$3,'opaque','active','w12-100-test',
-        'w12_100_identity_fixture','synthetic_active_access',$4,$5,true)
-     ON CONFLICT (entitlement_key)
-     DO UPDATE SET status = 'active', grants_access = true, evaluated_at = EXCLUDED.evaluated_at`,
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, access_version,
+        last_event_key)
+     VALUES ('w12_100_identity_access',$1,$2,$3,'active','free_pilot',$4,$5,
+        'w12_100_identity_free_pilot',1,$4,
+        '1111111111111111111111111111111111111111111111111111111111111111',
+        'w12-100-current-access-v1',1,'w12_100_identity_access_seed')
+     ON CONFLICT (account_key, product_key, household_key)
+     DO UPDATE SET state = 'active', source_kind = 'free_pilot',
+       effective_at = EXCLUDED.effective_at, expires_at = EXCLUDED.expires_at,
+       source_updated_at = EXCLUDED.source_updated_at,
+       source_request_hash = EXCLUDED.source_request_hash,
+       policy_version = EXCLUDED.policy_version, revocation_reason = NULL,
+       access_version = onetime.account_access_projections.access_version + 1,
+       last_event_key = EXCLUDED.last_event_key, updated_at = now()`,
     [
       config.accountKey,
       config.productKey,
       manifest.household.household_key,
       new Date('2026-07-17T12:00:00.000Z'),
-      new Date('2026-07-17T12:00:01.000Z'),
+      new Date('2027-01-17T12:00:00.000Z'),
     ],
   );
   await pool.query(

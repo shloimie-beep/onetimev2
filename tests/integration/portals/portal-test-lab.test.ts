@@ -48,6 +48,45 @@ afterEach(async () => {
 });
 
 describe('W12-03 Portal Test Lab', () => {
+  it('404s and writes nothing when either explicit runtime classification is production', async () => {
+    for (const override of [
+      { deliveryEnvironment: 'production' as const },
+      { oneTimeRuntimeEnvironment: 'production' as const },
+    ]) {
+      const isolatedPool = createMemoryPool();
+      await runMigrations(isolatedPool);
+      const failClosedConfig: AppConfig = {
+        ...config,
+        ...override,
+        portalTestLabEnabled: true,
+      };
+      const server = await listenForTest(
+        createApp({ config: failClosedConfig, pool: isolatedPool, distDir }),
+      );
+      try {
+        const page = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}`);
+        expect(page.status).toBe(404);
+        const reseed = await fetch(`${server.baseUrl}${W12_PORTAL_TEST_LAB_ROUTE}/reseed`, {
+          method: 'POST',
+        });
+        expect(reseed.status).toBe(404);
+
+        await seedPortalTestLab({ pool: isolatedPool, config: failClosedConfig });
+        const [users, accessRows] = await Promise.all([
+          isolatedPool.query(`SELECT count(*)::int AS count FROM onetime.account_users`),
+          isolatedPool.query(
+            `SELECT count(*)::int AS count FROM onetime.account_access_projections`,
+          ),
+        ]);
+        expect(users.rows[0]?.count).toBe(0);
+        expect(accessRows.rows[0]?.count).toBe(0);
+      } finally {
+        await server.close();
+        await isolatedPool.end();
+      }
+    }
+  });
+
   it('keeps the lab owner/admin-only and hides runnable secrets', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {

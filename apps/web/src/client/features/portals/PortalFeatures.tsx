@@ -51,8 +51,8 @@ export const PARENT_PORTAL_SECTIONS = [
   },
   {
     id: 'billing',
-    label: 'Billing',
-    description: 'Plan, access, and payment recovery truth for this household.',
+    label: 'Access',
+    description: 'Your current learning access. Billing is managed separately in GHL.',
   },
   {
     id: 'updates',
@@ -119,8 +119,6 @@ export type ParentPortalFeatureProps = {
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onOpenContent?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onPreviewSupport?: (learnerKey?: string) => void;
-  onBillingCheckout?: () => void;
-  onBillingPortal?: () => void;
   onCreateRewardGoal?: (
     learnerKey: string,
     goal: { title: string; description: string; pointsRequired: number },
@@ -165,8 +163,6 @@ export function ParentPortalFeature({
   onLaunchClass,
   onOpenContent,
   onPreviewSupport,
-  onBillingCheckout,
-  onBillingPortal,
   onCreateRewardGoal,
   onRetry,
 }: ParentPortalFeatureProps) {
@@ -388,13 +384,7 @@ export function ParentPortalFeature({
           </>
         )}
 
-        {activeSection === 'billing' && (
-          <BillingSummaryPanel
-            billing={dashboard.billing}
-            onCheckout={onBillingCheckout}
-            onPortal={onBillingPortal}
-          />
-        )}
+        {activeSection === 'billing' && <BillingSummaryPanel billing={dashboard.billing} />}
 
         {activeSection === 'updates' && (
           <>
@@ -407,23 +397,15 @@ export function ParentPortalFeature({
   );
 }
 
-function BillingSummaryPanel({
-  billing,
-  onCheckout,
-  onPortal,
-}: {
-  billing: ParentPortalDashboard['billing'];
-  onCheckout?: (() => void) | undefined;
-  onPortal?: (() => void) | undefined;
-}) {
+function BillingSummaryPanel({ billing }: { billing: ParentPortalDashboard['billing'] }) {
   if (!billing.enabled) {
     return (
       <section className="ot-subsection" aria-labelledby="billing-heading">
         <div className="ot-section-title">
-          <h3 id="billing-heading">Plan &amp; access</h3>
+          <h3 id="billing-heading">Learning access</h3>
           <span>Unavailable</span>
         </div>
-        <p>Billing is unavailable in this environment.</p>
+        <p>Current learning access is unavailable in this environment.</p>
         <dl className="ot-stats">
           <div>
             <dt>Access</dt>
@@ -434,13 +416,10 @@ function BillingSummaryPanel({
     );
   }
   const status = billing.entitlement_status ?? 'pending';
-  const showCheckout =
-    billing.checkout_available && status !== 'active' && status !== 'scheduled_end';
-  const showPortal = billing.customer_portal_available;
   return (
     <section className="ot-subsection" aria-labelledby="billing-heading">
       <div>
-        <h3 id="billing-heading">Plan &amp; access</h3>
+        <h3 id="billing-heading">Learning access</h3>
         <p>{billing.plan_truth}</p>
       </div>
       <dl className="ot-mini-metrics">
@@ -455,32 +434,14 @@ function BillingSummaryPanel({
       </dl>
       {billing.current_period_end && (
         <p className="ot-muted">
-          Current period ends {formatDate(billing.current_period_end)}
-          {billing.cancel_at_period_end ? '. Cancellation scheduled.' : ''}
+          Current access is scheduled through {formatDate(billing.current_period_end)}.
         </p>
       )}
       {billing.recovery_required && (
         <p className="ot-warning" role="status">
-          Payment recovery is required before learning access resumes.
+          Learning access needs operator review in GHL.
         </p>
       )}
-      <div className="ot-action-row">
-        {showCheckout && (
-          <button
-            type="button"
-            className="ot-button ot-button-primary"
-            disabled={!onCheckout}
-            onClick={onCheckout}
-          >
-            Start checkout
-          </button>
-        )}
-        {showPortal && (
-          <button type="button" className="ot-button" disabled={!onPortal} onClick={onPortal}>
-            Manage billing
-          </button>
-        )}
-      </div>
     </section>
   );
 }

@@ -11,8 +11,24 @@ import { withBillingNetworkGuard } from '../../../packages/domain/src/billing/ne
 describe('W12-100-01 provider and production safety boundaries', () => {
   it('fails closed for production-only Portal Test Lab, BNA mock bridge, and real transports', () => {
     expect(() => productionConfig({ PORTAL_TEST_LAB_ENABLED: 'true' })).toThrow(
-      'Portal Test Lab is forbidden in production.',
+      'Portal Test Lab requires explicit test or isolated_staging runtime classification.',
     );
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        DELIVERY_ENVIRONMENT: 'production',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'test',
+        PORTAL_TEST_LAB_ENABLED: 'true',
+      }),
+    ).toThrow('Portal Test Lab requires explicit test or isolated_staging');
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        DELIVERY_ENVIRONMENT: 'test',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+        PORTAL_TEST_LAB_ENABLED: 'true',
+      }),
+    ).toThrow('Portal Test Lab requires explicit test or isolated_staging');
     expect(() => productionConfig({ OT89_MOCK_BNA_ENABLED: 'true' })).toThrow(
       'OT89 mock BNA endpoint is forbidden in production.',
     );

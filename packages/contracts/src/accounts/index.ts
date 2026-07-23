@@ -46,6 +46,19 @@ export const parentActivationPayloadSchema = z.object({
   relationship_key: lifecycleOpaqueIdSchema,
   relationship_label: z.string().trim().min(1).max(80).default('Parent'),
   authority: z.enum(['primary_guardian', 'guardian']).default('guardian'),
+  free_pilot: z
+    .object({
+      expires_at: z.iso.datetime(),
+      policy_version: z.string().trim().min(3).max(120),
+      opaque_source_reference: z
+        .string()
+        .trim()
+        .min(8)
+        .max(180)
+        .regex(/^[A-Za-z0-9_:-]+$/u),
+    })
+    .strict()
+    .optional(),
 });
 export type ParentActivationPayload = z.infer<typeof parentActivationPayloadSchema>;
 

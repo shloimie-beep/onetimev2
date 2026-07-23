@@ -584,9 +584,11 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
 
 export function createClassroomPortalAccessAdapter(input: {
   classroom: ClassroomService;
+  currentAccess(args: { actor: PortalActorContext; learner: LearnerProfile }): Promise<boolean>;
 }): LearnerClassAccessAdapter {
   return {
     upcomingForLearner: async ({ actor, learner }) => {
+      if (!(await input.currentAccess({ actor, learner }))) return [];
       const projection = await input.classroom.upcomingForLearner({ actor, learner });
       return [
         {
@@ -632,13 +634,20 @@ export function createClassroomPortalAccessAdapter(input: {
         },
       ];
     },
-    protectedLaunch: async ({ actor, learner, class_key, idempotency_key }) =>
-      input.classroom.issuePortalLaunch({
+    protectedLaunch: async ({ actor, learner, class_key, idempotency_key }) => {
+      if (!(await input.currentAccess({ actor, learner }))) {
+        throw new PortalServiceError(
+          'ENTITLEMENT_REQUIRED',
+          'Current household learning access is required.',
+        );
+      }
+      return input.classroom.issuePortalLaunch({
         actor,
         learner,
         class_key,
         ...(idempotency_key ? { idempotency_key } : {}),
-      }),
+      });
+    },
   };
 }
 

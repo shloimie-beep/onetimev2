@@ -65,6 +65,9 @@ export async function scheduleClassFulfillmentForLead(input: {
     if (!row || row.signup_classification !== 'family' || row.contact_classification !== 'family') {
       return { occurrenceKey: null, deliveryKeys: [], dispatchMode: null };
     }
+    if (!(await adultPortalRelationshipAllowsClassWork(client, input.config, row.contact_key))) {
+      return { occurrenceKey: null, deliveryKeys: [], dispatchMode: null };
+    }
 
     const window = resolveDailyClassWindow(input.now ?? new Date());
     await ensureClassSeries(client, input.config);
@@ -82,6 +85,7 @@ export async function scheduleClassFulfillmentForLead(input: {
       client,
       input.config,
       row.contact_key,
+      input.now ?? new Date(),
     );
     if (householdKey && channels.length > 0) {
       const highLevel = await enqueueHighLevelEvent(client, input.config, {
@@ -107,10 +111,49 @@ export async function scheduleClassFulfillmentForLead(input: {
   });
 }
 
+async function adultPortalRelationshipAllowsClassWork(
+  client: Queryable,
+  config: AppConfig,
+  contactKey: string,
+) {
+  const result = await client.query(
+    `SELECT guardians.status AS relationship_status,
+            guardians.authority,
+            households.status AS household_status
+       FROM onetime.contacts AS contacts
+       JOIN onetime.account_users AS users
+         ON users.account_key = contacts.account_key
+        AND users.product_key = contacts.product_key
+        AND users.email_normalized = contacts.email_normalized
+        AND users.role IN ('owner', 'admin', 'parent')
+        AND users.status = 'active'
+       JOIN onetime.portal_guardian_relationships AS guardians
+         ON guardians.account_key = users.account_key
+        AND guardians.product_key = users.product_key
+        AND guardians.guardian_user_ref = users.user_key
+       JOIN onetime.portal_households AS households
+         ON households.account_key = guardians.account_key
+        AND households.product_key = guardians.product_key
+        AND households.household_key = guardians.household_key
+      WHERE contacts.account_key = $1
+        AND contacts.product_key = $2
+        AND contacts.contact_key = $3`,
+    [config.accountKey, config.productKey, contactKey],
+  );
+  if (result.rows.length === 0) return true;
+  return result.rows.some(
+    (row) =>
+      String(row.relationship_status) === 'active' &&
+      ['primary_guardian', 'guardian'].includes(String(row.authority)) &&
+      String(row.household_status) === 'active',
+  );
+}
+
 async function entitledHouseholdForAdultContact(
   client: Queryable,
   config: AppConfig,
   contactKey: string,
+  now: Date,
 ) {
   const result = await client.query(
     `SELECT guardians.household_key
@@ -126,18 +169,25 @@ async function entitledHouseholdForAdultContact(
         AND guardians.product_key = users.product_key
         AND guardians.guardian_user_ref = users.user_key
         AND guardians.status = 'active'
-       JOIN onetime.billing_entitlement_projections AS entitlements
-         ON entitlements.account_key = guardians.account_key
-        AND entitlements.product_key = guardians.product_key
-        AND entitlements.principal_key = guardians.household_key
-        AND entitlements.status IN ('active', 'scheduled_end')
-        AND entitlements.grants_access = true
+        AND guardians.authority IN ('primary_guardian', 'guardian')
+       JOIN onetime.portal_households AS households
+         ON households.account_key = guardians.account_key
+        AND households.product_key = guardians.product_key
+        AND households.household_key = guardians.household_key
+        AND households.status = 'active'
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = guardians.account_key
+        AND access.product_key = guardians.product_key
+        AND access.household_key = guardians.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
       WHERE contacts.account_key = $1
         AND contacts.product_key = $2
         AND contacts.contact_key = $3
       ORDER BY guardians.updated_at DESC
       LIMIT 1`,
-    [config.accountKey, config.productKey, contactKey],
+    [config.accountKey, config.productKey, contactKey, now],
   );
   const householdKey = result.rows[0]?.household_key;
   return typeof householdKey === 'string' ? householdKey : null;

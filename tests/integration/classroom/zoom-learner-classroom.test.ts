@@ -362,6 +362,54 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       [config.accountKey, config.productKey, parentUserKey],
     );
 
+    await pool.query(
+      `UPDATE onetime.portal_guardian_relationships
+          SET authority = 'support_only'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = 'household_alpha'`,
+      [config.accountKey, config.productKey],
+    );
+    await expect(
+      repository.scheduleDueReminders({
+        actor,
+        occurrence,
+        now: openClassClock(),
+      }),
+    ).resolves.toEqual({ queued: 0, suppressed: 1 });
+
+    await pool.query(
+      `UPDATE onetime.portal_guardian_relationships
+          SET authority = 'primary_guardian'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = 'household_alpha'`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `UPDATE onetime.portal_households
+          SET status = 'archived'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = 'household_alpha'`,
+      [config.accountKey, config.productKey],
+    );
+    await expect(
+      repository.scheduleDueReminders({
+        actor,
+        occurrence,
+        now: openClassClock(),
+      }),
+    ).resolves.toEqual({ queued: 0, suppressed: 1 });
+    await pool.query(
+      `UPDATE onetime.portal_households
+          SET status = 'active'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = 'household_alpha'`,
+      [config.accountKey, config.productKey],
+    );
+
     const scheduled = await repository.scheduleDueReminders({
       actor,
       occurrence,
@@ -709,6 +757,22 @@ async function seedClassroomRecords() {
        (entitlement_key, account_key, product_key, household_key, entitlement_state)
      VALUES ('entitlement_alpha', $1, $2, 'household_alpha', 'active')`,
     [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES
+       ('classroom_access_alpha', $1, $2, 'household_alpha', 'active', 'free_pilot',
+        '2026-07-15T12:00:00.000Z', '2027-07-15T12:00:00.000Z',
+        'classroom_free_pilot_alpha', 1, '2026-07-15T12:00:01.000Z', $3,
+        'classroom-current-access-v1', 'classroom_access_event_alpha'),
+       ('classroom_access_beta', $1, $2, 'household_beta', 'active', 'free_pilot',
+        '2026-07-15T12:00:00.000Z', '2027-07-15T12:00:00.000Z',
+        'classroom_free_pilot_beta', 1, '2026-07-15T12:00:01.000Z', $4,
+        'classroom-current-access-v1', 'classroom_access_event_beta')`,
+    [config.accountKey, config.productKey, 'a'.repeat(64), 'b'.repeat(64)],
   );
 }
 

@@ -203,16 +203,23 @@ export async function enqueueRecordingAvailableForEntitledAdults(
         AND guardians.product_key = users.product_key
         AND guardians.guardian_user_ref = users.user_key
         AND guardians.status = 'active'
-       JOIN onetime.billing_entitlement_projections AS entitlements
-         ON entitlements.account_key = guardians.account_key
-        AND entitlements.product_key = guardians.product_key
-        AND entitlements.principal_key = guardians.household_key
-        AND entitlements.status IN ('active', 'scheduled_end')
-        AND entitlements.grants_access = true
+        AND guardians.authority IN ('primary_guardian', 'guardian')
+       JOIN onetime.portal_households AS households
+         ON households.account_key = guardians.account_key
+        AND households.product_key = guardians.product_key
+        AND households.household_key = guardians.household_key
+        AND households.status = 'active'
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = guardians.account_key
+        AND access.product_key = guardians.product_key
+        AND access.household_key = guardians.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $3
+        AND (access.expires_at IS NULL OR access.expires_at > $3)
       WHERE contacts.account_key = $1
         AND contacts.product_key = $2
         AND contacts.archived_at IS NULL`,
-    [config.accountKey, config.productKey],
+    [config.accountKey, config.productKey, input.occurredAt],
   );
   const results: HighLevelEnqueueResult[] = [];
   for (const row of adults.rows) {

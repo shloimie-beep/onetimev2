@@ -984,21 +984,29 @@ async function hydrateContactList(
   }
 
   const subscriberRows = await target.query(
-    `SELECT users.email_normalized
+    `SELECT DISTINCT users.email_normalized
        FROM onetime.account_users AS users
-       JOIN onetime.billing_entitlement_projections AS entitlements
-         ON entitlements.account_key = users.account_key
-        AND entitlements.product_key = users.product_key
-        AND entitlements.principal_key = users.user_key
-        AND entitlements.principal_type = 'account_user'
-        AND entitlements.status = 'active'
+       JOIN onetime.portal_guardian_relationships AS guardians
+         ON guardians.account_key = users.account_key
+        AND guardians.product_key = users.product_key
+        AND guardians.guardian_user_ref = users.user_key
+        AND guardians.status = 'active'
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = guardians.account_key
+        AND access.product_key = guardians.product_key
+        AND access.household_key = guardians.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
       WHERE users.account_key = $1
         AND users.product_key = $2
+        AND users.status = 'active'
         AND users.email_normalized = ANY($3::text[])`,
     [
       config.accountKey,
       config.productKey,
       rows.map((row) => String(row.email_normalized ?? '')).filter(Boolean),
+      new Date(),
     ],
   );
   const subscriberEmails = new Set(subscriberRows.rows.map((row) => String(row.email_normalized)));
@@ -1009,7 +1017,7 @@ async function hydrateContactList(
     facts.set(contactKey, [
       ...systemFactsForContact(row, rolesByEmail.get(String(row.email_normalized)) ?? []),
       ...(subscriberEmails.has(String(row.email_normalized))
-        ? [systemFact('subscriber', 'active', 'billing_projection')]
+        ? [systemFact('subscriber', 'active', 'account_access_projection')]
         : []),
       ...(explicitFacts.get(contactKey) ?? []),
     ]);

@@ -667,7 +667,7 @@ function CrmApp() {
           },
           {
             id: 'billing',
-            label: 'Products/Billing',
+            label: 'Household Access',
             href: '/app/billing',
             current: surface === 'billing',
           },
@@ -770,8 +770,8 @@ function CrmApp() {
       />
     ) : surface === 'billing' ? (
       <ReadOnlyToolbar
-        label="Refresh billing status"
-        actionId="billing.status.refresh.button"
+        label="Refresh household access"
+        actionId="household.access.refresh.button"
         loading={dashboardState.loading}
         onRefresh={() => void loadDashboard()}
       />
@@ -1416,12 +1416,12 @@ function BillingPanel({
   error: string;
   onRetry: () => void;
 }) {
-  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading billing status" />;
+  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading household access" />;
   if (error) {
     return (
       <StatePanel
         kind="error"
-        title="Billing status could not load"
+        title="Household access could not load"
         body={error}
         actionLabel="Retry"
         onAction={onRetry}
@@ -1435,8 +1435,8 @@ function BillingPanel({
     return (
       <StatePanel
         kind="empty"
-        title="Billing status unavailable"
-        body="Billing readiness did not return a dashboard section."
+        title="Household access unavailable"
+        body="Current access did not return a dashboard section."
         actionLabel="Retry"
         onAction={onRetry}
       />
@@ -1459,11 +1459,57 @@ function BillingPanel({
             <dd>{billing.value_label}</dd>
           </div>
           <div>
-            <dt>Live payments</dt>
-            <dd>Off unless explicitly approved</dd>
+            <dt>Payment history</dt>
+            <dd>Managed in GHL</dd>
           </div>
         </dl>
       </article>
+      {dashboard?.dashboard.household_access.map((access) => (
+        <article
+          className={`readonly-row state-${access.grants_access ? 'ready' : 'action_needed'}`}
+          key={access.household_key}
+        >
+          <div>
+            <h2>{access.household_label}</h2>
+            <p>
+              {access.household_status === 'archived'
+                ? 'Archived household'
+                : access.grants_access
+                  ? 'Learning access is active.'
+                  : 'Learning access is not active.'}
+            </p>
+          </div>
+          <dl>
+            <div>
+              <dt>Current state</dt>
+              <dd>{readableState(access.state)}</dd>
+            </div>
+            <div>
+              <dt>Source</dt>
+              <dd>{access.source_label}</dd>
+            </div>
+            <div>
+              <dt>Effective</dt>
+              <dd>{formatOptionalDate(access.effective_at)}</dd>
+            </div>
+            <div>
+              <dt>Expires</dt>
+              <dd>{formatOptionalDate(access.expires_at)}</dd>
+            </div>
+            <div>
+              <dt>Review / revocation reason</dt>
+              <dd>{access.review_or_revocation_reason ?? 'None'}</dd>
+            </div>
+            <div>
+              <dt>Updated</dt>
+              <dd>{formatOptionalDate(access.updated_at)}</dd>
+            </div>
+          </dl>
+        </article>
+      ))}
+      {dashboard?.dashboard.household_access.length === 0 && (
+        <p className="state-panel">No scoped households are available yet.</p>
+      )}
     </section>
   );
 }
@@ -1893,8 +1939,8 @@ function ContactOverview({
               }))}
             />
             <DetailList
-              title="Enrollment / subscription"
-              empty="No enrollment summary available."
+              title="Enrollment / access"
+              empty="No enrollment or access summary available."
               items={contact.enrollment_summary.map((item) => ({
                 key: item.label,
                 title: item.label,
@@ -2513,7 +2559,7 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'launch-status') return 'Launch Status';
   if (surface === 'classes') return 'Classes';
   if (surface === 'content') return 'Content Workspace';
-  if (surface === 'billing') return 'Products/Billing status';
+  if (surface === 'billing') return 'Household Access';
   if (surface === 'rewards') return 'Learning Rewards';
   if (surface === 'experience-preview') return 'Experience Preview';
   if (surface === 'support') return 'Support';
@@ -2522,7 +2568,7 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
 
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
-    return 'Workspace snapshot for leads, classes, communications, content, members, support, and billing.';
+    return 'Workspace snapshot for leads, classes, communications, content, members, support, and current access.';
   }
   if (surface === 'launch-status') {
     return 'Board-derived launch milestone, working capabilities, exact blockers, and next task.';
@@ -2532,7 +2578,9 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'content') {
     return 'Rabbi and One Time content review, prompts, artifacts, social drafts, and provider-off status.';
   }
-  if (surface === 'billing') return 'Billing setup and access projection status.';
+  if (surface === 'billing') {
+    return 'Current household learning access; payment history remains in GHL.';
+  }
   if (surface === 'rewards') {
     return 'Private learner progress, rewards, guardrails, and correction audit.';
   }
@@ -2558,7 +2606,7 @@ function dashboardOpenLabel(href: string) {
   if (href === '/app/classes') return 'Open classroom';
   if (href === communicationsRouteDescriptor.path) return 'Review communications';
   if (href === '/app/content') return 'Configure content';
-  if (href === '/app/billing') return 'Open billing';
+  if (href === '/app/billing') return 'Open household access';
   if (href === '/app/rewards') return 'Review rewards';
   return 'Open';
 }
@@ -2611,6 +2659,10 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(
     new Date(value),
   );
+}
+
+function formatOptionalDate(value: string | null) {
+  return value ? formatDate(value) : 'Not set';
 }
 
 function errorMessage(error: unknown, fallback: string) {

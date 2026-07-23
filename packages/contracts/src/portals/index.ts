@@ -350,15 +350,13 @@ export type SupportPreview = z.infer<typeof supportPreviewSchema>;
 export const billingSummarySchema = z.object({
   enabled: z.boolean(),
   summary_label: z.string().trim().max(180).nullable(),
-  plan_truth: z
-    .literal('Family plan — $67/month — up to 3 active learners in one household.')
-    .nullable()
-    .optional(),
+  plan_truth: z.string().trim().max(240).nullable().optional(),
   entitlement_status: z
     .enum([
       'pending',
       'billing_eligible',
       'active',
+      'grace',
       'suspended',
       'scheduled_end',
       'revoked',

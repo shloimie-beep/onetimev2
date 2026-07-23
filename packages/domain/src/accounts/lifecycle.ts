@@ -21,6 +21,7 @@ import {
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { hashPassword } from '../auth/service.ts';
+import { applyHouseholdAccessStateWithClient } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { enqueueHighLevelEventForAdultEmail } from '../highlevel/producer.ts';
@@ -82,6 +83,42 @@ type TokenRecord = {
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 const RESET_TOKEN_TTL_MS = 30 * 60 * 1000;
+const MAX_FREE_PILOT_MS = 366 * 24 * 60 * 60 * 1000;
+
+function assertFreePilotWindow(expiresAtValue: string, now: Date) {
+  const expiresAt = new Date(expiresAtValue);
+  if (
+    Number.isNaN(expiresAt.getTime()) ||
+    expiresAt.getTime() <= now.getTime() ||
+    expiresAt.getTime() - now.getTime() > MAX_FREE_PILOT_MS
+  ) {
+    throw new AccountLifecycleError(
+      'FORBIDDEN',
+      'A free-pilot activation must have a future expiry within the governed pilot window.',
+    );
+  }
+}
+
+function freePilotIntentFromToken(token: TokenRecord) {
+  const value = token.metadata.free_pilot_intent;
+  if (value === undefined) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new AccountLifecycleError('TOKEN_INVALID', 'The account lifecycle token is invalid.');
+  }
+  const intent = value as Record<string, unknown>;
+  const expiresAt = typeof intent.expires_at === 'string' ? intent.expires_at : '';
+  const policyVersion = typeof intent.policy_version === 'string' ? intent.policy_version : '';
+  const opaqueSourceReference =
+    typeof intent.opaque_source_reference === 'string' ? intent.opaque_source_reference : '';
+  if (
+    policyVersion.length < 3 ||
+    policyVersion.length > 120 ||
+    !/^[A-Za-z0-9_:-]{8,180}$/u.test(opaqueSourceReference)
+  ) {
+    throw new AccountLifecycleError('TOKEN_INVALID', 'The account lifecycle token is invalid.');
+  }
+  return { expiresAt, policyVersion, opaqueSourceReference };
+}
 
 export async function createOwnerAdminInvitation(
   input: {
@@ -169,6 +206,9 @@ export async function createParentActivation(
     now: input.now ?? new Date(),
     includeLocalProofToken: input.includeLocalProofToken,
     issue: async (client, now) => {
+      if (payload.free_pilot) {
+        assertFreePilotWindow(payload.free_pilot.expires_at, now);
+      }
       await ensureHousehold(client, input.config, payload.household_key);
       await ensurePendingGuardianRelationship(client, input.config, payload);
       const issued = await issueAccountToken(client, input.config, {
@@ -183,6 +223,16 @@ export async function createParentActivation(
         actorUserKey: input.actor.userKey,
         now,
         includeLocalProofToken: input.includeLocalProofToken,
+        metadata: payload.free_pilot
+          ? {
+              free_pilot_intent: {
+                expires_at: payload.free_pilot.expires_at,
+                policy_version: payload.free_pilot.policy_version,
+                opaque_source_reference: payload.free_pilot.opaque_source_reference,
+                issued_by_user_key: input.actor.userKey,
+              },
+            }
+          : undefined,
       });
       await enqueueHighLevelEventForAdultEmail(client, input.config, {
         eventName: 'parent.portal.invitation_requested',
@@ -235,6 +285,30 @@ export async function acceptParentActivation(input: {
           now,
         ],
       );
+      const freePilotIntent = freePilotIntentFromToken(token);
+      if (freePilotIntent) {
+        assertFreePilotWindow(freePilotIntent.expiresAt, now);
+        await applyHouseholdAccessStateWithClient({
+          db: client,
+          accountKey: input.config.accountKey,
+          productKey: input.config.productKey,
+          sourceKind: 'free_pilot',
+          actorKind: 'account_lifecycle',
+          idempotencyKey: stableKey('parent_activation_free_pilot', [token.token_key]),
+          now,
+          command: {
+            household_key: requiredString(token.household_key),
+            state: 'active',
+            effective_at: now.toISOString(),
+            expires_at: new Date(freePilotIntent.expiresAt).toISOString(),
+            opaque_source_reference: freePilotIntent.opaqueSourceReference,
+            source_revision: 1,
+            source_updated_at: now.toISOString(),
+            policy_version: freePilotIntent.policyVersion,
+            revocation_reason: null,
+          },
+        });
+      }
       await markTokenConsumed(client, token.token_key, now, userKey);
       await audit(client, input.config, {
         actionType: 'parent_activation_accepted',
@@ -695,6 +769,7 @@ async function issueAccountToken(
     relationshipKey?: string | null;
     learnerKey?: string | null;
     includeLocalProofToken?: boolean | undefined;
+    metadata?: Record<string, unknown> | undefined;
   },
 ): Promise<TokenIssueWithProof> {
   const token = randomToken();
@@ -738,7 +813,7 @@ async function issueAccountToken(
       input.learnerKey ?? null,
       expiresAt,
       input.actorUserKey,
-      JSON.stringify({ raw_token_included: false }),
+      JSON.stringify({ raw_token_included: false, ...(input.metadata ?? {}) }),
       input.now,
     ],
   );

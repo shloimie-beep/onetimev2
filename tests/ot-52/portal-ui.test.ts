@@ -45,12 +45,14 @@ describe('OT-52P portal UI modules', () => {
     expect(markup).toContain('Student access');
     expect(markup).toContain('Classes &amp; materials');
     expect(markup).toContain('Progress &amp; rewards');
-    expect(markup).toContain('Billing');
+    expect(markup).toContain('Access');
     expect(markup).toContain('Updates');
     expect(markup).toContain('aria-label="Choose learner"');
     expect(markup).toContain('Open approved materials');
     expect(markup).toContain('Edit');
     expect(markup).toContain('Archive');
+    expect(markup).not.toContain('Start checkout');
+    expect(markup).not.toContain('Manage billing');
     expect(markup).not.toContain('unavailable in V1');
     expect(markup).not.toMatch(/https?:\/\/|zoom|meet|provider/i);
     expect(markup).not.toMatch(/CRM|Admin|View as/i);
@@ -76,6 +78,7 @@ describe('OT-52P portal UI modules', () => {
     expect(markup).not.toMatch(
       /Sibling|Household|Billing|Student access|Archive|Restore|Parent Portal/i,
     );
+    expect(markup).not.toContain('>Access<');
     expect(markup).not.toContain('learner_sibling');
     expect(markup).not.toMatch(/https?:\/\/|zoom|meet|provider/i);
   });

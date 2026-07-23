@@ -52,9 +52,9 @@ beforeEach(async () => {
     email: 'other@example.test',
     password: 'OtherPass!234',
     displayName: 'Other Parent',
-    role: 'parent',
+    role: 'viewer',
   });
-  await createActiveEntitlement(subscriberUserKey, futureIso());
+  await createActiveCurrentAccess(subscriberUserKey, futureIso());
   const app = createApp({ config, pool });
   await new Promise<void>((resolve, reject) => {
     server = app.listen(0, (error?: Error) => {
@@ -137,13 +137,13 @@ describe('OT-89A subscriber support producer', () => {
     }
   });
 
-  it('rechecks expired entitlement at submit and creates no durable rows', async () => {
+  it('revokes an expired current-access session at submit and creates no durable rows', async () => {
     const login = await loginAs('subscriber@example.test', 'SubscriberPass!234');
     const page = await fetch(`${baseUrl}/app/support`, { headers: { cookie: login.cookies } });
     expect(await page.text()).toContain('crm-root');
-    await expireSubscriberEntitlement(subscriberUserKey);
+    await expireSubscriberCurrentAccess();
     const response = await postSupport(login, validSupportPayload('expired'));
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
     const rows = await pool.query(
       `SELECT
         (SELECT count(*)::int FROM onetime.support_submissions) AS submissions,
@@ -454,39 +454,63 @@ type LoginResult = {
   json: { success: true; csrf_token: string };
 };
 
-async function createActiveEntitlement(userKey: string, validUntil: string) {
+async function createActiveCurrentAccess(userKey: string, validUntil: string) {
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-     (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-      policy_version, source, reason, effective_at, evaluated_at)
-     VALUES ($1,$2,$3,$4,'account_user','active','test-policy','test','active',now(),now())`,
-    [`ent_${userKey.slice(0, 24)}`, config.accountKey, config.productKey, userKey],
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name)
+     VALUES ('support_household_subscriber',$1,$2,'Subscriber Family')`,
+    [config.accountKey, config.productKey],
   );
   await pool.query(
-    `INSERT INTO onetime.billing_subscription_projections
-     (account_key, product_key, principal_key, principal_type, provider, mode, provider_account_ref,
-      provider_customer_ref, provider_subscription_ref, status, current_period_end,
-      provider_updated_at, source_event_key)
-     VALUES ($1,$2,$3,'account_user','stripe','test','acct_test_support',$4,$5,'active',
-      $6::timestamptz,now(),$7)`,
-    [
-      config.accountKey,
-      config.productKey,
-      userKey,
-      `cus_test_${userKey.slice(0, 18)}`,
-      `sub_test_${userKey.slice(0, 18)}`,
-      validUntil,
-      `evt_test_${userKey.slice(0, 18)}`,
-    ],
+    `INSERT INTO onetime.portal_guardian_relationships
+       (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+        relationship_label, authority)
+     VALUES (
+       'support_relationship_subscriber',
+       $1,
+       $2,
+       'support_household_subscriber',
+       $3,
+       'Parent',
+       'primary_guardian'
+     )`,
+    [config.accountKey, config.productKey, userKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES (
+       'support_current_access',
+       $1,
+       $2,
+       'support_household_subscriber',
+       'active',
+       'free_pilot',
+       now() - interval '1 hour',
+       $3::timestamptz,
+       'support-fixture-free-pilot',
+       1,
+       now(),
+       $4,
+       'ot-launch-01-current-access-v1',
+       'support_current_access_event'
+     )`,
+    [config.accountKey, config.productKey, validUntil, 'd'.repeat(64)],
   );
 }
 
-async function expireSubscriberEntitlement(userKey: string) {
+async function expireSubscriberCurrentAccess() {
   await pool.query(
-    `UPDATE onetime.billing_subscription_projections
-        SET current_period_end = $4::timestamptz, provider_updated_at = now()
-      WHERE account_key = $1 AND product_key = $2 AND principal_key = $3`,
-    [config.accountKey, config.productKey, userKey, pastIso()],
+    `UPDATE onetime.account_access_projections
+        SET expires_at = $3::timestamptz,
+            source_updated_at = now(),
+            updated_at = now()
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = 'support_household_subscriber'`,
+    [config.accountKey, config.productKey, pastIso()],
   );
 }
 

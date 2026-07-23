@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T12:10:24Z
+updated_at: 2026-07-23T14:24:21Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -108,7 +108,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'Persistent staging product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is deployed through exact web and worker sources with healthy /health and /ready readback at schema 2220. It differs from browser-accepted checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed only by a native no-JavaScript signup fallback and corrected performance observer boundary; five live 390x844 reloads now measure CLS 0 with no overflow. The redesigned public landing and Board-derived Admin Launch Status are live; bounded browser proof covers the real fictional Student login, normal Admin Dashboard discovery, Parent, all three sibling-scoped Student previews, Rabbi/Classroom, preserved Admin session, and the fake/provider-off Live Console. GHL remains authoritative for payment history; One Time current-access and explicit free-pilot projection is the next unclaimed implementation track. The reviewed Zoom staging canary packet is ready, but every real/canary gate remains off and no Zoom, GHL, customer, payment, or production mutation is claimed.'
+  current_summary: 'Persistent staging product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is deployed through exact web and worker sources with healthy /health and /ready readback at schema 2220. It differs from browser-accepted checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed only by a native no-JavaScript signup fallback and corrected performance observer boundary; five live 390x844 reloads now measure CLS 0 with no overflow. The redesigned public landing and Board-derived Admin Launch Status are live; bounded browser proof covers the real fictional Student login, normal Admin Dashboard discovery, Parent, all three sibling-scoped Student previews, Rabbi/Classroom, preserved Admin session, and the fake/provider-off Live Console. GHL remains authoritative for payment history; the conductor has assigned one current-access and explicit free-pilot projection implementation on PR #97, with no payment ledger or provider mutation in scope. The reviewed Zoom staging canary packet remains ready while every real/canary gate stays off.'
   external_action_count: 9
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -204,12 +204,12 @@ tracks:
     next_action: null
 
   - id: ghl_access_entitlement_projection
-    status: unclaimed
+    status: active
     owner:
-      task_id: null
+      task_id: OT-LAUNCH-01-ACCESS-PROJECTION-01
       repository: shloimie-beep/onetimev2
-      branch: null
-      pr: null
+      branch: codex/full-app-staging-live
+      pr: 97
       system: GHL payment state to One Time access projection
     write_scope: GHL-event-derived access state projection, explicit free-pilot entitlement, audit/replay/denial tests, and no payment ledger
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-access-entitlement-projection--queued.json
@@ -219,9 +219,14 @@ tracks:
       - The operator explicitly made GHL authoritative for payment history and limited One Time to deciding who currently has application access.
       - The accepted HighLevel application contracts provide the one canonical outbox-backed dispatcher and fail-closed provider modes needed by this projection.
       - 'Read-only design handoff ops/goals/OT-LAUNCH-01/handoffs/ghl-access-entitlement-projection--queued.json defines one account/product/household current-access projection, explicit free_pilot state, monotonic revision/replay rules, revocation, sibling isolation, and forbidden payment-history fields. It performs zero payment, GHL, access, provider, or production mutation.'
+      - 'Implementation checkpoint: migration 2223_account_product_access_projection.sql creates only current household access projection/event tables; canonical LF SHA-256 is 997795e26b182b921ae825f74d3b7bdf9696c712ed79221ef467dcd5212f2e88. Legacy billing routes fail closed and GHL remains the payment-history authority.'
+      - 'Final same-snapshot focused gate passed 127/127 tests across access transitions/replay/precedence/expiry, Parent and Student authorization/session revocation, sibling isolation, learner-only list/page/embed denial, approved playback, HighLevel credential separation, outbound class/reminder gating, dual-runtime free-pilot/demo-seed/Portal-Test-Lab protection, Admin household-access visibility, and Experience Preview preservation.'
+      - 'Real Chromium passed 7/7 across anonymous/no-access and active-member Support at 360/390px plus the W12 Parent and three-separate-Student portal journeys. The canonical free-pilot fixture becomes effective before the fixed browser clock, so the Parent class-launch check reaches and proves the intended Student-session boundary.'
+      - 'Independent final security review is terminal P0/P1 PASS. All three findings were repaired before checkpoint: entitlement selectors are coupled to their declared audience so mixed selector columns cannot cross sibling scope; the demo seed requires both explicit One Time runtime classifications to be isolated_staging/test; and Portal Test Lab eligibility is independently fail-closed in config and routing unless both classifications are isolated_staging/test, with mixed-classification 404/no-write proof.'
+      - 'Typecheck, full lint, production build, secret scan across 2051 repository text files, OPS-06 migration safety, HighLevel registry validation, workflow projection validation, and goal launch-status validation passed. The separate HighLevel control check remains intentionally fail-closed on known exhaustive-inventory gaps; it reports no canonical workflow drift.'
     blocker: null
-    remaining_work: Reconcile existing entitlement schema/contracts, implement only missing access projection and free-pilot semantics, and prove paid-state events cannot create a duplicate payment history.
-    next_action: Assign this as the next implementation lane; keep GHL payment-provider writes and payment history outside One Time.
+    remaining_work: Pending PostgreSQL 16/18 exact-head CI, migration 2223 staging ledger readback, protected staging free-pilot grant/readback, Parent and Student another-device browser proof, approved playback, revocation denial, and zero legacy-billing-row verification.
+    next_action: Freeze and push the governed implementation checkpoint, wait for exact-head database checks, deploy it to persistent staging, then run the reviewed private-network free-pilot command and browser acceptance without provider or production effects.
 
   - id: public_lead_capture_bot
     status: unclaimed

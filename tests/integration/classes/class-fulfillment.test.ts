@@ -145,6 +145,63 @@ describe('OT-71 class fulfillment for signup leads', () => {
     expect(JSON.stringify(outbox.rows)).not.toMatch(/class_series|provider_state|starts_at/i);
   });
 
+  it.each([
+    ['support-only relationship', 'active', 'support_only'],
+    ['archived household', 'archived', 'primary_guardian'],
+  ] as const)(
+    'does not create class or reminder work for an adult linked only through %s',
+    async (_label, householdStatus, authority) => {
+      const email = `blocked-${householdStatus}-${authority}@example.test`;
+      const parentUserKey = await createAccountUser({
+        pool,
+        config,
+        email,
+        password: 'BlockedParent!234',
+        displayName: 'Blocked Parent',
+        role: 'parent',
+        mfaCapable: false,
+      });
+      await pool.query(
+        `INSERT INTO onetime.portal_households
+           (household_key, account_key, product_key, display_name, status)
+         VALUES ('household_blocked',$1,$2,'Blocked Household',$3)`,
+        [config.accountKey, config.productKey, householdStatus],
+      );
+      await pool.query(
+        `INSERT INTO onetime.portal_guardian_relationships
+           (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+            relationship_label, authority, status)
+         VALUES ('relationship_blocked',$1,$2,'household_blocked',$3,'Parent',$4,'active')`,
+        [config.accountKey, config.productKey, parentUserKey, authority],
+      );
+
+      await captureLead({
+        pool,
+        config,
+        payload: {
+          ...basePayload,
+          email,
+          idempotency_key: `blocked-${householdStatus}-${authority}-signup`,
+        },
+        now: new Date('2026-07-15T12:00:00.000Z'),
+      });
+
+      await expectCount('class_occurrences', 0);
+      await expectCount('class_fulfillment_intents', 0);
+      const reminders = await pool.query(
+        `SELECT count(*)::int AS count
+           FROM onetime.outbox_events
+          WHERE event_type IN ($1,$2,$3)`,
+        [
+          DELIVERY_EVENT_TYPES.familyClassReminderEmail,
+          DELIVERY_EVENT_TYPES.familyClassReminderWhatsApp,
+          'highlevel.class.reminder.requested.v1',
+        ],
+      );
+      expect(Number(reminders.rows[0]?.count ?? 0)).toBe(0);
+    },
+  );
+
   it('replays idempotently without duplicating occurrences, fulfillment, or reminders', async () => {
     const now = new Date('2026-07-15T12:00:00.000Z');
     await captureLead({ pool, config, payload: basePayload, now });
@@ -195,8 +252,6 @@ describe('OT-71 class fulfillment for signup leads', () => {
       payload: basePayload,
       now: new Date('2026-07-15T12:00:00.000Z'),
     });
-    await grantHouseholdBillingAccess('household_alpha');
-
     const occurrences = await listClassOccurrences({ pool, config });
     expect(occurrences).toHaveLength(1);
     const occurrence = occurrences[0];
@@ -214,6 +269,7 @@ describe('OT-71 class fulfillment for signup leads', () => {
       next_action: 'Review classroom setup',
     });
     await seedClassDetailEvidence(occurrence.occurrence_key);
+    await grantHouseholdCurrentAccess('household_alpha');
 
     const detail = await getClassOccurrenceDetail({
       pool,
@@ -398,26 +454,29 @@ async function expectCount(table: string, expected: number) {
   expect(count).toBe(expected);
 }
 
-async function grantHouseholdBillingAccess(householdKey: string) {
+async function grantHouseholdCurrentAccess(householdKey: string) {
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type,
-        status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
      VALUES (
-       'billing_entitlement:' || $1 || ':' || $2 || ':' || $3,
+       'class_current_access:' || $1 || ':' || $2 || ':' || $3,
        $1,
        $2,
        $3,
-       'opaque',
        'active',
-       '2026-07-15.1',
-       'test_fixture_paid_invoice',
-       'active_paid_current_invoice',
-       '2026-07-15T12:00:00.000Z',
-       '2026-07-15T12:00:01.000Z',
-       true
+       'free_pilot',
+       now() - interval '1 hour',
+       now() + interval '1 day',
+       'class-fixture-free-pilot',
+       1,
+       now(),
+       $4,
+       'ot-launch-01-current-access-v1',
+       'class_current_access_event'
      )`,
-    [config.accountKey, config.productKey, householdKey],
+    [config.accountKey, config.productKey, householdKey, 'c'.repeat(64)],
   );
 }
 

@@ -8,10 +8,12 @@ import { loadConfig, type AppConfig } from '../../../packages/config/src/index.t
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
   createAccountUser,
+  createContentPortalAccessAdapter,
   createSession,
   generateContentFactoryDraftFromTranscript,
   getSessionUserByKey,
   ingestContentFactoryItem,
+  revokeFreePilotAccess,
 } from '../../../packages/domain/src/index.ts';
 
 let pool: DbPool;
@@ -43,6 +45,19 @@ describe('operator-reviewed content factory', () => {
     const owner = await createUserSession('owner', 'factory-owner@example.test');
     const parent = await createUserSession('parent', 'factory-parent@example.test');
     const student = await createUserSession('student', 'factory-student@example.test');
+    const siblingStudent = await createUserSession(
+      'student',
+      'factory-sibling-student@example.test',
+    );
+    const unrelatedStudent = await createUserSession(
+      'student',
+      'factory-unrelated-student@example.test',
+    );
+    await seedActiveContentHousehold({
+      parentUserKey: parent.userKey,
+      studentUserKey: student.userKey,
+      siblingStudentUserKey: siblingStudent.userKey,
+    });
     await ingestFixture();
     const server = await listenForTest(createApp({ config, pool }));
     try {
@@ -123,6 +138,99 @@ describe('operator-reviewed content factory', () => {
       expect(embed.headers.get('location')).toBe(
         'https://player.vimeo.com/video/private_video_123',
       );
+
+      await pool.query(
+        `UPDATE onetime.content_item_entitlements
+            SET audience = 'learner',
+                household_key = 'factory_household',
+                learner_key = 'factory_learner'
+          WHERE account_key = $1
+            AND product_key = $2
+            AND content_item_key = 'factory_sample_2026_07_22'`,
+        [config.accountKey, config.productKey],
+      );
+
+      const adapter = createContentPortalAccessAdapter({ pool, config });
+      const intendedLibrary = await adapter.publishedLibraryForLearner({
+        actor: studentActor(student.userKey, 'factory_learner'),
+        learner: studentLearner('factory_learner', 'Content factory learner'),
+      });
+      const siblingLibrary = await adapter.publishedLibraryForLearner({
+        actor: studentActor(siblingStudent.userKey, 'factory_sibling_learner'),
+        learner: studentLearner('factory_sibling_learner', 'Content factory sibling'),
+      });
+      expect(intendedLibrary.map((item) => item.item_key)).toContain('factory_sample_2026_07_22');
+      expect(siblingLibrary.map((item) => item.item_key)).not.toContain(
+        'factory_sample_2026_07_22',
+      );
+
+      const siblingPlayback = await fetch(
+        `${server.baseUrl}/app/learning/items/factory_sample_2026_07_22`,
+        { headers: { cookie: siblingStudent.cookie }, redirect: 'manual' },
+      );
+      expect(siblingPlayback.status).toBe(409);
+      expect(await siblingPlayback.text()).not.toContain('private_video_123');
+      const siblingEmbed = await fetch(
+        `${server.baseUrl}/api/v1/content/factory/factory_sample_2026_07_22/embed`,
+        { headers: { cookie: siblingStudent.cookie }, redirect: 'manual' },
+      );
+      expect(siblingEmbed.status).toBe(409);
+      expect(siblingEmbed.headers.get('location')).toBeNull();
+      expect(await siblingEmbed.text()).not.toContain('private_video_123');
+
+      const unrelatedPlayback = await fetch(
+        `${server.baseUrl}/app/learning/items/factory_sample_2026_07_22`,
+        { headers: { cookie: unrelatedStudent.cookie }, redirect: 'manual' },
+      );
+      expect(unrelatedPlayback.status).toBe(302);
+      expect(unrelatedPlayback.headers.get('location')).toBe(
+        '/login?return_to=%2Fapp%2Flearning%2Fitems%2Ffactory_sample_2026_07_22',
+      );
+      expect(await unrelatedPlayback.text()).not.toContain('private_video_123');
+      const unrelatedEmbed = await fetch(
+        `${server.baseUrl}/api/v1/content/factory/factory_sample_2026_07_22/embed`,
+        { headers: { cookie: unrelatedStudent.cookie }, redirect: 'manual' },
+      );
+      expect(unrelatedEmbed.status).toBe(401);
+      expect(unrelatedEmbed.headers.get('location')).toBeNull();
+      expect(await unrelatedEmbed.text()).not.toContain('private_video_123');
+
+      const revoked = await revokeFreePilotAccess({
+        pool,
+        accountKey: config.accountKey,
+        productKey: config.productKey,
+        actorKind: 'admin',
+        now: new Date('2026-07-23T12:00:00.000Z'),
+        command: {
+          household_key: 'factory_household',
+          idempotency_key: 'factory-household-revoke-v1',
+          revoked_at: '2026-07-23T12:00:00.000Z',
+          reason: 'pilot_completed',
+          policy_version: 'content-factory-current-access-v1',
+        },
+      });
+      expect(revoked.projection).toMatchObject({
+        state: 'revoked',
+        grants_access: false,
+      });
+      expect(revoked.sessions_revoked).toBe(3);
+      for (const session of [parent, student, siblingStudent]) {
+        const denied = await fetch(
+          `${server.baseUrl}/app/learning/items/factory_sample_2026_07_22`,
+          { headers: { cookie: session.cookie }, redirect: 'manual' },
+        );
+        expect(denied.status).toBe(302);
+        expect(denied.headers.get('location')).toBe(
+          '/login?return_to=%2Fapp%2Flearning%2Fitems%2Ffactory_sample_2026_07_22',
+        );
+        expect(await denied.text()).not.toContain('private_video_123');
+        const deniedEmbed = await fetch(
+          `${server.baseUrl}/api/v1/content/factory/factory_sample_2026_07_22/embed`,
+          { headers: { cookie: session.cookie }, redirect: 'manual' },
+        );
+        expect(deniedEmbed.status).toBe(401);
+        expect(await deniedEmbed.text()).not.toContain('private_video_123');
+      }
     } finally {
       await server.close();
     }
@@ -200,8 +308,100 @@ async function createUserSession(role: 'owner' | 'parent' | 'student', email: st
   if (!user) throw new Error(`missing ${role} test user`);
   const session = await createSession({ pool, config, user, assuranceMethod: 'password' });
   return {
+    userKey,
     cookie: `otcrm_session=${session.session_token}`,
     csrfToken: session.csrf_token,
+  };
+}
+
+async function seedActiveContentHousehold(input: {
+  parentUserKey: string;
+  studentUserKey: string;
+  siblingStudentUserKey: string;
+}) {
+  await pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name, status)
+     VALUES ('factory_household',$1,$2,'Content factory household','active')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_guardian_relationships
+       (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+        relationship_label, authority, status)
+     VALUES ('factory_parent_relationship',$1,$2,'factory_household',$3,
+       'Parent','primary_guardian','active')`,
+    [config.accountKey, config.productKey, input.parentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_learners
+       (learner_key, account_key, product_key, household_key, display_name, learner_status)
+     VALUES
+       ('factory_learner',$1,$2,'factory_household','Content factory learner','active'),
+       ('factory_sibling_learner',$1,$2,'factory_household','Content factory sibling','active')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_student_access_state
+       (access_state_key, account_key, product_key, household_key, learner_key,
+        student_user_ref, status, credential_status)
+     VALUES
+       ('factory_student_access',$1,$2,'factory_household','factory_learner',$3,
+        'active','parent_managed'),
+       ('factory_sibling_student_access',$1,$2,'factory_household','factory_sibling_learner',$4,
+        'active','parent_managed')`,
+    [config.accountKey, config.productKey, input.studentUserKey, input.siblingStudentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_learner_identity_links
+       (link_key, account_key, product_key, household_key, learner_key, user_key, link_state)
+     VALUES
+       ('factory_student_link',$1,$2,'factory_household','factory_learner',$3,'active'),
+       ('factory_sibling_student_link',$1,$2,'factory_household','factory_sibling_learner',$4,
+        'active')`,
+    [config.accountKey, config.productKey, input.studentUserKey, input.siblingStudentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES ('factory_household_access',$1,$2,'factory_household','active','free_pilot',
+       '2026-01-01T00:00:00.000Z','2027-01-01T00:00:00.000Z',
+       'factory_test_pilot',1,'2026-01-01T00:00:01.000Z',$3,
+       'content-factory-current-access-v1','factory_household_access_seed')`,
+    [config.accountKey, config.productKey, 'f'.repeat(64)],
+  );
+}
+
+function studentActor(userKey: string, learnerKey: string) {
+  return {
+    account_key: config.accountKey,
+    product_key: config.productKey,
+    actor_user_ref: userKey,
+    actor_role: 'student' as const,
+    session_key: `${learnerKey}_session`,
+    capabilities: ['student:dashboard:read' as const],
+    authorized_households: [],
+    student_learner: {
+      learner_key: learnerKey,
+      household_key: 'factory_household',
+      access_state_key: `${learnerKey}_access`,
+    },
+  };
+}
+
+function studentLearner(learnerKey: string, displayName: string) {
+  return {
+    learner_key: learnerKey,
+    household_key: 'factory_household',
+    display_name: displayName,
+    hebrew_name: null,
+    grade_label: null,
+    learner_status: 'active' as const,
+    version: 1,
+    created_at: '2026-07-23T12:00:00.000Z',
+    updated_at: '2026-07-23T12:00:00.000Z',
   };
 }
 

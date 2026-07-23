@@ -87,6 +87,7 @@ describe('OT-LAUNCH-01 Experience Preview security boundary', () => {
   it('is explicit isolated_staging plus flag and remains Admin-only', async () => {
     const admin = await createUserSession('admin', 'preview-admin@example.test');
     const parent = await createUserSession('parent', 'preview-parent@example.test');
+    await seedActiveParentAccess(parent.session.user.user_key);
     const server = await previewServer();
     try {
       const anonymous = await fetch(`${server.baseUrl}${EXPERIENCE_PREVIEW_ROUTE}`, {
@@ -755,6 +756,34 @@ async function createExchange(
   });
   const json = (await response.json()) as Record<string, unknown>;
   return { response, json };
+}
+
+async function seedActiveParentAccess(parentUserKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name, status)
+     VALUES ('preview_parent_household',$1,$2,'Preview Parent household','active')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_guardian_relationships
+       (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+        relationship_label, authority, status)
+     VALUES ('preview_parent_relationship',$1,$2,'preview_parent_household',$3,
+       'Parent','primary_guardian','active')`,
+    [config.accountKey, config.productKey, parentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES ('preview_parent_access',$1,$2,'preview_parent_household','active','free_pilot',
+       '2026-01-01T00:00:00.000Z','2027-01-01T00:00:00.000Z',
+       'preview_parent_pilot',1,'2026-01-01T00:00:01.000Z',$3,
+       'experience-preview-current-access-v1','preview_parent_access_seed')`,
+    [config.accountKey, config.productKey, 'e'.repeat(64)],
+  );
 }
 
 function itemState(

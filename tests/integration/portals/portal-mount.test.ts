@@ -362,24 +362,27 @@ async function seedPortalRecords() {
     [config.accountKey, config.productKey, studentUserKey],
   );
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type,
-        status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
      VALUES (
-       'billing_entitlement:' || $1 || ':' || $2 || ':household_alpha',
+       'portal_access_alpha',
        $1,
        $2,
        'household_alpha',
-       'opaque',
        'active',
-       '2026-07-15.1',
-       'test_fixture_paid_invoice',
-       'active_paid_current_invoice',
+       'free_pilot',
        '2026-07-15T12:00:00.000Z',
+       '2027-07-15T12:00:00.000Z',
+       'portal_free_pilot_alpha',
+       1,
        '2026-07-15T12:00:01.000Z',
-       true
+       $3,
+       'portal-current-access-v1',
+       'portal_access_event_alpha'
      )`,
-    [config.accountKey, config.productKey],
+    [config.accountKey, config.productKey, 'a'.repeat(64)],
   );
 }
 

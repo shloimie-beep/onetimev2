@@ -102,7 +102,7 @@ export const ownerRouteProbes: RouteProbe[] = [
     id: 'billing',
     path: '/app/billing',
     audience: 'owner',
-    expectedHeading: 'Products/Billing status',
+    expectedHeading: 'Household Access',
   },
   { id: 'support', path: '/app/support', audience: 'owner', expectedHeading: 'Support' },
 ];

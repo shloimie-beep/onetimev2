@@ -19,6 +19,7 @@ import {
 import type { AppConfig } from '../../../config/src/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
+import { householdHasLearningAccess } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 
@@ -305,6 +306,27 @@ export async function authenticateUser({
     return { ok: false, code: 'DISABLED' };
   }
 
+  if (row.role === 'parent' || row.role === 'student') {
+    const access = await currentApplicationAccessForUser({
+      pool,
+      config,
+      userKey: String(row.user_key),
+      role: row.role,
+    });
+    if (!access.allowed) {
+      await insertAuthAudit(pool, config, {
+        eventType: 'login_failed',
+        userKey: row.user_key,
+        success: false,
+        reason: 'CURRENT_ACCESS_DENIED',
+        ip,
+        userAgent,
+        metadata: { access_reason: access.reason },
+      });
+      return { ok: false, code: 'DISABLED' };
+    }
+  }
+
   if (['owner', 'admin'].includes(row.role)) {
     if (
       trustedDeviceToken &&
@@ -399,6 +421,8 @@ async function authenticateStudentByUsername({
             access.status AS access_status, access.credential_status,
             access.password_hash_ref,
             learners.learner_status,
+            households.status AS household_status,
+            links.link_state,
             users.user_key, users.email_normalized, users.display_name, users.role,
             users.password_hash, users.mfa_capable, users.status AS user_status,
             users.security_version
@@ -407,25 +431,50 @@ async function authenticateStudentByUsername({
          ON learners.account_key = access.account_key
         AND learners.product_key = access.product_key
         AND learners.learner_key = access.learner_key
-       LEFT JOIN onetime.account_users AS users
+        AND learners.household_key = access.household_key
+       JOIN onetime.portal_households AS households
+         ON households.account_key = access.account_key
+        AND households.product_key = access.product_key
+        AND households.household_key = access.household_key
+       JOIN onetime.account_learner_identity_links AS links
+         ON links.account_key = access.account_key
+        AND links.product_key = access.product_key
+        AND links.household_key = access.household_key
+        AND links.learner_key = access.learner_key
+        AND links.user_key = access.student_user_ref
+       JOIN onetime.account_users AS users
          ON users.account_key = access.account_key
         AND users.product_key = access.product_key
         AND users.user_key = access.student_user_ref
       WHERE access.account_key = $1
         AND access.product_key = $2
         AND access.normalized_username = $3
-      ORDER BY access.updated_at DESC
-      LIMIT 1`,
+      ORDER BY access.updated_at DESC, access.access_state_key ASC`,
     [config.accountKey, config.productKey, normalizedUsername],
   );
-  const row = result.rows[0] as Record<string, unknown> | undefined;
+  const candidate = result.rows[0] as Record<string, unknown> | undefined;
   const passwordValid = verifyStudentPasswordHashRef(
     password,
-    typeof row?.password_hash_ref === 'string'
-      ? row.password_hash_ref
+    result.rows.length === 1 && typeof candidate?.password_hash_ref === 'string'
+      ? candidate.password_hash_ref
       : DUMMY_STUDENT_PASSWORD_HASH_REF,
   );
-  if (!row) return null;
+  if (!result.rows.length) return null;
+  if (result.rows.length !== 1) {
+    await insertAuthAudit(pool, config, {
+      eventType: 'student_login_failed',
+      success: false,
+      reason: 'DISABLED',
+      ip,
+      userAgent,
+      metadata: {
+        username_digest: hashValue(normalizedUsername),
+        access_reason: 'student_identity_ambiguous',
+      },
+    });
+    return { ok: false, code: 'DISABLED' };
+  }
+  const row = result.rows[0] as Record<string, unknown>;
   if (!passwordValid) {
     await insertAuthAudit(pool, config, {
       eventType: 'student_login_failed',
@@ -441,6 +490,8 @@ async function authenticateStudentByUsername({
     row.access_status !== 'active' ||
     row.credential_status !== 'parent_managed' ||
     row.learner_status !== 'active' ||
+    row.household_status !== 'active' ||
+    row.link_state !== 'active' ||
     row.user_status !== 'active' ||
     row.role !== 'student' ||
     !row.user_key
@@ -453,6 +504,27 @@ async function authenticateStudentByUsername({
       ip,
       userAgent,
       metadata: { username_digest: hashValue(normalizedUsername) },
+    });
+    return { ok: false, code: 'DISABLED' };
+  }
+  const hasCurrentAccess = await householdHasLearningAccess({
+    db: pool,
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    householdKey: String(row.household_key),
+  });
+  if (!hasCurrentAccess) {
+    await insertAuthAudit(pool, config, {
+      eventType: 'student_login_failed',
+      userKey: String(row.user_key),
+      success: false,
+      reason: 'CURRENT_ACCESS_DENIED',
+      ip,
+      userAgent,
+      metadata: {
+        username_digest: hashValue(normalizedUsername),
+        access_reason: 'household_current_access_denied',
+      },
     });
     return { ok: false, code: 'DISABLED' };
   }
@@ -575,6 +647,32 @@ export async function getSessionByToken({
   );
   const row = result.rows[0];
   if (!row) return null;
+  if (row.role === 'parent' || row.role === 'student') {
+    const access = await currentApplicationAccessForUser({
+      pool,
+      config,
+      userKey: String(row.user_key),
+      role: row.role,
+    });
+    if (!access.allowed) {
+      await pool.query(
+        `UPDATE onetime.user_sessions
+            SET revoked_at = COALESCE(revoked_at, now())
+          WHERE session_key = $1
+            AND account_key = $2
+            AND product_key = $3`,
+        [row.session_key, config.accountKey, config.productKey],
+      );
+      await insertAuthAudit(pool, config, {
+        eventType: 'session_access_denied',
+        userKey: String(row.user_key),
+        success: false,
+        reason: 'CURRENT_ACCESS_DENIED',
+        metadata: { session_key: row.session_key, access_reason: access.reason },
+      });
+      return null;
+    }
+  }
   const lastSeenAt = new Date(String(row.last_seen_at));
   if (Date.now() - lastSeenAt.getTime() >= config.sessionLastSeenWriteIntervalMs) {
     await pool.query(
@@ -1517,6 +1615,114 @@ async function insertAuthAudit(
       JSON.stringify(event.metadata ?? {}),
     ],
   );
+}
+
+type CurrentApplicationAccessDecision = {
+  allowed: boolean;
+  reason:
+    | 'role_not_access_scoped'
+    | 'parent_household_access_active'
+    | 'parent_household_access_missing'
+    | 'student_identity_active'
+    | 'student_identity_missing_or_ambiguous'
+    | 'student_identity_inactive'
+    | 'household_current_access_denied';
+};
+
+export async function currentApplicationAccessForUser({
+  pool,
+  config,
+  userKey,
+  role,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  userKey: string;
+  role: UserRole;
+}): Promise<CurrentApplicationAccessDecision> {
+  if (role === 'parent') {
+    const relationships = await pool.query(
+      `SELECT relationships.household_key
+         FROM onetime.portal_guardian_relationships AS relationships
+         JOIN onetime.portal_households AS households
+           ON households.account_key = relationships.account_key
+          AND households.product_key = relationships.product_key
+          AND households.household_key = relationships.household_key
+        WHERE relationships.account_key = $1
+          AND relationships.product_key = $2
+          AND relationships.guardian_user_ref = $3
+          AND relationships.status = 'active'
+          AND relationships.authority <> 'support_only'
+          AND households.status = 'active'
+        ORDER BY relationships.created_at ASC, relationships.relationship_key ASC`,
+      [config.accountKey, config.productKey, userKey],
+    );
+    for (const row of relationships.rows) {
+      if (
+        await householdHasLearningAccess({
+          db: pool,
+          accountKey: config.accountKey,
+          productKey: config.productKey,
+          householdKey: String(row.household_key),
+        })
+      ) {
+        return { allowed: true, reason: 'parent_household_access_active' };
+      }
+    }
+    return { allowed: false, reason: 'parent_household_access_missing' };
+  }
+
+  if (role === 'student') {
+    const identities = await pool.query(
+      `SELECT links.household_key, links.learner_key, links.link_state,
+              access.status AS access_status, learners.learner_status,
+              households.status AS household_status
+         FROM onetime.account_learner_identity_links AS links
+         JOIN onetime.portal_student_access_state AS access
+           ON access.account_key = links.account_key
+          AND access.product_key = links.product_key
+          AND access.household_key = links.household_key
+          AND access.learner_key = links.learner_key
+          AND access.student_user_ref = links.user_key
+         JOIN onetime.portal_learners AS learners
+           ON learners.account_key = links.account_key
+          AND learners.product_key = links.product_key
+          AND learners.household_key = links.household_key
+          AND learners.learner_key = links.learner_key
+         JOIN onetime.portal_households AS households
+           ON households.account_key = links.account_key
+          AND households.product_key = links.product_key
+          AND households.household_key = links.household_key
+        WHERE links.account_key = $1
+          AND links.product_key = $2
+          AND links.user_key = $3
+        ORDER BY links.created_at ASC, links.link_key ASC, access.updated_at DESC`,
+      [config.accountKey, config.productKey, userKey],
+    );
+    if (identities.rows.length !== 1) {
+      return { allowed: false, reason: 'student_identity_missing_or_ambiguous' };
+    }
+    const identity = identities.rows[0] as Record<string, unknown>;
+    if (
+      identity.link_state !== 'active' ||
+      identity.access_status !== 'active' ||
+      identity.learner_status !== 'active' ||
+      identity.household_status !== 'active'
+    ) {
+      return { allowed: false, reason: 'student_identity_inactive' };
+    }
+    const allowed = await householdHasLearningAccess({
+      db: pool,
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      householdKey: String(identity.household_key),
+    });
+    return allowed
+      ? { allowed: true, reason: 'student_identity_active' }
+      : { allowed: false, reason: 'household_current_access_denied' };
+  }
+
+  return { allowed: true, reason: 'role_not_access_scoped' };
 }
 
 function rowToSessionUser(row: Record<string, unknown>): SessionUser {

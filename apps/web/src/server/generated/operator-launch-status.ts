@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:0b6d74b8c00288ff4647210c5fd123269a11e736d99fe2daca0da836280fada1',
-  generated_at: '2026-07-23T12:10:24.000Z',
+  board_source_hash: 'sha256:4c531711b9c0a92eea9379bfa5a03f093eb52d1ea00f6ac27b550522dc007f7e',
+  generated_at: '2026-07-23T14:24:21.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 16,
@@ -14,7 +14,7 @@ export const operatorLaunchStatusProjection = {
     percentage: 76,
   },
   what_changed:
-    'Persistent staging product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is deployed through exact web and worker sources with healthy /health and /ready readback at schema 2220. It differs from browser-accepted checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed only by a native no-JavaScript signup fallback and corrected performance observer boundary; five live 390x844 reloads now measure CLS 0 with no overflow. The redesigned public landing and Board-derived Admin Launch Status are live; bounded browser proof covers the real fictional Student login, normal Admin Dashboard discovery, Parent, all three sibling-scoped Student previews, Rabbi/Classroom, preserved Admin session, and the fake/provider-off Live Console. GHL remains authoritative for payment history; One Time current-access and explicit free-pilot projection is the next unclaimed implementation track. The reviewed Zoom staging canary packet is ready, but every real/canary gate remains off and no Zoom, GHL, customer, payment, or production mutation is claimed.',
+    'Persistent staging product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is deployed through exact web and worker sources with healthy /health and /ready readback at schema 2220. It differs from browser-accepted checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed only by a native no-JavaScript signup fallback and corrected performance observer boundary; five live 390x844 reloads now measure CLS 0 with no overflow. The redesigned public landing and Board-derived Admin Launch Status are live; bounded browser proof covers the real fictional Student login, normal Admin Dashboard discovery, Parent, all three sibling-scoped Student previews, Rabbi/Classroom, preserved Admin session, and the fake/provider-off Live Console. GHL remains authoritative for payment history; the conductor has assigned one current-access and explicit free-pilot projection implementation on PR #97, with no payment ledger or provider mutation in scope. The reviewed Zoom staging canary packet remains ready while every real/canary gate stays off.',
   works_now: [
     {
       track_id: 'goal_system',
@@ -75,9 +75,9 @@ export const operatorLaunchStatusProjection = {
     {
       track_id: 'ghl_access_entitlement_projection',
       label: 'Ghl Access Entitlement Projection',
-      status: 'unclaimed',
+      status: 'active',
       next_action:
-        'Assign this as the next implementation lane; keep GHL payment-provider writes and payment history outside One Time.',
+        'Freeze and push the governed implementation checkpoint, wait for exact-head database checks, deploy it to persistent staging, then run the reviewed private-network free-pilot command and browser acceptance without provider or production effects.',
     },
     {
       track_id: 'production_pilot',
@@ -151,6 +151,6 @@ export const operatorLaunchStatusProjection = {
     track_id: 'ghl_access_entitlement_projection',
     label: 'Ghl Access Entitlement Projection',
     action:
-      'Assign this as the next implementation lane; keep GHL payment-provider writes and payment history outside One Time.',
+      'Freeze and push the governed implementation checkpoint, wait for exact-head database checks, deploy it to persistent staging, then run the reviewed private-network free-pilot command and browser acceptance without provider or production effects.',
   },
 } as const satisfies OperatorLaunchStatusProjection;

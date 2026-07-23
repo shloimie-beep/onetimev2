@@ -4,6 +4,7 @@ import type { AppConfig } from '../../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
 import {
   createAccountUser,
+  grantFreePilotAccess,
   type AuthenticatedSession,
 } from '../../../../../../packages/domain/src/index.ts';
 
@@ -89,7 +90,11 @@ type PortalTestLabStatus = {
 };
 
 export function isPortalTestLabEnabled(config: AppConfig) {
-  return config.portalTestLabEnabled === true && !config.isProduction;
+  return (
+    config.portalTestLabEnabled === true &&
+    ['isolated_staging', 'test'].includes(config.deliveryEnvironment) &&
+    ['isolated_staging', 'test'].includes(config.oneTimeRuntimeEnvironment)
+  );
 }
 
 export function registerPortalTestLabRoutes(input: {
@@ -267,7 +272,7 @@ export async function seedPortalTestLab(input: { pool: DbPool; config: AppConfig
 
   await seedPortalLabClassAndContent(input);
   await seedPortalLabActivity(input, parentUserKey, studentUserKeys);
-  await seedPortalLabBilling(input);
+  await seedPortalLabAccess(input);
   await seedPortalLabHelperContent(input);
   return portalTestLabStatus(input.pool, input.config);
 }
@@ -430,13 +435,14 @@ export async function portalTestLabStatus(
     ),
     pool.query(
       `SELECT count(*)::int AS count
-         FROM onetime.billing_entitlement_projections
+         FROM onetime.account_access_projections
         WHERE account_key = $1
           AND product_key = $2
-          AND principal_key = $3
-          AND status = 'active'
-          AND grants_access = true`,
-      [config.accountKey, config.productKey, W12_PORTAL_TEST_LAB.householdKey],
+          AND household_key = $3
+          AND state IN ('active', 'grace', 'scheduled_end')
+          AND effective_at <= $4
+          AND (expires_at IS NULL OR expires_at > $4)`,
+      [config.accountKey, config.productKey, W12_PORTAL_TEST_LAB.householdKey, new Date()],
     ),
     pool.query(
       `SELECT count(*)::int AS count
@@ -784,55 +790,22 @@ async function seedPortalLabActivity(
   }
 }
 
-async function seedPortalLabBilling(input: { pool: DbPool; config: AppConfig }) {
-  await input.pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES ('w12_billing_entitlement',$1,$2,$3,'opaque','active','w12-test-policy',
-        'w12_test_fixture','active_synthetic_test_subscription',$4,$5,true)
-     ON CONFLICT (entitlement_key)
-     DO UPDATE SET status = 'active',
-                   source = 'w12_test_fixture',
-                   reason = 'active_synthetic_test_subscription',
-                   effective_at = EXCLUDED.effective_at,
-                   evaluated_at = EXCLUDED.evaluated_at,
-                   grants_access = true,
-                   updated_at = now()`,
-    [
-      input.config.accountKey,
-      input.config.productKey,
-      W12_PORTAL_TEST_LAB.householdKey,
-      new Date('2026-07-17T12:00:00.000Z'),
-      new Date('2026-07-17T12:00:01.000Z'),
-    ],
-  );
-  await input.pool.query(
-    `INSERT INTO onetime.billing_subscription_projections
-       (account_key, product_key, principal_key, principal_type, provider, mode,
-        provider_account_ref, provider_customer_ref, provider_subscription_ref, status,
-        current_period_start, current_period_end, provider_updated_at, source_event_key,
-        latest_invoice_ref, collection_state)
-     VALUES ($1,$2,$3,'opaque','stripe','test','acct_w12_fixture','cus_w12_fixture',
-        'sub_w12_fixture_test','active',$4,$5,$6,'evt_w12_fixture_paid_test',
-        'in_w12_fixture_test','paid')
-     ON CONFLICT (account_key, product_key, provider, mode, provider_subscription_ref)
-     DO UPDATE SET status = 'active',
-                   current_period_start = EXCLUDED.current_period_start,
-                   current_period_end = EXCLUDED.current_period_end,
-                   provider_updated_at = EXCLUDED.provider_updated_at,
-                   latest_invoice_ref = EXCLUDED.latest_invoice_ref,
-                   collection_state = 'paid',
-                   updated_at = now()`,
-    [
-      input.config.accountKey,
-      input.config.productKey,
-      W12_PORTAL_TEST_LAB.householdKey,
-      new Date('2026-07-17T12:00:00.000Z'),
-      new Date('2026-08-17T12:00:00.000Z'),
-      new Date('2026-07-17T12:00:02.000Z'),
-    ],
-  );
+async function seedPortalLabAccess(input: { pool: DbPool; config: AppConfig }) {
+  await grantFreePilotAccess({
+    pool: input.pool,
+    accountKey: input.config.accountKey,
+    productKey: input.config.productKey,
+    actorKind: 'provisioner',
+    now: new Date('2026-07-15T12:00:01.000Z'),
+    command: {
+      household_key: W12_PORTAL_TEST_LAB.householdKey,
+      idempotency_key: 'w12-portal-test-lab-free-pilot-v1',
+      effective_at: '2026-07-15T12:00:00.000Z',
+      expires_at: '2026-08-17T12:00:00.000Z',
+      opaque_source_reference: 'w12_portal_test_lab_free_pilot',
+      policy_version: 'w12-current-access-v1',
+    },
+  });
 }
 
 async function seedPortalLabHelperContent(input: { pool: DbPool; config: AppConfig }) {

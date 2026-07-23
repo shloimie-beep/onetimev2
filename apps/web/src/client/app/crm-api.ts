@@ -60,7 +60,7 @@ export type SupportEligibilityResponse = {
   success: true;
   available: boolean;
   can_create_ticket: boolean;
-  reason: 'authorized' | 'subscriber_required' | 'support_unavailable';
+  reason: 'authorized' | 'learning_access_required' | 'support_unavailable';
   csrf_token: string;
   categories: Array<{ value: string; label: string }>;
 };

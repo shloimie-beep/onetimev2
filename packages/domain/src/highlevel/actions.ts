@@ -6,9 +6,10 @@ import {
   type HighLevelActionResult,
   type HighLevelInboundAction,
 } from '../../../contracts/src/highlevel/index.ts';
-import type { DbPool } from '../../../db/src/index.ts';
+import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { requestPasswordReset } from '../accounts/lifecycle.ts';
+import { AccountAccessError, applyHouseholdAccessStateWithClient } from '../access/service.ts';
 import { stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { enqueueHighLevelEvent } from './producer.ts';
@@ -39,6 +40,20 @@ type AdultContact = {
   suppression_state: string;
 };
 
+type AccessIdentityErrorCode =
+  | 'HIGHLEVEL_ACCESS_IDENTITY_NOT_FOUND'
+  | 'HIGHLEVEL_ACCESS_IDENTITY_AMBIGUOUS'
+  | 'HIGHLEVEL_ACCESS_IDENTITY_MISMATCH';
+
+type HighLevelActionCredentialKind = 'bot' | 'access';
+
+class HighLevelAccessIdentityError extends Error {
+  constructor(readonly code: AccessIdentityErrorCode) {
+    super(code);
+    this.name = 'HighLevelAccessIdentityError';
+  }
+}
+
 export async function handleHighLevelAction(input: {
   pool: DbPool;
   config: AppConfig;
@@ -50,16 +65,26 @@ export async function handleHighLevelAction(input: {
     return blocked(503, 'HIGHLEVEL_ACTIONS_OFF', true);
   }
   const requestNow = input.now ?? new Date();
-  if (!authenticated(input.config, input.headers, input.rawBody, requestNow)) {
+  const credentialKind = authenticatedCredential(
+    input.config,
+    input.headers,
+    input.rawBody,
+    requestNow,
+  );
+  if (!credentialKind) {
     return blocked(401, 'HIGHLEVEL_ACTION_AUTH_FAILED', false);
   }
 
   let action: HighLevelInboundAction;
   try {
-    action = highLevelInboundActionSchema.parse(JSON.parse(input.rawBody.toString('utf8')));
-    assertHighLevelPayloadSafe(action);
+    const rawAction: unknown = JSON.parse(input.rawBody.toString('utf8'));
+    assertHighLevelPayloadSafe(rawAction);
+    action = highLevelInboundActionSchema.parse(rawAction);
   } catch {
     return blocked(400, 'HIGHLEVEL_CONTACT_INELIGIBLE', false);
+  }
+  if (!credentialAllowsAction(credentialKind, action.action_name)) {
+    return blocked(401, 'HIGHLEVEL_ACTION_AUTH_FAILED', false);
   }
   if (action.idempotency_key !== input.headers.idempotencyKey) {
     return blocked(401, 'HIGHLEVEL_ACTION_AUTH_FAILED', false);
@@ -111,6 +136,7 @@ export async function handleHighLevelAction(input: {
   if (!contact) return blocked(404, 'HIGHLEVEL_ADULT_CONTACT_NOT_FOUND', false);
   if (
     action.action_name !== 'bot.apply_opt_out' &&
+    action.action_name !== 'access.apply_current_state' &&
     (contact.suppression_state !== 'active' || !contact.consent_recorded_at)
   ) {
     return blocked(409, 'HIGHLEVEL_CONTACT_INELIGIBLE', false);
@@ -129,7 +155,12 @@ export async function handleHighLevelAction(input: {
     const body = await executeAction({ ...input, action, contact });
     await completeReceipt(input.pool, input.config, action, body, input.now);
     return { status: 200, body };
-  } catch {
+  } catch (error) {
+    const accessFailure = accessActionFailure(error);
+    if (action.action_name === 'access.apply_current_state' && accessFailure) {
+      await completeBlockedReceipt(input.pool, input.config, action, accessFailure.body, input.now);
+      return accessFailure;
+    }
     await rejectReceipt(input.pool, input.config, action.idempotency_key, input.now);
     return blocked(503, 'HIGHLEVEL_DEPENDENCY_UNAVAILABLE', true);
   }
@@ -143,13 +174,44 @@ async function executeAction(input: {
   now?: Date;
 }): Promise<Extract<HighLevelActionResult, { ok: true }>> {
   const { action, contact } = input;
+  if (action.action_name === 'access.apply_current_state') {
+    const applied = await inTransaction(input.pool, async (db) => {
+      await proveExactParentHouseholdIdentity(
+        db,
+        input.config,
+        contact.contact_key,
+        action.data.household_key,
+      );
+      return applyHouseholdAccessStateWithClient({
+        db,
+        accountKey: input.config.accountKey,
+        productKey: input.config.productKey,
+        sourceKind: 'highlevel_payment_state',
+        actorKind: 'highlevel_action',
+        idempotencyKey: action.idempotency_key,
+        command: action.data,
+        ...(input.now ? { now: input.now } : {}),
+      });
+    });
+    return success(action, null, {
+      access_state: applied.projection.state,
+      application_state: applied.state,
+      sessions_revoked: applied.sessions_revoked,
+      payment_history_written: false,
+    });
+  }
   if (action.action_name === 'bot.complete_signup') {
     if (!action.data.details_complete) throw new Error('DETAILS_INCOMPLETE');
     await completeAdultSignup(input.pool, input.config, action, contact, input.now ?? new Date());
     return success(action, '/signup', { signup_completed: true });
   }
   if (action.action_name === 'bot.next_confirmed_class_info') {
-    const next = await nextConfirmedClass(input.pool, input.config, contact.contact_key);
+    const next = await nextConfirmedClass(
+      input.pool,
+      input.config,
+      contact.contact_key,
+      input.now ?? new Date(),
+    );
     return success(action, '/app/parent', {
       confirmed_update_available: Boolean(next),
       next_class_at: next?.starts_at ?? null,
@@ -178,11 +240,59 @@ async function executeAction(input: {
       token_returned_to_highlevel: false,
     });
   }
+  if (action.action_name !== 'bot.apply_opt_out') {
+    throw new Error('HIGHLEVEL_ACTION_UNSUPPORTED');
+  }
   await applyOptOut(input.pool, input.config, action, input.now ?? new Date());
   return success(action, null, {
     suppression_applied: true,
     acknowledgement_authorized: false,
   });
+}
+
+async function proveExactParentHouseholdIdentity(
+  db: Queryable,
+  config: AppConfig,
+  contactKey: string,
+  requestedHouseholdKey: string,
+) {
+  const result = await db.query(
+    `SELECT users.user_key, guardians.household_key
+       FROM onetime.contacts AS contacts
+       JOIN onetime.account_users AS users
+         ON users.account_key = contacts.account_key
+        AND users.product_key = contacts.product_key
+        AND users.email_normalized = contacts.email_normalized
+        AND users.role = 'parent'
+        AND users.status = 'active'
+       JOIN onetime.portal_guardian_relationships AS guardians
+         ON guardians.account_key = users.account_key
+        AND guardians.product_key = users.product_key
+        AND guardians.guardian_user_ref = users.user_key
+        AND guardians.status = 'active'
+        AND guardians.authority IN ('primary_guardian', 'guardian')
+       JOIN onetime.portal_households AS households
+         ON households.account_key = guardians.account_key
+        AND households.product_key = guardians.product_key
+        AND households.household_key = guardians.household_key
+        AND households.status = 'active'
+      WHERE contacts.account_key = $1
+        AND contacts.product_key = $2
+        AND contacts.contact_key = $3
+        AND contacts.archived_at IS NULL
+      ORDER BY users.user_key, guardians.household_key
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, contactKey],
+  );
+  if (result.rows.length === 0) {
+    throw new HighLevelAccessIdentityError('HIGHLEVEL_ACCESS_IDENTITY_NOT_FOUND');
+  }
+  if (result.rows.length !== 1) {
+    throw new HighLevelAccessIdentityError('HIGHLEVEL_ACCESS_IDENTITY_AMBIGUOUS');
+  }
+  if (String(result.rows[0]?.household_key ?? '') !== requestedHouseholdKey) {
+    throw new HighLevelAccessIdentityError('HIGHLEVEL_ACCESS_IDENTITY_MISMATCH');
+  }
 }
 
 async function completeAdultSignup(
@@ -227,7 +337,7 @@ async function completeAdultSignup(
   });
 }
 
-async function nextConfirmedClass(pool: DbPool, config: AppConfig, contactKey: string) {
+async function nextConfirmedClass(pool: DbPool, config: AppConfig, contactKey: string, now: Date) {
   const result = await pool.query(
     `SELECT occurrences.starts_at, series.timezone,
             occurrences.starts_at <= now() + interval '15 minutes' AS join_available
@@ -243,12 +353,19 @@ async function nextConfirmedClass(pool: DbPool, config: AppConfig, contactKey: s
         AND guardians.product_key = users.product_key
         AND guardians.guardian_user_ref = users.user_key
         AND guardians.status = 'active'
-       JOIN onetime.billing_entitlement_projections AS entitlements
-         ON entitlements.account_key = guardians.account_key
-        AND entitlements.product_key = guardians.product_key
-        AND entitlements.principal_key = guardians.household_key
-        AND entitlements.status IN ('active', 'scheduled_end')
-        AND entitlements.grants_access = true
+        AND guardians.authority IN ('primary_guardian', 'guardian')
+       JOIN onetime.portal_households AS households
+         ON households.account_key = guardians.account_key
+        AND households.product_key = guardians.product_key
+        AND households.household_key = guardians.household_key
+        AND households.status = 'active'
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = guardians.account_key
+        AND access.product_key = guardians.product_key
+        AND access.household_key = guardians.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
        JOIN onetime.class_occurrences AS occurrences
          ON occurrences.account_key = contacts.account_key
         AND occurrences.product_key = contacts.product_key
@@ -263,7 +380,7 @@ async function nextConfirmedClass(pool: DbPool, config: AppConfig, contactKey: s
         AND contacts.contact_key = $3
       ORDER BY occurrences.starts_at
       LIMIT 1`,
-    [config.accountKey, config.productKey, contactKey],
+    [config.accountKey, config.productKey, contactKey, now],
   );
   const row = result.rows[0] as Record<string, unknown> | undefined;
   return row
@@ -281,7 +398,7 @@ async function applyOptOut(
   action: HighLevelInboundAction,
   now: Date,
 ) {
-  const channel = action.data.channel ?? 'all';
+  const channel = 'channel' in action.data ? (action.data.channel ?? 'all') : 'all';
   await inTransaction(pool, async (client) => {
     await client.query(
       `UPDATE onetime.contacts
@@ -368,42 +485,64 @@ export function signHighLevelActionRequest(input: {
     .digest('hex')}`;
 }
 
-function authenticated(
+function authenticatedCredential(
   config: AppConfig,
   headers: HighLevelActionSignatureHeaders,
   rawBody: Buffer,
   now: Date,
-) {
+): HighLevelActionCredentialKind | null {
   if (
-    !config.highLevelActionSecret ||
     !headers.keyId ||
     !headers.timestamp ||
     !headers.nonce ||
     !headers.idempotencyKey ||
     !headers.signature ||
-    !secureEqual(headers.keyId, config.highLevelActionKeyId) ||
     !/^\d{10}$/.test(headers.timestamp) ||
     !/^[A-Za-z0-9_-]{16,160}$/.test(headers.nonce) ||
     !/^[A-Za-z0-9._:-]{8,160}$/.test(headers.idempotencyKey)
   ) {
-    return false;
+    return null;
   }
+  const credential = resolveActionCredential(config, headers.keyId);
+  if (!credential) return null;
   const timestampMs = Number(headers.timestamp) * 1000;
   if (
     !Number.isSafeInteger(timestampMs) ||
     Math.abs(now.getTime() - timestampMs) > config.highLevelActionSignatureToleranceMs
   ) {
-    return false;
+    return null;
   }
   const expected = signHighLevelActionRequest({
-    secret: config.highLevelActionSecret,
+    secret: credential.secret,
     keyId: headers.keyId,
     timestamp: headers.timestamp,
     nonce: headers.nonce,
     idempotencyKey: headers.idempotencyKey,
     rawBody,
   });
-  return secureEqual(headers.signature, expected);
+  return secureEqual(headers.signature, expected) ? credential.kind : null;
+}
+
+function resolveActionCredential(
+  config: AppConfig,
+  keyId: string,
+): { kind: HighLevelActionCredentialKind; secret: string } | null {
+  if (config.highLevelActionSecret && secureEqual(keyId, config.highLevelActionKeyId)) {
+    return { kind: 'bot', secret: config.highLevelActionSecret };
+  }
+  if (config.highLevelAccessActionSecret && secureEqual(keyId, config.highLevelAccessActionKeyId)) {
+    return { kind: 'access', secret: config.highLevelAccessActionSecret };
+  }
+  return null;
+}
+
+function credentialAllowsAction(
+  credentialKind: HighLevelActionCredentialKind,
+  actionName: HighLevelInboundAction['action_name'],
+) {
+  return actionName === 'access.apply_current_state'
+    ? credentialKind === 'access'
+    : credentialKind === 'bot';
 }
 
 function secureEqual(left?: string, right?: string) {
@@ -523,7 +662,7 @@ function digest(value: unknown) {
 function success(
   action: HighLevelInboundAction,
   path: '/signup' | '/app/parent' | '/login' | '/forgot-password' | null,
-  result: Record<string, string | boolean | null>,
+  result: Record<string, string | number | boolean | null>,
 ): Extract<HighLevelActionResult, { ok: true }> {
   return {
     ok: true,
@@ -573,8 +712,64 @@ function replay(
     }
     return blocked(503, 'HIGHLEVEL_DEPENDENCY_UNAVAILABLE', true);
   }
-  const body = receipt.response_json as Extract<HighLevelActionResult, { ok: true }>;
+  const body = receipt.response_json as HighLevelActionResult;
+  if (!body.ok) return blocked(accessBlockerStatus(body.code), body.code, body.retryable);
   return { status: 200, body: { ...body, replayed: true } };
+}
+
+function accessActionFailure(error: unknown): {
+  status: number;
+  body: Extract<HighLevelActionResult, { ok: false }>;
+} | null {
+  if (error instanceof HighLevelAccessIdentityError) {
+    return accessBlocked(accessBlockerStatus(error.code), error.code);
+  }
+  if (!(error instanceof AccountAccessError)) return null;
+  if (error.code === 'ACCESS_SOURCE_STALE') {
+    return accessBlocked(409, 'HIGHLEVEL_ACCESS_STATE_STALE');
+  }
+  if (
+    ['ACCESS_IDEMPOTENCY_CONFLICT', 'ACCESS_SOURCE_CONFLICT', 'ACCESS_INVALID_COMMAND'].includes(
+      error.code,
+    )
+  ) {
+    return accessBlocked(409, 'HIGHLEVEL_ACCESS_STATE_CONFLICT');
+  }
+  if (error.code === 'ACCESS_SOURCE_PRECEDENCE') {
+    return accessBlocked(409, 'HIGHLEVEL_ACCESS_SOURCE_PRECEDENCE');
+  }
+  if (error.code === 'ACCESS_HOUSEHOLD_NOT_FOUND') {
+    return accessBlocked(404, 'HIGHLEVEL_ACCESS_IDENTITY_NOT_FOUND');
+  }
+  return null;
+}
+
+function accessBlocked(
+  status: number,
+  code:
+    | AccessIdentityErrorCode
+    | 'HIGHLEVEL_ACCESS_STATE_STALE'
+    | 'HIGHLEVEL_ACCESS_STATE_CONFLICT'
+    | 'HIGHLEVEL_ACCESS_SOURCE_PRECEDENCE',
+) {
+  return {
+    status,
+    body: { ok: false as const, code, retryable: false },
+  };
+}
+
+function accessBlockerStatus(code: Extract<HighLevelActionResult, { ok: false }>['code']) {
+  if (code === 'HIGHLEVEL_ACCESS_IDENTITY_NOT_FOUND') return 404;
+  if (
+    code === 'HIGHLEVEL_ACCESS_IDENTITY_AMBIGUOUS' ||
+    code === 'HIGHLEVEL_ACCESS_IDENTITY_MISMATCH' ||
+    code === 'HIGHLEVEL_ACCESS_STATE_STALE' ||
+    code === 'HIGHLEVEL_ACCESS_STATE_CONFLICT' ||
+    code === 'HIGHLEVEL_ACCESS_SOURCE_PRECEDENCE'
+  ) {
+    return 409;
+  }
+  return 503;
 }
 
 async function claimReceipt(
@@ -638,6 +833,41 @@ async function completeReceipt(
       config.productKey,
       action.adult_contact.contact_key,
       JSON.stringify({ action_name: action.action_name, private_payload_recorded: false }),
+      now,
+    ],
+  );
+}
+
+async function completeBlockedReceipt(
+  pool: DbPool,
+  config: AppConfig,
+  action: HighLevelInboundAction,
+  body: Extract<HighLevelActionResult, { ok: false }>,
+  now = new Date(),
+) {
+  assertHighLevelPayloadSafe(body);
+  await pool.query(
+    `UPDATE onetime.highlevel_action_receipts
+        SET status = 'succeeded', response_json = $4::jsonb, lease_expires_at = NULL,
+            updated_at = $5
+      WHERE account_key = $1 AND product_key = $2 AND idempotency_key = $3`,
+    [config.accountKey, config.productKey, action.idempotency_key, JSON.stringify(body), now],
+  );
+  await pool.query(
+    `INSERT INTO onetime.audit_events
+       (event_key, account_key, product_key, contact_key, event_type, metadata, created_at)
+     VALUES ($1, $2, $3, $4, 'highlevel_access_action_rejected', $5::jsonb, $6)
+     ON CONFLICT (event_key) DO NOTHING`,
+    [
+      stableKey('audit_highlevel_access_rejected', [action.idempotency_key]),
+      config.accountKey,
+      config.productKey,
+      action.adult_contact.contact_key,
+      JSON.stringify({
+        action_name: action.action_name,
+        blocker_code: body.code,
+        private_payload_recorded: false,
+      }),
       now,
     ],
   );

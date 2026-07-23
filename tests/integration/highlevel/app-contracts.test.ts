@@ -78,6 +78,11 @@ describe('One Time to HighLevel transactional journey', () => {
         household_key: 'household_highlevel',
         relationship_key: 'relationship_highlevel',
         relationship_label: 'Parent',
+        free_pilot: {
+          expires_at: '2026-08-22T10:00:00.000Z',
+          policy_version: 'highlevel-test-pilot-v1',
+          opaque_source_reference: 'highlevel_test_free_pilot_001',
+        },
       },
       now,
     });
@@ -93,6 +98,11 @@ describe('One Time to HighLevel transactional journey', () => {
         household_key: 'household_highlevel',
         relationship_key: 'relationship_highlevel',
         relationship_label: 'Parent',
+        free_pilot: {
+          expires_at: '2026-08-22T10:00:00.000Z',
+          policy_version: 'highlevel-test-pilot-v1',
+          opaque_source_reference: 'highlevel_test_free_pilot_001',
+        },
       },
       now,
     });
@@ -104,26 +114,25 @@ describe('One Time to HighLevel transactional journey', () => {
       payload: { token, password: 'ParentPass!234' },
       now: new Date('2026-07-22T10:01:00.000Z'),
     });
-    await grantHouseholdAccess();
-
+    const postActivationNow = new Date('2026-07-22T10:02:00.000Z');
     await scheduleClassFulfillmentForLead({
       pool,
       config,
       contactKey: lead.contact_key,
       signupKey: lead.signup_key,
-      now,
+      now: postActivationNow,
     });
     await scheduleClassFulfillmentForLead({
       pool,
       config,
       contactKey: lead.contact_key,
       signupKey: lead.signup_key,
-      now,
+      now: postActivationNow,
     });
 
     const outcome = contentOutcome();
-    await admitContentOutcome({ pool, config, payload: outcome, now });
-    await admitContentOutcome({ pool, config, payload: outcome, now });
+    await admitContentOutcome({ pool, config, payload: outcome, now: postActivationNow });
+    await admitContentOutcome({ pool, config, payload: outcome, now: postActivationNow });
 
     const events = await highLevelEvents();
     expect(events.map((event) => event.event_name).sort()).toEqual([
@@ -742,17 +751,6 @@ async function seedHousehold() {
        (household_key, account_key, product_key, display_name)
      VALUES ('household_highlevel', $1, $2, 'HighLevel Family')`,
     [config.accountKey, config.productKey],
-  );
-}
-
-async function grantHouseholdAccess() {
-  await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type,
-        status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES ('billing_entitlement_highlevel', $1, $2, 'household_highlevel', 'opaque',
-             'active', '2026-07-22.1', 'test_fixture', 'active_test_entitlement', $3, $3, true)`,
-    [config.accountKey, config.productKey, now],
   );
 }
 

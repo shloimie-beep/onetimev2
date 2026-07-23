@@ -206,7 +206,7 @@ describe('OT-71 content library outcome admission', () => {
         lifecycle_state: 'review_needed',
       },
     });
-    await grantHouseholdBillingAccess('household_alpha');
+    await grantHouseholdCurrentAccess('household_alpha');
     await pool.query(
       `INSERT INTO onetime.learning_delivery_content_factory_items
          (source_key, account_key, product_key, source_kind, source_ref_digest, source_sha256,
@@ -294,25 +294,25 @@ describe('OT-71 content library outcome admission', () => {
   });
 });
 
-async function grantHouseholdBillingAccess(householdKey: string) {
+async function grantHouseholdCurrentAccess(householdKey: string) {
   await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type,
-        status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES (
-       'billing_entitlement:' || $1 || ':' || $2 || ':' || $3,
-       $1,
-       $2,
-       $3,
-       'opaque',
-       'active',
-       '2026-07-15.1',
-       'test_fixture_paid_invoice',
-       'active_paid_current_invoice',
-       '2026-07-15T12:00:00.000Z',
-       '2026-07-15T12:00:01.000Z',
-       true
-     )`,
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name)
+     VALUES ($1,$2,$3,'Content fixture household')
+     ON CONFLICT (account_key, product_key, household_key) DO NOTHING`,
+    [householdKey, config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, access_version,
+        last_event_key)
+     VALUES ('content_fixture_access',$1,$2,$3,'active','free_pilot',
+       '2026-07-15T12:00:00.000Z','2027-01-15T12:00:00.000Z',
+       'content_fixture_free_pilot',1,'2026-07-15T12:00:01.000Z',
+       '2222222222222222222222222222222222222222222222222222222222222222',
+       'content-current-access-v1',1,'content_fixture_access_seed')`,
     [config.accountKey, config.productKey, householdKey],
   );
 }

@@ -487,6 +487,154 @@ export async function getContentFactoryPlayback(input: {
   };
 }
 
+export async function getAuthorizedContentFactoryPlayback(input: {
+  pool: DbPool;
+  config: AppConfig;
+  sourceKey: string;
+  actorUserKey: string;
+  actorRole: string;
+  now?: Date;
+}) {
+  if (!['owner', 'admin', 'parent', 'student'].includes(input.actorRole)) {
+    throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Approved playback is unavailable.');
+  }
+  if (input.actorRole === 'parent' || input.actorRole === 'student') {
+    const authorized =
+      input.actorRole === 'parent'
+        ? await parentCanOpenFactoryItem(input)
+        : await studentCanOpenFactoryItem(input);
+    if (!authorized) {
+      throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Approved playback is unavailable.');
+    }
+  }
+  return getContentFactoryPlayback(input);
+}
+
+async function parentCanOpenFactoryItem(input: {
+  pool: DbPool;
+  config: AppConfig;
+  sourceKey: string;
+  actorUserKey: string;
+  now?: Date;
+}) {
+  const result = await input.pool.query(
+    `SELECT 1
+       FROM onetime.portal_guardian_relationships AS relationships
+       JOIN onetime.portal_households AS households
+         ON households.account_key = relationships.account_key
+        AND households.product_key = relationships.product_key
+        AND households.household_key = relationships.household_key
+        AND households.status = 'active'
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = relationships.account_key
+        AND access.product_key = relationships.product_key
+        AND access.household_key = relationships.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $5
+        AND (access.expires_at IS NULL OR access.expires_at > $5)
+       JOIN onetime.content_item_entitlements AS entitlements
+         ON entitlements.account_key = relationships.account_key
+        AND entitlements.product_key = relationships.product_key
+        AND entitlements.content_item_key = $4
+        AND entitlements.entitlement_state = 'active'
+        AND (
+          entitlements.audience = 'all_active_learners'
+          OR (
+            entitlements.audience = 'household'
+            AND entitlements.household_key = relationships.household_key
+          )
+        )
+       JOIN onetime.content_items AS items
+         ON items.account_key = entitlements.account_key
+        AND items.product_key = entitlements.product_key
+        AND items.content_item_key = entitlements.content_item_key
+        AND items.lifecycle_state = 'published'
+        AND items.published_revision_key IS NOT NULL
+      WHERE relationships.account_key = $1
+        AND relationships.product_key = $2
+        AND relationships.guardian_user_ref = $3
+        AND relationships.status = 'active'
+        AND relationships.authority <> 'support_only'
+      LIMIT 1`,
+    [
+      input.config.accountKey,
+      input.config.productKey,
+      input.actorUserKey,
+      input.sourceKey,
+      input.now ?? new Date(),
+    ],
+  );
+  return Boolean(result.rowCount);
+}
+
+async function studentCanOpenFactoryItem(input: {
+  pool: DbPool;
+  config: AppConfig;
+  sourceKey: string;
+  actorUserKey: string;
+  now?: Date;
+}) {
+  const result = await input.pool.query(
+    `SELECT 1
+       FROM onetime.account_learner_identity_links AS links
+       JOIN onetime.portal_student_access_state AS student_access
+         ON student_access.account_key = links.account_key
+        AND student_access.product_key = links.product_key
+        AND student_access.household_key = links.household_key
+        AND student_access.learner_key = links.learner_key
+        AND student_access.student_user_ref = links.user_key
+        AND student_access.status = 'active'
+       JOIN onetime.portal_learners AS learners
+         ON learners.account_key = links.account_key
+        AND learners.product_key = links.product_key
+        AND learners.household_key = links.household_key
+        AND learners.learner_key = links.learner_key
+        AND learners.learner_status = 'active'
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = links.account_key
+        AND access.product_key = links.product_key
+        AND access.household_key = links.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $5
+        AND (access.expires_at IS NULL OR access.expires_at > $5)
+       JOIN onetime.content_item_entitlements AS entitlements
+         ON entitlements.account_key = links.account_key
+        AND entitlements.product_key = links.product_key
+        AND entitlements.content_item_key = $4
+        AND entitlements.entitlement_state = 'active'
+        AND (
+          entitlements.audience = 'all_active_learners'
+          OR (
+            entitlements.audience = 'household'
+            AND entitlements.household_key = links.household_key
+          )
+          OR (
+            entitlements.audience = 'learner'
+            AND entitlements.learner_key = links.learner_key
+          )
+        )
+       JOIN onetime.content_items AS items
+         ON items.account_key = entitlements.account_key
+        AND items.product_key = entitlements.product_key
+        AND items.content_item_key = entitlements.content_item_key
+        AND items.lifecycle_state = 'published'
+        AND items.published_revision_key IS NOT NULL
+      WHERE links.account_key = $1
+        AND links.product_key = $2
+        AND links.user_key = $3
+        AND links.link_state = 'active'
+      LIMIT 1`,
+    [
+      input.config.accountKey,
+      input.config.productKey,
+      input.actorUserKey,
+      input.sourceKey,
+      input.now ?? new Date(),
+    ],
+  );
+  return Boolean(result.rowCount);
+}
+
 function validateIngest(item: ContentFactoryIngest) {
   if (!/^[A-Za-z0-9][A-Za-z0-9._:-]+$/.test(item.sourceKey)) {
     throw new ContentFactoryError('VALIDATION_ERROR', 'Safe source key required.');

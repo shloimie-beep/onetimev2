@@ -570,6 +570,11 @@ describe('OT-71 account lifecycle', () => {
         relationship_key: 'relationship_alpha',
         relationship_label: 'Parent',
         authority: 'primary_guardian',
+        free_pilot: {
+          expires_at: '2027-01-01T00:00:00.000Z',
+          policy_version: 'account-lifecycle-test-free-pilot-v1',
+          opaque_source_reference: 'account_lifecycle_parent_alpha',
+        },
       },
     });
     const parentToken = requiredProof(parentIssue);
@@ -780,6 +785,11 @@ async function createParentWithPassword(email: string, password: string) {
       household_key: householdKey,
       relationship_key: `relationship_${email.replace(/[^a-z0-9]/gi, '_')}`,
       relationship_label: 'Parent',
+      free_pilot: {
+        expires_at: '2027-01-01T00:00:00.000Z',
+        policy_version: 'account-lifecycle-test-free-pilot-v1',
+        opaque_source_reference: 'account_lifecycle_reset_parent',
+      },
     },
   });
   return acceptParentActivation({

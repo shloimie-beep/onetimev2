@@ -292,6 +292,7 @@ export {
   createLoginCsrf,
   createPostActivationMfaHandoff,
   createSession,
+  currentApplicationAccessForUser,
   consumePostActivationMfaHandoff,
   decryptAuthEmailChallengeDeliveryPayloadForTests,
   resendEmailChallenge,
@@ -457,7 +458,17 @@ export {
   type FixtureBillingProviderAdapter,
 } from './billing/fixture-adapter.ts';
 export { buildBillingReturnPaths, isRejectedReturnPath } from './billing/return-paths.ts';
-export { householdHasLearningAccess } from './billing/portal-access.ts';
+export {
+  AccountAccessError,
+  applyHouseholdAccessState,
+  applyHouseholdAccessStateWithClient,
+  grantFreePilotAccess,
+  householdHasLearningAccess,
+  readHouseholdAccess,
+  revokeFreePilotAccess,
+  type AccountAccessActorKind,
+  type AccountAccessErrorCode,
+} from './access/service.ts';
 export {
   SupportSubmissionError,
   attachmentRequestTarget,

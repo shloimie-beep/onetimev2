@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { accountAccessSourceKindSchema, accountAccessStateSchema } from '../access/index.ts';
 
 export const ownerDashboardRoleSchema = z.enum([
   'owner',
@@ -53,6 +54,21 @@ export const ownerDashboardSectionSchema = z.object({
 });
 export type OwnerDashboardSection = z.infer<typeof ownerDashboardSectionSchema>;
 
+export const ownerDashboardHouseholdAccessSchema = z.object({
+  household_key: z.string().min(1).max(180),
+  household_label: z.string().min(1).max(180),
+  household_status: z.enum(['active', 'archived']),
+  state: accountAccessStateSchema,
+  source_kind: accountAccessSourceKindSchema.nullable(),
+  source_label: z.string().min(1).max(80),
+  grants_access: z.boolean(),
+  effective_at: z.string().nullable(),
+  expires_at: z.string().nullable(),
+  review_or_revocation_reason: z.string().min(1).max(180).nullable(),
+  updated_at: z.string().nullable(),
+});
+export type OwnerDashboardHouseholdAccess = z.infer<typeof ownerDashboardHouseholdAccessSchema>;
+
 export const visibleActionSchema = z.object({
   action_id: z.string().min(1).max(120),
   label: z.string().min(1).max(120),
@@ -92,6 +108,7 @@ export const ownerDashboardSchema = z.object({
     display_name: z.string().min(1),
   }),
   sections: z.array(ownerDashboardSectionSchema),
+  household_access: z.array(ownerDashboardHouseholdAccessSchema),
 });
 export type OwnerDashboard = z.infer<typeof ownerDashboardSchema>;
 

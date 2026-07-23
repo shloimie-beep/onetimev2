@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { applyCurrentAccessStateSchema } from '../access/index.ts';
 
 export const HIGHLEVEL_CONTRACT_VERSION = '1.0.0' as const;
 
@@ -17,8 +18,17 @@ export const highLevelActionNameSchema = z.enum([
   'bot.member_login',
   'bot.password_help',
   'bot.apply_opt_out',
+  'access.apply_current_state',
 ]);
 export type HighLevelActionName = z.infer<typeof highLevelActionNameSchema>;
+
+const highLevelBotActionNameSchema = z.enum([
+  'bot.complete_signup',
+  'bot.next_confirmed_class_info',
+  'bot.member_login',
+  'bot.password_help',
+  'bot.apply_opt_out',
+]);
 
 export const highLevelConsentContextSchema = z.object({
   email: z.enum(['granted', 'not_granted']),
@@ -41,11 +51,13 @@ const highLevelActorSchema = z.object({
   reference: z.string().trim().min(1).max(160),
 });
 
-const highLevelScopeSchema = z.object({
-  account_key: z.string().trim().min(1).max(160),
-  product_key: z.string().trim().min(1).max(160),
-  location_id: z.string().trim().min(1).max(160),
-});
+const highLevelScopeSchema = z
+  .object({
+    account_key: z.string().trim().min(1).max(160),
+    product_key: z.string().trim().min(1).max(160),
+    location_id: z.string().trim().min(1).max(160),
+  })
+  .strict();
 
 const highLevelEventDataSchema = z
   .object({
@@ -80,29 +92,55 @@ export const highLevelOutboundEventSchema = z
   .strict();
 export type HighLevelOutboundEvent = z.infer<typeof highLevelOutboundEventSchema>;
 
-const highLevelActionDataSchema = z
+const highLevelBotActionDataSchema = z
   .object({
     details_complete: z.boolean().optional(),
     channel: z.enum(['email', 'whatsapp', 'all']).optional(),
   })
   .strict();
 
-export const highLevelInboundActionSchema = z
+const highLevelInboundActionBaseSchema = z
   .object({
     contract_version: z.literal(HIGHLEVEL_CONTRACT_VERSION),
-    action_name: highLevelActionNameSchema,
     request_id: z.string().trim().min(8).max(180),
     idempotency_key: z.string().trim().min(8).max(180),
     requested_at: z.iso.datetime(),
-    actor: z.object({ kind: z.literal('highlevel_bot'), bot_key: z.literal('OT-A1') }),
     scope: highLevelScopeSchema,
-    adult_contact: z.object({
-      contact_key: z.string().trim().min(1).max(180),
-      adult_only: z.literal(true),
-    }),
-    data: highLevelActionDataSchema.default({}),
+    adult_contact: z
+      .object({
+        contact_key: z.string().trim().min(1).max(180),
+        adult_only: z.literal(true),
+      })
+      .strict(),
   })
   .strict();
+
+const highLevelInboundBotActionSchema = highLevelInboundActionBaseSchema.extend({
+  action_name: highLevelBotActionNameSchema,
+  actor: z
+    .object({
+      kind: z.literal('highlevel_bot'),
+      bot_key: z.literal('OT-A1'),
+    })
+    .strict(),
+  data: highLevelBotActionDataSchema.default({}),
+});
+
+const highLevelInboundAccessActionSchema = highLevelInboundActionBaseSchema.extend({
+  action_name: z.literal('access.apply_current_state'),
+  actor: z
+    .object({
+      kind: z.literal('highlevel_system'),
+      integration_key: z.literal('OT-ACCESS'),
+    })
+    .strict(),
+  data: applyCurrentAccessStateSchema,
+});
+
+export const highLevelInboundActionSchema = z.union([
+  highLevelInboundBotActionSchema,
+  highLevelInboundAccessActionSchema,
+]);
 export type HighLevelInboundAction = z.infer<typeof highLevelInboundActionSchema>;
 
 export const highLevelBlockerCodeSchema = z.enum([
@@ -115,6 +153,12 @@ export const highLevelBlockerCodeSchema = z.enum([
   'HIGHLEVEL_ACTION_REPLAYED',
   'HIGHLEVEL_SCOPE_MISMATCH',
   'HIGHLEVEL_ADULT_CONTACT_NOT_FOUND',
+  'HIGHLEVEL_ACCESS_IDENTITY_NOT_FOUND',
+  'HIGHLEVEL_ACCESS_IDENTITY_AMBIGUOUS',
+  'HIGHLEVEL_ACCESS_IDENTITY_MISMATCH',
+  'HIGHLEVEL_ACCESS_STATE_STALE',
+  'HIGHLEVEL_ACCESS_STATE_CONFLICT',
+  'HIGHLEVEL_ACCESS_SOURCE_PRECEDENCE',
   'HIGHLEVEL_CONTACT_INELIGIBLE',
   'HIGHLEVEL_ACTION_RATE_LIMITED',
   'HIGHLEVEL_IDEMPOTENCY_CONFLICT',
@@ -128,7 +172,7 @@ export type HighLevelActionResult =
       action_name: HighLevelActionName;
       replayed: boolean;
       protected_reference: z.infer<typeof highLevelProtectedReferenceSchema> | null;
-      result: Record<string, string | boolean | null>;
+      result: Record<string, string | number | boolean | null>;
     }
   | { ok: false; code: HighLevelBlockerCode; retryable: boolean };
 
@@ -145,6 +189,16 @@ const FORBIDDEN_HIGHLEVEL_KEYS = new Set([
   'destination',
   'zoom_url',
   'vimeo_url',
+  'amount',
+  'amount_paid',
+  'invoice',
+  'invoice_id',
+  'card',
+  'card_number',
+  'subscription',
+  'subscription_id',
+  'payment',
+  'payment_history',
 ]);
 
 export function assertHighLevelPayloadSafe(value: unknown): void {

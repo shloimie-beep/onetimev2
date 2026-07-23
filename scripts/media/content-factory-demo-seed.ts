@@ -7,11 +7,13 @@ import {
   performContentFactoryAction,
 } from '../../packages/domain/src/content/content-factory.ts';
 import { learningDeliverySha256Hex } from '../../packages/domain/src/content/learning-delivery.ts';
+import { assertReviewedStagingRuntime, grantBoundedFreePilotAccess } from '../access/free-pilot.ts';
 
 const config = loadConfig(process.env);
-if (config.deliveryEnvironment === 'production') {
-  throw new Error('content_factory_demo_seed_forbidden_in_production');
-}
+assertReviewedStagingRuntime(
+  config,
+  'content_factory_demo_seed_forbidden_outside_reviewed_staging',
+);
 const demoPassword = process.env.CONTENT_FACTORY_DEMO_PASSWORD?.trim();
 if (!demoPassword) {
   throw new Error('content_factory_demo_password_required');
@@ -191,6 +193,7 @@ try {
 }
 
 async function seedOtLaunchHousehold(studentUserKey: string) {
+  const accessNow = new Date();
   await pool.query(
     `INSERT INTO onetime.portal_households
        (household_key, account_key, product_key, display_name, status)
@@ -238,17 +241,20 @@ async function seedOtLaunchHousehold(studentUserKey: string) {
        source = EXCLUDED.source, policy_version = EXCLUDED.policy_version, updated_at = now()`,
     [config.accountKey, config.productKey],
   );
-  await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES ('ot_launch_01_billing_entitlement', $1, $2, 'ot_launch_01_household', 'opaque',
-       'active', 'ot-launch-01-demo-v1', 'isolated_demo_seed', 'synthetic_preview', now(),
-       now(), true)
-     ON CONFLICT (entitlement_key) DO UPDATE SET status = 'active', grants_access = true,
-       evaluated_at = now(), updated_at = now()`,
-    [config.accountKey, config.productKey],
-  );
+  const access = await grantBoundedFreePilotAccess({
+    pool,
+    config,
+    householdKey: 'ot_launch_01_household',
+    actorKind: 'provisioner',
+    idempotencyKey: `ot-launch-01-demo-free-pilot-${accessNow.getTime()}`,
+    expiresAt: new Date(accessNow.getTime() + 90 * 24 * 60 * 60 * 1000),
+    policyVersion: 'ot-launch-01-demo-access-v1',
+    opaqueSourceReference: 'ot_launch_01_demo_free_pilot_v1',
+    now: accessNow,
+  });
+  if (!access.projection.grants_access) {
+    throw new Error('content_factory_demo_access_not_granted');
+  }
   await pool.query(
     `WITH updated AS (
        UPDATE onetime.class_series

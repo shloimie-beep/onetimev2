@@ -207,6 +207,8 @@ const envSchema = z.object({
   HIGHLEVEL_ACTIONS_MODE: z.enum(['disabled', 'enabled']).default('disabled'),
   HIGHLEVEL_ACTION_KEY_ID: optionalTrimmedString(1, 120),
   HIGHLEVEL_ACTION_SECRET: optionalTrimmedString(24, 400),
+  HIGHLEVEL_ACCESS_ACTION_KEY_ID: optionalTrimmedString(1, 120),
+  HIGHLEVEL_ACCESS_ACTION_SECRET: optionalTrimmedString(24, 400),
   HIGHLEVEL_ACTION_SIGNATURE_TOLERANCE_MS: numberFromString.default(300_000),
   HIGHLEVEL_ACTION_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
   HIGHLEVEL_ACTION_RATE_LIMIT_MAX: numberFromString.default(8),
@@ -252,6 +254,9 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   const oneTimeRuntimeEnvironment =
     parsed.ONE_TIME_RUNTIME_ENVIRONMENT ?? (parsed.NODE_ENV === 'test' ? 'test' : 'local');
+  const portalTestLabRuntimeAllowed =
+    ['isolated_staging', 'test'].includes(deliveryEnvironment) &&
+    ['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment);
 
   if (oneTimeRuntimeEnvironment === 'production' && parsed.DELIVERY_PROVIDER_MODE !== 'sink') {
     throw new Error('Production delivery provider mode requires a separate exact authorization.');
@@ -306,6 +311,22 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   ) {
     throw new Error('HighLevel action key ID and secret are required when actions are enabled.');
   }
+  if (
+    Boolean(parsed.HIGHLEVEL_ACCESS_ACTION_KEY_ID) !==
+    Boolean(parsed.HIGHLEVEL_ACCESS_ACTION_SECRET)
+  ) {
+    throw new Error('HighLevel access-action key ID and secret must be configured together.');
+  }
+  if (
+    parsed.HIGHLEVEL_ACCESS_ACTION_KEY_ID &&
+    parsed.HIGHLEVEL_ACCESS_ACTION_SECRET &&
+    (parsed.HIGHLEVEL_ACCESS_ACTION_KEY_ID === parsed.HIGHLEVEL_ACTION_KEY_ID ||
+      parsed.HIGHLEVEL_ACCESS_ACTION_SECRET === parsed.HIGHLEVEL_ACTION_SECRET)
+  ) {
+    throw new Error(
+      'HighLevel access-action credentials must be cryptographically separate from bot-action credentials.',
+    );
+  }
 
   if (
     parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
@@ -353,8 +374,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('OT89 mock BNA endpoint is forbidden in production.');
   }
 
-  if (parsed.NODE_ENV === 'production' && parsed.PORTAL_TEST_LAB_ENABLED) {
-    throw new Error('Portal Test Lab is forbidden in production.');
+  if (parsed.PORTAL_TEST_LAB_ENABLED && !portalTestLabRuntimeAllowed) {
+    throw new Error(
+      'Portal Test Lab requires explicit test or isolated_staging runtime classification.',
+    );
   }
 
   if (
@@ -477,6 +500,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     operationsWorkerHeartbeatTtlMs: parsed.OPERATIONS_WORKER_HEARTBEAT_TTL_MS,
     accountKey: parsed.ONE_TIME_ACCOUNT_KEY,
     productKey: parsed.ONE_TIME_PRODUCT_KEY,
+    paymentHistorySystemOfRecord: 'highlevel' as const,
+    legacyBillingRuntimeEnabled: false,
     ownerInternalLabel: parsed.ONE_TIME_OWNER_INTERNAL_LABEL,
     adminCustomerLabel: parsed.ONE_TIME_ADMIN_CUSTOMER_LABEL,
     leadRateLimitWindowMs: parsed.LEAD_RATE_LIMIT_WINDOW_MS,
@@ -612,6 +637,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     highLevelActionsMode: parsed.HIGHLEVEL_ACTIONS_MODE,
     highLevelActionKeyId: parsed.HIGHLEVEL_ACTION_KEY_ID,
     highLevelActionSecret: parsed.HIGHLEVEL_ACTION_SECRET,
+    highLevelAccessActionKeyId: parsed.HIGHLEVEL_ACCESS_ACTION_KEY_ID,
+    highLevelAccessActionSecret: parsed.HIGHLEVEL_ACCESS_ACTION_SECRET,
     highLevelActionSignatureToleranceMs: parsed.HIGHLEVEL_ACTION_SIGNATURE_TOLERANCE_MS,
     highLevelActionRateLimitWindowMs: parsed.HIGHLEVEL_ACTION_RATE_LIMIT_WINDOW_MS,
     highLevelActionRateLimitMax: parsed.HIGHLEVEL_ACTION_RATE_LIMIT_MAX,
@@ -650,7 +677,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     bufferAccessToken: parsed.BUFFER_ACCESS_TOKEN,
     bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
     bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
-    portalTestLabEnabled: parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED,
+    portalTestLabEnabled:
+      (parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED) && portalTestLabRuntimeAllowed,
     learningDeliveryDemoEnabled:
       parsed.NODE_ENV === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
     experiencePreviewEnabled: parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED,

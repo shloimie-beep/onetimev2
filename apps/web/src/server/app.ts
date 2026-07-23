@@ -145,13 +145,14 @@ import {
   createParentPortalService,
   createPortalGamificationAdapter,
   createSession,
+  currentApplicationAccessForUser,
   consumeWhatsAppAccountLink,
   createStudentClassHelperAdapter,
   createStudentPortalService,
   resendEmailChallenge,
   getClassOccurrenceDetail,
   getContentItemDetail,
-  getContentFactoryPlayback,
+  getAuthorizedContentFactoryPlayback,
   getContentFactoryWorkspace,
   getContactDetail,
   getOt110aContentCreateWorkspace,
@@ -160,6 +161,8 @@ import {
   getOt110aContentWorkspaceOverview,
   getSessionUserByKey,
   getSessionByToken,
+  householdHasLearningAccess,
+  readHouseholdAccess,
   buildWhatsAppPublicAssistantStatus,
   inspectAccountLifecycleToken,
   buildOwnerDashboard,
@@ -224,7 +227,6 @@ import { createStripeTestBillingProviderAdapter } from '../../../../packages/dom
 import type {
   BillingActorContext,
   BillingAuthorizationAdapter,
-  BillingFeatureConfig,
 } from '../../../../packages/domain/src/billing/types.ts';
 import {
   collectOpsReadiness,
@@ -513,28 +515,43 @@ export function createApp({
     },
   });
 
-  const billingRuntime = createBillingRuntime(config, pool);
-  app.use(
-    '/api/v1/billing',
-    createBillingRouter({
-      config: billingRuntime.config,
-      repositories: billingRuntime.repositories,
-      providerAdapter: billingRuntime.providerAdapter,
-      authorization: billingRuntime.authorization,
-      resolveActor: (req) => billingActorFromRequest(req, pool, config),
-      verifyCsrf: (req) => verifyBillingCsrf(req, pool, config),
-    }),
-  );
-  app.get(/^\/app\/billing\/(?:checkout|portal)\/redirect\/([^/]+)$/, async (req, res) => {
-    setPrivateNoStore(res);
-    const redirectKey = String(req.params[0] ?? '');
-    const providerUrl = await billingRuntime.repositories.consumeRedirect(redirectKey);
-    if (!providerUrl) {
-      res.status(404).type('text').send('Billing redirect expired.');
-      return;
-    }
-    res.redirect(302, providerUrl);
-  });
+  if (config.legacyBillingRuntimeEnabled) {
+    const billingRuntime = createBillingRuntime(config, pool);
+    app.use(
+      '/api/v1/billing',
+      createBillingRouter({
+        config: billingRuntime.config,
+        repositories: billingRuntime.repositories,
+        providerAdapter: billingRuntime.providerAdapter,
+        authorization: billingRuntime.authorization,
+        resolveActor: (req) => billingActorFromRequest(req, pool, config),
+        verifyCsrf: (req) => verifyBillingCsrf(req, pool, config),
+      }),
+    );
+    app.get(/^\/app\/billing\/(?:checkout|portal)\/redirect\/([^/]+)$/, async (req, res) => {
+      setPrivateNoStore(res);
+      const redirectKey = String(req.params[0] ?? '');
+      const providerUrl = await billingRuntime.repositories.consumeRedirect(redirectKey);
+      if (!providerUrl) {
+        res.status(404).type('text').send('Billing redirect expired.');
+        return;
+      }
+      res.redirect(302, providerUrl);
+    });
+  } else {
+    app.use('/api/v1/billing', (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(404).json({
+        success: false,
+        code: 'LEGACY_BILLING_RUNTIME_UNAVAILABLE',
+        message: 'This application does not expose payment-history or payment-operation routes.',
+      });
+    });
+    app.all(/^\/app\/billing\/(?:checkout|portal)\/redirect\/[^/]+$/, (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(404).type('text').send('Billing redirect unavailable.');
+    });
+  }
 
   app.use(
     '/internal/highlevel/v1/actions',
@@ -716,6 +733,23 @@ export function createApp({
       if (!sessionUser) {
         throw new Error('Activated user was not available for session creation.');
       }
+      const currentAccess = await currentApplicationAccessForUser({
+        pool,
+        config,
+        userKey: sessionUser.user_key,
+        role: sessionUser.role,
+      });
+      if (!currentAccess.allowed) {
+        res.status(409).json({
+          success: false,
+          code: 'CURRENT_ACCESS_REQUIRED',
+          message:
+            'Account setup completed, but learning access is not active. Ask the Administrator to enable current access.',
+          activation_completed: true,
+          request_id: req.traceId,
+        });
+        return;
+      }
       const session = await createSession({
         pool,
         config,
@@ -839,24 +873,31 @@ export function createApp({
     await sendAppHtml(res, distDir, 'crm', config);
   });
 
-  app.get(
-    /^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/,
-    async (req: RequestWithTrace, res) => {
-      const session = await sessionFromRequest(req, pool, config);
-      if (!session) {
-        res.redirect(
-          302,
-          `/login?return_to=${encodeURIComponent(
-            safeReturnPath(req.path, config) ?? '/app/billing/checkout/success',
-          )}`,
-        );
-        return;
-      }
-      await ensureSessionCsrfCookie(req, res, pool, config, session);
+  if (config.legacyBillingRuntimeEnabled) {
+    app.get(
+      /^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/,
+      async (req: RequestWithTrace, res) => {
+        const session = await sessionFromRequest(req, pool, config);
+        if (!session) {
+          res.redirect(
+            302,
+            `/login?return_to=${encodeURIComponent(
+              safeReturnPath(req.path, config) ?? '/app/billing/checkout/success',
+            )}`,
+          );
+          return;
+        }
+        await ensureSessionCsrfCookie(req, res, pool, config, session);
+        setPrivateNoStore(res);
+        await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm', config);
+      },
+    );
+  } else {
+    app.all(/^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/, (_req, res) => {
       setPrivateNoStore(res);
-      await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm', config);
-    },
-  );
+      res.status(404).type('text').send('Billing completion route unavailable.');
+    });
+  }
 
   app.get(
     /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|launch-status)(?:\/.*)?$/,
@@ -1516,14 +1557,24 @@ export function createApp({
   const portalServiceDeps: PortalServiceDeps = {
     repository: portalRepository,
     classAccess: config.zoomClassroomEnabled
-      ? createClassroomPortalAccessAdapter({ classroom: classroomService })
+      ? createClassroomPortalAccessAdapter({
+          classroom: classroomService,
+          currentAccess: ({ actor, learner }) =>
+            householdHasLearningAccess({
+              db: pool,
+              accountKey: actor.account_key,
+              productKey: actor.product_key,
+              householdKey: learner.household_key,
+              ...(clock ? { now: clock() } : {}),
+            }),
+        })
       : createClassPortalAccessAdapter({ pool, config }),
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
     gamification: createPortalGamificationAdapter(gamificationService),
     helper: createStudentClassHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
-    billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
+    billing: createParentAccessSummaryAdapter(pool, config),
   };
   const previewStudentPortalService = createStudentPortalService(portalServiceDeps);
   registerExperiencePreviewRoutes({
@@ -2433,10 +2484,12 @@ export function createApp({
       return;
     }
     try {
-      const playback = await getContentFactoryPlayback({
+      const playback = await getAuthorizedContentFactoryPlayback({
         pool,
         config,
         sourceKey: String(req.params.sourceKey),
+        actorUserKey: session.user.user_key,
+        actorRole: session.user.role,
       });
       res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
     } catch (error) {
@@ -2456,10 +2509,12 @@ export function createApp({
       return;
     }
     try {
-      const playback = await getContentFactoryPlayback({
+      const playback = await getAuthorizedContentFactoryPlayback({
         pool,
         config,
         sourceKey: String(req.params.sourceKey),
+        actorUserKey: session.user.user_key,
+        actorRole: session.user.role,
       });
       if (playback.isDemo) {
         res.setHeader(
@@ -3814,34 +3869,7 @@ function createBillingAuthorizationAdapter(
     async resolvePrincipal({ actor, requested_principal_key }) {
       if (!actor.active || actor.role === 'public') return { ok: false, reason: 'anonymous' };
       if (actor.role === 'parent') {
-        const household = await pool.query(
-          `SELECT 1
-             FROM onetime.portal_guardian_relationships AS relationships
-             JOIN onetime.portal_households AS households
-               ON households.account_key = relationships.account_key
-              AND households.product_key = relationships.product_key
-              AND households.household_key = relationships.household_key
-            WHERE relationships.account_key = $1
-              AND relationships.product_key = $2
-              AND relationships.guardian_user_ref = $3
-              AND relationships.household_key = $4
-              AND relationships.status = 'active'
-              AND relationships.authority <> 'support_only'
-              AND households.status = 'active'
-            LIMIT 1`,
-          [config.accountKey, config.productKey, actor.actor_key, requested_principal_key],
-        );
-        if (!household.rowCount) return { ok: false, reason: 'wrong_scope' };
-        return {
-          ok: true,
-          principal: {
-            principal_key: requested_principal_key,
-            principal_type: 'opaque',
-            account_key: config.accountKey,
-            product_key: config.productKey,
-          },
-          capabilities: ['billing:read', 'billing:checkout', 'billing:portal'],
-        };
+        return { ok: false, reason: 'insufficient_capability' };
       }
       if (actor.role === 'owner' || actor.role === 'admin') {
         const household = await pool.query(
@@ -3870,38 +3898,42 @@ function createBillingAuthorizationAdapter(
   };
 }
 
-function createParentBillingSummaryAdapter(
-  config: BillingFeatureConfig,
-  repositories: ReturnType<typeof createPostgresBillingRepositories>,
+function createParentAccessSummaryAdapter(
+  pool: DbPool,
+  config: AppConfig,
 ): NonNullable<PortalServiceDeps['billing']> {
   return {
     summaryForHousehold: async ({ household }) => {
-      const principal = {
-        principal_key: household.household_key,
-        principal_type: 'opaque' as const,
-        account_key: config.offerMappings[0]?.account_key ?? 'one_time',
-        product_key: config.offerMappings[0]?.product_key ?? 'one_time_mishnah_class',
-      };
-      const summary = await repositories.summary(principal);
-      const customerPortalAvailable =
-        config.transportEnabled && config.customerPortalEnabled && Boolean(summary.customer);
+      const access = await readHouseholdAccess({
+        db: pool,
+        accountKey: config.accountKey,
+        productKey: config.productKey,
+        householdKey: household.household_key,
+      });
+      const state = access?.state ?? 'pending';
+      const sourceLabel =
+        access?.source_kind === 'free_pilot'
+          ? 'Complimentary pilot access'
+          : 'Current learning access';
       return {
-        enabled: config.foundationEnabled,
-        summary_label: summary.entitlement?.status ?? 'Not active',
-        plan_truth: 'Family plan — $67/month — up to 3 active learners in one household.',
-        entitlement_status: summary.entitlement?.status ?? null,
-        grants_access: summary.entitlement?.grants_access === true,
-        checkout_available:
-          config.transportEnabled && config.checkoutEnabled && config.offerMappings.length === 1,
-        customer_portal_available: customerPortalAvailable,
-        recovery_required:
-          summary.entitlement?.status === 'suspended' ||
-          summary.subscription?.status === 'past_due' ||
-          summary.subscription?.status === 'unpaid',
-        current_period_end: summary.subscription?.current_period_end
-          ? toIso(summary.subscription.current_period_end)
-          : null,
-        cancel_at_period_end: summary.subscription?.cancel_at_period_end === true,
+        enabled: true,
+        summary_label: access?.grants_access ? sourceLabel : 'Access not active',
+        plan_truth:
+          'GHL manages billing. One Time stores only the household’s current learning-access state.',
+        entitlement_status: state as
+          | 'pending'
+          | 'active'
+          | 'grace'
+          | 'suspended'
+          | 'scheduled_end'
+          | 'revoked'
+          | 'manual_review',
+        grants_access: access?.grants_access ?? false,
+        checkout_available: false,
+        customer_portal_available: false,
+        recovery_required: ['suspended', 'manual_review'].includes(state),
+        current_period_end: access?.expires_at ?? null,
+        cancel_at_period_end: state === 'scheduled_end',
       };
     },
   };
@@ -3916,6 +3948,13 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
          ON households.account_key = relationships.account_key
         AND households.product_key = relationships.product_key
         AND households.household_key = relationships.household_key
+       JOIN onetime.account_access_projections AS access
+         ON access.account_key = relationships.account_key
+        AND access.product_key = relationships.product_key
+        AND access.household_key = relationships.household_key
+        AND access.state IN ('active', 'grace', 'scheduled_end')
+        AND access.effective_at <= $4
+        AND (access.expires_at IS NULL OR access.expires_at > $4)
       WHERE relationships.account_key = $1
         AND relationships.product_key = $2
         AND relationships.guardian_user_ref = $3
@@ -3928,7 +3967,7 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
         END,
         relationships.created_at ASC,
         relationships.relationship_key ASC`,
-    [config.accountKey, config.productKey, userKey],
+    [config.accountKey, config.productKey, userKey, new Date()],
   );
   return result.rows.map((row) => ({
     household_key: String(row.household_key),
@@ -3950,7 +3989,15 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
        JOIN onetime.portal_learners AS learners
          ON learners.account_key = links.account_key
         AND learners.product_key = links.product_key
+        AND learners.household_key = links.household_key
         AND learners.learner_key = links.learner_key
+       JOIN onetime.account_access_projections AS account_access
+         ON account_access.account_key = links.account_key
+        AND account_access.product_key = links.product_key
+        AND account_access.household_key = links.household_key
+        AND account_access.state IN ('active', 'grace', 'scheduled_end')
+        AND account_access.effective_at <= $4
+        AND (account_access.expires_at IS NULL OR account_access.expires_at > $4)
       WHERE links.account_key = $1
         AND links.product_key = $2
         AND links.user_key = $3
@@ -3958,11 +4005,11 @@ async function studentLearnerSubject(pool: DbPool, config: AppConfig, userKey: s
         AND access_state.status = 'active'
         AND learners.learner_status = 'active'
       ORDER BY links.created_at ASC
-      LIMIT 1`,
-    [config.accountKey, config.productKey, userKey],
+      LIMIT 2`,
+    [config.accountKey, config.productKey, userKey, new Date()],
   );
   const row = result.rows[0];
-  if (!row) return null;
+  if (!row || result.rows.length !== 1) return null;
   return {
     learner_key: String(row.learner_key),
     household_key: String(row.household_key),
@@ -4737,7 +4784,9 @@ function classroomLaunchHtml() {
 </html>`;
 }
 
-function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>) {
+function contentFactoryPlayerHtml(
+  playback: Awaited<ReturnType<typeof getAuthorizedContentFactoryPlayback>>,
+) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -4811,7 +4860,7 @@ function zoomHostHtml() {
 }
 
 function contentFactoryDemoEmbedHtml(
-  playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>,
+  playback: Awaited<ReturnType<typeof getAuthorizedContentFactoryPlayback>>,
 ) {
   return `<!doctype html>
 <html lang="en">

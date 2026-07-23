@@ -53,7 +53,7 @@ test('captures concise launch-readiness screenshots without full-page duplicates
       name: 'class-detail-desktop.png',
       heading: 'Classes',
     },
-    { route: '/app/billing', name: 'billing-desktop.png', heading: 'Products/Billing status' },
+    { route: '/app/billing', name: 'billing-desktop.png', heading: 'Household Access' },
   ]) {
     await ownerPage.goto(item.route);
     await expect(ownerPage.getByRole('heading', { name: item.heading })).toBeVisible();

@@ -5,6 +5,7 @@ import { createApp } from '../../apps/web/src/server/app.ts';
 import {
   createAccountUser,
   generateContentFactoryDraftFromTranscript,
+  grantFreePilotAccess,
   ingestContentFactoryItem,
   performContentFactoryAction,
 } from '../../packages/domain/src/index.ts';
@@ -59,7 +60,6 @@ const parentUserKey = await createAccountUser({
   role: 'parent',
   mfaCapable: false,
 });
-await seedActiveSupportEntitlement(parentUserKey);
 const studentUserKey = await createAccountUser({
   pool,
   config,
@@ -155,26 +155,34 @@ async function seedDayOneBrowserRecords() {
         ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active')`,
     [config.accountKey, config.productKey],
   );
-  await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access)
-     VALUES (
-       'billing_entitlement:' || $1 || ':' || $2 || ':e2e_household_alpha',
-       $1,
-       $2,
-       'e2e_household_alpha',
-       'opaque',
-       'active',
-       '2026-07-15.1',
-       'test_fixture_paid_invoice',
-       'active_paid_current_invoice',
-       '2026-07-15T12:00:00.000Z',
-       '2026-07-15T12:00:01.000Z',
-       true
-     )`,
-    [config.accountKey, config.productKey],
-  );
+  for (const fixture of [
+    {
+      householdKey: 'e2e_household_alpha',
+      idempotencyKey: 'e2e-free-pilot-alpha-v1',
+      sourceReference: 'e2e_free_pilot_alpha',
+    },
+    {
+      householdKey: 'e2e_household_zoom',
+      idempotencyKey: 'e2e-free-pilot-zoom-v1',
+      sourceReference: 'e2e_free_pilot_zoom',
+    },
+  ]) {
+    await grantFreePilotAccess({
+      pool,
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      actorKind: 'provisioner',
+      now: new Date('2026-07-15T12:00:01.000Z'),
+      command: {
+        household_key: fixture.householdKey,
+        idempotency_key: fixture.idempotencyKey,
+        effective_at: '2026-07-15T12:00:00.000Z',
+        expires_at: '2027-07-15T12:00:00.000Z',
+        opaque_source_reference: fixture.sourceReference,
+        policy_version: 'e2e-current-access-v1',
+      },
+    });
+  }
   await pool.query(
     `INSERT INTO onetime.class_series
        (class_series_key, account_key, product_key, title, timezone, local_start_time,
@@ -276,33 +284,6 @@ async function seedDayOneBrowserRecords() {
     [config.accountKey, config.productKey],
   );
   void ownerUserKey;
-}
-
-async function seedActiveSupportEntitlement(userKey: string) {
-  await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at)
-     VALUES ($1,$2,$3,$4,'account_user','active','test-policy','test','active',now(),now())`,
-    [`e2e_entitlement_${userKey.slice(0, 16)}`, config.accountKey, config.productKey, userKey],
-  );
-  await pool.query(
-    `INSERT INTO onetime.billing_subscription_projections
-       (account_key, product_key, principal_key, principal_type, provider, mode,
-        provider_account_ref, provider_customer_ref, provider_subscription_ref, status,
-        current_period_end, provider_updated_at, source_event_key)
-     VALUES ($1,$2,$3,'account_user','stripe','test','acct_e2e_support',$4,$5,'active',
-        $6::timestamptz,now(),$7)`,
-    [
-      config.accountKey,
-      config.productKey,
-      userKey,
-      `cus_support_${userKey.slice(0, 12)}`,
-      `sub_support_${userKey.slice(0, 12)}`,
-      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      `evt_support_${userKey.slice(0, 12)}`,
-    ],
-  );
 }
 
 async function seedContentFactoryBrowserSample() {

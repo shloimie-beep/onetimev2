@@ -61,9 +61,11 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
   await expect(parentPage.getByText('3/3 active learners')).toBeVisible();
-  await parentPage.getByRole('link', { name: 'Billing' }).click();
-  await expect(parentPage.getByRole('heading', { name: 'Billing' })).toBeVisible();
-  await expect(parentPage.getByText(/Billing is unavailable|Family plan/i)).toBeVisible();
+  await parentPage.getByRole('link', { name: 'Access' }).click();
+  await expect(parentPage.getByRole('heading', { name: 'Learning access' })).toBeVisible();
+  await expect(
+    parentPage.getByText(/GHL manages billing|Complimentary pilot access/i),
+  ).toBeVisible();
   await parentPage.getByRole('link', { name: 'Learners' }).click();
   await parentPage.getByRole('button', { name: /W12 Learner One/i }).click();
 

@@ -174,13 +174,13 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
   if (!eligibility?.can_create_ticket) {
     return (
       <section className="support-shell" aria-labelledby="support-unavailable-title">
-        <h2 id="support-unavailable-title">Subscriber support is unavailable</h2>
+        <h2 id="support-unavailable-title">Learning support is unavailable</h2>
         <p>
-          Subscriber support is available after sign-in with an active One Time subscription. Public
-          help and WhatsApp guidance stay available from the signup path.
+          Support is available after sign-in with current One Time learning access. For signup or
+          account help, continue to the public help path.
         </p>
         <a className="button-primary" href="/signup">
-          Continue through the public WhatsApp lead path
+          Continue to signup and help
         </a>
       </section>
     );
@@ -197,7 +197,7 @@ export function SupportFeature({ receiptId, onProtectedStateCleared }: Props) {
             value={idempotencyRef.current}
             readOnly
           />
-          <h2 id="support-heading">Subscriber Support</h2>
+          <h2 id="support-heading">Member Support</h2>
           <label>
             <span>Category</span>
             <select name="category" required defaultValue="technical_bug">

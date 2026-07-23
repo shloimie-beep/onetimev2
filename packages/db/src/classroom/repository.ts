@@ -627,6 +627,26 @@ async function scheduleDueReminders(
             COALESCE(preferences.suppression_state, 'active') AS suppression_state,
             consent.consent_status
        FROM onetime.portal_learners AS learners
+       JOIN onetime.portal_households AS households
+         ON households.account_key = learners.account_key
+        AND households.product_key = learners.product_key
+        AND households.household_key = learners.household_key
+        AND households.status = 'active'
+       JOIN (
+         SELECT DISTINCT guardians.account_key, guardians.product_key, guardians.household_key
+           FROM onetime.portal_guardian_relationships AS guardians
+           JOIN onetime.account_users AS users
+             ON users.account_key = guardians.account_key
+            AND users.product_key = guardians.product_key
+            AND users.user_key = guardians.guardian_user_ref
+            AND users.role IN ('owner', 'admin', 'parent')
+            AND users.status = 'active'
+          WHERE guardians.status = 'active'
+            AND guardians.authority IN ('primary_guardian', 'guardian')
+       ) AS eligible_guardians
+         ON eligible_guardians.account_key = learners.account_key
+        AND eligible_guardians.product_key = learners.product_key
+        AND eligible_guardians.household_key = learners.household_key
        JOIN onetime.portal_student_access_state AS access_state
          ON access_state.account_key = learners.account_key
         AND access_state.product_key = learners.product_key
@@ -637,6 +657,13 @@ async function scheduleDueReminders(
         AND entitlement.product_key = learners.product_key
         AND entitlement.household_key = learners.household_key
         AND entitlement.entitlement_state = 'active'
+       JOIN onetime.account_access_projections AS account_access
+         ON account_access.account_key = learners.account_key
+        AND account_access.product_key = learners.product_key
+        AND account_access.household_key = learners.household_key
+        AND account_access.state IN ('active', 'grace', 'scheduled_end')
+        AND account_access.effective_at <= $3
+        AND (account_access.expires_at IS NULL OR account_access.expires_at > $3)
        LEFT JOIN onetime.classroom_reminder_preferences AS preferences
          ON preferences.account_key = learners.account_key
         AND preferences.product_key = learners.product_key
@@ -651,7 +678,7 @@ async function scheduleDueReminders(
       WHERE learners.account_key = $1
         AND learners.product_key = $2
         AND learners.learner_status = 'active'`,
-    [args.actor.account_key, args.actor.product_key],
+    [args.actor.account_key, args.actor.product_key, args.now],
   );
   let queued = 0;
   let suppressed = 0;

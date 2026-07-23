@@ -24,12 +24,14 @@ import {
   createParentPortalService,
   createPortalGamificationAdapter,
   createStudentPortalService,
+  householdHasLearningAccess,
   ONE_TIME_CLASS_SERIES_KEY,
   PortalServiceError,
   revokeUserSessions,
   type PortalServiceDeps,
 } from '../../packages/domain/src/index.ts';
 import { AesGcmPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
+import { grantBoundedFreePilotAccess } from '../access/free-pilot.ts';
 
 const EXPECTED_ACCOUNT_KEY = 'rabbi_sheller_provider';
 const EXPECTED_PRODUCT_KEY = 'one_time_mishnah_class';
@@ -182,6 +184,20 @@ export async function runFullAppProvision(
   });
 
   await seedPreviewHousehold(input.pool, input.config, parentUserKey, now);
+  const previewAccess = await grantBoundedFreePilotAccess({
+    pool: input.pool,
+    config: input.config,
+    householdKey: HOUSEHOLD_KEY,
+    actorKind: 'provisioner',
+    idempotencyKey: `full-app-preview-free-pilot-${runId}`,
+    expiresAt: new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000),
+    policyVersion: 'full-app-preview-access-v1',
+    opaqueSourceReference: 'full_app_preview_free_pilot_v1',
+    now,
+  });
+  if (!previewAccess.projection.grants_access) {
+    throw new Error('Preview free-pilot access did not grant learning access.');
+  }
   const learners = await seedPreviewLearners(input.pool, input.config, now);
   const firstLearner = learners[0];
   if (!firstLearner) {
@@ -469,7 +485,17 @@ function portalDeps(
   const deps: PortalServiceDeps = {
     repository: createPortalRepository(pool),
     classAccess: options.withRealAdapters
-      ? createClassroomPortalAccessAdapter({ classroom: classroomService })
+      ? createClassroomPortalAccessAdapter({
+          classroom: classroomService,
+          currentAccess: ({ actor, learner }) =>
+            householdHasLearningAccess({
+              db: pool,
+              accountKey: actor.account_key,
+              productKey: actor.product_key,
+              householdKey: learner.household_key,
+              now,
+            }),
+        })
       : emptyClassAccess(),
     contentAccess: options.withRealAdapters
       ? createContentPortalAccessAdapter({ pool, config })
@@ -594,26 +620,6 @@ async function seedPreviewHousehold(
                    updated_at = $5`,
     [
       'full_app_preview_classroom_entitlement',
-      config.accountKey,
-      config.productKey,
-      HOUSEHOLD_KEY,
-      now,
-    ],
-  );
-  await pool.query(
-    `INSERT INTO onetime.billing_entitlement_projections
-       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
-        policy_version, source, reason, effective_at, evaluated_at, grants_access, updated_at)
-     VALUES ($1,$2,$3,$4,'opaque','active','full-app-preview-v1','full_app_staging_preview',
-             'staging preview household', $5, $5, true, $5)
-     ON CONFLICT (entitlement_key)
-     DO UPDATE SET status = 'active',
-                   reason = EXCLUDED.reason,
-                   grants_access = true,
-                   evaluated_at = $5,
-                   updated_at = $5`,
-    [
-      'full_app_preview_billing_entitlement',
       config.accountKey,
       config.productKey,
       HOUSEHOLD_KEY,

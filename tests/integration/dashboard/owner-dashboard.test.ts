@@ -114,12 +114,35 @@ describe('OT-71 owner/admin dashboard shell', () => {
       });
       expect(sections.get('billing_readiness')).toMatchObject({
         state: 'ready',
+        label: 'Household access',
+        value: 1,
         href: '/app/billing',
+        diagnostics: {
+          source: 'account_access_projections',
+        },
       });
       expect(sections.get('support')).toMatchObject({
         state: 'temporarily_unavailable',
         href: null,
       });
+      expect(json.dashboard.household_access).toEqual([
+        expect.objectContaining({
+          household_key: 'dashboard_household',
+          household_label: 'Dashboard Family',
+          household_status: 'active',
+          state: 'active',
+          source_kind: 'free_pilot',
+          source_label: 'Complimentary pilot',
+          grants_access: true,
+          review_or_revocation_reason: null,
+        }),
+      ]);
+      expect(json.dashboard.household_access[0]?.effective_at).toMatch(/T/);
+      expect(json.dashboard.household_access[0]?.expires_at).toMatch(/T/);
+      expect(json.dashboard.household_access[0]?.updated_at).toMatch(/T/);
+      expect(JSON.stringify(json.dashboard.household_access)).not.toMatch(
+        /amount|invoice|card|subscription|checkout|payment_history/iu,
+      );
 
       const actionIds = json.actions.map((action) => action.action_id);
       expect(new Set(actionIds).size).toBe(actionIds.length);
@@ -135,9 +158,17 @@ describe('OT-71 owner/admin dashboard shell', () => {
           'content.library.view.route',
           'communications.view.route',
           'billing.status.view.route',
+          'household.access.refresh.button',
           'auth.logout.button',
         ]),
       );
+      expect(
+        json.actions.find((action) => action.action_id === 'household.access.refresh.button'),
+      ).toMatchObject({
+        label: 'Refresh household access',
+        capability: 'accounts:access:read',
+        audit: { event: 'account_access_status_read' },
+      });
       for (const action of json.actions) {
         expect(action.roles.length).toBeGreaterThan(0);
         expect(action.capability).toMatch(/:/);
@@ -275,17 +306,14 @@ async function seedDashboardSources() {
     [config.accountKey, config.productKey],
   );
   await pool.query(
-    `INSERT INTO onetime.billing_provider_accounts
-       (provider, mode, provider_account_ref, status)
-     VALUES ('stripe', 'test', 'acct_dashboard_test', 'active')`,
-  );
-  await pool.query(
-    `INSERT INTO onetime.billing_offer_prices
-       (account_key, product_key, offer_key, provider, mode, provider_account_ref,
-        provider_price_ref, currency, amount_cents)
-     VALUES ($1, $2, 'offer_dashboard', 'stripe', 'test', 'acct_dashboard_test',
-        'price_dashboard_test', 'usd', 1800)`,
-    [config.accountKey, config.productKey],
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES ('dashboard_household_access',$1,$2,'dashboard_household','active','free_pilot',
+       now() - interval '1 day',now() + interval '30 days','dashboard_free_pilot',1,
+       now(),$3,'dashboard-current-access-v1','dashboard_access_event')`,
+    [config.accountKey, config.productKey, 'd'.repeat(64)],
   );
 }
 

@@ -107,7 +107,7 @@ export function registerSupportRoutes(input: {
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     const session = await input.session.sessionFromRequest(req);
     if (!session) {
-      res.status(200).type('html').send(supportLeadOnlyHtml('Sign in for subscriber support'));
+      res.status(200).type('html').send(supportLeadOnlyHtml('Sign in for learning support'));
       return;
     }
     await input.session.ensureSessionCsrfCookie(req, res, session);
@@ -119,7 +119,7 @@ export function registerSupportRoutes(input: {
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     const session = await input.session.sessionFromRequest(req);
     if (!session) {
-      res.status(200).type('html').send(supportLeadOnlyHtml('Sign in for subscriber support'));
+      res.status(200).type('html').send(supportLeadOnlyHtml('Sign in for learning support'));
       return;
     }
     await input.session.ensureSessionCsrfCookie(req, res, session);
@@ -144,7 +144,11 @@ export function registerSupportRoutes(input: {
       success: true,
       available,
       can_create_ticket: available && active,
-      reason: !available ? 'support_unavailable' : active ? 'authorized' : 'subscriber_required',
+      reason: !available
+        ? 'support_unavailable'
+        : active
+          ? 'authorized'
+          : 'learning_access_required',
       csrf_token: await input.session.ensureSessionCsrfCookie(req, res, session),
       categories: supportCategories(),
     });
@@ -219,7 +223,7 @@ export function registerSupportRoutes(input: {
       if (!isSupportSubmissionAvailable(input.config)) {
         res
           .status(503)
-          .json(publicError('SUPPORT_DISABLED', 'Subscriber support is unavailable.', req.traceId));
+          .json(publicError('SUPPORT_DISABLED', 'Member support is unavailable.', req.traceId));
         return;
       }
       if (!(await input.session.requireSessionCsrf(req, res, session))) return;
@@ -373,8 +377,8 @@ function supportLeadOnlyHtml(title: string) {
   <main class="app-workspace">
     <section class="state-panel" aria-labelledby="support-title">
       <h1 id="support-title">${escapeHtml(title)}</h1>
-      <p>Subscriber support is available only after sign-in with an active One Time subscription.</p>
-      <a class="button button-primary" href="/signup">Continue through the public WhatsApp lead path</a>
+      <p>Support is available after sign-in with current One Time learning access.</p>
+      <a class="button button-primary" href="/signup">Continue to signup and help</a>
     </section>
   </main>
 </body>

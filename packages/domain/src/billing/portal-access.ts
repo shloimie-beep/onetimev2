@@ -1,23 +1,23 @@
 import type { DbPool } from '../../../db/src/index.ts';
+import { householdHasLearningAccess as householdHasCurrentAccess } from '../access/service.ts';
 
-export type LearnerBillingAccessInput = {
+/**
+ * Compatibility seam for portal adapters. The historical file name remains to
+ * avoid a broad import churn, but current access is resolved only from the
+ * neutral account-access projection.
+ */
+export async function householdHasLearningAccess(input: {
   pool: DbPool;
   accountKey: string;
   productKey: string;
   householdKey: string;
-};
-
-export async function householdHasLearningAccess(input: LearnerBillingAccessInput) {
-  const result = await input.pool.query(
-    `SELECT grants_access
-       FROM onetime.billing_entitlement_projections
-      WHERE account_key = $1
-        AND product_key = $2
-        AND principal_key = $3
-        AND status IN ('active', 'scheduled_end')
-      ORDER BY evaluated_at DESC
-      LIMIT 1`,
-    [input.accountKey, input.productKey, input.householdKey],
-  );
-  return result.rows[0]?.grants_access === true;
+  now?: Date;
+}) {
+  return householdHasCurrentAccess({
+    db: input.pool,
+    accountKey: input.accountKey,
+    productKey: input.productKey,
+    householdKey: input.householdKey,
+    ...(input.now ? { now: input.now } : {}),
+  });
 }

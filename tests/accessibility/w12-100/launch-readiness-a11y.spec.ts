@@ -80,7 +80,7 @@ test('authenticated routes pass serious axe checks with mobile and desktop layou
     { role: 'admin_session' as const, route: '/app/communications', heading: 'Communications' },
     { role: 'admin_session' as const, route: '/app/classes', heading: 'Classes' },
     { role: 'admin_session' as const, route: '/app/content', heading: 'Content Workspace' },
-    { role: 'admin_session' as const, route: '/app/billing', heading: 'Products/Billing status' },
+    { role: 'admin_session' as const, route: '/app/billing', heading: 'Household Access' },
     { role: 'admin_session' as const, route: '/app/support', heading: 'Support' },
     { role: 'parent' as const, route: '/app/parent', heading: 'Parent Portal' },
     { role: 'student' as const, route: '/app/student', heading: 'Student Portal' },
