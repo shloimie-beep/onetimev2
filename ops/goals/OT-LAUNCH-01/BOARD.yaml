@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T08:55:14Z
+updated_at: 2026-07-23T09:31:26Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,8 +23,8 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'PR #97 exact accepted product source 99c60d3aed91ea42fb9d18d819093c95efe17e3f completes the focused Parent/Student workspace on top of integrated PR #105 and PR #108, and eliminates mixed stale app bundles through no-store authenticated HTML, commit-versioned entry URLs, content-hashed shared chunks, and revalidated mutable assets. Board-only descendant 09dd48b095aa4f5054a642e3a609706fafd4f9f7 is the current Railway source through web deployment a22868d0-4ed2-488b-bc3d-34cf087e898e and worker deployment 334f6efe-5971-4812-97f7-93e1f4ee9303; both are SUCCESS, /version preserves product label full-app-staging-live-99c60d3 while commit_sha identifies the evidence-only source, /health and /ready return 200 with blockers empty, and schema remains 2220_tisha_bav_event_email_permission. An attempted exact queue cancellation briefly removed the prior active revision and returned 404 before the already-running evidence-only deployment restored service; no code, database, provider, or production mutation occurred. Protected fictional Parent and Student sessions then re-read the complete role category navigation plus focused workspaces without cross-role controls. The rotated protected fictional handoff remains private. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
-  external_action_count: 7
+  current_summary: 'PR #97 exact accepted product source 99c60d3aed91ea42fb9d18d819093c95efe17e3f completes the focused Parent/Student workspace on top of integrated PR #105 and PR #108, and eliminates mixed stale app bundles through no-store authenticated HTML, commit-versioned entry URLs, content-hashed shared chunks, and revalidated mutable assets. Board-only descendant 09dd48b095aa4f5054a642e3a609706fafd4f9f7 is the current Railway source through web deployment a22868d0-4ed2-488b-bc3d-34cf087e898e and worker deployment 334f6efe-5971-4812-97f7-93e1f4ee9303; both are SUCCESS, /version preserves product label full-app-staging-live-99c60d3 while commit_sha identifies the evidence-only source, /health and /ready return 200 with blockers empty, and schema remains 2220_tisha_bav_event_email_permission. An attempted exact queue cancellation briefly removed the prior active revision and returned 404 before the already-running evidence-only deployment restored service; no code, database, provider, or production mutation occurred. Protected fictional Parent and Student sessions then re-read the complete role category navigation plus focused workspaces without cross-role controls. The rotated protected fictional handoff remains private. HighLevel event/actions remain disabled with budget zero and real Zoom remains provider-off. In the separate BNA PR #141 isolated preview, exact runtime source b8bcfb01e735568a8bf13832ff74abe01cbb2cc1 now has private PostgreSQL durability plus a signed single-consumer Telegram webhook; one operator-private synthetic status canary and durable replay rejection passed, while customer messages and GHL mutations remained zero. No GHL/Zoom/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred in this follow-up.'
+  external_action_count: 8
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
       count: 6
@@ -32,6 +32,9 @@ outcome:
     - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
       scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
+    - kind: bna_private_telegram_synthetic_status_canary
+      count: 1
+      scope: One operator-owned private synthetic Telegram /questions status response in the isolated BNA preview only. Immediate replay and replay after restart were rejected; customer messages, GHL mutations, and production mutations were zero.
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -499,81 +502,87 @@ tracks:
       repository: shloimie-beep/bnei-neviim-academy
       branch: codex/platform-agent-actions-telegram-preview
       pr: 141
-      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
+      head: 5c83da99cd0caf49ae794dd7853f488ba494385b
       system: BNA Agent Action Hub
     write_scope: BNA foundation and canonical job import/readback
-    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/blob/5c83da99cd0caf49ae794dd7853f488ba494385b/ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json
     dependencies: []
     acceptance_ids: [BNA-001]
     evidence:
-      - 'PR #141 exact head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe is live in isolated preview deployment 79e7235c-03fc-44ed-a9e9-ba2cfb6c1e57; BNA-001 Agent Action Hub foundation is usable and fails closed with a sanitized 503 when durability is unavailable.'
-      - 'Prior canonical baseline imported/read back 14 jobs; the current 31-job queue remains pinned to PR #107 and must not substitute for PR #108 jobs.'
+      - 'PR #141 exact evidence head 5c83da99cd0caf49ae794dd7853f488ba494385b records the accepted BNA-001 foundation plus terminal durability and private Telegram proof. The exact deployed runtime source is b8bcfb01e735568a8bf13832ff74abe01cbb2cc1.'
+      - 'Historical foundation checkpoint: PR #141 exact head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe ran in isolated preview deployment 79e7235c-03fc-44ed-a9e9-ba2cfb6c1e57 before the durable PostgreSQL follow-up; it is evidence history, not current source.'
+      - 'Prior canonical baseline imported/read back 14 jobs; the deployed 31-job queue remains explicitly pinned to historical PR #107 and must not substitute for accepted PR #108 jobs.'
     blocker: null
     remaining_work: null
     next_action: Preserve the canonical registry and do not create a second job model.
 
   - id: bna_durability
-    status: active
+    status: done
     owner:
       task_id: BNA-PR-141-RECONCILIATION
       repository: shloimie-beep/bnei-neviim-academy
       branch: codex/platform-agent-actions-telegram-preview
       pr: 141
-      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
+      head: 5c83da99cd0caf49ae794dd7853f488ba494385b
       system: BNA durable DB and queue
     write_scope: Durable preview/Telegram save, restart, readback, and queue pin only
-    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/blob/5c83da99cd0caf49ae794dd7853f488ba494385b/ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json
     dependencies: [bna_foundation, ghl_event_dispatcher]
     acceptance_ids: [BNA-002]
     evidence:
-      - 'PR #141 terminal head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe pins One Time PR #107.'
-      - Isolated preview deployment 79e7235c-03fc-44ed-a9e9-ba2cfb6c1e57 passed 46/46 focused tests and fail-closed UI/browser smoke.
-      - Queue readback contains 31 unique jobs: 9 verified, 2 superseded, and 20 blocked; customer, GHL, and provider sends are zero.
-      - The live isolated preview returns sanitized fail-closed 503 because no Postgres service/DATABASE_URL is linked; durable claim/save/restart/readback, DB-backed Telegram lease, and synthetic Telegram-to-GHL draft canary are not accepted.
-      - 'The operator explicitly authorized the disposable preview database and private synthetic canary on 2026-07-23; this removes the authority blocker while preserving zero customer sends and the isolated-preview boundary.'
+      - 'PR #141 exact deployed source b8bcfb01e735568a8bf13832ff74abe01cbb2cc1 is healthy at web deployment 07ee9027-178f-49d7-ae6e-311eb8567ddf with private PostgreSQL deployment 6da1966f-1351-44cb-9347-f498e695e9c4; evidence-only head 5c83da99cd0caf49ae794dd7853f488ba494385b contains the sanitized terminal record.'
+      - The isolated preview reports health ok, database connected, and Agent Action storage postgres. DATABASE_URL is supplied only by a private Railway service reference; no public database proxy or SSH key was created.
+      - 'A sanitized 31-job projection retained identical SHA-256 7e4b64e239082ec31968b4fab15f3d2df7cd7a95f2454506a40d616e90fc6fac and status counts across an exact service restart: 9 verified, 2 superseded, and 20 blocked.'
+      - Focused durability tests pass 49 with 0 failures and 1 local real-PostgreSQL skip because this machine cannot access the private preview database. Hosted restart/readback closes the deployed acceptance without opening a proxy.
+      - 'The 31-job queue remains the historical PR #107 projection. Repinning/importing accepted PR #108 jobs is a separate reviewed importer change and was not fabricated by this durability proof.'
+      - Customer messages, GHL mutations, and production mutations in this follow-up are zero. Historical incident verdict remains PRODUCTION_CHANGED: YES_TRANSIENT_RESTORED.
     blocker: null
-    remaining_work: 'Attach Postgres only to bna-agent-actions-preview, apply preview tables, prove save -> restart -> identical readback, run one operator-owned synthetic Telegram-to-GHL draft/save/readback canary with customer sends zero, then repin/import only the accepted PR #108 result.'
-    next_action: Attach one disposable Postgres service only to bna-agent-actions-preview, verify private DATABASE_URL linkage, and run the durable save, restart, identical-readback, single-consumer lease, and zero-customer-send synthetic canary.
+    remaining_work: null
+    next_action: 'Preserve the private PostgreSQL boundary and do not relabel the historical PR #107 queue as current PR #108 work.'
 
   - id: telegram_foundation
+    status: done
+    owner:
+      task_id: BNA-PR-141-RECONCILIATION
+      repository: shloimie-beep/bnei-neviim-academy
+      branch: codex/platform-agent-actions-telegram-preview
+      pr: 141
+      head: 5c83da99cd0caf49ae794dd7853f488ba494385b
+      system: One Time Telegram private canary
+    write_scope: Single consumer, private owner mapping/canary, and sanitized readback only
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/blob/5c83da99cd0caf49ae794dd7853f488ba494385b/ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json
+    dependencies: [bna_foundation]
+    acceptance_ids: [TELEGRAM-001]
+    evidence:
+      - 'The dedicated bot identity was verified and one signed webhook is registered to the isolated preview with max_connections=1, allowed_updates=message, pending_updates=0, and the canonical single-consumer strategy.'
+      - One operator-owned private synthetic /questions canary returned a status result. Immediate replay was rejected, and replay after exact service restart was also rejected, proving durable handled-once behavior.
+      - Telegram runs synthetic-only. Customer messages and GHL mutations are zero; protected values and the private destination are absent from Git evidence.
+    blocker: null
+    remaining_work: null
+    next_action: Keep the single-consumer webhook synthetic-only and preserve durable replay rejection.
+
+  - id: telegram_customer_bridge
     status: provider_off
     owner:
       task_id: BNA-PR-141-RECONCILIATION
       repository: shloimie-beep/bnei-neviim-academy
       branch: codex/platform-agent-actions-telegram-preview
       pr: 141
-      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
-      system: One Time Telegram private canary
-    write_scope: Single consumer, private owner mapping/canary, and sanitized readback only
-    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
-    dependencies: [bna_foundation]
-    acceptance_ids: [TELEGRAM-001]
-    evidence:
-      - 'Prior historical baseline recorded a private canary, but current PR #141 acceptance does not prove a DB-backed single-consumer lease or durable canary.'
-      - Without preview DATABASE_URL, the Telegram consumer lease, GHL synthetic-question draft, and persistence contract cannot be truthfully verified; customer/GHL/provider sends remain zero.
-    blocker: null
-    remaining_work: Single-consumer, private canary, synthetic-question draft, and persistence readback after BNA durability is unblocked.
-    next_action: Keep the Telegram UI provider_off until DATABASE_URL is attached and every canonical runtime gate reads back.
-
-  - id: telegram_customer_bridge
-    status: waiting_external
-    owner:
-      task_id: BNA-PR-141-RECONCILIATION
-      repository: shloimie-beep/bnei-neviim-academy
-      branch: codex/platform-agent-actions-telegram-preview
-      pr: 141
-      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
+      head: 5c83da99cd0caf49ae794dd7853f488ba494385b
       system: Telegram to GHL customer bridge
     write_scope: Private synthetic question draft/readback; no customer send by default
-    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/blob/5c83da99cd0caf49ae794dd7853f488ba494385b/ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json
     dependencies: [telegram_foundation, bna_durability, ghl_event_dispatcher]
     acceptance_ids: [TELEGRAM-002]
     evidence:
-      - Customer, GHL, and provider sends are zero; private synthetic no-send proof does not require customer-send authorization.
-      - Private bridge readback depends on BNA preview durability and the accepted One Time outbox/dispatcher contract.
-    blocker: null
-    remaining_work: Private synthetic question draft/readback after BNA durability and the One Time dispatcher are accepted; a later customer send remains a separate operator decision.
-    next_action: Keep all customer sends off while waiting for the database and dispatcher dependencies; do not conflate private proof with later send authorization.
+      - BNA durability, the Telegram foundation, and the accepted One Time outbox/dispatcher contract are present; the Telegram-to-GHL adapter remains synthetic-only with customer send disabled.
+      - The operator-owned synthetic HighLevel contact is absent, so no contact was inferred or created and no GHL draft/save/readback canary was attempted.
+      - "Customer messages and GHL mutations are zero. The user's separate GHL lane owns any later synthetic contact and UI mutation; PR #97 does not duplicate that work."
+    blocker:
+      code: OPERATOR_OWNED_SYNTHETIC_CONTACT_ABSENT
+      reason: The exact synthetic HighLevel contact required for a no-send draft/save/readback canary is absent, and creating or selecting it belongs to the separate GHL-controlled scope.
+    remaining_work: After the GHL-owned lane supplies one exact operator-owned synthetic contact, run only the synthetic question draft/save/readback canary with customer sends fixed at zero.
+    next_action: Keep the GHL bridge provider_off and customer sends disabled; do not infer a contact, duplicate the GHL lane, or treat the private Telegram canary as customer-bridge proof.
 
   - id: VIDEO-TO-CLASSROOM-E2E
     status: unclaimed
