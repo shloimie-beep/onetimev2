@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "zoom_real_control_operator_change_set",
+  "task_id": "OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP",
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/full-app-staging-live",
+    "pr": 97,
+    "system": "Reviewed Zoom provider-action job and persistent-staging canary preparation"
+  },
+  "write_scope": "One sanitized staging-only provider-action job plus this stable handoff; no BOARD, runtime, Railway, Zoom, provider, deployment, credential, or production mutation.",
+  "result": {
+    "status": "reviewed_job_prepared",
+    "job_key": "OT-LAUNCH-01-ZOOM-STAGING-CANARY-01",
+    "job_path": "ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md",
+    "provider_action_executed": false,
+    "railway_changed": false,
+    "zoom_changed": false,
+    "production_changed": false,
+    "protected_value_read_or_recorded": false,
+    "first_external_action": "Revoke and rotate the exposed persistent-staging class target at its authoritative protected source with every real/canary gate off; prove the old target denied before any Zoom allowlist or credential change.",
+    "obs_required_for_control_proof": false
+  },
+  "acceptance_results": {
+    "ZOOM-SDK-001": {
+      "status": "pending_external_execution",
+      "prepared_contract": "Exact staging origin, canonical Meeting SDK values, separate role-0/role-1 human join, consent, launch replay/expiry, and sibling-scope proof."
+    },
+    "ZOOM-S2S-001": {
+      "status": "pending_external_execution",
+      "prepared_contract": "Canonical S2S/host/meeting values, fresh host ZAK, bounded mute/unmute/spotlight/reset canary, command idempotency/scope denial, sanitized provider readback, and post-canary disable."
+    }
+  },
+  "evidence": [
+    {
+      "path": "ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md",
+      "kind": "reviewed_provider_action_job",
+      "sanitized": true
+    },
+    {
+      "path": "tests/unit/live-class/zoom-host-readiness.test.ts",
+      "kind": "existing_fail_closed_readiness_contract",
+      "sanitized": true
+    },
+    {
+      "path": "tests/unit/live-class/live-class-service.test.ts",
+      "kind": "existing_control_scope_and_idempotency_contract",
+      "sanitized": true
+    },
+    {
+      "path": "tests/integration/classroom/zoom-learner-classroom.test.ts",
+      "kind": "existing_launch_replay_expiry_and_origin_contract",
+      "sanitized": true
+    }
+  ],
+  "remaining_work": [
+    "A separately scoped provider executor must validate protected prerequisite sources without displaying values.",
+    "The authorized operator must rotate/revoke the exposed class target, add the exact staging origin to the existing General app, and install only the required protected staging values.",
+    "A human host and fictional Student 1 must complete the bounded separate-device canary and negative cases.",
+    "The executor must return provider mode sink, real-provider false, and canary false, then commit a sanitized result for conductor ingestion."
+  ],
+  "blocker": null,
+  "sanitized_at": "2026-07-23T10:41:25Z"
+}

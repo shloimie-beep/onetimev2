@@ -1,101 +1,324 @@
-# ZOOM-UI-01 — Meeting SDK General app setup
+# OT-LAUNCH-01 Zoom staging real-control canary
 
-Status: **operator action required**. This is the exact follow-up to PR #100 job
-[`ZOOM-UI-01`](../codex-runs/RABBI-LIVE-CONSOLE-ZOOM-OBS/ZOOM-UI-01.md).
-Zoom's current Marketplace flow uses a **General app**, not the legacy
-"Meeting SDK app" label.
+Status: **reviewed staging-only provider-action job; not executed by this preparation task**
 
-## App and feature
+Job key: `OT-LAUNCH-01-ZOOM-STAGING-CANARY-01`
 
-1. In Zoom App Marketplace, choose **Develop > Build App > General App**.
-2. Name the app `One Time Zoom Stage Host` and select **Admin-managed**.
-3. Under **Features > Embed**, enable **Meeting SDK** and select **Other Devices**.
-4. Use the app's **Development** credentials for this isolated Railway PR environment only.
+Assigned track: `zoom_real_control_operator_change_set`
 
-## Exact protected credentials and Railway variables
+Acceptance: `ZOOM-SDK-001`, `ZOOM-S2S-001`
 
-Copy values from the General app's Development credentials without pasting them into a ticket,
-chat, log, commit, or build output:
+This job configures and proves one bounded real Zoom Meeting SDK/S2S canary in persistent
+staging. It does not authorize production Zoom, the Rabbi's recurring meeting, customer
+participants, notifications, a second Zoom app, or a second status model. Protected values must
+move only through native provider copy controls and protected Railway variables. They must never
+appear in terminal output, Git, logs, screenshots, browser snapshots, tickets, or reports.
 
-- Development **Client ID** → `ZOOM_MEETING_SDK_CLIENT_ID`
-- Development **Client Secret** → `ZOOM_MEETING_SDK_CLIENT_SECRET`
-- Meeting SDK web version → `ZOOM_MEETING_SDK_WEB_VERSION=6.2.0`
+The preparation task that wrote this job did not rotate a target, read or write a protected
+value, change a Zoom/Railway setting, deploy, join a meeting, invoke Zoom, or change production.
 
-Bind the runtime to the exact HTTPS origin configured as the General app's Meeting SDK Web
-Domain. This value is not a credential, but it must still be governed configuration:
+## First external human action
 
-- Exact SDK Web Domain origin → `ZOOM_MEETING_SDK_ALLOWED_ORIGIN`
-- Runtime public URL → `PUBLIC_BASE_URL`
+The first external action is for the authorized Zoom/class-target operator to revoke and rotate
+the exposed persistent-staging class target at its authoritative protected source while every
+real/canary gate remains off. Do not start with the Zoom allowlist or Railway credential writes.
+The old target must first be proven denied and the replacement must first be proven scoped to the
+same staging-only class purpose without rendering either value.
 
-Both variables must resolve to the same origin. Paths, wildcards, localhost, HTTP, and a
-production origin are rejected by the host-control readiness gate.
+If the operator cannot access that authoritative source, or the old-target denial is ambiguous,
+stop with `PROTECTED_CLASS_TARGET_ROTATION_BLOCKED`. Clear the staging target variable if its
+handling is in doubt; never restore or reuse the exposed value.
 
-The existing Server-to-Server OAuth app remains separate and supplies REST meeting/registrant
-provisioning plus the host ZAK:
+## Fixed scope
 
-- `ZOOM_ACCOUNT_ID`
+- Repository/branch/PR: `shloimie-beep/onetimev2`,
+  `codex/full-app-staging-live`, PR `#97`.
+- Runtime: `ONE_TIME_RUNTIME_ENVIRONMENT=isolated_staging`.
+- Web origin: `https://ot99-web-staging.up.railway.app`.
+- Provider app: the existing admin-managed General app, `One Time Zoom Stage Host`, with Meeting
+  SDK enabled. Do not create another General app.
+- API app: the existing Server-to-Server OAuth app. Do not create another S2S app.
+- Meeting: one disposable isolated staging meeting. Never use the Rabbi's recurring/customer
+  meeting.
+- People: one authorized host and fictional Student 1 only. Student 2 is used only for an
+  application-layer negative scope test and must not join Zoom.
+- Runtime secrets: install only on the staging web service unless code inspection at the pinned
+  execution head proves another staging service requires one. The worker keeps all Zoom real and
+  canary gates off and receives no unnecessary Zoom secret.
+- Production, DNS, public landing, GHL, Telegram, Vimeo, email, WhatsApp, payment, and customer
+  data are out of scope.
+
+Before any mutation, pin the exact Git head and authoritative Railway service/domain/deployment
+mapping. Require `/version` source fields to agree with the pinned head and require `/health` and
+`/ready` to return healthy with no blockers. A stale human version label must be corrected only if
+it is an explicit staging-only label; a source mismatch stops the job.
+
+## Authoritative implementation contract
+
+The current code enforces four provider gates before Zoom client construction:
+
+1. `ONE_TIME_RUNTIME_ENVIRONMENT=isolated_staging`
+2. `ZOOM_CLASSROOM_ENABLED=true`
+3. `ZOOM_CLASSROOM_PROVIDER_MODE=real`
+4. `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=true`
+
+`ZOOM_CLASSROOM_CANARY_ENABLED=true` is an additional, final authorization gate. It is never
+inferred from the four provider gates. The canary flag remains false until every prerequisite and
+negative preflight passes.
+
+The four separately reported readiness phases are:
+
+1. Meeting SDK app and exact origin
+2. S2S meeting provisioning
+3. host authorization
+4. real-control canary authorization
+
+Legacy `ZOOM_MEETING_SDK_KEY` and `ZOOM_MEETING_SDK_SECRET` cannot satisfy canonical SDK
+readiness. The canonical S2S account variable is `ZOOM_S2S_ACCOUNT_ID`; integrated code accepts
+`ZOOM_ACCOUNT_ID` only as a temporary account-ID alias. This job sets the canonical variable and
+does not set both.
+
+## Protected prerequisite-source validation
+
+Validate presence and provenance without exporting values. Use provider/Railway UI states that
+show only configured/missing, or a purpose-built presence-only check whose output is restricted
+to the variable names and booleans below. Do not enumerate an environment, echo a value, print a
+length/prefix/suffix, or take a DOM snapshot of any credential page.
+
+### Meeting SDK and origin
+
+- `ZOOM_MEETING_SDK_CLIENT_ID`
+- `ZOOM_MEETING_SDK_CLIENT_SECRET`
+- `ZOOM_MEETING_SDK_WEB_VERSION` (the repository contract currently selects `6.2.0`; recheck
+  Zoom's minimum-version policy immediately before execution)
+- `ZOOM_MEETING_SDK_ALLOWED_ORIGIN`
+- `PUBLIC_BASE_URL`
+
+The last two values must both be exactly `https://ot99-web-staging.up.railway.app`, with HTTPS,
+no path, no wildcard, no query/fragment, and no credentials.
+
+### Six S2S/host/meeting prerequisites
+
+- `ZOOM_S2S_ACCOUNT_ID`
 - `ZOOM_S2S_CLIENT_ID`
 - `ZOOM_S2S_CLIENT_SECRET`
 - `ZOOM_HOST_USER_ID`
-
-The protected `ZOOM_HOST_USER_ID` must identify a **Licensed** Zoom user, and Meeting
-registration must be available for that host. If Zoom returns `registration_not_enabled`, change
-the host/license policy in the Zoom admin portal; do not replace the canary with the Rabbi's
-regular meeting.
-
-Copy the isolated canary's protected meeting material into only this PR environment:
-
 - `ZOOM_REAL_CONTROL_MEETING_ID`
 - `ZOOM_REAL_CONTROL_MEETING_PASSCODE`
 
-Do not set any of these on persistent staging until governed staging integration is explicitly
-authorized. Never set this canary configuration on production.
+The host must be a licensed user in the same governed Zoom account. The meeting and passcode must
+refer to one disposable staging meeting under that host. If meeting material does not yet exist
+but the S2S credentials and host source are valid, the execution task may run the existing
+`npm run zoom:real-control:provision` command once inside a protected environment. Its protected
+state must remain outside the repository, and its sanitized output must confirm no invitations,
+join URL, passcode, token, or private destination were printed. Do not substitute the Rabbi's
+regular meeting when registration or licensing is not ready.
 
-`ZOOM_CLASSROOM_CANARY_ENABLED=true` is the final, separate real-control authorization. Keep it
-false until the protected class target is rotated, all readiness phases pass, and the operator
-has explicitly authorized one governed isolated-staging canary. Disable it immediately after
-the proof or on any unexpected provider response.
+### Protected class target
 
-## Exact redirect and origin allow-list
+- `ONE_TIME_PROTECTED_CLASS_TARGET_URL`
 
-Permit only these exact PR #105 values:
+This is not evidence that SDK/S2S is ready. Its previously exposed value is compromised and must
+be revoked. The replacement is copied directly from its authoritative source to the staging
+protected variable. Record only `old_target_denied`, `replacement_target_valid`, and
+`target_value_recorded=false`; do not record a URL or a plain unsalted digest of one.
 
-- OAuth Redirect URL: `https://ot99-web-onetimev2-pr-105.up.railway.app/api/v1/live-class/zoom/oauth/callback`
-- OAuth Allow List entry: `https://ot99-web-onetimev2-pr-105.up.railway.app/api/v1/live-class/zoom/oauth/callback`
-- Meeting SDK Web Domain: `https://ot99-web-onetimev2-pr-105.up.railway.app`
+Any missing or ambiguous protected source stops before a real gate is enabled and returns the
+exact missing variable name only.
 
-Turn **Strict Mode** on, keep the subdomain check on, and add no wildcard, localhost,
-persistent-staging, production, Zoom App Home URL, or private customer destination. This
-implementation does not use a Zoom in-client app surface or General-app OAuth callback; the
-redirect entry satisfies Marketplace configuration only. Host ZAK retrieval continues through
-the separately authorized Server-to-Server OAuth app.
+## Execution sequence
 
-For a later governed staging canary, add exactly
-`https://ot99-web-staging.up.railway.app` to the **existing** General app's Meeting SDK Web
-Domain allowlist and set both runtime origin variables to that exact origin. Do not create a new
-app and do not add production.
+### 1. Establish the safe baseline
 
-## Controlled verification sequence
+Read back names/status only and require:
 
-1. Rotate/revoke the exposed protected staging class target according to
-   `../codex-runs/OT-LAUNCH-01/ZOOM-STAGING-CLASS-LINK-ROTATION-CANARY-RUNBOOK.md` before any
-   provider canary.
-2. Confirm the target is an explicitly governed isolated-staging environment; do not change
-   production.
-3. Add only the variables above, verify the exact origin binding, and redeploy that governed
-   environment.
-4. Open the protected Rabbi Live Console, confirm `meeting_sdk_host`, and open **Protected Zoom
-   Host**. Confirm the short-lived role-1 signature starts the one isolated canary meeting.
-5. Join only the three fictional registrants. Confirm participant mapping succeeds by stable
-   `customer_key` and not by display name.
-6. Select Student 1, have Student 1 click **I'm Ready**, accept Zoom's unmute prompt if desired,
-   and start video from the participant client if spotlight is to be tested.
-7. From the Rabbi console run: **Ask Unmute**, **Spotlight**, **Remove Spotlight**, **Mute**, then
-   **Done**. Confirm the roster state follows Zoom events and Done resets the stage.
-8. Replay one executed command, submit one expired command, and target Student 2 with Student 1's
-   command context. Confirm all three are rejected.
-9. Set `ZOOM_CLASSROOM_CANARY_ENABLED=false` and stop after this canary. Do not invite customers,
-   use the Rabbi's regular meeting, or change production.
+- `ZOOM_CLASSROOM_PROVIDER_MODE=sink`
+- `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=false`
+- `ZOOM_CLASSROOM_CANARY_ENABLED=false`
+- production has no change associated with this job
+- the exact fictional occurrence and fictional Student 1 are active and eligible in the current
+  staging account/product
+- no customer invitee, broad message, or recurring Rabbi meeting is in the canary scope
 
-The REST Meetings API is used only for meeting creation, registrants, and ZAK acquisition. It is
-not used or described as an in-meeting mute/spotlight control surface.
+Do not record account, learner, meeting, participant, host, or credential identifiers.
+
+### 2. Rotate the exposed class target
+
+1. Revoke the exposed value at the authoritative protected source.
+2. Issue one replacement for the same persistent-staging class purpose.
+3. Copy the replacement through native protected controls directly into
+   `ONE_TIME_PROTECTED_CLASS_TARGET_URL`.
+4. Consume the old target once through a non-logging denial check and require denial.
+5. Consume the replacement once through a non-logging protected smoke and require the expected
+   staging-only destination.
+6. If either result is ambiguous, clear the variable, keep all real/canary gates off, revoke the
+   replacement if needed, and stop.
+
+### 3. Add the exact staging origin
+
+In the existing General app:
+
+1. Keep Meeting SDK enabled.
+2. Preserve the accepted isolated PR origin.
+3. Add exactly `https://ot99-web-staging.up.railway.app` to Meeting SDK Web Domains.
+4. Keep strict/origin checking enabled.
+5. Add no wildcard, path, localhost, production origin, customer destination, App Home URL, or
+   unrelated redirect.
+
+This runtime does not use a General-app OAuth callback for host control; ZAK retrieval comes from
+the separate S2S app. Do not broaden OAuth redirects or scopes as part of this job.
+
+If Zoom presents login reCAPTCHA, rate limiting, a concurrency conflict, or an unrecognized app
+version, stop after the current atomic read. Do not hammer retry, create a replacement app, or
+weaken strict origin checking.
+
+### 4. Install protected prerequisites with real execution still disabled
+
+1. Copy the canonical SDK values and six S2S/host/meeting values into the persistent-staging web
+   service's protected variables.
+2. Set `PUBLIC_BASE_URL` and `ZOOM_MEETING_SDK_ALLOWED_ORIGIN` to the exact staging origin.
+3. Leave provider mode `sink`, real provider `false`, and canary `false`.
+4. Redeploy the exact pinned source.
+5. Verify `/version`, `/health`, and `/ready`; verify no raw value appears in logs or readiness.
+6. Read the four readiness phases by name. Configuration phases may be ready while provider
+   execution remains off.
+
+### 5. Prove the final canary gate is fail-closed
+
+Set only:
+
+- `ZOOM_CLASSROOM_PROVIDER_MODE=real`
+- `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=true`
+- `ZOOM_CLASSROOM_CANARY_ENABLED=false`
+
+Redeploy and require the application to report provider off with only canary authorization still
+closed. A host port/provider client must not be constructed. If any provider request is observed,
+disable the real gates and stop.
+
+### 6. Run one bounded real canary
+
+Set `ZOOM_CLASSROOM_CANARY_ENABLED=true` only on the staging web service and redeploy the exact
+source. Use a current supported Chrome or Edge browser; allow microphone/camera only for this
+test.
+
+1. On the host device, sign in as the authorized fictional Administrator and open
+   `/app/live-console`.
+2. On a separate physical device or isolated browser profile, sign in as fictional Student 1,
+   open the exact class occurrence, and select **Join class**.
+3. Start/join from **Protected Zoom Host**. Require role-1 SDK authorization plus a freshly
+   acquired host ZAK; never record either token.
+4. Require Student 1's role-0 join to map by the bounded stable `customer_key`, not display name.
+   Record only the fictional label, never the customer key or Zoom participant ID.
+5. Student 1 selects **I'm Ready**, joins audio/video voluntarily, and accepts Zoom's unmute
+   prompt. The host cannot bypass participant consent.
+6. From Live Console, select Student 1 and execute:
+   - **Ask Unmute**; Student 1 accepts; read back unmuted.
+   - **Mute**; read back muted.
+   - **Ask Unmute** again; Student 1 accepts; read back unmuted.
+   - **Spotlight** with Student 1 video on; read back spotlighted.
+   - **Remove Spotlight**; read back not spotlighted.
+   - **Done**; require selected question/participant state and stage scene to reset.
+7. Refresh roster/state from Zoom participant events after each change; do not trust a cached
+   parallel roster.
+8. Stop the meeting. Do not invite a customer, record the meeting, livestream, or send a
+   notification.
+
+OBS is **not required** for this control proof. Meeting SDK/S2S plus the real host and Student
+devices prove join, consent, mute/unmute, spotlight, and reset. OBS is a separate production or
+broadcast-composition concern.
+
+### 7. Prove negative boundaries
+
+With no additional participant join:
+
+1. Replay one consumed Student 1 launch grant and require an expired/consumed denial.
+2. Submit one expired launch/command and require denial before provider invocation.
+3. Attempt to use Student 1's context as fictional Student 2 and require sibling/cross-student
+   denial before provider invocation.
+4. Replay one executed host command with the same idempotency key and require idempotency
+   rejection with no duplicate provider action.
+5. Attempt a command against a participant outside the selected fictional question/context and
+   require scope denial before provider invocation.
+
+Do not loosen an assertion or create a manual fallback if any negative case fails.
+
+### 8. Disable real execution and read back
+
+Immediately after proof, or on any unexpected response:
+
+1. Set `ZOOM_CLASSROOM_CANARY_ENABLED=false`.
+2. Set `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=false`.
+3. Set `ZOOM_CLASSROOM_PROVIDER_MODE=sink`.
+4. Redeploy the same exact source.
+5. Verify `/version`, `/health`, and `/ready`.
+6. Verify Live Console and Student Classroom truthfully show provider off while the controlled
+   fake flow remains usable.
+7. Verify no new Zoom provider request occurs after disable.
+
+The protected prerequisites and exact staging allowlist may remain installed for a later
+separately governed canary, but all real/canary execution gates remain off. If credential scope,
+origin binding, or value handling is suspect, remove the affected staging values and the staging
+origin as part of containment. Keep the exposed old class target revoked in all cases.
+
+## Sanitized evidence contract
+
+The execution result may record only:
+
+- job key, exact Git head, service names, deployment IDs, and timestamps
+- `/version`, `/health`, `/ready`, and migration label
+- `old_target_denied`, `replacement_target_valid`, `target_value_recorded=false`
+- the exact public staging origin and whether strict allowlisting passed
+- each variable **name** with `configured` or `missing`, never a value
+- each readiness phase name with ready/blocked and blocker variable names
+- fictional participant labels and device classes only
+- each command type with executed/rejected and allowlisted provider result category
+- replay/expiry/cross-student/idempotency denial booleans
+- confirmation that post-canary mode is sink, real-provider false, and canary false
+- provider request/mutation counts bounded to this one meeting and zero customer notifications
+- production change count zero
+
+It must not contain client IDs, secrets, account/host/meeting/participant identifiers, passcodes,
+ZAK, signatures, access tokens, join/class targets, customer keys, emails, IP addresses, private
+destinations, raw Zoom errors, browser credential fields, or screenshots of protected consoles.
+
+Before handoff, run the repository secret scan, inspect the exact changed-file list, and confirm
+no browser/terminal artifact captured a protected value. Return a single sanitized handoff to
+the conductor; only the conductor updates `BOARD.yaml`.
+
+## Stop conditions
+
+Stop with one exact blocker and keep real/canary gates off when:
+
+- a protected prerequisite source is missing or ambiguous
+- target rotation or old-target denial cannot be proven
+- the exact staging origin cannot be added without broadening the allowlist
+- the host is not licensed or cannot obtain a fresh ZAK
+- the isolated meeting cannot support the required participant behavior
+- Zoom presents unresolved reCAPTCHA/rate limiting or an outdated-version conflict
+- `/version` does not match the pinned source
+- readiness exposes a value or constructs a provider before the final canary gate
+- consent, mute/unmute, spotlight/reset, replay, expiry, sibling scope, or idempotency differs
+  from the contract
+- any customer notification, production change, unrelated meeting mutation, or protected-value
+  disclosure is observed
+
+## Current official Zoom constraints checked for this job
+
+Checked on 2026-07-23:
+
+- Meeting SDK JWTs are generated server-side; a host start/join uses JWT plus a fresh ZAK.
+- S2S OAuth account credentials are separate from Meeting SDK credentials.
+- Web participant join/state, mute/unmute, active-speaker, and host/co-host changes are surfaced
+  through Meeting SDK participant events.
+- Component view supports core mute/unmute and video controls; mobile uses client view.
+- Zoom enforces a quarterly Meeting SDK minimum-version policy. Recheck the selected web version
+  immediately before the canary.
+- Meeting SDK is for human meeting use, which this bounded host-and-Student canary satisfies.
+
+Official references:
+
+- https://developers.zoom.us/docs/meeting-sdk/auth/
+- https://developers.zoom.us/docs/internal-apps/create/
+- https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/
+- https://developers.zoom.us/docs/meeting-sdk/web/component-view/supported/
+- https://developers.zoom.us/docs/build/minimum-version/
