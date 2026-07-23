@@ -268,14 +268,12 @@ if (form) {
   const status = form.querySelector<HTMLElement>('[data-form-status]');
   const success = document.querySelector<HTMLElement>('[data-success-panel]');
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-  const noScriptFallback = document.querySelector<HTMLElement>('[data-noscript-fallback]');
   const phone = form.querySelector<HTMLInputElement>('#phone');
   const emailReminder = form.querySelector<HTMLInputElement>('#email_reminder_consent');
   const whatsappReminder = form.querySelector<HTMLInputElement>('#whatsapp_reminder_consent');
   const timezone = form.querySelector<HTMLInputElement>('#timezone');
   const timezoneFallback = form.querySelector<HTMLInputElement>('#timezone_fallback');
   const idempotencyKey = crypto.randomUUID();
-  if (noScriptFallback) noScriptFallback.hidden = true;
   if (submit) submit.hidden = false;
 
   const setError = (name: string, message: string) => {

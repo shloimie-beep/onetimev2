@@ -285,7 +285,7 @@ function signupPage() {
     <p>Join the live daily Mishnayos class and choose how you want to receive class information.</p>
   </section>
   <section class="signup-shell">
-    <div class="noscript-panel" role="status" data-noscript-fallback><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the contact method supplied by the One Time team. Do not send student-sensitive information through this public form.</span></div>
+    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the contact method supplied by the One Time team. Do not send student-sensitive information through this public form.</span></div></noscript>
     <form class="signup-form" action="/api/v1/leads" method="post" data-signup-form data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
       <div class="field"><label for="contact_name">Parent or contact name</label><input id="contact_name" name="contact_name" autocomplete="name" required><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
       <div class="field"><label for="family_or_school">Family or School</label><input id="family_or_school" name="family_or_school" required><small>Do not include student names, ages, medical details, or private learner notes here.</small><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>

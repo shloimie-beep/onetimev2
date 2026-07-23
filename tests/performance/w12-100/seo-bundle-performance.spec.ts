@@ -14,10 +14,10 @@ test.describe.configure({ mode: 'serial' });
 const performanceRecords: Array<Record<string, unknown>> = [];
 
 test('public pages meet local LCP, CLS, metadata, and navigation budgets', async ({ page }) => {
+  await installVitalsObserver(page);
   for (const viewport of [mobileViewport, desktopViewport]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const route of ['/', '/signup', '/privacy', '/terms']) {
-      await installVitalsObserver(page);
       const started = Date.now();
       const response = await page.goto(route, { waitUntil: 'load' });
       await page.waitForLoadState('networkidle').catch(() => undefined);

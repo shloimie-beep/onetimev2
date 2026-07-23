@@ -609,11 +609,11 @@ test('signup has an explicit no-JavaScript fallback', async ({ browser }) => {
   const noJsPage = await context.newPage();
   try {
     await noJsPage.goto('/signup');
-    await expect(
-      noJsPage.getByText('JavaScript is required for secure signup submission.'),
-    ).toBeVisible();
+    const fallback = noJsPage.locator('noscript > .noscript-panel');
+    await expect(fallback).toBeVisible();
+    await expect(fallback).toContainText('JavaScript is required for secure signup submission.');
     await expect(noJsPage.getByRole('button', { name: 'Sign Up Now' })).toBeHidden();
-    await expect(noJsPage.getByText('Do not send student-sensitive information')).toBeVisible();
+    await expect(fallback).toContainText('Do not send student-sensitive information');
   } finally {
     await context.close();
   }
