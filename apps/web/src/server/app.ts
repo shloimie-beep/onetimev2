@@ -808,7 +808,7 @@ export function createApp({
     }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
-    await sendAppHtml(res, distDir, 'crm');
+    await sendAppHtml(res, distDir, 'crm', config);
   });
 
   app.get('/app/experience-preview', async (req: RequestWithTrace, res) => {
@@ -834,7 +834,7 @@ export function createApp({
       return;
     }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
-    await sendAppHtml(res, distDir, 'crm');
+    await sendAppHtml(res, distDir, 'crm', config);
   });
 
   app.get(
@@ -852,7 +852,7 @@ export function createApp({
       }
       await ensureSessionCsrfCookie(req, res, pool, config, session);
       setPrivateNoStore(res);
-      await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm');
+      await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm', config);
     },
   );
 
@@ -876,7 +876,7 @@ export function createApp({
       }
       await ensureSessionCsrfCookie(req, res, pool, config, session);
       setPrivateNoStore(res);
-      await sendAppHtml(res, distDir, 'crm');
+      await sendAppHtml(res, distDir, 'crm', config);
     },
   );
 
@@ -971,7 +971,7 @@ export function createApp({
     }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
-    await sendAppHtml(res, distDir, 'live');
+    await sendAppHtml(res, distDir, 'live', config);
   });
 
   app.get(/^\/app\/live-stage\/([^/]+)(?:\/.*)?$/, async (_req: RequestWithTrace, res) => {
@@ -992,7 +992,7 @@ export function createApp({
         "frame-ancestors 'self'",
       ].join('; '),
     );
-    await sendAppHtml(res, distDir, 'live');
+    await sendAppHtml(res, distDir, 'live', config);
   });
 
   app.get(/^\/app\/parent(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
@@ -3252,7 +3252,12 @@ async function sendPublicHtml(
 ) {
   const html = await readFile(filePath, 'utf8');
   const response = res.type('html');
-  if (canonicalPath === '/tisha-bav' || canonicalPath === '/tisha-bav.html') {
+  if (canonicalPath.startsWith('/app/')) {
+    response
+      .set('Cache-Control', 'no-store, private')
+      .set('Pragma', 'no-cache')
+      .set('Expires', '0');
+  } else if (canonicalPath === '/tisha-bav' || canonicalPath === '/tisha-bav.html') {
     response
       .set('Cache-Control', 'no-cache, max-age=0, must-revalidate')
       .set('Pragma', 'no-cache')
@@ -3260,7 +3265,7 @@ async function sendPublicHtml(
   } else {
     response.set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache');
   }
-  response.send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+  response.send(rewritePublicMetadata(html, config, canonicalPath));
 }
 
 async function sendNoStorePublicHtml(
@@ -3277,17 +3282,29 @@ async function sendNoStorePublicHtml(
     .set('Expires', '0')
     .set('Referrer-Policy', 'no-referrer')
     .set('X-Robots-Tag', 'noindex, nofollow')
-    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+    .send(rewritePublicMetadata(html, config, canonicalPath));
 }
 
-function rewritePublicMetadata(html: string, publicBaseUrl: string, canonicalPath: string) {
-  const metadataUrl = publicMetadataUrl(publicBaseUrl, canonicalPath);
-  return html
+function rewritePublicMetadata(html: string, config: AppConfig, canonicalPath: string) {
+  const metadataUrl = publicMetadataUrl(config.publicBaseUrl, canonicalPath);
+  const rewrittenMetadata = html
     .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${metadataUrl}">`)
     .replace(
       /<meta property="og:url" content="[^"]*">/,
       `<meta property="og:url" content="${metadataUrl}">`,
     );
+  return rewriteAppAssetUrls(rewrittenMetadata, config);
+}
+
+function rewriteAppAssetUrls(html: string, config: AppConfig) {
+  const assetVersion = (config.railwayGitCommitSha ?? config.commitSha ?? config.appVersion)
+    .replace(/[^A-Za-z0-9._-]/g, '')
+    .slice(0, 64);
+  return html.replace(
+    /(["'])\/assets\/(app-[^"'?#]+\.(?:js|css))(?:\?[^"']*)?\1/g,
+    (_match, quote: string, assetPath: string) =>
+      `${quote}/assets/${assetPath}?v=${assetVersion}${quote}`,
+  );
 }
 
 function publicMetadataUrl(publicBaseUrl: string, canonicalPath: string) {
@@ -3621,17 +3638,18 @@ async function serveProtectedAppShell(
   }
   await ensureSessionCsrfCookie(req, res, input.pool, input.config, session);
   setPrivateNoStore(res);
-  await sendAppHtml(res, input.distDir, input.appPage);
+  await sendAppHtml(res, input.distDir, input.appPage, input.config);
 }
 
 async function sendAppHtml(
   res: Response,
   distDir: string,
   appPage: 'crm' | 'live' | 'parent' | 'student',
+  config: AppConfig,
 ) {
   try {
     const html = await readFile(path.join(distDir, 'app', `${appPage}.html`), 'utf8');
-    res.status(200).type('html').send(html);
+    res.status(200).type('html').send(rewriteAppAssetUrls(html, config));
   } catch {
     res
       .status(500)

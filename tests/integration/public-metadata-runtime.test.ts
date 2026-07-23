@@ -3,15 +3,19 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { loadConfig } from '../../packages/config/src/index.ts';
-import { createMemoryPool } from '../../packages/db/src/index.ts';
+import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
+import { createAccountUser } from '../../packages/domain/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
 
 let server: ReturnType<ReturnType<typeof createApp>['listen']> | null = null;
 let distDir: string | null = null;
+let pool: DbPool | null = null;
 
 afterEach(async () => {
   if (server) await closeServer(server);
   server = null;
+  if (pool) await pool.end();
+  pool = null;
   if (distDir) await rm(distDir, { recursive: true, force: true });
   distDir = null;
 });
@@ -26,7 +30,7 @@ describe('runtime public metadata origin', () => {
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://ot99-web-staging.up.railway.app',
     });
-    const pool = createMemoryPool();
+    pool = createMemoryPool();
     server = await listenForTest(createApp({ config, pool, distDir }));
     const baseUrl = serverBaseUrl(server);
 
@@ -51,10 +55,11 @@ describe('runtime public metadata origin', () => {
     const config = loadConfig({
       NODE_ENV: 'production',
       PUBLIC_BASE_URL: 'https://ot99-web-staging.up.railway.app',
+      COMMIT_SHA: '0123456789abcdef0123456789abcdef01234567',
       AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-static-cache-proof',
       MFA_SECRET_ENCRYPTION_KEY: 'test-only-32-byte-mfa-key-static',
     });
-    const pool = createMemoryPool();
+    pool = createMemoryPool();
     server = await listenForTest(createApp({ config, pool, distDir }));
     const baseUrl = serverBaseUrl(server);
 
@@ -69,6 +74,53 @@ describe('runtime public metadata origin', () => {
     const versionedImage = await fetch(`${baseUrl}/assets/brand.webp`);
     expect(versionedImage.status).toBe(200);
     expect(versionedImage.headers.get('cache-control')).toContain('max-age=3600');
+  });
+
+  it('serves authenticated app HTML as no-store with commit-versioned entry assets', async () => {
+    distDir = await mkdtemp(path.join(tmpdir(), 'ot-runtime-app-shell-'));
+    await mkdir(path.join(distDir, 'app'), { recursive: true });
+    await writeFile(
+      path.join(distDir, 'app', 'parent.html'),
+      '<link rel="stylesheet" href="/assets/app-crm.css"><div id="portal-root"></div><script type="module" src="/assets/app-portal.js"></script>',
+    );
+    await writeHtml(distDir, '404.html');
+    const config = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://ot99-web-staging.up.railway.app',
+      COMMIT_SHA: '0123456789abcdef0123456789abcdef01234567',
+    });
+    pool = createMemoryPool();
+    await runMigrations(pool);
+    await createAccountUser({
+      pool,
+      config,
+      email: 'cache-parent@example.test',
+      password: 'CacheParentPass!234',
+      displayName: 'Cache Parent',
+      role: 'parent',
+      mfaCapable: false,
+    });
+    server = await listenForTest(createApp({ config, pool, distDir }));
+    const baseUrl = serverBaseUrl(server);
+    const parentCookies = await loginAs(
+      baseUrl,
+      'cache-parent@example.test',
+      'CacheParentPass!234',
+    );
+    const parentHtml = await fetch(`${baseUrl}/app/parent`, {
+      headers: { cookie: parentCookies },
+    });
+    expect(parentHtml.status).toBe(200);
+    expect(parentHtml.headers.get('cache-control')).toBe('no-store, private');
+    expect(parentHtml.headers.get('pragma')).toBe('no-cache');
+    expect(parentHtml.headers.get('expires')).toBe('0');
+    const parentMarkup = await parentHtml.text();
+    expect(parentMarkup).toContain(
+      '/assets/app-portal.js?v=0123456789abcdef0123456789abcdef01234567',
+    );
+    expect(parentMarkup).toContain(
+      '/assets/app-crm.css?v=0123456789abcdef0123456789abcdef01234567',
+    );
   });
 });
 
@@ -103,4 +155,45 @@ function serverBaseUrl(target: ReturnType<ReturnType<typeof createApp>['listen']
   const address = target.address();
   if (!address || typeof address === 'string') throw new Error('Expected TCP test server');
   return `http://127.0.0.1:${address.port}`;
+}
+
+async function loginAs(baseUrl: string, identifier: string, password: string) {
+  const loginPage = await fetch(`${baseUrl}/login`);
+  const loginHtml = await loginPage.text();
+  const csrfToken = loginHtml.match(/name="csrf_token" value="([^"]+)"/)?.[1];
+  if (!csrfToken) throw new Error('missing login CSRF token');
+  const initialCookies = cookieHeader(loginPage.headers);
+  const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: {
+      cookie: initialCookies,
+      'content-type': 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify({
+      identifier,
+      password,
+      csrf_token: csrfToken,
+    }),
+  });
+  expect(response.status, await response.text()).toBe(200);
+  return mergeCookies(initialCookies, cookieHeader(response.headers));
+}
+
+function cookieHeader(headers: Headers) {
+  return headers
+    .getSetCookie()
+    .map((cookie) => cookie.split(';')[0])
+    .join('; ');
+}
+
+function mergeCookies(...headers: string[]) {
+  const cookies = new Map<string, string>();
+  for (const header of headers) {
+    for (const part of header.split(';')) {
+      const [key, value] = part.trim().split('=');
+      if (key && value) cookies.set(key, value);
+    }
+  }
+  return [...cookies.entries()].map(([key, value]) => `${key}=${value}`).join('; ');
 }
