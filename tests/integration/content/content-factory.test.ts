@@ -105,11 +105,12 @@ describe('durable occurrence-scoped content factory', () => {
     expect(String(persisted.rows[0].storage_locator)).toMatch(/^volume:v1:/);
     await contentFactoryStorageFromEnv().inspect(String(persisted.rows[0].storage_locator));
 
+    const leaseStartMs = Date.now() + 1_000;
     const claimedBeforeRestart = await claimContentFactoryJob({
       pool,
       config,
       workerIdentity: 'worker-before-restart',
-      now: new Date('2026-07-23T12:00:00.000Z'),
+      now: new Date(leaseStartMs),
       leaseMs: 1_000,
     });
     expect(claimedBeforeRestart?.stage).toBe('inspecting');
@@ -119,7 +120,7 @@ describe('durable occurrence-scoped content factory', () => {
       config,
       storage: contentFactoryStorageFromEnv(),
       workerIdentity: 'worker-after-restart',
-      now: new Date('2026-07-23T12:00:02.000Z'),
+      now: new Date(leaseStartMs + 2_000),
       leaseMs: 60_000,
       mode: 'synthetic',
     });
@@ -135,7 +136,7 @@ describe('durable occurrence-scoped content factory', () => {
         config,
         storage: contentFactoryStorageFromEnv(),
         workerIdentity: `worker-stage-${index}`,
-        now: new Date(`2026-07-23T12:00:${String(index + 3).padStart(2, '0')}.000Z`),
+        now: new Date(leaseStartMs + (index + 3) * 1_000),
         mode: 'synthetic',
       });
     }

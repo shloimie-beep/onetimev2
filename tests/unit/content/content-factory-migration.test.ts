@@ -4,17 +4,20 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('content factory migration allocation', () => {
-  it('keeps immutable 2214/2221 and forward-repairs the provider constraint at 2222', async () => {
+  it('keeps immutable 2214/2221 and uses forward-only constraint repairs', async () => {
     const directory = path.resolve(process.cwd(), 'packages/db/migrations');
     const names = await readdir(directory);
     const migrationName = '2214_learning_delivery_content_factory.sql';
     const previewMigrationName = '2215_experience_preview_sessions.sql';
     const durableMigrationName = '2221_video_to_classroom_e2e.sql';
     const providerConstraintMigrationName = '2222_content_factory_provider_constraint.sql';
+    const publishConstraintMigrationName =
+      '2223_content_factory_publish_ready_constraint.sql';
     expect(names).toContain(migrationName);
     expect(names).toContain(previewMigrationName);
     expect(names).toContain(durableMigrationName);
     expect(names).toContain(providerConstraintMigrationName);
+    expect(names).toContain(publishConstraintMigrationName);
     expect(names).not.toContain('2210_learning_delivery_content_factory.sql');
     expect(names).not.toContain('2214_experience_preview_sessions.sql');
 
@@ -54,5 +57,20 @@ describe('content factory migration allocation', () => {
     expect(
       createHash('sha256').update(providerConstraintSql.replace(/\r\n/g, '\n')).digest('hex'),
     ).toBe('79a3f3f60a2cd9b4c08bcd08b4d694f1d652f90ab288da79d578d87ce1cd32c0');
+
+    const publishConstraintSql = await readFile(
+      path.join(directory, publishConstraintMigrationName),
+      'utf8',
+    );
+    expect(publishConstraintSql).toContain(
+      'DROP CONSTRAINT IF EXISTS learning_delivery_content_factory_items_check1',
+    );
+    expect(publishConstraintSql).toContain(
+      'ADD CONSTRAINT learning_delivery_cf_publish_ready_check',
+    );
+    expect(publishConstraintSql).not.toContain('provider_embed_url IS NOT NULL');
+    expect(
+      createHash('sha256').update(publishConstraintSql.replace(/\r\n/g, '\n')).digest('hex'),
+    ).toBe('59ac22d69f56382669d70d1e78c7556e162efcc3183a5552b111f3d7b9953a65');
   });
 });
