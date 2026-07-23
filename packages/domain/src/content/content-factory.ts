@@ -17,6 +17,7 @@ import {
   learningDeliveryTranscriptSegmentSchema,
   type LearningDeliveryTranscriptSegment,
 } from '../../../contracts/src/content/learning-delivery.ts';
+import type { PortalActorContext } from '../../../contracts/src/portals/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { stableOt86Key } from './pipeline.ts';
@@ -44,6 +45,21 @@ export class ContentFactoryError extends Error {
   ) {
     super(message);
   }
+}
+
+export class ContentFactoryPublicationError extends Error {
+  constructor(
+    public readonly stage: string,
+    public readonly safeErrorCode: string,
+  ) {
+    super('Content publication could not be completed.');
+  }
+}
+
+export function contentFactorySafePostgresCode(error: unknown) {
+  const code =
+    error && typeof error === 'object' && 'code' in error ? String(error.code).toUpperCase() : '';
+  return /^[0-9A-Z]{5}$/.test(code) ? `pg_${code}` : 'publication_unexpected';
 }
 
 export type ContentFactoryIngest = {
@@ -212,17 +228,60 @@ export async function ingestContentFactoryItem(input: {
 }
 
 export async function getContentFactoryWorkspace(input: { pool: DbPool; config: AppConfig }) {
-  const [result, intakeResult] = await Promise.all([
+  const [result, intakeResult, occurrenceResult, rosterResult] = await Promise.all([
     input.pool.query(
-      `SELECT * FROM onetime.learning_delivery_content_factory_items
-      WHERE account_key = $1 AND product_key = $2
-      ORDER BY updated_at DESC, source_key ASC LIMIT 100`,
+      `SELECT item.*, occurrence.local_class_date AS occurrence_class_date,
+              series.title AS occurrence_class_title
+         FROM onetime.learning_delivery_content_factory_items item
+         LEFT JOIN onetime.class_occurrences occurrence
+           ON occurrence.account_key = item.account_key
+          AND occurrence.product_key = item.product_key
+          AND occurrence.occurrence_key = item.occurrence_key
+         LEFT JOIN onetime.class_series series
+           ON series.account_key = occurrence.account_key
+          AND series.product_key = occurrence.product_key
+          AND series.class_series_key = occurrence.class_series_key
+        WHERE item.account_key = $1 AND item.product_key = $2
+        ORDER BY item.updated_at DESC, item.source_key ASC LIMIT 100`,
       [input.config.accountKey, input.config.productKey],
     ),
     input.pool.query(
-      `SELECT * FROM onetime.learning_delivery_content_factory_intakes
-        WHERE account_key = $1 AND product_key = $2
-        ORDER BY updated_at DESC, intake_key ASC LIMIT 100`,
+      `SELECT intake.*, occurrence.local_class_date AS occurrence_class_date,
+              series.title AS occurrence_class_title
+         FROM onetime.learning_delivery_content_factory_intakes intake
+         LEFT JOIN onetime.class_occurrences occurrence
+           ON occurrence.account_key = intake.account_key
+          AND occurrence.product_key = intake.product_key
+          AND occurrence.occurrence_key = intake.occurrence_key
+         LEFT JOIN onetime.class_series series
+           ON series.account_key = occurrence.account_key
+          AND series.product_key = occurrence.product_key
+          AND series.class_series_key = occurrence.class_series_key
+        WHERE intake.account_key = $1 AND intake.product_key = $2
+        ORDER BY intake.updated_at DESC, intake.intake_key ASC LIMIT 100`,
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT occurrence.occurrence_key, occurrence.local_class_date, occurrence.starts_at,
+              series.title AS class_title
+         FROM onetime.class_occurrences occurrence
+         JOIN onetime.class_series series
+           ON series.account_key = occurrence.account_key
+          AND series.product_key = occurrence.product_key
+          AND series.class_series_key = occurrence.class_series_key
+        WHERE occurrence.account_key = $1 AND occurrence.product_key = $2
+          AND occurrence.occurrence_state <> 'cancelled'
+        ORDER BY occurrence.starts_at DESC LIMIT 100`,
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT occurrence_key, learner_key
+         FROM onetime.classroom_occurrence_learner_entitlements
+        WHERE account_key = $1 AND product_key = $2 AND entitlement_state = 'active'
+       UNION
+       SELECT occurrence_key, learner_key
+         FROM onetime.classroom_launch_grants
+        WHERE account_key = $1 AND product_key = $2 AND status IN ('issued','consumed')`,
       [input.config.accountKey, input.config.productKey],
     ),
   ]);
@@ -233,7 +292,20 @@ export async function getContentFactoryWorkspace(input: { pool: DbPool; config: 
     number
   >;
   for (const item of items) counts[item.state] += 1;
-  return { items, intakes, counts };
+  const learnerCounts = new Map<string, Set<string>>();
+  for (const row of rosterResult.rows) {
+    const learners = learnerCounts.get(String(row.occurrence_key)) ?? new Set<string>();
+    learners.add(String(row.learner_key));
+    learnerCounts.set(String(row.occurrence_key), learners);
+  }
+  const occurrences = occurrenceResult.rows.map((row) => ({
+    occurrence_key: String(row.occurrence_key),
+    class_title: String(row.class_title),
+    class_date: asDate(row.local_class_date).toISOString().slice(0, 10),
+    starts_at: asDate(row.starts_at).toISOString(),
+    learner_count: learnerCounts.get(String(row.occurrence_key))?.size ?? 0,
+  }));
+  return { items, intakes, occurrences, counts };
 }
 
 export async function createContentFactoryIntake(input: {
@@ -246,8 +318,9 @@ export async function createContentFactoryIntake(input: {
   byteLength: number;
   sourceSha256: string;
   privateRefDigest: string;
-  classLabel?: string | null;
-  classDate?: string | null;
+  storageLocator: string;
+  occurrenceKey: string;
+  idempotencyKey: string;
 }) {
   assertAdmin(input.actorRole);
   if (
@@ -262,46 +335,124 @@ export async function createContentFactoryIntake(input: {
   if (!input.displayName.trim() || input.displayName.length > 240) {
     throw new ContentFactoryError('VALIDATION_ERROR', 'A safe video filename is required.');
   }
-  if (input.classLabel && input.classLabel.length > 180) {
-    throw new ContentFactoryError('VALIDATION_ERROR', 'Class assignment is too long.');
+  if (!/^volume:v1:[0-9a-f-]{36}$/.test(input.storageLocator)) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'A durable private locator is required.');
   }
-  if (input.classDate && !/^\d{4}-\d{2}-\d{2}$/.test(input.classDate)) {
-    throw new ContentFactoryError('VALIDATION_ERROR', 'Class date must use YYYY-MM-DD.');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{7,179}$/.test(input.idempotencyKey)) {
+    throw new ContentFactoryError(
+      'VALIDATION_ERROR',
+      'A valid upload idempotency key is required.',
+    );
   }
-  const intakeKey = stableOt86Key('factory_intake', [input.sourceSha256]);
-  await input.pool.query(
-    `INSERT INTO onetime.learning_delivery_content_factory_intakes
-       (intake_key, account_key, product_key, source_kind, display_name, mime_type,
-        byte_length, source_sha256, private_ref_digest, intake_state, class_label,
-        class_date, created_by_user_key, updated_at)
-     VALUES ($1,$2,$3,'local_drop',$4,$5,$6,$7,$8,'received',$9,$10,$11,now())
-     ON CONFLICT (account_key, product_key, source_sha256)
-     DO UPDATE SET display_name = EXCLUDED.display_name, mime_type = EXCLUDED.mime_type,
-       byte_length = EXCLUDED.byte_length, private_ref_digest = EXCLUDED.private_ref_digest,
-       class_label = COALESCE(EXCLUDED.class_label, onetime.learning_delivery_content_factory_intakes.class_label),
-       class_date = COALESCE(EXCLUDED.class_date, onetime.learning_delivery_content_factory_intakes.class_date),
-       last_safe_error_code = NULL, updated_at = now()`,
-    [
-      intakeKey,
-      input.config.accountKey,
-      input.config.productKey,
-      input.displayName,
-      input.mimeType,
-      input.byteLength,
-      input.sourceSha256,
-      input.privateRefDigest,
-      input.classLabel ?? null,
-      input.classDate ?? null,
-      input.actorUserKey,
-    ],
-  );
-  const result = await input.pool.query(
-    `SELECT * FROM onetime.learning_delivery_content_factory_intakes
-      WHERE account_key = $1 AND product_key = $2 AND source_sha256 = $3 LIMIT 1`,
-    [input.config.accountKey, input.config.productKey, input.sourceSha256],
-  );
-  if (!result.rows[0]) throw new Error('content_factory_intake_not_persisted');
-  return safeIntakeFromRow(result.rows[0]);
+  return inTransaction(input.pool, async (client) => {
+    const occurrence = await client.query(
+      `SELECT occurrence.occurrence_key, occurrence.local_class_date,
+              series.title AS occurrence_class_title
+         FROM onetime.class_occurrences occurrence
+         JOIN onetime.class_series series
+           ON series.account_key = occurrence.account_key
+          AND series.product_key = occurrence.product_key
+          AND series.class_series_key = occurrence.class_series_key
+        WHERE occurrence.account_key = $1 AND occurrence.product_key = $2
+          AND occurrence.occurrence_key = $3 AND occurrence.occurrence_state <> 'cancelled'
+        LIMIT 1`,
+      [input.config.accountKey, input.config.productKey, input.occurrenceKey],
+    );
+    if (!occurrence.rows[0]) {
+      throw new ContentFactoryError('VALIDATION_ERROR', 'Select an existing class occurrence.');
+    }
+    const requestFingerprint = sha256(
+      [input.sourceSha256, input.occurrenceKey, input.byteLength, input.mimeType].join('\0'),
+    );
+    const existing = await client.query(
+      `SELECT intake.* FROM onetime.learning_delivery_content_factory_intakes intake
+        WHERE intake.account_key = $1 AND intake.product_key = $2
+          AND intake.idempotency_key = $3 LIMIT 1 FOR UPDATE`,
+      [input.config.accountKey, input.config.productKey, input.idempotencyKey],
+    );
+    if (existing.rows[0]) {
+      if (String(existing.rows[0].request_fingerprint) !== requestFingerprint) {
+        throw new ContentFactoryError(
+          'VALIDATION_ERROR',
+          'The upload idempotency key is already bound to different content.',
+        );
+      }
+      return safeIntakeFromRow(existing.rows[0]);
+    }
+    const duplicateSource = await client.query(
+      `SELECT intake_key FROM onetime.learning_delivery_content_factory_intakes
+        WHERE account_key = $1 AND product_key = $2 AND source_sha256 = $3 LIMIT 1`,
+      [input.config.accountKey, input.config.productKey, input.sourceSha256],
+    );
+    if (duplicateSource.rows[0]) {
+      throw new ContentFactoryError(
+        'VALIDATION_ERROR',
+        'This private source was already received with a different idempotency key.',
+      );
+    }
+    const intakeKey = stableOt86Key('factory_intake', [input.idempotencyKey]);
+    const jobKey = stableOt86Key('factory_job', [input.idempotencyKey]);
+    await client.query(
+      `INSERT INTO onetime.learning_delivery_content_factory_intakes
+         (intake_key, account_key, product_key, source_kind, display_name, mime_type,
+          byte_length, source_sha256, private_ref_digest, storage_locator, intake_state,
+          occurrence_key, class_label, class_date, idempotency_key, request_fingerprint,
+          audit_metadata_json, created_by_user_key, updated_at)
+       VALUES ($1,$2,$3,'local_drop',$4,$5,$6,$7,$8,$9,'received',$10,$11,$12,$13,$14,
+               $15::jsonb,$16,now())`,
+      [
+        intakeKey,
+        input.config.accountKey,
+        input.config.productKey,
+        input.displayName,
+        input.mimeType,
+        input.byteLength,
+        input.sourceSha256,
+        input.privateRefDigest,
+        input.storageLocator,
+        input.occurrenceKey,
+        String(occurrence.rows[0].occurrence_class_title),
+        asDate(occurrence.rows[0].local_class_date).toISOString().slice(0, 10),
+        input.idempotencyKey,
+        requestFingerprint,
+        JSON.stringify({ uploader_principal_present: true, raw_source_path_present: false }),
+        input.actorUserKey,
+      ],
+    );
+    await client.query(
+      `INSERT INTO onetime.learning_delivery_content_factory_jobs
+         (job_key, account_key, product_key, intake_key, occurrence_key, idempotency_key)
+       VALUES ($1,$2,$3,$4,$5,$6)`,
+      [
+        jobKey,
+        input.config.accountKey,
+        input.config.productKey,
+        intakeKey,
+        input.occurrenceKey,
+        input.idempotencyKey,
+      ],
+    );
+    return safeIntakeFromRow({
+      ...occurrence.rows[0],
+      intake_key: intakeKey,
+      source_kind: 'local_drop',
+      display_name: input.displayName,
+      mime_type: input.mimeType,
+      byte_length: input.byteLength,
+      source_sha256: input.sourceSha256,
+      private_ref_digest: input.privateRefDigest,
+      storage_locator: input.storageLocator,
+      intake_state: 'received',
+      occurrence_key: input.occurrenceKey,
+      occurrence_class_date: occurrence.rows[0].local_class_date,
+      class_label: occurrence.rows[0].occurrence_class_title,
+      class_date: occurrence.rows[0].local_class_date,
+      idempotency_key: input.idempotencyKey,
+      last_safe_error_code: null,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+  });
 }
 
 export async function getContentFactoryItem(input: {
@@ -310,8 +461,18 @@ export async function getContentFactoryItem(input: {
   sourceKey: string;
 }): Promise<ContentFactorySafeItem | null> {
   const result = await input.pool.query(
-    `SELECT * FROM onetime.learning_delivery_content_factory_items
-      WHERE account_key = $1 AND product_key = $2 AND source_key = $3 LIMIT 1`,
+    `SELECT item.*, occurrence.local_class_date AS occurrence_class_date,
+            series.title AS occurrence_class_title
+       FROM onetime.learning_delivery_content_factory_items item
+       LEFT JOIN onetime.class_occurrences occurrence
+         ON occurrence.account_key = item.account_key
+        AND occurrence.product_key = item.product_key
+        AND occurrence.occurrence_key = item.occurrence_key
+       LEFT JOIN onetime.class_series series
+         ON series.account_key = occurrence.account_key
+        AND series.product_key = occurrence.product_key
+        AND series.class_series_key = occurrence.class_series_key
+      WHERE item.account_key = $1 AND item.product_key = $2 AND item.source_key = $3 LIMIT 1`,
     [input.config.accountKey, input.config.productKey, input.sourceKey],
   );
   return result.rows[0] ? safeItemFromRow(result.rows[0]) : null;
@@ -333,9 +494,18 @@ export async function editContentFactoryItem(input: {
     if (previousState === 'published') {
       throw new ContentFactoryError('INVALID_STATE', 'Unpublish before editing approved content.');
     }
+    const occurrence = payload.occurrence_key
+      ? await requireOccurrence(client, input.config, payload.occurrence_key)
+      : null;
     const draft = contentFactoryDraftSchema.parse({
       ...asRecord(row.draft_json),
       ...draftPatch(payload),
+      ...(occurrence
+        ? {
+            class_label: occurrence.classTitle,
+            class_date: occurrence.classDate,
+          }
+        : {}),
       draft_only: true,
       authoritative_torah_interpretation: false,
     });
@@ -350,6 +520,7 @@ export async function editContentFactoryItem(input: {
       `UPDATE onetime.learning_delivery_content_factory_items
           SET draft_json = $4::jsonb, normalized_transcript = $5, transcript_sha256 = $6,
               transcript_review_state = 'draft', factory_state = 'needs_review',
+              occurrence_key = COALESCE($7, occurrence_key),
               approved_by_user_key = NULL, approved_at = NULL, updated_at = now()
         WHERE account_key = $1 AND product_key = $2 AND source_key = $3`,
       [
@@ -359,8 +530,38 @@ export async function editContentFactoryItem(input: {
         JSON.stringify(draft),
         normalizedTranscript,
         sha256(normalizedTranscript),
+        occurrence?.occurrenceKey ?? null,
       ],
     );
+    if (occurrence && row.occurrence_key !== occurrence.occurrenceKey) {
+      await client.query(
+        `UPDATE onetime.learning_delivery_content_factory_intakes
+            SET occurrence_key = $4, class_label = $5, class_date = $6, updated_at = now()
+          WHERE account_key = $1 AND product_key = $2 AND intake_key = (
+            SELECT intake_key FROM onetime.learning_delivery_content_factory_jobs
+             WHERE account_key = $1 AND product_key = $2 AND source_key = $3 LIMIT 1
+          )`,
+        [
+          input.config.accountKey,
+          input.config.productKey,
+          input.sourceKey,
+          occurrence.occurrenceKey,
+          occurrence.classTitle,
+          occurrence.classDate,
+        ],
+      );
+      await client.query(
+        `UPDATE onetime.learning_delivery_content_factory_jobs
+            SET occurrence_key = $4, updated_at = now()
+          WHERE account_key = $1 AND product_key = $2 AND source_key = $3`,
+        [
+          input.config.accountKey,
+          input.config.productKey,
+          input.sourceKey,
+          occurrence.occurrenceKey,
+        ],
+      );
+    }
     await recordEvent(client, input.config, {
       sourceKey: input.sourceKey,
       actorUserKey: input.actorUserKey,
@@ -405,10 +606,13 @@ export async function performContentFactoryAction(input: {
       }
       validateApprovalRow(row);
       nextState = 'published';
-      await client.query(
+      await publicationQuery(
+        client,
+        'mark_published',
         `UPDATE onetime.learning_delivery_content_factory_items
             SET factory_state = 'published', published_by_user_key = $4,
-                published_at = now(), updated_at = now()
+                published_at = now(), unpublished_by_user_key = NULL,
+                unpublished_at = NULL, updated_at = now()
           WHERE account_key = $1 AND product_key = $2 AND source_key = $3`,
         [input.config.accountKey, input.config.productKey, input.sourceKey, input.actorUserKey],
       );
@@ -423,10 +627,10 @@ export async function performContentFactoryAction(input: {
       nextState = 'approved';
       await client.query(
         `UPDATE onetime.learning_delivery_content_factory_items
-            SET factory_state = 'approved', published_by_user_key = NULL,
-                published_at = NULL, updated_at = now()
+            SET factory_state = 'approved', unpublished_by_user_key = $4,
+                unpublished_at = now(), updated_at = now()
           WHERE account_key = $1 AND product_key = $2 AND source_key = $3`,
-        [input.config.accountKey, input.config.productKey, input.sourceKey],
+        [input.config.accountKey, input.config.productKey, input.sourceKey, input.actorUserKey],
       );
       await unpublishFromLearnerLibrary(client, input.config, input.sourceKey);
     } else {
@@ -442,15 +646,35 @@ export async function performContentFactoryAction(input: {
         [input.config.accountKey, input.config.productKey, input.sourceKey],
       );
     }
-    await recordEvent(client, input.config, {
-      sourceKey: input.sourceKey,
-      actorUserKey: input.actorUserKey,
-      action: input.action,
-      previousState,
-      nextState,
-      metadata: { raw_provider_url_present: false },
-    });
-    return mustGet(client, input.config, input.sourceKey);
+    try {
+      await recordEvent(client, input.config, {
+        sourceKey: input.sourceKey,
+        actorUserKey: input.actorUserKey,
+        action: input.action,
+        previousState,
+        nextState,
+        metadata: { raw_provider_url_present: false },
+      });
+    } catch (error) {
+      if (input.action === 'publish') {
+        throw new ContentFactoryPublicationError(
+          'record_publication_event',
+          contentFactorySafePostgresCode(error),
+        );
+      }
+      throw error;
+    }
+    try {
+      return await mustGet(client, input.config, input.sourceKey);
+    } catch (error) {
+      if (input.action === 'publish') {
+        throw new ContentFactoryPublicationError(
+          'serialize_published_item',
+          contentFactorySafePostgresCode(error),
+        );
+      }
+      throw error;
+    }
   });
 }
 
@@ -458,18 +682,53 @@ export async function getContentFactoryPlayback(input: {
   pool: DbPool;
   config: AppConfig;
   sourceKey: string;
+  actor: Pick<
+    PortalActorContext,
+    'actor_role' | 'student_learner' | 'authorized_households' | 'actor_user_ref'
+  >;
 }) {
   const result = await input.pool.query(
-    `SELECT source_key, factory_state, draft_json, provider_embed_url,
-            captions_active, progress_state
-       FROM onetime.learning_delivery_content_factory_items
-      WHERE account_key = $1 AND product_key = $2 AND source_key = $3 LIMIT 1`,
+    `SELECT item.source_key, item.factory_state, item.draft_json, item.provider_video_id,
+            item.processing_mode, item.captions_active, item.progress_state,
+            item.occurrence_key, occurrence.local_class_date, series.title AS class_title
+       FROM onetime.learning_delivery_content_factory_items item
+       JOIN onetime.class_occurrences occurrence
+         ON occurrence.account_key = item.account_key
+        AND occurrence.product_key = item.product_key
+        AND occurrence.occurrence_key = item.occurrence_key
+       JOIN onetime.class_series series
+         ON series.account_key = occurrence.account_key
+        AND series.product_key = occurrence.product_key
+        AND series.class_series_key = occurrence.class_series_key
+      WHERE item.account_key = $1 AND item.product_key = $2 AND item.source_key = $3 LIMIT 1`,
     [input.config.accountKey, input.config.productKey, input.sourceKey],
   );
   const row = result.rows[0];
   if (!row) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
-  if (row.factory_state !== 'published' || !row.provider_embed_url || !row.captions_active) {
-    throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Approved playback is unavailable.');
+  if (row.factory_state !== 'published' || !row.provider_video_id || !row.captions_active) {
+    throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+  }
+  if (!['owner', 'admin'].includes(input.actor.actor_role)) {
+    const entitlementResult = await input.pool.query(
+      `SELECT entitlement.learner_key, learner.household_key
+         FROM onetime.content_item_entitlements entitlement
+         JOIN onetime.portal_learners learner
+           ON learner.account_key = entitlement.account_key
+          AND learner.product_key = entitlement.product_key
+          AND learner.learner_key = entitlement.learner_key
+        WHERE entitlement.account_key = $1 AND entitlement.product_key = $2
+          AND entitlement.content_item_key = $3 AND entitlement.audience = 'learner'
+          AND entitlement.entitlement_state = 'active'`,
+      [input.config.accountKey, input.config.productKey, input.sourceKey],
+    );
+    const learnerKey = input.actor.student_learner?.learner_key;
+    const households = new Set(input.actor.authorized_households.map((item) => item.household_key));
+    const entitled = entitlementResult.rows.some(
+      (entitlement) =>
+        (input.actor.actor_role === 'student' && entitlement.learner_key === learnerKey) ||
+        (input.actor.actor_role === 'parent' && households.has(String(entitlement.household_key))),
+    );
+    if (!entitled) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
   }
   const draft = contentFactoryDraftSchema.parse(row.draft_json);
   const isDemo = isContentFactoryDemoSource(String(row.source_key));
@@ -478,11 +737,15 @@ export async function getContentFactoryPlayback(input: {
     title: draft.title,
     summary: draft.short_description,
     reviewQuestions: draft.review_questions,
+    occurrenceKey: String(row.occurrence_key),
+    classTitle: String(row.class_title),
+    classDate: asDate(row.local_class_date).toISOString().slice(0, 10),
     captionsActive: true as const,
     progressState: String(row.progress_state) as 'not_started' | 'in_progress' | 'completed',
     playbackRoute: `/api/v1/content/factory/${encodeURIComponent(String(row.source_key))}/embed`,
-    privateProviderEmbedUrl: isDemo ? null : String(row.provider_embed_url),
-    isDemo,
+    privateProviderAssetId: String(row.provider_video_id),
+    processingMode: String(row.processing_mode) as 'synthetic' | 'vimeo',
+    isDemo: isDemo || row.processing_mode === 'synthetic',
     rawProviderUrlPresent: false as const,
   };
 }
@@ -554,12 +817,22 @@ function safeItemFromRow(row: Record<string, unknown>): ContentFactorySafeItem {
     display_name: String(row.display_name),
     state,
     is_demo: isContentFactoryDemoSource(sourceKey),
+    occurrence: row.occurrence_key
+      ? {
+          occurrence_key: String(row.occurrence_key),
+          class_title: String(row.occurrence_class_title ?? draft.class_label ?? 'Class'),
+          class_date: row.occurrence_class_date
+            ? asDate(row.occurrence_class_date).toISOString().slice(0, 10)
+            : String(draft.class_date),
+        }
+      : null,
+    processing_mode: row.processing_mode ?? 'vimeo',
     draft,
     normalized_transcript: String(row.normalized_transcript),
     transcript_review_state: row.transcript_review_state,
     transcript_segment_count: arrayValue(row.transcript_segments_json).length,
     transcription: {
-      provider: 'openai',
+      provider: row.processing_mode === 'synthetic' ? 'synthetic' : 'openai',
       model: String(row.transcription_model),
       language: String(row.transcription_language),
       transcript_sha256: String(row.transcript_sha256),
@@ -577,6 +850,7 @@ function safeItemFromRow(row: Record<string, unknown>): ContentFactorySafeItem {
       middle_cut_performed: false,
     },
     vimeo: {
+      provider: row.processing_mode === 'synthetic' ? 'synthetic' : 'vimeo',
       privacy: row.vimeo_privacy,
       captions_active: Boolean(row.captions_active),
       provider_video_id_present: Boolean(row.provider_video_id),
@@ -594,6 +868,7 @@ function safeItemFromRow(row: Record<string, unknown>): ContentFactorySafeItem {
     last_safe_error_code: nullableString(row.last_safe_error_code),
     approved_at: nullableIso(row.approved_at),
     published_at: nullableIso(row.published_at),
+    unpublished_at: nullableIso(row.unpublished_at),
     updated_at: asDate(row.updated_at).toISOString(),
   });
 }
@@ -606,15 +881,27 @@ function safeIntakeFromRow(row: Record<string, unknown>): ContentFactoryIntakeSa
     mime_type: String(row.mime_type),
     byte_length: Number(row.byte_length),
     state: row.intake_state,
+    occurrence: row.occurrence_key
+      ? {
+          occurrence_key: String(row.occurrence_key),
+          class_title: String(row.occurrence_class_title ?? row.class_label ?? 'Class'),
+          class_date: row.occurrence_class_date
+            ? asDate(row.occurrence_class_date).toISOString().slice(0, 10)
+            : asDate(row.class_date).toISOString().slice(0, 10),
+        }
+      : null,
     class_label: nullableString(row.class_label),
     class_date: row.class_date ? asDate(row.class_date).toISOString().slice(0, 10) : null,
     source_sha256: String(row.source_sha256),
     private_ref_digest: String(row.private_ref_digest),
+    durable_locator_present: Boolean(row.storage_locator),
+    idempotency_key_digest: row.idempotency_key ? sha256(String(row.idempotency_key)) : null,
     raw_source_path_present: false,
     raw_provider_url_present: false,
     last_safe_error_code: nullableString(row.last_safe_error_code),
     created_at: asDate(row.created_at).toISOString(),
     updated_at: asDate(row.updated_at).toISOString(),
+    retry_eligible: row.intake_state === 'failed',
   });
 }
 
@@ -643,15 +930,36 @@ function validateApprovalRow(row: Record<string, unknown>) {
   if (!String(row.normalized_transcript).trim()) {
     throw new ContentFactoryError('VALIDATION_ERROR', 'Review the transcript before approval.');
   }
-  if (!draft.class_label || !draft.class_date || !draft.short_description) {
+  if (!row.occurrence_key || !draft.class_label || !draft.class_date || !draft.short_description) {
     throw new ContentFactoryError('VALIDATION_ERROR', 'Assign class, date, and description.');
   }
-  if (!row.provider_video_id || !row.provider_embed_url || !row.captions_active) {
-    throw new ContentFactoryError(
-      'VALIDATION_ERROR',
-      'Private Vimeo playback and captions required.',
-    );
+  if (!row.provider_video_id || !row.provider_text_track_id || !row.captions_active) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Protected playback and captions required.');
   }
+}
+
+async function requireOccurrence(client: Queryable, config: AppConfig, occurrenceKey: string) {
+  const result = await client.query(
+    `SELECT occurrence.occurrence_key, occurrence.local_class_date, series.title
+       FROM onetime.class_occurrences occurrence
+       JOIN onetime.class_series series
+         ON series.account_key = occurrence.account_key
+        AND series.product_key = occurrence.product_key
+        AND series.class_series_key = occurrence.class_series_key
+      WHERE occurrence.account_key = $1 AND occurrence.product_key = $2
+        AND occurrence.occurrence_key = $3 AND occurrence.occurrence_state <> 'cancelled'
+      LIMIT 1`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  const row = result.rows[0];
+  if (!row) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Select an existing class occurrence.');
+  }
+  return {
+    occurrenceKey: String(row.occurrence_key),
+    classTitle: String(row.title),
+    classDate: asDate(row.local_class_date).toISOString().slice(0, 10),
+  };
 }
 
 async function publishToLearnerLibrary(
@@ -661,8 +969,34 @@ async function publishToLearnerLibrary(
   actorUserKey: string,
 ) {
   const sourceKey = String(row.source_key);
+  const occurrenceKey = String(row.occurrence_key);
   const draft = contentFactoryDraftSchema.parse(row.draft_json);
-  const current = await client.query(
+  const roster = await publicationQuery(
+    client,
+    'occurrence_roster',
+    `SELECT learner_key, household_key FROM (
+       SELECT learner_key, household_key
+         FROM onetime.classroom_occurrence_learner_entitlements
+        WHERE account_key = $1 AND product_key = $2 AND occurrence_key = $3
+          AND entitlement_state = 'active'
+       UNION
+       SELECT learner_key, household_key
+         FROM onetime.classroom_launch_grants
+        WHERE account_key = $1 AND product_key = $2 AND occurrence_key = $3
+          AND status IN ('issued','consumed')
+     ) occurrence_roster
+      ORDER BY learner_key`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  if (roster.rows.length < 1) {
+    throw new ContentFactoryError(
+      'VALIDATION_ERROR',
+      'The selected occurrence has no entitled learners.',
+    );
+  }
+  const current = await publicationQuery(
+    client,
+    'load_content_item',
     `SELECT latest_revision_number, latest_revision_key FROM onetime.content_items
       WHERE account_key = $1 AND product_key = $2 AND content_item_key = $3 LIMIT 1`,
     [config.accountKey, config.productKey, sourceKey],
@@ -671,14 +1005,17 @@ async function publishToLearnerLibrary(
   const previousRevisionKey = nullableString(current.rows[0]?.latest_revision_key);
   const revisionKey = stableOt86Key('factory_revision', [sourceKey, String(revisionNumber)]);
   const outcomeEventKey = stableOt86Key('factory_publish', [sourceKey, String(revisionNumber)]);
-  await client.query(
+  await publicationQuery(
+    client,
+    'upsert_content_item',
     `INSERT INTO onetime.content_items
-       (content_item_key, account_key, product_key, title, item_type, lifecycle_state,
+       (content_item_key, account_key, product_key, occurrence_key, title, item_type, lifecycle_state,
         latest_revision_number, latest_revision_key, published_revision_key, metadata,
         published_at, updated_at)
-     VALUES ($1,$2,$3,$4,'video','published',$5,$6,$6,$7::jsonb,now(),now())
+     VALUES ($1,$2,$3,$4,$5,'video','published',$6,$7,$7,$8::jsonb,now(),now())
      ON CONFLICT (account_key, product_key, content_item_key)
-     DO UPDATE SET title = EXCLUDED.title, lifecycle_state = 'published',
+     DO UPDATE SET occurrence_key = EXCLUDED.occurrence_key, title = EXCLUDED.title,
+       lifecycle_state = 'published',
        latest_revision_number = EXCLUDED.latest_revision_number,
        latest_revision_key = EXCLUDED.latest_revision_key,
        published_revision_key = EXCLUDED.published_revision_key,
@@ -687,14 +1024,17 @@ async function publishToLearnerLibrary(
       sourceKey,
       config.accountKey,
       config.productKey,
+      occurrenceKey,
       draft.title,
       revisionNumber,
       revisionKey,
-      JSON.stringify({ content_factory: true, captions_active: true }),
+      JSON.stringify({ content_factory: true, captions_active: true, occurrence_scoped: true }),
     ],
   );
   if (previousRevisionKey) {
-    await client.query(
+    await publicationQuery(
+      client,
+      'supersede_revision',
       `UPDATE onetime.content_revisions
           SET lifecycle_state = 'superseded', superseded_at = COALESCE(superseded_at, now())
         WHERE account_key = $1 AND product_key = $2 AND content_item_key = $3
@@ -702,7 +1042,9 @@ async function publishToLearnerLibrary(
       [config.accountKey, config.productKey, sourceKey],
     );
   }
-  await client.query(
+  await publicationQuery(
+    client,
+    'insert_revision',
     `INSERT INTO onetime.content_revisions
        (revision_key, account_key, product_key, content_item_key, outcome_event_key,
         revision_number, lifecycle_state, transcript_metadata, source_metadata,
@@ -720,12 +1062,13 @@ async function publishToLearnerLibrary(
       JSON.stringify({
         transcript_sha256: row.transcript_sha256,
         approved: true,
-        provider: 'openai',
+        provider: row.processing_mode === 'synthetic' ? 'synthetic' : 'openai',
         model: row.transcription_model,
       }),
       JSON.stringify({
         class_label: draft.class_label,
         class_date: draft.class_date,
+        occurrence_key: occurrenceKey,
         topics: draft.topics,
         mishnah_terms: draft.mishnah_terms,
       }),
@@ -737,7 +1080,10 @@ async function publishToLearnerLibrary(
         authoritative_torah_interpretation: false,
       }),
       JSON.stringify({
-        kind: 'server_authorized_vimeo_playback',
+        kind:
+          row.processing_mode === 'synthetic'
+            ? 'server_authorized_synthetic_playback'
+            : 'server_authorized_vimeo_playback',
         playback_route: `/app/learning/items/${sourceKey}`,
         captions_active: true,
         raw_provider_url_present: false,
@@ -746,21 +1092,61 @@ async function publishToLearnerLibrary(
       previousRevisionKey,
     ],
   );
-  await client.query(
-    `INSERT INTO onetime.content_item_entitlements
-       (entitlement_key, account_key, product_key, content_item_key, audience,
-        entitlement_state, created_at)
-     VALUES ($1,$2,$3,$4,'all_active_learners','active',now())
-     ON CONFLICT (account_key, product_key, entitlement_key)
-     DO UPDATE SET entitlement_state = 'active', revoked_at = NULL`,
-    [
-      stableOt86Key('factory_entitlement', [sourceKey, 'all_active_learners']),
-      config.accountKey,
-      config.productKey,
-      sourceKey,
-    ],
+  await publicationQuery(
+    client,
+    'revoke_entitlements',
+    `UPDATE onetime.content_item_entitlements
+        SET entitlement_state = 'revoked', revoked_at = now()
+      WHERE account_key = $1 AND product_key = $2 AND content_item_key = $3`,
+    [config.accountKey, config.productKey, sourceKey],
   );
-  await client.query(
+  for (const learner of roster.rows) {
+    await publicationQuery(
+      client,
+      'upsert_occurrence_entitlement',
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, entitlement_state, source, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,'active','enrollment_projection',now())
+       ON CONFLICT (account_key, product_key, occurrence_key, learner_key)
+       DO UPDATE SET household_key = EXCLUDED.household_key, entitlement_state = 'active',
+         source = 'enrollment_projection', revoked_at = NULL, updated_at = now()`,
+      [
+        stableOt86Key('occurrence_learner', [occurrenceKey, String(learner.learner_key)]),
+        config.accountKey,
+        config.productKey,
+        occurrenceKey,
+        learner.household_key,
+        learner.learner_key,
+      ],
+    );
+    await publicationQuery(
+      client,
+      'upsert_content_entitlement',
+      `INSERT INTO onetime.content_item_entitlements
+         (entitlement_key, account_key, product_key, content_item_key, audience,
+          household_key, learner_key, entitlement_state, created_at)
+       VALUES ($1,$2,$3,$4,'learner',$5,$6,'active',now())
+       ON CONFLICT (account_key, product_key, entitlement_key)
+       DO UPDATE SET household_key = EXCLUDED.household_key,
+         learner_key = EXCLUDED.learner_key, entitlement_state = 'active', revoked_at = NULL`,
+      [
+        stableOt86Key('factory_entitlement', [
+          sourceKey,
+          occurrenceKey,
+          String(learner.learner_key),
+        ]),
+        config.accountKey,
+        config.productKey,
+        sourceKey,
+        learner.household_key,
+        learner.learner_key,
+      ],
+    );
+  }
+  await publicationQuery(
+    client,
+    'insert_publication_audit',
     `INSERT INTO onetime.content_audit_events
        (audit_key, account_key, product_key, content_item_key, revision_key, actor_user_key,
         action_type, metadata)
@@ -772,9 +1158,22 @@ async function publishToLearnerLibrary(
       sourceKey,
       revisionKey,
       actorUserKey,
-      JSON.stringify({ raw_provider_url_present: false, captions_active: true }),
+      JSON.stringify({
+        raw_provider_url_present: false,
+        captions_active: true,
+        occurrence_key: occurrenceKey,
+        entitled_learner_count: roster.rows.length,
+      }),
     ],
   );
+}
+
+async function publicationQuery(client: Queryable, stage: string, text: string, values: unknown[]) {
+  try {
+    return await client.query(text, values);
+  } catch (error) {
+    throw new ContentFactoryPublicationError(stage, contentFactorySafePostgresCode(error));
+  }
 }
 
 async function unpublishFromLearnerLibrary(
@@ -841,6 +1240,7 @@ function assertAdmin(role: string) {
 function draftPatch(payload: ContentFactoryEditPayload) {
   const patch = { ...payload };
   delete patch.normalized_transcript;
+  delete patch.occurrence_key;
   return patch;
 }
 

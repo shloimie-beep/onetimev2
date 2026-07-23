@@ -454,8 +454,9 @@ function FactoryView({
   const [selectedKey, setSelectedKey] = useState(data.items[0]?.source_key ?? '');
   const [showIntake, setShowIntake] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadClass, setUploadClass] = useState('');
-  const [uploadDate, setUploadDate] = useState('');
+  const [uploadOccurrence, setUploadOccurrence] = useState(
+    data.occurrences[0]?.occurrence_key ?? '',
+  );
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const selected =
@@ -468,20 +469,18 @@ function FactoryView({
 
   async function upload(event: React.FormEvent) {
     event.preventDefault();
-    if (!uploadFile) return;
+    if (!uploadFile || !uploadOccurrence) return;
     setUploading(true);
     setUploadError('');
     try {
       await apiUpload(
         '/api/v1/admin/content/factory/intake',
         uploadFile,
-        { classLabel: uploadClass, classDate: uploadDate },
+        { occurrenceKey: uploadOccurrence, idempotencyKey: crypto.randomUUID() },
         csrfToken,
         onProtectedStateCleared,
       );
       setUploadFile(null);
-      setUploadClass('');
-      setUploadDate('');
       setShowIntake(false);
       await onChanged('Video received in protected staging. No external provider was contacted.');
     } catch (error) {
@@ -510,8 +509,8 @@ function FactoryView({
         <Card className="content-panel content-factory-intake-panel">
           <h2>Add class video</h2>
           <p>
-            The original is copied to protected local staging. Processing and external providers do
-            not start from this action.
+            The original is streamed to durable private storage and bound to one existing class
+            occurrence. Provider-off processing does not contact OpenAI or Vimeo.
           </p>
           {uploadError && (
             <p className="notice-banner" role="alert">
@@ -531,26 +530,29 @@ function FactoryView({
             </label>
             <div className="content-factory-fields">
               <label>
-                <span>Class assignment</span>
-                <Input
-                  maxLength={180}
+                <span>Class occurrence</span>
+                <Select
+                  required
                   disabled={uploading}
-                  value={uploadClass}
-                  onChange={(event) => setUploadClass(event.currentTarget.value)}
-                />
-              </label>
-              <label>
-                <span>Class date</span>
-                <Input
-                  type="date"
-                  disabled={uploading}
-                  value={uploadDate}
-                  onChange={(event) => setUploadDate(event.currentTarget.value)}
-                />
+                  value={uploadOccurrence}
+                  onChange={(event) => setUploadOccurrence(event.currentTarget.value)}
+                >
+                  <option value="">Select a class occurrence</option>
+                  {data.occurrences.map((occurrence) => (
+                    <option key={occurrence.occurrence_key} value={occurrence.occurrence_key}>
+                      {occurrence.class_title} · {occurrence.class_date} ·{' '}
+                      {occurrence.learner_count} learners
+                    </option>
+                  ))}
+                </Select>
               </label>
             </div>
-            <Button type="submit" variant="primary" disabled={!uploadFile || uploading}>
-              {uploading ? 'Copying privately…' : 'Add to protected staging'}
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={!uploadFile || !uploadOccurrence || uploading}
+            >
+              {uploading ? 'Copying privately…' : 'Add to private storage'}
             </Button>
           </form>
         </Card>
@@ -562,7 +564,7 @@ function FactoryView({
           <span>
             {data.input_adapter === 'DRIVE'
               ? 'Incoming Drive files remain protected.'
-              : 'Uploads remain in protected local staging.'}
+              : 'Uploads are streamed into durable private storage.'}
           </span>
         </Card>
       </section>
@@ -573,10 +575,30 @@ function FactoryView({
             <Card className="content-row-card content-factory-intake" key={intake.intake_key}>
               <div>
                 <strong>{intake.display_name}</strong>
-                <span>{intake.class_label ?? 'Class assignment pending'}</span>
+                <span>
+                  {intake.occurrence
+                    ? `${intake.occurrence.class_title} · ${intake.occurrence.class_date}`
+                    : 'Class occurrence required'}
+                </span>
               </div>
               <Badge>{readable(intake.state)}</Badge>
               <span>{formatBytes(intake.byte_length)}</span>
+              {intake.retry_eligible && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() =>
+                    void apiPost(
+                      `/api/v1/admin/content/factory/intakes/${encodeURIComponent(intake.intake_key)}/retry`,
+                      {},
+                      csrfToken,
+                      onProtectedStateCleared,
+                    ).then(() => onChanged('Failed processing step queued for retry.'))
+                  }
+                >
+                  Retry failed step
+                </Button>
+              )}
             </Card>
           ))}
         </section>
@@ -609,6 +631,7 @@ function FactoryView({
             <FactoryEditor
               key={`${selected.source_key}:${selected.updated_at}`}
               item={selected}
+              occurrences={data.occurrences}
               csrfToken={csrfToken}
               onProtectedStateCleared={onProtectedStateCleared}
               onChanged={onChanged}
@@ -677,11 +700,13 @@ function factoryTimelineState(state: ContentFactorySafeItem['state']) {
 
 function FactoryEditor({
   item,
+  occurrences,
   csrfToken,
   onProtectedStateCleared,
   onChanged,
 }: {
   item: ContentFactorySafeItem;
+  occurrences: ContentFactoryWorkspaceResponse['occurrences'];
   csrfToken: string;
   onProtectedStateCleared: () => void;
   onChanged: (message: string) => Promise<void>;
@@ -696,6 +721,7 @@ function FactoryEditor({
     normalized_transcript: item.normalized_transcript,
     review_questions: item.draft.review_questions.join('\n'),
     key_takeaways: item.draft.key_takeaways.join('\n'),
+    occurrence_key: item.occurrence?.occurrence_key ?? '',
   });
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState('');
@@ -715,6 +741,7 @@ function FactoryEditor({
       normalized_transcript: form.normalized_transcript,
       review_questions: splitLineList(form.review_questions),
       key_takeaways: splitLineList(form.key_takeaways),
+      occurrence_key: form.occurrence_key,
     };
     try {
       await apiPatch(
@@ -765,6 +792,10 @@ function FactoryEditor({
       <FactoryTimeline state={factoryTimelineState(item.state)} />
       <dl className="content-factory-metadata">
         <div>
+          <dt>Occurrence</dt>
+          <dd>{item.occurrence?.class_date ?? 'Assignment required'}</dd>
+        </div>
+        <div>
           <dt>Prepared duration</dt>
           <dd>{formatDuration(item.trim.prepared_duration_ms)}</dd>
         </div>
@@ -810,21 +841,28 @@ function FactoryEditor({
         </label>
         <div className="content-factory-fields">
           <label>
-            <span>Class</span>
-            <Input
+            <span>Class occurrence</span>
+            <Select
               required
-              maxLength={180}
               disabled={!canEdit || busy}
-              value={form.class_label}
-              onChange={(event) => setForm({ ...form, class_label: event.currentTarget.value })}
-            />
+              value={form.occurrence_key}
+              onChange={(event) => setForm({ ...form, occurrence_key: event.currentTarget.value })}
+            >
+              <option value="">Select a class occurrence</option>
+              {occurrences.map((occurrence) => (
+                <option key={occurrence.occurrence_key} value={occurrence.occurrence_key}>
+                  {occurrence.class_title} · {occurrence.class_date} · {occurrence.learner_count}{' '}
+                  learners
+                </option>
+              ))}
+            </Select>
           </label>
           <label>
             <span>Class date</span>
             <Input
               required
               type="date"
-              disabled={!canEdit || busy}
+              disabled
               value={form.class_date}
               onChange={(event) => setForm({ ...form, class_date: event.currentTarget.value })}
             />
@@ -1657,7 +1695,7 @@ async function apiPatch<T = unknown>(
 async function apiUpload<T = unknown>(
   path: string,
   file: File,
-  metadata: { classLabel: string; classDate: string },
+  metadata: { occurrenceKey: string; idempotencyKey: string },
   csrfToken: string,
   onProtectedStateCleared: () => void,
 ): Promise<T> {
@@ -1669,10 +1707,8 @@ async function apiUpload<T = unknown>(
         'content-type': file.type || 'application/octet-stream',
         'x-csrf-token': csrfToken,
         'x-file-name': encodeURIComponent(file.name),
-        ...(metadata.classLabel
-          ? { 'x-class-label': encodeURIComponent(metadata.classLabel) }
-          : {}),
-        ...(metadata.classDate ? { 'x-class-date': metadata.classDate } : {}),
+        'x-occurrence-key': encodeURIComponent(metadata.occurrenceKey),
+        'x-idempotency-key': encodeURIComponent(metadata.idempotencyKey),
       },
       body: file,
     },

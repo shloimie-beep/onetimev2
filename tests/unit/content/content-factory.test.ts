@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  contentFactorySafePostgresCode,
   createLearningDeliveryDriveInputAdapter,
   generateContentFactoryDraftFromTranscript,
   inspectLearningDeliveryInputAdapters,
@@ -20,6 +21,18 @@ afterEach(async () => {
 });
 
 describe('content factory input and transcript drafts', () => {
+  it('keeps PostgreSQL publication diagnostics bounded and content-free', () => {
+    expect(
+      contentFactorySafePostgresCode({
+        code: '23503',
+        detail: 'private transcript and storage locator must never be logged',
+      }),
+    ).toBe('pg_23503');
+    expect(contentFactorySafePostgresCode({ code: 'not-a-sqlstate' })).toBe(
+      'publication_unexpected',
+    );
+  });
+
   it('keeps transcript-derived suggestions draft-only and timestamped', () => {
     const segments = [
       'The Mishnah introduces the topic of returning a found object.',

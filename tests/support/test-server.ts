@@ -1,12 +1,18 @@
 import { createHash } from 'node:crypto';
+import { mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
 import {
   createAccountUser,
-  generateContentFactoryDraftFromTranscript,
-  ingestContentFactoryItem,
+  createContentFactoryIntake,
+  contentFactoryStorageFromEnv,
+  editContentFactoryItem,
   performContentFactoryAction,
+  runContentFactoryWorkerOnce,
 } from '../../packages/domain/src/index.ts';
 import {
   W12_PORTAL_TEST_LAB,
@@ -32,6 +38,12 @@ const config = loadConfig({
 });
 const pool = createMemoryPool();
 await runMigrations(pool);
+process.env.CONTENT_FACTORY_STORAGE_DRIVER = 'volume';
+process.env.CONTENT_FACTORY_STORAGE_ROOT = await mkdtemp(
+  path.join(tmpdir(), 'onetime-browser-content-factory-'),
+);
+process.env.CONTENT_FACTORY_MAX_UPLOAD_BYTES = '10485760';
+process.env.CONTENT_FACTORY_PROCESSING_MODE = 'synthetic';
 await createAccountUser({
   pool,
   config,
@@ -88,19 +100,42 @@ await createAccountUser({
   mfaCapable: false,
 });
 await seedDayOneBrowserRecords();
-await seedContentFactoryBrowserSample();
+await runContentFactoryBrowserAcceptance();
 await seedPortalTestLab({ pool, config });
 await seedW12AdminSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
   : undefined;
-const app = createApp({ config, pool, ...(testClock ? { clock: testClock } : {}) });
+const app = createApp({
+  config,
+  pool,
+  ...(testClock ? { clock: testClock } : {}),
+  contentFactoryJobNotifier: async () => {
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      await runContentFactoryWorkerOnce({
+        pool,
+        config,
+        storage: contentFactoryStorageFromEnv(),
+        workerIdentity: 'chromium-content-factory-worker',
+        mode: 'synthetic',
+      });
+    }
+  },
+});
 const server = app.listen(config.port);
 
-process.once('SIGTERM', () => {
+let shutdownStarted = false;
+async function shutdownTestServer() {
+  if (shutdownStarted) return;
+  shutdownStarted = true;
   server.close();
-  void pool.end().finally(() => process.exit(0));
-});
+  server.closeAllConnections?.();
+  await Promise.race([pool.end(), new Promise((resolve) => setTimeout(resolve, 250))]);
+  process.exit(0);
+}
+
+process.once('SIGTERM', () => void shutdownTestServer());
+process.once('SIGINT', () => void shutdownTestServer());
 
 async function seedDayOneBrowserRecords() {
   await pool.query(
@@ -305,65 +340,63 @@ async function seedActiveSupportEntitlement(userKey: string) {
   );
 }
 
-async function seedContentFactoryBrowserSample() {
-  const segments = [
-    'The fictional Mishnah review introduces returning a lost object.',
-    'Students identify a unique mark as a sign the owner can describe.',
-    'The class asks why an ordinary color may not identify the owner.',
-    'A bundle with a sign is compared with loose identical objects.',
-    'An announcement invites the owner to provide the identifying sign.',
-    'The lesson closes by stating that this is classroom review, not a ruling.',
-  ].map((text, index) => ({
-    segment_id: `browser_segment_${index + 1}`,
-    start_ms: index * 10_000,
-    end_ms: index * 10_000 + 9_000,
-    text,
-  }));
-  const transcript = segments.map((segment) => segment.text).join(' ');
-  const webvtt =
-    'WEBVTT\n\n00:00:00.000 --> 00:00:09.000\nThe fictional Mishnah review introduces returning a lost object.\n';
-  const sourceKey = 'ot_launch_01_demo_hashavas_aveidah';
-  await ingestContentFactoryItem({
+async function runContentFactoryBrowserAcceptance() {
+  await pool.query(
+    `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+       (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+        household_key, learner_key, entitlement_state, source)
+     VALUES ('browser_occurrence_alpha',$1,$2,'e2e_class_occurrence',
+       'e2e_household_alpha','e2e_learner_alpha','active','isolated_acceptance')`,
+    [config.accountKey, config.productKey],
+  );
+  const media = syntheticMp4('browser-acceptance');
+  const staged = await contentFactoryStorageFromEnv().stage({
+    stream: Readable.from([media]),
+    displayName: 'browser-accepted-occurrence.mp4',
+    declaredMimeType: 'video/mp4',
+    declaredLength: media.byteLength,
+  });
+  const intake = await createContentFactoryIntake({
     pool,
     config,
-    item: {
-      sourceKey,
-      sourceKind: 'local_drop',
-      sourceRefDigest: sha256('factory-browser-source-ref'),
-      sourceSha256: sha256('factory-browser-source'),
-      displayName: 'ot-launch-01-approved-synthetic-demo.mp4',
-      mimeType: 'video/quicktime',
-      byteLength: 4_200_000,
-      originalDurationMs: 72_000,
-      preparedDurationMs: 60_000,
-      trimStartMs: 6_000,
-      trimEndMs: 66_000,
-      removedStartMs: 6_000,
-      removedEndMs: 6_000,
-      trimConfidence: 0.91,
-      transcriptSegments: segments,
-      normalizedTranscript: transcript,
-      transcriptSha256: sha256(transcript),
-      webvtt,
-      webvttSha256: sha256(webvtt),
-      transcriptionModel: 'synthetic-demo-no-provider',
-      transcriptionLanguage: 'en',
-      draft: {
-        ...generateContentFactoryDraftFromTranscript({
-          displayName: 'ot-launch-01-approved-synthetic-demo.mp4',
-          segments,
-          classLabel: 'OT-LAUNCH-01 Mishnayos',
-          classDate: '2026-07-22',
-        }),
-        title: '[Demo] Hashavas Aveidah: Signs and Announcements',
-        short_description:
-          'An approved synthetic review lesson about identifying a lost object and the purpose of an announcement.',
-      },
-      providerVideoId: 'synthetic_demo_no_provider_resource',
-      providerEmbedUrl: 'https://player.vimeo.com/video/synthetic_demo_no_provider_resource',
-      providerTextTrackId: 'synthetic_demo_caption_track',
-      vimeoPrivacy: 'private',
-      captionsActive: true,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    displayName: staged.displayName,
+    mimeType: staged.mimeType,
+    byteLength: staged.byteLength,
+    sourceSha256: staged.sourceSha256,
+    privateRefDigest: staged.privateRefDigest,
+    storageLocator: staged.storageLocator,
+    occurrenceKey: 'e2e_class_occurrence',
+    idempotencyKey: 'browser-acceptance-intake-01',
+  });
+  for (let index = 0; index < 6; index += 1) {
+    await runContentFactoryWorkerOnce({
+      pool,
+      config,
+      storage: contentFactoryStorageFromEnv(),
+      workerIdentity: `browser-acceptance-worker-${index}`,
+      mode: 'synthetic',
+    });
+  }
+  const job = await pool.query(
+    `SELECT source_key FROM onetime.learning_delivery_content_factory_jobs
+      WHERE intake_key = $1 AND job_state = 'completed' LIMIT 1`,
+    [intake.intake_key],
+  );
+  const sourceKey = String(job.rows[0]?.source_key ?? '');
+  if (!sourceKey) throw new Error('browser content factory acceptance did not complete');
+  await editContentFactoryItem({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    payload: {
+      title: 'Approved occurrence-scoped synthetic Mishnah review',
+      short_description:
+        'Approved provider-off acceptance content for the selected class occurrence.',
+      occurrence_key: 'e2e_class_occurrence',
     },
   });
   await performContentFactoryAction({
@@ -382,6 +415,15 @@ async function seedContentFactoryBrowserSample() {
     actorRole: 'owner',
     action: 'publish',
   });
+}
+
+function syntheticMp4(label: string) {
+  const bytes = Buffer.alloc(4_096, 0);
+  bytes.writeUInt32BE(24, 0);
+  bytes.write('ftyp', 4, 'ascii');
+  bytes.write('isom', 8, 'ascii');
+  createHash('sha256').update(label).digest().copy(bytes, 32);
+  return bytes;
 }
 
 async function seedW12AdminSession() {

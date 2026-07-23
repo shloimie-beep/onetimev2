@@ -66,12 +66,20 @@ export const contentFactorySafeItemSchema = z.object({
   display_name: z.string().trim().min(1).max(240),
   state: contentFactoryStateSchema,
   is_demo: z.boolean(),
+  occurrence: z
+    .object({
+      occurrence_key: idSchema,
+      class_title: z.string().trim().min(1).max(240),
+      class_date: z.string().date(),
+    })
+    .nullable(),
+  processing_mode: z.enum(['synthetic', 'vimeo']),
   draft: contentFactoryDraftSchema,
   normalized_transcript: safeTextSchema,
   transcript_review_state: z.enum(['draft', 'approved', 'rejected']),
   transcript_segment_count: z.number().int().min(0),
   transcription: z.object({
-    provider: z.literal('openai'),
+    provider: z.enum(['openai', 'synthetic']),
     model: z.string().trim().min(1).max(120),
     language: z.string().trim().min(1).max(24),
     transcript_sha256: sha256Schema,
@@ -89,6 +97,7 @@ export const contentFactorySafeItemSchema = z.object({
     middle_cut_performed: z.literal(false),
   }),
   vimeo: z.object({
+    provider: z.enum(['vimeo', 'synthetic']),
     privacy: z.enum(['private', 'unlisted', 'password', 'review_required']),
     captions_active: z.boolean(),
     provider_video_id_present: z.boolean(),
@@ -105,6 +114,7 @@ export const contentFactorySafeItemSchema = z.object({
   last_safe_error_code: z.string().trim().max(160).nullable(),
   approved_at: z.string().datetime({ offset: true }).nullable(),
   published_at: z.string().datetime({ offset: true }).nullable(),
+  unpublished_at: z.string().datetime({ offset: true }).nullable(),
   updated_at: z.string().datetime({ offset: true }),
 });
 export type ContentFactorySafeItem = z.infer<typeof contentFactorySafeItemSchema>;
@@ -116,17 +126,36 @@ export const contentFactoryIntakeSafeSchema = z.object({
   mime_type: z.string().trim().min(1).max(120),
   byte_length: z.number().int().positive(),
   state: contentFactoryTimelineStateSchema,
+  occurrence: z
+    .object({
+      occurrence_key: idSchema,
+      class_title: z.string().trim().min(1).max(240),
+      class_date: z.string().date(),
+    })
+    .nullable(),
   class_label: z.string().trim().max(180).nullable(),
   class_date: z.string().date().nullable(),
   source_sha256: sha256Schema,
   private_ref_digest: sha256Schema,
+  durable_locator_present: z.boolean(),
+  idempotency_key_digest: sha256Schema.nullable(),
   raw_source_path_present: z.literal(false),
   raw_provider_url_present: z.literal(false),
   last_safe_error_code: z.string().trim().max(160).nullable(),
   created_at: z.string().datetime({ offset: true }),
   updated_at: z.string().datetime({ offset: true }),
+  retry_eligible: z.boolean(),
 });
 export type ContentFactoryIntakeSafe = z.infer<typeof contentFactoryIntakeSafeSchema>;
+
+export const contentFactoryOccurrenceSchema = z.object({
+  occurrence_key: idSchema,
+  class_title: z.string().trim().min(1).max(240),
+  class_date: z.string().date(),
+  starts_at: z.string().datetime({ offset: true }),
+  learner_count: z.number().int().min(0),
+});
+export type ContentFactoryOccurrence = z.infer<typeof contentFactoryOccurrenceSchema>;
 
 export const contentFactoryWorkspaceResponseSchema = z.object({
   success: z.literal(true),
@@ -139,6 +168,7 @@ export const contentFactoryWorkspaceResponseSchema = z.object({
     local_drop: z.object({ ready: z.literal(true), private_copy_required: z.literal(true) }),
   }),
   counts: z.record(contentFactoryStateSchema, z.number().int().min(0)),
+  occurrences: z.array(contentFactoryOccurrenceSchema),
   intakes: z.array(contentFactoryIntakeSafeSchema),
   items: z.array(contentFactorySafeItemSchema),
 });
@@ -156,6 +186,7 @@ export const contentFactoryEditPayloadSchema = z
     key_takeaways: z.array(z.string().trim().min(3).max(800)).min(3).max(5).optional(),
     vocabulary: z.array(contentFactoryVocabularyEntrySchema).max(20).optional(),
     normalized_transcript: safeTextSchema.optional(),
+    occurrence_key: idSchema.optional(),
   })
   .strict();
 export type ContentFactoryEditPayload = z.infer<typeof contentFactoryEditPayloadSchema>;
@@ -174,6 +205,9 @@ export const contentFactoryIntakeResponseSchema = z.object({
 });
 
 export const contentFactoryPortalProjectionSchema = z.object({
+  occurrence_key: idSchema,
+  class_title: z.string().trim().min(1).max(240),
+  class_date: z.string().date(),
   approved_summary: z.string().trim().max(1_200),
   approved_review_questions: z.array(z.string().trim().min(3).max(600)).min(5).max(10),
   captions_active: z.literal(true),
