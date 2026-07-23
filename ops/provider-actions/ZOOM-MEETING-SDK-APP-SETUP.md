@@ -19,11 +19,11 @@ value, change a Zoom/Railway setting, deploy, join a meeting, invoke Zoom, or ch
 
 ## First external human action
 
-The first external action is for the authorized Zoom/class-target operator to revoke and rotate
-the exposed persistent-staging class target at its authoritative protected source while every
-real/canary gate remains off. Do not start with the Zoom allowlist or Railway credential writes.
-The old target must first be proven denied and the replacement must first be proven scoped to the
-same staging-only class purpose without rendering either value.
+The first external action is a read-only classification of the exposed persistent-staging class
+target while every real/canary gate remains off. Do not start with deletion, rotation, the Zoom
+allowlist, or Railway runtime credential writes. Run the repository classifier described below.
+Only `SAFE_TO_REVOKE` permits the separately controlled revoke/replace step; `BLOCKED` means no
+delete, rotation, replacement, or provider mutation.
 
 If the operator cannot access that authoritative source, or the old-target denial is ambiguous,
 stop with `PROTECTED_CLASS_TARGET_ROTATION_BLOCKED`. Clear the staging target variable if its
@@ -132,12 +132,70 @@ any provider request.
 - `ONE_TIME_PROTECTED_CLASS_TARGET_URL`
 
 This is not evidence that SDK/S2S is ready. Its previously exposed value is compromised and must
-be revoked. The replacement is copied directly from its authoritative source to the staging
-protected variable. Record only `old_target_denied`, `replacement_target_valid`, and
-`target_value_recorded=false`; do not record a URL or a plain unsalted digest of one.
+first be classified without rendering it. The discovered
+`ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL` source variable is the Tisha event key. It is not a
+disposable classroom-canary source and must never be copied, relabeled, inferred disposable,
+deleted, or rotated by this job. The classifier also blocks when the protected target equals that
+event-specific canonical Zoom meeting reference, even when the two URLs use different Zoom hosts,
+`/j` versus `/w` paths, or query parameters.
 
-Any missing or ambiguous protected source stops before a real gate is enabled and returns the
-exact missing variable name only.
+Run `npm run zoom:protected-target:inspect` only from an authenticated disposable private Railway
+job or equivalent server-side private-network task pinned to the exact reviewed Git head. Do not
+use a public endpoint, browser DOM inspection, shell echo, environment enumeration, or client-side
+code. Inject the protected target and S2S values through native protected variables and remove
+only that exact disposable job after its sanitized result is captured.
+
+The inspection requires these exact fail-closed gates:
+
+- `ONE_TIME_RUNTIME_ENVIRONMENT=isolated_staging`
+- `ZOOM_CLASSROOM_PROVIDER_MODE=sink`
+- `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=false`
+- `ZOOM_CLASSROOM_CANARY_ENABLED=false`
+- `ZOOM_PROTECTED_TARGET_INSPECTION_AUTHORIZATION=INSPECT_PROTECTED_CLASS_TARGET_ONCE`
+- `ONE_TIME_PROTECTED_CLASS_TARGET_URL` and
+  `ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL` bound as separate server-side protected references for
+  the source-scope comparison
+- canonical `ZOOM_S2S_ACCOUNT_ID`, or temporary `ZOOM_ACCOUNT_ID` only when the canonical account
+  variable is absent
+- `ZOOM_S2S_CLIENT_ID`
+- `ZOOM_S2S_CLIENT_SECRET`
+- `ZOOM_HOST_USER_ID`
+- `ONE_TIME_PROTECTED_CLASS_TARGET_URL`
+
+The command parses the protected Zoom URL only in memory. S2S authentication requires one OAuth
+token `POST`; the sole meeting-resource operation is one `GET`. The inspection client exposes no
+create, update, registration, delete, or rotation method. Its output contains only fixed
+`status`, `blocker`, boolean `classifications`, and numeric `counts`. Counts separately report
+`oauth_token_requests`, `meeting_resource_get_requests`, and
+`resource_mutation_requests` (always zero). It never prints a meeting/host/account identifier,
+topic, agenda, URL, passcode, token, credential, provider error body, or digest.
+
+Both protected URLs are parsed before any S2S/host requirement, OAuth, or provider construction.
+If either URL is malformed, the job blocks with zero requests. The source-scope guard then
+compares only the two canonical Zoom meeting references. Prefer a disposable private job that
+binds both exact protected variable names and nothing else: canonical meeting-reference equality
+returns `protected_target_source_scope_checked=true`,
+`protected_target_source_scope_allowed=false`, and exact zero/zero/zero request counts. A missing
+comparison input returns both booleans false (scope unknown). Distinct references return both
+booleans true, which means only “not the known Tisha event key”; it does not establish that the
+target is disposable. Only that distinct case may proceed to the S2S GET inspection.
+
+`SAFE_TO_REVOKE` requires an exact single-occurrence type-2 meeting, the configured exact host,
+the repository-created canonical UTC-minute canary topic, the exact isolated-canary agenda,
+both registrant email settings false, and `join_before_host=false`. Every mismatch, malformed
+response, provider error, unavailable readback, or ambiguous source returns
+`PROTECTED_CLASS_TARGET_ROTATION_BLOCKED`. That blocker is terminal for this execution: perform no
+delete or rotation. Clear `ZOOM_PROTECTED_TARGET_INSPECTION_AUTHORIZATION` immediately after the
+single read-only attempt, whether it passes or blocks.
+
+After `SAFE_TO_REVOKE`, the replacement is copied directly from its authoritative disposable
+canary source to the staging protected variable. Record only `old_target_denied`,
+`replacement_target_valid`, and `target_value_recorded=false`; do not record a URL or a plain
+unsalted digest of one.
+
+Any missing or ambiguous protected source stops before a real gate is enabled. The classifier
+returns only the fixed blocker and sanitized phase booleans/counts; it does not echo a variable
+value or provider error.
 
 ## Execution sequence
 
@@ -156,16 +214,20 @@ Read back names/status only and require:
 
 Do not record account, learner, meeting, participant, host, or credential identifiers.
 
-### 2. Rotate the exposed class target
+### 2. Classify, then rotate the exposed class target
 
-1. Revoke the exposed value at the authoritative protected source.
-2. Issue one replacement for the same persistent-staging class purpose.
-3. Copy the replacement through native protected controls directly into
+1. Run the read-only `npm run zoom:protected-target:inspect` job above and require
+   `SAFE_TO_REVOKE`, one OAuth request, one meeting-resource GET, and zero resource mutations.
+2. Clear the transient inspection authorization and remove its exact disposable private job.
+3. If classification is `BLOCKED`, stop with no delete, rotation, or replacement.
+4. Revoke the exposed value at the authoritative protected source.
+5. Issue one replacement for the same persistent-staging class purpose.
+6. Copy the replacement through native protected controls directly into
    `ONE_TIME_PROTECTED_CLASS_TARGET_URL`.
-4. Consume the old target once through a non-logging denial check and require denial.
-5. Consume the replacement once through a non-logging protected smoke and require the expected
+7. Consume the old target once through a non-logging denial check and require denial.
+8. Consume the replacement once through a non-logging protected smoke and require the expected
    staging-only destination.
-6. If either result is ambiguous, clear the variable, keep all real/canary gates off, revoke the
+9. If either result is ambiguous, clear the variable, keep all real/canary gates off, revoke the
    replacement if needed, and stop.
 
 ### 3. Add the exact staging origin

@@ -2,7 +2,11 @@ import { createHmac } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { ZoomApiError, createZoomRestClient } from '../packages/domain/src/providers/zoom-rest.ts';
+import {
+  ZoomApiError,
+  createZoomRestClient,
+  zoomIsolatedCanaryTopic,
+} from '../packages/domain/src/providers/zoom-rest.ts';
 import {
   assertZoomRealControlProvisionedState,
   assertZoomRealControlProvisionPreflight,
@@ -54,7 +58,7 @@ if (existsSync(statePath)) {
   const created = await client.createIsolatedTestMeeting({
     hostUserId,
     startsAt,
-    topic: `One Time isolated control verification ${startsAt.toISOString().slice(0, 16)}`,
+    topic: zoomIsolatedCanaryTopic(startsAt),
     durationMinutes: 60,
   });
   state = {

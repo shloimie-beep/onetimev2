@@ -814,21 +814,23 @@ tracks:
       repository: shloimie-beep/bnei-neviim-academy
       branch: codex/platform-agent-actions-telegram-preview
       pr: 141
-      head: dba7234aa772e205f5d9861af3207f4b516e913b
+      head: dff66b24fd966a08cdd6a16e80f954d2f988673a
       system: Telegram to GHL customer bridge
     write_scope: Private synthetic question draft/readback; no customer send by default
-    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/blob/dba7234aa772e205f5d9861af3207f4b516e913b/ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/durability-telegram-live-proof.json
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/blob/dff66b24fd966a08cdd6a16e80f954d2f988673a/ops/codex-runs/2026-07-22-platform-agent-actions-telegram-preview/synthetic-contact-reconciliation.json
     dependencies: [telegram_foundation, bna_durability, ghl_event_dispatcher]
     acceptance_ids: [TELEGRAM-002]
     evidence:
       - BNA durability, the Telegram foundation, and the accepted One Time outbox/dispatcher contract are present; the Telegram-to-GHL adapter remains synthetic-only with customer send disabled.
-      - The operator-owned synthetic HighLevel contact is absent, so no contact was inferred or created and no GHL draft/save/readback canary was attempted.
-      - "Customer messages and GHL mutations are zero. The user's separate GHL lane owns any later synthetic contact and UI mutation; PR #97 does not duplicate that work."
+      - 'PR #141 evidence head dff66b24fd966a08cdd6a16e80f954d2f988673a records terminal lookup-only reconciliation: the official location returned 100 contacts, seven recent records lacked fictional/synthetic markers, two prior exact marker reads returned zero matches, and one prior broad marker read timed out.'
+      - The one authorized exact-key retry used official HighLevel advanced contact search with email-equals against the protected operator-owned synthetic identity; HighLevel returned HTTP 504, so exact match count remained unavailable.
+      - No exact canonical fictional contact was proven. Reconciliation stopped before create, save, readback, or protected handoff, so ONE_TIME_RABBI_SYNTHETIC_CONTACT_ID remains absent and no GHL draft/save/readback canary was attempted.
+      - "Customer messages, GHL mutations, workflow enrollments, and production effects are zero. The user's separate sole-GHL-writer lane owns exact contact reconciliation and any permitted synthetic-contact mutation; PR #97 does not duplicate that work."
     blocker:
-      code: OPERATOR_OWNED_SYNTHETIC_CONTACT_ABSENT
-      reason: The exact synthetic HighLevel contact required for a no-send draft/save/readback canary is absent, and creating or selecting it belongs to the separate GHL-controlled scope.
-    remaining_work: After the GHL-owned lane supplies one exact operator-owned synthetic contact, run only the synthetic question draft/save/readback canary with customer sends fixed at zero.
-    next_action: Keep the GHL bridge provider_off and customer sends disabled; do not infer a contact, duplicate the GHL lane, or treat the private Telegram canary as customer-bridge proof.
+      code: CANONICAL_FICTIONAL_GHL_IDENTITY_UNPROVEN
+      reason: Official exact email-equality lookup returned provider HTTP 504 on the one bounded retry, so one canonical fictional identity was neither proven nor safely creatable.
+    remaining_work: After the sole GHL writer supplies or exactly proves one operator-owned synthetic contact, inject only its ID through the protected handoff and run the synthetic question draft/save/readback canary with customer sends fixed at zero.
+    next_action: Keep the GHL bridge provider_off and customer sends disabled; resume only after one exact existing contact is privately supplied/proven or HighLevel exact lookup becomes available under a separately reviewed retry, and do not infer a contact or treat the private Telegram canary as customer-bridge proof.
 
   - id: VIDEO-TO-CLASSROOM-E2E
     status: unclaimed

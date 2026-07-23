@@ -76,13 +76,19 @@ export {
 export { createClassroomReminderJob } from './classroom/reminders.ts';
 export {
   ZoomApiError,
+  ZOOM_ISOLATED_CANARY_AGENDA,
+  ZOOM_ISOLATED_CANARY_TOPIC_PREFIX,
   assertNoZoomSecretLeak,
   createLearnerZoomSdkSignature,
   createHostZoomSdkSignature,
   createZoomMeetingSdkSignature,
+  createZoomProtectedTargetInspectionClient,
   createZoomRestClient,
   registrantTokenFromJoinUrl,
   resolveZoomOccurrenceForLocalDate,
+  zoomIsolatedCanaryTopic,
+  type ZoomProtectedTargetInspectionRequestObserver,
+  type ZoomProtectedTargetScopeInspection,
 } from './providers/zoom-rest.ts';
 export {
   processZoomWebhook,
