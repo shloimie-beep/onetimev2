@@ -18,7 +18,7 @@ const cases = [
   {
     id: 'landing',
     path: '/',
-    heading: 'Give your son a love for learning Torah.',
+    heading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
     role: 'anonymous',
   },
   { id: 'signup', path: '/signup', heading: 'Sign Up Now', role: 'anonymous' },

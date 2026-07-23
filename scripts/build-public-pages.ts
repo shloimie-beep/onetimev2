@@ -44,6 +44,11 @@ const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/outcomes/excitement-learning-torah.webp', [945, 2048]],
   ['/assets/outcomes/accomplishment-toronto-class.jpg', [1200, 745]],
   ['/assets/rabbi/rabbi-eli-holding-book.jpg', [1600, 1067]],
+  ['/assets/press/torah-anytime.png', [133, 100]],
+  ['/assets/press/24six.png', [131, 100]],
+  ['/assets/press/the-loop.png', [202, 100]],
+  ['/assets/press/naki.webp', [244, 100]],
+  ['/assets/press/mishpacha.webp', [338, 100]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp', [1600, 714]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp', [1600, 1066]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp', [1600, 1200]],
@@ -158,7 +163,7 @@ function landingPage() {
           : visualCard.image
             ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}"${mediaSizeAttributes(visualCard.image)}${srcSetAttributes(visualCard.srcset, visualCard.sizes)} loading="lazy" decoding="async" data-image-watch>${fallbackImageSpan()}`
             : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Missing approved asset</div>`;
-      return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}">
+      return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}" data-scroll-reveal>
         <div class="benefit-visual">${visual}</div>
         <h3>${escapeHtml(card.title)}</h3>
         <p>${escapeHtml(card.body)}</p>
@@ -196,7 +201,7 @@ function landingPage() {
   const press = landingContent.press
     .map(
       ([label, src]) =>
-        `<span><img src="${src}" alt="${escapeHtml(label)}" loading="lazy" decoding="async"></span>`,
+        `<span><img src="${src}" alt="${escapeHtml(label)}"${mediaSizeAttributes(src)} loading="lazy" decoding="async"></span>`,
     )
     .join('');
   const gallerySection = `<section class="section gallery-section" id="world">
@@ -210,32 +215,20 @@ function landingPage() {
         <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
         <div>${dots}</div>
         <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
+        <button type="button" class="gallery-playback" data-gallery-toggle aria-pressed="false">Pause slideshow</button>
       </div>
     </div>
-    <div class="press-strip" aria-label="Torah media and publication logos"><p>Torah media and publication mentions</p><div>${press}</div></div>
+    <div class="press-strip" aria-label="Torah media and publication logos"><div>${press}</div></div>
   </section>`;
-  const assistant = landingContent.whatsappAssistant;
-  const whatsappAssistant = `<aside class="whatsapp-assistant" data-whatsapp-assistant data-state="${escapeHtml(assistant.state)}">
-    <button class="whatsapp-assistant-button" type="button" data-whatsapp-toggle aria-expanded="false" aria-controls="whatsapp-assistant-panel">
-      <span aria-hidden="true">WA</span><span class="sr-only">${escapeHtml(assistant.buttonLabel)}</span>
-    </button>
-    <div class="whatsapp-assistant-panel" id="whatsapp-assistant-panel" data-whatsapp-panel hidden>
-      <button class="whatsapp-assistant-close" type="button" data-whatsapp-close aria-label="${escapeHtml(assistant.dismissLabel)}">x</button>
-      <p class="whatsapp-assistant-state">${escapeHtml(assistant.state === 'offline' ? 'Offline readiness' : 'Available')}</p>
-      <h2>${escapeHtml(assistant.heading)}</h2>
-      <p>${escapeHtml(assistant.body)}</p>
-      <a class="button button-primary" href="${escapeHtml(assistant.ctaHref)}">${escapeHtml(assistant.ctaLabel)}</a>
-    </div>
-  </aside>`;
 
   return pageShell(
     landingContent.seo.title,
-    `${header()}
-<main>
+    `${header()}${ticker()}
+<main class="landing-page">
   <section class="hero">
     <div class="hero-inner">
-      <p class="kicker">${landingContent.hero.kickerLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</p>
-      <h1>${escapeHtml(landingContent.hero.heading)}</h1>
+      <h1 aria-label="${escapeHtml(landingContent.hero.kickerLines.join(' / '))}">${landingContent.hero.kickerLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
+      <p class="hero-supporting">${escapeHtml(landingContent.hero.heading)}</p>
       <a class="button button-primary hero-cta" href="/signup">Sign Up Now</a>
     </div>
   </section>
@@ -255,18 +248,18 @@ function landingPage() {
     <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
     <div class="benefit-grid">${gainCards}</div>
   </section>
-  <section class="section how" id="how-it-works">
-    <h2>${escapeHtml(landingContent.how.heading)}</h2>
-    <p>${escapeHtml(landingContent.how.body)}</p>
-    <ol>${steps}</ol>
-  </section>
-  ${gallerySection}
   <section class="section who" id="who">
     <div>
       <h2>${escapeHtml(landingContent.who.heading)}</h2>
       <ul>${whoCards}</ul>
     </div>
   </section>
+  <section class="section how" id="how-it-works">
+    <h2>${escapeHtml(landingContent.how.heading)}</h2>
+    <p>${escapeHtml(landingContent.how.body)}</p>
+    <ol>${steps}</ol>
+  </section>
+  ${gallerySection}
   <section class="section rabbi" id="rabbi">
     <div class="rabbi-bio">
       <div>
@@ -278,7 +271,7 @@ function landingPage() {
     </div>
   </section>
   <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Sign Up Now</a></section>
-</main>${whatsappAssistant}${ticker()}${footer()}`,
+</main>${footer()}`,
   );
 }
 

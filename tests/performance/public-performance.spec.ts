@@ -4,7 +4,11 @@ test('landing meets local performance and overflow gates', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const started = Date.now();
   await page.goto('/', { waitUntil: 'load' });
-  await page.getByRole('heading', { name: 'Give your son a love for learning Torah.' }).waitFor();
+  await page
+    .getByRole('heading', {
+      name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+    })
+    .waitFor();
   const usableMs = Date.now() - started;
   const metrics = await page.evaluate(() => {
     const nav = performance.getEntriesByType('navigation')[0] as

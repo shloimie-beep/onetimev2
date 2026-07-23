@@ -61,10 +61,14 @@ describe('lead validation and content contracts', () => {
     expect(campaign.id).toBe('free-until-rosh-hashanah-2026');
     expect(campaign.deadlineDate).toBe('2026-09-11');
     expect(campaign.timezone).toBe('Asia/Jerusalem');
-    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toContain(
-      'JOIN NOW — FREE UNTIL ROSH HASHANAH',
-    );
+    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toContain('FREE UNTIL ROSH HASHANAH');
     expect(campaignTicker(new Date('2026-09-11T00:01:00+03:00'))).toBeNull();
+    expect(landingContent.hero.kickerLines).toEqual([
+      'WORLDWIDE MISHNAH LEARNING',
+      'LIVE FROM ERETZ YISRAEL',
+    ]);
+    expect(landingContent.hero.heading).toBe('Give your son a love for learning Torah.');
+    expect(landingContent).not.toHaveProperty('whatsappAssistant');
     expect(publicCopy).not.toMatch(/\$67|monthly price|No card today|trial/i);
   });
 

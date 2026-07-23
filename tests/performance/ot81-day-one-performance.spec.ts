@@ -38,7 +38,9 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
       await measureRoute(page, 'landing', async () => {
         await page.goto('/');
         await page
-          .getByRole('heading', { name: 'Give your son a love for learning Torah.' })
+          .getByRole('heading', {
+            name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+          })
           .waitFor();
       }),
     );

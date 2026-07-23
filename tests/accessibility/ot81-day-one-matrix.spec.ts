@@ -26,7 +26,9 @@ test.describe('OT81 responsive accessibility matrix', () => {
       await page.setViewportSize(viewport);
       await page.goto('/');
       await expect(
-        page.getByRole('heading', { name: 'Give your son a love for learning Torah.' }),
+        page.getByRole('heading', {
+          name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+        }),
       ).toBeVisible();
       evidence.push(await inspectPage(page, `landing-${viewport.name}`));
 

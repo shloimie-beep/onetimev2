@@ -52,16 +52,46 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const campaign = document.querySelector<HTMLElement>('[data-campaign-deadline]');
 if (campaign) {
-  const deadline = campaign.dataset.campaignDeadline;
-  const today = new Intl.DateTimeFormat('en-CA', {
+  const deadlineParts = campaign.dataset.campaignDeadline?.split('-').map(Number);
+  const deadline =
+    deadlineParts?.length === 3 && deadlineParts.every(Number.isFinite)
+      ? (deadlineParts as [number, number, number])
+      : null;
+  const initialLabel = campaign.getAttribute('aria-label') ?? '';
+  const label =
+    initialLabel.replace(/\s+—\s+\d+\s+DAYS?\s+TO ROSH HASHANAH$/u, '').trim() ||
+    'FREE UNTIL ROSH HASHANAH';
+  const jerusalemDate = new Intl.DateTimeFormat('en', {
     timeZone: 'Asia/Jerusalem',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).format(new Date());
-  if (deadline && today >= deadline) campaign.hidden = true;
+  });
+  const renderCountdown = () => {
+    if (!deadline) return;
+    const dateParts = { year: 0, month: 0, day: 0 };
+    for (const part of jerusalemDate.formatToParts(new Date())) {
+      if (part.type === 'year' || part.type === 'month' || part.type === 'day') {
+        dateParts[part.type] = Number(part.value);
+      }
+    }
+    const todayIndex = Date.UTC(dateParts.year, dateParts.month - 1, dateParts.day) / 86_400_000;
+    const [deadlineYear, deadlineMonth, deadlineDay] = deadline;
+    const deadlineIndex = Date.UTC(deadlineYear, deadlineMonth - 1, deadlineDay) / 86_400_000;
+    const days = deadlineIndex - todayIndex;
+    campaign.hidden = days <= 0;
+    if (days <= 0) return;
+    const copy = `${label} — ${days} ${days === 1 ? 'DAY' : 'DAYS'} TO ROSH HASHANAH`;
+    campaign.setAttribute('aria-label', `${copy}. Sign up now.`);
+    campaign
+      .querySelectorAll<HTMLElement>('.campaign-ticker-item')
+      .forEach((item) => (item.textContent = copy));
+  };
+  renderCountdown();
+  window.setInterval(renderCountdown, 60_000);
 }
 
 const carousel = document.querySelector<HTMLElement>('[data-gallery]');
@@ -71,15 +101,19 @@ if (carousel) {
   const track = carousel.querySelector<HTMLElement>('[data-gallery-track]');
   const viewport = carousel.querySelector<HTMLElement>('[data-gallery-viewport]');
   const status = carousel.querySelector<HTMLElement>('[data-gallery-status]');
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const toggle = carousel.querySelector<HTMLButtonElement>('[data-gallery-toggle]');
   let index = 0;
   let pointerStartX: number | null = null;
+  let autoplayTimer: number | undefined;
+  let userPaused = reducedMotion;
+  let pointerInside = false;
+  let focusInside = false;
   const positionTrack = () => {
     if (!track || !viewport) return;
     const offset = index * viewport.getBoundingClientRect().width;
     track.style.transform = `translate3d(${-offset}px, 0, 0)`;
   };
-  const show = (next: number) => {
+  const show = (next: number, announce = true) => {
     index = (next + slides.length) % slides.length;
     slides.forEach((slide, slideIndex) => {
       const active = slideIndex === index;
@@ -96,32 +130,53 @@ if (carousel) {
     });
     positionTrack();
     const current = slides[index];
-    if (prefersReducedMotion) track?.classList.add('is-reduced-motion');
     const caption = current?.querySelector('figcaption')?.textContent?.trim();
-    if (status && caption) status.textContent = `Showing ${caption}`;
+    if (announce && status && caption) status.textContent = `Showing ${caption}`;
+  };
+  const stopAutoplay = () => {
+    window.clearInterval(autoplayTimer);
+    autoplayTimer = undefined;
+  };
+  const syncAutoplay = () => {
+    stopAutoplay();
+    if (
+      reducedMotion ||
+      userPaused ||
+      pointerInside ||
+      focusInside ||
+      document.hidden ||
+      slides.length < 2
+    ) {
+      return;
+    }
+    autoplayTimer = window.setInterval(() => show(index + 1, false), 6000);
+  };
+  const showFromControl = (next: number) => {
+    show(next);
+    syncAutoplay();
   };
   buttons.forEach((button, buttonIndex) =>
-    button.addEventListener('click', () => show(buttonIndex)),
+    button.addEventListener('click', () => showFromControl(buttonIndex)),
   );
   carousel
     .querySelector<HTMLButtonElement>('[data-gallery-prev]')
-    ?.addEventListener('click', () => show(index - 1));
+    ?.addEventListener('click', () => showFromControl(index - 1));
   carousel
     .querySelector<HTMLButtonElement>('[data-gallery-next]')
-    ?.addEventListener('click', () => show(index + 1));
+    ?.addEventListener('click', () => showFromControl(index + 1));
   carousel.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
-      show(index - 1);
+      showFromControl(index - 1);
     } else if (event.key === 'ArrowRight') {
       event.preventDefault();
-      show(index + 1);
+      showFromControl(index + 1);
     } else if (event.key === 'Home') {
       event.preventDefault();
-      show(0);
+      showFromControl(0);
     } else if (event.key === 'End') {
       event.preventDefault();
-      show(slides.length - 1);
+      showFromControl(slides.length - 1);
     }
   });
   viewport?.addEventListener('pointerdown', (event) => {
@@ -132,10 +187,46 @@ if (carousel) {
     const delta = event.clientX - pointerStartX;
     pointerStartX = null;
     if (Math.abs(delta) < 36) return;
-    show(index + (delta < 0 ? 1 : -1));
+    showFromControl(index + (delta < 0 ? 1 : -1));
   });
+  viewport?.addEventListener('pointercancel', () => (pointerStartX = null));
+  carousel.addEventListener('mouseenter', () => {
+    pointerInside = true;
+    syncAutoplay();
+  });
+  carousel.addEventListener('mouseleave', () => {
+    pointerInside = false;
+    syncAutoplay();
+  });
+  carousel.addEventListener('focusin', () => {
+    focusInside = true;
+    syncAutoplay();
+  });
+  carousel.addEventListener('focusout', () => {
+    window.requestAnimationFrame(() => {
+      focusInside = carousel.contains(document.activeElement);
+      syncAutoplay();
+    });
+  });
+  document.addEventListener('visibilitychange', syncAutoplay);
+  if (toggle) {
+    if (reducedMotion) {
+      toggle.textContent = 'Slideshow paused';
+      toggle.setAttribute('aria-pressed', 'true');
+      toggle.disabled = true;
+    } else {
+      toggle.addEventListener('click', () => {
+        userPaused = !userPaused;
+        toggle.textContent = userPaused ? 'Play slideshow' : 'Pause slideshow';
+        toggle.setAttribute('aria-pressed', String(userPaused));
+        syncAutoplay();
+      });
+    }
+  }
+  if (reducedMotion) track?.classList.add('is-reduced-motion');
   window.addEventListener('resize', positionTrack);
-  show(0);
+  show(0, false);
+  syncAutoplay();
 }
 
 document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image) => {
@@ -150,26 +241,26 @@ document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image
   );
 });
 
-const whatsappAssistant = document.querySelector<HTMLElement>('[data-whatsapp-assistant]');
-if (whatsappAssistant) {
-  const toggle = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-toggle]');
-  const panel = whatsappAssistant.querySelector<HTMLElement>('[data-whatsapp-panel]');
-  const close = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-close]');
-  let assistantDismissed = false;
-  const setPanel = (open: boolean) => {
-    if (!toggle || !panel) return;
-    panel.hidden = !open;
-    toggle.setAttribute('aria-expanded', String(open));
-  };
-  toggle?.addEventListener('click', () => setPanel(Boolean(panel?.hidden)));
-  close?.addEventListener('click', () => {
-    assistantDismissed = true;
-    setPanel(false);
-    toggle?.focus();
+if (!reducedMotion && 'IntersectionObserver' in window) {
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const target = entry.target as HTMLElement;
+        target.dataset.scrollReveal = 'visible';
+        revealObserver.unobserve(target);
+      });
+    },
+    { threshold: 0.18 },
+  );
+  document.querySelectorAll<HTMLElement>('[data-scroll-reveal]').forEach((target) => {
+    if (target.getBoundingClientRect().top < window.innerHeight * 0.92) {
+      target.dataset.scrollReveal = 'visible';
+      return;
+    }
+    target.dataset.scrollReveal = 'pending';
+    revealObserver.observe(target);
   });
-  window.setTimeout(() => {
-    if (!assistantDismissed) setPanel(true);
-  }, 6500);
 }
 
 const form = document.querySelector<HTMLFormElement>('[data-signup-form]');

@@ -29,7 +29,7 @@ test.describe('OPS-07 visual matrix', () => {
           page,
           `landing-${viewport.name}`,
           '/',
-          'Give your son a love for learning Torah.',
+          'Worldwide Mishnah Learning / Live from Eretz Yisrael',
         ),
       );
       results.push(await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Sign Up Now'));

@@ -2,16 +2,16 @@ export const campaign = {
   id: 'free-until-rosh-hashanah-2026',
   timezone: 'Asia/Jerusalem',
   deadlineDate: '2026-09-11',
-  label: 'JOIN NOW — FREE UNTIL ROSH HASHANAH',
+  label: 'FREE UNTIL ROSH HASHANAH',
 };
 
 export const landingContent = {
   seo: {
-    title: 'Give Your Son A Love For Learning Torah | One Time Mishnayos',
+    title: 'Worldwide Mishnah Learning Live from Eretz Yisrael | One Time Mishnayos',
     description:
       'A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and steady progress.',
     canonical: 'https://join.onetimeonetime.com/',
-    ogTitle: 'Give your son a love for learning Torah.',
+    ogTitle: 'Worldwide Mishnah Learning Live from Eretz Yisrael',
     ogDescription: 'Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.',
   },
   hero: {
@@ -158,15 +158,6 @@ export const landingContent = {
   finalCta: {
     heading: 'Ready to join the live class?',
   },
-  whatsappAssistant: {
-    state: 'offline',
-    buttonLabel: 'WhatsApp help',
-    heading: 'Questions about joining?',
-    body: 'The WhatsApp assistant is being connected. Sign up now and the team will follow up with class information.',
-    ctaLabel: 'Sign Up Now',
-    ctaHref: '/signup',
-    dismissLabel: 'Dismiss WhatsApp helper',
-  },
   footer: {
     line: 'One Time Mishnayos with Rabbi Eli Scheller.',
     links: [
@@ -182,8 +173,8 @@ export const landingContent = {
 export const sharedNav = [
   ['What You Receive', '#receive'],
   ["What He'll Gain", '#gain'],
-  ['How It Works', '#how-it-works'],
   ["Who It's For", '#who'],
+  ['How It Works', '#how-it-works'],
   ['Rabbi Scheller', '#rabbi'],
   ['Member Login', '/login'],
 ] as const;

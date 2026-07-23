@@ -34,7 +34,7 @@ test('landing works on required mobile viewports with visible header and hero CT
     await expect(ticker).toBeVisible();
     await expect(ticker).toHaveAttribute(
       'aria-label',
-      /JOIN NOW — FREE UNTIL ROSH HASHANAH — \d+ DAYS? TO ROSH HASHANAH/,
+      /FREE UNTIL ROSH HASHANAH — \d+ DAYS? TO ROSH HASHANAH/,
     );
     await expect(brandLogo).toBeVisible();
     await expect(brandTitle).toBeVisible();
@@ -42,8 +42,11 @@ test('landing works on required mobile viewports with visible header and hero CT
     await expect(headerSignup).toBeVisible();
     await expect(hamburger).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'Give your son a love for learning Torah.' }),
+      page.getByRole('heading', {
+        name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+      }),
     ).toBeVisible();
+    await expect(page.getByText('Give your son a love for learning Torah.')).toBeVisible();
     await expect(heroSignup).toBeVisible();
     await expectLocatorInsideViewport(brandLogo, size);
     await expectLocatorInsideViewport(brandTitle, size);
@@ -84,9 +87,9 @@ test('landing preserves exact receive structure and asset assignments', async ({
   await expect(ticker).toBeVisible();
   await expect(ticker).toHaveAttribute('data-campaign-deadline', '2026-09-11');
   await expect(ticker.locator('.campaign-ticker-item')).toHaveCount(6);
-  await expect(ticker).toHaveCSS('height', '32px');
+  await expect(ticker).toHaveCSS('position', 'static');
   await expect(page.locator('.yellow-text')).toHaveCount(0);
-  await expect(page.locator('a.button-primary[href="/signup"]')).toHaveCount(4);
+  await expect(page.locator('a.button-primary[href="/signup"]')).toHaveCount(3);
   await expect(
     page.getByText(/ROSH HASHANAH SPECIAL|\$67|month afterward|No card today|trial/i),
   ).toHaveCount(0);
@@ -100,16 +103,24 @@ test('landing preserves exact receive structure and asset assignments', async ({
     'hero',
     'receive',
     'gain',
+    'who',
     'how-it-works',
     'world',
-    'who',
     'rabbi',
     'final-cta',
   ]);
-  await expect(page.locator('.hero .kicker span')).toHaveText([
+  await expect(
+    page.getByRole('heading', {
+      name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+    }),
+  ).toBeVisible();
+  await expect(page.locator('.hero h1 span')).toHaveText([
     'WORLDWIDE MISHNAH LEARNING',
     'LIVE FROM ERETZ YISRAEL',
   ]);
+  await expect(page.locator('.hero-supporting')).toHaveText(
+    'Give your son a love for learning Torah.',
+  );
   await expect(page.locator('.hero .schedule')).toHaveCount(0);
   await expect(page.getByText('Live every day at 7:00 p.m. Israel time.')).toBeVisible();
   await expect(
@@ -158,6 +169,22 @@ test('landing preserves exact receive structure and asset assignments', async ({
       .locator('img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]'),
   ).toHaveCount(0);
   await expect(page.locator('article[data-benefit="Retention"] img')).toHaveCount(1);
+  const outcomeMedia = await page.locator('.benefit-visual').evaluateAll((elements) =>
+    elements.map((element) => {
+      const box = element.getBoundingClientRect();
+      return { width: box.width, height: box.height };
+    }),
+  );
+  expect(new Set(outcomeMedia.map(({ width }) => Math.round(width))).size).toBe(1);
+  expect(new Set(outcomeMedia.map(({ height }) => Math.round(height))).size).toBe(1);
+  await expect(page.locator('article[data-benefit="Retention"] img')).toHaveCSS(
+    'object-fit',
+    'cover',
+  );
+  await expect(page.locator('article[data-benefit="Retention"] img')).toHaveCSS(
+    'object-position',
+    '50% 45%',
+  );
   await expect(page.locator('.benefit-card h3')).toHaveText([
     'Clarity',
     'Retention',
@@ -202,6 +229,7 @@ test('landing preserves exact receive structure and asset assignments', async ({
     'Silver Spring, Maryland',
   ]);
   await expect(page.getByText('Rabbi Scheller teaching a large student group.')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Pause slideshow' })).toBeVisible();
   await page.getByRole('button', { name: 'Next teaching photo' }).focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('.gallery-slide').nth(1)).toHaveAttribute('data-active', 'true');
@@ -228,11 +256,34 @@ test('landing preserves exact receive structure and asset assignments', async ({
   expect(galleryGeometry.overflowX).toBe('hidden');
   expect(galleryGeometry.activeLeft).toBeGreaterThanOrEqual(galleryGeometry.viewportLeft - 1);
   expect(galleryGeometry.activeRight).toBeLessThanOrEqual(galleryGeometry.viewportRight + 1);
-  await page.getByRole('button', { name: 'WhatsApp help' }).click();
-  await expect(page.getByText('Offline readiness')).toBeVisible();
-  await expect(page.getByText('The WhatsApp assistant is being connected.')).toBeVisible();
-  await page.getByRole('button', { name: 'Dismiss WhatsApp helper' }).click();
-  await expect(page.getByText('Offline readiness')).toBeHidden();
+  await expect(page.getByText('Torah media and publication mentions')).toHaveCount(0);
+  await expect(page.locator('.press-strip span')).toHaveCount(5);
+  const publicationCards = await page.locator('.press-strip span').evaluateAll((elements) =>
+    elements.map((element) => {
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      return {
+        width: Math.round(box.width),
+        background: style.backgroundColor,
+      };
+    }),
+  );
+  expect(new Set(publicationCards.map(({ width }) => width)).size).toBe(1);
+  expect(publicationCards.every(({ background }) => background === 'rgb(255, 255, 255)')).toBe(
+    true,
+  );
+  const rabbiImage = page.locator('.rabbi-bio img');
+  await rabbiImage.scrollIntoViewIfNeeded();
+  await expect(rabbiImage).toHaveCSS('object-fit', 'contain');
+  const rabbiGeometry = await rabbiImage.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return box.width / box.height;
+  });
+  expect(rabbiGeometry).toBeGreaterThan(0.98);
+  expect(rabbiGeometry).toBeLessThan(1.02);
+  await expect(page.getByRole('button', { name: 'WhatsApp help' })).toHaveCount(0);
+  await expect(page.getByText('Offline readiness')).toHaveCount(0);
+  await expect(page.getByText('The WhatsApp assistant is being connected.')).toHaveCount(0);
   expect(requests.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
   const html = await page.content();
   expect(html).not.toContain('Monitored platform');
@@ -301,8 +352,72 @@ test('landing ticker has a readable reduced-motion state', async ({ page }) => {
   await page.goto('/');
   const firstTickerItem = page.locator('.campaign-ticker-item').first();
   await expect(firstTickerItem).toBeVisible();
-  await expect(firstTickerItem).toContainText('JOIN NOW — FREE UNTIL ROSH HASHANAH');
+  await expect(firstTickerItem).toContainText('FREE UNTIL ROSH HASHANAH');
   await expect(page.locator('.campaign-ticker-track')).toHaveCSS('animation-name', 'none');
+  await expect(page.getByRole('button', { name: 'Slideshow paused' })).toBeDisabled();
+  expect(
+    await page
+      .locator('.benefit-card[data-scroll-reveal]')
+      .evaluateAll((elements) =>
+        elements.every((element) => element.getAttribute('data-scroll-reveal') !== 'pending'),
+      ),
+  ).toBe(true);
+});
+
+test('landing countdown rolls over in Jerusalem and expires in flow', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-09-09T20:59:00Z') });
+  await page.goto('/');
+  const ticker = page.locator('.campaign-ticker');
+  await expect(ticker).toHaveAttribute(
+    'aria-label',
+    /FREE UNTIL ROSH HASHANAH — 2 DAYS TO ROSH HASHANAH/,
+  );
+  await page.clock.runFor('02:00');
+  await expect(ticker).toHaveAttribute(
+    'aria-label',
+    /FREE UNTIL ROSH HASHANAH — 1 DAY TO ROSH HASHANAH/,
+  );
+  await page.clock.fastForward('24:00:00');
+  await expect(ticker).toBeHidden();
+});
+
+test('landing gallery autoplays, pauses explicitly, and avoids screen-reader chatter', async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date('2026-07-23T10:00:00Z') });
+  await page.goto('/');
+  const activeSlide = page.locator('.gallery-slide[data-active="true"]');
+  await expect(activeSlide.locator('figcaption')).toHaveText('Atlanta, Georgia');
+  await page.clock.runFor(6_100);
+  await expect(activeSlide.locator('figcaption')).toHaveText('Baltimore, Maryland');
+  await expect(page.locator('[data-gallery-status]')).toHaveText('Showing Atlanta, Georgia');
+
+  const pause = page.getByRole('button', { name: 'Pause slideshow' });
+  await pause.click();
+  await expect(page.getByRole('button', { name: 'Play slideshow' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.clock.runFor(6_100);
+  await expect(activeSlide.locator('figcaption')).toHaveText('Baltimore, Maryland');
+});
+
+test('landing content remains visible when JavaScript is unavailable', async ({ browser }) => {
+  const context = await browser.newContext({ baseURL: testBaseUrl, javaScriptEnabled: false });
+  const noJsPage = await context.newPage();
+  try {
+    await noJsPage.goto('/');
+    await expect(
+      noJsPage.getByRole('heading', {
+        name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+      }),
+    ).toBeVisible();
+    await expect(noJsPage.locator('.benefit-card')).toHaveCount(4);
+    await expect(noJsPage.locator('.benefit-card').first()).toBeVisible();
+    await expect(noJsPage.getByText('Offline readiness')).toHaveCount(0);
+  } finally {
+    await context.close();
+  }
 });
 
 test('landing gallery shows a graceful fallback when an image fails', async ({ page }) => {
