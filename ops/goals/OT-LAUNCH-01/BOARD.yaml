@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T08:06:52Z
+updated_at: 2026-07-23T08:49:23Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,7 +23,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard to the accepted fictional Student isolation on top of integrated PR #105, PR #108, and PR #104 work. Evidence-only descendant 6b6640d61d6198b2004c836532e1058d5a39a46b is the current persistent-staging source through web deployment 367d92e4-4575-4491-b9e7-1344b0929a04 and worker deployment 2235d4eb-fea6-4d43-b45c-996bda682c28; /version retains the product label full-app-staging-live-7dcb137 while commit_sha and Railway git_commit_sha identify exact source 6b6640d6, /health and /ready return 200 with blockers empty, and schema is 2220_tisha_bav_event_email_permission. The stale protected fictional Admin password was rejected, then only that credential was rotated through a disposable private-network Railway sandbox; the handoff was atomically replaced, old sessions were revoked, the sandbox and local transfer artifacts were removed, and the fresh login completed one bounded email challenge. Normal Dashboard discovery, all five role choices, three sibling-scoped read-only Student shells, the unchanged Admin session, the fake/provider-off Rabbi console, and the approved synthetic Content Factory lesson were re-read without exposing protected values. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
+  current_summary: 'PR #97 exact deployed source 99c60d3aed91ea42fb9d18d819093c95efe17e3f completes the focused Parent/Student workspace on top of integrated PR #105 and PR #108, and eliminates mixed stale app bundles through no-store authenticated HTML, commit-versioned entry URLs, content-hashed shared chunks, and revalidated mutable assets. Persistent staging web deployment 6f7d35de-274b-4154-87fd-ec2b67462d6d and worker deployment 9be7e004-3a2c-40f1-8baf-2aa2efbefc7b are exact-source SUCCESS; /version reports full-app-staging-live-99c60d3 and the exact commit, /health and /ready return 200 with blockers empty, and schema remains 2220_tisha_bav_event_email_permission. The same historical Parent browser session that had reproduced a mixed-module blank screen now renders without new console errors, and protected fictional Parent and Student sessions show the complete role category navigation plus focused workspaces without cross-role controls. The rotated protected fictional handoff remains private. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
   external_action_count: 7
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -40,8 +40,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 6b6640d61d6198b2004c836532e1058d5a39a46b
-    resolution: 'Exact product acceptance remains 7dcb137c4d1e3b908dce8230e3089ec58bf57261. Its evidence-only descendant 6b6640d61d6198b2004c836532e1058d5a39a46b is the current Railway source: /version retains label full-app-staging-live-7dcb137 while commit_sha and deployment.git_commit_sha both identify 6b6640d6 and web deployment 367d92e4-4575-4491-b9e7-1344b0929a04. Worker deployment 2235d4eb-fea6-4d43-b45c-996bda682c28 is exact-source SUCCESS. /health and /ready return 200 with blockers empty and latest schema 2220_tisha_bav_event_email_permission.'
+    last_verified_commit: 99c60d3aed91ea42fb9d18d819093c95efe17e3f
+    resolution: 'Exact product acceptance is 99c60d3aed91ea42fb9d18d819093c95efe17e3f. Web deployment 6f7d35de-274b-4154-87fd-ec2b67462d6d and worker deployment 9be7e004-3a2c-40f1-8baf-2aa2efbefc7b are exact-source SUCCESS. /version reports full-app-staging-live-99c60d3 and the exact commit, /health and /ready return 200 with blockers empty, latest schema is 2220_tisha_bav_event_email_permission, and live portal entry assets revalidate while all imported portal chunks have content hashes.'
   system: One Time persistent staging
 
 tracks:
@@ -159,7 +159,7 @@ tracks:
     next_action: Preserve the latest rotated protected handoff and never render fictional credentials, private destinations, or login codes in DOM/tool diagnostics.
 
   - id: parent_student_portal_information_architecture
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -172,13 +172,17 @@ tracks:
     acceptance_ids: [PORTAL-IA-001, PORTAL-IA-002]
     evidence:
       - 'The operator request was captured without private credentials in 20260723T080652Z-portal-provider-rollout.yaml and assigned to the existing PR #97 conductor.'
-      - 'Focused component/integration tests pass 16/16 for the category contract, actual preview projection, identity fixture boundary, and approved content projection.'
-      - 'Build-backed Chromium passes 5/5 across Experience Preview plus the Parent/Student real-app and portal-test-lab journeys. Desktop proof at 1440x1000 shows persistent role categories, contextual controls, a four-card upper summary, one visible learner identity, and one wide focused lower workspace; 360x800, 390x844, and 768x1024 proof shows compact category navigation with no page overflow or serious accessibility violation.'
+      - 'Focused component/integration/runtime tests pass 19/19 for the category contract, actual preview projection, identity fixture boundary, approved content projection, production asset revalidation, authenticated app no-store HTML, and commit-versioned entry URLs.'
+      - 'Build-backed Chromium passes 8/8 across Experience Preview, Parent/Student real-app and portal-test-lab journeys, public/private metadata, and bundle separation. Desktop proof at 1440x1000 shows persistent role categories, contextual controls, a four-card upper summary, one visible learner identity, and one wide focused lower workspace; 360x800, 390x844, and 768x1024 proof shows compact category navigation with no page overflow or serious accessibility violation.'
       - Parent category contract is Learners, Classes & materials, Progress & rewards, Billing, and Updates; Student category contract is Today, Library, Class Helper, Progress, Questions, and Updates.
-      - 'The exact checkpoint passes full build/typecheck, full lint, repository secret scan across 2,028 text files, brand validation, goal/pointer validation, scoped Prettier, and git diff --check.'
+      - 'Layout source 336a88339fee843bd1b28c0c05d36ad44a9949e9 and narrow assertion stabilization 53764629560c3f0d24a8136071011b82e8d9a298 are followed by cache-control commit 6109afc7b5e4e0a9bc7fb33db2b1a982bf162750 and coherent bundle commit 99c60d3aed91ea42fb9d18d819093c95efe17e3f. The final source uses no-store authenticated HTML, exact-commit entry query versions, and content-hashed shared chunks rather than relying on operator hard refreshes.'
+      - 'Historical isolation evidence remains intact: PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard; the current portal source is its governed descendant and does not weaken that boundary.'
+      - 'Exact source 99c60d3aed91ea42fb9d18d819093c95efe17e3f is live through web 6f7d35de-274b-4154-87fd-ec2b67462d6d and worker 9be7e004-3a2c-40f1-8baf-2aa2efbefc7b. /version, /health, /ready, schema 2220, entry cache headers, and hashed manifest imports were read back directly.'
+      - 'The same historical Parent tab that reproduced a blank mixed-module React failure recovered on normal navigation with no new console errors. Live Parent showed all five role categories and switched to Classes & materials; live fictional Student showed all six role categories, switched to Library, and exposed no Administrator controls. No credential value or private destination entered evidence.'
+      - 'The exact checkpoint passes full build/typecheck, full lint, repository secret scan across 2,028 text files, scoped Prettier, git diff --check, repository conflict-marker scan, and git object integrity.'
     blocker: null
-    remaining_work: Commit/push the immutable checkpoint, deploy it to persistent staging, and re-read Parent/Student desktop/mobile routes before marking done.
-    next_action: Push and deploy the governed portal checkpoint for exact-head persistent-staging browser acceptance; then assign the authorized BNA/Telegram canary track.
+    remaining_work: null
+    next_action: Preserve the exact deployed portal checkpoint and assign the separately authorized BNA/Telegram durability canary track without mixing provider changes into this completed slice.
 
   - id: git_history_privacy_remediation
     status: needs_operator_decision
