@@ -931,6 +931,7 @@ business_workflows:
       - 'Workflow remained Published; existing operator enrollment remained at the one-hour wait; counts stayed one active / two historical.'
       - 'Terminal run sent zero messages and applied no manual tag, enrollment, fallback, or duplicate signup.'
       - 'Current live readback found Email A - Immediate Confirmation disabled while the workflow remained Published; current immediate delivery is not operational.'
+      - 'The repair subphase opened the disabled action, but the GHL editor did not render its subject, sender, body, or link controls; no action/workflow save was performed and a fresh reopen still showed the action disabled.'
     essentialValues:
       registration_trigger_tag: "OT | Event | Tisha B'Av 2026 | Registered"
       immediate_confirmation_count: 1
@@ -941,6 +942,8 @@ business_workflows:
       immediate_email_live_link_readback: 'sanitized_present_valid'
       immediate_email_provider_link_present: false
       immediate_email_action_enabled: false
+      immediate_email_identity_reverified: false
+      repair_subphase_mutation_applied: false
       one_hour_reminder_scheduled_at: '2026-07-23T21:00:00+03:00'
       ten_minute_reminder_scheduled_at: '2026-07-23T21:50:00+03:00'
       historical_enrollments: 2
@@ -962,14 +965,14 @@ business_workflows:
       synthetic_or_operator_owned_verification_only: true
       whatsapp_allowed: false
     lastReadback:
-      at: '2026-07-23T18:40:42.355Z'
-      method: 'live authenticated exact-ID builder reopen/readback; Published switch on and Email A immediate-confirmation action visibly disabled; no mutation'
+      at: '2026-07-23T19:12:15.375Z'
+      method: 'live authenticated exact-ID action-open attempt plus clean builder reopen/readback; Published switch on, Email A visibly disabled, Save remained Saved/disabled, and no mutation was applied'
       reference: 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
     canary:
       result: 'passed'
       reference: 'GHL-E01-operator-fab156df2719852d'
-      detail: 'Historical bounded GHL-only execution/replay proof passed, but current live readback is DRIFTED because Email A is disabled; historical proof is not treated as current operational readiness.'
-    blocker: 'DRIFTED: the workflow is Published but Email A - Immediate Confirmation is disabled; this track was instructed to preserve OT-E01 and made no mutation.'
+      detail: 'Historical bounded GHL-only execution/replay proof passed, but current live readback is DRIFTED because Email A is disabled; the repair subphase could not reverify action identity and made no mutation.'
+    blocker: 'DRIFTED_BLOCKED_ACTION_IDENTITY_UNVERIFIED: GHL did not render the disabled action subject, sender, body, or link controls, so identity against the accepted configuration could not be proven and the action was not re-enabled or saved.'
     evidence:
       - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
       - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
