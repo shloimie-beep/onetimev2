@@ -83,7 +83,7 @@ test.describe('OT81 responsive accessibility matrix', () => {
       });
     });
     await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
-    await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'CRM', exact: true })).toBeVisible();
     await expect.poll(() => interceptedCrmError).toBeGreaterThan(0);
     await expect(page.getByRole('heading', { name: 'CRM contacts could not load' })).toBeVisible();
     evidence.push(await inspectPage(page, 'crm-error-state'));
