@@ -28,7 +28,7 @@ const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
 const tishaBavDesktopImage = '/assets/events/tisha-bav-2026/tisha%20beav(1).png';
 const tishaBavMobileImage = '/assets/events/tisha-bav-2026/tishea%20beav%20mobile(1).png';
-const tishaBavSocialImage = '/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png';
+const tishaBavSocialImage = '/assets/events/tisha-bav-2026/tisha-bav-whatsapp-card-v20260723.png';
 const tishaBavFavicon = '/assets/events/tisha-bav-2026/tisha-bav-favicon-v20260722.png';
 const tishaBavAppleTouchIcon =
   '/assets/events/tisha-bav-2026/tisha-bav-apple-touch-icon-v20260722.png';
@@ -390,14 +390,15 @@ function tishaBavLandingPage() {
     {
       canonicalPath: '/tisha-bav',
       description: "Reserve a spot for a live Tisha B'Av event with Rabbi Eli Scheller.",
-      ogTitle: "Live Tisha B'Av Event",
-      ogDescription: "Live Tisha B'Av event with Rabbi Eli Scheller. No charge.",
+      ogTitle: "Live Interactive Tisha B'Av Zoom Class with Rabbi Eli Scheller",
+      ogDescription: '3:00 p.m. Eastern. No charge. Reserve your spot now.',
       ogImage: publicCanonicalUrl(tishaBavSocialImage),
       ogImageSecureUrl: publicCanonicalUrl(tishaBavSocialImage),
       ogImageType: 'image/png',
       ogImageWidth: 1200,
       ogImageHeight: 630,
-      ogImageAlt: "One Time logo for the live Tisha B'Av event",
+      ogImageAlt:
+        "Live interactive Tisha B'Av Zoom class with Rabbi Eli Scheller at 3:00 p.m. Eastern, no charge",
       twitterImage: publicCanonicalUrl(tishaBavSocialImage),
       icon: tishaBavFavicon,
       appleTouchIcon: tishaBavAppleTouchIcon,

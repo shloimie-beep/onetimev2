@@ -1264,13 +1264,13 @@ describe('Tisha BAv event HTTP routes', () => {
       path.join(distDir, 'tisha-bav.html'),
       [
         '<!doctype html><html><head><title>Tisha</title>',
-        '<meta property="og:image" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png">',
-        '<meta property="og:image:secure_url" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png">',
+        '<meta property="og:image" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-whatsapp-card-v20260723.png">',
+        '<meta property="og:image:secure_url" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-whatsapp-card-v20260723.png">',
         '<meta property="og:image:type" content="image/png">',
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
-        '<meta property="og:image:alt" content="One Time logo for the Tisha B&#39;Av live Zoom class">',
-        '<meta name="twitter:image" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png">',
+        '<meta property="og:image:alt" content="Live interactive Tisha B&#39;Av Zoom class with Rabbi Eli Scheller at 3:00 p.m. Eastern, no charge">',
+        '<meta name="twitter:image" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-whatsapp-card-v20260723.png">',
         '<link rel="icon" type="image/png" href="/assets/events/tisha-bav-2026/tisha-bav-favicon-v20260722.png">',
         '<link rel="apple-touch-icon" href="/assets/events/tisha-bav-2026/tisha-bav-apple-touch-icon-v20260722.png">',
         '</head><body><p lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p><h1>Live Tisha B&#39;Av Class with Rabbi Eli Scheller</h1><p>3 p.m. Eastern Time</p><p>Free of charge</p><button>Reserve My Spot</button><p>By reserving, you’ll receive emails about this event.</p></body></html>',
@@ -1291,7 +1291,7 @@ describe('Tisha BAv event HTTP routes', () => {
         expect(html).toContain('3 p.m. Eastern Time');
         expect(html).toContain('Free of charge');
         expect(html).toContain('By reserving, you’ll receive emails about this event.');
-        expect(html).toContain('tisha-bav-social-card-v20260722.png');
+        expect(html).toContain('tisha-bav-whatsapp-card-v20260723.png');
         expect(html).toContain('<meta property="og:image:type" content="image/png">');
         expect(html).toContain('<meta property="og:image:width" content="1200">');
         expect(html).toContain('<meta property="og:image:height" content="630">');

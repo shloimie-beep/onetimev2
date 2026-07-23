@@ -509,7 +509,7 @@ async function assertHeroImage(
 }
 
 async function assertSocialMetadata(page: Page, label: string) {
-  const expectedPath = '/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png';
+  const expectedPath = '/assets/events/tisha-bav-2026/tisha-bav-whatsapp-card-v20260723.png';
   const ogImage = await page
     .locator('meta[property="og:image"]')
     .getAttribute('content', { timeout: 5_000 });
@@ -552,7 +552,10 @@ async function assertSocialMetadata(page: Page, label: string) {
   await expect(
     page.locator('meta[property="og:image:alt"]'),
     `${label} og image alt`,
-  ).toHaveAttribute('content', "One Time logo for the live Tisha B'Av event");
+  ).toHaveAttribute(
+    'content',
+    "Live interactive Tisha B'Av Zoom class with Rabbi Eli Scheller at 3:00 p.m. Eastern, no charge",
+  );
 
   const response = await page.request.get(ogImageUrl.pathname, {
     headers: { 'cache-control': 'no-cache', pragma: 'no-cache' },
