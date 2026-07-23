@@ -199,7 +199,7 @@ record(
       owner.repository === 'shloimie-beep/onetimev2' &&
       owner.branch === 'codex/full-app-staging-live' &&
       owner.pr === 97 &&
-      owner.head === '4d484c167ab332a6f82b97c7fc4f758c58bb391b' &&
+      owner.head === '662298075a250d2a2e6e21decf8d5aa9a83f86f3' &&
       track.zoom_ui_preview_state === 'READY' &&
       track.zoom_real_control_state === 'PROVIDER_OFF'
     );
@@ -213,7 +213,7 @@ record(
         owner.repository === 'shloimie-beep/onetimev2' &&
         owner.branch === 'codex/full-app-staging-live' &&
         owner.pr === 97 &&
-        owner.head === '4d484c167ab332a6f82b97c7fc4f758c58bb391b' &&
+        owner.head === '662298075a250d2a2e6e21decf8d5aa9a83f86f3' &&
         track.zoom_ui_preview_state === 'READY' &&
         track.zoom_real_control_state === 'PROVIDER_OFF'
       );
