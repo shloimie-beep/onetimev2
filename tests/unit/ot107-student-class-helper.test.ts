@@ -151,10 +151,12 @@ describe('OT-107 student Class Helper', () => {
   });
 
   it('renders Class Helper separately from explicit private-question confirmation', () => {
-    const markup = renderToStaticMarkup(
+    const dashboard = studentDashboard();
+    const helperMarkup = renderToStaticMarkup(
       React.createElement(StudentPortalFeature, {
         viewState: 'ready',
-        dashboard: studentDashboard(),
+        dashboard,
+        activeSection: 'helper',
         actorFingerprint: 'student-session-ot107',
         onQueryHelper: async (): Promise<HelperAnswer> => ({
           answer: 'Approved answer.',
@@ -168,11 +170,22 @@ describe('OT-107 student Class Helper', () => {
         onSubmitQuestion: () => undefined,
       }),
     );
+    const questionsMarkup = renderToStaticMarkup(
+      React.createElement(StudentPortalFeature, {
+        viewState: 'ready',
+        dashboard,
+        activeSection: 'questions',
+        actorFingerprint: 'student-session-ot107',
+        onSubmitQuestion: () => undefined,
+      }),
+    );
 
-    expect(markup).toContain('Class Helper answers from Rabbi Scheller');
-    expect(markup).toContain('Ask helper');
-    expect(markup).toContain('Preview private question');
-    expect(markup).not.toContain('Submit question');
+    expect(helperMarkup).toContain('Class Helper answers from Rabbi Scheller');
+    expect(helperMarkup).toContain('Ask helper');
+    expect(helperMarkup).not.toContain('Preview private question');
+    expect(questionsMarkup).toContain('Preview private question');
+    expect(questionsMarkup).not.toContain('Ask helper');
+    expect(questionsMarkup).not.toContain('Submit question');
   });
 });
 
