@@ -33,7 +33,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
       MFA_SECRET_ENCRYPTION_KEY: 'prod-test-mfa-secret-32-bytes-minimum',
       ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'prod-test-lifecycle-key-32-bytes-min',
     });
-    await createAccountUser({
+    const parentUserKey = await createAccountUser({
       pool: harness.pool,
       config: harness.config,
       email: 'parent-secure@example.test',
@@ -41,6 +41,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
       displayName: 'Secure Parent',
       role: 'parent',
     });
+    await seedParentCurrentAccess(harness, parentUserKey, 'secure');
 
     const csrf = await getCsrf(harness, '/login?return_to=%2Fapp%2Fparent');
     expect(csrf.response.headers.get('content-security-policy')).toContain(
@@ -86,7 +87,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
 
   it('canonicalizes hostile return_to inputs on login pages, password login, and email assurance', async () => {
     const harness = await startHarness();
-    await createAccountUser({
+    const parentUserKey = await createAccountUser({
       pool: harness.pool,
       config: harness.config,
       email: 'parent-return@example.test',
@@ -94,6 +95,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
       displayName: 'Return Parent',
       role: 'parent',
     });
+    await seedParentCurrentAccess(harness, parentUserKey, 'return');
     await createAccountUser({
       pool: harness.pool,
       config: harness.config,
@@ -232,6 +234,51 @@ async function latestEmailChallengePayload(harness: Harness) {
     ciphertext: String(row.ciphertext),
     auth_tag: String(row.auth_tag),
   });
+}
+
+async function seedParentCurrentAccess(
+  harness: Harness,
+  parentUserKey: string,
+  fixtureKey: string,
+) {
+  const householdKey = `auth_${fixtureKey}_household`;
+  await harness.pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name)
+     VALUES ($1,$2,$3,'Auth fixture household')`,
+    [householdKey, harness.config.accountKey, harness.config.productKey],
+  );
+  await harness.pool.query(
+    `INSERT INTO onetime.portal_guardian_relationships
+       (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+        relationship_label, authority)
+     VALUES ($1,$2,$3,$4,$5,'Parent','primary_guardian')`,
+    [
+      `auth_${fixtureKey}_relationship`,
+      harness.config.accountKey,
+      harness.config.productKey,
+      householdKey,
+      parentUserKey,
+    ],
+  );
+  await harness.pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES ($1,$2,$3,$4,'active','free_pilot',
+       now() - interval '1 hour',now() + interval '30 days',$5,1,
+       now(),$6,'auth-boundary-access-v1',$7)`,
+    [
+      `auth_${fixtureKey}_access`,
+      harness.config.accountKey,
+      harness.config.productKey,
+      householdKey,
+      `auth_${fixtureKey}_free_pilot`,
+      'b'.repeat(64),
+      `auth_${fixtureKey}_access_seed`,
+    ],
+  );
 }
 
 function cookieHeader(headers: Headers) {

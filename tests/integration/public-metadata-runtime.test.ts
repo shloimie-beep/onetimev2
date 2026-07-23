@@ -91,7 +91,7 @@ describe('runtime public metadata origin', () => {
     });
     pool = createMemoryPool();
     await runMigrations(pool);
-    await createAccountUser({
+    const parentUserKey = await createAccountUser({
       pool,
       config,
       email: 'cache-parent@example.test',
@@ -100,6 +100,7 @@ describe('runtime public metadata origin', () => {
       role: 'parent',
       mfaCapable: false,
     });
+    await seedParentCurrentAccess(parentUserKey, config.accountKey, config.productKey);
     server = await listenForTest(createApp({ config, pool, distDir }));
     const baseUrl = serverBaseUrl(server);
     const parentCookies = await loginAs(
@@ -196,4 +197,36 @@ function mergeCookies(...headers: string[]) {
     }
   }
   return [...cookies.entries()].map(([key, value]) => `${key}=${value}`).join('; ');
+}
+
+async function seedParentCurrentAccess(
+  parentUserKey: string,
+  accountKey: string,
+  productKey: string,
+) {
+  if (!pool) throw new Error('missing test pool');
+  await pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name)
+     VALUES ('cache_parent_household',$1,$2,'Cache Parent Household')`,
+    [accountKey, productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_guardian_relationships
+       (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+        relationship_label, authority)
+     VALUES ('cache_parent_relationship',$1,$2,'cache_parent_household',$3,
+       'Parent','primary_guardian')`,
+    [accountKey, productKey, parentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES ('cache_parent_access',$1,$2,'cache_parent_household','active','free_pilot',
+       now() - interval '1 hour',now() + interval '30 days','cache_parent_free_pilot',1,
+       now(),$3,'cache-parent-access-v1','cache_parent_access_seed')`,
+    [accountKey, productKey, 'a'.repeat(64)],
+  );
 }

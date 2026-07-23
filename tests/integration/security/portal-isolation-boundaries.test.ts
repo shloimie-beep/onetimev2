@@ -202,6 +202,22 @@ async function seedPortalFamilies() {
     [config.accountKey, config.productKey],
   );
   await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES
+       ('portal_isolation_access_alpha',$1,$2,'household_alpha','active','free_pilot',
+        now() - interval '1 hour',now() + interval '30 days',
+        'portal_isolation_alpha_free_pilot',1,now(),$3,
+        'portal-isolation-access-v1','portal_isolation_access_alpha_seed'),
+       ('portal_isolation_access_beta',$1,$2,'household_beta','active','free_pilot',
+        now() - interval '1 hour',now() + interval '30 days',
+        'portal_isolation_beta_free_pilot',1,now(),$4,
+        'portal-isolation-access-v1','portal_isolation_access_beta_seed')`,
+    [config.accountKey, config.productKey, 'd'.repeat(64), 'e'.repeat(64)],
+  );
+  await pool.query(
     `INSERT INTO onetime.portal_guardian_relationships
        (relationship_key, account_key, product_key, household_key, guardian_user_ref,
         relationship_label, authority)

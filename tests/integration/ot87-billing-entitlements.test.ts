@@ -45,7 +45,7 @@ afterEach(async () => {
 });
 
 describe('OT-87 family subscription entitlement policy', () => {
-  it('requires checkout correlation, active subscription, and a paid USD 6700 invoice before granting access', async () => {
+  it('records the legacy paid lifecycle without authorizing One Time learning access', async () => {
     const services = servicesFor();
     const checkout = await services.requestCheckoutSession({
       actor: parentActor,
@@ -59,7 +59,8 @@ describe('OT-87 family subscription entitlement policy', () => {
     expect(checkout.ok).toBe(true);
     if (!checkout.ok) throw new Error('checkout failed');
 
-    await expectNoAccess('checkout_creation');
+    await expectNoLegacyBillingGrant('checkout_creation');
+    await expectNoCurrentLearningAccess('checkout_creation');
 
     const customer = await providerCustomerRef();
     const subscription = await providerSubscriptionRef();
@@ -79,7 +80,8 @@ describe('OT-87 family subscription entitlement policy', () => {
       ok: true,
       value: { disposition: 'accepted' },
     });
-    await expectNoAccess('checkout_completed_alone');
+    await expectNoLegacyBillingGrant('checkout_completed_alone');
+    await expectNoCurrentLearningAccess('checkout_completed_alone');
 
     const active = await receiveFixtureEvent(services, {
       id: 'evt_ot87_subscription_active',
@@ -96,7 +98,8 @@ describe('OT-87 family subscription entitlement policy', () => {
       },
     });
     expect(active).toMatchObject({ ok: true, value: { disposition: 'accepted' } });
-    await expectNoAccess('active_without_invoice');
+    await expectNoLegacyBillingGrant('active_without_invoice');
+    await expectNoCurrentLearningAccess('active_without_invoice');
 
     const paid = await receiveFixtureEvent(services, {
       id: 'evt_ot87_invoice_paid',
@@ -121,20 +124,15 @@ describe('OT-87 family subscription entitlement policy', () => {
     });
     expect(summary.ok).toBe(true);
     if (summary.ok) {
+      // Retain legacy billing history for support/readback only. Learning authorization is
+      // governed exclusively by the account access projection owned by the GHL contract.
       expect(summary.value.entitlement).toMatchObject({
         status: 'active',
         grants_access: true,
         policy_version: '2026-07-15.1',
       });
     }
-    await expect(
-      householdHasLearningAccess({
-        pool,
-        accountKey: principal.account_key,
-        productKey: principal.product_key,
-        householdKey: principal.principal_key,
-      }),
-    ).resolves.toBe(true);
+    await expectNoCurrentLearningAccess('paid_legacy_history');
   });
 
   it('suspends immediately for past_due and treats trialing as manual review with no access', async () => {
@@ -157,6 +155,7 @@ describe('OT-87 family subscription entitlement policy', () => {
       status: 'manual_review',
       grants_access: false,
     });
+    await expectNoCurrentLearningAccess('trialing_legacy_history');
 
     await receiveFixtureEvent(services, {
       id: 'evt_ot87_past_due',
@@ -172,6 +171,7 @@ describe('OT-87 family subscription entitlement policy', () => {
       status: 'suspended',
       grants_access: false,
     });
+    await expectNoCurrentLearningAccess('past_due_legacy_history');
   });
 });
 
@@ -250,7 +250,7 @@ async function checkoutAndCustomer(services: ReturnType<typeof servicesFor>) {
   });
 }
 
-async function expectNoAccess(labelText: string) {
+async function expectNoLegacyBillingGrant(labelText: string) {
   const result = await pool.query(
     `SELECT grants_access
        FROM onetime.billing_entitlement_projections
@@ -262,6 +262,27 @@ async function expectNoAccess(labelText: string) {
     [principal.account_key, principal.product_key, principal.principal_key],
   );
   expect(result.rows[0]?.grants_access ?? false, labelText).toBe(false);
+}
+
+async function expectNoCurrentLearningAccess(labelText: string) {
+  const projection = await pool.query(
+    `SELECT access_key
+       FROM onetime.account_access_projections
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3`,
+    [principal.account_key, principal.product_key, principal.principal_key],
+  );
+  expect(projection.rowCount, labelText).toBe(0);
+  await expect(
+    householdHasLearningAccess({
+      pool,
+      accountKey: principal.account_key,
+      productKey: principal.product_key,
+      householdKey: principal.principal_key,
+    }),
+    labelText,
+  ).resolves.toBe(false);
 }
 
 async function providerCustomerRef() {
