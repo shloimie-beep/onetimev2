@@ -11,8 +11,7 @@ describe('content factory migration allocation', () => {
     const previewMigrationName = '2215_experience_preview_sessions.sql';
     const durableMigrationName = '2221_video_to_classroom_e2e.sql';
     const providerConstraintMigrationName = '2222_content_factory_provider_constraint.sql';
-    const publishConstraintMigrationName =
-      '2223_content_factory_publish_ready_constraint.sql';
+    const publishConstraintMigrationName = '2223_content_factory_publish_ready_constraint.sql';
     expect(names).toContain(migrationName);
     expect(names).toContain(previewMigrationName);
     expect(names).toContain(durableMigrationName);
