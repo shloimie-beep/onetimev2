@@ -10,11 +10,11 @@ import {
 } from '../../packages/domain/src/index.ts';
 
 const firstName = '{{default contact.first_name "there"}}';
-const schedule = ['Thursday, July 23, 2026', '3:00 PM Eastern', '10:00 PM Israel'].join('\n');
+const schedule = ['Thursday, July 23, 2026', '3:00 PM Eastern'].join('\n');
 
 describe("Tisha B'Av 2026 email copy", () => {
   it('preserves the exact sender, subjects, preview, bodies, and protected CTA paths', () => {
-    expect(TISHA_BAV_COMMUNICATION_CATALOG_VERSION).toBe('tisha-bav-2026-email-copy-v1');
+    expect(TISHA_BAV_COMMUNICATION_CATALOG_VERSION).toBe('tisha-bav-2026-email-copy-v2');
     expect(TISHA_BAV_EMAIL_SENDER).toEqual({
       visibleName: 'Rabbi Eli Scheller | One Time Mishnayos',
       from: 'info@onetimeonetime.com',
@@ -23,7 +23,7 @@ describe("Tisha B'Av 2026 email copy", () => {
 
     expect(TISHA_BAV_EMAIL_CATALOG.warm_invitation).toMatchObject({
       subject: "Join me live this Tisha B'Av",
-      preview: 'A live program from Eretz Yisrael on Thursday at 3:00 PM Eastern.',
+      preview: 'A live program on Thursday at 3:00 PM Eastern.',
       cta: { label: 'Reserve My Place', path: '/tisha-bav' },
       delivery: { kind: 'manual_prepare_only', offsetMinutes: null, sendAt: null },
     });
@@ -31,7 +31,7 @@ describe("Tisha B'Av 2026 email copy", () => {
       [
         `Hi ${firstName},`,
         '',
-        "This Tisha B'Av, I will be hosting a live online program from Eretz Yisrael.",
+        "This Tisha B'Av, I will be hosting a live online program.",
         '',
         schedule,
         '',
@@ -56,7 +56,7 @@ describe("Tisha B'Av 2026 email copy", () => {
       [
         `Hi ${firstName},`,
         '',
-        "Your place is saved for Rabbi Eli Scheller's live Tisha B'Av program from Eretz Yisrael.",
+        "Your place is saved for Rabbi Eli Scheller's live Tisha B'Av program.",
         '',
         schedule,
         '',
@@ -112,6 +112,7 @@ describe("Tisha B'Av 2026 email copy", () => {
     for (const email of Object.values(TISHA_BAV_EMAIL_CATALOG)) {
       expect(email.sender).toEqual(TISHA_BAV_EMAIL_SENDER);
       expect(JSON.stringify(email)).not.toMatch(/zoom\.us|zoommtg|pwd=/i);
+      expect(JSON.stringify(email)).not.toMatch(/Israel|Eretz Yisrael|keep this email/i);
     }
   });
 

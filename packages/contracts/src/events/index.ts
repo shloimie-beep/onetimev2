@@ -37,7 +37,7 @@ export type TishaBavRegistrationSuccessResponse = {
     body:
       | 'The link was sent to your email.'
       | 'We could not complete that registration. Please try again.';
-    schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel';
+    schedule: 'Thursday, July 23\n3:00 PM Eastern';
   };
 };
 

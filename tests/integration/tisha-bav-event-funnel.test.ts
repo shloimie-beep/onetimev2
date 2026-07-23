@@ -48,7 +48,7 @@ describe('Tisha BAv event registration', () => {
       message: {
         heading: 'Thank you — your spot has been reserved.',
         body: 'We could not complete that registration. Please try again.',
-        schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel',
+        schedule: 'Thursday, July 23\n3:00 PM Eastern',
       },
     });
     expect(JSON.stringify(result)).not.toMatch(/zoom\.us|join_url|start_url/i);
@@ -62,10 +62,10 @@ describe('Tisha BAv event registration', () => {
     expect(delivery.rows[0]).toMatchObject({ status: 'provider_off', provider: 'highlevel' });
     expect(delivery.rows[0].public_metadata.raw_zoom_url_present).toBe(false);
     expect(delivery.rows[0].public_metadata.communication_catalog_version).toBe(
-      'tisha-bav-2026-email-copy-v1',
+      'tisha-bav-2026-email-copy-v2',
     );
     expect(delivery.rows[0].protected_payload.communication_catalog_version).toBe(
-      'tisha-bav-2026-email-copy-v1',
+      'tisha-bav-2026-email-copy-v2',
     );
     expect(delivery.rows[0].protected_payload.workflow_schedule).toMatchObject({
       eventStart: '2026-07-23T19:00:00.000Z',
@@ -124,7 +124,7 @@ describe('Tisha BAv event registration', () => {
     );
     expect(deliveries.rowCount).toBe(1);
     expect(deliveries.rows[0].protected_payload).toMatchObject({
-      communication_catalog_version: 'tisha-bav-2026-email-copy-v1',
+      communication_catalog_version: 'tisha-bav-2026-email-copy-v2',
       template: 'tisha_bav_2026_registration_confirmation_direct_v2',
       subject: "You're registered for Rabbi Eli Scheller's live Tisha B'Av Zoom class",
       cta: { label: 'Join the Zoom Class', kind: 'protected_runtime_url' },
@@ -134,11 +134,10 @@ describe('Tisha BAv event registration', () => {
       from: 'info@onetimeonetime.com',
     });
     expect(deliveries.rows[0].protected_payload.body).toContain(
-      'Thursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel',
+      'Thursday, July 23, 2026\n3:00 PM Eastern',
     );
-    expect(deliveries.rows[0].protected_payload.body).toContain(
-      'The direct Zoom class link is below.',
-    );
+    expect(deliveries.rows[0].protected_payload.body).toContain('Your private Zoom link is below.');
+    expect(deliveries.rows[0].protected_payload.body).not.toMatch(/Israel|keep this email/i);
     expect(JSON.stringify(deliveries.rows[0].public_metadata)).not.toMatch(
       /zoom\.us|zoommtg|pwd=/i,
     );
@@ -354,6 +353,7 @@ describe('Tisha BAv event registration', () => {
     );
     const highLevel = new MockHighLevelEventClient();
     highLevel.addToWorkflow = async () => ({ outcome: 'already_active' });
+    highLevel.restartWorkflow = async () => ({ outcome: 'enrolled' });
 
     const recovered = await reprocessTishaBavRegistrationDelivery({
       pool,
@@ -367,7 +367,7 @@ describe('Tisha BAv event registration', () => {
       allowAlreadyEnrolledRecovery: true,
     });
 
-    expect(recovered).toEqual({ status: 'skipped', fallback_queued: true });
+    expect(recovered).toEqual({ status: 'succeeded', fallback_queued: false });
     const deliveries = await pool.query(
       `SELECT provider, status, public_metadata
          FROM onetime.event_delivery_events
@@ -378,14 +378,14 @@ describe('Tisha BAv event registration', () => {
     expect(deliveries.rows).toEqual([
       expect.objectContaining({
         provider: 'highlevel',
-        status: 'skipped',
+        status: 'succeeded',
         public_metadata: expect.objectContaining({
-          membership_existing: true,
-          new_enrollment_accepted: false,
-          confirmation_queued: false,
+          membership_existing: false,
+          new_enrollment_accepted: true,
+          workflow_restarted: true,
+          confirmation_queued: true,
         }),
       }),
-      expect.objectContaining({ provider: 'resend_fallback', status: 'pending' }),
     ]);
   });
 
@@ -644,16 +644,21 @@ describe('Tisha BAv event registration', () => {
     ]);
   });
 
-  it('records an existing membership without claiming a new confirmation or queuing fallback', async () => {
+  it('replaces an existing membership and does not queue fallback', async () => {
     const config = fallbackConfig({
       HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
       HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
     });
     const highLevel = new MockHighLevelEventClient();
     let workflowRequestCount = 0;
+    let workflowRestartCount = 0;
     highLevel.addToWorkflow = async () => {
       workflowRequestCount += 1;
       return { outcome: 'already_active' };
+    };
+    highLevel.restartWorkflow = async () => {
+      workflowRestartCount += 1;
+      return { outcome: 'enrolled' };
     };
 
     const result = await captureTishaBavRegistration({
@@ -664,7 +669,7 @@ describe('Tisha BAv event registration', () => {
       highLevelClient: highLevel,
     });
 
-    expect(result).toMatchObject({ ghl_sync_status: 'skipped', confirmation_queued: false });
+    expect(result).toMatchObject({ ghl_sync_status: 'succeeded', confirmation_queued: true });
     const deliveries = await pool.query(
       `SELECT provider, status, public_metadata
          FROM onetime.event_delivery_events
@@ -675,12 +680,13 @@ describe('Tisha BAv event registration', () => {
     expect(deliveries.rows).toEqual([
       expect.objectContaining({
         provider: 'highlevel',
-        status: 'skipped',
+        status: 'succeeded',
         public_metadata: expect.objectContaining({
-          membership_existing: true,
-          new_enrollment_accepted: false,
-          workflow_enrollment_verified: false,
-          confirmation_queued: false,
+          membership_existing: false,
+          new_enrollment_accepted: true,
+          workflow_enrollment_verified: true,
+          workflow_restarted: true,
+          confirmation_queued: true,
           tags_verified: true,
         }),
       }),
@@ -696,10 +702,11 @@ describe('Tisha BAv event registration', () => {
       highLevelClient: highLevel,
     });
     expect(replay).toMatchObject({
-      ghl_sync_status: 'skipped',
-      confirmation_queued: false,
+      ghl_sync_status: 'succeeded',
+      confirmation_queued: true,
     });
-    expect(workflowRequestCount).toBe(1);
+    expect(workflowRequestCount).toBe(2);
+    expect(workflowRestartCount).toBe(2);
     const fallback = await pool.query(
       `SELECT count(*)::int AS count
          FROM onetime.event_delivery_events
@@ -741,13 +748,14 @@ describe('Tisha BAv event registration', () => {
     }
   });
 
-  it('allows one explicit operator recovery for a proven already-active skipped confirmation', async () => {
+  it('does not queue fallback after replacing an already-active workflow run', async () => {
     const config = fallbackConfig({
       HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
       HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
     });
     const highLevel = new MockHighLevelEventClient();
     highLevel.addToWorkflow = async () => ({ outcome: 'already_active' });
+    highLevel.restartWorkflow = async () => ({ outcome: 'enrolled' });
     const initial = await captureTishaBavRegistration({
       pool,
       config,
@@ -755,7 +763,7 @@ describe('Tisha BAv event registration', () => {
       now: openWindow,
       highLevelClient: highLevel,
     });
-    expect(initial).toMatchObject({ confirmation_queued: false, ghl_sync_status: 'skipped' });
+    expect(initial).toMatchObject({ confirmation_queued: true, ghl_sync_status: 'succeeded' });
 
     const recovered = await reprocessTishaBavRegistrationDelivery({
       pool,
@@ -765,7 +773,7 @@ describe('Tisha BAv event registration', () => {
       highLevelClient: highLevel,
       allowAlreadyEnrolledRecovery: true,
     });
-    expect(recovered).toEqual({ status: 'skipped', fallback_queued: true });
+    expect(recovered).toEqual({ status: 'succeeded', fallback_queued: false });
     const fallback = await pool.query(
       `SELECT status
          FROM onetime.event_delivery_events
@@ -773,7 +781,7 @@ describe('Tisha BAv event registration', () => {
           AND provider = 'resend_fallback'`,
       [initial.registration_key],
     );
-    expect(fallback.rows).toEqual([expect.objectContaining({ status: 'pending' })]);
+    expect(fallback.rows).toEqual([]);
   });
 
   it('lets hard-bounce permission state win over re-registration', async () => {
@@ -846,6 +854,62 @@ describe('Tisha BAv event registration', () => {
     expect(highLevel.workflowRequests).toHaveLength(1);
   });
 
+  it('replaces one active workflow run for a fresh repeat registration', async () => {
+    const config = testConfig({
+      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
+    });
+    const highLevel = new MockHighLevelEventClient();
+
+    const first = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload: registrationPayload('repeat-registration@example.test', {
+        idempotency_key: 'repeat-registration-1',
+      }),
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+    const second = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload: registrationPayload('repeat-registration@example.test', {
+        idempotency_key: 'repeat-registration-2',
+      }),
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+
+    expect(first).toMatchObject({ ghl_sync_status: 'succeeded', confirmation_queued: true });
+    expect(second).toMatchObject({
+      duplicate_submission: false,
+      ghl_sync_status: 'succeeded',
+      confirmation_queued: true,
+    });
+    expect(highLevel.workflowRequests).toHaveLength(2);
+    expect(highLevel.operationLog).toEqual(
+      expect.arrayContaining(['workflow:already_active', 'workflow:removed']),
+    );
+    expect(highLevel.activeWorkflows.size).toBe(1);
+
+    const delivery = await pool.query(
+      `SELECT status, public_metadata
+         FROM onetime.event_delivery_events
+        WHERE registration_key = $1
+          AND provider = 'highlevel'`,
+      [first.registration_key],
+    );
+    expect(delivery.rows).toEqual([
+      expect.objectContaining({
+        status: 'succeeded',
+        public_metadata: expect.objectContaining({
+          confirmation_queued: true,
+          workflow_restarted: true,
+        }),
+      }),
+    ]);
+  });
+
   it('reopens a legacy false-success delivery once from a fresh public registration', async () => {
     const initial = await captureTishaBavRegistration({
       pool,
@@ -900,7 +964,7 @@ describe('Tisha BAv event registration', () => {
       ghl_sync_status: 'succeeded',
       confirmation_queued: true,
     });
-    expect(highLevel.workflowRequests).toHaveLength(1);
+    expect(highLevel.workflowRequests).toHaveLength(2);
     const fallback = await pool.query(
       `SELECT count(*)::int AS count
          FROM onetime.event_delivery_events

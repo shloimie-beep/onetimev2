@@ -1,4 +1,4 @@
-export const TISHA_BAV_COMMUNICATION_CATALOG_VERSION = 'tisha-bav-2026-email-copy-v1';
+export const TISHA_BAV_COMMUNICATION_CATALOG_VERSION = 'tisha-bav-2026-email-copy-v2';
 export const TISHA_BAV_EVENT_START = '2026-07-23T19:00:00.000Z';
 export const TISHA_BAV_LANDING_PATH = '/tisha-bav';
 export const TISHA_BAV_JOIN_PATH = '/tisha-bav/live';
@@ -48,11 +48,7 @@ export const TISHA_BAV_EMAIL_SENDER = {
   replyTo: 'info@onetimeonetime.com',
 } as const;
 
-const scheduleBlock = [
-  TISHA_BAV_EVENT_DISPLAY.date,
-  TISHA_BAV_EVENT_DISPLAY.eastern,
-  TISHA_BAV_EVENT_DISPLAY.israel,
-].join('\n');
+const scheduleBlock = [TISHA_BAV_EVENT_DISPLAY.date, TISHA_BAV_EVENT_DISPLAY.eastern].join('\n');
 
 export const TISHA_BAV_EMAIL_CATALOG = {
   warm_invitation: {
@@ -64,11 +60,11 @@ export const TISHA_BAV_EMAIL_CATALOG = {
     },
     sender: TISHA_BAV_EMAIL_SENDER,
     subject: "Join me live this Tisha B'Av",
-    preview: `A live program from Eretz Yisrael on ${formatWeekday(EASTERN_TIME_ZONE)} at ${TISHA_BAV_EVENT_DISPLAY.eastern}.`,
+    preview: `A live program on ${formatWeekday(EASTERN_TIME_ZONE)} at ${TISHA_BAV_EVENT_DISPLAY.eastern}.`,
     body: [
       `Hi ${FIRST_NAME_MERGE_TOKEN},`,
       '',
-      "This Tisha B'Av, I will be hosting a live online program from Eretz Yisrael.",
+      "This Tisha B'Av, I will be hosting a live online program.",
       '',
       scheduleBlock,
       '',
@@ -99,7 +95,7 @@ export const TISHA_BAV_EMAIL_CATALOG = {
     body: [
       `Hi ${FIRST_NAME_MERGE_TOKEN},`,
       '',
-      "Your place is saved for Rabbi Eli Scheller's live Tisha B'Av program from Eretz Yisrael.",
+      "Your place is saved for Rabbi Eli Scheller's live Tisha B'Av program.",
       '',
       scheduleBlock,
       '',

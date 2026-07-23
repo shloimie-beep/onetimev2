@@ -54,9 +54,8 @@ const TISHA_BAV_DIRECT_CONFIRMATION_BODY = [
   '',
   'Thursday, July 23, 2026',
   '3:00 PM Eastern',
-  '10:00 PM Israel',
   '',
-  'The direct Zoom class link is below.',
+  'Your private Zoom link is below.',
   '',
   '[Join the Zoom Class]',
   '',
@@ -149,6 +148,11 @@ export type HighLevelEventClient = {
     workflowId: string;
     idempotencyKey: string;
   }): Promise<HighLevelWorkflowEnrollmentOutcome>;
+  restartWorkflow(input: {
+    contactId: string;
+    workflowId: string;
+    idempotencyKey: string;
+  }): Promise<{ outcome: 'enrolled' }>;
 };
 
 export type HighLevelWorkflowEnrollmentOutcome =
@@ -159,6 +163,7 @@ export class MockHighLevelEventClient implements HighLevelEventClient {
   readonly contacts = new Map<string, { contactId: string; tags: string[] }>();
   readonly workflowRequests: string[] = [];
   readonly operationLog: string[] = [];
+  readonly activeWorkflows = new Set<string>();
 
   async ensureTags(input: { locationId: string; tags: readonly string[] }) {
     void input.locationId;
@@ -198,11 +203,27 @@ export class MockHighLevelEventClient implements HighLevelEventClient {
     workflowId: string;
     idempotencyKey: string;
   }): Promise<HighLevelWorkflowEnrollmentOutcome> {
+    const membershipKey = `${input.contactId}:${input.workflowId}`;
+    if (this.activeWorkflows.has(membershipKey)) {
+      this.operationLog.push('workflow:already_active');
+      return { outcome: 'already_active' as const };
+    }
     this.operationLog.push('workflow:accepted');
+    this.activeWorkflows.add(membershipKey);
     this.workflowRequests.push(
       `${input.contactId}:${input.workflowId}:${stableKey('workflow', [input.idempotencyKey])}`,
     );
     return { outcome: 'enrolled' as const };
+  }
+
+  async restartWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
+    this.activeWorkflows.delete(`${input.contactId}:${input.workflowId}`);
+    this.operationLog.push('workflow:removed');
+    const enrollment = await this.addToWorkflow(input);
+    if (enrollment.outcome !== 'enrolled') {
+      throw new Error('Mock HighLevel workflow did not restart.');
+    }
+    return enrollment;
   }
 }
 
@@ -323,10 +344,23 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
     }
   }
 
+  async restartWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
+    const path = `/contacts/${encodeURIComponent(input.contactId)}/workflow/${encodeURIComponent(
+      input.workflowId,
+    )}`;
+    await this.request(path, { method: 'DELETE' });
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const enrollment = await this.addToWorkflow(input);
+      if (enrollment.outcome === 'enrolled') return enrollment;
+      if (attempt < 2) await boundedProviderReadbackDelay(attempt);
+    }
+    throw new HighLevelProviderRequestError(422, 'workflow_reentry_not_ready');
+  }
+
   private async request(
     path: string,
     options: {
-      method: 'GET' | 'POST';
+      method: 'GET' | 'POST' | 'DELETE';
       body?: Record<string, unknown>;
       allowConflict?: 'resource_exists';
       apiVersion?: string;
@@ -1296,30 +1330,24 @@ async function upsertHighLevelDelivery(
      DO UPDATE SET
         protected_payload = EXCLUDED.protected_payload,
         public_metadata = CASE
-           WHEN onetime.event_delivery_events.status = 'succeeded'
-            AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
-            AND onetime.event_delivery_events.public_metadata->>'workflow_enrollment_verified' = 'true'
-            AND onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
+          WHEN onetime.event_delivery_events.lease_owner_hash IS NOT NULL
+           AND onetime.event_delivery_events.lease_expires_at > now()
            THEN onetime.event_delivery_events.public_metadata
-          WHEN onetime.event_delivery_events.public_metadata->>'membership_existing' = 'true'
-           THEN onetime.event_delivery_events.public_metadata
-          WHEN onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
-          THEN onetime.event_delivery_events.public_metadata
           ELSE EXCLUDED.public_metadata
         END,
        payload_digest = EXCLUDED.payload_digest,
         status = CASE
-           WHEN onetime.event_delivery_events.status = 'succeeded'
-            AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
-            AND onetime.event_delivery_events.public_metadata->>'workflow_enrollment_verified' = 'true'
-            AND onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
-           THEN 'succeeded'
-          WHEN onetime.event_delivery_events.public_metadata->>'membership_existing' = 'true'
-           THEN 'skipped'
-          WHEN onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
+          WHEN onetime.event_delivery_events.lease_owner_hash IS NOT NULL
+           AND onetime.event_delivery_events.lease_expires_at > now()
           THEN onetime.event_delivery_events.status
           ELSE EXCLUDED.status
         END,
+       completed_at = CASE
+         WHEN onetime.event_delivery_events.lease_owner_hash IS NOT NULL
+          AND onetime.event_delivery_events.lease_expires_at > now()
+         THEN onetime.event_delivery_events.completed_at
+         ELSE NULL
+       END,
        updated_at = now()
      RETURNING delivery_key`,
     [
@@ -1676,64 +1704,37 @@ async function maybeSyncHighLevel(input: {
       deliveryMetadata.membership_existing !== true;
     if (!enrollmentWasPreviouslyAccepted) {
       providerStage = 'add_to_workflow';
-      const enrollment = await client.addToWorkflow({
+      let enrollment = await client.addToWorkflow({
         contactId: contact.contactId,
         workflowId,
         idempotencyKey: payload.workflow_request_key,
       });
+      let workflowRestarted = false;
+      if (enrollment.outcome === 'already_active') {
+        providerStage = 'restart_workflow';
+        enrollment = await client.restartWorkflow({
+          contactId: contact.contactId,
+          workflowId,
+          idempotencyKey: payload.workflow_request_key,
+        });
+        workflowRestarted = true;
+      }
       const progressRecorded = await recordHighLevelDeliveryProgress(
         input.pool,
         input.deliveryKey,
-        enrollment.outcome === 'enrolled'
-          ? {
-              workflow_configured: true,
-              contact_reference_hash: sha256(contact.contactId),
-              workflow_request_accepted: true,
-              workflow_enrollment_verified: true,
-              new_enrollment_accepted: true,
-              membership_existing: false,
-              confirmation_queued: true,
-            }
-          : {
-              workflow_configured: true,
-              contact_reference_hash: sha256(contact.contactId),
-              workflow_request_accepted: false,
-              workflow_enrollment_verified: false,
-              new_enrollment_accepted: false,
-              membership_existing: true,
-              confirmation_queued: false,
-              provider_result_category: 'workflow_already_enrolled',
-            },
+        {
+          workflow_configured: true,
+          contact_reference_hash: sha256(contact.contactId),
+          workflow_request_accepted: true,
+          workflow_enrollment_verified: true,
+          new_enrollment_accepted: true,
+          membership_existing: false,
+          workflow_restarted: workflowRestarted,
+          confirmation_queued: true,
+        },
         leaseOwnerHash,
       );
       if (!progressRecorded) return 'in_flight';
-      if (enrollment.outcome === 'already_active') {
-        providerStage = 'add_post_enrollment_tags';
-        await client.addTags({
-          locationId: payload.location_id,
-          contactId: contact.contactId,
-          tags: payload.tags,
-        });
-        const marked = await markHighLevelDelivery(
-          input.pool,
-          input.deliveryKey,
-          'skipped',
-          {
-            workflow_configured: true,
-            contact_reference_hash: sha256(contact.contactId),
-            tags_verified: true,
-            workflow_request_accepted: false,
-            workflow_enrollment_verified: false,
-            new_enrollment_accepted: false,
-            membership_existing: true,
-            confirmation_queued: false,
-            provider_result_category: 'workflow_already_enrolled',
-          },
-          leaseOwnerHash,
-        );
-        if (!marked) return 'in_flight';
-        return 'skipped';
-      }
     }
     providerStage = 'add_post_enrollment_tags';
     await client.addTags({
@@ -2101,7 +2102,7 @@ function registrationMessage(
       body: confirmationQueued
         ? 'The link was sent to your email.'
         : 'We could not complete that registration. Please try again.',
-      schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel',
+      schedule: 'Thursday, July 23\n3:00 PM Eastern',
     },
   };
 }

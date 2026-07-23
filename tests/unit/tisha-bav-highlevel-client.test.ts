@@ -173,6 +173,38 @@ describe('Tisha BAv HighLevel client', () => {
     ).resolves.toEqual({ outcome: 'enrolled' });
   });
 
+  it('removes and re-adds one active workflow execution for a repeat registration', async () => {
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({}, { status: 200 }))
+      .mockResolvedValueOnce(Response.json({}, { status: 201 }));
+    const client = new HttpHighLevelEventClient({
+      baseUrl: 'https://provider.example.test',
+      token: 'private-test-token',
+      apiVersion: '2021-07-28',
+      fetchImpl,
+    });
+
+    await expect(
+      client.restartWorkflow({
+        contactId: 'contact_operator',
+        workflowId: 'workflow_tisha',
+        idempotencyKey: 'workflow-request-key',
+      }),
+    ).resolves.toEqual({ outcome: 'enrolled' });
+
+    expect(fetchImpl.mock.calls).toEqual([
+      [
+        'https://provider.example.test/contacts/contact_operator/workflow/workflow_tisha',
+        expect.objectContaining({ method: 'DELETE' }),
+      ],
+      [
+        'https://provider.example.test/contacts/contact_operator/workflow/workflow_tisha',
+        expect.objectContaining({ method: 'POST' }),
+      ],
+    ]);
+  });
+
   it.each([409, 422])('does not treat workflow %s as enrollment success', async (status) => {
     const fetchImpl = vi
       .fn<typeof fetch>()
