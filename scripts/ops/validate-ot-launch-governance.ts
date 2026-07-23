@@ -195,7 +195,11 @@ record(
     return (
       track.id === 'zoom_meeting_sdk' &&
       track.status === 'provider_off' &&
-      owner.head === 'e81de91a7372114c6b0a67a7cbb0abc9cb548885' &&
+      owner.task_id === 'OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP' &&
+      owner.repository === 'shloimie-beep/onetimev2' &&
+      owner.branch === 'codex/full-app-staging-live' &&
+      owner.pr === 97 &&
+      owner.head === '4d484c167ab332a6f82b97c7fc4f758c58bb391b' &&
       track.zoom_ui_preview_state === 'READY' &&
       track.zoom_real_control_state === 'PROVIDER_OFF'
     );
@@ -205,7 +209,11 @@ record(
       return (
         track.id === 'zoom_s2s_host_control' &&
         track.status === 'provider_off' &&
-        owner.head === 'e81de91a7372114c6b0a67a7cbb0abc9cb548885' &&
+        owner.task_id === 'OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP' &&
+        owner.repository === 'shloimie-beep/onetimev2' &&
+        owner.branch === 'codex/full-app-staging-live' &&
+        owner.pr === 97 &&
+        owner.head === '4d484c167ab332a6f82b97c7fc4f758c58bb391b' &&
         track.zoom_ui_preview_state === 'READY' &&
         track.zoom_real_control_state === 'PROVIDER_OFF'
       );
@@ -220,7 +228,7 @@ record(
         'canonical ZOOM_S2S_ACCOUNT_ID (with temporary ZOOM_ACCOUNT_ID alias also absent), ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE',
       ),
     ),
-  'isolated SDK setup READY; six-gate real control PROVIDER_OFF',
+  'isolated SDK setup READY; normal-Student code deployed; real control PROVIDER_OFF',
 );
 record(
   'honest GHL enrollment truth',

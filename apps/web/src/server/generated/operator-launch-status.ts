@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:4013795ab2fa60ed104a4152f253a0cd2e09e23bab20109ad45cb0734b26af8a',
-  generated_at: '2026-07-23T16:08:41.000Z',
+  board_source_hash: 'sha256:230ee3eeb8644bdfd4cf1c9cd9558a85373e0fc01c77fd800608f8efccb816f1',
+  generated_at: '2026-07-23T17:20:21.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 17,
@@ -14,7 +14,7 @@ export const operatorLaunchStatusProjection = {
     percentage: 81,
   },
   what_changed:
-    'Persistent staging product checkpoint ad407005a336fbee9ed1fcc47ca124969ec881b0 is deployed through exact web 07e8f048-30ea-46e5-810d-87562e3c4156 and worker 098d0be5-fb24-4be4-b6d4-861a1f22eca4 sources. All five GitHub suites pass; /version is full-app-staging-live-ad40700 with exact commit metadata, /health and /ready are healthy, blockers are empty, and schema is 2223_account_product_access_projection. GHL remains the sole payment-history ledger while the exact fictional household now has an active 30-day free-pilot access projection. Real Parent and all three separate Student logins pass, and Student 1 opens the approved Berachos lesson through the protected isolated-staging synthetic player with captions, sibling isolation, no raw provider URL, no credential change, no payment-history write, and zero external/provider effects. Real private-Vimeo playback, a normal-Student Zoom SDK join, the human Zoom host/control canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.',
+    'Persistent staging product checkpoint 4d484c167ab332a6f82b97c7fc4f758c58bb391b is deployed through exact web ddb811ed-2dff-48a7-be73-c91bd5bf1865 and worker 9528ca81-5329-4fa0-82ef-66dd48b14fe1 sources. /version is full-app-staging-live-4d484c1 with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2223_account_product_access_projection. The normal fictional Student 1 path now contains the fail-closed role-0 Zoom Meeting SDK branch with session-bound single-use grants, retry without grant replay, exact sibling/cross-account isolation, and no Admin impersonation; staging remains sink mode with real-provider and canary gates off and every SDK/S2S/host/meeting value absent. GHL remains the sole payment-history ledger while One Time owns current access state and the exact fictional household has an active 30-day free-pilot projection. Real private-Vimeo playback, protected Zoom target rotation plus staging configuration and the human host/Student canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.',
   works_now: [
     {
       track_id: 'goal_system',
@@ -83,7 +83,7 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
       next_action:
-        'Start the provider-off Student SDK wiring repair on PR #97; preserve the READY isolated-preview app evidence and do not configure or call Zoom until the exact code path and negative tests are accepted.',
+        'Begin the reviewed external packet with protected-target rotation and old-target denial proof; never reuse or render the exposed target.',
     },
     {
       track_id: 'zoom_s2s_host_control',
@@ -97,7 +97,7 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom Real Control Operator Change Set',
       status: 'active',
       next_action:
-        'Implement the reviewed Student role-0 SDK wiring and canonical S2S account-name cleanup on the existing conductor branch with provider construction blocked; after exact-head acceptance, begin the external packet with old-target rotation and denial proof.',
+        'Rotate/revoke the compromised protected target and prove the old target denied without rendering either value; only then install or enable the bounded Student 1 canary prerequisites.',
     },
     {
       track_id: 'media_external_canary',
@@ -150,6 +150,6 @@ export const operatorLaunchStatusProjection = {
     track_id: 'zoom_real_control_operator_change_set',
     label: 'Zoom Real Control Operator Change Set',
     action:
-      'Implement the reviewed Student role-0 SDK wiring and canonical S2S account-name cleanup on the existing conductor branch with provider construction blocked; after exact-head acceptance, begin the external packet with old-target rotation and denial proof.',
+      'Rotate/revoke the compromised protected target and prove the old target denied without rendering either value; only then install or enable the bounded Student 1 canary prerequisites.',
   },
 } as const satisfies OperatorLaunchStatusProjection;

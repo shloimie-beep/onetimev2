@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T16:08:41Z
+updated_at: 2026-07-23T17:20:21Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -108,7 +108,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'Persistent staging product checkpoint ad407005a336fbee9ed1fcc47ca124969ec881b0 is deployed through exact web 07e8f048-30ea-46e5-810d-87562e3c4156 and worker 098d0be5-fb24-4be4-b6d4-861a1f22eca4 sources. All five GitHub suites pass; /version is full-app-staging-live-ad40700 with exact commit metadata, /health and /ready are healthy, blockers are empty, and schema is 2223_account_product_access_projection. GHL remains the sole payment-history ledger while the exact fictional household now has an active 30-day free-pilot access projection. Real Parent and all three separate Student logins pass, and Student 1 opens the approved Berachos lesson through the protected isolated-staging synthetic player with captions, sibling isolation, no raw provider URL, no credential change, no payment-history write, and zero external/provider effects. Real private-Vimeo playback, a normal-Student Zoom SDK join, the human Zoom host/control canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.'
+  current_summary: 'Persistent staging product checkpoint 4d484c167ab332a6f82b97c7fc4f758c58bb391b is deployed through exact web ddb811ed-2dff-48a7-be73-c91bd5bf1865 and worker 9528ca81-5329-4fa0-82ef-66dd48b14fe1 sources. /version is full-app-staging-live-4d484c1 with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2223_account_product_access_projection. The normal fictional Student 1 path now contains the fail-closed role-0 Zoom Meeting SDK branch with session-bound single-use grants, retry without grant replay, exact sibling/cross-account isolation, and no Admin impersonation; staging remains sink mode with real-provider and canary gates off and every SDK/S2S/host/meeting value absent. GHL remains the sole payment-history ledger while One Time owns current access state and the exact fictional household has an active 30-day free-pilot projection. Real private-Vimeo playback, protected Zoom target rotation plus staging configuration and the human host/Student canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.'
   external_action_count: 9
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -128,8 +128,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: ad407005a336fbee9ed1fcc47ca124969ec881b0
-    resolution: 'Exact product checkpoint ad407005a336fbee9ed1fcc47ca124969ec881b0 is the deployed acceptance source. It is the prior governed app plus the six-file isolated-staging synthetic playback repair; every conflict path is insert-only/fail-closed and preserves any real or independently processed media row. Any later commit containing only this Board and its generated pointer/projection is an evidence descendant, not a different deployed product acceptance source.'
+    last_verified_commit: 4d484c167ab332a6f82b97c7fc4f758c58bb391b
+    resolution: 'Exact product checkpoint 4d484c167ab332a6f82b97c7fc4f758c58bb391b is the deployed acceptance source. It is the prior governed access/playback checkpoint plus the provider-off normal-Student Zoom SDK boundary, Student-1-only canary provisioner, canonical S2S naming, and fail-closed regression coverage. Any later commit containing only this Board and its generated pointer/projection is an evidence descendant, not a different deployed product acceptance source.'
   system: One Time persistent staging
 
 tracks:
@@ -654,11 +654,11 @@ tracks:
   - id: zoom_meeting_sdk
     status: provider_off
     owner:
-      task_id: ZOOM-REAL-CONTROL-ACTIVATION
+      task_id: OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP
       repository: shloimie-beep/onetimev2
-      branch: codex/zoom-real-control-activation
-      pr: 105
-      head: e81de91a7372114c6b0a67a7cbb0abc9cb548885
+      branch: codex/full-app-staging-live
+      pr: 97
+      head: 4d484c167ab332a6f82b97c7fc4f758c58bb391b
       system: Zoom Meeting SDK
     write_scope: Student protected Meeting SDK launch, consent, grant replay, and sibling scope
     handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
@@ -676,18 +676,22 @@ tracks:
       - 'Independent audit accepted PR #105 exact successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885: the 17-file 50989b3..e81de91 delta contains no migration or secret value, enforces the four SDK/origin, S2S-meeting, host-authorization, and canary-authorization phases before provider construction, and passed exact LF format, typecheck, secret scan, 39/39 focused tests, and all five GitHub suites.'
       - 'That exact successor delta is semantically integrated once in PR #97 head 312097c0d8707b48b68cf282169b04d62b71ba6d. Persistent staging remains sink/real-provider-false/canary-false; all canonical SDK, allowed-origin, S2S, host, meeting, and passcode values read absent.'
       - 'Fresh exact-source audit at ad407005a336fbee9ed1fcc47ca124969ec881b0 finds the normal Student Classroom route still uses the deterministic sink adapter. The existing real role-0 participant harness is Owner/Admin-only and cannot satisfy a real fictional Student login on another device; protected configuration alone must not be called Student-canary readiness.'
+      - 'PR #97 product checkpoint 4d484c167ab332a6f82b97c7fc4f758c58bb391b closes that code gap: the normal fictional Student 1 Classroom path can produce a role-0 Meeting SDK launch only after the exact isolated-staging, SDK/origin, S2S, host/meeting, canary, learner, session, and single-use grant gates pass. Admin can no longer mint a learner launch; Students 2 and 3 remain unavailable for the real canary.'
+      - 'Same-snapshot proof passed the 67-test Zoom unit set before the final evidence-privacy tightening, the final 52-test affected unit set after that tightening, 31/31 classroom/preview/provider-boundary integration tests, 6/6 Chromium role/Zoom journeys, 2/2 accessibility viewports, 1/1 performance budget, full lint/build/typecheck, secret scan across 2,053 repository text files, migration safety, goal/pointer checks, scoped Prettier, diff check, and conflict-marker scan. Independent final diff audit passed.'
+      - 'All five exact-head GitHub suites pass at 4d484c167ab332a6f82b97c7fc4f758c58bb391b: Node 24, OPS-06 deterministic checks, PostgreSQL 16 assurance, PostgreSQL 16 learner-seat proof, and PostgreSQL 18 assurance/restore.'
+      - 'Exact persistent-staging web ddb811ed-2dff-48a7-be73-c91bd5bf1865 and worker 9528ca81-5329-4fa0-82ef-66dd48b14fe1 are SUCCESS at source 4d484c167ab332a6f82b97c7fc4f758c58bb391b. Readback remains isolated_staging/sink/real-provider-disabled/canary-disabled with the canonical canary learner and every SDK/S2S/host/meeting value absent, so provider construction and Zoom network activity are impossible.'
     blocker: null
-    remaining_work: 'Implement and test a normal-Student role-0 SDK launch path behind the existing replay/session/sibling gates while every provider flag stays off. Then persistent staging requires its exact origin allowlist plus canonical Meeting SDK values; real control additionally depends on the separate S2S/host/meeting track and the authorized human canary.'
-    next_action: 'Start the provider-off Student SDK wiring repair on PR #97; preserve the READY isolated-preview app evidence and do not configure or call Zoom until the exact code path and negative tests are accepted.'
+    remaining_work: 'Revoke and rotate the compromised protected target, add only the exact persistent-staging origin to the existing Zoom General app, install the protected canonical Meeting SDK values, provision exactly fictional Student 1, and complete the separately bounded host/Student canary before turning every real/canary gate back off.'
+    next_action: 'Begin the reviewed external packet with protected-target rotation and old-target denial proof; never reuse or render the exposed target.'
 
   - id: zoom_s2s_host_control
     status: provider_off
     owner:
-      task_id: ZOOM-REAL-CONTROL-ACTIVATION
+      task_id: OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP
       repository: shloimie-beep/onetimev2
-      branch: codex/zoom-real-control-activation
-      pr: 105
-      head: e81de91a7372114c6b0a67a7cbb0abc9cb548885
+      branch: codex/full-app-staging-live
+      pr: 97
+      head: 4d484c167ab332a6f82b97c7fc4f758c58bb391b
       system: Zoom S2S and Rabbi host console
     write_scope: Exact fictional meeting provisioning and scoped mute/unmute/spotlight
     handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
@@ -702,6 +706,8 @@ tracks:
       - 'Exact-head fc122074 live readback reconfirms all nine canonical SDK/S2S/host/meeting values absent from persistent staging. The Rabbi preview and Live Console state Provider off: required Zoom provider prerequisites are incomplete, while fake mode remains usable.'
       - A protected staging class-link value was unintentionally rendered by a scoped environment diagnostic during this acceptance turn. The value is treated as exposed, is not repeated or committed, and must be rotated or revoked before any later real-provider canary.
       - 'PR #105 successor e81de91a7372114c6b0a67a7cbb0abc9cb548885 is integrated in PR #97 head 312097c. Exact web deployment 763375f7-2bcd-40d8-94af-a9342fa3892c and worker deployment 926fee2f-fb2d-496b-aae7-8dc468f880d6 are healthy at schema 2220; staging readback keeps every real Zoom and canary gate off.'
+      - 'The current provider-off descendant 4d484c167ab332a6f82b97c7fc4f758c58bb391b uses canonical ZOOM_S2S_ACCOUNT_ID, permits the historical account-name alias only as non-readiness compatibility, provisions exactly fictional Student 1, rejects legacy or multi-sibling state before provider construction, disables meeting registration in finally, and emits no meeting/account/host/participant reference or reversible digest in sanitized stdout.'
+      - 'A later exact-name classification mistake caused Railway tooling to return the same protected staging target in private task output. The target is again classified compromised; it is not repeated, committed, screenshotted, or used. No Zoom call, meeting mutation, customer notification, or production action occurred, and rotation plus old-target denial remains the first external step.'
     blocker:
       code: ZOOM_PROVIDER_CONFIG_AND_HUMAN_CANARY_BARRIER
       reason: 'The six S2S/host/meeting values are absent, persistent staging is not allowlisted or configured with Meeting SDK values, the exposed protected staging class link requires rotation/revocation, and the now-authorized human canary still requires a human-cleared Zoom login because prior attempts met reCAPTCHA/rate limiting.'
@@ -715,6 +721,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
+      head: 4d484c167ab332a6f82b97c7fc4f758c58bb391b
       system: Reviewed Zoom provider-action job and persistent-staging canary preparation
     write_scope: 'One governed staging-only job: validate protected prerequisites, revoke/rotate the exposed protected staging class target, allowlist the exact persistent-staging origin, install canonical SDK plus six S2S/host/meeting prerequisites, run one bounded human canary, sanitize readback, and return every real/canary gate off.'
     handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
@@ -729,9 +736,10 @@ tracks:
       - 'Preparation validation passed 26/26 Zoom units, 7/7 classroom integration tests, scoped Prettier/diff check, JSON parse, and a 2,034-file secret scan. The preparation task executed zero Zoom/Railway/provider/deployment/credential/production mutation and records OBS as unnecessary for the Meeting SDK control proof.'
       - 'The reviewed provider-action packet from commit 394dd3a is present in deployed product checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed. Live Rabbi Console readback remains fake/provider-off; no Zoom allowlist, credential, target, meeting, control, notification, or production change occurred.'
       - 'Fresh exact-source audit at ad407005a336fbee9ed1fcc47ca124969ec881b0 isolates one safe code prerequisite that does not need protected values: the real role-0 Student payload/SDK branch must be wired through the normal Student launch route, not the Owner/Admin diagnostic harness. This repair can proceed with sink/real-provider-false/canary-false and no provider call.'
+      - 'That provider-off code prerequisite is complete and independently accepted at PR #97 source 4d484c167ab332a6f82b97c7fc4f758c58bb391b. The exact web/worker deployment is healthy, the fake Rabbi flow and sink adapter remain intact, and all real Zoom values/gates remain absent or off with zero provider effects.'
     blocker: null
-    remaining_work: 'First implement and accept the normal-Student real-SDK branch with all provider gates off. Then the provider executor must rotate/revoke the exposed target, validate protected prerequisite sources without printing values, add only the exact staging origin, install staging-only values, run the human host/Student canary and negative cases, return all real/canary gates off, and commit one sanitized result.'
-    next_action: 'Implement the reviewed Student role-0 SDK wiring and canonical S2S account-name cleanup on the existing conductor branch with provider construction blocked; after exact-head acceptance, begin the external packet with old-target rotation and denial proof.'
+    remaining_work: 'The provider executor must rotate/revoke the compromised target, validate protected prerequisite sources by exact-name presence only, add the exact staging origin, install staging-only values, run the human host/Student 1 canary plus denial/replay cases, return all real/canary gates off, and commit one sanitized result.'
+    next_action: 'Rotate/revoke the compromised protected target and prove the old target denied without rendering either value; only then install or enable the bounded Student 1 canary prerequisites.'
 
   - id: bna_foundation
     status: done
@@ -895,6 +903,8 @@ tracks:
       - '/version reports full-app-staging-live-ad40700 and exact commit_sha/git_commit_sha ad407005a336fbee9ed1fcc47ca124969ec881b0; /health is healthy and /ready is healthy with blockers=[], database query ok, and latest=2223_account_product_access_projection.'
       - 'A disposable private-network sandbox pinned to the same exact source wrote only the reviewed synthetic playback projection with every GHL, Zoom, Telegram, payment, email, WhatsApp, and provider mode forced off. Sanitized readback reports external_effects=0, and the exact sandbox is destroyed and absent from the active list.'
       - 'Fresh browser acceptance proves real Parent, Student 1, Student 2, and Student 3 logins, sibling isolation, and Student 1 Library -> Berachos 2:1 -> protected synthetic classroom playback with captions and no raw provider URL. Earlier exact-source Chromium/live proof continues to cover Admin Dashboard discovery, all five preview roles, separate read-only Student shells, preserved Admin session, 360px layout, and fake/provider-off Rabbi Console.'
+      - 'Exact Zoom provider-off product source 4d484c167ab332a6f82b97c7fc4f758c58bb391b is live through staging web ddb811ed-2dff-48a7-be73-c91bd5bf1865 and worker 9528ca81-5329-4fa0-82ef-66dd48b14fe1. /version is full-app-staging-live-4d484c1 with exact commit_sha; /health returns 200 and /ready is healthy with blockers=[], database query ok, and latest=2223_account_product_access_projection.'
+      - 'Only the stale staging APP_VERSION label was corrected after the first exact automatic deployment; the label-only redeploy retained the same Git source and changed no Zoom/GHL/payment/database/production control. Exact-name readback confirms isolated_staging, sink, real-provider disabled, canary disabled, and every SDK/S2S/host/meeting value absent.'
     blocker: null
     remaining_work: null
     next_action: null
