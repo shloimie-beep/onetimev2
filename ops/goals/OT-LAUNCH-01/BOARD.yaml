@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T08:49:23Z
+updated_at: 2026-07-23T08:55:14Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,7 +23,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'PR #97 exact deployed source 99c60d3aed91ea42fb9d18d819093c95efe17e3f completes the focused Parent/Student workspace on top of integrated PR #105 and PR #108, and eliminates mixed stale app bundles through no-store authenticated HTML, commit-versioned entry URLs, content-hashed shared chunks, and revalidated mutable assets. Persistent staging web deployment 6f7d35de-274b-4154-87fd-ec2b67462d6d and worker deployment 9be7e004-3a2c-40f1-8baf-2aa2efbefc7b are exact-source SUCCESS; /version reports full-app-staging-live-99c60d3 and the exact commit, /health and /ready return 200 with blockers empty, and schema remains 2220_tisha_bav_event_email_permission. The same historical Parent browser session that had reproduced a mixed-module blank screen now renders without new console errors, and protected fictional Parent and Student sessions show the complete role category navigation plus focused workspaces without cross-role controls. The rotated protected fictional handoff remains private. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
+  current_summary: 'PR #97 exact accepted product source 99c60d3aed91ea42fb9d18d819093c95efe17e3f completes the focused Parent/Student workspace on top of integrated PR #105 and PR #108, and eliminates mixed stale app bundles through no-store authenticated HTML, commit-versioned entry URLs, content-hashed shared chunks, and revalidated mutable assets. Board-only descendant 09dd48b095aa4f5054a642e3a609706fafd4f9f7 is the current Railway source through web deployment a22868d0-4ed2-488b-bc3d-34cf087e898e and worker deployment 334f6efe-5971-4812-97f7-93e1f4ee9303; both are SUCCESS, /version preserves product label full-app-staging-live-99c60d3 while commit_sha identifies the evidence-only source, /health and /ready return 200 with blockers empty, and schema remains 2220_tisha_bav_event_email_permission. An attempted exact queue cancellation briefly removed the prior active revision and returned 404 before the already-running evidence-only deployment restored service; no code, database, provider, or production mutation occurred. Protected fictional Parent and Student sessions then re-read the complete role category navigation plus focused workspaces without cross-role controls. The rotated protected fictional handoff remains private. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
   external_action_count: 7
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -40,8 +40,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 99c60d3aed91ea42fb9d18d819093c95efe17e3f
-    resolution: 'Exact product acceptance is 99c60d3aed91ea42fb9d18d819093c95efe17e3f. Web deployment 6f7d35de-274b-4154-87fd-ec2b67462d6d and worker deployment 9be7e004-3a2c-40f1-8baf-2aa2efbefc7b are exact-source SUCCESS. /version reports full-app-staging-live-99c60d3 and the exact commit, /health and /ready return 200 with blockers empty, latest schema is 2220_tisha_bav_event_email_permission, and live portal entry assets revalidate while all imported portal chunks have content hashes.'
+    last_verified_commit: 09dd48b095aa4f5054a642e3a609706fafd4f9f7
+    resolution: 'Exact product acceptance is 99c60d3aed91ea42fb9d18d819093c95efe17e3f; current Railway source 09dd48b095aa4f5054a642e3a609706fafd4f9f7 changes only BOARD.yaml and the generated pointer. Web deployment a22868d0-4ed2-488b-bc3d-34cf087e898e and worker deployment 334f6efe-5971-4812-97f7-93e1f4ee9303 are current-source SUCCESS. /version reports product label full-app-staging-live-99c60d3 plus evidence-only commit_sha 09dd48b, /health and /ready return 200 with blockers empty, latest schema is 2220_tisha_bav_event_email_permission, and live portal entry assets revalidate while all imported portal chunks have content hashes.'
   system: One Time persistent staging
 
 tracks:
@@ -513,7 +513,7 @@ tracks:
     next_action: Preserve the canonical registry and do not create a second job model.
 
   - id: bna_durability
-    status: unclaimed
+    status: active
     owner:
       task_id: BNA-PR-141-RECONCILIATION
       repository: shloimie-beep/bnei-neviim-academy
@@ -533,7 +533,7 @@ tracks:
       - 'The operator explicitly authorized the disposable preview database and private synthetic canary on 2026-07-23; this removes the authority blocker while preserving zero customer sends and the isolated-preview boundary.'
     blocker: null
     remaining_work: 'Attach Postgres only to bna-agent-actions-preview, apply preview tables, prove save -> restart -> identical readback, run one operator-owned synthetic Telegram-to-GHL draft/save/readback canary with customer sends zero, then repin/import only the accepted PR #108 result.'
-    next_action: 'Remain unclaimed until the conductor closes the active portal track; then attach one disposable preview Postgres service without touching production.'
+    next_action: Attach one disposable Postgres service only to bna-agent-actions-preview, verify private DATABASE_URL linkage, and run the durable save, restart, identical-readback, single-consumer lease, and zero-customer-send synthetic canary.
 
   - id: telegram_foundation
     status: provider_off
