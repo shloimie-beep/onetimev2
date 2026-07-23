@@ -2,6 +2,6 @@
   "schema_version": 1,
   "goal_id": "OT-LAUNCH-01",
   "generated_from_board": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
-  "source_hash": "sha256:9258a44c65825a17fd257633e0f197e6cb7830eeb3589bbce8ab3048d977e736",
-  "generated_at": "Wed Jul 22 2026 22:37:05 GMT+0300 (Israel Daylight Time)"
+  "source_hash": "sha256:2ad2513e467f7d095cc330400e4f77849c37d05d3c69b465f4cc515ff3ca2ffc",
+  "generated_at": "Thu Jul 23 2026 10:28:42 GMT+0300 (Israel Daylight Time)"
 }

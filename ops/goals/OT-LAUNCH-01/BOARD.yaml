@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T19:37:05Z
+updated_at: 2026-07-23T07:28:42Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,12 +23,12 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard to the dedicated fictional Student shell on top of accepted PR #105 successor e81de91a7372114c6b0a67a7cbb0abc9cb548885 and the already integrated PR #108/PR #104 work. It is live in persistent staging through web deployment fb693d23-d100-42b1-aafc-3adc7afab16c and worker deployment ae860b1e-793f-49f2-a529-cacacf9afb1d; /version reports full-app-staging-live-7dcb137 with exact commit_sha and Railway git_commit_sha, /health and /ready return 200 with blockers empty and schema 2220_tisha_bav_event_email_permission. All five GitHub suites and both Railway checks pass. Normal Admin Dashboard discovery, all five role choices, Parent/Rabbi projections, all three sibling-scoped Student shells, and the unchanged Admin session were re-read without exposing protected values. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
-  external_action_count: 6
+  current_summary: 'PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard to the accepted fictional Student isolation on top of integrated PR #105, PR #108, and PR #104 work. Evidence-only descendant 6b6640d61d6198b2004c836532e1058d5a39a46b is the current persistent-staging source through web deployment 367d92e4-4575-4491-b9e7-1344b0929a04 and worker deployment 2235d4eb-fea6-4d43-b45c-996bda682c28; /version retains the product label full-app-staging-live-7dcb137 while commit_sha and Railway git_commit_sha identify exact source 6b6640d6, /health and /ready return 200 with blockers empty, and schema is 2220_tisha_bav_event_email_permission. The stale protected fictional Admin password was rejected, then only that credential was rotated through a disposable private-network Railway sandbox; the handoff was atomically replaced, old sessions were revoked, the sandbox and local transfer artifacts were removed, and the fresh login completed one bounded email challenge. Normal Dashboard discovery, all five role choices, three sibling-scoped read-only Student shells, the unchanged Admin session, the fake/provider-off Rabbi console, and the approved synthetic Content Factory lesson were re-read without exposing protected values. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
+  external_action_count: 7
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
-      count: 5
-      scope: Five bounded operator-owned staging login-code emails only. The latest challenge authenticated the already-rotated fictional Admin for exact-head role-preview proof without rendering its credential, destination, or code; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
+      count: 6
+      scope: Six bounded operator-owned staging login-code emails only. The latest challenge authenticated the freshly rotated fictional Admin for current-source role-preview proof without rendering the replacement credential or private destination in repository evidence; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
     - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
       scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
@@ -40,8 +40,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 7dcb137c4d1e3b908dce8230e3089ec58bf57261
-    resolution: 'Live /version records version full-app-staging-live-7dcb137, commit_sha and Railway git_commit_sha 7dcb137c4d1e3b908dce8230e3089ec58bf57261, and exact web deployment fb693d23-d100-42b1-aafc-3adc7afab16c. Worker deployment ae860b1e-793f-49f2-a529-cacacf9afb1d is exact-source SUCCESS/RUNNING. /health and /ready return 200 with blockers empty and latest schema 2220_tisha_bav_event_email_permission. A later Board/pointer commit is evidence-only and does not replace this accepted deployed source.'
+    last_verified_commit: 6b6640d61d6198b2004c836532e1058d5a39a46b
+    resolution: 'Exact product acceptance remains 7dcb137c4d1e3b908dce8230e3089ec58bf57261. Its evidence-only descendant 6b6640d61d6198b2004c836532e1058d5a39a46b is the current Railway source: /version retains label full-app-staging-live-7dcb137 while commit_sha and deployment.git_commit_sha both identify 6b6640d6 and web deployment 367d92e4-4575-4491-b9e7-1344b0929a04. Worker deployment 2235d4eb-fea6-4d43-b45c-996bda682c28 is exact-source SUCCESS. /health and /ready return 200 with blockers empty and latest schema 2220_tisha_bav_event_email_permission.'
   system: One Time persistent staging
 
 tracks:
@@ -98,6 +98,7 @@ tracks:
       - 'The in-app browser lost the target-blank tab binding before the dedicated Student shell could be re-read. A diagnostic call then exposed the fictional Admin input value, so browser work stopped; the exact Admin-only credential was rotated, all Admin sessions were revoked, and the replacement was never rendered. Current-head separate-tab and preserved-session proof remains pending with the fresh protected credential.'
       - 'Exact product head 7dcb137c adds a synchronous fail-closed opener-detachment guard before the dedicated Student React shell renders. Focused Experience Preview/security tests pass 18/18; scoped lint/Prettier, full build/typecheck, secret scan, diff check, and the real Chromium Experience Preview scenario pass. That scenario directly proves null opener, two sibling tabs, unchanged Admin session, production 404/nav gating, and 360px layout.'
       - 'Live deployment fb693d23 followed normal Admin Dashboard -> Preview Parent & Student portals -> Open portal preview and displayed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom. Parent and Rabbi/Classroom selected their exact fictional projections; Ari, Dovid, and Noam each rendered only their own actual read-only Student portal with no Admin navigation/logout, and the original Admin Experience Preview remained usable. The in-app automation layer did not surface the target-blank popup as a bindable new tab, so null-opener is cited from exact-source Chromium rather than overstated as an in-app popup readback.'
+      - 'Current-source live proof at 6b6640d6 followed normal Admin Dashboard -> Preview Parent & Student portals -> Open portal preview and re-read Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom. All three sibling-scoped Student shells rendered Today and Library inside inert read-only actual portal components with no Admin shell, navigation, or logout; the originating Admin Experience Preview remained authenticated. The in-app browser again did not surface target-blank as a bindable popup, so null-opener remains proven by the exact-source Chromium suite rather than this controlled-tab fallback.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -151,6 +152,8 @@ tracks:
       - 'A second authorized diagnostic snapshot at exact deployed head 312097c rendered the then-current fictional Admin password input and private destination. The browser was stopped immediately; only the exact fictional staging Administrator was rotated through an authenticated disposable Railway sandbox on the staging private network.'
       - 'Final superseding rotation completed at 2026-07-22T18:58:54.309Z from exact source 312097c: the security version incremented, active sessions are 0, the exposed credential is rejected, the replacement matches the stored hash, and the protected handoff was atomically replaced. Parent, Student, production, and customer credentials were unchanged.'
       - 'Final replacement scans found zero exact matches in Git-tracked files, repository screenshots, and 10 Chrome/Edge/Codex history stores; the secret scan passed across 2,027 repository text files. Every disposable sandbox and encrypted/plaintext transfer/helper file was removed, and no SSH key or public DB proxy was used.'
+      - 'The protected Admin password later drifted from the private handoff and was rejected by live staging. A superseding Admin-only rotation completed at 2026-07-23T07:10:34.572Z through disposable private-network Railway sandbox 7452f35b-ba35-41ea-8a91-183f2e7530ef pinned to exact source 6b6640d6, with HighLevel, Zoom, email, WhatsApp, and Telegram provider effects disabled. The security version incremented, active sessions remained 0 -> 0, the handoff was atomically replaced, and the sandbox plus all three local encrypted/key transfer artifacts were removed.'
+      - 'The fresh protected Admin credential then reached one real email-code challenge and completed login at /app/dashboard. The normal Preview Parent & Student portals card and Open portal preview CTA opened all five fictional role choices; all three read-only Student shells, the fake/provider-off Rabbi console, and the approved synthetic Content Factory lesson were re-read while the Administrator session remained intact. No reset/resend, customer message, provider mutation, production change, or protected value entered Git evidence.'
     blocker: null
     remaining_work: null
     next_action: Preserve the latest rotated protected handoff and never render fictional credentials, private destinations, or login codes in DOM/tool diagnostics.
