@@ -5,16 +5,16 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:4c531711b9c0a92eea9379bfa5a03f093eb52d1ea00f6ac27b550522dc007f7e',
-  generated_at: '2026-07-23T14:24:21.000Z',
+  board_source_hash: 'sha256:4013795ab2fa60ed104a4152f253a0cd2e09e23bab20109ad45cb0734b26af8a',
+  generated_at: '2026-07-23T16:08:41.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
-    acceptance_complete: 16,
+    acceptance_complete: 17,
     acceptance_total: 21,
-    percentage: 76,
+    percentage: 81,
   },
   what_changed:
-    'Persistent staging product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is deployed through exact web and worker sources with healthy /health and /ready readback at schema 2220. It differs from browser-accepted checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed only by a native no-JavaScript signup fallback and corrected performance observer boundary; five live 390x844 reloads now measure CLS 0 with no overflow. The redesigned public landing and Board-derived Admin Launch Status are live; bounded browser proof covers the real fictional Student login, normal Admin Dashboard discovery, Parent, all three sibling-scoped Student previews, Rabbi/Classroom, preserved Admin session, and the fake/provider-off Live Console. GHL remains authoritative for payment history; the conductor has assigned one current-access and explicit free-pilot projection implementation on PR #97, with no payment ledger or provider mutation in scope. The reviewed Zoom staging canary packet remains ready while every real/canary gate stays off.',
+    'Persistent staging product checkpoint ad407005a336fbee9ed1fcc47ca124969ec881b0 is deployed through exact web 07e8f048-30ea-46e5-810d-87562e3c4156 and worker 098d0be5-fb24-4be4-b6d4-861a1f22eca4 sources. All five GitHub suites pass; /version is full-app-staging-live-ad40700 with exact commit metadata, /health and /ready are healthy, blockers are empty, and schema is 2223_account_product_access_projection. GHL remains the sole payment-history ledger while the exact fictional household now has an active 30-day free-pilot access projection. Real Parent and all three separate Student logins pass, and Student 1 opens the approved Berachos lesson through the protected isolated-staging synthetic player with captions, sibling isolation, no raw provider URL, no credential change, no payment-history write, and zero external/provider effects. Real private-Vimeo playback, a normal-Student Zoom SDK join, the human Zoom host/control canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.',
   works_now: [
     {
       track_id: 'goal_system',
@@ -33,6 +33,12 @@ export const operatorLaunchStatusProjection = {
       label: 'Main Landing Polish',
       status: 'done',
       acceptance_ids: ['LANDING-001', 'LANDING-002'],
+    },
+    {
+      track_id: 'ghl_access_entitlement_projection',
+      label: 'Ghl Access Entitlement Projection',
+      status: 'done',
+      acceptance_ids: ['ACCESS-001'],
     },
     {
       track_id: 'admin_experience_preview',
@@ -73,32 +79,11 @@ export const operatorLaunchStatusProjection = {
   ],
   remaining: [
     {
-      track_id: 'ghl_access_entitlement_projection',
-      label: 'Ghl Access Entitlement Projection',
-      status: 'active',
-      next_action:
-        'Freeze and push the governed implementation checkpoint, wait for exact-head database checks, deploy it to persistent staging, then run the reviewed private-network free-pilot command and browser acceptance without provider or production effects.',
-    },
-    {
-      track_id: 'production_pilot',
-      label: 'Production Pilot',
-      status: 'active',
-      next_action:
-        'Finish the governance, landing, launch-summary, and access-projection staging slices while continuously reconciling the production release diff.',
-    },
-    {
-      track_id: 'media_external_canary',
-      label: 'Media External Canary',
-      status: 'unclaimed',
-      next_action:
-        'Keep truthful provider-off UI until the reviewed canary job is assigned and its protected prerequisites are validated.',
-    },
-    {
       track_id: 'zoom_meeting_sdk',
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
       next_action:
-        'Preserve the READY isolated-preview SDK setup and do not infer persistent-staging or real-control readiness from it.',
+        'Start the provider-off Student SDK wiring repair on PR #97; preserve the READY isolated-preview app evidence and do not configure or call Zoom until the exact code path and negative tests are accepted.',
     },
     {
       track_id: 'zoom_s2s_host_control',
@@ -110,9 +95,23 @@ export const operatorLaunchStatusProjection = {
     {
       track_id: 'zoom_real_control_operator_change_set',
       label: 'Zoom Real Control Operator Change Set',
-      status: 'waiting_external',
+      status: 'active',
       next_action:
-        'Start the reviewed ZOOM-STAGING-CANARY packet in a separate provider-authorized Codex task. Its first external action is old-target rotation and denial proof; stop only at a missing protected source, Zoom login/reCAPTCHA, or required human host/Student participation.',
+        'Implement the reviewed Student role-0 SDK wiring and canonical S2S account-name cleanup on the existing conductor branch with provider construction blocked; after exact-head acceptance, begin the external packet with old-target rotation and denial proof.',
+    },
+    {
+      track_id: 'media_external_canary',
+      label: 'Media External Canary',
+      status: 'unclaimed',
+      next_action:
+        'Keep truthful provider-off UI until the reviewed canary job is assigned and its protected prerequisites are validated.',
+    },
+    {
+      track_id: 'production_pilot',
+      label: 'Production Pilot',
+      status: 'unclaimed',
+      next_action:
+        'Queue the separately reviewed semantic production-pilot candidate after the normal-Student Zoom path and staging canary are accepted; do not promote the evidence-only Board descendant or broaden the initial operator-owned cohort.',
     },
   ],
   blockers: [
@@ -148,9 +147,9 @@ export const operatorLaunchStatusProjection = {
     },
   ],
   next_executable_task: {
-    track_id: 'ghl_access_entitlement_projection',
-    label: 'Ghl Access Entitlement Projection',
+    track_id: 'zoom_real_control_operator_change_set',
+    label: 'Zoom Real Control Operator Change Set',
     action:
-      'Freeze and push the governed implementation checkpoint, wait for exact-head database checks, deploy it to persistent staging, then run the reviewed private-network free-pilot command and browser acceptance without provider or production effects.',
+      'Implement the reviewed Student role-0 SDK wiring and canonical S2S account-name cleanup on the existing conductor branch with provider construction blocked; after exact-head acceptance, begin the external packet with old-target rotation and denial proof.',
   },
 } as const satisfies OperatorLaunchStatusProjection;
