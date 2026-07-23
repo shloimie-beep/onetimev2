@@ -4876,12 +4876,12 @@ function contentFactoryDemoEmbedHtml(
     <section class="state-panel learning-player-shell" aria-labelledby="demo-player-title">
       <p class="eyebrow">Synthetic classroom preview</p>
       <h1 id="demo-player-title">${escapeHtml(playback.title)}</h1>
-      <p>This protected demo uses approved synthetic lesson data while the fresh provider canary waits for operator approval.</p>
+      <p>This protected demo uses approved synthetic lesson data without contacting an external media provider.</p>
       <div role="group" aria-label="Demo caption track">
         <strong>Captions active</strong>
-        <p>00:00 — The Mishnah introduces returning a lost object.</p>
-        <p>00:20 — The class identifies the signs an owner may use.</p>
-        <p>00:40 — Students review when an announcement is required.</p>
+        <p>${escapeHtml(
+          playback.syntheticCaptionText ?? 'Approved synthetic caption track unavailable.',
+        )}</p>
       </div>
     </section>
   </main>

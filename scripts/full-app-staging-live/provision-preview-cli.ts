@@ -5,6 +5,7 @@ import {
   fullAppProvisionPublicSummary,
   rotateFullAppPreviewAdminCredential,
   runFullAppProvision,
+  seedFullAppSyntheticPlayback,
 } from './provision-preview.ts';
 
 const config = loadConfig(process.env);
@@ -15,6 +16,7 @@ try {
     process.argv.includes('--rotate-admin-only') ? 'rotate-admin' : null,
     process.argv.includes('--grant-free-pilot') ? 'grant-free-pilot' : null,
     process.argv.includes('--revoke-free-pilot') ? 'revoke-free-pilot' : null,
+    process.argv.includes('--seed-synthetic-playback-only') ? 'seed-synthetic-playback' : null,
   ].filter((value): value is string => Boolean(value));
   if (selectedOperations.length > 1) {
     throw new Error('Choose exactly one protected provisioning operation.');
@@ -26,6 +28,13 @@ try {
       config,
       publicBaseUrl: process.env.FULL_APP_STAGING_URL ?? config.publicBaseUrl,
       requirePrivateDestinations: true,
+    });
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else if (selectedOperations[0] === 'seed-synthetic-playback') {
+    const result = await seedFullAppSyntheticPlayback({
+      pool,
+      config,
+      authorizationPhrase: requiredEnvironment('ONE_TIME_SYNTHETIC_PLAYBACK_AUTHORIZATION'),
     });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } else if (

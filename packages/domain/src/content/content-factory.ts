@@ -460,7 +460,7 @@ export async function getContentFactoryPlayback(input: {
   sourceKey: string;
 }) {
   const result = await input.pool.query(
-    `SELECT source_key, factory_state, draft_json, provider_embed_url,
+    `SELECT source_key, factory_state, draft_json, normalized_transcript, provider_embed_url,
             captions_active, progress_state
        FROM onetime.learning_delivery_content_factory_items
       WHERE account_key = $1 AND product_key = $2 AND source_key = $3 LIMIT 1`,
@@ -473,6 +473,12 @@ export async function getContentFactoryPlayback(input: {
   }
   const draft = contentFactoryDraftSchema.parse(row.draft_json);
   const isDemo = isContentFactoryDemoSource(String(row.source_key));
+  if (isDemo && !isContentFactorySyntheticPlaybackEnabled(input.config)) {
+    throw new ContentFactoryError(
+      'PLAYBACK_UNAVAILABLE',
+      'Synthetic playback is unavailable outside reviewed staging.',
+    );
+  }
   return {
     sourceKey: String(row.source_key),
     title: draft.title,
@@ -482,6 +488,7 @@ export async function getContentFactoryPlayback(input: {
     progressState: String(row.progress_state) as 'not_started' | 'in_progress' | 'completed',
     playbackRoute: `/api/v1/content/factory/${encodeURIComponent(String(row.source_key))}/embed`,
     privateProviderEmbedUrl: isDemo ? null : String(row.provider_embed_url),
+    syntheticCaptionText: isDemo ? String(row.normalized_transcript) : null,
     isDemo,
     rawProviderUrlPresent: false as const,
   };
@@ -766,8 +773,20 @@ function safeIntakeFromRow(row: Record<string, unknown>): ContentFactoryIntakeSa
   });
 }
 
-function isContentFactoryDemoSource(sourceKey: string) {
-  return sourceKey.startsWith('ot_launch_01_demo_');
+export function isContentFactoryDemoSource(sourceKey: string) {
+  return (
+    sourceKey.startsWith('ot_launch_01_demo_') || sourceKey === 'full_app_demo_mishnayos_video'
+  );
+}
+
+export function isContentFactorySyntheticPlaybackEnabled(
+  config: Pick<AppConfig, 'deliveryEnvironment' | 'oneTimeRuntimeEnvironment'>,
+) {
+  return (
+    (config.deliveryEnvironment === 'isolated_staging' || config.deliveryEnvironment === 'test') &&
+    (config.oneTimeRuntimeEnvironment === 'isolated_staging' ||
+      config.oneTimeRuntimeEnvironment === 'test')
+  );
 }
 
 async function lockedRow(client: Queryable, config: AppConfig, sourceKey: string) {

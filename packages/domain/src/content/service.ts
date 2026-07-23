@@ -21,6 +21,10 @@ import { stableKey } from '../lead/normalize.ts';
 import type { LearnerContentAccessAdapter } from '../portals/services.ts';
 import { householdHasLearningAccess } from '../billing/portal-access.ts';
 import { enqueueRecordingAvailableForEntitledAdults } from '../highlevel/producer.ts';
+import {
+  isContentFactoryDemoSource,
+  isContentFactorySyntheticPlaybackEnabled,
+} from './content-factory.ts';
 
 export class ContentIdempotencyConflictError extends Error {
   constructor() {
@@ -155,6 +159,7 @@ export function createContentPortalAccessAdapter(input: {
       }
       return portalItemsForLearner({
         pool: input.pool,
+        config: input.config,
         accountKey: actor.account_key,
         productKey: actor.product_key,
         actorRole: actor.actor_role,
@@ -176,6 +181,7 @@ export function createContentPortalAccessAdapter(input: {
       }
       return portalItemsForLearner({
         pool: input.pool,
+        config: input.config,
         accountKey: actor.account_key,
         productKey: actor.product_key,
         actorRole: actor.actor_role,
@@ -457,6 +463,7 @@ async function getContentItemDetailFrom(
 
 async function portalItemsForLearner(input: {
   pool: DbPool;
+  config: Pick<AppConfig, 'deliveryEnvironment' | 'oneTimeRuntimeEnvironment'>;
   accountKey: string;
   productKey: string;
   actorRole: string;
@@ -541,6 +548,11 @@ async function portalItemsForLearner(input: {
       ? (row.factory_draft_json as Record<string, unknown>)
       : null;
     const itemKey = String(row.content_item_key);
+    const isDemo = isContentFactoryDemoSource(itemKey);
+    const exposedFactoryDraft =
+      factoryDraft && (!isDemo || isContentFactorySyntheticPlaybackEnabled(input.config))
+        ? factoryDraft
+        : null;
     return {
       item_key: itemKey,
       title: String(row.title),
@@ -555,18 +567,18 @@ async function portalItemsForLearner(input: {
       ),
       featured: Boolean(row.lesson_featured),
       published_at: nullableIso(row.published_at),
-      content_factory: factoryDraft
+      content_factory: exposedFactoryDraft
         ? {
-            approved_summary: String(factoryDraft.short_description ?? ''),
-            approved_review_questions: Array.isArray(factoryDraft.review_questions)
-              ? factoryDraft.review_questions.map(String)
+            approved_summary: String(exposedFactoryDraft.short_description ?? ''),
+            approved_review_questions: Array.isArray(exposedFactoryDraft.review_questions)
+              ? exposedFactoryDraft.review_questions.map(String)
               : [],
             captions_active: true as const,
             progress_state: String(row.factory_progress_state ?? 'not_started') as
               'not_started' | 'in_progress' | 'completed',
             playback_route: `/app/learning/items/${encodeURIComponent(itemKey)}`,
             raw_provider_url_present: false as const,
-            is_demo: itemKey.startsWith('ot_launch_01_demo_'),
+            is_demo: isDemo,
           }
         : undefined,
       lesson: lessonKey

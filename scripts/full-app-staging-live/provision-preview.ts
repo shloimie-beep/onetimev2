@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { AppConfig } from '../../packages/config/src/index.ts';
-import type { DbPool } from '../../packages/db/src/index.ts';
+import { inTransaction, type DbPool } from '../../packages/db/src/index.ts';
 import { createClassroomRepository } from '../../packages/db/src/classroom/repository.ts';
 import { createGamificationRepository } from '../../packages/db/src/gamification/repository.ts';
 import { createPortalRepository } from '../../packages/db/src/portals/repository.ts';
@@ -41,6 +41,17 @@ const CONTENT_ITEM_KEY = 'full_app_demo_mishnayos_video';
 const CONTENT_REVISION_KEY = 'full_app_demo_mishnayos_video_rev_1';
 const LESSON_KEY = 'full_app_demo_mishnayos_lesson';
 const VIMEO_SOURCE_KEY = 'full_app_private_vimeo_demo_source';
+const CONTENT_TITLE = 'Berachos 2:1 — Finding the Right Time for Shema';
+const CONTENT_DESCRIPTION =
+  'A fictional Cohen family lesson prepared through the protected One Time media workflow.';
+const CONTENT_REVIEW_QUESTIONS = [
+  'When does the evening Shema period begin?',
+  'Which signs help define the Mishnah’s time window?',
+  'How do the opinions differ at the end of the time window?',
+  'What does the lesson ask a learner to notice about the earliest opinion?',
+  'Which part of the time window should the learner review before the next class?',
+] as const;
+const SYNTHETIC_PLAYBACK_AUTHORIZATION = 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK';
 const CLASS_BOARD_KEY = 'full_app_demo_class_board';
 const RABBI_LIVE_CONSOLE_ROUTE = '/app/live-console';
 const EXPERIENCE_PREVIEW_ROUTE = '/app/experience-preview';
@@ -258,6 +269,7 @@ export async function runFullAppProvision(
     const dashboard = await studentService.dashboard(actor);
     const upcoming = dashboard.upcoming_classes[0];
     const featuredLesson = dashboard.featured_lesson;
+    const protectedContent = await studentService.protectedContentOpen(actor, CONTENT_ITEM_KEY);
     const protectedLaunch = upcoming?.launch_action
       ? await studentService.protectedClassLaunch(actor, upcoming.class_key, {
           idempotency_key: `full-app-launch-${runId}-${index + 1}`,
@@ -277,7 +289,9 @@ export async function runFullAppProvision(
       lesson_ready:
         featuredLesson?.lesson_key === LESSON_KEY &&
         featuredLesson.video_provider === 'vimeo' &&
-        featuredLesson.raw_private_url_present === false,
+        featuredLesson.raw_private_url_present === false &&
+        protectedContent.href === `/app/learning/items/${encodeURIComponent(CONTENT_ITEM_KEY)}` &&
+        protectedContent.label === 'Open approved class video',
       protected_launch_ready: launchReady,
     });
   }
@@ -888,7 +902,7 @@ async function seedLearningContent(
       config.productKey,
       vimeoDigest,
       digest('full-app-preview-private-vimeo-asset'),
-      'Berachos 2:1 — Finding the Right Time for Shema',
+      CONTENT_TITLE,
       VIMEO_SOURCE_KEY,
       JSON.stringify({
         raw_url_present: false,
@@ -920,7 +934,7 @@ async function seedLearningContent(
       config.accountKey,
       config.productKey,
       occurrenceKey,
-      'Berachos 2:1 — Finding the Right Time for Shema',
+      CONTENT_TITLE,
       CONTENT_REVISION_KEY,
       JSON.stringify({
         provider: 'vimeo',
@@ -956,11 +970,7 @@ async function seedLearningContent(
       JSON.stringify({ source_kind: 'private_vimeo_reference', source_key: VIMEO_SOURCE_KEY }),
       JSON.stringify({
         review_available: true,
-        questions: [
-          'When does the evening Shema period begin?',
-          'Which signs help define the Mishnah’s time window?',
-          'How do the opinions differ at the end of the time window?',
-        ],
+        questions: CONTENT_REVIEW_QUESTIONS,
       }),
       JSON.stringify({ provider: 'vimeo', protected_runtime: true, raw_url_present: false }),
       digest('full-app-preview-vimeo-provider-event'),
@@ -1015,8 +1025,8 @@ async function seedLearningContent(
       ONE_TIME_CLASS_SERIES_KEY,
       occurrenceKey,
       CONTENT_ITEM_KEY,
-      'Berachos 2:1 — Finding the Right Time for Shema',
-      'A fictional Cohen family lesson prepared through the protected One Time media workflow.',
+      CONTENT_TITLE,
+      CONTENT_DESCRIPTION,
       now,
       VIMEO_SOURCE_KEY,
       vimeoDigest,
@@ -1029,6 +1039,254 @@ async function seedLearningContent(
       ]),
     ],
   );
+}
+
+export async function seedFullAppSyntheticPlayback(input: {
+  pool: DbPool;
+  config: AppConfig;
+  authorizationPhrase: string;
+  now?: Date;
+}) {
+  assertSyntheticPlaybackScope(input.config);
+  if (input.authorizationPhrase !== SYNTHETIC_PLAYBACK_AUTHORIZATION) {
+    throw new Error('Full app synthetic playback requires explicit staging authorization.');
+  }
+  const now = input.now ?? new Date();
+  return inTransaction(input.pool, async (client) => {
+    const prerequisite = await client.query(
+      `SELECT scenario.scenario_key
+       FROM onetime.experience_preview_scenarios AS scenario
+       JOIN onetime.content_items AS item
+         ON item.account_key = scenario.account_key
+        AND item.product_key = scenario.product_key
+        AND item.content_item_key = scenario.content_item_key
+        AND item.lifecycle_state = 'published'
+        AND item.retention_state = 'active'
+        AND item.published_revision_key = $6
+       JOIN onetime.content_revisions AS revision
+         ON revision.account_key = item.account_key
+        AND revision.product_key = item.product_key
+        AND revision.content_item_key = item.content_item_key
+        AND revision.revision_key = $6
+        AND revision.lifecycle_state = 'published'
+        AND revision.raw_provider_target_present = false
+       JOIN onetime.classroom_lesson_publications AS lesson
+         ON lesson.account_key = scenario.account_key
+        AND lesson.product_key = scenario.product_key
+        AND lesson.lesson_key = scenario.lesson_key
+        AND lesson.content_item_key = scenario.content_item_key
+        AND lesson.publication_state = 'published'
+        AND lesson.raw_private_url_present = false
+       JOIN onetime.content_item_entitlements AS entitlement
+         ON entitlement.account_key = scenario.account_key
+        AND entitlement.product_key = scenario.product_key
+        AND entitlement.content_item_key = scenario.content_item_key
+        AND entitlement.audience = 'household'
+        AND entitlement.household_key = scenario.household_key
+        AND entitlement.entitlement_state = 'active'
+      WHERE scenario.scenario_key = $1
+        AND scenario.account_key = $2
+        AND scenario.product_key = $3
+        AND scenario.household_key = $4
+        AND scenario.content_item_key = $5
+        AND scenario.lesson_key = $7
+        AND scenario.provisioner_marker = 'full_app_staging_provisioner_v1'
+        AND scenario.eligibility_state = 'active'
+      LIMIT 1`,
+      [
+        'full_app_preview_scenario',
+        input.config.accountKey,
+        input.config.productKey,
+        HOUSEHOLD_KEY,
+        CONTENT_ITEM_KEY,
+        CONTENT_REVISION_KEY,
+        LESSON_KEY,
+      ],
+    );
+    if (!prerequisite.rowCount) {
+      throw new Error('Full app synthetic playback requires the exact active Cohen lesson seed.');
+    }
+
+    const normalizedTranscript = [
+      'The fictional class reviews when the evening Shema period begins.',
+      'Students compare the signs used to describe the opening of the time window.',
+      'The lesson reviews how the opinions differ at the end of the time window.',
+      'The class pauses to identify the earliest opinion in the Mishnah.',
+      'The lesson closes with a short review for the next class.',
+    ].join(' ');
+    const transcriptSegments = [
+      {
+        segment_id: 'full_app_demo_segment_1',
+        start_ms: 0,
+        end_ms: 12_000,
+        text: 'The fictional class reviews when the evening Shema period begins.',
+      },
+      {
+        segment_id: 'full_app_demo_segment_2',
+        start_ms: 12_000,
+        end_ms: 25_000,
+        text: 'Students compare the signs used to describe the opening of the time window.',
+      },
+      {
+        segment_id: 'full_app_demo_segment_3',
+        start_ms: 25_000,
+        end_ms: 39_000,
+        text: 'The lesson reviews how the opinions differ at the end of the time window.',
+      },
+      {
+        segment_id: 'full_app_demo_segment_4',
+        start_ms: 39_000,
+        end_ms: 52_000,
+        text: 'The class pauses to identify the earliest opinion in the Mishnah.',
+      },
+      {
+        segment_id: 'full_app_demo_segment_5',
+        start_ms: 52_000,
+        end_ms: 65_000,
+        text: 'The lesson closes with a short review for the next class.',
+      },
+    ];
+    const webvtt = `WEBVTT
+
+00:00:00.000 --> 00:00:12.000
+The fictional class reviews when the evening Shema period begins.
+
+00:00:12.000 --> 00:00:25.000
+Students compare the signs used to describe the opening of the time window.
+
+00:00:25.000 --> 00:00:39.000
+The lesson reviews how the opinions differ at the end of the time window.
+
+00:00:39.000 --> 00:00:52.000
+The class pauses to identify the earliest opinion in the Mishnah.
+
+  00:00:52.000 --> 00:01:05.000
+The lesson closes with a short review for the next class.
+`;
+    const sourceRefDigest = digest('full-app-preview-synthetic-private-source-ref-v1');
+    const sourceSha256 = digest('full-app-preview-synthetic-video-bytes-v1');
+    const providerVideoId = 'synthetic_demo_no_provider_resource';
+    const providerEmbedUrl = 'https://player.vimeo.com/video/synthetic_demo_no_provider_resource';
+    const providerTextTrackId = 'synthetic_demo_caption_track';
+    const transcriptionModel = 'synthetic-demo-no-provider';
+    const digestCollision = await client.query(
+      `SELECT source_key
+       FROM onetime.learning_delivery_content_factory_items
+      WHERE account_key = $1
+        AND product_key = $2
+        AND source_sha256 = $3
+        AND source_key <> $4
+      LIMIT 1`,
+      [input.config.accountKey, input.config.productKey, sourceSha256, CONTENT_ITEM_KEY],
+    );
+    if (digestCollision.rowCount) {
+      throw new Error('Full app synthetic playback source digest is already assigned.');
+    }
+
+    await client.query(
+      `INSERT INTO onetime.learning_delivery_content_factory_items
+       (source_key, account_key, product_key, source_kind, source_ref_digest, source_sha256,
+        display_name, mime_type, byte_length, factory_state, original_duration_ms,
+        prepared_duration_ms, trim_start_ms, trim_end_ms, removed_start_ms, removed_end_ms,
+        trim_confidence, safe_duration, middle_cut_performed, transcript_segments_json,
+        normalized_transcript, transcript_sha256, webvtt, webvtt_sha256, transcription_model,
+        transcription_language, transcript_review_state, draft_json, provider_video_id,
+        provider_embed_url, provider_text_track_id, vimeo_privacy, captions_active,
+        approved_by_user_key, approved_at, published_by_user_key, published_at, updated_at)
+     VALUES ($1,$2,$3,'local_drop',$4,$5,$6,'video/mp4',1048576,'published',78000,65000,
+        6000,71000,6000,7000,0.92,true,false,$7::jsonb,$8,$9,$10,$11,
+        $12,'en','approved',$13::jsonb,$14,$15,$16,'private',true,
+        'full_app_preview',$17,'full_app_preview',$17,$17)
+     ON CONFLICT (source_key)
+     DO NOTHING`,
+      [
+        CONTENT_ITEM_KEY,
+        input.config.accountKey,
+        input.config.productKey,
+        sourceRefDigest,
+        sourceSha256,
+        'full-app-preview-approved-synthetic-lesson.mp4',
+        JSON.stringify(transcriptSegments),
+        normalizedTranscript,
+        digest(normalizedTranscript),
+        webvtt,
+        digest(webvtt),
+        transcriptionModel,
+        JSON.stringify({
+          title: CONTENT_TITLE,
+          short_description: CONTENT_DESCRIPTION,
+          class_label: 'Daily Mishnayos: Berachos 2:1',
+          class_date: now.toISOString().slice(0, 10),
+          topics: ['Evening Shema', 'Time window', 'Mishnah review'],
+          mishnah_terms: ['Mishnah', 'Shema'],
+          review_questions: CONTENT_REVIEW_QUESTIONS,
+          key_takeaways: [
+            'The fictional class reviews the opening of the evening Shema time window.',
+            'Students compare the signs and opinions described in the Mishnah.',
+            'The lesson ends with a bounded review for the next class.',
+          ],
+          vocabulary: [
+            {
+              term: 'Shema',
+              transcript_context: 'The class reviews the evening Shema time window.',
+            },
+            {
+              term: 'Mishnah',
+              transcript_context: 'Students compare the opinions recorded in the Mishnah.',
+            },
+          ],
+          draft_only: true,
+          authoritative_torah_interpretation: false,
+        }),
+        providerVideoId,
+        providerEmbedUrl,
+        providerTextTrackId,
+        now,
+      ],
+    );
+    const persisted = await client.query(
+      `SELECT account_key, product_key, source_kind, source_ref_digest, source_sha256,
+            factory_state, transcription_model, provider_video_id, provider_embed_url,
+            provider_text_track_id, captions_active, approved_by_user_key, published_by_user_key
+      FROM onetime.learning_delivery_content_factory_items
+      WHERE source_key = $1
+      LIMIT 1
+      FOR UPDATE`,
+      [CONTENT_ITEM_KEY],
+    );
+    const row = persisted.rows[0];
+    if (
+      persisted.rowCount !== 1 ||
+      row?.account_key !== input.config.accountKey ||
+      row?.product_key !== input.config.productKey ||
+      row?.source_kind !== 'local_drop' ||
+      row?.source_ref_digest !== sourceRefDigest ||
+      row?.source_sha256 !== sourceSha256 ||
+      row?.factory_state !== 'published' ||
+      row?.transcription_model !== transcriptionModel ||
+      row?.provider_video_id !== providerVideoId ||
+      row?.provider_embed_url !== providerEmbedUrl ||
+      row?.provider_text_track_id !== providerTextTrackId ||
+      row?.captions_active !== true ||
+      row?.approved_by_user_key !== 'full_app_preview' ||
+      row?.published_by_user_key !== 'full_app_preview'
+    ) {
+      throw new Error(
+        'Existing factory media was preserved because it is not the reviewed synthetic playback.',
+      );
+    }
+    return {
+      schema: 'onetime.full_app_synthetic_playback_seed.v1' as const,
+      operation: 'seed_synthetic_playback' as const,
+      source_key: CONTENT_ITEM_KEY,
+      factory_state: 'published' as const,
+      captions_active: true as const,
+      synthetic_playback: true as const,
+      raw_provider_url_present: false as const,
+      credentials_changed: false as const,
+      external_effects: 0 as const,
+    };
+  });
 }
 
 async function seedExperiencePreviewScenario(
@@ -1477,6 +1735,25 @@ function assertStagingScope(config: AppConfig, requirePrivateDestinations: boole
     throw new Error(
       'Full app preview provisioning requires DELIVERY_ENVIRONMENT=isolated_staging.',
     );
+  }
+}
+
+function assertSyntheticPlaybackScope(
+  config: Pick<
+    AppConfig,
+    'accountKey' | 'productKey' | 'deliveryEnvironment' | 'oneTimeRuntimeEnvironment'
+  >,
+) {
+  if (
+    !['isolated_staging', 'test'].includes(config.deliveryEnvironment) ||
+    !['isolated_staging', 'test'].includes(config.oneTimeRuntimeEnvironment)
+  ) {
+    throw new Error(
+      'Full app synthetic playback is limited to explicit test or isolated staging scope.',
+    );
+  }
+  if (config.accountKey !== EXPECTED_ACCOUNT_KEY || config.productKey !== EXPECTED_PRODUCT_KEY) {
+    throw new Error('Full app synthetic playback requires the exact preview account and product.');
   }
 }
 

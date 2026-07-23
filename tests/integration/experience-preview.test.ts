@@ -19,12 +19,14 @@ import {
 import {
   rotateFullAppPreviewAdminCredential,
   runFullAppProvision,
+  seedFullAppSyntheticPlayback,
 } from '../../scripts/full-app-staging-live/provision-preview.ts';
 
 let pool: DbPool;
 let config: AppConfig;
 let distDir: string;
 let currentTime: Date;
+const COHEN_LESSON_TITLE = 'Berachos 2:1 — Finding the Right Time for Shema';
 
 beforeEach(async () => {
   currentTime = new Date('2026-07-22T12:00:00.000Z');
@@ -437,6 +439,290 @@ describe('OT-LAUNCH-01 Experience Preview security boundary', () => {
 });
 
 describe('OT-LAUNCH-01 exact projection truth', () => {
+  it('does not seed synthetic playback through the default provision path without authorization', async () => {
+    const provisioned = await runFullAppProvision({
+      pool,
+      config,
+      publicBaseUrl: config.publicBaseUrl,
+      writePrivateHandoff: false,
+      requirePrivateDestinations: false,
+      now: currentTime,
+    });
+    expect(provisioned.vimeo_demo_lesson_ready).toBe(false);
+    const factory = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.learning_delivery_content_factory_items
+        WHERE account_key = $1
+          AND product_key = $2
+          AND source_key = 'full_app_demo_mishnayos_video'`,
+      [config.accountKey, config.productKey],
+    );
+    expect(factory.rows[0]?.count).toBe(0);
+  });
+
+  it('serves the exact Cohen synthetic lesson only in reviewed staging and remains idempotent', async () => {
+    await seedExactScenario();
+    await pool.query(
+      `DELETE FROM onetime.learning_delivery_content_factory_items
+        WHERE account_key = $1
+          AND product_key = $2
+          AND source_key = 'full_app_demo_mishnayos_video'`,
+      [config.accountKey, config.productKey],
+    );
+    const absentBeforeSeed = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.learning_delivery_content_factory_items
+        WHERE source_key = 'full_app_demo_mishnayos_video'`,
+    );
+    expect(absentBeforeSeed.rows[0]?.count).toBe(0);
+    const outboxBefore = await pool.query(
+      `SELECT count(*)::int AS count FROM onetime.outbox_events`,
+    );
+    const first = await seedFullAppSyntheticPlayback({
+      pool,
+      config,
+      authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+      now: currentTime,
+    });
+    const persistedAfterFirst = await pool.query(
+      `SELECT draft_json, approved_at, published_at, updated_at
+         FROM onetime.learning_delivery_content_factory_items
+        WHERE source_key = 'full_app_demo_mishnayos_video'`,
+    );
+    const second = await seedFullAppSyntheticPlayback({
+      pool,
+      config,
+      authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+      now: new Date('2026-07-23T12:00:00.000Z'),
+    });
+    const persistedAfterReplay = await pool.query(
+      `SELECT draft_json, approved_at, published_at, updated_at
+         FROM onetime.learning_delivery_content_factory_items
+        WHERE source_key = 'full_app_demo_mishnayos_video'`,
+    );
+    expect(first).toEqual(second);
+    expect(persistedAfterReplay.rows).toEqual(persistedAfterFirst.rows);
+    expect(first).toMatchObject({
+      source_key: 'full_app_demo_mishnayos_video',
+      factory_state: 'published',
+      captions_active: true,
+      synthetic_playback: true,
+      raw_provider_url_present: false,
+      credentials_changed: false,
+      external_effects: 0,
+    });
+    expect(JSON.stringify(first)).not.toMatch(/https?:\/\/|vimeo|password|token|secret/i);
+
+    const seededRows = await pool.query(
+      `SELECT
+         (SELECT count(*)::int
+            FROM onetime.learning_delivery_content_factory_items
+           WHERE source_key = 'full_app_demo_mishnayos_video') AS factory_count,
+         (SELECT count(*)::int
+            FROM onetime.content_revisions
+           WHERE content_item_key = 'full_app_demo_mishnayos_video') AS revision_count,
+         (SELECT count(*)::int
+            FROM onetime.content_item_entitlements
+           WHERE content_item_key = 'full_app_demo_mishnayos_video') AS entitlement_count`,
+    );
+    expect({
+      factory_count: Number(seededRows.rows[0]?.factory_count),
+      revision_count: Number(seededRows.rows[0]?.revision_count),
+      entitlement_count: Number(seededRows.rows[0]?.entitlement_count),
+    }).toEqual({ factory_count: 1, revision_count: 1, entitlement_count: 1 });
+    const outboxAfter = await pool.query(
+      `SELECT count(*)::int AS count FROM onetime.outbox_events`,
+    );
+    expect(outboxAfter.rows[0]?.count).toBe(outboxBefore.rows[0]?.count);
+
+    const student = await seededStudentSession('full_app_preview_student_1');
+    const unrelated = await seedUnrelatedStudentSession();
+    const server = await previewServer();
+    try {
+      const open = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/content/full_app_demo_mishnayos_video/open`,
+        { headers: { cookie: student.cookie } },
+      );
+      const openBody = await open.text();
+      expect(open.status, openBody).toBe(200);
+      expect(JSON.parse(openBody)).toMatchObject({
+        success: true,
+        data: {
+          label: 'Open approved class video',
+          href: '/app/learning/items/full_app_demo_mishnayos_video',
+          launch_token_ref: null,
+        },
+      });
+      expect(openBody).not.toMatch(/https?:\/\/|synthetic_demo_no_provider_resource/i);
+
+      const player = await fetch(
+        `${server.baseUrl}/app/learning/items/full_app_demo_mishnayos_video`,
+        { headers: { cookie: student.cookie } },
+      );
+      const playerHtml = await player.text();
+      expect(player.status, playerHtml).toBe(200);
+      expect(playerHtml).toContain('Protected synthetic demo lesson');
+      expect(playerHtml).toContain(COHEN_LESSON_TITLE);
+      expect(playerHtml).toContain('/api/v1/content/factory/full_app_demo_mishnayos_video/embed');
+      expect(playerHtml).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_demo_no_provider/i);
+
+      const embed = await fetch(
+        `${server.baseUrl}/api/v1/content/factory/full_app_demo_mishnayos_video/embed`,
+        { headers: { cookie: student.cookie }, redirect: 'manual' },
+      );
+      const embedHtml = await embed.text();
+      expect(embed.status, embedHtml).toBe(200);
+      expect(embed.headers.get('location')).toBeNull();
+      expect(embedHtml).toContain('Synthetic classroom preview');
+      expect(embedHtml).toContain('evening Shema period begins');
+      expect(embedHtml).not.toContain('returning a lost object');
+      expect(embedHtml).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_demo_no_provider/i);
+
+      const unrelatedOpen = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/content/full_app_demo_mishnayos_video/open`,
+        { headers: { cookie: unrelated.cookie } },
+      );
+      const unrelatedBody = await unrelatedOpen.text();
+      expect(unrelatedOpen.status, unrelatedBody).toBe(404);
+      expect(unrelatedBody).not.toMatch(/https?:\/\/|vimeo|provider_video/i);
+      const unrelatedPlayer = await fetch(
+        `${server.baseUrl}/app/learning/items/full_app_demo_mishnayos_video`,
+        { headers: { cookie: unrelated.cookie }, redirect: 'manual' },
+      );
+      expect(unrelatedPlayer.status).toBe(409);
+      expect(await unrelatedPlayer.text()).not.toMatch(/https?:\/\/|vimeo|provider_video/i);
+    } finally {
+      await server.close();
+    }
+
+    const production = loadConfig({
+      ...baseEnvironment(),
+      DELIVERY_ENVIRONMENT: 'production',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+      ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: 'false',
+      LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'false',
+    });
+    await expect(
+      seedFullAppSyntheticPlayback({
+        pool,
+        config: production,
+        authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+        now: currentTime,
+      }),
+    ).rejects.toThrow('limited to explicit test or isolated staging');
+    const mixedClassification = loadConfig({
+      ...baseEnvironment(),
+      DELIVERY_ENVIRONMENT: 'isolated_staging',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+    });
+    await expect(
+      seedFullAppSyntheticPlayback({
+        pool,
+        config: mixedClassification,
+        authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+        now: currentTime,
+      }),
+    ).rejects.toThrow('limited to explicit test or isolated staging');
+    const wrongAccount = previewConfig({
+      ONE_TIME_ACCOUNT_KEY: 'another_staging_account',
+    });
+    await expect(
+      seedFullAppSyntheticPlayback({
+        pool,
+        config: wrongAccount,
+        authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+        now: currentTime,
+      }),
+    ).rejects.toThrow('requires the exact preview account and product');
+    const wrongProduct = previewConfig({
+      ONE_TIME_PRODUCT_KEY: 'another_staging_product',
+    });
+    await expect(
+      seedFullAppSyntheticPlayback({
+        pool,
+        config: wrongProduct,
+        authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+        now: currentTime,
+      }),
+    ).rejects.toThrow('requires the exact preview account and product');
+    await expect(
+      seedFullAppSyntheticPlayback({
+        pool,
+        config,
+        authorizationPhrase: 'NOT AUTHORIZED',
+        now: currentTime,
+      }),
+    ).rejects.toThrow('requires explicit staging authorization');
+    const productionServer = await listenForTest(
+      createApp({ config: production, pool, distDir, clock: () => currentTime }),
+    );
+    try {
+      const productionOpen = await fetch(
+        `${productionServer.baseUrl}/api/v1/portals/student/content/full_app_demo_mishnayos_video/open`,
+        { headers: { cookie: student.cookie } },
+      );
+      const productionOpenBody = await productionOpen.text();
+      expect(productionOpen.status, productionOpenBody).toBe(200);
+      expect(JSON.parse(productionOpenBody)).toMatchObject({
+        data: {
+          label: 'Content provider unavailable',
+          href: null,
+        },
+      });
+      expect(productionOpenBody).not.toMatch(/https?:\/\/|vimeo|provider_video/i);
+      const productionPlayer = await fetch(
+        `${productionServer.baseUrl}/app/learning/items/full_app_demo_mishnayos_video`,
+        { headers: { cookie: student.cookie }, redirect: 'manual' },
+      );
+      expect(productionPlayer.status).toBe(409);
+      expect(await productionPlayer.text()).not.toMatch(/https?:\/\/|vimeo|provider_video/i);
+    } finally {
+      await productionServer.close();
+    }
+  });
+
+  it('never overwrites an existing real or independently processed factory row', async () => {
+    await seedExactScenario();
+    await pool.query(
+      `UPDATE onetime.learning_delivery_content_factory_items
+          SET source_ref_digest = $1,
+              source_sha256 = $2,
+              transcription_model = 'whisper-1',
+              provider_video_id = 'existing_private_provider_video',
+              provider_embed_url = 'https://player.vimeo.com/video/123456789',
+              provider_text_track_id = 'existing_private_caption_track',
+              approved_by_user_key = 'existing_admin',
+              published_by_user_key = 'existing_admin'
+        WHERE account_key = $3
+          AND product_key = $4
+          AND source_key = 'full_app_demo_mishnayos_video'`,
+      ['b'.repeat(64), 'c'.repeat(64), config.accountKey, config.productKey],
+    );
+    const before = await pool.query(
+      `SELECT source_ref_digest, source_sha256, transcription_model, provider_video_id,
+              provider_embed_url, provider_text_track_id, approved_by_user_key,
+              published_by_user_key
+         FROM onetime.learning_delivery_content_factory_items
+        WHERE source_key = 'full_app_demo_mishnayos_video'`,
+    );
+    await expect(
+      seedFullAppSyntheticPlayback({
+        pool,
+        config,
+        authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+        now: currentTime,
+      }),
+    ).rejects.toThrow('Existing factory media was preserved');
+    const after = await pool.query(
+      `SELECT source_ref_digest, source_sha256, transcription_model, provider_video_id,
+              provider_embed_url, provider_text_track_id, approved_by_user_key,
+              published_by_user_key
+         FROM onetime.learning_delivery_content_factory_items
+        WHERE source_key = 'full_app_demo_mishnayos_video'`,
+    );
+    expect(after.rows).toEqual(before.rows);
+  });
+
   it('binds only the exact fictional occurrence even when another ready occurrence exists', async () => {
     await seedExactScenario();
     const scenario = await pool.query(
@@ -719,6 +1005,12 @@ async function seedExactScenario() {
     requirePrivateDestinations: false,
     now: currentTime,
   });
+  await seedFullAppSyntheticPlayback({
+    pool,
+    config,
+    authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
+    now: currentTime,
+  });
 }
 
 async function createUserSession(
@@ -784,6 +1076,78 @@ async function seedActiveParentAccess(parentUserKey: string) {
        'experience-preview-current-access-v1','preview_parent_access_seed')`,
     [config.accountKey, config.productKey, 'e'.repeat(64)],
   );
+}
+
+async function seededStudentSession(learnerKey: string) {
+  const result = await pool.query(
+    `SELECT student_user_ref
+       FROM onetime.portal_student_access_state
+      WHERE account_key = $1
+        AND product_key = $2
+        AND learner_key = $3
+        AND status = 'active'
+      LIMIT 1`,
+    [config.accountKey, config.productKey, learnerKey],
+  );
+  const userKey = String(result.rows[0]?.student_user_ref ?? '');
+  const user = await getSessionUserByKey({ pool, config, userKey });
+  if (!user) throw new Error(`missing seeded student for ${learnerKey}`);
+  const session = await createSession({ pool, config, user, assuranceMethod: 'password' });
+  return { cookie: `otcrm_session=${session.session_token}` };
+}
+
+async function seedUnrelatedStudentSession() {
+  const userKey = await createAccountUser({
+    pool,
+    config,
+    email: 'unrelated-playback-student@example.test',
+    password: 'UnrelatedPlaybackStudent!234',
+    displayName: 'Unrelated playback student',
+    role: 'student',
+  });
+  await pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name, status)
+     VALUES ('unrelated_playback_household',$1,$2,'Unrelated playback household','active')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_learners
+       (learner_key, account_key, product_key, household_key, display_name, learner_status)
+     VALUES ('unrelated_playback_learner',$1,$2,'unrelated_playback_household',
+       'Unrelated playback learner','active')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_student_access_state
+       (access_state_key, account_key, product_key, household_key, learner_key,
+        student_user_ref, status, credential_status)
+     VALUES ('unrelated_playback_access',$1,$2,'unrelated_playback_household',
+       'unrelated_playback_learner',$3,'active','parent_managed')`,
+    [config.accountKey, config.productKey, userKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_learner_identity_links
+       (link_key, account_key, product_key, household_key, learner_key, user_key, link_state)
+     VALUES ('unrelated_playback_link',$1,$2,'unrelated_playback_household',
+       'unrelated_playback_learner',$3,'active')`,
+    [config.accountKey, config.productKey, userKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_access_projections
+       (access_key, account_key, product_key, household_key, state, source_kind,
+        effective_at, expires_at, opaque_source_reference, source_revision,
+        source_updated_at, source_request_hash, policy_version, last_event_key)
+     VALUES ('unrelated_playback_current_access',$1,$2,'unrelated_playback_household',
+       'active','free_pilot','2026-01-01T00:00:00.000Z','2027-01-01T00:00:00.000Z',
+       'unrelated_playback_pilot',1,'2026-01-01T00:00:01.000Z',$3,
+       'synthetic-playback-test-v1','unrelated_playback_access_seed')`,
+    [config.accountKey, config.productKey, 'a'.repeat(64)],
+  );
+  const user = await getSessionUserByKey({ pool, config, userKey });
+  if (!user) throw new Error('missing unrelated playback student');
+  const session = await createSession({ pool, config, user, assuranceMethod: 'password' });
+  return { cookie: `otcrm_session=${session.session_token}` };
 }
 
 function itemState(
