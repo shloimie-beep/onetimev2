@@ -1,4 +1,4 @@
 interface:
   display_name: 'One Time Goal Executor'
   short_description: 'Execute one Git-controlled goal track with evidence'
-  default_prompt: 'Use $one-time-goal-executor to verify and execute one conductor-assigned track from the current One Time goal, preserve the canonical Git control model, close provider or visual work through objective readback, and return a sanitized handoff.'
+  default_prompt: 'Use $one-time-goal-executor to verify and execute one conductor-assigned track from the current One Time goal, preserve the canonical Git control model, close provider or visual work through objective readback, derive any operator progress summary from BOARD acceptance IDs, and return a sanitized handoff.'

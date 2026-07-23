@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T09:38:15Z
+updated_at: 2026-07-23T10:32:47Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -14,7 +14,7 @@ status_definitions:
 
 outcome:
   status: active
-  target: Production-believable persistent staging with complete operator preview and coherent fictional scenario.
+  target: Controlled live production pilot with real operator access, free pilot enrollment, approved playback, real Zoom proof, and one Board-derived launch summary.
   production_changed: YES_TRANSIENT_RESTORED
   production_impact: 'BNA production was transiently changed in error, restored, and independently evidenced at canonical master cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c. The separately authorized narrow One Time Tisha public landing promotion completed at PR #106 only; no broader One Time production app/provider mutation occurred.'
   authorized_production_promotions:
@@ -23,7 +23,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'PR #97 exact accepted product source 99c60d3aed91ea42fb9d18d819093c95efe17e3f completes the focused Parent/Student workspace on top of integrated PR #105 and PR #108, and eliminates mixed stale app bundles through no-store authenticated HTML, commit-versioned entry URLs, content-hashed shared chunks, and revalidated mutable assets. The latest verified evidence-only Railway source is 4817472656b86fd9bf095399b0b3aa50e3e9cea2: web deployment de6823df-7de0-4b97-b1fe-eeed138d324e and worker deployment f469e067-b8ce-4187-8ed9-11d3a72092d6 are exact-source SUCCESS. That source changes only Board/pointer evidence on top of the accepted product, so the product label remains full-app-staging-live-99c60d3; /health and /ready remain healthy and schema remains 2220_tisha_bav_event_email_permission. Protected fictional Parent and Student sessions previously re-read the complete role category navigation plus focused workspaces without cross-role controls, and the rotated protected fictional handoff remains private. HighLevel event/actions remain disabled with budget zero and real Zoom remains provider-off. In the separate BNA PR #141 isolated preview, verified runtime source b8bcfb01e735568a8bf13832ff74abe01cbb2cc1 has private PostgreSQL durability plus a signed single-consumer Telegram webhook; one operator-private synthetic status canary and durable replay rejection passed, while customer messages and GHL mutations remained zero. No GHL/Zoom/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred in this follow-up. This Board successor records evidence only and does not redefine either verified runtime source.'
+  current_summary: 'The operator has moved OT-LAUNCH-01 from a staging-only objective to a controlled free production pilot. GHL remains the payment-history and payment-operations authority; One Time will project only access state and may grant an explicit free-pilot entitlement. Starting remote PR #97 head de2d0f89b1e2b73de035a80607429dacdf88e001 is clean and source-stable. The accepted full-app product remains 99c60d3aed91ea42fb9d18d819093c95efe17e3f with healthy persistent staging, focused Parent/Student workspaces, protected role previews, synthetic approved content, integrated fail-closed PR #108 HighLevel contracts, and integrated fake/provider-off PR #105 Zoom. Newly active work is the Board-derived Admin launch summary, main landing repair, reviewed Zoom staging canary preparation, and production release-candidate convergence. No new provider mutation, customer message, payment change, production change, or protected-value disclosure is claimed by this update.'
   external_action_count: 8
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -43,13 +43,13 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 4817472656b86fd9bf095399b0b3aa50e3e9cea2
-    resolution: 'Exact product acceptance remains 99c60d3aed91ea42fb9d18d819093c95efe17e3f. Last verified evidence-only Railway source 4817472656b86fd9bf095399b0b3aa50e3e9cea2 changes only BOARD.yaml and the generated pointer; web deployment de6823df-7de0-4b97-b1fe-eeed138d324e and worker deployment f469e067-b8ce-4187-8ed9-11d3a72092d6 are exact-source SUCCESS. The product label remains full-app-staging-live-99c60d3, /health and /ready are healthy, and latest schema is 2220_tisha_bav_event_email_permission. Later evidence-only Board successors do not invalidate this last verified runtime readback.'
+    last_verified_commit: de2d0f89b1e2b73de035a80607429dacdf88e001
+    resolution: 'Remote PR #97 head de2d0f89b1e2b73de035a80607429dacdf88e001 is the clean starting point for the controlled-live-pilot governance and implementation pass. It is an evidence-only descendant of accepted product source 99c60d3aed91ea42fb9d18d819093c95efe17e3f; product-runtime acceptance is not silently reassigned to the new uncommitted work.'
   system: One Time persistent staging
 
 tracks:
   - id: goal_system
-    status: done
+    status: active
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -67,9 +67,133 @@ tracks:
       - Fresh conductor review reconciled structured owners, accepted external heads, dependency-only states, production impact, and board-derived preview metadata.
       - Goal execution and RAMBLE now turn visual intent into route/breakpoint acceptance, current-page/screenshot inspection, obvious in-scope repair, retest, and deployed-URL proof; only real product decisions return to the operator.
       - Both unchanged repository skill packages retain their earlier independent official-validator pass. Modified goal, Board, and pointer files use repository-native YAML/JSON validation; no current PyYAML-dependent command is claimed as passed and no package was installed or vendored.
+      - 'The 2026-07-23 live-pilot intake records GHL-owned payment history, One Time access projection, the free-pilot target, authorized staging canaries, landing-helper removal, and a Board-derived operator summary without creating a second goal or status model.'
+      - 'The expanded 30-track Board, SPEC, ACCEPTANCE, DECISIONS, intake, skill metadata, and source-hashed pointer pass the repository-native goal validator. The bundled Python quick validator cannot import yaml; no dependency was installed and no official-Python pass is claimed for the changed skill.'
     blocker: null
-    remaining_work: null
-    next_action: Keep workflow-registry.yaml and BOARD.yaml as the only editable desired/current sources; do not infer empty archived/hidden scope or silently quarantine/delete either visible unknown asset.
+    remaining_work: Validate the expanded goal/spec/acceptance/decisions, generate the exact pointer, and close the governance checkpoint before a release or provider job consumes it.
+    next_action: Run repository-native goal validation and the repository skill validator on the changed executor skill, then commit one scoped governance checkpoint.
+
+  - id: operator_launch_dashboard
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-OPERATOR-LAUNCH-DASHBOARD
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: One Time Admin launch status
+    write_scope: Board-derived generated launch projection, Admin route/navigation/card, responsive UI, source-hash validation, and focused tests
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/operator-launch-dashboard--assigned-task.json
+    dependencies: [goal_system, admin_experience_preview]
+    acceptance_ids: [OPS-LAUNCH-001]
+    evidence:
+      - The operator explicitly requested one clickable summary of what just changed, how close the current milestone is, what works, and the next task.
+      - The goal executor contract now forbids hand-maintained percentage/status and requires a source-hashed BOARD acceptance projection.
+    blocker: null
+    remaining_work: Implement the generated projection and Admin-only desktop/mobile surface without exposing provider values, credentials, private destinations, customer data, or diagnostic controls.
+    next_action: Inspect existing Admin Dashboard/navigation and build the smallest canonical brand-system route and generated-data contract.
+
+  - id: main_landing_polish
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-MAIN-LANDING-POLISH
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: One Time main public landing
+    write_scope: Main landing static content/build, landing-scoped public CSS and client enhancement, approved asset derivative, and focused breakpoint/accessibility/performance tests
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/main-landing-polish--assigned-task.json
+    dependencies: [goal_system]
+    acceptance_ids: [LANDING-001, LANDING-002]
+    evidence:
+      - Read-only live/source audit confirms the reversed hero hierarchy, fixed build-time ticker, auto-opening offline WhatsApp helper, letterboxed Retention image, manual-only gallery, small translucent publication cards, old section order, nonsquare Rabbi media, and cyan landing eyebrow.
+      - Built public CSS is 34,586 bytes against the unchanged 35,000-byte gate; removing the assistant and unused landing rules must fund the scoped repair.
+    blocker: null
+    remaining_work: Implement the exact landing hierarchy and responsive behavior, update focused assertions, pass size/performance/accessibility gates, and deploy to persistent staging before any narrow production promotion.
+    next_action: Apply the landing-only repair with no real form submission, GHL mutation, provider action, or Tisha regression.
+
+  - id: ghl_access_entitlement_projection
+    status: unclaimed
+    owner:
+      task_id: null
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: GHL payment state to One Time access projection
+    write_scope: GHL-event-derived access state projection, explicit free-pilot entitlement, audit/replay/denial tests, and no payment ledger
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-access-entitlement-projection--queued.json
+    dependencies: [ghl_event_dispatcher, goal_system]
+    acceptance_ids: [ACCESS-001]
+    evidence:
+      - The operator explicitly made GHL authoritative for payment history and limited One Time to deciding who currently has application access.
+      - The accepted HighLevel application contracts provide the one canonical outbox-backed dispatcher and fail-closed provider modes needed by this projection.
+    blocker: null
+    remaining_work: Reconcile existing entitlement schema/contracts, implement only missing access projection and free-pilot semantics, and prove paid-state events cannot create a duplicate payment history.
+    next_action: Assign after the governance checkpoint; keep GHL payment-provider writes outside this application task.
+
+  - id: public_lead_capture_bot
+    status: unclaimed
+    owner:
+      task_id: null
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: GHL website lead assistant
+    write_scope: 'Future GHL website-chat lead contract and landing integration; no placeholder helper, WhatsApp auto-open, Telegram sales routing, or provider mutation in PR #97'
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/public-lead-capture-bot--queued.json
+    dependencies: [main_landing_polish, ghl_organization]
+    acceptance_ids: [LEAD-001]
+    evidence:
+      - The operator requested removal of the current offline WhatsApp helper and a later real browser lead-capture assistant.
+      - The canonical communications boundary keeps public lead/support conversations in GHL and Telegram private to Rabbi Torah-question/content work.
+    blocker: null
+    remaining_work: After GHL billing/access is available, review one exact website-chat bot job with consent, dedupe, suppression, provider-off fallback, and controlled lead readback.
+    next_action: Remove the placeholder helper now; do not replace it with Telegram or a fake connected state.
+
+  - id: voice_lead_bot
+    status: unclaimed
+    owner:
+      task_id: null
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: Future GHL voice lead channel
+    write_scope: Deferred voice-bot product contract only; no telephony provisioning or customer call in the current milestone
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/voice-lead-bot--queued.json
+    dependencies: [public_lead_capture_bot]
+    acceptance_ids: []
+    evidence:
+      - The operator named voice as valuable but explicitly not immediate.
+    blocker: null
+    remaining_work: Define provider, consent/recording disclosure, business hours, escalation, transcript ownership, test number, and bounded operator canary after website lead capture is proven.
+    next_action: Keep unclaimed until the controlled production pilot and public website assistant are accepted.
+
+  - id: production_pilot
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: Controlled One Time production release candidate
+    write_scope: Read-only production/staging comparison, semantic release candidate, migration/backup/rollback proof, real-role pilot acceptance plan, and exact production-promotion handoff; no direct production mutation from general conductor work
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/production-pilot--persistent-staging-conductor.json
+    dependencies:
+      [
+        goal_system,
+        main_landing_polish,
+        operator_launch_dashboard,
+        parent_student_portal_information_architecture,
+        persistent_staging,
+        ghl_access_entitlement_projection,
+      ]
+    acceptance_ids: [PROD-PILOT-001]
+    evidence:
+      - The operator explicitly authorized a controlled free live pilot and wants real Admin/Parent/Student use, approved playback on another device, and Zoom testing before broader launch.
+      - Current production and full-app staging are divergent release lines, so an exact semantic convergence candidate is required; mechanical branch replacement is forbidden.
+      - Repository safety keeps production promotion in its own reviewed narrow job after candidate, backup, rollback, and exact role acceptance are complete.
+    blocker: null
+    remaining_work: Build and verify the immutable release candidate, explicit free-pilot access contract, backup/restore and rollback evidence, real Administrator activation plan, separate-device role proof, and exact promotion job.
+    next_action: Finish the governance, landing, launch-summary, and access-projection staging slices while continuously reconciling the production release diff.
 
   - id: admin_experience_preview
     status: done
@@ -399,12 +523,12 @@ tracks:
     next_action: Preserve immutable 2214 and keep persistent-staging deployment evidence in the persistent_staging track.
 
   - id: media_external_canary
-    status: needs_operator_decision
+    status: unclaimed
     owner:
-      task_id: VIDEO-TO-STUDENT-CONTENT-FACTORY
+      task_id: null
       repository: shloimie-beep/onetimev2
-      branch: codex/vimeo-drive-content-factory
-      pr: 104
+      branch: null
+      pr: null
       system: Vimeo external provider
     write_scope: One authorized private Vimeo canary and protected playback readback
     handoff_path: ops/codex-runs/OT-LAUNCH-01/VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md
@@ -412,11 +536,10 @@ tracks:
     acceptance_ids: [CONTENT-002]
     evidence:
       - Staging content-factory work is ready independently of external approval.
-    blocker:
-      code: OPERATOR_OWNED_MEDIA_CANARY_AUTHORIZATION_REQUIRED
-      reason: One operator-owned OpenAI/private-Vimeo canary requires a separate explicit operator decision.
-    remaining_work: External canary authorization/readback.
-    next_action: Preserve truthful provider-off UI until the operator separately authorizes the canary.
+      - The operator explicitly authorized one bounded operator-owned OpenAI/private-Vimeo staging canary on 2026-07-23; authority is no longer the blocker.
+    blocker: null
+    remaining_work: Assign a reviewed canary job after the durable occurrence-scoped pipeline is ready, then prove private provider state and protected playback without exposing a provider URL.
+    next_action: Keep truthful provider-off UI until the reviewed canary job is assigned and its protected prerequisites are validated.
 
   - id: zoom_meeting_sdk
     status: provider_off
@@ -475,14 +598,14 @@ tracks:
     next_action: Keep provider controls unavailable and never infer host control from partial SDK configuration.
 
   - id: zoom_real_control_operator_change_set
-    status: unclaimed
+    status: active
     owner:
-      task_id: OT-LAUNCH-01-ZOOM-REAL-CONTROL-OPERATOR-DECISION
+      task_id: OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP
       repository: shloimie-beep/onetimev2
-      branch: null
-      pr: null
-      system: Zoom General app, persistent-staging origin, and exact human canary
-    write_scope: 'One future governed change set only: revoke/rotate the exposed protected staging class target, allowlist the exact persistent-staging origin, install canonical SDK plus six S2S/host/meeting prerequisites, authorize one bounded human canary, read back, and return every real/canary gate off.'
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: Reviewed Zoom provider-action job and persistent-staging canary preparation
+    write_scope: 'One governed staging-only job: validate protected prerequisites, revoke/rotate the exposed protected staging class target, allowlist the exact persistent-staging origin, install canonical SDK plus six S2S/host/meeting prerequisites, run one bounded human canary, sanitize readback, and return every real/canary gate off.'
     handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
     dependencies: []
     acceptance_ids: [ZOOM-SDK-001, ZOOM-S2S-001]
@@ -492,8 +615,8 @@ tracks:
       - 'The previously rendered protected staging class target must be revoked or rotated before any later real-provider test. Zoom reCAPTCHA/rate limiting still requires a separately authorized human-cleared host-and-Student canary.'
       - 'The operator explicitly authorized the bounded staging-only configuration and human canary on 2026-07-23; this removes the authority blocker but does not supply or validate protected prerequisites.'
     blocker: null
-    remaining_work: 'After the active portal checkpoint, execute the atomic staging-only change set, prove SDK join plus exact fictional host mute/unmute/spotlight and replay/cross-student denial, then disable real/canary gates and preserve sanitized readback.'
-    next_action: 'Remain unclaimed until the conductor closes the active portal track; then validate protected prerequisites and continue until the exact external or technical blocker.'
+    remaining_work: 'Write and validate the exact provider-action job, confirm the private prerequisite sources without printing values, then execute through the separately scoped provider task; prove SDK join plus exact fictional host mute/unmute/spotlight and replay/cross-student denial before returning real/canary gates off.'
+    next_action: 'Prepare the reviewed staging-only job now; stop only at a missing protected value, Zoom login/reCAPTCHA, or the required human host/Student participation.'
 
   - id: bna_foundation
     status: done
@@ -601,8 +724,8 @@ tracks:
       - Current publication targets all active learners rather than one selected occurrence, and durable Railway storage/redeploy survival is unproven.
       - The queued contract requires occurrence selection, protected opaque storage, idempotent restart-safe processing through Admin review, occurrence-only publish/unpublish with sibling denial, a fully usable synthetic provider-off staging path, and production unchanged.
     blocker: null
-    remaining_work: 'Start only after PR #97 governance and one independently accepted PR #108 head converge; the real OpenAI/private-Vimeo canary remains separately approval-gated.'
-    next_action: 'Keep unclaimed in this conductor pass; the conductor may assign it only after PR #108 integration acceptance.'
+    remaining_work: 'PR #108 is integrated and the operator authorized the bounded media canary. Assign the durable upload/storage/worker/occurrence-publication implementation after the current governance checkpoint.'
+    next_action: 'Assign one implementation task for durable synthetic acceptance first; execute the separately reviewed OpenAI/private-Vimeo canary only after retry/restart and occurrence isolation pass.'
 
   - id: persistent_staging
     status: done

@@ -17,6 +17,10 @@ criteria:
     track: goal_system
     observable: A visual request records exact routes and breakpoint checks, inspects current screenshots/page state, automatically repairs obvious in-scope violations, retests each breakpoint, and verifies the deployed URL; only a real product choice is returned to the operator.
     proof: [ramble_intake, browser_desktop, browser_mobile, deployed_url_readback]
+  - id: OPS-LAUNCH-001
+    track: operator_launch_dashboard
+    observable: Admin opens one visible Launch Status surface generated from the exact BOARD source hash and sees the named current milestone, objective completed/total acceptance count and percentage, latest sanitized change, what works now, exact blockers, safe role/route links, and one next executable task; no displayed value is separately editable status.
+    proof: [repository_diff, source_hash_validation, browser_desktop, browser_mobile]
   - id: GHL-001
     track: ghl_organization
     observable: The 19 canonical desired automation assets remain separately accounted from observed drift; OT-C01 workflow wrapper f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae and Email Marketing campaign 6a5f750b557817806a14b19e have distinct exact kind/path/configuration/state evidence, neither is collapsed/activated/quarantined/deleted, and every additional visible asset is reported while unexposed archived/hidden-AI scope fails closed. OT-A1 and knowledge bases remain separate non-workflow assets.
@@ -81,6 +85,30 @@ criteria:
     track: telegram_customer_bridge
     observable: Private synthetic question reaches a GHL draft/readback through the canonical bridge; customer sends are still zero unless separately authorized.
     proof: [provider_readback, audit_readback, send_count]
+  - id: ACCESS-001
+    track: ghl_access_entitlement_projection
+    observable: GHL remains the only payment-history ledger while One Time idempotently projects exact account/product access state, effective/expiry timestamps, source reference, and revocation reason; a free-pilot entitlement grants access without a fabricated payment, and missing/expired/revoked/ambiguous state denies Parent and Student access.
+    proof:
+      [
+        domain_contract_test,
+        integration_test,
+        database_readback,
+        replay_test,
+        authorization_negative_tests,
+      ]
+  - id: LEAD-001
+    track: public_lead_capture_bot
+    observable: The landing page contains no placeholder WhatsApp/offline helper; the future provider-backed website assistant creates only a consented deduplicated GHL lead/conversation, remains provider_off until configured, and routes only explicitly classified substantive Torah questions to the private Rabbi Telegram queue.
+    proof: [browser_desktop, browser_mobile, integration_test, provider_readback]
+  - id: LANDING-001
+    track: main_landing_polish
+    observable: The main landing hero, in-flow Jerusalem countdown, CTA, section order, equal outcome media, autoplay teaching gallery, full-width white publication cards, square Rabbi media, and yellow/black/white accents match the operator specification at 360x800, 390x844, 768x1024, 1366x768, and 1440x900 with no placeholder assistant or horizontal overflow.
+    proof: [browser_mobile, browser_desktop, screenshot_review, asset_http_readback]
+  - id: LANDING-002
+    track: main_landing_polish
+    observable: Countdown rollover/expiry, no-JS content visibility, reduced motion, carousel pause conditions, accessibility, LCP/CLS, CSS and public-JS budgets, bundle separation, signup/login links, consent, and zero real submissions/provider effects all pass without weakening a gate.
+    proof:
+      [unit_test, accessibility_scan, performance_test, bundle_budget, intercepted_browser_test]
   - id: EXP-001
     track: admin_experience_preview
     observable: Owner/Admin Dashboard shows the explicit card/CTA Preview Parent & Student portals and opens /app/experience-preview; the same capability remains discoverable through the mobile hamburger, while non-admin and production see no card/nav/dead link and the route fails closed in production.
@@ -144,7 +172,7 @@ criteria:
       [browser_mobile, browser_desktop, asset_http_readback, persistent_staging_url, production_url]
   - id: VIDEO-E2E-001
     track: VIDEO-TO-CLASSROOM-E2E
-    observable: After PR #97 governance and accepted PR #108 convergence, Admin selects an exact class occurrence, uploads to durable opaque source storage, and an idempotent restart-safe worker reaches editable review without duplicate transcription/upload; publish/unpublish grants/revokes only occurrence-enrolled Parent/Student Classroom access and denies unrelated siblings, with a fully usable synthetic provider-off path and production unchanged.
+    observable: Admin selects an exact class occurrence, uploads to durable opaque source storage, and an idempotent restart-safe worker reaches editable review without duplicate transcription/upload; publish/unpublish grants/revokes only occurrence-enrolled Parent/Student Classroom access and denies unrelated siblings, with a fully usable synthetic provider-off path and one bounded operator-owned external canary.
     proof:
       [
         integration_test,
@@ -153,4 +181,17 @@ criteria:
         browser_desktop,
         browser_mobile,
         sibling_isolation_test,
+      ]
+  - id: PROD-PILOT-001
+    track: production_pilot
+    observable: One immutable semantic production candidate proves exact web/worker source, forward-only migrations/checksums, backup/restore and rollback, real operator Administrator access, one operator-owned Parent and Student free-pilot entitlement, approved content playback on another device, provider fail-closed defaults, and live health/readiness without broad customer enrollment or messaging.
+    proof:
+      [
+        release_diff_review,
+        migration_proof,
+        backup_restore_readback,
+        version_health_ready,
+        browser_desktop,
+        browser_mobile,
+        separate_device_role_proof,
       ]

@@ -3,19 +3,22 @@ goal_id: OT-LAUNCH-01
 source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
 runtime:
   persistent_staging: https://ot99-web-staging.up.railway.app
-  production_mutation_allowed: false
+  production_mutation_allowed: controlled_pilot_only
   classification:
     allowed_preview_values: [isolated_staging, test]
     enable_flag: ONE_TIME_EXPERIENCE_PREVIEW_ENABLED
     production_behavior: fail_closed_404
   production_rollout:
     policy: independently_accepted_slice_only
-    operator_authorized_at: 2026-07-23T08:06:52Z
+    operator_authorized_at: 2026-07-23T10:32:47Z
+    current_target: controlled_free_operator_pilot
     requirements:
       - Exact immutable staging head and deployed version agree.
       - Focused automated and desktop/mobile browser acceptance passes.
       - Rollback target and scope are explicit before promotion.
       - Promotion changes only the accepted slice and verifies the live route after deployment.
+      - The initial live cohort is operator-owned and free; broad enrollment remains closed.
+      - Real Administrator, Parent, Student, approved playback, and access-revocation journeys pass on separate devices.
     exclusions:
       - broad or customer provider sends
       - payment collection or price changes
@@ -23,7 +26,7 @@ runtime:
       - unrelated provider activation
       - DNS or domain changes
   provider_canary_authorization:
-    operator_authorized_at: 2026-07-23T08:06:52Z
+    operator_authorized_at: 2026-07-23T10:32:47Z
     allowed:
       - Zoom staging configuration plus one bounded human host-and-Student canary
       - BNA disposable preview database plus one private synthetic Telegram bridge canary
@@ -42,6 +45,9 @@ golden_paths:
       - Visual intent becomes route- and breakpoint-specific acceptance before implementation;
         the assigned executor inspects the current page/screenshots, fixes obvious in-scope violations,
         retests, and verifies the deployed URL without asking for non-decisions.
+      - The Admin launch summary is a source-hashed generated projection of BOARD acceptance IDs,
+        never editable status; it names the current milestone, objective percentage, exact blockers,
+        safe links, latest sanitized change, and one next executable task.
   ghl:
     requirements:
       - GitHub is the canonical desired-state/control view; registry/workflow-registry.yaml is the
@@ -147,6 +153,26 @@ golden_paths:
         canary contract all pass before readiness.
       - A private canary may create/read back a synthetic GHL question draft through the canonical bridge.
       - Customer sends stay off until a separate, explicit authorization.
+  payment_and_access:
+    requirements:
+      - GHL is the source of truth for payment transactions, invoices, subscription history,
+        refunds, and payment operations; One Time does not duplicate a payment ledger.
+      - >-
+        One Time stores only the account/product access projection required for authorization:
+        current state, effective and optional expiry timestamps, source reference, and revocation reason.
+      - A free pilot entitlement is explicit and cannot be misreported as a paid subscription.
+      - GHL payment-active, grace, canceled, refund, and chargeback events update the projection
+        only through the canonical outbox-backed dispatcher with dedupe, replay safety, and audit readback.
+      - Parent and Student authorization uses the One Time access projection and fails closed when
+        it is missing, expired, revoked, or ambiguous.
+  public_lead_capture:
+    requirements:
+      - The current landing WhatsApp/offline-readiness helper is absent from markup and runtime code.
+      - A future public assistant uses the canonical GHL website-chat/conversation contract with
+        consent, dedupe, suppression, and truthful provider-off states.
+      - Telegram is never the general public lead or support inbox; only an explicitly classified
+        substantive Torah question may enter the private Rabbi Telegram queue.
+      - Voice remains a separate deferred channel and cannot be implied ready by website-chat proof.
   operator_experience:
     requirements:
       - Admin navigation exposes Experience Preview only when its server capability is true.
@@ -165,6 +191,23 @@ golden_paths:
         At tablet/mobile widths the same categories remain discoverable through the application
         navigation and a compact horizontal category control; the focused body replaces rather than
         accumulates content, preserves native control semantics, and never introduces page overflow.
+      - >-
+        Admin has a visible Launch Status entry showing a Board-derived current milestone percentage,
+        what changed, what works, exact blockers, safe role/route links, and one next executable task.
+        The projection carries the BOARD source hash and contains no credentials, private destinations,
+        customer data, provider links, or diagnostic controls.
+  main_landing:
+    requirements:
+      - The main hero uses Worldwide Mishnah Learning / Live from Eretz Yisrael as the primary title,
+        Give your son a love for learning Torah as the smaller supporting line, and one visible Sign Up Now CTA.
+      - Free until Rosh Hashanah appears as an in-flow header divider with a Jerusalem-date countdown
+        that updates in the browser and disappears at expiry; no fixed bottom ticker remains.
+      - Outcome cards have equal media frames, Retention uses a face-safe focal crop, and subtle
+        scroll reveal is no-JS and reduced-motion safe.
+      - Ready-to-Run precedes How It Works. Teaching photos autoplay with accessible pause conditions.
+        Publication logos use larger equal white cards across the available width without the old label.
+      - Rabbi media uses a square full-source treatment and landing accents are yellow, black, and white.
+        The wider authenticated-app token migration remains separately scoped.
   coherent_demo:
     requirements:
       - One fictional Cohen household supplies one Administrator, one Parent, three separately
@@ -175,9 +218,7 @@ golden_paths:
       - Provider-dependent surfaces show provider_off or unavailable when exact gates/evidence are absent.
   video_to_classroom_e2e:
     requirements:
-      - >-
-        This queued implementation begins only after PR #97 governance and an independently accepted
-        PR #108 converge; it is not implemented in this conductor pass.
+      - PR #108 has converged; this implementation is eligible for conductor assignment.
       - Admin selects one canonical class occurrence and uploads one video to durable protected source
         storage that retains a non-secret opaque locator across restart/redeploy.
       - One idempotent worker advances probe -> conservative trim -> transcription -> captions ->
@@ -185,8 +226,23 @@ golden_paths:
         transcription or provider upload.
       - Admin can edit, approve, publish, and unpublish; only learners enrolled in the selected
         occurrence receive Classroom access, unrelated siblings are denied, and unpublish revokes access.
-      - The fully usable staging path remains synthetic/provider-off. One real OpenAI/private-Vimeo
-        canary stays behind the already-recorded exact approval phrase, and production remains unchanged.
+      - The fully usable staging path remains synthetic/provider-off. One bounded operator-owned
+        OpenAI/private-Vimeo canary is authorized, preserves protected values, and cannot broaden
+        publication or customer access.
+  production_pilot:
+    requirements:
+      - Create one semantic release candidate from the current production landing/hotfix line and
+        the accepted full-app staging line; never overwrite either side mechanically or ship stale assets.
+      - Prove exact migration/checksum inventory, production backup and restore path, rollback commit,
+        web/worker source agreement, and fail-closed provider defaults before promotion.
+      - Provision or safely activate the operator's real Administrator identity without committing or
+        rendering credentials, then verify Admin, Parent, Student, Classroom, content, and access revocation.
+      - Initial signup is free and operator-owned. It grants an explicit free-pilot entitlement and
+        never fabricates payment history or sends broad communications.
+      - Real Zoom production activation follows a successful staging canary and retains a narrow
+        occurrence/cohort gate and rollback.
+      - Broad customer enrollment remains closed until GHL consent/enrollment workflows and the
+        selected payment lifecycle are independently proven.
 
 security_invariants:
   - No real Parent or Student impersonation.

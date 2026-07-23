@@ -43,6 +43,16 @@ Require the closed loop: reviewed Git-authored job -> permitted browser change -
 
 For UI work, translate operator visual intent into exact route and breakpoint acceptance. Inspect current page state and screenshots first; repair obvious in-scope violations, retest every recorded breakpoint, and verify the deployed URL/head when deployment is assigned. Ask only for a genuine product choice, not routine implementation judgment.
 
+## Operator launch summary
+
+When a goal includes an operator-facing progress surface, derive it from `BOARD.yaml` and the acceptance IDs assigned to the current milestone. Never hand-maintain a percentage or copy mutable status into another model.
+
+- Report `what_changed`, `works_now`, `current_milestone`, `acceptance_complete`, `acceptance_total`, `blockers`, `safe_links`, and exactly one `next_executable_task`.
+- A percentage is `acceptance_complete / acceptance_total` for the named milestone, not an estimate of all future product work.
+- Every displayed blocker and next task links back to one BOARD track.
+- Generated JSON or application projections carry the BOARD source hash and generated timestamp and are read-only.
+- Do not expose secrets, credentials, private destinations, customer data, provider links, or internal diagnostic controls in the operator summary.
+
 ## Handoff contract
 
 Return machine-readable JSON containing:
