@@ -297,16 +297,14 @@ test('Tisha BAv keeps tablet and phone-landscape compositions centered and uncli
   }
 });
 
-test('Tisha BAv success panel reports an unconfirmed email handoff truthfully', async ({
-  page,
-}) => {
+test('Tisha BAv keeps the form open when email handoff is unconfirmed', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await interceptRegistration(page, {
     success: true,
     registration_key: 'registration-unconfirmed',
     confirmation_queued: false,
     message: {
-      body: 'Your spot is reserved, but event email delivery is not confirmed yet.',
+      body: 'We could not complete that registration. Please try again.',
     },
   });
   await page.goto('/tisha-bav?delivery=unconfirmed', { waitUntil: 'load' });
@@ -314,12 +312,10 @@ test('Tisha BAv success panel reports an unconfirmed email handoff truthfully', 
   await page.locator('input[name="email"]').fill('delivery-unconfirmed@example.test');
   await page.locator('form.event-form button[type="submit"]').click();
 
-  const successMessage = page.locator('[data-event-success-message]');
-  await expect(successMessage).toHaveText(
-    'Your spot is reserved, but event email delivery is not confirmed yet.',
-  );
-  await expect(successMessage).not.toHaveText(
-    "We'll email the private Zoom link and event details.",
+  await expect(page.locator('form.event-form')).toBeVisible();
+  await expect(page.locator('[data-event-success-panel]')).toBeHidden();
+  await expect(page.locator('[data-form-status]')).toHaveText(
+    'We could not complete that registration. Please try again.',
   );
 });
 
@@ -351,7 +347,7 @@ async function interceptRegistration(
     success: true,
     registration_key: 'registration-intercepted',
     confirmation_queued: true,
-    message: { body: "We'll email the private Zoom link and event details." },
+    message: { body: 'The link was sent to your email.' },
   },
 ) {
   const requests: RegistrationPayload[] = [];
@@ -808,10 +804,8 @@ async function assertSuccessShareState(page: Page, label: string) {
   const successPanel = page.locator('[data-event-success-panel]');
   await expect(successPanel.getByText('Registration complete')).toBeVisible({ timeout: 15_000 });
   await expect(successPanel.locator('h2[lang="he"]')).toHaveText(successHebrew);
-  await expect(successPanel.getByText('May we merit to see Jerusalem rebuilt.')).toBeVisible();
-  await expect(
-    successPanel.getByText("We'll email the private Zoom link and event details."),
-  ).toBeVisible();
+  await expect(successPanel.getByText('The link was sent to your email.')).toBeVisible();
+  await expect(successPanel).not.toContainText('May we merit to see Jerusalem rebuilt.');
   const whatsApp = dialog.getByRole('link', { name: 'Share on WhatsApp' });
   const email = dialog.getByRole('link', { name: 'Email a friend' });
   await expect(whatsApp, label).toBeVisible();
@@ -845,19 +839,35 @@ async function assertSuccessComposition(page: Page, label: string) {
   const shell = page.locator('.tisha-bav-page .event-register-shell');
   const copy = page.locator('[data-event-success-panel] .event-success-copy');
   const actions = page.locator('[data-event-success-panel] .event-share-actions');
+  const eyebrow = page.locator('[data-event-success-panel] .event-success-eyebrow');
+  const close = page.locator('[data-event-close-modal]');
   const shellBox = await shell.boundingBox();
   const copyBox = await copy.boundingBox();
   const actionsBox = await actions.boundingBox();
+  const eyebrowBox = await eyebrow.boundingBox();
+  const closeBox = await close.boundingBox();
   expect(shellBox, `${label} shell box`).not.toBeNull();
   expect(copyBox, `${label} copy box`).not.toBeNull();
   expect(actionsBox, `${label} actions box`).not.toBeNull();
-  if (!shellBox || !copyBox || !actionsBox) return;
-  expect(copyBox.y, `${label} copy starts in top zone`).toBeGreaterThanOrEqual(shellBox.y - 1);
-  expect(copyBox.y + copyBox.height, `${label} copy stays in top 40 percent`).toBeLessThanOrEqual(
-    shellBox.y + shellBox.height * 0.43,
+  expect(eyebrowBox, `${label} registration eyebrow box`).not.toBeNull();
+  expect(closeBox, `${label} close control box`).not.toBeNull();
+  if (!shellBox || !copyBox || !actionsBox || !eyebrowBox || !closeBox) return;
+  expect(eyebrowBox.x, `${label} registration eyebrow is not clipped`).toBeGreaterThanOrEqual(
+    shellBox.x,
   );
-  expect(actionsBox.y, `${label} share row stays in bottom 15 percent`).toBeGreaterThanOrEqual(
-    shellBox.y + shellBox.height * 0.82,
+  expect(
+    eyebrowBox.x + eyebrowBox.width,
+    `${label} registration eyebrow clears close control`,
+  ).toBeLessThanOrEqual(closeBox.x - 4);
+  expect(copyBox.y, `${label} copy starts in top zone`).toBeGreaterThanOrEqual(shellBox.y - 1);
+  expect(copyBox.y + copyBox.height, `${label} copy stays in top zone`).toBeLessThanOrEqual(
+    shellBox.y + shellBox.height * 0.4,
+  );
+  expect(actionsBox.y, `${label} share band stays near the bottom`).toBeGreaterThanOrEqual(
+    shellBox.y + shellBox.height * 0.76,
+  );
+  expect(actionsBox.height, `${label} share band is large enough`).toBeGreaterThanOrEqual(
+    shellBox.height * 0.12,
   );
   expect(actionsBox.y + actionsBox.height, `${label} share row inside image`).toBeLessThanOrEqual(
     shellBox.y + shellBox.height + 1,

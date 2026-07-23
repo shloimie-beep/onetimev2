@@ -35,8 +35,8 @@ export type TishaBavRegistrationSuccessResponse = {
   message: {
     heading: 'Thank you — your spot has been reserved.';
     body:
-      | "We'll send your Zoom link and event details by email."
-      | 'Your spot is reserved, but event email delivery is not confirmed yet.';
+      | 'The link was sent to your email.'
+      | 'We could not complete that registration. Please try again.';
     schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel';
   };
 };

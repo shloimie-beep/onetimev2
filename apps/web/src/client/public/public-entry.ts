@@ -368,7 +368,6 @@ if (eventRegistrationForm) {
   const status = eventRegistrationForm.querySelector<HTMLElement>('[data-form-status]');
   const submit = eventRegistrationForm.querySelector<HTMLButtonElement>('[data-event-submit]');
   const success = document.querySelector<HTMLElement>('[data-event-success-panel]');
-  const successMessage = document.querySelector<HTMLElement>('[data-event-success-message]');
   const noScriptFallback = document.querySelector<HTMLElement>('[data-event-noscript]');
   const idempotencyKey = `tisha-bav-${crypto.randomUUID()}`;
   if (noScriptFallback) noScriptFallback.hidden = true;
@@ -400,16 +399,12 @@ if (eventRegistrationForm) {
         );
         return;
       }
-      const responseMessage = response.json.message;
-      const responseMessageBody =
-        responseMessage && typeof responseMessage === 'object' && !Array.isArray(responseMessage)
-          ? (responseMessage as Record<string, unknown>).body
-          : undefined;
-      if (successMessage && typeof responseMessageBody === 'string' && responseMessageBody.trim()) {
-        successMessage.textContent = responseMessageBody.trim();
-      } else if (successMessage && response.json.confirmation_queued === false) {
-        successMessage.textContent =
-          'Your spot is reserved, but event email delivery is not confirmed yet.';
+      if (response.json.confirmation_queued !== true) {
+        setFormStatus(
+          eventRegistrationForm,
+          'We could not complete that registration. Please try again.',
+        );
+        return;
       }
       eventRegistrationForm.hidden = true;
       if (eventRegistrationContent) eventRegistrationContent.hidden = true;

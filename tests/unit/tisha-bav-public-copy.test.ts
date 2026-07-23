@@ -40,6 +40,9 @@ describe('Tisha BAv public generated copy', () => {
     expect(generatedHtml).toContain('with Rabbi Eli Scheller');
     expect(generatedHtml).toContain('Rabbi Eli Scheller');
     expect(generatedHtml).toContain('data-event-success-message');
+    expect(generatedHtml).toContain('The link was sent to your email.');
+    expect(generatedHtml).not.toContain('May we merit to see Jerusalem rebuilt.');
+    expect(generatedHtml).not.toContain('event email delivery is not confirmed yet');
     expect(eventCssSource).toContain('tisha-bav-success-bg-mobile-v20260722b.png');
     expect(generatedHtml).toContain('/assets/events/tisha-bav-2026/tisha-bav.css');
     expect(generatedHtml).not.toContain('name="homepage"');

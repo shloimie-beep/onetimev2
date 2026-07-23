@@ -47,7 +47,7 @@ describe('Tisha BAv event registration', () => {
       ghl_sync_status: 'provider_off',
       message: {
         heading: 'Thank you — your spot has been reserved.',
-        body: 'Your spot is reserved, but event email delivery is not confirmed yet.',
+        body: 'We could not complete that registration. Please try again.',
         schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel',
       },
     });

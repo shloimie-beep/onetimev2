@@ -357,7 +357,7 @@ function tishaBavLandingPage() {
   <div class="event-modal-backdrop" data-event-modal-backdrop hidden></div>
   <section class="event-modal" id="event-register-modal" role="dialog" aria-modal="true" aria-label="Tisha B'Av registration" data-event-modal data-event-share-url="${escapeHtml(shareUrl)}" hidden tabindex="-1">
     <div class="event-register-shell">
-      <button class="event-modal-close" type="button" data-event-close-modal aria-label="Close registration modal">Close</button>
+      <button class="event-modal-close" type="button" data-event-close-modal aria-label="Close registration modal"><span aria-hidden="true">&times;</span></button>
       <div class="event-registration-content" data-event-registration-content>
         <h2 id="event-register-title">Reserve My Spot</h2>
         <p class="event-form-note">Join this live Tisha B'Av event and receive the private link by email.</p>
@@ -374,8 +374,7 @@ function tishaBavLandingPage() {
         <div class="event-success-copy">
           <p class="event-success-eyebrow">Registration complete</p>
           <h2 lang="he" dir="rtl">שֶׁנִּזְכֶּה לִרְאוֹת אֶת יְרוּשָׁלַיִם בְּבִנְיָנָהּ</h2>
-          <p>May we merit to see Jerusalem rebuilt.</p>
-          <p data-event-success-message>We'll email the private Zoom link and event details.</p>
+          <p data-event-success-message>The link was sent to your email.</p>
         </div>
         <div class="event-share-actions" aria-label="Share this event">
           <a class="button event-share-button" href="${escapeHtml(whatsappShareUrl)}" data-event-share-link target="_blank" rel="noopener" aria-label="Share on WhatsApp"><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11.6a8 8 0 0 1-11.8 7l-4.2 1.1 1.1-4A8 8 0 1 1 20 11.6Z"/><path d="M8.5 8.2c.2 3 2.4 5.2 5.4 5.6"/></svg><span>WhatsApp</span></a>
