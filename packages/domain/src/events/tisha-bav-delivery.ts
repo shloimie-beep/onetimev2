@@ -35,7 +35,12 @@ export async function runTishaBavEventEmailFallbackBatch(input: {
   workerId?: string;
   fetchImpl?: typeof fetch;
 }): Promise<TishaBavFallbackBatchSummary> {
-  if (input.config.oneTimeEventEmailFallback !== 'resend') return emptySummary();
+  if (
+    input.config.oneTimeEventEmailFallback !== 'resend' &&
+    input.config.tishaBavConfirmationTransport !== 'resend'
+  ) {
+    return emptySummary();
+  }
   assertFallbackTransportReady(input.config);
   const now = input.now ?? new Date();
   const claims = await claimFallbacks(input.pool, input.config, {

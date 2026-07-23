@@ -166,6 +166,98 @@ describe('Tisha BAv event registration', () => {
     );
   });
 
+  it('queues one primary Resend confirmation per fresh signup while preserving HighLevel sync', async () => {
+    const config = directConfirmationConfig({
+      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
+    });
+    const highLevel = new MockHighLevelEventClient();
+    const firstPayload = registrationPayload('direct-confirmation@example.test', {
+      idempotency_key: 'direct-confirmation-1',
+    });
+
+    const first = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload: firstPayload,
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+    const exactReplay = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload: firstPayload,
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+    const freshRepeat = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload: registrationPayload('direct-confirmation@example.test', {
+        idempotency_key: 'direct-confirmation-2',
+      }),
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+
+    expect(first).toMatchObject({ ghl_sync_status: 'succeeded', confirmation_queued: true });
+    expect(exactReplay).toMatchObject({
+      duplicate_submission: true,
+      ghl_sync_status: 'succeeded',
+      confirmation_queued: true,
+    });
+    expect(freshRepeat).toMatchObject({
+      duplicate_submission: false,
+      ghl_sync_status: 'succeeded',
+      confirmation_queued: true,
+    });
+    expect(highLevel.workflowRequests).toHaveLength(2);
+
+    const deliveries = await pool.query(
+      `SELECT event_type, provider, status, public_metadata
+         FROM onetime.event_delivery_events
+        WHERE registration_key = $1
+        ORDER BY event_type, idempotency_key`,
+      [first.registration_key],
+    );
+    expect(deliveries.rows).toEqual([
+      expect.objectContaining({
+        event_type: 'tisha_bav_2026.highlevel_registration_sync.v1',
+        provider: 'highlevel',
+        status: 'succeeded',
+      }),
+      expect.objectContaining({
+        event_type: 'tisha_bav_2026.resend_direct_confirmation.v1',
+        provider: 'resend_fallback',
+        status: 'pending',
+        public_metadata: expect.objectContaining({ delivery_role: 'primary_confirmation' }),
+      }),
+      expect.objectContaining({
+        event_type: 'tisha_bav_2026.resend_direct_confirmation.v1',
+        provider: 'resend_fallback',
+        status: 'pending',
+        public_metadata: expect.objectContaining({ delivery_role: 'primary_confirmation' }),
+      }),
+    ]);
+
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ id: 'provider-message-private' }, { status: 200 }));
+    const summary = await runTishaBavEventEmailFallbackBatch({
+      pool,
+      config,
+      now: openWindow,
+      limit: 10,
+      fetchImpl,
+    });
+    expect(summary).toMatchObject({ claimed: 2, delivered: 2, external_send_performed: true });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    const providerKeys = fetchImpl.mock.calls.map(
+      (call) => new Headers(call[1]?.headers).get('Idempotency-Key') ?? '',
+    );
+    expect(new Set(providerKeys).size).toBe(2);
+  });
+
   it('rejects newsletter permission on the event registration contract', async () => {
     await expect(
       captureTishaBavRegistration({
@@ -207,7 +299,7 @@ describe('Tisha BAv event registration', () => {
     const highLevel = new MockHighLevelEventClient();
     const reprocessInput = {
       pool,
-      config: fallbackConfig({
+      config: directConfirmationConfig({
         HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
         HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
       }),
@@ -644,6 +736,43 @@ describe('Tisha BAv event registration', () => {
     ]);
   });
 
+  it('does not create a duplicate fallback when a primary confirmation already exists', async () => {
+    const config = directConfirmationConfig({
+      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
+    });
+    const highLevel = new MockHighLevelEventClient();
+    highLevel.addToWorkflow = async () => {
+      throw new Error(
+        'HighLevel API request failed with status 400: workflow_enrollment_rejected.',
+      );
+    };
+    const registration = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload: registrationPayload('direct-confirmation-reprocess@example.test'),
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+
+    const reprocessed = await reprocessTishaBavRegistrationDelivery({
+      pool,
+      config,
+      registrationKey: registration.registration_key ?? '',
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+    expect(reprocessed).toEqual({ status: 'pending', fallback_queued: false });
+    const resend = await pool.query(
+      `SELECT event_type
+         FROM onetime.event_delivery_events
+        WHERE registration_key = $1
+          AND provider = 'resend_fallback'`,
+      [registration.registration_key],
+    );
+    expect(resend.rows).toEqual([{ event_type: 'tisha_bav_2026.resend_direct_confirmation.v1' }]);
+  });
+
   it('replaces an existing membership and does not queue fallback', async () => {
     const config = fallbackConfig({
       HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
@@ -799,7 +928,7 @@ describe('Tisha BAv event registration', () => {
     );
     const replay = await captureTishaBavRegistration({
       pool,
-      config: fallbackConfig({
+      config: directConfirmationConfig({
         HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
         HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
       }),
@@ -1288,6 +1417,21 @@ function fallbackConfig(overrides: NodeJS.ProcessEnv = {}) {
     DELIVERY_PROVIDER_AUTHORIZATION_ID: 'test-only-tisha-fallback-authorization',
     DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
     DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
+    ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL:
+      'https://zoom.example.test/j/operator-proof?pwd=protected',
+    ...overrides,
+  });
+}
+
+function directConfirmationConfig(overrides: NodeJS.ProcessEnv = {}) {
+  return testConfig({
+    ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT: 'resend',
+    RESEND_API_KEY: 'test-only-resend-key',
+    ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+    ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+    DELIVERY_PROVIDER_AUTHORIZATION_ID: 'test-only-tisha-confirmation-authorization',
+    DELIVERY_PROVIDER_PER_RUN_BUDGET: '10',
+    DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '10',
     ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL:
       'https://zoom.example.test/j/operator-proof?pwd=protected',
     ...overrides,

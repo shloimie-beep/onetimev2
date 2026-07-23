@@ -274,4 +274,14 @@ describe('Tisha BAv HighLevel client', () => {
       }),
     ).toThrow("Tisha B'Av Resend fallback config missing");
   });
+
+  it('rejects a partially enabled primary Resend confirmation transport', () => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+        ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT: 'resend',
+      }),
+    ).toThrow("Tisha B'Av Resend confirmation config missing");
+  });
 });

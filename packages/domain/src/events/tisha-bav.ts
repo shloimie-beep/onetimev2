@@ -44,6 +44,8 @@ export const TISHA_BAV_REQUIRED_TAGS = [
 ] as const;
 export const TISHA_BAV_NEWSLETTER_TAG = 'OT | Weekly Newsletter';
 const TISHA_BAV_REGISTERED_TAG = "OT | Event | Tisha B'Av 2026 | Registered";
+const TISHA_BAV_FALLBACK_CONFIRMATION_EVENT_TYPE = 'tisha_bav_2026.resend_fallback_confirmation.v1';
+const TISHA_BAV_DIRECT_CONFIRMATION_EVENT_TYPE = 'tisha_bav_2026.resend_direct_confirmation.v1';
 const TISHA_BAV_DIRECT_CONFIRMATION_TEMPLATE = 'tisha_bav_2026_registration_confirmation_direct_v2';
 const TISHA_BAV_DIRECT_CONFIRMATION_SUBJECT =
   "You're registered for Rabbi Eli Scheller's live Tisha B'Av Zoom class";
@@ -451,6 +453,13 @@ export async function captureTishaBavRegistration(input: {
   );
 
   if (!response.highLevelDeliveryKey) return withoutInternalKeys(response);
+  const directConfirmationQueued = await queueDirectResendConfirmation({
+    pool: input.pool,
+    config: input.config,
+    registrationKey: response.registration_key ?? '',
+    submissionIdempotencyKey: parsed.idempotency_key,
+    now,
+  });
   const syncAttempt = await maybeSyncHighLevel({
     pool: input.pool,
     config: input.config,
@@ -460,8 +469,9 @@ export async function captureTishaBavRegistration(input: {
     ...(input.highLevelClient === undefined ? {} : { highLevelClient: input.highLevelClient }),
   });
   const syncStatus = syncAttempt === 'in_flight' ? 'pending' : syncAttempt;
+  const directConfirmationIsPrimary = input.config.tishaBavConfirmationTransport === 'resend';
   const fallbackQueued =
-    syncAttempt === 'in_flight' || syncStatus === 'succeeded'
+    directConfirmationIsPrimary || syncAttempt === 'in_flight' || syncStatus === 'succeeded'
       ? false
       : await queueFallbackAfterHighLevelFailure({
           pool: input.pool,
@@ -470,7 +480,9 @@ export async function captureTishaBavRegistration(input: {
           highLevelDeliveryKey: response.highLevelDeliveryKey,
           now,
         });
-  const confirmationQueued = syncStatus === 'succeeded' || fallbackQueued;
+  const confirmationQueued = directConfirmationIsPrimary
+    ? directConfirmationQueued
+    : syncStatus === 'succeeded' || fallbackQueued;
 
   return {
     ...withoutInternalKeys(response),
@@ -586,8 +598,11 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
     return { status: 'blocked' as const, fallback_queued: false };
   }
   const syncStatus = syncAttempt;
+  const directConfirmationExists =
+    input.config.tishaBavConfirmationTransport === 'resend' &&
+    (await hasDirectResendConfirmation(input.pool, input.config, input.registrationKey));
   const fallbackQueued =
-    syncStatus === 'succeeded'
+    directConfirmationExists || syncStatus === 'succeeded'
       ? false
       : await queueFallbackAfterHighLevelFailure({
           pool: input.pool,
@@ -598,6 +613,26 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
           allowAlreadyEnrolledRecovery: input.allowAlreadyEnrolledRecovery === true,
         });
   return { status: syncStatus ?? 'blocked', fallback_queued: fallbackQueued };
+}
+
+async function hasDirectResendConfirmation(
+  pool: Queryable,
+  config: AppConfig,
+  registrationKey: string,
+) {
+  const result = await pool.query(
+    `SELECT 1
+       FROM onetime.event_delivery_events
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND registration_key = $4
+        AND provider = 'resend_fallback'
+        AND event_type = '${TISHA_BAV_DIRECT_CONFIRMATION_EVENT_TYPE}'
+      LIMIT 1`,
+    [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey],
+  );
+  return Boolean(result.rowCount);
 }
 
 export async function requestTishaBavJoin(input: {
@@ -1207,6 +1242,7 @@ async function reserveHighLevelReprocess(
           AND event_code = $3
           AND registration_key = $4
           AND provider = 'resend_fallback'
+          AND event_type = '${TISHA_BAV_FALLBACK_CONFIRMATION_EVENT_TYPE}'
         LIMIT 1
         ${lockClause}`,
       [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey],
@@ -1404,6 +1440,55 @@ async function queueFallbackAfterHighLevelFailure(input: {
   if (!fallbackIsSafeAfterHighLevel(highLevelRow, input.allowAlreadyEnrolledRecovery === true)) {
     return false;
   }
+  return queueResendConfirmation({
+    pool: input.pool,
+    config: input.config,
+    registrationKey: input.registrationKey,
+    idempotencyKey: `resend_fallback:${TISHA_BAV_EVENT_CODE}:${input.registrationKey}`,
+    eventType: TISHA_BAV_FALLBACK_CONFIRMATION_EVENT_TYPE,
+    deliveryRole: 'highlevel_fallback',
+    now: input.now,
+  });
+}
+
+async function queueDirectResendConfirmation(input: {
+  pool: DbPool;
+  config: AppConfig;
+  registrationKey: string;
+  submissionIdempotencyKey: string;
+  now: Date;
+}) {
+  if (input.config.tishaBavConfirmationTransport !== 'resend') return false;
+  const submissionKey = stableKey('event_confirmation_submission', [
+    input.config.accountKey,
+    input.config.productKey,
+    TISHA_BAV_EVENT_CODE,
+    input.registrationKey,
+    eventIdempotencyKey(input.submissionIdempotencyKey),
+  ]);
+  return queueResendConfirmation({
+    pool: input.pool,
+    config: input.config,
+    registrationKey: input.registrationKey,
+    idempotencyKey: `resend_confirmation:${TISHA_BAV_EVENT_CODE}:${submissionKey}`,
+    eventType: TISHA_BAV_DIRECT_CONFIRMATION_EVENT_TYPE,
+    deliveryRole: 'primary_confirmation',
+    now: input.now,
+  });
+}
+
+async function queueResendConfirmation(input: {
+  pool: DbPool;
+  config: AppConfig;
+  registrationKey: string;
+  idempotencyKey: string;
+  eventType: string;
+  deliveryRole: 'primary_confirmation' | 'highlevel_fallback';
+  now: Date;
+}) {
+  if (input.now > new Date('2026-07-24T23:59:59.000Z')) return false;
+  const protectedJoinUrl = input.config.tishaBavZoomJoinUrl;
+  if (!protectedJoinUrl) return false;
   const eligibility = await eventEmailPermissionEligibility(
     input.pool,
     input.config,
@@ -1422,7 +1507,6 @@ async function queueFallbackAfterHighLevelFailure(input: {
   );
   const registration = registrationResult.rows[0];
   if (!registration) return false;
-  const idempotencyKey = `resend_fallback:${TISHA_BAV_EVENT_CODE}:${registration.registration_key}`;
   const protectedPayload = {
     email_normalized: registration.email_normalized,
     first_name: registration.first_name,
@@ -1447,18 +1531,19 @@ async function queueFallbackAfterHighLevelFailure(input: {
      VALUES ($1,$2,$3,$4,$5,$6,'resend_fallback','resend','pending',$7,$8,$9::jsonb,$10::jsonb,$11)
      ON CONFLICT (account_key, product_key, event_code, idempotency_key) DO NOTHING`,
     [
-      stableKey('event_delivery', [idempotencyKey]),
+      stableKey('event_delivery', [input.idempotencyKey]),
       input.config.accountKey,
       input.config.productKey,
       TISHA_BAV_EVENT_CODE,
       registration.registration_key,
-      'tisha_bav_2026.resend_fallback_confirmation.v1',
-      idempotencyKey,
+      input.eventType,
+      input.idempotencyKey,
       sha256(canonicalJson(protectedPayload)),
       JSON.stringify(protectedPayload),
       JSON.stringify({
         bounded: true,
         confirmation_only: true,
+        delivery_role: input.deliveryRole,
         warm_list_invitation: false,
         protected_direct_link_present: true,
         expires_after: '2026-07-24T23:59:59.000Z',
@@ -1475,7 +1560,7 @@ async function queueFallbackAfterHighLevelFailure(input: {
         AND event_code = $3
         AND idempotency_key = $4
       LIMIT 1`,
-    [input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE, idempotencyKey],
+    [input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE, input.idempotencyKey],
   );
   return ['pending', 'succeeded'].includes(existing.rows[0]?.status ?? '');
 }
@@ -1558,6 +1643,7 @@ async function maybeSyncHighLevel(input: {
         AND event_code = $3
         AND registration_key = $4
         AND provider = 'resend_fallback'
+        AND event_type = '${TISHA_BAV_FALLBACK_CONFIRMATION_EVENT_TYPE}'
       LIMIT 1`,
     [input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE, input.registrationKey],
   );
@@ -1941,6 +2027,7 @@ async function cancelUnsentFallback(
           AND event_code = $3
           AND registration_key = $4
           AND provider = 'resend_fallback'
+          AND event_type = '${TISHA_BAV_FALLBACK_CONFIRMATION_EVENT_TYPE}'
           AND status IN ('pending', 'failed')
           AND lease_owner_hash = $5`,
       [
@@ -1966,6 +2053,7 @@ async function cancelUnsentFallback(
         AND event_code = $3
         AND registration_key = $4
         AND provider = 'resend_fallback'
+        AND event_type = '${TISHA_BAV_FALLBACK_CONFIRMATION_EVENT_TYPE}'
         AND status IN ('pending', 'failed')
         AND (lease_expires_at IS NULL OR lease_expires_at <= $5)`,
     [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey, now],

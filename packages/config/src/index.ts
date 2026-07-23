@@ -158,6 +158,7 @@ const envSchema = z.object({
   ZOOM_MEETING_SDK_SECRET: z.string().optional(),
   ZOOM_ACCOUNT_ID: z.string().optional(),
   ONE_TIME_EVENT_EMAIL_FALLBACK: z.enum(['disabled', 'resend']).default('disabled'),
+  ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT: z.enum(['disabled', 'resend']).default('disabled'),
   ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: z.url().optional(),
   ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF: optionalTrimmedString(4, 240),
   HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
@@ -250,6 +251,22 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ].filter(Boolean);
     if (missing.length) {
       throw new Error(`Tisha B'Av Resend fallback config missing: ${missing.join(', ')}`);
+    }
+  }
+
+  if (parsed.ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT === 'resend') {
+    const missing = [
+      !parsed.RESEND_API_KEY && 'RESEND_API_KEY',
+      !parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED &&
+        'ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED',
+      !parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED && 'ONE_TIME_RESEND_TRANSPORT_ENABLED',
+      !parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID && 'DELIVERY_PROVIDER_AUTHORIZATION_ID',
+      parsed.DELIVERY_PROVIDER_PER_RUN_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_RUN_BUDGET',
+      parsed.DELIVERY_PROVIDER_PER_PROVIDER_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
+      !parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL && 'ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL',
+    ].filter(Boolean);
+    if (missing.length) {
+      throw new Error(`Tisha B'Av Resend confirmation config missing: ${missing.join(', ')}`);
     }
   }
 
@@ -462,6 +479,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkSecretConfigured: Boolean(parsed.ZOOM_MEETING_SDK_SECRET),
     zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID),
     oneTimeEventEmailFallback: parsed.ONE_TIME_EVENT_EMAIL_FALLBACK,
+    tishaBavConfirmationTransport: parsed.ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT,
     tishaBavZoomJoinUrl: parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL,
     tishaBavZoomMeetingRefConfigured: Boolean(parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF),
     highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
