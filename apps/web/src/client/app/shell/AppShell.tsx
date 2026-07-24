@@ -17,6 +17,7 @@ export type ShellNavItem = {
 type AppShellProps = {
   user: ShellUser | null;
   navItems: ShellNavItem[];
+  utilityItems?: ShellNavItem[];
   title: string;
   description?: string;
   toolbar?: React.ReactNode;
@@ -32,6 +33,7 @@ type AppShellProps = {
 export function AppShell({
   user,
   navItems,
+  utilityItems = [],
   title,
   description,
   toolbar,
@@ -98,11 +100,12 @@ export function AppShell({
     email: sessionExpired ? 'Sign in again to continue' : 'Preparing your workspace',
     roleLabel: sessionExpired ? 'Needs sign-in' : 'Secure workspace',
   };
-  const currentItem = navItems.find((item) => item.current) ??
+  const currentItem = [...navItems, ...utilityItems].find((item) => item.current) ??
     navItems[0] ?? {
-      href: '/app/crm',
-      label: 'CRM',
+      href: '/app/dashboard',
+      label: 'Dashboard',
     };
+  const homeHref = navItems[0]?.href ?? '/app/dashboard';
 
   return (
     <div className="app-shell">
@@ -134,10 +137,11 @@ export function AppShell({
           <span aria-hidden="true" />
         </button>
         <Logo
+          href={homeHref}
           subtitle={shellUser.roleLabel}
           onClick={(event) => {
             event.preventDefault();
-            onNavigate('/app/crm');
+            onNavigate(homeHref);
           }}
         />
         <div className="app-context" aria-label="Current account">
@@ -160,7 +164,17 @@ export function AppShell({
 
       <div className="app-body">
         <aside className="app-sidebar" aria-label="Primary navigation">
-          <ShellNavigation items={navItems} onNavigate={onNavigate} />
+          <ShellNavigation items={navItems} label="One Time app" onNavigate={onNavigate} />
+          {utilityItems.length > 0 && (
+            <section className="shell-utility-section" aria-labelledby="desktop-utilities-title">
+              <h2 id="desktop-utilities-title">Utilities</h2>
+              <ShellNavigation
+                items={utilityItems}
+                label="One Time utilities"
+                onNavigate={onNavigate}
+              />
+            </section>
+          )}
         </aside>
         <div
           className={workspaceClassName ? `app-workspace ${workspaceClassName}` : 'app-workspace'}
@@ -216,11 +230,25 @@ export function AppShell({
             </div>
             <ShellNavigation
               items={navItems}
+              label="One Time app"
               onNavigate={(href) => {
                 closeDrawer(false);
                 onNavigate(href);
               }}
             />
+            {utilityItems.length > 0 && (
+              <section className="shell-utility-section" aria-labelledby="drawer-utilities-title">
+                <h2 id="drawer-utilities-title">Utilities</h2>
+                <ShellNavigation
+                  items={utilityItems}
+                  label="One Time utilities"
+                  onNavigate={(href) => {
+                    closeDrawer(false);
+                    onNavigate(href);
+                  }}
+                />
+              </section>
+            )}
           </Drawer>
         </>
       )}
@@ -230,13 +258,15 @@ export function AppShell({
 
 function ShellNavigation({
   items,
+  label,
   onNavigate,
 }: {
   items: ShellNavItem[];
+  label: string;
   onNavigate: (href: string) => void;
 }) {
   return (
-    <nav className="shell-nav" aria-label="One Time app">
+    <nav className="shell-nav" aria-label={label}>
       {items.map((item) => (
         <a
           key={item.id}
@@ -259,7 +289,7 @@ function SessionExpiredState({ onSignIn }: { onSignIn?: (() => void) | undefined
   return (
     <section className="state-panel session-expired-state" aria-labelledby="session-expired-title">
       <h2 id="session-expired-title">Session expired</h2>
-      <p>Protected CRM details were cleared. Sign in again to continue.</p>
+      <p>Protected contact details were cleared. Sign in again to continue.</p>
       <Button type="button" variant="primary" onClick={onSignIn}>
         Sign in
       </Button>

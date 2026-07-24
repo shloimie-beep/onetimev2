@@ -76,7 +76,7 @@ test('authenticated routes pass serious axe checks with mobile and desktop layou
   test.setTimeout(90_000);
   const checks = [
     { role: 'admin_session' as const, route: '/app/dashboard', heading: 'Dashboard' },
-    { role: 'admin_session' as const, route: '/app/crm', heading: 'CRM' },
+    { role: 'admin_session' as const, route: '/app/crm', heading: 'Contacts' },
     { role: 'admin_session' as const, route: '/app/communications', heading: 'Communications' },
     { role: 'admin_session' as const, route: '/app/classes', heading: 'Classes' },
     { role: 'admin_session' as const, route: '/app/content', heading: 'Content Workspace' },

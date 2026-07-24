@@ -9,12 +9,26 @@ import type {
   OwnerDashboardResponse,
   SessionUser,
 } from '@onetime/contracts';
-import { Button, Card } from '@onetime/brand-system/react';
+import { Button, Card, EmptyState, Select } from '@onetime/brand-system/react';
+import {
+  CLASSROOM_SECTIONS,
+  CONTACTS_SECTIONS,
+  DASHBOARD_SECTIONS,
+  adminPrimaryNav,
+  classroomHref,
+  classroomOccurrenceFromLocation,
+  classroomSectionFromPath,
+  contactsSectionFromPath,
+  dashboardSectionFromPath,
+  type DashboardSectionId,
+  type ClassroomSectionId,
+} from './admin-ia.js';
 import {
   communicationsRouteDescriptor,
   contactCommunicationsTabDescriptor,
 } from './communications/route-descriptor.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
 import { SupportFeature } from './support/SupportFeature.js';
 import {
@@ -98,7 +112,6 @@ type OwnerSurface =
   | 'classes'
   | 'content'
   | 'billing'
-  | 'rewards'
   | 'support'
   | 'launch-status'
   | 'experience-preview';
@@ -170,6 +183,17 @@ function CrmApp() {
   });
   const [contentRoutePath, setContentRoutePath] = useState(
     location.pathname.startsWith('/app/content') ? location.pathname : '/app/content',
+  );
+  const [dashboardRoutePath, setDashboardRoutePath] = useState(
+    location.pathname.startsWith('/app/dashboard') ? location.pathname : '/app/dashboard',
+  );
+  const [contactsRoutePath, setContactsRoutePath] = useState(
+    location.pathname.startsWith('/app/crm') ? location.pathname : '/app/crm',
+  );
+  const [classroomRoutePath, setClassroomRoutePath] = useState(
+    location.pathname === '/app/rewards' || location.pathname.startsWith('/app/classes')
+      ? `${location.pathname}${location.search}`
+      : '/app/classes',
   );
   const [assignees, setAssignees] = useState<Assignee[]>([]);
   const [focusContactId, setFocusContactId] = useState<string | null>(null);
@@ -256,10 +280,24 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
+    if (
+      location.pathname === '/app/crm/students' ||
+      location.pathname === '/app/crm/internal-tasks'
+    ) {
+      setSurface('crm');
+      setContactsRoutePath(location.pathname);
+      setCommunicationsMode(null);
+      setSupportReceiptId(null);
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
     const ownerSurface = ownerSurfaceFromPath(location.pathname);
     if (ownerSurface && ownerSurface !== 'crm') {
       setContactOperationsMode(false);
-      const classDetailMatch = location.pathname.match(/^\/app\/classes\/([^/]+)$/);
+      setContactOperationsHouseholdKey(null);
       setSurface(ownerSurface);
       setCommunicationsMode(null);
       setSupportReceiptId(null);
@@ -268,20 +306,20 @@ function CrmApp() {
       setCreating(false);
       setListLoading(false);
       if (ownerSurface === 'dashboard' || ownerSurface === 'billing') await loadDashboard();
+      if (ownerSurface === 'dashboard') setDashboardRoutePath(location.pathname);
       if (ownerSurface === 'classes') {
-        await loadClasses();
-        if (classDetailMatch?.[1]) {
-          await loadClassDetail(decodeURIComponent(classDetailMatch[1]));
-        } else {
-          setSelectedClass(null);
-          setClassDetailState({ loading: false, error: '' });
+        const nextClassroomPath = `${location.pathname}${location.search}`;
+        const occurrenceKey = classroomOccurrenceFromLocation(location.pathname, location.search);
+        setClassroomRoutePath(nextClassroomPath);
+        await loadClasses(occurrenceKey);
+        if (classroomSectionFromPath(location.pathname) === 'rewards') {
+          await loadGamificationDashboard();
         }
       } else {
         setSelectedClass(null);
         setClassDetailState({ loading: false, error: '' });
       }
       if (ownerSurface === 'content') setContentRoutePath(location.pathname);
-      if (ownerSurface === 'rewards') await loadGamificationDashboard();
       return;
     }
     if (location.pathname === communicationsRouteDescriptor.path) {
@@ -326,6 +364,8 @@ function CrmApp() {
     }
     setSurface('crm');
     setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
+    setContactsRoutePath(location.pathname);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
     const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
@@ -412,11 +452,26 @@ function CrmApp() {
     }
   }
 
-  async function loadClasses() {
+  async function loadClasses(preferredOccurrenceKey?: string | null) {
     setClassesState({ loading: true, error: '' });
     try {
       const json = await getClasses();
       setClasses(json.occurrences);
+      const occurrenceKey =
+        preferredOccurrenceKey ??
+        selectedClass?.occurrence_key ??
+        json.occurrences[0]?.occurrence_key ??
+        null;
+      if (preferredOccurrenceKey || selectedClass?.occurrence_key) {
+        if (occurrenceKey) await loadClassDetail(occurrenceKey);
+      } else if (occurrenceKey) {
+        for (const occurrence of json.occurrences) {
+          if (await loadClassDetail(occurrence.occurrence_key)) break;
+        }
+      } else {
+        setSelectedClass(null);
+        setClassDetailState({ loading: false, error: '' });
+      }
     } catch (error) {
       if (handleAuthError(error)) return;
       setClassesState({
@@ -434,15 +489,16 @@ function CrmApp() {
       const json = await getClassDetail(occurrenceKey);
       setSelectedClass(json.occurrence);
     } catch (error) {
-      if (handleAuthError(error)) return;
+      if (handleAuthError(error)) return false;
       setSelectedClass(null);
       setClassDetailState({
         loading: false,
         error: errorMessage(error, 'Class details could not load.'),
       });
-      return;
+      return false;
     }
     setClassDetailState({ loading: false, error: '' });
+    return true;
   }
 
   function openContact(contactId: string) {
@@ -459,6 +515,7 @@ function CrmApp() {
     setSurface('crm');
     setContactOperationsMode(false);
     setContactOperationsHouseholdKey(null);
+    setContactsRoutePath('/app/crm');
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -482,6 +539,7 @@ function CrmApp() {
 
   function startCreate() {
     setSurface('crm');
+    setContactsRoutePath('/app/crm');
     setSelected(null);
     setEditing(false);
     setCreating(true);
@@ -497,6 +555,7 @@ function CrmApp() {
       : '/app/crm/contact-operations';
     history.pushState({}, '', href);
     setSurface('crm');
+    setContactsRoutePath('/app/crm');
     setContactOperationsMode(true);
     setContactOperationsHouseholdKey(householdKey ?? null);
     setCommunicationsMode(null);
@@ -512,6 +571,7 @@ function CrmApp() {
     setContactOperationsHouseholdKey(null);
     history.pushState({}, '', communicationsRouteDescriptor.path);
     setSurface('crm');
+    setContactsRoutePath('/app/crm');
     setCommunicationsMode({ kind: 'global' });
     setSupportReceiptId(null);
     setSelected(null);
@@ -529,6 +589,7 @@ function CrmApp() {
       `/app/crm/contacts/${encodeURIComponent(contactId)}/${contactCommunicationsTabDescriptor.id}`,
     );
     setSurface('crm');
+    setContactsRoutePath('/app/crm');
     setCommunicationsMode({ kind: 'contact', contactId });
     setSupportReceiptId(null);
     setSelected(null);
@@ -541,7 +602,6 @@ function CrmApp() {
     nextSurface: Exclude<OwnerSurface, 'crm'>,
     href = ownerSurfacePath(nextSurface),
   ) {
-    const classDetailMatch = href.match(/^\/app\/classes\/([^/]+)$/);
     history.pushState({}, '', href);
     setSurface(nextSurface);
     setContactOperationsMode(false);
@@ -553,13 +613,14 @@ function CrmApp() {
     setCreating(false);
     setListLoading(false);
     if (nextSurface === 'dashboard' || nextSurface === 'billing') void loadDashboard();
-    if (nextSurface === 'rewards') void loadGamificationDashboard();
+    if (nextSurface === 'dashboard') setDashboardRoutePath(new URL(href, location.origin).pathname);
     if (nextSurface === 'classes') {
-      void loadClasses();
-      if (classDetailMatch?.[1]) void loadClassDetail(decodeURIComponent(classDetailMatch[1]));
-      else {
-        setSelectedClass(null);
-        setClassDetailState({ loading: false, error: '' });
+      const target = new URL(href, location.origin);
+      const occurrenceKey = classroomOccurrenceFromLocation(target.pathname, target.search);
+      setClassroomRoutePath(`${target.pathname}${target.search}`);
+      void loadClasses(occurrenceKey);
+      if (classroomSectionFromPath(target.pathname) === 'rewards') {
+        void loadGamificationDashboard();
       }
     } else {
       setSelectedClass(null);
@@ -568,19 +629,32 @@ function CrmApp() {
     if (nextSurface === 'content') setContentRoutePath(href);
   }
 
-  function openClassDetail(occurrenceKey: string) {
-    const href = `/app/classes/${encodeURIComponent(occurrenceKey)}`;
+  function selectClassOccurrence(occurrenceKey: string) {
+    const target = new URL(classroomRoutePath, location.origin);
+    const section = classroomSectionFromPath(target.pathname);
+    const href = classroomHref(section, occurrenceKey);
     history.pushState({}, '', href);
     setSurface('classes');
+    setClassroomRoutePath(href);
     void loadClassDetail(occurrenceKey);
   }
 
-  function backToClasses() {
-    history.pushState({}, '', '/app/classes');
-    setSurface('classes');
-    setSelectedClass(null);
-    setClassDetailState({ loading: false, error: '' });
-    void loadClasses();
+  function openContactSection(href: string) {
+    if (href === '/app/crm') {
+      void backToList();
+      return;
+    }
+    history.pushState({}, '', href);
+    setSurface('crm');
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
+    setContactsRoutePath(href);
+    setCommunicationsMode(null);
+    setSupportReceiptId(null);
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
   }
 
   async function logout() {
@@ -656,6 +730,9 @@ function CrmApp() {
     setSelectedClass(null);
     setClassDetailState({ loading: false, error: '' });
     setContentRoutePath('/app/content');
+    setDashboardRoutePath('/app/dashboard');
+    setContactsRoutePath('/app/crm');
+    setClassroomRoutePath('/app/classes');
     setListLoading(false);
     setDetailLoading(false);
     setSession(null);
@@ -686,54 +763,30 @@ function CrmApp() {
         })),
     [query],
   );
+  const dashboardSection = dashboardSectionFromPath(dashboardRoutePath);
+  const contactsSection = contactsSectionFromPath(contactsRoutePath);
+  const classroomPath = new URL(classroomRoutePath, location.origin);
+  const classroomSection = classroomSectionFromPath(classroomPath.pathname);
 
-  const navItems: ShellNavItem[] = [
+  const adminCurrentArea =
+    surface === 'dashboard'
+      ? 'dashboard'
+      : surface === 'crm' || surface === 'billing'
+        ? 'contacts'
+        : surface === 'content'
+          ? 'content'
+          : surface === 'classes'
+            ? 'classroom'
+            : null;
+  const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
+  const navItems: ShellNavItem[] = canReadOwnerShell
+    ? adminPrimaryNav(adminCurrentArea, liveConsoleReady)
+    : canReadCrm
+      ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
+      : [];
+  const utilityItems: ShellNavItem[] = [
     ...(canReadOwnerShell
       ? [
-          {
-            id: 'dashboard',
-            label: 'Dashboard',
-            href: '/app/dashboard',
-            current: surface === 'dashboard',
-          },
-        ]
-      : []),
-    ...(canReadCrm
-      ? [
-          {
-            id: 'crm',
-            label: 'CRM',
-            href: '/app/crm',
-            current: surface === 'crm' && !communicationsMode,
-          },
-        ]
-      : []),
-    ...(canReadOwnerShell
-      ? [
-          {
-            id: 'classes',
-            label: 'Classes',
-            href: '/app/classes',
-            current: surface === 'classes',
-          },
-          {
-            id: 'content',
-            label: 'Content',
-            href: '/app/content',
-            current: surface === 'content',
-          },
-          {
-            id: 'billing',
-            label: 'Household Access',
-            href: '/app/billing',
-            current: surface === 'billing',
-          },
-          {
-            id: 'rewards',
-            label: 'Rewards',
-            href: '/app/rewards',
-            current: surface === 'rewards',
-          },
           {
             id: 'launch-status',
             label: 'Launch Status',
@@ -750,26 +803,6 @@ function CrmApp() {
                 },
               ]
             : []),
-          ...(session?.capabilities?.operator_experience?.live_console
-            ? [
-                {
-                  id: 'live-console',
-                  label: 'Live Console',
-                  href: '/app/live-console',
-                  current: false,
-                },
-              ]
-            : []),
-        ]
-      : []),
-    ...(canReadCommunications
-      ? [
-          {
-            id: communicationsRouteDescriptor.id,
-            label: communicationsRouteDescriptor.label,
-            href: communicationsRouteDescriptor.path,
-            current: communicationsMode?.kind === 'global',
-          },
         ]
       : []),
     ...(session
@@ -797,7 +830,7 @@ function CrmApp() {
               ? 'Edit contact'
               : selected
                 ? selected.display_name
-                : 'CRM';
+                : 'Contacts';
   const pageDescription =
     surface !== 'crm'
       ? ownerSurfaceDescription(surface)
@@ -813,9 +846,9 @@ function CrmApp() {
               ? 'Update CRM fields backed by the One Time contact API.'
               : selected
                 ? contactSummary(selected)
-                : 'One Time signup and contact review.';
+                : 'Parent and adult contact review. Students remain One Time-only.';
   const toolbar =
-    surface === 'dashboard' ? (
+    surface === 'dashboard' && dashboardSection === 'overview' ? (
       <ReadOnlyToolbar
         label="Refresh dashboard"
         actionId="dashboard.refresh.button"
@@ -824,7 +857,7 @@ function CrmApp() {
       />
     ) : surface === 'classes' ? (
       <ReadOnlyToolbar
-        label="Refresh classes"
+        label="Refresh classroom"
         actionId="classes.refresh.button"
         loading={classesState.loading}
         onRefresh={() => void loadClasses()}
@@ -836,16 +869,12 @@ function CrmApp() {
         loading={dashboardState.loading}
         onRefresh={() => void loadDashboard()}
       />
-    ) : surface === 'rewards' ? (
-      <ReadOnlyToolbar
-        label="Refresh rewards"
-        actionId="rewards.refresh.button"
-        loading={gamificationState.loading}
-        onRefresh={() => void loadGamificationDashboard()}
-      />
     ) : surface === 'support' ||
       surface === 'launch-status' ||
-      surface === 'experience-preview' ? null : communicationsMode?.kind === 'contact' ? (
+      surface === 'experience-preview' ||
+      (surface === 'crm' &&
+        !communicationsMode &&
+        contactsSection !== 'parents') ? null : communicationsMode?.kind === 'contact' ? (
       <ContactCommunicationsToolbar
         onBack={() => {
           history.pushState(
@@ -896,6 +925,7 @@ function CrmApp() {
     <AppShell
       user={shellUser}
       navItems={navItems}
+      utilityItems={utilityItems}
       title={pageTitle}
       description={pageDescription}
       toolbar={toolbar}
@@ -919,30 +949,34 @@ function CrmApp() {
           dashboard={dashboard}
           loading={dashboardState.loading}
           error={dashboardState.error}
-          showExperiencePreview={Boolean(
-            session?.capabilities?.operator_experience?.experience_preview,
-          )}
+          section={dashboardSection}
+          showExperiencePreview={
+            session?.capabilities?.operator_experience?.experience_preview === true
+          }
+          onNavigate={(href) => openOwnerSurface('dashboard', href)}
+          onOpenExperiencePreview={() =>
+            openOwnerSurface('experience-preview', '/app/experience-preview')
+          }
           onRetry={() => void loadDashboard()}
-          onOpen={(href) => {
-            const ownerSurface = ownerSurfaceFromPath(href);
-            if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
-            if (href === '/app/crm') void backToList();
-            if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
-          }}
         />
       )}
       {surface === 'classes' && (
         <ClassesPanel
+          section={classroomSection}
           classes={classes}
           selectedClass={selectedClass}
+          gamificationDashboard={gamificationDashboard}
+          gamificationLoading={gamificationState.loading}
+          gamificationError={gamificationState.error}
           loading={classesState.loading}
           error={classesState.error}
           detailLoading={classDetailState.loading}
           detailError={classDetailState.error}
-          onOpen={openClassDetail}
-          onBack={backToClasses}
+          onNavigate={(href) => openOwnerSurface('classes', href)}
+          onSelectOccurrence={selectClassOccurrence}
           onRetry={() => void loadClasses()}
           onRetryDetail={(occurrenceKey) => void loadClassDetail(occurrenceKey)}
+          onRetryRewards={() => void loadGamificationDashboard()}
         />
       )}
       {surface === 'content' && (
@@ -967,14 +1001,6 @@ function CrmApp() {
           loading={dashboardState.loading}
           error={dashboardState.error}
           onRetry={() => void loadDashboard()}
-        />
-      )}
-      {surface === 'rewards' && (
-        <GamificationAdminPanel
-          dashboard={gamificationDashboard}
-          loading={gamificationState.loading}
-          error={gamificationState.error}
-          onRetry={() => void loadGamificationDashboard()}
         />
       )}
       {surface === 'experience-preview' && (
@@ -1018,32 +1044,66 @@ function CrmApp() {
           />
         </Suspense>
       )}
-      {surface === 'crm' && contactOperationsMode && !communicationsMode && (
-        <Suspense
-          fallback={
-            <p className="state-panel" role="status">
-              Loading Parent household operations...
-            </p>
-          }
-        >
-          <ContactOperationsPanel
-            csrfToken={session?.csrf_token ?? ''}
-            initialHouseholdKey={contactOperationsHouseholdKey}
-            onProtectedStateCleared={clearProtectedState}
-          />
-        </Suspense>
-      )}
-      {surface === 'crm' && !contactOperationsMode && !communicationsMode && creating && (
-        <ContactForm
-          title="Add contact"
-          initial={emptyForm}
-          canAssign={canAssign}
-          assignees={assignees}
-          onCancel={() => setCreating(false)}
-          onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
+      {surface === 'crm' && (
+        <WorkspaceTabs
+          tabs={CONTACTS_SECTIONS}
+          currentId={contactsSection}
+          label="Contacts area"
+          onNavigate={openContactSection}
         />
       )}
       {surface === 'crm' &&
+        !communicationsMode &&
+        !contactOperationsMode &&
+        contactsSection === 'students' && (
+          <CapabilityGate
+            title="Student contacts are not available yet"
+            body="Students remain local to One Time. This view will use the separately assigned Contacts API and never synthesize a Student or child GHL contact in the browser."
+          />
+        )}
+      {surface === 'crm' &&
+        !communicationsMode &&
+        !contactOperationsMode &&
+        contactsSection === 'internal-tasks' && (
+          <CapabilityGate
+            title="Internal tasks are not available yet"
+            body="Internal tasks will appear here only after the assigned communications task API is accepted. No placeholder task or provider state is invented."
+          />
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'parents' &&
+        contactOperationsMode &&
+        !communicationsMode && (
+          <Suspense
+            fallback={
+              <p className="state-panel" role="status">
+                Loading Parent household operations...
+              </p>
+            }
+          >
+            <ContactOperationsPanel
+              csrfToken={session?.csrf_token ?? ''}
+              initialHouseholdKey={contactOperationsHouseholdKey}
+              onProtectedStateCleared={clearProtectedState}
+            />
+          </Suspense>
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'parents' &&
+        !contactOperationsMode &&
+        !communicationsMode &&
+        creating && (
+          <ContactForm
+            title="Add contact"
+            initial={emptyForm}
+            canAssign={canAssign}
+            assignees={assignees}
+            onCancel={() => setCreating(false)}
+            onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
+          />
+        )}
+      {surface === 'crm' &&
+        contactsSection === 'parents' &&
         !communicationsMode &&
         !contactOperationsMode &&
         selected &&
@@ -1070,6 +1130,7 @@ function CrmApp() {
           />
         ))}
       {surface === 'crm' &&
+        contactsSection === 'parents' &&
         !communicationsMode &&
         !contactOperationsMode &&
         !creating &&
@@ -1138,352 +1199,266 @@ function DashboardPanel({
   dashboard,
   loading,
   error,
+  section,
   showExperiencePreview,
+  onNavigate,
+  onOpenExperiencePreview,
   onRetry,
-  onOpen,
 }: {
   dashboard: OwnerDashboardResponse | null;
   loading: boolean;
   error: string;
+  section: DashboardSectionId;
   showExperiencePreview: boolean;
+  onNavigate: (href: string) => void;
+  onOpenExperiencePreview: () => void;
   onRetry: () => void;
-  onOpen: (href: string) => void;
 }) {
-  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading dashboard" />;
-  if (error) {
-    return (
-      <StatePanel
-        kind="error"
-        title="Dashboard could not load"
-        body={error}
-        actionLabel="Retry"
-        onAction={onRetry}
-      />
-    );
-  }
-  if (!dashboard) {
-    return (
-      <StatePanel
-        kind="empty"
-        title="Dashboard unavailable"
-        body="The owner dashboard source did not return data."
-        actionLabel="Retry"
-        onAction={onRetry}
-      />
-    );
-  }
-  const actionIds = new Set(dashboard.actions.map((action) => action.action_id));
-  const visibleSections = dashboard.dashboard.sections.filter(
-    (section) =>
-      !(
-        section.id === 'support' &&
-        section.state === 'no_data_yet' &&
-        /not mounted|not available/i.test(section.detail)
-      ),
-  );
   return (
     <section className="dashboard-surface" data-usable="owner-dashboard" aria-busy={loading}>
-      <div className="dashboard-grid">
-        <Card className="dashboard-card launch-status-dashboard-card state-ready">
-          <header>
-            <h2>Launch Status</h2>
-            <Chip label="Board-derived" tone="status" />
-          </header>
-          <strong>See what works and what comes next</strong>
-          <p>
-            Review the current launch milestone, objective progress, exact blockers, safe routes,
-            and one executable next task.
-          </p>
-          <Button
-            type="button"
-            variant="primary"
-            data-action-id="dashboard.open_launch_status.button"
-            onClick={() => onOpen('/app/launch-status')}
-          >
-            Open Launch Status
-          </Button>
-        </Card>
-        {showExperiencePreview && (
-          <article className="dashboard-card experience-preview-dashboard-card state-ready">
-            <header>
+      <WorkspaceTabs
+        tabs={DASHBOARD_SECTIONS}
+        currentId={section}
+        label="Dashboard area"
+        onNavigate={onNavigate}
+      />
+      {section === 'internal-tasks' ? (
+        <CapabilityGate
+          title="Internal tasks are not available yet"
+          body="This view will use the separately assigned internal tasks API after it is accepted. No placeholder task or provider state is invented."
+        />
+      ) : loading && !dashboard ? (
+        <ReadOnlySkeleton label="Loading dashboard" />
+      ) : error ? (
+        <StatePanel
+          kind="error"
+          title="Dashboard could not load"
+          body={error}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      ) : !dashboard ? (
+        <StatePanel
+          kind="empty"
+          title="Dashboard unavailable"
+          body="The owner dashboard source did not return data."
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      ) : (
+        <>
+          <Card className="dashboard-overview-card">
+            <h2>Workspace overview</h2>
+            <ul className="dashboard-overview-list">
+              {dashboard.dashboard.sections
+                .filter(
+                  (item) =>
+                    !(
+                      item.id === 'support' &&
+                      item.state === 'no_data_yet' &&
+                      /not mounted|not available/i.test(item.detail)
+                    ),
+                )
+                .map((item) => (
+                  <li key={item.id}>
+                    <span>
+                      <strong>{item.label}</strong>
+                      <small>{item.detail}</small>
+                    </span>
+                    <span>
+                      <Chip label={productStateLabel(item.state)} tone="status" />
+                      <strong>{item.value_label}</strong>
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </Card>
+          {showExperiencePreview && (
+            <Card className="experience-preview-dashboard-card">
               <h2>Preview Parent &amp; Student portals</h2>
-              <Chip label="Staging only" tone="status" />
-            </header>
-            <strong>Walk through the fictional Cohen household</strong>
-            <p>
-              Choose Parent, each sibling, or Rabbi/Classroom in a read-only preview. Fictional
-              Student sessions open separately and never replace this Administrator session.
-            </p>
-            <button
-              type="button"
-              className="button-primary"
-              data-action-id="dashboard.open_experience_preview.button"
-              onClick={() => onOpen('/app/experience-preview')}
-            >
-              Open portal preview
-            </button>
-          </article>
-        )}
-        {visibleSections.map((section) => {
-          const href = section.href;
-          const actionId = dashboardOpenActionId(href);
-          return (
-            <article key={section.id} className={`dashboard-card state-${section.state}`}>
-              <header>
-                <h2>{section.label}</h2>
-                <Chip label={productStateLabel(section.state)} tone="status" />
-              </header>
-              <strong>{section.value_label}</strong>
-              <p>{section.detail}</p>
-              {section.trend_label && <p>{section.trend_label}</p>}
-              {section.next_action && <small>Next: {section.next_action}</small>}
-              {section.updated_at && <small>Last updated {formatDate(section.updated_at)}</small>}
-              {href && actionId && actionIds.has(actionId) && (
-                <button
-                  type="button"
-                  className="button-secondary"
-                  data-action-id={actionId}
-                  onClick={() => onOpen(href)}
-                >
-                  {dashboardOpenLabel(href)}
-                </button>
-              )}
-            </article>
-          );
-        })}
-      </div>
+              <p>
+                Walk through the fictional Cohen household without replacing this Administrator
+                session.
+              </p>
+              <Button
+                type="button"
+                variant="primary"
+                data-action-id="dashboard.open_experience_preview.button"
+                onClick={onOpenExperiencePreview}
+              >
+                Open portal preview
+              </Button>
+            </Card>
+          )}
+        </>
+      )}
     </section>
   );
 }
 
 function ClassesPanel({
+  section,
   classes,
   selectedClass,
+  gamificationDashboard,
+  gamificationLoading,
+  gamificationError,
   loading,
   error,
   detailLoading,
   detailError,
-  onOpen,
-  onBack,
+  onNavigate,
+  onSelectOccurrence,
   onRetry,
   onRetryDetail,
+  onRetryRewards,
 }: {
+  section: ClassroomSectionId;
   classes: ClassOccurrenceSummary[];
   selectedClass: ClassOccurrenceDetail | null;
+  gamificationDashboard: AdminGamificationDashboardResponse | null;
+  gamificationLoading: boolean;
+  gamificationError: string;
   loading: boolean;
   error: string;
   detailLoading: boolean;
   detailError: string;
-  onOpen: (occurrenceKey: string) => void;
-  onBack: () => void;
+  onNavigate: (href: string) => void;
+  onSelectOccurrence: (occurrenceKey: string) => void;
   onRetry: () => void;
   onRetryDetail: (occurrenceKey: string) => void;
+  onRetryRewards: () => void;
 }) {
-  if (loading && classes.length === 0) return <ReadOnlySkeleton label="Loading classes" />;
-  if (error) {
-    return (
-      <StatePanel
-        kind="error"
-        title="Classes could not load"
-        body={error}
-        actionLabel="Retry"
-        onAction={onRetry}
-      />
-    );
-  }
-  if (detailLoading && !selectedClass) return <ReadOnlySkeleton label="Loading class details" />;
-  if (detailError && !selectedClass) {
-    return (
-      <StatePanel
-        kind="error"
-        title="Class details could not load"
-        body={detailError}
-        actionLabel="Back to classes"
-        onAction={onBack}
-      />
-    );
-  }
-  if (selectedClass) {
-    return (
-      <section className="class-detail" aria-busy={loading || detailLoading}>
-        <button
-          type="button"
-          className="button-secondary"
-          data-action-id="classes.back_to_list.button"
-          onClick={onBack}
-        >
-          Back to classes
-        </button>
-        {detailError && (
-          <p className="notice-banner error" role="alert">
-            {detailError}
-          </p>
-        )}
-        <article
-          className={`readonly-row state-${productStateClass(selectedClass.product_state.label)}`}
-        >
-          <div>
-            <h2>{selectedClass.title}</h2>
-            <p>{formatDate(selectedClass.starts_at)}</p>
-            <div className="chip-row">
-              <Chip label={selectedClass.product_state.label} tone="status" />
-              <Chip label={readableState(selectedClass.status)} tone="source" />
-            </div>
-            <p>{selectedClass.product_state.explanation}</p>
-          </div>
-          <dl>
-            <div>
-              <dt>Next action</dt>
-              <dd>{selectedClass.next_action ?? 'No owner action needed right now'}</dd>
-            </div>
-            <div>
-              <dt>Protected access</dt>
-              <dd>{selectedClass.protected_access_state.label}</dd>
-            </div>
-            <div>
-              <dt>Classroom link</dt>
-              <dd>
-                {selectedClass.readiness.raw_provider_target_present
-                  ? 'Protected link available'
-                  : 'Not connected yet'}
-              </dd>
-            </div>
-          </dl>
-        </article>
-        <div className="class-detail-grid">
-          <ClassMetricGroup
-            title="Enrollment"
-            rows={[
-              ['Households', selectedClass.enrollment_counts.households],
-              ['Learners', selectedClass.enrollment_counts.learners],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Attendance"
-            rows={[
-              ['Manual marks', selectedClass.attendance_summary.manual_marks],
-              ['Classroom launches', selectedClass.attendance_summary.launch_attempts],
-              ['Joined sessions', selectedClass.attendance_summary.joined_attempts],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Content"
-            rows={[
-              ['Recordings', selectedClass.content_summary.videos],
-              ['Review sheets', selectedClass.content_summary.review_sheets],
-              ['Processing', selectedClass.content_summary.processing],
-              ['Needs review', selectedClass.content_summary.needs_review],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Questions"
-            rows={[
-              ['New questions', selectedClass.question_summary.new_questions],
-              ['Featured', selectedClass.question_summary.featured_questions],
-              ['Answered', selectedClass.question_summary.answered_questions],
-            ]}
-          />
-          <ClassMetricGroup
-            title="Reminder progress"
-            rows={[
-              ['Queued', selectedClass.fulfillment_counts.queued],
-              ['Satisfied', selectedClass.fulfillment_counts.satisfied],
-              ['Suppressed', selectedClass.fulfillment_counts.suppressed],
-              ['Skipped', selectedClass.fulfillment_counts.skipped],
-              ['Access not connected', selectedClass.fulfillment_counts.provider_unavailable],
-            ]}
-          />
-          <article className="readonly-row">
-            <div>
-              <h2>Protected classroom</h2>
-              <p>{selectedClass.readiness.reason}</p>
-            </div>
-            <dl>
-              <div>
-                <dt>Access state</dt>
-                <dd>{selectedClass.protected_access_state.explanation}</dd>
-              </div>
-              <div>
-                <dt>Launch requirement</dt>
-                <dd>Protected access required</dd>
-              </div>
-              <div>
-                <dt>Classroom target</dt>
-                <dd>No classroom link is shown until access is connected.</dd>
-              </div>
-            </dl>
-          </article>
-        </div>
-        <button
-          type="button"
-          className="button-secondary"
-          data-action-id="classes.open_detail.button"
-          disabled={detailLoading}
-          onClick={() => onRetryDetail(selectedClass.occurrence_key)}
-        >
-          {detailLoading ? 'Refreshing...' : 'Refresh class details'}
-        </button>
-      </section>
-    );
-  }
-  if (classes.length === 0) {
-    return (
-      <StatePanel
-        kind="empty"
-        title="No classes yet"
-        body="No class schedule has been recorded yet."
-      />
-    );
-  }
   return (
-    <section className="readonly-list" aria-busy={loading}>
-      {classes.map((classItem) => (
-        <article
-          className={`readonly-row state-${productStateClass(classItem.product_state.label)}`}
-          key={classItem.occurrence_key}
-        >
-          <div>
-            <h2>{classItem.title}</h2>
-            <p>{formatDate(classItem.starts_at)}</p>
-            <div className="chip-row">
-              <Chip label={classItem.product_state.label} tone="status" />
-              <Chip label={readableState(classItem.status)} tone="source" />
-            </div>
-            <p>{classItem.product_state.explanation}</p>
-          </div>
-          <dl>
-            <div>
-              <dt>Class state</dt>
-              <dd>{readableState(classItem.status)}</dd>
-            </div>
-            <div>
-              <dt>Protected access</dt>
-              <dd>{classItem.protected_access_state.label}</dd>
-            </div>
-            <div>
-              <dt>Next action</dt>
-              <dd>{classItem.next_action ?? 'No owner action needed right now'}</dd>
-            </div>
-          </dl>
-          <button
-            type="button"
-            className="button-secondary"
-            data-action-id="classes.open_detail.button"
-            onClick={() => onOpen(classItem.occurrence_key)}
-          >
-            Open class details
-          </button>
-        </article>
-      ))}
+    <section className="classroom-workspace" aria-busy={loading || detailLoading}>
+      <WorkspaceTabs
+        tabs={CLASSROOM_SECTIONS}
+        currentId={section}
+        label="Classroom area"
+        onNavigate={onNavigate}
+      />
+      {loading && classes.length === 0 ? (
+        <ReadOnlySkeleton label="Loading classroom" />
+      ) : error ? (
+        <StatePanel
+          kind="error"
+          title="Classroom could not load"
+          body={error}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      ) : classes.length === 0 ? (
+        <StatePanel
+          kind="empty"
+          title="No classes yet"
+          body="No class schedule has been recorded yet."
+        />
+      ) : (
+        <>
+          <label className="classroom-occurrence-selector">
+            <span>Class occurrence</span>
+            <Select
+              value={selectedClass?.occurrence_key ?? ''}
+              onChange={(event) => onSelectOccurrence(event.currentTarget.value)}
+            >
+              {!selectedClass && (
+                <option value="" disabled>
+                  Choose an occurrence
+                </option>
+              )}
+              {classes.map((classItem) => (
+                <option key={classItem.occurrence_key} value={classItem.occurrence_key}>
+                  {classItem.title} - {formatDate(classItem.starts_at)}
+                </option>
+              ))}
+            </Select>
+          </label>
+          {detailLoading && !selectedClass ? (
+            <ReadOnlySkeleton label="Loading class details" />
+          ) : detailError && !selectedClass ? (
+            <StatePanel
+              kind="error"
+              title="Class details could not load"
+              body={detailError}
+              actionLabel="Retry"
+              onAction={() => onRetryDetail(classes[0]?.occurrence_key ?? '')}
+            />
+          ) : selectedClass ? (
+            <ClassroomFocusedBody
+              section={section}
+              occurrence={selectedClass}
+              gamificationDashboard={gamificationDashboard}
+              gamificationLoading={gamificationLoading}
+              gamificationError={gamificationError}
+              onRetryRewards={onRetryRewards}
+            />
+          ) : null}
+        </>
+      )}
     </section>
   );
 }
 
-function ClassMetricGroup({ title, rows }: { title: string; rows: Array<[string, number]> }) {
+function ClassroomFocusedBody({
+  section,
+  occurrence,
+  gamificationDashboard,
+  gamificationLoading,
+  gamificationError,
+  onRetryRewards,
+}: {
+  section: ClassroomSectionId;
+  occurrence: ClassOccurrenceDetail;
+  gamificationDashboard: AdminGamificationDashboardResponse | null;
+  gamificationLoading: boolean;
+  gamificationError: string;
+  onRetryRewards: () => void;
+}) {
+  if (section === 'rewards') {
+    return (
+      <GamificationAdminPanel
+        dashboard={gamificationDashboard}
+        loading={gamificationLoading}
+        error={gamificationError}
+        onRetry={onRetryRewards}
+      />
+    );
+  }
+
+  const rows =
+    section === 'schedule'
+      ? [
+          ['Starts', formatDate(occurrence.starts_at)],
+          ['Class state', readableState(occurrence.status)],
+          ['Protected access', occurrence.protected_access_state.label],
+          ['Next action', occurrence.next_action ?? 'No owner action needed right now'],
+        ]
+      : section === 'questions'
+        ? [
+            ['New questions', occurrence.question_summary.new_questions],
+            ['Featured', occurrence.question_summary.featured_questions],
+            ['Answered', occurrence.question_summary.answered_questions],
+          ]
+        : [
+            ['Households', occurrence.enrollment_counts.households],
+            ['Learners', occurrence.enrollment_counts.learners],
+            ['Joined sessions', occurrence.attendance_summary.joined_attempts],
+            ['Recordings', occurrence.content_summary.videos],
+          ];
+
   return (
-    <article className="readonly-row">
+    <article
+      className={`readonly-row classroom-focused state-${productStateClass(
+        occurrence.product_state.label,
+      )}`}
+    >
       <div>
-        <h2>{title}</h2>
+        <h2>{occurrence.title}</h2>
+        <p>{occurrence.product_state.explanation}</p>
+        <div className="chip-row">
+          <Chip label={occurrence.product_state.label} tone="status" />
+          <Chip label={readableState(occurrence.status)} tone="source" />
+        </div>
       </div>
       <dl>
         {rows.map(([label, value]) => (
@@ -1495,6 +1470,10 @@ function ClassMetricGroup({ title, rows }: { title: string; rows: Array<[string,
       </dl>
     </article>
   );
+}
+
+function CapabilityGate({ title, body }: { title: string; body: string }) {
+  return <EmptyState title={title} body={body} />;
 }
 
 function BillingPanel({
@@ -2649,12 +2628,12 @@ function sourceLabel(value: string) {
 }
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
-  if (pathname === '/app/dashboard') return 'dashboard';
+  if (pathname === '/app/dashboard' || pathname.startsWith('/app/dashboard/')) return 'dashboard';
   if (pathname === '/app/launch-status') return 'launch-status';
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
-  if (pathname === '/app/rewards') return 'rewards';
+  if (pathname === '/app/rewards') return 'classes';
   if (pathname === '/app/experience-preview' || pathname.startsWith('/app/experience-preview/')) {
     return 'experience-preview';
   }
@@ -2673,58 +2652,34 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'dashboard') return 'Dashboard';
   if (surface === 'launch-status') return 'Launch Status';
-  if (surface === 'classes') return 'Classes';
-  if (surface === 'content') return 'Content Workspace';
+  if (surface === 'classes') return 'Classroom';
+  if (surface === 'content') return 'Content';
   if (surface === 'billing') return 'Household Access';
-  if (surface === 'rewards') return 'Learning Rewards';
   if (surface === 'experience-preview') return 'Experience Preview';
   if (surface === 'support') return 'Support';
-  return 'CRM';
+  return 'Contacts';
 }
 
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
-    return 'Workspace snapshot for leads, classes, communications, content, members, support, and current access.';
+    return 'A focused overview of the One Time workspace.';
   }
   if (surface === 'launch-status') {
     return 'Board-derived launch milestone, working capabilities, exact blockers, and next task.';
   }
   if (surface === 'classes')
-    return 'Class schedule, access, content, questions, and learner readiness.';
+    return 'One occurrence at a time across schedule, questions, and rewards.';
   if (surface === 'content') {
-    return 'Rabbi and One Time content review, prompts, artifacts, social drafts, and provider-off status.';
+    return 'Library, factory, studio, knowledge, and prompt workspaces.';
   }
   if (surface === 'billing') {
     return 'Current household learning access; payment history remains in GHL.';
-  }
-  if (surface === 'rewards') {
-    return 'Private learner progress, rewards, guardrails, and correction audit.';
   }
   if (surface === 'experience-preview') {
     return 'Read-only fictional Parent, Student, and Rabbi journeys for the isolated staging runtime.';
   }
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
-  return 'One Time signup and contact review.';
-}
-
-function dashboardOpenActionId(href: string | null) {
-  if (href === '/app/crm') return 'dashboard.open_crm.button';
-  if (href === '/app/classes') return 'dashboard.open_classes.button';
-  if (href === communicationsRouteDescriptor.path) return 'dashboard.open_communications.button';
-  if (href === '/app/content') return 'dashboard.open_content.button';
-  if (href === '/app/billing') return 'dashboard.open_billing.button';
-  if (href === '/app/rewards') return 'dashboard.open_rewards.button';
-  return null;
-}
-
-function dashboardOpenLabel(href: string) {
-  if (href === '/app/crm') return 'Review leads';
-  if (href === '/app/classes') return 'Open classroom';
-  if (href === communicationsRouteDescriptor.path) return 'Review communications';
-  if (href === '/app/content') return 'Configure content';
-  if (href === '/app/billing') return 'Open household access';
-  if (href === '/app/rewards') return 'Review rewards';
-  return 'Open';
+  return 'Parent and adult contact review.';
 }
 
 function productStateLabel(value: string) {

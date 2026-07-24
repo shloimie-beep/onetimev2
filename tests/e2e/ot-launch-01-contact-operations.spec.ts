@@ -18,7 +18,7 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
   ]);
 
   await page.goto('/app/crm');
-  await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
   await page.getByLabel('Search').fill('Contact Operations Parent');
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('button', { name: 'Open Contact Operations Parent' }).click();
@@ -86,7 +86,7 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
   await expect(page.getByRole('button', { name: 'Reconciliation queued' })).toBeDisabled();
 
   await page.getByRole('button', { name: 'Cancel' }).click();
-  await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
   await page.getByRole('button', { name: 'Parent household' }).click();
   await expect(page).toHaveURL(/\/app\/crm\/contact-operations$/);
   await expect(page.getByRole('heading', { name: 'Parent household' })).toBeVisible();

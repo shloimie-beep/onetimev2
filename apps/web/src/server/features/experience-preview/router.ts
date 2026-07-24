@@ -822,11 +822,6 @@ export async function buildExperiencePreviewCatalog(
               : 'Provider off',
             telegramFoundationReady(config) ? 'ready' : 'provider_off',
           ),
-          item(
-            'BNA Agent Actions',
-            config.ot89SupportEnabled ? 'Configured' : 'Provider off',
-            config.ot89SupportEnabled ? 'ready' : 'provider_off',
-          ),
         ]),
       ],
     },

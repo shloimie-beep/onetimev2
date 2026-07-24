@@ -403,6 +403,22 @@ textarea:focus-visible,
   gap: 8px;
 }
 
+.shell-utility-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+  border-top: 1px solid #34464d;
+  padding-top: 16px;
+}
+
+.shell-utility-section h2 {
+  margin: 0;
+  color: #c8d6d9;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .shell-nav a {
   display: flex;
   align-items: center;
@@ -938,6 +954,24 @@ textarea:focus-visible,
   border-color: #ede518;
   background: rgba(237, 229, 24, 0.14);
   color: #ffffff;
+}
+
+.workspace-tabs {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.workspace-tabs__select {
+  display: none;
+  gap: 6px;
+  color: #c8d6d9;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.workspace-tabs__select select {
+  width: 100%;
 }
 
 .ot-metric-row {
@@ -1560,5 +1594,15 @@ textarea:focus-visible,
 
   .skeleton-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace-tabs .ot-section-tabs {
+    display: none;
+  }
+
+  .workspace-tabs__select {
+    display: grid;
   }
 }

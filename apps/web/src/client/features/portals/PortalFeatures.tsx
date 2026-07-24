@@ -104,6 +104,7 @@ export type ParentPortalFeatureProps = {
   rewardHistory?: Record<string, RewardEvent[]>;
   selectedLearnerKey?: string | null;
   activeSection?: ParentPortalSection;
+  navigationMode?: 'shell' | 'embedded';
   actorFingerprint: string;
   resetSignal?: number;
   onSelectLearner?: (learnerKey: string) => void;
@@ -130,6 +131,7 @@ export type StudentPortalFeatureProps = {
   viewState: PortalViewState;
   dashboard: StudentPortalDashboard | null;
   activeSection?: StudentPortalSection;
+  navigationMode?: 'shell' | 'embedded';
   actorFingerprint: string;
   resetSignal?: number;
   onLaunchClass?: (action: ProtectedActionDescriptor) => void;
@@ -151,6 +153,7 @@ export function ParentPortalFeature({
   rewardHistory = {},
   selectedLearnerKey,
   activeSection: requestedSection,
+  navigationMode = 'embedded',
   actorFingerprint,
   resetSignal,
   onSelectLearner,
@@ -222,6 +225,7 @@ export function ParentPortalFeature({
       <StatusStrip viewState={viewState} onRetry={onRetry} />
       <PortalWorkspace
         role="parent"
+        navigationMode={navigationMode}
         sections={PARENT_PORTAL_SECTIONS}
         activeSection={activeSection}
         onSelectSection={(section) => selectSection(section as ParentPortalSection)}
@@ -445,6 +449,7 @@ export function StudentPortalFeature({
   viewState,
   dashboard,
   activeSection: requestedSection,
+  navigationMode = 'embedded',
   actorFingerprint,
   resetSignal,
   onLaunchClass,
@@ -498,6 +503,7 @@ export function StudentPortalFeature({
       <StatusStrip viewState={viewState} onRetry={onRetry} />
       <PortalWorkspace
         role="student"
+        navigationMode={navigationMode}
         sections={STUDENT_PORTAL_SECTIONS}
         activeSection={activeSection}
         onSelectSection={(section) => selectSection(section as StudentPortalSection)}
@@ -664,6 +670,7 @@ type PortalSummaryCard = {
 
 function PortalWorkspace({
   role,
+  navigationMode,
   sections,
   activeSection,
   onSelectSection,
@@ -672,6 +679,7 @@ function PortalWorkspace({
   children,
 }: {
   role: 'parent' | 'student';
+  navigationMode: 'shell' | 'embedded';
   sections: readonly PortalSectionDefinition[];
   activeSection: string;
   onSelectSection: (section: string) => void;
@@ -683,15 +691,17 @@ function PortalWorkspace({
   if (!active) return null;
   const roleLabel = role === 'parent' ? 'Family workspace' : 'My learning';
   return (
-    <div className="ot-portal-layout">
-      <aside className="ot-portal-menu" aria-label={`${roleLabel} categories`}>
-        <p className="ot-kicker">{roleLabel}</p>
-        <PortalSectionButtons
-          sections={sections}
-          activeSection={active.id}
-          onSelectSection={onSelectSection}
-        />
-      </aside>
+    <div className="ot-portal-layout" data-navigation-mode={navigationMode}>
+      {navigationMode === 'embedded' && (
+        <aside className="ot-portal-menu" aria-label={`${roleLabel} categories`}>
+          <p className="ot-kicker">{roleLabel}</p>
+          <PortalSectionButtons
+            sections={sections}
+            activeSection={active.id}
+            onSelectSection={onSelectSection}
+          />
+        </aside>
+      )}
       <div className="ot-portal-workspace">
         <header className="ot-portal-workspace-head">
           <div>
@@ -701,13 +711,15 @@ function PortalWorkspace({
           </div>
           {topControls}
         </header>
-        <nav className="ot-portal-subnav" aria-label={`${roleLabel} shortcuts`}>
-          <PortalSectionButtons
-            sections={sections}
-            activeSection={active.id}
-            onSelectSection={onSelectSection}
-          />
-        </nav>
+        {navigationMode === 'embedded' && (
+          <nav className="ot-portal-subnav" aria-label={`${roleLabel} categories`}>
+            <PortalSectionButtons
+              sections={sections}
+              activeSection={active.id}
+              onSelectSection={onSelectSection}
+            />
+          </nav>
+        )}
         <section className="ot-portal-summary-grid" aria-label={`${roleLabel} overview`}>
           {summaryCards.map((card) => (
             <article
@@ -718,13 +730,6 @@ function PortalWorkspace({
               <h3>{card.label}</h3>
               <strong>{card.value}</strong>
               <p>{card.detail}</p>
-              <button
-                type="button"
-                className="ot-text-button"
-                onClick={() => onSelectSection(card.section)}
-              >
-                Open {card.label.toLowerCase()}
-              </button>
             </article>
           ))}
         </section>

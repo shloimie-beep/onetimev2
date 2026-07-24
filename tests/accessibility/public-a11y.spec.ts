@@ -15,7 +15,7 @@ test('axe accessibility check authenticated CRM', async ({ page }) => {
   await page.getByLabel('Password').fill('TestPassword!234');
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForURL('**/app/crm');
-  await page.getByRole('heading', { name: 'CRM' }).waitFor();
+  await page.getByRole('heading', { name: 'Contacts' }).waitFor();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });

@@ -20,6 +20,9 @@
   gap: 18px;
   min-width: 0;
 }
+.ot-portal-layout[data-navigation-mode='shell'] {
+  grid-template-columns: minmax(0, 1fr);
+}
 .ot-portal-menu {
   position: sticky;
   top: 82px;
@@ -157,10 +160,6 @@
 .ot-portal-summary-card p {
   color: var(--ot-portal-muted);
   overflow-wrap: anywhere;
-}
-.ot-portal-summary-card .ot-text-button {
-  justify-self: start;
-  margin-top: auto;
 }
 .ot-portal-focus {
   min-height: clamp(360px, 45vh, 680px);
