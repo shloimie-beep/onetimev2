@@ -309,7 +309,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
         household_key: householdKey,
         include_archived: true,
       });
-      const visibleLearners = learners.slice(0, 12);
+      const visibleLearners = learners;
       const studentAccess = await Promise.all(
         visibleLearners.map((learner) =>
           deps.repository.getStudentAccessState({ actor, learner_key: learner.learner_key }),
@@ -838,6 +838,15 @@ function validateStudentAccessCredentialPayload(
   payload: StudentAccessOperationPayload,
 ) {
   if (operationType !== 'setup' && operationType !== 'reset') return;
+  if (operationType === 'reset') {
+    if (payload.password) {
+      throw new PortalServiceError(
+        'VALIDATION_ERROR',
+        'Student reset uses a secure one-time link; do not submit a password.',
+      );
+    }
+    return;
+  }
   if (operationType === 'setup' && !payload.username) {
     throw new PortalServiceError('VALIDATION_ERROR', 'Student username is required for setup.');
   }

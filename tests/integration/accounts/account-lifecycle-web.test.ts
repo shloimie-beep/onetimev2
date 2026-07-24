@@ -134,7 +134,7 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
     expect(replay.json).toMatchObject({ code: 'TOKEN_CONSUMED' });
   });
 
-  it('completes Parent activation without issuing a misleading session when access is absent', async () => {
+  it('completes Parent activation into a safe paused session when access is absent', async () => {
     await pool.query(
       `INSERT INTO onetime.portal_households
          (household_key, account_key, product_key, display_name)
@@ -167,13 +167,12 @@ describe('OPS-03B email step-up account lifecycle web flow', () => {
       activationPage.cookies,
     );
 
-    expect(activated.response.status).toBe(409);
+    expect(activated.response.status).toBe(200);
     expect(activated.json).toMatchObject({
-      success: false,
-      code: 'CURRENT_ACCESS_REQUIRED',
-      activation_completed: true,
+      success: true,
+      return_to: '/app/parent',
     });
-    expect(cookieHeader(activated.response.headers)).not.toContain('otcrm_session=');
+    expect(cookieHeader(activated.response.headers)).toContain('otcrm_session=');
     const relationship = await pool.query(
       `SELECT status, guardian_user_ref
          FROM onetime.portal_guardian_relationships

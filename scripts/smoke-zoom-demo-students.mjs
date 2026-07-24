@@ -35,7 +35,7 @@ try {
       (student) => student.protected_launch_ready,
     ),
     all_students_have_vimeo_lesson: result.students.every((student) => student.lesson_ready),
-    fourth_student_cap_rejection: result.fourth_student_cap_rejection,
+    fourth_student_creation_supported: result.fourth_student_creation_supported,
     zoom_provider_mode: result.zoom_provider_mode,
     raw_zoom_url_printed: false,
     raw_vimeo_url_printed: false,
@@ -45,7 +45,7 @@ try {
     summary.student_count !== 3 ||
     !summary.all_students_have_protected_launch ||
     !summary.all_students_have_vimeo_lesson ||
-    !summary.fourth_student_cap_rejection
+    !summary.fourth_student_creation_supported
   ) {
     throw new Error('Zoom demo student preview smoke failed.');
   }

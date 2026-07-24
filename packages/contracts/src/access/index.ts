@@ -16,6 +16,7 @@ const opaqueSourceReferenceSchema = z
 
 export const accountAccessStateSchema = z.enum([
   'pending',
+  'paused',
   'active',
   'grace',
   'scheduled_end',
@@ -27,8 +28,10 @@ export type AccountAccessState = z.infer<typeof accountAccessStateSchema>;
 
 export const accountAccessSourceKindSchema = z.enum([
   'free_pilot',
+  'complimentary',
   'highlevel_payment_state',
   'admin_override',
+  'admin_suspension',
   'legacy_preview',
 ]);
 export type AccountAccessSourceKind = z.infer<typeof accountAccessSourceKindSchema>;

@@ -137,22 +137,22 @@ describe('OT-89A subscriber support producer', () => {
     }
   });
 
-  it('revokes an expired current-access session at submit and creates no durable rows', async () => {
+  it('keeps Support available when an active Parent becomes commercially paused', async () => {
     const login = await loginAs('subscriber@example.test', 'SubscriberPass!234');
     const page = await fetch(`${baseUrl}/app/support`, { headers: { cookie: login.cookies } });
     expect(await page.text()).toContain('crm-root');
     await expireSubscriberCurrentAccess();
     const response = await postSupport(login, validSupportPayload('expired'));
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(202);
     const rows = await pool.query(
       `SELECT
         (SELECT count(*)::int FROM onetime.support_submissions) AS submissions,
         (SELECT count(*)::int FROM onetime.support_attachments) AS attachments,
         (SELECT count(*)::int FROM onetime.support_outbox) AS outbox`,
     );
-    expect(countValue(rows.rows[0].submissions)).toBe(0);
+    expect(countValue(rows.rows[0].submissions)).toBe(1);
     expect(countValue(rows.rows[0].attachments)).toBe(0);
-    expect(countValue(rows.rows[0].outbox)).toBe(0);
+    expect(countValue(rows.rows[0].outbox)).toBe(1);
   });
 
   it('commits a subscriber receipt and outbox without synchronously calling BNA', async () => {

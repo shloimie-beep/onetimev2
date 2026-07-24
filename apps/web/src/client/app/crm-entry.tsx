@@ -67,6 +67,12 @@ const LaunchStatus = React.lazy(() =>
   })),
 );
 
+const ContactOperationsPanel = React.lazy(() =>
+  import('./contact-operations/ContactOperationsPanel.js').then((module) => ({
+    default: module.ContactOperationsPanel,
+  })),
+);
+
 type ContactFormState = {
   display_name: string;
   family_school_classification: 'family' | 'school';
@@ -134,6 +140,10 @@ function CrmApp() {
   const [selected, setSelected] = useState<ContactDetail | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [contactOperationsMode, setContactOperationsMode] = useState(false);
+  const [contactOperationsHouseholdKey, setContactOperationsHouseholdKey] = useState<string | null>(
+    null,
+  );
   const [surface, setSurface] = useState<OwnerSurface>('crm');
   const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
   const [supportReceiptId, setSupportReceiptId] = useState<string | null>(null);
@@ -234,6 +244,7 @@ function CrmApp() {
     if (sessionExpired) return;
     const supportReceiptMatch = location.pathname.match(/^\/app\/support\/receipts\/([^/]+)$/);
     if (location.pathname === '/app/support' || supportReceiptMatch?.[1]) {
+      setContactOperationsMode(false);
       setSurface('support');
       setSupportReceiptId(
         supportReceiptMatch?.[1] ? decodeURIComponent(supportReceiptMatch[1]) : null,
@@ -247,6 +258,7 @@ function CrmApp() {
     }
     const ownerSurface = ownerSurfaceFromPath(location.pathname);
     if (ownerSurface && ownerSurface !== 'crm') {
+      setContactOperationsMode(false);
       const classDetailMatch = location.pathname.match(/^\/app\/classes\/([^/]+)$/);
       setSurface(ownerSurface);
       setCommunicationsMode(null);
@@ -273,6 +285,7 @@ function CrmApp() {
       return;
     }
     if (location.pathname === communicationsRouteDescriptor.path) {
+      setContactOperationsMode(false);
       setSurface('crm');
       setCommunicationsMode({ kind: 'global' });
       setSelected(null);
@@ -285,6 +298,7 @@ function CrmApp() {
       /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
     );
     if (contactCommunicationsMatch?.[1]) {
+      setContactOperationsMode(false);
       setSurface('crm');
       setCommunicationsMode({
         kind: 'contact',
@@ -296,7 +310,22 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
+    if (location.pathname === '/app/crm/contact-operations') {
+      setSurface('crm');
+      setContactOperationsMode(true);
+      setContactOperationsHouseholdKey(
+        new URLSearchParams(location.search).get('household')?.trim() || null,
+      );
+      setCommunicationsMode(null);
+      setSupportReceiptId(null);
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
     setSurface('crm');
+    setContactOperationsMode(false);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
     const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
@@ -417,6 +446,7 @@ function CrmApp() {
   }
 
   function openContact(contactId: string) {
+    setContactOperationsMode(false);
     returnFocusContactId.current = contactId;
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(contactId)}`);
     setCreating(false);
@@ -427,6 +457,8 @@ function CrmApp() {
   async function backToList() {
     history.pushState({}, '', '/app/crm');
     setSurface('crm');
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -453,12 +485,31 @@ function CrmApp() {
     setSelected(null);
     setEditing(false);
     setCreating(true);
+    setContactOperationsMode(false);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
     history.pushState({}, '', '/app/crm');
   }
 
+  function startContactOperations(householdKey?: string) {
+    const href = householdKey
+      ? `/app/crm/contact-operations?household=${encodeURIComponent(householdKey)}`
+      : '/app/crm/contact-operations';
+    history.pushState({}, '', href);
+    setSurface('crm');
+    setContactOperationsMode(true);
+    setContactOperationsHouseholdKey(householdKey ?? null);
+    setCommunicationsMode(null);
+    setSupportReceiptId(null);
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
+  }
+
   function openGlobalCommunications() {
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     history.pushState({}, '', communicationsRouteDescriptor.path);
     setSurface('crm');
     setCommunicationsMode({ kind: 'global' });
@@ -470,6 +521,8 @@ function CrmApp() {
   }
 
   function openContactCommunications(contactId: string) {
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     history.pushState(
       {},
       '',
@@ -491,6 +544,8 @@ function CrmApp() {
     const classDetailMatch = href.match(/^\/app\/classes\/([^/]+)$/);
     history.pushState({}, '', href);
     setSurface(nextSurface);
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     setCommunicationsMode(null);
     setSupportReceiptId(null);
     setSelected(null);
@@ -589,6 +644,8 @@ function CrmApp() {
     setSelected(null);
     setCreating(false);
     setEditing(false);
+    setContactOperationsMode(false);
+    setContactOperationsHouseholdKey(null);
     setSurface('crm');
     setCommunicationsMode(null);
     setSupportReceiptId(null);
@@ -732,13 +789,15 @@ function CrmApp() {
       ? ownerSurfaceTitle(surface)
       : communicationsMode
         ? 'Communications'
-        : creating
-          ? 'Add contact'
-          : editing
-            ? 'Edit contact'
-            : selected
-              ? selected.display_name
-              : 'CRM';
+        : contactOperationsMode
+          ? 'Parent household'
+          : creating
+            ? 'Add contact'
+            : editing
+              ? 'Edit contact'
+              : selected
+                ? selected.display_name
+                : 'CRM';
   const pageDescription =
     surface !== 'crm'
       ? ownerSurfaceDescription(surface)
@@ -746,13 +805,15 @@ function CrmApp() {
         ? communicationsMode.kind === 'contact'
           ? 'Communication history and draft activity for this contact.'
           : 'One Time communication activity and draft follow-up status.'
-        : creating
-          ? 'Create a One Time contact without sending messages or granting access.'
-          : editing
-            ? 'Update CRM fields backed by the One Time contact API.'
-            : selected
-              ? contactSummary(selected)
-              : 'One Time signup and contact review.';
+        : contactOperationsMode
+          ? 'Invite a Parent, create local-only Students, and manage access and adult-only GHL sync.'
+          : creating
+            ? 'Create a One Time contact without sending messages or granting access.'
+            : editing
+              ? 'Update CRM fields backed by the One Time contact API.'
+              : selected
+                ? contactSummary(selected)
+                : 'One Time signup and contact review.';
   const toolbar =
     surface === 'dashboard' ? (
       <ReadOnlyToolbar
@@ -796,6 +857,8 @@ function CrmApp() {
           void loadContact(communicationsMode.contactId);
         }}
       />
+    ) : contactOperationsMode ? (
+      <FormToolbar onCancel={() => void backToList()} />
     ) : selected ? (
       <DetailToolbar
         contact={selected}
@@ -804,6 +867,11 @@ function CrmApp() {
         onBack={backToList}
         onEdit={() => setEditing(true)}
         onCommunications={() => openContactCommunications(selected.contact_id)}
+        onManageHousehold={
+          selected.managed_household
+            ? () => startContactOperations(selected.managed_household?.household_key)
+            : undefined
+        }
       />
     ) : creating || editing ? (
       <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
@@ -812,6 +880,7 @@ function CrmApp() {
         query={query}
         activeChips={activeChips}
         canEdit={canCreate}
+        canOperateHouseholds={canReadOwnerShell}
         onChange={setQuery}
         onApply={(nextQuery) => void loadList(undefined, nextQuery)}
         onClear={() => {
@@ -819,6 +888,7 @@ function CrmApp() {
           void loadList(undefined, defaultQuery);
         }}
         onCreate={startCreate}
+        onHouseholdOperations={startContactOperations}
       />
     );
 
@@ -948,7 +1018,22 @@ function CrmApp() {
           />
         </Suspense>
       )}
-      {surface === 'crm' && !communicationsMode && creating && (
+      {surface === 'crm' && contactOperationsMode && !communicationsMode && (
+        <Suspense
+          fallback={
+            <p className="state-panel" role="status">
+              Loading Parent household operations...
+            </p>
+          }
+        >
+          <ContactOperationsPanel
+            csrfToken={session?.csrf_token ?? ''}
+            initialHouseholdKey={contactOperationsHouseholdKey}
+            onProtectedStateCleared={clearProtectedState}
+          />
+        </Suspense>
+      )}
+      {surface === 'crm' && !contactOperationsMode && !communicationsMode && creating && (
         <ContactForm
           title="Add contact"
           initial={emptyForm}
@@ -960,6 +1045,7 @@ function CrmApp() {
       )}
       {surface === 'crm' &&
         !communicationsMode &&
+        !contactOperationsMode &&
         selected &&
         (editing ? (
           <ContactForm
@@ -983,22 +1069,28 @@ function CrmApp() {
             onArchived={() => void backToList()}
           />
         ))}
-      {surface === 'crm' && !communicationsMode && !creating && !selected && !editing && (
-        <ContactList
-          contacts={contacts}
-          loading={listLoading}
-          error={listError}
-          nextCursor={nextCursor}
-          query={query}
-          canEdit={canEdit}
-          onOpen={openContact}
-          onRetry={() => void loadList(undefined, query)}
-          onLoadMore={() => void loadList(nextCursor ?? undefined, query)}
-          onCreate={startCreate}
-        />
-      )}
       {surface === 'crm' &&
         !communicationsMode &&
+        !contactOperationsMode &&
+        !creating &&
+        !selected &&
+        !editing && (
+          <ContactList
+            contacts={contacts}
+            loading={listLoading}
+            error={listError}
+            nextCursor={nextCursor}
+            query={query}
+            canEdit={canEdit}
+            onOpen={openContact}
+            onRetry={() => void loadList(undefined, query)}
+            onLoadMore={() => void loadList(nextCursor ?? undefined, query)}
+            onCreate={startCreate}
+          />
+        )}
+      {surface === 'crm' &&
+        !communicationsMode &&
+        !contactOperationsMode &&
         !creating &&
         !selected &&
         !editing &&
@@ -1533,18 +1625,22 @@ function ListToolbar({
   query,
   activeChips,
   canEdit,
+  canOperateHouseholds,
   onChange,
   onApply,
   onClear,
   onCreate,
+  onHouseholdOperations,
 }: {
   query: QueryState;
   activeChips: { key: string; label: string }[];
   canEdit: boolean;
+  canOperateHouseholds: boolean;
   onChange: (query: QueryState) => void;
   onApply: (query: QueryState) => void;
   onClear: () => void;
   onCreate: () => void;
+  onHouseholdOperations: () => void;
 }) {
   return (
     <form
@@ -1615,10 +1711,23 @@ function ListToolbar({
           </button>
         </div>
       )}
-      {canEdit && (
-        <button type="button" className="button-primary toolbar-primary" onClick={onCreate}>
-          Add contact
-        </button>
+      {(canEdit || canOperateHouseholds) && (
+        <div className="toolbar-primary toolbar-primary--group">
+          {canOperateHouseholds && (
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => onHouseholdOperations()}
+            >
+              Parent household
+            </button>
+          )}
+          {canEdit && (
+            <button type="button" className="button-primary" onClick={onCreate}>
+              Add contact
+            </button>
+          )}
+        </div>
       )}
     </form>
   );
@@ -1631,6 +1740,7 @@ function DetailToolbar({
   onBack,
   onEdit,
   onCommunications,
+  onManageHousehold,
 }: {
   contact: ContactDetail;
   canEdit: boolean;
@@ -1638,6 +1748,7 @@ function DetailToolbar({
   onBack: () => void;
   onEdit: () => void;
   onCommunications: () => void;
+  onManageHousehold?: (() => void) | undefined;
 }) {
   return (
     <div className="detail-toolbar">
@@ -1652,6 +1763,11 @@ function DetailToolbar({
       {canReadCommunications && (
         <button type="button" className="button-secondary" onClick={onCommunications}>
           Communications
+        </button>
+      )}
+      {onManageHousehold && (
+        <button type="button" className="button-secondary" onClick={onManageHousehold}>
+          Manage household
         </button>
       )}
       {canEdit && (

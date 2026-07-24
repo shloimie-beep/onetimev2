@@ -106,7 +106,7 @@ describe('reviewed free-pilot provisioning', () => {
       expect.objectContaining({
         operation: 'revoke',
         result_state: 'applied',
-        current_state: 'revoked',
+        current_state: 'paused',
         grants_access: false,
         source_kind: 'free_pilot',
         source_revision: 2,

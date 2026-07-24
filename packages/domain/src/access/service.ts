@@ -18,12 +18,8 @@ import { stableKey } from '../lead/normalize.ts';
 const GRANTING_STATES = new Set(['active', 'grace', 'scheduled_end']);
 const MAX_SOURCE_FUTURE_SKEW_MS = 5 * 60 * 1000;
 const MAX_FREE_PILOT_DURATION_MS = 366 * 24 * 60 * 60 * 1000;
-const SOURCE_PRECEDENCE: Readonly<Record<AccountAccessSourceKind, number>> = {
-  legacy_preview: 0,
-  free_pilot: 1,
-  highlevel_payment_state: 2,
-  admin_override: 3,
-};
+
+type AccountAccessSourceSlot = 'highlevel_payment_state' | 'complimentary' | 'admin_suspension';
 
 export type AccountAccessActorKind =
   'highlevel_action' | 'admin' | 'provisioner' | 'account_lifecycle' | 'migration';
@@ -269,10 +265,36 @@ export async function applyHouseholdAccessStateWithClient(
   );
   const currentRow = currentResult.rows[0] as ProjectionRow | undefined;
   const currentProjection = currentRow ? projectionFromRow(currentRow, now) : null;
+  const sourceSlot = sourceSlotForKind(input.sourceKind, command.state);
+  const currentSourceResult = await input.db.query(
+    `SELECT source_state_key,
+            account_key,
+            product_key,
+            household_key,
+            source_slot,
+            source_kind,
+            state,
+            effective_at,
+            expires_at,
+            opaque_source_reference,
+            source_revision,
+            source_updated_at,
+            source_request_hash,
+            policy_version,
+            revocation_reason,
+            last_event_key
+       FROM onetime.account_access_source_states
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+        AND source_slot = $4
+      FOR UPDATE`,
+    [input.accountKey, input.productKey, command.household_key, sourceSlot],
+  );
+  const currentSourceRow = currentSourceResult.rows[0] as ProjectionRow | undefined;
 
   const sourceDecision = decideSourceTransition({
-    currentRow,
-    sourceKind: input.sourceKind,
+    currentRow: currentSourceRow,
     command,
     requestHash,
   });
@@ -309,6 +331,63 @@ export async function applyHouseholdAccessStateWithClient(
     return result;
   }
 
+  const sourceStateKey =
+    typeof currentSourceRow?.source_state_key === 'string'
+      ? currentSourceRow.source_state_key
+      : stableKey('account_access_source', [
+          input.accountKey,
+          input.productKey,
+          command.household_key,
+          sourceSlot,
+        ]);
+  await input.db.query(
+    `INSERT INTO onetime.account_access_source_states
+       (source_state_key, account_key, product_key, household_key, source_slot,
+        source_kind, state, effective_at, expires_at, opaque_source_reference,
+        source_revision, source_updated_at, source_request_hash, policy_version,
+        revocation_reason, last_event_key, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$17)
+     ON CONFLICT (account_key, product_key, household_key, source_slot)
+     DO UPDATE SET
+       source_kind = EXCLUDED.source_kind,
+       state = EXCLUDED.state,
+       effective_at = EXCLUDED.effective_at,
+       expires_at = EXCLUDED.expires_at,
+       opaque_source_reference = EXCLUDED.opaque_source_reference,
+       source_revision = EXCLUDED.source_revision,
+       source_updated_at = EXCLUDED.source_updated_at,
+       source_request_hash = EXCLUDED.source_request_hash,
+       policy_version = EXCLUDED.policy_version,
+       revocation_reason = EXCLUDED.revocation_reason,
+       last_event_key = EXCLUDED.last_event_key,
+       updated_at = EXCLUDED.updated_at`,
+    [
+      sourceStateKey,
+      input.accountKey,
+      input.productKey,
+      command.household_key,
+      sourceSlot,
+      input.sourceKind,
+      command.state,
+      command.effective_at,
+      command.expires_at,
+      command.opaque_source_reference,
+      command.source_revision,
+      command.source_updated_at,
+      requestHash,
+      command.policy_version,
+      command.revocation_reason,
+      eventKey,
+      now,
+    ],
+  );
+
+  const effective = await deriveEffectiveSourceState(input.db, {
+    accountKey: input.accountKey,
+    productKey: input.productKey,
+    householdKey: command.household_key,
+    now,
+  });
   const accessKey =
     currentProjection?.access_key ??
     stableKey('account_access', [input.accountKey, input.productKey, command.household_key]);
@@ -338,16 +417,16 @@ export async function applyHouseholdAccessStateWithClient(
         input.accountKey,
         input.productKey,
         command.household_key,
-        command.state,
-        input.sourceKind,
-        command.effective_at,
-        command.expires_at,
-        command.opaque_source_reference,
-        command.source_revision,
-        command.source_updated_at,
-        requestHash,
-        command.policy_version,
-        command.revocation_reason,
+        effective.state,
+        effective.sourceKind,
+        effective.effectiveAt,
+        effective.expiresAt,
+        effective.opaqueSourceReference,
+        effective.sourceRevision,
+        effective.sourceUpdatedAt,
+        effective.sourceRequestHash,
+        effective.policyVersion,
+        effective.revocationReason,
         nextAccessVersion,
         eventKey,
         now,
@@ -366,16 +445,16 @@ export async function applyHouseholdAccessStateWithClient(
         input.accountKey,
         input.productKey,
         command.household_key,
-        command.state,
-        input.sourceKind,
-        command.effective_at,
-        command.expires_at,
-        command.opaque_source_reference,
-        command.source_revision,
-        command.source_updated_at,
-        requestHash,
-        command.policy_version,
-        command.revocation_reason,
+        effective.state,
+        effective.sourceKind,
+        effective.effectiveAt,
+        effective.expiresAt,
+        effective.opaqueSourceReference,
+        effective.sourceRevision,
+        effective.sourceUpdatedAt,
+        effective.sourceRequestHash,
+        effective.policyVersion,
+        effective.revocationReason,
         nextAccessVersion,
         eventKey,
         now,
@@ -397,9 +476,10 @@ export async function applyHouseholdAccessStateWithClient(
     );
   }
 
-  const grantChanged = (currentProjection?.grants_access ?? false) !== nextProjection.grants_access;
-  const sessionsRevoked = grantChanged
-    ? await revokeHouseholdPortalSessions(input.db, {
+  const accessDisappeared =
+    (currentProjection?.grants_access ?? false) && !nextProjection.grants_access;
+  const sessionsRevoked = accessDisappeared
+    ? await revokeHouseholdStudentSessions(input.db, {
         accountKey: input.accountKey,
         productKey: input.productKey,
         householdKey: command.household_key,
@@ -465,6 +545,12 @@ export async function grantFreePilotAccess(
         productKey: input.productKey,
         householdKey: parsed.data.household_key,
       });
+      if (current?.source_kind === 'admin_override' && GRANTING_STATES.has(String(current.state))) {
+        throw new AccountAccessError(
+          'ACCESS_SOURCE_PRECEDENCE',
+          'The reviewed free-pilot command cannot replace an active administrative grant.',
+        );
+      }
       const sourceRevision =
         current?.source_kind === 'free_pilot' &&
         current.opaque_source_reference === parsed.data.opaque_source_reference
@@ -651,30 +737,19 @@ function assertNotTooFarInFuture(value: string, now: Date, label: string) {
 
 function decideSourceTransition(input: {
   currentRow: ProjectionRow | undefined;
-  sourceKind: AccountAccessSourceKind;
   command: ApplyCurrentAccessState;
   requestHash: string;
 }): 'applied' | 'replayed' {
   if (!input.currentRow) return 'applied';
-  const currentKind = String(input.currentRow.source_kind) as AccountAccessSourceKind;
-  const currentPrecedence = SOURCE_PRECEDENCE[currentKind];
-  const incomingPrecedence = SOURCE_PRECEDENCE[input.sourceKind];
-  if (incomingPrecedence < currentPrecedence) {
-    throw new AccountAccessError(
-      'ACCESS_SOURCE_PRECEDENCE',
-      'A lower-precedence access source cannot replace the current source.',
-    );
-  }
 
   const currentUpdatedAt = dateFromUnknown(input.currentRow.source_updated_at).getTime();
   const incomingUpdatedAt = new Date(input.command.source_updated_at).getTime();
   if (incomingUpdatedAt < currentUpdatedAt) {
     throw new AccountAccessError(
       'ACCESS_SOURCE_STALE',
-      'The access source update is older than the current projection.',
+      'The access source update is older than the current source slot.',
     );
   }
-  if (incomingPrecedence > currentPrecedence) return 'applied';
 
   const sameReference =
     String(input.currentRow.opaque_source_reference) === input.command.opaque_source_reference;
@@ -705,7 +780,119 @@ function decideSourceTransition(input: {
   return 'applied';
 }
 
-async function revokeHouseholdPortalSessions(
+function sourceSlotForKind(
+  sourceKind: AccountAccessSourceKind,
+  state: AccountAccessProjection['state'],
+): AccountAccessSourceSlot {
+  if (sourceKind === 'highlevel_payment_state') return 'highlevel_payment_state';
+  if (sourceKind === 'admin_suspension') return 'admin_suspension';
+  if (
+    sourceKind === 'admin_override' &&
+    ['suspended', 'manual_review', 'revoked'].includes(state)
+  ) {
+    return 'admin_suspension';
+  }
+  return 'complimentary';
+}
+
+async function deriveEffectiveSourceState(
+  db: Queryable,
+  input: {
+    accountKey: string;
+    productKey: string;
+    householdKey: string;
+    now: Date;
+  },
+) {
+  const result = await db.query(
+    `SELECT source_slot,
+            source_kind,
+            state,
+            effective_at,
+            expires_at,
+            opaque_source_reference,
+            source_revision,
+            source_updated_at,
+            source_request_hash,
+            policy_version,
+            revocation_reason
+       FROM onetime.account_access_source_states
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3`,
+    [input.accountKey, input.productKey, input.householdKey],
+  );
+  const rows = result.rows as ProjectionRow[];
+  if (!rows.length) {
+    throw new AccountAccessError(
+      'ACCESS_SOURCE_CONFLICT',
+      'No access source state is available for the household.',
+    );
+  }
+
+  const suspension = rows.find(
+    (row) =>
+      row.source_slot === 'admin_suspension' &&
+      ['suspended', 'manual_review'].includes(String(row.state)) &&
+      sourceIsInForce(row, input.now),
+  );
+  if (suspension) return effectiveSourceFromRow(suspension);
+
+  const paid = rows.find(
+    (row) =>
+      row.source_slot === 'highlevel_payment_state' &&
+      GRANTING_STATES.has(String(row.state)) &&
+      sourceIsInForce(row, input.now),
+  );
+  if (paid) return effectiveSourceFromRow(paid);
+
+  const complimentary = rows.find(
+    (row) =>
+      row.source_slot === 'complimentary' &&
+      GRANTING_STATES.has(String(row.state)) &&
+      sourceIsInForce(row, input.now),
+  );
+  if (complimentary) return effectiveSourceFromRow(complimentary);
+
+  const fallback = [...rows].sort(
+    (left, right) =>
+      dateFromUnknown(right.source_updated_at).getTime() -
+      dateFromUnknown(left.source_updated_at).getTime(),
+  )[0]!;
+  return {
+    ...effectiveSourceFromRow(fallback),
+    state: 'paused' as const,
+  };
+}
+
+function sourceIsInForce(row: ProjectionRow, now: Date) {
+  if (dateFromUnknown(row.effective_at).getTime() > now.getTime()) return false;
+  if (row.expires_at === null || row.expires_at === undefined) return true;
+  return dateFromUnknown(row.expires_at).getTime() > now.getTime();
+}
+
+function effectiveSourceFromRow(row: ProjectionRow) {
+  return {
+    state: String(row.state) as AccountAccessProjection['state'],
+    sourceKind: String(row.source_kind) as AccountAccessSourceKind,
+    effectiveAt: dateFromUnknown(row.effective_at),
+    expiresAt:
+      row.expires_at === null || row.expires_at === undefined
+        ? null
+        : dateFromUnknown(row.expires_at),
+    opaqueSourceReference: String(row.opaque_source_reference),
+    sourceRevision: Number(row.source_revision),
+    sourceUpdatedAt: dateFromUnknown(row.source_updated_at),
+    sourceRequestHash: String(row.source_request_hash),
+    policyVersion: String(row.policy_version),
+    revocationReason:
+      row.revocation_reason === null || row.revocation_reason === undefined
+        ? null
+        : String(row.revocation_reason),
+  };
+}
+
+async function revokeHouseholdStudentSessions(
   db: Queryable,
   input: {
     accountKey: string;
@@ -717,18 +904,6 @@ async function revokeHouseholdPortalSessions(
 ) {
   const users = await db.query(
     `SELECT users.user_key
-       FROM onetime.account_users AS users
-       JOIN onetime.portal_guardian_relationships AS guardians
-         ON guardians.account_key = users.account_key
-        AND guardians.product_key = users.product_key
-        AND guardians.guardian_user_ref = users.user_key
-      WHERE users.account_key = $1
-        AND users.product_key = $2
-        AND users.role = 'parent'
-        AND guardians.household_key = $3
-        AND guardians.status = 'active'
-      UNION
-     SELECT users.user_key
        FROM onetime.account_users AS users
        JOIN onetime.portal_student_access_state AS students
          ON students.account_key = users.account_key
@@ -785,10 +960,10 @@ async function revokeHouseholdPortalSessions(
   await db.query(
     `INSERT INTO onetime.auth_audit_events
        (event_key, account_key, product_key, user_key, event_type, success, reason, metadata, created_at)
-     VALUES ($1,$2,$3,NULL,'household_access_sessions_revoked',true,'access_state_changed',$4::jsonb,$5)
+       VALUES ($1,$2,$3,NULL,'household_student_sessions_revoked',true,'access_state_changed',$4::jsonb,$5)
      ON CONFLICT (event_key) DO NOTHING`,
     [
-      stableKey('auth_audit', [input.eventKey, 'sessions_revoked']),
+      stableKey('auth_audit', [input.eventKey, 'student_sessions_revoked']),
       input.accountKey,
       input.productKey,
       JSON.stringify({
@@ -977,15 +1152,29 @@ async function lockProjectionForFreePilot(
   },
 ) {
   const result = await db.query(
-    `SELECT source_kind, opaque_source_reference, source_revision, effective_at, expires_at
+    `SELECT source_kind, state, opaque_source_reference, source_revision, effective_at, expires_at
+       FROM onetime.account_access_source_states
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+        AND source_slot = 'complimentary'
+      FOR UPDATE`,
+    [input.accountKey, input.productKey, input.householdKey],
+  );
+  if (result.rowCount) {
+    return result.rows[0] as Record<string, unknown>;
+  }
+  const legacy = await db.query(
+    `SELECT source_kind, state, opaque_source_reference, source_revision, effective_at, expires_at
        FROM onetime.account_access_projections
       WHERE account_key = $1
         AND product_key = $2
         AND household_key = $3
+        AND source_kind IN ('free_pilot', 'complimentary')
       FOR UPDATE`,
     [input.accountKey, input.productKey, input.householdKey],
   );
-  return result.rows[0] as Record<string, unknown> | undefined;
+  return legacy.rows[0] as Record<string, unknown> | undefined;
 }
 
 async function replayFreePilotGrantIfPresent(

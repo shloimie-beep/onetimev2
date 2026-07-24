@@ -4,6 +4,9 @@ import type {
   ClassOccurrenceSummary,
   ContactDetail,
   ContactListItem,
+  ContactOperationsEnrollment,
+  ContactOperationsEnrollmentResult,
+  ContactOperationsHousehold,
   ContentLibraryItemSummary,
   OwnerDashboardResponse,
   OperatorLaunchStatusResponse,
@@ -44,6 +47,26 @@ export type ListResponse = {
 export type ContactResponse = {
   success: true;
   contact: ContactDetail;
+};
+
+export type AdultContactLink = {
+  contact_key: string;
+  household_key: string;
+  guardian_user_ref: string | null;
+  sync_state: 'sync_pending' | 'synced' | 'conflict';
+  highlevel_contact_linked: boolean;
+  open_in_highlevel_url: string | null;
+  projection_revision: number;
+  payment_data_present: false;
+};
+
+export type ContactOperationsAccessResult = {
+  projection: {
+    state: string;
+    grants_access: boolean;
+  };
+  billing_mutated: false;
+  payment_history_written: false;
 };
 
 export type TagListResponse = {
@@ -445,6 +468,113 @@ export async function getClassDetail(occurrenceKey: string) {
   );
 }
 
+export async function enrollParentHousehold(
+  csrfToken: string,
+  payload: ContactOperationsEnrollment,
+) {
+  return contactOperationsWrite<{ success: true; data: ContactOperationsEnrollmentResult }>(
+    '/api/v1/contact-operations/enrollments',
+    csrfToken,
+    payload,
+  );
+}
+
+export async function getAdultContactLink(householdKey: string) {
+  return authenticatedJson<{ success: true; data: AdultContactLink }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(householdKey)}/adult-link`,
+  );
+}
+
+export async function getContactOperationsHousehold(householdKey: string) {
+  return authenticatedJson<{ success: true; data: ContactOperationsHousehold }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(householdKey)}`,
+  );
+}
+
+export async function updateContactOperationsAccess(input: {
+  csrfToken: string;
+  householdKey: string;
+  operation: 'grant_complimentary' | 'revoke_complimentary' | 'suspend' | 'release';
+  idempotencyKey: string;
+}) {
+  return contactOperationsWrite<{ success: true; data: ContactOperationsAccessResult }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(
+      input.householdKey,
+    )}/access/${input.operation}`,
+    input.csrfToken,
+    {
+      idempotency_key: input.idempotencyKey,
+      policy_version: 'contact-operations-ui-v1',
+      reason:
+        input.operation === 'suspend'
+          ? 'operator_suspension_billing_unchanged'
+          : input.operation === 'release'
+            ? 'operator_suspension_released_billing_unchanged'
+            : input.operation === 'revoke_complimentary'
+              ? 'operator_complimentary_revoked'
+              : undefined,
+    },
+  );
+}
+
+export async function reconcileAdultContact(input: {
+  csrfToken: string;
+  householdKey: string;
+  idempotencyKey: string;
+}) {
+  return contactOperationsWrite<{
+    success: true;
+    data: {
+      sync_state: 'sync_pending';
+      projection_revision: number;
+      duplicate: boolean;
+      child_highlevel_operations: 0;
+    };
+  }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(input.householdKey)}/reconcile`,
+    input.csrfToken,
+    { idempotency_key: input.idempotencyKey },
+  );
+}
+
+export async function requestParentContactReset(input: {
+  csrfToken: string;
+  householdKey: string;
+  idempotencyKey: string;
+}) {
+  return contactOperationsWrite<{
+    success: true;
+    data: { request_accepted: true; password_exposed: false };
+  }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(input.householdKey)}/parent-reset`,
+    input.csrfToken,
+    { idempotency_key: input.idempotencyKey },
+  );
+}
+
+export async function requestStudentContactReset(input: {
+  csrfToken: string;
+  householdKey: string;
+  learnerKey: string;
+  idempotencyKey: string;
+}) {
+  return contactOperationsWrite<{
+    success: true;
+    data: {
+      token_ref: string;
+      plaintext_credential_stored: false;
+      sessions_revoked_on_completion: true;
+      child_highlevel_operations: 0;
+    };
+  }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(
+      input.householdKey,
+    )}/students/${encodeURIComponent(input.learnerKey)}/reset`,
+    input.csrfToken,
+    { idempotency_key: input.idempotencyKey },
+  );
+}
+
 export async function getContentLibrary() {
   return authenticatedJson<ContentListResponse>('/api/v1/content/library?limit=10');
 }
@@ -512,6 +642,17 @@ async function authenticatedJson<T>(path: string, init: RequestInit = {}): Promi
     throw new ApiRequestError(json);
   }
   return json as T;
+}
+
+function contactOperationsWrite<T>(path: string, csrfToken: string, payload: unknown) {
+  return authenticatedJson<T>(path, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
 }
 
 function privateHeaders(headers?: HeadersInit) {

@@ -40,7 +40,10 @@ type EntitlementProof = {
   entitlementId: string;
   checkedAt: string;
   validUntil: string | null;
-  policyVersion: 'ot-launch-01-current-access-v1' | 'ot114-owner-admin-support-v1';
+  policyVersion:
+    | 'ot-launch-01-current-access-v1'
+    | 'ot-launch-01-paused-parent-support-v1'
+    | 'ot114-owner-admin-support-v1';
 };
 
 export class SupportSubmissionError extends Error {
@@ -690,7 +693,34 @@ async function resolveSupportAuthorization(input: {
       policyVersion: 'ot114-owner-admin-support-v1',
     };
   }
-  return resolveActiveSupportEntitlement(input);
+  const active = await resolveActiveSupportEntitlement(input);
+  if (active || input.role !== 'parent') return active;
+  const parent = await input.target.query(
+    `SELECT relationships.relationship_key
+       FROM onetime.portal_guardian_relationships AS relationships
+       JOIN onetime.portal_households AS households
+         ON households.account_key = relationships.account_key
+        AND households.product_key = relationships.product_key
+        AND households.household_key = relationships.household_key
+        AND households.status = 'active'
+      WHERE relationships.account_key = $1
+        AND relationships.product_key = $2
+        AND relationships.guardian_user_ref = $3
+        AND relationships.status = 'active'
+        AND relationships.authority <> 'support_only'
+      ORDER BY relationships.relationship_key
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, input.userKey],
+  );
+  if (!parent.rowCount) return null;
+  return {
+    entitlementId: `paused_parent_${sha256Hex(
+      `${input.config.accountKey}:${input.userKey}:${String(parent.rows[0]?.relationship_key)}`,
+    ).slice(0, 24)}`,
+    checkedAt: now.toISOString(),
+    validUntil: null,
+    policyVersion: 'ot-launch-01-paused-parent-support-v1',
+  };
 }
 
 function sanitizePayload(

@@ -18,6 +18,7 @@ export * from './ops/index.ts';
 export * from './events/index.ts';
 export * from './experience-preview/index.ts';
 export * from './highlevel/index.ts';
+export * from './contact-operations/index.ts';
 
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;
@@ -470,6 +471,10 @@ export type ContactDetail = ContactListItem & {
     captured_at: string | null;
   };
   enrollment_summary: ContactSummaryFact[];
+  managed_household: {
+    household_key: string;
+    display_name: string;
+  } | null;
   relationships: ContactRelationship[];
   notes: ContactNote[];
   tasks: ContactTask[];
@@ -493,6 +498,12 @@ export const contactDetailSchema: z.ZodType<ContactDetail> = contactListItemSche
     captured_at: z.string().nullable(),
   }),
   enrollment_summary: z.array(contactSummaryFactSchema),
+  managed_household: z
+    .object({
+      household_key: z.string().min(3).max(180),
+      display_name: z.string().min(1).max(180),
+    })
+    .nullable(),
   relationships: z.array(contactRelationshipSchema),
   notes: z.array(contactNoteSchema),
   tasks: z.array(contactTaskSchema),

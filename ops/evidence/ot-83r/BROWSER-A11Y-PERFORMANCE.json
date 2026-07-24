@@ -4,56 +4,56 @@
   "screenshots": [
     {
       "viewport": "mobile-360-parent",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\mobile-360-parent.png",
+      "path": "ops/evidence/ot-83r/screenshots/mobile-360-parent.png",
       "width": 360,
       "height": 800,
       "role": "parent"
     },
     {
       "viewport": "mobile-360-student",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\mobile-360-student.png",
+      "path": "ops/evidence/ot-83r/screenshots/mobile-360-student.png",
       "width": 360,
       "height": 800,
       "role": "student"
     },
     {
       "viewport": "mobile-390-parent",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\mobile-390-parent.png",
+      "path": "ops/evidence/ot-83r/screenshots/mobile-390-parent.png",
       "width": 390,
       "height": 844,
       "role": "parent"
     },
     {
       "viewport": "mobile-390-student",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\mobile-390-student.png",
+      "path": "ops/evidence/ot-83r/screenshots/mobile-390-student.png",
       "width": 390,
       "height": 844,
       "role": "student"
     },
     {
       "viewport": "tablet-parent",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\tablet-parent.png",
+      "path": "ops/evidence/ot-83r/screenshots/tablet-parent.png",
       "width": 768,
       "height": 1024,
       "role": "parent"
     },
     {
       "viewport": "tablet-student",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\tablet-student.png",
+      "path": "ops/evidence/ot-83r/screenshots/tablet-student.png",
       "width": 768,
       "height": 1024,
       "role": "student"
     },
     {
       "viewport": "desktop-parent",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\desktop-parent.png",
+      "path": "ops/evidence/ot-83r/screenshots/desktop-parent.png",
       "width": 1440,
       "height": 1000,
       "role": "parent"
     },
     {
       "viewport": "desktop-student",
-      "path": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\screenshots\\desktop-student.png",
+      "path": "ops/evidence/ot-83r/screenshots/desktop-student.png",
       "width": 1440,
       "height": 1000,
       "role": "student"

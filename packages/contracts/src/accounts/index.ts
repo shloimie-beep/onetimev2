@@ -18,6 +18,7 @@ export const accountLifecycleErrorCodeSchema = z.enum([
   'TOKEN_INVALID',
   'TOKEN_EXPIRED',
   'TOKEN_CONSUMED',
+  'IDENTITY_CONFLICT',
   'IDEMPOTENCY_CONFLICT',
   'RATE_LIMITED',
   'SERVER_ERROR',

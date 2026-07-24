@@ -168,7 +168,7 @@ describe('HighLevel current-access action', () => {
     );
   });
 
-  it('fails closed for missing, mismatched, and ambiguous Parent-household identity', async () => {
+  it('fails closed for missing and mismatched durable adult-household identity', async () => {
     const contactKey = await seedAdultContact();
     const missing = await invoke(
       accessPayload(contactKey, 'household_access_missing', 1, 'access-missing-0001'),
@@ -187,21 +187,52 @@ describe('HighLevel current-access action', () => {
       body: { ok: false, code: 'HIGHLEVEL_ACCESS_IDENTITY_MISMATCH' },
     });
 
-    await seedHouseholdRelationship('household_access_secondary');
-    const ambiguous = await invoke(
-      accessPayload(contactKey, 'household_access_primary', 3, 'access-ambiguous-0001'),
-    );
-    expect(ambiguous).toMatchObject({
-      status: 409,
-      body: { ok: false, code: 'HIGHLEVEL_ACCESS_IDENTITY_AMBIGUOUS' },
-    });
     const projection = await pool.query(
       `SELECT count(*)::int AS count FROM onetime.account_access_projections`,
     );
     expect(Number(projection.rows[0]?.count ?? 0)).toBe(0);
   });
 
-  it('denies support-only authority and archived households before access mutation', async () => {
+  it('accepts the exact durable adult link before Parent activation exists', async () => {
+    const contactKey = await seedAdultContact();
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name)
+       VALUES ('household_access_unactivated',$1,$2,'Unactivated Parent Household')`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.adult_household_contact_links
+         (link_key, account_key, product_key, contact_key, household_key,
+          highlevel_location_id, sync_state)
+       VALUES ('adult_link_unactivated',$1,$2,$3,'household_access_unactivated',$4,'sync_pending')`,
+      [config.accountKey, config.productKey, contactKey, config.highLevelLocationId],
+    );
+
+    await expect(
+      invoke(
+        accessPayload(contactKey, 'household_access_unactivated', 1, 'access-unactivated-0001'),
+      ),
+    ).resolves.toMatchObject({
+      status: 200,
+      body: {
+        ok: true,
+        result: { access_state: 'active', payment_history_written: false },
+      },
+    });
+
+    const parentState = await pool.query(
+      `SELECT
+         (SELECT count(*)::int FROM onetime.account_users WHERE role = 'parent') AS parents,
+         (SELECT count(*)::int FROM onetime.portal_guardian_relationships) AS relationships`,
+    );
+    expect({
+      parents: scalarCount(parentState.rows[0]?.parents),
+      relationships: scalarCount(parentState.rows[0]?.relationships),
+    }).toEqual({ parents: 0, relationships: 0 });
+  });
+
+  it('denies a missing durable link and an archived linked household before access mutation', async () => {
     const contactKey = await seedAdultContact();
     await seedExactParentHousehold('household_access_primary', 'support_only');
 
@@ -219,6 +250,25 @@ describe('HighLevel current-access action', () => {
           AND product_key = $2
           AND household_key = 'household_access_primary'`,
       [config.accountKey, config.productKey],
+    );
+    const parent = await pool.query(
+      `SELECT user_key
+         FROM onetime.account_users
+        WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3`,
+      [config.accountKey, config.productKey, contactEmail],
+    );
+    await pool.query(
+      `INSERT INTO onetime.adult_household_contact_links
+         (link_key, account_key, product_key, contact_key, household_key,
+          guardian_user_ref, highlevel_location_id, sync_state)
+       VALUES ('adult_link_archived',$1,$2,$3,'household_access_primary',$4,$5,'sync_pending')`,
+      [
+        config.accountKey,
+        config.productKey,
+        contactKey,
+        String(parent.rows[0]?.user_key),
+        config.highLevelLocationId,
+      ],
     );
     await pool.query(
       `UPDATE onetime.portal_households
@@ -289,7 +339,7 @@ describe('HighLevel current-access action', () => {
     );
   });
 
-  it('cannot replace a higher-precedence Admin access decision', async () => {
+  it('keeps paid and complimentary sources independent instead of using precedence', async () => {
     const contactKey = await seedAdultContact();
     await seedExactParentHousehold('household_access_primary');
     const payload = accessPayload(
@@ -312,10 +362,10 @@ describe('HighLevel current-access action', () => {
       now,
     });
 
-    const blocked = await invoke(payload);
-    expect(blocked).toMatchObject({
-      status: 409,
-      body: { ok: false, code: 'HIGHLEVEL_ACCESS_SOURCE_PRECEDENCE', retryable: false },
+    const applied = await invoke(payload);
+    expect(applied).toMatchObject({
+      status: 200,
+      body: { ok: true, result: { access_state: 'active' } },
     });
     const projection = await pool.query(
       `SELECT source_kind, opaque_source_reference
@@ -324,12 +374,12 @@ describe('HighLevel current-access action', () => {
       [config.accountKey, config.productKey, 'household_access_primary'],
     );
     expect(projection.rows[0]).toMatchObject({
-      source_kind: 'admin_override',
-      opaque_source_reference: 'admin-access-reference-0001',
+      source_kind: 'highlevel_payment_state',
+      opaque_source_reference: payload.data.opaque_source_reference,
     });
   });
 
-  it('applies active, grace, and revoked transitions and revokes Parent and Student sessions', async () => {
+  it('applies active, grace, and revoked paid transitions and revokes only Student sessions', async () => {
     const contactKey = await seedAdultContact();
     const parentUserKey = await seedExactParentHousehold('household_access_primary');
     const studentUserKey = await createAccountUser({
@@ -405,8 +455,8 @@ describe('HighLevel current-access action', () => {
       body: {
         ok: true,
         result: {
-          access_state: 'revoked',
-          sessions_revoked: 2,
+          access_state: 'paused',
+          sessions_revoked: 1,
           payment_history_written: false,
         },
       },
@@ -419,7 +469,12 @@ describe('HighLevel current-access action', () => {
       [parentSession.session_key, studentSession.session_key],
     );
     expect(sessions.rows).toHaveLength(2);
-    expect(sessions.rows.every((row) => Boolean(row.revoked_at))).toBe(true);
+    expect(
+      sessions.rows.find((row) => row.session_key === parentSession.session_key)?.revoked_at,
+    ).toBeFalsy();
+    expect(
+      sessions.rows.find((row) => row.session_key === studentSession.session_key)?.revoked_at,
+    ).toBeTruthy();
   });
 });
 
@@ -468,6 +523,29 @@ async function seedExactParentHousehold(
     mfaCapable: false,
   });
   await seedHouseholdRelationship(householdKey, parentUserKey, authority);
+  if (authority !== 'support_only') {
+    const contact = await pool.query(
+      `SELECT contact_key
+         FROM onetime.contacts
+        WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3`,
+      [config.accountKey, config.productKey, contactEmail],
+    );
+    await pool.query(
+      `INSERT INTO onetime.adult_household_contact_links
+         (link_key, account_key, product_key, contact_key, household_key,
+          guardian_user_ref, highlevel_location_id, sync_state)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'sync_pending')`,
+      [
+        `adult_link_${householdKey}`,
+        config.accountKey,
+        config.productKey,
+        String(contact.rows[0]?.contact_key),
+        householdKey,
+        parentUserKey,
+        config.highLevelLocationId,
+      ],
+    );
+  }
   return parentUserKey;
 }
 

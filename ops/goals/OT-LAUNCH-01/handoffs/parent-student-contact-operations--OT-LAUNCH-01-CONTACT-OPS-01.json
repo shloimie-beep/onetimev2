@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "parent_student_contact_operations",
+  "task_id": "OT-LAUNCH-01-CONTACT-OPS-01",
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/parent-student-contact-operations",
+    "pr": 120,
+    "system": "One Time Parent, Student, and access administration"
+  },
+  "write_scope": "Adult/household/GHL links, independent access-source states, paused-Parent shell, atomic enrollment, secure Parent/Student recovery, adult-only outbox projection, and the smallest canonical Contacts operator workflow",
+  "result": {
+    "status": "superseding_rejected_head_implemented_and_verified_draft_pr",
+    "governed_lineage": {
+      "governed_base": "bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0",
+      "reconciled_target_head": "5bce2428c221f950e74999f3ee8980b0610b7ac6",
+      "target_reconciliation_commit": "63becc3187443e8456c6e2141e7f5399ccd15ad3",
+      "rejected_audit_head": "2065374419672f3e77d4b25b29c721e740da3b9b",
+      "superseding_implementation_commit": "a744e9db109354ea68307c83c387266d3a8b6dde",
+      "governed_base_is_ancestor": true
+    },
+    "pull_request": {
+      "url": "https://github.com/shloimie-beep/onetimev2/pull/120",
+      "base": "codex/full-app-staging-live",
+      "draft": true
+    },
+    "migration": {
+      "path": "packages/db/migrations/2225_parent_student_contact_operations.sql",
+      "sha256": "259532137222b31c6b72975d479fb6061366a2800404d34939b66d19961e1d60",
+      "changed_during_audit_repair": false,
+      "global_ledger_audit": "222 refs were fetched and scanned before selecting 2225; no committed 2225 migration existed, and 2226 remained reserved by the Rabbi Telegram branch. The accepted migration and checksum were preserved."
+    },
+    "release_blocker_repairs": {
+      "operator_workflow": {
+        "status": "repaired",
+        "authorized_roles": ["owner", "admin"],
+        "capability": "contact_ops:school_admin",
+        "canonical_entry_points": [
+          "Contacts toolbar -> Parent household",
+          "Contacts -> Search exact Parent name -> Apply -> open Parent detail -> Manage household"
+        ],
+        "route": "/app/crm/contact-operations",
+        "existing_household_discovery": "The canonical CRM contact detail read model exposes only the authorized, account/product-scoped managed_household summary. The operator reaches an existing family by human-readable Parent name; an opaque household-key field remains only a fail-closed direct-link fallback.",
+        "actions": [
+          "Invite/create one adult Parent household atomically",
+          "Create one or more local-only Students",
+          "Grant or revoke complimentary access without changing paid truth",
+          "Suspend or release administrative suspension without mutating billing",
+          "Request secure Parent or Student reset",
+          "See adult-only GHL link and sync state",
+          "Open the linked adult in GHL only through an explicit link",
+          "Queue one coalesced reconciliation"
+        ],
+        "ghl_link": {
+          "label": "Open in GHL",
+          "target": "_blank",
+          "rel": "noopener noreferrer",
+          "browser_navigation_performed": false,
+          "focused_assertion": "tests/e2e/ot-launch-01-contact-operations.spec.ts asserts the exact rel value and observes no automatic GHL request."
+        },
+        "boundaries": {
+          "second_crm_model_added": false,
+          "child_ghl_contact_or_payload": false,
+          "provider_call_or_send": false
+        }
+      },
+      "identity_collision_and_parent_reset": {
+        "status": "repaired",
+        "identity_rule": "Enrollment and Parent activation reject an email already owned by an account user whose role is not parent. The shared account-user upsert no longer overwrites role and returns the existing durable user key only for a compatible Parent identity.",
+        "parent_reset_rule": "Reset is bound to exactly one active non-support guardian relationship whose guardian_user_ref resolves to one active role=parent user in the same account/product and household, with a normalized email exactly matching the adult link and contact.",
+        "rejected_without_send": [
+          "Owner email collision",
+          "Admin email collision",
+          "Student email collision",
+          "Missing guardian user",
+          "Unactivated adult link",
+          "Non-Parent guardian",
+          "Guardian/contact email mismatch",
+          "Ambiguous active guardian",
+          "Cross-account guardian",
+          "Cross-product guardian",
+          "Cross-household guardian"
+        ],
+        "replay_and_assurance": "Recovery issuance is advisory-lock/idempotency protected; replay returns the same safe outcome. Mutating operator endpoints require CSRF plus recent assurance.",
+        "proof": "Focused domain and web suites cover collisions, role preservation, unconsumed activation tokens, guardian mismatch/missing/unactivated/ambiguous cases, cross-scope denial, replay, CSRF, and recent-assurance denial."
+      }
+    },
+    "content_playback_overlap": {
+      "source_head": "690df5a732b847f8adb2c840b5d004679900d4c4",
+      "file": "packages/domain/src/content/content-factory.ts",
+      "test": "tests/integration/experience-preview.test.ts:592",
+      "ownership": "The 690df5a source owns the broader household/learner entitlement behavior. CONTACT-OPS retains only the smallest fail-closed generic-404 correction directly required by its unrelated-Student and cross-household acceptance.",
+      "exact_base_case": "At exact 690df5a, an unrelated Student opening /app/learning/items/full_app_demo_mishnayos_video receives distinguishable HTTP 409 because the non-entitled demo-source branch throws PLAYBACK_UNAVAILABLE. The exact-base test expected 409.",
+      "exact_diff": {
+        "source": "throw new ContentFactoryError(isContentFactoryDemoSource(input.sourceKey) ? 'PLAYBACK_UNAVAILABLE' : 'NOT_FOUND', 'Content was not found.');",
+        "contact_ops": "throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');",
+        "test_source": "expect(unrelatedPlayer.status).toBe(409);",
+        "test_contact_ops": "expect(unrelatedPlayer.status).toBe(404);"
+      },
+      "proof": "The combined integration run failed expected 404 / received 409 before the one-condition correction; focused and full integration suites then passed. Positive entitled playback and the separate synthetic-playback environment guard remain unchanged.",
+      "conductor_action": "Independently audit this exact file/diff/test and decide whether to port the correction once to the governed lineage before integration. It is not described as a rebase artifact."
+    },
+    "role_authority": {
+      "owner_capabilities": ["contact_ops:supervise", "contact_ops:school_admin"],
+      "admin_capabilities": ["contact_ops:school_admin"],
+      "parent_capabilities": ["contact_ops:parent_self_service"],
+      "labels_changed": false,
+      "silent_owner_admin_rename": false
+    },
+    "external_provider_calls": 0,
+    "customer_sends": 0,
+    "production_changed": false,
+    "payment_history_written": false,
+    "child_ghl_contacts_created": 0,
+    "contact_polling_added": false,
+    "plaintext_credentials_recorded": false,
+    "board_changed": false
+  },
+  "acceptance_results": {
+    "CONTACT-OPS-001": {
+      "status": "passed",
+      "verified_behavior": [
+        "Paid, complimentary, and administrative-suspension source states are independent; suspension denies, otherwise paid or complimentary grants, otherwise the household is paused.",
+        "Complimentary revocation leaves paid truth intact, and suspension/release never mutates billing.",
+        "A paused Parent can authenticate only to identity, protected recovery, and Support; Student authentication, sessions, and learning fail closed when effective access disappears.",
+        "Atomic idempotent enrollment creates or links one adult and household, prepares pending Parent activation, creates any positive number of local-only Students, optionally grants complimentary access, and queues exactly one adult-only GHL projection.",
+        "The canonical Contacts UI supports the complete Owner/Admin one-button flow and a human-readable existing-Parent management path on desktop and 390px Chromium.",
+        "Durable adult links expose authorized GHL state/deep-link and one coalesced reconcile action without payment data or child payloads.",
+        "Parent recovery remains link-only and generic; Student recovery is adult-authorized, audited, one-time, session-revoking, and never returns a stored plaintext credential.",
+        "Identity collisions and guardian-link mismatches fail closed without role mutation, token consumption, or send.",
+        "Existing fictional preview behavior remains isolated with exactly three active fictional Students while normal households permit additional Students."
+      ],
+      "negative_boundaries": {
+        "payment_ledger_added": false,
+        "student_ghl_payloads": false,
+        "contact_polling_added": false,
+        "provider_mutation_or_send": false,
+        "plaintext_credentials_recorded": false,
+        "production_change": false
+      }
+    }
+  },
+  "browser_proof": {
+    "canonical_10_journey_six_worker": {
+      "command_verbatim_sanitized": "$env:PORT='3104'\nnpx playwright test tests/e2e/ot-launch-01-contact-operations.spec.ts tests/e2e/ot-launch-01-parent-paused.spec.ts tests/e2e/account-lifecycle-pages.spec.ts tests/e2e/ot-83r-portals.spec.ts tests/e2e/crm-core.spec.ts tests/e2e/w12-03-portal-test-lab.spec.ts --project=chromium",
+      "result_at_superseding_head": "Running 10 tests using 6 workers; 10 passed (16.2s).",
+      "purpose": "Canonical reported stress set for Contacts, paused Parent, activation, CRM, portals, sibling denial, and portal test lab."
+    },
+    "serial_diagnostic_only": {
+      "command_difference": "The same six files were run once with --workers=1 while diagnosing shared state.",
+      "result": "10 passed (30.1s).",
+      "purpose": "Diagnostic only; this was not used as the release proof and CI was not serialized."
+    },
+    "full_repository_ci": {
+      "local_matching_command": "npm run e2e -- --workers=2",
+      "local_result": "Running 66 tests using 2 workers; 66 passed (1.3m).",
+      "hosted_command": "npm run e2e",
+      "hosted_distinction": "The GitHub runner's unmodified repository command auto-selects 2 workers and is the authoritative full-CI gate. The Node job also runs accessibility and performance/bundle gates after full E2E."
+    }
+  },
+  "failure_and_repair_log": [
+    {
+      "head": "2d5c5abfb3336ec2309a69c0f510d3973221628b",
+      "failing_command": "Hosted Node 24 verify",
+      "root_cause": "The first Contacts browser fixture shared mutable CRM/session state, and the unrelated OT88 provider-path assertion searched an opaque classroom credential whose random value contained bBNA.",
+      "repair": "Added a dedicated Owner session/household/Parent/Student fixture. Narrowed only the OT88 test assertion to redact opaque grant/secret URL segments before checking provider paths; real /operations/jobs remains forbidden and no Zoom product behavior changed."
+    },
+    {
+      "head": "1bbefa0f9578100ff1d450792b84d1a792dd67fd",
+      "failing_command": "npm run e2e",
+      "exact_result": "Running 66 tests using 2 workers; 64 passed; both tests/e2e/ot-launch-01-contact-operations.spec.ts cases timed out waiting for the seeded Parent row.",
+      "root_cause": "The Parent was not deleted or mutated. Earlier CRM journeys created enough newer contacts that Contact Operations Parent fell beyond page 1; the trace/error snapshot showed Load more.",
+      "repair": "Both desktop and mobile journeys now use the product UI to Search for exact Parent name, Apply, open the exact result, and then Manage household. Pagination size, Load more ordering, worker count, and assertions were not weakened."
+    },
+    {
+      "scope": "local_high_worker_noncanonical_probe",
+      "failing_command": "npm run e2e on a 12-worker local machine",
+      "root_cause": "Unrelated shared-fixture races in content-factory and Rabbi live-console tests.",
+      "disposition": "Not absorbed into CONTACT-OPS. The governed two-worker full suite and canonical six-worker 10-journey set both pass."
+    }
+  ],
+  "evidence": [
+    {
+      "ref": "npm run unit",
+      "kind": "local_unit",
+      "result": "74 files / 410 tests passed",
+      "sanitized": true
+    },
+    {
+      "ref": "npm run integration",
+      "kind": "local_integration",
+      "result": "65 files / 342 tests passed",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/integration/accounts/contact-operations.test.ts; tests/integration/accounts/contact-operations-web.test.ts; tests/integration/accounts/lifecycle-race.test.ts",
+      "kind": "collision_scope_replay_csrf_recent_assurance_matrix",
+      "result": "focused matrix passed",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/e2e/ot-launch-01-contact-operations.spec.ts",
+      "kind": "desktop_and_mobile_contacts_operator_workflow",
+      "result": "2 passed in the full 66-test two-worker suite and the canonical six-worker stress set",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/e2e/ot-launch-01-parent-paused.spec.ts; tests/e2e/ot-83r-portals.spec.ts; tests/e2e/account-lifecycle-pages.spec.ts; tests/e2e/w12-03-portal-test-lab.spec.ts",
+      "kind": "paused_parent_recovery_portal_activation_sibling_and_preview_proof",
+      "result": "passed",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/integration/experience-preview.test.ts:592",
+      "kind": "content_playback_overlap_fail_closed_proof",
+      "result": "Exact 690df5a source returned unrelated-Student HTTP 409; the CONTACT-OPS one-condition NOT_FOUND correction returns generic HTTP 404.",
+      "sanitized": true
+    },
+    {
+      "ref": "npm run format; npm run brand:check; npm run lint; npm run typecheck; npm run secret:scan; npm run goal:validate; npm run goal:launch-status:check; npm run ops06:migrations; git diff --check; npm run build",
+      "kind": "local_static_governance_migration_and_safety_gates",
+      "result": "passed",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30091724398",
+      "kind": "node_24_full_ci_at_superseding_implementation_head",
+      "result": "pending at handoff drafting; must be green before handoff commit",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30091724362",
+      "kind": "ops_06_deterministic_checks",
+      "result": "pending at handoff drafting; must be green before handoff commit",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30091724400",
+      "kind": "postgresql_16_assurance",
+      "result": "pending at handoff drafting; must be green before handoff commit",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30091724361",
+      "kind": "postgresql_16_learner_seat_proof",
+      "result": "passed",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30091724446",
+      "kind": "postgresql_18_assurance_and_restore_clone",
+      "result": "pending at handoff drafting; must be green before handoff commit",
+      "sanitized": true
+    },
+    {
+      "ref": "https://ot99-web-onetimev2-pr-120.up.railway.app/version",
+      "kind": "fresh_preview_exact_source_and_honest_label_proof",
+      "result": {
+        "health": 200,
+        "ready": 200,
+        "deployment_git_commit_sha": "a744e9db109354ea68307c83c387266d3a8b6dde",
+        "deployment_id": "9cde126f-b4f2-4c85-9612-2dd32511cd86",
+        "snapshot_id": "a1ed14e8-2385-4569-b86b-3c9f946b0600",
+        "human_version_label": "full-app-staging-live-5556c4a",
+        "human_commit_sha": "5556c4ab78e01d367666694459eb2ea97f4028ef",
+        "label_status": "stale; exact deployment metadata is source-accurate, but no exact human-label proof is claimed"
+      },
+      "sanitized": true
+    }
+  ],
+  "remaining_work": [
+    "The conductor should independently audit the exact 690df5a content-playback file/diff/test and decide whether to port the one-condition fail-closed 404 correction once to the governed lineage before integration.",
+    "The conductor may decide later whether Rabbi should become a separate display label or first-class role; Owner/Admin labels remain unchanged and authority is enforced by explicit capabilities.",
+    "The preview /version human label remains stale at 5556c4a even though deployment.git_commit_sha exactly identifies the preview source."
+  ],
+  "blocker": null,
+  "sanitized_at": "2026-07-24T12:03:00Z"
+}

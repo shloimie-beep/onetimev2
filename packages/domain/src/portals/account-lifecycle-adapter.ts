@@ -10,6 +10,7 @@ import {
 import { hashPassword } from '../auth/service.ts';
 import {
   AccountLifecycleError,
+  createStudentReset,
   revokeStudentIdentitySessions,
   restoreStudentIdentity,
   suspendStudentIdentity,
@@ -39,14 +40,50 @@ export function createAccountLifecycleCredentialAdapter(input: {
       }),
     requestReset: async ({ actor, learner, payload }) =>
       mapLifecycleErrors(async () => {
-        return parentManagedCredentialResult(
-          'reset',
-          input.pool,
-          input.config,
-          actor,
-          learner,
-          payload,
+        const adult = await input.pool.query(
+          `SELECT contacts.email_normalized
+             FROM onetime.portal_guardian_relationships AS guardians
+             JOIN onetime.adult_household_contact_links AS links
+               ON links.account_key = guardians.account_key
+              AND links.product_key = guardians.product_key
+              AND links.household_key = guardians.household_key
+             JOIN onetime.contacts AS contacts
+               ON contacts.account_key = links.account_key
+              AND contacts.product_key = links.product_key
+              AND contacts.contact_key = links.contact_key
+            WHERE guardians.account_key = $1
+              AND guardians.product_key = $2
+              AND guardians.household_key = $3
+              AND guardians.guardian_user_ref = $4
+              AND guardians.status = 'active'
+              AND guardians.authority <> 'support_only'
+            LIMIT 2`,
+          [actor.account_key, actor.product_key, learner.household_key, actor.actor_user_ref],
         );
+        if (adult.rows.length !== 1) {
+          throw new AccountLifecycleError(
+            'NOT_FOUND',
+            'The adult recovery destination is unavailable.',
+          );
+        }
+        const issued = await createStudentReset({
+          pool: input.pool,
+          config: input.config,
+          actor: lifecycleActor(actor),
+          payload: {
+            idempotency_key: payload.idempotency_key,
+            learner_key: learner.learner_key,
+            email: String(adult.rows[0]?.email_normalized),
+          },
+        });
+        return {
+          operation_ref: issued.token_ref,
+          status: 'reset_requested',
+          expires_at: issued.expires_at,
+          delivery_hint:
+            'A secure one-time Student reset link was queued to the adult Parent. No password was accepted or exposed.',
+          credential_status: 'reset_required',
+        };
       }),
     requestSuspend: async ({ actor, learner }) =>
       mapLifecycleErrors(async () => {

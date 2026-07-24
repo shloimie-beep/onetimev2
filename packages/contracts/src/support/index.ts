@@ -186,6 +186,7 @@ export const supportEventV1Schema = z
         'ot89-subscriber-support-v1',
         'ot114-subscriber-support-v1',
         'ot-launch-01-current-access-v1',
+        'ot-launch-01-paused-parent-support-v1',
         'ot114-owner-admin-support-v1',
       ]),
       authenticated: z.literal(true),

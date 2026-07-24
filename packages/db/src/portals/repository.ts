@@ -23,8 +23,6 @@ import {
   type StudentAccessOperationType,
 } from '../../../domain/src/portals/services.ts';
 
-const MAX_ACTIVE_LEARNERS = 3;
-
 export function createPortalRepository(pool: DbPool): PortalRepository {
   return {
     getHousehold: (args) => getHousehold(pool, args.actor, args.household_key),
@@ -108,9 +106,9 @@ async function getHousehold(
     household_key: String(row.household_key),
     display_name: String(row.display_name),
     active_learner_count: activeLearnerCount,
-    max_active_learners: MAX_ACTIVE_LEARNERS,
+    max_active_learners: null,
     consent_status: 'not_required',
-    learner_limit_reached: activeLearnerCount >= MAX_ACTIVE_LEARNERS,
+    learner_limit_reached: false,
     version: Number(row.version),
   };
 }
@@ -174,14 +172,6 @@ async function createLearner(
     if (replay) return replay;
 
     await lockHousehold(client, actor, householdKey);
-    const count = await activeLearnerCount(client, actor, householdKey);
-    if (count >= MAX_ACTIVE_LEARNERS) {
-      throw new PortalServiceError(
-        'LEARNER_LIMIT_REACHED',
-        'A household can have at most three active learners in V1.',
-      );
-    }
-
     const learnerKey = `learner_${randomUUID()}`;
     const accessStateKey = `student_access_${randomUUID()}`;
     const inserted = await client.query(
@@ -328,15 +318,6 @@ async function setLearnerStatus(
         'This learner changed in another session.',
         Number(current.version),
       );
-    }
-    if (args.status === 'active' && String(current.learner_status) !== 'active') {
-      const count = await activeLearnerCount(client, args.actor, args.householdKey);
-      if (count >= MAX_ACTIVE_LEARNERS) {
-        throw new PortalServiceError(
-          'LEARNER_LIMIT_REACHED',
-          'A household can have at most three active learners in V1.',
-        );
-      }
     }
     const updated = await client.query(
       `UPDATE onetime.portal_learners
@@ -896,23 +877,6 @@ async function findLearnerForUpdate(
     [actor.account_key, actor.product_key, learnerKey],
   );
   return result.rows[0] as Record<string, unknown> | undefined;
-}
-
-async function activeLearnerCount(
-  client: Queryable,
-  actor: PortalActorContext,
-  householdKey: string,
-) {
-  const result = await client.query(
-    `SELECT count(*)::int AS count
-       FROM onetime.portal_learners
-      WHERE account_key = $1
-        AND product_key = $2
-        AND household_key = $3
-        AND learner_status = 'active'`,
-    [actor.account_key, actor.product_key, householdKey],
-  );
-  return Number((result.rows[0] as Record<string, unknown> | undefined)?.count ?? 0);
 }
 
 async function readIdempotency<T>(

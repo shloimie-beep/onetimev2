@@ -26,7 +26,6 @@ import {
   createStudentPortalService,
   householdHasLearningAccess,
   ONE_TIME_CLASS_SERIES_KEY,
-  PortalServiceError,
   revokeUserSessions,
   type PortalServiceDeps,
 } from '../../packages/domain/src/index.ts';
@@ -88,7 +87,7 @@ type FullAppPreviewResult = {
   product_key: string;
   admin_login: 'email_challenge_required' | 'ready';
   parent_login: 'ready';
-  fourth_student_cap_rejection: boolean;
+  fourth_student_creation_supported: boolean;
   vimeo_demo_lesson_ready: boolean;
   zoom_demo_class_ready: boolean;
   zoom_provider_mode: 'sink' | 'real';
@@ -219,7 +218,11 @@ export async function runFullAppProvision(
     portalDeps(input.pool, input.config, now, { withRealAdapters: false }),
   );
 
-  const fourthRejected = await verifyFourthStudentCap(parentService, parentActor, runId);
+  const fourthStudentSupported = await verifyFourthStudentCreation(
+    parentService,
+    parentActor,
+    runId,
+  );
   const accessStates = await configureStudentCredentials({
     pool: input.pool,
     config: input.config,
@@ -344,7 +347,7 @@ export async function runFullAppProvision(
     product_key: input.config.productKey,
     admin_login: 'email_challenge_required',
     parent_login: 'ready',
-    fourth_student_cap_rejection: fourthRejected,
+    fourth_student_creation_supported: fourthStudentSupported,
     vimeo_demo_lesson_ready: students.every((student) => student.lesson_ready),
     zoom_demo_class_ready: students.every((student) => student.protected_launch_ready),
     zoom_provider_mode: input.config.zoomClassroomProviderMode,
@@ -693,24 +696,21 @@ async function seedPreviewLearners(pool: DbPool, config: AppConfig, now: Date) {
   return learners;
 }
 
-async function verifyFourthStudentCap(
+async function verifyFourthStudentCreation(
   service: ReturnType<typeof createParentPortalService>,
   actor: PortalActorContext,
   runId: string,
 ) {
-  try {
-    await service.createLearner(actor, HOUSEHOLD_KEY, {
-      idempotency_key: `full-app-fourth-${runId}`,
-      display_name: 'Fictional Student Four',
-      grade_label: 'Preview limit check',
-    });
-    return false;
-  } catch (error) {
-    if (error instanceof PortalServiceError && error.code === 'LEARNER_LIMIT_REACHED') {
-      return true;
-    }
-    throw error;
-  }
+  const learner = await service.createLearner(actor, HOUSEHOLD_KEY, {
+    idempotency_key: `full-app-fourth-${runId}`,
+    display_name: 'Fictional Student Four',
+    grade_label: 'Preview unlimited learner check',
+  });
+  await service.archiveLearner(actor, HOUSEHOLD_KEY, learner.learner_key, {
+    idempotency_key: `full-app-fourth-archive-${runId}`,
+    version: learner.version,
+  });
+  return true;
 }
 
 async function configureStudentCredentials(input: {
@@ -1803,7 +1803,7 @@ async function writePrivateHandoff(input: {
       class_key: input.result.class_key,
       lesson_key: input.result.lesson_key,
       lesson_title: 'Berachos 2:1 — Finding the Right Time for Shema',
-      fourth_student_cap_rejection: input.result.fourth_student_cap_rejection,
+      fourth_student_creation_supported: input.result.fourth_student_creation_supported,
       zoom_provider_mode: input.result.zoom_provider_mode,
       protected_zoom_launch_only: true,
       raw_zoom_link_in_handoff: false,
@@ -1891,7 +1891,7 @@ export function fullAppProvisionPublicSummary(result: FullAppPreviewResult) {
     admin_login: result.admin_login,
     parent_login: result.parent_login,
     student_count: result.students.length,
-    fourth_student_cap_rejection: result.fourth_student_cap_rejection,
+    fourth_student_creation_supported: result.fourth_student_creation_supported,
     vimeo_demo_lesson_ready: result.vimeo_demo_lesson_ready,
     zoom_demo_class_ready: result.zoom_demo_class_ready,
     zoom_provider_mode: result.zoom_provider_mode,

@@ -717,11 +717,24 @@ describe('durable occurrence-scoped content factory', () => {
         },
       });
       expect(revoked.projection).toMatchObject({
-        state: 'revoked',
+        state: 'paused',
         grants_access: false,
       });
-      expect(revoked.sessions_revoked).toBe(3);
-      for (const session of [parent, student, sibling]) {
+      expect(revoked.sessions_revoked).toBe(2);
+      const parentDenied = await fetch(
+        `${server.baseUrl}/app/learning/items/factory_sample_2026_07_22`,
+        { headers: { cookie: parent.cookie }, redirect: 'manual' },
+      );
+      expect(parentDenied.status).toBe(404);
+      expect(await parentDenied.text()).not.toContain('private_video_123');
+      const parentDeniedEmbed = await fetch(
+        `${server.baseUrl}/api/v1/content/factory/factory_sample_2026_07_22/embed`,
+        { headers: { cookie: parent.cookie }, redirect: 'manual' },
+      );
+      expect(parentDeniedEmbed.status).toBe(404);
+      expect(await parentDeniedEmbed.text()).not.toContain('private_video_123');
+
+      for (const session of [student, sibling]) {
         const denied = await fetch(
           `${server.baseUrl}/app/learning/items/factory_sample_2026_07_22`,
           { headers: { cookie: session.cookie }, redirect: 'manual' },

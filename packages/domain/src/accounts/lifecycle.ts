@@ -1,4 +1,4 @@
-import { createHash, randomBytes, randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID, scryptSync } from 'node:crypto';
 import type { AppConfig } from '../../../config/src/index.ts';
 import type {
   AccountLifecycleCompletionResult,
@@ -205,47 +205,74 @@ export async function createParentActivation(
     requestPayload: payload,
     now: input.now ?? new Date(),
     includeLocalProofToken: input.includeLocalProofToken,
-    issue: async (client, now) => {
-      if (payload.free_pilot) {
-        assertFreePilotWindow(payload.free_pilot.expires_at, now);
-      }
-      await ensureHousehold(client, input.config, payload.household_key);
-      await ensurePendingGuardianRelationship(client, input.config, payload);
-      const issued = await issueAccountToken(client, input.config, {
-        tokenType: 'parent_activation',
-        targetRole: 'parent',
-        emailNormalized: normalizeEmail(payload.email),
-        displayName: payload.display_name,
-        householdKey: payload.household_key,
-        relationshipKey: payload.relationship_key,
-        idempotencyKey: payload.idempotency_key,
-        requestHash: fingerprint(payload),
-        actorUserKey: input.actor.userKey,
+    issue: (client, now) =>
+      issueParentActivationWithClient({
+        client,
+        config: input.config,
+        actor: input.actor,
+        payload,
         now,
         includeLocalProofToken: input.includeLocalProofToken,
-        metadata: payload.free_pilot
-          ? {
-              free_pilot_intent: {
-                expires_at: payload.free_pilot.expires_at,
-                policy_version: payload.free_pilot.policy_version,
-                opaque_source_reference: payload.free_pilot.opaque_source_reference,
-                issued_by_user_key: input.actor.userKey,
-              },
-            }
-          : undefined,
-      });
-      await enqueueHighLevelEventForAdultEmail(client, input.config, {
-        eventName: 'parent.portal.invitation_requested',
-        emailNormalized: normalizeEmail(payload.email),
-        idempotencyKey: stableKey('parent_portal_invitation', [payload.idempotency_key]),
-        actor: { kind: 'admin', reference: input.actor.userKey },
-        occurredAt: now,
-        protectedPath: '/app/parent',
-        data: { household_key: payload.household_key, portal_status: 'invited' },
-      });
-      return issued;
-    },
+        queueHighLevelPortalEvent: true,
+      }),
   });
+}
+
+export async function issueParentActivationWithClient(input: {
+  client: Queryable;
+  config: AppConfig;
+  actor: LifecycleActor;
+  payload: ParentActivationPayload;
+  now: Date;
+  includeLocalProofToken?: boolean | undefined;
+  queueHighLevelPortalEvent?: boolean | undefined;
+}): Promise<TokenIssueWithProof> {
+  requireOwnerOrAdmin(input.actor);
+  if (input.payload.free_pilot) {
+    assertFreePilotWindow(input.payload.free_pilot.expires_at, input.now);
+  }
+  await assertParentIdentityAvailableWithClient(
+    input.client,
+    input.config,
+    normalizeEmail(input.payload.email),
+  );
+  await ensureHousehold(input.client, input.config, input.payload.household_key);
+  await ensurePendingGuardianRelationship(input.client, input.config, input.payload);
+  const issued = await issueAccountToken(input.client, input.config, {
+    tokenType: 'parent_activation',
+    targetRole: 'parent',
+    emailNormalized: normalizeEmail(input.payload.email),
+    displayName: input.payload.display_name,
+    householdKey: input.payload.household_key,
+    relationshipKey: input.payload.relationship_key,
+    idempotencyKey: input.payload.idempotency_key,
+    requestHash: fingerprint(input.payload),
+    actorUserKey: input.actor.userKey,
+    now: input.now,
+    includeLocalProofToken: input.includeLocalProofToken,
+    metadata: input.payload.free_pilot
+      ? {
+          free_pilot_intent: {
+            expires_at: input.payload.free_pilot.expires_at,
+            policy_version: input.payload.free_pilot.policy_version,
+            opaque_source_reference: input.payload.free_pilot.opaque_source_reference,
+            issued_by_user_key: input.actor.userKey,
+          },
+        }
+      : undefined,
+  });
+  if (input.queueHighLevelPortalEvent) {
+    await enqueueHighLevelEventForAdultEmail(input.client, input.config, {
+      eventName: 'parent.portal.invitation_requested',
+      emailNormalized: normalizeEmail(input.payload.email),
+      idempotencyKey: stableKey('parent_portal_invitation', [input.payload.idempotency_key]),
+      actor: { kind: 'admin', reference: input.actor.userKey },
+      occurredAt: input.now,
+      protectedPath: '/app/parent',
+      data: { household_key: input.payload.household_key, portal_status: 'invited' },
+    });
+  }
+  return issued;
 }
 
 export async function acceptParentActivation(input: {
@@ -281,6 +308,21 @@ export async function acceptParentActivation(input: {
           input.config.productKey,
           requiredString(token.household_key),
           requiredString(token.relationship_key),
+          userKey,
+          now,
+        ],
+      );
+      await client.query(
+        `UPDATE onetime.adult_household_contact_links
+            SET guardian_user_ref = $4,
+                updated_at = $5
+          WHERE account_key = $1
+            AND product_key = $2
+            AND household_key = $3`,
+        [
+          input.config.accountKey,
+          input.config.productKey,
+          requiredString(token.household_key),
           userKey,
           now,
         ],
@@ -402,14 +444,43 @@ export async function acceptStudentSetup(input: {
     expectedType: 'student_setup',
     now: input.now ?? new Date(),
     complete: async (client, token, now) => {
+      const studentUsername =
+        typeof token.metadata.student_username === 'string'
+          ? token.metadata.student_username.trim().toLowerCase()
+          : null;
       const userKey = await upsertAccountUser(client, input.config, {
-        emailNormalized: requiredString(token.email_normalized),
+        emailNormalized: studentUsername
+          ? `student:${studentUsername}`
+          : requiredString(token.email_normalized),
         displayName: requiredString(token.display_name),
         role: 'student',
         password: payload.password,
         status: 'active',
       });
       await activateStudentIdentity(client, input.config, token, userKey, now);
+      if (studentUsername) {
+        await client.query(
+          `UPDATE onetime.portal_student_access_state
+              SET username_display = $4,
+                  normalized_username = $4,
+                  password_hash_ref = $5,
+                  credential_status = 'parent_managed',
+                  password_version = password_version + 1,
+                  security_version = security_version + 1,
+                  updated_at = $6
+            WHERE account_key = $1
+              AND product_key = $2
+              AND learner_key = $3`,
+          [
+            input.config.accountKey,
+            input.config.productKey,
+            requiredString(token.learner_key),
+            studentUsername,
+            studentPasswordHashRef(payload.password, token.token_key),
+            now,
+          ],
+        );
+      }
       await markTokenConsumed(client, token.token_key, now, userKey);
       await audit(client, input.config, {
         actionType: 'student_setup_accepted',
@@ -418,6 +489,85 @@ export async function acceptStudentSetup(input: {
         metadata: { learner_key: token.learner_key },
       });
       return completion(userKey, 'student', 'active', false, 0);
+    },
+  });
+}
+
+export async function issueLocalStudentSetupWithClient(input: {
+  client: Queryable;
+  config: AppConfig;
+  actor: LifecycleActor;
+  adultDeliveryEmail: string;
+  displayName: string;
+  householdKey: string;
+  learnerKey: string;
+  username: string;
+  idempotencyKey: string;
+  now: Date;
+}): Promise<AccountLifecycleTokenIssueResult> {
+  requireOwnerOrAdmin(input.actor);
+  const username = input.username.trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9._-]{1,22}[a-z0-9]$/u.test(username)) {
+    throw new AccountLifecycleError('FORBIDDEN', 'The Student username is invalid.');
+  }
+  await ensureLearner(input.client, input.config, input.householdKey, input.learnerKey);
+  const existingUsername = await input.client.query(
+    `SELECT learner_key
+       FROM onetime.portal_student_access_state
+      WHERE account_key = $1
+        AND product_key = $2
+        AND normalized_username = $3
+        AND learner_key <> $4
+        AND status <> 'disabled'
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, username, input.learnerKey],
+  );
+  if (existingUsername.rowCount) {
+    throw new AccountLifecycleError('FORBIDDEN', 'The Student username is unavailable.');
+  }
+  await input.client.query(
+    `UPDATE onetime.portal_student_access_state
+        SET status = 'setup_requested',
+            credential_status = 'reset_required',
+            username_display = $5,
+            normalized_username = $5,
+            last_operation_type = 'setup',
+            last_operation_at = $6,
+            version = version + 1,
+            updated_at = $6
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+        AND learner_key = $4`,
+    [
+      input.config.accountKey,
+      input.config.productKey,
+      input.householdKey,
+      input.learnerKey,
+      username,
+      input.now,
+    ],
+  );
+  return issueAccountToken(input.client, input.config, {
+    tokenType: 'student_setup',
+    targetRole: 'student',
+    emailNormalized: normalizeEmail(input.adultDeliveryEmail),
+    displayName: input.displayName,
+    householdKey: input.householdKey,
+    learnerKey: input.learnerKey,
+    idempotencyKey: input.idempotencyKey,
+    requestHash: fingerprint({
+      household_key: input.householdKey,
+      learner_key: input.learnerKey,
+      username,
+      adult_delivery_email: normalizeEmail(input.adultDeliveryEmail),
+    }),
+    actorUserKey: input.actor.userKey,
+    now: input.now,
+    metadata: {
+      student_username: username,
+      delivery_to_adult: true,
+      child_highlevel_contact_created: false,
     },
   });
 }
@@ -491,6 +641,18 @@ export async function completeStudentReset(input: {
       await client.query(
         `UPDATE onetime.portal_student_access_state
             SET status = 'active',
+                credential_status = 'parent_managed',
+                password_hash_ref = CASE
+                  WHEN normalized_username IS NOT NULL THEN $5
+                  ELSE password_hash_ref
+                END,
+                password_version = password_version + 1,
+                security_version = security_version + 1,
+                last_reset_at = $4,
+                last_session_revoked_at = CASE
+                  WHEN $6::int > 0 THEN $4
+                  ELSE last_session_revoked_at
+                END,
                 last_operation_type = 'reset',
                 last_operation_at = $4,
                 version = version + 1,
@@ -498,8 +660,25 @@ export async function completeStudentReset(input: {
           WHERE account_key = $1
             AND product_key = $2
             AND learner_key = $3`,
-        [input.config.accountKey, input.config.productKey, token.learner_key, now],
+        [
+          input.config.accountKey,
+          input.config.productKey,
+          token.learner_key,
+          now,
+          studentPasswordHashRef(payload.password, token.token_key),
+          sessionsInvalidated,
+        ],
       );
+      await audit(client, input.config, {
+        actionType: 'student_reset_completed',
+        subjectUserKey: userKey,
+        tokenKey: token.token_key,
+        metadata: {
+          learner_key: token.learner_key,
+          sessions_invalidated: sessionsInvalidated,
+          plaintext_credential_stored: false,
+        },
+      });
       return completion(userKey, 'student', 'active', false, sessionsInvalidated);
     },
   });
@@ -511,6 +690,11 @@ export async function requestPasswordReset(
     config: AppConfig;
     payload: unknown;
     now?: Date;
+    expectedParentGuardian?: {
+      householdKey: string;
+      guardianUserKey: string;
+      emailNormalized: string;
+    };
   } & LocalProofOption,
 ): Promise<TokenIssueWithProof | { request_accepted: true }> {
   const payload = passwordResetRequestPayloadSchema.parse(input.payload);
@@ -533,7 +717,12 @@ export async function requestPasswordReset(
     throw new AccountLifecycleError('RATE_LIMITED', 'Password reset requests are rate limited.');
   }
   return inTransaction(input.pool, async (client) => {
-    const user = await findAccountUserByEmail(client, input.config, emailNormalized);
+    const user = input.expectedParentGuardian
+      ? await findExpectedActiveParentGuardian(client, input.config, {
+          ...input.expectedParentGuardian,
+          emailNormalized,
+        })
+      : await findAccountUserByEmail(client, input.config, emailNormalized);
     if (!user) {
       await audit(client, input.config, {
         actionType: 'password_reset_requested_unknown',
@@ -772,13 +961,18 @@ async function issueAccountToken(
     metadata?: Record<string, unknown> | undefined;
   },
 ): Promise<TokenIssueWithProof> {
-  const token = randomToken();
   const tokenKey = stableKey('account_lifecycle_token', [
     config.accountKey,
     config.productKey,
     input.tokenType,
     input.idempotencyKey,
   ]);
+  await client.query('SELECT pg_advisory_xact_lock($1)', [
+    lifecycleAdvisoryLockKey(config.accountKey, config.productKey, input.idempotencyKey),
+  ]);
+  const replay = await readAccountTokenIssueReplay(client, config, tokenKey, input.requestHash);
+  if (replay) return replay;
+  const token = randomToken();
   const tokenHash = digest(token);
   const expiresAt = new Date(input.now.getTime() + (input.ttlMs ?? TOKEN_TTL_MS));
   await revokePriorLifecycleTokens(client, config, {
@@ -867,6 +1061,52 @@ async function issueAccountToken(
     result.token_for_local_proof = token;
   }
   return result;
+}
+
+async function readAccountTokenIssueReplay(
+  client: Queryable,
+  config: AppConfig,
+  tokenKey: string,
+  requestHash: string,
+): Promise<TokenIssueWithProof | null> {
+  const result = await client.query(
+    `SELECT tokens.token_key, tokens.token_type, tokens.target_role, tokens.expires_at,
+            intents.intent_key, intents.delivery_state, intents.request_hash
+       FROM onetime.account_lifecycle_tokens AS tokens
+       JOIN onetime.account_lifecycle_delivery_intents AS intents
+         ON intents.account_key = tokens.account_key
+        AND intents.product_key = tokens.product_key
+        AND intents.token_key = tokens.token_key
+      WHERE tokens.account_key = $1
+        AND tokens.product_key = $2
+        AND tokens.token_key = $3
+      LIMIT 2`,
+    [config.accountKey, config.productKey, tokenKey],
+  );
+  if (!result.rows.length) return null;
+  if (result.rows.length !== 1 || String(result.rows[0]?.request_hash) !== requestHash) {
+    throw new AccountLifecycleError(
+      'IDEMPOTENCY_CONFLICT',
+      'This account lifecycle request key was already used for different information.',
+    );
+  }
+  const row = result.rows[0] as Record<string, unknown>;
+  return {
+    token_key: String(row.token_key),
+    token_type: row.token_type as AccountLifecycleTokenType,
+    target_role: row.target_role as TokenIssueWithProof['target_role'],
+    expires_at: new Date(String(row.expires_at)).toISOString(),
+    delivery: {
+      intent_key: String(row.intent_key),
+      delivery_state: String(
+        row.delivery_state,
+      ) as TokenIssueWithProof['delivery']['delivery_state'],
+      external_send_performed: false,
+      raw_token_included: false,
+    },
+    token_ref: tokenRef(String(row.token_key)),
+    raw_token_included: false,
+  };
 }
 
 async function revokePriorLifecycleTokens(
@@ -1042,8 +1282,9 @@ async function upsertAccountUser(
     status: 'active' | 'disabled';
   },
 ) {
+  await assertAccountRoleAvailableWithClient(client, config, input.emailNormalized, input.role);
   const userKey = stableKey('user', [config.accountKey, config.productKey, input.emailNormalized]);
-  await client.query(
+  const result = await client.query(
     `INSERT INTO onetime.account_users
        (user_key, account_key, product_key, email_normalized, display_name, role,
         password_hash, mfa_capable, status)
@@ -1051,13 +1292,14 @@ async function upsertAccountUser(
      ON CONFLICT (account_key, product_key, email_normalized)
      DO UPDATE SET
        display_name = EXCLUDED.display_name,
-       role = EXCLUDED.role,
        password_hash = EXCLUDED.password_hash,
        password_updated_at = now(),
        status = EXCLUDED.status,
        security_version = onetime.account_users.security_version + 1,
        security_policy_updated_at = now(),
-       updated_at = now()`,
+       updated_at = now()
+     WHERE onetime.account_users.role = EXCLUDED.role
+     RETURNING user_key`,
     [
       userKey,
       config.accountKey,
@@ -1069,7 +1311,14 @@ async function upsertAccountUser(
       input.status,
     ],
   );
-  return userKey;
+  const returnedUserKey = result.rows[0]?.user_key;
+  if (typeof returnedUserKey !== 'string') {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The email already belongs to a different account role.',
+    );
+  }
+  return returnedUserKey;
 }
 
 async function activateStudentIdentity(
@@ -1360,6 +1609,45 @@ async function ensureHousehold(client: Queryable, config: AppConfig, householdKe
   }
 }
 
+export async function assertParentIdentityAvailableWithClient(
+  client: Queryable,
+  config: AppConfig,
+  emailNormalized: string,
+) {
+  return assertAccountRoleAvailableWithClient(client, config, emailNormalized, 'parent');
+}
+
+async function assertAccountRoleAvailableWithClient(
+  client: Queryable,
+  config: AppConfig,
+  emailNormalized: string,
+  expectedRole: string,
+) {
+  const result = await client.query(
+    `SELECT user_key, role
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_normalized = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, emailNormalized],
+  );
+  if (result.rows.length > 1) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The email resolves to more than one account identity.',
+    );
+  }
+  const role = result.rows[0]?.role;
+  if (typeof role === 'string' && role !== expectedRole) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The email already belongs to a different account role.',
+    );
+  }
+}
+
 async function ensurePendingGuardianRelationship(
   client: Queryable,
   config: AppConfig,
@@ -1458,6 +1746,115 @@ async function findAccountUserByEmail(
   return result.rows[0] as Record<string, unknown> | undefined;
 }
 
+async function findExpectedActiveParentGuardian(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    householdKey: string;
+    guardianUserKey: string;
+    emailNormalized: string;
+  },
+) {
+  const link = await client.query(
+    `SELECT link_key, contact_key
+       FROM onetime.adult_household_contact_links
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+        AND guardian_user_ref = $4
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, input.householdKey, input.guardianUserKey],
+  );
+  const contactKey = link.rows[0]?.contact_key;
+  const contact =
+    link.rows.length === 1 && typeof contactKey === 'string'
+      ? await client.query(
+          `SELECT contact_key
+             FROM onetime.contacts
+            WHERE account_key = $1
+              AND product_key = $2
+              AND contact_key = $3
+            LIMIT 2
+            FOR UPDATE`,
+          [config.accountKey, config.productKey, contactKey],
+        )
+      : { rows: [] };
+  const user = await client.query(
+    `SELECT user_key
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, input.guardianUserKey],
+  );
+  const relationship = await client.query(
+    `SELECT relationship_key
+       FROM onetime.portal_guardian_relationships
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, input.householdKey],
+  );
+  if (
+    link.rows.length !== 1 ||
+    contact.rows.length !== 1 ||
+    user.rows.length !== 1 ||
+    relationship.rows.length !== 1
+  ) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The Parent recovery identity is missing or ambiguous.',
+    );
+  }
+  const result = await client.query(
+    `SELECT users.user_key, users.email_normalized, users.display_name, users.role, users.status
+       FROM onetime.adult_household_contact_links AS links
+       JOIN onetime.contacts AS contacts
+         ON contacts.account_key = links.account_key
+        AND contacts.product_key = links.product_key
+        AND contacts.contact_key = links.contact_key
+       JOIN onetime.account_users AS users
+         ON users.account_key = links.account_key
+        AND users.product_key = links.product_key
+        AND users.user_key = links.guardian_user_ref
+       JOIN onetime.portal_guardian_relationships AS relationships
+         ON relationships.account_key = links.account_key
+        AND relationships.product_key = links.product_key
+        AND relationships.household_key = links.household_key
+        AND relationships.guardian_user_ref = users.user_key
+      WHERE links.account_key = $1
+        AND links.product_key = $2
+        AND links.household_key = $3
+        AND links.guardian_user_ref = $4
+        AND contacts.email_normalized = $5
+        AND users.email_normalized = $5
+        AND users.role = 'parent'
+        AND users.status = 'active'
+        AND relationships.status = 'active'
+        AND relationships.authority <> 'support_only'
+      LIMIT 2`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.householdKey,
+      input.guardianUserKey,
+      input.emailNormalized,
+    ],
+  );
+  if (result.rows.length !== 1) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The Parent recovery identity does not match the active adult guardian link.',
+    );
+  }
+  return result.rows[0] as Record<string, unknown>;
+}
+
 async function audit(
   client: Queryable,
   config: AppConfig,
@@ -1516,6 +1913,12 @@ function withoutLocalProofToken(result: TokenIssueWithProof): TokenIssueWithProo
   const safe = { ...result };
   delete safe.token_for_local_proof;
   return safe;
+}
+
+function studentPasswordHashRef(password: string, tokenKey: string) {
+  const salt = digest(['student-lifecycle-password-v1', tokenKey].join(':'));
+  const derived = scryptSync(password, salt, 32).toString('base64url');
+  return `scrypt:v1:${salt}:${derived}`;
 }
 
 function mapToken(row: Record<string, unknown>): TokenRecord {
@@ -1600,6 +2003,14 @@ function sortForHash(value: unknown): unknown {
 
 function digest(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function lifecycleAdvisoryLockKey(accountKey: string, productKey: string, idempotencyKey: string) {
+  const value = Number.parseInt(
+    digest([accountKey, productKey, idempotencyKey].join('\0')).slice(0, 8),
+    16,
+  );
+  return value > 0x7fffffff ? value - 0x100000000 : value;
 }
 
 function asDate(value: unknown) {

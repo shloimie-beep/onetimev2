@@ -257,30 +257,22 @@ async function proveExactParentHouseholdIdentity(
   requestedHouseholdKey: string,
 ) {
   const result = await db.query(
-    `SELECT users.user_key, guardians.household_key
-       FROM onetime.contacts AS contacts
-       JOIN onetime.account_users AS users
-         ON users.account_key = contacts.account_key
-        AND users.product_key = contacts.product_key
-        AND users.email_normalized = contacts.email_normalized
-        AND users.role = 'parent'
-        AND users.status = 'active'
-       JOIN onetime.portal_guardian_relationships AS guardians
-         ON guardians.account_key = users.account_key
-        AND guardians.product_key = users.product_key
-        AND guardians.guardian_user_ref = users.user_key
-        AND guardians.status = 'active'
-        AND guardians.authority IN ('primary_guardian', 'guardian')
+    `SELECT links.household_key, links.highlevel_location_id
+       FROM onetime.adult_household_contact_links AS links
+       JOIN onetime.contacts AS contacts
+         ON contacts.account_key = links.account_key
+        AND contacts.product_key = links.product_key
+        AND contacts.contact_key = links.contact_key
        JOIN onetime.portal_households AS households
-         ON households.account_key = guardians.account_key
-        AND households.product_key = guardians.product_key
-        AND households.household_key = guardians.household_key
+         ON households.account_key = links.account_key
+        AND households.product_key = links.product_key
+        AND households.household_key = links.household_key
         AND households.status = 'active'
-      WHERE contacts.account_key = $1
-        AND contacts.product_key = $2
-        AND contacts.contact_key = $3
+      WHERE links.account_key = $1
+        AND links.product_key = $2
+        AND links.contact_key = $3
         AND contacts.archived_at IS NULL
-      ORDER BY users.user_key, guardians.household_key
+      ORDER BY links.household_key
       FOR UPDATE`,
     [config.accountKey, config.productKey, contactKey],
   );
@@ -291,6 +283,9 @@ async function proveExactParentHouseholdIdentity(
     throw new HighLevelAccessIdentityError('HIGHLEVEL_ACCESS_IDENTITY_AMBIGUOUS');
   }
   if (String(result.rows[0]?.household_key ?? '') !== requestedHouseholdKey) {
+    throw new HighLevelAccessIdentityError('HIGHLEVEL_ACCESS_IDENTITY_MISMATCH');
+  }
+  if (String(result.rows[0]?.highlevel_location_id ?? '') !== config.highLevelLocationId) {
     throw new HighLevelAccessIdentityError('HIGHLEVEL_ACCESS_IDENTITY_MISMATCH');
   }
 }

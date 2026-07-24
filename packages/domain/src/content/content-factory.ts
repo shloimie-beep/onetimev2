@@ -766,10 +766,7 @@ export async function getContentFactoryPlayback(input: {
       return false;
     });
     if (!entitled) {
-      throw new ContentFactoryError(
-        isContentFactoryDemoSource(input.sourceKey) ? 'PLAYBACK_UNAVAILABLE' : 'NOT_FOUND',
-        'Content was not found.',
-      );
+      throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
     }
   }
   const draft = contentFactoryDraftSchema.parse(row.draft_json);

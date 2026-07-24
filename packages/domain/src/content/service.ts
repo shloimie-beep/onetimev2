@@ -470,6 +470,17 @@ async function portalItemsForLearner(input: {
   itemTypes: ContentItemType[];
   occurrenceScopedOnly: boolean;
 }): Promise<LibraryItem[]> {
+  const studentVisibility =
+    input.actorRole === 'student'
+      ? `AND COALESCE(
+            lessons.lesson_key,
+            factory.source_key,
+            CASE
+              WHEN items.item_type IN ('sheet', 'review') THEN items.content_item_key
+              ELSE NULL
+            END
+          ) IS NOT NULL`
+      : '';
   const activeOccurrenceKeys = input.occurrenceScopedOnly
     ? (
         await input.pool.query(
@@ -489,7 +500,7 @@ async function portalItemsForLearner(input: {
   const occurrenceScopeFilter = input.occurrenceScopedOnly
     ? `AND factory.source_key IS NOT NULL
        AND items.occurrence_key IN (${activeOccurrenceKeys
-         .map((_occurrenceKey, index) => `$${index + 7}`)
+         .map((_occurrenceKey, index) => `$${index + 6}`)
          .join(', ')})`
     : '';
 
@@ -511,10 +522,6 @@ async function portalItemsForLearner(input: {
             occurrence.local_class_date AS factory_class_date,
             series.title AS factory_class_title
        FROM onetime.content_items AS items
-       JOIN onetime.content_item_entitlements AS entitlements
-         ON entitlements.account_key = items.account_key
-        AND entitlements.product_key = items.product_key
-        AND entitlements.content_item_key = items.content_item_key
        LEFT JOIN onetime.classroom_lesson_publications AS lessons
          ON lessons.account_key = items.account_key
         AND lessons.product_key = items.product_key
@@ -538,24 +545,25 @@ async function portalItemsForLearner(input: {
         AND items.retention_state = 'active'
         AND items.published_revision_key IS NOT NULL
         AND items.item_type = ANY($3)
-        AND entitlements.entitlement_state = 'active'
-        AND (
-          entitlements.audience = 'all_active_learners'
-          OR (
-            entitlements.audience = 'learner'
-            AND entitlements.learner_key = $4
-          )
-          OR (
-            entitlements.audience = 'household'
-            AND entitlements.household_key = $5
-          )
+        AND items.content_item_key IN (
+          SELECT entitlement.content_item_key
+            FROM onetime.content_item_entitlements AS entitlement
+           WHERE entitlement.account_key = $1
+             AND entitlement.product_key = $2
+             AND entitlement.entitlement_state = 'active'
+             AND (
+               entitlement.audience = 'all_active_learners'
+               OR (
+                 entitlement.audience = 'learner'
+                 AND entitlement.learner_key = $4
+               )
+               OR (
+                 entitlement.audience = 'household'
+                 AND entitlement.household_key = $5
+               )
+             )
         )
-        AND (
-          $6::text <> 'student'
-          OR items.item_type IN ('sheet', 'review')
-          OR lessons.lesson_key IS NOT NULL
-          OR factory.source_key IS NOT NULL
-        )
+        ${studentVisibility}
         ${occurrenceScopeFilter}
       ORDER BY items.published_at DESC, items.content_item_key ASC
       LIMIT 25`,
@@ -565,7 +573,6 @@ async function portalItemsForLearner(input: {
       input.itemTypes,
       input.learnerKey,
       input.householdKey,
-      input.actorRole,
       ...activeOccurrenceKeys,
     ],
   );
