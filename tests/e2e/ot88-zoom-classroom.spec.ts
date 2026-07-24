@@ -235,6 +235,17 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
     await page.getByRole('button', { name: 'Leave' }).click();
     await page.waitForURL('**/app/student');
   });
+
+  test('checks provider routes without interpreting opaque classroom secrets', () => {
+    const target = providerSafeRequestTarget(
+      'http://127.0.0.1:3100/classroom/launch/classroom_grant_example/kNUEnf0bBNASCg',
+    );
+    expect(target).toContain('/classroom/launch/opaque-grant/opaque-secret');
+    expect(target).not.toMatch(/bna|operations/i);
+    expect(providerSafeRequestTarget('http://127.0.0.1:3100/operations/jobs')).toMatch(
+      /operations/i,
+    );
+  });
 });
 
 async function loginStudent(page: Page) {
@@ -260,9 +271,17 @@ async function assertNoRawZoomLeakage(page: Page, requests: Request[]) {
     .map((request) => new URL(request.url()))
     .filter((url) => url.origin !== 'http://127.0.0.1:3100');
   expect(externalRequests.map((url) => url.href)).toEqual([]);
-  expect(requests.map((request) => request.url()).join('\n')).not.toMatch(
-    /zoom\.us|source\.zoom\.us|zoomcdn|bna|operations/i,
-  );
+  expect(
+    requests.map((request) => providerSafeRequestTarget(request.url())).join('\n'),
+  ).not.toMatch(/zoom\.us|source\.zoom\.us|zoomcdn|bna|operations/i);
+}
+
+function providerSafeRequestTarget(requestUrl: string) {
+  const url = new URL(requestUrl);
+  if (/^\/classroom\/launch\/[^/]+\/[^/]+$/u.test(url.pathname)) {
+    url.pathname = '/classroom/launch/opaque-grant/opaque-secret';
+  }
+  return url.href;
 }
 
 function fakeZoomSignature(sdkKey: string) {
