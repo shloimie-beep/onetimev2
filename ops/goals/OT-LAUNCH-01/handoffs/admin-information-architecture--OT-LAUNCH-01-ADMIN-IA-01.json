@@ -81,9 +81,19 @@
     }
   ],
   "remaining_work": [
+    "The upstream owner must restore the reviewed-staging synthetic lesson playback contract so tests/integration/experience-preview.test.ts:563 returns 200 instead of the pre-existing 404.",
     "Conductor review and merge into codex/full-app-staging-live.",
     "Post-merge staging deployment and readback are conductor-owned; this task did not deploy production."
   ],
-  "blocker": null,
-  "sanitized_at": "2026-07-24T08:21:02Z"
+  "blocker": {
+    "kind": "pre_existing_required_ci_failure",
+    "scope": "Outside the assigned client-focused information architecture and protected by the packet's provider and access exclusions.",
+    "check": "Node 24 verify / Integration tests",
+    "test": "tests/integration/experience-preview.test.ts:563",
+    "observed": "Approved lesson playback is unavailable: expected HTTP 200 and received HTTP 404.",
+    "base_proof": "The current codex/full-app-staging-live head 7ac546846592266ce1a112c42d7d578276c6ec3d has the exact same failure in GitHub Actions run 30075949198.",
+    "pr_proof": "GitHub Actions run 30078846310 passed 331 integration tests, including all Admin IA and preview-isolation contracts, and failed only the same synthetic lesson playback assertion.",
+    "resolution_owner": "Conductor or upstream synthetic lesson playback owner"
+  },
+  "sanitized_at": "2026-07-24T08:30:13Z"
 }
