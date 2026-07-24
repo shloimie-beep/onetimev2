@@ -17,7 +17,9 @@ const spec = await readYaml<Record<string, unknown>>('ops/goals/OT-LAUNCH-01/SPE
 const acceptance = await readYaml<Record<string, unknown>>(
   'ops/goals/OT-LAUNCH-01/ACCEPTANCE.yaml',
 );
-const decisions = await readYaml<Record<string, unknown>>('ops/goals/OT-LAUNCH-01/DECISIONS.yaml');
+const decisionsPath = 'ops/goals/OT-LAUNCH-01/DECISIONS.yaml';
+const decisionsText = await readText(decisionsPath);
+const decisions = parseYaml<Record<string, unknown>>(decisionsText, decisionsPath);
 const boardText = await readFile(path.join(repoRoot, boardPath), 'utf8');
 const board = parseYaml<Record<string, unknown>>(boardText, boardPath);
 const adminIncident = JSON.parse(
@@ -41,7 +43,7 @@ const expectedPointer = {
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: boardPath,
   source_hash: sourceHash,
-  generated_at: String(board.updated_at ?? ''),
+  generated_at: isoTimestamp(board.updated_at, 'board.updated_at'),
 };
 if (writePointer) {
   await writeFile(
@@ -67,10 +69,15 @@ record(
 const statusDefinitions = objectAt(board, 'status_definitions');
 const outcome = objectAt(board, 'outcome');
 const parsedBoardStrings = collectStrings(board);
+const parsedDecisionStrings = collectStrings(decisions);
 const suspiciousTruncatedStrings = parsedBoardStrings.filter(({ value }) =>
   /\bPR$/u.test(value.trim()),
 );
+const suspiciousTruncatedDecisionStrings = parsedDecisionStrings.filter(({ value }) =>
+  /\bPR$/u.test(value.trim()),
+);
 const unquotedHashCommentHazards = findUnquotedHashCommentHazards(boardText);
+const unquotedDecisionHashCommentHazards = findUnquotedHashCommentHazards(decisionsText);
 const staleCurrentClaims = [
   'Current deployed product source 415d7e49d7567d3e211fb725c0916ece78da4dd0',
   'The current provider-off descendant 4d484c167ab332a6f82b97c7fc4f758c58bb391b',
@@ -171,6 +178,16 @@ record(
   unquotedHashCommentHazards.join(', ') || 'none',
 );
 record(
+  'decisions have no hash-comment truncation or unquoted hazards',
+  suspiciousTruncatedDecisionStrings.length === 0 &&
+    unquotedDecisionHashCommentHazards.length === 0,
+  `parsed=${parsedDecisionStrings.length}; suspicious=${
+    suspiciousTruncatedDecisionStrings
+      .map(({ path: valuePath, value }) => `${valuePath}=${JSON.stringify(value)}`)
+      .join(', ') || 'none'
+  }; hazards=${unquotedDecisionHashCommentHazards.join(', ') || 'none'}`,
+);
+record(
   'board has no superseded current or final claims',
   staleCurrentClaims.length === 0,
   staleCurrentClaims.join(', ') || 'none',
@@ -185,7 +202,7 @@ record(
 );
 record(
   'current persistent-staging product evidence',
-  conductorHead.last_verified_commit === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
+  conductorHead.last_verified_commit === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
     (() => {
       const track = trackById('persistent_staging');
       if (!track) return false;
@@ -193,25 +210,25 @@ record(
       const evidence = arrayAt<string>(track, 'evidence');
       return (
         track.status === 'done' &&
-        owner.head === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
+        owner.head === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
         evidence.some(
           (value) =>
-            value.includes('web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a') &&
-            value.includes('worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821') &&
+            value.includes('web deployment 1e102abe-9659-42e0-b7e1-edca1a9edfcc') &&
+            value.includes('worker deployment 1e7e4f86-9569-4f04-af04-f6169543edf4') &&
             value.includes('2226_rabbi_telegram_communications'),
         )
       );
     })() &&
     String(outcome.current_summary).includes(
-      'web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a',
+      'web deployment 1e102abe-9659-42e0-b7e1-edca1a9edfcc',
     ) &&
     String(outcome.current_summary).includes(
-      'worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821',
+      'worker deployment 1e7e4f86-9569-4f04-af04-f6169543edf4',
     ) &&
     String(outcome.current_summary).includes('2226_rabbi_telegram_communications') &&
     parsedBoardStrings.some(({ value }) => value.includes('Chromium 68/68')) &&
     parsedBoardStrings.some(({ value }) => value.includes('2,115-file secret scan')),
-  '4cf4d49 deployed through exact web/worker with schema 2226 and same-snapshot role gates',
+  '98d1735 deployed through exact web/worker with schema 2226 and preserved same-snapshot role gates',
 );
 record(
   'current role-preview and fictional-session evidence',
@@ -222,8 +239,8 @@ record(
     return (
       previewTrack.status === 'done' &&
       sessionTrack.status === 'done' &&
-      objectAt(previewTrack, 'owner').head === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
-      objectAt(sessionTrack, 'owner').head === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
+      objectAt(previewTrack, 'owner').head === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
+      objectAt(sessionTrack, 'owner').head === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
       parsedBoardStrings.some(({ value }) =>
         value.includes('Direct Student 1 and Parent credential logins separately reached'),
       )
@@ -298,18 +315,19 @@ record(
       (action) => action.kind === 'fictional_staging_admin_login_code_challenge',
     );
     const mediaAction = externalActions.find(
-      (action) => action.kind === 'media_private_openai_transcription_canary',
+      (action) => action.kind === 'media_private_external_canary_lifecycle',
     );
     return (
       outcome.external_action_count === counted &&
       outcome.external_action_count === 17 &&
       loginAction?.count === 11 &&
       mediaAction?.count === 1 &&
-      String(mediaAction.scope).includes('one authorized private OpenAI transcription request') &&
-      String(mediaAction.scope).includes('no retry')
+      String(mediaAction.scope).includes('one OpenAI transcription') &&
+      String(mediaAction.scope).includes('one private Vimeo asset') &&
+      String(mediaAction.scope).includes('no provider/media-processing retry')
     );
   })(),
-  'external_action_count=17 equals row sum and includes 11 bounded staging login-code emails plus one private media transcription request',
+  'external_action_count=17 equals row sum and includes 11 bounded staging login-code emails plus one bounded private-media lifecycle',
 );
 record(
   'fictional Admin incident is rotated and auditable',
@@ -411,6 +429,36 @@ record(
       ),
     ),
   'PR #113 accepted at 45b213a and deployed in product source 5556c4a with exact 2224 checksum',
+);
+record(
+  'terminal private-media canary is complete and non-repeatable',
+  (() => {
+    const track = trackById('media_external_canary');
+    const decisionRows = arrayAt<Record<string, unknown>>(decisions, 'decisions');
+    const canaryDecision = decisionRows.find(
+      (decision) => decision.id === 'provider-canaries-reaffirmed-20260723',
+    );
+    if (!track || !canaryDecision) return false;
+    const owner = objectAt(track, 'owner');
+    const evidence = arrayAt<string>(track, 'evidence');
+    return (
+      track.status === 'done' &&
+      owner.pr === 117 &&
+      owner.head === '13656a558b44d6af533720697e4e9eb12d22bf9e' &&
+      track.blocker === null &&
+      track.remaining_work === null &&
+      evidence.some(
+        (value) =>
+          value.includes('one OpenAI whisper-1 transcription') &&
+          value.includes('one private Vimeo asset') &&
+          value.includes('provider/media-processing retries were zero'),
+      ) &&
+      evidence.some((value) => value.includes('Final unpublish left zero active canary')) &&
+      String(canaryDecision.decision).includes('The media portion was consumed exactly once') &&
+      String(canaryDecision.decision).includes('grants no retry')
+    );
+  })(),
+  'PR #117 is terminal, final publication is revoked, and the consumed authority cannot be replayed',
 );
 record(
   'accepted Tisha production plus isolated preview block',
@@ -587,6 +635,18 @@ async function readSkill(filePath: string) {
     frontmatter: parseYaml<Record<string, unknown>>(match[1] ?? '', filePath),
     body: match[2] ?? '',
   };
+}
+
+function isoTimestamp(value: unknown, field: string) {
+  if (value instanceof Date && !Number.isNaN(value.valueOf())) return value.toISOString();
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new Error(`governance_datetime_missing:${field}`);
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.valueOf())) {
+    throw new Error(`governance_datetime_invalid:${field}`);
+  }
+  return parsed.toISOString();
 }
 
 function objectAt(value: Record<string, unknown>, key: string) {

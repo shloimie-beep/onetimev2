@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T14:06:54Z
+updated_at: 2026-07-24T15:31:21Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -129,7 +129,34 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: "Persistent-staging product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is the accepted live application through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821 at schema 2226_rabbi_telegram_communications. PR #118 Admin information architecture, PR #119 Rabbi Telegram communications, and PR #120 Parent/Student contact operations are accepted, integrated, deployed, and fully green together with the shared route-state and parallel browser-fixture repairs. Admin Dashboard discovery, Parent, three separately scoped Students, Rabbi/Classroom, content, Tisha, protected playback, and Admin-session isolation pass on the same product source. The latest exposed fictional Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old value is rejected, the private handoff was atomically replaced, active sessions remain zero, and the exact sandbox and local transfer artifacts are absent. The exact operator-owned 1.82 GB media source is now verified complete on the resumed executor after the host restart, and the one authorized private canary is actively processing with no alternate source; terminal provider and playback readback remain pending. PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but the provider-only cleanup is paused because the host restart cleared the Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists, no cleanup command ran, no signed deleted tombstone exists, and host/Student controls remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions."
+  current_summary: >-
+    Persistent-staging product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce is the
+    accepted live application through exact web deployment
+    1e102abe-9659-42e0-b7e1-edca1a9edfcc and worker deployment
+    1e7e4f86-9569-4f04-af04-f6169543edf4 at schema
+    2226_rabbi_telegram_communications. It preserves the accepted Admin information
+    architecture, Rabbi Telegram communications, Parent/Student contact operations,
+    role-isolated Experience Preview, protected synthetic content path, and every
+    fail-closed HighLevel and Zoom boundary. The real media canary is now terminal:
+    the exact operator-owned private source completed one bounded OpenAI transcription,
+    one private Vimeo upload, one active caption track, and one content-factory import
+    without retry. Admin review corrected the first malformed generated title before
+    acceptance; one entitled fictional Student then proved protected playback,
+    captions, progress, and five review questions while the sibling remained denied.
+    Final unpublish left zero active canary entitlements, restored the original
+    three-learner occurrence roster, and retained the private asset/captions and the
+    approved item without exposing provider metadata. The latest exposed fictional
+    Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old
+    value is rejected, the private handoff was atomically replaced, active sessions
+    remain zero, and the exact sandbox and local transfer artifacts are absent. PR 105
+    cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but
+    provider-only cleanup remains paused because the host restart cleared the
+    Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists,
+    no cleanup command ran, no signed deleted tombstone exists, and host/Student controls
+    remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but
+    DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective
+    pause, the campaign is untouched, and the target shells remain empty Drafts.
+    Production is unchanged beyond the recorded historical/narrow exceptions.
   external_action_count: 17
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -150,9 +177,9 @@ outcome:
     - kind: zoom_disposable_isolated_canary_lifecycle
       count: 1
       scope: 'One separately protected isolated PR #105 run created exactly one disposable non-Tisha meeting under decision zoom-distinct-disposable-isolated-canary-20260724. The signed schema-v3 state remains valid and cleanup_required. Registrant outcome is ambiguous; Student/host joins and controls are zero; customer invitations/messages and persistent-staging/production changes are zero. The sole cleanup attempt made one OAuth request and one meeting GET, then stopped before POST/PATCH/DELETE on ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH. The exact meeting, runner, and state remain preserved. No provisioning retry or second meeting is authorized; exactly one reviewed provider-only cleanup reconciliation remains permitted.'
-    - kind: media_private_openai_transcription_canary
+    - kind: media_private_external_canary_lifecycle
       count: 1
-      scope: 'The existing PR #117 executor submitted the exact verified operator-owned source through one authorized private OpenAI transcription request. The same 42-minute request remains in progress with no retry, alternate source, Vimeo publication, Student publication, customer communication, persistent-staging mutation, or production mutation.'
+      scope: 'The existing PR #117 executor completed one bounded private-media lifecycle for the exact verified operator-owned source: one OpenAI transcription, one private Vimeo asset, one active caption track, and one content-factory import. There was no provider/media-processing retry, customer communication, or production mutation. The accepted fictional publication was sibling-scoped and then unpublished, leaving zero active canary entitlements while the private asset/captions and approved item remain retained.'
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -161,8 +188,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 4cf4d491a6190fcad278d9cfd2324728d28c3cc4
-    resolution: 'Exact product checkpoint 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is the deployed acceptance source. It contains accepted PR #118, PR #119, and PR #120 plus the shared route-state and parallel browser-fixture repairs, while preserving every prior access, Experience Preview, HighLevel-disabled, Zoom provider-off, and content-factory boundary. Any later commit containing only this Board, the incident handoff, generated pointer/projection, or validator assertions is an evidence/control descendant and must not be presented as the deployed product source.'
+    last_verified_commit: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
+    resolution: 'Exact product checkpoint 98d1735d47a1a73c060a0ef4a9da838128d1bfce is the deployed acceptance source. It contains the accepted Admin, Rabbi Telegram, Parent/Student contact, Experience Preview, HighLevel-disabled, Zoom provider-off, and occurrence-scoped content-factory composition plus the full-length transcript contract and streaming large-media safeguards accepted from PR #117. Any later commit containing only this Board, generated pointer/projection, decisions, or validator assertions is an evidence/control descendant and must not be presented as the deployed product source.'
   system: One Time persistent staging
 
 tracks:
@@ -345,7 +372,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: 4cf4d491a6190fcad278d9cfd2324728d28c3cc4
+      head: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
       system: One Time web
     write_scope: Experience Preview config, server catalog/routes, Admin Dashboard discovery CTA, actual read-only fictional Student portal rendering, contracts, migration, and focused browser/security tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/experience-preview--persistent-staging-conductor.json
@@ -374,7 +401,7 @@ tracks:
       - 'Sanitized screenshot evidence is committed under ops/evidence/ot-launch-01-pr113-persistent-staging-5556c4a/, including the Dashboard launcher, mobile navigation, all explicit role choices, the dedicated Student shell, occurrence entitlement/sibling isolation, protected playback, and post-unpublish revocation. No credentials, login codes, private destinations, exchange identifiers, or provider URLs appear in those images.'
       - 'At deployed source 415d7e49d7567d3e211fb725c0916ece78da4dd0, the freshly rotated fictional Administrator completed the bounded email-code login and followed Dashboard -> Preview Parent & Student portals -> Open portal preview. The page visibly listed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom; every choice selected inside the authenticated Admin preview while the Admin navigation remained usable.'
       - 'Existing isolated Student 2 and Student 3 tabs rendered the actual fictional Student portal with Today, Library, Learning points, and Private questions, a visible read-only banner, disabled question mutation, GET-only behavior, no Admin navigation/logout, and opener=null. Direct Student 1 and Parent credential logins separately reached their real portals with no Admin shell. The in-app client did not expose a newly opened Student 1 popup as a bindable tab, so the fresh popup claim remains limited to exact-source Chromium 13/13 plus the already-open isolated sibling tabs; no product defect is inferred from the client limitation.'
-      - 'Current deployed product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 retains the normal Admin Dashboard Preview Parent & Student portals launcher, the capability-gated Live Console route, the dedicated GET-only Student shells, and production rejection. Same-snapshot Chromium 68/68 plus accessibility 24/24 and performance 10/10 cover Admin, Parent, all three sibling scopes, Rabbi/Classroom, desktop, and mobile without weakening the Admin-session boundary.'
+      - 'Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established the normal Admin Dashboard Preview Parent & Student portals launcher, the capability-gated Live Console route, the dedicated GET-only Student shells, and production rejection. Current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce preserves that boundary. Same-snapshot Chromium 68/68 plus accessibility 24/24 and performance 10/10 cover Admin, Parent, all three sibling scopes, Rabbi/Classroom, desktop, and mobile without weakening the Admin-session boundary.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -386,7 +413,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: 4cf4d491a6190fcad278d9cfd2324728d28c3cc4
+      head: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
       system: One Time web
     write_scope: Preview-only exchange/session and dedicated GET-only client shell
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/fictional-student-session--persistent-staging-conductor.json
@@ -400,7 +427,7 @@ tracks:
       - 'Exact product head 7dcb137c live proof rendered Ari, Dovid, and Noam in three distinct route-scoped, read-only actual Student portal shells. Each shell omitted Admin navigation/logout and every sibling identity, while the originating Admin role selector remained usable. Exact-source real Chromium directly passed the target-blank null-opener assertion after the client-side fail-closed detachment guard was added.'
       - 'At exact deployed source 5556c4ab78e01d367666694459eb2ea97f4028ef, Student 2 direct credential login opened the occurrence-scoped published lesson through a first-party protected route/embed with captions and review questions and no raw Vimeo, storage locator, Admin, or sibling data. Student 1 direct credential login reached its own portal; its bounded direct-Library denial retry timed out in the test harness, while a fresh sibling-scoped preview independently showed only the original one-item library and no Student 2 occurrence lesson. Exact-source automated sibling-denial coverage remains green.'
       - 'At deployed source 415d7e49d7567d3e211fb725c0916ece78da4dd0, direct Student 1 login reached the actual Student Portal with Today, Library, Class Helper, Progress, Questions, and Updates and no Parent/Admin navigation. Existing Student 2 and Student 3 preview tabs remained separately route-scoped, read-only, opener-null, and free of Admin controls; the originating Admin preview stayed authenticated and usable.'
-      - 'At current deployed source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4, the shared route-state repair and parallel browser-fixture isolation preserve single-use exchange, sibling-specific session scope, GET-only dedicated shells, null-opener behavior, and the originating Admin session. The exact same-snapshot Chromium journey is 68/68 green.'
+      - 'Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 proved the shared route-state repair and parallel browser-fixture isolation for single-use exchange, sibling-specific session scope, GET-only dedicated shells, null-opener behavior, and the originating Admin session. Current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce preserves that boundary; the exact same-snapshot Chromium journey is 68/68 green.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -687,38 +714,37 @@ tracks:
       - Exact-head Railway /version and /ready were verified in its isolated preview; Admin and Student browser acceptance passed without mobile overflow.
       - 'Synthetic VIDEO_TO_STUDENT_CLASSROOM acceptance is complete and its commits are semantically integrated into the PR #97 descendant under combined 22/22 focused, build/typecheck, and 3/3 browser proof.'
       - 'PR #104 is superseded by PR #97 for convergence: its seven unique media/content-factory commits are already represented as 5223edc, e8b2c84, 312f8ed, b65c7ca, 956662f, e3bf66c, and b281fff. The stale PR #104 range was not integrated again.'
-      - 'Exact-head live Admin proof shows the published full_app_demo_mishnayos_video row Berachos 2:1 — Finding the Right Time for Shema in Content Workspace and the protected Prepared Vimeo Demo Lesson metadata/transcript/captions surface. The real Student portal shows only the approved lesson resource; external private-Vimeo playback remains separately gated.'
+      - 'Historical exact-head Admin proof shows the published full_app_demo_mishnayos_video row Berachos 2:1 — Finding the Right Time for Shema in Content Workspace and the protected Prepared Vimeo Demo Lesson metadata/transcript/captions surface. The real Student portal showed only the approved synthetic lesson resource; the separate external provider canary is now terminal in the media_external_canary track.'
       - 'Exact product head ad407005a336fbee9ed1fcc47ca124969ec881b0 adds a staging-only protected synthetic player for the same coherent lesson. The insert is authorized only through the dedicated private CLI, transactionally refuses and byte-preserves any existing real or independently processed factory row, fails closed outside dual test/isolated-staging classification, and passed independent review plus 29/29 focused tests.'
-      - 'Live Student 1 opened the approved lesson through the protected synthetic player with the exact Berachos title and caption text. This proves the provider-off staging playback path only; it is not evidence of a real private-Vimeo upload or external canary.'
+      - 'Live Student 1 opened the approved lesson through the protected synthetic player with the exact Berachos title and caption text. This remains the provider-off staging playback proof; the later real private-media proof is recorded separately under media_external_canary and does not replace the synthetic fallback.'
     blocker: null
     remaining_work: null
     next_action: Preserve immutable 2214 and keep persistent-staging deployment evidence in the persistent_staging track.
 
   - id: media_external_canary
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-MEDIA-EXTERNAL-CANARY-01
       repository: shloimie-beep/onetimev2
       branch: codex/media-external-canary
       pr: 117
-      head: b5d85dbbf6e6a578c374f5658cea245142cfec1e
-      system: Vimeo external provider
+      head: 13656a558b44d6af533720697e4e9eb12d22bf9e
+      system: OpenAI/Vimeo private provider canary
     write_scope: One authorized private Vimeo canary and protected playback readback
     handoff_path: ops/codex-runs/OT-LAUNCH-01/VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md
     dependencies: [media_staging_integration]
     acceptance_ids: [CONTENT-002]
     evidence:
-      - Staging content-factory work is ready independently of external approval.
-      - The operator explicitly authorized one bounded operator-owned OpenAI/private-Vimeo staging canary on 2026-07-23; authority is no longer the blocker.
-      - 'Accepted PR #113 and deployed PR #97 product source 5556c4ab78e01d367666694459eb2ea97f4028ef now provide the durable occurrence-scoped intake, restart-safe worker, protected storage, Admin review, publication/revocation, and sibling-isolation prerequisite. This is synthetic provider-off proof only; no real OpenAI or private-Vimeo canary has run.'
-      - 'Draft PR #117 exact head b5d85dbbf6e6a578c374f5658cea245142cfec1e changes only the sanitized VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md; BOARD.yaml is byte-unchanged in that lane. Goal governance, typecheck, secret scan, diff check, and 16 focused media/content tests pass.'
-      - 'The signed-in protected Drive browser resolved one exact operator-owned private MP4 using safe metadata only: 1.82 GB, 42:18, 1280x720, created and modified 2026-07-20. The Drive connector cannot see that same file scope, so the executor must resume the already-open protected tab and must not select or substitute another source.'
-      - 'At the initial preflight, OpenAI and Vimeo authentication readback passed while download, upload, transcription, provider mutation, customer communication, persistent-staging change, and production change counts were all zero; no protected Drive reference entered Git.'
-      - 'After the host restart, the same executor verified that the exact source is already local and complete: safe size, duration, and 1280x720 probe match the protected Drive readback and no partial download exists. The single authorized canary resumed with that source only; no replacement source or second canary was started.'
-      - 'The executor has now submitted exactly one private OpenAI transcription request for the same source. It remains in progress; no retry, second upload, Vimeo publication, Student publication, customer communication, persistent-staging mutation, or production mutation has occurred.'
+      - 'Draft PR #117 exact head 13656a558b44d6af533720697e4e9eb12d22bf9e is the immutable terminal handoff. Its semantic code boundary adds streaming SHA-256 for the multi-gigabyte private intake, a bounded 64 kbps/16 kHz mono transcription preflight, a streaming Vimeo TUS body, and a normalized transcript import digest; no migration was added.'
+      - 'The exact operator-owned private MP4 was verified by safe metadata only at 1.82 GB, 42:18, and 1280x720. One bounded provider lifecycle produced one OpenAI whisper-1 transcription, one private Vimeo asset, one active caption track, and one content-factory import; provider/media-processing retries were zero and the original operator file was unchanged.'
+      - 'Safe output readback reports prepared duration 2,483,900 ms, 434 timestamped segments, conservative boundary-only trim with no middle cut, and ten draft review questions. No source locator, transcript body, provider ID/URL, credential, cookie, or token is committed.'
+      - 'The first fictional-Student readback exposed a malformed generated title; the operator-safe workflow immediately unpublished it and replaced it with neutral human-reviewed metadata before acceptance. No customer or real-learner publication occurred.'
+      - 'The accepted fictional publication had one entitled learner and zero sibling entitlements. The entitled Student opened the approved summary, five questions, active captions, progress, and the first-party protected player; the sibling Library omitted the item and its direct route returned metadata-safe denial.'
+      - 'Final unpublish left zero active canary content entitlements and restored the original three-learner occurrence roster. The item remains approved/unpublished and the Vimeo asset/captions remain private; no re-upload, retranscription, or import retry is permitted.'
+      - 'Terminal verification passed 26/26 focused unit/migration tests, 7/7 real-PostgreSQL integration tests, live Admin/Student/sibling/unpublish proof, typecheck, build, lint, scoped formatting, a 2,079-file secret scan, goal/generated-status validation, diff check, and all four exact-head PR #117 GitHub suites. Customer actions and production mutations were zero.'
     blocker: null
-    remaining_work: Complete the in-progress bounded private provider processing, return provider gates off, and prove protected Student playback without exposing the provider URL or raw transcript.
-    next_action: 'Continue the same PR #117 executor to terminal sanitized OpenAI/Vimeo and protected-playback readback; do not select another source or broaden publication.'
+    remaining_work: null
+    next_action: 'Preserve the private asset/captions and approved-unpublished item, keep synthetic/provider-off fallback usable, and never repeat this completed provider lifecycle.'
 
   - id: zoom_meeting_sdk
     status: provider_off
@@ -976,7 +1002,7 @@ tracks:
       - 'Superseding PR #118 head 938942b41634a47aae48d95b12a912209dec8849 is cleanly rebased onto governed source 415d7e49d7567d3e211fb725c0916ece78da4dd0. All hosted CI, exact-head unit/integration/E2E/accessibility/performance checks, secret scan across 2,091 files, marker scan, and diff check pass; its 35-path scope contains no auth, access-domain, provider, migration, payment, production, Board, CURRENT, or pointer change.'
       - 'Independent semantic audit rejected convergence because Live Console became unconditional instead of consuming session.capabilities.operator_experience.live_console, including a production/provider-off fixture, and the explicit capability-gated Admin Dashboard Preview Parent & Student portals card/CTA was removed. Both changes contradict the existing SPEC/EXP-001 acceptance even though the mechanical test suite is green.'
       - 'Final PR #118 head 5741d5d9422c9f326112c636880de365ca3cc35a restores server-capability-gated Live Console visibility and the explicit Dashboard Preview Parent & Student portals CTA while preserving the five-area Admin workspace. Independent exact-head audit and all hosted/focused UI, isolation, responsive, lint, typecheck, format, secret, and diff gates pass.'
-      - 'PR #118 is merged and semantically integrated once as PR #97 commit 5b37f6477721e797f3c79ba1ec82ceff57e48e91. Current deployed source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 retains the five-area navigation, capability-negative production behavior, Dashboard launcher, and mobile access.'
+      - 'PR #118 is merged and semantically integrated once as PR #97 commit 5b37f6477721e797f3c79ba1ec82ceff57e48e91. Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established the five-area navigation, capability-negative production behavior, Dashboard launcher, and mobile access; current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce preserves them.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -1001,7 +1027,7 @@ tracks:
       - The task packet forbids payment history, child GHL contacts, full contact polling, plaintext credentials, GHL workflow activation, customer sends, and production mutation.
       - 'Final PR #120 head e5e52114828401d575ca2baae35db364e608d91a is independently accepted and merged. Migration 2225_parent_student_contact_operations has checksum 259532137222b31c6b72975d479fb6061366a2800404d34939b66d19961e1d60 and adds the governed adult-link/access-source/recovery boundary without storing payment history or creating child GHL contacts.'
       - 'The accepted implementation provides atomic Parent enrollment, local-only Student creation, independent paid/complimentary/suspension truth, paused-Parent recovery shell, secure Parent/Student credential reset, adult-only outbox projection, replay/idempotency and sibling/security denials. Provider/customer/production effects remain zero.'
-      - 'PR #120 is integrated once as PR #97 commit 9139d459e2211ca988e96939ce149562f083f62d. Current deployed source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 reports schema 2226 with the 2225 ledger entry preserved and the same-snapshot unit/integration/browser gates green.'
+      - 'PR #120 is integrated once as PR #97 commit 9139d459e2211ca988e96939ce149562f083f62d. Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established schema 2226 with the 2225 ledger entry preserved and the same-snapshot unit/integration/browser gates green; current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce retains that schema and behavior.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -1109,7 +1135,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: 4cf4d491a6190fcad278d9cfd2324728d28c3cc4
+      head: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
       system: Railway isolated persistent staging
     write_scope: 'PR #97 exact-head commit, staging-only variables, web/worker deploy, seed, and read-only production comparison'
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/persistent-staging--persistent-staging-conductor.json
@@ -1170,11 +1196,14 @@ tracks:
       - 'Exact-head Node 24, OPS-06, PostgreSQL 16 assurance, PostgreSQL 16 learner-seat proof, PostgreSQL 18 assurance/restore, Railway web, and Railway worker checks are terminal green. The repaired occurrence projection passed focused content integration 4/4 and affected Chromium 13/13; typecheck, build, scoped ESLint/Prettier, a 2,085-file secret scan, repository marker scan, and git diff check passed on the same source.'
       - 'Fresh protected-role acceptance used the final rotated handoff without rendering values. Admin Dashboard exposed Preview Parent & Student portals -> Open portal preview and all five explicit roles; Parent and direct Student 1 reached their actual portals; existing Student 2 and Student 3 route-scoped read-only tabs had opener=null and no Admin controls; the originating Admin tab remained authenticated. Exact-source Chromium supplies the fresh Student 1 separate-popup, two-sibling, production-gating, and 360px proof that the in-app client could not bind as a new tab.'
       - 'A prior fictional Admin rotation at 2026-07-24T09:54:47.696Z revoked one active session, atomically replaced the protected handoff, rejected the old credential, and left the exact private-network sandbox destroyed and absent. One operator-owned staging login-code email completed that acceptance; customer/broad messages, workflow enrollments, content-provider calls, persistent-staging provider-mode changes, and production changes were zero.'
-      - 'Current deployed product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is live through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and standalone worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821. /version reports full-app-staging-live-4cf4d49 with exact commit_sha and Railway git_commit_sha; /health is 200 and /ready is healthy with blockers=[], database ready, and latest=2226_rabbi_telegram_communications.'
+      - 'Historical product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 was accepted through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and standalone worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821. Its /version reported full-app-staging-live-4cf4d49 with exact commit_sha and Railway git_commit_sha; /health was 200 and /ready was healthy with blockers=[], database ready, and latest=2226_rabbi_telegram_communications.'
       - 'This source integrates accepted PR #120 at e5e52114828401d575ca2baae35db364e608d91a, PR #119 at 17ee48e1f2f0abaea0b319ad69a5e384048cdd52, and PR #118 at 5741d5d9422c9f326112c636880de365ca3cc35a plus the shared route-state and parallel browser-fixture repairs. Migrations 2225 and 2226 retain checksums 259532137222b31c6b72975d479fb6061366a2800404d34939b66d19961e1d60 and 82b609978f4ab6efeb7860810c987003fe44e0f3326813dff6587ff9a3a1bdeb.'
       - 'Same-snapshot acceptance passed 76 unit files/416 tests, 67 integration files/350 tests, Chromium 68/68, accessibility 24/24, performance 10/10, typecheck, build, lint, brand checks, a 2,115-file secret scan, migration safety, explicit owned-file Prettier, repository marker scan, and git diff check. All five GitHub suites and both exact persistent-staging Railway checks are green.'
       - 'Admin, Parent, Student 1/2/3, Rabbi/Classroom, content, protected playback, Tisha, production preview rejection, mobile, sibling isolation, and preserved Admin-session journeys pass on the exact product source. HighLevel event/actions remain disabled, real Zoom/canary remains off, the co-located content worker is ready, and the standalone worker reports zero sink batches/failures.'
       - 'A fourth fictional Admin diagnostic exposure was remediated at 2026-07-24T13:14:22.759Z through one exact Admin-only private-network rotation sandbox pinned to this source. The old value is rejected, active sessions remained 0 -> 0, the protected handoff was atomically replaced, and the sandbox plus exact local transfer artifacts are absent. The latest replacement was not entered into a browser and no customer, provider, database-service, or production state changed.'
+      - 'Current media-safeguard product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce is live through exact web deployment 1e102abe-9659-42e0-b7e1-edca1a9edfcc and standalone worker deployment 1e7e4f86-9569-4f04-af04-f6169543edf4. /version reports full-app-staging-live-98d1735 with exact commit_sha and Railway git_commit_sha; /health is healthy and /ready is healthy with blockers=[], database query ok, and latest=2226_rabbi_telegram_communications.'
+      - 'This source adds only the accepted full-length content-factory transcript contract and the remaining PR #117 streaming large-media safeguards plus sanitized terminal evidence. It adds no migration, makes no new provider call, and preserves all existing fail-closed HighLevel, real-Zoom, payment, Telegram, and production boundaries.'
+      - 'Same-source local verification passed 28 focused unit tests, 7 focused real-PostgreSQL integration tests, typecheck, full build, full lint, scoped formatting, a 2,115-file secret scan, migration/diff/marker checks, and an independent semantic audit. Railway web and worker checks are exact-source successes; the terminal media browser proof used the already deployed transcript contract at 089d724bdd901a2a009770fecf58c6d9e68df494 and did not repeat any provider action after the 98d1735 deployment.'
     blocker: null
     remaining_work: null
     next_action: null
