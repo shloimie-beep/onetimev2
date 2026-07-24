@@ -165,6 +165,81 @@ golden_paths:
         only through the canonical outbox-backed dispatcher with dedupe, replay safety, and audit readback.
       - Parent and Student authorization uses the One Time access projection and fails closed when
         it is missing, expired, revoked, or ambiguous.
+      - >-
+        Paid state, complimentary access, and administrative suspension are independent current
+        source slots. The effective projection denies while suspended, otherwise grants for current
+        paid or complimentary access, and otherwise pauses; revoking one source never erases another.
+      - >-
+        Parent authentication remains available while access is paused and exposes only a limited
+        recovery, identity, and support shell. Student sessions and protected learning access are
+        revoked or denied while paused.
+  parent_student_contact_operations:
+    requirements:
+      - Every Student is a One Time-only identity linked to exactly one Parent household; no child is
+        created, synchronized, or represented as a GHL contact.
+      - A Parent or authorized school administrator may create any positive number of Student
+        profiles; ordinary enrollment never auto-creates three Students.
+      - One atomic idempotent enrollment command creates or links the adult, household, guardian,
+        optional local Students, optional complimentary access, secure activation, and one adult-only
+        GHL outbox projection; local success survives provider unavailability as sync_pending.
+      - Durable adult-to-household and adult-to-GHL-contact links support exact signed identity proof,
+        Open in GHL, and one-Parent reconciliation without full contact polling.
+      - Parent recovery sends a secure reset link without revealing or setting the password. Parent or
+        authorized school administrator may reset a Student credential only through a one-time
+        secret-safe flow with session revocation and audit.
+      - One Time stores no invoices, cards, charges, amounts, refunds, subscriptions, or payment
+        history, and administrative suspension explicitly does not cancel GHL billing.
+  admin_information_architecture:
+    requirements:
+      - Primary Administrator navigation is exactly Dashboard, Contacts, Content, Classroom, and
+        Live Console on desktop and in the mobile drawer.
+      - Household Access, Rewards, Communications, Launch Status, Experience Preview, and Support
+        remain available only in their correct contextual or utility location, not the primary rail.
+      - Content owns Studio; Classroom owns Rewards; Contacts owns Parents, Students, and Internal
+        Tasks; each page renders one selected category rather than simultaneous unrelated card groups.
+      - Legacy routes remain safe, canonical brand tabs/selectors are reused, and no browser code
+        invents a Student record, GHL link, or provider capability.
+      - Experience Preview removes redundant bottom route shortcuts and customer-visible BNA bridge
+        copy while preserving the one-use, no-opener, read-only, sibling-scoped security boundary.
+  rabbi_telegram_communications:
+    requirements:
+      - The One Time Rabbi bot has a distinct identity, deployment, scope, lease, and audit from the
+        BNA control-plane bot and never shares sessions, cookies, secrets, transcripts, or runtime.
+      - Parent replies use the same GHL adult conversation through preview and explicit confirmation;
+        One Time stores only opaque references, safe status/digests, idempotency, and audit.
+      - Student questions and confirmed Rabbi answers remain One Time-only and are visible only in the
+        exact Student portal; no child GHL contact or second conversation transcript is created.
+      - Internal Rabbi-to-operator tasks are a One Time aggregate, not customer messages or GHL tasks.
+      - Natural language compiles only to allowlisted typed capabilities and can never bypass scope,
+        explicit confirmation, replay protection, or provider-off gates.
+  structured_prompt_and_scoped_knowledge:
+    requirements:
+      - Prompt feedback produces a schema-valid section-scoped patch over an immutable structured
+        prompt version, with deterministic diff, guardrail preservation, activation, rollback, and
+        exact output/version provenance.
+      - Parent and Student helpers authorize before retrieval, use only current approved and
+        knowledge-approved content in exact household/learner scope, cite sources, abstain when
+        unsupported, resist prompt injection, and recheck entitlement/revocation.
+      - Existing retrieval and model ports converge into one server-only adapter; no second knowledge
+        store, public web answers, persistent raw chat memory, or GHL lead-bot KB is introduced.
+  human_confirmed_social_publishing:
+    requirements:
+      - Existing social ledgers converge into one provider-neutral immutable revision, approval,
+        schedule, delivery, and readback model; no third ledger is created.
+      - Edit, preview, approve, schedule, cancel, and retract actions are authenticated; any edit
+        invalidates approval, and a leased idempotent worker alone calls the provider.
+      - Telegram confirmation records or queues the exact approved revision and never performs the
+        provider call directly.
+      - Facebook text/image is first; GHL Social Planner capability must be verified before adapter
+        work, and YouTube remains explicitly unsupported until a real provider contract is proven.
+  bna_control_plane_operations_bot:
+    requirements:
+      - The BNA control-plane bot remains separate from One Time and starts as a redacted notifier and
+        read-only status surface using opaque references, counts, and HTTPS links.
+      - Any broader mutation or Codex capability requires a replacement ADR with exact action
+        allowlist, re-authentication, two-step confirmation, audit, rate limit, kill switch, and
+        emergency revoke; arbitrary shell, deploy, provider, product-session, transcript, and database
+        access remain forbidden.
   public_lead_capture:
     requirements:
       - The current landing WhatsApp/offline-readiness helper is absent from markup and runtime code.

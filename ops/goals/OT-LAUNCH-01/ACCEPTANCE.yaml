@@ -96,6 +96,45 @@ criteria:
         replay_test,
         authorization_negative_tests,
       ]
+  - id: CONTACT-OPS-001
+    track: parent_student_contact_operations
+    observable: An authorized operator or school administrator atomically enrolls one adult Parent, any explicitly selected number of local-only Students, optional complimentary access, and one adult-only GHL projection; paused Parents retain a limited recovery/support login while every Student learning session is denied, and no payment ledger or child GHL contact is created.
+    proof:
+      [
+        domain_contract_test,
+        integration_test,
+        database_readback,
+        browser_desktop,
+        browser_mobile,
+        authorization_negative_tests,
+      ]
+  - id: ADMIN-IA-001
+    track: admin_information_architecture
+    observable: Desktop and mobile Admin primary navigation contains exactly Dashboard, Contacts, Content, Classroom, and Live Console; one selected contextual category fills the workspace, Studio is under Content, Rewards is under Classroom, legacy URLs remain safe, and no duplicate navigation, card wall, BNA bridge copy, or invented data control appears.
+    proof:
+      [
+        component_contract_test,
+        browser_desktop,
+        browser_mobile,
+        screenshot_review,
+        accessibility_scan,
+      ]
+  - id: RABBI-TELEGRAM-001
+    track: rabbi_telegram_communications
+    observable: The distinct One Time Rabbi bot durably previews and explicitly confirms one synthetic Parent conversation reply and one exact Student-question answer with replay safety, sibling/account denial, same-GHL-conversation truth, Student portal readback, and one internal Rabbi-to-operator task; no child GHL contact, duplicate transcript, unconfirmed send, or customer message is created.
+    proof: [integration_test, database_readback, restart_readback, synthetic_provider_readback]
+  - id: PROMPT-KNOWLEDGE-001
+    track: structured_prompt_and_scoped_knowledge
+    observable: Natural-language feedback yields a reviewed schema-valid section patch and immutable prompt version without losing unrelated guardrails, while Parent and Student helpers answer only from approved exact-scope content with citations, abstention, injection resistance, revocation recheck, and provider-off fallback.
+    proof: [domain_contract_test, integration_test, authorization_negative_tests, browser_desktop]
+  - id: SOCIAL-001
+    track: human_confirmed_social_publishing
+    observable: One immutable Facebook text/image revision can be previewed, explicitly approved, scheduled, delivered once by a leased worker, and read back; edits invalidate approval, replay is idempotent, zero provider calls occur before confirmation, and unsupported YouTube remains truthful.
+    proof: [integration_test, worker_readback, synthetic_provider_readback, browser_desktop]
+  - id: BNA-CP-001
+    track: bna_control_plane_operations_bot
+    observable: The separate BNA control-plane bot exposes only allowlisted redacted status notifications and links by default; forbidden callbacks are rejected/audited, missing ownership keeps delivery off, and any future mutation is impossible without an accepted replacement ADR and bounded capability proof.
+    proof: [architecture_decision, integration_test, authorization_negative_tests]
   - id: LEAD-001
     track: public_lead_capture_bot
     observable: The landing page contains no placeholder WhatsApp/offline helper; the future provider-backed website assistant creates only a consented deduplicated GHL lead/conversation, remains provider_off until configured, and routes only explicitly classified substantive Torah questions to the private Rabbi Telegram queue.

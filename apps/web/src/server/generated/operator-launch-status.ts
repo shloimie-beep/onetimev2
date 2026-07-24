@@ -5,16 +5,16 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:dea753ca94eec2f2c20a33061f21b6e631c7b2e59240cc82a00c3cf8b97a333a',
-  generated_at: '2026-07-23T20:16:33.000Z',
+  board_source_hash: 'sha256:f882b138413075666105acd54899a4c6176c200996b905437819b4493def0e3d',
+  generated_at: '2026-07-24T07:20:49.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 17,
-    acceptance_total: 21,
-    percentage: 81,
+    acceptance_total: 24,
+    percentage: 71,
   },
   what_changed:
-    'Persistent-staging product source 5556c4ab78e01d367666694459eb2ea97f4028ef is live through exact web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0. /version is full-app-staging-live-5556c4a with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2224_content_factory_publish_ready_constraint. The occurrence-scoped synthetic video pipeline is accepted: durable intake, restart-safe worker processing, Admin review/publish, entitled Student playback, sibling denial, unpublish revocation, and restart persistence passed with zero external provider calls. Normal Admin Dashboard discovery exposes Preview Parent & Student portals, all five fictional roles, and isolated read-only Student shells while retaining the Admin session. Current GHL truth is intentionally fail-closed: OT-E01 remains Published but DRIFTED because Email A is disabled, OT-C01 campaign remains Draft/unsent, its separate workflow wrapper was protectively paused back to Draft, and the reviewed application-contract targets remain empty Draft shells. Real OpenAI/private-Vimeo, the distinct disposable real Zoom canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.',
+    'Persistent-staging product source 5556c4ab78e01d367666694459eb2ea97f4028ef remains the accepted live application through exact web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0 at schema 2224_content_factory_publish_ready_constraint. The operator has now fixed the next product boundary: Students stay exclusively in One Time, only the adult Parent links to GHL, GHL owns payment history while One Time derives current access, and the Rabbi operates Parent/Student access and communications from One Time or the distinct scoped Telegram bot. Three non-overlapping implementation packets are assigned for the five-area Admin workspace, Parent/Student contact and access operations, and Rabbi Telegram communications; structured prompts/knowledge, confirmed social publishing, and the separate BNA control-plane bot are queued behind those contracts. Current GHL truth remains fail-closed, and real OpenAI/private-Vimeo plus the distinct disposable real Zoom canary remain separately assigned provider work.',
   works_now: [
     {
       track_id: 'goal_system',
@@ -79,6 +79,27 @@ export const operatorLaunchStatusProjection = {
   ],
   remaining: [
     {
+      track_id: 'parent_student_contact_operations',
+      label: 'Parent Student Contact Operations',
+      status: 'active',
+      next_action:
+        'Start OT-LAUNCH-01-CONTACT-OPS-01 from the exact governed conductor base; resolve role capabilities independently of display-label changes.',
+    },
+    {
+      track_id: 'admin_information_architecture',
+      label: 'Admin Information Architecture',
+      status: 'active',
+      next_action:
+        'Start OT-LAUNCH-01-ADMIN-IA-01 from the exact governed conductor base and inspect current pages before changing them.',
+    },
+    {
+      track_id: 'rabbi_telegram_communications',
+      label: 'Rabbi Telegram Communications',
+      status: 'active',
+      next_action:
+        'Start OT-LAUNCH-01-RABBI-TELEGRAM-01 from the exact governed conductor base; keep access, Zoom, social, voice, and BNA super-admin work outside this packet.',
+    },
+    {
       track_id: 'zoom_meeting_sdk',
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
@@ -102,9 +123,9 @@ export const operatorLaunchStatusProjection = {
     {
       track_id: 'media_external_canary',
       label: 'Media External Canary',
-      status: 'unclaimed',
+      status: 'active',
       next_action:
-        'Keep truthful provider-off UI until the reviewed canary job is assigned; do not infer real provider acceptance from the synthetic pipeline.',
+        'The assigned media executor continues exact-source discovery and safe preflight now; it must not substitute the tiny smoke fixture or infer real provider acceptance from the synthetic pipeline.',
     },
     {
       track_id: 'production_pilot',
@@ -147,9 +168,9 @@ export const operatorLaunchStatusProjection = {
     },
   ],
   next_executable_task: {
-    track_id: 'zoom_real_control_operator_change_set',
-    label: 'Zoom Real Control Operator Change Set',
+    track_id: 'parent_student_contact_operations',
+    label: 'Parent Student Contact Operations',
     action:
-      'Use the approved protected S2S/host source to provision one distinct disposable Student 1 canary meeting; keep the Tisha event target excluded and every runtime real/canary gate off until the installation preflight passes.',
+      'Start OT-LAUNCH-01-CONTACT-OPS-01 from the exact governed conductor base; resolve role capabilities independently of display-label changes.',
   },
 } as const satisfies OperatorLaunchStatusProjection;

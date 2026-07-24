@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T20:16:33Z
+updated_at: 2026-07-24T07:20:49Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -24,6 +24,9 @@ milestones:
         LANDING-001,
         LANDING-002,
         ACCESS-001,
+        CONTACT-OPS-001,
+        ADMIN-IA-001,
+        RABBI-TELEGRAM-001,
         EXP-001,
         EXP-002,
         EXP-003,
@@ -47,6 +50,9 @@ milestones:
         operator_launch_dashboard,
         main_landing_polish,
         ghl_access_entitlement_projection,
+        parent_student_contact_operations,
+        admin_information_architecture,
+        rabbi_telegram_communications,
         zoom_meeting_sdk,
         zoom_s2s_host_control,
         zoom_real_control_operator_change_set,
@@ -76,7 +82,19 @@ milestones:
     label: Operational automation
     current: false
     outcome: Durable occurrence-scoped media, private Telegram-to-GHL question flow, public lead capture, and governed GHL access/workflow activation are accepted.
-    acceptance_ids: [VIDEO-E2E-001, TELEGRAM-001, TELEGRAM-002, LEAD-001, GHL-003, GHL-004, GHL-006]
+    acceptance_ids:
+      [
+        VIDEO-E2E-001,
+        TELEGRAM-001,
+        TELEGRAM-002,
+        LEAD-001,
+        GHL-003,
+        GHL-004,
+        GHL-006,
+        PROMPT-KNOWLEDGE-001,
+        SOCIAL-001,
+        BNA-CP-001,
+      ]
     track_ids:
       [
         VIDEO-TO-CLASSROOM-E2E,
@@ -85,6 +103,9 @@ milestones:
         public_lead_capture_bot,
         ghl_app_contract_shells,
         ghl_event_dispatcher,
+        structured_prompt_and_scoped_knowledge,
+        human_confirmed_social_publishing,
+        bna_control_plane_operations_bot,
       ]
     safe_links:
       - id: launch_status
@@ -108,7 +129,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'Persistent-staging product source 5556c4ab78e01d367666694459eb2ea97f4028ef is live through exact web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0. /version is full-app-staging-live-5556c4a with exact commit metadata; /health and /ready are healthy, blockers are empty, and schema is 2224_content_factory_publish_ready_constraint. The occurrence-scoped synthetic video pipeline is accepted: durable intake, restart-safe worker processing, Admin review/publish, entitled Student playback, sibling denial, unpublish revocation, and restart persistence passed with zero external provider calls. Normal Admin Dashboard discovery exposes Preview Parent & Student portals, all five fictional roles, and isolated read-only Student shells while retaining the Admin session. Current GHL truth is intentionally fail-closed: OT-E01 remains Published but DRIFTED because Email A is disabled, OT-C01 campaign remains Draft/unsent, its separate workflow wrapper was protectively paused back to Draft, and the reviewed application-contract targets remain empty Draft shells. Real OpenAI/private-Vimeo, the distinct disposable real Zoom canary, and the synthetic Telegram-to-GHL draft remain incomplete and truthfully gated.'
+  current_summary: 'Persistent-staging product source 5556c4ab78e01d367666694459eb2ea97f4028ef remains the accepted live application through exact web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0 at schema 2224_content_factory_publish_ready_constraint. The operator has now fixed the next product boundary: Students stay exclusively in One Time, only the adult Parent links to GHL, GHL owns payment history while One Time derives current access, and the Rabbi operates Parent/Student access and communications from One Time or the distinct scoped Telegram bot. Three non-overlapping implementation packets are assigned for the five-area Admin workspace, Parent/Student contact and access operations, and Rabbi Telegram communications; structured prompts/knowledge, confirmed social publishing, and the separate BNA control-plane bot are queued behind those contracts. Current GHL truth remains fail-closed, and real OpenAI/private-Vimeo plus the distinct disposable real Zoom canary remain separately assigned provider work.'
   external_action_count: 13
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -161,6 +182,7 @@ tracks:
       - 'The 2026-07-23 live-pilot intake records GHL-owned payment history, One Time access projection, the free-pilot target, authorized staging canaries, landing-helper removal, and a Board-derived operator summary without creating a second goal or status model.'
       - 'The expanded 30-track Board, SPEC, ACCEPTANCE, DECISIONS, intake, skill metadata, and source-hashed pointer pass the repository-native goal validator. The bundled Python quick validator cannot import yaml; no dependency was installed and no official-Python pass is claimed for the changed skill.'
       - 'The Board now declares one explicit controlled_live_pilot milestone with a fixed acceptance denominator, ordered contributing tracks, and safe Admin routes; the generated Launch Status projection fails closed if this contract is absent, duplicated, or stale.'
+      - 'The 2026-07-24 operator-workspace intake converts the finalized Parent/Student/GHL boundary, five-area Admin information architecture, communications-first Rabbi Telegram scope, structured prompt/knowledge contract, and human-confirmed publishing sequence into bounded task packets without creating a second status model.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -652,11 +674,11 @@ tracks:
     next_action: Preserve immutable 2214 and keep persistent-staging deployment evidence in the persistent_staging track.
 
   - id: media_external_canary
-    status: unclaimed
+    status: active
     owner:
-      task_id: null
+      task_id: OT-LAUNCH-01-MEDIA-EXTERNAL-CANARY-01
       repository: shloimie-beep/onetimev2
-      branch: null
+      branch: codex/media-external-canary
       pr: null
       system: Vimeo external provider
     write_scope: One authorized private Vimeo canary and protected playback readback
@@ -667,9 +689,10 @@ tracks:
       - Staging content-factory work is ready independently of external approval.
       - The operator explicitly authorized one bounded operator-owned OpenAI/private-Vimeo staging canary on 2026-07-23; authority is no longer the blocker.
       - 'Accepted PR #113 and deployed PR #97 product source 5556c4ab78e01d367666694459eb2ea97f4028ef now provide the durable occurrence-scoped intake, restart-safe worker, protected storage, Admin review, publication/revocation, and sibling-isolation prerequisite. This is synthetic provider-off proof only; no real OpenAI or private-Vimeo canary has run.'
+      - 'The connected Drive scope exposes the canonical Vimeo test folder but only a 557,469-byte smoke video; the operator-described recent multi-gigabyte source is not visible, so the executor must continue all safe provider preflight and request only an exact protected Drive link/account scope if discovery remains impossible.'
     blocker: null
-    remaining_work: Assign one reviewed operator-owned canary job, validate protected provider prerequisites, prove private provider state and protected playback without exposing a provider URL, then return provider gates off.
-    next_action: Keep truthful provider-off UI until the reviewed canary job is assigned; do not infer real provider acceptance from the synthetic pipeline.
+    remaining_work: Locate the exact operator-owned source through the connected Drive scope or one protected link, validate provider prerequisites, run one private OpenAI/Vimeo canary, prove protected playback without exposing a provider URL, and return provider gates off.
+    next_action: The assigned media executor continues exact-source discovery and safe preflight now; it must not substitute the tiny smoke fixture or infer real provider acceptance from the synthetic pipeline.
 
   - id: zoom_meeting_sdk
     status: provider_off
@@ -881,6 +904,127 @@ tracks:
     blocker: null
     remaining_work: null
     next_action: null
+
+  - id: admin_information_architecture
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-ADMIN-IA-01
+      repository: shloimie-beep/onetimev2
+      branch: codex/admin-workspace-information-architecture
+      pr: null
+      system: One Time Administrator workspace
+    write_scope: Client shell/navigation, focused Admin workspaces, Experience Preview presentation cleanup, shared brand tabs/selectors, and desktop/mobile browser acceptance only
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/admin-information-architecture--assigned-task.md
+    dependencies: [goal_system, persistent_staging]
+    acceptance_ids: [ADMIN-IA-001]
+    evidence:
+      - The operator selected exactly five primary Admin areas: Dashboard, Contacts, Content, Classroom, and Live Console.
+      - Read-only source audit found ten or more primary links, duplicate role/category navigation, dashboard and class card walls, redundant Experience Preview route buttons, and customer-visible BNA bridge copy.
+      - The assigned task packet is client-focused and capability-gates unavailable data; it does not own migrations, provider configuration, access/auth semantics, GHL, Telegram, Zoom, Vimeo, payments, or production.
+    blocker: null
+    remaining_work: Implement the five-area navigation and one-selected-workspace layout, preserve safe legacy URLs and preview isolation, pass focused desktop/mobile/a11y checks, and return one clean PR handoff.
+    next_action: Start OT-LAUNCH-01-ADMIN-IA-01 from the exact governed conductor base and inspect current pages before changing them.
+
+  - id: parent_student_contact_operations
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-CONTACT-OPS-01
+      repository: shloimie-beep/onetimev2
+      branch: codex/parent-student-contact-operations
+      pr: null
+      system: One Time Parent, Student, and access administration
+    write_scope: Adult/household/GHL links, independent access-source states, paused-Parent shell, atomic enrollment, secure Parent/Student recovery, adult-only outbox projection, and focused domain/API tests
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/parent-student-contact-operations--assigned-task.md
+    dependencies: [goal_system, ghl_access_entitlement_projection, ghl_event_dispatcher]
+    acceptance_ids: [CONTACT-OPS-001]
+    evidence:
+      - The operator made children local-only, the Parent the sole GHL adult contact, and the Rabbi responsible for in-app invitation, complimentary access, suspension, and secure recovery without opening GHL.
+      - Current access code stores one precedence winner, which cannot safely represent simultaneous paid, complimentary, and suspension truth; current Parent auth also denies the requested paused recovery shell.
+      - 'Existing PR #108/PR #115 contracts and migrations are already ancestors of the governed base and must be extended rather than recreated. Any new schema uses the next globally free forward-only prefix after convergence.'
+      - The task packet forbids payment history, child GHL contacts, full contact polling, plaintext credentials, GHL workflow activation, customer sends, and production mutation.
+    blocker: null
+    remaining_work: Implement independent access sources, durable adult links, atomic enrollment, paused Parent behavior, secure recovery, adult-only reconciliation, and exact negative/security tests.
+    next_action: Start OT-LAUNCH-01-CONTACT-OPS-01 from the exact governed conductor base; resolve role capabilities independently of display-label changes.
+
+  - id: rabbi_telegram_communications
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-RABBI-TELEGRAM-01
+      repository: shloimie-beep/onetimev2
+      branch: codex/rabbi-telegram-communications
+      pr: null
+      system: One Time Rabbi Telegram bot
+    write_scope: Executable Telegram worker, typed communication capabilities, same-GHL-conversation adapter, Student-question answer projection, internal tasks, preview/confirm, lease/replay/audit, and synthetic tests
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/rabbi-telegram-communications--assigned-task.md
+    dependencies: [telegram_foundation, bna_durability, ghl_event_dispatcher]
+    acceptance_ids: [RABBI-TELEGRAM-001]
+    evidence:
+      - The operator made Parent/Student communication the first Rabbi Telegram priority and kept the Rabbi bot distinct from the broader BNA operations bot.
+      - One Time already contains webhook, identity, command, audit, preview-confirm, gamification, and Student-question foundations, but the executable bot entry is not a complete worker and the CRM reply path remains provider-off/local-draft.
+      - The assigned packet preserves the adult-only GHL boundary, same-conversation truth, local-only Student questions, separate internal tasks, explicit confirmation, idempotency, and truthful provider-off startup.
+    blocker: null
+    remaining_work: Implement and test the durable worker, one synthetic Parent reply, one Student answer, internal-task readback, replay denial, and cross-scope denials without a customer send.
+    next_action: Start OT-LAUNCH-01-RABBI-TELEGRAM-01 from the exact governed conductor base; keep access, Zoom, social, voice, and BNA super-admin work outside this packet.
+
+  - id: structured_prompt_and_scoped_knowledge
+    status: unclaimed
+    owner:
+      task_id: null
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: One Time Content prompts and scoped knowledge helper
+    write_scope: Structured immutable prompt patches plus approved role-scoped Parent/Student retrieval; no Studio/OpenArt, public lead KB, social delivery, or persistent chat memory
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/structured-prompt-and-scoped-knowledge--queued-task.md
+    dependencies: [rabbi_telegram_communications, VIDEO-TO-CLASSROOM-E2E]
+    acceptance_ids: [PROMPT-KNOWLEDGE-001]
+    evidence:
+      - Existing prompt versions already support parent/checksum/activation/rollback/run binding, but feedback is literal find/replace rather than a section-scoped structured patch.
+      - Existing Student Class Helper and knowledge retrieval ports provide the correct starting point; a Parent route mismatch and duplicated retrieval seams must be converged rather than hidden behind a new framework.
+      - The queued packet preserves approved-content, entitlement, sibling, citation, abstention, injection, revocation, and provider-off boundaries.
+    blocker: null
+    remaining_work: Assign after communication and Contacts contracts converge, then implement structured patching and the shared scoped helper in bounded phases.
+    next_action: Keep queued; do not start a parallel Studio/OpenArt build or import a generic agent framework.
+
+  - id: human_confirmed_social_publishing
+    status: unclaimed
+    owner:
+      task_id: null
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: One Time social publishing
+    write_scope: Canonical draft/revision/approval/schedule ledger, real UI mutations, leased worker, Telegram confirmation, and synthetic Facebook provider proof
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/human-confirmed-social-publishing--queued-task.md
+    dependencies: [structured_prompt_and_scoped_knowledge, rabbi_telegram_communications]
+    acceptance_ids: [SOCIAL-001]
+    evidence:
+      - Two social ledgers and a sink-only UI action exist, but no canonical mutation API, running scheduler, confirmed GHL Social Planner adapter, or real provider readback exists.
+      - The operator prioritized Facebook text/image organic publishing with an exact human confirmation and deferred Studio/OpenArt.
+      - The queued packet requires provider capability proof and keeps YouTube unsupported until its actual contract is verified.
+    blocker: null
+    remaining_work: Converge the existing ledgers after upstream contracts, implement the real approval/scheduler path, and run a synthetic Facebook proof before any separately authorized production post.
+    next_action: Keep queued behind communications and structured prompts; do not claim GHL or YouTube support from an enum or mock.
+
+  - id: bna_control_plane_operations_bot
+    status: active
+    owner:
+      task_id: BNA-CONTROL-PLANE-OPERATIONS-BOT-01
+      repository: shloimie-beep/bnei-neviim-academy
+      branch: codex/bna-control-plane-operations-bot
+      pr: null
+      system: BNA operator control-plane Telegram bot
+    write_scope: Replacement ADR, threat model, distinct bot ownership, redacted notifier/read-only status surface, denied-action audit, and no One Time runtime changes
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/bna-control-plane-operations-bot--assigned-task.md
+    dependencies: [bna_foundation, bna_durability]
+    acceptance_ids: [BNA-CP-001]
+    evidence:
+      - The operator wants a personal operations bot with broader visibility than the school-scoped Rabbi bot.
+      - Current BNA ownership policy forbids mutations, Codex, deployment, and provider writes, so the safe executable first step is an explicit replacement ADR and redacted notifier/read-only implementation rather than silently broadening the monolith.
+      - One Time and BNA retain separate repositories, sessions, secrets, bot identities, data stores, and failure domains.
+    blocker: null
+    remaining_work: Produce and test the replacement ADR plus safe read-only bot; return any proposed mutation as one bounded capability with its own acceptance.
+    next_action: Start the BNA task from its current governed platform-agent-actions baseline; do not import One Time data or enable arbitrary Codex/shell/provider writes.
 
   - id: persistent_staging
     status: done
