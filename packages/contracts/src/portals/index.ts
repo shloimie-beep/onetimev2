@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { gamificationSummarySchema } from '../gamification/index.ts';
 import { contentFactoryPortalProjectionSchema } from '../content/content-factory.ts';
+import { sameOriginPathSchema } from '../content/pipeline.ts';
 
 export const portalActorRoleSchema = z.enum([
   'parent',
@@ -308,7 +309,7 @@ export const helperCitationSchema = z
     version_id: opaqueIdSchema,
     section_id: opaqueIdSchema,
     section_title: z.string().trim().min(1).max(240),
-    deep_link: z.string().trim().regex(/^\//).max(768),
+    deep_link: sameOriginPathSchema,
     section_sha256: z
       .string()
       .trim()
@@ -326,6 +327,8 @@ export const helperAnswerSchema = z
     safe_reason_code: z.string().trim().min(1).max(80),
     private_question_available: z.literal(true),
     policy: z.literal('ot107-student-class-helper-v1'),
+    provider_mode: z.enum(['provider_off', 'ready']),
+    grounding_mode: z.literal('approved_entitled_sections'),
   })
   .strict()
   .superRefine((answer, ctx) => {
@@ -416,6 +419,7 @@ export const parentLearnerMaterialsSchema = z.object({
   rewards: rewardBalanceSchema,
   gamification: gamificationSummarySchema.optional(),
   updates: z.array(administrativeUpdateSchema),
+  helper: helperAvailabilitySchema,
 });
 export type ParentLearnerMaterials = z.infer<typeof parentLearnerMaterialsSchema>;
 

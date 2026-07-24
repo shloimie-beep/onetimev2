@@ -10,6 +10,7 @@ import type {
   ContentAdminProcessingResponse,
   ContentAdminPromptListResponse,
   ContentAdminPromptPreviewResponse,
+  ContentAdminStructuredPromptSection,
   ContentAdminPromptTemplate,
   ContentAdminPromptVersion,
   ContentAdminProviderPortStatus,
@@ -81,6 +82,18 @@ const artifactKinds: ContentAdminArtifactKind[] = [
   'short_clip_plan',
   'helper_knowledge',
   'classroom_resource',
+];
+
+const structuredPromptSectionOptions: Array<{
+  value: ContentAdminStructuredPromptSection;
+  label: string;
+}> = [
+  { value: 'objective', label: 'Objective' },
+  { value: 'audience', label: 'Audience' },
+  { value: 'tone_and_voice', label: 'Tone and voice' },
+  { value: 'channel_and_output_format', label: 'Channel and output format' },
+  { value: 'visual_camera_composition', label: 'Visual, camera, and composition' },
+  { value: 'required_elements', label: 'Required elements' },
 ];
 
 const defaultFilters: FilterState = {
@@ -1202,15 +1215,16 @@ function PromptRegistryView({
   const template = data.templates.find((entry) => entry.template_key === templateKey);
   const active = activeVersion(template);
   const [parentVersionKey, setParentVersionKey] = useState(active?.version_key ?? '');
-  const [findText, setFindText] = useState('approved transcript');
-  const [replaceText, setReplaceText] = useState('approved transcript with timestamp citations');
+  const [section, setSection] = useState<ContentAdminStructuredPromptSection>('required_elements');
+  const [feedback, setFeedback] = useState('Use exact source timestamps for every major point.');
   const [reason, setReason] = useState('Improve source-citation specificity.');
   const [preview, setPreview] = useState<ContentAdminPromptPreviewResponse['preview'] | null>(null);
 
   useEffect(() => {
     const nextActive = activeVersion(template);
     setParentVersionKey(nextActive?.version_key ?? template?.versions[0]?.version_key ?? '');
-  }, [templateKey]);
+    setPreview(null);
+  }, [active?.version_key, templateKey]);
 
   async function postPrompt(pathSuffix: string, body: Record<string, unknown>) {
     if (!template) return;
@@ -1223,30 +1237,56 @@ function PromptRegistryView({
   }
 
   async function previewPatch() {
+    const parent = template?.versions.find((version) => version.version_key === parentVersionKey);
+    if (!parent || !feedback.trim()) return;
+    const operation = {
+      operation: 'append_item' as const,
+      section,
+      expected_section_checksum: await sha256(JSON.stringify(parent.structured_document[section])),
+      item: feedback.trim(),
+    };
     const result = await postPrompt('preview', {
       parent_version_key: parentVersionKey,
-      patch: { find: findText, replace: replaceText },
+      expected_latest_version_number: Math.max(
+        ...(template?.versions.map((version) => version.version_number) ?? [1]),
+      ),
+      operations: [operation],
       reason,
     });
     setPreview((result as ContentAdminPromptPreviewResponse).preview);
   }
 
   async function savePatch() {
+    if (!preview) return;
     await postPrompt('patch', {
       parent_version_key: parentVersionKey,
-      patch: { find: findText, replace: replaceText },
+      expected_latest_version_number: Math.max(
+        ...(template?.versions.map((version) => version.version_number) ?? [1]),
+      ),
+      operations: preview.proposed_operations,
+      reason,
+    });
+    setPreview(null);
+    await onChanged();
+  }
+
+  async function activate(version: ContentAdminPromptVersion) {
+    if (!active) return;
+    await postPrompt('activate', {
+      version_key: version.version_key,
+      expected_active_version_key: active.version_key,
       reason,
     });
     await onChanged();
   }
 
-  async function activate(version: ContentAdminPromptVersion) {
-    await postPrompt('activate', { version_key: version.version_key, reason });
-    await onChanged();
-  }
-
   async function rollback(version: ContentAdminPromptVersion) {
-    await postPrompt('rollback', { target_version_key: version.version_key, reason });
+    if (!active) return;
+    await postPrompt('rollback', {
+      target_version_key: version.version_key,
+      expected_active_version_key: active.version_key,
+      reason,
+    });
     await onChanged();
   }
 
@@ -1268,25 +1308,34 @@ function PromptRegistryView({
           </Select>
         </label>
         <label>
-          <span>Parent version</span>
+          <span>Active parent version</span>
+          <Input value={active ? `v${active.version_number}` : 'Unavailable'} disabled />
+        </label>
+        <label>
+          <span>Prompt section</span>
           <Select
-            value={parentVersionKey}
-            onChange={(event) => setParentVersionKey(event.target.value)}
+            value={section}
+            onChange={(event) => {
+              setSection(event.target.value as ContentAdminStructuredPromptSection);
+              setPreview(null);
+            }}
           >
-            {template?.versions.map((version) => (
-              <option key={version.version_key} value={version.version_key}>
-                v{version.version_number} - {version.status}
+            {structuredPromptSectionOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
           </Select>
         </label>
-        <label>
-          <span>Find</span>
-          <Input value={findText} onChange={(event) => setFindText(event.target.value)} />
-        </label>
-        <label>
-          <span>Replace</span>
-          <Input value={replaceText} onChange={(event) => setReplaceText(event.target.value)} />
+        <label className="wide-field">
+          <span>Natural-language instruction</span>
+          <Input
+            value={feedback}
+            onChange={(event) => {
+              setFeedback(event.target.value);
+              setPreview(null);
+            }}
+          />
         </label>
         <label className="wide-field">
           <span>Reason</span>
@@ -1304,7 +1353,7 @@ function PromptRegistryView({
           <Button
             type="button"
             variant="primary"
-            disabled={!canManage}
+            disabled={!canManage || !preview}
             onClick={() => void savePatch()}
           >
             Save draft
@@ -1314,7 +1363,32 @@ function PromptRegistryView({
       {preview && (
         <Card className="content-preview-card">
           <h2>Preview</h2>
-          <pre>{preview.rendered_excerpt}</pre>
+          <p>
+            Review the complete candidate and exact changed instructions before saving this draft.
+          </p>
+          <h3>Complete candidate prompt</h3>
+          <pre>{preview.rendered_prompt}</pre>
+          {preview.diff.map((change, index) => (
+            <div key={`${change.section}:${index}`} data-prompt-diff={change.section}>
+              <h3>{readable(change.section)} exact change</h3>
+              <h4>Before</h4>
+              {change.before.length === 0 ? (
+                <p>No instructions.</p>
+              ) : (
+                <ol>
+                  {change.before.map((item, itemIndex) => (
+                    <li key={`before:${itemIndex}`}>{item}</li>
+                  ))}
+                </ol>
+              )}
+              <h4>After</h4>
+              <ol>
+                {change.after.map((item, itemIndex) => (
+                  <li key={`after:${itemIndex}`}>{item}</li>
+                ))}
+              </ol>
+            </div>
+          ))}
           <Badge>cannot publish</Badge>
         </Card>
       )}
@@ -1802,6 +1876,12 @@ function activeVersion(template: ContentAdminPromptTemplate | undefined) {
     template.versions[0] ??
     null
   );
+}
+
+async function sha256(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 function formatBytes(value: number) {

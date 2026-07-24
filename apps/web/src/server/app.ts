@@ -149,7 +149,7 @@ import {
   createSession,
   currentApplicationAccessForUser,
   consumeWhatsAppAccountLink,
-  createStudentClassHelperAdapter,
+  createScopedKnowledgeHelperAdapter,
   createStudentPortalService,
   resendEmailChallenge,
   getClassOccurrenceDetail,
@@ -1571,7 +1571,7 @@ export function createApp({
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
     gamification: createPortalGamificationAdapter(gamificationService),
-    helper: createStudentClassHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
+    helper: createScopedKnowledgeHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
     billing: createParentAccessSummaryAdapter(pool, config),
   };
   const previewStudentPortalService = createStudentPortalService(portalServiceDeps);
@@ -2827,6 +2827,7 @@ export function createApp({
           actor,
           templateKey: String(request.params.templateKey),
           versionKey: payload.version_key,
+          expectedActiveVersionKey: payload.expected_active_version_key,
           reason: payload.reason,
         }),
       );
@@ -2852,6 +2853,7 @@ export function createApp({
           actor,
           templateKey: String(request.params.templateKey),
           targetVersionKey: payload.target_version_key,
+          expectedActiveVersionKey: payload.expected_active_version_key,
           reason: payload.reason,
         }),
       );

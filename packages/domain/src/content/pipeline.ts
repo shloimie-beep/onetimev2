@@ -680,7 +680,14 @@ export async function retrieveOt86ApprovedContent(
         AND docs.active = true
         AND sections.active = true
         AND versions.active_state = 'active'
-        AND docs.content_id = ANY($2)
+        AND versions.privacy_json->>'source_scope' = 'approved_rabbi_content'
+        AND versions.privacy_json->>'approved_for_student_kb' = 'true'
+        AND versions.privacy_json->>'contains_learner_name' = 'false'
+        AND versions.privacy_json->>'contains_learner_voice' = 'false'
+        AND versions.privacy_json->>'contains_learner_face' = 'false'
+        AND versions.privacy_json->>'contains_learner_question' = 'false'
+        AND versions.privacy_json->>'contains_private_data' = 'false'
+        AND docs.content_id = ANY($2::text[])
       LIMIT 200`,
     [input.tenantId, input.entitlementContentIds],
   );

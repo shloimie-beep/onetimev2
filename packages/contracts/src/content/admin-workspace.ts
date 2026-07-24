@@ -197,6 +197,8 @@ export const contentAdminPromptVersionSchema = z.object({
   author_user_key: z.string().nullable(),
   activated_at: nullableIsoStringSchema,
   created_at: isoStringSchema,
+  structured_document: z.lazy(() => contentAdminStructuredPromptDocumentSchema),
+  rendered_prompt: z.string().min(1).max(30_000),
 });
 export type ContentAdminPromptVersion = z.infer<typeof contentAdminPromptVersionSchema>;
 
@@ -217,12 +219,97 @@ export const contentAdminPromptListResponseSchema = z.object({
 });
 export type ContentAdminPromptListResponse = z.infer<typeof contentAdminPromptListResponseSchema>;
 
+export const contentAdminStructuredPromptSectionSchema = z.enum([
+  'objective',
+  'audience',
+  'approved_sources',
+  'tone_and_voice',
+  'channel_and_output_format',
+  'visual_camera_composition',
+  'required_elements',
+  'forbidden_elements',
+  'citations',
+  'safety',
+]);
+export type ContentAdminStructuredPromptSection = z.infer<
+  typeof contentAdminStructuredPromptSectionSchema
+>;
+
+const structuredPromptDocumentItemSchema = z.string().min(1).max(30_000);
+const structuredPromptPatchItemSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(1_500)
+  .refine((value) => value.trim().length > 0, 'Prompt instructions cannot be blank.');
+const structuredPromptItemsSchema = z.array(structuredPromptDocumentItemSchema).max(30);
+const structuredPromptPatchItemsSchema = z.array(structuredPromptPatchItemSchema).max(30);
+
+export const contentAdminStructuredPromptDocumentSchema = z
+  .object({
+    objective: structuredPromptItemsSchema,
+    audience: structuredPromptItemsSchema,
+    approved_sources: structuredPromptItemsSchema,
+    tone_and_voice: structuredPromptItemsSchema,
+    channel_and_output_format: structuredPromptItemsSchema,
+    visual_camera_composition: structuredPromptItemsSchema,
+    required_elements: structuredPromptItemsSchema,
+    forbidden_elements: structuredPromptItemsSchema,
+    citations: structuredPromptItemsSchema,
+    safety: structuredPromptItemsSchema,
+  })
+  .strict();
+export type ContentAdminStructuredPromptDocument = z.infer<
+  typeof contentAdminStructuredPromptDocumentSchema
+>;
+
+const sectionChecksumSchema = z
+  .string()
+  .trim()
+  .regex(/^[a-f0-9]{64}$/);
+const mutablePromptSectionSchema = z.enum([
+  'objective',
+  'audience',
+  'tone_and_voice',
+  'channel_and_output_format',
+  'visual_camera_composition',
+  'required_elements',
+]);
+
+export const contentAdminStructuredPromptOperationSchema = z.discriminatedUnion('operation', [
+  z
+    .object({
+      operation: z.literal('replace_section'),
+      section: mutablePromptSectionSchema,
+      expected_section_checksum: sectionChecksumSchema,
+      items: structuredPromptPatchItemsSchema.min(1),
+    })
+    .strict(),
+  z
+    .object({
+      operation: z.literal('append_item'),
+      section: mutablePromptSectionSchema,
+      expected_section_checksum: sectionChecksumSchema,
+      item: structuredPromptPatchItemSchema,
+    })
+    .strict(),
+  z
+    .object({
+      operation: z.literal('remove_item'),
+      section: mutablePromptSectionSchema,
+      expected_section_checksum: sectionChecksumSchema,
+      item_index: z.number().int().min(0).max(29),
+    })
+    .strict(),
+]);
+export type ContentAdminStructuredPromptOperation = z.infer<
+  typeof contentAdminStructuredPromptOperationSchema
+>;
+
 export const contentAdminPromptPatchPayloadSchema = z.object({
   parent_version_key: idSchema,
-  patch: z.object({
-    find: z.string().trim().min(1).max(1_000),
-    replace: z.string().trim().min(1).max(1_500),
-  }),
+  expected_latest_version_number: z.number().int().min(1),
+  operations: z.array(contentAdminStructuredPromptOperationSchema).min(1).max(20),
   reason: z.string().trim().min(3).max(500),
 });
 export type ContentAdminPromptPatchPayload = z.infer<typeof contentAdminPromptPatchPayloadSchema>;
@@ -236,11 +323,13 @@ export type ContentAdminPromptPreviewPayload = z.infer<
 
 export const contentAdminPromptActivatePayloadSchema = z.object({
   version_key: idSchema,
+  expected_active_version_key: idSchema,
   reason: z.string().trim().min(3).max(500),
 });
 
 export const contentAdminPromptRollbackPayloadSchema = z.object({
   target_version_key: idSchema,
+  expected_active_version_key: idSchema,
   reason: z.string().trim().min(3).max(500),
 });
 
@@ -259,6 +348,24 @@ export const contentAdminPromptPreviewResponseSchema = z.object({
     source_key: z.string().nullable(),
     parent_checksum: z.string().min(16).max(128),
     candidate_checksum: z.string().min(16).max(128),
+    candidate_document: contentAdminStructuredPromptDocumentSchema,
+    proposed_operations: z.array(contentAdminStructuredPromptOperationSchema).min(1).max(20),
+    diff: z
+      .array(
+        z
+          .object({
+            operation: z.enum(['replace_section', 'append_item', 'remove_item']),
+            section: contentAdminStructuredPromptSectionSchema,
+            before: structuredPromptItemsSchema,
+            after: structuredPromptItemsSchema,
+            before_checksum: sectionChecksumSchema,
+            after_checksum: sectionChecksumSchema,
+          })
+          .strict(),
+      )
+      .min(1)
+      .max(20),
+    rendered_prompt: z.string().min(1).max(30_000),
     rendered_excerpt: z.string().min(1).max(1_500),
     can_publish: z.literal(false),
   }),

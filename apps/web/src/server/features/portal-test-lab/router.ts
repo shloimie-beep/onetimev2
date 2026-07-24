@@ -5,6 +5,7 @@ import type { DbPool } from '../../../../../../packages/db/src/index.ts';
 import { RABBI_TELEGRAM_SYNTHETIC_STUDENT_ANSWER } from '../../../../../../packages/contracts/src/telegram/rabbi-communications.ts';
 import {
   createAccountUser,
+  grantOt110aContentAdminCapability,
   grantFreePilotAccess,
   type AuthenticatedSession,
 } from '../../../../../../packages/domain/src/index.ts';
@@ -150,7 +151,13 @@ export async function seedPortalTestLab(input: { pool: DbPool; config: AppConfig
     displayName: W12_PORTAL_TEST_LAB.admin.displayName,
     role: 'admin',
   });
-  void adminUserKey;
+  await grantOt110aContentAdminCapability({
+    pool: input.pool,
+    config: input.config,
+    userKey: adminUserKey,
+    capability: 'prompt.manage',
+    grantedByUserKey: adminUserKey,
+  });
 
   const parentUserKey = await createAccountUser({
     pool: input.pool,
@@ -873,7 +880,15 @@ async function seedPortalLabHelperContent(input: { pool: DbPool; config: AppConf
       sha256Hex('w12-helper-source'),
       sha256Hex('w12-helper-manifest'),
       JSON.stringify({ approved_by: 'w12_fixture', synthetic: true }),
-      JSON.stringify({ learner_safe: true, production_data: false }),
+      JSON.stringify({
+        source_scope: 'approved_rabbi_content',
+        contains_learner_name: false,
+        contains_learner_voice: false,
+        contains_learner_face: false,
+        contains_learner_question: false,
+        contains_private_data: false,
+        approved_for_student_kb: true,
+      }),
       new Date('2026-07-17T12:05:00.000Z'),
     ],
   );

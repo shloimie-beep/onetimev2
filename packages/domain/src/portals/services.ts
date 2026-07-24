@@ -485,15 +485,23 @@ export function createParentPortalService(deps: PortalServiceDeps) {
     async learnerMaterials(actor: PortalActorContext, householdKey: string, learnerKey: string) {
       requireParentHousehold(actor, householdKey, 'parent:household:read');
       const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
-      const [library, reviewSheets, progress, rewards, gamificationSummary, updates] =
-        await Promise.all([
-          deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
-          deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
-          deps.progress.progressForLearner({ actor, learner }),
-          deps.repository.getRewardBalance({ actor, learner_key: learnerKey }),
-          gamification.summaryForLearner({ actor, learner }),
-          mergedUpdates(deps.repository, deps, actor, learner, 'parent'),
-        ]);
+      const [
+        library,
+        reviewSheets,
+        progress,
+        rewards,
+        gamificationSummary,
+        updates,
+        helperAvailability,
+      ] = await Promise.all([
+        deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
+        deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
+        deps.progress.progressForLearner({ actor, learner }),
+        deps.repository.getRewardBalance({ actor, learner_key: learnerKey }),
+        gamification.summaryForLearner({ actor, learner }),
+        mergedUpdates(deps.repository, deps, actor, learner, 'parent'),
+        helper.availability({ actor, learner }),
+      ]);
       return {
         learner,
         library: safeLibraryItems(library),
@@ -502,6 +510,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
         rewards,
         gamification: gamificationSummary,
         updates,
+        helper: helperAvailability,
       };
     },
 
@@ -514,6 +523,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
     async helperQuery(
       actor: PortalActorContext,
       householdKey: string,
+      learnerKey: string,
       payload: HelperQueryPayload,
     ) {
       requireParentHousehold(actor, householdKey, 'helper:query');
@@ -521,7 +531,8 @@ export function createParentPortalService(deps: PortalServiceDeps) {
         throw new PortalServiceError('ADAPTER_UNAVAILABLE', PARENT_HELPER_PREPARING_MESSAGE);
       }
       const household = await requireHousehold(deps.repository, actor, householdKey);
-      return helper.query({ actor, household, payload });
+      const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
+      return helper.query({ actor, household, learner, payload });
     },
 
     async supportPreview(

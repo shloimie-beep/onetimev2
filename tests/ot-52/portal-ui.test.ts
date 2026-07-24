@@ -96,6 +96,11 @@ describe('OT-52P portal UI modules', () => {
             progress: studentDashboard().progress,
             rewards: { learner_key: 'learner_alpha', balance: 8, event_count: 2 },
             updates: [],
+            helper: {
+              available: true,
+              reason: null,
+              scope_label: 'Class Helper',
+            },
           },
         },
         activeSection: 'classes',
