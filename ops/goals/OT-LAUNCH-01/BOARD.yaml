@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T13:49:53Z
+updated_at: 2026-07-24T14:03:19Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -129,7 +129,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: "Persistent-staging product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is the accepted live application through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821 at schema 2226_rabbi_telegram_communications. PR #118 Admin information architecture, PR #119 Rabbi Telegram communications, and PR #120 Parent/Student contact operations are accepted, integrated, deployed, and fully green together with the shared route-state and parallel browser-fixture repairs. Admin Dashboard discovery, Parent, three separately scoped Students, Rabbi/Classroom, content, Tisha, protected playback, and Admin-session isolation pass on the same product source. The latest exposed fictional Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old value is rejected, the private handoff was atomically replaced, active sessions remain zero, and the exact sandbox and local transfer artifacts are absent. The exact operator-owned 1.82 GB media source still waits only for the protected Google Drive Download anyway click. PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but the provider-only cleanup is paused because the host restart cleared the Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists, no cleanup command ran, no signed deleted tombstone exists, and host/Student controls remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions."
+  current_summary: "Persistent-staging product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is the accepted live application through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821 at schema 2226_rabbi_telegram_communications. PR #118 Admin information architecture, PR #119 Rabbi Telegram communications, and PR #120 Parent/Student contact operations are accepted, integrated, deployed, and fully green together with the shared route-state and parallel browser-fixture repairs. Admin Dashboard discovery, Parent, three separately scoped Students, Rabbi/Classroom, content, Tisha, protected playback, and Admin-session isolation pass on the same product source. The latest exposed fictional Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old value is rejected, the private handoff was atomically replaced, active sessions remain zero, and the exact sandbox and local transfer artifacts are absent. The exact operator-owned 1.82 GB media source is now verified complete on the resumed executor after the host restart, and the one authorized private canary is actively processing with no alternate source; terminal provider and playback readback remain pending. PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but the provider-only cleanup is paused because the host restart cleared the Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists, no cleanup command ran, no signed deleted tombstone exists, and host/Student controls remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions."
   external_action_count: 16
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -692,7 +692,7 @@ tracks:
     next_action: Preserve immutable 2214 and keep persistent-staging deployment evidence in the persistent_staging track.
 
   - id: media_external_canary
-    status: blocked
+    status: active
     owner:
       task_id: OT-LAUNCH-01-MEDIA-EXTERNAL-CANARY-01
       repository: shloimie-beep/onetimev2
@@ -711,11 +711,10 @@ tracks:
       - 'Draft PR #117 exact head b5d85dbbf6e6a578c374f5658cea245142cfec1e changes only the sanitized VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md; BOARD.yaml is byte-unchanged in that lane. Goal governance, typecheck, secret scan, diff check, and 16 focused media/content tests pass.'
       - 'The signed-in protected Drive browser resolved one exact operator-owned private MP4 using safe metadata only: 1.82 GB, 42:18, 1280x720, created and modified 2026-07-20. The Drive connector cannot see that same file scope, so the executor must resume the already-open protected tab and must not select or substitute another source.'
       - 'OpenAI and Vimeo read-only authentication preflight passed. Download, upload, transcription, provider mutation, customer communication, persistent-staging change, and production change counts are all zero; no protected Drive reference entered Git.'
-    blocker:
-      code: OPERATOR_DRIVE_LARGE_FILE_DOWNLOAD_CONFIRMATION_REQUIRED
-      reason: Google Drive is waiting at its large-file Download anyway safety dialog in the already-open protected Chrome tab, and the agent cannot bypass that human confirmation.
-    remaining_work: 'After the operator clicks Download anyway in the existing tab, resume the same PR #117 task with the exact verified source, complete one private OpenAI/Vimeo canary, prove protected Student playback without exposing a provider URL, and return provider gates off.'
-    next_action: 'Operator clicks Download anyway in the already-open protected Drive tab, then resumes the existing media task; do not start a replacement canary, select another source, or claim provider acceptance before terminal readback.'
+      - 'After the host restart, the same executor verified that the exact source is already local and complete: safe size, duration, and 1280x720 probe match the protected Drive readback and no partial download exists. The single authorized canary resumed with that source only; no replacement source or second canary was started.'
+    blocker: null
+    remaining_work: Complete the in-progress bounded private provider processing, return provider gates off, and prove protected Student playback without exposing the provider URL or raw transcript.
+    next_action: 'Continue the same PR #117 executor to terminal sanitized OpenAI/Vimeo and protected-playback readback; do not select another source or broaden publication.'
 
   - id: zoom_meeting_sdk
     status: provider_off
@@ -1033,24 +1032,26 @@ tracks:
     next_action: null
 
   - id: structured_prompt_and_scoped_knowledge
-    status: unclaimed
+    status: active
     owner:
-      task_id: null
+      task_id: OT-LAUNCH-01-PROMPT-KNOWLEDGE-01
       repository: shloimie-beep/onetimev2
-      branch: null
+      branch: codex/structured-prompt-scoped-knowledge
       pr: null
+      head: 00d3511e9d66aaaafc0e2031e56f9858bd332bb8
       system: One Time Content prompts and scoped knowledge helper
     write_scope: Structured immutable prompt patches plus approved role-scoped Parent/Student retrieval; no Studio/OpenArt, public lead KB, social delivery, or persistent chat memory
-    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/structured-prompt-and-scoped-knowledge--queued-task.md
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/structured-prompt-and-scoped-knowledge--OT-LAUNCH-01-PROMPT-KNOWLEDGE-01.json
     dependencies: [rabbi_telegram_communications, VIDEO-TO-CLASSROOM-E2E]
     acceptance_ids: [PROMPT-KNOWLEDGE-001]
     evidence:
       - Existing prompt versions already support parent/checksum/activation/rollback/run binding, but feedback is literal find/replace rather than a section-scoped structured patch.
       - Existing Student Class Helper and knowledge retrieval ports provide the correct starting point; a Parent route mismatch and duplicated retrieval seams must be converged rather than hidden behind a new framework.
       - The queued packet preserves approved-content, entitlement, sibling, citation, abstention, injection, revocation, and provider-off boundaries.
+      - 'The conductor assigned OT-LAUNCH-01-PROMPT-KNOWLEDGE-01 from governed control head 00d3511e9d66aaaafc0e2031e56f9858bd332bb8 after both declared dependencies reached done. The executor owns one isolated branch and may perform source, test, and isolated-preview work only; provider calls, customer messages, persistent-staging mutation, production mutation, and BOARD edits remain forbidden.'
     blocker: null
-    remaining_work: Assign after communication and Contacts contracts converge, then implement structured patching and the shared scoped helper in bounded phases.
-    next_action: Keep queued; do not start a parallel Studio/OpenArt build or import a generic agent framework.
+    remaining_work: Implement the reviewed structured patch contract and shared Parent/Student-scoped knowledge helper, then return exact tests, authorization denials, provider-off browser proof, and a sanitized handoff for conductor review.
+    next_action: Execute the existing assigned packet on codex/structured-prompt-scoped-knowledge without starting a parallel Studio/OpenArt build or importing a generic agent framework.
 
   - id: human_confirmed_social_publishing
     status: unclaimed

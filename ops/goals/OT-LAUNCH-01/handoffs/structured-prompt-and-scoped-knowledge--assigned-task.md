@@ -1,12 +1,15 @@
 # OT-LAUNCH-01 — Structured Prompt Patches and Scoped Knowledge
 
-## Queue
+## Assignment
 
 - Task: `OT-LAUNCH-01-PROMPT-KNOWLEDGE-01`
 - Repository: `shloimie-beep/onetimev2`
-- Planned branch: `codex/structured-prompt-scoped-knowledge`
-- Start after the communication/Contacts contracts converge.
+- Governed assignment base: `00d3511e9d66aaaafc0e2031e56f9858bd332bb8`
+- Branch: `codex/structured-prompt-scoped-knowledge`
+- Both Board dependencies are `done`; this track is assigned and executable.
 - Status remains in `BOARD.yaml`; this packet is not a second status model.
+- The executor must not edit `BOARD.yaml`. Return the sanitized result at
+  `ops/goals/OT-LAUNCH-01/handoffs/structured-prompt-and-scoped-knowledge--OT-LAUNCH-01-PROMPT-KNOWLEDGE-01.json`.
 
 ## C1 — Structured prompt patches
 

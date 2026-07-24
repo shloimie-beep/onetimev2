@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:7f9209ec7e07110d1d9c89d527bf837cab11aee818db40efdc990da37e764037',
-  generated_at: '2026-07-24T13:49:53.000Z',
+  board_source_hash: 'sha256:6fde76bbe00bfcbe3b0cfdb2a1a1f366a62355939876db8c0b772183829be3ef',
+  generated_at: '2026-07-24T14:03:19.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 20,
@@ -14,7 +14,7 @@ export const operatorLaunchStatusProjection = {
     percentage: 83,
   },
   what_changed:
-    "Persistent-staging product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is the accepted live application through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821 at schema 2226_rabbi_telegram_communications. PR #118 Admin information architecture, PR #119 Rabbi Telegram communications, and PR #120 Parent/Student contact operations are accepted, integrated, deployed, and fully green together with the shared route-state and parallel browser-fixture repairs. Admin Dashboard discovery, Parent, three separately scoped Students, Rabbi/Classroom, content, Tisha, protected playback, and Admin-session isolation pass on the same product source. The latest exposed fictional Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old value is rejected, the private handoff was atomically replaced, active sessions remain zero, and the exact sandbox and local transfer artifacts are absent. The exact operator-owned 1.82 GB media source still waits only for the protected Google Drive Download anyway click. PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but the provider-only cleanup is paused because the host restart cleared the Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists, no cleanup command ran, no signed deleted tombstone exists, and host/Student controls remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions.",
+    "Persistent-staging product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is the accepted live application through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821 at schema 2226_rabbi_telegram_communications. PR #118 Admin information architecture, PR #119 Rabbi Telegram communications, and PR #120 Parent/Student contact operations are accepted, integrated, deployed, and fully green together with the shared route-state and parallel browser-fixture repairs. Admin Dashboard discovery, Parent, three separately scoped Students, Rabbi/Classroom, content, Tisha, protected playback, and Admin-session isolation pass on the same product source. The latest exposed fictional Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old value is rejected, the private handoff was atomically replaced, active sessions remain zero, and the exact sandbox and local transfer artifacts are absent. The exact operator-owned 1.82 GB media source is now verified complete on the resumed executor after the host restart, and the one authorized private canary is actively processing with no alternate source; terminal provider and playback readback remain pending. PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but the provider-only cleanup is paused because the host restart cleared the Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists, no cleanup command ran, no signed deleted tombstone exists, and host/Student controls remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions.",
   works_now: [
     {
       track_id: 'goal_system',
@@ -120,9 +120,9 @@ export const operatorLaunchStatusProjection = {
     {
       track_id: 'media_external_canary',
       label: 'Media External Canary',
-      status: 'blocked',
+      status: 'active',
       next_action:
-        'Operator clicks Download anyway in the already-open protected Drive tab, then resumes the existing media task; do not start a replacement canary, select another source, or claim provider acceptance before terminal readback.',
+        'Continue the same PR #117 executor to terminal sanitized OpenAI/Vimeo and protected-playback readback; do not select another source or broaden publication.',
     },
     {
       track_id: 'production_pilot',
@@ -157,14 +157,6 @@ export const operatorLaunchStatusProjection = {
       reason:
         'The computer restart cleared the signed-in Railway/GitHub browser session before the provider-only executor could access the preserved runner and signed journal. No cleanup command or Zoom request ran; the disposable meeting remains at cleanup_required and deletion, canonical 3001 absence, and the signed sequence-6 tombstone are unproven.',
     },
-    {
-      track_id: 'media_external_canary',
-      label: 'Media External Canary',
-      status: 'blocked',
-      code: 'OPERATOR_DRIVE_LARGE_FILE_DOWNLOAD_CONFIRMATION_REQUIRED',
-      reason:
-        'Google Drive is waiting at its large-file Download anyway safety dialog in the already-open protected Chrome tab, and the agent cannot bypass that human confirmation.',
-    },
   ],
   safe_links: [
     {
@@ -189,9 +181,9 @@ export const operatorLaunchStatusProjection = {
     },
   ],
   next_executable_task: {
-    track_id: 'zoom_real_control_operator_change_set',
-    label: 'Zoom Real Control Operator Change Set',
+    track_id: 'media_external_canary',
+    label: 'Media External Canary',
     action:
-      'Operator signs in through the already-open GitHub/Railway page and says signed in; then resume exact task 019f9460-bdcc-7f63-9273-0a05e75fcf19 for the existing disposable meeting, run only the reviewed reconciliation command, require sanitized deleted output plus the signed sequence-6 tombstone and canonical provider absence, and remove only the preserved runner and state volume. Do not retry provisioning, create a second meeting, touch a Tisha/recurring/customer meeting, or change persistent-staging/production variables.',
+      'Continue the same PR #117 executor to terminal sanitized OpenAI/Vimeo and protected-playback readback; do not select another source or broaden publication.',
   },
 } as const satisfies OperatorLaunchStatusProjection;
