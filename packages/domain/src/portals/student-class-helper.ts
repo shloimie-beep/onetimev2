@@ -453,8 +453,14 @@ async function listEntitledApprovedContentIds(
         AND versions.privacy_json->>'contains_private_data' = 'false'
         AND (
           entitlements.audience = 'all_active_learners'
-          OR entitlements.learner_key = $3
-          OR entitlements.household_key = $4
+          OR (
+            entitlements.audience = 'learner'
+            AND entitlements.learner_key = $3
+          )
+          OR (
+            entitlements.audience = 'household'
+            AND entitlements.household_key = $4
+          )
         )
       ORDER BY items.content_item_key ASC
       LIMIT 50`,
