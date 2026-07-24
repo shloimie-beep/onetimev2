@@ -12,7 +12,6 @@ import {
   runOt109PublisherWorkerOnce,
   runContentFactoryWorkerOnce,
   runSupportDeliveryBatch,
-  runTishaBavEventEmailFallbackBatch,
 } from '../../../../packages/domain/src/index.ts';
 import {
   markOpsWorkerDraining,
@@ -113,12 +112,6 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       workerInstanceKey,
       logger,
     });
-    const eventEmailFallback = await runTishaBavEventEmailFallbackBatch({
-      pool,
-      config: config.appConfig,
-      limit: config.batchSize,
-      leaseMs: config.claimLeaseMs,
-    });
     return {
       ...delivery,
       support,
@@ -127,7 +120,6 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       highLevel,
       learningDelivery,
       contentFactory,
-      eventEmailFallback,
     };
   } finally {
     await safeHeartbeat(
@@ -246,12 +238,6 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             source,
             workerInstanceKey,
             logger,
-          });
-          await runTishaBavEventEmailFallbackBatch({
-            pool,
-            config: config.appConfig,
-            limit: config.batchSize,
-            leaseMs: config.claimLeaseMs,
           });
         } catch (error) {
           void error;
@@ -401,8 +387,6 @@ if (process.argv.includes('--once')) {
       `highlevel_adapter_calls=${summary.highLevel.adapterCalls}`,
       `learning_delivery_enabled=${summary.learningDelivery.enabled}`,
       `content_factory_enabled=${summary.contentFactory.enabled}`,
-      `event_fallback_delivered=${summary.eventEmailFallback.delivered}`,
-      `event_fallback_skipped=${summary.eventEmailFallback.skipped}`,
     ].join('\n') + '\n',
   );
 } else {

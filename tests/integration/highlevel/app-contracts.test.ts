@@ -615,6 +615,56 @@ describe('HighLevel to One Time bot actions', () => {
     );
     expect(later).toMatchObject({ state: 'blocked', code: 'SUPPRESSED' });
     expect(await highLevelEventCount()).toBe(before);
+    const restrictions = await pool.query(
+      `SELECT restriction_type, active
+         FROM onetime.contact_email_restrictions
+        WHERE account_key = $1 AND product_key = $2 AND contact_key = $3`,
+      [config.accountKey, config.productKey, lead.contact_key],
+    );
+    expect(restrictions.rows).toEqual([{ restriction_type: 'global_unsubscribe', active: true }]);
+    const history = await pool.query(
+      `SELECT restriction_type, action, source
+         FROM onetime.contact_email_restriction_events
+        WHERE account_key = $1 AND product_key = $2 AND contact_key = $3`,
+      [config.accountKey, config.productKey, lead.contact_key],
+    );
+    expect(history.rows).toEqual([
+      {
+        restriction_type: 'global_unsubscribe',
+        action: 'applied',
+        source: 'highlevel_bot_opt_out',
+      },
+    ]);
+  });
+
+  it('records signed complaint and hard-bounce restrictions without an acknowledgement', async () => {
+    const lead = await captureLead({ pool, config, payload: leadPayload(), now });
+    for (const restrictionType of ['complaint', 'hard_bounce'] as const) {
+      const result = await invokeAction({
+        ...actionPayload(
+          'bot.apply_opt_out',
+          lead.contact_key,
+          `typed-${restrictionType}-action-0001`,
+        ),
+        data: { channel: 'email', email_restriction: restrictionType },
+      });
+      expect(result.body).toMatchObject({
+        ok: true,
+        protected_reference: null,
+        result: { suppression_applied: true, acknowledgement_authorized: false },
+      });
+    }
+    const restrictions = await pool.query(
+      `SELECT restriction_type, active
+         FROM onetime.contact_email_restrictions
+        WHERE account_key = $1 AND product_key = $2 AND contact_key = $3
+        ORDER BY restriction_type`,
+      [config.accountKey, config.productKey, lead.contact_key],
+    );
+    expect(restrictions.rows).toEqual([
+      { restriction_type: 'complaint', active: true },
+      { restriction_type: 'hard_bounce', active: true },
+    ]);
   });
 
   it('rejects body mutation, stale or future timestamps, and captured signed-header replay', async () => {
@@ -860,6 +910,7 @@ async function canaryConfigForKeys(
 class CrashAfterEffectAdapter implements HighLevelAdapter {
   upsertEffects = 0;
   tagEffects = 0;
+  private tags: string[] = [];
 
   constructor(private readonly failurePoint: 'upsert' | 'add_tags') {}
 
@@ -874,7 +925,12 @@ class CrashAfterEffectAdapter implements HighLevelAdapter {
     _context: HighLevelProviderOperationContext,
   ) {
     this.tagEffects += 1;
+    this.tags = [..._input.tagsToAdd];
     if (this.failurePoint === 'add_tags') throw new Error('SIMULATED_CRASH_AFTER_ADD_TAG');
+  }
+
+  async readTags() {
+    return [...this.tags];
   }
 }
 
@@ -883,6 +939,7 @@ class SlowAdapter implements HighLevelAdapter {
   private signalStarted: () => void = () => {};
   private readonly gate: Promise<void>;
   private openGate: () => void = () => {};
+  private tags: string[] = [];
 
   constructor() {
     this.started = new Promise<void>((resolve) => {
@@ -902,7 +959,13 @@ class SlowAdapter implements HighLevelAdapter {
   async addTags(
     _input: { locationId: string; providerContactId: string; tagsToAdd: string[] },
     _context: HighLevelProviderOperationContext,
-  ) {}
+  ) {
+    this.tags = [..._input.tagsToAdd];
+  }
+
+  async readTags() {
+    return [...this.tags];
+  }
 
   release() {
     this.openGate();

@@ -18,6 +18,7 @@ export {
 } from './lead/normalize.ts';
 export { processOutboxSink } from './outbox/sink.ts';
 export * from './highlevel/index.ts';
+export * from './events/event-email-permission.ts';
 export {
   communicationHistorySourceTruthMatrix,
   dryRunCommunicationHistoryBackfill,
@@ -350,8 +351,6 @@ export {
   TISHA_BAV_WORKFLOW_SCHEDULE,
 } from './events/tisha-bav-communications.ts';
 export {
-  HttpHighLevelEventClient,
-  MockHighLevelEventClient,
   TISHA_BAV_EVENT_CODE,
   TISHA_BAV_EVENT_TITLE,
   TISHA_BAV_JOIN_PATH,
@@ -360,17 +359,11 @@ export {
   TishaBavIdempotencyConflictError,
   TishaBavJoinError,
   captureTishaBavRegistration,
-  createHighLevelEventClient,
-  reprocessTishaBavRegistrationDelivery,
+  inspectTishaBavRegistrationDelivery,
   requestTishaBavJoin,
   resolveTishaBavRedirect,
   tishaBavEventState,
-  type HighLevelEventClient,
 } from './events/tisha-bav.ts';
-export {
-  runTishaBavEventEmailFallbackBatch,
-  type TishaBavFallbackBatchSummary,
-} from './events/tisha-bav-delivery.ts';
 export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
 export { buildOwnerDashboard, ownerAdminVisibleActions } from './dashboard/service.ts';
 export {

@@ -10,6 +10,7 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { requestPasswordReset } from '../accounts/lifecycle.ts';
 import { AccountAccessError, applyHouseholdAccessStateWithClient } from '../access/service.ts';
+import { recordContactEmailRestriction } from '../events/event-email-permission.ts';
 import { stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { enqueueHighLevelEvent } from './producer.ts';
@@ -394,13 +395,26 @@ async function applyOptOut(
   now: Date,
 ) {
   const channel = 'channel' in action.data ? (action.data.channel ?? 'all') : 'all';
+  const emailRestriction =
+    'email_restriction' in action.data
+      ? (action.data.email_restriction ?? 'global_unsubscribe')
+      : 'global_unsubscribe';
+  if (
+    channel === 'whatsapp' &&
+    'email_restriction' in action.data &&
+    action.data.email_restriction
+  ) {
+    throw new Error('EMAIL_RESTRICTION_REQUIRES_EMAIL_CHANNEL');
+  }
   await inTransaction(pool, async (client) => {
-    await client.query(
-      `UPDATE onetime.contacts
-          SET suppression_state = 'suppressed', updated_at = $4
-        WHERE account_key = $1 AND product_key = $2 AND contact_key = $3`,
-      [config.accountKey, config.productKey, action.adult_contact.contact_key, now],
-    );
+    if (channel === 'email' || channel === 'all') {
+      await client.query(
+        `UPDATE onetime.contacts
+            SET suppression_state = 'suppressed', updated_at = $4
+          WHERE account_key = $1 AND product_key = $2 AND contact_key = $3`,
+        [config.accountKey, config.productKey, action.adult_contact.contact_key, now],
+      );
+    }
     await client.query(
       `INSERT INTO onetime.highlevel_contact_preferences
          (account_key, product_key, contact_key, email_dnd, whatsapp_dnd, all_dnd,
@@ -439,6 +453,17 @@ async function applyOptOut(
       ],
     );
   });
+  if (channel === 'email' || channel === 'all') {
+    await recordContactEmailRestriction(pool, config, {
+      contactKey: action.adult_contact.contact_key,
+      restrictionType: emailRestriction,
+      action: 'applied',
+      source: 'highlevel_bot_opt_out',
+      reasonCode: 'explicit_opt_out',
+      idempotencyKey: `${action.idempotency_key}:event-service-email`,
+      recordedAt: now,
+    });
+  }
 }
 
 async function loadAdultContact(pool: DbPool, config: AppConfig, contactKey: string) {

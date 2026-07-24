@@ -9,6 +9,7 @@ import {
 } from '../../../contracts/src/highlevel/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
+import { evaluateEventServiceEmailEligibility } from '../events/event-email-permission.ts';
 import { stableKey } from '../lead/normalize.ts';
 
 export type HighLevelProjection = {
@@ -34,6 +35,10 @@ export interface HighLevelAdapter {
     input: { locationId: string; providerContactId: string; tagsToAdd: string[] },
     context: HighLevelProviderOperationContext,
   ): Promise<void>;
+  readTags(
+    input: { locationId: string; providerContactId: string },
+    context: HighLevelProviderOperationContext,
+  ): Promise<string[]>;
 }
 
 export class DeterministicFakeHighLevelAdapter implements HighLevelAdapter {
@@ -48,6 +53,7 @@ export class DeterministicFakeHighLevelAdapter implements HighLevelAdapter {
   private readonly receipts = new Map<string, string>();
   private readonly tagged = new Set<string>();
   private readonly projections = new Map<string, HighLevelProjection>();
+  private readonly contactTags = new Map<string, string[]>();
 
   async upsertContact(input: HighLevelProjection, context: HighLevelProviderOperationContext) {
     const existing = this.receipts.get(context.operationKey);
@@ -64,6 +70,7 @@ export class DeterministicFakeHighLevelAdapter implements HighLevelAdapter {
     const projection = this.projections.get(input.providerContactId);
     if (!projection) throw new Error('HIGHLEVEL_FAKE_CONTACT_MISSING');
     this.tagged.add(context.operationKey);
+    this.contactTags.set(input.providerContactId, [...projection.tagsToAdd]);
     this.calls.push({
       idempotencyKey: projection.idempotencyKey,
       eventName: projection.eventName,
@@ -71,6 +78,10 @@ export class DeterministicFakeHighLevelAdapter implements HighLevelAdapter {
       tagsToAdd: [...projection.tagsToAdd],
       customFieldIds: projection.customFields.map((field) => field.id),
     });
+  }
+
+  async readTags(input: { providerContactId: string }) {
+    return [...(this.contactTags.get(input.providerContactId) ?? [])];
   }
 }
 
@@ -117,6 +128,25 @@ export async function runHighLevelProjectionBatch(input: {
     try {
       event = highLevelOutboundEventSchema.parse(row.payload);
       assertHighLevelPayloadSafe(event);
+      if (event.event_name === 'event.registration.recorded') {
+        const eventCode = event.data.event_code;
+        const registrationKey = event.data.registration_key;
+        if (!eventCode || !registrationKey) {
+          await revokeIneligibleEventRow(input.pool, input.config, row, 'identity_missing', now);
+          quarantined += 1;
+          continue;
+        }
+        const eligibility = await evaluateEventServiceEmailEligibility(input.pool, input.config, {
+          eventCode,
+          registrationKey,
+          contactKey: row.contact_key,
+        });
+        if (!eligibility.allowed) {
+          await revokeIneligibleEventRow(input.pool, input.config, row, eligibility.reason, now);
+          quarantined += 1;
+          continue;
+        }
+      }
       adapterCalls += 1;
       const value = projection(event, row);
       const upsertNow = input.now ?? new Date();
@@ -128,6 +158,24 @@ export async function runHighLevelProjectionBatch(input: {
         input.adapter,
         upsertNow,
       );
+      if (event.event_name === 'event.registration.recorded') {
+        const eligibility = await evaluateEventServiceEmailEligibility(input.pool, input.config, {
+          eventCode: event.data.event_code ?? '',
+          registrationKey: event.data.registration_key ?? '',
+          contactKey: row.contact_key,
+        });
+        if (!eligibility.allowed) {
+          await revokeIneligibleEventRow(
+            input.pool,
+            input.config,
+            row,
+            eligibility.reason,
+            input.now ?? new Date(),
+          );
+          quarantined += 1;
+          continue;
+        }
+      }
       const addTagsNow = input.now ?? new Date();
       await runAddTagsOperation(
         input.pool,
@@ -250,6 +298,7 @@ WITH candidates AS (
           AND eligible_contacts.contact_key = outbox.contact_key
           AND (
             outbox.event_type = 'highlevel.parent.household.sync_requested.v1'
+            OR outbox.event_type = 'highlevel.event.registration.recorded.v1'
             OR (
               eligible_contacts.suppression_state = 'active'
               AND NOT COALESCE(eligible_preferences.email_dnd, false)
@@ -289,7 +338,10 @@ SELECT claimed.delivery_key, claimed.attempts, claimed.payload, claimed.contact_
     ON preferences.account_key = contacts.account_key
    AND preferences.product_key = contacts.product_key
    AND preferences.contact_key = contacts.contact_key
- WHERE claimed.event_type = 'highlevel.parent.household.sync_requested.v1'
+ WHERE claimed.event_type IN (
+      'highlevel.parent.household.sync_requested.v1',
+      'highlevel.event.registration.recorded.v1'
+    )
     OR (
       contacts.suppression_state = 'active'
       AND NOT COALESCE(preferences.email_dnd, false)
@@ -375,7 +427,8 @@ async function authorizeCanaryRows(
            FROM onetime.outbox_events
           WHERE account_key = $1 AND product_key = $2
             AND channel = 'highlevel' AND delivery_key = $3
-            AND transport_mode = $4`,
+            AND transport_mode = $4
+            AND event_type <> 'highlevel.event.registration.recorded.v1'`,
         [config.accountKey, config.productKey, deliveryKey, canary.mode],
       );
       if (eligible.rows.length !== 1) continue;
@@ -431,6 +484,177 @@ async function authorizeCanaryRows(
       }
     }
     return true;
+  });
+}
+
+export async function prepareEventRegistrationCanary(input: {
+  pool: DbPool;
+  config: AppConfig;
+  deliveryKey: string;
+  now?: Date;
+}) {
+  const canary = canaryConfig(input.config);
+  if (!canary || !canary.deliveryKeys.includes(input.deliveryKey)) {
+    return { prepared: false as const, reason: 'canary_configuration_missing' as const };
+  }
+  const now = input.now ?? new Date();
+  return inTransaction(input.pool, async (client) => {
+    const row = await client.query<{
+      contact_key: string;
+      payload: unknown;
+      status: string;
+      attempts: number;
+      transport_mode: string;
+      transport_authorization_state: string;
+      delivered_at: Date | string | null;
+    }>(
+      `SELECT contact_key, payload, status, attempts, transport_mode,
+              transport_authorization_state, delivered_at
+         FROM onetime.outbox_events
+        WHERE account_key = $1 AND product_key = $2
+          AND channel = 'highlevel'
+          AND event_type = 'highlevel.event.registration.recorded.v1'
+          AND delivery_key = $3
+        LIMIT 1`,
+      [input.config.accountKey, input.config.productKey, input.deliveryKey],
+    );
+    const outbox = row.rows[0];
+    if (
+      !outbox ||
+      outbox.status !== 'pending' ||
+      Number(outbox.attempts) !== 0 ||
+      outbox.transport_mode !== 'disabled' ||
+      outbox.transport_authorization_state !== 'held' ||
+      outbox.delivered_at
+    ) {
+      return { prepared: false as const, reason: 'row_not_pristine' as const };
+    }
+    const receipts = await client.query(
+      `SELECT operation_key
+         FROM onetime.highlevel_provider_operation_receipts
+        WHERE account_key = $1 AND product_key = $2 AND delivery_key = $3
+        LIMIT 1`,
+      [input.config.accountKey, input.config.productKey, input.deliveryKey],
+    );
+    if (receipts.rowCount) {
+      return { prepared: false as const, reason: 'prior_provider_effect' as const };
+    }
+    const event = highLevelOutboundEventSchema.parse(outbox.payload);
+    if (
+      event.event_name !== 'event.registration.recorded' ||
+      !event.data.event_code ||
+      !event.data.registration_key
+    ) {
+      return { prepared: false as const, reason: 'event_contract_invalid' as const };
+    }
+    const eligibility = await evaluateEventServiceEmailEligibility(client, input.config, {
+      eventCode: event.data.event_code,
+      registrationKey: event.data.registration_key,
+      contactKey: outbox.contact_key,
+    });
+    if (!eligibility.allowed) {
+      return {
+        prepared: false as const,
+        reason: 'contact_ineligible' as const,
+        blocker: eligibility.reason,
+      };
+    }
+    await client.query(
+      `INSERT INTO onetime.highlevel_canary_runs
+         (account_key, product_key, run_id, transport_mode, allowlist_hash, budget, state,
+          created_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,'active',$7,$7)
+       ON CONFLICT (account_key, product_key, run_id) DO NOTHING`,
+      [
+        input.config.accountKey,
+        input.config.productKey,
+        canary.runId,
+        canary.mode,
+        canary.allowlistHash,
+        canary.budget,
+        now,
+      ],
+    );
+    const stored = await client.query<{
+      transport_mode: string;
+      allowlist_hash: string;
+      budget: number;
+      state: string;
+    }>(
+      `SELECT transport_mode, allowlist_hash, budget, state
+         FROM onetime.highlevel_canary_runs
+        WHERE account_key = $1 AND product_key = $2 AND run_id = $3`,
+      [input.config.accountKey, input.config.productKey, canary.runId],
+    );
+    const run = stored.rows[0];
+    if (
+      !run ||
+      run.transport_mode !== canary.mode ||
+      run.allowlist_hash !== canary.allowlistHash ||
+      Number(run.budget) !== canary.budget ||
+      run.state !== 'active'
+    ) {
+      return { prepared: false as const, reason: 'canary_run_mismatch' as const };
+    }
+    await client.query(
+      `INSERT INTO onetime.highlevel_canary_run_allowlist
+         (account_key, product_key, run_id, delivery_key, created_at)
+       VALUES ($1,$2,$3,$4,$5)
+       ON CONFLICT (account_key, product_key, run_id, delivery_key) DO NOTHING`,
+      [input.config.accountKey, input.config.productKey, canary.runId, input.deliveryKey, now],
+    );
+    const updated = await client.query(
+      `UPDATE onetime.outbox_events
+          SET transport_mode = $4,
+              transport_authorization_state = 'authorized',
+              transport_authorization_run_id = $5,
+              transport_authorization_allowlist_hash = $6
+        WHERE account_key = $1 AND product_key = $2 AND delivery_key = $3
+          AND channel = 'highlevel'
+          AND event_type = 'highlevel.event.registration.recorded.v1'
+          AND transport_mode = 'disabled'
+          AND transport_authorization_state = 'held'
+          AND status = 'pending'
+          AND attempts = 0
+        RETURNING contact_key`,
+      [
+        input.config.accountKey,
+        input.config.productKey,
+        input.deliveryKey,
+        canary.mode,
+        canary.runId,
+        canary.allowlistHash,
+      ],
+    );
+    if (updated.rows.length !== 1) {
+      return { prepared: false as const, reason: 'row_prepare_race' as const };
+    }
+    await client.query(
+      `INSERT INTO onetime.audit_events
+         (event_key, account_key, product_key, contact_key, event_type, metadata, created_at)
+       VALUES ($1,$2,$3,$4,'event_registration_highlevel_canary_prepared',$5::jsonb,$6)
+       ON CONFLICT (event_key) DO NOTHING`,
+      [
+        stableKey('audit_event_registration_canary_prepared', [input.deliveryKey, canary.runId]),
+        input.config.accountKey,
+        input.config.productKey,
+        outbox.contact_key,
+        JSON.stringify({
+          delivery_key: input.deliveryKey,
+          run_id_hash: stableKey('canary_run', [canary.runId]),
+          allowlist_hash: canary.allowlistHash,
+          budget: canary.budget,
+          transport_mode: canary.mode,
+          provider_effect_performed: false,
+        }),
+        now,
+      ],
+    );
+    return {
+      prepared: true as const,
+      deliveryKey: input.deliveryKey,
+      allowlistHash: canary.allowlistHash,
+    };
   });
 }
 
@@ -508,6 +732,7 @@ async function claimMemory(
             AND outbox.transport_authorization_allowlist_hash = $6
             AND (
               outbox.event_type = 'highlevel.parent.household.sync_requested.v1'
+              OR outbox.event_type = 'highlevel.event.registration.recorded.v1'
               OR (
                 contacts.suppression_state = 'active'
                 AND NOT COALESCE(preferences.email_dnd, false)
@@ -669,6 +894,25 @@ async function runAddTagsOperation(
       { locationId: value.locationId, providerContactId, tagsToAdd: value.tagsToAdd },
       { operationKey, idempotencyKey: value.idempotencyKey },
     );
+    const observedTags = await adapter.readTags(
+      {
+        locationId: value.locationId,
+        providerContactId,
+      },
+      {
+        operationKey: `${operationKey}:readback`,
+        idempotencyKey: value.idempotencyKey,
+      },
+    );
+    for (const expected of value.tagsToAdd) {
+      const normalizedExpected = normalizeTagReadbackKey(expected);
+      const normalizedMatches = observedTags.filter(
+        (tag) => normalizeTagReadbackKey(tag) === normalizedExpected,
+      );
+      if (normalizedMatches.length !== 1 || normalizedMatches[0] !== expected) {
+        throw new Error('HIGHLEVEL_TAG_READBACK_UNCERTAIN');
+      }
+    }
     await completeOperation(pool, config, row, operationKey, requestHash, providerContactId, now);
   } catch (error) {
     await quarantineOperation(pool, config, row, operationKey, now);
@@ -820,6 +1064,16 @@ async function markOperationUncertain(
   );
 }
 
+function normalizeTagReadbackKey(value: string) {
+  return (
+    value
+      .normalize('NFKC')
+      .toLocaleLowerCase('en-US')
+      .match(/[\p{L}\p{N}]+/gu)
+      ?.join(' ') ?? ''
+  );
+}
+
 function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelProjection {
   const tagsToAdd: Record<HighLevelEventName, string> = {
     'adult.signup.submitted': 'OT | Lead',
@@ -828,15 +1082,20 @@ function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelPr
     'parent.portal.activated': 'OT | Portal Active',
     'class.reminder.requested': 'OT | Class Reminder Pending',
     'recording.available': 'OT | Recording Available',
+    'event.registration.recorded': "OT | Event | Tisha B'Av 2026 | Registered",
   };
   const customFields: Array<{ id: string; value: string }> = [
     { id: 'TRZGYm5rfFdjpYHM0HLL', value: event.adult_contact.contact_key },
-    { id: 'olSxPkya7mkkB61vSXHx', value: event.consent.email },
-    { id: 'XhBuFbkwtbpD9gyVNDdG', value: event.consent.whatsapp },
-    { id: '5ID7x61OAXaLHf2VrzVb', value: event.consent.policy_version },
-    { id: 'dzvudcSnnaVzuw4Y5QzL', value: event.consent.captured_at },
-    { id: 'rdWsApvquRfHwkzvp5mS', value: event.consent.suppression_state },
   ];
+  if (event.event_name !== 'event.registration.recorded' && event.consent) {
+    customFields.push(
+      { id: 'olSxPkya7mkkB61vSXHx', value: event.consent.email },
+      { id: 'XhBuFbkwtbpD9gyVNDdG', value: event.consent.whatsapp },
+      { id: '5ID7x61OAXaLHf2VrzVb', value: event.consent.policy_version },
+      { id: 'dzvudcSnnaVzuw4Y5QzL', value: event.consent.captured_at },
+      { id: 'rdWsApvquRfHwkzvp5mS', value: event.consent.suppression_state },
+    );
+  }
   if (event.data.classification) {
     customFields.push({ id: 'XoW0UWbGFkwUplKydjZI', value: event.data.classification });
   }
@@ -862,7 +1121,10 @@ function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelPr
       displayName: row.display_name,
       phone: row.phone_normalized,
     },
-    tagsToAdd: [tagsToAdd[event.event_name]],
+    tagsToAdd:
+      event.event_name === 'event.registration.recorded'
+        ? ["OT | Event | Tisha B'Av 2026 | Registered", "OT | Source | Tisha B'Av 2026"]
+        : [tagsToAdd[event.event_name]],
     customFields,
   };
 }
@@ -928,6 +1190,51 @@ async function markDelivered(
           canary_run_id_hash: stableKey('canary_run', [row.transport_authorization_run_id]),
           provider_reference_hash: stableKey('provider_ref', [providerContactId]),
           private_destination_recorded: false,
+        }),
+        now,
+      ],
+    );
+    return true;
+  });
+}
+
+async function revokeIneligibleEventRow(
+  pool: DbPool,
+  config: AppConfig,
+  row: ClaimedRow,
+  reason: string,
+  now: Date,
+) {
+  return inTransaction(pool, async (client) => {
+    const result = await client.query(
+      `UPDATE onetime.outbox_events
+          SET status = 'dead_letter',
+              transport_authorization_state = 'revoked',
+              transport_claim_token = NULL,
+              transport_lease_expires_at = NULL
+        WHERE account_key = $1 AND product_key = $2 AND delivery_key = $3
+          AND channel = 'highlevel'
+          AND status = 'processing'
+          AND transport_authorization_state = 'processing'
+          AND transport_claim_token = $4`,
+      [config.accountKey, config.productKey, row.delivery_key, row.transport_claim_token],
+    );
+    if (!result.rowCount) return false;
+    await client.query(
+      `INSERT INTO onetime.audit_events
+         (event_key, account_key, product_key, contact_key, event_type, metadata, created_at)
+       VALUES ($1,$2,$3,$4,'event_registration_highlevel_revoked',$5::jsonb,$6)
+       ON CONFLICT (event_key) DO NOTHING`,
+      [
+        stableKey('audit_event_registration_highlevel_revoked', [row.delivery_key]),
+        config.accountKey,
+        config.productKey,
+        row.contact_key,
+        JSON.stringify({
+          delivery_key: row.delivery_key,
+          eligibility_reason: reason,
+          provider_effect_performed: false,
+          retry_authorized: false,
         }),
         now,
       ],

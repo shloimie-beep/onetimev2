@@ -49,6 +49,19 @@ export class HighLevelHttpAdapter implements HighLevelAdapter {
       },
     );
   }
+
+  async readTags(
+    input: { locationId: string; providerContactId: string },
+    context: HighLevelProviderOperationContext,
+  ) {
+    void input.locationId;
+    const value = await this.client.request(
+      `/contacts/${encodeURIComponent(input.providerContactId)}`,
+      context.operationKey,
+      { method: 'GET' },
+    );
+    return providerContactTags(value);
+  }
 }
 
 function providerContactId(value: unknown) {
@@ -61,4 +74,25 @@ function providerContactId(value: unknown) {
   }
   if (typeof record.id === 'string' && record.id.length > 0) return record.id;
   throw new Error('HIGHLEVEL_PROVIDER_CONTACT_ID_MISSING');
+}
+
+function providerContactTags(value: unknown) {
+  if (!value || typeof value !== 'object') throw new Error('HIGHLEVEL_PROVIDER_RESPONSE_INVALID');
+  const record = value as Record<string, unknown>;
+  const contact =
+    record.contact && typeof record.contact === 'object'
+      ? (record.contact as Record<string, unknown>)
+      : record;
+  if (!Array.isArray(contact.tags)) throw new Error('HIGHLEVEL_PROVIDER_TAG_READBACK_INVALID');
+  return contact.tags.map((tag) => {
+    if (typeof tag === 'string') return tag;
+    if (
+      tag &&
+      typeof tag === 'object' &&
+      typeof (tag as Record<string, unknown>).name === 'string'
+    ) {
+      return String((tag as Record<string, unknown>).name);
+    }
+    throw new Error('HIGHLEVEL_PROVIDER_TAG_READBACK_INVALID');
+  });
 }

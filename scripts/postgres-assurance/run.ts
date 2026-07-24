@@ -3,7 +3,12 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import pg from 'pg';
+import { loadConfig } from '../../packages/config/src/index.ts';
 import { runMigrations } from '../../packages/db/src/index.ts';
+import {
+  captureTishaBavRegistration,
+  recordContactEmailRestriction,
+} from '../../packages/domain/src/index.ts';
 import {
   expectedOpenFindingCatalog,
   ot37Task,
@@ -1020,6 +1025,9 @@ async function runConcurrencyScenarios(pool: pg.Pool): Promise<ConcurrencyResult
     await runIdempotencyInsertRace(pool),
     await runDuplicateContactRace(pool),
     await runSkipLockedWorkerClaims(pool),
+    await runEventServicePermissionOutboxRace(pool),
+    await runEventServiceRestrictionAtomicity(pool),
+    await runEventServiceRestrictionEqualTimeRace(pool),
     {
       id: 'durable_throttling_current_base',
       status: 'skipped_current_base',
@@ -1030,6 +1038,320 @@ async function runConcurrencyScenarios(pool: pg.Pool): Promise<ConcurrencyResult
       expected_open_findings: ['DURABLE-THROTTLE-MISSING'],
     },
   ];
+}
+
+async function runEventServiceRestrictionAtomicity(pool: pg.Pool): Promise<ConcurrencyResult> {
+  const contactKey = 'ot37-event-restriction-atomic-contact';
+  const idempotencyKey = 'ot37-event-restriction-atomic';
+  const recordedAt = new Date('2026-07-23T18:35:00.000Z');
+  const config = loadConfig({
+    NODE_ENV: 'test',
+    PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+    APP_VERSION: 'ot37-postgres-assurance',
+    COMMIT_SHA: 'ot37-postgres-assurance',
+    ONE_TIME_ACCOUNT_KEY: PRIMARY_ACCOUNT,
+    ONE_TIME_PRODUCT_KEY: PRIMARY_PRODUCT,
+  });
+  await pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, reminder_preference,
+        suppression_state, source)
+     VALUES ($1,$2,$3,'Synthetic restriction contact','family','Synthetic','Synthetic','UTC',
+             'event-restriction-atomic@example.test','none','active','postgres_assurance')
+     ON CONFLICT (account_key, product_key, contact_key) DO NOTHING`,
+    [contactKey, PRIMARY_ACCOUNT, PRIMARY_PRODUCT],
+  );
+  await pool.query(
+    `CREATE OR REPLACE FUNCTION onetime.ot37_reject_restriction_projection()
+     RETURNS trigger LANGUAGE plpgsql AS $$
+     BEGIN
+       RAISE EXCEPTION 'synthetic restriction projection failure';
+     END
+     $$`,
+  );
+  await pool.query(
+    `DROP TRIGGER IF EXISTS ot37_reject_restriction_projection
+       ON onetime.contact_email_restrictions`,
+  );
+  await pool.query(
+    `CREATE TRIGGER ot37_reject_restriction_projection
+       BEFORE INSERT ON onetime.contact_email_restrictions
+       FOR EACH ROW
+       WHEN (NEW.contact_key = 'ot37-event-restriction-atomic-contact')
+       EXECUTE FUNCTION onetime.ot37_reject_restriction_projection()`,
+  );
+  let firstFailure = 'none';
+  try {
+    await recordContactEmailRestriction(pool, config, {
+      contactKey,
+      restrictionType: 'complaint',
+      action: 'applied',
+      source: 'postgres_assurance',
+      reasonCode: 'synthetic_atomicity',
+      idempotencyKey,
+      recordedAt,
+    });
+  } catch (error) {
+    firstFailure = pgCode(error) ?? 'provider_error';
+  } finally {
+    await pool.query(
+      `DROP TRIGGER IF EXISTS ot37_reject_restriction_projection
+         ON onetime.contact_email_restrictions`,
+    );
+    await pool.query(`DROP FUNCTION IF EXISTS onetime.ot37_reject_restriction_projection()`);
+  }
+  const afterFailure = await restrictionCounts(pool, contactKey);
+  const retry = await recordContactEmailRestriction(pool, config, {
+    contactKey,
+    restrictionType: 'complaint',
+    action: 'applied',
+    source: 'postgres_assurance',
+    reasonCode: 'synthetic_atomicity',
+    idempotencyKey,
+    recordedAt,
+  });
+  const afterRetry = await restrictionCounts(pool, contactKey);
+  const passed =
+    firstFailure !== 'none' &&
+    afterFailure.events === 0 &&
+    afterFailure.current === 0 &&
+    retry.state === 'recorded' &&
+    afterRetry.events === 1 &&
+    afterRetry.current === 1;
+  if (!passed) {
+    throw new Error('EVENT_SERVICE_EMAIL_RESTRICTION_ATOMICITY_FAILED');
+  }
+  return {
+    id: 'event_service_email_restriction_atomic_rollback_retry',
+    status: 'passed',
+    participants: 1,
+    observations: {
+      first_failure: firstFailure,
+      history_after_failure: afterFailure.events,
+      current_after_failure: afterFailure.current,
+      retry_state: retry.state,
+      history_after_retry: afterRetry.events,
+      current_after_retry: afterRetry.current,
+    },
+    expected_open_findings: [],
+  };
+}
+
+async function runEventServiceRestrictionEqualTimeRace(pool: pg.Pool): Promise<ConcurrencyResult> {
+  const contactKey = 'ot37-event-restriction-equal-time-contact';
+  const recordedAt = new Date('2026-07-23T18:40:00.000Z');
+  const config = loadConfig({
+    NODE_ENV: 'test',
+    PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+    APP_VERSION: 'ot37-postgres-assurance',
+    COMMIT_SHA: 'ot37-postgres-assurance',
+    ONE_TIME_ACCOUNT_KEY: PRIMARY_ACCOUNT,
+    ONE_TIME_PRODUCT_KEY: PRIMARY_PRODUCT,
+  });
+  await pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, reminder_preference,
+        suppression_state, source)
+     VALUES ($1,$2,$3,'Synthetic equal-time restriction contact','family','Synthetic','Synthetic',
+             'UTC','event-restriction-equal-time@example.test','none','active',
+             'postgres_assurance')
+     ON CONFLICT (account_key, product_key, contact_key) DO NOTHING`,
+    [contactKey, PRIMARY_ACCOUNT, PRIMARY_PRODUCT],
+  );
+  const results = await Promise.all(
+    [
+      {
+        action: 'cleared' as const,
+        idempotencyKey: 'ot37-event-restriction-equal-time-cleared',
+      },
+      {
+        action: 'applied' as const,
+        idempotencyKey: 'ot37-event-restriction-equal-time-applied',
+      },
+    ].map((input) =>
+      recordContactEmailRestriction(pool, config, {
+        contactKey,
+        restrictionType: 'hard_bounce',
+        action: input.action,
+        source: 'postgres_assurance',
+        reasonCode: 'synthetic_equal_time_race',
+        idempotencyKey: input.idempotencyKey,
+        recordedAt,
+      }),
+    ),
+  );
+  const counts = await restrictionCounts(pool, contactKey);
+  const projection = await pool.query<{ active: boolean; effective_at: Date }>(
+    `SELECT active, effective_at
+       FROM onetime.contact_email_restrictions
+      WHERE account_key = $1
+        AND product_key = $2
+        AND contact_key = $3
+        AND restriction_type = 'hard_bounce'
+      LIMIT 1`,
+    [PRIMARY_ACCOUNT, PRIMARY_PRODUCT, contactKey],
+  );
+  const current = projection.rows[0];
+  const passed =
+    results.every((result) => result.state === 'recorded') &&
+    counts.events === 2 &&
+    counts.current === 1 &&
+    current?.active === true &&
+    current.effective_at.getTime() === recordedAt.getTime();
+  if (!passed) {
+    throw new Error('EVENT_SERVICE_EMAIL_RESTRICTION_EQUAL_TIME_RACE_FAILED');
+  }
+  return {
+    id: 'event_service_email_restriction_equal_time_race',
+    status: 'passed',
+    participants: 2,
+    observations: {
+      actions: ['cleared', 'applied'],
+      history: counts.events,
+      current: counts.current,
+      deny_active: current.active,
+      effective_at: current.effective_at.toISOString(),
+    },
+    expected_open_findings: [],
+  };
+}
+
+async function restrictionCounts(pool: pg.Pool, contactKey: string) {
+  const result = await pool.query<{ events: string; current: string }>(
+    `SELECT
+       (SELECT count(*) FROM onetime.contact_email_restriction_events
+         WHERE account_key = $1 AND product_key = $2 AND contact_key = $3) AS events,
+       (SELECT count(*) FROM onetime.contact_email_restrictions
+         WHERE account_key = $1 AND product_key = $2 AND contact_key = $3) AS current`,
+    [PRIMARY_ACCOUNT, PRIMARY_PRODUCT, contactKey],
+  );
+  return {
+    events: Number(result.rows[0]?.events ?? 0),
+    current: Number(result.rows[0]?.current ?? 0),
+  };
+}
+
+async function runEventServicePermissionOutboxRace(pool: pg.Pool): Promise<ConcurrencyResult> {
+  const participants = 6;
+  const eventCode = 'tisha-bav-2026';
+  const eventDefinitionKey = 'ot37-event-service-email-definition';
+  const email = 'event-permission-concurrency@example.test';
+  const idempotencyKey = 'ot37-event-permission-concurrency';
+  const recordedAt = '2026-07-23T18:30:00.000Z';
+  await pool.query(
+    `INSERT INTO onetime.event_definitions
+       (event_definition_key, account_key, product_key, event_code, public_title,
+        event_start, event_timezone, event_start_israel, registration_open, landing_path,
+        join_path, join_open_at, join_close_at, provider, provider_state)
+     VALUES ($1,$2,$3,$4,'Synthetic event',$5,'UTC',$5,true,'/synthetic-event',
+             '/synthetic-event/live',$6,$7,'zoom','unavailable')
+     ON CONFLICT (account_key, product_key, event_code) DO NOTHING`,
+    [
+      eventDefinitionKey,
+      PRIMARY_ACCOUNT,
+      PRIMARY_PRODUCT,
+      eventCode,
+      '2026-07-23T19:00:00.000Z',
+      '2026-07-23T18:00:00.000Z',
+      '2026-07-23T20:00:00.000Z',
+    ],
+  );
+  const config = loadConfig({
+    NODE_ENV: 'test',
+    PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+    APP_VERSION: 'ot37-postgres-assurance',
+    COMMIT_SHA: 'ot37-postgres-assurance',
+    ONE_TIME_ACCOUNT_KEY: PRIMARY_ACCOUNT,
+    ONE_TIME_PRODUCT_KEY: PRIMARY_PRODUCT,
+  });
+  const barrier = createBarrier(participants);
+  const results = await Promise.all(
+    Array.from({ length: participants }, async () => {
+      try {
+        await barrier();
+        const result = await captureTishaBavRegistration({
+          pool,
+          config,
+          payload: {
+            email,
+            first_name: 'Synthetic',
+            newsletter_opt_in: false,
+            source: 'ot37_postgres_assurance',
+            idempotency_key: idempotencyKey,
+            homepage: '',
+          },
+          now: new Date(recordedAt),
+        });
+        return result.duplicate_submission ? 'duplicate' : 'inserted';
+      } catch (error) {
+        return `error:${pgCode(error) ?? 'unknown'}`;
+      }
+    }),
+  );
+  const counts = await pool.query<{
+    contacts: string;
+    registrations: string;
+    permission_events: string;
+    permissions: string;
+    outbox: string;
+  }>(
+    `SELECT
+       (SELECT count(*) FROM onetime.contacts
+         WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3) AS contacts,
+       (SELECT count(*) FROM onetime.event_registrations
+         WHERE account_key = $1 AND product_key = $2 AND event_code = $4
+           AND email_normalized = $3)
+         AS registrations,
+       (SELECT count(*) FROM onetime.event_email_permission_events
+         WHERE account_key = $1 AND product_key = $2 AND event_code = $4
+           AND email_normalized = $3) AS permission_events,
+       (SELECT count(*) FROM onetime.event_email_permissions
+         WHERE account_key = $1 AND product_key = $2 AND event_code = $4
+           AND email_normalized = $3)
+         AS permissions,
+       (SELECT count(*) FROM onetime.outbox_events
+         WHERE account_key = $1 AND product_key = $2
+           AND event_type = 'highlevel.event.registration.recorded.v1'
+           AND payload->'data'->>'registration_key' = (
+             SELECT registration_key
+               FROM onetime.event_registrations
+              WHERE account_key = $1 AND product_key = $2 AND event_code = $4
+                AND email_normalized = $3
+              LIMIT 1
+           )) AS outbox`,
+    [PRIMARY_ACCOUNT, PRIMARY_PRODUCT, email, eventCode],
+  );
+  const observed = counts.rows[0];
+  const exactlyOnce =
+    Number(observed?.contacts) === 1 &&
+    Number(observed?.registrations) === 1 &&
+    Number(observed?.permission_events) === 1 &&
+    Number(observed?.permissions) === 1 &&
+    Number(observed?.outbox) === 1 &&
+    results.filter((value) => value === 'inserted').length === 1 &&
+    results.filter((value) => value === 'duplicate').length === participants - 1;
+  if (!exactlyOnce || results.some((value) => value.startsWith('error:'))) {
+    throw new Error('EVENT_SERVICE_EMAIL_PERMISSION_EXACTLY_ONCE_FAILED');
+  }
+  return {
+    id: 'event_service_email_permission_outbox_exactly_once',
+    status: 'passed',
+    participants,
+    observations: {
+      service_path: 'captureTishaBavRegistration',
+      contacts: Number(observed?.contacts ?? 0),
+      registrations: Number(observed?.registrations ?? 0),
+      permission_events: Number(observed?.permission_events ?? 0),
+      permissions: Number(observed?.permissions ?? 0),
+      outbox: Number(observed?.outbox ?? 0),
+      inserted: results.filter((value) => value === 'inserted').length,
+      duplicate: results.filter((value) => value === 'duplicate').length,
+      raw_results: results,
+    },
+    expected_open_findings: [],
+  };
 }
 
 async function runIdempotencyInsertRace(pool: pg.Pool): Promise<ConcurrencyResult> {
