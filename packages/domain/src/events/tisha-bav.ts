@@ -465,15 +465,17 @@ async function resolveEventAdultContact(
   ]);
   await client.query(
     `INSERT INTO onetime.contacts
-       (contact_key, account_key, product_key, display_name, family_school_classification,
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification,
         family_or_school, location_text, timezone, email_normalized, phone_normalized,
         reminder_preference, consent_policy_version, consent_recorded_at, suppression_state,
         source, created_at, updated_at)
-     VALUES ($1,$2,$3,$4,'family','Event registrant','Unknown','Asia/Jerusalem',$5,NULL,
-             'none',NULL,NULL,'active',$6,$7,$7)
+     VALUES ($1,$2,$3,$4,$5,'family','Event registrant','Unknown','Asia/Jerusalem',$6,NULL,
+             'none',NULL,NULL,'active',$7,$8,$8)
      ON CONFLICT (account_key, product_key, email_normalized) DO NOTHING`,
     [
       contactKey,
+      randomUUID(),
       config.accountKey,
       config.productKey,
       input.firstName?.trim() || 'Event registrant',

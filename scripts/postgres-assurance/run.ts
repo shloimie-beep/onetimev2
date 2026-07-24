@@ -1286,11 +1286,7 @@ async function runEventServicePermissionOutboxRace(pool: pg.Pool): Promise<Concu
         });
         return result.duplicate_submission ? 'duplicate' : 'inserted';
       } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message.replace(/[^A-Za-z0-9:_ -]/g, '_').slice(0, 160)
-            : 'unknown';
-        return `error:${pgCode(error) ?? 'unknown'}:${message}`;
+        return `error:${pgCode(error) ?? 'unknown'}`;
       }
     }),
   );
@@ -1337,18 +1333,7 @@ async function runEventServicePermissionOutboxRace(pool: pg.Pool): Promise<Concu
     results.filter((value) => value === 'inserted').length === 1 &&
     results.filter((value) => value === 'duplicate').length === participants - 1;
   if (!exactlyOnce || results.some((value) => value.startsWith('error:'))) {
-    throw new Error(
-      `EVENT_SERVICE_EMAIL_PERMISSION_EXACTLY_ONCE_FAILED:${JSON.stringify({
-        counts: {
-          contacts: Number(observed?.contacts ?? 0),
-          registrations: Number(observed?.registrations ?? 0),
-          permission_events: Number(observed?.permission_events ?? 0),
-          permissions: Number(observed?.permissions ?? 0),
-          outbox: Number(observed?.outbox ?? 0),
-        },
-        outcomes: results,
-      })}`,
-    );
+    throw new Error('EVENT_SERVICE_EMAIL_PERMISSION_EXACTLY_ONCE_FAILED');
   }
   return {
     id: 'event_service_email_permission_outbox_exactly_once',
