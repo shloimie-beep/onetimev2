@@ -263,7 +263,6 @@ record(
       objectAt(hostTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
       objectAt(operatorTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
       operatorBlocker.code === 'RAILWAY_PROVIDER_SESSION_NOT_AUTHENTICATED_AFTER_HOST_RESTART' &&
-      outcome.external_action_count === 16 &&
       externalActions.some(
         (action) =>
           action.kind === 'zoom_disposable_isolated_canary_lifecycle' &&
@@ -298,13 +297,19 @@ record(
     const loginAction = externalActions.find(
       (action) => action.kind === 'fictional_staging_admin_login_code_challenge',
     );
+    const mediaAction = externalActions.find(
+      (action) => action.kind === 'media_private_openai_transcription_canary',
+    );
     return (
       outcome.external_action_count === counted &&
-      outcome.external_action_count === 16 &&
-      loginAction?.count === 11
+      outcome.external_action_count === 17 &&
+      loginAction?.count === 11 &&
+      mediaAction?.count === 1 &&
+      String(mediaAction.scope).includes('one authorized private OpenAI transcription request') &&
+      String(mediaAction.scope).includes('no retry')
     );
   })(),
-  'external_action_count=16 equals row sum and includes 11 bounded staging login-code emails',
+  'external_action_count=17 equals row sum and includes 11 bounded staging login-code emails plus one private media transcription request',
 );
 record(
   'fictional Admin incident is rotated and auditable',

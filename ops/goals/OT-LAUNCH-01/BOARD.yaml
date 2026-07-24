@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T14:03:19Z
+updated_at: 2026-07-24T14:06:54Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -130,7 +130,7 @@ outcome:
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
   current_summary: "Persistent-staging product source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 is the accepted live application through exact web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a and worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821 at schema 2226_rabbi_telegram_communications. PR #118 Admin information architecture, PR #119 Rabbi Telegram communications, and PR #120 Parent/Student contact operations are accepted, integrated, deployed, and fully green together with the shared route-state and parallel browser-fixture repairs. Admin Dashboard discovery, Parent, three separately scoped Students, Rabbi/Classroom, content, Tisha, protected playback, and Admin-session isolation pass on the same product source. The latest exposed fictional Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old value is rejected, the private handoff was atomically replaced, active sessions remain zero, and the exact sandbox and local transfer artifacts are absent. The exact operator-owned 1.82 GB media source is now verified complete on the resumed executor after the host restart, and the one authorized private canary is actively processing with no alternate source; terminal provider and playback readback remain pending. PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but the provider-only cleanup is paused because the host restart cleared the Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists, no cleanup command ran, no signed deleted tombstone exists, and host/Student controls remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions."
-  external_action_count: 16
+  external_action_count: 17
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
       count: 11
@@ -150,6 +150,9 @@ outcome:
     - kind: zoom_disposable_isolated_canary_lifecycle
       count: 1
       scope: 'One separately protected isolated PR #105 run created exactly one disposable non-Tisha meeting under decision zoom-distinct-disposable-isolated-canary-20260724. The signed schema-v3 state remains valid and cleanup_required. Registrant outcome is ambiguous; Student/host joins and controls are zero; customer invitations/messages and persistent-staging/production changes are zero. The sole cleanup attempt made one OAuth request and one meeting GET, then stopped before POST/PATCH/DELETE on ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH. The exact meeting, runner, and state remain preserved. No provisioning retry or second meeting is authorized; exactly one reviewed provider-only cleanup reconciliation remains permitted.'
+    - kind: media_private_openai_transcription_canary
+      count: 1
+      scope: 'The existing PR #117 executor submitted the exact verified operator-owned source through one authorized private OpenAI transcription request. The same 42-minute request remains in progress with no retry, alternate source, Vimeo publication, Student publication, customer communication, persistent-staging mutation, or production mutation.'
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -710,8 +713,9 @@ tracks:
       - 'Accepted PR #113 and deployed PR #97 product source 5556c4ab78e01d367666694459eb2ea97f4028ef now provide the durable occurrence-scoped intake, restart-safe worker, protected storage, Admin review, publication/revocation, and sibling-isolation prerequisite. This is synthetic provider-off proof only; no real OpenAI or private-Vimeo canary has run.'
       - 'Draft PR #117 exact head b5d85dbbf6e6a578c374f5658cea245142cfec1e changes only the sanitized VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md; BOARD.yaml is byte-unchanged in that lane. Goal governance, typecheck, secret scan, diff check, and 16 focused media/content tests pass.'
       - 'The signed-in protected Drive browser resolved one exact operator-owned private MP4 using safe metadata only: 1.82 GB, 42:18, 1280x720, created and modified 2026-07-20. The Drive connector cannot see that same file scope, so the executor must resume the already-open protected tab and must not select or substitute another source.'
-      - 'OpenAI and Vimeo read-only authentication preflight passed. Download, upload, transcription, provider mutation, customer communication, persistent-staging change, and production change counts are all zero; no protected Drive reference entered Git.'
+      - 'At the initial preflight, OpenAI and Vimeo authentication readback passed while download, upload, transcription, provider mutation, customer communication, persistent-staging change, and production change counts were all zero; no protected Drive reference entered Git.'
       - 'After the host restart, the same executor verified that the exact source is already local and complete: safe size, duration, and 1280x720 probe match the protected Drive readback and no partial download exists. The single authorized canary resumed with that source only; no replacement source or second canary was started.'
+      - 'The executor has now submitted exactly one private OpenAI transcription request for the same source. It remains in progress; no retry, second upload, Vimeo publication, Student publication, customer communication, persistent-staging mutation, or production mutation has occurred.'
     blocker: null
     remaining_work: Complete the in-progress bounded private provider processing, return provider gates off, and prove protected Student playback without exposing the provider URL or raw transcript.
     next_action: 'Continue the same PR #117 executor to terminal sanitized OpenAI/Vimeo and protected-playback readback; do not select another source or broaden publication.'
