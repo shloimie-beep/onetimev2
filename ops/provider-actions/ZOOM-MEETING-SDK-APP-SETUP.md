@@ -8,33 +8,44 @@ Assigned track: `zoom_real_control_operator_change_set`
 
 Acceptance: `ZOOM-SDK-001`, `ZOOM-S2S-001`
 
-This job configures and proves one bounded real Zoom Meeting SDK/S2S canary in persistent
-staging. It does not authorize production Zoom, the Rabbi's recurring meeting, customer
-participants, notifications, a second Zoom app, or a second status model. Protected values must
-move only through native provider copy controls and protected Railway variables. They must never
-appear in terminal output, Git, logs, screenshots, browser snapshots, tickets, or reports.
+This job has two mutually exclusive execution paths:
+
+1. the historical persistent-staging replacement path, which requires verified old-target
+   revocation; or
+2. the operator-authorized isolated PR #105 path, which creates one new disposable meeting while
+   leaving the Tisha target and every persistent-staging/production variable untouched.
+
+It does not authorize production Zoom, the Rabbi's recurring meeting, customer participants,
+notifications, a second Zoom app, or a second status model. Protected values must move only
+through native provider copy controls and protected Railway variables. They must never appear in
+terminal output, Git, logs, screenshots, browser snapshots, tickets, or reports.
 
 The preparation task that wrote this job did not rotate a target, read or write a protected
 value, change a Zoom/Railway setting, deploy, join a meeting, invoke Zoom, or change production.
 
 ## First external human action
 
-The first external action is a read-only classification of the exposed persistent-staging class
-target while every real/canary gate remains off. Do not start with deletion, rotation, the Zoom
-allowlist, or Railway runtime credential writes. Run the repository classifier described below.
-Only `SAFE_TO_REVOKE` permits the separately controlled revoke/replace step; `BLOCKED` means no
-delete, rotation, replacement, or provider mutation.
+For the historical replacement path, the first external action is a read-only classification of
+the exposed persistent-staging class target while every real/canary gate remains off. Do not
+start with deletion, rotation, the Zoom allowlist, or Railway runtime credential writes. Run the
+repository classifier described below. Only `SAFE_TO_REVOKE` permits the separately controlled
+revoke/replace step; `BLOCKED` means no delete, rotation, replacement, or provider mutation.
 
-If the operator cannot access that authoritative source, or the old-target denial is ambiguous,
-stop with `PROTECTED_CLASS_TARGET_ROTATION_BLOCKED`. Clear the staging target variable if its
-handling is in doubt; never restore or reuse the exposed value.
+The isolated PR #105 path must not bind, inspect, read, classify, copy, clear, rotate, or delete
+the persistent-staging class target or the Tisha event target. It starts from a fresh absent
+protected-state file and creates one new disposable meeting only after exact-source preflight.
+
+For the historical path only: if the operator cannot access that authoritative source, or the
+old-target denial is ambiguous, stop with `PROTECTED_CLASS_TARGET_ROTATION_BLOCKED`. Clear the
+staging target variable if its handling is in doubt; never restore or reuse the exposed value.
 
 ## Fixed scope
 
 - Repository/branch/PR: `shloimie-beep/onetimev2`,
   `codex/full-app-staging-live`, PR `#97`.
 - Runtime: `ONE_TIME_RUNTIME_ENVIRONMENT=isolated_staging`.
-- Web origin: `https://ot99-web-staging.up.railway.app`.
+- Web origin: the historical path uses `https://ot99-web-staging.up.railway.app`; the distinct
+  disposable path uses only `https://ot99-web-onetimev2-pr-105.up.railway.app`.
 - Provider app: the existing admin-managed General app, `One Time Zoom Stage Host`, with Meeting
   SDK enabled. Do not create another General app.
 - API app: the existing Server-to-Server OAuth app. Do not create another S2S app.
@@ -42,9 +53,9 @@ handling is in doubt; never restore or reuse the exposed value.
   meeting.
 - People: one authorized host and fictional Student 1 only. Student 2 is used only for an
   application-layer negative scope test and must not join Zoom.
-- Runtime secrets: install only on the staging web service unless code inspection at the pinned
-  execution head proves another staging service requires one. The worker keeps all Zoom real and
-  canary gates off and receives no unnecessary Zoom secret.
+- Runtime secrets: the distinct disposable path supplies them only to its isolated private job
+  and, after provisioning, only the minimum canary-specific values to the PR #105 preview.
+  Persistent staging, production, and the worker receive no change from that path.
 - Production, DNS, public landing, GHL, Telegram, Vimeo, email, WhatsApp, payment, and customer
   data are out of scope.
 
@@ -95,8 +106,10 @@ length/prefix/suffix, or take a DOM snapshot of any credential page.
 - `ZOOM_MEETING_SDK_ALLOWED_ORIGIN`
 - `PUBLIC_BASE_URL`
 
-The last two values must both be exactly `https://ot99-web-staging.up.railway.app`, with HTTPS,
-no path, no wildcard, no query/fragment, and no credentials.
+For the historical path the last two values must both be
+`https://ot99-web-staging.up.railway.app`. For the disposable path they must both be
+`https://ot99-web-onetimev2-pr-105.up.railway.app`. In either case require HTTPS, no path, no
+wildcard, no query/fragment, and no credentials.
 
 ### Six S2S/host/meeting prerequisites
 
@@ -108,24 +121,52 @@ no path, no wildcard, no query/fragment, and no credentials.
 - `ZOOM_REAL_CONTROL_MEETING_PASSCODE`
 
 The host must be a licensed user in the same governed Zoom account. The meeting and passcode must
-refer to one disposable staging meeting under that host. If meeting material does not yet exist
-but the S2S credentials and host source are valid, the execution task may run the existing
-`npm run zoom:real-control:provision` command once inside a protected environment. Its protected
-state must remain outside the repository, and its sanitized output must confirm no invitations,
-join URL, passcode, token, or private destination were printed. Do not substitute the Rabbi's
-regular meeting when registration or licensing is not ready.
+refer to one disposable staging meeting under that host. The historical replacement path uses
+`npm run zoom:real-control:provision`. The distinct isolated path uses
+`npm run zoom:real-control:disposable:provision` and must later use
+`npm run zoom:real-control:disposable:cleanup`. Protected state stays outside Git, and sanitized
+output must confirm no invitation, join URL, passcode, token, private destination, or provider
+identifier was printed. Never substitute the Rabbi's regular meeting or the Tisha event meeting.
 
-The one-off provisioner must stop before constructing a provider client unless all four
-non-secret preflight values are exact:
+The distinct disposable provisioner must stop before reading protected credentials or
+constructing a provider client unless every non-secret preflight value is exact:
 
 - `ONE_TIME_RUNTIME_ENVIRONMENT=isolated_staging`
+- `ZOOM_CLASSROOM_ENABLED=true`
+- `ZOOM_CLASSROOM_PROVIDER_MODE=sink`
+- `ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=false`
+- `ZOOM_CLASSROOM_CANARY_ENABLED=false`
 - `ZOOM_CLASSROOM_CANARY_LEARNER_KEY=full_app_preview_student_1`
 - `ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION=PROVISION_FICTIONAL_STUDENT_1_ONCE`
-- `ZOOM_PROTECTED_TARGET_ROTATION_ATTESTATION=OLD_TARGET_REVOKED_REPLACEMENT_VALID`
+- `ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA=<the exact full reviewed execution head>`
+- `RAILWAY_GIT_COMMIT_SHA=<the same exact full reviewed execution head>`
+- `PUBLIC_BASE_URL=https://ot99-web-onetimev2-pr-105.up.railway.app`
+- `ZOOM_MEETING_SDK_ALLOWED_ORIGIN=https://ot99-web-onetimev2-pr-105.up.railway.app`
+- `ZOOM_DISTINCT_DISPOSABLE_ISOLATED_CANARY_ATTESTATION=CREATE_ONE_DISTINCT_PR105_MEETING_TISHA_UNTOUCHED_DELETE_AFTER_PROOF`
+- `ZOOM_DISPOSABLE_CANARY_OPERATION_ID=<one fresh UUID for this job>`
+- `ZOOM_DISPOSABLE_CANARY_CLEANUP_DEADLINE=<10 minutes to 6 hours in the future>`
+- `ONE_TIME_ZOOM_KEYHOLDER_DIR=<absolute One Time-owned protected directory outside Git>`
+- `ZOOM_DISPOSABLE_CANARY_STATE_PATH=<absolute new JSONL path inside that directory>`
 
-Clear the two one-off authorization/attestation values after provisioning. The script accepts
-only a new schema-v2 Student-1 state outside Git and rejects legacy or multi-Student state before
-any provider request.
+`BNA_KEYHOLDER_DIR`, `ZOOM_PROTECTED_TARGET_ROTATION_ATTESTATION`,
+`ONE_TIME_PROTECTED_CLASS_TARGET_URL`, `ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL`,
+`ZOOM_REAL_CONTROL_MEETING_ID`, and `ZOOM_REAL_CONTROL_MEETING_PASSCODE` must all be absent from
+the disposable job. Absence is the proof that this job cannot inspect or act on the Tisha or
+persistent-staging target. Do not copy BNA secrets. Transfer only the required S2S, host,
+fictional-alias, and state-signing inputs through One Time-owned protected controls.
+
+The new path writes a signed schema-v3 `create_intent` before the first provider POST, uses an
+exclusive lock, records each transition durably, binds the state to the operation UUID, exact
+execution head, exact origin, host, topic, and fictional Student 1, and rejects v1/v2, tampered,
+wrong-purpose, wrong-source, cross-student, raw-email, token, or URL state. A completed `ready`
+state may be read back without creating again. An ambiguous `create_intent`,
+`registration_in_flight`, or `cleanup_required` state stops for exact reconciliation; it never
+repeats an ambiguous POST.
+
+The historical replacement command continues to require
+`ZOOM_PROTECTED_TARGET_ROTATION_ATTESTATION=OLD_TARGET_REVOKED_REPLACEMENT_VALID`. That attestation
+cannot authorize the disposable command, and the disposable attestation cannot authorize the
+historical command.
 
 ### Protected class target
 
@@ -197,7 +238,46 @@ Any missing or ambiguous protected source stops before a real gate is enabled. T
 returns only the fixed blocker and sanitized phase booleans/counts; it does not echo a variable
 value or provider error.
 
-## Execution sequence
+## Isolated PR #105 disposable-canary sequence
+
+Use this sequence only under decision `zoom-distinct-disposable-isolated-canary-20260724`.
+
+1. Pin the exact PR #105 successor head that contains this attestation repair. Redeploy the
+   isolated preview and require `/version` commit fields to equal it; the observed stale
+   `944f46b...` runtime is not acceptable evidence.
+2. Require the existing General app, Meeting SDK enablement, and existing exact PR #105 preview
+   origin. Add no persistent-staging or production origin and create no second app.
+3. Keep every persistent-staging and production Zoom variable unchanged. Create one isolated
+   private-network job with only the exact disposable preflight names above. Its source must be
+   the reviewed successor head, not the stale `944f46b...` preview source.
+4. Require a fresh absent protected-state path, then run
+   `npm run zoom:real-control:disposable:provision` once. Sanitized output must report
+   `mode=distinct_disposable_pr105_canary`, `phase=ready`, exact source verified, fictional
+   Student 1 only, both protected targets unbound, zero invitations, and no printed protected
+   value. Do not reuse a v2 state or manually provide a meeting identifier.
+5. Install canary-specific values only in the isolated PR #105 preview, keep real/canary gates off
+   through readiness preflight, and run the bounded host plus fictional Student 1 control and
+   negative proof below on that isolated preview.
+6. Stop for human verification, rate limiting, source drift, missing protected input, or any
+   unexpected participant. Never bypass a challenge or substitute the Tisha/recurring meeting.
+7. Immediately return the isolated preview to sink/real-provider-false/canary-false. Clear the
+   one-shot provision authorization, set only
+   `ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION=DELETE_ONE_CREATED_PR105_DISPOSABLE_MEETING_ONCE`,
+   and run `npm run zoom:real-control:disposable:cleanup`. The cleanup command can obtain its
+   target only from the valid signed v3 state. It performs an exact GET scope proof before one
+   documented meeting DELETE, requires the meeting's notification settings to read back false,
+   verifies absence, and appends a secret-free `deleted` tombstone. A timeout, 429, 5xx, scope
+   mismatch, or still-present readback remains fail-closed and is never blindly retried.
+8. Capture only the sanitized deleted result. Then destroy the exact isolated job and its private
+   state volume or remove that exact state and the canary-specific isolated variables through
+   protected controls without rendering them. Read back that the disposable meeting is absent,
+   the Tisha and recurring meetings were untouched, customer invitations/notifications are zero,
+   persistent staging and production are unchanged, and no provider request occurs after disable.
+
+The historical persistent-staging sequence below is not authorized by the isolated decision and
+must not be mixed into it.
+
+## Historical persistent-staging replacement sequence
 
 ### 1. Establish the safe baseline
 

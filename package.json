@@ -39,6 +39,8 @@
     "full-app:provision-staging": "tsx scripts/full-app-staging-live/provision-preview-cli.ts",
     "zoom:demo-students": "node --import tsx scripts/smoke-zoom-demo-students.mjs",
     "zoom:real-control:provision": "tsx scripts/zoom-real-control-provision.ts",
+    "zoom:real-control:disposable:provision": "tsx scripts/zoom-disposable-canary-provision.ts",
+    "zoom:real-control:disposable:cleanup": "tsx scripts/zoom-disposable-canary-cleanup.ts",
     "zoom:protected-target:inspect": "tsx scripts/zoom-protected-target-inspection.ts",
     "stripe:test:resources:validate": "tsx scripts/ot87-stripe-test-resources.ts validate",
     "stripe:test:resources:setup": "tsx scripts/ot87-stripe-test-resources.ts setup",
