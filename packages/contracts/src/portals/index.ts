@@ -121,8 +121,8 @@ export type LearnerProfile = z.infer<typeof learnerProfileSchema>;
 export const householdOverviewSchema = z.object({
   household_key: opaqueIdSchema,
   display_name: z.string().trim().min(1).max(180),
-  active_learner_count: z.number().int().min(0).max(3),
-  max_active_learners: z.literal(3),
+  active_learner_count: z.number().int().min(0),
+  max_active_learners: z.number().int().positive().nullable(),
   consent_status: consentStatusSchema,
   learner_limit_reached: z.boolean(),
   version: optimisticVersionSchema,
@@ -354,6 +354,7 @@ export const billingSummarySchema = z.object({
   entitlement_status: z
     .enum([
       'pending',
+      'paused',
       'billing_eligible',
       'active',
       'grace',
@@ -395,7 +396,7 @@ export type StudentQuestion = z.infer<typeof studentQuestionSchema>;
 
 export const parentPortalDashboardSchema = z.object({
   household: householdOverviewSchema,
-  learners: z.array(learnerProfileSchema).max(12),
+  learners: z.array(learnerProfileSchema),
   student_access: z.array(studentAccessStateSchema),
   upcoming_classes: z.record(z.string(), z.array(upcomingClassSummarySchema)),
   rewards: z.record(z.string(), rewardBalanceSchema),

@@ -127,6 +127,7 @@ type StudentPortalService = {
 export type ParentPortalRouterDeps = {
   resolveActor: PortalActorResolver;
   verifyCsrf: PortalCsrfVerifier;
+  verifyRecentAssurance?: PortalCsrfVerifier;
   service: ParentPortalService;
 };
 
@@ -243,6 +244,18 @@ export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
       const householdKey = parseParam(req.params.householdKey);
       const learnerKey = parseParam(req.params.learnerKey);
       const operation = studentAccessOperationSchema.parse(req.params.operation);
+      if (
+        operation === 'reset' &&
+        (!deps.verifyRecentAssurance || !(await deps.verifyRecentAssurance(req, actor)))
+      ) {
+        sendError(
+          res.status(428),
+          'FORBIDDEN',
+          'Please sign in again before resetting a Student credential.',
+          req.traceId,
+        );
+        return;
+      }
       const payload = studentAccessOperationPayloadSchema.parse(req.body);
       sendData(
         res,

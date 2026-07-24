@@ -266,6 +266,7 @@ import { createHighLevelActionsRouter } from './features/highlevel/actions-route
 import { registerSupportRoutes } from './features/support/router.ts';
 import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
+import { createContactOperationsRouter } from './features/contact-operations/router.ts';
 import { operatorLaunchStatusProjection } from './generated/operator-launch-status.js';
 
 type AppDeps = {
@@ -1609,6 +1610,47 @@ export function createApp({
       sessionKey: actor.session_key,
       csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
     });
+  const verifyPortalRecentAssurance = async (_req: Request, actor: PortalActorContext) => {
+    const result = await pool.query(
+      `SELECT assurance_at
+         FROM onetime.user_sessions
+        WHERE account_key = $1
+          AND product_key = $2
+          AND session_key = $3
+          AND revoked_at IS NULL
+          AND expires_at > now()
+        LIMIT 1`,
+      [config.accountKey, config.productKey, actor.session_key],
+    );
+    const assuranceAt = result.rows[0]?.assurance_at;
+    return Boolean(
+      assuranceAt && Date.now() - new Date(String(assuranceAt)).getTime() <= 10 * 60 * 1000,
+    );
+  };
+  app.use(
+    '/api/v1/contact-operations',
+    createContactOperationsRouter({
+      pool,
+      config,
+      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      verifyCsrf: async (req, session) => {
+        if (!isSameOriginPost(req, config)) return false;
+        return verifySessionCsrf({
+          pool,
+          sessionKey: session.session_key,
+          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+        });
+      },
+      verifyRecentAssurance: async (session) => {
+        if (session.user.role === 'owner' || session.user.role === 'admin') {
+          return verifyRecentEmailAssurance({ pool, sessionKey: session.session_key });
+        }
+        if (!session.assurance_at) return false;
+        return Date.now() - new Date(session.assurance_at).getTime() <= 10 * 60 * 1000;
+      },
+      ...(clock ? { now: clock } : {}),
+    }),
+  );
 
   app.get('/classroom/launch/:grantKey/:secret', async (req: RequestWithTrace, res) => {
     const session = await sessionFromRequest(req, pool, config);
@@ -2153,6 +2195,7 @@ export function createApp({
     createParentPortalRouter({
       resolveActor: resolvePortalActor,
       verifyCsrf: verifyPortalCsrf,
+      verifyRecentAssurance: verifyPortalRecentAssurance,
       service: createParentPortalService(portalServiceDeps),
     }),
   );
@@ -3967,7 +4010,7 @@ function createParentAccessSummaryAdapter(
       });
       const state = access?.state ?? 'pending';
       const sourceLabel =
-        access?.source_kind === 'free_pilot'
+        access?.source_kind === 'free_pilot' || access?.source_kind === 'complimentary'
           ? 'Complimentary pilot access'
           : 'Current learning access';
       return {
@@ -3977,6 +4020,7 @@ function createParentAccessSummaryAdapter(
           'GHL manages billing. One Time stores only the household’s current learning-access state.',
         entitlement_status: state as
           | 'pending'
+          | 'paused'
           | 'active'
           | 'grace'
           | 'suspended'
@@ -4014,6 +4058,7 @@ async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey:
         AND relationships.product_key = $2
         AND relationships.guardian_user_ref = $3
         AND relationships.status = 'active'
+        AND relationships.authority <> 'support_only'
         AND households.status = 'active'
       ORDER BY CASE relationships.authority
           WHEN 'primary_guardian' THEN 0

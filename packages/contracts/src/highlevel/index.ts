@@ -5,6 +5,7 @@ export const HIGHLEVEL_CONTRACT_VERSION = '1.0.0' as const;
 
 export const highLevelEventNameSchema = z.enum([
   'adult.signup.submitted',
+  'parent.household.sync_requested',
   'parent.portal.invitation_requested',
   'parent.portal.activated',
   'class.reminder.requested',

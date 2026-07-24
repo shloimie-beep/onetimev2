@@ -243,6 +243,62 @@ describe('One Time to HighLevel transactional journey', () => {
     expect(await highLevelEventCount()).toBe(baseline);
   });
 
+  it('treats an adult identity projection as provider sync, not a customer send', async () => {
+    const lead = await captureLead({ pool, config, payload: leadPayload(), now });
+    await pool.query(
+      `UPDATE onetime.contacts SET suppression_state = 'suppressed' WHERE contact_key = $1`,
+      [lead.contact_key],
+    );
+    await pool.query(
+      `INSERT INTO onetime.highlevel_contact_preferences
+         (account_key, product_key, contact_key, email_dnd, all_dnd)
+       VALUES ($1,$2,$3,true,true)`,
+      [config.accountKey, config.productKey, lead.contact_key],
+    );
+    const identity = await inTransaction(pool, (client) =>
+      enqueueHighLevelEvent(client, config, {
+        eventName: 'parent.household.sync_requested',
+        contactKey: lead.contact_key,
+        idempotencyKey: 'suppressed-parent-identity-0001',
+        actor: { kind: 'admin', reference: 'test' },
+        occurredAt: now,
+        protectedPath: '/app/parent',
+        data: { household_key: 'household_identity_projection' },
+      }),
+    );
+    expect(identity).toMatchObject({ state: 'queued' });
+    if (identity.state === 'blocked') throw new Error('Expected an adult identity projection.');
+    const recordedIdentity = await pool.query(
+      `SELECT payload
+         FROM onetime.outbox_events
+        WHERE delivery_key = $1`,
+      [identity.deliveryKey],
+    );
+    expect(recordedIdentity.rows[0]?.payload).toMatchObject({
+      adult_contact: { contact_key: lead.contact_key, adult_only: true },
+      consent: {
+        suppression_state: 'suppressed',
+        email_dnd: true,
+      },
+    });
+
+    const adapter = new DeterministicFakeHighLevelAdapter();
+    const dispatchConfig = await canaryConfigForKeys(
+      'identity-projection-canary-0001',
+      [identity.deliveryKey],
+      'mock',
+    );
+    await expect(
+      runHighLevelProjectionBatch({ pool, config: dispatchConfig, adapter, now }),
+    ).resolves.toMatchObject({ enabled: true, claimed: 1, delivered: 1 });
+    expect(adapter.calls).toEqual([
+      expect.objectContaining({
+        eventName: 'parent.household.sync_requested',
+        tagsToAdd: ['OT | Parent'],
+      }),
+    ]);
+  });
+
   it('allows only one of two concurrent dispatchers to claim the same intent', async () => {
     await captureLead({ pool, config, payload: leadPayload(), now });
     const adapter = new DeterministicFakeHighLevelAdapter();
@@ -780,6 +836,21 @@ async function canaryConfigForAll(runId: string): Promise<AppConfig> {
   if (deliveryKeys.length < 1) throw new Error('Expected HighLevel canary delivery rows.');
   return {
     ...config,
+    highLevelCanaryRunId: runId,
+    highLevelCanaryDeliveryKeys: deliveryKeys,
+    highLevelCanaryBudget: deliveryKeys.length,
+  };
+}
+
+async function canaryConfigForKeys(
+  runId: string,
+  deliveryKeys: string[],
+  mode: 'mock' | 'provider',
+): Promise<AppConfig> {
+  if (deliveryKeys.length < 1) throw new Error('Expected HighLevel canary delivery rows.');
+  return {
+    ...config,
+    highLevelEventSyncMode: mode,
     highLevelCanaryRunId: runId,
     highLevelCanaryDeliveryKeys: deliveryKeys,
     highLevelCanaryBudget: deliveryKeys.length,

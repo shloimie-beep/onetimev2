@@ -8,6 +8,7 @@ import {
   createSession,
   getSessionByToken,
 } from '../../../packages/domain/src/auth/service.ts';
+import { hasActiveSupportEntitlement } from '../../../packages/domain/src/support/service.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -54,10 +55,18 @@ afterEach(async () => {
 });
 
 describe('Parent and Student current-access authentication', () => {
-  it('denies Parent login without current household access and invalidates an active session on revocation', async () => {
+  it('keeps Parent authentication independent while learning access is paused', async () => {
+    await expect(
+      hasActiveSupportEntitlement({
+        target: pool,
+        config,
+        userKey: parentUserKey,
+        role: 'parent',
+      }),
+    ).resolves.toBe(true);
     await expectLogin('parent@example.test', parentPassword, {
-      ok: false,
-      code: 'DISABLED',
+      ok: true,
+      user: { role: 'parent' },
     });
 
     await grantCurrentAccess();
@@ -97,18 +106,26 @@ describe('Parent and Student current-access authentication', () => {
         config,
         sessionToken: session.session_token,
       }),
-    ).toBeNull();
+    ).not.toBeNull();
     const revoked = await pool.query(
       `SELECT revoked_at
          FROM onetime.user_sessions
         WHERE session_key = $1`,
       [session.session_key],
     );
-    expect(revoked.rows[0]?.revoked_at).toBeTruthy();
+    expect(revoked.rows[0]?.revoked_at).toBeFalsy();
     await expectLogin('parent@example.test', parentPassword, {
-      ok: false,
-      code: 'DISABLED',
+      ok: true,
+      user: { role: 'parent' },
     });
+    await expect(
+      hasActiveSupportEntitlement({
+        target: pool,
+        config,
+        userKey: parentUserKey,
+        role: 'parent',
+      }),
+    ).resolves.toBe(true);
   });
 
   it('requires one coherent active Student identity and current household access for email and username login', async () => {

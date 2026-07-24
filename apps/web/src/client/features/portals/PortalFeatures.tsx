@@ -229,7 +229,7 @@ export function ParentPortalFeature({
           {
             section: 'learners',
             label: 'Active learners',
-            value: `${dashboard.household.active_learner_count}/3 active learners`,
+            value: `${dashboard.household.active_learner_count} active learners`,
             detail: dashboard.household.display_name,
           },
           {
@@ -282,11 +282,6 @@ export function ParentPortalFeature({
                   <p>Consent: {label(dashboard.household.consent_status)}</p>
                 </div>
               </div>
-              {dashboard.household.learner_limit_reached && (
-                <p className="ot-warning" role="status">
-                  V1 supports three active learners. Archive one before adding another.
-                </p>
-              )}
               <p className="ot-muted">
                 Choose a learner above to manage that child’s separate profile and Student access.
               </p>

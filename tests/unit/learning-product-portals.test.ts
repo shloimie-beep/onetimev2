@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { AppConfig } from '../../packages/config/src/index.ts';
+import { loadConfig } from '../../packages/config/src/index.ts';
 import type {
   PortalActorContext,
   ProtectedActionDescriptor,
@@ -11,16 +11,24 @@ import { createGamificationRepository } from '../../packages/db/src/gamification
 import { createPortalRepository } from '../../packages/db/src/portals/repository.ts';
 import { createGamificationService } from '../../packages/domain/src/gamification/service.ts';
 import { createAccountLifecycleCredentialAdapter } from '../../packages/domain/src/portals/account-lifecycle-adapter.ts';
+import { createAccountUser } from '../../packages/domain/src/auth/service.ts';
 import {
   createParentPortalService,
   type PortalServiceDeps,
 } from '../../packages/domain/src/portals/services.ts';
 
 let pool: DbPool;
+let parentUserKey: string;
 
 const accountKey = 'rabbi_sheller_provider';
 const productKey = 'one_time_mishnah_class';
 const householdKey = 'household_learning_product';
+const lifecycleConfig = loadConfig({
+  NODE_ENV: 'test',
+  PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+  ONE_TIME_ACCOUNT_KEY: accountKey,
+  ONE_TIME_PRODUCT_KEY: productKey,
+});
 
 beforeEach(async () => {
   pool = createMemoryPool();
@@ -28,7 +36,7 @@ beforeEach(async () => {
 });
 
 describe('Window B learning product portals', () => {
-  it('sets up and resets parent-managed student credentials without student email', async () => {
+  it('sets up credentials and queues a secure Student reset to the adult Parent', async () => {
     await seedHousehold();
     const service = createParentPortalService(portalDeps());
     const learner = await service.createLearner(parentActor(), householdKey, {
@@ -76,14 +84,29 @@ describe('Window B learning product portals', () => {
       'reset',
       {
         idempotency_key: 'student-credential-reset',
-        password: 'Mishnah12345',
       },
     );
 
-    expect(reset.status).toBe('active');
+    expect(reset.status).toBe('reset_requested');
     expect(reset.username_display).toBe('chaim_7');
-    expect(reset.password_version).toBe(2);
-    expect(reset.last_reset_at).toMatch(/^20/);
+    expect(reset.credential_status).toBe('reset_required');
+    expect(reset.password_version).toBe(1);
+    expect(reset.last_reset_at).toBeNull();
+
+    const resetToken = await pool.query(
+      `SELECT email_normalized, token_hash, metadata
+         FROM onetime.account_lifecycle_tokens
+        WHERE account_key = $1
+          AND product_key = $2
+          AND token_type = 'student_reset'
+          AND learner_key = $3`,
+      [accountKey, productKey, learner.learner_key],
+    );
+    expect(resetToken.rows[0]).toMatchObject({
+      email_normalized: 'learning.parent@example.test',
+    });
+    expect(String(resetToken.rows[0]?.token_hash)).toMatch(/^[a-f0-9]{64}$/);
+    expect(JSON.stringify(resetToken.rows[0])).not.toContain('Mishnah12345');
 
     const audit = await pool.query(
       `SELECT operation_type, username_digest, password_hash_ref_digest
@@ -199,7 +222,7 @@ function portalDeps(): PortalServiceDeps {
     },
     credentialLifecycle: createAccountLifecycleCredentialAdapter({
       pool,
-      config: { accountKey, productKey } as AppConfig,
+      config: lifecycleConfig,
     }),
   };
 }
@@ -220,7 +243,7 @@ function parentActor(): PortalActorContext {
   return {
     account_key: accountKey,
     product_key: productKey,
-    actor_user_ref: 'parent_learning_product',
+    actor_user_ref: parentUserKey,
     actor_role: 'parent',
     session_key: 'session_parent_learning_product',
     capabilities: [
@@ -273,11 +296,46 @@ function studentActor(learnerKey: string): PortalActorContext {
 }
 
 async function seedHousehold() {
+  parentUserKey = await createAccountUser({
+    pool,
+    config: lifecycleConfig,
+    email: 'learning.parent@example.test',
+    password: 'LearningParent!234',
+    displayName: 'Learning Parent',
+    role: 'parent',
+  });
   await pool.query(
     `INSERT INTO onetime.portal_households
      (household_key, account_key, product_key, display_name)
      VALUES ($1,$2,$3,'Learning Product Family')`,
     [householdKey, accountKey, productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.contacts
+     (contact_key, account_key, product_key, display_name, family_school_classification,
+      family_or_school, location_text, timezone, email_normalized, reminder_preference, source)
+     VALUES
+     ('contact_learning_parent',$1,$2,'Learning Parent','family',
+      'Learning Product Family','Jerusalem','Asia/Jerusalem',
+      'learning.parent@example.test','none','test')`,
+    [accountKey, productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_guardian_relationships
+     (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+      relationship_label, authority)
+     VALUES
+     ('relationship_learning_product',$1,$2,$3,$4,'Parent','primary_guardian')`,
+    [accountKey, productKey, householdKey, parentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.adult_household_contact_links
+     (link_key, account_key, product_key, contact_key, household_key,
+      highlevel_location_id, sync_state)
+     VALUES
+     ('adult_link_learning_product',$1,$2,'contact_learning_parent',$3,
+      'location_learning_product','sync_pending')`,
+    [accountKey, productKey, householdKey],
   );
 }
 

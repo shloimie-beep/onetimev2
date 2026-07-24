@@ -72,6 +72,15 @@ const parentUserKey = await createAccountUser({
   role: 'parent',
   mfaCapable: false,
 });
+const pausedParentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: process.env.OT_TEST_PAUSED_PARENT_EMAIL ?? 'ot-paused-parent@example.test',
+  password: process.env.OT_TEST_PAUSED_PARENT_PASSWORD ?? 'PausedParentPassword!234',
+  displayName: 'Test Paused Parent',
+  role: 'parent',
+  mfaCapable: false,
+});
 const studentUserKey = await createAccountUser({
   pool,
   config,
@@ -143,16 +152,51 @@ async function seedDayOneBrowserRecords() {
        (household_key, account_key, product_key, display_name)
       VALUES
         ('e2e_household_alpha', $1, $2, 'E2E Alpha Family'),
-        ('e2e_household_zoom', $1, $2, 'E2E Zoom Family')`,
+        ('e2e_household_zoom', $1, $2, 'E2E Zoom Family'),
+        ('e2e_household_paused', $1, $2, 'E2E Paused Family')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
     `INSERT INTO onetime.portal_guardian_relationships
        (relationship_key, account_key, product_key, household_key, guardian_user_ref,
         relationship_label, authority)
-     VALUES ('e2e_relationship_alpha', $1, $2, 'e2e_household_alpha', $3, 'Parent',
+     VALUES
+       ('e2e_relationship_alpha', $1, $2, 'e2e_household_alpha', $3, 'Parent',
+        'primary_guardian'),
+       ('e2e_relationship_paused', $1, $2, 'e2e_household_paused', $4, 'Parent',
         'primary_guardian')`,
-    [config.accountKey, config.productKey, parentUserKey],
+    [config.accountKey, config.productKey, parentUserKey, pausedParentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone,
+        email_normalized, reminder_preference, suppression_state, source)
+     VALUES
+       ('e2e_contact_parent','e2e-public-parent',$1,$2,'Test Parent',
+        'family','E2E Alpha Family','Jerusalem','Asia/Jerusalem',
+        'ot-parent@example.test','none','active','e2e_fixture'),
+       ('e2e_contact_paused_parent','e2e-public-paused-parent',$1,$2,'Test Paused Parent',
+        'family','E2E Paused Family','Jerusalem','Asia/Jerusalem',
+        'ot-paused-parent@example.test','none','active','e2e_fixture')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.adult_household_contact_links
+       (link_key, account_key, product_key, contact_key, household_key,
+        guardian_user_ref, highlevel_location_id, sync_state)
+     VALUES
+       ('e2e_adult_link_parent',$1,$2,'e2e_contact_parent','e2e_household_alpha',
+        $5,$4,'sync_pending'),
+       ('e2e_adult_link_paused',$1,$2,'e2e_contact_paused_parent','e2e_household_paused',
+        $3,$4,'sync_pending')`,
+    [
+      config.accountKey,
+      config.productKey,
+      pausedParentUserKey,
+      config.highLevelLocationId,
+      parentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.portal_learners

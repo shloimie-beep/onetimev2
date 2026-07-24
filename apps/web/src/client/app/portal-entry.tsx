@@ -24,6 +24,7 @@ import {
   PortalApiError,
   createParentRewardGoal,
   createParentLearner,
+  getParentAccessShell,
   getParentDashboard,
   getParentMaterials,
   getLiveClassQuestions,
@@ -32,6 +33,7 @@ import {
   invokeProtectedAction,
   markLiveClassQuestionReady,
   runStudentAccessOperation,
+  requestParentRecovery,
   setParentLearnerArchived,
   submitClassroomQuestion,
   queryStudentHelper,
@@ -77,7 +79,10 @@ type PortalDialog =
     }
   | {
       type: 'student-access-confirm';
-      action: Extract<StudentAccessOperationType, 'suspend' | 'restore' | 'revoke_sessions'>;
+      action: Extract<
+        StudentAccessOperationType,
+        'reset' | 'suspend' | 'restore' | 'revoke_sessions'
+      >;
       learner: LearnerProfile;
     };
 
@@ -90,6 +95,9 @@ function PortalApp() {
   const [sessionExpired, setSessionExpired] = useState(false);
   const [viewState, setViewState] = useState<PortalViewState>('loading');
   const [parentDashboard, setParentDashboard] = useState<ParentPortalDashboard | null>(null);
+  const [parentAccessShell, setParentAccessShell] = useState<Awaited<
+    ReturnType<typeof getParentAccessShell>
+  > | null>(null);
   const [studentDashboard, setStudentDashboard] = useState<StudentPortalDashboard | null>(null);
   const [liveClassQuestions, setLiveClassQuestions] = useState<LiveClassQuestion[]>([]);
   const [selectedLearnerKey, setSelectedLearnerKey] = useState<string | null>(null);
@@ -136,13 +144,20 @@ function PortalApp() {
         return;
       }
       if (portalRole === 'parent') {
-        const dashboard = await getParentDashboard();
-        setParentDashboard(dashboard);
-        setSelectedLearnerKey((current) =>
-          current && dashboard.learners.some((learner) => learner.learner_key === current)
-            ? current
-            : (dashboard.learners[0]?.learner_key ?? null),
-        );
+        const shell = await getParentAccessShell();
+        setParentAccessShell(shell);
+        if (shell.mode === 'active') {
+          const dashboard = await getParentDashboard();
+          setParentDashboard(dashboard);
+          setSelectedLearnerKey((current) =>
+            current && dashboard.learners.some((learner) => learner.learner_key === current)
+              ? current
+              : (dashboard.learners[0]?.learner_key ?? null),
+          );
+        } else {
+          setParentDashboard(null);
+          setSelectedLearnerKey(null);
+        }
       } else {
         const dashboard = await getStudentDashboard();
         setStudentDashboard(dashboard);
@@ -220,7 +235,7 @@ function PortalApp() {
     const learner = findParentLearner(learnerKey);
     if (!learner) return;
     setDialogError('');
-    if (action === 'setup' || action === 'reset') {
+    if (action === 'setup') {
       setDialog({ type: 'student-access-form', action, learner });
       return;
     }
@@ -500,6 +515,13 @@ function PortalApp() {
   }
 
   const navItems = useMemo<ShellNavItem[]>(() => {
+    if (portalRole === 'parent' && parentAccessShell?.mode === 'paused') {
+      return [
+        { id: 'parent-identity', label: 'Identity', href: '#identity', current: true },
+        { id: 'parent-recovery', label: 'Recovery', href: '#recovery', current: false },
+        { id: 'parent-support', label: 'Support', href: '/app/support', current: false },
+      ];
+    }
     const sections = portalRole === 'parent' ? PARENT_PORTAL_SECTIONS : STUDENT_PORTAL_SECTIONS;
     const route = portalRole === 'parent' ? '/app/parent' : '/app/student';
     return sections.map((section) => ({
@@ -508,7 +530,7 @@ function PortalApp() {
       href: `${route}?section=${section.id}`,
       current: activeSection === section.id,
     }));
-  }, [activeSection, portalRole]);
+  }, [activeSection, parentAccessShell?.mode, portalRole]);
   const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
   const description =
     portalRole === 'parent'
@@ -543,29 +565,54 @@ function PortalApp() {
       onSignIn={signIn}
     >
       {portalRole === 'parent' ? (
-        <ParentPortalFeature
-          viewState={viewState}
-          dashboard={parentDashboard}
-          selectedLearnerKey={selectedLearner?.learner_key ?? null}
-          activeSection={activeSection as ParentPortalSection}
-          learnerMaterials={parentMaterials}
-          actorFingerprint={actorFingerprint}
-          onSelectSection={(section) => {
-            history.pushState({}, '', `/app/parent?section=${section}`);
-            setActiveSection(section);
-          }}
-          onSelectLearner={setSelectedLearnerKey}
-          onCreateLearner={openCreateLearnerDialog}
-          onEditLearner={openEditLearnerDialog}
-          onArchiveLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'archive')}
-          onRestoreLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'restore')}
-          onStudentAccessAction={openStudentAccessDialog}
-          onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
-          onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
-          onPreviewSupport={() => window.location.assign('/app/support')}
-          onCreateRewardGoal={(learnerKey, goal) => void handleCreateRewardGoal(learnerKey, goal)}
-          onRetry={() => void load()}
-        />
+        parentAccessShell?.mode === 'paused' ? (
+          <ParentPausedShell
+            displayName={parentAccessShell.display_name}
+            onRecovery={async () => {
+              if (!session) return;
+              try {
+                await requestParentRecovery({
+                  csrfToken: session.csrf_token,
+                  householdKey: parentAccessShell.primary_household_key,
+                });
+                setNotice({
+                  kind: 'success',
+                  message: 'If this Parent account is eligible, a secure reset link was queued.',
+                });
+              } catch (error) {
+                if (handleAuthError(error)) return;
+                setNotice({
+                  kind: 'error',
+                  message: errorMessage(error, 'Recovery could not be requested.'),
+                });
+              }
+            }}
+          />
+        ) : (
+          <ParentPortalFeature
+            viewState={viewState}
+            dashboard={parentDashboard}
+            selectedLearnerKey={selectedLearner?.learner_key ?? null}
+            activeSection={activeSection as ParentPortalSection}
+            learnerMaterials={parentMaterials}
+            actorFingerprint={actorFingerprint}
+            onSelectSection={(section) => {
+              history.pushState({}, '', `/app/parent?section=${section}`);
+              setActiveSection(section);
+            }}
+            onSelectLearner={setSelectedLearnerKey}
+            onCreateLearner={openCreateLearnerDialog}
+            onEditLearner={openEditLearnerDialog}
+            onArchiveLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'archive')}
+            onRestoreLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'restore')}
+            onStudentAccessAction={openStudentAccessDialog}
+            onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
+            onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
+            onPreviewSupport={() => window.location.assign('/app/support')}
+            onCreateRewardGoal={(learnerKey, goal) => void handleCreateRewardGoal(learnerKey, goal)}
+            onRetry={() => void load()}
+          />
+        )
       ) : (
         <StudentPortalFeature
           viewState={viewState}
@@ -606,6 +653,45 @@ function PortalApp() {
         onSubmitStudentAccessConfirm={() => void submitStudentAccessConfirm()}
       />
     </AppShell>
+  );
+}
+
+function ParentPausedShell({
+  displayName,
+  onRecovery,
+}: {
+  displayName: string;
+  onRecovery: () => void | Promise<void>;
+}) {
+  return (
+    <section className="ot-portal-feature" aria-labelledby="paused-parent-title">
+      <div className="ot-panel" id="identity">
+        <p className="ot-eyebrow">Parent account</p>
+        <h2 id="paused-parent-title">Learning access is paused</h2>
+        <p>
+          {displayName}, your Parent identity remains available. Student and learning routes stay
+          closed until current paid or complimentary access is restored.
+        </p>
+      </div>
+      <div className="ot-panel" id="recovery">
+        <h3>Secure recovery</h3>
+        <p>Request a protected reset link. Your password is never shown to an Administrator.</p>
+        <button
+          className="ot-button ot-button--primary"
+          type="button"
+          onClick={() => void onRecovery()}
+        >
+          Send reset link
+        </button>
+      </div>
+      <div className="ot-panel">
+        <h3>Support</h3>
+        <p>Support remains available while learning access is paused.</p>
+        <a className="ot-button ot-button--secondary" href="/app/support">
+          Open Support
+        </a>
+      </div>
+    </section>
   );
 }
 

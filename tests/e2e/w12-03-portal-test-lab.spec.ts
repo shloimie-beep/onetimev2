@@ -60,7 +60,7 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   await expect(
     parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
-  await expect(parentPage.getByText('3/3 active learners')).toBeVisible();
+  await expect(parentPage.getByText('3 active learners')).toBeVisible();
   await parentPage.getByRole('link', { name: 'Access' }).click();
   await expect(parentPage.getByRole('heading', { name: 'Learning access' })).toBeVisible();
   await expect(
@@ -71,9 +71,8 @@ test('W12-03 parent and three separate learners complete portal journeys', async
 
   await parentPage.getByRole('button', { name: 'Reset' }).click();
   let dialog = parentPage.getByRole('dialog', { name: 'Reset student access' });
-  await dialog.getByLabel('Student password').fill('W12Learner123');
   await dialog.getByRole('button', { name: 'Reset' }).click();
-  await expect(parentPage.getByText('Status: Active')).toBeVisible();
+  await expect(parentPage.getByText('Status: Reset requested')).toBeVisible();
 
   await parentPage.getByRole('button', { name: 'Suspend' }).click();
   dialog = parentPage.getByRole('dialog', { name: 'Suspend student access' });
@@ -106,11 +105,7 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     const studentContext = await browser.newContext();
     const studentPage = await studentContext.newPage();
     const requests = collectRequests(studentPage);
-    const studentPassword =
-      learner.learnerKey === W12_PORTAL_TEST_LAB.learners[0].learnerKey
-        ? 'W12Learner123'
-        : undefined;
-    await loginAs(studentPage, learner.email, '/app/student', { password: studentPassword });
+    await loginAs(studentPage, learner.email, '/app/student');
     await expect(
       studentPage.locator('#app-main').getByRole('heading', { name: 'Student Portal' }),
     ).toBeVisible();
@@ -221,7 +216,7 @@ async function captureResponsiveA11y(page: Page, name: string, route: string) {
     evidence.push({
       name,
       viewport: size.label,
-      screenshot: screenshotPath,
+      screenshot: path.relative(process.cwd(), screenshotPath).replaceAll('\\', '/'),
       critical_or_serious_a11y: serious.length,
       horizontal_overflow: overflow,
       forbidden_external_text: /https?:\/\/|zoom|vimeo|drive|meet/i.test(text),
@@ -239,9 +234,13 @@ function collectRequests(page: Page) {
 }
 
 function expectForbiddenRequests(requests: string[]) {
-  const forbidden = requests.filter((url) =>
-    /bna|operations|leadconnector|gohighlevel|fonts\.googleapis|fonts\.gstatic/i.test(url),
-  );
+  const forbidden = requests.filter((url) => {
+    const parsed = new URL(url);
+    return (
+      /\/(bna|operations)(\/|$)/i.test(parsed.pathname) ||
+      /leadconnector|gohighlevel|fonts\.googleapis|fonts\.gstatic/i.test(parsed.hostname)
+    );
+  });
   expect(forbidden).toEqual([]);
 }
 

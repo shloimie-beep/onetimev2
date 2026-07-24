@@ -15,6 +15,17 @@ import type {
   SupportPreview,
 } from '@onetime/contracts';
 
+type ParentAccessShell = {
+  mode: 'active' | 'paused';
+  display_name: string;
+  household_count: number;
+  primary_household_key: string;
+  learning_routes_available: boolean;
+  identity_profile_available: true;
+  recovery_available: true;
+  support_available: true;
+};
+
 export type ApiSession = {
   authenticated: true;
   user: SessionUser;
@@ -42,6 +53,24 @@ export async function getParentDashboard() {
     '/api/v1/portals/parent/dashboard',
   );
   return json.data;
+}
+
+export async function getParentAccessShell() {
+  const json = await api<{ success: true; data: ParentAccessShell }>(
+    '/api/v1/contact-operations/parent-shell',
+  );
+  return json.data;
+}
+
+export async function requestParentRecovery(input: { csrfToken: string; householdKey: string }) {
+  return api<{ success: true; data: { request_accepted: true } }>(
+    `/api/v1/contact-operations/households/${encodeURIComponent(input.householdKey)}/parent-reset`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({ idempotency_key: createIdempotencyKey() }),
+    },
+  );
 }
 
 export async function getParentMaterials(householdKey: string, learnerKey: string) {

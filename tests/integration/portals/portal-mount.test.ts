@@ -177,8 +177,6 @@ describe('OT-71 mounted parent and student portals', () => {
           },
           body: JSON.stringify({
             idempotency_key: 'portal-student-reset-username-001',
-            username: 'setup_learner',
-            password: 'Mishnah54321',
           }),
         },
       );
@@ -188,20 +186,20 @@ describe('OT-71 mounted parent and student portals', () => {
         success: true,
         data: {
           learner_key: 'learner_setup',
-          status: 'active',
+          status: 'reset_requested',
           username_display: 'setup_learner',
-          credential_status: 'parent_managed',
+          credential_status: 'reset_required',
           last_operation_type: 'reset',
         },
       });
 
-      const staleStudentSession = await fetch(
+      const existingStudentSession = await fetch(
         `${server.baseUrl}/api/v1/portals/student/dashboard`,
         {
           headers: { cookie: setupStudent.cookies },
         },
       );
-      expect(staleStudentSession.status).toBe(401);
+      expect(existingStudentSession.status).toBe(401);
 
       const oldStudentPassword = await postLogin(server.baseUrl, 'setup_learner', 'Mishnah12345');
       expect(oldStudentPassword.status).toBe(401);
@@ -210,8 +208,26 @@ describe('OT-71 mounted parent and student portals', () => {
         code: 'INVALID_CREDENTIALS',
       });
 
-      const resetStudent = await loginAs(server.baseUrl, 'setup_learner', 'Mishnah54321');
-      expect(resetStudent.json.user.role).toBe('student');
+      const resetStudent = await postLogin(server.baseUrl, 'setup_learner', 'Mishnah54321');
+      expect(resetStudent.status).toBe(401);
+      expect(resetStudent.json).toMatchObject({
+        success: false,
+        code: 'INVALID_CREDENTIALS',
+      });
+
+      const resetTokens = await pool.query(
+        `SELECT token_hash, consumed_at
+           FROM onetime.account_lifecycle_tokens
+          WHERE account_key = $1
+            AND product_key = $2
+            AND learner_key = 'learner_setup'
+            AND token_type = 'student_reset'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(resetTokens.rows).toHaveLength(1);
+      expect(String(resetTokens.rows[0]?.token_hash)).toMatch(/^[a-f0-9]{64}$/);
+      expect(resetTokens.rows[0]?.consumed_at).toBeNull();
+      expect(JSON.stringify(resetTokens.rows)).not.toContain('Mishnah54321');
 
       const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');
       const denied = await fetch(`${server.baseUrl}/api/v1/portals/parent/dashboard`, {
@@ -333,6 +349,25 @@ async function seedPortalRecords() {
      VALUES
        ('relationship_alpha', $1, $2, 'household_alpha', $3, 'Parent', 'primary_guardian')`,
     [config.accountKey, config.productKey, parentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, reminder_preference, source)
+     VALUES
+       ('portal_parent_contact', $1, $2, 'Parent User', 'family',
+        'Alpha Family', 'Jerusalem', 'Asia/Jerusalem',
+        'parent@example.test', 'none', 'test')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.adult_household_contact_links
+       (link_key, account_key, product_key, contact_key, household_key, guardian_user_ref,
+        highlevel_location_id, sync_state)
+     VALUES
+       ('portal_parent_adult_link', $1, $2, 'portal_parent_contact', 'household_alpha', $3,
+        $4, 'sync_pending')`,
+    [config.accountKey, config.productKey, parentUserKey, config.highLevelLocationId],
   );
   await pool.query(
     `INSERT INTO onetime.portal_learners

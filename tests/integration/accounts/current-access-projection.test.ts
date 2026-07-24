@@ -132,7 +132,7 @@ describe('canonical current household access projection', () => {
     expect(String(event.rows[0]?.source_reference_digest)).toMatch(/^[a-f0-9]{64}$/u);
   });
 
-  it('fails closed on idempotency conflict, stale updates, and lower-precedence sources', async () => {
+  it('fails closed on idempotency conflict and stale same-slot updates while sources stay independent', async () => {
     const baseCommand = {
       household_key: 'household_alpha',
       state: 'active' as const,
@@ -218,7 +218,10 @@ describe('canonical current household access projection', () => {
         },
         now: new Date('2026-07-23T09:03:00.000Z'),
       }),
-    ).rejects.toMatchObject({ code: 'ACCESS_SOURCE_PRECEDENCE' });
+    ).resolves.toMatchObject({
+      state: 'applied',
+      projection: { state: 'suspended', source_kind: 'admin_override' },
+    });
     expect(
       (
         await pool.query(
@@ -230,7 +233,7 @@ describe('canonical current household access projection', () => {
           [accountKey, productKey],
         )
       ).rows[0]?.decision,
-    ).toBe('rejected_precedence');
+    ).toBe('applied');
 
     await expect(
       applyHouseholdAccessState({
@@ -455,7 +458,7 @@ describe('canonical current household access projection', () => {
     ).toBe(false);
   });
 
-  it('revokes Parent and Student sessions when a free pilot is revoked', async () => {
+  it('revokes only Student sessions when effective learning access disappears', async () => {
     const parentUserKey = await createAccountUser({
       pool,
       config,
@@ -537,9 +540,9 @@ describe('canonical current household access projection', () => {
     });
     expect(revoked).toMatchObject({
       state: 'applied',
-      sessions_revoked: 2,
+      sessions_revoked: 1,
       payment_history_written: false,
-      projection: { state: 'revoked', grants_access: false },
+      projection: { state: 'paused', grants_access: false },
     });
 
     const sessions = await pool.query(
@@ -550,7 +553,12 @@ describe('canonical current household access projection', () => {
       [parentSession.session_key, studentSession.session_key],
     );
     expect(sessions.rows).toHaveLength(2);
-    expect(sessions.rows.every((row) => Boolean(row.revoked_at))).toBe(true);
+    expect(
+      sessions.rows.find((row) => row.session_key === parentSession.session_key)?.revoked_at,
+    ).toBeFalsy();
+    expect(
+      sessions.rows.find((row) => row.session_key === studentSession.session_key)?.revoked_at,
+    ).toBeTruthy();
 
     const securityAfter = await pool.query(
       `SELECT user_key, security_version
@@ -559,12 +567,17 @@ describe('canonical current household access projection', () => {
         ORDER BY user_key`,
       [parentUserKey, studentUserKey],
     );
+    const securityBeforeByUser = new Map(
+      securityBefore.rows.map((row) => [String(row.user_key), Number(row.security_version)]),
+    );
     expect(
-      securityAfter.rows.map(
-        (row, index) =>
-          Number(row.security_version) - Number(securityBefore.rows[index]?.security_version),
-      ),
-    ).toEqual([1, 1]);
+      Number(securityAfter.rows.find((row) => row.user_key === parentUserKey)?.security_version) -
+        Number(securityBeforeByUser.get(parentUserKey)),
+    ).toBe(0);
+    expect(
+      Number(securityAfter.rows.find((row) => row.user_key === studentUserKey)?.security_version) -
+        Number(securityBeforeByUser.get(studentUserKey)),
+    ).toBe(1);
   });
 });
 

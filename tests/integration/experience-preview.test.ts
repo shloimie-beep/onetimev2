@@ -589,7 +589,7 @@ describe('OT-LAUNCH-01 exact projection truth', () => {
         `${server.baseUrl}/app/learning/items/full_app_demo_mishnayos_video`,
         { headers: { cookie: unrelated.cookie }, redirect: 'manual' },
       );
-      expect(unrelatedPlayer.status).toBe(409);
+      expect(unrelatedPlayer.status).toBe(404);
       expect(await unrelatedPlayer.text()).not.toMatch(/https?:\/\/|vimeo|provider_video/i);
     } finally {
       await server.close();

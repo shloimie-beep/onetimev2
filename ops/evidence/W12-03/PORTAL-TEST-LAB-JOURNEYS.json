@@ -1,6 +1,6 @@
 {
   "status": "completed",
-  "generated_at": "2026-07-23T08:16:04.636Z",
+  "generated_at": "2026-07-24T08:52:22.488Z",
   "journeys": [
     "admin-only W12 lab status/reset page without visible secrets",
     "parent manages W12 household and learner access without student impersonation",
@@ -11,7 +11,7 @@
     {
       "name": "admin-lab",
       "viewport": "360x800",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\admin-lab-360x800.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/admin-lab-360x800.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -19,7 +19,7 @@
     {
       "name": "admin-lab",
       "viewport": "390x844",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\admin-lab-390x844.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/admin-lab-390x844.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -27,7 +27,7 @@
     {
       "name": "admin-lab",
       "viewport": "768x1024",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\admin-lab-768x1024.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/admin-lab-768x1024.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -35,7 +35,7 @@
     {
       "name": "admin-lab",
       "viewport": "1440x1000",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\admin-lab-1440x1000.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/admin-lab-1440x1000.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -43,7 +43,7 @@
     {
       "name": "parent-journey",
       "viewport": "360x800",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\parent-journey-360x800.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/parent-journey-360x800.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -51,7 +51,7 @@
     {
       "name": "parent-journey",
       "viewport": "390x844",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\parent-journey-390x844.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/parent-journey-390x844.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -59,7 +59,7 @@
     {
       "name": "parent-journey",
       "viewport": "768x1024",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\parent-journey-768x1024.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/parent-journey-768x1024.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -67,7 +67,7 @@
     {
       "name": "parent-journey",
       "viewport": "1440x1000",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\parent-journey-1440x1000.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/parent-journey-1440x1000.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -75,7 +75,7 @@
     {
       "name": "student-journey",
       "viewport": "360x800",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\student-journey-360x800.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/student-journey-360x800.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -83,7 +83,7 @@
     {
       "name": "student-journey",
       "viewport": "390x844",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\student-journey-390x844.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/student-journey-390x844.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -91,7 +91,7 @@
     {
       "name": "student-journey",
       "viewport": "768x1024",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\student-journey-768x1024.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/student-journey-768x1024.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false
@@ -99,7 +99,7 @@
     {
       "name": "student-journey",
       "viewport": "1440x1000",
-      "screenshot": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE\\ops\\evidence\\W12-03\\screenshots\\student-journey-1440x1000.png",
+      "screenshot": "ops/evidence/W12-03/screenshots/student-journey-1440x1000.png",
       "critical_or_serious_a11y": 0,
       "horizontal_overflow": false,
       "forbidden_external_text": false

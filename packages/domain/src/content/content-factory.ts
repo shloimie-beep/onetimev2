@@ -730,14 +730,16 @@ export async function getContentFactoryPlayback(input: {
   }
   if (!['owner', 'admin'].includes(input.actor.actor_role)) {
     const entitlementResult = await input.pool.query(
-      `SELECT entitlement.learner_key, learner.household_key
+      `SELECT entitlement.audience,
+              entitlement.learner_key,
+              COALESCE(entitlement.household_key, learner.household_key) AS household_key
          FROM onetime.content_item_entitlements entitlement
-         JOIN onetime.portal_learners learner
+         LEFT JOIN onetime.portal_learners learner
            ON learner.account_key = entitlement.account_key
           AND learner.product_key = entitlement.product_key
           AND learner.learner_key = entitlement.learner_key
         WHERE entitlement.account_key = $1 AND entitlement.product_key = $2
-          AND entitlement.content_item_key = $3 AND entitlement.audience = 'learner'
+          AND entitlement.content_item_key = $3
           AND entitlement.entitlement_state = 'active'`,
       [input.config.accountKey, input.config.productKey, input.sourceKey],
     );
@@ -745,7 +747,10 @@ export async function getContentFactoryPlayback(input: {
     const households = new Set(input.actor.authorized_households.map((item) => item.household_key));
     const entitled = entitlementResult.rows.some(
       (entitlement) =>
-        (input.actor.actor_role === 'student' && entitlement.learner_key === learnerKey) ||
+        (input.actor.actor_role === 'student' &&
+          ((entitlement.audience === 'learner' && entitlement.learner_key === learnerKey) ||
+            (entitlement.audience === 'household' &&
+              entitlement.household_key === input.actor.student_learner?.household_key))) ||
         (input.actor.actor_role === 'parent' && households.has(String(entitlement.household_key))),
     );
     if (!entitled) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');

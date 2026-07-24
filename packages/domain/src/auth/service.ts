@@ -1622,6 +1622,7 @@ type CurrentApplicationAccessDecision = {
   reason:
     | 'role_not_access_scoped'
     | 'parent_household_access_active'
+    | 'parent_household_access_paused'
     | 'parent_household_access_missing'
     | 'student_identity_active'
     | 'student_identity_missing_or_ambiguous'
@@ -1669,7 +1670,9 @@ export async function currentApplicationAccessForUser({
         return { allowed: true, reason: 'parent_household_access_active' };
       }
     }
-    return { allowed: false, reason: 'parent_household_access_missing' };
+    return relationships.rowCount
+      ? { allowed: true, reason: 'parent_household_access_paused' }
+      : { allowed: false, reason: 'parent_household_access_missing' };
   }
 
   if (role === 'student') {

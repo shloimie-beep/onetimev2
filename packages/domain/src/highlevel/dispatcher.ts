@@ -248,9 +248,14 @@ WITH candidates AS (
         WHERE eligible_contacts.account_key = outbox.account_key
           AND eligible_contacts.product_key = outbox.product_key
           AND eligible_contacts.contact_key = outbox.contact_key
-          AND eligible_contacts.suppression_state = 'active'
-          AND NOT COALESCE(eligible_preferences.email_dnd, false)
-          AND NOT COALESCE(eligible_preferences.all_dnd, false)
+          AND (
+            outbox.event_type = 'highlevel.parent.household.sync_requested.v1'
+            OR (
+              eligible_contacts.suppression_state = 'active'
+              AND NOT COALESCE(eligible_preferences.email_dnd, false)
+              AND NOT COALESCE(eligible_preferences.all_dnd, false)
+            )
+          )
      )
    ORDER BY outbox.next_attempt_at, outbox.created_at, outbox.id
    LIMIT $4
@@ -284,9 +289,12 @@ SELECT claimed.delivery_key, claimed.attempts, claimed.payload, claimed.contact_
     ON preferences.account_key = contacts.account_key
    AND preferences.product_key = contacts.product_key
    AND preferences.contact_key = contacts.contact_key
- WHERE contacts.suppression_state = 'active'
-   AND NOT COALESCE(preferences.email_dnd, false)
-   AND NOT COALESCE(preferences.all_dnd, false)
+ WHERE claimed.event_type = 'highlevel.parent.household.sync_requested.v1'
+    OR (
+      contacts.suppression_state = 'active'
+      AND NOT COALESCE(preferences.email_dnd, false)
+      AND NOT COALESCE(preferences.all_dnd, false)
+    )
  ORDER BY claimed.created_at, claimed.delivery_key
 `;
 
@@ -498,9 +506,14 @@ async function claimMemory(
             AND outbox.transport_mode = $4
             AND outbox.transport_authorization_run_id = $5
             AND outbox.transport_authorization_allowlist_hash = $6
-            AND contacts.suppression_state = 'active'
-            AND NOT COALESCE(preferences.email_dnd, false)
-            AND NOT COALESCE(preferences.all_dnd, false)
+            AND (
+              outbox.event_type = 'highlevel.parent.household.sync_requested.v1'
+              OR (
+                contacts.suppression_state = 'active'
+                AND NOT COALESCE(preferences.email_dnd, false)
+                AND NOT COALESCE(preferences.all_dnd, false)
+              )
+            )
             AND (
               (outbox.transport_authorization_state = 'authorized'
                 AND outbox.status IN ('pending', 'retry')
@@ -810,6 +823,7 @@ async function markOperationUncertain(
 function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelProjection {
   const tagsToAdd: Record<HighLevelEventName, string> = {
     'adult.signup.submitted': 'OT | Lead',
+    'parent.household.sync_requested': 'OT | Parent',
     'parent.portal.invitation_requested': 'OT | Portal Invited',
     'parent.portal.activated': 'OT | Portal Active',
     'class.reminder.requested': 'OT | Class Reminder Pending',
@@ -825,6 +839,9 @@ function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelPr
   ];
   if (event.data.classification) {
     customFields.push({ id: 'XoW0UWbGFkwUplKydjZI', value: event.data.classification });
+  }
+  if (event.data.household_key) {
+    customFields.push({ id: 'PIuJBPvZGI3FTp4ZRpay', value: event.data.household_key });
   }
   if (event.data.portal_status) {
     customFields.push({ id: 'hxancKIMgrEWUeVSSUYF', value: event.data.portal_status });
@@ -871,6 +888,31 @@ async function markDelivered(
       [config.accountKey, config.productKey, row.delivery_key, row.transport_claim_token, now],
     );
     if (!updated.rowCount) return false;
+    if (event.event_name === 'parent.household.sync_requested' && event.data.household_key) {
+      await client.query(
+        `UPDATE onetime.adult_household_contact_links
+            SET highlevel_contact_id = $6,
+                sync_state = 'synced',
+                last_delivery_key = $5,
+                last_reconciled_at = $7,
+                updated_at = $7
+          WHERE account_key = $1
+            AND product_key = $2
+            AND contact_key = $3
+            AND household_key = $4
+            AND highlevel_location_id = $8`,
+        [
+          config.accountKey,
+          config.productKey,
+          event.adult_contact.contact_key,
+          event.data.household_key,
+          row.delivery_key,
+          providerContactId,
+          now,
+          event.scope.location_id,
+        ],
+      );
+    }
     await client.query(
       `INSERT INTO onetime.audit_events
          (event_key, account_key, product_key, contact_key, event_type, metadata, created_at)

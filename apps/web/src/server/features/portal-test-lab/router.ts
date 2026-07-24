@@ -206,6 +206,46 @@ export async function seedPortalTestLab(input: { pool: DbPool; config: AppConfig
       parentUserKey,
     ],
   );
+  await input.pool.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, reminder_preference, source)
+     VALUES ($1,$2,$3,$4,'family',$5,'Jerusalem','Asia/Jerusalem',$6,'none','portal_test_lab')
+     ON CONFLICT (account_key, product_key, contact_key)
+     DO UPDATE SET display_name = EXCLUDED.display_name,
+                   family_or_school = EXCLUDED.family_or_school,
+                   email_normalized = EXCLUDED.email_normalized,
+                   archived_at = NULL,
+                   updated_at = now()`,
+    [
+      'w12_portal_test_lab_parent_contact',
+      input.config.accountKey,
+      input.config.productKey,
+      W12_PORTAL_TEST_LAB.parent.displayName,
+      W12_PORTAL_TEST_LAB.householdName,
+      W12_PORTAL_TEST_LAB.parent.email,
+    ],
+  );
+  await input.pool.query(
+    `INSERT INTO onetime.adult_household_contact_links
+       (link_key, account_key, product_key, contact_key, household_key, guardian_user_ref,
+        highlevel_location_id, sync_state)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,'sync_pending')
+     ON CONFLICT (account_key, product_key, household_key)
+     DO UPDATE SET contact_key = EXCLUDED.contact_key,
+                   guardian_user_ref = EXCLUDED.guardian_user_ref,
+                   highlevel_location_id = EXCLUDED.highlevel_location_id,
+                   updated_at = now()`,
+    [
+      'w12_portal_test_lab_adult_link',
+      input.config.accountKey,
+      input.config.productKey,
+      'w12_portal_test_lab_parent_contact',
+      W12_PORTAL_TEST_LAB.householdKey,
+      parentUserKey,
+      input.config.highLevelLocationId,
+    ],
+  );
 
   for (const [index, learner] of W12_PORTAL_TEST_LAB.learners.entries()) {
     const studentUserKey = studentUserKeys[index];

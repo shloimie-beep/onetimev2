@@ -277,6 +277,8 @@ export {
   completeStudentReset,
   createOwnerAdminInvitation,
   createParentActivation,
+  issueParentActivationWithClient,
+  issueLocalStudentSetupWithClient,
   createStudentReset,
   createStudentSetup,
   inspectAccountLifecycleToken,
@@ -286,6 +288,18 @@ export {
   suspendStudentIdentity,
   type AccountLifecycleTokenInspection,
 } from './accounts/lifecycle.ts';
+export {
+  ContactOperationsError,
+  contactOperationsCapabilitiesForRole,
+  enrollParentHousehold,
+  parentAccessShell,
+  readAdultContactLink,
+  reconcileAdultContactLink,
+  requestParentResetForHousehold,
+  requestStudentResetForHousehold,
+  setContactOperationsAccess,
+  type ContactOperationsActor,
+} from './contact-operations/service.ts';
 export {
   decryptLifecycleDeliveryPayloadForTests,
   runLifecycleDeliveryOutboxBatch,
