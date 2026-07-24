@@ -70,7 +70,7 @@ test('entitled Student sees approved content with protected captions and progres
   await page.getByRole('link', { name: 'Library', exact: true }).click();
   await expect(page).toHaveURL('/app/student?section=library');
   const contentCard = page
-    .getByRole('article')
+    .locator('article.ot-item')
     .filter({ hasText: 'Browser-published occurrence lesson' });
   await expect(contentCard).toBeVisible();
   await expect(contentCard.getByText(/provider-off acceptance content/i)).toBeVisible();
@@ -120,7 +120,7 @@ test('Admin unpublish immediately revokes the entitled Student route', async ({ 
   await page.context().clearCookies();
   await loginAs(page, 'student', '/app/student');
   await expect(
-    page.getByRole('article').filter({ hasText: 'Browser-published occurrence lesson' }),
+    page.locator('article.ot-item').filter({ hasText: 'Browser-published occurrence lesson' }),
   ).toHaveCount(0);
   const response = await page.goto(publishedPlaybackPath);
   expect(response?.status()).toBe(404);
