@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { W12_E2E_ADMIN_SESSION_TOKEN } from '../support/w12-portal-test-lab-session.ts';
+import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from '../support/contact-operations-session.ts';
 
 test('Admin runs one-button Parent household enrollment and protected Contacts operations', async ({
   page,
@@ -9,7 +9,7 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
   await page.context().addCookies([
     {
       name: 'otcrm_session',
-      value: W12_E2E_ADMIN_SESSION_TOKEN,
+      value: CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
       domain: '127.0.0.1',
       path: '/',
       httpOnly: true,
@@ -19,22 +19,24 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
 
   await page.goto('/app/crm');
   await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
-  await page.getByRole('button', { name: 'Open Test Parent' }).click();
-  await expect(page.getByRole('heading', { name: 'Test Parent' })).toBeVisible();
+  await page.getByRole('button', { name: 'Open Contact Operations Parent' }).click();
+  await expect(page.getByRole('heading', { name: 'Contact Operations Parent' })).toBeVisible();
   const existingResponse = page.waitForResponse(
     (response) =>
       response.request().method() === 'GET' &&
-      response.url().endsWith('/api/v1/contact-operations/households/e2e_household_alpha'),
+      response.url().endsWith('/api/v1/contact-operations/households/contact_operations_household'),
   );
   await page.getByRole('button', { name: 'Manage household' }).click();
   expect((await existingResponse).status()).toBe(200);
-  await expect(page).toHaveURL(/\/app\/crm\/contact-operations\?household=e2e_household_alpha$/);
-  await expect(page.getByRole('heading', { name: 'E2E Alpha Family' })).toBeVisible();
+  await expect(page).toHaveURL(
+    /\/app\/crm\/contact-operations\?household=contact_operations_household$/,
+  );
+  await expect(page.getByRole('heading', { name: 'Contact Operations Family' })).toBeVisible();
 
   const openInGhl = page.getByRole('link', { name: 'Open in GHL' });
   await expect(openInGhl).toHaveAttribute(
     'href',
-    /gohighlevel\.com\/v2\/location\/.+\/contacts\/detail\/e2e_highlevel_parent_contact$/,
+    /gohighlevel\.com\/v2\/location\/.+\/contacts\/detail\/contact_operations_highlevel_parent$/,
   );
   await expect(openInGhl).toHaveAttribute('rel', 'noopener noreferrer');
 
@@ -51,7 +53,7 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
   const studentResetResponse = page.waitForResponse(
     (response) =>
       response.request().method() === 'POST' &&
-      response.url().includes('/students/e2e_learner_alpha/reset'),
+      response.url().includes('/students/contact_operations_learner/reset'),
   );
   await page.getByRole('button', { name: 'Request Student reset' }).first().click();
   expect((await studentResetResponse).status()).toBe(200);
@@ -135,7 +137,7 @@ test('Admin reaches the existing Parent household naturally from Contacts on mob
   await page.context().addCookies([
     {
       name: 'otcrm_session',
-      value: W12_E2E_ADMIN_SESSION_TOKEN,
+      value: CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN,
       domain: '127.0.0.1',
       path: '/',
       httpOnly: true,
@@ -144,11 +146,13 @@ test('Admin reaches the existing Parent household naturally from Contacts on mob
   ]);
 
   await page.goto('/app/crm');
-  await page.getByRole('button', { name: /^Test Parent / }).click();
-  await expect(page.getByRole('heading', { name: 'Test Parent' })).toBeVisible();
+  await page.getByRole('button', { name: /^Contact Operations Parent / }).click();
+  await expect(page.getByRole('heading', { name: 'Contact Operations Parent' })).toBeVisible();
   await page.getByRole('button', { name: 'Manage household' }).click();
-  await expect(page).toHaveURL(/\/app\/crm\/contact-operations\?household=e2e_household_alpha$/);
-  await expect(page.getByRole('heading', { name: 'E2E Alpha Family' })).toBeVisible();
+  await expect(page).toHaveURL(
+    /\/app\/crm\/contact-operations\?household=contact_operations_household$/,
+  );
+  await expect(page.getByRole('heading', { name: 'Contact Operations Family' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Request Parent reset' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Request Student reset' }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: 'Open in GHL' })).toHaveAttribute(

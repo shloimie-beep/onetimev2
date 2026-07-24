@@ -19,6 +19,7 @@ import {
   W12_PORTAL_TEST_LAB,
   seedPortalTestLab,
 } from '../../apps/web/src/server/features/portal-test-lab/router.ts';
+import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from './contact-operations-session.ts';
 import { W12_E2E_ADMIN_SESSION_TOKEN } from './w12-portal-test-lab-session.ts';
 
 const config = loadConfig({
@@ -81,12 +82,30 @@ const pausedParentUserKey = await createAccountUser({
   role: 'parent',
   mfaCapable: false,
 });
+const contactOperationsParentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'contact-operations-parent@example.test',
+  password: 'ContactOperationsParent!234',
+  displayName: 'Contact Operations Parent',
+  role: 'parent',
+  mfaCapable: false,
+});
 const studentUserKey = await createAccountUser({
   pool,
   config,
   email: process.env.OT_TEST_STUDENT_EMAIL ?? 'ot-student@example.test',
   password: process.env.OT_TEST_STUDENT_PASSWORD ?? 'StudentPassword!234',
   displayName: 'Test Student',
+  role: 'student',
+  mfaCapable: false,
+});
+const contactOperationsStudentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'contact-operations-student@example.test',
+  password: 'ContactOperationsStudent!234',
+  displayName: 'Contact Operations Student',
   role: 'student',
   mfaCapable: false,
 });
@@ -112,6 +131,7 @@ await seedDayOneBrowserRecords();
 await runContentFactoryBrowserAcceptance();
 await seedPortalTestLab({ pool, config });
 await seedW12AdminSession();
+await seedContactOperationsOwnerSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
   : undefined;
@@ -153,7 +173,8 @@ async function seedDayOneBrowserRecords() {
       VALUES
         ('e2e_household_alpha', $1, $2, 'E2E Alpha Family'),
         ('e2e_household_zoom', $1, $2, 'E2E Zoom Family'),
-        ('e2e_household_paused', $1, $2, 'E2E Paused Family')`,
+        ('e2e_household_paused', $1, $2, 'E2E Paused Family'),
+        ('contact_operations_household', $1, $2, 'Contact Operations Family')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
@@ -164,8 +185,16 @@ async function seedDayOneBrowserRecords() {
        ('e2e_relationship_alpha', $1, $2, 'e2e_household_alpha', $3, 'Parent',
         'primary_guardian'),
        ('e2e_relationship_paused', $1, $2, 'e2e_household_paused', $4, 'Parent',
-        'primary_guardian')`,
-    [config.accountKey, config.productKey, parentUserKey, pausedParentUserKey],
+        'primary_guardian'),
+       ('contact_operations_relationship', $1, $2, 'contact_operations_household', $5,
+        'Parent', 'primary_guardian')`,
+    [
+      config.accountKey,
+      config.productKey,
+      parentUserKey,
+      pausedParentUserKey,
+      contactOperationsParentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.contacts
@@ -178,7 +207,11 @@ async function seedDayOneBrowserRecords() {
         'ot-parent@example.test','none','active','e2e_fixture'),
        ('e2e_contact_paused_parent','e2e-public-paused-parent',$1,$2,'Test Paused Parent',
         'family','E2E Paused Family','Jerusalem','Asia/Jerusalem',
-        'ot-paused-parent@example.test','none','active','e2e_fixture')`,
+        'ot-paused-parent@example.test','none','active','e2e_fixture'),
+       ('contact_operations_parent','contact-operations-public-parent',$1,$2,
+        'Contact Operations Parent','family','Contact Operations Family','Jerusalem',
+        'Asia/Jerusalem','contact-operations-parent@example.test','none','active',
+        'contact_operations_e2e_fixture')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
@@ -187,15 +220,18 @@ async function seedDayOneBrowserRecords() {
         guardian_user_ref, highlevel_location_id, highlevel_contact_id, sync_state)
      VALUES
        ('e2e_adult_link_parent',$1,$2,'e2e_contact_parent','e2e_household_alpha',
-        $5,$4,'e2e_highlevel_parent_contact','synced'),
+        $5,$4,NULL,'sync_pending'),
        ('e2e_adult_link_paused',$1,$2,'e2e_contact_paused_parent','e2e_household_paused',
-        $3,$4,NULL,'sync_pending')`,
+        $3,$4,NULL,'sync_pending'),
+       ('contact_operations_adult_link',$1,$2,'contact_operations_parent',
+        'contact_operations_household',$6,$4,'contact_operations_highlevel_parent','synced')`,
     [
       config.accountKey,
       config.productKey,
       pausedParentUserKey,
       config.highLevelLocationId,
       parentUserKey,
+      contactOperationsParentUserKey,
     ],
   );
   await pool.query(
@@ -204,7 +240,9 @@ async function seedDayOneBrowserRecords() {
       VALUES
         ('e2e_learner_alpha', $1, $2, 'e2e_household_alpha', 'E2E Alpha Learner', '6'),
         ('e2e_learner_beta', $1, $2, 'e2e_household_alpha', 'E2E Beta Learner', '5'),
-        ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6')`,
+        ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6'),
+        ('contact_operations_learner', $1, $2, 'contact_operations_household',
+         'Contact Operations Student', '6')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
@@ -215,16 +253,32 @@ async function seedDayOneBrowserRecords() {
         ('e2e_access_alpha', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3, 'active'),
         ('e2e_access_beta', $1, $2, 'e2e_household_alpha', 'e2e_learner_beta', NULL,
          'not_configured'),
-        ('e2e_access_zoom', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4, 'active')`,
-    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
+        ('e2e_access_zoom', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4, 'active'),
+        ('contact_operations_access', $1, $2, 'contact_operations_household',
+         'contact_operations_learner', $5, 'active')`,
+    [
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      zoomStudentUserKey,
+      contactOperationsStudentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.account_learner_identity_links
         (link_key, account_key, product_key, household_key, learner_key, user_key)
        VALUES
         ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3),
-        ('e2e_link_zoom_student', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4)`,
-    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
+        ('e2e_link_zoom_student', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4),
+        ('contact_operations_student_link', $1, $2, 'contact_operations_household',
+         'contact_operations_learner', $5)`,
+    [
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      zoomStudentUserKey,
+      contactOperationsStudentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.classroom_household_entitlements
@@ -244,6 +298,11 @@ async function seedDayOneBrowserRecords() {
       householdKey: 'e2e_household_zoom',
       idempotencyKey: 'e2e-free-pilot-zoom-v1',
       sourceReference: 'e2e_free_pilot_zoom',
+    },
+    {
+      householdKey: 'contact_operations_household',
+      idempotencyKey: 'contact-operations-free-pilot-v1',
+      sourceReference: 'contact_operations_free_pilot',
     },
   ]) {
     await grantFreePilotAccess({
@@ -484,6 +543,45 @@ async function seedW12AdminSession() {
       String(row.user_key),
       sha256(W12_E2E_ADMIN_SESSION_TOKEN),
       sha256('w12-admin-csrf-local-only'),
+      new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      Number(row.security_version ?? 1),
+    ],
+  );
+}
+
+async function seedContactOperationsOwnerSession() {
+  const user = await pool.query(
+    `SELECT security_version
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+      LIMIT 1`,
+    [config.accountKey, config.productKey, ownerUserKey],
+  );
+  const row = user.rows[0];
+  if (!row) throw new Error('missing contact operations owner test user');
+  await pool.query(
+    `INSERT INTO onetime.user_sessions
+       (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
+        user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
+        assurance_method, assurance_at)
+     VALUES ($1,$2,$3,$4,$5,$6,NULL,NULL,$7,NULL,$8,'email_challenge',now())
+     ON CONFLICT (session_key)
+     DO UPDATE SET token_hash = EXCLUDED.token_hash,
+                   csrf_token_hash = EXCLUDED.csrf_token_hash,
+                   expires_at = EXCLUDED.expires_at,
+                   revoked_at = NULL,
+                   security_version = EXCLUDED.security_version,
+                   assurance_method = 'email_challenge',
+                   assurance_at = now()`,
+    [
+      'sess_contact_operations_owner',
+      config.accountKey,
+      config.productKey,
+      ownerUserKey,
+      sha256(CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN),
+      sha256('contact-operations-owner-csrf-local-only'),
       new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       Number(row.security_version ?? 1),
     ],
