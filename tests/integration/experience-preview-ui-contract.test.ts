@@ -12,6 +12,10 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
     'utf8',
   );
   const previewCss = readFileSync('apps/web/src/client/app/crm.css', 'utf8');
+  const portalSource = readFileSync(
+    'apps/web/src/client/features/portals/PortalFeatures.tsx',
+    'utf8',
+  );
   const previewProjection = readFileSync(
     'apps/web/src/server/features/experience-preview/router.ts',
     'utf8',
@@ -55,8 +59,12 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
     expect(studentShellSource).not.toContain('AppShell');
     expect(studentShellSource).toContain('StudentPortalFeature');
     expect(studentShellSource).toContain('student_portal');
-    expect(studentShellSource).toContain('inert');
+    expect(studentShellSource).toContain('readOnly');
+    expect(studentShellSource).not.toContain('inert');
     expect(studentShellSource).not.toContain("method: 'POST'");
+    expect(portalSource).toContain('data-read-only={readOnly}');
+    expect(portalSource).toContain('disabled={readOnly}');
+    expect(previewCss).toContain('.fictional-student-portal-preview {');
     expect(previewCss).toContain('@media (max-width: 480px)');
     expect(previewCss).toContain('.experience-preview-selectors');
   });

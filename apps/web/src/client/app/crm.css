@@ -533,7 +533,7 @@
   margin: 0;
 }
 
-.fictional-student-portal-preview[inert] {
+.fictional-student-portal-preview {
   border: 2px solid var(--ot-color-action-auth);
   border-radius: var(--ot-radius-panel);
   overflow: hidden;

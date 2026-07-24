@@ -241,19 +241,54 @@ async function openStudentPreview(
 }
 
 async function assertDedicatedStudentShell(page: Page, learnerName: string) {
+  const interactionRequests: string[] = [];
+  page.on('request', (request) => {
+    interactionRequests.push(request.method());
+  });
   await expect(page.getByRole('heading', { name: 'Student Portal' })).toBeVisible();
   await expect(page.getByText(learnerName, { exact: true }).first()).toBeVisible();
+  await expect(page.locator('[data-portal-role="student"]')).toHaveAttribute(
+    'data-read-only',
+    'true',
+  );
   await expect(
     page.locator('.ot-portal-focus').getByRole('heading', { name: 'Today' }),
   ).toBeVisible();
   await expect(
     page.locator('.ot-portal-menu').getByRole('button', { name: /^Library/ }),
   ).toBeVisible();
-  await expect(page.locator('.fictional-student-portal-preview')).toHaveAttribute('inert', '');
+  await expect(page.getByRole('textbox', { name: 'Question for class' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Send question' })).toBeDisabled();
+  await page
+    .locator('.ot-portal-menu')
+    .getByRole('button', { name: /^Library/ })
+    .click();
+  await expect(
+    page.locator('.ot-portal-focus').getByRole('heading', { name: 'Library' }),
+  ).toBeVisible();
+  await page
+    .locator('.ot-portal-menu')
+    .getByRole('button', { name: /^Class Helper/ })
+    .click();
+  await expect(page.getByRole('textbox', { name: 'Ask Class Helper' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Ask helper' })).toBeDisabled();
+  await page
+    .locator('.ot-portal-menu')
+    .getByRole('button', { name: /^Questions/ })
+    .click();
+  await expect(page.getByRole('radio', { name: /Daily Mishnayos/ })).toBeDisabled();
+  await expect(page.getByRole('textbox', { name: 'Ask privately' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Preview private question' })).toBeDisabled();
+  await page
+    .locator('.ot-portal-menu')
+    .getByRole('button', { name: /^Updates/ })
+    .click();
+  await expect(page.getByRole('button', { name: 'Technical help' })).toBeDisabled();
   await expect(page.getByRole('navigation', { name: 'One Time app' })).toHaveCount(0);
   await expect(page.locator('#crm-root')).toHaveCount(0);
   await expect(page.locator('.crm-shell')).toHaveCount(0);
   await expect(page.getByRole('link', { name: /logout/i })).toHaveCount(0);
+  expect(interactionRequests.filter((method) => method !== 'GET')).toEqual([]);
 }
 
 async function horizontalOverflow(page: Page) {

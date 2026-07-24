@@ -131,6 +131,7 @@ export type ParentPortalFeatureProps = {
 export type StudentPortalFeatureProps = {
   viewState: PortalViewState;
   dashboard: StudentPortalDashboard | null;
+  readOnly?: boolean;
   activeSection?: StudentPortalSection;
   navigationMode?: 'shell' | 'embedded';
   actorFingerprint: string;
@@ -456,6 +457,7 @@ function BillingSummaryPanel({ billing }: { billing: ParentPortalDashboard['bill
 export function StudentPortalFeature({
   viewState,
   dashboard,
+  readOnly = false,
   activeSection: requestedSection,
   navigationMode = 'embedded',
   actorFingerprint,
@@ -507,6 +509,7 @@ export function StudentPortalFeature({
       data-portal-role="student"
       data-state={viewState}
       data-session-marker={sessionMarker}
+      data-read-only={readOnly}
     >
       <StatusStrip viewState={viewState} onRetry={onRetry} />
       <PortalWorkspace
@@ -557,14 +560,17 @@ export function StudentPortalFeature({
         {activeSection === 'today' && (
           <>
             <h2 id="student-dashboard-heading">Today</h2>
-            <ClassSummary classes={dashboard.upcoming_classes} onLaunch={onLaunchClass} />
+            <ClassSummary
+              classes={dashboard.upcoming_classes}
+              onLaunch={readOnly ? undefined : onLaunchClass}
+            />
             {currentClass && (
               <form
                 className="ot-question-form"
                 onSubmit={(event) => {
                   event.preventDefault();
                   const body = question.trim();
-                  if (body.length < 3 || !onSubmitClassroomQuestion) {
+                  if (readOnly || body.length < 3 || !onSubmitClassroomQuestion) {
                     setQuestionState('blocked');
                     return;
                   }
@@ -580,13 +586,18 @@ export function StudentPortalFeature({
                   minLength={3}
                   maxLength={360}
                   rows={3}
+                  disabled={readOnly}
                   onChange={(event) => {
                     setQuestion(event.currentTarget.value);
                     setQuestionState('idle');
                   }}
                 />
                 <div className="ot-action-row">
-                  <button type="submit" className="ot-button" disabled={!onSubmitClassroomQuestion}>
+                  <button
+                    type="submit"
+                    className="ot-button"
+                    disabled={readOnly || !onSubmitClassroomQuestion}
+                  >
                     Send question
                   </button>
                   {questionState !== 'idle' && (
@@ -599,7 +610,7 @@ export function StudentPortalFeature({
             )}
             <LiveClassReadyPanel
               questions={liveClassQuestions}
-              {...(onMarkLiveClassReady ? { onMarkReady: onMarkLiveClassReady } : {})}
+              {...(!readOnly && onMarkLiveClassReady ? { onMarkReady: onMarkLiveClassReady } : {})}
             />
           </>
         )}
@@ -610,7 +621,7 @@ export function StudentPortalFeature({
             {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
             <ContentList
               items={dashboard.library_items.filter((item) => item.status === 'published')}
-              onOpen={onOpenContent}
+              onOpen={readOnly ? undefined : onOpenContent}
             />
           </>
         )}
@@ -618,7 +629,11 @@ export function StudentPortalFeature({
         {activeSection === 'helper' && (
           <>
             <h2 id="student-helper-heading">Class Helper</h2>
-            <ClassHelperPanel helper={dashboard.helper} onQueryHelper={onQueryHelper} />
+            <ClassHelperPanel
+              helper={dashboard.helper}
+              onQueryHelper={readOnly ? undefined : onQueryHelper}
+              readOnly={readOnly}
+            />
           </>
         )}
 
@@ -644,7 +659,8 @@ export function StudentPortalFeature({
             <QuestionPanel
               questions={dashboard.questions}
               upcoming={dashboard.upcoming_classes}
-              onSubmitQuestion={onSubmitQuestion}
+              onSubmitQuestion={readOnly ? undefined : onSubmitQuestion}
+              readOnly={readOnly}
             />
           </>
         )}
@@ -653,7 +669,12 @@ export function StudentPortalFeature({
           <>
             <h2 id="student-updates-heading">Updates</h2>
             <UpdatesList updates={dashboard.updates} />
-            <button type="button" className="ot-button" onClick={onPreviewSupport}>
+            <button
+              type="button"
+              className="ot-button"
+              disabled={readOnly || !onPreviewSupport}
+              onClick={readOnly ? undefined : onPreviewSupport}
+            >
               Technical help
             </button>
           </>
@@ -1136,16 +1157,18 @@ function ContentList({
 function ClassHelperPanel({
   helper,
   onQueryHelper,
+  readOnly = false,
 }: {
   helper: HelperAvailability;
   onQueryHelper?: ((question: string) => Promise<HelperAnswer>) | undefined;
+  readOnly?: boolean;
 }) {
   const [draft, setDraft] = useState('');
   const [answer, setAnswer] = useState<HelperAnswer | null>(null);
   const [state, setState] = useState<'idle' | 'loading' | 'answered' | 'error'>('idle');
   const [error, setError] = useState('');
   const trimmed = draft.trim();
-  const canAsk = helper.available && Boolean(onQueryHelper) && trimmed.length > 0;
+  const canAsk = !readOnly && helper.available && Boolean(onQueryHelper) && trimmed.length > 0;
   return (
     <div className="ot-stack ot-helper-panel">
       <HelperState helper={helper} />
@@ -1181,7 +1204,7 @@ function ClassHelperPanel({
             value={draft}
             maxLength={800}
             rows={4}
-            disabled={!helper.available || state === 'loading'}
+            disabled={readOnly || !helper.available || state === 'loading'}
             onChange={(event) => {
               setDraft(event.currentTarget.value);
               setState('idle');
@@ -1225,10 +1248,12 @@ function QuestionPanel({
   questions,
   upcoming,
   onSubmitQuestion,
+  readOnly = false,
 }: {
   questions: StudentQuestion[];
   upcoming: UpcomingClassSummary[];
   onSubmitQuestion?: ((question: string, classKey?: string | undefined) => void) | undefined;
+  readOnly?: boolean;
 }) {
   const [draft, setDraft] = useState('');
   const [classKey, setClassKey] = useState(upcoming[0]?.class_key ?? '');
@@ -1252,7 +1277,7 @@ function QuestionPanel({
         className="ot-question-form"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!trimmed || !onSubmitQuestion) return;
+          if (readOnly || !trimmed || !onSubmitQuestion) return;
           setPreview({ question: trimmed, classKey: classKey || undefined });
         }}
       >
@@ -1261,6 +1286,7 @@ function QuestionPanel({
             label="Class"
             items={upcoming}
             value={classKey}
+            disabled={readOnly}
             onChange={(nextClassKey) => {
               setClassKey(nextClassKey);
               setPreview(null);
@@ -1273,6 +1299,7 @@ function QuestionPanel({
             value={draft}
             maxLength={800}
             rows={4}
+            disabled={readOnly}
             onChange={(event) => {
               setDraft(event.currentTarget.value);
               setPreview(null);
@@ -1282,7 +1309,7 @@ function QuestionPanel({
         <button
           type="submit"
           className="ot-button ot-button-primary"
-          disabled={!trimmed || !onSubmitQuestion}
+          disabled={readOnly || !trimmed || !onSubmitQuestion}
         >
           Preview private question
         </button>
@@ -1332,11 +1359,13 @@ function ClassPicker({
   label: pickerLabel,
   items,
   value,
+  disabled = false,
   onChange,
 }: {
   label: string;
   items: UpcomingClassSummary[];
   value: string;
+  disabled?: boolean;
   onChange: (classKey: string) => void;
 }) {
   return (
@@ -1349,6 +1378,7 @@ function ClassPicker({
             className="ot-choice"
             role="radio"
             aria-checked={item.class_key === value}
+            disabled={disabled}
             key={item.class_key}
             onClick={() => onChange(item.class_key)}
           >

@@ -75,7 +75,8 @@ function FictionalStudentShell() {
       </header>
       <p className="fictional-student-shell__notice" role="status">
         This isolated shell has no Administrator navigation, actions, logout, Student cookie, or
-        mutation controls. It cannot impersonate a real learner.
+        enabled mutation controls. Portal navigation is available, while every write remains
+        disabled. It cannot impersonate a real learner.
       </p>
 
       {state.kind === 'loading' && (
@@ -96,10 +97,11 @@ function FictionalStudentShell() {
             <h2 id="preview-role-name">{state.preview.label}</h2>
             <p>{state.preview.banner}</p>
           </section>
-          <div className="fictional-student-portal-preview" inert>
+          <div className="fictional-student-portal-preview">
             <StudentPortalFeature
               viewState="ready"
               dashboard={state.dashboard}
+              readOnly
               actorFingerprint={`fictional-preview:${state.dashboard.learner.learner_key}`}
             />
           </div>
