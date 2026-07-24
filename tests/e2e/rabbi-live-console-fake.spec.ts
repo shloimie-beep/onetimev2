@@ -16,6 +16,7 @@ test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', asy
     'ZoomStudentPassword!234',
     '/app/student',
   );
+  await studentPage.getByRole('link', { name: 'Questions', exact: true }).click();
   await expect(studentPage.getByLabel('Question for class')).toBeVisible();
 
   const questionResponse = studentPage.waitForResponse(
@@ -36,6 +37,7 @@ test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', asy
     `/app/live-console?occurrence_key=${encodeURIComponent(occurrenceKey)}`,
   );
   await expect(ownerPage.getByRole('heading', { name: 'Live Console' })).toBeVisible();
+  await ownerPage.getByRole('link', { name: 'Questions', exact: true }).click();
   const consoleSnapshot = await ownerPage.request.get(
     `/api/v1/live-class/questions?occurrence_key=${encodeURIComponent(occurrenceKey)}`,
   );

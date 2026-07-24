@@ -7,7 +7,14 @@ import type {
   LiveClassStageState,
   SessionUser,
 } from '@onetime/contracts';
+import {
+  LIVE_CONSOLE_SECTIONS,
+  adminPrimaryNav,
+  liveConsoleHref,
+  liveConsoleSectionFromSearch,
+} from './admin-ia.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { zoomProviderOffSummary } from './zoom-sdk-safety.js';
 import './crm.css';
 
@@ -18,6 +25,11 @@ type ApiSession = {
   user: SessionUser;
   csrf_token: string;
   expires_at: string;
+  capabilities?: {
+    operator_experience?: {
+      experience_preview?: boolean;
+    };
+  };
 };
 
 type Notice = { kind: 'info' | 'success' | 'error'; message: string };
@@ -37,6 +49,11 @@ function LiveConsole() {
     () => new URLSearchParams(location.search).get('occurrence_key'),
     [],
   );
+  const section = liveConsoleSectionFromSearch(location.search);
+  const liveConsoleSections = LIVE_CONSOLE_SECTIONS.map((item) => ({
+    ...item,
+    href: liveConsoleHref(item.id, occurrenceKey),
+  }));
 
   async function load() {
     setLoading(true);
@@ -78,9 +95,20 @@ function LiveConsole() {
     }
   }
 
-  const navItems: ShellNavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard', current: false },
-    { id: 'live', label: 'Live Console', href: '/app/live-console', current: true },
+  const navItems: ShellNavItem[] = adminPrimaryNav('live-console');
+  const utilityItems: ShellNavItem[] = [
+    { id: 'launch-status', label: 'Launch Status', href: '/app/launch-status', current: false },
+    ...(session?.capabilities?.operator_experience?.experience_preview
+      ? [
+          {
+            id: 'experience-preview',
+            label: 'Experience Preview',
+            href: '/app/experience-preview',
+            current: false,
+          },
+        ]
+      : []),
+    { id: 'support', label: 'Support', href: '/app/support', current: false },
   ];
   const selected = data?.selected_question ?? null;
 
@@ -88,6 +116,7 @@ function LiveConsole() {
     <AppShell
       user={session ? shellUserFromSession(session.user) : null}
       navItems={navItems}
+      utilityItems={utilityItems}
       title="Live Console"
       description="One Time classroom control"
       notice={notice ? <LiveNotice notice={notice} /> : undefined}
@@ -98,6 +127,12 @@ function LiveConsole() {
       onSignIn={() => window.location.assign('/login?return_to=%2Fapp%2Flive-console')}
     >
       <section className="live-console" aria-busy={loading}>
+        <WorkspaceTabs
+          tabs={liveConsoleSections}
+          currentId={section}
+          label="Live Console area"
+          onNavigate={(href) => window.location.assign(href)}
+        />
         <header className="live-console__header">
           <div>
             <p className="ot-kicker">Rabbi Console</p>
@@ -110,44 +145,132 @@ function LiveConsole() {
           </div>
         </header>
 
-        <div className="live-console__layout">
-          <section className="live-panel live-panel--queue" aria-labelledby="live-queue-heading">
-            <div className="live-panel__title">
-              <h3 id="live-queue-heading">Queued Questions</h3>
-              <button type="button" className="ot-button secondary" onClick={() => void load()}>
-                Refresh
-              </button>
-            </div>
-            <QuestionQueue
-              questions={data?.questions ?? []}
-              selectedKey={selected?.question_key ?? null}
-              onSelect={(question) =>
-                void postControl(
-                  `/api/v1/live-class/questions/${encodeURIComponent(question.question_key)}/select`,
-                  {},
-                  'Select question',
-                )
-              }
-              onResolve={(question, resolution) =>
-                void postControl(
-                  `/api/v1/live-class/questions/${encodeURIComponent(question.question_key)}/complete`,
-                  { resolution },
-                  resolution.replaceAll('_', ' '),
-                )
-              }
-            />
+        {section === 'current-class' && (
+          <section className="live-panel" aria-labelledby="live-current-class-heading">
+            <h3 id="live-current-class-heading">Current Class</h3>
+            <p>
+              {data?.stage.class_label ?? 'One Time live class'} is the focused classroom control
+              surface.
+            </p>
+            <details className="live-advanced">
+              <summary>Advanced</summary>
+              <h4>Stage and OBS</h4>
+              {data && <StagePreview data={data} />}
+              <div className="live-action-grid">
+                <button
+                  type="button"
+                  className="ot-button"
+                  onClick={() =>
+                    selected &&
+                    void postControl(
+                      '/api/v1/live-class/obs/commands',
+                      { action: 'feature_student', question_key: selected.question_key },
+                      'OBS feature student',
+                    )
+                  }
+                  disabled={!selected}
+                >
+                  OBS Featured Student
+                </button>
+                <button
+                  type="button"
+                  className="ot-button secondary"
+                  onClick={() =>
+                    void postControl(
+                      '/api/v1/live-class/obs/commands',
+                      { action: 'done' },
+                      'OBS slides',
+                    )
+                  }
+                >
+                  OBS Slides
+                </button>
+                <button
+                  type="button"
+                  className="ot-button danger"
+                  onClick={() =>
+                    void postControl(
+                      '/api/v1/live-class/obs/commands',
+                      { action: 'emergency_reset' },
+                      'Emergency reset',
+                    )
+                  }
+                >
+                  Emergency Reset
+                </button>
+              </div>
+              <ObsHealth data={data} />
+            </details>
           </section>
+        )}
 
-          <section
-            className="live-panel live-panel--selected"
-            aria-labelledby="live-selected-heading"
-          >
-            <div className="live-panel__title">
-              <h3 id="live-selected-heading">Selected Student</h3>
-              {selected && <span>{selected.status.replaceAll('_', ' ')}</span>}
-            </div>
+        {section === 'questions' && (
+          <div className="live-console__layout">
+            <section className="live-panel live-panel--queue" aria-labelledby="live-queue-heading">
+              <div className="live-panel__title">
+                <h3 id="live-queue-heading">Queued Questions</h3>
+                <button type="button" className="ot-button secondary" onClick={() => void load()}>
+                  Refresh
+                </button>
+              </div>
+              <QuestionQueue
+                questions={data?.questions ?? []}
+                selectedKey={selected?.question_key ?? null}
+                onSelect={(question) =>
+                  void postControl(
+                    `/api/v1/live-class/questions/${encodeURIComponent(question.question_key)}/select`,
+                    {},
+                    'Select question',
+                  )
+                }
+                onResolve={(question, resolution) =>
+                  void postControl(
+                    `/api/v1/live-class/questions/${encodeURIComponent(question.question_key)}/complete`,
+                    { resolution },
+                    resolution.replaceAll('_', ' '),
+                  )
+                }
+              />
+            </section>
+            <section
+              className="live-panel live-panel--selected"
+              aria-labelledby="live-selected-heading"
+            >
+              <div className="live-panel__title">
+                <h3 id="live-selected-heading">Selected Student</h3>
+                {selected && <span>{selected.status.replaceAll('_', ' ')}</span>}
+              </div>
+              {selected ? (
+                <SelectedQuestion
+                  question={selected}
+                  onFeature={() =>
+                    void postControl(
+                      `/api/v1/live-class/questions/${encodeURIComponent(selected.question_key)}/live`,
+                      {},
+                      'Feature student',
+                    )
+                  }
+                  onFinish={(resolution) =>
+                    void postControl(
+                      `/api/v1/live-class/questions/${encodeURIComponent(selected.question_key)}/complete`,
+                      { resolution },
+                      resolution === 'answered' ? 'Done' : resolution.replaceAll('_', ' '),
+                    )
+                  }
+                />
+              ) : (
+                <p className="live-empty">Select a question to prepare the student.</p>
+              )}
+            </section>
+          </div>
+        )}
+
+        {section === 'zoom' && (
+          <section className="live-panel" aria-labelledby="live-zoom-heading">
+            <h3 id="live-zoom-heading">Zoom</h3>
+            <ZoomHealth data={data} />
             {selected ? (
-              <SelectedQuestion
+              <ZoomControls
                 question={selected}
                 participant={participantFor(data?.participants ?? [], selected)}
                 onZoom={(operation) =>
@@ -157,80 +280,12 @@ function LiveConsole() {
                     operation.replaceAll('_', ' '),
                   )
                 }
-                onFeature={() =>
-                  void postControl(
-                    `/api/v1/live-class/questions/${encodeURIComponent(selected.question_key)}/live`,
-                    {},
-                    'Feature student',
-                  )
-                }
-                onFinish={(resolution) =>
-                  void postControl(
-                    `/api/v1/live-class/questions/${encodeURIComponent(selected.question_key)}/complete`,
-                    { resolution },
-                    resolution === 'answered' ? 'Done' : resolution.replaceAll('_', ' '),
-                  )
-                }
               />
             ) : (
-              <p className="live-empty">Select a question to prepare the student.</p>
+              <p className="live-empty">Select a question before using participant controls.</p>
             )}
           </section>
-
-          <section className="live-panel" aria-labelledby="live-stage-heading">
-            <h3 id="live-stage-heading">Stage And OBS</h3>
-            {data && <StagePreview data={data} />}
-            <div className="live-action-grid">
-              <button
-                type="button"
-                className="ot-button"
-                onClick={() =>
-                  selected &&
-                  void postControl(
-                    '/api/v1/live-class/obs/commands',
-                    { action: 'feature_student', question_key: selected.question_key },
-                    'OBS feature student',
-                  )
-                }
-                disabled={!selected}
-              >
-                OBS Featured Student
-              </button>
-              <button
-                type="button"
-                className="ot-button secondary"
-                onClick={() =>
-                  void postControl(
-                    '/api/v1/live-class/obs/commands',
-                    { action: 'done' },
-                    'OBS slides',
-                  )
-                }
-              >
-                OBS Slides
-              </button>
-              <button
-                type="button"
-                className="ot-button danger"
-                onClick={() =>
-                  void postControl(
-                    '/api/v1/live-class/obs/commands',
-                    { action: 'emergency_reset' },
-                    'Emergency reset',
-                  )
-                }
-              >
-                Emergency Reset
-              </button>
-            </div>
-            <ObsHealth data={data} />
-          </section>
-
-          <section className="live-panel" aria-labelledby="live-zoom-heading">
-            <h3 id="live-zoom-heading">Zoom Host Surface</h3>
-            <ZoomHealth data={data} />
-          </section>
-        </div>
+        )}
       </section>
     </AppShell>
   );
@@ -296,16 +351,10 @@ function QuestionQueue({
 
 function SelectedQuestion({
   question,
-  participant,
-  onZoom,
   onFeature,
   onFinish,
 }: {
   question: LiveClassQuestion;
-  participant: LiveClassParticipant | null;
-  onZoom: (
-    operation: 'ask_unmute' | 'mute' | 'spotlight_replace' | 'spotlight_remove' | 'stop_video',
-  ) => void;
   onFeature: () => void;
   onFinish: (resolution: 'answered' | 'approved_for_board' | 'kept_private' | 'rejected') => void;
 }) {
@@ -319,6 +368,54 @@ function SelectedQuestion({
         <StatusPill label="Student" value={question.readiness} />
         <StatusPill label="Mic" value={question.mic_ready ? 'ready' : 'not ready'} />
         <StatusPill label="Video" value={question.video_ready ? 'ready' : 'not ready'} />
+      </div>
+      <div className="live-action-grid">
+        <button
+          type="button"
+          className="ot-button"
+          onClick={onFeature}
+          disabled={question.status !== 'student_ready'}
+        >
+          Feature
+        </button>
+        <button type="button" className="ot-button secondary" onClick={() => onFinish('answered')}>
+          Done
+        </button>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onFinish('approved_for_board')}
+        >
+          Approve Board
+        </button>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onFinish('kept_private')}
+        >
+          Keep Private
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ZoomControls({
+  question,
+  participant,
+  onZoom,
+}: {
+  question: LiveClassQuestion;
+  participant: LiveClassParticipant | null;
+  onZoom: (
+    operation: 'ask_unmute' | 'mute' | 'spotlight_replace' | 'spotlight_remove' | 'stop_video',
+  ) => void;
+}) {
+  return (
+    <div className="live-selected">
+      <div className="live-selected__question">
+        <strong>{question.approved_display_name}</strong>
+        <p>{question.question_preview}</p>
       </div>
       <div className="live-roster-row">
         <span>{participant?.join_state ?? 'unknown'}</span>
@@ -349,31 +446,6 @@ function SelectedQuestion({
         </button>
         <button type="button" className="ot-button secondary" onClick={() => onZoom('stop_video')}>
           Stop Video
-        </button>
-        <button
-          type="button"
-          className="ot-button"
-          onClick={onFeature}
-          disabled={question.status !== 'student_ready'}
-        >
-          Feature
-        </button>
-        <button type="button" className="ot-button secondary" onClick={() => onFinish('answered')}>
-          Done
-        </button>
-        <button
-          type="button"
-          className="ot-button secondary"
-          onClick={() => onFinish('approved_for_board')}
-        >
-          Approve Board
-        </button>
-        <button
-          type="button"
-          className="ot-button secondary"
-          onClick={() => onFinish('kept_private')}
-        >
-          Keep Private
         </button>
       </div>
     </div>

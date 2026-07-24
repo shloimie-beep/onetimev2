@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { ExperiencePreviewCatalog, ExperiencePreviewRoleId } from '@onetime/contracts';
+import { Select } from '@onetime/brand-system/react';
 import { RolePreview } from './RolePreview.js';
 
 type LoadState =
@@ -16,6 +17,7 @@ export function ExperiencePreview({
 }) {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [selectedRoleId, setSelectedRoleId] = useState<ExperiencePreviewRoleId>('parent');
+  const [selectedSectionTitle, setSelectedSectionTitle] = useState('');
   const [openingRoleId, setOpeningRoleId] = useState<ExperiencePreviewRoleId | null>(null);
   const [launchError, setLaunchError] = useState('');
   const [preparedLaunch, setPreparedLaunch] = useState<{
@@ -48,7 +50,12 @@ export function ExperiencePreview({
       return;
     }
     setState({ kind: 'catalog', catalog: json.data });
-    setSelectedRoleId(json.data.roles[0]?.role_id ?? 'parent');
+    const firstRoleId = json.data.roles[0]?.role_id ?? 'parent';
+    const firstPreview =
+      json.data.previews.find((preview) => preview.role_id === firstRoleId) ??
+      json.data.previews[0];
+    setSelectedRoleId(firstRoleId);
+    setSelectedSectionTitle(firstPreview?.sections[0]?.title ?? '');
   }
 
   async function openFictionalStudentSession(roleId: ExperiencePreviewRoleId) {
@@ -93,6 +100,10 @@ export function ExperiencePreview({
       null
     );
   }, [selectedRoleId, state]);
+  const selectedSection =
+    selected?.sections.find((section) => section.title === selectedSectionTitle) ??
+    selected?.sections[0] ??
+    null;
 
   if (state.kind === 'loading') {
     return (
@@ -133,40 +144,47 @@ export function ExperiencePreview({
         <span className="preview-readonly-badge">Read-only</span>
       </header>
 
-      <ul className="experience-role-grid" aria-label="Fictional role previews">
-        {state.catalog.roles.map((role) => (
-          <li key={role.role_id}>
-            <button
-              type="button"
-              className="experience-role-card"
-              aria-label={`Preview ${role.label}: ${role.subtitle}`}
-              aria-pressed={role.role_id === selectedRoleId}
-              onClick={() => {
-                setSelectedRoleId(role.role_id);
-                setLaunchError('');
-                setPreparedLaunch(null);
-              }}
-            >
-              <span>Choose {role.label}</span>
-              <strong>{role.subtitle}</strong>
-              <span className="experience-role-card-action">Preview {role.label}</span>
-              <small data-state={role.state}>{stateLabel(role.state)}</small>
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="experience-preview-selectors">
+        <label>
+          <span>Role</span>
+          <Select
+            value={selectedRoleId}
+            onChange={(event) => {
+              const roleId = event.target.value as ExperiencePreviewRoleId;
+              const preview = state.catalog.previews.find(
+                (candidate) => candidate.role_id === roleId,
+              );
+              setSelectedRoleId(roleId);
+              setSelectedSectionTitle(preview?.sections[0]?.title ?? '');
+              setLaunchError('');
+              setPreparedLaunch(null);
+            }}
+          >
+            {state.catalog.roles.map((role) => (
+              <option key={role.role_id} value={role.role_id}>
+                {role.label} - {role.subtitle} ({stateLabel(role.state)})
+              </option>
+            ))}
+          </Select>
+        </label>
+        <label>
+          <span>Section</span>
+          <Select
+            value={selectedSection?.title ?? ''}
+            onChange={(event) => setSelectedSectionTitle(event.target.value)}
+          >
+            {selected?.sections.map((section) => (
+              <option key={section.title} value={section.title}>
+                {section.title}
+              </option>
+            ))}
+          </Select>
+        </label>
+      </div>
 
-      {selected && (
+      {selected && selectedSection && (
         <>
-          <div className="experience-selected-role" role="status">
-            <strong>Selected preview: {selected.label}</strong>
-            <span>
-              {selected.can_open_student_session
-                ? 'Inspect the read-only projection, then prepare and open its separate fictional Student session.'
-                : 'This Parent or Rabbi/Classroom projection renders read-only below; no account session is replaced.'}
-            </span>
-          </div>
-          <RolePreview preview={selected} />
+          <RolePreview preview={selected} section={selectedSection} />
           {selected.can_open_student_session && (
             <div className="experience-session-action">
               <button
@@ -201,13 +219,6 @@ export function ExperiencePreview({
           )}
         </>
       )}
-
-      <nav className="experience-safe-routes" aria-label="Operator routes">
-        <a href={state.catalog.safe_routes.live_console}>Live Console</a>
-        <a href={state.catalog.safe_routes.content_factory}>Content Factory</a>
-        <a href={state.catalog.safe_routes.classes}>Classes</a>
-        <a href={state.catalog.safe_routes.vimeo_demo}>Prepared Vimeo Demo</a>
-      </nav>
     </section>
   );
 }

@@ -44,9 +44,16 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
 
   await page.goto(`${staging.baseUrl}/app/dashboard`);
   const appNavigation = page.getByLabel('One Time app');
-  await expect(appNavigation.getByRole('link', { name: 'Launch Status' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Launch Status' })).toBeVisible();
-  await page.getByRole('button', { name: 'Open Launch Status' }).click();
+  const utilityNavigation = page.getByLabel('One Time utilities');
+  await expect(appNavigation.getByRole('link').allTextContents()).resolves.toEqual([
+    'Dashboard',
+    'Contacts',
+    'Content',
+    'Classroom',
+    'Live Console',
+  ]);
+  await expect(appNavigation.getByRole('link', { name: 'Launch Status' })).toHaveCount(0);
+  await utilityNavigation.getByRole('link', { name: 'Launch Status' }).click();
   await expect(page).toHaveURL(`${staging.baseUrl}/app/launch-status`);
   const launchStatusResponse = await page.request.get(`${staging.baseUrl}/api/v1/launch-status`);
   expect(launchStatusResponse.ok()).toBe(true);
@@ -85,24 +92,27 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   await appNavigation.getByRole('link', { name: 'Dashboard' }).click();
   await expect(page).toHaveURL(`${staging.baseUrl}/app/dashboard`);
-  await expect(
-    page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
-  ).toBeVisible();
-  await page.getByRole('button', { name: 'Open portal preview' }).click();
+  await utilityNavigation.getByRole('link', { name: 'Experience Preview' }).click();
   await expect(page).toHaveURL(`${staging.baseUrl}/app/experience-preview`);
   await expect(
-    page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
+    page.getByRole('heading', {
+      name: 'The Cohen Family — One Time launch walkthrough',
+      exact: true,
+    }),
   ).toBeVisible();
-  await expect(appNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
+  await expect(utilityNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
   await expect(appNavigation.getByRole('link', { name: 'Live Console' })).toBeVisible();
 
-  for (const label of ['Parent', 'Student 1', 'Student 2', 'Student 3', 'Rabbi/Classroom']) {
-    const role = page.getByRole('button', {
-      name: new RegExp(`^Preview ${escapeRegex(label)}:`),
-    });
-    await role.click();
-    await expect(role).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByText(`Selected preview: ${label}`, { exact: true })).toBeVisible();
+  for (const [value, label] of [
+    ['parent', 'Parent'],
+    ['student_1', 'Student 1'],
+    ['student_2', 'Student 2'],
+    ['student_3', 'Student 3'],
+    ['rabbi_classroom', 'Rabbi/Classroom'],
+  ] as const) {
+    await page.getByLabel('Role').selectOption(value);
+    await expect(page.getByText(`${label} view`, { exact: true })).toBeVisible();
+    await expect(page.locator('.experience-section')).toHaveCount(1);
   }
 
   const studentOne = await openStudentPreview(page, context, 'Student 1');
@@ -131,32 +141,38 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   });
   expect(adminSession.status).toBe(200);
   expect(adminSession.json.user.role).toBe('owner');
-  await expect(appNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
+  await expect(utilityNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
 
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto(`${staging.baseUrl}/app/dashboard`);
-  await expect(page.getByRole('heading', { name: 'Launch Status' })).toBeVisible();
-  await expect(
-    page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
-  ).toBeVisible();
   await page.getByRole('button', { name: 'Open navigation' }).click();
   const drawer = page.getByRole('dialog', { name: 'One Time navigation' });
+  await expect(
+    drawer.getByLabel('One Time app').getByRole('link').allTextContents(),
+  ).resolves.toEqual(['Dashboard', 'Contacts', 'Content', 'Classroom', 'Live Console']);
   await expect(drawer.getByRole('link', { name: 'Launch Status' })).toBeVisible();
   await expect(drawer.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
-  await drawer.getByRole('button', { name: 'Close navigation' }).click();
-  await page.getByRole('button', { name: 'Open Launch Status' }).click();
+  await drawer.getByRole('link', { name: 'Launch Status' }).click();
   await expect(page).toHaveURL(`${staging.baseUrl}/app/launch-status`);
   await expect(
     page.getByRole('progressbar', { name: 'Current launch milestone progress' }),
   ).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   await page.goto(`${staging.baseUrl}/app/dashboard`);
-  await page.getByRole('button', { name: 'Open portal preview' }).click();
+  await page.getByRole('button', { name: 'Open navigation' }).click();
+  await page
+    .getByRole('dialog', { name: 'One Time navigation' })
+    .getByRole('link', { name: 'Experience Preview' })
+    .click();
   await expect(
-    page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
+    page.getByRole('heading', {
+      name: 'The Cohen Family — One Time launch walkthrough',
+      exact: true,
+    }),
   ).toBeVisible();
-  await page.getByRole('button', { name: /^Preview Student 1:/ }).click();
-  await expect(page.getByText('Selected preview: Student 1', { exact: true })).toBeVisible();
+  await page.getByLabel('Role').selectOption('student_1');
+  await expect(page.getByText('Student 1 view', { exact: true })).toBeVisible();
+  await expect(page.locator('.experience-section')).toHaveCount(1);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   await studentOne.setViewportSize({ width: 360, height: 800 });
   expect(await horizontalOverflow(studentOne)).toBeLessThanOrEqual(1);
@@ -170,21 +186,22 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   await useAdminSession(productionContext, production);
   const productionPage = await productionContext.newPage();
   await productionPage.goto(`${production.baseUrl}/app/dashboard`);
-  await expect(productionPage.getByRole('heading', { name: 'Launch Status' })).toBeVisible();
   await expect(
-    productionPage.getByLabel('One Time app').getByRole('link', { name: 'Launch Status' }),
+    productionPage.getByLabel('One Time utilities').getByRole('link', { name: 'Launch Status' }),
   ).toBeVisible();
-  await productionPage.getByRole('button', { name: 'Open Launch Status' }).click();
+  await productionPage
+    .getByLabel('One Time utilities')
+    .getByRole('link', { name: 'Launch Status' })
+    .click();
   await expect(productionPage).toHaveURL(`${production.baseUrl}/app/launch-status`);
   await expect(
     productionPage.getByRole('progressbar', { name: 'Current launch milestone progress' }),
   ).toBeVisible();
   await productionPage.goto(`${production.baseUrl}/app/dashboard`);
-  await expect(
-    productionPage.getByRole('heading', { name: 'Preview Parent & Student portals' }),
-  ).toHaveCount(0);
   await expect(productionPage.getByRole('link', { name: 'Experience Preview' })).toHaveCount(0);
-  await expect(productionPage.getByRole('link', { name: 'Live Console' })).toHaveCount(0);
+  await expect(
+    productionPage.getByLabel('One Time app').getByRole('link', { name: 'Live Console' }),
+  ).toBeVisible();
   const rejected = await productionPage.goto(`${production.baseUrl}/app/experience-preview`);
   expect(rejected?.status()).toBe(404);
   await productionContext.close();
@@ -195,9 +212,7 @@ async function openStudentPreview(
   context: BrowserContext,
   roleLabel: 'Student 1' | 'Student 2',
 ) {
-  await page
-    .getByRole('button', { name: new RegExp(`^Preview ${escapeRegex(roleLabel)}:`) })
-    .click();
+  await page.getByLabel('Role').selectOption(roleLabel === 'Student 1' ? 'student_1' : 'student_2');
   await page.getByRole('button', { name: 'Prepare fictional Student session' }).click();
   const link = page.getByRole('link', { name: 'Open fictional Student session' });
   await expect(link).toHaveAttribute('target', '_blank');
@@ -329,8 +344,4 @@ function baseEnvironment() {
     ONE_TIME_PRODUCT_KEY: 'one_time_mishnah_class',
     ZOOM_CLASSROOM_ENABLED: 'true',
   } satisfies NodeJS.ProcessEnv;
-}
-
-function escapeRegex(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

@@ -4,6 +4,21 @@
   min-width: 0;
 }
 
+.content-library-view {
+  display: grid;
+  gap: var(--ot-space-1);
+  width: min(100%, 22rem);
+}
+
+.content-library-view span {
+  color: var(--ot-color-text-muted);
+  font-size: 0.9rem;
+}
+
+.content-library-view select {
+  width: 100%;
+}
+
 .content-factory-hero {
   display: flex;
   gap: var(--ot-space-4);

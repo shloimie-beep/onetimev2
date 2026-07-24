@@ -126,6 +126,80 @@
   gap: var(--ot-space-2);
 }
 
+.live-advanced {
+  border-top: 1px solid var(--ot-color-border);
+  padding-top: var(--ot-space-3);
+}
+
+.live-advanced summary {
+  min-height: var(--ot-size-touch-target);
+  color: var(--ot-color-action-auth);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.live-advanced[open] {
+  display: grid;
+  gap: var(--ot-space-3);
+}
+
+.dashboard-surface,
+.classroom-workspace {
+  display: grid;
+  gap: var(--ot-space-4);
+  min-width: 0;
+}
+
+.dashboard-overview-card {
+  display: grid;
+  gap: var(--ot-space-3);
+}
+
+.dashboard-overview-card h2,
+.dashboard-overview-list {
+  margin: 0;
+}
+
+.dashboard-overview-list {
+  display: grid;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-overview-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--ot-space-3);
+  border-top: 1px solid var(--ot-color-border);
+  padding: var(--ot-space-3) 0;
+}
+
+.dashboard-overview-list li > span {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--ot-space-1);
+}
+
+.dashboard-overview-list small {
+  color: var(--ot-color-text-muted);
+}
+
+.classroom-occurrence-selector {
+  display: grid;
+  gap: var(--ot-space-1);
+  width: min(100%, 36rem);
+}
+
+.classroom-occurrence-selector span {
+  color: var(--ot-color-text-muted);
+  font-size: 0.9rem;
+}
+
+.classroom-occurrence-selector select {
+  width: 100%;
+}
+
 .experience-preview,
 .experience-role-preview,
 .experience-section,
@@ -133,6 +207,23 @@
 .experience-selected-role {
   display: grid;
   gap: var(--ot-space-4);
+}
+
+.experience-preview-selectors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ot-space-3);
+}
+
+.experience-preview-selectors label {
+  display: grid;
+  gap: var(--ot-space-1);
+  color: var(--ot-color-text-muted);
+}
+
+.experience-preview-selectors select {
+  width: 100%;
+  color: var(--ot-color-text);
 }
 
 .experience-preview-intro,
@@ -541,6 +632,11 @@
   .experience-preview-banner {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .experience-preview-selectors,
+  .dashboard-overview-list li {
+    grid-template-columns: 1fr;
   }
 
   .fictional-student-shell__banner {

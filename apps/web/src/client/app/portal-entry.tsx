@@ -548,6 +548,7 @@ function PortalApp() {
           dashboard={parentDashboard}
           selectedLearnerKey={selectedLearner?.learner_key ?? null}
           activeSection={activeSection as ParentPortalSection}
+          navigationMode="shell"
           learnerMaterials={parentMaterials}
           actorFingerprint={actorFingerprint}
           onSelectSection={(section) => {
@@ -571,6 +572,7 @@ function PortalApp() {
           viewState={viewState}
           dashboard={studentDashboard}
           activeSection={activeSection as StudentPortalSection}
+          navigationMode="shell"
           actorFingerprint={actorFingerprint}
           onSelectSection={(section) => {
             history.pushState({}, '', `/app/student?section=${section}`);

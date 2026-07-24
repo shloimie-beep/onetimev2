@@ -33,6 +33,8 @@ import {
   Select,
   Table,
 } from '@onetime/brand-system/react';
+import { CONTENT_SECTIONS, contentSectionFromPath } from '../admin-ia.js';
+import { WorkspaceTabs } from '../shell/WorkspaceTabs.js';
 import './content-workspace.css';
 
 type RouteKind =
@@ -65,16 +67,10 @@ type FilterState = {
   sort: string;
 };
 
-const navItems: Array<{ href: string; label: string; kind: RouteKind }> = [
-  { href: '/app/content', label: 'Overview', kind: 'overview' },
-  { href: '/app/content/processing', label: 'Processing', kind: 'processing' },
-  { href: '/app/content/factory', label: 'Content Factory', kind: 'factory' },
-  { href: '/app/content/create', label: 'Create', kind: 'create' },
-  { href: '/app/content/social', label: 'Social', kind: 'social' },
-  { href: '/app/content/knowledge', label: 'Knowledge', kind: 'knowledge' },
-  { href: '/app/content/prompts', label: 'Prompts', kind: 'prompts' },
-  { href: '/app/content/activity', label: 'Activity', kind: 'activity' },
-];
+const studioViews = [
+  { id: 'create', label: 'Create', href: '/app/content/studio' },
+  { id: 'social', label: 'Social', href: '/app/content/studio/social' },
+] as const;
 
 const artifactKinds: ContentAdminArtifactKind[] = [
   'lesson_summary',
@@ -214,21 +210,12 @@ export function ContentWorkspace({
 
   return (
     <section className="content-workspace" data-usable="content-workspace">
-      <nav className="content-tabs" aria-label="Content workspace">
-        {navItems.map((item) => (
-          <a
-            key={item.href}
-            href={item.href}
-            aria-current={route.kind === item.kind ? 'page' : undefined}
-            onClick={(event) => {
-              event.preventDefault();
-              onNavigate(item.href);
-            }}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
+      <WorkspaceTabs
+        tabs={CONTENT_SECTIONS}
+        currentId={contentSectionFromPath(path)}
+        label="Content area"
+        onNavigate={onNavigate}
+      />
       {notice && (
         <p className="notice-banner success" role="status">
           {notice}
@@ -247,19 +234,25 @@ export function ContentWorkspace({
         />
       )}
       {!loading && !error && route.kind === 'overview' && overview && (
-        <OverviewView
-          data={overview}
-          filters={filters}
-          onFiltersChange={setFilters}
-          onApplyFilters={() => setAppliedFilters(filters)}
-          onOpen={(sourceKey) => onNavigate(`/app/content/${encodeURIComponent(sourceKey)}`)}
-        />
+        <>
+          <LibraryViewSelector currentId="all" onNavigate={onNavigate} />
+          <OverviewView
+            data={overview}
+            filters={filters}
+            onFiltersChange={setFilters}
+            onApplyFilters={() => setAppliedFilters(filters)}
+            onOpen={(sourceKey) => onNavigate(`/app/content/${encodeURIComponent(sourceKey)}`)}
+          />
+        </>
       )}
       {!loading && !error && route.kind === 'processing' && processing && (
-        <ProcessingView
-          data={processing}
-          onRetry={(sourceKey) => postSourceAction(sourceKey, 'retry', 'Retry from admin queue')}
-        />
+        <>
+          <LibraryViewSelector currentId="processing" onNavigate={onNavigate} />
+          <ProcessingView
+            data={processing}
+            onRetry={(sourceKey) => postSourceAction(sourceKey, 'retry', 'Retry from admin queue')}
+          />
+        </>
       )}
       {!loading && !error && route.kind === 'factory' && factory && (
         <FactoryView
@@ -273,17 +266,35 @@ export function ContentWorkspace({
         />
       )}
       {!loading && !error && route.kind === 'create' && createData && (
-        <CreateView
-          data={createData}
-          csrfToken={csrfToken}
-          onProtectedStateCleared={onProtectedStateCleared}
-          onCreated={async () => {
-            setNotice('Draft generated for review.');
-            await loadRoute();
-          }}
-        />
+        <>
+          <WorkspaceTabs
+            tabs={studioViews}
+            currentId="create"
+            label="Studio view"
+            onNavigate={onNavigate}
+          />
+          <CreateView
+            data={createData}
+            csrfToken={csrfToken}
+            onProtectedStateCleared={onProtectedStateCleared}
+            onCreated={async () => {
+              setNotice('Draft generated for review.');
+              await loadRoute();
+            }}
+          />
+        </>
       )}
-      {!loading && !error && route.kind === 'social' && social && <SocialView data={social} />}
+      {!loading && !error && route.kind === 'social' && social && (
+        <>
+          <WorkspaceTabs
+            tabs={studioViews}
+            currentId="social"
+            label="Studio view"
+            onNavigate={onNavigate}
+          />
+          <SocialView data={social} />
+        </>
+      )}
       {!loading && !error && route.kind === 'knowledge' && knowledge && (
         <KnowledgeView data={knowledge} />
       )}
@@ -299,7 +310,15 @@ export function ContentWorkspace({
         />
       )}
       {!loading && !error && route.kind === 'activity' && activity && (
-        <ActivityView events={activity.events} />
+        <EmptyState
+          title="Activity moved to item history"
+          body="Open a Library item to review its scoped history. The legacy Activity bookmark remains safe."
+          action={
+            <Button type="button" variant="primary" onClick={() => onNavigate('/app/content')}>
+              Return to Library
+            </Button>
+          }
+        />
       )}
       {!loading && !error && route.kind === 'detail' && detail && (
         <SourceDetailView
@@ -309,6 +328,31 @@ export function ContentWorkspace({
         />
       )}
     </section>
+  );
+}
+
+function LibraryViewSelector({
+  currentId,
+  onNavigate,
+}: {
+  currentId: 'all' | 'processing';
+  onNavigate: (href: string) => void;
+}) {
+  return (
+    <label className="content-library-view">
+      <span>Library view</span>
+      <Select
+        value={currentId}
+        onChange={(event) =>
+          onNavigate(
+            event.target.value === 'processing' ? '/app/content/processing' : '/app/content',
+          )
+        }
+      >
+        <option value="all">All items</option>
+        <option value="processing">Processing queue</option>
+      </Select>
+    </label>
   );
 }
 
@@ -1643,9 +1687,14 @@ function ProviderPorts({ ports }: { ports: ContentAdminProviderPortStatus[] }) {
 function routeFromPath(path: string): RouteState {
   const cleanPath = path.split('?')[0] ?? '/app/content';
   if (cleanPath === '/app/content') return { kind: 'overview' };
-  const segment = cleanPath.replace(/^\/app\/content\/?/, '').split('/')[0] ?? '';
+  const segments = cleanPath
+    .replace(/^\/app\/content\/?/, '')
+    .split('/')
+    .filter(Boolean);
+  const segment = segments[0] ?? '';
   if (segment === 'processing') return { kind: 'processing' };
   if (segment === 'factory') return { kind: 'factory' };
+  if (segment === 'studio') return { kind: segments[1] === 'social' ? 'social' : 'create' };
   if (segment === 'create') return { kind: 'create' };
   if (segment === 'social') return { kind: 'social' };
   if (segment === 'knowledge') return { kind: 'knowledge' };
