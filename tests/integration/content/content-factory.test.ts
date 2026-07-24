@@ -533,6 +533,14 @@ describe('durable occurrence-scoped content factory', () => {
           AND source_key = 'factory_sample_2026_07_22'`,
       [config.accountKey, config.productKey],
     );
+    await pool.query(
+      `UPDATE onetime.content_items
+          SET occurrence_key = 'occurrence_video_e2e'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND content_item_key = 'factory_sample_2026_07_22'`,
+      [config.accountKey, config.productKey],
+    );
 
     const server = await listenForTest(createApp({ config, pool }));
     try {
@@ -611,6 +619,59 @@ describe('durable occurrence-scoped content factory', () => {
       expect(intendedLibrary.map((item) => item.item_key)).toContain('factory_sample_2026_07_22');
       expect(siblingLibrary.map((item) => item.item_key)).not.toContain(
         'factory_sample_2026_07_22',
+      );
+
+      await pool.query(
+        `UPDATE onetime.account_access_projections
+            SET state = 'revoked',
+                revocation_reason = 'occurrence_scope_regression'
+          WHERE account_key = $1
+            AND product_key = $2
+            AND household_key = 'household_video_e2e'`,
+        [config.accountKey, config.productKey],
+      );
+      const occurrenceScope = await pool.query(
+        `SELECT items.occurrence_key, factory.factory_state,
+                occurrence_entitlement.entitlement_state
+           FROM onetime.content_items AS items
+           JOIN onetime.learning_delivery_content_factory_items AS factory
+             ON factory.source_key = items.content_item_key
+           JOIN onetime.classroom_occurrence_learner_entitlements AS occurrence_entitlement
+             ON occurrence_entitlement.occurrence_key = items.occurrence_key
+          WHERE items.account_key = $1
+            AND items.product_key = $2
+            AND items.content_item_key = 'factory_sample_2026_07_22'
+            AND occurrence_entitlement.household_key = 'household_video_e2e'
+            AND occurrence_entitlement.learner_key = 'learner_video_one'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(occurrenceScope.rows).toEqual([
+        expect.objectContaining({
+          occurrence_key: 'occurrence_video_e2e',
+          factory_state: 'published',
+          entitlement_state: 'active',
+        }),
+      ]);
+      const occurrenceScopedLibrary = await adapter.publishedLibraryForLearner({
+        actor: studentActor(student.userKey, 'learner_video_one'),
+        learner: studentLearner('learner_video_one', 'Entitled learner'),
+      });
+      const occurrenceScopedSiblingLibrary = await adapter.publishedLibraryForLearner({
+        actor: studentActor(sibling.userKey, 'learner_video_sibling'),
+        learner: studentLearner('learner_video_sibling', 'Unentitled sibling'),
+      });
+      expect(occurrenceScopedLibrary.map((item) => item.item_key)).toContain(
+        'factory_sample_2026_07_22',
+      );
+      expect(occurrenceScopedSiblingLibrary).toEqual([]);
+      await pool.query(
+        `UPDATE onetime.account_access_projections
+            SET state = 'active',
+                revocation_reason = NULL
+          WHERE account_key = $1
+            AND product_key = $2
+            AND household_key = 'household_video_e2e'`,
+        [config.accountKey, config.productKey],
       );
 
       const siblingPlayback = await playback(server.baseUrl, sibling, 'factory_sample_2026_07_22');
