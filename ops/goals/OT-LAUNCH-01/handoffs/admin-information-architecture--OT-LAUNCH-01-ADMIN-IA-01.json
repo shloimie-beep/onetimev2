@@ -12,8 +12,10 @@
   "write_scope": "Client-focused Admin information architecture, scoped tests, sanitized browser evidence, and this result handoff; no BOARD, access/auth, GHL, Telegram, Zoom, Vimeo, migration, provider, payment, deployment, credential, or production mutation.",
   "result": {
     "status": "implementation_complete",
-    "base_commit": "bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0",
-    "implementation_commit": "9ac871991da7e6c49437a5f692802797e9d5f365",
+    "base_commit": "690df5a732b847f8adb2c840b5d004679900d4c4",
+    "implementation_commit": "afbb0f4ac2ff9757b47ca4e94e159218a5a1b09b",
+    "supersedes_head": "91098a69ca96adc254a51d377844f0f12c8226cc",
+    "inherited_student_playback_repair_commit": "690df5a732b847f8adb2c840b5d004679900d4c4",
     "primary_navigation": ["Dashboard", "Contacts", "Content", "Classroom", "Live Console"],
     "provider_changed": false,
     "auth_or_access_changed": false,
@@ -39,9 +41,9 @@
     "npm run secret:scan",
     "git diff --check",
     "3 focused Admin IA unit tests passed",
-    "11 focused UI and portal-isolation integration tests passed",
-    "10 Experience Preview security-boundary integration tests passed",
-    "Admin IA and Experience Preview real Chromium journeys passed"
+    "64 integration files and 332 integration tests passed on governed descendant 690df5a732b847f8adb2c840b5d004679900d4c4",
+    "The exact reviewed-staging synthetic lesson playback, sibling-denial, and fixed-demo projection contracts passed",
+    "2 Admin IA and Experience Preview real Chromium journeys passed across 360x800, 390x844, 768x1024, and 1440x1000"
   ],
   "evidence": [
     {
@@ -78,22 +80,18 @@
       "path": "tests/integration/security/portal-isolation-boundaries.test.ts",
       "kind": "existing_portal_authorization_isolation_contract",
       "sanitized": true
+    },
+    {
+      "path": "tests/integration/experience-preview.test.ts",
+      "kind": "governed_descendant_playback_entitlement_and_preview_isolation_contract",
+      "source_commit": "690df5a732b847f8adb2c840b5d004679900d4c4",
+      "sanitized": true
     }
   ],
   "remaining_work": [
-    "The upstream owner must restore the reviewed-staging synthetic lesson playback contract so tests/integration/experience-preview.test.ts:563 returns 200 instead of the pre-existing 404.",
     "Conductor review and merge into codex/full-app-staging-live.",
     "Post-merge staging deployment and readback are conductor-owned; this task did not deploy production."
   ],
-  "blocker": {
-    "kind": "pre_existing_required_ci_failure",
-    "scope": "Outside the assigned client-focused information architecture and protected by the packet's provider and access exclusions.",
-    "check": "Node 24 verify / Integration tests",
-    "test": "tests/integration/experience-preview.test.ts:563",
-    "observed": "Approved lesson playback is unavailable: expected HTTP 200 and received HTTP 404.",
-    "base_proof": "The current codex/full-app-staging-live head 7ac546846592266ce1a112c42d7d578276c6ec3d has the exact same failure in GitHub Actions run 30075949198.",
-    "pr_proof": "GitHub Actions run 30078846310 passed 331 integration tests, including all Admin IA and preview-isolation contracts, and failed only the same synthetic lesson playback assertion.",
-    "resolution_owner": "Conductor or upstream synthetic lesson playback owner"
-  },
-  "sanitized_at": "2026-07-24T08:30:13Z"
+  "blocker": null,
+  "sanitized_at": "2026-07-24T08:57:38Z"
 }
