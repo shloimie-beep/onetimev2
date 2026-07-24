@@ -137,19 +137,16 @@ async function runConcurrencyProof(pool: DbPool) {
     idempotency_key: `ot83-replacement-${suffix}`,
     display_name: 'Replacement Learner',
   });
-  let restoreBlocked = false;
-  try {
-    await service.restoreLearner(actor, householdKey, first.learner_key, {
-      idempotency_key: `ot83-restore-blocked-${suffix}`,
+  const restoredAfterReplacement = await service.restoreLearner(
+    actor,
+    householdKey,
+    first.learner_key,
+    {
+      idempotency_key: `ot83-restore-after-replacement-${suffix}`,
       version: reArchived.version,
-    });
-  } catch (error) {
-    restoreBlocked =
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 'LEARNER_LIMIT_REACHED';
-  }
+    },
+  );
+  const activeAfterFinalRestore = await activeCount(pool, accountKey, productKey, householdKey);
 
   const auditRows = await pool.query(
     `SELECT action_type, learner_key
@@ -162,19 +159,20 @@ async function runConcurrencyProof(pool: DbPool) {
   );
 
   const status =
-    fulfilled.length === 1 &&
-    limitRejections.length === 1 &&
-    activeAfterRace === 3 &&
+    fulfilled.length === 2 &&
+    limitRejections.length === 0 &&
+    activeAfterRace === 4 &&
     restored.learner_status === 'active' &&
     replacement.learner_status === 'active' &&
-    restoreBlocked
+    restoredAfterReplacement.learner_status === 'active' &&
+    activeAfterFinalRestore === 5
       ? 'completed'
       : 'failed';
 
   return {
     status,
     scenario:
-      'Start with two active learners; launch two concurrent seat-consuming attempts; exactly one succeeds and one receives LEARNER_LIMIT_REACHED.',
+      'Start with two active learners; launch two concurrent learner creates; both succeed without a household seat cap, and archive, replacement, and restore remain atomic and audited.',
     race: {
       fulfilled: fulfilled.length,
       limit_rejections: limitRejections.length,
@@ -184,7 +182,8 @@ async function runConcurrencyProof(pool: DbPool) {
       archived_status: archived.learner_status,
       restored_status: restored.learner_status,
       replacement_learner_key: replacement.learner_key,
-      restore_blocked_at_capacity: restoreBlocked,
+      restore_after_replacement_status: restoredAfterReplacement.learner_status,
+      active_after_final_restore: activeAfterFinalRestore,
     },
     audit_actions: auditRows.rows.map((row) => ({
       action_type: String(row.action_type),
