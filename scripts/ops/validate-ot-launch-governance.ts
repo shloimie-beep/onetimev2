@@ -262,7 +262,7 @@ record(
       objectAt(sdkTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
       objectAt(hostTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
       objectAt(operatorTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
-      operatorBlocker.code === 'ZOOM_DISPOSABLE_CANARY_PROVIDER_DELETION_UNPROVEN' &&
+      operatorBlocker.code === 'RAILWAY_PROVIDER_SESSION_NOT_AUTHENTICATED_AFTER_HOST_RESTART' &&
       outcome.external_action_count === 16 &&
       externalActions.some(
         (action) =>
@@ -279,10 +279,13 @@ record(
       parsedBoardStrings.some(({ value }) =>
         value.includes('c6d90077-de1c-41ed-b30e-cda5389b98b2'),
       ) &&
-      parsedBoardStrings.some(({ value }) => value.includes('2c0d6ed8-a7e1-4da2-baf9-06323de78dc8'))
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('2c0d6ed8-a7e1-4da2-baf9-06323de78dc8'),
+      ) &&
+      parsedBoardStrings.some(({ value }) => value.includes('019f9460-bdcc-7f63-9273-0a05e75fcf19'))
     );
   })(),
-  'one disposable meeting exists; provider deletion and signed tombstone remain unproven',
+  'one disposable meeting exists; provider cleanup awaits restored Railway browser authentication',
 );
 record(
   'external action accounting is exact',
