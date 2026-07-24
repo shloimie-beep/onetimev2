@@ -50,6 +50,11 @@ import {
   liveClassQuestionSubmitResponseSchema,
   liveClassStageResponseSchema,
   liveClassZoomControlPayloadSchema,
+  liveClassZoomCommandPollResponseSchema,
+  liveClassZoomHostBootstrapResponseSchema,
+  liveClassZoomParticipantSyncPayloadSchema,
+  liveClassZoomParticipantSyncResponseSchema,
+  liveClassZoomTestParticipantBootstrapResponseSchema,
   loginPayloadSchema,
   publicFieldErrors,
   updateContactSchema,
@@ -122,6 +127,7 @@ import {
   createClassroomPortalAccessAdapter,
   createClassroomService,
   createLiveClassService,
+  createZoomHostLaunchPort,
   createContentPortalAccessAdapter,
   createGamificationService,
   createLoginCsrf,
@@ -805,6 +811,79 @@ export function createApp({
     },
   );
 
+  app.get('/app/live-console/zoom-host', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Flive-console%2Fzoom-host');
+      return;
+    }
+    if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data: blob: https://source.zoom.us",
+        "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+        "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+        "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+        "worker-src 'self' blob:",
+        "media-src 'self' blob: mediastream:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+      ].join('; '),
+    );
+    res.status(200).type('html').send(zoomHostHtml());
+  });
+
+  app.get('/app/live-console/zoom-participant/:student', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Flive-console');
+      return;
+    }
+    if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    const student = Number(req.params.student);
+    if (![1, 2, 3].includes(student)) {
+      res.status(404).type('text').send('Fictional student not found.');
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data: blob: https://source.zoom.us",
+        "script-src 'self' https://source.zoom.us 'unsafe-eval' 'wasm-unsafe-eval'",
+        "style-src 'self' 'unsafe-inline' https://source.zoom.us",
+        "connect-src 'self' https://*.zoom.us wss://*.zoom.us",
+        "worker-src 'self' blob:",
+        "media-src 'self' blob: mediastream:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+      ].join('; '),
+    );
+    res.status(200).type('html').send(zoomParticipantHtml(student));
+  });
+
   app.get(/^\/app\/live-console(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     const session = await sessionFromRequest(req, pool, config);
     if (!session) {
@@ -1255,12 +1334,14 @@ export function createApp({
     ...(clock ? { clock } : {}),
   });
   const liveClassRepository = createLiveClassRepository(pool);
+  const zoomHostLaunchPort = createZoomHostLaunchPort(config);
   const liveClassService = createLiveClassService({
     config,
     repository: liveClassRepository,
     questionCodec: new AesGcmPayloadCodec(
       `${config.mfaSecretEncryptionKey}:live-class-question-v1`,
     ),
+    ...(zoomHostLaunchPort ? { zoomHostLaunchPort } : {}),
     ...(clock ? { clock } : {}),
   });
   const gamificationRepository = createGamificationRepository(pool);
@@ -1558,6 +1639,106 @@ export function createApp({
       const payload = liveClassZoomControlPayloadSchema.parse(req.body);
       const data = await liveClassService.zoomControl(actor, payload);
       res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/zoom/host/bootstrap', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const data = await liveClassService.zoomHostBootstrap(
+        actor,
+        optionalQueryString(req.query.occurrence_key),
+      );
+      res.json(liveClassZoomHostBootstrapResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/zoom/participant/bootstrap', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const student = z.coerce.number().int().min(1).max(3).parse(req.query.student);
+      const data = await liveClassService.zoomTestParticipantBootstrap(
+        actor,
+        student,
+        optionalQueryString(req.query.occurrence_key),
+      );
+      res.json(liveClassZoomTestParticipantBootstrapResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/zoom/host/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const occurrenceKey = String(req.query.occurrence_key ?? '');
+      const commands = await liveClassService.pollZoomCommands(actor, occurrenceKey);
+      res.json(liveClassZoomCommandPollResponseSchema.parse({ success: true, data: { commands } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/host/participants', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassZoomParticipantSyncPayloadSchema.parse(req.body);
+      const data = await liveClassService.syncZoomParticipants(actor, payload);
+      res.json(liveClassZoomParticipantSyncResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/host/commands/report', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassObsCommandReportPayloadSchema.parse(req.body);
+      const data = await liveClassService.reportZoomCommand(actor, payload);
+      res.json({ success: true, data });
     } catch (error) {
       handleApiError(error, req, res);
     }
@@ -3551,7 +3732,9 @@ function statusForPortalError(code: string) {
     return 409;
   }
   if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
-  if (code === 'ADAPTER_UNAVAILABLE') return 503;
+  if (code === 'ADAPTER_UNAVAILABLE' || code === 'PROVIDER_OFF' || code === 'PROVIDER_NOT_READY') {
+    return 503;
+  }
   return 500;
 }
 
@@ -4045,6 +4228,61 @@ function classroomLaunchHtml() {
     </section>
   </main>
   <script type="module" src="/assets/app-classroom-launch.js"></script>
+</body>
+</html>`;
+}
+
+function zoomHostHtml() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>Zoom Stage Host | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace classroom-launch-page">
+    <section class="state-panel" aria-labelledby="zoom-host-title">
+      <h1 id="zoom-host-title">One Time Zoom Stage Host</h1>
+      <p>Participant video remains participant-controlled. The host can ask to unmute, mute, and manage spotlight only after the roster is mapped.</p>
+      <p data-zoom-host-status role="status">Checking protected Meeting SDK configuration.</p>
+      <div id="zmmtg-root" data-zoom-host-root aria-live="polite"></div>
+      <a class="button" href="/app/live-console">Return to Rabbi Live Console</a>
+    </section>
+  </main>
+  <script type="module" src="/assets/app-zoom-host.js?v=zoom-real-control-3"></script>
+</body>
+</html>`;
+}
+
+function zoomParticipantHtml(student: number) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>Student ${student} Join Class | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace classroom-launch-page">
+    <section class="state-panel" aria-labelledby="zoom-participant-title">
+      <p class="ot-kicker">Isolated Zoom test</p>
+      <h1 id="zoom-participant-title">Student ${student} — Join Class</h1>
+      <p>Audio and video remain participant-controlled. Zoom may ask for permission; One Time does not start the camera silently.</p>
+      <p data-zoom-participant-status role="status">Preparing the protected participant join.</p>
+      <div id="zmmtg-root" aria-live="polite"></div>
+      <a class="button" href="/app/live-console">Return to Rabbi Live Console</a>
+    </section>
+  </main>
+  <script type="module" src="/assets/app-zoom-participant.js?v=zoom-real-control-3"></script>
 </body>
 </html>`;
 }

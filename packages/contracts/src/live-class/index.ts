@@ -39,6 +39,11 @@ export const liveClassZoomOperationSchema = z.enum([
 ]);
 export type LiveClassZoomOperation = z.infer<typeof liveClassZoomOperationSchema>;
 
+export const liveClassZoomCustomerKeySchema = z
+  .string()
+  .regex(/^zoom_ck_[a-f0-9]{24}$/)
+  .max(36);
+
 export const liveClassQuestionSchema = z.object({
   question_key: opaqueIdSchema,
   occurrence_key: opaqueIdSchema,
@@ -112,6 +117,13 @@ export const liveClassControlCommandSchema = z.object({
 });
 export type LiveClassControlCommand = z.infer<typeof liveClassControlCommandSchema>;
 
+const zoomHostControlReadinessPhaseSchema = z
+  .object({
+    ready: z.boolean(),
+    blocker_variable_names: z.array(z.string().trim().min(1)),
+  })
+  .strict();
+
 export const liveClassConsoleSnapshotSchema = z.object({
   success: z.literal(true),
   data: z.object({
@@ -126,13 +138,32 @@ export const liveClassConsoleSnapshotSchema = z.object({
       provider: z.literal('meeting_sdk'),
       adapter: z.enum(['fake', 'meeting_sdk_host']),
       sdk_credentials_configured: z.boolean(),
+      host_control_configured: z.boolean(),
+      readiness: z
+        .object({
+          ready: z.boolean(),
+          code: z.enum(['ZOOM_HOST_CONTROL_READY', 'PROVIDER_OFF', 'PROVIDER_NOT_READY']),
+          provider_gate_blockers: z.array(z.string().trim().min(1)),
+          readiness_blockers: z.array(z.string().trim().min(1)),
+          canary_authorization_blockers: z.array(z.string().trim().min(1)),
+          phases: z
+            .object({
+              sdk_app: zoomHostControlReadinessPhaseSchema,
+              s2s_meeting_provisioning: zoomHostControlReadinessPhaseSchema,
+              host_authorization: zoomHostControlReadinessPhaseSchema,
+              real_control_canary_authorization: zoomHostControlReadinessPhaseSchema,
+            })
+            .strict(),
+          secret_values_included: z.literal(false),
+        })
+        .strict(),
       live_control_uses_rest_api: z.literal(false),
       can_force_camera_on: z.literal(false),
       video_start_model: z.literal('PARTICIPANT_CONSENT'),
       setup_job: z
         .object({
           job_key: z.literal('ZOOM-UI-01'),
-          title: z.literal('Create One Time Meeting SDK App'),
+          title: z.literal('Complete Zoom real-control readiness'),
           status: z.enum(['not_required', 'operator_action_required']),
           scopes: z.array(z.string().trim().min(1)),
           storage_instruction: z.string().trim().min(1).max(240),
@@ -141,7 +172,7 @@ export const liveClassConsoleSnapshotSchema = z.object({
         .nullable(),
     }),
     obs: z.object({
-      bridge_required: z.literal(true),
+      bridge_required: z.literal(false),
       connected: z.boolean(),
       current_scene: liveClassObsSceneSchema,
       allowed_scenes: z.array(liveClassObsSceneSchema),
@@ -221,6 +252,79 @@ export const liveClassZoomControlPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
 });
 export type LiveClassZoomControlPayload = z.infer<typeof liveClassZoomControlPayloadSchema>;
+
+export const liveClassZoomHostBootstrapResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({
+    occurrence_key: opaqueIdSchema,
+    sdk_web_version: z.string().regex(/^\d+\.\d+\.\d+$/),
+    meeting_number: z.string().trim().min(9).max(32),
+    signature: z.string().trim().min(16).max(2048),
+    password: z.string().max(64),
+    zak: z.string().trim().min(16).max(4096),
+    user_name: z.string().trim().min(1).max(160),
+    leave_url: z.string().trim().min(1).max(240),
+    video_start_model: z.literal('PARTICIPANT_CONSENT'),
+  }),
+});
+export type LiveClassZoomHostBootstrapResponse = z.infer<
+  typeof liveClassZoomHostBootstrapResponseSchema
+>;
+
+export const liveClassZoomTestParticipantBootstrapResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({
+    occurrence_key: opaqueIdSchema,
+    sdk_web_version: z.string().regex(/^\d+\.\d+\.\d+$/),
+    meeting_number: z.string().trim().min(9).max(32),
+    signature: z.string().trim().min(16).max(2048),
+    password: z.string().max(64),
+    customer_key: liveClassZoomCustomerKeySchema,
+    user_name: z.string().trim().min(1).max(160),
+    leave_url: z.string().trim().min(1).max(240),
+    video_start_model: z.literal('PARTICIPANT_CONSENT'),
+  }),
+});
+export type LiveClassZoomTestParticipantBootstrapResponse = z.infer<
+  typeof liveClassZoomTestParticipantBootstrapResponseSchema
+>;
+
+export const liveClassZoomParticipantSyncPayloadSchema = z.object({
+  occurrence_key: opaqueIdSchema,
+  participants: z
+    .array(
+      z.object({
+        customer_key: liveClassZoomCustomerKeySchema,
+        provider_user_id: z.string().regex(/^\d{1,20}$/),
+        join_state: liveClassParticipantJoinStateSchema,
+        audio_state: liveClassParticipantAudioStateSchema,
+        video_state: liveClassParticipantVideoStateSchema,
+        active_speaker: z.boolean(),
+        spotlighted: z.boolean(),
+      }),
+    )
+    .max(100),
+});
+export type LiveClassZoomParticipantSyncPayload = z.infer<
+  typeof liveClassZoomParticipantSyncPayloadSchema
+>;
+
+export const liveClassZoomParticipantSyncResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({
+    mappings: z.array(
+      z.object({
+        participant_key: opaqueIdSchema,
+        customer_key: liveClassZoomCustomerKeySchema,
+      }),
+    ),
+  }),
+});
+
+export const liveClassZoomCommandPollResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({ commands: z.array(liveClassControlCommandSchema) }),
+});
 
 export const liveClassObsCommandPayloadSchema = z.object({
   action: liveClassObsActionSchema,

@@ -6,10 +6,13 @@ import {
 } from '../../../packages/domain/src/classroom/service.ts';
 import {
   ZoomApiError,
+  createHostZoomSdkSignature,
   createLearnerZoomSdkSignature,
+  createZoomDisposableCanaryLifecycleClient,
   createZoomRestClient,
   registrantTokenFromJoinUrl,
   resolveZoomOccurrenceForLocalDate,
+  ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
 } from '../../../packages/domain/src/providers/zoom-rest.ts';
 import {
   processZoomWebhook,
@@ -147,6 +150,474 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
     expect(JSON.stringify(registrant)).not.toMatch(/https?:\/\/|zoom\.us|pwd=secret/i);
   });
 
+  it('creates one isolated meeting and one-time fictional registrants without returning provider URLs', async () => {
+    const calls: string[] = [];
+    const meetingSettings: unknown[] = [];
+    const client = createZoomRestClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        const url = String(input);
+        calls.push(url);
+        if (url.startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        if (url.endsWith('/users/host_test/meetings')) {
+          expect(JSON.parse(String(init?.body))).toMatchObject({
+            type: 2,
+            settings: {
+              email_notification: false,
+              registrants_confirmation_email: false,
+              registrants_email_notification: false,
+              participant_video: false,
+              mute_upon_entry: true,
+              waiting_room: true,
+            },
+          });
+          return jsonResponse({
+            id: '987654321',
+            type: 2,
+            password: 'private-test-passcode',
+            start_url: 'https://zoom.us/private-start',
+            join_url: 'https://zoom.us/private-join',
+          });
+        }
+        if (init?.method === 'PATCH') {
+          meetingSettings.push(JSON.parse(String(init.body)));
+          return jsonResponse({});
+        }
+        expect(url).toBe('https://api.zoom.us/v2/meetings/987654321/registrants');
+        return jsonResponse({
+          registrant_id: 'fictional_1',
+          join_url: 'https://example.zoom.us/w/987654321?tk=FICTIONAL_TOKEN',
+        });
+      },
+    });
+    const privateMeeting = await client.createIsolatedTestMeeting({
+      hostUserId: 'host_test',
+      startsAt: new Date('2027-07-21T16:30:00Z'),
+      topic: 'One Time isolated control canary',
+      durationMinutes: 60,
+    });
+    await client.enableMeetingRegistration(privateMeeting.meeting.meeting_id);
+    const registrant = await client.addLearnerRegistrant({
+      meetingId: privateMeeting.meeting.meeting_id,
+      learnerKey: 'fictional_student_1',
+      displayName: 'Student 1',
+      email: 'fictional-1@example.test',
+    });
+    await client.disableMeetingRegistration(privateMeeting.meeting.meeting_id);
+    expect(privateMeeting.meeting).toMatchObject({
+      type: 2,
+      raw_start_url_present: false,
+      raw_join_url_present: false,
+    });
+    expect(registrant.occurrence_id).toBe('single');
+    expect(JSON.stringify({ meeting: privateMeeting.meeting, registrant })).not.toMatch(
+      /https?:\/\/|private-test-passcode/i,
+    );
+    expect(meetingSettings).toEqual([
+      {
+        settings: {
+          approval_type: 1,
+          registration_type: 1,
+          registrants_confirmation_email: false,
+          registrants_email_notification: false,
+        },
+      },
+      { settings: { approval_type: 2 } },
+    ]);
+    expect(calls).toHaveLength(5);
+  });
+
+  it('deletes only one exact disposable canary after scope readback and verifies absence', async () => {
+    const resourceCalls: Array<{ method: string; url: string }> = [];
+    let getCount = 0;
+    let beforeDeleteCount = 0;
+    const lifecycle = createZoomDisposableCanaryLifecycleClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        const url = String(input);
+        if (url.startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        const method = init?.method ?? 'GET';
+        resourceCalls.push({ method, url });
+        if (method === 'DELETE') return new Response(null, { status: 204 });
+        getCount += 1;
+        if (getCount === 2) return jsonResponse({ code: 3001 }, 404);
+        return jsonResponse({
+          id: '987654321',
+          type: 2,
+          host_id: 'host_test',
+          topic:
+            'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+          agenda: 'Isolated fictional-student control verification. No customer invitations.',
+          start_time: '2026-07-24T11:00:00Z',
+          duration: 60,
+          settings: {
+            registrants_confirmation_email: false,
+            registrants_email_notification: false,
+            email_notification: false,
+            join_before_host: false,
+          },
+        });
+      },
+    });
+
+    await expect(
+      lifecycle.deleteExactMeeting({
+        meetingId: '987654321',
+        expectedHostUserId: 'host_test',
+        expectedTopic:
+          'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+        expectedStartsAt: '2026-07-24T11:00:00.000Z',
+        expectedDurationMinutes: 60,
+        beforeDelete: async () => {
+          beforeDeleteCount += 1;
+        },
+      }),
+    ).resolves.toEqual({
+      already_absent: false,
+      delete_executed: true,
+      absent_verified: true,
+    });
+    expect(beforeDeleteCount).toBe(1);
+    expect(resourceCalls).toEqual([
+      { method: 'GET', url: 'https://api.zoom.us/v2/meetings/987654321' },
+      { method: 'DELETE', url: 'https://api.zoom.us/v2/meetings/987654321' },
+      { method: 'GET', url: 'https://api.zoom.us/v2/meetings/987654321' },
+    ]);
+  });
+
+  it('performs no delete when disposable meeting scope is mismatched', async () => {
+    const methods: string[] = [];
+    const lifecycle = createZoomDisposableCanaryLifecycleClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        if (String(input).startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        methods.push(init?.method ?? 'GET');
+        return jsonResponse({
+          id: '987654321',
+          type: 2,
+          host_id: 'different_host',
+          topic:
+            'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+          agenda: 'Isolated fictional-student control verification. No customer invitations.',
+          start_time: '2026-07-24T11:00:00Z',
+          duration: 60,
+          settings: {
+            registrants_confirmation_email: false,
+            registrants_email_notification: false,
+            email_notification: false,
+            join_before_host: false,
+          },
+        });
+      },
+    });
+    await expect(
+      lifecycle.deleteExactMeeting({
+        meetingId: '987654321',
+        expectedHostUserId: 'host_test',
+        expectedTopic:
+          'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+        expectedStartsAt: '2026-07-24T11:00:00.000Z',
+        expectedDurationMinutes: 60,
+        beforeDelete: async () => {
+          throw new Error('must not run');
+        },
+      }),
+    ).rejects.toMatchObject({ code: 'ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH' });
+    expect(methods).toEqual(['GET']);
+  });
+
+  it.each([
+    ['explicitly false', { email_notification: false }],
+    ['safely omitted', {}],
+  ])(
+    'reconciles documented sub-minute start normalization with general email notification %s',
+    async (_label, generalNotification) => {
+      const methods: string[] = [];
+      let getCount = 0;
+      let beforeDeleteCount = 0;
+      const lifecycle = createZoomDisposableCanaryLifecycleClient({
+        enabled: true,
+        environment: 'staging',
+        credentials: {
+          accountId: 'acct_zoom_test',
+          clientId: 'client_test',
+          clientSecret: 'client_secret_test',
+        },
+        fetchImpl: async (input, init) => {
+          if (String(input).startsWith('https://zoom.us/oauth/token')) {
+            return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+          }
+          const method = init?.method ?? 'GET';
+          methods.push(method);
+          if (method === 'DELETE') return new Response(null, { status: 204 });
+          getCount += 1;
+          if (getCount === 2) return jsonResponse({ code: 3001 }, 404);
+          return jsonResponse(
+            reconciliationMeeting({
+              start_time: '2026-07-24T11:00:45Z',
+              settings: {
+                registrants_confirmation_email: false,
+                registrants_email_notification: false,
+                join_before_host: false,
+                ...generalNotification,
+              },
+            }),
+          );
+        },
+      });
+
+      await expect(
+        lifecycle.reconcileDeleteExactMeeting({
+          meetingId: '987654321',
+          expectedHostUserId: 'host_test',
+          expectedTopic:
+            'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+          expectedStartsAt: '2026-07-24T11:00:00.000Z',
+          expectedDurationMinutes: 60,
+          originalExecutionHead: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+          beforeDelete: async () => {
+            beforeDeleteCount += 1;
+          },
+        }),
+      ).resolves.toEqual({ delete_executed: true, absent_verified: true });
+      expect(beforeDeleteCount).toBe(1);
+      expect(methods).toEqual(['GET', 'DELETE', 'GET']);
+    },
+  );
+
+  it.each([
+    [
+      'large start delta',
+      reconciliationMeeting({ start_time: '2026-07-24T11:01:01Z' }),
+      'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+    ],
+    [
+      'unknown start time',
+      reconciliationMeeting({ start_time: 'provider-normalized-unknown' }),
+      'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+    ],
+    [
+      'registrant confirmation enabled',
+      reconciliationMeeting({
+        settings: {
+          registrants_confirmation_email: true,
+          registrants_email_notification: false,
+          email_notification: false,
+          join_before_host: false,
+        },
+      }),
+      'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+    ],
+    [
+      'registrant notification omitted',
+      reconciliationMeeting({
+        settings: {
+          registrants_confirmation_email: false,
+          email_notification: false,
+          join_before_host: false,
+        },
+      }),
+      'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+    ],
+    [
+      'general notification enabled',
+      reconciliationMeeting({
+        settings: {
+          registrants_confirmation_email: false,
+          registrants_email_notification: false,
+          email_notification: true,
+          join_before_host: false,
+        },
+      }),
+      'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+    ],
+    [
+      'general notification omitted with alternative host',
+      reconciliationMeeting({
+        settings: {
+          registrants_confirmation_email: false,
+          registrants_email_notification: false,
+          join_before_host: false,
+          alternative_hosts: 'another-host@example.test',
+        },
+      }),
+      'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+    ],
+    [
+      'unknown notification value',
+      reconciliationMeeting({
+        settings: {
+          registrants_confirmation_email: false,
+          registrants_email_notification: false,
+          email_notification: 'false',
+          join_before_host: false,
+        },
+      }),
+      'ZOOM_DISPOSABLE_CANARY_READBACK_INVALID',
+    ],
+    [
+      'host identity mismatch',
+      reconciliationMeeting({ host_id: 'another_host' }),
+      'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+    ],
+  ])('stops before journal transition and DELETE for %s', async (_label, readback, code) => {
+    const methods: string[] = [];
+    let beforeDeleteCount = 0;
+    const lifecycle = createZoomDisposableCanaryLifecycleClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        if (String(input).startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        methods.push(init?.method ?? 'GET');
+        return jsonResponse(readback);
+      },
+    });
+
+    await expect(
+      lifecycle.reconcileDeleteExactMeeting({
+        meetingId: '987654321',
+        expectedHostUserId: 'host_test',
+        expectedTopic:
+          'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+        expectedStartsAt: '2026-07-24T11:00:00.000Z',
+        expectedDurationMinutes: 60,
+        originalExecutionHead: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+        beforeDelete: async () => {
+          beforeDeleteCount += 1;
+        },
+      }),
+    ).rejects.toMatchObject({ code });
+    expect(beforeDeleteCount).toBe(0);
+    expect(methods).toEqual(['GET']);
+  });
+
+  it('rejects an unreviewed create source before OAuth or meeting readback', async () => {
+    const methods: string[] = [];
+    const lifecycle = createZoomDisposableCanaryLifecycleClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (_input, init) => {
+        methods.push(init?.method ?? 'GET');
+        return jsonResponse({});
+      },
+    });
+    await expect(
+      lifecycle.reconcileDeleteExactMeeting({
+        meetingId: '987654321',
+        expectedHostUserId: 'host_test',
+        expectedTopic:
+          'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+        expectedStartsAt: '2026-07-24T11:00:00.000Z',
+        expectedDurationMinutes: 60,
+        originalExecutionHead: 'b'.repeat(40),
+        beforeDelete: async () => undefined,
+      }),
+    ).rejects.toMatchObject({
+      code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SOURCE_MISMATCH',
+    });
+    expect(methods).toEqual([]);
+  });
+
+  it('never treats an OAuth 404 as proof that a disposable meeting is absent', async () => {
+    let beforeDeleteCount = 0;
+    const methods: string[] = [];
+    const lifecycle = createZoomDisposableCanaryLifecycleClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (_input, init) => {
+        methods.push(init?.method ?? 'GET');
+        return jsonResponse({ code: 3001 }, 404);
+      },
+    });
+    await expect(
+      lifecycle.deleteExactMeeting({
+        meetingId: '987654321',
+        expectedHostUserId: 'host_test',
+        expectedTopic:
+          'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+        expectedStartsAt: '2026-07-24T11:00:00.000Z',
+        expectedDurationMinutes: 60,
+        beforeDelete: async () => {
+          beforeDeleteCount += 1;
+        },
+      }),
+    ).rejects.toMatchObject({ status: 404 });
+    expect(beforeDeleteCount).toBe(0);
+    expect(methods).toEqual(['POST']);
+  });
+
+  it('never treats a generic meeting-resource 404 as canonical absence', async () => {
+    const methods: string[] = [];
+    const lifecycle = createZoomDisposableCanaryLifecycleClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        methods.push(init?.method ?? 'GET');
+        if (String(input).startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        return jsonResponse({ message: 'generic gateway route not found' }, 404);
+      },
+    });
+    await expect(
+      lifecycle.inspectExactMeeting({
+        meetingId: '987654321',
+        expectedHostUserId: 'host_test',
+        expectedTopic:
+          'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+        expectedStartsAt: '2026-07-24T11:00:00.000Z',
+        expectedDurationMinutes: 60,
+      }),
+    ).rejects.toMatchObject({ status: 404, code: 'ZOOM_HTTP_404' });
+    expect(methods).toEqual(['POST', 'GET']);
+  });
+
   it('fails closed when disabled, sanitizes provider errors, and marks retryable statuses', async () => {
     const disabled = createZoomRestClient({
       enabled: false,
@@ -189,7 +660,24 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
       sdkKey: 'sdk_key_test',
       mn: '987654321',
       role: 0,
+      video_webrtc_mode: 1,
     });
+    expect(payload.iat).toBe(Math.floor(new Date('2026-07-16T16:00:00Z').getTime() / 1000) - 30);
+    expect(signature).not.toContain('sdk_secret_do_not_leak');
+  });
+
+  it('creates a short-lived role-1 host signature without exposing the SDK secret', () => {
+    const issuedAt = new Date('2027-07-21T16:00:00Z');
+    const signature = createHostZoomSdkSignature({
+      credentials: { sdkKey: 'sdk_key_test', sdkSecret: 'sdk_secret_do_not_leak' },
+      meetingNumber: '987654321',
+      issuedAt,
+      ttlSeconds: 30 * 60,
+    });
+    const payload = JSON.parse(Buffer.from(signature.split('.')[1] ?? '', 'base64url').toString());
+    expect(payload).toMatchObject({ role: 1, mn: '987654321', video_webrtc_mode: 1 });
+    expect(payload.iat).toBe(Math.floor(issuedAt.getTime() / 1000) - 30);
+    expect(payload.exp - payload.iat).toBe(30 * 60);
     expect(signature).not.toContain('sdk_secret_do_not_leak');
   });
 
@@ -413,4 +901,24 @@ function grantCapturingRepository(onGrant: (expiresAt: Date) => void): Classroom
 
 async function fail(): Promise<never> {
   throw new Error('unexpected repository call');
+}
+
+function reconciliationMeeting(overrides: Record<string, unknown> = {}) {
+  return {
+    id: '987654321',
+    type: 2,
+    host_id: 'host_test',
+    topic:
+      'One Time PR105 disposable control 123e4567-e89b-42d3-a456-426614174000 2026-07-24T11:00Z',
+    agenda: 'Isolated fictional-student control verification. No customer invitations.',
+    start_time: '2026-07-24T11:00:00Z',
+    duration: 60,
+    settings: {
+      registrants_confirmation_email: false,
+      registrants_email_notification: false,
+      email_notification: false,
+      join_before_host: false,
+    },
+    ...overrides,
+  };
 }

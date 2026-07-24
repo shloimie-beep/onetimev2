@@ -8,6 +8,7 @@ import type {
   SessionUser,
 } from '@onetime/contracts';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { zoomProviderOffSummary } from './zoom-sdk-safety.js';
 import './crm.css';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
@@ -104,7 +105,7 @@ function LiveConsole() {
           </div>
           <div className="live-console__status">
             <StatusPill label="Zoom" value={data?.zoom.adapter ?? 'fake'} />
-            <StatusPill label="OBS" value={data?.obs.connected ? 'connected' : 'bridge needed'} />
+            <StatusPill label="OBS" value={data?.obs.connected ? 'connected' : 'optional off'} />
             <StatusPill label="Telegram" value="optional off" />
           </div>
         </header>
@@ -416,6 +417,33 @@ function ZoomHealth({ data }: { data: ConsoleData | null }) {
       <p>Mode: {data?.zoom.adapter ?? 'fake'}</p>
       <p>REST live control: no</p>
       <p>Video start model: participant consent</p>
+      {data?.zoom.host_control_configured ? (
+        <>
+          <a
+            className="ot-button"
+            href="/app/live-console/zoom-host"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Protected Zoom Host
+          </a>
+          <div className="live-action-grid" aria-label="Isolated fictional student joins">
+            {[1, 2, 3].map((student) => (
+              <a
+                key={student}
+                className="ot-button secondary"
+                href={`/app/live-console/zoom-participant/${student}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Join Class — Student {student}
+              </a>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p>{zoomProviderOffSummary(data?.zoom.readiness)}</p>
+      )}
       {job && (
         <details>
           <summary>

@@ -164,7 +164,19 @@ const envSchema = z.object({
   ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES: numberFromString.default(15),
   ZOOM_MEETING_SDK_KEY: z.string().optional(),
   ZOOM_MEETING_SDK_SECRET: z.string().optional(),
+  ZOOM_MEETING_SDK_CLIENT_ID: z.string().optional(),
+  ZOOM_MEETING_SDK_CLIENT_SECRET: z.string().optional(),
+  ZOOM_MEETING_SDK_ALLOWED_ORIGIN: z.url().optional(),
+  ZOOM_MEETING_SDK_WEB_VERSION: z
+    .string()
+    .regex(/^\d+\.\d+\.\d+$/)
+    .default('6.2.0'),
   ZOOM_ACCOUNT_ID: z.string().optional(),
+  ZOOM_S2S_CLIENT_ID: z.string().optional(),
+  ZOOM_S2S_CLIENT_SECRET: z.string().optional(),
+  ZOOM_HOST_USER_ID: z.string().optional(),
+  ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
+  ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
   LIVE_CLASS_FAKE_ADAPTER_ENABLED: optionalBooleanFromString,
   LIVE_CLASS_OBS_BRIDGE_TOKEN: optionalTrimmedString(12, 160),
   LIVE_CLASS_TELEGRAM_ENABLED: booleanFromString,
@@ -218,8 +230,12 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Delivery provider mode is limited to test or isolated_staging.');
   }
 
-  if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && parsed.NODE_ENV !== 'test') {
-    throw new Error('Zoom canary execution is outside this local task and must remain disabled.');
+  if (
+    parsed.ZOOM_CLASSROOM_CANARY_ENABLED &&
+    parsed.NODE_ENV !== 'test' &&
+    oneTimeRuntimeEnvironment !== 'isolated_staging'
+  ) {
+    throw new Error('Zoom canary execution is limited to test or isolated_staging.');
   }
 
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
@@ -434,9 +450,29 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomClassroomClassDurationMinutes: parsed.ZOOM_CLASSROOM_CLASS_DURATION_MINUTES,
     zoomClassroomJoinOpenOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_OPEN_OFFSET_MINUTES,
     zoomClassroomJoinCloseOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES,
-    zoomMeetingSdkKeyConfigured: Boolean(parsed.ZOOM_MEETING_SDK_KEY),
-    zoomMeetingSdkSecretConfigured: Boolean(parsed.ZOOM_MEETING_SDK_SECRET),
+    zoomMeetingSdkClientId: parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
+    zoomMeetingSdkClientSecret:
+      parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
+    zoomMeetingSdkAllowedOrigin: parsed.ZOOM_MEETING_SDK_ALLOWED_ORIGIN,
+    zoomMeetingSdkWebVersion: parsed.ZOOM_MEETING_SDK_WEB_VERSION,
+    zoomMeetingSdkCanonicalClientIdConfigured: Boolean(parsed.ZOOM_MEETING_SDK_CLIENT_ID?.trim()),
+    zoomMeetingSdkCanonicalClientSecretConfigured: Boolean(
+      parsed.ZOOM_MEETING_SDK_CLIENT_SECRET?.trim(),
+    ),
+    zoomMeetingSdkWebVersionConfigured: Boolean(source.ZOOM_MEETING_SDK_WEB_VERSION?.trim()),
+    zoomMeetingSdkKeyConfigured: Boolean(
+      parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
+    ),
+    zoomMeetingSdkSecretConfigured: Boolean(
+      parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
+    ),
+    zoomAccountId: parsed.ZOOM_ACCOUNT_ID,
     zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID),
+    zoomServerToServerClientId: parsed.ZOOM_S2S_CLIENT_ID,
+    zoomServerToServerClientSecret: parsed.ZOOM_S2S_CLIENT_SECRET,
+    zoomHostUserId: parsed.ZOOM_HOST_USER_ID,
+    zoomRealControlMeetingId: parsed.ZOOM_REAL_CONTROL_MEETING_ID,
+    zoomRealControlMeetingPasscode: parsed.ZOOM_REAL_CONTROL_MEETING_PASSCODE,
     liveClassFakeAdapterEnabled:
       parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED ?? oneTimeRuntimeEnvironment !== 'production',
     liveClassObsBridgeToken:
