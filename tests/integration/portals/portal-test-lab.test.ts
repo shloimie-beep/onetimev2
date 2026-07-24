@@ -286,6 +286,150 @@ describe('W12-03 Portal Test Lab', () => {
     }
   });
 
+  it('fails closed when approved entitled helper rows contain protected provider material', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const students = await Promise.all(
+        W12_PORTAL_TEST_LAB.learners.map((learner) =>
+          loginAs(server.baseUrl, learner.email, learner.defaultPassword),
+        ),
+      );
+      const tenantId = config.accountKey;
+      const bodyPatterns = [
+        'https://zoom.us/j/123456789?pwd=forbidden-value',
+        'zoom.us/j/123456789?pwd=forbidden-value',
+        '//us02web.zoom.us/j/123456789',
+        'https://player.vimeo.com/video/123456?h=forbidden-value',
+        'player.vimeo.com/video/123456',
+        'API key forbidden-value',
+        'passcode 123456',
+        '?token=forbidden-value',
+      ];
+      for (const [index, unsafeValue] of bodyPatterns.entries()) {
+        await pool.query(
+          `UPDATE onetime.ot86_search_documents
+              SET body = $4,
+                  updated_at = now()
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [
+            tenantId,
+            W12_PORTAL_TEST_LAB.recordingKey,
+            W12_PORTAL_TEST_LAB.helperVersionId,
+            `This fictional Mishnah lesson is approved for review. ${unsafeValue}`,
+          ],
+        );
+        await expectUnsafeHelperResponse({
+          baseUrl: server.baseUrl,
+          session: students[0]!,
+          learnerIndex: 0,
+          idempotencyKey: `w12-unsafe-body-${index}`,
+        });
+      }
+
+      await pool.query(
+        `UPDATE onetime.ot86_search_documents
+            SET body = 'This fictional Mishnah lesson is approved for review.',
+                updated_at = now()
+          WHERE tenant_id = $1
+            AND content_id = $2
+            AND version_id = $3`,
+        [tenantId, W12_PORTAL_TEST_LAB.recordingKey, W12_PORTAL_TEST_LAB.helperVersionId],
+      );
+      const titlePatterns = [
+        'Review at https://zoom.us/j/123456789',
+        'Review at zoom.us/j/123456789',
+        'Review at player.vimeo.com/video/123456',
+        'Lesson API key forbidden-value',
+        'Lesson passcode 123456',
+      ];
+      for (const [index, unsafeTitle] of titlePatterns.entries()) {
+        await Promise.all([
+          pool.query(
+            `UPDATE onetime.ot86_search_documents
+                SET title = $4,
+                    updated_at = now()
+              WHERE tenant_id = $1
+                AND content_id = $2
+                AND version_id = $3`,
+            [
+              tenantId,
+              W12_PORTAL_TEST_LAB.recordingKey,
+              W12_PORTAL_TEST_LAB.helperVersionId,
+              unsafeTitle,
+            ],
+          ),
+          pool.query(
+            `UPDATE onetime.ot86_published_sections
+                SET title = $4
+              WHERE tenant_id = $1
+                AND content_id = $2
+                AND version_id = $3`,
+            [
+              tenantId,
+              W12_PORTAL_TEST_LAB.recordingKey,
+              W12_PORTAL_TEST_LAB.helperVersionId,
+              unsafeTitle,
+            ],
+          ),
+        ]);
+        await expectUnsafeHelperResponse({
+          baseUrl: server.baseUrl,
+          session: students[1]!,
+          learnerIndex: 1,
+          idempotencyKey: `w12-unsafe-title-${index}`,
+        });
+      }
+
+      await Promise.all([
+        pool.query(
+          `UPDATE onetime.ot86_search_documents
+              SET title = 'W12 fictional review section',
+                  updated_at = now()
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [tenantId, W12_PORTAL_TEST_LAB.recordingKey, W12_PORTAL_TEST_LAB.helperVersionId],
+        ),
+        pool.query(
+          `UPDATE onetime.ot86_published_sections
+              SET title = 'W12 fictional review section'
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [tenantId, W12_PORTAL_TEST_LAB.recordingKey, W12_PORTAL_TEST_LAB.helperVersionId],
+        ),
+      ]);
+      for (const [index, unsafeDeepLink] of [
+        '/app/admin#section-private',
+        '/library/classes/w12?api_key=forbidden-value#section-w12',
+      ].entries()) {
+        await pool.query(
+          `UPDATE onetime.ot86_published_sections
+              SET deep_link = $4
+            WHERE tenant_id = $1
+              AND content_id = $2
+              AND version_id = $3`,
+          [
+            tenantId,
+            W12_PORTAL_TEST_LAB.recordingKey,
+            W12_PORTAL_TEST_LAB.helperVersionId,
+            unsafeDeepLink,
+          ],
+        );
+        await expectUnsafeHelperResponse({
+          baseUrl: server.baseUrl,
+          session: students[2]!,
+          learnerIndex: 2,
+          idempotencyKey: `w12-unsafe-deep-link-${index}`,
+        });
+      }
+    } finally {
+      await server.close();
+    }
+  });
+
   it('enforces one database-backed helper budget across independent adapter instances', async () => {
     const first = createDbStudentClassHelperRateLimitStore(pool, config);
     const second = createDbStudentClassHelperRateLimitStore(pool, config);
@@ -323,6 +467,46 @@ async function parentStudentAccessAction(
       }),
     },
   );
+}
+
+async function expectUnsafeHelperResponse(input: {
+  baseUrl: string;
+  session: Awaited<ReturnType<typeof loginAs>>;
+  learnerIndex: number;
+  idempotencyKey: string;
+}) {
+  const response = await fetch(`${input.baseUrl}/api/v1/portals/student/helper/query`, {
+    method: 'POST',
+    headers: {
+      cookie: input.session.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': input.session.json.csrf_token,
+    },
+    body: JSON.stringify({
+      idempotency_key: input.idempotencyKey,
+      question: 'What should I review from this fictional Mishnah lesson?',
+    }),
+  });
+  const body = await response.json();
+  expect(response.status, JSON.stringify(body)).toBe(200);
+  expect(body.data).toMatchObject({
+    answer:
+      "I couldn't find that in Rabbi Scheller's approved class material. Try asking about this lesson, or send a private question.",
+    abstained: true,
+    safe_reason_code: 'unsafe_source_content',
+    citations: [],
+    source_refs: [],
+    provider_mode: 'provider_off',
+  });
+  const serialized = JSON.stringify(body);
+  expect(serialized).not.toMatch(
+    /forbidden-value|(?:https?:)?\/\/|zoom\.us|vimeo\.com|api[_ ]?key|passcode\s*[:=]?\s*\d|[?&]token=/i,
+  );
+  for (const [index, learner] of W12_PORTAL_TEST_LAB.learners.entries()) {
+    if (index === input.learnerIndex) continue;
+    expect(serialized).not.toContain(learner.learnerKey);
+    expect(serialized).not.toContain(learner.displayName);
+  }
 }
 
 async function writePortalShells(targetDir: string) {

@@ -12,6 +12,10 @@ import {
 import type { DbPool } from '../../../db/src/index.ts';
 import { householdHasLearningAccess } from '../billing/portal-access.ts';
 import { retrieveOt86ApprovedContent, stableOt86Key } from '../content/pipeline.ts';
+import {
+  SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+  sanitizeScopedKnowledgeProjection,
+} from '../content/scoped-knowledge-redaction.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { PortalServiceError, fingerprint, type ScopedPortalHelperAdapter } from './services.ts';
 
@@ -280,6 +284,32 @@ export function createScopedKnowledgeHelperAdapter(
         });
       }
 
+      const safeProjection = sanitizeScopedKnowledgeProjection({
+        answer: providerResult.answer,
+        citations: currentCitations,
+      });
+      if (!safeProjection.safe) {
+        await recordHelperAudit(deps.pool, {
+          tenantId,
+          principalId,
+          correlationId,
+          authorizationDecisionId,
+          entitlementScope: 'content_list',
+          outcome: 'abstained',
+          safeReasonCode: SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+          selectedCitationCount: 0,
+          latencyMs: Date.now() - started,
+          now,
+        });
+        return helperAnswer({
+          answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+          citations: [],
+          abstained: true,
+          safeReasonCode: SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+          providerMode: provider.mode,
+        });
+      }
+
       const safeReasonCode = safeProviderReasonCode(providerResult.safe_reason_code);
       await recordHelperAudit(deps.pool, {
         tenantId,
@@ -294,8 +324,8 @@ export function createScopedKnowledgeHelperAdapter(
         now,
       });
       return helperAnswer({
-        answer: providerResult.answer,
-        citations: currentCitations,
+        answer: safeProjection.answer,
+        citations: safeProjection.citations,
         abstained: false,
         safeReasonCode,
         providerMode: provider.mode,
@@ -584,11 +614,27 @@ function helperAnswer(input: {
   safeReasonCode: string;
   providerMode: StudentClassHelperProviderPort['mode'];
 }): HelperAnswer {
-  const citations = input.citations.slice(0, 10);
+  const safeProjection = sanitizeScopedKnowledgeProjection({
+    answer: input.answer,
+    citations: input.citations.slice(0, 10),
+  });
+  if (!safeProjection.safe) {
+    return helperAnswerSchema.parse({
+      answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+      source_refs: [],
+      citations: [],
+      abstained: true,
+      safe_reason_code: SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+      private_question_available: true,
+      policy: STUDENT_CLASS_HELPER_POLICY,
+      provider_mode: input.providerMode,
+      grounding_mode: 'approved_entitled_sections',
+    });
+  }
   return helperAnswerSchema.parse({
-    answer: normalizeAnswer(input.answer),
-    source_refs: citations.map(sourceRefForCitation).filter(Boolean).slice(0, 20),
-    citations,
+    answer: normalizeAnswer(safeProjection.answer),
+    source_refs: safeProjection.sourceRefs.slice(0, 20),
+    citations: safeProjection.citations,
     abstained: input.abstained,
     safe_reason_code: input.safeReasonCode,
     private_question_available: true,
@@ -599,15 +645,9 @@ function helperAnswer(input: {
 }
 
 function normalizeAnswer(value: string) {
-  const withoutExternalUrls = value.replaceAll(/https?:\/\/\S+/gi, '[link removed]');
-  const words = withoutExternalUrls.replaceAll(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+  const words = value.replaceAll(/\s+/g, ' ').trim().split(' ').filter(Boolean);
   const limited = words.slice(0, 450).join(' ');
   return limited.slice(0, 2400) || STUDENT_CLASS_HELPER_NO_SOURCE;
-}
-
-function sourceRefForCitation(citation: HelperCitation) {
-  const ref = `${citation.section_title} (${citation.deep_link})`;
-  return ref.length <= 180 ? ref : `${citation.section_title} (${citation.section_id})`;
 }
 
 function canonicalizeProviderCitations(
