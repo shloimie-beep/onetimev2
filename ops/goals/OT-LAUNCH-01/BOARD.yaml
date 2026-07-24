@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T17:14:32Z
+updated_at: 2026-07-24T18:26:07Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -130,32 +130,27 @@ outcome:
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
   current_summary: >-
-    Persistent-staging product source f40acecb6fc3227d71f04065c8703ba2d134ede5 is the
+    Persistent-staging product source a22009f4dce6bae6b0553ea9007ff40eceaffd25 is the
     accepted live application through exact web deployment
-    a587f930-2b08-4c95-8622-35ea257941ff and worker deployment
-    64e3d716-40ad-4286-973e-7322e78c8b3d at schema
-    2226_rabbi_telegram_communications. It integrates the accepted structured-prompt and
-    role-scoped knowledge range from PR 121 exactly once, retains the terminal private
-    media canary without replay, and makes the actual fictional Student portal navigable
-    inside its dedicated read-only shell while every write control, Admin control, and
-    sibling identity remains unavailable. Live proof followed the normal Admin Dashboard
-    card into all five explicit role choices, opened a detached Student 1 session, visited
-    Today, Library, Class Helper, Progress, Questions, and Updates, and re-read the
-    unchanged authenticated Administrator tab. HighLevel event/actions remain disabled
-    with budget zero while the inherited optional email/WhatsApp transport readiness
-    flags remain enabled; real Zoom controls remain fail-closed. The exact operator-owned
-    media source has one completed OpenAI transcription, one private Vimeo asset, one
-    active caption track, and one content-factory import with no retry; final unpublish
-    left zero active canary entitlements. The latest exposed fictional Admin credential
-    remains rotated and rejected with the private handoff atomically replaced. PR 105
-    cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but
-    provider-only cleanup remains paused because the host restart cleared the
-    Railway/GitHub browser session; the disposable non-Tisha meeting still exists and
-    host/Student controls remain unaccepted. Current GHL truth remains fail-closed:
-    OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is
-    Draft after the protective pause, the campaign is untouched, and the target shells
-    remain empty Drafts. Production is unchanged beyond the recorded historical/narrow
-    exceptions.
+    8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004 and worker deployment
+    4ee9afc9-8727-4f0c-9074-2fe4bafd41a9 at schema
+    2227_event_service_email_permission_convergence. It integrates the accepted
+    event-only permission and canonical HighLevel-outbox convergence from PR 122 exactly
+    once while HighLevel event/actions stay disabled, canary budget stays zero, and run
+    ID/allowlist stay absent. It retains the accepted structured-prompt, role-scoped
+    knowledge, navigable fictional Student portal, occurrence-scoped content factory, and
+    terminal private-media canary without provider replay. The normal Admin Dashboard
+    still exposes all five explicit role choices; detached Student sessions remain
+    read-only, sibling-scoped, and separate from the authenticated Administrator session.
+    Optional email/WhatsApp transport readiness flags remain enabled and are not treated
+    as HighLevel provider modes. Real Zoom controls remain fail-closed. PR 105 cleanup
+    successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but provider-only
+    cleanup remains paused because the host restart cleared the Railway/GitHub browser
+    session; the disposable non-Tisha meeting still exists and host/Student controls
+    remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but
+    DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective
+    pause, the campaign is untouched, and the target shells remain empty Drafts.
+    Production is unchanged beyond the recorded historical/narrow exceptions.
   external_action_count: 18
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -187,8 +182,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: f40acecb6fc3227d71f04065c8703ba2d134ede5
-    resolution: 'Exact product checkpoint f40acecb6fc3227d71f04065c8703ba2d134ede5 is the deployed acceptance source. It contains the accepted Admin, Rabbi Telegram, Parent/Student contact, navigable read-only Experience Preview, HighLevel-disabled, Zoom provider-off, occurrence-scoped content factory, full-length media safeguards, and structured prompt/scoped knowledge composition. Any later commit containing only this Board, generated pointer/projection, decisions, or validator assertions is an evidence/control descendant and must not be presented as the deployed product source.'
+    last_verified_commit: a22009f4dce6bae6b0553ea9007ff40eceaffd25
+    resolution: 'Exact product checkpoint a22009f4dce6bae6b0553ea9007ff40eceaffd25 is the deployed acceptance source. It contains the accepted Admin, Rabbi Telegram, Parent/Student contact, navigable read-only Experience Preview, HighLevel-disabled event-permission/outbox convergence, Zoom provider-off, occurrence-scoped content factory, full-length media safeguards, and structured prompt/scoped knowledge composition. Any later commit containing only this Board, generated pointer/projection, decisions, or validator assertions is an evidence/control descendant and must not be presented as the deployed product source.'
   system: One Time persistent staging
 
 tracks:
@@ -669,34 +664,33 @@ tracks:
     next_action: 'Keep the deployed dispatcher fail-closed; do not activate a workflow, contact a provider, or open a database proxy until one separately reviewed bounded activation job is authorized.'
 
   - id: event_service_email_permission
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE
       repository: shloimie-beep/onetimev2
       branch: codex/event-service-email-permission-convergence
-      pr: null
+      pr: 122
+      head: 37b83461bb1fed8c0f795234e125b5270d5414c0
       system: One Time event-only permission and canonical HighLevel outbox convergence
     write_scope: Forward-only event_service_email enforcement, typed deny precedence, atomic exact-tag outbox producer, dispatcher send-time recheck, read-only exact-key inspection, and synthetic/PostgreSQL tests; no GHL UI mutation, fallback/customer delivery, live reprocess, or production change
-    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/event-service-email-permission--queued.json
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/event-service-email-permission--OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE.json
     dependencies: [goal_system, ghl_event_dispatcher]
     acceptance_ids: [GHL-006]
     evidence:
-      - Application DB is authoritative. The implementation must add append-only account/product/event/contact-scoped event_service_email permission history plus a current projection; GHL fields/tags are projections only and existing contacts receive no inferred or backfilled permission.
-      - Registration atomically grants only the fixed Tisha event scope, records disclosure version/source/timestamps, queues the GHL projection, is idempotent, never grants newsletter/general-marketing consent, and cannot override prior withdrawal or suppression.
-      - Typed deny precedence is complaint/hard bounce, global suppression/DND, global unsubscribe, event withdrawal/cancellation, invalid or ambiguous identity, then missing active event permission.
-      - OT-E01 requires a matching registration plus active event permission, does not require newsletter opt-in, and rechecks every deny gate at send time. OT-C01 remains Draft, unseeded, unscheduled, and unsent.
-      - The 207 provider-email-capable contacts are classified read-only by identity confidence, event permission, marketing permission, and delivery state; deliverability is never consent.
-      - 'Accepted staging integration adds forward-only 2220_tisha_bav_event_email_permission.sql with canonical Git-content SHA-256 06e6329f63232aed3f546431e1908e700379932064dee643a496524c569c317f; tests are synthetic/operator-owned and customer email, WhatsApp, GHL mutation, inferred consent, reprocess, and production change remain zero.'
-      - 'Persistent staging exact head fc122074 applies 2220_tisha_bav_event_email_permission with /ready healthy. ONE_TIME_EVENT_EMAIL_FALLBACK is unset and therefore disabled by the canonical default; no staging registration, reprocess, GHL projection, or email was executed during integration acceptance.'
-      - 'Fresh exact PR #106 source audit at acddcc8 confirms event_service_consent purpose=event_access_communication/email is stored separately, newsletter_opt_in defaults false, the weekly-newsletter tag is added only when explicitly true, and student_contact is false. A read-only public-page review submitted no registration.'
-      - GHL OT-E01 enrollment is proven to rely on the exact event-registration tag, but a separate durable GHL event-permission custom field/tag and send-time projection readback were not proven. Existing enrollment and one delivered operator confirmation must not be treated as completion of this application/GHL contract.
-      - Newest live production evidence is an end-to-end failure: the operator's real Tisha signup yielded an account/login-code email, not the OT-E01 event confirmation. The application registration transaction, canonical registered-tag projection, GHL enrollment, and send-time event-permission chain must be diagnosed as one system before promotion.
-      - 'Separate governed hotfix OT-TISHA-HANDOFF-01 is queued as client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef on release/tisha-bav-2026-live. Its claim is pending and its scope is only the server registration/tag/enrollment/fallback repair plus a narrow production hotfix; PR #110 stays visual-only and the PR #107 executor stays the sole GHL UI writer.'
-      - 'A read-only conductor audit at b32351bfde706822440bcc01cf49079ac52b27fb isolated the remaining application defects: the Tisha route still bypasses the accepted PR #108 outbox, event permission is not yet contact-scoped with ordered deny precedence, the dispatcher does not recheck event permission immediately before provider work, and the existing reprocess command is mutating rather than inspection-first.'
-      - 'The same existing track is now assigned through ops/goals/OT-LAUNCH-01/handoffs/event-service-email-permission--queued.json. The implementation must add one dedicated event.registration.recorded contract, exact registered/source tag projection, one shared fail-closed eligibility evaluator, and a read-only default inspection path while leaving every provider mode disabled.'
+      - 'Application DB is now authoritative through append-only account/product/event/contact-scoped event_service_email history plus a current projection. GHL fields/tags remain projections only; existing contacts receive no inferred or backfilled permission.'
+      - 'Registration atomically grants only the fixed event scope, records disclosure version/source/timestamps, queues the canonical outbox projection idempotently, never grants newsletter/general-marketing consent, and cannot override withdrawal or suppression.'
+      - 'The shared evaluator enforces typed deny precedence: complaint/hard bounce, global suppression/DND, global unsubscribe, event withdrawal/cancellation, invalid or ambiguous identity, then missing active event permission. The dispatcher rechecks the exact permission and deny gates immediately before provider work.'
+      - 'PR #122 exact head 37b83461bb1fed8c0f795234e125b5270d5414c0 passed independent audit, all five GitHub suites, isolated Railway web/worker, 412/412 source-lane unit tests, 370/370 source-lane integration tests, 51/51 focused event/HighLevel integration tests, 7/7 focused unit tests, typecheck, build, lint, scoped formatting, secret scan, migration safety, goal validation, and diff check.'
+      - 'Forward-only migration 2227_event_service_email_permission_convergence.sql has canonical SHA-256 746ea6efdd06ce5ff20ffbfbf7bb9bab759dea5e3976fbb3442140b8a0e29f86. Existing migrations 2220 through 2226 are unchanged.'
+      - 'The complete semantic range 43e38a6f1d3aae7eff62781f75a49777ee325d5c..37b83461bb1fed8c0f795234e125b5270d5414c0 is integrated once in PR #97 product source a22009f4dce6bae6b0553ea9007ff40eceaffd25. The shared domain barrel preserved the newer conductor exports and removed only retired fallback exports.'
+      - 'Conductor same-snapshot proof passed 439/439 configured unit tests, 374/374 configured integration tests, 51/51 focused event/HighLevel integration tests, 7/7 focused unit tests, Node 24, OPS-06, PostgreSQL 16/18 and learner-seat assurance, build, lint, typecheck, scoped formatting, a 2,121-file secret scan, goal/projection checks, migration checksum/uniqueness checks, and diff/marker checks.'
+      - 'Persistent staging web 8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004 and worker 4ee9afc9-8727-4f0c-9074-2fe4bafd41a9 run exact source a22009f4dce6bae6b0553ea9007ff40eceaffd25. /version is exact, /health is 200, and /ready is healthy with blockers=[] and latest=2227_event_service_email_permission_convergence.'
+      - 'Web and worker keep HIGHLEVEL_EVENT_SYNC_MODE=disabled, HIGHLEVEL_ACTIONS_MODE=disabled, HIGHLEVEL_CANARY_BUDGET=0, and canary run ID/delivery allowlist absent. Optional email/WhatsApp transport readiness remains enabled and is not represented as HighLevel activation.'
+      - 'No GHL mutation, enrollment, provider action, customer email/WhatsApp, live reprocess, inferred consent, persistent-staging data mutation, or production mutation occurred during source integration and deployment acceptance.'
+      - 'Exact immutable GHL tag IDs/readback and the separately governed live canary remain outside this completed source track. OT-E01 is still DRIFTED with Email A disabled, so the existing workflow-activation track remains fail-closed.'
     blocker: null
-    remaining_work: 'Implement and independently verify the assigned source-only convergence on the governed base; deploy it to persistent staging with HighLevel modes disabled and prove one synthetic registration creates exactly one held outbox row while inspection changes zero rows. Live GHL execution and the one affected production contact remain separately gated after source acceptance.'
-    next_action: 'Execute OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE from the assigned packet. Never manual-tag, repeat the signup, call GHL directly, queue a fallback, infer consent, or mutate production in this implementation lane.'
+    remaining_work: null
+    next_action: null
 
   - id: media_staging_integration
     status: done
@@ -743,6 +737,7 @@ tracks:
       - 'The accepted fictional publication had one entitled learner and zero sibling entitlements. The entitled Student opened the approved summary, five questions, active captions, progress, and the first-party protected player; the sibling Library omitted the item and its direct route returned metadata-safe denial.'
       - 'Final unpublish left zero active canary content entitlements and restored the original three-learner occurrence roster. The item remains approved/unpublished and the Vimeo asset/captions remain private; no re-upload, retranscription, or import retry is permitted.'
       - 'Terminal verification passed 26/26 focused unit/migration tests, 7/7 real-PostgreSQL integration tests, live Admin/Student/sibling/unpublish proof, typecheck, build, lint, scoped formatting, a 2,079-file secret scan, goal/generated-status validation, diff check, and all four exact-head PR #117 GitHub suites. Customer actions and production mutations were zero.'
+      - 'Independent conductor audit at a22009f4dce6bae6b0553ea9007ff40eceaffd25 proves all seven final PR #117 blobs are already byte-identical in the conductor through 089d724bdd901a2a009770fecf58c6d9e68df494 and 98d1735d47a1a73c060a0ef4a9da838128d1bfce. No PR #117 commit was replayed, no migration exists, the 2,121-file secret scan passed, and provider-free content coverage passed 16/16.'
     blocker: null
     remaining_work: null
     next_action: 'Preserve the private asset/captions and approved-unpublished item, keep synthetic/provider-off fallback usable, and never repeat this completed provider lifecycle.'
@@ -1139,7 +1134,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: f40acecb6fc3227d71f04065c8703ba2d134ede5
+      head: a22009f4dce6bae6b0553ea9007ff40eceaffd25
       system: Railway isolated persistent staging
     write_scope: 'PR #97 exact-head commit, staging-only variables, web/worker deploy, seed, and read-only production comparison'
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/persistent-staging--persistent-staging-conductor.json
@@ -1209,6 +1204,9 @@ tracks:
       - 'The historical 98d1735 safeguard range added only the accepted full-length content-factory transcript contract, the remaining PR #117 streaming large-media safeguards, and sanitized terminal evidence. Current f40acec preserves those exact bytes and adds no media migration or provider replay.'
       - 'Media-safeguard verification passed 28 focused unit tests, 7 focused real-PostgreSQL integration tests, typecheck, full build, full lint, scoped formatting, secret scan, migration/diff/marker checks, and an independent semantic audit. The terminal media browser proof used the already deployed transcript contract at 089d724bdd901a2a009770fecf58c6d9e68df494 and no provider action was repeated after the accepted PR #117 lifecycle.'
       - 'For current f40acec, automatic deployment first exposed the exact Git source with stale staging-only APP_VERSION and COMMIT_SHA labels. Only those two explicit labels were reconciled on ot99-web and ot99-worker staging; the resulting exact-source deployments are successful, production and provider configuration are unchanged, and optional email/WhatsApp readiness flags are recorded separately from the disabled HighLevel event/actions modes.'
+      - 'Current product source a22009f4dce6bae6b0553ea9007ff40eceaffd25 is live through exact staging web deployment 8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004 and worker deployment 4ee9afc9-8727-4f0c-9074-2fe4bafd41a9. /version reports full-app-staging-live-a22009f with exact commit_sha and Railway git_commit_sha; /health is 200 and /ready is healthy with blockers=[], database query ok, and latest=2227_event_service_email_permission_convergence.'
+      - 'All five exact-head GitHub workflow suites, Node 24, OPS-06, PostgreSQL 16 assurance, learner-seat proof, PostgreSQL 18 assurance/restore, Railway web, and Railway worker are green. Same-snapshot conductor proof passed 439/439 configured unit tests, 374/374 configured integration tests, 51/51 focused event/HighLevel integration tests, 7/7 focused units, build, lint, typecheck, scoped formatting, a 2,121-file secret scan, migration checksum/uniqueness, goal/projection validation, and diff/marker checks.'
+      - 'Only staging-scoped APP_VERSION and COMMIT_SHA were reconciled after the first exact a22009f deployment. Web and worker retain HIGHLEVEL_EVENT_SYNC_MODE=disabled, HIGHLEVEL_ACTIONS_MODE=disabled, HIGHLEVEL_CANARY_BUDGET=0, and absent canary run ID/delivery allowlist; real Zoom/canary gates remain off. Optional email/WhatsApp transport readiness remains enabled, and production/provider/customer state was not changed.'
     blocker: null
     remaining_work: null
     next_action: null

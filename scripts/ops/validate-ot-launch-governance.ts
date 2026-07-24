@@ -202,7 +202,7 @@ record(
 );
 record(
   'current persistent-staging product evidence',
-  conductorHead.last_verified_commit === 'f40acecb6fc3227d71f04065c8703ba2d134ede5' &&
+  conductorHead.last_verified_commit === 'a22009f4dce6bae6b0553ea9007ff40eceaffd25' &&
     (() => {
       const track = trackById('persistent_staging');
       if (!track) return false;
@@ -210,25 +210,59 @@ record(
       const evidence = arrayAt<string>(track, 'evidence');
       return (
         track.status === 'done' &&
-        owner.head === 'f40acecb6fc3227d71f04065c8703ba2d134ede5' &&
+        owner.head === 'a22009f4dce6bae6b0553ea9007ff40eceaffd25' &&
         evidence.some(
           (value) =>
-            value.includes('web deployment a587f930-2b08-4c95-8622-35ea257941ff') &&
-            value.includes('worker deployment 64e3d716-40ad-4286-973e-7322e78c8b3d') &&
-            value.includes('2226_rabbi_telegram_communications'),
+            value.includes('staging web deployment 8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004') &&
+            value.includes('worker deployment 4ee9afc9-8727-4f0c-9074-2fe4bafd41a9') &&
+            value.includes('2227_event_service_email_permission_convergence'),
         )
       );
     })() &&
     String(outcome.current_summary).includes(
-      'web deployment a587f930-2b08-4c95-8622-35ea257941ff',
+      'web deployment 8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004',
     ) &&
     String(outcome.current_summary).includes(
-      'worker deployment 64e3d716-40ad-4286-973e-7322e78c8b3d',
+      'worker deployment 4ee9afc9-8727-4f0c-9074-2fe4bafd41a9',
     ) &&
-    String(outcome.current_summary).includes('2226_rabbi_telegram_communications') &&
-    parsedBoardStrings.some(({ value }) => value.includes('445/445 configured unit tests')) &&
-    parsedBoardStrings.some(({ value }) => value.includes('2,120-file secret scan')),
-  'f40acec deployed through exact web/worker with schema 2226 and same-snapshot role gates',
+    String(outcome.current_summary).includes('2227_event_service_email_permission_convergence') &&
+    parsedBoardStrings.some(({ value }) => value.includes('439/439 configured unit tests')) &&
+    parsedBoardStrings.some(({ value }) => value.includes('2,121-file secret scan')),
+  'a22009f deployed through exact web/worker with schema 2227 and same-snapshot gates',
+);
+record(
+  'event-only permission convergence is integrated and provider-disabled',
+  (() => {
+    const track = trackById('event_service_email_permission');
+    if (!track) return false;
+    const owner = objectAt(track, 'owner');
+    const evidence = arrayAt<string>(track, 'evidence');
+    return (
+      track.status === 'done' &&
+      owner.pr === 122 &&
+      owner.head === '37b83461bb1fed8c0f795234e125b5270d5414c0' &&
+      track.handoff_path ===
+        'ops/goals/OT-LAUNCH-01/handoffs/event-service-email-permission--OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE.json' &&
+      track.blocker === null &&
+      track.remaining_work === null &&
+      evidence.some(
+        (value) =>
+          value.includes('2227_event_service_email_permission_convergence.sql') &&
+          value.includes('746ea6efdd06ce5ff20ffbfbf7bb9bab759dea5e3976fbb3442140b8a0e29f86'),
+      ) &&
+      evidence.some(
+        (value) =>
+          value.includes('HIGHLEVEL_EVENT_SYNC_MODE=disabled') &&
+          value.includes('HIGHLEVEL_ACTIONS_MODE=disabled') &&
+          value.includes('HIGHLEVEL_CANARY_BUDGET=0'),
+      ) &&
+      evidence.some(
+        (value) =>
+          value.includes('No GHL mutation') && value.includes('production mutation occurred'),
+      )
+    );
+  })(),
+  'PR #122 source convergence is done at schema 2227 while every live HighLevel gate stays off',
 );
 record(
   'current role-preview and fictional-session evidence',
