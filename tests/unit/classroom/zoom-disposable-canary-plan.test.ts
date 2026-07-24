@@ -4,14 +4,18 @@ import {
   assertZoomDisposableCanaryCleanupPreflight,
   assertZoomDisposableCanaryJournal,
   assertZoomDisposableCanaryProvisionPreflight,
+  assertZoomDisposableCanaryReconciliationJournal,
+  assertZoomDisposableCanaryReconciliationPreflight,
   buildZoomDisposableCanarySanitizedResult,
   createZoomDisposableCanaryIntent,
   parseZoomDisposableCanaryState,
   transitionZoomDisposableCanaryState,
   ZOOM_DISPOSABLE_CANARY_ATTESTATION,
   ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION,
+  ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
   ZOOM_DISPOSABLE_CANARY_ORIGIN,
   ZOOM_DISPOSABLE_CANARY_PROVISION_AUTHORIZATION,
+  ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION,
 } from '../../../scripts/zoom-disposable-canary-plan.ts';
 
 const operationId = '123e4567-e89b-42d3-a456-426614174000';
@@ -40,6 +44,22 @@ function provisionEnvironment(): NodeJS.ProcessEnv {
     ZOOM_DISPOSABLE_CANARY_CLEANUP_DEADLINE: '2026-07-24T13:00:00.000Z',
     ONE_TIME_ZOOM_KEYHOLDER_DIR: keyholderDir,
     ZOOM_DISPOSABLE_CANARY_STATE_PATH: statePath,
+  };
+}
+
+function reconciliationEnvironment(): NodeJS.ProcessEnv {
+  const repairHead = 'b'.repeat(40);
+  const source = provisionEnvironment();
+  delete source.ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION;
+  delete source.ZOOM_DISPOSABLE_CANARY_CLEANUP_DEADLINE;
+  return {
+    ...source,
+    ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+    RAILWAY_GIT_COMMIT_SHA: repairHead,
+    ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA: repairHead,
+    ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION: ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION,
+    ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION:
+      ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION,
   };
 }
 
@@ -139,6 +159,48 @@ describe('distinct disposable PR #105 Zoom canary plan', () => {
     ).toThrow('ZOOM_DISPOSABLE_CANARY_PREFLIGHT_FAILED:PROVISION_AUTHORIZATION_MUST_BE_CLEARED');
   });
 
+  it('binds reconciliation to the original journal head and a distinct exact repair head', () => {
+    expect(
+      assertZoomDisposableCanaryReconciliationPreflight(reconciliationEnvironment(), {
+        repositoryRoot,
+      }),
+    ).toMatchObject({
+      operationId,
+      executionHead: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+      repairHead: 'b'.repeat(40),
+      origin: ZOOM_DISPOSABLE_CANARY_ORIGIN,
+    });
+  });
+
+  it.each([
+    ['ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA', 'c'.repeat(40)],
+    ['ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA', 'c'.repeat(40)],
+    ['RAILWAY_GIT_COMMIT_SHA', 'c'.repeat(40)],
+    ['ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION', 'DELETE_ANY_MEETING'],
+    ['ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION', 'DELETE_ANY_MEETING'],
+  ])('rejects reconciliation source or authorization drift in %s', (variable, value) => {
+    expect(() =>
+      assertZoomDisposableCanaryReconciliationPreflight(
+        { ...reconciliationEnvironment(), [variable]: value },
+        { repositoryRoot },
+      ),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_PREFLIGHT_FAILED');
+  });
+
+  it('rejects a repair deployment that reuses the original execution head', () => {
+    expect(() =>
+      assertZoomDisposableCanaryReconciliationPreflight(
+        {
+          ...reconciliationEnvironment(),
+          RAILWAY_GIT_COMMIT_SHA: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+          ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA:
+            ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+        },
+        { repositoryRoot },
+      ),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_PREFLIGHT_FAILED:REPAIR_SOURCE_SHA');
+  });
+
   it('binds a signed v3 journal to source, operation, exact topic, and Student 1', () => {
     const intent = createZoomDisposableCanaryIntent({
       operationId,
@@ -215,6 +277,94 @@ describe('distinct disposable PR #105 Zoom canary plan', () => {
         executionHead: 'b'.repeat(40),
       }),
     ).toThrow('ZOOM_DISPOSABLE_CANARY_STATE_INVALID:SOURCE');
+    expect(() =>
+      parseZoomDisposableCanaryState(intent, stateSecret, {
+        operationId: '123e4567-e89b-42d3-a456-426614174001',
+      }),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_STATE_INVALID:OPERATION');
+    expect(() =>
+      parseZoomDisposableCanaryState(intent, stateSecret, {
+        origin: 'https://example.test',
+      }),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_STATE_INVALID:ORIGIN');
+  });
+
+  it('accepts only the exact sequence-4 cleanup journal and its repair tombstone chain', () => {
+    const states = reconciliationJournal();
+    expect(assertZoomDisposableCanaryReconciliationJournal(states)).toMatchObject({
+      sequence: 4,
+      phase: 'cleanup_required',
+      failure_category: 'registration_outcome_ambiguous',
+    });
+    const deleteInFlight = transitionZoomDisposableCanaryState(
+      states[3]!,
+      {
+        phase: 'cleanup_delete_in_flight',
+        reconciliation_repair_head: 'b'.repeat(40),
+      },
+      stateSecret,
+    );
+    expect(
+      assertZoomDisposableCanaryReconciliationJournal([...states, deleteInFlight], 'b'.repeat(40)),
+    ).toMatchObject({ sequence: 5, phase: 'cleanup_delete_in_flight' });
+    expect(() =>
+      parseZoomDisposableCanaryState(
+        { ...deleteInFlight, reconciliation_repair_head: 'c'.repeat(40) },
+        stateSecret,
+      ),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_STATE_INVALID:MAC');
+    const deleted = transitionZoomDisposableCanaryState(
+      deleteInFlight,
+      { phase: 'deleted' },
+      stateSecret,
+    );
+    expect(
+      assertZoomDisposableCanaryReconciliationJournal(
+        [...states, deleteInFlight, deleted],
+        'b'.repeat(40),
+      ),
+    ).toMatchObject({ sequence: 6, phase: 'deleted' });
+    expect(() =>
+      assertZoomDisposableCanaryReconciliationJournal(
+        [...states, deleteInFlight, deleted],
+        'c'.repeat(40),
+      ),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_STATE_INVALID:RECONCILIATION_STATE');
+  });
+
+  it('rejects another source, another outcome, and a broken HMAC chain for reconciliation', () => {
+    const wrongSourceIntent = createZoomDisposableCanaryIntent({
+      operationId,
+      executionHead: 'b'.repeat(40),
+      cleanupDeadline: '2026-07-24T13:00:00.000Z',
+      hostUserId: 'protected-host-fixture',
+      startsAt: new Date('2026-07-24T11:00:00.000Z'),
+      now,
+      stateSecret,
+    });
+    expect(() => assertZoomDisposableCanaryReconciliationJournal([wrongSourceIntent])).toThrow(
+      'ZOOM_DISPOSABLE_CANARY_STATE_INVALID:RECONCILIATION_SOURCE',
+    );
+
+    const states = reconciliationJournal();
+    const wrongOutcome = transitionZoomDisposableCanaryState(
+      states[2]!,
+      {
+        phase: 'cleanup_required',
+        failure_category: 'registration_disable_unverified',
+      },
+      stateSecret,
+    );
+    expect(() =>
+      assertZoomDisposableCanaryReconciliationJournal([...states.slice(0, 3), wrongOutcome]),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_STATE_INVALID:RECONCILIATION_STATE');
+
+    expect(() =>
+      assertZoomDisposableCanaryReconciliationJournal([
+        ...states.slice(0, 3),
+        { ...states[3]!, previous_state_mac: '0'.repeat(64) },
+      ]),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_STATE_INVALID:JOURNAL_CHAIN');
   });
 
   it('writes a secret-free deleted tombstone and sanitized result', () => {
@@ -254,3 +404,38 @@ describe('distinct disposable PR #105 Zoom canary plan', () => {
     expect(JSON.stringify(output)).not.toMatch(/protected-meeting|protected-passcode|@/u);
   });
 });
+
+function reconciliationJournal() {
+  const intent = createZoomDisposableCanaryIntent({
+    operationId,
+    executionHead: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+    cleanupDeadline: '2026-07-24T13:00:00.000Z',
+    hostUserId: 'protected-host-fixture',
+    startsAt: new Date('2026-07-24T11:00:00.000Z'),
+    now,
+    stateSecret,
+  });
+  const meeting = transitionZoomDisposableCanaryState(
+    intent,
+    {
+      phase: 'meeting_created',
+      meeting_id: 'protected-meeting-fixture',
+      passcode: 'protected-passcode-fixture',
+    },
+    stateSecret,
+  );
+  const registrationInFlight = transitionZoomDisposableCanaryState(
+    meeting,
+    { phase: 'registration_in_flight' },
+    stateSecret,
+  );
+  const cleanupRequired = transitionZoomDisposableCanaryState(
+    registrationInFlight,
+    {
+      phase: 'cleanup_required',
+      failure_category: 'registration_outcome_ambiguous',
+    },
+    stateSecret,
+  );
+  return [intent, meeting, registrationInFlight, cleanupRequired];
+}

@@ -479,3 +479,48 @@ Official references:
 - https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/
 - https://developers.zoom.us/docs/meeting-sdk/web/component-view/supported/
 - https://developers.zoom.us/docs/build/minimum-version/
+ The protected state and evidence must never contain raw meeting IDs, passcodes, join URLs, SDK or
+S2S credentials, ZAK, signatures, access tokens, participant identifiers, customer keys, emails,
+or private destinations.
+
+## Existing-meeting reconciliation cleanup only
+
+This is a one-time repair for the existing signed schema-v3 journal whose create source is exactly
+`96e54d9688ff174ac8265ce3b3a6216abb6292dc`, sequence is exactly `4`, phase is
+`cleanup_required`, and failure category is exactly `registration_outcome_ambiguous`. It cannot
+create, register, patch, join, control, or select a different meeting.
+
+Deploy the repair successor only to the preserved isolated runner. Keep every sink/real/canary
+gate off and retain the original operation ID, protected journal path, protected keyholder path,
+origin, learner key, attestation, and cleanup authorization. Require:
+
+- `ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA=96e54d9688ff174ac8265ce3b3a6216abb6292dc`
+- `ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA=<exact repair successor SHA>`
+- `RAILWAY_GIT_COMMIT_SHA=<the same exact repair successor SHA>`
+- `ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION=DELETE_ONE_CREATED_PR105_DISPOSABLE_MEETING_ONCE`
+- `ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION=RECONCILE_DELETE_ONE_EXISTING_PR105_96E54D_MEETING_ONCE`
+- `ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION` absent
+
+Run only `npm run zoom:real-control:disposable:reconcile-cleanup`.
+
+Before any journal transition or delete, the command requires the signed meeting ID, type `2`,
+protected host, unique operation-bound topic, fixed isolated agenda, duration `60`, disabled
+join-before-host, no alternative host, and the original deterministic create head to match. The
+only accepted provider normalization is an absolute scheduled-start delta of at most 60 seconds.
+Both registrant notification flags must be explicitly `false`. General email notification must be
+explicitly `false`, or may be omitted only when no alternative host exists and the journal proves
+the exact deterministic original create head. Any explicit `true`, missing registrant flag,
+unknown value, larger/invalid time delta, or other identity mismatch stops before journal
+transition and `DELETE`.
+
+The command appends signed sequence `5` / `cleanup_delete_in_flight`, including the exact repair
+successor SHA in the HMAC chain, before exactly one delete, then performs exactly one meeting GET.
+Only the canonical Zoom meeting-resource `404` with code `3001` proves absence and permits the
+secret-free sequence `6` / `deleted` tombstone, which retains that repair-head binding. A timeout
+or ambiguous response retains sequence `5`; a later invocation from that same exact repair head
+performs absence reconciliation only and never repeats the delete. A completed tombstone is
+idempotent and loads no provider context. Generic or OAuth `404` responses do not prove absence.
+
+Only after sanitized `phase=deleted`, `deleted_tombstone_written=true`, and provider counts are
+read back may the separate provider-only executor remove the preserved runner and state volume.
+Do not remove either resource from this repository task.
