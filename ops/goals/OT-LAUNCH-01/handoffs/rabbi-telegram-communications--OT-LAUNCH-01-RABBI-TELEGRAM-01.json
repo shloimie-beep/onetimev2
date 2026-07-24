@@ -10,7 +10,7 @@
   },
   "write_scope": "Executable Telegram worker, typed communication capabilities, same-GHL-conversation adapter, Student-question answer projection, internal tasks, preview/confirm, lease/replay/audit, and synthetic tests",
   "result": {
-    "status": "implemented_and_locally_validated",
+    "status": "implemented_and_acceptance_green_ci_blocked_by_baseline",
     "summary": "The distinct One Time Rabbi Telegram worker now handles scoped Parent communication previews and confirmations, local Student question answers, and internal Rabbi/operator tasks with one leased consumer, deterministic idempotency, replay denial, durable audit, synthetic same-conversation delivery proof, and truthful provider-off startup.",
     "customer_messages_sent": 0,
     "production_mutations": 0,
@@ -64,9 +64,21 @@
     {
       "type": "static_gates",
       "result": "format, lint, typecheck, build, secret scan, and git diff check passed"
+    },
+    {
+      "type": "pull_request_ci",
+      "reference": "PR #119",
+      "result": "OPS-06, PostgreSQL 16 assurance, PostgreSQL 16 learner-seat, and PostgreSQL 18 assurance passed; Node verification stopped on the pre-existing Experience Preview protected-playback assertion after 330 integration tests passed"
     }
   ],
-  "remaining_work": [],
-  "blocker": null,
-  "sanitized_at": "2026-07-24T08:19:12Z"
+  "remaining_work": [
+    "The Experience Preview/content-playback owner must repair the existing protected synthetic lesson readback at tests/integration/experience-preview.test.ts:563, then rerun PR CI; all assigned Rabbi Telegram acceptance work is complete."
+  ],
+  "blocker": {
+    "code": "BASE_EXPERIENCE_PREVIEW_PLAYBACK_ASSERTION",
+    "scope": "repository_ci_outside_assigned_track",
+    "detail": "The untouched Experience Preview integration test expects protected synthetic lesson playback status 200 but receives 404. It reproduces locally and in PR CI, and this task changes neither that route, test, nor content-playback domain.",
+    "impact": "PR #119 cannot be fully green without an out-of-scope Experience Preview/content-playback repair; RABBI-TELEGRAM-001 remains passed."
+  },
+  "sanitized_at": "2026-07-24T08:27:35Z"
 }
