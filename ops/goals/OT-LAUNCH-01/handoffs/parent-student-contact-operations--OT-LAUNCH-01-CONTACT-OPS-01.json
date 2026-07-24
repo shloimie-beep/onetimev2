@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "parent_student_contact_operations",
+  "task_id": "OT-LAUNCH-01-CONTACT-OPS-01",
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/parent-student-contact-operations",
+    "pr": 120,
+    "system": "One Time Parent, Student, and access administration"
+  },
+  "write_scope": "Adult/household/GHL links, independent access-source states, paused-Parent shell, atomic enrollment, secure Parent/Student recovery, adult-only outbox projection, and focused domain/API tests",
+  "result": {
+    "status": "implemented_draft_pr_open",
+    "governed_base": "bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0",
+    "implementation_commit": "e6b00543297afc2e4a4c79b90fb190ce8091faf5",
+    "pull_request": "https://github.com/shloimie-beep/onetimev2/pull/120",
+    "migration": {
+      "path": "packages/db/migrations/2225_parent_student_contact_operations.sql",
+      "sha256": "259532137222b31c6b72975d479fb6061366a2800404d34939b66d19961e1d60",
+      "global_ledger_audit": "222 refs fetched and scanned immediately before commit; no committed 2225 migration was present; 2226 remains reserved by the Rabbi Telegram branch"
+    },
+    "role_authority": {
+      "owner_capabilities": ["contact_ops:supervise", "contact_ops:school_admin"],
+      "admin_capabilities": ["contact_ops:school_admin"],
+      "parent_capabilities": ["contact_ops:self_service"],
+      "labels_changed": false
+    },
+    "external_provider_calls": 0,
+    "customer_sends": 0,
+    "production_changed": false,
+    "payment_history_written": false,
+    "child_ghl_contacts_created": 0,
+    "board_changed": false
+  },
+  "acceptance_results": {
+    "CONTACT-OPS-001": {
+      "status": "implemented_local_gates_passed_ci_pending",
+      "verified_behavior": [
+        "Paid, complimentary, and administrative-suspension states are independent; suspension denies, otherwise paid or complimentary grants, otherwise the household is paused.",
+        "Complimentary revocation leaves paid truth intact, and suspension/release does not mutate billing.",
+        "A paused Parent can authenticate only to identity, protected recovery, and Support; Student authentication, sessions, and learning fail closed when effective access disappears.",
+        "Atomic idempotent enrollment creates or links one adult and household, creates pending Parent activation, creates any positive number of local-only Students, optionally grants complimentary access, and queues one adult-only GHL projection.",
+        "Ambiguous adult identity, cross-account and cross-household scope, sibling access, stale revisions, and replay attempts fail closed in focused integration and browser coverage.",
+        "Adult contact links persist the GHL contact and household field, expose a configured deep link to authorized school operators, and reconcile one Parent through a coalesced event without payment data.",
+        "Parent recovery remains link-only and generic; Student recovery is an audited adult-authorized one-time flow that revokes Student sessions and never returns a stored plaintext credential.",
+        "Signed paid-state intake requires the exact durable adult-contact-to-household link and configured GHL location without requiring an activated Parent.",
+        "Existing fictional preview behavior remains isolated with exactly three active fictional Students while normal households permit additional Students."
+      ],
+      "negative_boundaries": {
+        "payment_ledger_added": false,
+        "student_ghl_payloads": false,
+        "contact_polling_added": false,
+        "provider_mutation_or_send": false,
+        "plaintext_credentials_recorded": false
+      }
+    }
+  },
+  "evidence": [
+    {
+      "ref": "npm test",
+      "kind": "local_unit_and_integration",
+      "result": "72 unit files / 386 tests and 64 integration files / 335 tests passed",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/e2e/ot-launch-01-parent-paused.spec.ts",
+      "kind": "paused_parent_auth_recovery_browser_proof",
+      "result": "passed",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/e2e/ot-83r-portals.spec.ts",
+      "kind": "parent_student_portal_security_and_unlimited_students_browser_proof",
+      "result": "2 passed",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/e2e/w12-03-portal-test-lab.spec.ts",
+      "kind": "fictional_parent_and_three_student_preview_browser_proof",
+      "result": "2 passed",
+      "sanitized": true
+    },
+    {
+      "ref": "tests/e2e/account-lifecycle-pages.spec.ts",
+      "kind": "activation_and_auth_browser_proof",
+      "result": "passed",
+      "sanitized": true
+    },
+    {
+      "path": "ops/evidence/ot-83r/REAL-APP-JOURNEYS.json",
+      "kind": "sanitized_portal_journey_readback",
+      "sanitized": true
+    },
+    {
+      "path": "ops/evidence/W12-03/PORTAL-TEST-LAB-JOURNEYS.json",
+      "kind": "sanitized_preview_journey_readback",
+      "sanitized": true
+    },
+    {
+      "ref": "npm run lint; npm run format; npm run typecheck -- --pretty false; npm run build; npm run brand:check; npm run secret:scan; npm run goal:validate; npm run goal:launch-status:check; npm run ops06:migrations; git diff --check",
+      "kind": "local_static_governance_migration_and_safety_gates",
+      "result": "passed",
+      "sanitized": true
+    }
+  ],
+  "remaining_work": [
+    "Wait for draft PR #120 repository checks, including the PostgreSQL-backed migration and integration environment not available in this local task runtime.",
+    "The conductor may decide later whether Rabbi should become a separate display label or first-class role; current Owner/Admin labels were preserved and authority is enforced by explicit capabilities."
+  ],
+  "blocker": null,
+  "sanitized_at": "2026-07-24T08:57:57Z"
+}
