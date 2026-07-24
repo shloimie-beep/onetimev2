@@ -202,7 +202,7 @@ record(
 );
 record(
   'current persistent-staging product evidence',
-  conductorHead.last_verified_commit === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
+  conductorHead.last_verified_commit === 'f40acecb6fc3227d71f04065c8703ba2d134ede5' &&
     (() => {
       const track = trackById('persistent_staging');
       if (!track) return false;
@@ -210,25 +210,25 @@ record(
       const evidence = arrayAt<string>(track, 'evidence');
       return (
         track.status === 'done' &&
-        owner.head === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
+        owner.head === 'f40acecb6fc3227d71f04065c8703ba2d134ede5' &&
         evidence.some(
           (value) =>
-            value.includes('web deployment 1e102abe-9659-42e0-b7e1-edca1a9edfcc') &&
-            value.includes('worker deployment 1e7e4f86-9569-4f04-af04-f6169543edf4') &&
+            value.includes('web deployment a587f930-2b08-4c95-8622-35ea257941ff') &&
+            value.includes('worker deployment 64e3d716-40ad-4286-973e-7322e78c8b3d') &&
             value.includes('2226_rabbi_telegram_communications'),
         )
       );
     })() &&
     String(outcome.current_summary).includes(
-      'web deployment 1e102abe-9659-42e0-b7e1-edca1a9edfcc',
+      'web deployment a587f930-2b08-4c95-8622-35ea257941ff',
     ) &&
     String(outcome.current_summary).includes(
-      'worker deployment 1e7e4f86-9569-4f04-af04-f6169543edf4',
+      'worker deployment 64e3d716-40ad-4286-973e-7322e78c8b3d',
     ) &&
     String(outcome.current_summary).includes('2226_rabbi_telegram_communications') &&
-    parsedBoardStrings.some(({ value }) => value.includes('Chromium 68/68')) &&
-    parsedBoardStrings.some(({ value }) => value.includes('2,115-file secret scan')),
-  '98d1735 deployed through exact web/worker with schema 2226 and preserved same-snapshot role gates',
+    parsedBoardStrings.some(({ value }) => value.includes('445/445 configured unit tests')) &&
+    parsedBoardStrings.some(({ value }) => value.includes('2,120-file secret scan')),
+  'f40acec deployed through exact web/worker with schema 2226 and same-snapshot role gates',
 );
 record(
   'current role-preview and fictional-session evidence',
@@ -239,14 +239,17 @@ record(
     return (
       previewTrack.status === 'done' &&
       sessionTrack.status === 'done' &&
-      objectAt(previewTrack, 'owner').head === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
-      objectAt(sessionTrack, 'owner').head === '98d1735d47a1a73c060a0ef4a9da838128d1bfce' &&
-      parsedBoardStrings.some(({ value }) =>
-        value.includes('Direct Student 1 and Parent credential logins separately reached'),
+      objectAt(previewTrack, 'owner').head === 'f40acecb6fc3227d71f04065c8703ba2d134ede5' &&
+      objectAt(sessionTrack, 'owner').head === 'f40acecb6fc3227d71f04065c8703ba2d134ede5' &&
+      parsedBoardStrings.some(
+        ({ value }) =>
+          value.includes('Today, Library, Class Helper, Progress, Questions, and Updates') &&
+          value.includes('opener absent') &&
+          value.includes('original Administrator tab remained authenticated'),
       )
     );
   })(),
-  'Admin launcher, direct Parent/Student, sibling previews, and preserved Admin session',
+  'Admin launcher, navigable read-only Student session, sibling scope, and preserved Admin session',
 );
 record(
   'production pilot remains dependency-gated',
@@ -319,15 +322,15 @@ record(
     );
     return (
       outcome.external_action_count === counted &&
-      outcome.external_action_count === 17 &&
-      loginAction?.count === 11 &&
+      outcome.external_action_count === 18 &&
+      loginAction?.count === 12 &&
       mediaAction?.count === 1 &&
       String(mediaAction.scope).includes('one OpenAI transcription') &&
       String(mediaAction.scope).includes('one private Vimeo asset') &&
       String(mediaAction.scope).includes('no provider/media-processing retry')
     );
   })(),
-  'external_action_count=17 equals row sum and includes 11 bounded staging login-code emails plus one bounded private-media lifecycle',
+  'external_action_count=18 equals row sum and includes 12 bounded staging login-code emails plus one bounded private-media lifecycle',
 );
 record(
   'fictional Admin incident is rotated and auditable',

@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T15:54:16Z
+updated_at: 2026-07-24T17:14:32Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -130,38 +130,37 @@ outcome:
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
   current_summary: >-
-    Persistent-staging product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce is the
+    Persistent-staging product source f40acecb6fc3227d71f04065c8703ba2d134ede5 is the
     accepted live application through exact web deployment
-    1e102abe-9659-42e0-b7e1-edca1a9edfcc and worker deployment
-    1e7e4f86-9569-4f04-af04-f6169543edf4 at schema
-    2226_rabbi_telegram_communications. It preserves the accepted Admin information
-    architecture, Rabbi Telegram communications, Parent/Student contact operations,
-    role-isolated Experience Preview, protected synthetic content path, and every
-    fail-closed HighLevel and Zoom boundary. The real media canary is now terminal:
-    the exact operator-owned private source completed one bounded OpenAI transcription,
-    one private Vimeo upload, one active caption track, and one content-factory import
-    without retry. Admin review corrected the first malformed generated title before
-    acceptance; one entitled fictional Student then proved protected playback,
-    captions, progress, and five review questions while the sibling remained denied.
-    Final unpublish left zero active canary entitlements, restored the original
-    three-learner occurrence roster, and retained the private asset/captions and the
-    approved item without exposing provider metadata. The latest exposed fictional
-    Admin credential was rotated only in staging at 2026-07-24T13:14:22.759Z; the old
-    value is rejected, the private handoff was atomically replaced, active sessions
-    remain zero, and the exact sandbox and local transfer artifacts are absent. PR 105
+    a587f930-2b08-4c95-8622-35ea257941ff and worker deployment
+    64e3d716-40ad-4286-973e-7322e78c8b3d at schema
+    2226_rabbi_telegram_communications. It integrates the accepted structured-prompt and
+    role-scoped knowledge range from PR 121 exactly once, retains the terminal private
+    media canary without replay, and makes the actual fictional Student portal navigable
+    inside its dedicated read-only shell while every write control, Admin control, and
+    sibling identity remains unavailable. Live proof followed the normal Admin Dashboard
+    card into all five explicit role choices, opened a detached Student 1 session, visited
+    Today, Library, Class Helper, Progress, Questions, and Updates, and re-read the
+    unchanged authenticated Administrator tab. HighLevel event/actions remain disabled
+    with budget zero while the inherited optional email/WhatsApp transport readiness
+    flags remain enabled; real Zoom controls remain fail-closed. The exact operator-owned
+    media source has one completed OpenAI transcription, one private Vimeo asset, one
+    active caption track, and one content-factory import with no retry; final unpublish
+    left zero active canary entitlements. The latest exposed fictional Admin credential
+    remains rotated and rejected with the private handoff atomically replaced. PR 105
     cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but
     provider-only cleanup remains paused because the host restart cleared the
-    Railway/GitHub browser session. The disposable non-Tisha Zoom meeting still exists,
-    no cleanup command ran, no signed deleted tombstone exists, and host/Student controls
-    remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but
-    DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective
-    pause, the campaign is untouched, and the target shells remain empty Drafts.
-    Production is unchanged beyond the recorded historical/narrow exceptions.
-  external_action_count: 17
+    Railway/GitHub browser session; the disposable non-Tisha meeting still exists and
+    host/Student controls remain unaccepted. Current GHL truth remains fail-closed:
+    OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is
+    Draft after the protective pause, the campaign is untouched, and the target shells
+    remain empty Drafts. Production is unchanged beyond the recorded historical/narrow
+    exceptions.
+  external_action_count: 18
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
-      count: 11
-      scope: Eleven bounded operator-owned staging login-code emails only. The latest challenge was requested immediately before a diagnostic exposed the then-current fictional Administrator input; the form was cleared, the credential was rotated again, and the replacement was not entered into a browser. No replacement credential, private destination, or code entered Git or screenshots; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
+      count: 12
+      scope: Twelve bounded operator-owned staging login-code emails only. The newest challenge completed exact-source f40acec Admin and detached fictional-Student acceptance without rendering a credential, destination, or code. An earlier challenge immediately preceded the diagnostic exposure of the then-current fictional Administrator input; that form was cleared, the credential was rotated again, and the old value remains rejected. No replacement credential, private destination, or code entered Git or screenshots; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
     - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
       scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
@@ -188,8 +187,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
-    resolution: 'Exact product checkpoint 98d1735d47a1a73c060a0ef4a9da838128d1bfce is the deployed acceptance source. It contains the accepted Admin, Rabbi Telegram, Parent/Student contact, Experience Preview, HighLevel-disabled, Zoom provider-off, and occurrence-scoped content-factory composition plus the full-length transcript contract and streaming large-media safeguards accepted from PR #117. Any later commit containing only this Board, generated pointer/projection, decisions, or validator assertions is an evidence/control descendant and must not be presented as the deployed product source.'
+    last_verified_commit: f40acecb6fc3227d71f04065c8703ba2d134ede5
+    resolution: 'Exact product checkpoint f40acecb6fc3227d71f04065c8703ba2d134ede5 is the deployed acceptance source. It contains the accepted Admin, Rabbi Telegram, Parent/Student contact, navigable read-only Experience Preview, HighLevel-disabled, Zoom provider-off, occurrence-scoped content factory, full-length media safeguards, and structured prompt/scoped knowledge composition. Any later commit containing only this Board, generated pointer/projection, decisions, or validator assertions is an evidence/control descendant and must not be presented as the deployed product source.'
   system: One Time persistent staging
 
 tracks:
@@ -372,7 +371,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
+      head: f40acecb6fc3227d71f04065c8703ba2d134ede5
       system: One Time web
     write_scope: Experience Preview config, server catalog/routes, Admin Dashboard discovery CTA, actual read-only fictional Student portal rendering, contracts, migration, and focused browser/security tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/experience-preview--persistent-staging-conductor.json
@@ -387,7 +386,7 @@ tracks:
       - Live Admin browser proof reached Experience Preview and selected Parent, all three siblings, and Rabbi/Classroom; both Experience Preview and Live Console navigation were visible.
       - Binding UX re-audit reopened this track because direct URL/nav-only discovery is insufficient below the desktop sidebar breakpoint and the dedicated Student tab previously rendered only a RolePreview summary rather than the actual StudentPortalFeature UI.
       - Current governed worktree adds an Admin Dashboard card titled Preview Parent & Student portals with an Open portal preview CTA, still gated by the server-delivered isolated-staging capability; production receives neither card nor nav item.
-      - The dedicated Student preview now obtains the exact sibling-scoped dashboard through the existing GET-only route-bound preview session and renders the actual StudentPortalFeature inside an inert Read-only preview container. No Student cookie, real-user impersonation, mutation callback, Admin AppShell/nav/logout, or opener is introduced.
+      - The dedicated Student preview obtains the exact sibling-scoped dashboard through the existing GET-only route-bound preview session and renders the actual StudentPortalFeature in explicit read-only mode. Its six local section controls remain navigable, while class launch, content open, helper query, private/classroom questions, readiness, support, and every text/radio write control remain disabled or absent. No Student cookie, real-user impersonation, Admin AppShell/nav/logout, or opener is introduced.
       - Focused Experience Preview tests pass 19/19 after this repair, including exact learner/class/library/progress projection, single-use exchange, expiry/replay, CSRF, Admin-session binding, cross-account denial, sibling-tab isolation, no-store/audit, provider truth, and UI contract coverage. Scoped Prettier and typecheck pass.
       - Build-backed real Chromium proof passed 5/5 on the stable combined worktree: Dashboard -> Preview Parent & Student portals card -> all explicit role choices -> Student 1 prepare/open, null opener, actual sibling-scoped Student portal inside the dedicated GET-only shell, two isolated sibling tabs, unchanged Admin session, production 404/nav gating, mobile hamburger at 360px, and the existing Parent/Student portal regression journeys.
       - Exact-head live browser proof on 06f66568 logged in through the bounded operator email-code challenge, followed Dashboard -> Preview Parent & Student portals -> Student 1 -> prepare/open, rendered Ari Cohen's actual Student portal with no Admin navigation/logout/forms, and returned to an unchanged authenticated Admin Dashboard. The in-app browser suppressed the target-blank popup, so opener-null and separate-tab behavior are claimed only from the green real-Chromium proof, not from the same-tab live fallback.
@@ -401,7 +400,9 @@ tracks:
       - 'Sanitized screenshot evidence is committed under ops/evidence/ot-launch-01-pr113-persistent-staging-5556c4a/, including the Dashboard launcher, mobile navigation, all explicit role choices, the dedicated Student shell, occurrence entitlement/sibling isolation, protected playback, and post-unpublish revocation. No credentials, login codes, private destinations, exchange identifiers, or provider URLs appear in those images.'
       - 'At deployed source 415d7e49d7567d3e211fb725c0916ece78da4dd0, the freshly rotated fictional Administrator completed the bounded email-code login and followed Dashboard -> Preview Parent & Student portals -> Open portal preview. The page visibly listed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom; every choice selected inside the authenticated Admin preview while the Admin navigation remained usable.'
       - 'Existing isolated Student 2 and Student 3 tabs rendered the actual fictional Student portal with Today, Library, Learning points, and Private questions, a visible read-only banner, disabled question mutation, GET-only behavior, no Admin navigation/logout, and opener=null. Direct Student 1 and Parent credential logins separately reached their real portals with no Admin shell. The in-app client did not expose a newly opened Student 1 popup as a bindable tab, so the fresh popup claim remains limited to exact-source Chromium 13/13 plus the already-open isolated sibling tabs; no product defect is inferred from the client limitation.'
-      - 'Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established the normal Admin Dashboard Preview Parent & Student portals launcher, the capability-gated Live Console route, the dedicated GET-only Student shells, and production rejection. Current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce preserves that boundary. Same-snapshot Chromium 68/68 plus accessibility 24/24 and performance 10/10 cover Admin, Parent, all three sibling scopes, Rabbi/Classroom, desktop, and mobile without weakening the Admin-session boundary.'
+      - 'Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established the normal Admin Dashboard Preview Parent & Student portals launcher, the capability-gated Live Console route, the dedicated GET-only Student shells, and production rejection. Current product source f40acecb6fc3227d71f04065c8703ba2d134ede5 preserves that boundary and adds safe local Student navigation without enabling writes.'
+      - 'Exact source f40acecb6fc3227d71f04065c8703ba2d134ede5 passed 445/445 configured unit tests, 354/354 configured integration tests, the focused Experience Preview Chromium scenario, typecheck, build, full lint, scoped Prettier, a 2,120-file secret scan, migration safety, goal/projection validation, repository marker scan, and diff check. The only initial broad-gate failure was a resource-contention timeout in the Tisha public-copy test; the same complete unit gate passed 445/445 when rerun sequentially.'
+      - 'Live exact-source proof followed Administrator Dashboard -> Preview Parent & Student portals -> Open portal preview and displayed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom as Ready. Student 1 opened in a distinct tab with opener absent, no Admin navigation/logout, Ari-only scope, and disabled write controls; Today, Library, Class Helper, Progress, Questions, and Updates all navigated locally while the original Administrator tab remained authenticated and usable. No screenshot, credential, destination, code, exchange handle, or provider URL was recorded.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -413,7 +414,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
+      head: f40acecb6fc3227d71f04065c8703ba2d134ede5
       system: One Time web
     write_scope: Preview-only exchange/session and dedicated GET-only client shell
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/fictional-student-session--persistent-staging-conductor.json
@@ -427,7 +428,7 @@ tracks:
       - 'Exact product head 7dcb137c live proof rendered Ari, Dovid, and Noam in three distinct route-scoped, read-only actual Student portal shells. Each shell omitted Admin navigation/logout and every sibling identity, while the originating Admin role selector remained usable. Exact-source real Chromium directly passed the target-blank null-opener assertion after the client-side fail-closed detachment guard was added.'
       - 'At exact deployed source 5556c4ab78e01d367666694459eb2ea97f4028ef, Student 2 direct credential login opened the occurrence-scoped published lesson through a first-party protected route/embed with captions and review questions and no raw Vimeo, storage locator, Admin, or sibling data. Student 1 direct credential login reached its own portal; its bounded direct-Library denial retry timed out in the test harness, while a fresh sibling-scoped preview independently showed only the original one-item library and no Student 2 occurrence lesson. Exact-source automated sibling-denial coverage remains green.'
       - 'At deployed source 415d7e49d7567d3e211fb725c0916ece78da4dd0, direct Student 1 login reached the actual Student Portal with Today, Library, Class Helper, Progress, Questions, and Updates and no Parent/Admin navigation. Existing Student 2 and Student 3 preview tabs remained separately route-scoped, read-only, opener-null, and free of Admin controls; the originating Admin preview stayed authenticated and usable.'
-      - 'Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 proved the shared route-state repair and parallel browser-fixture isolation for single-use exchange, sibling-specific session scope, GET-only dedicated shells, null-opener behavior, and the originating Admin session. Current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce preserves that boundary; the exact same-snapshot Chromium journey is 68/68 green.'
+      - 'Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 proved the shared route-state repair and parallel browser-fixture isolation for single-use exchange, sibling-specific session scope, GET-only dedicated shells, null-opener behavior, and the originating Admin session. Current product source f40acecb6fc3227d71f04065c8703ba2d134ede5 preserves that boundary and proves Ari-only live scope with the actual six-section portal navigable in read-only mode.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -1002,7 +1003,7 @@ tracks:
       - 'Superseding PR #118 head 938942b41634a47aae48d95b12a912209dec8849 is cleanly rebased onto governed source 415d7e49d7567d3e211fb725c0916ece78da4dd0. All hosted CI, exact-head unit/integration/E2E/accessibility/performance checks, secret scan across 2,091 files, marker scan, and diff check pass; its 35-path scope contains no auth, access-domain, provider, migration, payment, production, Board, CURRENT, or pointer change.'
       - 'Independent semantic audit rejected convergence because Live Console became unconditional instead of consuming session.capabilities.operator_experience.live_console, including a production/provider-off fixture, and the explicit capability-gated Admin Dashboard Preview Parent & Student portals card/CTA was removed. Both changes contradict the existing SPEC/EXP-001 acceptance even though the mechanical test suite is green.'
       - 'Final PR #118 head 5741d5d9422c9f326112c636880de365ca3cc35a restores server-capability-gated Live Console visibility and the explicit Dashboard Preview Parent & Student portals CTA while preserving the five-area Admin workspace. Independent exact-head audit and all hosted/focused UI, isolation, responsive, lint, typecheck, format, secret, and diff gates pass.'
-      - 'PR #118 is merged and semantically integrated once as PR #97 commit 5b37f6477721e797f3c79ba1ec82ceff57e48e91. Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established the five-area navigation, capability-negative production behavior, Dashboard launcher, and mobile access; current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce preserves them.'
+      - 'PR #118 is merged and semantically integrated once as PR #97 commit 5b37f6477721e797f3c79ba1ec82ceff57e48e91. Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established the five-area navigation, capability-negative production behavior, Dashboard launcher, and mobile access; current product source f40acecb6fc3227d71f04065c8703ba2d134ede5 preserves them.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -1027,7 +1028,7 @@ tracks:
       - The task packet forbids payment history, child GHL contacts, full contact polling, plaintext credentials, GHL workflow activation, customer sends, and production mutation.
       - 'Final PR #120 head e5e52114828401d575ca2baae35db364e608d91a is independently accepted and merged. Migration 2225_parent_student_contact_operations has checksum 259532137222b31c6b72975d479fb6061366a2800404d34939b66d19961e1d60 and adds the governed adult-link/access-source/recovery boundary without storing payment history or creating child GHL contacts.'
       - 'The accepted implementation provides atomic Parent enrollment, local-only Student creation, independent paid/complimentary/suspension truth, paused-Parent recovery shell, secure Parent/Student credential reset, adult-only outbox projection, replay/idempotency and sibling/security denials. Provider/customer/production effects remain zero.'
-      - 'PR #120 is integrated once as PR #97 commit 9139d459e2211ca988e96939ce149562f083f62d. Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established schema 2226 with the 2225 ledger entry preserved and the same-snapshot unit/integration/browser gates green; current product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce retains that schema and behavior.'
+      - 'PR #120 is integrated once as PR #97 commit 9139d459e2211ca988e96939ce149562f083f62d. Historical acceptance source 4cf4d491a6190fcad278d9cfd2324728d28c3cc4 established schema 2226 with the 2225 ledger entry preserved and the same-snapshot unit/integration/browser gates green; current product source f40acecb6fc3227d71f04065c8703ba2d134ede5 retains that schema and behavior.'
     blocker: null
     remaining_work: null
     next_action: null
@@ -1062,13 +1063,13 @@ tracks:
     next_action: null
 
   - id: structured_prompt_and_scoped_knowledge
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PROMPT-KNOWLEDGE-01
       repository: shloimie-beep/onetimev2
       branch: codex/structured-prompt-scoped-knowledge
-      pr: null
-      head: 00d3511e9d66aaaafc0e2031e56f9858bd332bb8
+      pr: 121
+      head: 7264ee1a247dda12a25042af11594e8dea86d667
       system: One Time Content prompts and scoped knowledge helper
     write_scope: Structured immutable prompt patches plus approved role-scoped Parent/Student retrieval; no Studio/OpenArt, public lead KB, social delivery, or persistent chat memory
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/structured-prompt-and-scoped-knowledge--OT-LAUNCH-01-PROMPT-KNOWLEDGE-01.json
@@ -1079,9 +1080,12 @@ tracks:
       - Existing Student Class Helper and knowledge retrieval ports provide the correct starting point; a Parent route mismatch and duplicated retrieval seams must be converged rather than hidden behind a new framework.
       - The queued packet preserves approved-content, entitlement, sibling, citation, abstention, injection, revocation, and provider-off boundaries.
       - 'The conductor assigned OT-LAUNCH-01-PROMPT-KNOWLEDGE-01 from governed control head 00d3511e9d66aaaafc0e2031e56f9858bd332bb8 after both declared dependencies reached done. The executor owns one isolated branch and may perform source, test, and isolated-preview work only; provider calls, customer messages, persistent-staging mutation, production mutation, and BOARD edits remain forbidden.'
+      - 'Independent audit accepted exact PR 121 head 7264ee1a247dda12a25042af11594e8dea86d667 against merge base 91860774160667bf2cd7003f427df4ae1c8dbf4d: immutable section-scoped prompt patches, one shared approved-source retrieval port, Parent/Student scope enforcement, sibling denial, citation/abstention/injection protection, revocation, and protected-provider redaction all remain fail-closed.'
+      - 'The exact six-commit semantic range was integrated once on the conductor as 4c5420d, 8e3940d, befbe19, 3db6f4c, 0fcc387, and 7443aa3. No alternate inventory, prompt status model, provider call, customer message, persistent-staging provider mutation, or production change was introduced.'
+      - 'Exact deployed descendant f40acecb6fc3227d71f04065c8703ba2d134ede5 passed all five GitHub assurance suites through the completed structured-prompt range, plus 445/445 configured unit and 354/354 configured integration tests, build/typecheck/lint, focused Chromium, scoped formatting, secret scan, migration safety, goal/projection validation, and diff/marker checks.'
     blocker: null
-    remaining_work: Implement the reviewed structured patch contract and shared Parent/Student-scoped knowledge helper, then return exact tests, authorization denials, provider-off browser proof, and a sanitized handoff for conductor review.
-    next_action: Execute the existing assigned packet on codex/structured-prompt-scoped-knowledge without starting a parallel Studio/OpenArt build or importing a generic agent framework.
+    remaining_work: null
+    next_action: null
 
   - id: human_confirmed_social_publishing
     status: unclaimed
@@ -1135,7 +1139,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
-      head: 98d1735d47a1a73c060a0ef4a9da838128d1bfce
+      head: f40acecb6fc3227d71f04065c8703ba2d134ede5
       system: Railway isolated persistent staging
     write_scope: 'PR #97 exact-head commit, staging-only variables, web/worker deploy, seed, and read-only production comparison'
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/persistent-staging--persistent-staging-conductor.json
@@ -1201,9 +1205,10 @@ tracks:
       - 'Same-snapshot acceptance passed 76 unit files/416 tests, 67 integration files/350 tests, Chromium 68/68, accessibility 24/24, performance 10/10, typecheck, build, lint, brand checks, a 2,115-file secret scan, migration safety, explicit owned-file Prettier, repository marker scan, and git diff check. All five GitHub suites and both exact persistent-staging Railway checks are green.'
       - 'Admin, Parent, Student 1/2/3, Rabbi/Classroom, content, protected playback, Tisha, production preview rejection, mobile, sibling isolation, and preserved Admin-session journeys pass on the exact product source. HighLevel event/actions remain disabled, real Zoom/canary remains off, the co-located content worker is ready, and the standalone worker reports zero sink batches/failures.'
       - 'A fourth fictional Admin diagnostic exposure was remediated at 2026-07-24T13:14:22.759Z through one exact Admin-only private-network rotation sandbox pinned to this source. The old value is rejected, active sessions remained 0 -> 0, the protected handoff was atomically replaced, and the sandbox plus exact local transfer artifacts are absent. The latest replacement was not entered into a browser and no customer, provider, database-service, or production state changed.'
-      - 'Current media-safeguard product source 98d1735d47a1a73c060a0ef4a9da838128d1bfce is live through exact web deployment 1e102abe-9659-42e0-b7e1-edca1a9edfcc and standalone worker deployment 1e7e4f86-9569-4f04-af04-f6169543edf4. /version reports full-app-staging-live-98d1735 with exact commit_sha and Railway git_commit_sha; /health is healthy and /ready is healthy with blockers=[], database query ok, and latest=2226_rabbi_telegram_communications.'
-      - 'This source adds only the accepted full-length content-factory transcript contract and the remaining PR #117 streaming large-media safeguards plus sanitized terminal evidence. It adds no migration, makes no new provider call, and preserves all existing fail-closed HighLevel, real-Zoom, payment, Telegram, and production boundaries.'
-      - 'Same-source local verification passed 28 focused unit tests, 7 focused real-PostgreSQL integration tests, typecheck, full build, full lint, scoped formatting, a 2,115-file secret scan, migration/diff/marker checks, and an independent semantic audit. Railway web and worker checks are exact-source successes; the terminal media browser proof used the already deployed transcript contract at 089d724bdd901a2a009770fecf58c6d9e68df494 and did not repeat any provider action after the 98d1735 deployment.'
+      - 'Current product source f40acecb6fc3227d71f04065c8703ba2d134ede5 is live through exact web deployment a587f930-2b08-4c95-8622-35ea257941ff and standalone worker deployment 64e3d716-40ad-4286-973e-7322e78c8b3d. /version reports full-app-staging-live-f40acec with exact commit_sha and Railway git_commit_sha; /health is 200 and /ready is healthy with blockers=[], database query ok, and latest=2226_rabbi_telegram_communications.'
+      - 'The historical 98d1735 safeguard range added only the accepted full-length content-factory transcript contract, the remaining PR #117 streaming large-media safeguards, and sanitized terminal evidence. Current f40acec preserves those exact bytes and adds no media migration or provider replay.'
+      - 'Media-safeguard verification passed 28 focused unit tests, 7 focused real-PostgreSQL integration tests, typecheck, full build, full lint, scoped formatting, secret scan, migration/diff/marker checks, and an independent semantic audit. The terminal media browser proof used the already deployed transcript contract at 089d724bdd901a2a009770fecf58c6d9e68df494 and no provider action was repeated after the accepted PR #117 lifecycle.'
+      - 'For current f40acec, automatic deployment first exposed the exact Git source with stale staging-only APP_VERSION and COMMIT_SHA labels. Only those two explicit labels were reconciled on ot99-web and ot99-worker staging; the resulting exact-source deployments are successful, production and provider configuration are unchanged, and optional email/WhatsApp readiness flags are recorded separately from the disabled HighLevel event/actions modes.'
     blocker: null
     remaining_work: null
     next_action: null
