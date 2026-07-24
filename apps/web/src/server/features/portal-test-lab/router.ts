@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { Express, Request, Response } from 'express';
 import type { AppConfig } from '../../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
+import { RABBI_TELEGRAM_SYNTHETIC_STUDENT_ANSWER } from '../../../../../../packages/contracts/src/telegram/rabbi-communications.ts';
 import {
   createAccountUser,
   grantFreePilotAccess,
@@ -781,7 +782,7 @@ async function seedPortalLabActivity(
         studentUserKeys[index],
         W12_PORTAL_TEST_LAB.occurrenceKey,
         'What should I review before the next fictional class?',
-        'Review the fictional Mishnah terms and bring one prepared example.',
+        `${RABBI_TELEGRAM_SYNTHETIC_STUDENT_ANSWER} Learner ${ordinal}.`,
         new Date('2026-07-20T17:25:00.000Z'),
         `w12_question_${ordinal}`,
         sha256Hex(`w12_question_${ordinal}`),

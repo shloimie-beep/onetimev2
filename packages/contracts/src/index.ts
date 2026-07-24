@@ -18,6 +18,7 @@ export * from './ops/index.ts';
 export * from './events/index.ts';
 export * from './experience-preview/index.ts';
 export * from './highlevel/index.ts';
+export * from './telegram/rabbi-communications.ts';
 
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;

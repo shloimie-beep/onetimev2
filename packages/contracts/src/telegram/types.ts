@@ -95,6 +95,18 @@ export const botCapabilities = [
   'delivery.status.read',
   'delivery.retry',
   'telegram.audit.read_recent',
+  'conversation.parent.list',
+  'conversation.parent.read_redacted',
+  'conversation.parent.reply.preview',
+  'conversation.parent.reply.confirm',
+  'student.question.list',
+  'student.question.read',
+  'student.question.reply.preview',
+  'student.question.reply.confirm',
+  'student.question.close',
+  'internal_task.list',
+  'internal_task.create',
+  'internal_task.update',
 ] as const;
 
 export type BotCapability = (typeof botCapabilities)[number];

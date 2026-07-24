@@ -30,6 +30,7 @@ export default defineConfig({
             LOGIN_IP_RATE_LIMIT_MAX: '100',
             ZOOM_CLASSROOM_ENABLED: 'true',
             ZOOM_CLASSROOM_PROVIDER_MODE: 'sink',
+            PORTAL_TEST_LAB_ENABLED: 'true',
             OT_TEST_CLOCK: '2026-07-16T16:05:00.000Z',
           },
         },

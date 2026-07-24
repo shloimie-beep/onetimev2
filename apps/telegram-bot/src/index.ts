@@ -13,6 +13,11 @@ export {
 export { TelegramIdentityResolver } from '../../../packages/domain/src/telegram/identity.ts';
 export { DeterministicTestPayloadCodec } from '../../../packages/domain/src/telegram/crypto.ts';
 export { createOneTimeTelegramAdminRuntime } from '../../../packages/domain/src/telegram/runtime.ts';
+export { runRabbiTelegramWorker, runRabbiTelegramWorkerOnce } from './main.ts';
+export {
+  createOneTimeRabbiTelegramRuntime,
+  rabbiTelegramReadiness,
+} from '../../../packages/domain/src/telegram/rabbi-runtime.ts';
 export {
   OneTimeTelegramTransportAdapter,
   TelegramBotApiSendMessageClient,

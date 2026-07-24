@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "rabbi_telegram_communications",
+  "task_id": "OT-LAUNCH-01-RABBI-TELEGRAM-01",
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/rabbi-telegram-communications",
+    "system": "One Time Rabbi Telegram bot"
+  },
+  "write_scope": "Executable Telegram worker, typed communication capabilities, same-GHL-conversation adapter, Student-question answer projection, internal tasks, preview/confirm, lease/replay/audit, and synthetic tests",
+  "result": {
+    "status": "implemented_and_locally_validated",
+    "summary": "The distinct One Time Rabbi Telegram worker now handles scoped Parent communication previews and confirmations, local Student question answers, and internal Rabbi/operator tasks with one leased consumer, deterministic idempotency, replay denial, durable audit, synthetic same-conversation delivery proof, and truthful provider-off startup.",
+    "customer_messages_sent": 0,
+    "production_mutations": 0,
+    "child_ghl_contacts_created": 0,
+    "duplicate_customer_transcripts_created": 0,
+    "customer_provider_status": "provider_off"
+  },
+  "acceptance_results": {
+    "RABBI-TELEGRAM-001": {
+      "status": "passed",
+      "summary": "Focused worker, domain, database, browser, scope-denial, replay, and synthetic-provider gates passed without a customer send or production mutation."
+    }
+  },
+  "evidence": [
+    {
+      "type": "unit_test",
+      "path": "tests/unit/telegram-rabbi-runtime.test.ts",
+      "result": "3 passed; provider-off boot, distinct identity prerequisites, and synthetic-mode environment restriction verified"
+    },
+    {
+      "type": "integration_test",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "3 passed; Parent preview/confirm, Student answer, internal task, cross-scope denial, stale confirmation, lease, retry, and replay behavior verified"
+    },
+    {
+      "type": "database_readback",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "confirmed Student answer read from the canonical portal question table; internal task read from its contact-independent aggregate; no GHL contact or CRM task created"
+    },
+    {
+      "type": "restart_readback",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "consumer lease and delivered idempotency state survived worker reconstruction and rejected duplicate delivery"
+    },
+    {
+      "type": "synthetic_provider_readback",
+      "path": "tests/integration/telegram-rabbi-communications.test.ts",
+      "result": "one confirmed Parent reply produced exactly one synthetic delivery in the original adult conversation; unconfirmed and replayed actions produced no additional delivery"
+    },
+    {
+      "type": "browser_test",
+      "path": "tests/e2e/rabbi-telegram-communications.spec.ts",
+      "result": "1 passed; the intended Student portal API returned the confirmed answer and a sibling session could not read it"
+    },
+    {
+      "type": "migration_safety",
+      "path": "packages/db/migrations/2226_rabbi_telegram_communications.sql",
+      "sha256": "82b609978f4ab6efeb7860810c987003fe44e0f3326813dff6587ff9a3a1bdeb",
+      "result": "forward-only migration safety passed"
+    },
+    {
+      "type": "static_gates",
+      "result": "format, lint, typecheck, build, secret scan, and git diff check passed"
+    }
+  ],
+  "remaining_work": [],
+  "blocker": null,
+  "sanitized_at": "2026-07-24T08:19:12Z"
+}
