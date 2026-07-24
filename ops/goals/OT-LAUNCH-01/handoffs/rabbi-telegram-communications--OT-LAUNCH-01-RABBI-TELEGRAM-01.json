@@ -10,7 +10,7 @@
   },
   "write_scope": "Executable Telegram worker, typed communication capabilities, same-GHL-conversation adapter, Student-question answer projection, internal tasks, preview/confirm, lease/replay/audit, and synthetic tests",
   "result": {
-    "status": "implemented_and_exact_descendant_validated",
+    "status": "implemented_and_acceptance_green_ci_blocked_by_governed_base_e2e",
     "summary": "The distinct One Time Rabbi Telegram worker now handles scoped Parent communication previews and confirmations, local Student question answers, and internal Rabbi/operator tasks with one leased consumer, deterministic idempotency, replay denial, durable audit, synthetic same-conversation delivery proof, and truthful provider-off startup.",
     "customer_messages_sent": 0,
     "production_mutations": 0,
@@ -77,9 +77,26 @@
     {
       "type": "timeout_recheck",
       "result": "three unrelated migration setup hooks that timed out under the first parallel integration run passed independently at 25/25; the complete integration retry then passed 331/331"
+    },
+    {
+      "type": "pull_request_ci",
+      "reference": "PR #119 / Actions run 30081560970",
+      "result": "secret scan, format, lint, typecheck, 413 unit tests, 331 integration tests, and build passed; Playwright E2E passed 52 tests, failed 8 inherited portal/classroom tests, and did not run 3 dependent serial tests"
+    },
+    {
+      "type": "governed_base_reproduction",
+      "reference": "690df5a732b847f8adb2c840b5d004679900d4c4",
+      "result": "the same five browser files reproduced the exact 8 failures with the Rabbi branch absent: Student dashboard requests returned a sanitized 500 in content, Zoom, and legacy Rabbi flows; the parent add-learner assertion and portal-lab dialog journey also failed"
     }
   ],
-  "remaining_work": [],
-  "blocker": null,
-  "sanitized_at": "2026-07-24T09:06:10Z"
+  "remaining_work": [
+    "The governed-base portal/classroom owner must repair the reproducible browser failures on 690df5a732b847f8adb2c840b5d004679900d4c4, then rerun PR #119 Node verification; the assigned Rabbi Telegram acceptance work is complete."
+  ],
+  "blocker": {
+    "code": "GOVERNED_BASE_PORTAL_CLASSROOM_E2E_FAILURES",
+    "scope": "codex/full-app-staging-live@690df5a732b847f8adb2c840b5d004679900d4c4",
+    "detail": "Node verification run 30081560970 passed every pre-browser gate, then failed 8 Playwright tests across content-factory.spec.ts, ot-83r-portals.spec.ts, ot88-zoom-classroom.spec.ts, rabbi-live-console-fake.spec.ts, and w12-03-portal-test-lab.spec.ts. Running those same files at the exact governed base with no Rabbi commits produced the same 8 failures.",
+    "impact": "PR #119 cannot be fully green without an out-of-scope governed-base portal/classroom browser repair; RABBI-TELEGRAM-001 and its scoped Chromium proof remain passed."
+  },
+  "sanitized_at": "2026-07-24T09:24:05Z"
 }
