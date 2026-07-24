@@ -7,7 +7,9 @@ import type {
   SensitivePayloadCodec,
 } from '../../../contracts/src/telegram/types.ts';
 import { correlationKey, stableDigest } from './crypto.ts';
-import type { TelegramCommandEngine } from './commands.ts';
+type TelegramUpdateHandler = {
+  handle(update: NormalizedBotUpdate, now?: Date): Promise<unknown[]>;
+};
 
 export class TelegramPollingConflictError extends Error {
   readonly code = 409;
@@ -34,7 +36,7 @@ export class TelegramBotWorkerEngine {
   constructor(
     private readonly inbox: BotInboxRepository,
     private readonly codec: SensitivePayloadCodec,
-    private readonly engine: TelegramCommandEngine,
+    private readonly engine: TelegramUpdateHandler,
     private readonly transport: BotTransportAdapter,
     private readonly audit: BotAuditSink,
     private readonly config: TelegramWorkerConfig,
@@ -55,10 +57,10 @@ export class TelegramBotWorkerEngine {
           }),
           this.config.handlerDeadlineMs,
         )) as NormalizedBotUpdate;
-        const replies = await withDeadline(
+        const replies = (await withDeadline(
           this.engine.handle(update, now),
           this.config.handlerDeadlineMs,
-        );
+        )) as Parameters<BotTransportAdapter['sendReply']>[0][];
         for (const reply of replies) await this.transport.sendReply(reply);
         await this.inbox.complete(item.inboxKey, item.leaseGeneration);
         return { claimed: true as const, disposition: 'completed' as const };

@@ -164,6 +164,16 @@ const envSchema = z.object({
   ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED: booleanFromString,
   ONE_TIME_TELEGRAM_BOT_KEY: z.string().min(1).default('one_time_internal_ops'),
   ONE_TIME_TELEGRAM_ENVIRONMENT: z.enum(['local', 'staging', 'production']).default('staging'),
+  ONE_TIME_RABBI_TELEGRAM_ENABLED: booleanFromString,
+  ONE_TIME_RABBI_TELEGRAM_TOKEN_CONFIGURED: booleanFromString,
+  ONE_TIME_RABBI_TELEGRAM_OWNER_MAPPING_CONFIGURED: booleanFromString,
+  ONE_TIME_RABBI_TELEGRAM_SINGLE_CONSUMER_GATE: booleanFromString,
+  ONE_TIME_RABBI_TELEGRAM_BOT_KEY: z
+    .literal('one_time_rabbi_torah_console')
+    .default('one_time_rabbi_torah_console'),
+  ONE_TIME_RABBI_TELEGRAM_TOKEN_FINGERPRINT_HASH: optionalTrimmedString(32, 128),
+  ONE_TIME_RABBI_TELEGRAM_PAYLOAD_KEY: optionalTrimmedString(32, 400),
+  ONE_TIME_RABBI_GHL_REPLY_MODE: z.enum(['disabled', 'synthetic']).default('disabled'),
   ZOOM_CLASSROOM_ENABLED: booleanFromString,
   ZOOM_CLASSROOM_PROVIDER_MODE: z.enum(['sink', 'real']).default('sink'),
   ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: booleanFromString,
@@ -261,6 +271,25 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   const portalTestLabRuntimeAllowed =
     ['isolated_staging', 'test'].includes(deliveryEnvironment) &&
     ['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment);
+
+  if (
+    parsed.ONE_TIME_RABBI_GHL_REPLY_MODE === 'synthetic' &&
+    !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
+  ) {
+    throw new Error('Rabbi synthetic HighLevel replies are limited to test or isolated_staging.');
+  }
+  if (
+    parsed.ONE_TIME_RABBI_TELEGRAM_ENABLED &&
+    (!parsed.ONE_TIME_RABBI_TELEGRAM_TOKEN_CONFIGURED ||
+      !parsed.ONE_TIME_RABBI_TELEGRAM_OWNER_MAPPING_CONFIGURED ||
+      !parsed.ONE_TIME_RABBI_TELEGRAM_SINGLE_CONSUMER_GATE ||
+      !parsed.ONE_TIME_RABBI_TELEGRAM_TOKEN_FINGERPRINT_HASH ||
+      !parsed.ONE_TIME_RABBI_TELEGRAM_PAYLOAD_KEY)
+  ) {
+    throw new Error(
+      'Rabbi Telegram runtime requires its distinct token, owner mapping, token fingerprint, and single-consumer gate.',
+    );
+  }
 
   if (oneTimeRuntimeEnvironment === 'production' && parsed.DELIVERY_PROVIDER_MODE !== 'sink') {
     throw new Error('Production delivery provider mode requires a separate exact authorization.');
@@ -578,6 +607,15 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeTelegramProductionPollingEnabled: parsed.ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED,
     oneTimeTelegramBotKey: parsed.ONE_TIME_TELEGRAM_BOT_KEY,
     oneTimeTelegramEnvironment: parsed.ONE_TIME_TELEGRAM_ENVIRONMENT,
+    oneTimeRabbiTelegramEnabled: parsed.ONE_TIME_RABBI_TELEGRAM_ENABLED,
+    oneTimeRabbiTelegramTokenConfigured: parsed.ONE_TIME_RABBI_TELEGRAM_TOKEN_CONFIGURED,
+    oneTimeRabbiTelegramOwnerMappingConfigured:
+      parsed.ONE_TIME_RABBI_TELEGRAM_OWNER_MAPPING_CONFIGURED,
+    oneTimeRabbiTelegramSingleConsumerGate: parsed.ONE_TIME_RABBI_TELEGRAM_SINGLE_CONSUMER_GATE,
+    oneTimeRabbiTelegramBotKey: parsed.ONE_TIME_RABBI_TELEGRAM_BOT_KEY,
+    oneTimeRabbiTelegramTokenFingerprintHash: parsed.ONE_TIME_RABBI_TELEGRAM_TOKEN_FINGERPRINT_HASH,
+    oneTimeRabbiTelegramPayloadKey: parsed.ONE_TIME_RABBI_TELEGRAM_PAYLOAD_KEY,
+    oneTimeRabbiGhlReplyMode: parsed.ONE_TIME_RABBI_GHL_REPLY_MODE,
     zoomClassroomEnabled: parsed.ZOOM_CLASSROOM_ENABLED,
     zoomClassroomProviderMode: parsed.ZOOM_CLASSROOM_PROVIDER_MODE,
     zoomClassroomRealProviderEnabled: parsed.ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED,

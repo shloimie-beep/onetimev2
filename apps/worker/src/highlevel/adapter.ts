@@ -4,12 +4,22 @@ import type {
   HighLevelProjection,
   HighLevelProviderOperationContext,
 } from '../../../../packages/domain/src/highlevel/dispatcher.ts';
+import { HighLevelHttpClient } from '../../../../packages/domain/src/highlevel/http-client.ts';
 
 export class HighLevelHttpAdapter implements HighLevelAdapter {
-  constructor(private readonly config: AppConfig) {}
+  private readonly client: HighLevelHttpClient;
+
+  constructor(private readonly config: AppConfig) {
+    this.client = new HighLevelHttpClient({
+      apiBaseUrl: config.highLevelApiBaseUrl,
+      apiVersion: config.highLevelApiVersion,
+      privateIntegrationsToken: config.highLevelPrivateIntegrationsToken,
+      timeoutMs: config.highLevelProviderTimeoutMs,
+    });
+  }
 
   async upsertContact(input: HighLevelProjection, context: HighLevelProviderOperationContext) {
-    const contact = await this.request('/contacts/upsert', context, {
+    const contact = await this.client.request('/contacts/upsert', context.operationKey, {
       method: 'POST',
       body: JSON.stringify({
         locationId: input.locationId,
@@ -30,32 +40,14 @@ export class HighLevelHttpAdapter implements HighLevelAdapter {
     input: { locationId: string; providerContactId: string; tagsToAdd: string[] },
     context: HighLevelProviderOperationContext,
   ) {
-    await this.request(`/contacts/${encodeURIComponent(input.providerContactId)}/tags`, context, {
-      method: 'POST',
-      body: JSON.stringify({ tags: input.tagsToAdd }),
-    });
-  }
-
-  private async request(
-    path: string,
-    context: HighLevelProviderOperationContext,
-    init: RequestInit,
-  ) {
-    const token = this.config.highLevelPrivateIntegrationsToken;
-    if (!token) throw new Error('HIGHLEVEL_PROVIDER_UNCONFIGURED');
-    const response = await fetch(new URL(path, this.config.highLevelApiBaseUrl), {
-      ...init,
-      signal: AbortSignal.timeout(this.config.highLevelProviderTimeoutMs),
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Idempotency-Key': context.operationKey,
-        Version: this.config.highLevelApiVersion,
+    await this.client.request(
+      `/contacts/${encodeURIComponent(input.providerContactId)}/tags`,
+      context.operationKey,
+      {
+        method: 'POST',
+        body: JSON.stringify({ tags: input.tagsToAdd }),
       },
-    });
-    if (!response.ok) throw new Error(`HIGHLEVEL_PROVIDER_HTTP_${response.status}`);
-    return (await response.json()) as unknown;
+    );
   }
 }
 

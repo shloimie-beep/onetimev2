@@ -419,6 +419,24 @@ export {
 } from './crm/service.ts';
 export { createOneTimeTelegramApplicationAdapter } from './telegram/application-adapter.ts';
 export { createOneTimeTelegramAdminRuntime } from './telegram/runtime.ts';
+export { RabbiCommunicationService } from './telegram/rabbi-communications.ts';
+export {
+  RabbiTelegramCommunicationEngine,
+  RabbiTelegramIdentityAdapter,
+} from './telegram/rabbi-engine.ts';
+export {
+  DisabledRabbiConversationProvider,
+  HighLevelRabbiConversationProvider,
+  SyntheticRabbiConversationProvider,
+} from './telegram/rabbi-provider.ts';
+export {
+  createOneTimeRabbiTelegramRuntime,
+  rabbiTelegramReadiness,
+} from './telegram/rabbi-runtime.ts';
+export {
+  RabbiParentReplyWorker,
+  encryptRabbiParentConversationRef,
+} from './telegram/rabbi-worker.ts';
 export {
   OneTimeTelegramTransportAdapter,
   TelegramBotApiSendMessageClient,
