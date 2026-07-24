@@ -14,8 +14,8 @@
     "status": "ready_for_convergence",
     "governed_assignment_base": "00d3511e9d66aaaafc0e2031e56f9858bd332bb8",
     "assignment_packet_commit": "91860774160667bf2cd7003f427df4ae1c8dbf4d",
-    "implementation_commit": "fd47a7fe0d3a9c574cb6d35acfa53430d8eb21f3",
-    "summary": "Natural-language prompt feedback now produces reviewed, section-scoped immutable prompt versions with stable checksums, compare-and-swap activation and rollback, exact full-candidate and before/after review, reversible legacy rendering, immutable source/citation/privacy/safety guardrails, and generation binding. The existing Class Helper is the single canonical Parent/Student scoped knowledge adapter over currently entitled approved content, with exact household/learner authorization, entitlement and citation rechecks, sibling denial, prompt-injection resistance, database-backed multi-instance rate limits, no raw Q/A persistence, and an explicit approved-source provider-off fallback. A centralized fail-closed output boundary now rejects protected provider URLs or values in indexed text, answer text, citation labels, generated source references, and deep links; only explicit first-party app deep-link forms are allowed.",
+    "implementation_commit": "fc6ea3e393e82428292dde21fc46e7d5edfcddb0",
+    "summary": "Natural-language prompt feedback now produces reviewed, section-scoped immutable prompt versions with stable checksums, compare-and-swap activation and rollback, exact full-candidate and before/after review, reversible legacy rendering, immutable source/citation/privacy/safety guardrails, and generation binding. The existing Class Helper is the single canonical Parent/Student scoped knowledge adapter over currently entitled approved content, with exact household/learner authorization, audience-coupled learner and household entitlement selectors, entitlement and citation rechecks, sibling denial, prompt-injection resistance, database-backed multi-instance rate limits, no raw Q/A persistence, and an explicit approved-source provider-off fallback. A centralized fail-closed output boundary rejects protected provider URLs or values in indexed text, answer text, citation labels, generated source references, and deep links; only explicit first-party app deep-link forms are allowed.",
     "prompt_guardrails_mutable": false,
     "new_chat_ui_created": false,
     "new_retrieval_store_created": false,
@@ -30,7 +30,7 @@
     "PROMPT-KNOWLEDGE-001": {
       "status": "passed",
       "summary": "Structured schema and exact diffs, immutable versions, checksum/CAS/rollback, invalid-operation and concurrency denial, legacy rendering, Parent/Student/cross-household scope, current approved-source citation validation, protected-output abstention, injection and ungrounded-answer denial, revocation rechecks, database-backed rate limiting, provider-off fallback, and learner-switch UI isolation all passed.",
-      "independent_security_review": "The f1fe392 predecessor was rejected for one output-redaction defect. Commit fd47a7fe0d3a9c574cb6d35acfa53430d8eb21f3 repairs that defect and is pending independent successor re-audit."
+      "independent_security_review": "The f1fe392 predecessor was rejected for output redaction and dc203dd was rejected for a mixed-selector sibling entitlement leak. Commit fc6ea3e393e82428292dde21fc46e7d5edfcddb0 repairs both findings and is pending independent successor re-audit."
     }
   },
   "verification": [
@@ -48,7 +48,7 @@
     "git diff --check and conflict-marker/debug-statement scan passed",
     "the first post-review browser attempt served the prior compiled client and failed one new UI expectation; rebuilding the exact source followed by the same 3-test Chromium command passed 3/3",
     "redaction repair unit test passed 24/24, including schemed, schemeless, protocol-relative, and encoded provider links; URL-bearing titles; protected query/value labels; post-provider citation revalidation; and fail-closed source references",
-    "redaction repair database-backed portal integration passed 5/5, including approved-and-entitled unsafe rows, all three isolated Student principals, and no sibling disclosure",
+    "redaction and entitlement repair database-backed portal integration passed 6/6, including approved-and-entitled unsafe rows, a learner-scoped row carrying both learner and household keys, exact-learner success, sibling abstention with no metadata, all three isolated Student principals, and no sibling disclosure",
     "redaction repair npm run typecheck and npm run build passed",
     "redaction repair scoped ESLint and repo-pinned Prettier checks passed for all 5 changed code/test paths",
     "redaction repair npm run secret:scan passed across 2,119 repository text files",
@@ -101,5 +101,5 @@
     "Conductor updates the sole BOARD/pointer after acceptance and owns exact-head persistent-staging deployment/readback."
   ],
   "blocker": null,
-  "sanitized_at": "2026-07-24T15:58:03Z"
+  "sanitized_at": "2026-07-24T16:16:24Z"
 }
