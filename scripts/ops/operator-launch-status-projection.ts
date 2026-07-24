@@ -13,6 +13,7 @@ type BoardTrack = {
   id?: unknown;
   status?: unknown;
   acceptance_ids?: unknown;
+  dependencies?: unknown;
   blocker?: unknown;
   next_action?: unknown;
 };
@@ -143,15 +144,29 @@ export function buildOperatorLaunchStatusProjection(input: {
       },
     ];
   });
-  const nextTrack = milestoneTracks.find(
-    (track) =>
-      (track.status === 'active' ||
-        track.status === 'unclaimed' ||
-        track.status === 'ready_for_convergence') &&
-      !track.blocker &&
-      typeof track.next_action === 'string' &&
-      track.next_action.trim().length > 0,
-  );
+  const dependenciesAreDone = (track: BoardTrack) =>
+    optionalStringArray(track.dependencies, `${track.id}.dependencies`).every(
+      (dependencyId) => trackById.get(dependencyId)?.status === 'done',
+    );
+  const nextTrack =
+    milestoneTracks.find(
+      (track) =>
+        (track.status === 'active' ||
+          track.status === 'unclaimed' ||
+          track.status === 'ready_for_convergence') &&
+        !track.blocker &&
+        dependenciesAreDone(track) &&
+        typeof track.next_action === 'string' &&
+        track.next_action.trim().length > 0,
+    ) ??
+    milestoneTracks.find(
+      (track) =>
+        track.status === 'blocked' &&
+        Boolean(track.blocker) &&
+        dependenciesAreDone(track) &&
+        typeof track.next_action === 'string' &&
+        track.next_action.trim().length > 0,
+    );
   if (!nextTrack) throw new Error('launch_status_next_task_missing');
 
   const projection = operatorLaunchStatusProjectionSchema.parse({
@@ -215,6 +230,10 @@ function arrayValue<T>(value: unknown, field: string) {
 
 function stringArray(value: unknown, field: string) {
   return arrayValue<unknown>(value, field).map((entry) => stringValue(entry, field));
+}
+
+function optionalStringArray(value: unknown, field: string) {
+  return value === undefined ? [] : stringArray(value, field);
 }
 
 function stringValue(value: unknown, field: string) {

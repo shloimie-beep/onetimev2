@@ -71,6 +71,14 @@ const suspiciousTruncatedStrings = parsedBoardStrings.filter(({ value }) =>
   /\bPR$/u.test(value.trim()),
 );
 const unquotedHashCommentHazards = findUnquotedHashCommentHazards(boardText);
+const staleCurrentClaims = [
+  'Current deployed product source 415d7e49d7567d3e211fb725c0916ece78da4dd0',
+  'The current provider-off descendant 4d484c167ab332a6f82b97c7fc4f758c58bb391b',
+  'Final superseding rotation completed at 2026-07-22T18:58:54.309Z',
+  'The final Admin-only rotation completed at 2026-07-24T09:54:47.696Z',
+  'Final rotation at 2026-07-22T18:58:54.309Z',
+  'The final fictional Admin rotation at 2026-07-24T09:54:47.696Z',
+].filter((claim) => boardText.includes(claim));
 record(
   'board status vocabulary',
   sameSet(Object.keys(statusDefinitions), [
@@ -127,6 +135,7 @@ const criticalParsedSubstrings = [
   'PR #104 prefix 2214',
   'PR #105 exact successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885',
   'PR #105 exact successor 96e54d9688ff174ac8265ce3b3a6216abb6292dc',
+  'PR #105 cleanup-only successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e',
   'PR #106 exact production head acddcc8cd012c5cdc5bfc08cbc80550bef8719ba',
   'Terminal PR #107 head 1e247c70004dffb6247fc1ee407f1153d753bd7d',
   'PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad',
@@ -134,8 +143,9 @@ const criticalParsedSubstrings = [
   'PR #110 exact head 38358961cff6c6bf44621ab9e3f6b88061586618',
   'Accepted PR #113 head 45b213a5ddfde97d60f220ae3eb0bdff5cda51ed',
   'Terminal PR #115 head 06c14e9b59c5e7c963397fb961634fe711b00e0c',
-  'Superseding PR #118 head 938942b41634a47aae48d95b12a912209dec8849',
-  'Superseding PR #119 head 960d1bdff84e12eed89d3e7a45fd1717d22a81fc',
+  'Final PR #118 head 5741d5d9422c9f326112c636880de365ca3cc35a',
+  'Final PR #119 head 17ee48e1f2f0abaea0b319ad69a5e384048cdd52',
+  'Final PR #120 head e5e52114828401d575ca2baae35db364e608d91a',
   'PR #141 exact head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe',
 ];
 record(
@@ -161,6 +171,11 @@ record(
   unquotedHashCommentHazards.join(', ') || 'none',
 );
 record(
+  'board has no superseded current or final claims',
+  staleCurrentClaims.length === 0,
+  staleCurrentClaims.join(', ') || 'none',
+);
+record(
   'structured track owners',
   tracks.every((track) => {
     const owner = objectAt(track, 'owner');
@@ -170,7 +185,7 @@ record(
 );
 record(
   'current persistent-staging product evidence',
-  conductorHead.last_verified_commit === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+  conductorHead.last_verified_commit === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
     (() => {
       const track = trackById('persistent_staging');
       if (!track) return false;
@@ -178,25 +193,25 @@ record(
       const evidence = arrayAt<string>(track, 'evidence');
       return (
         track.status === 'done' &&
-        owner.head === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+        owner.head === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
         evidence.some(
           (value) =>
-            value.includes('web deployment 6b007369-3345-41f3-9c5f-abc08eaeae95') &&
-            value.includes('worker deployment 34c123e4-61eb-4907-9a99-0b5f3e83b4b0') &&
-            value.includes('2224_content_factory_publish_ready_constraint'),
+            value.includes('web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a') &&
+            value.includes('worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821') &&
+            value.includes('2226_rabbi_telegram_communications'),
         )
       );
     })() &&
     String(outcome.current_summary).includes(
-      'web deployment 6b007369-3345-41f3-9c5f-abc08eaeae95',
+      'web deployment d56944dd-fbb7-46d3-a613-0f7c00a00c0a',
     ) &&
     String(outcome.current_summary).includes(
-      'worker deployment 34c123e4-61eb-4907-9a99-0b5f3e83b4b0',
+      'worker deployment 00ad7a14-e98a-4c54-92e8-4e5c75fdd821',
     ) &&
-    String(outcome.current_summary).includes('2224_content_factory_publish_ready_constraint') &&
-    parsedBoardStrings.some(({ value }) => value.includes('affected Chromium 13/13')) &&
-    parsedBoardStrings.some(({ value }) => value.includes('2,085-file secret scan')),
-  '415d7e4 deployed through exact web/worker with schema 2224 and repaired portal gates',
+    String(outcome.current_summary).includes('2226_rabbi_telegram_communications') &&
+    parsedBoardStrings.some(({ value }) => value.includes('Chromium 68/68')) &&
+    parsedBoardStrings.some(({ value }) => value.includes('2,115-file secret scan')),
+  '4cf4d49 deployed through exact web/worker with schema 2226 and same-snapshot role gates',
 );
 record(
   'current role-preview and fictional-session evidence',
@@ -207,14 +222,29 @@ record(
     return (
       previewTrack.status === 'done' &&
       sessionTrack.status === 'done' &&
-      objectAt(previewTrack, 'owner').head === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
-      objectAt(sessionTrack, 'owner').head === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+      objectAt(previewTrack, 'owner').head === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
+      objectAt(sessionTrack, 'owner').head === '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
       parsedBoardStrings.some(({ value }) =>
         value.includes('Direct Student 1 and Parent credential logins separately reached'),
       )
     );
   })(),
   'Admin launcher, direct Parent/Student, sibling previews, and preserved Admin session',
+);
+record(
+  'production pilot remains dependency-gated',
+  (() => {
+    const track = trackById('production_pilot');
+    if (!track) return false;
+    const dependencies = arrayAt<string>(track, 'dependencies');
+    return (
+      track.status === 'unclaimed' &&
+      dependencies.includes('zoom_meeting_sdk') &&
+      dependencies.includes('zoom_s2s_host_control') &&
+      dependencies.includes('zoom_real_control_operator_change_set')
+    );
+  })(),
+  'production_pilot cannot be projected executable before all three Zoom tracks are done',
 );
 record(
   'Zoom disposable lifecycle remains fail-closed',
@@ -229,8 +259,11 @@ record(
       sdkTrack.status === 'provider_off' &&
       hostTrack.status === 'provider_off' &&
       operatorTrack.status === 'blocked' &&
-      operatorBlocker.code === 'ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH' &&
-      outcome.external_action_count === 15 &&
+      objectAt(sdkTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
+      objectAt(hostTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
+      objectAt(operatorTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
+      operatorBlocker.code === 'ZOOM_DISPOSABLE_CANARY_PROVIDER_DELETION_UNPROVEN' &&
+      outcome.external_action_count === 16 &&
       externalActions.some(
         (action) =>
           action.kind === 'zoom_disposable_isolated_canary_lifecycle' &&
@@ -243,10 +276,13 @@ record(
       parsedBoardStrings.some(({ value }) =>
         value.includes('d4f10489-1d8a-4518-8db2-a6da309dda8f'),
       ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('c6d90077-de1c-41ed-b30e-cda5389b98b2'),
+      ) &&
       parsedBoardStrings.some(({ value }) => value.includes('2c0d6ed8-a7e1-4da2-baf9-06323de78dc8'))
     );
   })(),
-  'one disposable meeting exists; cleanup mismatch blocks joins/controls and preserves exact state',
+  'one disposable meeting exists; provider deletion and signed tombstone remain unproven',
 );
 record(
   'external action accounting is exact',
@@ -261,64 +297,86 @@ record(
     );
     return (
       outcome.external_action_count === counted &&
-      outcome.external_action_count === 15 &&
-      loginAction?.count === 10
+      outcome.external_action_count === 16 &&
+      loginAction?.count === 11
     );
   })(),
-  'external_action_count=15 equals row sum and includes 10 bounded staging login-code emails',
+  'external_action_count=16 equals row sum and includes 11 bounded staging login-code emails',
 );
 record(
   'fictional Admin incident is rotated and auditable',
   adminIncident.schema_version === 3 &&
     objectAt(adminIncident, 'rotation').status === 'complete' &&
-    objectAt(adminIncident, 'rotation').rotated_at === '2026-07-24T09:54:47.696Z' &&
-    objectAt(adminIncident, 'rotation').active_sessions_before === 1 &&
+    objectAt(adminIncident, 'rotation').rotated_at === '2026-07-24T13:14:22.759Z' &&
+    objectAt(adminIncident, 'rotation').active_sessions_before === 0 &&
     objectAt(adminIncident, 'rotation').active_sessions_after === 0 &&
     objectAt(adminIncident, 'rotation').protected_handoff_replaced_atomically === true &&
     objectAt(adminIncident, 'rotation').old_credential_rejected === true &&
     objectAt(adminIncident, 'rotation').credential_printed === false &&
     objectAt(adminIncident, 'rotation_execution').source_head ===
-      '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
-    parsedBoardStrings.some(({ value }) =>
-      value.includes('Authorized Codex history contains four old-value matches'),
-    ),
+      '4cf4d491a6190fcad278d9cfd2324728d28c3cc4' &&
+    parsedBoardStrings.some(({ value }) => value.includes('14,140 Codex text/log files')),
   'Admin-only rotation complete; old value remains explicitly classified as compromised',
 );
 record(
-  'Admin IA semantic rejection is preserved',
+  'Admin IA is accepted and integrated',
   (() => {
     const track = trackById('admin_information_architecture');
     if (!track) return false;
     const owner = objectAt(track, 'owner');
     return (
-      track.status === 'active' &&
+      track.status === 'done' &&
       owner.pr === 118 &&
-      owner.head === '938942b41634a47aae48d95b12a912209dec8849' &&
-      parsedBoardStrings.some(({ value }) => value.includes('Live Console became unconditional')) &&
+      owner.head === '5741d5d9422c9f326112c636880de365ca3cc35a' &&
       parsedBoardStrings.some(({ value }) =>
-        value.includes('Dashboard Preview Parent & Student portals card/CTA was removed'),
+        value.includes('restores server-capability-gated Live Console visibility'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('Dashboard Preview Parent & Student portals CTA'),
       )
     );
   })(),
-  'PR #118 remains unintegrated until capability gating and Dashboard discovery are restored',
+  'PR #118 final head is integrated with capability gating and Dashboard discovery restored',
 );
 record(
-  'Rabbi Telegram lease-fencing rejection is preserved',
+  'Rabbi Telegram is accepted and integrated',
   (() => {
     const track = trackById('rabbi_telegram_communications');
     if (!track) return false;
     const owner = objectAt(track, 'owner');
     return (
-      track.status === 'active' &&
+      track.status === 'done' &&
       owner.pr === 119 &&
-      owner.head === '960d1bdff84e12eed89d3e7a45fd1717d22a81fc' &&
-      parsedBoardStrings.some(({ value }) => value.includes('ignores rowCount')) &&
+      owner.head === '17ee48e1f2f0abaea0b319ad69a5e384048cdd52' &&
+      parsedBoardStrings.some(({ value }) => value.includes('exact row-count fence')) &&
       parsedBoardStrings.some(({ value }) =>
-        value.includes('same-owner/digest generation-reclaim adversarial test'),
+        value.includes('stale terminal failure cannot overwrite'),
       )
     );
   })(),
-  'PR #119 remains unintegrated until stale failure cannot overwrite a reclaimed generation',
+  'PR #119 final head is integrated with stale-generation failure fencing',
+);
+record(
+  'Parent and Student contact operations are accepted and integrated',
+  (() => {
+    const track = trackById('parent_student_contact_operations');
+    if (!track) return false;
+    const owner = objectAt(track, 'owner');
+    return (
+      track.status === 'done' &&
+      owner.pr === 120 &&
+      owner.head === 'e5e52114828401d575ca2baae35db364e608d91a' &&
+      track.handoff_path ===
+        'ops/goals/OT-LAUNCH-01/handoffs/parent-student-contact-operations--OT-LAUNCH-01-CONTACT-OPS-01.json' &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('2225_parent_student_contact_operations'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('9139d459e2211ca988e96939ce149562f083f62d'),
+      )
+    );
+  })(),
+  'PR #120 final head is integrated with exact 2225 migration evidence',
 );
 record(
   'accepted occurrence-scoped video track',
@@ -380,7 +438,7 @@ record(
       owner.repository === 'shloimie-beep/onetimev2' &&
       owner.branch === 'codex/zoom-real-control-activation' &&
       owner.pr === 105 &&
-      owner.head === '96e54d9688ff174ac8265ce3b3a6216abb6292dc' &&
+      owner.head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
       track.zoom_ui_preview_state === 'READY' &&
       track.zoom_real_control_state === 'PROVIDER_OFF'
     );
@@ -394,7 +452,7 @@ record(
         owner.repository === 'shloimie-beep/onetimev2' &&
         owner.branch === 'codex/zoom-real-control-activation' &&
         owner.pr === 105 &&
-        owner.head === '96e54d9688ff174ac8265ce3b3a6216abb6292dc' &&
+        owner.head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
         track.zoom_ui_preview_state === 'READY' &&
         track.zoom_real_control_state === 'PROVIDER_OFF'
       );

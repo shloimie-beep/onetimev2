@@ -110,6 +110,20 @@ describe('OT-LAUNCH-01 operator launch status projection', () => {
     ).toThrow('launch_status_external_url_forbidden');
   });
 
+  it('does not present a dependency-gated future track as executable', () => {
+    const projection = buildOperatorLaunchStatusProjection({
+      boardText: boardFixture()
+        .replace('dependencies: [ready_track]', 'dependencies: [blocked_track]')
+        .replace('Wait for the dependency.', 'Run the bounded cleanup.'),
+      acceptanceText: acceptanceFixture(),
+    });
+
+    expect(projection.next_executable_task).toMatchObject({
+      track_id: 'blocked_track',
+      action: 'Run the bounded cleanup.',
+    });
+  });
+
   it('keeps the checked-in projection exact to current canonical Board bytes', async () => {
     const projection = buildOperatorLaunchStatusProjection({
       boardText: await readFile('ops/goals/OT-LAUNCH-01/BOARD.yaml', 'utf8'),
@@ -142,16 +156,19 @@ tracks:
   - id: ready_track
     status: done
     acceptance_ids: [READY-001]
+    dependencies: []
     blocker: null
     next_action: null
   - id: active_track
     status: active
     acceptance_ids: [ACTIVE-001]
+    dependencies: [ready_track]
     blocker: null
     next_action: Run the next bounded task.
   - id: blocked_track
     status: blocked
     acceptance_ids: [BLOCKED-001]
+    dependencies: []
     blocker:
       code: EXACT_DEPENDENCY
       reason: One exact external dependency remains.
