@@ -11,9 +11,10 @@
   },
   "write_scope": "Adult/household/GHL links, independent access-source states, paused-Parent shell, atomic enrollment, secure Parent/Student recovery, adult-only outbox projection, and focused domain/API tests",
   "result": {
-    "status": "implemented_draft_pr_open",
+    "status": "implemented_and_verified_draft_pr",
     "governed_base": "bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0",
     "implementation_commit": "e6b00543297afc2e4a4c79b90fb190ce8091faf5",
+    "head_at_handoff": "3b61273cc80d6dc847da8805e017a80d8227d29d",
     "pull_request": "https://github.com/shloimie-beep/onetimev2/pull/120",
     "migration": {
       "path": "packages/db/migrations/2225_parent_student_contact_operations.sql",
@@ -44,7 +45,7 @@
   },
   "acceptance_results": {
     "CONTACT-OPS-001": {
-      "status": "implemented_local_gates_passed_ci_pending",
+      "status": "passed",
       "verified_behavior": [
         "Paid, complimentary, and administrative-suspension states are independent; suspension denies, otherwise paid or complimentary grants, otherwise the household is paused.",
         "Complimentary revocation leaves paid truth intact, and suspension/release does not mutate billing.",
@@ -97,6 +98,12 @@
       "sanitized": true
     },
     {
+      "ref": "tests/e2e/content-factory.spec.ts",
+      "kind": "content_item_selector_and_entitlement_browser_proof",
+      "result": "4 passed after the content-item selector was narrowed from all semantic articles to article.ot-item",
+      "sanitized": true
+    },
+    {
       "ref": "tests/integration/experience-preview.test.ts:592",
       "kind": "content_playback_overlap_fail_closed_proof",
       "result": "Exact 690df5a source condition reproduced unrelated-Student HTTP 409; the CONTACT-OPS one-condition NOT_FOUND correction restored HTTP 404 while preserving positive household and learner entitlements.",
@@ -117,13 +124,36 @@
       "kind": "local_static_governance_migration_and_safety_gates",
       "result": "passed",
       "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30081557177",
+      "kind": "postgresql_16_unlimited_learner_concurrency",
+      "result": "passed with both concurrent creates fulfilled, four active learners after the race, and five after archive/replacement/restore",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30081557315",
+      "kind": "postgresql_16_assurance",
+      "result": "passed",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30081557202",
+      "kind": "postgresql_18_assurance_and_restore_clone",
+      "result": "passed",
+      "sanitized": true
+    },
+    {
+      "ref": "https://github.com/shloimie-beep/onetimev2/actions/runs/30081557219",
+      "kind": "ops_06_deterministic_checks",
+      "result": "passed",
+      "sanitized": true
     }
   ],
   "remaining_work": [
-    "Wait for draft PR #120 repository checks, including the PostgreSQL-backed migration and integration environment not available in this local task runtime.",
     "The conductor should independently audit the recorded 690df5a content-playback overlap and decide whether the one-condition fail-closed 404 correction should be ported once to the governed lineage before integration.",
     "The conductor may decide later whether Rabbi should become a separate display label or first-class role; current Owner/Admin labels were preserved and authority is enforced by explicit capabilities."
   ],
   "blocker": null,
-  "sanitized_at": "2026-07-24T08:57:57Z"
+  "sanitized_at": "2026-07-24T09:17:56Z"
 }
