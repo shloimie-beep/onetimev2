@@ -730,25 +730,47 @@ export async function getContentFactoryPlayback(input: {
   }
   if (!['owner', 'admin'].includes(input.actor.actor_role)) {
     const entitlementResult = await input.pool.query(
-      `SELECT entitlement.learner_key, learner.household_key
+      `SELECT entitlement.audience, entitlement.household_key, entitlement.learner_key,
+              learner.household_key AS learner_household_key
          FROM onetime.content_item_entitlements entitlement
-         JOIN onetime.portal_learners learner
-           ON learner.account_key = entitlement.account_key
-          AND learner.product_key = entitlement.product_key
-          AND learner.learner_key = entitlement.learner_key
+         LEFT JOIN onetime.portal_learners learner
+            ON learner.account_key = entitlement.account_key
+           AND learner.product_key = entitlement.product_key
+           AND learner.learner_key = entitlement.learner_key
         WHERE entitlement.account_key = $1 AND entitlement.product_key = $2
-          AND entitlement.content_item_key = $3 AND entitlement.audience = 'learner'
+          AND entitlement.content_item_key = $3
           AND entitlement.entitlement_state = 'active'`,
       [input.config.accountKey, input.config.productKey, input.sourceKey],
     );
     const learnerKey = input.actor.student_learner?.learner_key;
+    const learnerHouseholdKey = input.actor.student_learner?.household_key;
     const households = new Set(input.actor.authorized_households.map((item) => item.household_key));
-    const entitled = entitlementResult.rows.some(
-      (entitlement) =>
-        (input.actor.actor_role === 'student' && entitlement.learner_key === learnerKey) ||
-        (input.actor.actor_role === 'parent' && households.has(String(entitlement.household_key))),
-    );
-    if (!entitled) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+    const entitled = entitlementResult.rows.some((entitlement) => {
+      if (input.actor.actor_role === 'student') {
+        return (
+          entitlement.audience === 'all_active_learners' ||
+          (entitlement.audience === 'learner' && entitlement.learner_key === learnerKey) ||
+          (entitlement.audience === 'household' &&
+            entitlement.household_key === learnerHouseholdKey)
+        );
+      }
+      if (input.actor.actor_role === 'parent') {
+        return (
+          (entitlement.audience === 'all_active_learners' && households.size > 0) ||
+          (entitlement.audience === 'household' &&
+            households.has(String(entitlement.household_key))) ||
+          (entitlement.audience === 'learner' &&
+            households.has(String(entitlement.learner_household_key)))
+        );
+      }
+      return false;
+    });
+    if (!entitled) {
+      throw new ContentFactoryError(
+        isContentFactoryDemoSource(input.sourceKey) ? 'PLAYBACK_UNAVAILABLE' : 'NOT_FOUND',
+        'Content was not found.',
+      );
+    }
   }
   const draft = contentFactoryDraftSchema.parse(row.draft_json);
   const isDemo = isContentFactoryDemoSource(String(row.source_key));
