@@ -182,7 +182,9 @@ async function measureRoute(page: Page, route: string, run: () => Promise<void>)
       lcp_ms: typeof vitals.lcp === 'number' ? Number(vitals.lcp.toFixed(1)) : null,
       cls: typeof vitals.cls === 'number' ? Number(vitals.cls.toFixed(4)) : null,
       browser_vitals_supported: !vitals.unsupported,
-      bna_operations_fanout_count: requests.filter((url) => /bna|operations/i.test(url)).length,
+      bna_operations_fanout_count: requests.filter((url) =>
+        /\/(?:bna|operations)(?:\/|$)/i.test(new URL(url).pathname),
+      ).length,
     });
   }
   const durations = samples.map((sample) => sample.duration_ms).sort((left, right) => left - right);

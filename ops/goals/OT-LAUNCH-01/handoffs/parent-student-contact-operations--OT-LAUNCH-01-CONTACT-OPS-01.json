@@ -14,7 +14,6 @@
     "status": "implemented_and_verified_draft_pr",
     "governed_base": "bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0",
     "implementation_commit": "e6b00543297afc2e4a4c79b90fb190ce8091faf5",
-    "head_at_handoff": "3b61273cc80d6dc847da8805e017a80d8227d29d",
     "pull_request": "https://github.com/shloimie-beep/onetimev2/pull/120",
     "migration": {
       "path": "packages/db/migrations/2225_parent_student_contact_operations.sql",
@@ -104,6 +103,12 @@
       "sanitized": true
     },
     {
+      "ref": "tests/performance/ot81-day-one-performance.spec.ts",
+      "kind": "thirty_sample_route_and_forbidden_fanout_proof",
+      "result": "passed after the forbidden BNA operations counter was narrowed to the external /bna or /operations path segment so local /contact-operations requests are not false positives",
+      "sanitized": true
+    },
+    {
       "ref": "tests/integration/experience-preview.test.ts:592",
       "kind": "content_playback_overlap_fail_closed_proof",
       "result": "Exact 690df5a source condition reproduced unrelated-Student HTTP 409; the CONTACT-OPS one-condition NOT_FOUND correction restored HTTP 404 while preserving positive household and learner entitlements.",
@@ -155,5 +160,5 @@
     "The conductor may decide later whether Rabbi should become a separate display label or first-class role; current Owner/Admin labels were preserved and authority is enforced by explicit capabilities."
   ],
   "blocker": null,
-  "sanitized_at": "2026-07-24T09:17:56Z"
+  "sanitized_at": "2026-07-24T09:31:50Z"
 }
