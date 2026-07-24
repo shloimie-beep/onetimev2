@@ -132,14 +132,7 @@ export async function runHighLevelProjectionBatch(input: {
         const eventCode = event.data.event_code;
         const registrationKey = event.data.registration_key;
         if (!eventCode || !registrationKey) {
-          await revokeIneligibleEventRow(
-            input.pool,
-            input.config,
-            row,
-            'identity_missing',
-            'none',
-            now,
-          );
+          await revokeIneligibleEventRow(input.pool, input.config, row, 'identity_missing', now);
           quarantined += 1;
           continue;
         }
@@ -149,7 +142,6 @@ export async function runHighLevelProjectionBatch(input: {
             input.config,
             row,
             'payload_scope_mismatch',
-            'none',
             now,
           );
           quarantined += 1;
@@ -161,14 +153,7 @@ export async function runHighLevelProjectionBatch(input: {
           contactKey: row.contact_key,
         });
         if (!eligibility.allowed) {
-          await revokeIneligibleEventRow(
-            input.pool,
-            input.config,
-            row,
-            eligibility.reason,
-            'none',
-            now,
-          );
+          await revokeIneligibleEventRow(input.pool, input.config, row, eligibility.reason, now);
           quarantined += 1;
           continue;
         }
@@ -196,7 +181,6 @@ export async function runHighLevelProjectionBatch(input: {
             input.config,
             row,
             eligibility.reason,
-            'contact_upsert_completed',
             input.now ?? new Date(),
           );
           quarantined += 1;
@@ -1246,10 +1230,32 @@ async function revokeIneligibleEventRow(
   config: AppConfig,
   row: ClaimedRow,
   reason: string,
-  providerEffectStage: 'none' | 'contact_upsert_completed',
   now: Date,
 ) {
   return inTransaction(pool, async (client) => {
+    const completedContactUpsert = await client.query(
+      `SELECT 1
+         FROM onetime.highlevel_provider_operation_receipts
+        WHERE account_key = $1
+          AND product_key = $2
+          AND delivery_key = $3
+          AND run_id = $4
+          AND operation_key = $5
+          AND operation_name = 'contact_upsert'
+          AND status = 'completed'
+          AND provider_contact_id IS NOT NULL
+          AND completed_at IS NOT NULL
+        LIMIT 1`,
+      [
+        config.accountKey,
+        config.productKey,
+        row.delivery_key,
+        row.transport_authorization_run_id,
+        operationKeyFor(row.delivery_key, 'contact_upsert'),
+      ],
+    );
+    const providerEffectStage =
+      completedContactUpsert.rowCount === 1 ? 'contact_upsert_completed' : 'none';
     const result = await client.query(
       `UPDATE onetime.outbox_events
           SET status = 'dead_letter',

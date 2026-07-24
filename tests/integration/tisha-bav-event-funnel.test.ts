@@ -19,6 +19,7 @@ import {
   requestTishaBavJoin,
   resolveTishaBavRedirect,
   runHighLevelProjectionBatch,
+  stableKey,
   type EventServiceEmailDenialReason,
   type HighLevelAdapter,
   type HighLevelProjection,
@@ -1041,6 +1042,64 @@ describe('Tisha BAv event-only email permission convergence', () => {
         transport_authorization_state: 'revoked',
       },
     ]);
+    expect(await revocationAudit(deliveryKey)).toMatchObject({
+      eligibility_reason: 'complaint',
+      provider_effect_performed: true,
+      provider_effect_stage: 'contact_upsert_completed',
+      tags_written: false,
+      retry_authorized: false,
+    });
+  });
+
+  it('reports a completed contact upsert after crash recovery when pre-call eligibility revokes', async () => {
+    const fixture = await eligibilityFixture('completed-upsert-crash-recovery');
+    const deliveryKey = await registrationDeliveryKey(fixture.registrationKey);
+    const runId = 'completed-upsert-crash-recovery-run';
+    const config = canaryConfig(deliveryKey, runId);
+    await prepareEventRegistrationCanary({ pool, config, deliveryKey, now: openWindow });
+    await pool.query(
+      `INSERT INTO onetime.highlevel_provider_operation_receipts
+         (operation_key, account_key, product_key, delivery_key, run_id, operation_name,
+          request_hash, status, claim_token, provider_contact_id, started_at, completed_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,'contact_upsert',$6,'completed',$7,$8,$9,$9,$9)`,
+      [
+        stableKey('highlevel_provider_operation', [deliveryKey, 'contact_upsert']),
+        config.accountKey,
+        config.productKey,
+        deliveryKey,
+        runId,
+        'synthetic-completed-upsert-request-hash',
+        'expired-prior-claim',
+        'synthetic-provider-contact',
+        openWindow,
+      ],
+    );
+    await pool.query(
+      `UPDATE onetime.outbox_events
+          SET attempts = 1
+        WHERE account_key = $1 AND product_key = $2 AND delivery_key = $3`,
+      [config.accountKey, config.productKey, deliveryKey],
+    );
+    await recordContactEmailRestriction(pool, config, {
+      contactKey: fixture.contactKey,
+      restrictionType: 'complaint',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'completed-upsert-crash-recovery-complaint',
+      recordedAt: openWindow,
+    });
+    const adapter = new DeterministicFakeHighLevelAdapter();
+
+    const result = await runHighLevelProjectionBatch({
+      pool,
+      config,
+      adapter,
+      now: openWindow,
+    });
+
+    expect(result).toMatchObject({ claimed: 1, delivered: 0, quarantined: 1, adapterCalls: 0 });
+    expect(adapter.upsertCalls).toHaveLength(0);
+    expect(adapter.calls).toHaveLength(0);
     expect(await revocationAudit(deliveryKey)).toMatchObject({
       eligibility_reason: 'complaint',
       provider_effect_performed: true,
