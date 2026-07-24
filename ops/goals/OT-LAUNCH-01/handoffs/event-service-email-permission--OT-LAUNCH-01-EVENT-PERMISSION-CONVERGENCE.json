@@ -15,7 +15,12 @@
   "result": {
     "status": "implementation_complete_pending_remote_postgresql_assurance",
     "base_commit": "43e38a6f1d3aae7eff62781f75a49777ee325d5c",
-    "implementation_commit": "7f4ad095ea6123f57dc4d34cf79e9f9253509d6d",
+    "implementation_commit": "d963441837c6301e1cd0762d7a2d19eb99c5a522",
+    "postgresql_assurance_fix": {
+      "root_cause": "The real PostgreSQL contacts table requires public_contact_id; the event-only registration contact insert omitted it while pg-mem did not surface the constraint.",
+      "resolution": "Generate and insert one opaque public contact UUID within the serialized registration transaction.",
+      "diagnostic_only_code_retained": false
+    },
     "migration": {
       "path": "packages/db/migrations/2227_event_service_email_permission_convergence.sql",
       "sha256": "746ea6efdd06ce5ff20ffbfbf7bb9bab759dea5e3976fbb3442140b8a0e29f86",
