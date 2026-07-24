@@ -10,8 +10,8 @@
   },
   "write_scope": "Executable Telegram worker, typed communication capabilities, same-GHL-conversation adapter, Student-question answer projection, internal tasks, preview/confirm, lease/replay/audit, and synthetic tests",
   "result": {
-    "status": "implemented_and_exact_descendant_validated",
-    "summary": "The distinct One Time Rabbi Telegram worker now handles scoped Parent communication previews and confirmations, local Student question answers, and internal Rabbi/operator tasks with one leased consumer, deterministic idempotency, replay denial, durable audit, synthetic same-conversation delivery proof, and truthful provider-off startup.",
+    "status": "implemented_semantic_audit_repaired_and_validated",
+    "summary": "The distinct One Time Rabbi Telegram worker handles scoped Parent communication previews and confirmations, local Student question answers, and internal Rabbi/operator tasks with one leased consumer, deterministic idempotency, replay denial, durable audit, synthetic same-conversation delivery proof, and truthful provider-off startup. A terminal failure may now update the conversation projection and failure audit only after exactly one owner-and-generation-fenced outbox transition; a stale generation is lease loss with no downstream mutation.",
     "customer_messages_sent": 0,
     "production_mutations": 0,
     "child_ghl_contacts_created": 0,
@@ -33,7 +33,12 @@
     {
       "type": "integration_test",
       "path": "tests/integration/telegram-rabbi-communications.test.ts",
-      "result": "3 passed; Parent preview/confirm, Student answer, internal task, cross-scope denial, stale confirmation, lease, retry, and replay behavior verified"
+      "result": "4 passed; Parent preview/confirm, Student answer, internal task, cross-scope denial, stale confirmation, lease, retry, replay, and same-owner newer-generation failure fencing verified"
+    },
+    {
+      "type": "semantic_audit_repair",
+      "path": "packages/domain/src/telegram/rabbi-worker.ts",
+      "result": "an adversarial same-owner reclaim delivered generation 2 before generation 1 failed terminally; the stale attempt returned lease_lost, preserved delivered outbox/conversation state, and created zero failed or dead-letter audit rows"
     },
     {
       "type": "database_readback",
@@ -63,7 +68,7 @@
     },
     {
       "type": "static_gates",
-      "result": "format, lint, typecheck, build, secret scan, and git diff check passed"
+      "result": "format, brand, lint, typecheck, build, secret scan, bundle budgets, migration safety, governance validation, launch-status projection, workflow-control projection, conflict-marker scan, and git diff check passed"
     },
     {
       "type": "governed_base",
@@ -72,7 +77,7 @@
     },
     {
       "type": "regression_suite",
-      "result": "75 unit files with 413 tests and 64 integration files with 331 tests passed; the repaired Experience Preview file passed 18/18, including protected synthetic lesson playback, sibling denial, and fixed-demo 409 semantics"
+      "result": "75 unit files with 413 tests and 64 integration files with 332 tests passed; the repaired Experience Preview file passed 18/18, including protected synthetic lesson playback, sibling denial, and fixed-demo 409 semantics"
     },
     {
       "type": "timeout_recheck",
@@ -91,9 +96,13 @@
     {
       "type": "accessibility_validation",
       "result": "24 browser accessibility tests passed"
+    },
+    {
+      "type": "complete_browser_validation",
+      "result": "the full 63-case E2E command completed successfully at bounded local concurrency; all 10 performance tests and bundle checks passed"
     }
   ],
   "remaining_work": [],
   "blocker": null,
-  "sanitized_at": "2026-07-24T09:52:57Z"
+  "sanitized_at": "2026-07-24T10:58:42Z"
 }

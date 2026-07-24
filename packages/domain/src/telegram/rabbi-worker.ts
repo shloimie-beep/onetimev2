@@ -168,7 +168,7 @@ export class RabbiParentReplyWorker {
       if (!item) throw error;
       const errorCode = safeErrorCode(error);
       const terminal = item.attempts >= item.max_attempts;
-      await this.pool.query(
+      const failed = await this.pool.query(
         `UPDATE onetime.rabbi_parent_reply_outbox
             SET state = $4,
                 next_attempt_at = $5,
@@ -178,7 +178,8 @@ export class RabbiParentReplyWorker {
                 updated_at = $7
           WHERE delivery_key = $1
             AND lease_owner = $2
-            AND lease_generation = $3`,
+            AND lease_generation = $3
+            AND state = 'leased'`,
         [
           item.delivery_key,
           this.config.ownerId,
@@ -191,6 +192,13 @@ export class RabbiParentReplyWorker {
           now.toISOString(),
         ],
       );
+      if (failed.rowCount !== 1) {
+        return {
+          enabled: true as const,
+          claimed: 1,
+          disposition: 'lease_lost' as const,
+        };
+      }
       if (terminal) {
         await this.pool.query(
           `UPDATE onetime.rabbi_parent_conversations

@@ -400,6 +400,114 @@ describe('OT-LAUNCH-01 Rabbi Telegram communications', () => {
     });
     expect(flaky.successful).toBe(1);
   });
+
+  it('prevents a stale same-owner generation from overwriting a newer delivered projection', async () => {
+    const provider = new SameOwnerGenerationRaceProvider();
+    const audit = new TelegramSqlAuditSink(pool);
+    const service = new RabbiCommunicationService(pool, codec, 'synthetic');
+    const context = {
+      botKey,
+      environment,
+      providerUserRef,
+      chatRef,
+      actor: {
+        userKey: asCanonicalUserKey(actorUserKey),
+        displayLabel: 'Rabbi Owner',
+        accountKey,
+        productKey,
+        role: 'owner' as const,
+        securityVersion: 1,
+      },
+      mappingKey: 'rabbi_mapping_fixture',
+      mappingVersion: 1,
+    };
+    const preview = await service.preview(
+      context,
+      {
+        capability: 'conversation.parent.reply.preview',
+        conversationKey: 'parent_conversation_fixture',
+        replyText: 'Generation-fenced synthetic reply.',
+      },
+      new Date('2026-07-24T11:00:00.000Z'),
+    );
+    if (!('confirmationKey' in preview)) throw new Error('expected preview');
+    await service.confirm(context, preview.confirmationKey, new Date('2026-07-24T11:00:01.000Z'));
+    const delivery = await pool.query(
+      `SELECT delivery_key
+         FROM onetime.rabbi_parent_reply_outbox
+        WHERE state = 'confirmed'
+        ORDER BY created_at DESC, delivery_key DESC
+        LIMIT 1`,
+    );
+    const deliveryKey = String(delivery.rows[0]?.delivery_key);
+    await pool.query(
+      `UPDATE onetime.rabbi_parent_reply_outbox
+          SET max_attempts = 1
+        WHERE delivery_key = $1`,
+      [deliveryKey],
+    );
+
+    const workerConfig = {
+      botKey,
+      environment,
+      ownerId: 'rabbi-reused-worker-identity',
+      rowLeaseMs: 100,
+      baseBackoffMs: 100,
+    };
+    const staleWorker = new RabbiParentReplyWorker(pool, codec, provider, audit, workerConfig);
+    const newerWorker = new RabbiParentReplyWorker(pool, codec, provider, audit, workerConfig);
+    const staleRun = staleWorker.runOnce(new Date('2026-07-24T11:00:02.000Z'));
+    await provider.firstAttemptStarted;
+
+    const newerRun = newerWorker.runOnce(new Date('2026-07-24T11:00:02.200Z'));
+    await provider.secondAttemptStarted;
+    const reclaimed = await pool.query(
+      `SELECT state, lease_owner, lease_generation
+         FROM onetime.rabbi_parent_reply_outbox
+        WHERE delivery_key = $1`,
+      [deliveryKey],
+    );
+    expect(reclaimed.rows[0]).toMatchObject({
+      state: 'leased',
+      lease_owner: workerConfig.ownerId,
+      lease_generation: 2,
+    });
+    provider.completeNewerAttempt();
+    expect(await newerRun).toMatchObject({
+      claimed: 1,
+      disposition: 'delivered',
+    });
+    provider.rejectStaleAttempt(new Error('SYNTHETIC_STALE_TERMINAL_FAILURE'));
+    await expect(staleRun).resolves.toMatchObject({
+      claimed: 1,
+      disposition: 'lease_lost',
+    });
+
+    const preserved = await pool.query(
+      `SELECT outbox.state, outbox.lease_generation, outbox.last_error_code,
+              conversation.last_reply_state
+         FROM onetime.rabbi_parent_reply_outbox AS outbox
+         JOIN onetime.rabbi_parent_conversations AS conversation
+           ON conversation.conversation_key = outbox.conversation_key
+        WHERE outbox.delivery_key = $1`,
+      [deliveryKey],
+    );
+    expect(preserved.rows[0]).toMatchObject({
+      state: 'delivered',
+      lease_generation: 2,
+      last_error_code: null,
+      last_reply_state: 'delivered',
+    });
+    const staleFailureAudit = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.telegram_operation_audit
+        WHERE correlation_key = $1
+          AND outcome IN ('failed', 'dead_letter')`,
+      [deliveryKey],
+    );
+    expect(Number(staleFailureAudit.rows[0]?.count)).toBe(0);
+    expect(provider.successful).toBe(1);
+  });
 });
 
 class FlakySyntheticProvider implements RabbiConversationProvider {
@@ -415,6 +523,51 @@ class FlakySyntheticProvider implements RabbiConversationProvider {
       providerMessageRef: 'synthetic-retry-message',
       conversationRef: input.conversationRef,
     };
+  }
+}
+
+class SameOwnerGenerationRaceProvider implements RabbiConversationProvider {
+  readonly mode = 'synthetic' as const;
+  successful = 0;
+  private attempts = 0;
+  private markFirstAttemptStarted!: () => void;
+  private markSecondAttemptStarted!: () => void;
+  private rejectFirstAttempt!: (reason?: unknown) => void;
+  private resolveSecondAttempt!: () => void;
+  readonly firstAttemptStarted = new Promise<void>((resolve) => {
+    this.markFirstAttemptStarted = resolve;
+  });
+  readonly secondAttemptStarted = new Promise<void>((resolve) => {
+    this.markSecondAttemptStarted = resolve;
+  });
+  private readonly staleAttempt = new Promise<never>((_resolve, reject) => {
+    this.rejectFirstAttempt = reject;
+  });
+  private readonly newerAttempt = new Promise<void>((resolve) => {
+    this.resolveSecondAttempt = resolve;
+  });
+
+  async sendReply(input: Parameters<RabbiConversationProvider['sendReply']>[0]) {
+    this.attempts += 1;
+    if (this.attempts === 1) {
+      this.markFirstAttemptStarted();
+      return this.staleAttempt;
+    }
+    this.markSecondAttemptStarted();
+    await this.newerAttempt;
+    this.successful += 1;
+    return {
+      providerMessageRef: 'synthetic-generation-fenced-message',
+      conversationRef: input.conversationRef,
+    };
+  }
+
+  rejectStaleAttempt(reason: unknown) {
+    this.rejectFirstAttempt(reason);
+  }
+
+  completeNewerAttempt() {
+    this.resolveSecondAttempt();
   }
 }
 
