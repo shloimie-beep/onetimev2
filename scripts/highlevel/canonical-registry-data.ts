@@ -1017,6 +1017,16 @@ const tagInputs = [
   ['OT | Weekly Newsletter', 'consent_communication', 'Newsletter audience marker.'],
   ['OT | Signup Website', 'source', 'Signup source was website.'],
   ['OT | Signup WhatsApp', 'source', 'Signup source was WhatsApp.'],
+  [
+    "OT | Event | Tisha B'Av 2026 | Registered",
+    'event',
+    'Exact event-only registration trigger for OT-E01; it does not grant newsletter or general marketing consent.',
+  ],
+  [
+    "OT | Source | Tisha B'Av 2026",
+    'source',
+    "Exact source marker for the Tisha B'Av 2026 registration projection.",
+  ],
   ['OT | Source | Rabbi Followers', 'source', 'Approved Rabbi followers import source.'],
   ['OT | Source | Subscribed Audience', 'source', 'Approved subscribed audience import source.'],
   ['OT | Source | Cleaned Audience', 'source', 'Approved cleaned audience import source.'],
@@ -1035,6 +1045,10 @@ const tagInputs = [
 export const tags: RegistryTag[] = tagInputs.map(([canonicalName, category, purpose]) => {
   const id = existingTagIds[canonicalName] ?? '';
   const deprecated = category === 'deprecated_existing';
+  const oneTimeEventProjection = [
+    "OT | Event | Tisha B'Av 2026 | Registered",
+    "OT | Source | Tisha B'Av 2026",
+  ].includes(canonicalName);
   return {
     canonicalName,
     normalizedName: normalizeAssetName(canonicalName),
@@ -1047,7 +1061,7 @@ export const tags: RegistryTag[] = tagInputs.map(([canonicalName, category, purp
     sourceOfTruth: 'Shared',
     allowedValues: [],
     workflowsAllowedToWrite: [],
-    oneTimeAllowedToWrite: false,
+    oneTimeAllowedToWrite: oneTimeEventProjection,
     humansMayEdit: false,
     dependencies: [],
     aliases: [],

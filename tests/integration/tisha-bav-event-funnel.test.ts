@@ -1,17 +1,24 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
 import type { TishaBavRegistrationPayload } from '../../packages/contracts/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import {
   captureTishaBavRegistration,
-  MockHighLevelEventClient,
-  reprocessTishaBavRegistrationDelivery,
+  DeterministicFakeHighLevelAdapter,
+  evaluateEventServiceEmailEligibility,
+  inspectTishaBavRegistrationDelivery,
+  prepareEventRegistrationCanary,
+  recordContactEmailRestriction,
   requestTishaBavJoin,
   resolveTishaBavRedirect,
-  runTishaBavEventEmailFallbackBatch,
+  runHighLevelProjectionBatch,
+  type EventServiceEmailDenialReason,
+  type HighLevelAdapter,
+  type HighLevelProjection,
+  type HighLevelProviderOperationContext,
 } from '../../packages/domain/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
 
@@ -29,12 +36,11 @@ afterEach(async () => {
   await pool.end();
 });
 
-describe('Tisha BAv event registration', () => {
-  it('stores event registration and a provider-off HighLevel delivery intent by default', async () => {
-    const config = testConfig();
+describe('Tisha BAv event-only email permission convergence', () => {
+  it('atomically records an adult contact, scoped permission, and one held HighLevel event', async () => {
     const result = await captureTishaBavRegistration({
       pool,
-      config,
+      config: testConfig(),
       payload: registrationPayload('parent@example.test'),
       now: openWindow,
     });
@@ -45,116 +51,970 @@ describe('Tisha BAv event registration', () => {
       event_code: 'tisha-bav-2026',
       confirmation_queued: false,
       ghl_sync_status: 'provider_off',
-      message: {
-        heading: 'Thank you — your spot has been reserved.',
-        body: 'Your spot is reserved, but event email delivery is not confirmed yet.',
-        schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel',
-      },
     });
     expect(JSON.stringify(result)).not.toMatch(/zoom\.us|join_url|start_url/i);
 
-    await expectCount('event_registrations', 1);
-    const delivery = await pool.query(
-      `SELECT status, provider, protected_payload, public_metadata
-         FROM onetime.event_delivery_events
-        WHERE event_code = 'tisha-bav-2026'`,
+    const registration = await pool.query(
+      `SELECT contact_key, registration_status, identity_status, newsletter_opt_in
+         FROM onetime.event_registrations
+        WHERE registration_key = $1`,
+      [result.registration_key],
     );
-    expect(delivery.rows[0]).toMatchObject({ status: 'provider_off', provider: 'highlevel' });
-    expect(delivery.rows[0].public_metadata.raw_zoom_url_present).toBe(false);
-    expect(delivery.rows[0].public_metadata.communication_catalog_version).toBe(
-      'tisha-bav-2026-email-copy-v1',
+    expect(registration.rows).toEqual([
+      expect.objectContaining({
+        registration_status: 'active',
+        identity_status: 'verified',
+        newsletter_opt_in: false,
+      }),
+    ]);
+    const contactKey = String(registration.rows[0]?.contact_key);
+    const contact = await pool.query(
+      `SELECT reminder_preference, consent_policy_version, consent_recorded_at
+         FROM onetime.contacts
+        WHERE contact_key = $1`,
+      [contactKey],
     );
-    expect(delivery.rows[0].protected_payload.communication_catalog_version).toBe(
-      'tisha-bav-2026-email-copy-v1',
-    );
-    expect(delivery.rows[0].protected_payload.workflow_schedule).toMatchObject({
-      eventStart: '2026-07-23T19:00:00.000Z',
-      oneHourReminder: { offsetMinutes: -60, sendAt: '2026-07-23T18:00:00.000Z' },
-      tenMinuteReminder: { offsetMinutes: -10, sendAt: '2026-07-23T18:50:00.000Z' },
-    });
-    expect(delivery.rows[0].protected_payload.tags).toEqual([
-      "OT | Event | Tisha B'Av 2026 | Registered",
-      "OT | Source | Tisha B'Av 2026",
+    expect(contact.rows).toEqual([
+      {
+        reminder_preference: 'none',
+        consent_policy_version: null,
+        consent_recorded_at: null,
+      },
     ]);
     const permission = await pool.query(
-      `SELECT status, permission_scope, disclosure_version
+      `SELECT contact_key, status, permission_scope, disclosure_version
          FROM onetime.event_email_permissions
-        WHERE event_code = 'tisha-bav-2026'`,
+        WHERE registration_key = $1`,
+      [result.registration_key],
     );
-    expect(permission.rows[0]).toMatchObject({
-      status: 'granted',
-      permission_scope: 'event_service_email',
-      disclosure_version: 'tisha-bav-2026-event-email-v1',
+    expect(permission.rows).toEqual([
+      {
+        contact_key: contactKey,
+        status: 'granted',
+        permission_scope: 'event_service_email',
+        disclosure_version: 'tisha-bav-2026-event-email-v1',
+      },
+    ]);
+    const outbox = await pool.query(
+      `SELECT event_type, transport_mode, transport_authorization_state, status, payload
+         FROM onetime.outbox_events
+        WHERE contact_key = $1 AND channel = 'highlevel'`,
+      [contactKey],
+    );
+    expect(outbox.rows).toEqual([
+      expect.objectContaining({
+        event_type: 'highlevel.event.registration.recorded.v1',
+        transport_mode: 'disabled',
+        transport_authorization_state: 'held',
+        status: 'pending',
+      }),
+    ]);
+    expect(outbox.rows[0]?.payload).toMatchObject({
+      event_name: 'event.registration.recorded',
+      protected_reference: { kind: 'one_time_path', path: '/tisha-bav' },
+      data: {
+        event_code: 'tisha-bav-2026',
+        registration_key: result.registration_key,
+        permission_scope: 'event_service_email',
+      },
     });
+    expect(outbox.rows[0]?.payload).not.toHaveProperty('consent');
+    expect(JSON.stringify(outbox.rows[0]?.payload)).not.toMatch(/newsletter|marketing|whatsapp/i);
+    await expectCount('event_delivery_events', 0);
     await expectCount('account_lifecycle_delivery_outbox', 0);
     await expectCount('auth_email_challenge_delivery_outbox', 0);
   });
 
-  it('replays the same idempotency key without duplicate rows', async () => {
-    const config = testConfig();
-    const payload = registrationPayload('same@example.test', { idempotency_key: 'event-same-1' });
-    const first = await captureTishaBavRegistration({ pool, config, payload, now: openWindow });
-    const second = await captureTishaBavRegistration({ pool, config, payload, now: openWindow });
-
-    expect(second.duplicate_submission).toBe(true);
-    expect(second.registration_key).toBe(first.registration_key);
-    await expectCount('event_registrations', 1);
-    await expectCount('event_delivery_events', 1);
-  });
-
-  it('queues and processes the exact bounded confirmation only after HighLevel is provider-off', async () => {
-    const config = fallbackConfig();
-    const registration = await captureTishaBavRegistration({
+  it('replays idempotently and never creates a second outbox row', async () => {
+    const payload = registrationPayload('same@example.test', {
+      idempotency_key: 'event-same-1',
+    });
+    const first = await captureTishaBavRegistration({
       pool,
-      config,
-      payload: registrationPayload('fallback@example.test'),
+      config: testConfig(),
+      payload,
       now: openWindow,
     });
-
-    expect(registration).toMatchObject({
-      confirmation_queued: true,
+    const replay = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload,
+      now: openWindow,
+    });
+    expect(replay).toMatchObject({
+      duplicate_submission: true,
+      registration_key: first.registration_key,
+      confirmation_queued: false,
       ghl_sync_status: 'provider_off',
     });
+    await expectCount('event_registrations', 1);
+    await expectCount('event_email_permissions', 1);
+    await expectCount('event_email_permission_events', 1);
+    await expectCount('outbox_events', 1);
+    await expectCount('event_delivery_events', 0);
+  });
 
-    const deliveries = await pool.query(
-      `SELECT protected_payload, public_metadata
-         FROM onetime.event_delivery_events
-        WHERE event_code = 'tisha-bav-2026'
-          AND provider = 'resend_fallback'`,
-    );
-    expect(deliveries.rowCount).toBe(1);
-    expect(deliveries.rows[0].protected_payload).toMatchObject({
-      communication_catalog_version: 'tisha-bav-2026-email-copy-v1',
-      template: 'tisha_bav_2026_registration_confirmation_v1',
-      subject: "You're registered for Rabbi Eli Scheller's live Tisha B'Av program",
-      cta: { label: 'View Event Details', path: '/tisha-bav' },
-      reply_to: 'info@onetimeonetime.com',
-      sender: 'Rabbi Eli Scheller | One Time Mishnayos',
-      from: 'info@onetimeonetime.com',
+  it('preserves a prior denial and does not create a fallback or direct provider effect', async () => {
+    const first = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('denied@example.test', {
+        idempotency_key: 'denied-first',
+      }),
+      now: openWindow,
     });
-    expect(deliveries.rows[0].protected_payload.body).toContain(
-      'Thursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel',
-    );
-    expect(JSON.stringify(deliveries.rows[0])).not.toMatch(/zoom\.us|zoommtg|pwd=/i);
-    expect(deliveries.rows[0].public_metadata).toMatchObject({
-      bounded: true,
-      confirmation_only: true,
-      warm_list_invitation: false,
+    const identity = await registrationIdentity(first.registration_key ?? '');
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'hard_bounce',
+      action: 'applied',
+      source: 'synthetic_test',
+      reasonCode: 'provider_hard_bounce',
+      idempotencyKey: 'hard-bounce-1',
+      recordedAt: openWindow,
     });
-    const fetchImpl = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(Response.json({ id: 'provider-message-private' }, { status: 200 }));
-    const summary = await runTishaBavEventEmailFallbackBatch({
+    await pool.query(
+      `UPDATE onetime.event_email_permissions
+          SET status = 'hard_bounced', deny_reason = 'provider_hard_bounce'
+        WHERE registration_key = $1`,
+      [first.registration_key],
+    );
+
+    const second = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('denied@example.test', {
+        idempotency_key: 'denied-second',
+      }),
+      now: openWindow,
+    });
+    expect(second).toMatchObject({ confirmation_queued: false, ghl_sync_status: 'provider_off' });
+    const permission = await pool.query(
+      `SELECT status FROM onetime.event_email_permissions WHERE registration_key = $1`,
+      [first.registration_key],
+    );
+    expect(permission.rows[0]?.status).toBe('hard_bounced');
+    await expectCount('event_delivery_events', 0);
+    await expectCount('outbox_events', 1);
+  });
+
+  it('enforces the typed deny precedence when denial states collide', async () => {
+    const registration = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('precedence@example.test'),
+      now: openWindow,
+    });
+    const identity = await registrationIdentity(registration.registration_key ?? '');
+    await pool.query(
+      `UPDATE onetime.event_email_permissions SET status = 'withdrawn'
+        WHERE registration_key = $1`,
+      [registration.registration_key],
+    );
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'global_unsubscribe',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'unsubscribe-1',
+      recordedAt: openWindow,
+    });
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'global_dnd',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'dnd-1',
+      recordedAt: openWindow,
+    });
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'complaint',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'complaint-1',
+      recordedAt: openWindow,
+    });
+    await expectEligibility(registration.registration_key ?? '', identity.contactKey, 'complaint');
+
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'complaint',
+      action: 'cleared',
+      source: 'synthetic_test',
+      idempotencyKey: 'complaint-clear-1',
+      recordedAt: new Date(openWindow.getTime() + 1),
+    });
+    await expectEligibility(registration.registration_key ?? '', identity.contactKey, 'global_dnd');
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'global_dnd',
+      action: 'cleared',
+      source: 'synthetic_test',
+      idempotencyKey: 'dnd-clear-1',
+      recordedAt: new Date(openWindow.getTime() + 2),
+    });
+    await expectEligibility(
+      registration.registration_key ?? '',
+      identity.contactKey,
+      'global_unsubscribe',
+    );
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'global_unsubscribe',
+      action: 'cleared',
+      source: 'synthetic_test',
+      idempotencyKey: 'unsubscribe-clear-1',
+      recordedAt: new Date(openWindow.getTime() + 3),
+    });
+    await expectEligibility(
+      registration.registration_key ?? '',
+      identity.contactKey,
+      'event_withdrawal',
+    );
+  });
+
+  it('returns every typed denial reason from an isolated authoritative state', async () => {
+    const denialReasons = [
+      'complaint',
+      'hard_bounce',
+      'global_suppression',
+      'global_dnd',
+      'global_unsubscribe',
+      'event_withdrawal',
+      'event_cancelled',
+      'identity_missing',
+      'identity_archived',
+      'identity_ambiguous',
+      'identity_invalid',
+      'identity_mismatch',
+      'permission_missing',
+      'permission_inactive',
+    ] as const satisfies readonly EventServiceEmailDenialReason[];
+
+    for (const [index, reason] of denialReasons.entries()) {
+      const fixture = await eligibilityFixture(`typed-${index}-${reason}`);
+      const evaluationInput = await applyEligibilityDenial(fixture, reason, `typed-${index}`);
+      await expect(
+        evaluateEventServiceEmailEligibility(pool, testConfig(), {
+          eventCode: 'tisha-bav-2026',
+          ...evaluationInput,
+        }),
+      ).resolves.toEqual({ allowed: false, reason });
+    }
+  });
+
+  it('enforces every pairwise cross-tier denial collision', async () => {
+    const tierRepresentatives = [
+      'complaint',
+      'global_suppression',
+      'global_unsubscribe',
+      'event_withdrawal',
+      'identity_invalid',
+      'permission_inactive',
+    ] as const satisfies readonly EventServiceEmailDenialReason[];
+    let collision = 0;
+
+    for (let higherIndex = 0; higherIndex < tierRepresentatives.length; higherIndex += 1) {
+      for (
+        let lowerIndex = higherIndex + 1;
+        lowerIndex < tierRepresentatives.length;
+        lowerIndex += 1
+      ) {
+        const higher = tierRepresentatives[higherIndex];
+        const lower = tierRepresentatives[lowerIndex];
+        if (!higher || !lower) throw new Error('missing denial tier fixture');
+        const fixture = await eligibilityFixture(`tier-${collision}-${higher}-${lower}`);
+        await applyEligibilityDenial(fixture, lower, `tier-${collision}-lower`);
+        await applyEligibilityDenial(fixture, higher, `tier-${collision}-higher`);
+        await expectEligibility(fixture.registrationKey, fixture.contactKey, higher);
+        collision += 1;
+      }
+    }
+
+    expect(collision).toBe(15);
+  });
+
+  it('fails closed for wrong account, product, event, registration, and contact scope', async () => {
+    const fixture = await eligibilityFixture('wrong-scope-primary');
+    const other = await eligibilityFixture('wrong-scope-other');
+    const cases: Array<{
+      config: AppConfig;
+      eventCode: string;
+      registrationKey: string;
+      contactKey: string;
+      reason: EventServiceEmailDenialReason;
+    }> = [
+      {
+        config: testConfig({ ONE_TIME_ACCOUNT_KEY: 'wrong_account' }),
+        eventCode: 'tisha-bav-2026',
+        registrationKey: fixture.registrationKey,
+        contactKey: fixture.contactKey,
+        reason: 'identity_missing',
+      },
+      {
+        config: testConfig({ ONE_TIME_PRODUCT_KEY: 'wrong_product' }),
+        eventCode: 'tisha-bav-2026',
+        registrationKey: fixture.registrationKey,
+        contactKey: fixture.contactKey,
+        reason: 'identity_missing',
+      },
+      {
+        config: testConfig(),
+        eventCode: 'wrong-event',
+        registrationKey: fixture.registrationKey,
+        contactKey: fixture.contactKey,
+        reason: 'identity_missing',
+      },
+      {
+        config: testConfig(),
+        eventCode: 'tisha-bav-2026',
+        registrationKey: 'missing-registration',
+        contactKey: fixture.contactKey,
+        reason: 'identity_missing',
+      },
+      {
+        config: testConfig(),
+        eventCode: 'tisha-bav-2026',
+        registrationKey: fixture.registrationKey,
+        contactKey: other.contactKey,
+        reason: 'identity_mismatch',
+      },
+    ];
+
+    for (const testCase of cases) {
+      await expect(
+        evaluateEventServiceEmailEligibility(pool, testCase.config, {
+          eventCode: testCase.eventCode,
+          registrationKey: testCase.registrationKey,
+          contactKey: testCase.contactKey,
+        }),
+      ).resolves.toEqual({ allowed: false, reason: testCase.reason });
+    }
+  });
+
+  it('preserves ambiguous and invalid identity state across re-registration', async () => {
+    for (const identityStatus of ['ambiguous', 'invalid'] as const) {
+      const email = `reregister-${identityStatus}@example.test`;
+      const first = await captureTishaBavRegistration({
+        pool,
+        config: testConfig(),
+        payload: registrationPayload(email, {
+          idempotency_key: `reregister-${identityStatus}-first`,
+        }),
+        now: openWindow,
+      });
+      await pool.query(
+        `UPDATE onetime.event_registrations
+            SET identity_status = $1
+          WHERE registration_key = $2`,
+        [identityStatus, first.registration_key],
+      );
+
+      await captureTishaBavRegistration({
+        pool,
+        config: testConfig(),
+        payload: registrationPayload(email, {
+          idempotency_key: `reregister-${identityStatus}-second`,
+        }),
+        now: new Date(openWindow.getTime() + 1_000),
+      });
+
+      const state = await pool.query<{ identity_status: string; permission_status: string }>(
+        `SELECT registrations.identity_status,
+                permissions.status AS permission_status
+           FROM onetime.event_registrations AS registrations
+           JOIN onetime.event_email_permissions AS permissions
+             ON permissions.account_key = registrations.account_key
+            AND permissions.product_key = registrations.product_key
+            AND permissions.event_code = registrations.event_code
+            AND permissions.registration_key = registrations.registration_key
+          WHERE registrations.registration_key = $1`,
+        [first.registration_key],
+      );
+      expect(state.rows).toEqual([
+        {
+          identity_status: identityStatus,
+          permission_status: 'withdrawn',
+        },
+      ]);
+    }
+    await expectCount('event_registrations', 2);
+    await expectCount('outbox_events', 2);
+  });
+
+  it('rolls back restriction history and projection atomically, then retries safely', async () => {
+    const fixture = await eligibilityFixture('restriction-rollback');
+    const failingPool = failRestrictionProjectionPool(pool, 'restriction-rollback-retry');
+    const input = {
+      contactKey: fixture.contactKey,
+      restrictionType: 'global_dnd' as const,
+      action: 'applied' as const,
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-rollback-retry',
+      recordedAt: openWindow,
+    };
+
+    await expect(recordContactEmailRestriction(failingPool, testConfig(), input)).rejects.toThrow(
+      'SYNTHETIC_RESTRICTION_PROJECTION_FAILURE',
+    );
+    await expectRestrictionCounts(fixture.contactKey, 'global_dnd', 0, 0);
+
+    await expect(recordContactEmailRestriction(pool, testConfig(), input)).resolves.toMatchObject({
+      state: 'recorded',
+    });
+    await expectRestrictionCounts(fixture.contactKey, 'global_dnd', 1, 1);
+  });
+
+  it('appends stale restriction clears without rolling the current projection backward', async () => {
+    const fixture = await eligibilityFixture('restriction-ordering');
+    const appliedAt = new Date(openWindow.getTime() + 120_000);
+    const staleClearAt = new Date(openWindow.getTime() + 60_000);
+    const currentClearAt = new Date(openWindow.getTime() + 180_000);
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: 'global_unsubscribe',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-ordering-applied',
+      recordedAt: appliedAt,
+    });
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: 'global_unsubscribe',
+      action: 'cleared',
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-ordering-stale-clear',
+      recordedAt: staleClearAt,
+    });
+
+    const afterStale = await restrictionProjection(fixture.contactKey, 'global_unsubscribe');
+    expect(afterStale).toMatchObject({
+      active: true,
+      effective_at: appliedAt,
+    });
+    await expectRestrictionCounts(fixture.contactKey, 'global_unsubscribe', 2, 1);
+
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: 'global_unsubscribe',
+      action: 'cleared',
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-ordering-current-clear',
+      recordedAt: currentClearAt,
+    });
+    expect(await restrictionProjection(fixture.contactKey, 'global_unsubscribe')).toMatchObject({
+      active: false,
+      effective_at: currentClearAt,
+    });
+    await expectRestrictionCounts(fixture.contactKey, 'global_unsubscribe', 3, 1);
+  });
+
+  it('resolves equal-time restriction events fail closed regardless of arrival order', async () => {
+    const fixture = await eligibilityFixture('restriction-equal-time');
+    const recordedAt = new Date(openWindow.getTime() + 240_000);
+
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: 'complaint',
+      action: 'cleared',
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-equal-time-clear-first',
+      recordedAt,
+    });
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: 'complaint',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-equal-time-apply-second',
+      recordedAt,
+    });
+    expect(await restrictionProjection(fixture.contactKey, 'complaint')).toMatchObject({
+      active: true,
+      effective_at: recordedAt,
+    });
+
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: 'hard_bounce',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-equal-time-apply-first',
+      recordedAt,
+    });
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: 'hard_bounce',
+      action: 'cleared',
+      source: 'synthetic_test',
+      idempotencyKey: 'restriction-equal-time-clear-second',
+      recordedAt,
+    });
+    expect(await restrictionProjection(fixture.contactKey, 'hard_bounce')).toMatchObject({
+      active: true,
+      effective_at: recordedAt,
+    });
+    await expectRestrictionCounts(fixture.contactKey, 'complaint', 2, 1);
+    await expectRestrictionCounts(fixture.contactKey, 'hard_bounce', 2, 1);
+  });
+
+  it('fails closed for archived, ambiguous, mismatched, and missing permission identities', async () => {
+    const registration = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('identity@example.test'),
+      now: openWindow,
+    });
+    const identity = await registrationIdentity(registration.registration_key ?? '');
+    await pool.query(`UPDATE onetime.contacts SET archived_at = $1 WHERE contact_key = $2`, [
+      openWindow,
+      identity.contactKey,
+    ]);
+    await expectEligibility(
+      registration.registration_key ?? '',
+      identity.contactKey,
+      'identity_archived',
+    );
+    await pool.query(`UPDATE onetime.contacts SET archived_at = NULL WHERE contact_key = $1`, [
+      identity.contactKey,
+    ]);
+    await pool.query(
+      `UPDATE onetime.event_registrations SET identity_status = 'ambiguous'
+        WHERE registration_key = $1`,
+      [registration.registration_key],
+    );
+    await expectEligibility(
+      registration.registration_key ?? '',
+      identity.contactKey,
+      'identity_ambiguous',
+    );
+    await pool.query(
+      `UPDATE onetime.event_registrations SET identity_status = 'verified', contact_key = NULL
+        WHERE registration_key = $1`,
+      [registration.registration_key],
+    );
+    await expectEligibility(
+      registration.registration_key ?? '',
+      identity.contactKey,
+      'identity_mismatch',
+    );
+    await pool.query(
+      `UPDATE onetime.event_registrations SET contact_key = $1 WHERE registration_key = $2`,
+      [identity.contactKey, registration.registration_key],
+    );
+    await pool.query(`DELETE FROM onetime.event_email_permissions WHERE registration_key = $1`, [
+      registration.registration_key,
+    ]);
+    await expectEligibility(
+      registration.registration_key ?? '',
+      identity.contactKey,
+      'permission_missing',
+    );
+  });
+
+  it('keeps the inspection CLI boundary read-only and does not infer legacy permission', async () => {
+    const registration = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('inspection@example.test'),
+      now: openWindow,
+    });
+    await pool.query(
+      `DELETE FROM onetime.outbox_events
+        WHERE payload->'data'->>'registration_key' = $1`,
+      [registration.registration_key],
+    );
+    await pool.query(`DELETE FROM onetime.event_email_permissions WHERE registration_key = $1`, [
+      registration.registration_key,
+    ]);
+    await pool.query(
+      `DELETE FROM onetime.event_email_permission_events WHERE registration_key = $1`,
+      [registration.registration_key],
+    );
+    const before = await stateSnapshot();
+    const result = await inspectTishaBavRegistrationDelivery({
+      pool,
+      config: testConfig(),
+      registrationKey: registration.registration_key ?? '',
+    });
+    expect(result).toMatchObject({
+      status: 'missing',
+      would_enqueue: false,
+      eligibility_reason: 'permission_missing',
+    });
+    expect(await stateSnapshot()).toEqual(before);
+  });
+
+  it('requires an explicit exact-row canary prepare before synthetic dispatch and exact tag readback', async () => {
+    const registration = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('canary@example.test'),
+      now: openWindow,
+    });
+    const deliveryKey = await registrationDeliveryKey(registration.registration_key ?? '');
+    const config = canaryConfig(deliveryKey);
+    const adapter = new DeterministicFakeHighLevelAdapter();
+
+    const beforePrepare = await runHighLevelProjectionBatch({
       pool,
       config,
+      adapter,
       now: openWindow,
-      fetchImpl,
     });
-    expect(summary).toMatchObject({ claimed: 1, delivered: 1, external_send_performed: true });
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-    const sendBody = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
-    expect(sendBody.to).toEqual(['fallback@example.test']);
-    expect(JSON.stringify(sendBody)).not.toMatch(/zoom\.us|zoommtg|pwd=/i);
+    expect(beforePrepare).toMatchObject({ claimed: 0, delivered: 0, adapterCalls: 0 });
+
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config,
+        deliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toMatchObject({ prepared: true, deliveryKey });
+    const dispatched = await runHighLevelProjectionBatch({
+      pool,
+      config,
+      adapter,
+      now: openWindow,
+    });
+    expect(dispatched).toMatchObject({ claimed: 1, delivered: 1, adapterCalls: 1 });
+    expect(adapter.calls).toEqual([
+      expect.objectContaining({
+        eventName: 'event.registration.recorded',
+        tagsToAdd: ["OT | Event | Tisha B'Av 2026 | Registered", "OT | Source | Tisha B'Av 2026"],
+      }),
+    ]);
+  });
+
+  it('rejects canary preparation without the exact run, allowlist, budget, eligibility, or pristine row', async () => {
+    const registration = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('prepare-negative@example.test'),
+      now: openWindow,
+    });
+    const registrationKey = registration.registration_key ?? '';
+    const identity = await registrationIdentity(registrationKey);
+    const deliveryKey = await registrationDeliveryKey(registrationKey);
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config: testConfig(),
+        deliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toEqual({
+      prepared: false,
+      reason: 'canary_configuration_missing',
+    });
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config: canaryConfig('different-delivery-key'),
+        deliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toEqual({
+      prepared: false,
+      reason: 'canary_configuration_missing',
+    });
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: identity.contactKey,
+      restrictionType: 'global_unsubscribe',
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: 'prepare-negative-unsubscribe',
+      recordedAt: openWindow,
+    });
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config: canaryConfig(deliveryKey),
+        deliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toMatchObject({
+      prepared: false,
+      reason: 'contact_ineligible',
+      blocker: 'global_unsubscribe',
+    });
+  });
+
+  it('rejects prior receipts, attempts, non-pristine rows, and stored canary-run mismatches', async () => {
+    const prior = await eligibilityFixture('canary-prior-receipt');
+    const priorDeliveryKey = await registrationDeliveryKey(prior.registrationKey);
+    await pool.query(
+      `INSERT INTO onetime.highlevel_provider_operation_receipts
+         (operation_key, account_key, product_key, delivery_key, run_id, operation_name,
+          request_hash, status, claim_token, provider_contact_id, started_at, completed_at,
+          updated_at)
+       VALUES ($1,$2,$3,$4,$5,'contact_upsert',$6,'completed',$7,$8,$9,$9,$9)`,
+      [
+        'prior-receipt-operation',
+        testConfig().accountKey,
+        testConfig().productKey,
+        priorDeliveryKey,
+        'prior-receipt-run',
+        'synthetic-request-hash',
+        'prior-receipt-claim',
+        'synthetic-provider-contact',
+        openWindow,
+      ],
+    );
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config: canaryConfig(priorDeliveryKey, 'prior-receipt-run'),
+        deliveryKey: priorDeliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toEqual({ prepared: false, reason: 'prior_provider_effect' });
+
+    const attempted = await eligibilityFixture('canary-attempted');
+    const attemptedDeliveryKey = await registrationDeliveryKey(attempted.registrationKey);
+    await pool.query(`UPDATE onetime.outbox_events SET attempts = 1 WHERE delivery_key = $1`, [
+      attemptedDeliveryKey,
+    ]);
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config: canaryConfig(attemptedDeliveryKey, 'attempted-row-run'),
+        deliveryKey: attemptedDeliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toEqual({ prepared: false, reason: 'row_not_pristine' });
+
+    const revoked = await eligibilityFixture('canary-revoked');
+    const revokedDeliveryKey = await registrationDeliveryKey(revoked.registrationKey);
+    await pool.query(
+      `UPDATE onetime.outbox_events
+          SET transport_authorization_state = 'revoked'
+        WHERE delivery_key = $1`,
+      [revokedDeliveryKey],
+    );
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config: canaryConfig(revokedDeliveryKey, 'revoked-row-run'),
+        deliveryKey: revokedDeliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toEqual({ prepared: false, reason: 'row_not_pristine' });
+
+    const mismatch = await eligibilityFixture('canary-run-mismatch');
+    const mismatchDeliveryKey = await registrationDeliveryKey(mismatch.registrationKey);
+    const mismatchConfig = canaryConfig(mismatchDeliveryKey, 'stored-mismatch-run');
+    await pool.query(
+      `INSERT INTO onetime.highlevel_canary_runs
+         (account_key, product_key, run_id, transport_mode, allowlist_hash, budget, state,
+          created_at, updated_at)
+       VALUES ($1,$2,$3,'mock','intentionally-wrong-hash',1,'active',$4,$4)`,
+      [
+        mismatchConfig.accountKey,
+        mismatchConfig.productKey,
+        mismatchConfig.highLevelCanaryRunId,
+        openWindow,
+      ],
+    );
+    await expect(
+      prepareEventRegistrationCanary({
+        pool,
+        config: mismatchConfig,
+        deliveryKey: mismatchDeliveryKey,
+        now: openWindow,
+      }),
+    ).resolves.toEqual({ prepared: false, reason: 'canary_run_mismatch' });
+    const mismatchRow = await pool.query(
+      `SELECT transport_mode, transport_authorization_state
+         FROM onetime.outbox_events
+        WHERE delivery_key = $1`,
+      [mismatchDeliveryKey],
+    );
+    expect(mismatchRow.rows).toEqual([
+      {
+        transport_mode: 'disabled',
+        transport_authorization_state: 'held',
+      },
+    ]);
+  });
+
+  it('rechecks eligibility before provider construction and revokes with zero adapter calls', async () => {
+    const cases = [
+      ['complaint', 'complaint'],
+      ['hard-bounce', 'hard_bounce'],
+      ['unsubscribe', 'global_unsubscribe'],
+      ['dnd', 'global_dnd'],
+      ['withdrawal', 'event_withdrawal'],
+    ] as const;
+    const rows: Array<{
+      registrationKey: string;
+      contactKey: string;
+      deliveryKey: string;
+    }> = [];
+    for (const [label] of cases) {
+      const registration = await captureTishaBavRegistration({
+        pool,
+        config: testConfig(),
+        payload: registrationPayload(`${label}@example.test`),
+        now: openWindow,
+      });
+      const registrationKey = registration.registration_key ?? '';
+      rows.push({
+        registrationKey,
+        contactKey: (await registrationIdentity(registrationKey)).contactKey,
+        deliveryKey: await registrationDeliveryKey(registrationKey),
+      });
+    }
+    const config = canaryConfigForKeys(rows.map((row) => row.deliveryKey));
+    for (const row of rows) {
+      await expect(
+        prepareEventRegistrationCanary({
+          pool,
+          config,
+          deliveryKey: row.deliveryKey,
+          now: openWindow,
+        }),
+      ).resolves.toMatchObject({ prepared: true });
+    }
+    for (const [index, [label, denial]] of cases.entries()) {
+      const row = rows[index];
+      if (!row) throw new Error('missing denial fixture');
+      if (denial === 'event_withdrawal') {
+        await pool.query(
+          `UPDATE onetime.event_email_permissions SET status = 'withdrawn'
+            WHERE registration_key = $1`,
+          [row.registrationKey],
+        );
+      } else {
+        await recordContactEmailRestriction(pool, config, {
+          contactKey: row.contactKey,
+          restrictionType: denial,
+          action: 'applied',
+          source: 'synthetic_test',
+          idempotencyKey: `late-${label}-1`,
+          recordedAt: openWindow,
+        });
+      }
+    }
+    const adapter = new DeterministicFakeHighLevelAdapter();
+    const result = await runHighLevelProjectionBatch({
+      pool,
+      config,
+      adapter,
+      now: openWindow,
+    });
+    expect(result).toMatchObject({ claimed: 5, delivered: 0, quarantined: 5, adapterCalls: 0 });
+    expect(adapter.calls).toHaveLength(0);
+    expect(adapter.upsertCalls).toHaveLength(0);
+    const row = await pool.query(
+      `SELECT status, transport_authorization_state FROM onetime.outbox_events
+        WHERE event_type = 'highlevel.event.registration.recorded.v1'
+        ORDER BY delivery_key`,
+    );
+    expect(row.rows).toHaveLength(5);
+    expect(row.rows).toEqual(
+      expect.arrayContaining(
+        Array.from({ length: 5 }, () => ({
+          status: 'dead_letter',
+          transport_authorization_state: 'revoked',
+        })),
+      ),
+    );
+  });
+
+  it('rechecks a denial arriving during contact upsert before adding any tag', async () => {
+    const fixture = await eligibilityFixture('denial-during-upsert');
+    const deliveryKey = await registrationDeliveryKey(fixture.registrationKey);
+    const config = canaryConfig(deliveryKey, 'denial-during-upsert-run');
+    await prepareEventRegistrationCanary({ pool, config, deliveryKey, now: openWindow });
+    const adapter = new DenyDuringUpsertAdapter(async () => {
+      await recordContactEmailRestriction(pool, config, {
+        contactKey: fixture.contactKey,
+        restrictionType: 'complaint',
+        action: 'applied',
+        source: 'synthetic_test',
+        idempotencyKey: 'denial-during-upsert-complaint',
+        recordedAt: openWindow,
+      });
+    });
+
+    const result = await runHighLevelProjectionBatch({
+      pool,
+      config,
+      adapter,
+      now: openWindow,
+    });
+    expect(result).toMatchObject({ claimed: 1, delivered: 0, quarantined: 1, adapterCalls: 1 });
+    expect(adapter.upserts).toBe(1);
+    expect(adapter.tagWrites).toBe(0);
+    expect(adapter.readbacks).toBe(0);
+    const row = await pool.query(
+      `SELECT status, transport_authorization_state
+         FROM onetime.outbox_events
+        WHERE delivery_key = $1`,
+      [deliveryKey],
+    );
+    expect(row.rows).toEqual([
+      {
+        status: 'dead_letter',
+        transport_authorization_state: 'revoked',
+      },
+    ]);
+  });
+
+  it.each([
+    ['missing canonical tag', ["OT | Event | Tisha B'Av 2026 | Registered"]],
+    [
+      'duplicate canonical tag',
+      [
+        "OT | Event | Tisha B'Av 2026 | Registered",
+        "OT | Event | Tisha B'Av 2026 | Registered",
+        "OT | Source | Tisha B'Av 2026",
+      ],
+    ],
+    [
+      'wrong apostrophe punctuation',
+      ['OT | Event | Tisha B’Av 2026 | Registered', "OT | Source | Tisha B'Av 2026"],
+    ],
+    [
+      'ambiguous normalized near-duplicate',
+      [
+        "OT | Event | Tisha B'Av 2026 | Registered",
+        "OT | Source | Tisha B'Av 2026",
+        'OT | Event | Tisha B’Av 2026 | Registered',
+      ],
+    ],
+  ])('quarantines %s readback as uncertain without automatic replay', async (_label, tags) => {
+    const registration = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('uncertain@example.test'),
+      now: openWindow,
+    });
+    const deliveryKey = await registrationDeliveryKey(registration.registration_key ?? '');
+    const config = canaryConfig(deliveryKey);
+    await prepareEventRegistrationCanary({ pool, config, deliveryKey, now: openWindow });
+    const adapter = new ControlledTagReadbackAdapter(tags);
+    const first = await runHighLevelProjectionBatch({
+      pool,
+      config,
+      adapter,
+      now: openWindow,
+    });
+    expect(first).toMatchObject({ claimed: 1, delivered: 0, quarantined: 1 });
+    expect(adapter.upserts).toBe(1);
+    expect(adapter.tagWrites).toBe(1);
+    const second = await runHighLevelProjectionBatch({
+      pool,
+      config,
+      adapter,
+      now: new Date(openWindow.getTime() + 60_000),
+    });
+    expect(second).toMatchObject({ claimed: 0, adapterCalls: 0 });
+    expect(adapter.upserts).toBe(1);
+    expect(adapter.tagWrites).toBe(1);
   });
 
   it('rejects newsletter permission on the event registration contract', async () => {
@@ -171,444 +1031,7 @@ describe('Tisha BAv event registration', () => {
     ).rejects.toThrow();
     await expectCount('event_registrations', 0);
     await expectCount('event_email_permissions', 0);
-  });
-
-  it('materializes one event-only permission for an exact pre-2220 registration and reprocesses idempotently', async () => {
-    const initial = await captureTishaBavRegistration({
-      pool,
-      config: testConfig(),
-      payload: registrationPayload('reprocess@example.test', {
-        idempotency_key: 'provider-off-reprocess-1',
-      }),
-      now: openWindow,
-    });
-    await pool.query(
-      `DELETE FROM onetime.event_email_permissions
-        WHERE registration_key = $1`,
-      [initial.registration_key],
-    );
-    await pool.query(
-      `DELETE FROM onetime.event_email_permission_events
-        WHERE registration_key = $1`,
-      [initial.registration_key],
-    );
-    await expectCount('event_email_permissions', 0);
-    await expectCount('event_email_permission_events', 0);
-
-    const highLevel = new MockHighLevelEventClient();
-    const reprocessInput = {
-      pool,
-      config: fallbackConfig({
-        HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-      }),
-      registrationKey: initial.registration_key ?? '',
-      now: openWindow,
-      highLevelClient: highLevel,
-    };
-    const result = await reprocessTishaBavRegistrationDelivery(reprocessInput);
-
-    expect(result).toEqual({ status: 'succeeded', fallback_queued: false });
-    expect(highLevel.tags.has("OT | Event | Tisha B'Av 2026 | Registered")).toBe(true);
-    expect([...highLevel.contacts.values()][0]?.tags).not.toContain('OT | Weekly Newsletter');
-    expect(highLevel.workflowRequests).toHaveLength(1);
-    await expectCount('event_registrations', 1);
-    await expectCount('event_delivery_events', 1);
-    const permission = await pool.query(
-      `SELECT registration_key, status, permission_scope, disclosure_version
-         FROM onetime.event_email_permissions
-        WHERE registration_key = $1`,
-      [initial.registration_key],
-    );
-    expect(permission.rows).toEqual([
-      expect.objectContaining({
-        registration_key: initial.registration_key,
-        status: 'granted',
-        permission_scope: 'event_service_email',
-        disclosure_version: 'legacy:tisha-bav-2026-service-v1',
-      }),
-    ]);
-    const permissionEvents = await pool.query(
-      `SELECT action, metadata
-         FROM onetime.event_email_permission_events
-        WHERE registration_key = $1`,
-      [initial.registration_key],
-    );
-    expect(permissionEvents.rows).toEqual([
-      expect.objectContaining({
-        action: 'granted',
-        metadata: expect.objectContaining({
-          materialized_from_existing_registration: true,
-          event_only: true,
-          newsletter_permission_granted: false,
-          student_contact: false,
-        }),
-      }),
-    ]);
-
-    const replay = await reprocessTishaBavRegistrationDelivery(reprocessInput);
-    expect(replay).toEqual({ status: 'succeeded', fallback_queued: false });
-    expect(highLevel.workflowRequests).toHaveLength(1);
-    await expectCount('event_email_permissions', 1);
-    await expectCount('event_email_permission_events', 1);
-  });
-
-  it('denies legacy materialization when the exact registration lacks stored event-consent proof', async () => {
-    const initial = await captureTishaBavRegistration({
-      pool,
-      config: testConfig(),
-      payload: registrationPayload('legacy-no-proof@example.test', {
-        idempotency_key: 'legacy-no-proof-1',
-      }),
-      now: openWindow,
-    });
-    await pool.query(
-      `DELETE FROM onetime.event_email_permissions
-        WHERE registration_key = $1`,
-      [initial.registration_key],
-    );
-    await pool.query(
-      `DELETE FROM onetime.event_email_permission_events
-        WHERE registration_key = $1`,
-      [initial.registration_key],
-    );
-    await pool.query(
-      `UPDATE onetime.event_registrations
-          SET metadata = '{"event_service_consent":{"purpose":"unknown","channels":[]}}'::jsonb
-        WHERE registration_key = $1`,
-      [initial.registration_key],
-    );
-    const highLevel = new MockHighLevelEventClient();
-    const result = await reprocessTishaBavRegistrationDelivery({
-      pool,
-      config: fallbackConfig({
-        HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-      }),
-      registrationKey: initial.registration_key ?? '',
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-
-    expect(result).toEqual({ status: 'skipped', fallback_queued: false });
-    expect(highLevel.workflowRequests).toHaveLength(0);
-    await expectCount('event_email_permissions', 0);
-    await expectCount('event_email_permission_events', 0);
-    const deliveries = await pool.query(
-      `SELECT provider, status
-         FROM onetime.event_delivery_events
-        WHERE registration_key = $1
-        ORDER BY provider`,
-      [initial.registration_key],
-    );
-    expect(deliveries.rows).toEqual([
-      expect.objectContaining({ provider: 'highlevel', status: 'skipped' }),
-    ]);
-  });
-
-  it('allows only one concurrent HighLevel reprocess when no fallback row exists', async () => {
-    const initial = await captureTishaBavRegistration({
-      pool,
-      config: testConfig(),
-      payload: registrationPayload('reprocess-race@example.test', {
-        idempotency_key: 'provider-off-reprocess-race-1',
-      }),
-      now: openWindow,
-    });
-    const highLevel = new MockHighLevelEventClient();
-    const originalAddToWorkflow = highLevel.addToWorkflow.bind(highLevel);
-    let releaseWorkflow!: () => void;
-    const workflowGate = new Promise<void>((resolve) => {
-      releaseWorkflow = resolve;
-    });
-    let reportWorkflowStarted!: () => void;
-    const workflowStarted = new Promise<void>((resolve) => {
-      reportWorkflowStarted = resolve;
-    });
-    highLevel.addToWorkflow = async (request) => {
-      reportWorkflowStarted();
-      await workflowGate;
-      await originalAddToWorkflow(request);
-    };
-    const config = fallbackConfig({
-      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-    });
-    const first = reprocessTishaBavRegistrationDelivery({
-      pool,
-      config,
-      registrationKey: initial.registration_key ?? '',
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-    await workflowStarted;
-    const second = await reprocessTishaBavRegistrationDelivery({
-      pool,
-      config,
-      registrationKey: initial.registration_key ?? '',
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-    expect(second).toEqual({ status: 'blocked', fallback_queued: false });
-    releaseWorkflow();
-    await expect(first).resolves.toEqual({ status: 'succeeded', fallback_queued: false });
-    expect(highLevel.workflowRequests).toHaveLength(1);
-  });
-
-  it('prevents the fallback worker from claiming while a HighLevel reprocess owns the row', async () => {
-    const config = fallbackConfig();
-    const initial = await captureTishaBavRegistration({
-      pool,
-      config,
-      payload: registrationPayload('fallback-race@example.test', {
-        idempotency_key: 'fallback-reprocess-race-1',
-      }),
-      now: openWindow,
-    });
-    const highLevel = new MockHighLevelEventClient();
-    const originalAddToWorkflow = highLevel.addToWorkflow.bind(highLevel);
-    let releaseWorkflow!: () => void;
-    const workflowGate = new Promise<void>((resolve) => {
-      releaseWorkflow = resolve;
-    });
-    let reportWorkflowStarted!: () => void;
-    const workflowStarted = new Promise<void>((resolve) => {
-      reportWorkflowStarted = resolve;
-    });
-    highLevel.addToWorkflow = async (request) => {
-      reportWorkflowStarted();
-      await workflowGate;
-      await originalAddToWorkflow(request);
-    };
-    const reprocess = reprocessTishaBavRegistrationDelivery({
-      pool,
-      config: fallbackConfig({
-        HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-      }),
-      registrationKey: initial.registration_key ?? '',
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-    await workflowStarted;
-    const fallbackFetch = vi.fn<typeof fetch>();
-    const fallbackBatch = await runTishaBavEventEmailFallbackBatch({
-      pool,
-      config,
-      now: openWindow,
-      fetchImpl: fallbackFetch,
-    });
-    expect(fallbackBatch).toEqual({
-      claimed: 0,
-      delivered: 0,
-      skipped: 0,
-      failed: 0,
-      external_send_performed: false,
-    });
-    expect(fallbackFetch).not.toHaveBeenCalled();
-    releaseWorkflow();
-    await expect(reprocess).resolves.toEqual({ status: 'succeeded', fallback_queued: false });
-    const fallback = await pool.query(
-      `SELECT status, lease_owner_hash, lease_expires_at
-         FROM onetime.event_delivery_events
-        WHERE registration_key = $1
-          AND provider = 'resend_fallback'`,
-      [initial.registration_key],
-    );
-    expect(fallback.rows).toEqual([
-      expect.objectContaining({
-        status: 'skipped',
-        lease_owner_hash: null,
-        lease_expires_at: null,
-      }),
-    ]);
-    expect(highLevel.workflowRequests).toHaveLength(1);
-  });
-
-  it('queues fallback only after a proven HighLevel workflow failure', async () => {
-    const config = fallbackConfig({
-      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-    });
-    const highLevel = new MockHighLevelEventClient();
-    highLevel.addToWorkflow = async () => {
-      throw new Error('workflow_enrollment_rejected');
-    };
-    const result = await captureTishaBavRegistration({
-      pool,
-      config,
-      payload: registrationPayload('workflow-failed@example.test'),
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-    expect(result).toMatchObject({ ghl_sync_status: 'pending', confirmation_queued: true });
-    const deliveries = await pool.query(
-      `SELECT provider, status
-         FROM onetime.event_delivery_events
-        WHERE registration_key = $1
-        ORDER BY provider`,
-      [result.registration_key],
-    );
-    expect(deliveries.rows).toEqual([
-      expect.objectContaining({ provider: 'highlevel', status: 'failed' }),
-      expect.objectContaining({ provider: 'resend_fallback', status: 'pending' }),
-    ]);
-  });
-
-  it('lets hard-bounce permission state win over re-registration', async () => {
-    const first = await captureTishaBavRegistration({
-      pool,
-      config: testConfig(),
-      payload: registrationPayload('suppressed@example.test'),
-      now: openWindow,
-    });
-    await pool.query(
-      `UPDATE onetime.event_email_permissions
-          SET status = 'hard_bounced', deny_reason = 'provider_hard_bounce'
-        WHERE registration_key = $1`,
-      [first.registration_key],
-    );
-    const replay = await captureTishaBavRegistration({
-      pool,
-      config: fallbackConfig({
-        HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-      }),
-      payload: registrationPayload('suppressed@example.test', {
-        idempotency_key: 'suppressed-second-registration',
-      }),
-      now: openWindow,
-      highLevelClient: new MockHighLevelEventClient(),
-    });
-    expect(replay).toMatchObject({ ghl_sync_status: 'skipped', confirmation_queued: false });
-    const permission = await pool.query(
-      `SELECT status FROM onetime.event_email_permissions WHERE registration_key = $1`,
-      [first.registration_key],
-    );
-    expect(permission.rows[0]?.status).toBe('hard_bounced');
-    const fallback = await pool.query(
-      `SELECT count(*)::int AS count
-         FROM onetime.event_delivery_events
-        WHERE registration_key = $1 AND provider = 'resend_fallback'`,
-      [first.registration_key],
-    );
-    expect(fallback.rows[0]?.count).toBe(0);
-  });
-
-  it('does not request the workflow again after a successful idempotent replay', async () => {
-    const config = testConfig({
-      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-    });
-    const highLevel = new MockHighLevelEventClient();
-    const payload = registrationPayload('operator@example.test', {
-      idempotency_key: 'operator-idempotency-1',
-    });
-
-    const first = await captureTishaBavRegistration({
-      pool,
-      config,
-      payload,
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-    const second = await captureTishaBavRegistration({
-      pool,
-      config,
-      payload,
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-
-    expect(first.ghl_sync_status).toBe('succeeded');
-    expect(second).toMatchObject({ duplicate_submission: true, ghl_sync_status: 'succeeded' });
-    expect(highLevel.workflowRequests).toHaveLength(1);
-  });
-
-  it('claims the public HighLevel delivery once across concurrent same-idempotency submissions', async () => {
-    const config = testConfig({
-      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-    });
-    const highLevel = new MockHighLevelEventClient();
-    const originalAddToWorkflow = highLevel.addToWorkflow.bind(highLevel);
-    let releaseWorkflow!: () => void;
-    const workflowGate = new Promise<void>((resolve) => {
-      releaseWorkflow = resolve;
-    });
-    let reportWorkflowStarted!: () => void;
-    const workflowStarted = new Promise<void>((resolve) => {
-      reportWorkflowStarted = resolve;
-    });
-    highLevel.addToWorkflow = async (request) => {
-      reportWorkflowStarted();
-      await workflowGate;
-      await originalAddToWorkflow(request);
-    };
-    const payload = registrationPayload('public-race@example.test', {
-      idempotency_key: 'public-same-idempotency-race-1',
-    });
-
-    const first = captureTishaBavRegistration({
-      pool,
-      config,
-      payload,
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-    await workflowStarted;
-    const second = await captureTishaBavRegistration({
-      pool,
-      config,
-      payload,
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-
-    expect(second).toMatchObject({
-      duplicate_submission: true,
-      ghl_sync_status: 'pending',
-      confirmation_queued: false,
-    });
-    releaseWorkflow();
-    await expect(first).resolves.toMatchObject({
-      ghl_sync_status: 'succeeded',
-      confirmation_queued: true,
-    });
-    expect(highLevel.workflowRequests).toHaveLength(1);
-    const deliveries = await pool.query(
-      `SELECT provider, status, lease_owner_hash, lease_expires_at
-         FROM onetime.event_delivery_events
-        WHERE event_code = 'tisha-bav-2026'`,
-    );
-    expect(deliveries.rows).toEqual([
-      expect.objectContaining({
-        provider: 'highlevel',
-        status: 'succeeded',
-        lease_owner_hash: null,
-        lease_expires_at: null,
-      }),
-    ]);
-  });
-
-  it('does not add the weekly newsletter tag without explicit consent', async () => {
-    const config = testConfig({
-      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
-      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
-    });
-    const highLevel = new MockHighLevelEventClient();
-    await captureTishaBavRegistration({
-      pool,
-      config,
-      payload: registrationPayload('nonews@example.test', {
-        newsletter_opt_in: false,
-        idempotency_key: 'newsletter-no-1',
-      }),
-      now: openWindow,
-      highLevelClient: highLevel,
-    });
-
-    expect([...highLevel.contacts.values()][0]?.tags).not.toContain('OT | Weekly Newsletter');
+    await expectCount('outbox_events', 0);
   });
 });
 
@@ -802,6 +1225,49 @@ describe('Tisha BAv event HTTP routes', () => {
   });
 });
 
+class ControlledTagReadbackAdapter implements HighLevelAdapter {
+  upserts = 0;
+  tagWrites = 0;
+
+  constructor(private readonly observedTags: string[]) {}
+
+  async upsertContact(_input: HighLevelProjection, _context: HighLevelProviderOperationContext) {
+    this.upserts += 1;
+    return { providerContactId: 'synthetic-provider-contact' };
+  }
+
+  async addTags() {
+    this.tagWrites += 1;
+  }
+
+  async readTags() {
+    return [...this.observedTags];
+  }
+}
+
+class DenyDuringUpsertAdapter implements HighLevelAdapter {
+  upserts = 0;
+  tagWrites = 0;
+  readbacks = 0;
+
+  constructor(private readonly deny: () => Promise<void>) {}
+
+  async upsertContact(_input: HighLevelProjection, _context: HighLevelProviderOperationContext) {
+    this.upserts += 1;
+    await this.deny();
+    return { providerContactId: 'synthetic-provider-contact' };
+  }
+
+  async addTags() {
+    this.tagWrites += 1;
+  }
+
+  async readTags() {
+    this.readbacks += 1;
+    return ["OT | Event | Tisha B'Av 2026 | Registered", "OT | Source | Tisha B'Av 2026"];
+  }
+}
+
 function testConfig(overrides: NodeJS.ProcessEnv = {}): AppConfig {
   return loadConfig({
     NODE_ENV: 'test',
@@ -812,6 +1278,21 @@ function testConfig(overrides: NodeJS.ProcessEnv = {}): AppConfig {
     ONE_TIME_PRODUCT_KEY: 'one_time_mishnah_class',
     ...overrides,
   });
+}
+
+function canaryConfig(deliveryKey: string, runId?: string) {
+  return canaryConfigForKeys([deliveryKey], runId);
+}
+
+function canaryConfigForKeys(deliveryKeys: string[], runId = 'event-permission-synthetic-run') {
+  return {
+    ...testConfig({
+      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+      HIGHLEVEL_CANARY_RUN_ID: runId,
+      HIGHLEVEL_CANARY_DELIVERY_KEYS: deliveryKeys.join(','),
+      HIGHLEVEL_CANARY_BUDGET: String(deliveryKeys.length),
+    }),
+  };
 }
 
 function registrationPayload(
@@ -829,17 +1310,216 @@ function registrationPayload(
   } as TishaBavRegistrationPayload;
 }
 
-function fallbackConfig(overrides: NodeJS.ProcessEnv = {}) {
-  return testConfig({
-    ONE_TIME_EVENT_EMAIL_FALLBACK: 'resend',
-    RESEND_API_KEY: 'test-only-resend-key',
-    ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
-    ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
-    DELIVERY_PROVIDER_AUTHORIZATION_ID: 'test-only-tisha-fallback-authorization',
-    DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
-    DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
-    ...overrides,
+async function registrationIdentity(registrationKey: string) {
+  const result = await pool.query<{ contact_key: string }>(
+    `SELECT contact_key FROM onetime.event_registrations WHERE registration_key = $1`,
+    [registrationKey],
+  );
+  return { contactKey: String(result.rows[0]?.contact_key) };
+}
+
+async function eligibilityFixture(label: string) {
+  const registration = await captureTishaBavRegistration({
+    pool,
+    config: testConfig(),
+    payload: registrationPayload(`${label}@example.test`, {
+      idempotency_key: `eligibility-${label}`,
+    }),
+    now: openWindow,
   });
+  const registrationKey = registration.registration_key ?? '';
+  return {
+    registrationKey,
+    contactKey: (await registrationIdentity(registrationKey)).contactKey,
+  };
+}
+
+async function applyEligibilityDenial(
+  fixture: { registrationKey: string; contactKey: string },
+  reason: EventServiceEmailDenialReason,
+  suffix: string,
+) {
+  if (
+    reason === 'complaint' ||
+    reason === 'hard_bounce' ||
+    reason === 'global_suppression' ||
+    reason === 'global_dnd' ||
+    reason === 'global_unsubscribe'
+  ) {
+    await recordContactEmailRestriction(pool, testConfig(), {
+      contactKey: fixture.contactKey,
+      restrictionType: reason,
+      action: 'applied',
+      source: 'synthetic_test',
+      idempotencyKey: `${suffix}-${reason}`,
+      recordedAt: openWindow,
+    });
+  } else if (reason === 'event_withdrawal') {
+    await pool.query(
+      `UPDATE onetime.event_email_permissions
+          SET status = 'withdrawn', denied_at = $1, deny_reason = 'synthetic_withdrawal'
+        WHERE registration_key = $2`,
+      [openWindow, fixture.registrationKey],
+    );
+  } else if (reason === 'event_cancelled') {
+    await pool.query(
+      `UPDATE onetime.event_registrations
+          SET registration_status = 'cancelled', cancelled_at = $1,
+              cancellation_reason = 'synthetic_cancellation'
+        WHERE registration_key = $2`,
+      [openWindow, fixture.registrationKey],
+    );
+  } else if (reason === 'identity_archived') {
+    await pool.query(`UPDATE onetime.contacts SET archived_at = $1 WHERE contact_key = $2`, [
+      openWindow,
+      fixture.contactKey,
+    ]);
+  } else if (reason === 'identity_ambiguous') {
+    await pool.query(
+      `UPDATE onetime.event_registrations
+          SET identity_status = 'ambiguous'
+        WHERE registration_key = $1`,
+      [fixture.registrationKey],
+    );
+  } else if (reason === 'identity_invalid') {
+    await pool.query(
+      `UPDATE onetime.event_registrations
+          SET identity_status = 'invalid'
+        WHERE registration_key = $1`,
+      [fixture.registrationKey],
+    );
+  } else if (reason === 'identity_mismatch') {
+    await pool.query(
+      `UPDATE onetime.event_registrations SET contact_key = NULL WHERE registration_key = $1`,
+      [fixture.registrationKey],
+    );
+  } else if (reason === 'permission_missing') {
+    await pool.query(`DELETE FROM onetime.event_email_permissions WHERE registration_key = $1`, [
+      fixture.registrationKey,
+    ]);
+  } else if (reason === 'permission_inactive') {
+    await pool.query(
+      `UPDATE onetime.event_email_permissions
+          SET status = 'granted', granted_at = NULL
+        WHERE registration_key = $1`,
+      [fixture.registrationKey],
+    );
+  } else if (reason === 'identity_missing') {
+    return {
+      registrationKey: `${fixture.registrationKey}-missing`,
+      contactKey: fixture.contactKey,
+    };
+  }
+  return fixture;
+}
+
+function failRestrictionProjectionPool(sourcePool: DbPool, idempotencyKey: string): DbPool {
+  return {
+    query: sourcePool.query.bind(sourcePool),
+    end: sourcePool.end.bind(sourcePool),
+    connect: async () => {
+      const client = await sourcePool.connect();
+      const query = (async (text: string, values?: unknown[]) => {
+        if (/^\s*ROLLBACK\s*$/i.test(text)) {
+          const result = await client.query(text);
+          // pg-mem accepts ROLLBACK but does not revert DML. Mirror PostgreSQL rollback semantics
+          // in this injected client; the PG16/PG18 assurance executes the service on real engines.
+          await client.query(
+            `DELETE FROM onetime.contact_email_restriction_events
+              WHERE idempotency_key = $1`,
+            [idempotencyKey],
+          );
+          return result;
+        }
+        if (/INSERT\s+INTO\s+onetime\.contact_email_restrictions\s*\(/i.test(text)) {
+          throw new Error('SYNTHETIC_RESTRICTION_PROJECTION_FAILURE');
+        }
+        return client.query(text, values);
+      }) as typeof client.query;
+      return {
+        query,
+        release: () => client.release(),
+      } as typeof client;
+    },
+  };
+}
+
+async function restrictionProjection(contactKey: string, restrictionType: string) {
+  const result = await pool.query<{ active: boolean; effective_at: Date | string }>(
+    `SELECT active, effective_at
+       FROM onetime.contact_email_restrictions
+      WHERE contact_key = $1 AND restriction_type = $2`,
+    [contactKey, restrictionType],
+  );
+  const row = result.rows[0];
+  return row
+    ? {
+        active: row.active,
+        effective_at: new Date(row.effective_at),
+      }
+    : null;
+}
+
+async function expectRestrictionCounts(
+  contactKey: string,
+  restrictionType: string,
+  eventCount: number,
+  projectionCount: number,
+) {
+  const result = await pool.query<{
+    event_count: number | number[];
+    projection_count: number | number[];
+  }>(
+    `SELECT
+       (SELECT count(*)::int
+          FROM onetime.contact_email_restriction_events
+         WHERE contact_key = $1 AND restriction_type = $2) AS event_count,
+       (SELECT count(*)::int
+          FROM onetime.contact_email_restrictions
+         WHERE contact_key = $1 AND restriction_type = $2) AS projection_count`,
+    [contactKey, restrictionType],
+  );
+  const row = result.rows[0];
+  const count = (value: number | number[] | undefined) =>
+    Number(Array.isArray(value) ? value[0] : (value ?? 0));
+  expect({
+    event_count: count(row?.event_count),
+    projection_count: count(row?.projection_count),
+  }).toEqual({ event_count: eventCount, projection_count: projectionCount });
+}
+
+async function registrationDeliveryKey(registrationKey: string) {
+  const result = await pool.query<{ delivery_key: string }>(
+    `SELECT delivery_key
+       FROM onetime.outbox_events
+      WHERE event_type = 'highlevel.event.registration.recorded.v1'
+        AND payload->'data'->>'registration_key' = $1`,
+    [registrationKey],
+  );
+  return String(result.rows[0]?.delivery_key);
+}
+
+async function expectEligibility(registrationKey: string, contactKey: string, reason: string) {
+  await expect(
+    evaluateEventServiceEmailEligibility(pool, testConfig(), {
+      eventCode: 'tisha-bav-2026',
+      registrationKey,
+      contactKey,
+    }),
+  ).resolves.toEqual({ allowed: false, reason });
+}
+
+async function stateSnapshot() {
+  const queries = [
+    `SELECT * FROM onetime.event_registrations ORDER BY registration_key`,
+    `SELECT * FROM onetime.event_email_permission_events ORDER BY permission_event_key`,
+    `SELECT * FROM onetime.event_email_permissions ORDER BY permission_key`,
+    `SELECT * FROM onetime.outbox_events ORDER BY delivery_key`,
+    `SELECT * FROM onetime.audit_events ORDER BY event_key`,
+  ];
+  return JSON.stringify(
+    await Promise.all(queries.map(async (query) => (await pool.query(query)).rows)),
+  );
 }
 
 async function expectCount(table: string, expected: number) {

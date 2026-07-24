@@ -10,15 +10,13 @@ import {
 import type { AppConfig } from '../../../config/src/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
+import { enqueueHighLevelEvent } from '../highlevel/producer.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
+import { evaluateEventServiceEmailEligibility } from './event-email-permission.ts';
 import {
-  TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
-  TISHA_BAV_EMAIL_CATALOG,
-  TISHA_BAV_EMAIL_SENDER,
   TISHA_BAV_EVENT_START,
   TISHA_BAV_JOIN_PATH,
   TISHA_BAV_LANDING_PATH,
-  TISHA_BAV_WORKFLOW_SCHEDULE,
 } from './tisha-bav-communications.ts';
 
 export const TISHA_BAV_EVENT_CODE = 'tisha-bav-2026';
@@ -34,29 +32,17 @@ export const TISHA_BAV_JOIN_CLOSE_AT = new Date(
 ).toISOString();
 export const TISHA_BAV_SERVICE_CONSENT_POLICY = 'tisha-bav-2026-service-v1';
 export const TISHA_BAV_EVENT_EMAIL_DISCLOSURE_VERSION = 'tisha-bav-2026-event-email-v1';
-export const TISHA_BAV_SOURCE_VALUE = "Tisha B'Av 2026 Landing";
-export const TISHA_BAV_REQUIRED_TAGS = [
-  "OT | Event | Tisha B'Av 2026 | Invited",
-  "OT | Event | Tisha B'Av 2026 | Registered",
-  "OT | Event | Tisha B'Av 2026 | Attended",
-  "OT | Event | Tisha B'Av 2026 | No Show",
-  "OT | Event | Tisha B'Av 2026 | Replay Sent",
-  "OT | Source | Tisha B'Av 2026",
-] as const;
-export const TISHA_BAV_NEWSLETTER_TAG = 'OT | Weekly Newsletter';
-
 type RegistrationResult = TishaBavRegistrationSuccessResponse & {
   highLevelDeliveryKey: string | null;
 };
 
-type HighLevelSyncAttemptStatus =
-  TishaBavRegistrationSuccessResponse['ghl_sync_status'] | 'in_flight' | null;
-
 type RegistrationRow = {
   registration_key: string;
+  contact_key: string;
   email_normalized: string;
   first_name: string | null;
   newsletter_opt_in: boolean;
+  identity_status: 'verified' | 'ambiguous' | 'invalid' | 'unverified';
 };
 
 type EventDefinitionRow = {
@@ -103,235 +89,11 @@ export class TishaBavJoinError extends Error {
   }
 }
 
-export type HighLevelEventClient = {
-  ensureTags(input: { locationId: string; tags: readonly string[] }): Promise<void>;
-  upsertContact(input: {
-    locationId: string;
-    email: string;
-    firstName?: string;
-    source: string;
-    customFields: Record<string, string>;
-  }): Promise<{ contactId: string }>;
-  addTags(input: { locationId: string; contactId: string; tags: readonly string[] }): Promise<void>;
-  addToWorkflow(input: {
-    contactId: string;
-    workflowId: string;
-    idempotencyKey: string;
-  }): Promise<void>;
-};
-
-export class MockHighLevelEventClient implements HighLevelEventClient {
-  readonly tags = new Set<string>();
-  readonly contacts = new Map<string, { contactId: string; tags: string[] }>();
-  readonly workflowRequests: string[] = [];
-
-  async ensureTags(input: { locationId: string; tags: readonly string[] }) {
-    void input.locationId;
-    input.tags.forEach((tag) => this.tags.add(tag));
-  }
-
-  async upsertContact(input: {
-    locationId: string;
-    email: string;
-    firstName?: string;
-    source: string;
-    customFields: Record<string, string>;
-  }) {
-    void input.locationId;
-    void input.firstName;
-    void input.source;
-    void input.customFields;
-    const key = normalizeEmail(input.email);
-    const existing = this.contacts.get(key);
-    if (existing) return { contactId: existing.contactId };
-    const contactId = `mock_hl_${stableKey('contact', [key])}`;
-    this.contacts.set(key, { contactId, tags: [] });
-    return { contactId };
-  }
-
-  async addTags(input: { contactId: string; tags: readonly string[] }) {
-    for (const contact of this.contacts.values()) {
-      if (contact.contactId !== input.contactId) continue;
-      contact.tags = [...new Set([...contact.tags, ...input.tags])];
-      return;
-    }
-  }
-
-  async addToWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
-    this.workflowRequests.push(
-      `${input.contactId}:${input.workflowId}:${stableKey('workflow', [input.idempotencyKey])}`,
-    );
-  }
-}
-
-export class HttpHighLevelEventClient implements HighLevelEventClient {
-  constructor(
-    private readonly options: {
-      baseUrl: string;
-      token: string;
-      apiVersion: string;
-      fetchImpl?: typeof fetch;
-    },
-  ) {}
-
-  async ensureTags(input: { locationId: string; tags: readonly string[] }) {
-    const response = await this.request(`/locations/${encodeURIComponent(input.locationId)}/tags`, {
-      method: 'GET',
-    });
-    const existingTags = new Set(
-      (Array.isArray(response.tags) ? response.tags : [])
-        .map((tag) =>
-          tag && typeof tag === 'object' && 'name' in tag
-            ? String((tag as { name?: unknown }).name ?? '')
-                .trim()
-                .toLocaleLowerCase()
-            : '',
-        )
-        .filter(Boolean),
-    );
-    for (const tag of input.tags) {
-      if (existingTags.has(tag.trim().toLocaleLowerCase())) continue;
-      await this.request(`/locations/${encodeURIComponent(input.locationId)}/tags`, {
-        method: 'POST',
-        body: { name: tag },
-        allowConflict: true,
-      });
-    }
-  }
-
-  async upsertContact(input: {
-    locationId: string;
-    email: string;
-    firstName?: string;
-    source: string;
-    customFields: Record<string, string>;
-  }) {
-    const response = await this.request('/contacts/upsert', {
-      method: 'POST',
-      body: {
-        locationId: input.locationId,
-        email: input.email,
-        source: input.source,
-        ...(input.firstName ? { firstName: input.firstName } : {}),
-        customFields: Object.entries(input.customFields).map(([key, fieldValue]) => ({
-          key,
-          fieldValue,
-        })),
-      },
-    });
-    const contact = (response.contact ?? response) as Record<string, unknown>;
-    const contactId = String(contact.id ?? contact.contactId ?? '');
-    if (!contactId)
-      throw new Error('HighLevel contact upsert response did not include a contact id.');
-    return { contactId };
-  }
-
-  async addTags(input: { locationId: string; contactId: string; tags: readonly string[] }) {
-    void input.locationId;
-    const response = await this.request(`/contacts/${encodeURIComponent(input.contactId)}/tags`, {
-      method: 'POST',
-      body: { tags: input.tags },
-      apiVersion: '2023-02-21',
-    });
-    let currentTags = new Set([
-      ...(Array.isArray(response.tags) ? response.tags.map(String) : []),
-      ...(Array.isArray(response.tagsAdded) ? response.tagsAdded.map(String) : []),
-    ]);
-    if (input.tags.some((tag) => !currentTags.has(tag))) {
-      const readback = await this.request(`/contacts/${encodeURIComponent(input.contactId)}`, {
-        method: 'GET',
-      });
-      const contact = (readback.contact ?? readback) as Record<string, unknown>;
-      currentTags = new Set(Array.isArray(contact.tags) ? contact.tags.map(String) : []);
-    }
-    if (input.tags.some((tag) => !currentTags.has(tag))) {
-      throw new Error('HighLevel contact tag verification failed.');
-    }
-  }
-
-  async addToWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
-    void input.idempotencyKey;
-    await this.request(
-      `/contacts/${encodeURIComponent(input.contactId)}/workflow/${encodeURIComponent(
-        input.workflowId,
-      )}`,
-      {
-        method: 'POST',
-        body: {},
-      },
-    );
-  }
-
-  private async request(
-    path: string,
-    options: {
-      method: 'GET' | 'POST';
-      body?: Record<string, unknown>;
-      allowConflict?: boolean;
-      apiVersion?: string;
-    },
-  ): Promise<Record<string, unknown>> {
-    const base = this.options.baseUrl.replace(/\/$/, '');
-    const response = await (this.options.fetchImpl ?? fetch)(`${base}${path}`, {
-      method: options.method,
-      headers: {
-        authorization: `Bearer ${this.options.token}`,
-        version: options.apiVersion ?? this.options.apiVersion,
-        'content-type': 'application/json',
-        accept: 'application/json',
-      },
-      ...(options.body ? { body: JSON.stringify(options.body) } : {}),
-    });
-    const responseBody = ((await response.json().catch(() => ({}))) ?? {}) as Record<
-      string,
-      unknown
-    >;
-    if (
-      options.allowConflict &&
-      (response.status === 409 || response.status === 422) &&
-      exactProviderConflict(responseBody)
-    ) {
-      return responseBody;
-    }
-    if (!response.ok) {
-      throw new Error(
-        `HighLevel API request failed with status ${response.status}: ${providerErrorCode(responseBody)}.`,
-      );
-    }
-    return responseBody;
-  }
-}
-
-function exactProviderConflict(response: Record<string, unknown>) {
-  const message = Array.isArray(response.message)
-    ? response.message.map(String).join(' ')
-    : String(response.message ?? response.error ?? '');
-  return /already (?:exists|enrolled|in (?:the )?workflow)|duplicate/i.test(message);
-}
-
-function providerErrorCode(response: Record<string, unknown>) {
-  const message = Array.isArray(response.message)
-    ? response.message.map(String).join(' ')
-    : String(response.message ?? response.error ?? 'provider_error');
-  return message.replace(/[^a-z0-9_-]+/gi, '_').slice(0, 80) || 'provider_error';
-}
-
-export function createHighLevelEventClient(config: AppConfig): HighLevelEventClient | null {
-  if (config.highLevelEventSyncMode === 'disabled') return null;
-  if (config.highLevelEventSyncMode === 'mock') return new MockHighLevelEventClient();
-  return new HttpHighLevelEventClient({
-    baseUrl: config.highLevelApiBaseUrl,
-    token: config.highLevelPrivateIntegrationsToken ?? '',
-    apiVersion: config.highLevelApiVersion,
-  });
-}
-
 export async function captureTishaBavRegistration(input: {
   pool: DbPool;
   config: AppConfig;
   payload: TishaBavRegistrationPayload;
   now?: Date;
-  highLevelClient?: HighLevelEventClient | null;
 }): Promise<TishaBavRegistrationSuccessResponse> {
   const parsed = tishaBavRegistrationPayloadSchema.parse(input.payload);
   if (parsed.homepage.trim()) return genericBotRegistrationResponse();
@@ -340,116 +102,71 @@ export async function captureTishaBavRegistration(input: {
   const response = await inTransaction(input.pool, async (client) =>
     persistRegistration(client, input.config, parsed, now),
   );
-
-  if (!response.highLevelDeliveryKey) return withoutInternalKeys(response);
-  const syncAttempt = await maybeSyncHighLevel({
-    pool: input.pool,
-    config: input.config,
-    deliveryKey: response.highLevelDeliveryKey,
-    registrationKey: response.registration_key ?? '',
-    now,
-    ...(input.highLevelClient === undefined ? {} : { highLevelClient: input.highLevelClient }),
-  });
-  const syncStatus = syncAttempt === 'in_flight' ? 'pending' : syncAttempt;
-  const fallbackQueued =
-    syncAttempt === 'in_flight' || syncStatus === 'succeeded'
-      ? false
-      : await queueFallbackAfterHighLevelFailure({
-          pool: input.pool,
-          config: input.config,
-          registrationKey: response.registration_key ?? '',
-          highLevelDeliveryKey: response.highLevelDeliveryKey,
-          now,
-        });
-  const confirmationQueued = syncStatus === 'succeeded' || fallbackQueued;
-
-  return {
-    ...withoutInternalKeys(response),
-    confirmation_queued: confirmationQueued,
-    ghl_sync_status: syncStatus ?? response.ghl_sync_status,
-    message: registrationMessage(
-      response.registration_key,
-      response.duplicate_submission,
-      confirmationQueued,
-    ).message,
-  };
+  return withoutInternalKeys(response);
 }
 
-export async function reprocessTishaBavRegistrationDelivery(input: {
+export async function inspectTishaBavRegistrationDelivery(input: {
   pool: DbPool;
   config: AppConfig;
   registrationKey: string;
-  now?: Date;
-  highLevelClient?: HighLevelEventClient | null;
 }) {
-  const now = input.now ?? new Date();
-  const delivery = await input.pool.query<{ delivery_key: string; status: string }>(
-    `SELECT delivery_key, status
-       FROM onetime.event_delivery_events
+  const registration = await input.pool.query<{
+    registration_key: string;
+    contact_key: string | null;
+    registration_status: string;
+    identity_status: string;
+  }>(
+    `SELECT registration_key, contact_key, registration_status, identity_status
+       FROM onetime.event_registrations
       WHERE account_key = $1
         AND product_key = $2
         AND event_code = $3
         AND registration_key = $4
-        AND provider = 'highlevel'
       LIMIT 1`,
     [input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE, input.registrationKey],
   );
-  const row = delivery.rows[0];
-  if (!row) return { status: 'missing' as const, fallback_queued: false };
-  await materializeLegacyEventEmailPermission(input.pool, input.config, input.registrationKey);
-  if (row.status === 'succeeded') {
-    return { status: 'succeeded' as const, fallback_queued: false };
+  const row = registration.rows[0];
+  if (!row?.contact_key) {
+    return {
+      status: 'missing' as const,
+      would_enqueue: false,
+      eligibility_reason: 'identity_missing' as const,
+    };
   }
-  if (!['provider_off', 'failed', 'pending', 'skipped'].includes(row.status)) {
-    return { status: 'blocked' as const, fallback_queued: false };
-  }
-  const retryReservation = await reserveHighLevelReprocess(
-    input.pool,
-    input.config,
-    row.delivery_key,
-    input.registrationKey,
-    now,
+  const delivery = await input.pool.query<{
+    delivery_key: string;
+    status: string;
+    transport_mode: string;
+    transport_authorization_state: string;
+  }>(
+    `SELECT delivery_key, status, transport_mode, transport_authorization_state
+       FROM onetime.outbox_events
+      WHERE account_key = $1
+        AND product_key = $2
+        AND channel = 'highlevel'
+        AND event_type = 'highlevel.event.registration.recorded.v1'
+        AND contact_key = $3
+        AND payload->'data'->>'registration_key' = $4
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, row.contact_key, input.registrationKey],
   );
-  if (!retryReservation.allowed) {
-    return { status: 'blocked' as const, fallback_queued: false };
-  }
-  let syncAttempt: HighLevelSyncAttemptStatus = null;
-  try {
-    syncAttempt = await maybeSyncHighLevel({
-      pool: input.pool,
-      config: input.config,
-      deliveryKey: row.delivery_key,
-      registrationKey: input.registrationKey,
-      now,
-      allowPendingFallbackRetry: true,
-      reprocessLeaseOwnerHash: retryReservation.leaseOwnerHash,
-      ...(input.highLevelClient === undefined ? {} : { highLevelClient: input.highLevelClient }),
-    });
-  } finally {
-    if (retryReservation.leaseOwnerHash) {
-      await releaseReprocessReservation(
-        input.pool,
-        input.config,
-        input.registrationKey,
-        retryReservation.leaseOwnerHash,
-      );
-    }
-  }
-  if (syncAttempt === 'in_flight') {
-    return { status: 'blocked' as const, fallback_queued: false };
-  }
-  const syncStatus = syncAttempt;
-  const fallbackQueued =
-    syncStatus === 'succeeded'
-      ? false
-      : await queueFallbackAfterHighLevelFailure({
-          pool: input.pool,
-          config: input.config,
-          registrationKey: input.registrationKey,
-          highLevelDeliveryKey: row.delivery_key,
-          now,
-        });
-  return { status: syncStatus ?? 'blocked', fallback_queued: fallbackQueued };
+  const eligibility = await evaluateEventServiceEmailEligibility(input.pool, input.config, {
+    eventCode: TISHA_BAV_EVENT_CODE,
+    registrationKey: input.registrationKey,
+    contactKey: row.contact_key,
+  });
+  return {
+    status: delivery.rows[0] ? ('recorded' as const) : ('missing' as const),
+    would_enqueue: eligibility.allowed && !delivery.rows[0],
+    eligibility_reason: eligibility.reason,
+    delivery_state: delivery.rows[0]
+      ? {
+          status: delivery.rows[0].status,
+          transport_mode: delivery.rows[0].transport_mode,
+          authorization_state: delivery.rows[0].transport_authorization_state,
+        }
+      : null,
+  };
 }
 
 export async function requestTishaBavJoin(input: {
@@ -618,20 +335,39 @@ async function persistRegistration(
     email,
   ]);
   const registeredAt = now.toISOString();
+  const contact = await resolveEventAdultContact(client, config, {
+    email,
+    firstName: payload.first_name ?? null,
+    source: normalizeSource(payload.source),
+    now,
+  });
+  const identityStatus =
+    contact.archived_at || contact.email_normalized !== email ? 'invalid' : 'verified';
   const registration = await client.query<RegistrationRow>(
     `INSERT INTO onetime.event_registrations (
        registration_key, event_definition_key, account_key, product_key, event_code,
+       contact_key, registration_status, identity_status,
        email_normalized, first_name, newsletter_opt_in, event_service_consent_policy_version,
        marketing_consent_policy_version, marketing_consent_recorded_at, initial_source,
        latest_source, first_seen_at, last_seen_at, registered_at, last_registered_at, metadata
      )
      VALUES (
-       $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
-       CASE WHEN $8 THEN $11::timestamptz ELSE NULL::timestamptz END,
-       $12,$12,$11::timestamptz,$11::timestamptz,$11::timestamptz,$11::timestamptz,$13::jsonb
+       $1,$2,$3,$4,$5,$6,'active',$7,$8,$9,$10,$11,$12,
+       CASE WHEN $10 THEN $13::timestamptz ELSE NULL::timestamptz END,
+       $14,$14,$13::timestamptz,$13::timestamptz,$13::timestamptz,$13::timestamptz,$15::jsonb
      )
      ON CONFLICT (account_key, product_key, event_code, email_normalized)
      DO UPDATE SET
+       contact_key = EXCLUDED.contact_key,
+       registration_status = CASE
+         WHEN onetime.event_registrations.registration_status = 'cancelled' THEN 'cancelled'
+         ELSE EXCLUDED.registration_status
+       END,
+       identity_status = CASE
+         WHEN onetime.event_registrations.identity_status IN ('ambiguous', 'invalid')
+           THEN onetime.event_registrations.identity_status
+         ELSE EXCLUDED.identity_status
+       END,
        first_name = COALESCE(EXCLUDED.first_name, onetime.event_registrations.first_name),
        newsletter_opt_in = false,
        marketing_consent_policy_version = NULL,
@@ -641,13 +377,16 @@ async function persistRegistration(
        last_registered_at = EXCLUDED.last_registered_at,
        metadata = EXCLUDED.metadata,
        updated_at = now()
-     RETURNING registration_key, email_normalized, first_name, newsletter_opt_in`,
+     RETURNING registration_key, contact_key, email_normalized, first_name, newsletter_opt_in,
+               identity_status`,
     [
       registrationKey,
       event.event_definition_key,
       config.accountKey,
       config.productKey,
       TISHA_BAV_EVENT_CODE,
+      contact.contact_key,
+      identityStatus,
       email,
       payload.first_name ?? null,
       false,
@@ -677,13 +416,32 @@ async function persistRegistration(
   );
   const row = requireRow(registration.rows[0], 'Event registration write failed.');
   await recordEventEmailPermission(client, config, row, payload, now);
-  const highLevelDeliveryKey = await upsertHighLevelDelivery(client, config, row, payload, now);
+  const highLevel = await enqueueHighLevelEvent(client, config, {
+    eventName: 'event.registration.recorded',
+    contactKey: row.contact_key,
+    idempotencyKey: stableKey('event_registration_projection', [
+      config.accountKey,
+      config.productKey,
+      TISHA_BAV_EVENT_CODE,
+      row.registration_key,
+    ]),
+    actor: { kind: 'system', reference: 'tisha_bav_registration' },
+    occurredAt: now,
+    protectedPath: '/tisha-bav',
+    data: {
+      event_code: TISHA_BAV_EVENT_CODE,
+      registration_key: row.registration_key,
+      permission_scope: 'event_service_email',
+    },
+  });
+  const highLevelDeliveryKey =
+    highLevel.state === 'queued' || highLevel.state === 'duplicate' ? highLevel.deliveryKey : null;
   await insertAudit(client, config, row.registration_key, payload, now);
 
   const responseBase: RegistrationResult = {
     ...registrationMessage(row.registration_key, false),
     confirmation_queued: false,
-    ghl_sync_status: config.highLevelEventSyncMode === 'disabled' ? 'provider_off' : 'pending',
+    ghl_sync_status: 'provider_off',
     highLevelDeliveryKey,
   };
   await client.query(
@@ -693,6 +451,49 @@ async function persistRegistration(
     [config.accountKey, config.productKey, idempotencyKey, reqHash, JSON.stringify(responseBase)],
   );
   return responseBase;
+}
+
+async function resolveEventAdultContact(
+  client: Queryable,
+  config: AppConfig,
+  input: { email: string; firstName: string | null; source: string; now: Date },
+) {
+  const contactKey = stableKey('event_adult_contact', [
+    config.accountKey,
+    config.productKey,
+    input.email,
+  ]);
+  await client.query(
+    `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, phone_normalized,
+        reminder_preference, consent_policy_version, consent_recorded_at, suppression_state,
+        source, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,'family','Event registrant','Unknown','Asia/Jerusalem',$5,NULL,
+             'none',NULL,NULL,'active',$6,$7,$7)
+     ON CONFLICT (account_key, product_key, email_normalized) DO NOTHING`,
+    [
+      contactKey,
+      config.accountKey,
+      config.productKey,
+      input.firstName?.trim() || 'Event registrant',
+      input.email,
+      input.source,
+      input.now,
+    ],
+  );
+  const result = await client.query<{
+    contact_key: string;
+    email_normalized: string;
+    archived_at: Date | string | null;
+  }>(
+    `SELECT contact_key, email_normalized, archived_at
+       FROM onetime.contacts
+      WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3
+      LIMIT 1`,
+    [config.accountKey, config.productKey, input.email],
+  );
+  return requireRow(result.rows[0], 'Event adult contact resolution failed.');
 }
 
 async function loadEventDefinition(
@@ -741,35 +542,80 @@ async function recordEventEmailPermission(
       WHERE account_key = $1
         AND product_key = $2
         AND event_code = $3
-        AND email_normalized = $4
+        AND (
+          contact_key = $4
+          OR (contact_key IS NULL AND email_normalized = $5)
+        )
+      ORDER BY CASE WHEN contact_key = $4 THEN 0 ELSE 1 END, updated_at DESC
       LIMIT 1`,
-    [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registration.email_normalized],
+    [
+      config.accountKey,
+      config.productKey,
+      TISHA_BAV_EVENT_CODE,
+      registration.contact_key,
+      registration.email_normalized,
+    ],
   );
-  const contact = await client.query<{ suppression_state: string }>(
-    `SELECT suppression_state
-       FROM onetime.contacts
-      WHERE account_key = $1
-        AND product_key = $2
-        AND email_normalized = $3
+  const contact = await client.query<{
+    suppression_state: string;
+    email_dnd: boolean | null;
+    all_dnd: boolean | null;
+  }>(
+    `SELECT contacts.suppression_state, preferences.email_dnd, preferences.all_dnd
+       FROM onetime.contacts AS contacts
+       LEFT JOIN onetime.highlevel_contact_preferences AS preferences
+         ON preferences.account_key = contacts.account_key
+        AND preferences.product_key = contacts.product_key
+        AND preferences.contact_key = contacts.contact_key
+      WHERE contacts.account_key = $1
+        AND contacts.product_key = $2
+        AND contacts.contact_key = $3
       LIMIT 1`,
-    [config.accountKey, config.productKey, registration.email_normalized],
+    [config.accountKey, config.productKey, registration.contact_key],
   );
+  const restrictions = await client.query<{ restriction_type: string }>(
+    `SELECT restriction_type
+       FROM onetime.contact_email_restrictions
+      WHERE account_key = $1 AND product_key = $2 AND contact_key = $3 AND active = true`,
+    [config.accountKey, config.productKey, registration.contact_key],
+  );
+  const activeRestrictions = new Set(restrictions.rows.map((row) => row.restriction_type));
   const current = existing.rows[0];
   const contactSuppressed =
     (contact.rowCount ?? 0) > 0 &&
     String(contact.rows[0]?.suppression_state ?? 'unknown') !== 'active';
+  const contactDnd = Boolean(contact.rows[0]?.email_dnd || contact.rows[0]?.all_dnd);
+  const globalDeniedStatus: EventEmailPermissionStatus | null = activeRestrictions.has('complaint')
+    ? 'complained'
+    : activeRestrictions.has('hard_bounce')
+      ? 'hard_bounced'
+      : activeRestrictions.has('global_suppression') ||
+          activeRestrictions.has('global_dnd') ||
+          contactDnd
+        ? 'suppressed'
+        : activeRestrictions.has('global_unsubscribe')
+          ? 'unsubscribed'
+          : null;
   const status: EventEmailPermissionStatus =
     current && EVENT_EMAIL_DENY_STATUSES.has(current.status)
       ? current.status
-      : contactSuppressed
-        ? 'suppressed'
-        : 'granted';
+      : registration.identity_status !== 'verified'
+        ? 'withdrawn'
+        : globalDeniedStatus
+          ? globalDeniedStatus
+          : contactSuppressed
+            ? 'suppressed'
+            : 'granted';
   const reasonCode =
     current && EVENT_EMAIL_DENY_STATUSES.has(current.status)
       ? (current.deny_reason ?? `existing_${current.status}`)
-      : contactSuppressed
-        ? 'contact_suppression_active'
-        : null;
+      : registration.identity_status !== 'verified'
+        ? `identity_${registration.identity_status}`
+        : globalDeniedStatus
+          ? `contact_${globalDeniedStatus}`
+          : contactSuppressed
+            ? 'contact_suppression_active'
+            : null;
   const permissionEventKey = stableKey('event_email_permission_event', [
     config.accountKey,
     config.productKey,
@@ -781,14 +627,14 @@ async function recordEventEmailPermission(
     config.accountKey,
     config.productKey,
     TISHA_BAV_EVENT_CODE,
-    registration.email_normalized,
+    registration.contact_key,
   ]);
   await client.query(
     `INSERT INTO onetime.event_email_permission_events (
        permission_event_key, account_key, product_key, event_code, registration_key,
-       email_normalized, permission_scope, action, disclosure_version, source,
+       contact_key, email_normalized, permission_scope, action, disclosure_version, source,
        idempotency_key, reason_code, metadata, recorded_at
-     ) VALUES ($1,$2,$3,$4,$5,$6,'event_service_email',$7,$8,$9,$10,$11,$12::jsonb,$13)
+     ) VALUES ($1,$2,$3,$4,$5,$6,$7,'event_service_email',$8,$9,$10,$11,$12,$13::jsonb,$14)
      ON CONFLICT (account_key, product_key, event_code, idempotency_key) DO NOTHING`,
     [
       permissionEventKey,
@@ -796,6 +642,7 @@ async function recordEventEmailPermission(
       config.productKey,
       TISHA_BAV_EVENT_CODE,
       registration.registration_key,
+      registration.contact_key,
       registration.email_normalized,
       status,
       TISHA_BAV_EVENT_EMAIL_DISCLOSURE_VERSION,
@@ -814,41 +661,70 @@ async function recordEventEmailPermission(
   await client.query(
     `INSERT INTO onetime.event_email_permissions (
        permission_key, account_key, product_key, event_code, registration_key,
-       email_normalized, permission_scope, status, disclosure_version, source,
+       contact_key, email_normalized, permission_scope, status, disclosure_version, source,
        granted_at, denied_at, deny_reason, latest_permission_event_key
      ) VALUES (
-       $1,$2,$3,$4,$5,$6,'event_service_email',$7,$8,$9,
-       CASE WHEN $7 = 'granted' THEN $10::timestamptz ELSE NULL END,
-       CASE WHEN $7 = 'granted' THEN NULL ELSE $10::timestamptz END,
-       $11,$12
+       $1,$2,$3,$4,$5,$6,$7,'event_service_email',$8,$9,$10,
+       CASE WHEN $8 = 'granted' THEN $11::timestamptz ELSE NULL END,
+       CASE WHEN $8 = 'granted' THEN NULL ELSE $11::timestamptz END,
+       $12,$13
      )
-     ON CONFLICT (account_key, product_key, event_code, email_normalized)
-     DO UPDATE SET
-       registration_key = EXCLUDED.registration_key,
-       status = CASE
-         WHEN onetime.event_email_permissions.status IN
-           ('withdrawn','suppressed','unsubscribed','complained','hard_bounced')
-           THEN onetime.event_email_permissions.status
-         ELSE EXCLUDED.status
-       END,
-       disclosure_version = EXCLUDED.disclosure_version,
-       source = EXCLUDED.source,
-       granted_at = CASE
-         WHEN onetime.event_email_permissions.status IN
-           ('withdrawn','suppressed','unsubscribed','complained','hard_bounced')
-           THEN onetime.event_email_permissions.granted_at
-         ELSE COALESCE(onetime.event_email_permissions.granted_at, EXCLUDED.granted_at)
-       END,
-       denied_at = COALESCE(onetime.event_email_permissions.denied_at, EXCLUDED.denied_at),
-       deny_reason = COALESCE(onetime.event_email_permissions.deny_reason, EXCLUDED.deny_reason),
-       latest_permission_event_key = EXCLUDED.latest_permission_event_key,
-       updated_at = now()`,
+     ON CONFLICT DO NOTHING`,
     [
       permissionKey,
       config.accountKey,
       config.productKey,
       TISHA_BAV_EVENT_CODE,
       registration.registration_key,
+      registration.contact_key,
+      registration.email_normalized,
+      status,
+      TISHA_BAV_EVENT_EMAIL_DISCLOSURE_VERSION,
+      normalizeSource(payload.source),
+      now,
+      reasonCode,
+      permissionEventKey,
+    ],
+  );
+  await client.query(
+    `UPDATE onetime.event_email_permissions
+        SET registration_key = $5,
+            email_normalized = $7,
+            status = CASE
+              WHEN status IN
+                ('withdrawn','suppressed','unsubscribed','complained','hard_bounced')
+                THEN status
+              ELSE $8
+            END,
+            disclosure_version = $9,
+            source = $10,
+            granted_at = CASE
+              WHEN status IN
+                ('withdrawn','suppressed','unsubscribed','complained','hard_bounced')
+                THEN granted_at
+              ELSE COALESCE(
+                granted_at,
+                CASE WHEN $8 = 'granted' THEN $11::timestamptz ELSE NULL END
+              )
+            END,
+            denied_at = COALESCE(
+              denied_at,
+              CASE WHEN $8 = 'granted' THEN NULL ELSE $11::timestamptz END
+            ),
+            deny_reason = COALESCE(deny_reason, $12),
+            latest_permission_event_key = $13,
+            updated_at = now()
+      WHERE account_key = $2
+        AND product_key = $3
+        AND event_code = $4
+        AND (contact_key = $6 OR permission_key = $1)`,
+    [
+      permissionKey,
+      config.accountKey,
+      config.productKey,
+      TISHA_BAV_EVENT_CODE,
+      registration.registration_key,
+      registration.contact_key,
       registration.email_normalized,
       status,
       TISHA_BAV_EVENT_EMAIL_DISCLOSURE_VERSION,
@@ -860,6 +736,11 @@ async function recordEventEmailPermission(
   );
 }
 
+/*
+ * Historical direct-delivery implementation retired by GHL-006.
+ *
+ * Git history preserves the forensic implementation. Keeping this block outside the compiled
+ * program ensures registration and inspection cannot reach a direct HighLevel or fallback path.
 async function eventEmailPermissionEligibility(
   pool: Queryable,
   config: AppConfig,
@@ -1308,6 +1189,8 @@ async function queueFallbackAfterHighLevelFailure(input: {
   return ['pending', 'succeeded'].includes(existing.rows[0]?.status ?? '');
 }
 
+*/
+
 async function insertAudit(
   client: Queryable,
   config: AppConfig,
@@ -1344,6 +1227,9 @@ async function insertAudit(
   );
 }
 
+/*
+ * Historical direct-provider and fallback synchronization implementation retired by GHL-006.
+ * The only compiled outbound path is the canonical held HighLevel outbox dispatcher.
 async function maybeSyncHighLevel(input: {
   pool: DbPool;
   config: AppConfig;
@@ -1747,6 +1633,8 @@ function normalizeJsonRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
+*/
+
 function registrationMessage(
   registrationKey: string | null,
   duplicate: boolean,
@@ -1828,10 +1716,6 @@ function sha256(value: string) {
 
 function canonicalJson(value: unknown) {
   return JSON.stringify(value, Object.keys(flattenKeys(value)).sort());
-}
-
-function isMemoryPool(pool: DbPool) {
-  return Boolean((pool as DbPool & { __memory?: boolean }).__memory);
 }
 
 function requireRow<T>(row: T | undefined, message: string): T {

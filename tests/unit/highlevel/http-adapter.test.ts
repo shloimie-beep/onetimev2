@@ -22,6 +22,12 @@ describe('HighLevel HTTP adapter operation identity', () => {
           status: 200,
           headers: { 'content-type': 'application/json' },
         }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ contact: { tags: ['OT | Lead'] } }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }),
       );
     const config = loadConfig({
       NODE_ENV: 'test',
@@ -61,13 +67,28 @@ describe('HighLevel HTTP adapter operation identity', () => {
         idempotencyKey: projection.idempotencyKey,
       },
     );
+    await expect(
+      adapter.readTags(
+        {
+          locationId: projection.locationId,
+          providerContactId: upsert.providerContactId,
+        },
+        {
+          operationKey: 'highlevel-operation-read-tags-0001',
+          idempotencyKey: projection.idempotencyKey,
+        },
+      ),
+    ).resolves.toEqual(['OT | Lead']);
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(headersFor(fetchMock.mock.calls[0]?.[1])).toMatchObject({
       'idempotency-key': 'highlevel-operation-upsert-0001',
     });
     expect(headersFor(fetchMock.mock.calls[1]?.[1])).toMatchObject({
       'idempotency-key': 'highlevel-operation-add-tags-0001',
+    });
+    expect(headersFor(fetchMock.mock.calls[2]?.[1])).toMatchObject({
+      'idempotency-key': 'highlevel-operation-read-tags-0001',
     });
   });
 });

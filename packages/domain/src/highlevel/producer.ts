@@ -6,6 +6,7 @@ import {
   type HighLevelEventName,
 } from '../../../contracts/src/highlevel/index.ts';
 import type { Queryable } from '../../../db/src/index.ts';
+import { evaluateEventServiceEmailEligibility } from '../events/event-email-permission.ts';
 import { stableKey } from '../lead/normalize.ts';
 
 type ActorKind = 'system' | 'admin' | 'parent';
@@ -16,7 +17,7 @@ export type HighLevelEventInput = {
   idempotencyKey: string;
   actor: { kind: ActorKind; reference: string };
   occurredAt: Date;
-  protectedPath: '/signup' | '/app/parent' | '/login' | '/forgot-password';
+  protectedPath: '/signup' | '/app/parent' | '/login' | '/forgot-password' | '/tisha-bav';
   data?: {
     signup_key?: string;
     household_key?: string;
@@ -26,6 +27,9 @@ export type HighLevelEventInput = {
     timezone?: string;
     classification?: 'family' | 'school';
     portal_status?: 'invited' | 'active';
+    event_code?: string;
+    registration_key?: string;
+    permission_scope?: 'event_service_email';
   };
   confirmed?: boolean;
   entitled?: boolean;
@@ -44,7 +48,8 @@ export type HighLevelEnqueueResult =
         | 'WRONG_SCOPE'
         | 'CLASS_NOT_CONFIRMED'
         | 'HOUSEHOLD_NOT_ENTITLED'
-        | 'CONTENT_NOT_APPROVED';
+        | 'CONTENT_NOT_APPROVED'
+        | 'EVENT_PERMISSION_INELIGIBLE';
     };
 
 type AdultContactRow = {
@@ -71,13 +76,31 @@ export async function enqueueHighLevelEvent(
   const contact = await loadAdultContact(client, config, input.contactKey);
   if (!contact) return { state: 'blocked', code: 'ADULT_CONTACT_NOT_FOUND' };
   const identityProjection = input.eventName === 'parent.household.sync_requested';
-  if (!identityProjection && (!contact.consent_recorded_at || !contact.consent_policy_version)) {
+  const eventRegistration = input.eventName === 'event.registration.recorded';
+  const eventCode = input.data?.event_code;
+  const registrationKey = input.data?.registration_key;
+  const eventEligibility =
+    eventRegistration && eventCode && registrationKey
+      ? await evaluateEventServiceEmailEligibility(client, config, {
+          eventCode,
+          registrationKey,
+          contactKey: input.contactKey,
+        })
+      : null;
+  if (eventRegistration && (!eventEligibility || !eventEligibility.allowed)) {
+    return { state: 'blocked', code: 'EVENT_PERMISSION_INELIGIBLE' };
+  }
+  if (
+    !identityProjection &&
+    !eventRegistration &&
+    (!contact.consent_recorded_at || !contact.consent_policy_version)
+  ) {
     return { state: 'blocked', code: 'CONSENT_MISSING' };
   }
-  if (!identityProjection && contact.suppression_state !== 'active') {
+  if (!identityProjection && !eventRegistration && contact.suppression_state !== 'active') {
     return { state: 'blocked', code: 'SUPPRESSED' };
   }
-  if (!identityProjection && (contact.all_dnd || contact.email_dnd)) {
+  if (!identityProjection && !eventRegistration && (contact.all_dnd || contact.email_dnd)) {
     return { state: 'blocked', code: 'DND_ACTIVE' };
   }
   if (input.eventName === 'class.reminder.requested') {
@@ -89,10 +112,14 @@ export async function enqueueHighLevelEvent(
     if (!input.entitled) return { state: 'blocked', code: 'HOUSEHOLD_NOT_ENTITLED' };
   }
 
-  const capturedAt = new Date(contact.consent_recorded_at ?? contact.created_at).toISOString();
-  const emailGranted = ['email', 'both'].includes(contact.reminder_preference);
-  const whatsappGranted = ['whatsapp', 'both'].includes(contact.reminder_preference);
-  if (!identityProjection && !emailGranted) {
+  const capturedAt = eventEligibility?.allowed
+    ? new Date(eventEligibility.permission.grantedAt).toISOString()
+    : new Date(contact.consent_recorded_at ?? contact.created_at).toISOString();
+  const emailGranted =
+    !eventRegistration && ['email', 'both'].includes(contact.reminder_preference);
+  const whatsappGranted =
+    !eventRegistration && ['whatsapp', 'both'].includes(contact.reminder_preference);
+  if (!identityProjection && !eventRegistration && !emailGranted) {
     return { state: 'blocked', code: 'CONSENT_MISSING' };
   }
 
@@ -115,15 +142,19 @@ export async function enqueueHighLevelEvent(
       location_id: config.highLevelLocationId,
     },
     adult_contact: { contact_key: contact.contact_key, adult_only: true },
-    consent: {
-      email: emailGranted ? 'granted' : 'not_granted',
-      whatsapp: whatsappGranted ? 'granted' : 'not_granted',
-      suppression_state: contact.suppression_state,
-      email_dnd: Boolean(contact.email_dnd || contact.all_dnd),
-      whatsapp_dnd: Boolean(contact.whatsapp_dnd || contact.all_dnd),
-      policy_version: contact.consent_policy_version ?? 'ot-contact-identity-v1',
-      captured_at: capturedAt,
-    },
+    ...(eventRegistration
+      ? {}
+      : {
+          consent: {
+            email: emailGranted ? 'granted' : 'not_granted',
+            whatsapp: whatsappGranted ? 'granted' : 'not_granted',
+            suppression_state: contact.suppression_state,
+            email_dnd: Boolean(contact.email_dnd || contact.all_dnd),
+            whatsapp_dnd: Boolean(contact.whatsapp_dnd || contact.all_dnd),
+            policy_version: contact.consent_policy_version ?? 'ot-contact-identity-v1',
+            captured_at: capturedAt,
+          },
+        }),
     protected_reference: { kind: 'one_time_path', path: input.protectedPath },
     data: input.data ?? {},
   });
@@ -142,7 +173,7 @@ export async function enqueueHighLevelEvent(
       config.productKey,
       contact.contact_key,
       `highlevel.${input.eventName}.v1`,
-      config.highLevelEventSyncMode,
+      eventRegistration ? 'disabled' : config.highLevelEventSyncMode,
       JSON.stringify(event),
       input.occurredAt,
     ],

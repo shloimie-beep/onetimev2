@@ -10,6 +10,7 @@ export const highLevelEventNameSchema = z.enum([
   'parent.portal.activated',
   'class.reminder.requested',
   'recording.available',
+  'event.registration.recorded',
 ]);
 export type HighLevelEventName = z.infer<typeof highLevelEventNameSchema>;
 
@@ -44,7 +45,7 @@ export type HighLevelConsentContext = z.infer<typeof highLevelConsentContextSche
 
 export const highLevelProtectedReferenceSchema = z.object({
   kind: z.literal('one_time_path'),
-  path: z.enum(['/signup', '/app/parent', '/login', '/forgot-password']),
+  path: z.enum(['/signup', '/app/parent', '/login', '/forgot-password', '/tisha-bav']),
 });
 
 const highLevelActorSchema = z.object({
@@ -70,6 +71,9 @@ const highLevelEventDataSchema = z
     timezone: z.string().trim().min(1).max(80).optional(),
     classification: z.enum(['family', 'school']).optional(),
     portal_status: z.enum(['invited', 'active']).optional(),
+    event_code: z.literal('tisha-bav-2026').optional(),
+    registration_key: z.string().trim().min(1).max(180).optional(),
+    permission_scope: z.literal('event_service_email').optional(),
   })
   .strict();
 
@@ -86,17 +90,51 @@ export const highLevelOutboundEventSchema = z
       contact_key: z.string().trim().min(1).max(180),
       adult_only: z.literal(true),
     }),
-    consent: highLevelConsentContextSchema,
+    consent: highLevelConsentContextSchema.optional(),
     protected_reference: highLevelProtectedReferenceSchema,
     data: highLevelEventDataSchema,
   })
-  .strict();
+  .strict()
+  .superRefine((event, context) => {
+    if (event.event_name !== 'event.registration.recorded') {
+      if (!event.consent) {
+        context.addIssue({
+          code: 'custom',
+          message: 'Non-event HighLevel projections require the shared consent context.',
+          path: ['consent'],
+        });
+      }
+      return;
+    }
+    if (event.consent) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Event-service permission must not project shared marketing consent.',
+        path: ['consent'],
+      });
+    }
+    if (
+      event.data.event_code !== 'tisha-bav-2026' ||
+      !event.data.registration_key ||
+      event.data.permission_scope !== 'event_service_email' ||
+      event.protected_reference.path !== '/tisha-bav'
+    ) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Event registration projection requires the exact scoped event contract.',
+        path: ['data'],
+      });
+    }
+  });
 export type HighLevelOutboundEvent = z.infer<typeof highLevelOutboundEventSchema>;
 
 const highLevelBotActionDataSchema = z
   .object({
     details_complete: z.boolean().optional(),
     channel: z.enum(['email', 'whatsapp', 'all']).optional(),
+    email_restriction: z
+      .enum(['global_suppression', 'global_dnd', 'global_unsubscribe', 'complaint', 'hard_bounce'])
+      .optional(),
   })
   .strict();
 

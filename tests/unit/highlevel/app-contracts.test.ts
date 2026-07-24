@@ -4,6 +4,7 @@ import {
   HIGHLEVEL_CONTRACT_VERSION,
   assertHighLevelPayloadSafe,
   highLevelInboundActionSchema,
+  highLevelOutboundEventSchema,
 } from '../../../packages/contracts/src/highlevel/index.ts';
 import type { DbPool } from '../../../packages/db/src/index.ts';
 import {
@@ -41,6 +42,51 @@ describe('HighLevel application contracts', () => {
           location_id: 'pBSnOK2nkdxp6gf9Rg3o',
         },
         adult_contact: { contact_key: 'contact-adult', adult_only: false },
+      }),
+    ).toThrow();
+  });
+
+  it('accepts only the canonical event-registration projection shape', () => {
+    const event = highLevelOutboundEventSchema.parse({
+      contract_version: HIGHLEVEL_CONTRACT_VERSION,
+      event_name: 'event.registration.recorded',
+      event_id: 'event-registration-0001',
+      idempotency_key: 'event-registration-idempotency-0001',
+      occurred_at: '2026-07-23T18:30:00.000Z',
+      actor: { kind: 'system', reference: 'tisha_bav_registration' },
+      scope: {
+        account_key: 'one_time',
+        product_key: 'one_time_mishnah_class',
+        location_id: 'pBSnOK2nkdxp6gf9Rg3o',
+      },
+      adult_contact: { contact_key: 'contact-adult', adult_only: true },
+      protected_reference: { kind: 'one_time_path', path: '/tisha-bav' },
+      data: {
+        event_code: 'tisha-bav-2026',
+        registration_key: 'event-registration-key',
+        permission_scope: 'event_service_email',
+      },
+    });
+    expect(event.event_name).toBe('event.registration.recorded');
+    expect(event).not.toHaveProperty('consent');
+    expect(() =>
+      highLevelOutboundEventSchema.parse({
+        ...event,
+        consent: {
+          email: 'granted',
+          whatsapp: 'not_granted',
+          suppression_state: 'active',
+          email_dnd: false,
+          whatsapp_dnd: false,
+          policy_version: 'tisha-bav-2026-event-email-v1',
+          captured_at: '2026-07-23T18:30:00.000Z',
+        },
+      }),
+    ).toThrow();
+    expect(() =>
+      highLevelOutboundEventSchema.parse({
+        ...event,
+        protected_reference: { kind: 'one_time_path', path: '/provider-url' },
       }),
     ).toThrow();
   });

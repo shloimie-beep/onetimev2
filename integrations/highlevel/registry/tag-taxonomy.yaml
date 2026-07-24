@@ -473,6 +473,44 @@
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
+- canonicalName: "OT | Event | Tisha B'Av 2026 | Registered"
+  normalizedName: 'ot_event_tisha_b_av_2026_registered'
+  ghlId: ''
+  ghlKey: 'ot_event_tisha_b_av_2026_registered'
+  objectType: 'tag'
+  dataType: 'tag'
+  category: 'event'
+  purpose: 'Exact event-only registration trigger for OT-E01; it does not grant newsletter or general marketing consent.'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: true
+  humansMayEdit: false
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-21'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: "OT | Source | Tisha B'Av 2026"
+  normalizedName: 'ot_source_tisha_b_av_2026'
+  ghlId: ''
+  ghlKey: 'ot_source_tisha_b_av_2026'
+  objectType: 'tag'
+  dataType: 'tag'
+  category: 'source'
+  purpose: "Exact source marker for the Tisha B'Av 2026 registration projection."
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: true
+  humansMayEdit: false
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-21'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
 - canonicalName: 'OT | Source | Rabbi Followers'
   normalizedName: 'ot_source_rabbi_followers'
   ghlId: 'F3kxEGC93isu7v4RaE5V'
