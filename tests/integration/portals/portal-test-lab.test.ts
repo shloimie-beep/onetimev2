@@ -286,6 +286,103 @@ describe('W12-03 Portal Test Lab', () => {
     }
   });
 
+  it('does not treat a learner entitlement household key as sibling access', async () => {
+    const [entitledLearner, siblingLearner] = W12_PORTAL_TEST_LAB.learners;
+    if (!entitledLearner || !siblingLearner) throw new Error('W12 learner fixtures are incomplete');
+    await pool.query(
+      `UPDATE onetime.content_item_entitlements
+          SET entitlement_state = 'revoked',
+              revoked_at = now()
+        WHERE account_key = $1
+          AND product_key = $2
+          AND content_item_key = $3`,
+      [config.accountKey, config.productKey, W12_PORTAL_TEST_LAB.recordingKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.content_item_entitlements
+         (entitlement_key, account_key, product_key, content_item_key, audience, household_key,
+          learner_key, entitlement_state)
+       VALUES
+         ('w12_recording_learner_one_scope',$1,$2,$3,'learner',$4,$5,'active')`,
+      [
+        config.accountKey,
+        config.productKey,
+        W12_PORTAL_TEST_LAB.recordingKey,
+        W12_PORTAL_TEST_LAB.householdKey,
+        entitledLearner.learnerKey,
+      ],
+    );
+    const stored = await pool.query(
+      `SELECT audience, household_key, learner_key
+         FROM onetime.content_item_entitlements
+        WHERE account_key = $1
+          AND product_key = $2
+          AND entitlement_key = 'w12_recording_learner_one_scope'`,
+      [config.accountKey, config.productKey],
+    );
+    expect(stored.rows[0]).toMatchObject({
+      audience: 'learner',
+      household_key: W12_PORTAL_TEST_LAB.householdKey,
+      learner_key: entitledLearner.learnerKey,
+    });
+
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const entitledSession = await loginAs(
+        server.baseUrl,
+        entitledLearner.email,
+        entitledLearner.defaultPassword,
+      );
+      const entitledResponse = await queryStudentHelper({
+        baseUrl: server.baseUrl,
+        session: entitledSession,
+        idempotencyKey: 'w12-learner-one-exact-entitlement',
+      });
+      expect(entitledResponse.status, JSON.stringify(entitledResponse.body)).toBe(200);
+      expect(entitledResponse.body.data).toMatchObject({
+        abstained: false,
+        safe_reason_code: 'supported_by_approved_section',
+        provider_mode: 'provider_off',
+      });
+      expect(entitledResponse.body.data.citations).toHaveLength(1);
+      expect(entitledResponse.body.data.citations[0]?.content_id).toBe(
+        W12_PORTAL_TEST_LAB.recordingKey,
+      );
+
+      const siblingSession = await loginAs(
+        server.baseUrl,
+        siblingLearner.email,
+        siblingLearner.defaultPassword,
+      );
+      const siblingResponse = await queryStudentHelper({
+        baseUrl: server.baseUrl,
+        session: siblingSession,
+        idempotencyKey: 'w12-learner-two-sibling-denial',
+      });
+      expect(siblingResponse.status, JSON.stringify(siblingResponse.body)).toBe(200);
+      expect(siblingResponse.body.data).toMatchObject({
+        abstained: true,
+        safe_reason_code: 'not_entitled',
+        citations: [],
+        source_refs: [],
+        provider_mode: 'provider_off',
+      });
+      const siblingPayload = JSON.stringify(siblingResponse.body);
+      for (const forbidden of [
+        W12_PORTAL_TEST_LAB.recordingKey,
+        W12_PORTAL_TEST_LAB.helperVersionId,
+        'w12_section_001',
+        'W12 fictional review section',
+        entitledLearner.learnerKey,
+        entitledLearner.displayName,
+      ]) {
+        expect(siblingPayload).not.toContain(forbidden);
+      }
+    } finally {
+      await server.close();
+    }
+  });
+
   it('fails closed when approved entitled helper rows contain protected provider material', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
@@ -507,6 +604,26 @@ async function expectUnsafeHelperResponse(input: {
     expect(serialized).not.toContain(learner.learnerKey);
     expect(serialized).not.toContain(learner.displayName);
   }
+}
+
+async function queryStudentHelper(input: {
+  baseUrl: string;
+  session: Awaited<ReturnType<typeof loginAs>>;
+  idempotencyKey: string;
+}) {
+  const response = await fetch(`${input.baseUrl}/api/v1/portals/student/helper/query`, {
+    method: 'POST',
+    headers: {
+      cookie: input.session.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': input.session.json.csrf_token,
+    },
+    body: JSON.stringify({
+      idempotency_key: input.idempotencyKey,
+      question: 'What should I review from this fictional Mishnah lesson?',
+    }),
+  });
+  return { status: response.status, body: await response.json() };
 }
 
 async function writePortalShells(targetDir: string) {
