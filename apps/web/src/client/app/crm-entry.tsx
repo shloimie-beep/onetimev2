@@ -285,6 +285,8 @@ function CrmApp() {
       location.pathname === '/app/crm/internal-tasks'
     ) {
       setSurface('crm');
+      setContactOperationsMode(false);
+      setContactOperationsHouseholdKey(null);
       setContactsRoutePath(location.pathname);
       setCommunicationsMode(null);
       setSupportReceiptId(null);
@@ -350,6 +352,7 @@ function CrmApp() {
     }
     if (location.pathname === '/app/crm/contact-operations') {
       setSurface('crm');
+      setContactsRoutePath('/app/crm');
       setContactOperationsMode(true);
       setContactOperationsHouseholdKey(
         new URLSearchParams(location.search).get('household')?.trim() || null,
@@ -1150,6 +1153,7 @@ function CrmApp() {
           />
         )}
       {surface === 'crm' &&
+        contactsSection === 'parents' &&
         !communicationsMode &&
         !contactOperationsMode &&
         !creating &&
