@@ -1,5 +1,6 @@
-import { createSign } from 'node:crypto';
-import { chmod, copyFile, mkdir, readFile, realpath, stat, writeFile } from 'node:fs/promises';
+import { createHash, createSign } from 'node:crypto';
+import { createReadStream } from 'node:fs';
+import { chmod, copyFile, mkdir, realpath, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   normalizeLearningDeliveryDriveFile,
@@ -56,7 +57,7 @@ export async function stageLearningDeliveryLocalDrop(input: {
   }
   const privateDirectory = path.resolve(input.privateDirectory);
   await mkdir(privateDirectory, { recursive: true });
-  const sourceSha256 = learningDeliverySha256Hex(await readFile(sourcePath));
+  const sourceSha256 = await sha256File(sourcePath);
   const displayName = path.basename(sourcePath);
   const privatePath = path.join(
     privateDirectory,
@@ -81,6 +82,14 @@ export async function stageLearningDeliveryLocalDrop(input: {
     sourceRefDigest: learningDeliverySha256Hex(`local_drop\0${sourceSha256}`),
     rawUrlPresent: false,
   };
+}
+
+async function sha256File(filePath: string) {
+  const hash = createHash('sha256');
+  for await (const chunk of createReadStream(filePath)) {
+    hash.update(chunk as Buffer);
+  }
+  return hash.digest('hex');
 }
 
 type DriveServiceAccount = {

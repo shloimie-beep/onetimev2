@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { Readable } from 'node:stream';
 import path from 'node:path';
 import {
   LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
@@ -110,7 +112,7 @@ async function main() {
 
   const sourceSha256 = await sha256File(canarySourcePath);
   const silenceRanges = await silencedetect(ffmpegPath, canarySourcePath, probe.duration_ms);
-  const audioPath = path.join(args.outDir, 'source-audio-16khz.wav');
+  const audioPath = path.join(args.outDir, 'source-audio-16khz.mp3');
   await extractAudio(ffmpegPath, canarySourcePath, audioPath);
 
   const transcription = await transcribeAudio(audioPath);
@@ -159,6 +161,7 @@ async function main() {
     displayName: stagedInput.displayName,
     segments: correctedSegments,
   });
+  const normalizedTranscript = artifact.segments.map((segment) => segment.text).join(' ');
   await writeFile(
     path.join(args.outDir, 'corrected-transcript-segments.private.json'),
     JSON.stringify(artifact.segments, null, 2),
@@ -333,8 +336,8 @@ async function main() {
           removedEndMs: trim.removed_end_ms ?? Math.max(0, probe.duration_ms - trim.end_ms),
           trimConfidence: trim.confidence ?? 0,
           transcriptSegments: artifact.segments,
-          normalizedTranscript: artifact.segments.map((segment) => segment.text).join(' '),
-          transcriptSha256: artifact.transcript_sha256,
+          normalizedTranscript,
+          transcriptSha256: learningDeliverySha256Hex(normalizedTranscript),
           webvtt: artifact.webvtt,
           webvttSha256: artifact.webvtt_sha256,
           transcriptionModel: artifact.provider_model_version,
@@ -435,7 +438,9 @@ async function extractAudio(ffmpegPath: string, inputPath: string, outputPath: s
     '-ar',
     '16000',
     '-c:a',
-    'pcm_s16le',
+    'libmp3lame',
+    '-b:a',
+    '64k',
     outputPath,
   ]);
 }
@@ -506,11 +511,15 @@ async function transcribeAudio(audioPath: string) {
   const apiKey = (await readFile(path.join(keyholderDir, 'openaiv2.txt'), 'utf8')).trim();
   const model = process.env.OPENAI_TRANSCRIPTION_MODEL ?? 'whisper-1';
   const adapter = createLearningDeliveryOpenAiTranscriptionAdapter({ apiKey, model });
+  const audioStat = await stat(audioPath);
+  if (audioStat.size > 24 * 1024 * 1024) {
+    throw new Error('transcription_audio_exceeds_safe_upload_budget');
+  }
   const audio = await readFile(audioPath);
   return adapter.transcribeAudioBufferWithMetadata({
     audio,
-    fileName: 'learning-delivery-source-audio.wav',
-    mimeType: 'audio/wav',
+    fileName: 'learning-delivery-source-audio.mp3',
+    mimeType: 'audio/mpeg',
     prompt: LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
   });
 }
@@ -530,11 +539,11 @@ async function uploadPreparedVideoToVimeo(input: {
     const projectUri = existsSync(projectUriPath)
       ? (await readFile(projectUriPath, 'utf8')).trim()
       : '';
-    const videoBytes = await readFile(input.videoPath);
+    const videoStat = await stat(input.videoPath);
     const created = await vimeoApiJson(token, '/me/videos', {
       method: 'POST',
       body: JSON.stringify({
-        upload: { approach: 'tus', size: videoBytes.byteLength },
+        upload: { approach: 'tus', size: videoStat.size },
         name: input.title,
         privacy: { view: 'nobody' },
       }),
@@ -552,8 +561,9 @@ async function uploadPreparedVideoToVimeo(input: {
         'Upload-Offset': '0',
         'Content-Type': 'application/offset+octet-stream',
       },
-      body: videoBytes,
-    });
+      body: Readable.toWeb(createReadStream(input.videoPath)),
+      duplex: 'half',
+    } as RequestInit & { duplex: 'half' });
     if (!tus.ok && tus.status !== 204) {
       return blockedVimeo(`vimeo_tus_patch_${tus.status}`);
     }
@@ -763,8 +773,11 @@ async function runFile(command: string, args: string[]) {
 }
 
 async function sha256File(filePath: string) {
-  const buffer = await readFile(filePath);
-  return learningDeliverySha256Hex(buffer);
+  const hash = createHash('sha256');
+  for await (const chunk of createReadStream(filePath)) {
+    hash.update(chunk as Buffer);
+  }
+  return hash.digest('hex');
 }
 
 function stableKey(prefix: string, parts: string[]) {

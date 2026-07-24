@@ -1,5 +1,94 @@
 # OT-LAUNCH-01 Video-to-Student Classroom Handoff
 
+## Current external-canary checkpoint
+
+- Task: `OT-LAUNCH-01-MEDIA-EXTERNAL-CANARY-01`
+- Acceptance: `CONTENT-002`
+- Governed base: `bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0`
+- Branch: `codex/media-external-canary`
+- Draft PR: `#117`
+- Result: `accepted_and_cleaned_up`
+- Runtime source: `089d724bdd901a2a009770fecf58c6d9e68df494`
+- Runtime version: `full-app-staging-live-089d724`
+- Production changed: no
+- OpenAI transcription requests: 1
+- Private Vimeo uploads: 1
+- Vimeo caption tracks activated: 1
+- Provider or media-processing retries: 0
+- Content-factory imports: 1
+- Accepted occurrence-scoped publications: 1
+- Final canary state: approved and unpublished
+- Customer communications: zero
+
+The durable occurrence-scoped pipeline remains accepted in deployed product source
+`089d724bdd901a2a009770fecf58c6d9e68df494`. This checkpoint does not rebuild or
+reseed that pipeline.
+
+### Sanitized provider result
+
+- The exact operator-approved 1.82 GB, 42:18, 1280 x 720 private MP4 was selected
+  by its previously verified safe metadata. The small Drive smoke fixture and all
+  other local videos remained excluded.
+- Conservative opening/closing trim accepted 2,483,900 ms of prepared media from
+  a 2,570,167 ms derived-edge-silence canary source. No middle cut was made and the
+  operator's original file was not modified.
+- One OpenAI `whisper-1` request produced 434 timestamped segments and WebVTT.
+- One private Vimeo asset completed transcoding with one active caption track.
+  Provider privacy and playback readback passed without committing or displaying
+  a provider ID, raw Vimeo URL, private source locator, credential, or transcript.
+- The exact item persisted once as `needs_review`; no import, transcription, upload,
+  caption, or provider retry occurred.
+
+### Admin, Student, and cleanup acceptance
+
+- The existing private conductor handoff supplied only the established fictional
+  Admin and Student sessions. No credential, cookie, login code, account, or data
+  was created or rendered.
+- The exact existing fictional occurrence was temporarily narrowed to one entitled
+  learner for the bounded publication proof. The accepted publication created one
+  active content entitlement and zero sibling entitlements.
+- The first fictional-Student readback caught a malformed AI-generated title. That
+  publication was immediately revoked. The title, description, topics, questions,
+  and takeaways were replaced with neutral human-reviewed staging metadata before
+  the accepted publication.
+- The entitled fictional Student opened the approved description, five questions,
+  active captions, progress state, and first-party protected player. The ordinary
+  document contained no raw Vimeo URL.
+- The fictional sibling's Library omitted the canary, and its direct lesson request
+  returned metadata-safe unavailability without the title, description, transcript,
+  or provider URL.
+- Final unpublish removed the lesson from a fresh entitled-Student Library and
+  revoked the prior route. Zero active canary content entitlements remain, and the
+  original three-learner fictional occurrence roster was restored.
+- Web and content-factory provider gates were returned to synthetic/provider-off.
+  The standalone worker has no real content-provider mode configured.
+
+### Exact blocker
+
+None. The private Vimeo asset and active caption track remain private as the
+accepted provider canary; first-party publication is approved but unpublished.
+Persistent staging contains only that reviewed canary record and its revoked
+first-party publication projection. Production and customer systems were not
+changed.
+
+### Current verification
+
+- Focused media/content unit, including migration safety: 26/26 pass.
+- Focused durable content/portal integration: 7/7 pass, including lease fencing,
+  occurrence-scoped publication, sibling denial, and unpublish revocation.
+- Local Chromium Admin upload/review/publish step: pass.
+- Exact deployed staging browser: entitled Student playback, first-party embed,
+  captions, approved summary/questions, sibling Library omission, metadata-safe
+  direct denial, and fresh-session unpublish revocation all pass.
+- The remaining local multi-step Chromium cases cannot enter the Student portal
+  because the repository's in-memory `pg-mem` harness rejects the existing
+  production portal query with `lookups on joins`; this is a test-double limit, not
+  a live-runtime failure. Exact staging browser and real-PostgreSQL integration
+  evidence are terminal for this canary.
+- Typecheck, build, lint, scoped format, secret scan across 2,079 repository text
+  files, goal validation, generated launch-status check, and diff check: pass.
+- Draft PR #117 GitHub checks: 4/4 pass.
+
 ## Integration identity
 
 - Repository: `shloimie-beep/onetimev2`
