@@ -1,5 +1,66 @@
 # OT-LAUNCH-01 Video-to-Student Classroom Handoff
 
+## Current external-canary checkpoint
+
+- Task: `OT-LAUNCH-01-MEDIA-EXTERNAL-CANARY-01`
+- Acceptance: `CONTENT-002`
+- Governed base: `bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0`
+- Branch: `codex/media-external-canary`
+- Result: `waiting_external`
+- Production changed: no
+- Provider mutations: zero
+- OpenAI transcription requests: zero
+- Vimeo uploads or text-track mutations: zero
+- Customer communications: zero
+
+The durable occurrence-scoped pipeline remains accepted in deployed product source
+`5556c4ab78e01d367666694459eb2ea97f4028ef`. This checkpoint does not rebuild,
+reseed, redeploy, or republish it.
+
+### Sanitized discovery and preflight
+
+- The connected Google Drive connector can read the canonical operator test folder.
+  Its drop area contains one sub-megabyte smoke video. That file is explicitly
+  excluded and was not downloaded, transcribed, uploaded, imported, or published.
+- The protected link supplied by the operator resolves in the signed-in browser to
+  one exact operator-owned MP4: 1.82 GB, 42:18, 1280 x 720, created and modified
+  July 20, 2026, in the private transcription-upload folder.
+- The Drive connector and signed-in browser are not exposing the same file scope.
+  Exact-name and exact-parent connector reads found zero candidates, while the
+  signed-in browser shows the confirmed source.
+- The local Drive service-account/OAuth files used by the legacy readiness script
+  are absent; the confirmed source must therefore be downloaded through the
+  signed-in protected browser session or newly shared to the connector identity.
+- The protected OpenAI and Vimeo credentials are present and nonempty. Read-only
+  authenticated provider checks returned success without reading response bodies
+  into evidence and without performing a mutation.
+- The pinned ffmpeg and ffprobe binaries are present. The workspace drive had more
+  than 80 GiB free during preflight.
+- The canary runner has unrelated legacy fallback candidates on this machine.
+  Execution is therefore forbidden unless an explicit operator-source path is
+  supplied with `--source`; it must never rely on fallback selection.
+- Private canary output, the prepared media, transcript, captions, import manifest,
+  provider references, and source locator must remain outside Git.
+
+### Exact blocker
+
+`OPERATOR_DRIVE_LARGE_FILE_DOWNLOAD_CONFIRMATION_REQUIRED`: Google Drive cannot
+virus-scan the confirmed 1.82 GB source and is waiting at its `Download anyway`
+safety dialog. The agent did not bypass that interstitial. The operator must click
+`Download anyway` in the already-open protected Drive tab, or privately share the
+exact file with the connected Drive connector identity so it can be downloaded
+without that browser warning. Do not paste a token, folder ID, raw provider URL,
+or public link into Git or PR discussion.
+
+After that one confirmation, resume this same branch and task without selecting or
+downloading another source. Move the completed file to a protected non-repository
+location, pass its exact path through `--source`, run one bounded
+OpenAI/private-Vimeo canary, import the private manifest into the reviewed staging
+path, assign one existing fictional class occurrence, approve and publish only
+after Admin review, prove entitled Student access plus sibling denial, unpublish,
+and return every provider gate off. Evidence may contain only safe counts,
+durations, digests, states, and first-party route results.
+
 ## Integration identity
 
 - Repository: `shloimie-beep/onetimev2`
