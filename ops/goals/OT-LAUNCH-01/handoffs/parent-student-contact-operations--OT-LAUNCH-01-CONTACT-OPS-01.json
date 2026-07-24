@@ -27,7 +27,17 @@
       "exact_reproduction": "Applying the exact source-head content-factory implementation to the governed CONTACT-OPS branch made an unrelated Student receive HTTP 409 at tests/integration/experience-preview.test.ts:592, where the existing security assertion requires the generic HTTP 404.",
       "source_condition": "isContentFactoryDemoSource(input.sourceKey) ? 'PLAYBACK_UNAVAILABLE' : 'NOT_FOUND'",
       "contact_ops_correction": "For a non-entitled actor, always throw NOT_FOUND. All positive entitlement branches from the source head remain unchanged.",
-      "proof": "The combined integration run first failed with expected 404 / received 409; the focused 19-test rerun and subsequent full 335-test integration run passed after the one-condition correction."
+      "proof": "The combined integration run first failed with expected 404 / received 409; the focused 19-test rerun and subsequent full 335-test integration run passed after the one-condition correction.",
+      "latest_target_reconciliation": {
+        "source_head": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
+        "source_owned_files": [
+          "packages/domain/src/content/service.ts",
+          "tests/e2e/content-factory.spec.ts",
+          "tests/integration/content/content-factory.test.ts"
+        ],
+        "ownership": "The source head owns the occurrence-key prefilter, occurrence regression fixture/assertions, and Library-region browser selector. CONTACT-OPS retains only its duplicate-safe entitlement projection, explicit Student visibility, paused-Parent/session assertions, and the separately recorded content-factory.ts fail-closed correction.",
+        "proof": "After explicit reconciliation, the 22 focused content/preview integration tests, 4 content-factory browser tests, formatting, lint, typecheck, and production build passed."
+      }
     },
     "role_authority": {
       "owner_capabilities": ["contact_ops:supervise", "contact_ops:school_admin"],
@@ -99,7 +109,7 @@
     {
       "ref": "tests/e2e/content-factory.spec.ts",
       "kind": "content_item_selector_and_entitlement_browser_proof",
-      "result": "4 passed after the content-item selector was narrowed from all semantic articles to article.ot-item",
+      "result": "4 passed with the staging-owned Library-region selector after occurrence-scope reconciliation",
       "sanitized": true
     },
     {
@@ -160,5 +170,5 @@
     "The conductor may decide later whether Rabbi should become a separate display label or first-class role; current Owner/Admin labels were preserved and authority is enforced by explicit capabilities."
   ],
   "blocker": null,
-  "sanitized_at": "2026-07-24T09:31:50Z"
+  "sanitized_at": "2026-07-24T09:38:20Z"
 }

@@ -481,10 +481,29 @@ async function portalItemsForLearner(input: {
             END
           ) IS NOT NULL`
       : '';
-  const occurrenceVisibility = input.occurrenceScopedOnly
+  const activeOccurrenceKeys = input.occurrenceScopedOnly
+    ? (
+        await input.pool.query(
+          `SELECT occurrence_key
+             FROM onetime.classroom_occurrence_learner_entitlements
+            WHERE account_key = $1
+              AND product_key = $2
+              AND household_key = $3
+              AND learner_key = $4
+              AND entitlement_state = 'active'
+            ORDER BY occurrence_key ASC`,
+          [input.accountKey, input.productKey, input.householdKey, input.learnerKey],
+        )
+      ).rows.map((row) => String(row.occurrence_key))
+    : [];
+  if (input.occurrenceScopedOnly && activeOccurrenceKeys.length === 0) return [];
+  const occurrenceScopeFilter = input.occurrenceScopedOnly
     ? `AND factory.source_key IS NOT NULL
-       AND occurrence_entitlement.occurrence_entitlement_key IS NOT NULL`
+       AND items.occurrence_key IN (${activeOccurrenceKeys
+         .map((_occurrenceKey, index) => `$${index + 6}`)
+         .join(', ')})`
     : '';
+
   const result = await input.pool.query(
     `SELECT items.*,
             lessons.lesson_key,
@@ -513,13 +532,6 @@ async function portalItemsForLearner(input: {
         AND factory.product_key = items.product_key
         AND factory.source_key = items.content_item_key
         AND factory.factory_state = 'published'
-       LEFT JOIN onetime.classroom_occurrence_learner_entitlements AS occurrence_entitlement
-         ON occurrence_entitlement.account_key = items.account_key
-        AND occurrence_entitlement.product_key = items.product_key
-        AND occurrence_entitlement.occurrence_key = items.occurrence_key
-        AND occurrence_entitlement.household_key = $5
-        AND occurrence_entitlement.learner_key = $4
-        AND occurrence_entitlement.entitlement_state = 'active'
        LEFT JOIN onetime.class_occurrences AS occurrence
          ON occurrence.account_key = items.account_key
         AND occurrence.product_key = items.product_key
@@ -552,10 +564,17 @@ async function portalItemsForLearner(input: {
              )
         )
         ${studentVisibility}
-        ${occurrenceVisibility}
+        ${occurrenceScopeFilter}
       ORDER BY items.published_at DESC, items.content_item_key ASC
       LIMIT 25`,
-    [input.accountKey, input.productKey, input.itemTypes, input.learnerKey, input.householdKey],
+    [
+      input.accountKey,
+      input.productKey,
+      input.itemTypes,
+      input.learnerKey,
+      input.householdKey,
+      ...activeOccurrenceKeys,
+    ],
   );
   const messagesByLesson = await approvedMessagesByLesson(
     input.pool,
