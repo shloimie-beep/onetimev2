@@ -6,60 +6,88 @@
 - Acceptance: `CONTENT-002`
 - Governed base: `bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0`
 - Branch: `codex/media-external-canary`
-- Result: `waiting_external`
+- Draft PR: `#117`
+- Result: `accepted_and_cleaned_up`
+- Runtime source: `089d724bdd901a2a009770fecf58c6d9e68df494`
+- Runtime version: `full-app-staging-live-089d724`
 - Production changed: no
-- Provider mutations: zero
-- OpenAI transcription requests: zero
-- Vimeo uploads or text-track mutations: zero
+- OpenAI transcription requests: 1
+- Private Vimeo uploads: 1
+- Vimeo caption tracks activated: 1
+- Provider or media-processing retries: 0
+- Content-factory imports: 1
+- Accepted occurrence-scoped publications: 1
+- Final canary state: approved and unpublished
 - Customer communications: zero
 
 The durable occurrence-scoped pipeline remains accepted in deployed product source
-`5556c4ab78e01d367666694459eb2ea97f4028ef`. This checkpoint does not rebuild,
-reseed, redeploy, or republish it.
+`089d724bdd901a2a009770fecf58c6d9e68df494`. This checkpoint does not rebuild or
+reseed that pipeline.
 
-### Sanitized discovery and preflight
+### Sanitized provider result
 
-- The connected Google Drive connector can read the canonical operator test folder.
-  Its drop area contains one sub-megabyte smoke video. That file is explicitly
-  excluded and was not downloaded, transcribed, uploaded, imported, or published.
-- The protected link supplied by the operator resolves in the signed-in browser to
-  one exact operator-owned MP4: 1.82 GB, 42:18, 1280 x 720, created and modified
-  July 20, 2026, in the private transcription-upload folder.
-- The Drive connector and signed-in browser are not exposing the same file scope.
-  Exact-name and exact-parent connector reads found zero candidates, while the
-  signed-in browser shows the confirmed source.
-- The local Drive service-account/OAuth files used by the legacy readiness script
-  are absent; the confirmed source must therefore be downloaded through the
-  signed-in protected browser session or newly shared to the connector identity.
-- The protected OpenAI and Vimeo credentials are present and nonempty. Read-only
-  authenticated provider checks returned success without reading response bodies
-  into evidence and without performing a mutation.
-- The pinned ffmpeg and ffprobe binaries are present. The workspace drive had more
-  than 80 GiB free during preflight.
-- The canary runner has unrelated legacy fallback candidates on this machine.
-  Execution is therefore forbidden unless an explicit operator-source path is
-  supplied with `--source`; it must never rely on fallback selection.
-- Private canary output, the prepared media, transcript, captions, import manifest,
-  provider references, and source locator must remain outside Git.
+- The exact operator-approved 1.82 GB, 42:18, 1280 x 720 private MP4 was selected
+  by its previously verified safe metadata. The small Drive smoke fixture and all
+  other local videos remained excluded.
+- Conservative opening/closing trim accepted 2,483,900 ms of prepared media from
+  a 2,570,167 ms derived-edge-silence canary source. No middle cut was made and the
+  operator's original file was not modified.
+- One OpenAI `whisper-1` request produced 434 timestamped segments and WebVTT.
+- One private Vimeo asset completed transcoding with one active caption track.
+  Provider privacy and playback readback passed without committing or displaying
+  a provider ID, raw Vimeo URL, private source locator, credential, or transcript.
+- The exact item persisted once as `needs_review`; no import, transcription, upload,
+  caption, or provider retry occurred.
+
+### Admin, Student, and cleanup acceptance
+
+- The existing private conductor handoff supplied only the established fictional
+  Admin and Student sessions. No credential, cookie, login code, account, or data
+  was created or rendered.
+- The exact existing fictional occurrence was temporarily narrowed to one entitled
+  learner for the bounded publication proof. The accepted publication created one
+  active content entitlement and zero sibling entitlements.
+- The first fictional-Student readback caught a malformed AI-generated title. That
+  publication was immediately revoked. The title, description, topics, questions,
+  and takeaways were replaced with neutral human-reviewed staging metadata before
+  the accepted publication.
+- The entitled fictional Student opened the approved description, five questions,
+  active captions, progress state, and first-party protected player. The ordinary
+  document contained no raw Vimeo URL.
+- The fictional sibling's Library omitted the canary, and its direct lesson request
+  returned metadata-safe unavailability without the title, description, transcript,
+  or provider URL.
+- Final unpublish removed the lesson from a fresh entitled-Student Library and
+  revoked the prior route. Zero active canary content entitlements remain, and the
+  original three-learner fictional occurrence roster was restored.
+- Web and content-factory provider gates were returned to synthetic/provider-off.
+  The standalone worker has no real content-provider mode configured.
 
 ### Exact blocker
 
-`OPERATOR_DRIVE_LARGE_FILE_DOWNLOAD_CONFIRMATION_REQUIRED`: Google Drive cannot
-virus-scan the confirmed 1.82 GB source and is waiting at its `Download anyway`
-safety dialog. The agent did not bypass that interstitial. The operator must click
-`Download anyway` in the already-open protected Drive tab, or privately share the
-exact file with the connected Drive connector identity so it can be downloaded
-without that browser warning. Do not paste a token, folder ID, raw provider URL,
-or public link into Git or PR discussion.
+None. The private Vimeo asset and active caption track remain private as the
+accepted provider canary; first-party publication is approved but unpublished.
+Persistent staging contains only that reviewed canary record and its revoked
+first-party publication projection. Production and customer systems were not
+changed.
 
-After that one confirmation, resume this same branch and task without selecting or
-downloading another source. Move the completed file to a protected non-repository
-location, pass its exact path through `--source`, run one bounded
-OpenAI/private-Vimeo canary, import the private manifest into the reviewed staging
-path, assign one existing fictional class occurrence, approve and publish only
-after Admin review, prove entitled Student access plus sibling denial, unpublish,
-and return every provider gate off. Evidence may contain only safe counts,
-durations, digests, states, and first-party route results.
+### Current verification
+
+- Focused media/content unit, including migration safety: 26/26 pass.
+- Focused durable content/portal integration: 7/7 pass, including lease fencing,
+  occurrence-scoped publication, sibling denial, and unpublish revocation.
+- Local Chromium Admin upload/review/publish step: pass.
+- Exact deployed staging browser: entitled Student playback, first-party embed,
+  captions, approved summary/questions, sibling Library omission, metadata-safe
+  direct denial, and fresh-session unpublish revocation all pass.
+- The remaining local multi-step Chromium cases cannot enter the Student portal
+  because the repository's in-memory `pg-mem` harness rejects the existing
+  production portal query with `lookups on joins`; this is a test-double limit, not
+  a live-runtime failure. Exact staging browser and real-PostgreSQL integration
+  evidence are terminal for this canary.
+- Typecheck, build, lint, scoped format, secret scan across 2,079 repository text
+  files, goal validation, generated launch-status check, and diff check: pass.
+- Draft PR #117 GitHub checks: 4/4 pass.
 
 ## Integration identity
 
