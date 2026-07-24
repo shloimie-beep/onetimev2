@@ -16,7 +16,10 @@ test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', asy
     'ZoomStudentPassword!234',
     '/app/student',
   );
-  await studentPage.getByRole('link', { name: 'Questions', exact: true }).click();
+  await studentPage
+    .getByRole('navigation', { name: 'One Time app' })
+    .getByRole('link', { name: 'Today', exact: true })
+    .click();
   await expect(studentPage.getByLabel('Question for class')).toBeVisible();
 
   const questionResponse = studentPage.waitForResponse(

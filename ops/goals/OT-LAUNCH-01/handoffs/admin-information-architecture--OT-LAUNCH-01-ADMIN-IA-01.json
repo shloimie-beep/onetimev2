@@ -12,10 +12,10 @@
   "write_scope": "Client-focused Admin information architecture, scoped tests, sanitized browser evidence, and this result handoff; no BOARD, access/auth, GHL, Telegram, Zoom, Vimeo, migration, provider, payment, deployment, credential, or production mutation.",
   "result": {
     "status": "implementation_complete",
-    "base_commit": "690df5a732b847f8adb2c840b5d004679900d4c4",
-    "implementation_commit": "afbb0f4ac2ff9757b47ca4e94e159218a5a1b09b",
-    "supersedes_head": "91098a69ca96adc254a51d377844f0f12c8226cc",
-    "inherited_student_playback_repair_commit": "690df5a732b847f8adb2c840b5d004679900d4c4",
+    "base_commit": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
+    "implementation_commit": "c3538083f3dc8dc674b9336faa28530fc4776f7a",
+    "supersedes_head": "ac997db3d367f4199cb602e6d13a49f9933d14bf",
+    "governed_portal_content_fix_commit": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
     "primary_navigation": ["Dashboard", "Contacts", "Content", "Classroom", "Live Console"],
     "provider_changed": false,
     "auth_or_access_changed": false,
@@ -41,12 +41,12 @@
     "npm run secret:scan",
     "git diff --check",
     "3 focused Admin IA unit tests passed",
-    "64 integration files and 332 integration tests passed on governed descendant 690df5a732b847f8adb2c840b5d004679900d4c4",
-    "The exact reviewed-staging synthetic lesson playback, sibling-denial, and fixed-demo projection contracts passed",
+    "75 unit files and 413 unit tests passed on governed descendant 415d7e49d7567d3e211fb725c0916ece78da4dd0",
+    "64 integration files and 332 integration tests passed on governed descendant 415d7e49d7567d3e211fb725c0916ece78da4dd0",
     "2 Admin IA and Experience Preview real Chromium journeys passed across 360x800, 390x844, 768x1024, and 1440x1000",
-    "10 of 10 targeted legacy Content Factory, CRM core, and OT-39 Chromium contracts passed after aligning their assertions with the five-area Admin information architecture",
-    "PR run 30080891542 passed secret scan, format, lint, typecheck, unit tests, 332 integration tests, and build before the full E2E step exposed inherited governed-base failures and stale Admin IA selectors",
-    "Exact-base run 30080463129 independently reproduced the eight remaining unrelated full-E2E failures at 690df5a732b847f8adb2c840b5d004679900d4c4"
+    "13 of 13 exact affected Content Factory, portal, Zoom, Rabbi live-console, and W12-03 Chromium journeys passed",
+    "24 of 24 accessibility journeys passed with zero critical or serious violations",
+    "10 of 10 performance journeys and all bundle-size gates passed"
   ],
   "evidence": [
     {
@@ -87,37 +87,14 @@
     {
       "path": "tests/integration/experience-preview.test.ts",
       "kind": "governed_descendant_playback_entitlement_and_preview_isolation_contract",
-      "source_commit": "690df5a732b847f8adb2c840b5d004679900d4c4",
+      "source_commit": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
       "sanitized": true
     }
   ],
   "remaining_work": [
-    "Conductor or the owning tracks must repair the eight full-E2E failures already present on exact governed base 690df5a732b847f8adb2c840b5d004679900d4c4; access, Zoom, provider, and unrelated portal repair are outside this packet.",
     "Conductor review and merge into codex/full-app-staging-live.",
     "Post-merge staging deployment and readback are conductor-owned; this task did not deploy production."
   ],
-  "blocker": {
-    "kind": "inherited_required_ci_failure",
-    "scope": "The exact governed base already fails eight unrelated full Playwright journeys. Repairing access, Zoom/provider, Rabbi live-console, and portal test-lab behavior is explicitly outside this Admin IA packet.",
-    "check": "Node 24 verify / Playwright e2e",
-    "base_run": {
-      "id": 30080463129,
-      "head": "690df5a732b847f8adb2c840b5d004679900d4c4",
-      "result": "8 failed, 51 passed, 3 did not run",
-      "failed_files": [
-        "tests/e2e/content-factory.spec.ts (Student journey)",
-        "tests/e2e/ot-83r-portals.spec.ts",
-        "tests/e2e/ot88-zoom-classroom.spec.ts (4 journeys)",
-        "tests/e2e/rabbi-live-console-fake.spec.ts",
-        "tests/e2e/w12-03-portal-test-lab.spec.ts"
-      ]
-    },
-    "prior_pr_run": {
-      "id": 30080891542,
-      "head": "86c8d59dec6ab449732e4695d5f57efa1456b49d",
-      "result": "All Node steps through build passed; full E2E exposed the same inherited base failures plus stale Admin IA selectors."
-    },
-    "pr_specific_resolution": "The five PR-specific selector failures were corrected without changing access or provider behavior; the affected Content Factory, CRM core, and OT-39 suites pass 10 of 10 targeted Chromium tests."
-  },
-  "sanitized_at": "2026-07-24T09:11:19Z"
+  "blocker": null,
+  "sanitized_at": "2026-07-24T09:55:48Z"
 }
