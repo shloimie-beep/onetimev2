@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:f882b138413075666105acd54899a4c6176c200996b905437819b4493def0e3d',
-  generated_at: '2026-07-24T07:20:49.000Z',
+  board_source_hash: 'sha256:8999e8a2bf31c895a8be1348816ac27716153fa9bff3a912bb64eb5a35b2c56c',
+  generated_at: '2026-07-24T07:35:00.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 17,
@@ -118,7 +118,7 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom Real Control Operator Change Set',
       status: 'active',
       next_action:
-        'Use the approved protected S2S/host source to provision one distinct disposable Student 1 canary meeting; keep the Tisha event target excluded and every runtime real/canary gate off until the installation preflight passes.',
+        'Execute the newly canonicalized isolated-only disposable-meeting decision; stop for human verification rather than bypass it, and do not install or change persistent-staging or production variables.',
     },
     {
       track_id: 'media_external_canary',

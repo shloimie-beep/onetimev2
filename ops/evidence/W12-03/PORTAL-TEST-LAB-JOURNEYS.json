@@ -1,6 +1,6 @@
 {
   "status": "completed",
-  "generated_at": "2026-07-24T08:52:22.488Z",
+  "generated_at": "2026-07-24T09:05:32.891Z",
   "journeys": [
     "admin-only W12 lab status/reset page without visible secrets",
     "parent manages W12 household and learner access without student impersonation",

@@ -20,6 +20,15 @@
       "sha256": "259532137222b31c6b72975d479fb6061366a2800404d34939b66d19961e1d60",
       "global_ledger_audit": "222 refs fetched and scanned immediately before commit; no committed 2225 migration was present; 2226 remains reserved by the Rabbi Telegram branch"
     },
+    "content_playback_overlap": {
+      "source_head": "690df5a732b847f8adb2c840b5d004679900d4c4",
+      "file": "packages/domain/src/content/content-factory.ts",
+      "ownership": "The source head owns the broader household, learner, and all-active-learner entitlement expansion. CONTACT-OPS owns only the smallest fail-closed correction required by its cross-household and sibling-denial acceptance.",
+      "exact_reproduction": "Applying the exact source-head content-factory implementation to the governed CONTACT-OPS branch made an unrelated Student receive HTTP 409 at tests/integration/experience-preview.test.ts:592, where the existing security assertion requires the generic HTTP 404.",
+      "source_condition": "isContentFactoryDemoSource(input.sourceKey) ? 'PLAYBACK_UNAVAILABLE' : 'NOT_FOUND'",
+      "contact_ops_correction": "For a non-entitled actor, always throw NOT_FOUND. All positive entitlement branches from the source head remain unchanged.",
+      "proof": "The combined integration run first failed with expected 404 / received 409; the focused 19-test rerun and subsequent full 335-test integration run passed after the one-condition correction."
+    },
     "role_authority": {
       "owner_capabilities": ["contact_ops:supervise", "contact_ops:school_admin"],
       "admin_capabilities": ["contact_ops:school_admin"],
@@ -88,6 +97,12 @@
       "sanitized": true
     },
     {
+      "ref": "tests/integration/experience-preview.test.ts:592",
+      "kind": "content_playback_overlap_fail_closed_proof",
+      "result": "Exact 690df5a source condition reproduced unrelated-Student HTTP 409; the CONTACT-OPS one-condition NOT_FOUND correction restored HTTP 404 while preserving positive household and learner entitlements.",
+      "sanitized": true
+    },
+    {
       "path": "ops/evidence/ot-83r/REAL-APP-JOURNEYS.json",
       "kind": "sanitized_portal_journey_readback",
       "sanitized": true
@@ -106,6 +121,7 @@
   ],
   "remaining_work": [
     "Wait for draft PR #120 repository checks, including the PostgreSQL-backed migration and integration environment not available in this local task runtime.",
+    "The conductor should independently audit the recorded 690df5a content-playback overlap and decide whether the one-condition fail-closed 404 correction should be ported once to the governed lineage before integration.",
     "The conductor may decide later whether Rabbi should become a separate display label or first-class role; current Owner/Admin labels were preserved and authority is enforced by explicit capabilities."
   ],
   "blocker": null,

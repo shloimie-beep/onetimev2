@@ -17,8 +17,11 @@ import {
 } from './zoom-real-control-plan.ts';
 
 const canary = assertZoomRealControlProvisionPreflight(process.env);
-const keyholderDir =
-  process.env.BNA_KEYHOLDER_DIR ?? path.join(process.env.USERPROFILE ?? '.', 'BNA-Keyholder');
+const configuredKeyholderDir = process.env.ONE_TIME_ZOOM_KEYHOLDER_DIR;
+if (!configuredKeyholderDir) {
+  throw new Error('ZOOM_PROTECTED_INPUT_MISSING:ONE_TIME_ZOOM_KEYHOLDER_DIR');
+}
+const keyholderDir: string = configuredKeyholderDir;
 const statePath =
   process.env.ZOOM_REAL_CONTROL_STATE_PATH ??
   path.join(keyholderDir, 'incoming', 'zoom-real-control-student-1-v2-state.json');
@@ -30,7 +33,6 @@ if (
 ) {
   throw new Error('ZOOM_REAL_CONTROL_STATE_PATH_INVALID: protected state must stay outside Git.');
 }
-
 const [accountId, clientId, clientSecret, hostUserId, aliasDomain, aliasSecret] = await Promise.all(
   [
     protectedValue('zoom-s2s-account-id.txt'),
