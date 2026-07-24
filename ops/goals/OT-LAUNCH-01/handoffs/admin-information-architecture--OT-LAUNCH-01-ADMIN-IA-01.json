@@ -13,10 +13,12 @@
   "result": {
     "status": "implementation_complete",
     "base_commit": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
-    "implementation_commit": "c3538083f3dc8dc674b9336faa28530fc4776f7a",
-    "supersedes_head": "ac997db3d367f4199cb602e6d13a49f9933d14bf",
+    "implementation_commit": "3a5e74dbed72a025223ce5c4a9e0ab9a5e5bce4b",
+    "supersedes_head": "938942b41634a47aae48d95b12a912209dec8849",
     "governed_portal_content_fix_commit": "415d7e49d7567d3e211fb725c0916ece78da4dd0",
     "primary_navigation": ["Dashboard", "Contacts", "Content", "Classroom", "Live Console"],
+    "primary_navigation_live_console_capability_gated": true,
+    "experience_preview_dashboard_capability_gated": true,
     "provider_changed": false,
     "auth_or_access_changed": false,
     "migration_changed": false,
@@ -27,7 +29,7 @@
   "acceptance_results": {
     "ADMIN-IA-001": {
       "status": "passed",
-      "summary": "The Admin application exposes exactly five ordered primary areas, separates utilities, renders one focused workspace section at a time, preserves safe legacy URLs, removes duplicate portal navigation, and keeps role-preview isolation intact.",
+      "summary": "The Admin application exposes the five canonical ordered primary areas when Live Console is ready, removes Live Console from desktop and mobile navigation when the server capability is false, keeps Experience Preview out of the primary rail, restores its capability-gated Dashboard card and CTA on desktop and mobile, separates utilities, renders one focused workspace section at a time, preserves safe legacy URLs, removes duplicate portal navigation, and keeps role-preview isolation intact.",
       "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
       "critical_or_serious_accessibility_violations": 0,
       "horizontal_overflow": false
@@ -40,11 +42,11 @@
     "npm run build",
     "npm run secret:scan",
     "git diff --check",
-    "3 focused Admin IA unit tests passed",
+    "28 of 28 focused Admin IA, capability, and Experience Preview tests passed",
     "75 unit files and 413 unit tests passed on governed descendant 415d7e49d7567d3e211fb725c0916ece78da4dd0",
     "64 integration files and 332 integration tests passed on governed descendant 415d7e49d7567d3e211fb725c0916ece78da4dd0",
-    "2 Admin IA and Experience Preview real Chromium journeys passed across 360x800, 390x844, 768x1024, and 1440x1000",
-    "13 of 13 exact affected Content Factory, portal, Zoom, Rabbi live-console, and W12-03 Chromium journeys passed",
+    "2 of 2 Admin IA and Experience Preview real Chromium journeys passed across 360x800, 390x844, 768x1024, and 1440x1000, including production/provider-off negative navigation coverage",
+    "63 of 63 full Chromium E2E journeys passed serially; the two unrelated Windows parallel-run timing failures were also rerun directly and passed 5 of 5",
     "24 of 24 accessibility journeys passed with zero critical or serious violations",
     "10 of 10 performance journeys and all bundle-size gates passed"
   ],
@@ -96,5 +98,5 @@
     "Post-merge staging deployment and readback are conductor-owned; this task did not deploy production."
   ],
   "blocker": null,
-  "sanitized_at": "2026-07-24T09:55:48Z"
+  "sanitized_at": "2026-07-24T11:04:27Z"
 }
