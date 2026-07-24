@@ -7,7 +7,6 @@ const idSchema = z
   .max(180)
   .regex(/^[A-Za-z0-9][A-Za-z0-9._:-]+$/);
 const sha256Schema = z.string().regex(/^[a-f0-9]{64}$/);
-const safeTextSchema = z.string().trim().max(12_000);
 const normalizedTranscriptSchema = z.string().trim().max(250_000);
 
 export const contentFactoryStateSchema = z.enum([
