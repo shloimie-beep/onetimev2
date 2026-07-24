@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "admin_information_architecture",
+  "task_id": "OT-LAUNCH-01-ADMIN-IA-01",
+  "owner": {
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/admin-workspace-information-architecture",
+    "pr": 118,
+    "system": "Client-focused Administrator information architecture"
+  },
+  "write_scope": "Client-focused Admin information architecture, scoped tests, sanitized browser evidence, and this result handoff; no BOARD, access/auth, GHL, Telegram, Zoom, Vimeo, migration, provider, payment, deployment, credential, or production mutation.",
+  "result": {
+    "status": "implementation_complete",
+    "base_commit": "bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0",
+    "implementation_commit": "9ac871991da7e6c49437a5f692802797e9d5f365",
+    "primary_navigation": [
+      "Dashboard",
+      "Contacts",
+      "Content",
+      "Classroom",
+      "Live Console"
+    ],
+    "provider_changed": false,
+    "auth_or_access_changed": false,
+    "migration_changed": false,
+    "payment_changed": false,
+    "production_changed": false,
+    "protected_value_read_or_recorded": false
+  },
+  "acceptance_results": {
+    "ADMIN-IA-001": {
+      "status": "passed",
+      "summary": "The Admin application exposes exactly five ordered primary areas, separates utilities, renders one focused workspace section at a time, preserves safe legacy URLs, removes duplicate portal navigation, and keeps role-preview isolation intact.",
+      "viewports": [
+        "360x800",
+        "390x844",
+        "768x1024",
+        "1440x1000"
+      ],
+      "critical_or_serious_accessibility_violations": 0,
+      "horizontal_overflow": false
+    }
+  },
+  "verification": [
+    "npm run format",
+    "npm run lint",
+    "npm run brand:check",
+    "npm run build",
+    "npm run secret:scan",
+    "git diff --check",
+    "3 focused Admin IA unit tests passed",
+    "11 focused UI and portal-isolation integration tests passed",
+    "10 Experience Preview security-boundary integration tests passed",
+    "Admin IA and Experience Preview real Chromium journeys passed"
+  ],
+  "evidence": [
+    {
+      "path": "ops/evidence/ot-launch-01-admin-ia-01/admin-dashboard-360x800.png",
+      "kind": "real_chromium_screenshot",
+      "sanitized": true
+    },
+    {
+      "path": "ops/evidence/ot-launch-01-admin-ia-01/admin-dashboard-390x844.png",
+      "kind": "real_chromium_screenshot",
+      "sanitized": true
+    },
+    {
+      "path": "ops/evidence/ot-launch-01-admin-ia-01/admin-dashboard-768x1024.png",
+      "kind": "real_chromium_screenshot",
+      "sanitized": true
+    },
+    {
+      "path": "ops/evidence/ot-launch-01-admin-ia-01/admin-dashboard-1440x1000.png",
+      "kind": "real_chromium_screenshot",
+      "sanitized": true
+    },
+    {
+      "path": "tests/e2e/admin-information-architecture.spec.ts",
+      "kind": "real_chromium_navigation_responsiveness_and_accessibility_contract",
+      "sanitized": true
+    },
+    {
+      "path": "tests/e2e/experience-preview.spec.ts",
+      "kind": "real_chromium_preview_isolation_contract",
+      "sanitized": true
+    },
+    {
+      "path": "tests/integration/security/portal-isolation-boundaries.test.ts",
+      "kind": "existing_portal_authorization_isolation_contract",
+      "sanitized": true
+    }
+  ],
+  "remaining_work": [
+    "Conductor review and merge into codex/full-app-staging-live.",
+    "Post-merge staging deployment and readback are conductor-owned; this task did not deploy production."
+  ],
+  "blocker": null,
+  "sanitized_at": "2026-07-24T08:21:02Z"
+}
