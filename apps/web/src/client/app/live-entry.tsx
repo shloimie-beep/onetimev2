@@ -28,6 +28,7 @@ type ApiSession = {
   capabilities?: {
     operator_experience?: {
       experience_preview?: boolean;
+      live_console?: boolean;
     };
   };
 };
@@ -95,7 +96,10 @@ function LiveConsole() {
     }
   }
 
-  const navItems: ShellNavItem[] = adminPrimaryNav('live-console');
+  const navItems: ShellNavItem[] = adminPrimaryNav(
+    'live-console',
+    session?.capabilities?.operator_experience?.live_console === true,
+  );
   const utilityItems: ShellNavItem[] = [
     { id: 'launch-status', label: 'Launch Status', href: '/app/launch-status', current: false },
     ...(session?.capabilities?.operator_experience?.experience_preview

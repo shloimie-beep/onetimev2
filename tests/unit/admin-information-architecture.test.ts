@@ -18,7 +18,7 @@ import {
 } from '../../apps/web/src/client/app/admin-ia.ts';
 
 describe('OT-LAUNCH-01 Admin information architecture', () => {
-  it('keeps exactly five primary Admin areas in the governed order', () => {
+  it('keeps five canonical Admin areas and gates Live Console by server readiness', () => {
     expect(ADMIN_PRIMARY_AREAS).toEqual([
       { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
       { id: 'contacts', label: 'Contacts', href: '/app/crm' },
@@ -26,8 +26,14 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       { id: 'classroom', label: 'Classroom', href: '/app/classes' },
       { id: 'live-console', label: 'Live Console', href: '/app/live-console' },
     ]);
-    expect(adminPrimaryNav('content').filter((item) => item.current)).toEqual([
+    expect(adminPrimaryNav('content', true).filter((item) => item.current)).toEqual([
       { id: 'content', label: 'Content', href: '/app/content', current: true },
+    ]);
+    expect(adminPrimaryNav('content', false).map((item) => item.label)).toEqual([
+      'Dashboard',
+      'Contacts',
+      'Content',
+      'Classroom',
     ]);
   });
 

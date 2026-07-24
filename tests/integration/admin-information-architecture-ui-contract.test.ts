@@ -15,10 +15,11 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
   it('separates operating areas from utility destinations', () => {
     expect(shell).toContain('label="One Time app"');
     expect(shell).toContain('label="One Time utilities"');
-    expect(crm).toContain('adminPrimaryNav(adminCurrentArea)');
+    expect(crm).toContain('adminPrimaryNav(adminCurrentArea, liveConsoleReady)');
+    expect(crm).toContain('session?.capabilities?.operator_experience?.live_console === true');
     expect(crm).toContain('utilityItems={utilityItems}');
     expect(crm).toContain('className="dashboard-overview-list"');
-    expect(crm).not.toContain('dashboard.open_experience_preview.button');
+    expect(crm).toContain('dashboard.open_experience_preview.button');
   });
 
   it('folds legacy content and classroom destinations into focused workspaces', () => {

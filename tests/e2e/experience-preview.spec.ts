@@ -92,7 +92,10 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   await appNavigation.getByRole('link', { name: 'Dashboard' }).click();
   await expect(page).toHaveURL(`${staging.baseUrl}/app/dashboard`);
-  await utilityNavigation.getByRole('link', { name: 'Experience Preview' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Open portal preview' }).click();
   await expect(page).toHaveURL(`${staging.baseUrl}/app/experience-preview`);
   await expect(
     page.getByRole('heading', {
@@ -159,11 +162,10 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   ).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   await page.goto(`${staging.baseUrl}/app/dashboard`);
-  await page.getByRole('button', { name: 'Open navigation' }).click();
-  await page
-    .getByRole('dialog', { name: 'One Time navigation' })
-    .getByRole('link', { name: 'Experience Preview' })
-    .click();
+  await expect(
+    page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Open portal preview' }).click();
   await expect(
     page.getByRole('heading', {
       name: 'The Cohen Family — One Time launch walkthrough',
@@ -198,10 +200,24 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
     productionPage.getByRole('progressbar', { name: 'Current launch milestone progress' }),
   ).toBeVisible();
   await productionPage.goto(`${production.baseUrl}/app/dashboard`);
+  await expect(
+    productionPage.getByRole('heading', { name: 'Preview Parent & Student portals' }),
+  ).toHaveCount(0);
+  await expect(productionPage.getByRole('button', { name: 'Open portal preview' })).toHaveCount(0);
   await expect(productionPage.getByRole('link', { name: 'Experience Preview' })).toHaveCount(0);
   await expect(
     productionPage.getByLabel('One Time app').getByRole('link', { name: 'Live Console' }),
-  ).toBeVisible();
+  ).toHaveCount(0);
+  await productionPage.setViewportSize({ width: 360, height: 800 });
+  await productionPage.getByRole('button', { name: 'Open navigation' }).click();
+  const productionDrawer = productionPage.getByRole('dialog', {
+    name: 'One Time navigation',
+  });
+  await expect(
+    productionDrawer.getByLabel('One Time app').getByRole('link').allTextContents(),
+  ).resolves.toEqual(['Dashboard', 'Contacts', 'Content', 'Classroom']);
+  await expect(productionDrawer.getByRole('link', { name: 'Experience Preview' })).toHaveCount(0);
+  await productionDrawer.getByRole('button', { name: 'Close navigation' }).click();
   const rejected = await productionPage.goto(`${production.baseUrl}/app/experience-preview`);
   expect(rejected?.status()).toBe(404);
   await productionContext.close();

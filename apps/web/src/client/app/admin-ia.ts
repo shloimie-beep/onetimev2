@@ -66,11 +66,13 @@ export const LIVE_CONSOLE_SECTIONS = [
 
 export type LiveConsoleSectionId = (typeof LIVE_CONSOLE_SECTIONS)[number]['id'];
 
-export function adminPrimaryNav(currentId: AdminPrimaryAreaId | null) {
-  return ADMIN_PRIMARY_AREAS.map((item) => ({
-    ...item,
-    current: item.id === currentId,
-  }));
+export function adminPrimaryNav(currentId: AdminPrimaryAreaId | null, liveConsoleReady: boolean) {
+  return ADMIN_PRIMARY_AREAS.filter((item) => item.id !== 'live-console' || liveConsoleReady).map(
+    (item) => ({
+      ...item,
+      current: item.id === currentId,
+    }),
+  );
 }
 
 export function dashboardSectionFromPath(pathname: string): DashboardSectionId {

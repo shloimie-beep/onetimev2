@@ -9,7 +9,7 @@ import type {
   OwnerDashboardResponse,
   SessionUser,
 } from '@onetime/contracts';
-import { Card, EmptyState, Select } from '@onetime/brand-system/react';
+import { Button, Card, EmptyState, Select } from '@onetime/brand-system/react';
 import {
   CLASSROOM_SECTIONS,
   CONTACTS_SECTIONS,
@@ -716,8 +716,9 @@ function CrmApp() {
           : surface === 'classes'
             ? 'classroom'
             : null;
+  const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
   const navItems: ShellNavItem[] = canReadOwnerShell
-    ? adminPrimaryNav(adminCurrentArea)
+    ? adminPrimaryNav(adminCurrentArea, liveConsoleReady)
     : canReadCrm
       ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
       : [];
@@ -874,7 +875,13 @@ function CrmApp() {
           loading={dashboardState.loading}
           error={dashboardState.error}
           section={dashboardSection}
+          showExperiencePreview={
+            session?.capabilities?.operator_experience?.experience_preview === true
+          }
           onNavigate={(href) => openOwnerSurface('dashboard', href)}
+          onOpenExperiencePreview={() =>
+            openOwnerSurface('experience-preview', '/app/experience-preview')
+          }
           onRetry={() => void loadDashboard()}
         />
       )}
@@ -1088,14 +1095,18 @@ function DashboardPanel({
   loading,
   error,
   section,
+  showExperiencePreview,
   onNavigate,
+  onOpenExperiencePreview,
   onRetry,
 }: {
   dashboard: OwnerDashboardResponse | null;
   loading: boolean;
   error: string;
   section: DashboardSectionId;
+  showExperiencePreview: boolean;
   onNavigate: (href: string) => void;
+  onOpenExperiencePreview: () => void;
   onRetry: () => void;
 }) {
   return (
@@ -1130,32 +1141,51 @@ function DashboardPanel({
           onAction={onRetry}
         />
       ) : (
-        <Card className="dashboard-overview-card">
-          <h2>Workspace overview</h2>
-          <ul className="dashboard-overview-list">
-            {dashboard.dashboard.sections
-              .filter(
-                (item) =>
-                  !(
-                    item.id === 'support' &&
-                    item.state === 'no_data_yet' &&
-                    /not mounted|not available/i.test(item.detail)
-                  ),
-              )
-              .map((item) => (
-                <li key={item.id}>
-                  <span>
-                    <strong>{item.label}</strong>
-                    <small>{item.detail}</small>
-                  </span>
-                  <span>
-                    <Chip label={productStateLabel(item.state)} tone="status" />
-                    <strong>{item.value_label}</strong>
-                  </span>
-                </li>
-              ))}
-          </ul>
-        </Card>
+        <>
+          <Card className="dashboard-overview-card">
+            <h2>Workspace overview</h2>
+            <ul className="dashboard-overview-list">
+              {dashboard.dashboard.sections
+                .filter(
+                  (item) =>
+                    !(
+                      item.id === 'support' &&
+                      item.state === 'no_data_yet' &&
+                      /not mounted|not available/i.test(item.detail)
+                    ),
+                )
+                .map((item) => (
+                  <li key={item.id}>
+                    <span>
+                      <strong>{item.label}</strong>
+                      <small>{item.detail}</small>
+                    </span>
+                    <span>
+                      <Chip label={productStateLabel(item.state)} tone="status" />
+                      <strong>{item.value_label}</strong>
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </Card>
+          {showExperiencePreview && (
+            <Card className="experience-preview-dashboard-card">
+              <h2>Preview Parent &amp; Student portals</h2>
+              <p>
+                Walk through the fictional Cohen household without replacing this Administrator
+                session.
+              </p>
+              <Button
+                type="button"
+                variant="primary"
+                data-action-id="dashboard.open_experience_preview.button"
+                onClick={onOpenExperiencePreview}
+              >
+                Open portal preview
+              </Button>
+            </Card>
+          )}
+        </>
       )}
     </section>
   );
