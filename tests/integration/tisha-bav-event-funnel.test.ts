@@ -3,7 +3,11 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
-import type { TishaBavRegistrationPayload } from '../../packages/contracts/src/index.ts';
+import {
+  highLevelOutboundEventSchema,
+  type HighLevelOutboundEvent,
+  type TishaBavRegistrationPayload,
+} from '../../packages/contracts/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import {
   captureTishaBavRegistration,
@@ -26,6 +30,12 @@ let pool: DbPool;
 
 const openWindow = new Date('2026-07-23T18:30:00.000Z');
 const beforeWindow = new Date('2026-07-23T18:00:00.000Z');
+const eventPayloadTamperCases: Array<[string, (event: HighLevelOutboundEvent) => void]> = [
+  ['account', (event) => (event.scope.account_key = 'wrong-account')],
+  ['product', (event) => (event.scope.product_key = 'wrong-product')],
+  ['location', (event) => (event.scope.location_id = 'wrong-location')],
+  ['contact', (event) => (event.adult_contact.contact_key = 'wrong-contact')],
+];
 
 beforeEach(async () => {
   pool = createMemoryPool();
@@ -742,6 +752,75 @@ describe('Tisha BAv event-only email permission convergence', () => {
     });
   });
 
+  it.each(eventPayloadTamperCases)(
+    'rejects a held event whose %s payload scope disagrees with the claimed row',
+    async (label, tamper) => {
+      const fixture = await eligibilityFixture(`prepare-scope-${label}`);
+      const deliveryKey = await registrationDeliveryKey(fixture.registrationKey);
+      const config = canaryConfig(deliveryKey, `prepare-scope-${label}-run`);
+      const event = await readHighLevelEventPayload(deliveryKey);
+      tamper(event);
+      await writeHighLevelEventPayload(deliveryKey, event);
+
+      await expect(
+        prepareEventRegistrationCanary({ pool, config, deliveryKey, now: openWindow }),
+      ).resolves.toEqual({
+        prepared: false,
+        reason: 'event_scope_mismatch',
+      });
+      expect(await outboxAuthorizationState(deliveryKey)).toEqual({
+        status: 'pending',
+        transport_mode: 'disabled',
+        transport_authorization_state: 'held',
+      });
+      const run = await pool.query(
+        `SELECT run_id FROM onetime.highlevel_canary_runs
+          WHERE account_key = $1 AND product_key = $2 AND run_id = $3`,
+        [config.accountKey, config.productKey, config.highLevelCanaryRunId],
+      );
+      expect(run.rows).toHaveLength(0);
+    },
+  );
+
+  it.each(eventPayloadTamperCases)(
+    'revokes an authorized event whose %s payload scope changes before provider dispatch',
+    async (label, tamper) => {
+      const fixture = await eligibilityFixture(`dispatch-scope-${label}`);
+      const deliveryKey = await registrationDeliveryKey(fixture.registrationKey);
+      const config = canaryConfig(deliveryKey, `dispatch-scope-${label}-run`);
+      await expect(
+        prepareEventRegistrationCanary({ pool, config, deliveryKey, now: openWindow }),
+      ).resolves.toMatchObject({ prepared: true });
+      const event = await readHighLevelEventPayload(deliveryKey);
+      tamper(event);
+      await writeHighLevelEventPayload(deliveryKey, event);
+      const adapter = new DeterministicFakeHighLevelAdapter();
+
+      await expect(
+        runHighLevelProjectionBatch({ pool, config, adapter, now: openWindow }),
+      ).resolves.toMatchObject({
+        claimed: 1,
+        delivered: 0,
+        quarantined: 1,
+        adapterCalls: 0,
+      });
+      expect(adapter.upsertCalls).toHaveLength(0);
+      expect(adapter.calls).toHaveLength(0);
+      expect(await outboxAuthorizationState(deliveryKey)).toEqual({
+        status: 'dead_letter',
+        transport_mode: 'mock',
+        transport_authorization_state: 'revoked',
+      });
+      const audit = await revocationAudit(deliveryKey);
+      expect(audit).toMatchObject({
+        eligibility_reason: 'payload_scope_mismatch',
+        provider_effect_performed: false,
+        provider_effect_stage: 'none',
+        tags_written: false,
+      });
+    },
+  );
+
   it('rejects prior receipts, attempts, non-pristine rows, and stored canary-run mismatches', async () => {
     const prior = await eligibilityFixture('canary-prior-receipt');
     const priorDeliveryKey = await registrationDeliveryKey(prior.registrationKey);
@@ -962,6 +1041,13 @@ describe('Tisha BAv event-only email permission convergence', () => {
         transport_authorization_state: 'revoked',
       },
     ]);
+    expect(await revocationAudit(deliveryKey)).toMatchObject({
+      eligibility_reason: 'complaint',
+      provider_effect_performed: true,
+      provider_effect_stage: 'contact_upsert_completed',
+      tags_written: false,
+      retry_authorized: false,
+    });
   });
 
   it.each([
@@ -1497,6 +1583,50 @@ async function registrationDeliveryKey(registrationKey: string) {
     [registrationKey],
   );
   return String(result.rows[0]?.delivery_key);
+}
+
+async function readHighLevelEventPayload(deliveryKey: string) {
+  const result = await pool.query<{ payload: unknown }>(
+    `SELECT payload FROM onetime.outbox_events WHERE delivery_key = $1`,
+    [deliveryKey],
+  );
+  return highLevelOutboundEventSchema.parse(result.rows[0]?.payload);
+}
+
+async function writeHighLevelEventPayload(deliveryKey: string, event: HighLevelOutboundEvent) {
+  await pool.query(`UPDATE onetime.outbox_events SET payload = $2::jsonb WHERE delivery_key = $1`, [
+    deliveryKey,
+    JSON.stringify(event),
+  ]);
+}
+
+async function outboxAuthorizationState(deliveryKey: string) {
+  const result = await pool.query<{
+    status: string;
+    transport_mode: string;
+    transport_authorization_state: string;
+  }>(
+    `SELECT status, transport_mode, transport_authorization_state
+       FROM onetime.outbox_events
+      WHERE delivery_key = $1`,
+    [deliveryKey],
+  );
+  return result.rows[0];
+}
+
+async function revocationAudit(deliveryKey: string) {
+  const result = await pool.query<{ metadata: unknown }>(
+    `SELECT metadata
+       FROM onetime.audit_events
+      WHERE event_type = 'event_registration_highlevel_revoked'
+        AND metadata->>'delivery_key' = $1
+      LIMIT 1`,
+    [deliveryKey],
+  );
+  const metadata = result.rows[0]?.metadata;
+  return typeof metadata === 'string'
+    ? (JSON.parse(metadata) as Record<string, unknown>)
+    : (metadata as Record<string, unknown> | undefined);
 }
 
 async function expectEligibility(registrationKey: string, contactKey: string, reason: string) {
