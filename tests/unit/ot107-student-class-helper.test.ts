@@ -154,6 +154,162 @@ describe('OT-107 student Class Helper', () => {
     });
   });
 
+  it.each([
+    ['scheme Zoom URL', 'https://zoom.us/j/123456789?pwd=forbidden-value'],
+    ['schemeless Zoom URL', 'zoom.us/j/123456789?pwd=forbidden-value'],
+    ['protocol-relative Zoom URL', '//us02web.zoom.us/j/123456789'],
+    ['encoded schemeless Zoom URL', 'zoom%2Eus%2Fj%2F123456789'],
+    ['scheme Vimeo URL', 'https://player.vimeo.com/video/123456?h=forbidden-value'],
+    ['schemeless Vimeo URL', 'player.vimeo.com/video/123456'],
+    ['protected API key assignment', 'api_key=forbidden-value'],
+    ['protected API key label', 'API key forbidden-value'],
+    ['protected passcode assignment', 'passcode: forbidden-value'],
+    ['protected passcode label', 'passcode 123456'],
+    ['protected token query', '?token=forbidden-value'],
+  ])('fails closed when approved source body contains a %s', async (_label, unsafeValue) => {
+    const pool = fakeHelperPool();
+    pool.setSourceProjection({
+      body: `The opening idea is to review the Mishnah carefully. ${unsafeValue}`,
+    });
+    const helper = createStudentClassHelperAdapter({
+      pool,
+      config: { accountKey: 'one_time', productKey: 'one_time_mishnah_class' },
+      rateLimitStore: permissiveRateLimitStore(),
+      clock: () => now,
+    });
+
+    const result = await helper.query?.({
+      actor: studentActor(),
+      learner: learner(),
+      payload: {
+        idempotency_key: `helper-query-unsafe-body-${fingerprintForTest(unsafeValue)}`,
+        question: 'What is the opening idea?',
+      },
+    });
+
+    expect(result).toMatchObject({
+      answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+      abstained: true,
+      safe_reason_code: 'unsafe_source_content',
+      citations: [],
+      source_refs: [],
+      provider_mode: 'provider_off',
+    });
+    expect(JSON.stringify(result)).not.toContain('forbidden-value');
+    expect(JSON.stringify(result)).not.toMatch(
+      /(?:https?:)?\/\/|zoom\.us|vimeo\.com|api[_ ]?key|passcode\s*[:=]?\s*\d|[?&]token=/i,
+    );
+  });
+
+  it.each([
+    ['scheme URL title', 'Review at https://zoom.us/j/123456789'],
+    ['schemeless URL title', 'Review at player.vimeo.com/video/123456'],
+    ['secret-bearing title', 'Lesson passcode 123456'],
+  ])('fails closed when an approved citation has a %s', async (_label, unsafeTitle) => {
+    const pool = fakeHelperPool();
+    pool.setSourceProjection({ title: unsafeTitle });
+    const helper = createStudentClassHelperAdapter({
+      pool,
+      config: { accountKey: 'one_time', productKey: 'one_time_mishnah_class' },
+      rateLimitStore: permissiveRateLimitStore(),
+      clock: () => now,
+    });
+
+    const result = await helper.query?.({
+      actor: studentActor(),
+      learner: learner(),
+      payload: {
+        idempotency_key: `helper-query-unsafe-title-${fingerprintForTest(unsafeTitle)}`,
+        question: 'What is the opening idea?',
+      },
+    });
+
+    expect(result).toMatchObject({
+      answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+      abstained: true,
+      safe_reason_code: 'unsafe_source_content',
+      citations: [],
+      source_refs: [],
+    });
+    expect(JSON.stringify(result)).not.toContain(unsafeTitle);
+  });
+
+  it('fails closed for a same-origin but non-allowlisted or protected citation deep link', async () => {
+    for (const deepLink of [
+      '/app/admin#section-private',
+      '/library/classes/content_001?token=forbidden-value#section-section_001',
+    ]) {
+      const pool = fakeHelperPool();
+      pool.setSourceProjection({ deepLink });
+      const helper = createStudentClassHelperAdapter({
+        pool,
+        config: { accountKey: 'one_time', productKey: 'one_time_mishnah_class' },
+        rateLimitStore: permissiveRateLimitStore(),
+        clock: () => now,
+      });
+
+      const result = await helper.query?.({
+        actor: studentActor(),
+        learner: learner(),
+        payload: {
+          idempotency_key: `helper-query-unsafe-deep-link-${fingerprintForTest(deepLink)}`,
+          question: 'What is the opening idea?',
+        },
+      });
+
+      expect(result).toMatchObject({
+        answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+        abstained: true,
+        safe_reason_code: 'unsafe_source_content',
+        citations: [],
+        source_refs: [],
+      });
+      expect(JSON.stringify(result)).not.toContain(deepLink);
+      expect(JSON.stringify(result)).not.toContain('forbidden-value');
+    }
+  });
+
+  it('revalidates and sanitizes citation labels after provider work before building source refs', async () => {
+    const pool = fakeHelperPool();
+    const helper = createStudentClassHelperAdapter({
+      pool,
+      config: { accountKey: 'one_time', productKey: 'one_time_mishnah_class' },
+      rateLimitStore: permissiveRateLimitStore(),
+      provider: {
+        mode: 'ready',
+        answer: async ({ retrieval }) => {
+          pool.setSourceProjection({
+            title: 'Review at player.vimeo.com/video/forbidden-value',
+          });
+          return {
+            answer: retrieval.answer,
+            citations: retrieval.citations,
+            safe_reason_code: retrieval.safe_reason_code,
+          };
+        },
+      },
+      clock: () => now,
+    });
+
+    const result = await helper.query?.({
+      actor: studentActor(),
+      learner: learner(),
+      payload: {
+        idempotency_key: 'helper-query-post-provider-title-redaction',
+        question: 'What is the opening idea?',
+      },
+    });
+
+    expect(result).toMatchObject({
+      answer: STUDENT_CLASS_HELPER_NO_SOURCE,
+      abstained: true,
+      safe_reason_code: 'unsafe_source_content',
+      citations: [],
+      source_refs: [],
+    });
+    expect(JSON.stringify(result)).not.toMatch(/vimeo|forbidden-value/i);
+  });
+
   it('rate-limits per learner without storing prompt bodies', async () => {
     const pool = fakeHelperPool();
     const helper = createStudentClassHelperAdapter({
@@ -527,6 +683,9 @@ function fakeHelperPool() {
   let contentApproved = true;
   let learnerActive = true;
   let versionActive = true;
+  let sourceTitle = 'Opening idea';
+  let sourceBody = 'The opening idea is to review the Mishnah carefully before answering.';
+  let sourceDeepLink = '/library/classes/content_001#section-section_001';
   const pool = {
     auditParams,
     setAccessActive(value: boolean) {
@@ -540,6 +699,11 @@ function fakeHelperPool() {
     },
     setVersionActive(value: boolean) {
       versionActive = value;
+    },
+    setSourceProjection(value: { title?: string; body?: string; deepLink?: string }) {
+      sourceTitle = value.title ?? sourceTitle;
+      sourceBody = value.body ?? sourceBody;
+      sourceDeepLink = value.deepLink ?? sourceDeepLink;
     },
     query: async (sql: string, params?: unknown[]) => {
       if (sql.includes('FROM onetime.portal_learners AS learners')) {
@@ -594,8 +758,8 @@ function fakeHelperPool() {
                   content_id: 'content_001',
                   version_id: 'version_001',
                   section_id: 'section_001',
-                  section_title: 'Opening idea',
-                  deep_link: '/library/classes/content_001#section-section_001',
+                  section_title: sourceTitle,
+                  deep_link: sourceDeepLink,
                   section_sha256: 'a'.repeat(64),
                 },
               ],
@@ -615,10 +779,10 @@ function fakeHelperPool() {
               content_id: 'content_001',
               version_id: 'version_001',
               section_id: 'section_001',
-              title: 'Opening idea',
-              body: 'The opening idea is to review the Mishnah carefully before answering.',
+              title: sourceTitle,
+              body: sourceBody,
               document_sha256: 'c'.repeat(64),
-              deep_link: '/library/classes/content_001#section-section_001',
+              deep_link: sourceDeepLink,
               text_sha256: 'a'.repeat(64),
               active_state: 'active',
               privacy_json: {},
@@ -644,7 +808,12 @@ function fakeHelperPool() {
     setContentApproved(value: boolean): void;
     setLearnerActive(value: boolean): void;
     setVersionActive(value: boolean): void;
+    setSourceProjection(value: { title?: string; body?: string; deepLink?: string }): void;
   };
+}
+
+function fingerprintForTest(value: string) {
+  return Buffer.from(value).toString('hex').slice(0, 24);
 }
 
 function permissiveRateLimitStore() {

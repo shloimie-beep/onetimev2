@@ -14,6 +14,11 @@ import {
 } from '../../../contracts/src/content/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
+import {
+  SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+  containsProtectedScopedKnowledgeMaterial,
+  sanitizeScopedKnowledgeProjection,
+} from './scoped-knowledge-redaction.ts';
 
 export class Ot86ContentPipelineError extends Error {
   constructor(
@@ -717,11 +722,37 @@ export async function retrieveOt86ApprovedContent(
     deep_link: String(row.deep_link),
     section_sha256: String(row.text_sha256),
   }));
-  const response = ot86RetrievalResponseSchema.parse({
+  const selectedSourceContainsProtectedMaterial = ranked.some(({ row }) =>
+    [row.body, row.title, row.deep_link].some((value) =>
+      containsProtectedScopedKnowledgeMaterial(String(value ?? '')),
+    ),
+  );
+  const safeProjection = sanitizeScopedKnowledgeProjection({
     answer: safeAnswerFromSource(String(ranked[0]?.row.body ?? '')),
+    citations,
+  });
+  if (selectedSourceContainsProtectedMaterial || !safeProjection.safe) {
+    return recordRetrievalAndReturn(input.pool, {
+      tenantId: input.tenantId,
+      principalId: input.principalId,
+      entitlementScope: 'content_list',
+      authorizationDecisionId,
+      outcome: 'abstained',
+      safeReasonCode: SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+      latencyMs: Date.now() - started,
+      response: abstention(
+        SCOPED_KNOWLEDGE_UNSAFE_SOURCE_REASON,
+        authorizationDecisionId,
+        input.correlationId,
+      ),
+      now,
+    });
+  }
+  const response = ot86RetrievalResponseSchema.parse({
+    answer: safeProjection.answer,
     abstained: false,
     safe_reason_code: 'supported_by_approved_section',
-    citations,
+    citations: safeProjection.citations,
     authorization_decision_id: authorizationDecisionId,
     correlation_id: input.correlationId,
   });
