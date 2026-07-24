@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T07:20:49Z
+updated_at: 2026-07-24T07:35:00Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -785,9 +785,11 @@ tracks:
       - 'Fresh exact-source audit at ad407005a336fbee9ed1fcc47ca124969ec881b0 isolates one safe code prerequisite that does not need protected values: the real role-0 Student payload/SDK branch must be wired through the normal Student launch route, not the Owner/Admin diagnostic harness. This repair can proceed with sink/real-provider-false/canary-false and no provider call.'
       - 'That provider-off code prerequisite is complete and independently accepted at PR #97 source 4d484c167ab332a6f82b97c7fc4f758c58bb391b. The exact web/worker deployment is healthy, the fake Rabbi flow and sink adapter remain intact, and all real Zoom values/gates remain absent or off with zero provider effects.'
       - 'The read-only classifier is independently accepted and deployed at PR #97 source 662298075a250d2a2e6e21decf8d5aa9a83f86f3. Its exact server-side proof classified the exposed protected reference as the Tisha event meeting before provider construction with OAuth=0, meeting GET=0, mutations=0; the disposable sandbox is destroyed and production is unchanged.'
+      - 'The resumed Zoom executor reconfirmed PROTECTED_CLASS_TARGET_ROTATION_BLOCKED for the only currently protected staging class target and left every real gate off with zero Zoom/Railway mutation. That target remains the forbidden Tisha event meeting and cannot be used as the classroom canary.'
+      - 'Decision zoom-distinct-disposable-isolated-canary-20260724 now authorizes exactly one new operator-owned disposable classroom meeting only in the isolated PR #105 proof environment, with no customer invite, no persistent-staging or production variable change, exact fictional Student 1 scope, sanitized evidence, and cleanup of only the disposable canary.'
     blocker: null
-    remaining_work: 'The provider executor must provision a new disposable canary meeting that is canonically distinct from the protected Tisha event meeting, validate protected prerequisite sources by exact-name presence only, add the exact staging origin, install staging-only values, run the human host/Student 1 canary plus denial/replay cases, return all real/canary gates off, and commit one sanitized result.'
-    next_action: 'Use the approved protected S2S/host source to provision one distinct disposable Student 1 canary meeting; keep the Tisha event target excluded and every runtime real/canary gate off until the installation preflight passes.'
+    remaining_work: 'The provider executor must create exactly one distinct disposable meeting in the isolated PR #105 environment, validate protected prerequisites by exact-name presence only, run the bounded human host/Student 1 control and denial/replay proof, sanitize readback, delete only the disposable meeting/canary configuration, and confirm persistent staging, production, the Tisha event meeting, and all customer communication remain unchanged.'
+    next_action: 'Execute the newly canonicalized isolated-only disposable-meeting decision; stop for human verification rather than bypass it, and do not install or change persistent-staging or production variables.'
 
   - id: bna_foundation
     status: done
