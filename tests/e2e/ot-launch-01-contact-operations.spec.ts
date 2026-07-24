@@ -19,6 +19,8 @@ test('Admin runs one-button Parent household enrollment and protected Contacts o
 
   await page.goto('/app/crm');
   await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await page.getByLabel('Search').fill('Contact Operations Parent');
+  await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('button', { name: 'Open Contact Operations Parent' }).click();
   await expect(page.getByRole('heading', { name: 'Contact Operations Parent' })).toBeVisible();
   const existingResponse = page.waitForResponse(
@@ -146,6 +148,8 @@ test('Admin reaches the existing Parent household naturally from Contacts on mob
   ]);
 
   await page.goto('/app/crm');
+  await page.getByLabel('Search').fill('Contact Operations Parent');
+  await page.getByRole('button', { name: 'Apply' }).click();
   await page.getByRole('button', { name: /^Contact Operations Parent / }).click();
   await expect(page.getByRole('heading', { name: 'Contact Operations Parent' })).toBeVisible();
   await page.getByRole('button', { name: 'Manage household' }).click();
