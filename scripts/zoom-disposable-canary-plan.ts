@@ -1,6 +1,9 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
-import { ZOOM_ISOLATED_CANARY_AGENDA } from '../packages/domain/src/providers/zoom-rest.ts';
+import {
+  ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD as REVIEWED_ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+  ZOOM_ISOLATED_CANARY_AGENDA,
+} from '../packages/domain/src/providers/zoom-rest.ts';
 
 export const ZOOM_DISPOSABLE_CANARY_ORIGIN = 'https://ot99-web-onetimev2-pr-105.up.railway.app';
 export const ZOOM_DISPOSABLE_CANARY_ATTESTATION =
@@ -8,6 +11,10 @@ export const ZOOM_DISPOSABLE_CANARY_ATTESTATION =
 export const ZOOM_DISPOSABLE_CANARY_PROVISION_AUTHORIZATION = 'PROVISION_FICTIONAL_STUDENT_1_ONCE';
 export const ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION =
   'DELETE_ONE_CREATED_PR105_DISPOSABLE_MEETING_ONCE';
+export const ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD =
+  REVIEWED_ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD;
+export const ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION =
+  'RECONCILE_DELETE_ONE_EXISTING_PR105_96E54D_MEETING_ONCE';
 export const ZOOM_DISPOSABLE_CANARY_LEARNER_KEY = 'full_app_preview_student_1';
 export const ZOOM_DISPOSABLE_CANARY_PURPOSE = 'distinct_disposable_pr105_canary';
 export const ZOOM_DISPOSABLE_CANARY_TOPIC_PREFIX = 'One Time PR105 disposable control ';
@@ -54,6 +61,7 @@ const allowedStateKeys = new Set([
   'registration_disabled_for_sdk_join',
   'registrants',
   'failure_category',
+  'reconciliation_repair_head',
   'deleted_at',
   'state_mac',
 ]);
@@ -103,6 +111,7 @@ export type ZoomDisposableCanaryStatePayload = {
     registrant_token_ref: string;
   }>;
   failure_category?: ZoomDisposableCanaryFailureCategory | undefined;
+  reconciliation_repair_head?: string | undefined;
   deleted_at?: string | undefined;
 };
 
@@ -118,6 +127,10 @@ export type ZoomDisposableCanaryPreflight = {
   keyholderDir: string;
   learnerKey: typeof ZOOM_DISPOSABLE_CANARY_LEARNER_KEY;
   cleanupDeadline?: string | undefined;
+};
+
+export type ZoomDisposableCanaryReconciliationPreflight = ZoomDisposableCanaryPreflight & {
+  repairHead: string;
 };
 
 export function assertZoomDisposableCanaryProvisionPreflight(
@@ -161,6 +174,45 @@ export function assertZoomDisposableCanaryCleanupPreflight(
     fail('PROVISION_AUTHORIZATION_MUST_BE_CLEARED');
   }
   return shared;
+}
+
+export function assertZoomDisposableCanaryReconciliationPreflight(
+  source: NodeJS.ProcessEnv,
+  options: { repositoryRoot?: string } = {},
+): ZoomDisposableCanaryReconciliationPreflight {
+  const shared = assertSharedIsolationAndScope(source, options.repositoryRoot);
+  requireExact(
+    source,
+    'ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA',
+    ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+  );
+  requireExact(
+    source,
+    'ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION',
+    ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION,
+  );
+  requireExact(
+    source,
+    'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION',
+    ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION,
+  );
+  if (hasBoundInput(source, 'ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION')) {
+    fail('PROVISION_AUTHORIZATION_MUST_BE_CLEARED');
+  }
+  const repairHead = requireValue(source, 'ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA');
+  const deployedHead = requireValue(source, 'RAILWAY_GIT_COMMIT_SHA');
+  if (
+    !fullSha.test(repairHead) ||
+    repairHead === ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD ||
+    repairHead !== deployedHead
+  ) {
+    fail('REPAIR_SOURCE_SHA');
+  }
+  return {
+    ...shared,
+    executionHead: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+    repairHead,
+  };
 }
 
 export function createZoomDisposableCanaryIntent(input: {
@@ -211,6 +263,7 @@ export function transitionZoomDisposableCanaryState(
       | 'registration_disabled_for_sdk_join'
       | 'registrants'
       | 'failure_category'
+      | 'reconciliation_repair_head'
       | 'deleted_at'
     >
   >,
@@ -295,6 +348,50 @@ export function assertZoomDisposableCanaryJournal(states: ZoomDisposableCanarySt
   return states.at(-1)!;
 }
 
+export function assertZoomDisposableCanaryReconciliationJournal(
+  states: ZoomDisposableCanaryState[],
+  expectedRepairHead?: string | undefined,
+) {
+  const current = assertZoomDisposableCanaryJournal(states);
+  if (current.execution_head !== ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD) {
+    failState('RECONCILIATION_SOURCE');
+  }
+  if (
+    current.phase === 'cleanup_required' &&
+    current.sequence === 4 &&
+    current.failure_category === 'registration_outcome_ambiguous' &&
+    current.registrants.length === 0 &&
+    current.registration_disabled_for_sdk_join === undefined
+  ) {
+    return current;
+  }
+  if (
+    current.phase === 'cleanup_delete_in_flight' &&
+    current.sequence === 5 &&
+    current.failure_category === 'registration_outcome_ambiguous' &&
+    fullSha.test(current.reconciliation_repair_head ?? '') &&
+    current.reconciliation_repair_head !== ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD &&
+    (expectedRepairHead === undefined ||
+      current.reconciliation_repair_head === expectedRepairHead) &&
+    current.registrants.length === 0
+  ) {
+    return current;
+  }
+  if (
+    current.phase === 'deleted' &&
+    current.sequence === 6 &&
+    fullSha.test(current.reconciliation_repair_head ?? '') &&
+    current.reconciliation_repair_head !== ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD &&
+    (expectedRepairHead === undefined ||
+      current.reconciliation_repair_head === expectedRepairHead) &&
+    current.registrants.length === 0 &&
+    current.deleted_at !== undefined
+  ) {
+    return current;
+  }
+  failState('RECONCILIATION_STATE');
+}
+
 function assertAllowedTransition(from: ZoomDisposableCanaryPhase, to: ZoomDisposableCanaryPhase) {
   const allowed: Record<ZoomDisposableCanaryPhase, ZoomDisposableCanaryPhase[]> = {
     create_intent: ['meeting_created', 'cleanup_required', 'deleted'],
@@ -345,6 +442,20 @@ function assertSharedPreflight(
   source: NodeJS.ProcessEnv,
   repositoryRoot = process.cwd(),
 ): ZoomDisposableCanaryPreflight {
+  const shared = assertSharedIsolationAndScope(source, repositoryRoot);
+  const executionHead = requireValue(source, 'ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA');
+  const deployedHead = requireValue(source, 'RAILWAY_GIT_COMMIT_SHA');
+  if (!fullSha.test(executionHead) || executionHead !== deployedHead) fail('EXACT_SOURCE_SHA');
+  return {
+    ...shared,
+    executionHead,
+  };
+}
+
+function assertSharedIsolationAndScope(
+  source: NodeJS.ProcessEnv,
+  repositoryRoot = process.cwd(),
+): Omit<ZoomDisposableCanaryPreflight, 'executionHead'> {
   requireExact(source, 'ONE_TIME_RUNTIME_ENVIRONMENT', 'isolated_staging');
   requireExact(source, 'ZOOM_CLASSROOM_ENABLED', 'true');
   requireExact(source, 'ZOOM_CLASSROOM_PROVIDER_MODE', 'sink');
@@ -362,9 +473,6 @@ function assertSharedPreflight(
   for (const variable of protectedInputsForbiddenInDisposableJob) {
     if (hasBoundInput(source, variable)) fail(`FORBIDDEN_INPUT_${variable}`);
   }
-  const executionHead = requireValue(source, 'ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA');
-  const deployedHead = requireValue(source, 'RAILWAY_GIT_COMMIT_SHA');
-  if (!fullSha.test(executionHead) || executionHead !== deployedHead) fail('EXACT_SOURCE_SHA');
   const operationId = requireValue(source, 'ZOOM_DISPOSABLE_CANARY_OPERATION_ID');
   if (!uuid.test(operationId)) fail('OPERATION_ID');
   const keyholderDir = path.resolve(requireValue(source, 'ONE_TIME_ZOOM_KEYHOLDER_DIR'));
@@ -381,7 +489,6 @@ function assertSharedPreflight(
   }
   return {
     operationId,
-    executionHead,
     origin: ZOOM_DISPOSABLE_CANARY_ORIGIN,
     statePath,
     keyholderDir,
@@ -462,6 +569,14 @@ function validateStatePayload(payload: ZoomDisposableCanaryStatePayload) {
     typeof payload.registration_disabled_for_sdk_join !== 'boolean'
   ) {
     failState('REGISTRATION_STATE');
+  }
+  if (
+    payload.reconciliation_repair_head !== undefined &&
+    (!fullSha.test(payload.reconciliation_repair_head) ||
+      payload.reconciliation_repair_head === ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD ||
+      !['cleanup_delete_in_flight', 'deleted'].includes(payload.phase))
+  ) {
+    failState('RECONCILIATION_REPAIR_SOURCE');
   }
   const hasMeetingId = typeof payload.meeting_id === 'string' && payload.meeting_id.length > 0;
   const hasPasscode = typeof payload.passcode === 'string' && payload.passcode.length > 0;

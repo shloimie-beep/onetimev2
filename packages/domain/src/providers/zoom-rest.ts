@@ -19,6 +19,9 @@ export type ZoomMeetingSdkCredentials = {
 
 export const ZOOM_ISOLATED_CANARY_AGENDA =
   'Isolated fictional-student control verification. No customer invitations.';
+export const ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD =
+  '96e54d9688ff174ac8265ce3b3a6216abb6292dc';
+export const ZOOM_DISPOSABLE_CANARY_RECONCILIATION_MAX_START_DELTA_SECONDS = 60;
 
 export type ZoomRestClientOptions = {
   credentials: ZoomServerToServerCredentials;
@@ -159,6 +162,7 @@ const disposableCanaryMeetingResponseSchema = z.object({
       registrants_email_notification: z.boolean().optional(),
       email_notification: z.boolean().optional(),
       join_before_host: z.boolean().optional(),
+      alternative_hosts: z.string().optional(),
     })
     .optional()
     .default({}),
@@ -183,6 +187,7 @@ export function createZoomDisposableCanaryLifecycleClient(
     expectedTopic: string;
     expectedStartsAt: string;
     expectedDurationMinutes: 60;
+    reconciliationOriginalExecutionHead?: string | undefined;
   }) {
     meetingResourceGetStarted = false;
     let json: unknown;
@@ -208,7 +213,12 @@ export function createZoomDisposableCanaryLifecycleClient(
           starts_at_matches_expected: false,
           duration_matches_expected: false,
           notifications_disabled: false,
+          registrant_notifications_explicitly_disabled: false,
+          general_email_notification_safe: false,
+          no_alternative_hosts: false,
           join_before_host_disabled: false,
+          starts_at_delta_seconds: null,
+          reconciliation_scope: false,
         });
       }
       throw error;
@@ -232,12 +242,40 @@ export function createZoomDisposableCanaryLifecycleClient(
       Number.isFinite(parsedStartsAt) &&
       Number.isFinite(expectedStartsAt) &&
       parsedStartsAt === expectedStartsAt;
+    const startsAtDeltaSeconds =
+      Number.isFinite(parsedStartsAt) && Number.isFinite(expectedStartsAt)
+        ? Math.abs(parsedStartsAt - expectedStartsAt) / 1000
+        : null;
     const durationMatchesExpected = parsed.data.duration === input.expectedDurationMinutes;
-    const notificationsDisabled =
+    const registrantNotificationsExplicitlyDisabled =
       parsed.data.settings.registrants_confirmation_email === false &&
-      parsed.data.settings.registrants_email_notification === false &&
+      parsed.data.settings.registrants_email_notification === false;
+    const noAlternativeHosts =
+      parsed.data.settings.alternative_hosts === undefined ||
+      parsed.data.settings.alternative_hosts.trim() === '';
+    const generalEmailNotificationSafe =
+      parsed.data.settings.email_notification === false ||
+      (parsed.data.settings.email_notification === undefined &&
+        noAlternativeHosts &&
+        input.reconciliationOriginalExecutionHead ===
+          ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD);
+    const notificationsDisabled =
+      registrantNotificationsExplicitlyDisabled &&
       parsed.data.settings.email_notification === false;
     const joinBeforeHostDisabled = parsed.data.settings.join_before_host === false;
+    const reconciliationScope =
+      meetingIdMatchesExpected &&
+      typeIsSingleMeeting &&
+      hostMatchesExpected &&
+      topicMatchesExpected &&
+      agendaMatchesExpected &&
+      startsAtDeltaSeconds !== null &&
+      startsAtDeltaSeconds <= ZOOM_DISPOSABLE_CANARY_RECONCILIATION_MAX_START_DELTA_SECONDS &&
+      durationMatchesExpected &&
+      registrantNotificationsExplicitlyDisabled &&
+      generalEmailNotificationSafe &&
+      noAlternativeHosts &&
+      joinBeforeHostDisabled;
     return Object.freeze({
       exists: true as const,
       exact_scope:
@@ -258,7 +296,12 @@ export function createZoomDisposableCanaryLifecycleClient(
       starts_at_matches_expected: startsAtMatchesExpected,
       duration_matches_expected: durationMatchesExpected,
       notifications_disabled: notificationsDisabled,
+      registrant_notifications_explicitly_disabled: registrantNotificationsExplicitlyDisabled,
+      general_email_notification_safe: generalEmailNotificationSafe,
+      no_alternative_hosts: noAlternativeHosts,
       join_before_host_disabled: joinBeforeHostDisabled,
+      starts_at_delta_seconds: startsAtDeltaSeconds,
+      reconciliation_scope: reconciliationScope,
     });
   }
 
@@ -301,6 +344,75 @@ export function createZoomDisposableCanaryLifecycleClient(
         );
       }
       return Object.freeze({ already_absent: false, delete_executed: true, absent_verified: true });
+    },
+    async reconcileDeleteExactMeeting(input: {
+      meetingId: string;
+      expectedHostUserId: string;
+      expectedTopic: string;
+      expectedStartsAt: string;
+      expectedDurationMinutes: 60;
+      originalExecutionHead: string;
+      beforeDelete: () => Promise<void>;
+    }) {
+      if (input.originalExecutionHead !== ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD) {
+        throw new ZoomApiError(
+          409,
+          'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SOURCE_MISMATCH',
+          'Zoom disposable reconciliation source did not match the reviewed create request.',
+        );
+      }
+      const inspection = await inspectExactMeeting({
+        ...input,
+        reconciliationOriginalExecutionHead: input.originalExecutionHead,
+      });
+      if (!inspection.exists) {
+        throw new ZoomApiError(
+          409,
+          'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_UNEXPECTED_ABSENCE',
+          'Zoom disposable reconciliation found no meeting before its authorized delete.',
+        );
+      }
+      if (!inspection.reconciliation_scope) {
+        throw new ZoomApiError(
+          409,
+          'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+          'Zoom disposable meeting did not match the reviewed reconciliation scope.',
+        );
+      }
+      await input.beforeDelete();
+      await zoomJson(`/meetings/${encodeURIComponent(input.meetingId)}`, {
+        method: 'DELETE',
+      });
+      const readback = await inspectExactMeeting({
+        ...input,
+        reconciliationOriginalExecutionHead: input.originalExecutionHead,
+      });
+      if (readback.exists) {
+        throw new ZoomApiError(
+          502,
+          'ZOOM_DISPOSABLE_CANARY_DELETE_UNVERIFIED',
+          'Zoom disposable meeting deletion could not be verified.',
+          true,
+        );
+      }
+      return Object.freeze({ delete_executed: true, absent_verified: true });
+    },
+    async verifyCanonicalAbsence(input: {
+      meetingId: string;
+      expectedHostUserId: string;
+      expectedTopic: string;
+      expectedStartsAt: string;
+      expectedDurationMinutes: 60;
+    }) {
+      const inspection = await inspectExactMeeting(input);
+      if (inspection.exists) {
+        throw new ZoomApiError(
+          409,
+          'ZOOM_DISPOSABLE_CANARY_DELETE_OUTCOME_AMBIGUOUS',
+          'Zoom disposable meeting still exists after an interrupted delete attempt.',
+        );
+      }
+      return Object.freeze({ absent_verified: true });
     },
   });
 }

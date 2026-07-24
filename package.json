@@ -41,6 +41,7 @@
     "zoom:real-control:provision": "tsx scripts/zoom-real-control-provision.ts",
     "zoom:real-control:disposable:provision": "tsx scripts/zoom-disposable-canary-provision.ts",
     "zoom:real-control:disposable:cleanup": "tsx scripts/zoom-disposable-canary-cleanup.ts",
+    "zoom:real-control:disposable:reconcile-cleanup": "tsx scripts/zoom-disposable-canary-reconcile-cleanup.ts",
     "stripe:test:resources:validate": "tsx scripts/ot87-stripe-test-resources.ts validate",
     "stripe:test:resources:setup": "tsx scripts/ot87-stripe-test-resources.ts setup",
     "stripe:test:canary": "tsx scripts/ot105-stripe-test-canary.ts",
