@@ -2,6 +2,7 @@ import { mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { contentFactoryEditPayloadSchema } from '../../../packages/contracts/src/content/index.ts';
 import {
   contentFactorySafePostgresCode,
   createLearningDeliveryDriveInputAdapter,
@@ -21,6 +22,20 @@ afterEach(async () => {
 });
 
 describe('content factory input and transcript drafts', () => {
+  it('accepts a bounded full-length lesson transcript for Admin review', () => {
+    const fullLessonTranscript = 'lesson segment '.repeat(8_000);
+    expect(
+      contentFactoryEditPayloadSchema.parse({
+        normalized_transcript: fullLessonTranscript,
+      }).normalized_transcript,
+    ).toHaveLength(fullLessonTranscript.trim().length);
+    expect(
+      contentFactoryEditPayloadSchema.safeParse({
+        normalized_transcript: 'x'.repeat(250_001),
+      }).success,
+    ).toBe(false);
+  });
+
   it('keeps PostgreSQL publication diagnostics bounded and content-free', () => {
     expect(
       contentFactorySafePostgresCode({

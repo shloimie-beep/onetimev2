@@ -8,6 +8,7 @@ const idSchema = z
   .regex(/^[A-Za-z0-9][A-Za-z0-9._:-]+$/);
 const sha256Schema = z.string().regex(/^[a-f0-9]{64}$/);
 const safeTextSchema = z.string().trim().max(12_000);
+const normalizedTranscriptSchema = z.string().trim().max(250_000);
 
 export const contentFactoryStateSchema = z.enum([
   'incoming',
@@ -75,7 +76,7 @@ export const contentFactorySafeItemSchema = z.object({
     .nullable(),
   processing_mode: z.enum(['synthetic', 'vimeo']),
   draft: contentFactoryDraftSchema,
-  normalized_transcript: safeTextSchema,
+  normalized_transcript: normalizedTranscriptSchema,
   transcript_review_state: z.enum(['draft', 'approved', 'rejected']),
   transcript_segment_count: z.number().int().min(0),
   transcription: z.object({
@@ -185,7 +186,7 @@ export const contentFactoryEditPayloadSchema = z
     review_questions: z.array(z.string().trim().min(3).max(600)).min(5).max(10).optional(),
     key_takeaways: z.array(z.string().trim().min(3).max(800)).min(3).max(5).optional(),
     vocabulary: z.array(contentFactoryVocabularyEntrySchema).max(20).optional(),
-    normalized_transcript: safeTextSchema.optional(),
+    normalized_transcript: normalizedTranscriptSchema.optional(),
     occurrence_key: idSchema.optional(),
   })
   .strict();

@@ -161,6 +161,7 @@ async function main() {
     displayName: stagedInput.displayName,
     segments: correctedSegments,
   });
+  const normalizedTranscript = artifact.segments.map((segment) => segment.text).join(' ');
   await writeFile(
     path.join(args.outDir, 'corrected-transcript-segments.private.json'),
     JSON.stringify(artifact.segments, null, 2),
@@ -335,8 +336,8 @@ async function main() {
           removedEndMs: trim.removed_end_ms ?? Math.max(0, probe.duration_ms - trim.end_ms),
           trimConfidence: trim.confidence ?? 0,
           transcriptSegments: artifact.segments,
-          normalizedTranscript: artifact.segments.map((segment) => segment.text).join(' '),
-          transcriptSha256: artifact.transcript_sha256,
+          normalizedTranscript,
+          transcriptSha256: learningDeliverySha256Hex(normalizedTranscript),
           webvtt: artifact.webvtt,
           webvttSha256: artifact.webvtt_sha256,
           transcriptionModel: artifact.provider_model_version,
