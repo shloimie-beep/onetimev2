@@ -20,7 +20,10 @@ import {
   seedPortalTestLab,
 } from '../../apps/web/src/server/features/portal-test-lab/router.ts';
 import { CONTACT_OPERATIONS_E2E_OWNER_SESSION_TOKEN } from './contact-operations-session.ts';
-import { W12_E2E_ADMIN_SESSION_TOKEN } from './w12-portal-test-lab-session.ts';
+import {
+  W12_E2E_ADMIN_CSRF_TOKEN,
+  W12_E2E_ADMIN_SESSION_TOKEN,
+} from './w12-portal-test-lab-session.ts';
 
 const config = loadConfig({
   ...process.env,
@@ -109,6 +112,15 @@ const contactOperationsStudentUserKey = await createAccountUser({
   role: 'student',
   mfaCapable: false,
 });
+const contentFactoryStudentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: 'content-factory-student@example.test',
+  password: 'ContentFactoryStudent!234',
+  displayName: 'Content Factory Student',
+  role: 'student',
+  mfaCapable: false,
+});
 const zoomStudentUserKey = await createAccountUser({
   pool,
   config,
@@ -174,6 +186,7 @@ async function seedDayOneBrowserRecords() {
         ('e2e_household_alpha', $1, $2, 'E2E Alpha Family'),
         ('e2e_household_zoom', $1, $2, 'E2E Zoom Family'),
         ('e2e_household_paused', $1, $2, 'E2E Paused Family'),
+        ('content_factory_household', $1, $2, 'Content Factory Family'),
         ('contact_operations_household', $1, $2, 'Contact Operations Family')`,
     [config.accountKey, config.productKey],
   );
@@ -241,6 +254,8 @@ async function seedDayOneBrowserRecords() {
         ('e2e_learner_alpha', $1, $2, 'e2e_household_alpha', 'E2E Alpha Learner', '6'),
         ('e2e_learner_beta', $1, $2, 'e2e_household_alpha', 'E2E Beta Learner', '5'),
         ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6'),
+        ('content_factory_learner', $1, $2, 'content_factory_household',
+         'Content Factory Student', '6'),
         ('contact_operations_learner', $1, $2, 'contact_operations_household',
          'Contact Operations Student', '6')`,
     [config.accountKey, config.productKey],
@@ -255,13 +270,16 @@ async function seedDayOneBrowserRecords() {
          'not_configured'),
         ('e2e_access_zoom', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4, 'active'),
         ('contact_operations_access', $1, $2, 'contact_operations_household',
-         'contact_operations_learner', $5, 'active')`,
+         'contact_operations_learner', $5, 'active'),
+        ('content_factory_access', $1, $2, 'content_factory_household',
+         'content_factory_learner', $6, 'active')`,
     [
       config.accountKey,
       config.productKey,
       studentUserKey,
       zoomStudentUserKey,
       contactOperationsStudentUserKey,
+      contentFactoryStudentUserKey,
     ],
   );
   await pool.query(
@@ -271,13 +289,16 @@ async function seedDayOneBrowserRecords() {
         ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3),
         ('e2e_link_zoom_student', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4),
         ('contact_operations_student_link', $1, $2, 'contact_operations_household',
-         'contact_operations_learner', $5)`,
+         'contact_operations_learner', $5),
+        ('content_factory_student_link', $1, $2, 'content_factory_household',
+         'content_factory_learner', $6)`,
     [
       config.accountKey,
       config.productKey,
       studentUserKey,
       zoomStudentUserKey,
       contactOperationsStudentUserKey,
+      contentFactoryStudentUserKey,
     ],
   );
   await pool.query(
@@ -285,7 +306,8 @@ async function seedDayOneBrowserRecords() {
        (entitlement_key, account_key, product_key, household_key, entitlement_state)
       VALUES
         ('e2e_entitlement_alpha', $1, $2, 'e2e_household_alpha', 'active'),
-        ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active')`,
+        ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active'),
+        ('content_factory_entitlement', $1, $2, 'content_factory_household', 'active')`,
     [config.accountKey, config.productKey],
   );
   for (const fixture of [
@@ -303,6 +325,11 @@ async function seedDayOneBrowserRecords() {
       householdKey: 'contact_operations_household',
       idempotencyKey: 'contact-operations-free-pilot-v1',
       sourceReference: 'contact_operations_free_pilot',
+    },
+    {
+      householdKey: 'content_factory_household',
+      idempotencyKey: 'content-factory-free-pilot-v1',
+      sourceReference: 'content_factory_free_pilot',
     },
   ]) {
     await grantFreePilotAccess({
@@ -430,7 +457,9 @@ async function runContentFactoryBrowserAcceptance() {
        (occurrence_entitlement_key, account_key, product_key, occurrence_key,
         household_key, learner_key, entitlement_state, source)
      VALUES ('browser_occurrence_alpha',$1,$2,'e2e_class_occurrence',
-       'e2e_household_alpha','e2e_learner_alpha','active','isolated_acceptance')`,
+       'e2e_household_alpha','e2e_learner_alpha','active','isolated_acceptance'),
+       ('browser_occurrence_content_factory',$1,$2,'e2e_class_occurrence',
+       'content_factory_household','content_factory_learner','active','isolated_acceptance')`,
     [config.accountKey, config.productKey],
   );
   const media = syntheticMp4('browser-acceptance');
@@ -542,7 +571,7 @@ async function seedW12AdminSession() {
       config.productKey,
       String(row.user_key),
       sha256(W12_E2E_ADMIN_SESSION_TOKEN),
-      sha256('w12-admin-csrf-local-only'),
+      sha256(W12_E2E_ADMIN_CSRF_TOKEN),
       new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       Number(row.security_version ?? 1),
     ],

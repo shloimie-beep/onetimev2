@@ -6,7 +6,7 @@ import {
   W12_PORTAL_TEST_LAB,
   W12_PORTAL_TEST_LAB_ROUTE,
 } from '../../apps/web/src/server/features/portal-test-lab/router.ts';
-import { W12_E2E_ADMIN_SESSION_TOKEN } from '../support/w12-portal-test-lab-session.ts';
+import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -16,16 +16,7 @@ const evidence: Array<Record<string, unknown>> = [];
 
 test('W12-03 admin lab page is owner/admin-only and secret-free', async ({ browser }) => {
   const adminContext = await browser.newContext();
-  await adminContext.addCookies([
-    {
-      name: 'otcrm_session',
-      value: W12_E2E_ADMIN_SESSION_TOKEN,
-      domain: '127.0.0.1',
-      path: '/',
-      httpOnly: true,
-      sameSite: 'Lax',
-    },
-  ]);
+  await adminContext.addCookies([...W12_E2E_ADMIN_COOKIES]);
   const adminPage = await adminContext.newPage();
   const requests = collectRequests(adminPage);
   await adminPage.goto(W12_PORTAL_TEST_LAB_ROUTE);

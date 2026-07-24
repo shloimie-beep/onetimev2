@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { expect, type Page } from '@playwright/test';
+import { W12_E2E_ADMIN_COOKIES } from '../../support/w12-portal-test-lab-session.ts';
 
 export type ViewportSpec = { label: string; width: number; height: number };
 export type RouteProbe = {
@@ -133,16 +134,7 @@ export async function loginAs(
 }
 
 export async function useW12AdminSession(page: Page) {
-  await page.context().addCookies([
-    {
-      name: 'otcrm_session',
-      value: 'w12-admin-session-token-local-only-2026-07-17',
-      domain: '127.0.0.1',
-      path: '/',
-      httpOnly: true,
-      sameSite: 'Lax',
-    },
-  ]);
+  await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
 }
 
 export async function waitForProbeReady(page: Page, probe: RouteProbe) {

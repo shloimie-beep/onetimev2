@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { W12_E2E_ADMIN_SESSION_TOKEN } from '../support/w12-portal-test-lab-session.ts';
+import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts';
 
 test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', async ({
   browser,
@@ -115,16 +115,7 @@ async function loginAs(page: Page, email: string, password: string, returnTo: st
 }
 
 async function useAdminSession(page: Page, returnTo: string) {
-  await page.context().addCookies([
-    {
-      name: 'otcrm_session',
-      value: W12_E2E_ADMIN_SESSION_TOKEN,
-      domain: '127.0.0.1',
-      path: '/',
-      httpOnly: true,
-      sameSite: 'Lax',
-    },
-  ]);
+  await page.context().addCookies([...W12_E2E_ADMIN_COOKIES]);
   await page.goto(returnTo);
   await page.waitForLoadState('domcontentloaded');
 }

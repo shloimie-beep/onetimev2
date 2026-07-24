@@ -1,7 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
   assertNoHorizontalOverflow,
-  loginAs,
   useW12AdminSession,
 } from './w12-100/launch-readiness-helpers.ts';
 
@@ -63,7 +62,12 @@ test('entitled Student sees approved content with protected captions and progres
   page,
 }) => {
   expect(publishedPlaybackPath).toBeTruthy();
-  await loginAs(page, 'student', '/app/student');
+  await loginWithCredentials(
+    page,
+    'content-factory-student@example.test',
+    'ContentFactoryStudent!234',
+    '/app/student',
+  );
   await page.getByRole('link', { name: 'Library', exact: true }).click();
   await expect(page).toHaveURL('/app/student?section=library');
   const contentCard = page
@@ -116,7 +120,12 @@ test('Admin unpublish immediately revokes the entitled Student route', async ({ 
   await expect(page.getByRole('button', { name: 'Publish', exact: true })).toBeVisible();
 
   await page.context().clearCookies();
-  await loginAs(page, 'student', '/app/student');
+  await loginWithCredentials(
+    page,
+    'content-factory-student@example.test',
+    'ContentFactoryStudent!234',
+    '/app/student',
+  );
   await expect(
     page
       .getByRole('region', { name: 'Library', exact: true })

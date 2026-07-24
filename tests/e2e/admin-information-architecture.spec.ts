@@ -2,7 +2,7 @@ import { AxeBuilder } from '@axe-core/playwright';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
-import { W12_E2E_ADMIN_SESSION_TOKEN } from '../support/w12-portal-test-lab-session.ts';
+import { W12_E2E_ADMIN_COOKIES } from '../support/w12-portal-test-lab-session.ts';
 
 const primaryLabels = ['Dashboard', 'Contacts', 'Content', 'Classroom', 'Live Console'];
 const viewports = [
@@ -108,16 +108,7 @@ test('Admin IA keeps five focused areas across the governed viewport matrix', as
 });
 
 async function useAdminSession(context: BrowserContext) {
-  await context.addCookies([
-    {
-      name: 'otcrm_session',
-      value: W12_E2E_ADMIN_SESSION_TOKEN,
-      domain: '127.0.0.1',
-      path: '/',
-      httpOnly: true,
-      sameSite: 'Lax',
-    },
-  ]);
+  await context.addCookies([...W12_E2E_ADMIN_COOKIES]);
 }
 
 async function horizontalOverflow(page: Page) {
