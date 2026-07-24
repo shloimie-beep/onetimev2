@@ -20,6 +20,11 @@ const acceptance = await readYaml<Record<string, unknown>>(
 const decisions = await readYaml<Record<string, unknown>>('ops/goals/OT-LAUNCH-01/DECISIONS.yaml');
 const boardText = await readFile(path.join(repoRoot, boardPath), 'utf8');
 const board = parseYaml<Record<string, unknown>>(boardText, boardPath);
+const adminIncident = JSON.parse(
+  await readText(
+    'ops/goals/OT-LAUNCH-01/handoffs/fictional-admin-credential-exposure--20260722.json',
+  ),
+) as Record<string, unknown>;
 const ramble = await readText('ops/goals/OT-LAUNCH-01/RAMBLE-PROTOCOL.md');
 const goalSkill = await readSkill('.agents/skills/one-time-goal-executor/SKILL.md');
 const ghlSkill = await readSkill('.agents/skills/one-time-ghl-ui-job/SKILL.md');
@@ -83,6 +88,9 @@ record(
 );
 const tracks = arrayAt<Record<string, unknown>>(board, 'tracks');
 const trackIds = tracks.map((track) => String(track.id));
+const trackById = (id: string) => tracks.find((track) => track.id === id);
+const conductor = objectAt(board, 'conductor');
+const conductorHead = objectAt(conductor, 'head');
 record('unique tracks', new Set(trackIds).size === trackIds.length, `${trackIds.length} tracks`);
 const criteria = arrayAt<Record<string, unknown>>(acceptance, 'criteria');
 const criterionIds = criteria.map((criterion) => String(criterion.id));
@@ -118,6 +126,7 @@ const criticalParsedSubstrings = [
   'PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard',
   'PR #104 prefix 2214',
   'PR #105 exact successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885',
+  'PR #105 exact successor 96e54d9688ff174ac8265ce3b3a6216abb6292dc',
   'PR #106 exact production head acddcc8cd012c5cdc5bfc08cbc80550bef8719ba',
   'Terminal PR #107 head 1e247c70004dffb6247fc1ee407f1153d753bd7d',
   'PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad',
@@ -125,6 +134,8 @@ const criticalParsedSubstrings = [
   'PR #110 exact head 38358961cff6c6bf44621ab9e3f6b88061586618',
   'Accepted PR #113 head 45b213a5ddfde97d60f220ae3eb0bdff5cda51ed',
   'Terminal PR #115 head 06c14e9b59c5e7c963397fb961634fe711b00e0c',
+  'Superseding PR #118 head 938942b41634a47aae48d95b12a912209dec8849',
+  'Superseding PR #119 head 960d1bdff84e12eed89d3e7a45fd1717d22a81fc',
   'PR #141 exact head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe',
 ];
 record(
@@ -156,6 +167,158 @@ record(
     return ['task_id', 'repository', 'branch', 'pr', 'system'].every((field) => field in owner);
   }),
   'task_id/repository/branch/pr/system present for every track',
+);
+record(
+  'current persistent-staging product evidence',
+  conductorHead.last_verified_commit === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+    (() => {
+      const track = trackById('persistent_staging');
+      if (!track) return false;
+      const owner = objectAt(track, 'owner');
+      const evidence = arrayAt<string>(track, 'evidence');
+      return (
+        track.status === 'done' &&
+        owner.head === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+        evidence.some(
+          (value) =>
+            value.includes('web deployment 6b007369-3345-41f3-9c5f-abc08eaeae95') &&
+            value.includes('worker deployment 34c123e4-61eb-4907-9a99-0b5f3e83b4b0') &&
+            value.includes('2224_content_factory_publish_ready_constraint'),
+        )
+      );
+    })() &&
+    String(outcome.current_summary).includes(
+      'web deployment 6b007369-3345-41f3-9c5f-abc08eaeae95',
+    ) &&
+    String(outcome.current_summary).includes(
+      'worker deployment 34c123e4-61eb-4907-9a99-0b5f3e83b4b0',
+    ) &&
+    String(outcome.current_summary).includes('2224_content_factory_publish_ready_constraint') &&
+    parsedBoardStrings.some(({ value }) => value.includes('affected Chromium 13/13')) &&
+    parsedBoardStrings.some(({ value }) => value.includes('2,085-file secret scan')),
+  '415d7e4 deployed through exact web/worker with schema 2224 and repaired portal gates',
+);
+record(
+  'current role-preview and fictional-session evidence',
+  (() => {
+    const previewTrack = trackById('admin_experience_preview');
+    const sessionTrack = trackById('fictional_student_session');
+    if (!previewTrack || !sessionTrack) return false;
+    return (
+      previewTrack.status === 'done' &&
+      sessionTrack.status === 'done' &&
+      objectAt(previewTrack, 'owner').head === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+      objectAt(sessionTrack, 'owner').head === '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('Direct Student 1 and Parent credential logins separately reached'),
+      )
+    );
+  })(),
+  'Admin launcher, direct Parent/Student, sibling previews, and preserved Admin session',
+);
+record(
+  'Zoom disposable lifecycle remains fail-closed',
+  (() => {
+    const sdkTrack = trackById('zoom_meeting_sdk');
+    const hostTrack = trackById('zoom_s2s_host_control');
+    const operatorTrack = trackById('zoom_real_control_operator_change_set');
+    if (!sdkTrack || !hostTrack || !operatorTrack) return false;
+    const operatorBlocker = objectAt(operatorTrack, 'blocker');
+    const externalActions = arrayAt<Record<string, unknown>>(outcome, 'external_actions');
+    return (
+      sdkTrack.status === 'provider_off' &&
+      hostTrack.status === 'provider_off' &&
+      operatorTrack.status === 'blocked' &&
+      operatorBlocker.code === 'ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH' &&
+      outcome.external_action_count === 15 &&
+      externalActions.some(
+        (action) =>
+          action.kind === 'zoom_disposable_isolated_canary_lifecycle' &&
+          action.count === 1 &&
+          String(action.scope).includes('cleanup_required'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('ce9ca160-d72b-496c-a2c9-b3b8efa9c975'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('d4f10489-1d8a-4518-8db2-a6da309dda8f'),
+      ) &&
+      parsedBoardStrings.some(({ value }) => value.includes('2c0d6ed8-a7e1-4da2-baf9-06323de78dc8'))
+    );
+  })(),
+  'one disposable meeting exists; cleanup mismatch blocks joins/controls and preserves exact state',
+);
+record(
+  'external action accounting is exact',
+  (() => {
+    const externalActions = arrayAt<Record<string, unknown>>(outcome, 'external_actions');
+    const counted = externalActions.reduce(
+      (sum, action) => sum + (typeof action.count === 'number' ? action.count : 0),
+      0,
+    );
+    const loginAction = externalActions.find(
+      (action) => action.kind === 'fictional_staging_admin_login_code_challenge',
+    );
+    return (
+      outcome.external_action_count === counted &&
+      outcome.external_action_count === 15 &&
+      loginAction?.count === 10
+    );
+  })(),
+  'external_action_count=15 equals row sum and includes 10 bounded staging login-code emails',
+);
+record(
+  'fictional Admin incident is rotated and auditable',
+  adminIncident.schema_version === 3 &&
+    objectAt(adminIncident, 'rotation').status === 'complete' &&
+    objectAt(adminIncident, 'rotation').rotated_at === '2026-07-24T09:54:47.696Z' &&
+    objectAt(adminIncident, 'rotation').active_sessions_before === 1 &&
+    objectAt(adminIncident, 'rotation').active_sessions_after === 0 &&
+    objectAt(adminIncident, 'rotation').protected_handoff_replaced_atomically === true &&
+    objectAt(adminIncident, 'rotation').old_credential_rejected === true &&
+    objectAt(adminIncident, 'rotation').credential_printed === false &&
+    objectAt(adminIncident, 'rotation_execution').source_head ===
+      '415d7e49d7567d3e211fb725c0916ece78da4dd0' &&
+    parsedBoardStrings.some(({ value }) =>
+      value.includes('Authorized Codex history contains four old-value matches'),
+    ),
+  'Admin-only rotation complete; old value remains explicitly classified as compromised',
+);
+record(
+  'Admin IA semantic rejection is preserved',
+  (() => {
+    const track = trackById('admin_information_architecture');
+    if (!track) return false;
+    const owner = objectAt(track, 'owner');
+    return (
+      track.status === 'active' &&
+      owner.pr === 118 &&
+      owner.head === '938942b41634a47aae48d95b12a912209dec8849' &&
+      parsedBoardStrings.some(({ value }) => value.includes('Live Console became unconditional')) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('Dashboard Preview Parent & Student portals card/CTA was removed'),
+      )
+    );
+  })(),
+  'PR #118 remains unintegrated until capability gating and Dashboard discovery are restored',
+);
+record(
+  'Rabbi Telegram lease-fencing rejection is preserved',
+  (() => {
+    const track = trackById('rabbi_telegram_communications');
+    if (!track) return false;
+    const owner = objectAt(track, 'owner');
+    return (
+      track.status === 'active' &&
+      owner.pr === 119 &&
+      owner.head === '960d1bdff84e12eed89d3e7a45fd1717d22a81fc' &&
+      parsedBoardStrings.some(({ value }) => value.includes('ignores rowCount')) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('same-owner/digest generation-reclaim adversarial test'),
+      )
+    );
+  })(),
+  'PR #119 remains unintegrated until stale failure cannot overwrite a reclaimed generation',
 );
 record(
   'accepted occurrence-scoped video track',
@@ -215,9 +378,9 @@ record(
       track.status === 'provider_off' &&
       owner.task_id === 'OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP' &&
       owner.repository === 'shloimie-beep/onetimev2' &&
-      owner.branch === 'codex/full-app-staging-live' &&
-      owner.pr === 97 &&
-      owner.head === '662298075a250d2a2e6e21decf8d5aa9a83f86f3' &&
+      owner.branch === 'codex/zoom-real-control-activation' &&
+      owner.pr === 105 &&
+      owner.head === '96e54d9688ff174ac8265ce3b3a6216abb6292dc' &&
       track.zoom_ui_preview_state === 'READY' &&
       track.zoom_real_control_state === 'PROVIDER_OFF'
     );
@@ -229,9 +392,9 @@ record(
         track.status === 'provider_off' &&
         owner.task_id === 'OT-LAUNCH-01-ZOOM-STAGING-CANARY-PREP' &&
         owner.repository === 'shloimie-beep/onetimev2' &&
-        owner.branch === 'codex/full-app-staging-live' &&
-        owner.pr === 97 &&
-        owner.head === '662298075a250d2a2e6e21decf8d5aa9a83f86f3' &&
+        owner.branch === 'codex/zoom-real-control-activation' &&
+        owner.pr === 105 &&
+        owner.head === '96e54d9688ff174ac8265ce3b3a6216abb6292dc' &&
         track.zoom_ui_preview_state === 'READY' &&
         track.zoom_real_control_state === 'PROVIDER_OFF'
       );
@@ -257,6 +420,30 @@ record(
       value.includes('GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'),
     ),
   'zero counts require the committed timestamped closeout readback',
+);
+record(
+  'current GHL drift and protective pause remain fail-closed',
+  (() => {
+    const e01Track = trackById('ghl_ot_e01');
+    const c01Track = trackById('ghl_ot_c01_tisha_invitation');
+    const shellTrack = trackById('ghl_app_contract_shells');
+    if (!e01Track || !c01Track || !shellTrack) return false;
+    return (
+      e01Track.status === 'blocked' &&
+      objectAt(e01Track, 'blocker').code ===
+        'DRIFTED_EMAIL_A_DISABLED_ACTION_IDENTITY_UNVERIFIED' &&
+      c01Track.status === 'blocked' &&
+      shellTrack.status === 'blocked' &&
+      parsedBoardStrings.some(({ value }) => value.includes('2,677 historical total / 0 active')) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('remain unique exact-ID DRAFT_SHELL assets'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('The historical passed canary remains historical'),
+      )
+    );
+  })(),
+  'OT-E01 DRIFTED, OT-C01 wrapper Draft, campaign untouched, target shells empty',
 );
 record(
   'goal decisions parsed',

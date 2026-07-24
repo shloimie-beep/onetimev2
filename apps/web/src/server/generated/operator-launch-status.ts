@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:8999e8a2bf31c895a8be1348816ac27716153fa9bff3a912bb64eb5a35b2c56c',
-  generated_at: '2026-07-24T07:35:00.000Z',
+  board_source_hash: 'sha256:0f5039c0e0c5de3f3af4d82312d5f161cb273ce6bc976865a021f302bf9eaf81',
+  generated_at: '2026-07-24T10:42:33.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 17,
@@ -14,7 +14,7 @@ export const operatorLaunchStatusProjection = {
     percentage: 71,
   },
   what_changed:
-    'Persistent-staging product source 5556c4ab78e01d367666694459eb2ea97f4028ef remains the accepted live application through exact web deployment ef159bf7-c313-45dc-8ebd-bcfa30c8d033 and worker deployment 8e7e8276-550d-461f-9c40-f106684a0ea0 at schema 2224_content_factory_publish_ready_constraint. The operator has now fixed the next product boundary: Students stay exclusively in One Time, only the adult Parent links to GHL, GHL owns payment history while One Time derives current access, and the Rabbi operates Parent/Student access and communications from One Time or the distinct scoped Telegram bot. Three non-overlapping implementation packets are assigned for the five-area Admin workspace, Parent/Student contact and access operations, and Rabbi Telegram communications; structured prompts/knowledge, confirmed social publishing, and the separate BNA control-plane bot are queued behind those contracts. Current GHL truth remains fail-closed, and real OpenAI/private-Vimeo plus the distinct disposable real Zoom canary remain separately assigned provider work.',
+    "Persistent-staging product source 415d7e49d7567d3e211fb725c0916ece78da4dd0 is the accepted live application through exact web deployment 6b007369-3345-41f3-9c5f-abc08eaeae95 and worker deployment 34c123e4-61eb-4907-9a99-0b5f3e83b4b0 at schema 2224_content_factory_publish_ready_constraint. Full exact-head CI and the repaired occurrence-scoped Student playback boundary are green; live Admin Dashboard discovery, Parent, direct Student 1, sibling-scoped read-only Student 2/3 previews, Rabbi/Classroom, and preserved Admin-session proof are complete. The exposed fictional Admin credential was rotated only in staging, its prior session was revoked, the private handoff was atomically replaced, and the old value is rejected. PR #118 is exact-head green but independently rejected for unconditional Live Console visibility and removal of the required Dashboard preview CTA. PR #119 is also exact-head green but independently rejected because a stale terminal Telegram worker generation can overwrite a successfully reclaimed conversation projection; both feature lanes own narrow repairs before convergence. The exact operator-owned 1.82 GB media source is waiting only for the operator's protected Google Drive Download anyway click. One isolated disposable non-Tisha Zoom meeting was created, but the single cleanup attempt stopped fail-closed on provider scope mismatch before any join/control/delete; the exact runner and state remain preserved for reviewed reconciliation. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions.",
   works_now: [
     {
       track_id: 'goal_system',
@@ -90,42 +90,42 @@ export const operatorLaunchStatusProjection = {
       label: 'Admin Information Architecture',
       status: 'active',
       next_action:
-        'Start OT-LAUNCH-01-ADMIN-IA-01 from the exact governed conductor base and inspect current pages before changing them.',
+        'Keep the five-area information architecture and governed 415d7e4 base, but do not integrate 938942b. The feature lane owns only these two client/test semantic corrections; it must not alter auth, provider configuration, or the canonical acceptance model.',
     },
     {
       track_id: 'rabbi_telegram_communications',
       label: 'Rabbi Telegram Communications',
       status: 'active',
       next_action:
-        'Start OT-LAUNCH-01-RABBI-TELEGRAM-01 from the exact governed conductor base; keep access, Zoom, social, voice, and BNA super-admin work outside this packet.',
+        'Keep real Telegram/GHL transport disabled and preserve the governed 415d7e4 base; do not integrate 960d1bd or send any customer message until the lease-generation repair passes independent audit.',
     },
     {
       track_id: 'zoom_meeting_sdk',
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
       next_action:
-        'Preserve the protected Tisha event target as excluded from this canary job; provision a fresh disposable canary meeting and never reuse or render the exposed event value.',
+        'Keep every persistent-staging and production Zoom gate off; preserve the exact runner/state and do not retry, create a second meeting, weaken the guard, or use the protected Tisha event target.',
     },
     {
       track_id: 'zoom_s2s_host_control',
       label: 'Zoom host controls',
       status: 'provider_off',
       next_action:
-        'Keep provider controls unavailable; create a separate disposable canary meeting and never infer host control from partial SDK configuration or the Tisha event link.',
+        'Keep provider controls unavailable; preserve the runner/state and do not retry, create another meeting, or infer host control from the protected Tisha event link.',
     },
     {
       track_id: 'zoom_real_control_operator_change_set',
       label: 'Zoom Real Control Operator Change Set',
-      status: 'active',
+      status: 'blocked',
       next_action:
-        'Execute the newly canonicalized isolated-only disposable-meeting decision; stop for human verification rather than bypass it, and do not install or change persistent-staging or production variables.',
+        'Preserve the runner service and protected state volume. Do not retry, create a second meeting, bypass the guard, delete the Tisha/recurring/customer meeting, or change persistent-staging/production variables.',
     },
     {
       track_id: 'media_external_canary',
       label: 'Media External Canary',
-      status: 'active',
+      status: 'blocked',
       next_action:
-        'The assigned media executor continues exact-source discovery and safe preflight now; it must not substitute the tiny smoke fixture or infer real provider acceptance from the synthetic pipeline.',
+        'Operator clicks Download anyway in the already-open protected Drive tab, then resumes the existing media task; do not start a replacement canary, select another source, or claim provider acceptance before terminal readback.',
     },
     {
       track_id: 'production_pilot',
@@ -137,12 +137,36 @@ export const operatorLaunchStatusProjection = {
   ],
   blockers: [
     {
+      track_id: 'zoom_meeting_sdk',
+      label: 'Zoom Meeting SDK',
+      status: 'provider_off',
+      code: 'ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH',
+      reason:
+        'One disposable meeting exists, but the signed-state cleanup guard found provider start-time and notification-state drift. No Student/host join or control proof is accepted, and the exact meeting cannot be retried, reused, or deleted outside a separately reviewed reconciliation.',
+    },
+    {
       track_id: 'zoom_s2s_host_control',
       label: 'Zoom host controls',
       status: 'provider_off',
-      code: 'ZOOM_PROVIDER_CONFIG_AND_HUMAN_CANARY_BARRIER',
+      code: 'ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH',
       reason:
-        'Persistent staging still lacks the canonical SDK/S2S/host/meeting values and exact Zoom origin allowlist; the known Tisha event meeting is forbidden as the canary target, and the authorized host/Student proof still needs one fresh disposable meeting plus a human-cleared Zoom login because prior attempts met reCAPTCHA/rate limiting.',
+        'The exact disposable meeting exists but its provider readback differs from the signed timing/notification scope. Host/Student joins and controls were not attempted, and persistent staging intentionally remains unconfigured and provider-off.',
+    },
+    {
+      track_id: 'zoom_real_control_operator_change_set',
+      label: 'Zoom Real Control Operator Change Set',
+      status: 'blocked',
+      code: 'ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH',
+      reason:
+        'Provider readback for the exact disposable meeting differs from the signed start-time and notification-disabled scope. The fail-closed cleanup guard correctly refused mutation, so the meeting still exists and host/Student controls remain untested.',
+    },
+    {
+      track_id: 'media_external_canary',
+      label: 'Media External Canary',
+      status: 'blocked',
+      code: 'OPERATOR_DRIVE_LARGE_FILE_DOWNLOAD_CONFIRMATION_REQUIRED',
+      reason:
+        'Google Drive is waiting at its large-file Download anyway safety dialog in the already-open protected Chrome tab, and the agent cannot bypass that human confirmation.',
     },
   ],
   safe_links: [
