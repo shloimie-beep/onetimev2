@@ -15,7 +15,7 @@
   "result": {
     "status": "implementation_complete_pending_remote_postgresql_assurance",
     "base_commit": "43e38a6f1d3aae7eff62781f75a49777ee325d5c",
-    "implementation_commit": "7a9c62a81f5fbaa1d0982dfcd651c7d3540d3d2f",
+    "implementation_commit": "f5c81c3c4d7d69466ba2626d4c51af00b9f3cd02",
     "postgresql_assurance_fix": {
       "root_cause": "The real PostgreSQL contacts table requires public_contact_id; the event-only registration contact insert omitted it while pg-mem did not surface the constraint.",
       "resolution": "Generate and insert one opaque public contact UUID within the serialized registration transaction.",
@@ -24,6 +24,7 @@
     "projection_security_repair": {
       "payload_scope": "Exact account, product, HighLevel location, and adult contact equality is required at both prepare and dispatch boundaries.",
       "post_upsert_denial_audit": "A denial after contact upsert records provider_effect_performed=true, provider_effect_stage=contact_upsert_completed, and tags_written=false.",
+      "crash_window_audit": "A pre-call revocation after crash recovery derives provider effect truth from the exact completed contact-upsert receipt fenced by account, product, delivery, run, and operation key; the reclaimed attempt performs zero new adapter calls.",
       "retired_direct_provider_block_removed": true
     },
     "migration": {
@@ -92,21 +93,21 @@
     "tests/unit/tisha-bav-highlevel-client.test.ts"
   ],
   "verification": {
-    "focused_integration": "50/50 passed",
+    "focused_integration": "51/51 passed",
     "focused_unit": "7/7 passed",
     "full_unit": "75 files, 412 tests passed",
-    "full_integration": "67 files, 361 tests passed",
+    "full_integration": "67 files, 370 tests passed",
     "typecheck": "passed",
     "lint": "passed",
     "build": "passed",
-    "scoped_prettier_check": "19 exact changed supported paths passed",
-    "secret_scan": "2,116 repository text files passed",
-    "migration_safety": "passed before the final non-SQL denial-tie repair; migration bytes and checksum remained unchanged",
+    "scoped_prettier_check": "20 exact changed supported paths passed",
+    "secret_scan": "2,117 repository text files passed",
+    "migration_safety": "passed; the final crash-window audit repair is non-SQL and migration bytes/checksum remain unchanged",
     "goal_validation": "32/32 checks passed",
     "operator_launch_status": "passed",
     "git_diff_check": "passed",
-    "independent_diff_audit": "passed",
-    "independent_postgresql_scope_audit": "passed",
+    "independent_diff_audit": "prior findings repaired; final exact-head re-audit pending",
+    "independent_postgresql_scope_audit": "prior findings repaired; final exact-head re-audit pending",
     "postgresql_16_18_execution": "required on exact-head remote assurance workflows"
   },
   "intentional_fail_closed_state": {
@@ -126,5 +127,5 @@
     "A separately authorized GHL readback must prove immutable IDs and exact presence for both canonical Tisha tags before any exact-row provider canary can be prepared."
   ],
   "blocker": null,
-  "sanitized_at": "2026-07-24T17:21:00Z"
+  "sanitized_at": "2026-07-24T17:49:00Z"
 }
