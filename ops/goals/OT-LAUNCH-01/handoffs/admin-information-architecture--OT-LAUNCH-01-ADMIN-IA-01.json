@@ -14,13 +14,7 @@
     "status": "implementation_complete",
     "base_commit": "bc14fa0be3f6420b048e7ba2cc1667bfbcd413a0",
     "implementation_commit": "9ac871991da7e6c49437a5f692802797e9d5f365",
-    "primary_navigation": [
-      "Dashboard",
-      "Contacts",
-      "Content",
-      "Classroom",
-      "Live Console"
-    ],
+    "primary_navigation": ["Dashboard", "Contacts", "Content", "Classroom", "Live Console"],
     "provider_changed": false,
     "auth_or_access_changed": false,
     "migration_changed": false,
@@ -32,12 +26,7 @@
     "ADMIN-IA-001": {
       "status": "passed",
       "summary": "The Admin application exposes exactly five ordered primary areas, separates utilities, renders one focused workspace section at a time, preserves safe legacy URLs, removes duplicate portal navigation, and keeps role-preview isolation intact.",
-      "viewports": [
-        "360x800",
-        "390x844",
-        "768x1024",
-        "1440x1000"
-      ],
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
       "critical_or_serious_accessibility_violations": 0,
       "horizontal_overflow": false
     }
