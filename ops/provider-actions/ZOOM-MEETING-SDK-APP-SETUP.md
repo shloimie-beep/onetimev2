@@ -99,3 +99,44 @@ app and do not add production.
 
 The REST Meetings API is used only for meeting creation, registrants, and ZAK acquisition. It is
 not used or described as an in-meeting mute/spotlight control surface.
+
+## Distinct disposable PR #105 canary
+
+This sequence is authorized only by decision
+`zoom-distinct-disposable-isolated-canary-20260724` and supersedes the older multi-student
+provisioning sequence above for this one proof.
+
+1. Pin and deploy the exact PR #105 successor containing the disposable-canary guard repair.
+   Require every `/version` commit field to equal that successor; the previously observed
+   `944f46b...` runtime is an absolute stop.
+2. Reuse only the existing General app and exact PR #105 preview origin. Add no persistent-staging
+   or production origin and create no second app.
+3. Create one isolated private-network job from that exact successor. Its environment must satisfy
+   the new disposable preflight while provider mode remains `sink`, real-provider remains `false`,
+   and canary remains `false`. It must not bind the Tisha target, protected class target, an
+   existing meeting ID/passcode, `BNA_KEYHOLDER_DIR`, or any persistent-staging value.
+4. Require a fresh absent protected-state path and run
+   `npm run zoom:real-control:disposable:provision` once. Sanitized output must report
+   `mode=distinct_disposable_pr105_canary`, `phase=ready`, exact source verified, fictional
+   Student 1 only, both protected targets unbound, zero invitations, and no printed protected
+   value.
+5. Install only the canary-specific meeting material in the isolated PR #105 preview. Run one host
+   plus fictional Student 1 proof covering participant-event readback, consented unmute, mute,
+   spotlight/remove spotlight, active-speaker readback, Done/reset, replay, expiry,
+   cross-student denial, and idempotency. Stop for human verification, rate limiting, source drift,
+   missing protected input, or any unexpected participant.
+6. Immediately return the isolated preview to `sink`, real-provider `false`, and canary `false`.
+   Clear the one-shot provision authorization, set only
+   `ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION=DELETE_ONE_CREATED_PR105_DISPOSABLE_MEETING_ONCE`,
+   and run `npm run zoom:real-control:disposable:cleanup`.
+7. Cleanup may obtain its target only from the signed v3 state. It must prove exact scope before one
+   meeting delete, verify absence, and append a secret-free `deleted` tombstone. Never blindly
+   retry a timeout, 429, 5xx, ambiguous outcome, or scope mismatch.
+8. Destroy only the isolated job and canary-specific private state/configuration after sanitized
+   readback. Confirm the Tisha and recurring meetings were untouched, customer
+   invitations/notifications remained zero, persistent staging and production were unchanged, and
+   no provider request occurred after disable.
+
+The protected state and evidence must never contain raw meeting IDs, passcodes, join URLs, SDK or
+S2S credentials, ZAK, signatures, access tokens, participant identifiers, customer keys, emails,
+or private destinations.

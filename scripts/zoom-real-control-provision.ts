@@ -4,8 +4,11 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { ZoomApiError, createZoomRestClient } from '../packages/domain/src/providers/zoom-rest.ts';
 
-const keyholderDir =
-  process.env.BNA_KEYHOLDER_DIR ?? path.join(process.env.USERPROFILE ?? '.', 'BNA-Keyholder');
+const configuredKeyholderDir = process.env.ONE_TIME_ZOOM_KEYHOLDER_DIR;
+if (!configuredKeyholderDir) {
+  throw new Error('ZOOM_PROTECTED_INPUT_MISSING:ONE_TIME_ZOOM_KEYHOLDER_DIR');
+}
+const keyholderDir: string = configuredKeyholderDir;
 const statePath =
   process.env.ZOOM_REAL_CONTROL_STATE_PATH ??
   path.join(keyholderDir, 'incoming', 'zoom-real-control-activation-state.json');

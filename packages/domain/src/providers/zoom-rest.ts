@@ -17,6 +17,9 @@ export type ZoomMeetingSdkCredentials = {
   sdkSecret: string;
 };
 
+export const ZOOM_ISOLATED_CANARY_AGENDA =
+  'Isolated fictional-student control verification. No customer invitations.';
+
 export type ZoomRestClientOptions = {
   credentials: ZoomServerToServerCredentials;
   environment: ZoomRestEnvironment;
@@ -91,6 +94,11 @@ export type ZoomRegistrantRecord = {
   raw_join_url_present: false;
 };
 
+export type ZoomDisposableCanaryRequestObserver = Readonly<{
+  onOauthTokenRequest?: (() => void) | undefined;
+  onResourceRequest?: ((method: string) => void) | undefined;
+}>;
+
 export class ZoomApiError extends Error {
   readonly status: number;
   readonly code: string;
@@ -137,7 +145,170 @@ const registrantResponseSchema = z.object({
   join_url: z.string().url(),
 });
 
-export function createZoomRestClient(options: ZoomRestClientOptions) {
+const disposableCanaryMeetingResponseSchema = z.object({
+  id: z.union([z.string(), z.number()]).transform((value) => String(value)),
+  type: z.number(),
+  host_id: z.string().min(1),
+  topic: z.string(),
+  agenda: z.string(),
+  start_time: z.string().min(1),
+  duration: z.number(),
+  settings: z
+    .object({
+      registrants_confirmation_email: z.boolean().optional(),
+      registrants_email_notification: z.boolean().optional(),
+      email_notification: z.boolean().optional(),
+      join_before_host: z.boolean().optional(),
+    })
+    .optional()
+    .default({}),
+});
+
+export function createZoomDisposableCanaryLifecycleClient(
+  options: ZoomRestClientOptions,
+  observer: ZoomDisposableCanaryRequestObserver = {},
+) {
+  let meetingResourceGetStarted = false;
+  const zoomJson = createZoomJsonRequester(options, {
+    onOauthTokenRequest: observer.onOauthTokenRequest,
+    onResourceRequest(method) {
+      observer.onResourceRequest?.(method);
+      if (method === 'GET') meetingResourceGetStarted = true;
+    },
+  });
+
+  async function inspectExactMeeting(input: {
+    meetingId: string;
+    expectedHostUserId: string;
+    expectedTopic: string;
+    expectedStartsAt: string;
+    expectedDurationMinutes: 60;
+  }) {
+    meetingResourceGetStarted = false;
+    let json: unknown;
+    try {
+      json = await zoomJson(`/meetings/${encodeURIComponent(input.meetingId)}`, {
+        method: 'GET',
+      });
+    } catch (error) {
+      if (
+        error instanceof ZoomApiError &&
+        error.status === 404 &&
+        error.code === 'ZOOM_3001' &&
+        meetingResourceGetStarted
+      ) {
+        return Object.freeze({
+          exists: false as const,
+          exact_scope: false,
+          meeting_id_matches_expected: false,
+          type_is_single_meeting: false,
+          host_matches_expected: false,
+          topic_matches_expected: false,
+          agenda_matches_expected: false,
+          starts_at_matches_expected: false,
+          duration_matches_expected: false,
+          notifications_disabled: false,
+          join_before_host_disabled: false,
+        });
+      }
+      throw error;
+    }
+    const parsed = disposableCanaryMeetingResponseSchema.safeParse(json);
+    if (!parsed.success) {
+      throw new ZoomApiError(
+        502,
+        'ZOOM_DISPOSABLE_CANARY_READBACK_INVALID',
+        'Zoom disposable meeting readback was incomplete.',
+      );
+    }
+    const meetingIdMatchesExpected = parsed.data.id === input.meetingId;
+    const typeIsSingleMeeting = parsed.data.type === 2;
+    const hostMatchesExpected = parsed.data.host_id === input.expectedHostUserId;
+    const topicMatchesExpected = parsed.data.topic === input.expectedTopic;
+    const agendaMatchesExpected = parsed.data.agenda === ZOOM_ISOLATED_CANARY_AGENDA;
+    const parsedStartsAt = Date.parse(parsed.data.start_time);
+    const expectedStartsAt = Date.parse(input.expectedStartsAt);
+    const startsAtMatchesExpected =
+      Number.isFinite(parsedStartsAt) &&
+      Number.isFinite(expectedStartsAt) &&
+      parsedStartsAt === expectedStartsAt;
+    const durationMatchesExpected = parsed.data.duration === input.expectedDurationMinutes;
+    const notificationsDisabled =
+      parsed.data.settings.registrants_confirmation_email === false &&
+      parsed.data.settings.registrants_email_notification === false &&
+      parsed.data.settings.email_notification === false;
+    const joinBeforeHostDisabled = parsed.data.settings.join_before_host === false;
+    return Object.freeze({
+      exists: true as const,
+      exact_scope:
+        meetingIdMatchesExpected &&
+        typeIsSingleMeeting &&
+        hostMatchesExpected &&
+        topicMatchesExpected &&
+        agendaMatchesExpected &&
+        startsAtMatchesExpected &&
+        durationMatchesExpected &&
+        notificationsDisabled &&
+        joinBeforeHostDisabled,
+      meeting_id_matches_expected: meetingIdMatchesExpected,
+      type_is_single_meeting: typeIsSingleMeeting,
+      host_matches_expected: hostMatchesExpected,
+      topic_matches_expected: topicMatchesExpected,
+      agenda_matches_expected: agendaMatchesExpected,
+      starts_at_matches_expected: startsAtMatchesExpected,
+      duration_matches_expected: durationMatchesExpected,
+      notifications_disabled: notificationsDisabled,
+      join_before_host_disabled: joinBeforeHostDisabled,
+    });
+  }
+
+  return Object.freeze({
+    inspectExactMeeting,
+    async deleteExactMeeting(input: {
+      meetingId: string;
+      expectedHostUserId: string;
+      expectedTopic: string;
+      expectedStartsAt: string;
+      expectedDurationMinutes: 60;
+      beforeDelete: () => Promise<void>;
+    }) {
+      const inspection = await inspectExactMeeting(input);
+      if (!inspection.exists) {
+        return Object.freeze({
+          already_absent: true,
+          delete_executed: false,
+          absent_verified: true,
+        });
+      }
+      if (!inspection.exact_scope) {
+        throw new ZoomApiError(
+          409,
+          'ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH',
+          'Zoom disposable meeting scope did not match the protected state.',
+        );
+      }
+      await input.beforeDelete();
+      await zoomJson(`/meetings/${encodeURIComponent(input.meetingId)}`, {
+        method: 'DELETE',
+      });
+      const readback = await inspectExactMeeting(input);
+      if (readback.exists) {
+        throw new ZoomApiError(
+          502,
+          'ZOOM_DISPOSABLE_CANARY_DELETE_UNVERIFIED',
+          'Zoom disposable meeting deletion could not be verified.',
+          true,
+        );
+      }
+      return Object.freeze({ already_absent: false, delete_executed: true, absent_verified: true });
+    },
+  });
+}
+
+export function createZoomRestClient(
+  options: ZoomRestClientOptions,
+  observer: ZoomDisposableCanaryRequestObserver = {},
+) {
   const apiBaseUrl = trimTrailingSlash(options.apiBaseUrl ?? 'https://api.zoom.us/v2');
   const oauthTokenUrl = options.oauthTokenUrl ?? 'https://zoom.us/oauth/token';
   const fetchImpl = options.fetchImpl ?? fetch;
@@ -154,6 +325,7 @@ export function createZoomRestClient(options: ZoomRestClientOptions) {
     const authorization = Buffer.from(
       `${options.credentials.clientId}:${options.credentials.clientSecret}`,
     ).toString('base64');
+    observer.onOauthTokenRequest?.();
     const response = await fetchWithTimeout(
       fetchImpl,
       url,
@@ -178,6 +350,8 @@ export function createZoomRestClient(options: ZoomRestClientOptions) {
 
   async function zoomJson(path: string, init: RequestInit = {}) {
     const token = await accessToken();
+    const method = init.method?.toUpperCase() ?? 'GET';
+    observer.onResourceRequest?.(method);
     const response = await fetchWithTimeout(
       fetchImpl,
       new URL(path.replace(/^\/+/, ''), `${apiBaseUrl}/`),
@@ -211,9 +385,10 @@ export function createZoomRestClient(options: ZoomRestClientOptions) {
           start_time: input.startsAt.toISOString(),
           timezone: 'Asia/Jerusalem',
           duration: input.durationMinutes,
-          agenda: 'Isolated fictional-student control verification. No customer invitations.',
+          agenda: ZOOM_ISOLATED_CANARY_AGENDA,
           settings: {
             approval_type: 0,
+            email_notification: false,
             registrants_confirmation_email: false,
             registrants_email_notification: false,
             join_before_host: false,
@@ -447,6 +622,79 @@ function sanitizeMeeting(meeting: z.infer<typeof meetingResponseSchema>): ZoomDa
   };
   assertNoZoomSecretLeak(JSON.stringify(record));
   return record;
+}
+
+function createZoomJsonRequester(
+  options: ZoomRestClientOptions,
+  observer: ZoomDisposableCanaryRequestObserver = {},
+) {
+  const apiBaseUrl = trimTrailingSlash(options.apiBaseUrl ?? 'https://api.zoom.us/v2');
+  const oauthTokenUrl = options.oauthTokenUrl ?? 'https://zoom.us/oauth/token';
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const timeoutMs = options.timeoutMs ?? 8_000;
+  let cachedToken: { value: string; expiresAt: number } | null = null;
+
+  async function accessToken() {
+    assertEnabled(options);
+    const now = Date.now();
+    if (cachedToken && cachedToken.expiresAt - 60_000 > now) return cachedToken.value;
+    const url = new URL(oauthTokenUrl);
+    url.searchParams.set('grant_type', 'account_credentials');
+    url.searchParams.set('account_id', options.credentials.accountId);
+    const authorization = Buffer.from(
+      `${options.credentials.clientId}:${options.credentials.clientSecret}`,
+    ).toString('base64');
+    observer.onOauthTokenRequest?.();
+    const response = await fetchWithTimeout(
+      fetchImpl,
+      url,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Basic ${authorization}`,
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      },
+      timeoutMs,
+    );
+    const json = await safeJson(response);
+    if (!response.ok) throw zoomError(response.status, json);
+    const parsed = tokenResponseSchema.safeParse(json);
+    if (!parsed.success) {
+      throw new ZoomApiError(
+        502,
+        'ZOOM_OAUTH_READBACK_INVALID',
+        'Zoom authorization readback was incomplete.',
+      );
+    }
+    cachedToken = {
+      value: parsed.data.access_token,
+      expiresAt: now + Math.max(60, parsed.data.expires_in ?? 3600) * 1000,
+    };
+    return cachedToken.value;
+  }
+
+  return async function zoomJson(path: string, init: RequestInit = {}) {
+    const token = await accessToken();
+    const method = init.method?.toUpperCase() ?? 'GET';
+    observer.onResourceRequest?.(method);
+    const response = await fetchWithTimeout(
+      fetchImpl,
+      new URL(path.replace(/^\/+/, ''), `${apiBaseUrl}/`),
+      {
+        ...init,
+        headers: {
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+          ...(init.headers ?? {}),
+        },
+      },
+      timeoutMs,
+    );
+    const json = await safeJson(response);
+    if (!response.ok) throw zoomError(response.status, json);
+    return json;
+  };
 }
 
 async function fetchWithTimeout(
