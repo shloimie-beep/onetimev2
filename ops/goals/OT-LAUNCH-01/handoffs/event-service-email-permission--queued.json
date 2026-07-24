@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "event_service_email_permission",
+  "acceptance_ids": ["GHL-006"],
+  "assignment": {
+    "task_id": "OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE",
+    "repository": "shloimie-beep/onetimev2",
+    "branch": "codex/event-service-email-permission-convergence",
+    "starting_head": "b32351bfde706822440bcc01cf49079ac52b27fb",
+    "conductor_branch": "codex/full-app-staging-live",
+    "conductor_pr": 97
+  },
+  "objective": "Converge Tisha event-only permission and the exact registered-event tag onto the accepted canonical HighLevel outbox without sending, enrolling, or mutating a provider.",
+  "required_contract": {
+    "event_name": "event.registration.recorded",
+    "outbox_event_type": "highlevel.event.registration.recorded.v1",
+    "event_code": "tisha-bav-2026",
+    "permission_scope": "event_service_email",
+    "protected_path": "/tisha-bav",
+    "tags": ["OT | Event | Tisha B'Av 2026 | Registered", "OT | Source | Tisha B'Av 2026"]
+  },
+  "implementation": [
+    "Audit the migration ledger and add only the next globally free forward-only migration if contact-scoped permission, durable global email restrictions, cancellation, or identity ambiguity cannot be represented by the applied schema; never edit applied 2220.",
+    "Create one shared typed evaluator with exact precedence: complaint or hard bounce; contact suppression or email/all DND; global unsubscribe; event withdrawal or registration cancellation; invalid, archived, mismatched, or ambiguous identity; missing active event permission.",
+    "Atomically resolve or create exactly one adult contact for the scoped normalized email without granting generic or marketing consent, persist registration plus permission history/current projection, and enqueue one deterministic held HighLevel outbox event in the same transaction.",
+    "Do not call the legacy direct HighLevel client, enroll a workflow directly, or automatically queue the Resend fallback. Preserve historical rows as immutable history.",
+    "Extend the canonical producer and dispatcher for the new event, exact two-tag projection, account/product/contact/event matching, and a second eligibility check immediately before provider operations.",
+    "Do not silently reuse or flip a held row created with transport_mode=disabled. A later live canary requires one explicit exact-row prepare transition bound to the delivery key, run, allowlist, budget, current eligibility, no-prior-effect proof, and audit.",
+    "After the provider add-tags operation, require a provider readback proving both exact tags before completing the operation receipt. Ambiguous or missing readback is uncertain and cannot be replayed automatically.",
+    "Make the exact-key reprocess command read-only by default. It returns only sanitized hashes, eligibility reason, outbox state, and would-enqueue state while changing zero rows and making zero provider calls.",
+    "If an explicit enqueue path is retained, keep it separately authorization-gated and limited to deterministic outbox insertion; replay must be a duplicate/no-op and it must never call GHL or a fallback directly."
+  ],
+  "required_tests": [
+    "Full typed precedence table, pairwise collisions, and fail-closed unknown/missing states.",
+    "Atomic registration, adult contact, event-only permission history/current projection, and exactly one held outbox row.",
+    "No newsletter/general-marketing consent and no backfill/inference for legacy rows.",
+    "Replay creates no duplicate; withdrawal/suppression cannot be overridden.",
+    "Post-claim DND, withdrawal, complaint, or hard bounce causes zero provider operations.",
+    "Exact-row canary preparation refuses a disabled held row without matching run, allowlist, budget, current eligibility, and no-prior-effect proof.",
+    "Provider tag readback must prove both exact tags; missing or ambiguous readback becomes uncertain with no automatic replay.",
+    "Account, product, contact, registration, and event-scope mismatch denial.",
+    "Read-only inspection preserves all rows, bytes, and timestamps.",
+    "Provider-off deployment yields zero adapter calls, messages, enrollments, or GHL mutations.",
+    "PostgreSQL 16 and 18, migration safety/checksum, focused unit/integration, typecheck, build, lint, scoped format, secret scan, and diff check."
+  ],
+  "forbidden": [
+    "No GHL UI change, workflow activation, manual tag, direct enrollment, provider send, WhatsApp, fallback email, repeated signup, or live reprocess.",
+    "No production or persistent-staging provider/config mutation.",
+    "No inference of event permission from deliverability, newsletter consent, historical enrollment, or the 207 contacts.",
+    "Do not cherry-pick the historical PR 106, PR 111, or PR 112 direct-provider implementations."
+  ],
+  "handoff": {
+    "write_only_to_feature_branch": true,
+    "board_owned_by_conductor": true,
+    "required_result": "One sanitized handoff with exact head, changed paths, migration checksum if any, tests, zero-effects readback, conflicts, and remaining separately gated live proof."
+  }
+}

@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T15:31:21Z
+updated_at: 2026-07-24T15:54:16Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -668,14 +668,14 @@ tracks:
     next_action: 'Keep the deployed dispatcher fail-closed; do not activate a workflow, contact a provider, or open a database proxy until one separately reviewed bounded activation job is authorized.'
 
   - id: event_service_email_permission
-    status: blocked
+    status: active
     owner:
-      task_id: client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef
+      task_id: OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE
       repository: shloimie-beep/onetimev2
-      branch: release/tisha-bav-2026-live
+      branch: codex/event-service-email-permission-convergence
       pr: null
-      system: OT-TISHA-HANDOFF-01 queued governed application hotfix
-    write_scope: Server registration/tag/enrollment/fallback diagnosis and repair plus narrow production hotfix; forward-only event_service_email permission schema/projection, send-time eligibility, read-only audience classification, and synthetic tests; no GHL UI mutation or substitute/customer delivery
+      system: One Time event-only permission and canonical HighLevel outbox convergence
+    write_scope: Forward-only event_service_email enforcement, typed deny precedence, atomic exact-tag outbox producer, dispatcher send-time recheck, read-only exact-key inspection, and synthetic/PostgreSQL tests; no GHL UI mutation, fallback/customer delivery, live reprocess, or production change
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/event-service-email-permission--queued.json
     dependencies: [goal_system, ghl_event_dispatcher]
     acceptance_ids: [GHL-006]
@@ -691,11 +691,11 @@ tracks:
       - GHL OT-E01 enrollment is proven to rely on the exact event-registration tag, but a separate durable GHL event-permission custom field/tag and send-time projection readback were not proven. Existing enrollment and one delivered operator confirmation must not be treated as completion of this application/GHL contract.
       - Newest live production evidence is an end-to-end failure: the operator's real Tisha signup yielded an account/login-code email, not the OT-E01 event confirmation. The application registration transaction, canonical registered-tag projection, GHL enrollment, and send-time event-permission chain must be diagnosed as one system before promotion.
       - 'Separate governed hotfix OT-TISHA-HANDOFF-01 is queued as client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef on release/tisha-bav-2026-live. Its claim is pending and its scope is only the server registration/tag/enrollment/fallback repair plus a narrow production hotfix; PR #110 stays visual-only and the PR #107 executor stays the sole GHL UI writer.'
-    blocker:
-      code: LIVE_EVENT_PERMISSION_AND_GHL_HANDOFF_UNPROVEN
-      reason: A real live signup did not produce the event-service confirmation, and the exact point where the authoritative application permission/registration state failed to project or enroll is still under readback.
-    remaining_work: 'Diagnose and repair the exact production transaction and registered-tag handoff, reconcile the already present PR #106 event_service_consent source with the full append-only/current-projection/idempotency/deny-order contract, prove durable GHL projection plus send-time readback, and only after proof reprocess the one affected existing operator contact without duplicate enrollment or delivery.'
-    next_action: 'Do not fold into PR #108, send a fallback, repeat the signup, infer permission from contact state, or promote PR #110 until exact failure evidence and the separate governed repair are accepted.'
+      - 'A read-only conductor audit at b32351bfde706822440bcc01cf49079ac52b27fb isolated the remaining application defects: the Tisha route still bypasses the accepted PR #108 outbox, event permission is not yet contact-scoped with ordered deny precedence, the dispatcher does not recheck event permission immediately before provider work, and the existing reprocess command is mutating rather than inspection-first.'
+      - 'The same existing track is now assigned through ops/goals/OT-LAUNCH-01/handoffs/event-service-email-permission--queued.json. The implementation must add one dedicated event.registration.recorded contract, exact registered/source tag projection, one shared fail-closed eligibility evaluator, and a read-only default inspection path while leaving every provider mode disabled.'
+    blocker: null
+    remaining_work: 'Implement and independently verify the assigned source-only convergence on the governed base; deploy it to persistent staging with HighLevel modes disabled and prove one synthetic registration creates exactly one held outbox row while inspection changes zero rows. Live GHL execution and the one affected production contact remain separately gated after source acceptance.'
+    next_action: 'Execute OT-LAUNCH-01-EVENT-PERMISSION-CONVERGENCE from the assigned packet. Never manual-tag, repeat the signup, call GHL directly, queue a fallback, infer consent, or mutate production in this implementation lane.'
 
   - id: media_staging_integration
     status: done
