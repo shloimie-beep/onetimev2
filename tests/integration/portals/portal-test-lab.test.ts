@@ -11,6 +11,7 @@ import {
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
+  createDbStudentClassHelperRateLimitStore,
   createAccountUser,
   decryptAuthEmailChallengeDeliveryPayloadForTests,
 } from '../../../packages/domain/src/index.ts';
@@ -200,6 +201,49 @@ describe('W12-03 Portal Test Lab', () => {
         /https?:\/\/|zoom|vimeo|drive|meet/i,
       );
 
+      const parentHelper = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/${
+          W12_PORTAL_TEST_LAB.householdKey
+        }/learners/${W12_PORTAL_TEST_LAB.learners[0].learnerKey}/helper/query`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parent.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': parent.json.csrf_token,
+          },
+          body: JSON.stringify({
+            idempotency_key: 'w12-parent-helper-learner-one',
+            question: 'What should this learner review from the Mishnah lesson?',
+          }),
+        },
+      );
+      const parentHelperJson = await parentHelper.json();
+      expect(parentHelper.status, JSON.stringify(parentHelperJson)).toBe(200);
+      expect(parentHelperJson.data).toMatchObject({
+        abstained: false,
+        provider_mode: 'provider_off',
+        grounding_mode: 'approved_entitled_sections',
+      });
+      const crossHousehold = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/not_authorized_household/learners/${
+          W12_PORTAL_TEST_LAB.learners[0].learnerKey
+        }/helper/query`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parent.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': parent.json.csrf_token,
+          },
+          body: JSON.stringify({
+            idempotency_key: 'w12-parent-helper-cross-household',
+            question: 'What should this learner review?',
+          }),
+        },
+      );
+      expect(crossHousehold.status).toBe(404);
+
       for (const current of W12_PORTAL_TEST_LAB.learners) {
         const student = await loginAs(server.baseUrl, current.email, current.defaultPassword);
         const dashboard = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
@@ -233,11 +277,29 @@ describe('W12-03 Portal Test Lab', () => {
         const helperJson = await helper.json();
         expect(helper.status, JSON.stringify(helperJson)).toBe(200);
         expect(helperJson.data.abstained).toBe(false);
+        expect(helperJson.data.provider_mode).toBe('provider_off');
+        expect(helperJson.data.grounding_mode).toBe('approved_entitled_sections');
         expect(JSON.stringify(helperJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive|meet/i);
       }
     } finally {
       await server.close();
     }
+  });
+
+  it('enforces one database-backed helper budget across independent adapter instances', async () => {
+    const first = createDbStudentClassHelperRateLimitStore(pool, config);
+    const second = createDbStudentClassHelperRateLimitStore(pool, config);
+    const request = {
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      principalKey: 'scoped_parent_learner_principal',
+      learnerKey: W12_PORTAL_TEST_LAB.learners[0].learnerKey,
+      now: new Date('2026-07-24T12:00:00.000Z'),
+    };
+    for (let index = 0; index < 10; index += 1) {
+      await (index % 2 === 0 ? first : second).assertAllowed(request);
+    }
+    await expect(second.assertAllowed(request)).rejects.toMatchObject({ code: 'RATE_LIMITED' });
   });
 });
 

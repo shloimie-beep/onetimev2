@@ -458,7 +458,7 @@ describe('OT-52P parent and student portal services', () => {
     expect(dashboard.helper).toMatchObject({ available: false });
     expect(studentDashboard.helper).toMatchObject({ available: false });
     await expect(
-      parentService.helperQuery(parentActor, householdKey, {
+      parentService.helperQuery(parentActor, householdKey, learner.learner_key, {
         idempotency_key: 'helper-query-001',
         question: 'What is due?',
       }),

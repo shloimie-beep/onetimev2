@@ -19,6 +19,12 @@ const uuidSchema = z
 
 const dateTimeSchema = z.string().datetime({ offset: true });
 
+export const sameOriginPathSchema = z
+  .string()
+  .min(1)
+  .max(768)
+  .refine(isCanonicalSameOriginPath, 'Expected a canonical same-origin path.');
+
 export const ot86ContentLifecycleStateSchema = z.enum([
   'received',
   'uploading',
@@ -85,11 +91,8 @@ export const ot86ContentSectionSchema = z
     ordinal: z.number().int().min(0),
     start_ms: z.number().int().min(0),
     end_ms: z.number().int().min(0),
-    canonical_path: z.string().regex(/^\//).max(512),
-    deep_link: z
-      .string()
-      .regex(/^\/[^#]*#section-/)
-      .max(768),
+    canonical_path: sameOriginPathSchema.refine((value) => value.length <= 512),
+    deep_link: sameOriginPathSchema.refine((value) => /^\/[^#]*#section-/.test(value)),
     text_sha256: sha256Schema,
   })
   .strict()
@@ -131,7 +134,7 @@ export const ot86ContentPublishManifestSchema = z
     supersedes_version_id: idSchema.optional(),
     sequence: z.number().int().min(1),
     occurred_at: dateTimeSchema,
-    canonical_path: z.string().regex(/^\//).max(512).optional(),
+    canonical_path: sameOriginPathSchema.refine((value) => value.length <= 512).optional(),
     approval: z
       .object({
         approval_id: idSchema,
@@ -283,7 +286,7 @@ export const ot86RetrievalResponseSchema = z
             version_id: idSchema,
             section_id: idSchema,
             section_title: z.string().min(1).max(240),
-            deep_link: z.string().regex(/^\//).max(768),
+            deep_link: sameOriginPathSchema,
             section_sha256: sha256Schema,
           })
           .strict(),
@@ -303,6 +306,35 @@ export const ot86RetrievalResponseSchema = z
     }
   });
 export type Ot86RetrievalResponse = z.infer<typeof ot86RetrievalResponseSchema>;
+
+function isCanonicalSameOriginPath(value: string) {
+  if (
+    value !== value.trim() ||
+    !value.startsWith('/') ||
+    value.startsWith('//') ||
+    hasUnsafePathCharacter(value) ||
+    /%(?:5c|0[0-9a-f]|1[0-9a-f]|7f)/iu.test(value)
+  ) {
+    return false;
+  }
+  try {
+    const base = new URL('https://onetime.invalid');
+    const parsed = new URL(value, base);
+    return (
+      parsed.origin === base.origin && `${parsed.pathname}${parsed.search}${parsed.hash}` === value
+    );
+  } catch {
+    return false;
+  }
+}
+
+function hasUnsafePathCharacter(value: string) {
+  for (const character of value) {
+    const code = character.charCodeAt(0);
+    if (character === '\\' || code <= 0x1f || code === 0x7f) return true;
+  }
+  return false;
+}
 
 export const ot86ProviderReadinessStateSchema = z.enum([
   'unconfigured',

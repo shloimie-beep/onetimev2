@@ -27,6 +27,14 @@ import {
 } from '../social/buffer-runtime.ts';
 import { telegramTransportReadiness } from '../telegram/transport.ts';
 import { OT109_SCOPE } from './publisher.ts';
+import {
+  applyStructuredPromptOperations,
+  assertStoredPromptIntegrity,
+  renderStructuredPromptDocument,
+  structuredPromptDocumentChecksum,
+  structuredPromptPatchEnvelope,
+  StructuredPromptPatchError,
+} from './structured-prompt.ts';
 import { inspectOt104rVimeoReadinessFromEnv } from './vimeo-private-runtime.ts';
 
 const OWNER_CAPABILITIES: ContentAdminCapability[] = [
@@ -920,6 +928,10 @@ export async function createOt110aPromptPatch(input: {
   const now = input.now ?? new Date();
   await ensureOt110aDefaultPromptRegistry({ pool: input.pool, config: input.config, now });
   return inTransaction(input.pool, async (client) => {
+    const templateState = await lockPromptTemplate(client, input.config, input.templateKey);
+    if (!templateState) {
+      throw new Ot110aContentWorkspaceError('NOT_FOUND', 'Prompt template was not found.');
+    }
     const parent = await getPromptVersionRow(
       client,
       input.config,
@@ -928,15 +940,32 @@ export async function createOt110aPromptPatch(input: {
     if (!parent || parent.template_key !== input.templateKey) {
       throw new Ot110aContentWorkspaceError('NOT_FOUND', 'Parent prompt version was not found.');
     }
-    const promptText = applyPromptPatch(String(parent.prompt_text), input.payload.patch);
-    if (promptText === parent.prompt_text) {
+    if (String(templateState.active_version_key) !== String(parent.version_key)) {
       throw new Ot110aContentWorkspaceError(
-        'PROMPT_PATCH_NOOP',
-        'Prompt patch did not change text.',
+        'VERSION_CONFLICT',
+        'Prompt patches must start from the current active version.',
       );
     }
-    const versionNumber = await nextPromptVersionNumber(client, input.config, input.templateKey);
-    const checksum = digest(promptText);
+    const latestVersionNumber = await latestPromptVersionNumber(
+      client,
+      input.config,
+      input.templateKey,
+    );
+    if (latestVersionNumber !== input.payload.expected_latest_version_number) {
+      throw new Ot110aContentWorkspaceError(
+        'VERSION_CONFLICT',
+        'A newer prompt version exists. Review its diff before saving another patch.',
+      );
+    }
+    const parentDocument = assertStoredPromptIntegrity({
+      promptText: String(parent.prompt_text),
+      patchJson: parent.patch_json,
+      checksum: String(parent.checksum),
+    });
+    const applied = applyStructuredPromptPatch(parentDocument, input.payload.operations);
+    const promptText = renderStructuredPromptDocument(applied.document);
+    const versionNumber = latestVersionNumber + 1;
+    const checksum = structuredPromptDocumentChecksum(applied.document);
     const versionKey = stableKey('ot110a_prompt_version', [
       input.config.accountKey,
       input.config.productKey,
@@ -958,7 +987,12 @@ export async function createOt110aPromptPatch(input: {
         versionNumber,
         parent.version_key,
         promptText,
-        JSON.stringify(input.payload.patch),
+        JSON.stringify(
+          structuredPromptPatchEnvelope({
+            document: applied.document,
+            operations: input.payload.operations,
+          }),
+        ),
         input.payload.reason,
         checksum,
         input.actor.userKey,
@@ -982,7 +1016,11 @@ export async function createOt110aPromptPatch(input: {
         input.templateKey,
         parent.version_key,
         versionKey,
-        JSON.stringify(input.payload.patch),
+        JSON.stringify({
+          schema_version: 1,
+          operations: input.payload.operations,
+          diff: applied.diff,
+        }),
         input.payload.reason,
         input.actor.userKey,
         checksum,
@@ -1020,14 +1058,35 @@ export async function previewOt110aPromptPatch(input: {
   if (!parent || parent.template_key !== input.templateKey) {
     throw new Ot110aContentWorkspaceError('NOT_FOUND', 'Parent prompt version was not found.');
   }
-  const candidate = applyPromptPatch(String(parent.prompt_text), input.payload.patch);
+  const latestVersionNumber = await latestPromptVersionNumber(
+    input.pool,
+    input.config,
+    input.templateKey,
+  );
+  if (latestVersionNumber !== input.payload.expected_latest_version_number) {
+    throw new Ot110aContentWorkspaceError(
+      'VERSION_CONFLICT',
+      'A newer prompt version exists. Refresh before previewing this patch.',
+    );
+  }
+  const parentDocument = assertStoredPromptIntegrity({
+    promptText: String(parent.prompt_text),
+    patchJson: parent.patch_json,
+    checksum: String(parent.checksum),
+  });
+  const applied = applyStructuredPromptPatch(parentDocument, input.payload.operations);
+  const candidate = renderStructuredPromptDocument(applied.document);
   const source = input.payload.source_key
     ? await getContentItemRow(input.pool, input.config, input.payload.source_key)
     : null;
   return {
     source_key: input.payload.source_key ?? null,
     parent_checksum: String(parent.checksum),
-    candidate_checksum: digest(candidate),
+    candidate_checksum: structuredPromptDocumentChecksum(applied.document),
+    candidate_document: applied.document,
+    proposed_operations: input.payload.operations,
+    diff: applied.diff,
+    rendered_prompt: candidate,
     rendered_excerpt: [
       `Template: ${String(parent.template_label ?? input.templateKey)}`,
       `Source: ${source ? String(source.title) : 'fictional entitled sample'}`,
@@ -1043,6 +1102,7 @@ export async function activateOt110aPromptVersion(input: {
   actor: Ot110aContentAdminActor;
   templateKey: string;
   versionKey: string;
+  expectedActiveVersionKey: string;
   reason: string;
   now?: Date;
 }) {
@@ -1054,6 +1114,7 @@ export async function activateOt110aPromptVersion(input: {
     actor: input.actor,
     templateKey: input.templateKey,
     versionKey: input.versionKey,
+    expectedActiveVersionKey: input.expectedActiveVersionKey,
     reason: input.reason,
     actionType: 'prompt.activated',
     now,
@@ -1066,6 +1127,7 @@ export async function rollbackOt110aPromptVersion(input: {
   actor: Ot110aContentAdminActor;
   templateKey: string;
   targetVersionKey: string;
+  expectedActiveVersionKey: string;
   reason: string;
   now?: Date;
 }) {
@@ -1076,6 +1138,7 @@ export async function rollbackOt110aPromptVersion(input: {
     actor: input.actor,
     templateKey: input.templateKey,
     versionKey: input.targetVersionKey,
+    expectedActiveVersionKey: input.expectedActiveVersionKey,
     reason: input.reason,
     actionType: 'prompt.rollback_reactivated',
     now: input.now ?? new Date(),
@@ -1229,6 +1292,8 @@ async function readPromptTemplates(
             versions.version_key,
             versions.version_number,
             versions.parent_version_key,
+            versions.prompt_text,
+            versions.patch_json,
             versions.checksum,
             versions.status,
             versions.reason,
@@ -1248,6 +1313,11 @@ async function readPromptTemplates(
   const templates = new Map<string, ContentAdminPromptTemplate>();
   for (const row of result.rows) {
     const templateKey = String(row.template_key);
+    const structuredDocument = assertStoredPromptIntegrity({
+      promptText: String(row.prompt_text),
+      patchJson: row.patch_json,
+      checksum: String(row.checksum),
+    });
     const version: ContentAdminPromptVersion = {
       version_key: String(row.version_key),
       template_key: templateKey,
@@ -1259,6 +1329,8 @@ async function readPromptTemplates(
       author_user_key: nullableString(row.author_user_key),
       activated_at: nullableIso(row.activated_at),
       created_at: asDate(row.created_at).toISOString(),
+      structured_document: structuredDocument,
+      rendered_prompt: renderStructuredPromptDocument(structuredDocument),
     };
     const existing = templates.get(templateKey);
     if (existing) {
@@ -1671,6 +1743,7 @@ async function setPromptActiveVersion(input: {
   actor: Ot110aContentAdminActor;
   templateKey: string;
   versionKey: string;
+  expectedActiveVersionKey: string;
   reason: string;
   actionType: string;
   now: Date;
@@ -1681,6 +1754,16 @@ async function setPromptActiveVersion(input: {
     now: input.now,
   });
   return inTransaction(input.pool, async (client) => {
+    const templateState = await lockPromptTemplate(client, input.config, input.templateKey);
+    if (!templateState) {
+      throw new Ot110aContentWorkspaceError('NOT_FOUND', 'Prompt template was not found.');
+    }
+    if (String(templateState.active_version_key) !== input.expectedActiveVersionKey) {
+      throw new Ot110aContentWorkspaceError(
+        'VERSION_CONFLICT',
+        'The active prompt changed before this action could be applied.',
+      );
+    }
     const version = await getPromptVersionRow(client, input.config, input.versionKey);
     if (!version || version.template_key !== input.templateKey) {
       throw new Ot110aContentWorkspaceError('NOT_FOUND', 'Prompt version was not found.');
@@ -1784,17 +1867,49 @@ async function getPromptVersionRow(
       LIMIT 1`,
     [config.accountKey, config.productKey, versionKey],
   );
-  return result.rows[0] ?? null;
+  const row = (result.rows[0] as Record<string, unknown> | undefined) ?? null;
+  if (!row) return null;
+  try {
+    assertStoredPromptIntegrity({
+      promptText: String(row.prompt_text),
+      patchJson: row.patch_json,
+      checksum: String(row.checksum),
+    });
+  } catch (error) {
+    if (error instanceof StructuredPromptPatchError) {
+      throw new Ot110aContentWorkspaceError(
+        'VALIDATION_ERROR',
+        'Stored prompt version failed integrity validation.',
+      );
+    }
+    throw error;
+  }
+  return row;
 }
 
-async function nextPromptVersionNumber(client: Queryable, config: AppConfig, templateKey: string) {
+async function latestPromptVersionNumber(
+  client: Queryable,
+  config: AppConfig,
+  templateKey: string,
+) {
   const result = await client.query(
-    `SELECT COALESCE(MAX(version_number), 0)::int + 1 AS next_version
+    `SELECT COALESCE(MAX(version_number), 0)::int AS latest_version
        FROM onetime.ot110a_prompt_versions
       WHERE account_key = $1 AND product_key = $2 AND template_key = $3`,
     [config.accountKey, config.productKey, templateKey],
   );
-  return Number(result.rows[0]?.next_version ?? 1);
+  return Number(result.rows[0]?.latest_version ?? 0);
+}
+
+async function lockPromptTemplate(client: Queryable, config: AppConfig, templateKey: string) {
+  const result = await client.query(
+    `SELECT active_version_key
+       FROM onetime.ot110a_prompt_templates
+      WHERE account_key = $1 AND product_key = $2 AND template_key = $3
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, templateKey],
+  );
+  return (result.rows[0] as Record<string, unknown> | undefined) ?? null;
 }
 
 async function nextArtifactRevisionNumber(
@@ -2245,11 +2360,24 @@ function capabilityForAction(
   return map[actionType];
 }
 
-function applyPromptPatch(promptText: string, patch: { find: string; replace: string }) {
-  if (!promptText.includes(patch.find)) {
-    return `${promptText}\n\nPatch note: ${patch.replace}`;
+function applyStructuredPromptPatch(
+  document: Parameters<typeof applyStructuredPromptOperations>[0],
+  operations: Parameters<typeof applyStructuredPromptOperations>[1],
+) {
+  try {
+    return applyStructuredPromptOperations(document, operations);
+  } catch (error) {
+    if (error instanceof StructuredPromptPatchError) {
+      if (error.code === 'SECTION_CHECKSUM_CONFLICT') {
+        throw new Ot110aContentWorkspaceError('VERSION_CONFLICT', error.message);
+      }
+      if (error.code === 'PATCH_NOOP') {
+        throw new Ot110aContentWorkspaceError('PROMPT_PATCH_NOOP', error.message);
+      }
+      throw new Ot110aContentWorkspaceError('VALIDATION_ERROR', error.message);
+    }
+    throw error;
   }
-  return promptText.replace(patch.find, patch.replace);
 }
 
 function templateByKey(templates: ContentAdminPromptTemplate[], templateKey: string) {

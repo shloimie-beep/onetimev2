@@ -250,6 +250,28 @@ export async function queryStudentHelper(input: { csrfToken: string; question: s
   return json.data;
 }
 
+export async function queryParentHelper(input: {
+  csrfToken: string;
+  householdKey: string;
+  learnerKey: string;
+  question: string;
+}) {
+  const json = await api<{ success: true; data: HelperAnswer }>(
+    `/api/v1/portals/parent/households/${encodeURIComponent(
+      input.householdKey,
+    )}/learners/${encodeURIComponent(input.learnerKey)}/helper/query`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        question: input.question,
+      }),
+    },
+  );
+  return json.data;
+}
+
 export async function submitClassroomQuestion(input: {
   csrfToken: string;
   occurrenceKey: string;

@@ -119,6 +119,7 @@ export type ParentPortalFeatureProps = {
   ) => void;
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onOpenContent?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
+  onQueryHelper?: (learnerKey: string, question: string) => Promise<HelperAnswer>;
   onPreviewSupport?: (learnerKey?: string) => void;
   onCreateRewardGoal?: (
     learnerKey: string,
@@ -165,6 +166,7 @@ export function ParentPortalFeature({
   onStudentAccessAction,
   onLaunchClass,
   onOpenContent,
+  onQueryHelper,
   onPreviewSupport,
   onCreateRewardGoal,
   onRetry,
@@ -349,10 +351,16 @@ export function ParentPortalFeature({
             <section aria-labelledby="parent-materials-heading">
               <h2 id="parent-materials-heading">Materials</h2>
               <MaterialsSummary
+                key={selectedLearner.learner_key}
                 library={selectedMaterials?.library ?? []}
                 reviewSheets={selectedMaterials?.review_sheets ?? []}
-                helper={dashboard.helper}
+                helper={selectedMaterials?.helper ?? dashboard.helper}
                 onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
+                onQueryHelper={
+                  onQueryHelper
+                    ? (question) => onQueryHelper(selectedLearner.learner_key, question)
+                    : undefined
+                }
                 onPreviewSupport={() => onPreviewSupport?.(selectedLearner.learner_key)}
               />
             </section>
@@ -1043,19 +1051,21 @@ function MaterialsSummary({
   reviewSheets,
   helper,
   onOpen,
+  onQueryHelper,
   onPreviewSupport,
 }: {
   library: LibraryItem[];
   reviewSheets: LibraryItem[];
   helper: HelperAvailability;
   onOpen?: ((action: ProtectedActionDescriptor) => void) | undefined;
+  onQueryHelper?: ((question: string) => Promise<HelperAnswer>) | undefined;
   onPreviewSupport?: (() => void) | undefined;
 }) {
   return (
     <section className="ot-subsection" aria-labelledby="materials-heading">
       <h3 id="materials-heading">Materials</h3>
       <ContentList items={[...library, ...reviewSheets]} onOpen={onOpen} />
-      <HelperState helper={helper} />
+      <ClassHelperPanel helper={helper} onQueryHelper={onQueryHelper} />
       {onPreviewSupport && (
         <button type="button" className="ot-button" onClick={onPreviewSupport}>
           Technical support
@@ -1191,6 +1201,11 @@ function ClassHelperPanel({
       {answer && (
         <article className="ot-helper-answer" data-abstained={answer.abstained}>
           <p>{answer.answer}</p>
+          {answer.provider_mode === 'provider_off' && (
+            <p className="ot-guardrail-note">
+              Approved-source fallback is active while the model provider is off.
+            </p>
+          )}
           {answer.citations.length > 0 && (
             <ul className="ot-citation-list" aria-label="Approved sources">
               {answer.citations.map((citation) => (

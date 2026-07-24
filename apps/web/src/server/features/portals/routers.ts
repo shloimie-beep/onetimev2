@@ -92,6 +92,7 @@ type ParentPortalService = {
   helperQuery(
     actor: PortalActorContext,
     householdKey: string,
+    learnerKey: string,
     payload: z.infer<typeof helperQueryPayloadSchema>,
   ): Promise<unknown>;
   supportPreview(
@@ -319,16 +320,17 @@ export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
   );
 
   router.post(
-    '/households/:householdKey/helper/query',
+    '/households/:householdKey/learners/:learnerKey/helper/query',
     asyncRoute(async (req, res) => {
       const actor = await requireWriteActor(req, res, deps);
       if (!actor) return;
       const householdKey = parseParam(req.params.householdKey);
+      const learnerKey = parseParam(req.params.learnerKey);
       const payload = helperQueryPayloadSchema.parse(req.body);
       sendData(
         res,
         helperAnswerSchema,
-        await deps.service.helperQuery(actor, householdKey, payload),
+        await deps.service.helperQuery(actor, householdKey, learnerKey, payload),
       );
     }),
   );

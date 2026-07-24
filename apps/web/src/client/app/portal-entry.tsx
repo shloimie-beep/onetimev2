@@ -34,6 +34,7 @@ import {
   markLiveClassQuestionReady,
   runStudentAccessOperation,
   requestParentRecovery,
+  queryParentHelper,
   setParentLearnerArchived,
   submitClassroomQuestion,
   queryStudentHelper,
@@ -440,6 +441,25 @@ function PortalApp() {
     }
   }
 
+  async function handleParentHelper(learnerKey: string, question: string) {
+    if (!session || portalRole !== 'parent' || !parentDashboard) {
+      throw new Error(HELPER_PREPARING_MESSAGE);
+    }
+    try {
+      return await queryParentHelper({
+        csrfToken: session.csrf_token,
+        householdKey: parentDashboard.household.household_key,
+        learnerKey,
+        question,
+      });
+    } catch (error) {
+      if (handleAuthError(error)) throw error;
+      setNotice({ kind: 'error', message: errorMessage(error, HELPER_PREPARING_MESSAGE) });
+      setViewState(stateForError(error));
+      throw error;
+    }
+  }
+
   async function handleClassroomQuestion(occurrenceKey: string, body: string) {
     if (!session || portalRole !== 'student') return;
     try {
@@ -609,6 +629,7 @@ function PortalApp() {
             onStudentAccessAction={openStudentAccessDialog}
             onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
             onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
+            onQueryHelper={(learnerKey, question) => handleParentHelper(learnerKey, question)}
             onPreviewSupport={() => window.location.assign('/app/support')}
             onCreateRewardGoal={(learnerKey, goal) => void handleCreateRewardGoal(learnerKey, goal)}
             onRetry={() => void load()}

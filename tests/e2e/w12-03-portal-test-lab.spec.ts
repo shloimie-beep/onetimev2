@@ -42,6 +42,62 @@ test('W12-03 admin lab page is owner/admin-only and secret-free', async ({ brows
   await parentContext.close();
 });
 
+test('PROMPT-KNOWLEDGE-001 Admin reviews, saves, activates, and rolls back one section patch', async ({
+  browser,
+}) => {
+  const adminContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  await adminContext.addCookies([...W12_E2E_ADMIN_COOKIES]);
+  const page = await adminContext.newPage();
+  const requests = collectRequests(page);
+  await page.goto('/app/content/prompts');
+  await expect(
+    page.getByRole('navigation', { name: 'Content area' }).getByRole('link', { name: 'Prompts' }),
+  ).toHaveAttribute('aria-current', 'page');
+  await page.getByRole('combobox', { name: 'Prompt section' }).selectOption('tone_and_voice');
+  await page
+    .getByRole('textbox', { name: 'Natural-language instruction' })
+    .fill('Use a warm, precise classroom voice.');
+  await page.getByRole('textbox', { name: 'Reason' }).fill('Browser review of one scoped section.');
+  const saveDraft = page.getByRole('button', { name: 'Save draft' });
+  await expect(saveDraft).toBeDisabled();
+  await page.getByRole('button', { name: 'Preview/test' }).click();
+  const preview = page.getByRole('heading', { name: 'Preview' }).locator('..');
+  await expect(preview).toContainText('Tone and voice');
+  await expect(preview.getByRole('heading', { name: 'Complete candidate prompt' })).toBeVisible();
+  await expect(preview.locator('pre')).toContainText('Use a warm, precise classroom voice.');
+  const exactDiff = preview.locator('[data-prompt-diff="tone_and_voice"]');
+  await expect(exactDiff.getByRole('heading', { name: 'Before' })).toBeVisible();
+  await expect(exactDiff.getByRole('heading', { name: 'After' })).toBeVisible();
+  await expect(
+    exactDiff.getByRole('listitem').filter({ hasText: 'Use a warm, precise classroom voice.' }),
+  ).toHaveCount(1);
+  await expect(preview).toContainText('cannot publish');
+  await expect(saveDraft).toBeEnabled();
+  await saveDraft.click();
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Prompt registry updated.' }),
+  ).toBeVisible();
+
+  let versionTwo = page.locator('.content-row-card').filter({ hasText: 'Version 2' });
+  await expect(versionTwo).toContainText('draft');
+  await versionTwo.getByRole('button', { name: 'Activate', exact: true }).click();
+  versionTwo = page.locator('.content-row-card').filter({ hasText: 'Version 2' });
+  await expect(versionTwo).toContainText('active');
+
+  let versionOne = page.locator('.content-row-card').filter({ hasText: 'Version 1' });
+  await expect(versionOne).toContainText('retired');
+  await versionOne.getByRole('button', { name: 'Rollback/reactivate', exact: true }).click();
+  versionOne = page.locator('.content-row-card').filter({ hasText: 'Version 1' });
+  await expect(versionOne).toContainText('active');
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    ),
+  ).toBe(false);
+  expectForbiddenRequests(requests);
+  await adminContext.close();
+});
+
 test('W12-03 parent and three separate learners complete portal journeys', async ({ browser }) => {
   test.setTimeout(60_000);
   const parentContext = await browser.newContext();
@@ -79,6 +135,22 @@ test('W12-03 parent and three separate learners complete portal journeys', async
   const parentMaterials = parentPage.getByRole('region', { name: 'Classes & materials' });
   await expect(parentMaterials.getByText('W12 Fictional Recording')).toBeVisible();
   await expect(parentMaterials.getByText('W12 Fictional Review Sheet')).toBeVisible();
+  await parentMaterials
+    .getByRole('textbox', { name: 'Ask Class Helper' })
+    .fill('What should this learner review from the Mishnah lesson?');
+  await parentMaterials.getByRole('button', { name: 'Ask helper' }).click();
+  await expect(parentMaterials.locator('.ot-helper-answer')).toContainText(
+    'fictional Mishnah lesson',
+  );
+  await expect(parentMaterials.locator('.ot-helper-answer')).toContainText(
+    'Approved-source fallback is active while the model provider is off.',
+  );
+  await parentPage.getByRole('link', { name: 'Learners' }).click();
+  await parentPage.getByRole('button', { name: /W12 Learner Two/i }).click();
+  await parentPage.getByRole('link', { name: 'Classes & materials' }).click();
+  await expect(
+    parentPage.getByRole('region', { name: 'Classes & materials' }).locator('.ot-helper-answer'),
+  ).toHaveCount(0);
 
   const parentLaunch = await samePagePostJson(
     parentPage,
@@ -127,6 +199,9 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     await studentPage.getByRole('button', { name: 'Ask helper' }).click();
     await expect(studentPage.locator('.ot-helper-answer')).toContainText(
       'fictional Mishnah lesson',
+    );
+    await expect(studentPage.locator('.ot-helper-answer')).toContainText(
+      'Approved-source fallback is active while the model provider is off.',
     );
 
     if (learner.learnerKey === W12_PORTAL_TEST_LAB.learners[0].learnerKey) {
@@ -245,6 +320,7 @@ test.afterAll(async () => {
         generated_at: new Date().toISOString(),
         journeys: [
           'admin-only W12 lab status/reset page without visible secrets',
+          'Admin reviews, saves, activates, and rolls back one structured prompt section patch',
           'parent manages W12 household and learner access without student impersonation',
           'three separate student identities resolve to exactly one learner each',
           'student class, recording, review, progress, reward, private question, and helper examples',

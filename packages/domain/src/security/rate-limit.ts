@@ -22,7 +22,7 @@ export async function consumeRateLimitBudgets({
   now = new Date(),
 }: {
   pool: DbPool;
-  config: AppConfig;
+  config: Pick<AppConfig, 'accountKey' | 'productKey'>;
   budgets: RateLimitBudget[];
   now?: Date;
 }): Promise<RateLimitResult> {
@@ -36,7 +36,7 @@ export async function consumeRateLimitBudgets({
   return { allowed: true };
 }
 
-function budgetKey(config: AppConfig, budget: RateLimitBudget) {
+function budgetKey(config: Pick<AppConfig, 'accountKey' | 'productKey'>, budget: RateLimitBudget) {
   return createHash('sha256')
     .update([config.accountKey, config.productKey, budget.scope, budget.subject].join('\0'))
     .digest('hex');
@@ -49,7 +49,7 @@ async function consumeOneBudget({
   now,
 }: {
   pool: DbPool;
-  config: AppConfig;
+  config: Pick<AppConfig, 'accountKey' | 'productKey'>;
   budget: RateLimitBudget;
   now: Date;
 }): Promise<RateLimitResult> {
