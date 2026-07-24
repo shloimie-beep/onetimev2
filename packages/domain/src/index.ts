@@ -294,6 +294,7 @@ export {
   enrollParentHousehold,
   parentAccessShell,
   readAdultContactLink,
+  readContactOperationsHousehold,
   reconcileAdultContactLink,
   requestParentResetForHousehold,
   requestStudentResetForHousehold,

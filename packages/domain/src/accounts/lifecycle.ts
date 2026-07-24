@@ -231,6 +231,11 @@ export async function issueParentActivationWithClient(input: {
   if (input.payload.free_pilot) {
     assertFreePilotWindow(input.payload.free_pilot.expires_at, input.now);
   }
+  await assertParentIdentityAvailableWithClient(
+    input.client,
+    input.config,
+    normalizeEmail(input.payload.email),
+  );
   await ensureHousehold(input.client, input.config, input.payload.household_key);
   await ensurePendingGuardianRelationship(input.client, input.config, input.payload);
   const issued = await issueAccountToken(input.client, input.config, {
@@ -685,6 +690,11 @@ export async function requestPasswordReset(
     config: AppConfig;
     payload: unknown;
     now?: Date;
+    expectedParentGuardian?: {
+      householdKey: string;
+      guardianUserKey: string;
+      emailNormalized: string;
+    };
   } & LocalProofOption,
 ): Promise<TokenIssueWithProof | { request_accepted: true }> {
   const payload = passwordResetRequestPayloadSchema.parse(input.payload);
@@ -707,7 +717,12 @@ export async function requestPasswordReset(
     throw new AccountLifecycleError('RATE_LIMITED', 'Password reset requests are rate limited.');
   }
   return inTransaction(input.pool, async (client) => {
-    const user = await findAccountUserByEmail(client, input.config, emailNormalized);
+    const user = input.expectedParentGuardian
+      ? await findExpectedActiveParentGuardian(client, input.config, {
+          ...input.expectedParentGuardian,
+          emailNormalized,
+        })
+      : await findAccountUserByEmail(client, input.config, emailNormalized);
     if (!user) {
       await audit(client, input.config, {
         actionType: 'password_reset_requested_unknown',
@@ -946,13 +961,18 @@ async function issueAccountToken(
     metadata?: Record<string, unknown> | undefined;
   },
 ): Promise<TokenIssueWithProof> {
-  const token = randomToken();
   const tokenKey = stableKey('account_lifecycle_token', [
     config.accountKey,
     config.productKey,
     input.tokenType,
     input.idempotencyKey,
   ]);
+  await client.query('SELECT pg_advisory_xact_lock($1)', [
+    lifecycleAdvisoryLockKey(config.accountKey, config.productKey, input.idempotencyKey),
+  ]);
+  const replay = await readAccountTokenIssueReplay(client, config, tokenKey, input.requestHash);
+  if (replay) return replay;
+  const token = randomToken();
   const tokenHash = digest(token);
   const expiresAt = new Date(input.now.getTime() + (input.ttlMs ?? TOKEN_TTL_MS));
   await revokePriorLifecycleTokens(client, config, {
@@ -1041,6 +1061,52 @@ async function issueAccountToken(
     result.token_for_local_proof = token;
   }
   return result;
+}
+
+async function readAccountTokenIssueReplay(
+  client: Queryable,
+  config: AppConfig,
+  tokenKey: string,
+  requestHash: string,
+): Promise<TokenIssueWithProof | null> {
+  const result = await client.query(
+    `SELECT tokens.token_key, tokens.token_type, tokens.target_role, tokens.expires_at,
+            intents.intent_key, intents.delivery_state, intents.request_hash
+       FROM onetime.account_lifecycle_tokens AS tokens
+       JOIN onetime.account_lifecycle_delivery_intents AS intents
+         ON intents.account_key = tokens.account_key
+        AND intents.product_key = tokens.product_key
+        AND intents.token_key = tokens.token_key
+      WHERE tokens.account_key = $1
+        AND tokens.product_key = $2
+        AND tokens.token_key = $3
+      LIMIT 2`,
+    [config.accountKey, config.productKey, tokenKey],
+  );
+  if (!result.rows.length) return null;
+  if (result.rows.length !== 1 || String(result.rows[0]?.request_hash) !== requestHash) {
+    throw new AccountLifecycleError(
+      'IDEMPOTENCY_CONFLICT',
+      'This account lifecycle request key was already used for different information.',
+    );
+  }
+  const row = result.rows[0] as Record<string, unknown>;
+  return {
+    token_key: String(row.token_key),
+    token_type: row.token_type as AccountLifecycleTokenType,
+    target_role: row.target_role as TokenIssueWithProof['target_role'],
+    expires_at: new Date(String(row.expires_at)).toISOString(),
+    delivery: {
+      intent_key: String(row.intent_key),
+      delivery_state: String(
+        row.delivery_state,
+      ) as TokenIssueWithProof['delivery']['delivery_state'],
+      external_send_performed: false,
+      raw_token_included: false,
+    },
+    token_ref: tokenRef(String(row.token_key)),
+    raw_token_included: false,
+  };
 }
 
 async function revokePriorLifecycleTokens(
@@ -1216,8 +1282,9 @@ async function upsertAccountUser(
     status: 'active' | 'disabled';
   },
 ) {
+  await assertAccountRoleAvailableWithClient(client, config, input.emailNormalized, input.role);
   const userKey = stableKey('user', [config.accountKey, config.productKey, input.emailNormalized]);
-  await client.query(
+  const result = await client.query(
     `INSERT INTO onetime.account_users
        (user_key, account_key, product_key, email_normalized, display_name, role,
         password_hash, mfa_capable, status)
@@ -1225,13 +1292,14 @@ async function upsertAccountUser(
      ON CONFLICT (account_key, product_key, email_normalized)
      DO UPDATE SET
        display_name = EXCLUDED.display_name,
-       role = EXCLUDED.role,
        password_hash = EXCLUDED.password_hash,
        password_updated_at = now(),
        status = EXCLUDED.status,
        security_version = onetime.account_users.security_version + 1,
        security_policy_updated_at = now(),
-       updated_at = now()`,
+       updated_at = now()
+     WHERE onetime.account_users.role = EXCLUDED.role
+     RETURNING user_key`,
     [
       userKey,
       config.accountKey,
@@ -1243,7 +1311,14 @@ async function upsertAccountUser(
       input.status,
     ],
   );
-  return userKey;
+  const returnedUserKey = result.rows[0]?.user_key;
+  if (typeof returnedUserKey !== 'string') {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The email already belongs to a different account role.',
+    );
+  }
+  return returnedUserKey;
 }
 
 async function activateStudentIdentity(
@@ -1534,6 +1609,45 @@ async function ensureHousehold(client: Queryable, config: AppConfig, householdKe
   }
 }
 
+export async function assertParentIdentityAvailableWithClient(
+  client: Queryable,
+  config: AppConfig,
+  emailNormalized: string,
+) {
+  return assertAccountRoleAvailableWithClient(client, config, emailNormalized, 'parent');
+}
+
+async function assertAccountRoleAvailableWithClient(
+  client: Queryable,
+  config: AppConfig,
+  emailNormalized: string,
+  expectedRole: string,
+) {
+  const result = await client.query(
+    `SELECT user_key, role
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_normalized = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, emailNormalized],
+  );
+  if (result.rows.length > 1) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The email resolves to more than one account identity.',
+    );
+  }
+  const role = result.rows[0]?.role;
+  if (typeof role === 'string' && role !== expectedRole) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The email already belongs to a different account role.',
+    );
+  }
+}
+
 async function ensurePendingGuardianRelationship(
   client: Queryable,
   config: AppConfig,
@@ -1630,6 +1744,115 @@ async function findAccountUserByEmail(
     [config.accountKey, config.productKey, emailNormalized],
   );
   return result.rows[0] as Record<string, unknown> | undefined;
+}
+
+async function findExpectedActiveParentGuardian(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    householdKey: string;
+    guardianUserKey: string;
+    emailNormalized: string;
+  },
+) {
+  const link = await client.query(
+    `SELECT link_key, contact_key
+       FROM onetime.adult_household_contact_links
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+        AND guardian_user_ref = $4
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, input.householdKey, input.guardianUserKey],
+  );
+  const contactKey = link.rows[0]?.contact_key;
+  const contact =
+    link.rows.length === 1 && typeof contactKey === 'string'
+      ? await client.query(
+          `SELECT contact_key
+             FROM onetime.contacts
+            WHERE account_key = $1
+              AND product_key = $2
+              AND contact_key = $3
+            LIMIT 2
+            FOR UPDATE`,
+          [config.accountKey, config.productKey, contactKey],
+        )
+      : { rows: [] };
+  const user = await client.query(
+    `SELECT user_key
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, input.guardianUserKey],
+  );
+  const relationship = await client.query(
+    `SELECT relationship_key
+       FROM onetime.portal_guardian_relationships
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+      LIMIT 2
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, input.householdKey],
+  );
+  if (
+    link.rows.length !== 1 ||
+    contact.rows.length !== 1 ||
+    user.rows.length !== 1 ||
+    relationship.rows.length !== 1
+  ) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The Parent recovery identity is missing or ambiguous.',
+    );
+  }
+  const result = await client.query(
+    `SELECT users.user_key, users.email_normalized, users.display_name, users.role, users.status
+       FROM onetime.adult_household_contact_links AS links
+       JOIN onetime.contacts AS contacts
+         ON contacts.account_key = links.account_key
+        AND contacts.product_key = links.product_key
+        AND contacts.contact_key = links.contact_key
+       JOIN onetime.account_users AS users
+         ON users.account_key = links.account_key
+        AND users.product_key = links.product_key
+        AND users.user_key = links.guardian_user_ref
+       JOIN onetime.portal_guardian_relationships AS relationships
+         ON relationships.account_key = links.account_key
+        AND relationships.product_key = links.product_key
+        AND relationships.household_key = links.household_key
+        AND relationships.guardian_user_ref = users.user_key
+      WHERE links.account_key = $1
+        AND links.product_key = $2
+        AND links.household_key = $3
+        AND links.guardian_user_ref = $4
+        AND contacts.email_normalized = $5
+        AND users.email_normalized = $5
+        AND users.role = 'parent'
+        AND users.status = 'active'
+        AND relationships.status = 'active'
+        AND relationships.authority <> 'support_only'
+      LIMIT 2`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.householdKey,
+      input.guardianUserKey,
+      input.emailNormalized,
+    ],
+  );
+  if (result.rows.length !== 1) {
+    throw new AccountLifecycleError(
+      'IDENTITY_CONFLICT',
+      'The Parent recovery identity does not match the active adult guardian link.',
+    );
+  }
+  return result.rows[0] as Record<string, unknown>;
 }
 
 async function audit(
@@ -1780,6 +2003,14 @@ function sortForHash(value: unknown): unknown {
 
 function digest(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function lifecycleAdvisoryLockKey(accountKey: string, productKey: string, idempotencyKey: string) {
+  const value = Number.parseInt(
+    digest([accountKey, productKey, idempotencyKey].join('\0')).slice(0, 8),
+    16,
+  );
+  return value > 0x7fffffff ? value - 0x100000000 : value;
 }
 
 function asDate(value: unknown) {

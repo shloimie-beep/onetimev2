@@ -556,6 +556,55 @@ describe('OT-71 account lifecycle', () => {
     ).rejects.toMatchObject({ code: 'TOKEN_EXPIRED' });
   });
 
+  it('fails Parent activation closed if the email becomes a non-Parent identity after issue', async () => {
+    const issued = await createParentActivation({
+      pool,
+      config,
+      actor: ownerActor(),
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'parent-activation-role-race-001',
+        email: 'role-race@example.test',
+        display_name: 'Role Race Parent',
+        household_key: householdKey,
+        relationship_key: 'relationship_role_race',
+        relationship_label: 'Parent',
+        authority: 'primary_guardian',
+      },
+    });
+    const studentUserKey = await createAccountUser({
+      pool,
+      config,
+      email: 'role-race@example.test',
+      password: 'RoleRaceStudent!234',
+      displayName: 'Role Race Student',
+      role: 'student',
+    });
+
+    await expect(
+      acceptParentActivation({
+        pool,
+        config,
+        payload: { token: requiredProof(issued), password: 'RoleRaceParent!234' },
+      }),
+    ).rejects.toMatchObject({ code: 'IDENTITY_CONFLICT' });
+
+    const identity = await pool.query(
+      `SELECT user_key, role
+         FROM onetime.account_users
+        WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3`,
+      [config.accountKey, config.productKey, 'role-race@example.test'],
+    );
+    expect(identity.rows[0]).toMatchObject({ user_key: studentUserKey, role: 'student' });
+    const token = await pool.query(
+      `SELECT consumed_at
+         FROM onetime.account_lifecycle_tokens
+        WHERE token_key = $1`,
+      [issued.token_key],
+    );
+    expect(token.rows[0]?.consumed_at).toBeNull();
+  });
+
   it('activates parent identity and manages student setup, reset, suspend, and restore', async () => {
     const parentIssue = await createParentActivation({
       pool,

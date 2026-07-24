@@ -9,6 +9,7 @@ import {
 } from '../../../contracts/src/index.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../../db/src/index.ts';
 import {
+  assertParentIdentityAvailableWithClient,
   createStudentReset,
   issueLocalStudentSetupWithClient,
   issueParentActivationWithClient,
@@ -79,6 +80,7 @@ export async function enrollParentHousehold(input: {
 
     const email = normalizeEmail(payload.adult.email);
     const phone = normalizePhone(payload.adult.phone);
+    await assertParentIdentityAvailableWithClient(client, input.config, email);
     const contactKey = await findOrCreateAdultContact(client, input.config, {
       ...payload.adult,
       email,
@@ -423,6 +425,77 @@ export async function readAdultContactLink(input: {
   };
 }
 
+export async function readContactOperationsHousehold(input: {
+  pool: DbPool;
+  config: AppConfig;
+  actor: ContactOperationsActor;
+  householdKey: string;
+}) {
+  requireCapability(input.actor, 'contact_ops:school_admin');
+  const household = await input.pool.query(
+    `SELECT households.household_key, households.display_name,
+            contacts.display_name AS adult_display_name
+       FROM onetime.portal_households AS households
+       JOIN onetime.adult_household_contact_links AS links
+         ON links.account_key = households.account_key
+        AND links.product_key = households.product_key
+        AND links.household_key = households.household_key
+       JOIN onetime.contacts AS contacts
+         ON contacts.account_key = links.account_key
+        AND contacts.product_key = links.product_key
+        AND contacts.contact_key = links.contact_key
+      WHERE households.account_key = $1
+        AND households.product_key = $2
+        AND households.household_key = $3
+        AND households.status = 'active'
+      LIMIT 2`,
+    [input.config.accountKey, input.config.productKey, input.householdKey],
+  );
+  if (household.rows.length !== 1) {
+    throw new ContactOperationsError(
+      household.rows.length ? 'AMBIGUOUS_IDENTITY' : 'NOT_FOUND',
+      'The Parent household is unavailable.',
+    );
+  }
+  const learners = await input.pool.query(
+    `SELECT learners.learner_key, learners.display_name,
+            COALESCE(access.username_display, learners.display_name) AS username,
+            access.status
+       FROM onetime.portal_learners AS learners
+       JOIN onetime.portal_student_access_state AS access
+         ON access.account_key = learners.account_key
+        AND access.product_key = learners.product_key
+        AND access.household_key = learners.household_key
+        AND access.learner_key = learners.learner_key
+      WHERE learners.account_key = $1
+        AND learners.product_key = $2
+        AND learners.household_key = $3
+        AND learners.learner_status <> 'archived'
+      ORDER BY learners.created_at, learners.learner_key`,
+    [input.config.accountKey, input.config.productKey, input.householdKey],
+  );
+  const access = await readHouseholdAccess({
+    db: input.pool,
+    accountKey: input.config.accountKey,
+    productKey: input.config.productKey,
+    householdKey: input.householdKey,
+  });
+  const link = await readAdultContactLink(input);
+  return {
+    household_key: String(household.rows[0]?.household_key),
+    display_name: String(household.rows[0]?.display_name),
+    adult_display_name: String(household.rows[0]?.adult_display_name),
+    access_state: access?.state ?? 'paused',
+    students: learners.rows.map((row) => ({
+      learner_key: String(row.learner_key),
+      display_name: String(row.display_name),
+      username: String(row.username),
+      status: String(row.status),
+    })),
+    adult_link: link,
+  };
+}
+
 export async function reconcileAdultContactLink(input: {
   pool: DbPool;
   config: AppConfig;
@@ -586,7 +659,7 @@ export async function requestParentResetForHousehold(input: {
 }) {
   assertHouseholdAuthority(input.actor, input.householdKey);
   const result = await input.pool.query(
-    `SELECT contacts.email_normalized
+    `SELECT links.guardian_user_ref, contacts.email_normalized
        FROM onetime.adult_household_contact_links AS links
        JOIN onetime.contacts AS contacts
          ON contacts.account_key = links.account_key
@@ -599,14 +672,30 @@ export async function requestParentResetForHousehold(input: {
     [input.config.accountKey, input.config.productKey, input.householdKey],
   );
   if (result.rows.length !== 1) {
-    throw new ContactOperationsError('NOT_FOUND', 'The Parent recovery target is unavailable.');
+    throw new ContactOperationsError(
+      result.rows.length ? 'AMBIGUOUS_IDENTITY' : 'NOT_FOUND',
+      'The Parent recovery target is unavailable.',
+    );
   }
+  const guardianUserKey = result.rows[0]?.guardian_user_ref;
+  if (typeof guardianUserKey !== 'string' || guardianUserKey.length === 0) {
+    throw new ContactOperationsError(
+      'NOT_FOUND',
+      'The Parent must activate their account before recovery is available.',
+    );
+  }
+  const emailNormalized = String(result.rows[0]?.email_normalized);
   await requestPasswordReset({
     pool: input.pool,
     config: input.config,
     payload: {
       idempotency_key: input.idempotencyKey,
-      email: String(result.rows[0]?.email_normalized),
+      email: emailNormalized,
+    },
+    expectedParentGuardian: {
+      householdKey: input.householdKey,
+      guardianUserKey,
+      emailNormalized,
     },
     ...(input.now ? { now: input.now } : {}),
   });

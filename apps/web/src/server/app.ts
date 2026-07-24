@@ -4524,6 +4524,7 @@ function statusForLifecycleCode(code: string) {
   if (code === 'TOKEN_EXPIRED' || code === 'TOKEN_CONSUMED') return 410;
   if (code === 'RATE_LIMITED') return 429;
   if (code === 'FORBIDDEN') return 403;
+  if (code === 'IDENTITY_CONFLICT') return 409;
   if (code === 'IDEMPOTENCY_CONFLICT') return 409;
   if (code === 'NOT_FOUND') return 404;
   return 400;

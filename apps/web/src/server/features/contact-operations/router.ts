@@ -6,15 +6,18 @@ import {
   contactOperationsAccessCommandSchema,
   contactOperationsEnrollmentResultSchema,
   contactOperationsEnrollmentSchema,
+  contactOperationsHouseholdSchema,
   contactOperationsResetCommandSchema,
   parentAccessShellSchema,
 } from '../../../../../../packages/contracts/src/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
 import {
+  AccountLifecycleError,
   ContactOperationsError,
   enrollParentHousehold,
   parentAccessShell,
   readAdultContactLink,
+  readContactOperationsHousehold,
   reconcileAdultContactLink,
   requestParentResetForHousehold,
   requestStudentResetForHousehold,
@@ -106,6 +109,21 @@ export function createContactOperationsRouter(input: {
   );
 
   router.get(
+    '/households/:householdKey',
+    asyncRoute(async (req, res) => {
+      const context = await requireContext(req, res, input);
+      if (!context) return;
+      const result = await readContactOperationsHousehold({
+        pool: input.pool,
+        config: input.config,
+        actor: context.actor,
+        householdKey: routeKeySchema.parse(req.params.householdKey),
+      });
+      res.json({ success: true, data: contactOperationsHouseholdSchema.parse(result) });
+    }),
+  );
+
+  router.get(
     '/households/:householdKey/adult-link',
     asyncRoute(async (req, res) => {
       const context = await requireContext(req, res, input);
@@ -192,6 +210,18 @@ export function createContactOperationsRouter(input: {
           success: false,
           code: error.code,
           message: error.message,
+          request_id: req.traceId,
+        });
+        return;
+      }
+      if (error instanceof AccountLifecycleError) {
+        res.status(statusForLifecycleError(error.code)).json({
+          success: false,
+          code: error.code,
+          message:
+            error.code === 'RATE_LIMITED'
+              ? 'Please wait before trying recovery again.'
+              : 'The contact identity could not be verified.',
           request_id: req.traceId,
         });
         return;
@@ -305,4 +335,12 @@ function statusForError(code: ContactOperationsError['code']) {
   if (code === 'AMBIGUOUS_IDENTITY' || code === 'IDENTITY_CONFLICT') return 409;
   if (code === 'IDEMPOTENCY_CONFLICT') return 409;
   return 403;
+}
+
+function statusForLifecycleError(code: string) {
+  if (code === 'IDENTITY_CONFLICT' || code === 'IDEMPOTENCY_CONFLICT') return 409;
+  if (code === 'NOT_FOUND') return 404;
+  if (code === 'RATE_LIMITED') return 429;
+  if (code === 'FORBIDDEN') return 403;
+  return 400;
 }

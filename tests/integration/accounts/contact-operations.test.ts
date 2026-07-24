@@ -9,6 +9,7 @@ import {
   readAdultContactLink,
   readHouseholdAccess,
   reconcileAdultContactLink,
+  requestParentResetForHousehold,
   runHighLevelProjectionBatch,
   setContactOperationsAccess,
 } from '../../../packages/domain/src/index.ts';
@@ -145,6 +146,61 @@ describe('Parent and Student contact operations', () => {
         now,
       }),
     ).rejects.toMatchObject({ code: 'IDEMPOTENCY_CONFLICT' });
+  });
+
+  it('rejects owner, admin, and Student email collisions before enrollment writes persist', async () => {
+    await createAccountUser({
+      pool,
+      config,
+      email: 'collision.admin@example.test',
+      password: 'CollisionAdmin!234',
+      displayName: 'Collision Admin',
+      role: 'admin',
+    });
+    await createAccountUser({
+      pool,
+      config,
+      email: 'collision.student@example.test',
+      password: 'CollisionStudent!234',
+      displayName: 'Collision Student',
+      role: 'student',
+    });
+
+    for (const [index, email] of [
+      'contact.ops.owner@example.test',
+      'collision.admin@example.test',
+      'collision.student@example.test',
+    ].entries()) {
+      await expect(
+        enrollParentHousehold({
+          pool,
+          config,
+          actor: { userKey: ownerUserKey, role: 'owner' },
+          payload: {
+            ...enrollmentPayload,
+            idempotency_key: `contact-ops-collision-${index}-0001`,
+            adult: { ...enrollmentPayload.adult, email },
+            household: {
+              household_key: `household_contact_collision_${index}`,
+              display_name: `Collision Family ${index}`,
+            },
+          },
+          now,
+        }),
+      ).rejects.toMatchObject({ code: 'IDENTITY_CONFLICT' });
+    }
+
+    const writes = await pool.query(
+      `SELECT
+         (SELECT count(*)::int FROM onetime.contacts) AS contacts,
+         (SELECT count(*)::int FROM onetime.portal_households) AS households,
+         (SELECT count(*)::int FROM onetime.account_lifecycle_tokens) AS lifecycle_tokens`,
+    );
+    expect(
+      Object.fromEntries(
+        Object.entries(writes.rows[0] ?? {}).map(([key, value]) => [key, Number(value)]),
+      ),
+    ).toEqual({ contacts: 0, households: 0, lifecycle_tokens: 0 });
   });
 
   it('derives paid, complimentary, and suspension truth independently', async () => {
@@ -374,6 +430,132 @@ describe('Parent and Student contact operations', () => {
       /student|learner|username|password|amount|invoice|subscription/i,
     );
   });
+
+  it('binds Parent recovery to one exact active Parent guardian and replays without a second token', async () => {
+    const enrolled = await enroll();
+    await expect(
+      requestParentResetForHousehold({
+        pool,
+        config,
+        actor: { userKey: ownerUserKey, role: 'owner' },
+        householdKey: enrolled.household_key,
+        idempotencyKey: 'contact-ops-parent-reset-unactivated',
+        now,
+      }),
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+
+    await activateAdultGuardian(enrolled);
+    const first = await requestParentResetForHousehold({
+      pool,
+      config,
+      actor: { userKey: ownerUserKey, role: 'owner' },
+      householdKey: enrolled.household_key,
+      idempotencyKey: 'contact-ops-parent-reset-exact-0001',
+      now,
+    });
+    const replay = await requestParentResetForHousehold({
+      pool,
+      config,
+      actor: { userKey: ownerUserKey, role: 'owner' },
+      householdKey: enrolled.household_key,
+      idempotencyKey: 'contact-ops-parent-reset-exact-0001',
+      now: new Date('2026-07-24T08:01:00.000Z'),
+    });
+    expect(first).toEqual({ request_accepted: true, password_exposed: false });
+    expect(replay).toEqual(first);
+
+    const resetRows = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.account_lifecycle_tokens
+        WHERE token_type = 'password_reset'`,
+    );
+    expect(Number(resetRows.rows[0]?.count)).toBe(1);
+  });
+
+  it('rejects mismatched and cross-scope guardian recovery without issuing a reset', async () => {
+    const enrolled = await enroll();
+    const guardianUserKey = await activateAdultGuardian(enrolled);
+    const otherParentKey = await createAccountUser({
+      pool,
+      config,
+      email: 'other.parent@example.test',
+      password: 'OtherParent!234',
+      displayName: 'Other Parent',
+      role: 'parent',
+    });
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name)
+       VALUES ('household_cross_scope_guardian',$1,$2,'Cross Scope Guardian Family')`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_guardian_relationships
+         (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+          relationship_label, authority)
+       VALUES ('relationship_cross_scope_guardian',$1,$2,'household_cross_scope_guardian',$3,
+          'Parent','primary_guardian')`,
+      [config.accountKey, config.productKey, guardianUserKey],
+    );
+
+    await pool.query(
+      `UPDATE onetime.portal_guardian_relationships
+          SET guardian_user_ref = $1
+        WHERE relationship_key = $2`,
+      [otherParentKey, enrolled.relationship_key],
+    );
+    await expectParentResetConflict(enrolled.household_key, 'guardian-mismatch');
+
+    await pool.query(
+      `UPDATE onetime.portal_guardian_relationships
+          SET guardian_user_ref = $1
+        WHERE relationship_key = $2`,
+      [guardianUserKey, enrolled.relationship_key],
+    );
+    await pool.query(
+      `UPDATE onetime.contacts
+          SET email_normalized = 'mismatched.parent@example.test'
+        WHERE contact_key = $1`,
+      [enrolled.contact_key],
+    );
+    await expectParentResetConflict(enrolled.household_key, 'email-mismatch');
+
+    const crossConfig = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      ONE_TIME_ACCOUNT_KEY: 'other_contact_operations_account',
+      ONE_TIME_PRODUCT_KEY: config.productKey,
+      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+    });
+    const crossAccountParentKey = await createAccountUser({
+      pool,
+      config: crossConfig,
+      email: 'mismatched.parent@example.test',
+      password: 'CrossAccountParent!234',
+      displayName: 'Cross Account Parent',
+      role: 'parent',
+    });
+    await pool.query(
+      `UPDATE onetime.adult_household_contact_links
+          SET guardian_user_ref = $1
+        WHERE household_key = $2`,
+      [crossAccountParentKey, enrolled.household_key],
+    );
+    await pool.query(
+      `UPDATE onetime.portal_guardian_relationships
+          SET guardian_user_ref = $1
+        WHERE relationship_key = $2`,
+      [crossAccountParentKey, enrolled.relationship_key],
+    );
+    await expectParentResetConflict(enrolled.household_key, 'cross-account');
+
+    const resets = await pool.query(
+      `SELECT count(*)::int AS count
+         FROM onetime.account_lifecycle_tokens
+        WHERE token_type = 'password_reset'`,
+    );
+    expect(Number(resets.rows[0]?.count)).toBe(0);
+  });
 });
 
 function enroll() {
@@ -394,4 +576,41 @@ function access(householdKey: string) {
     householdKey,
     now: new Date('2026-07-24T08:04:00.000Z'),
   });
+}
+
+async function activateAdultGuardian(enrolled: Awaited<ReturnType<typeof enroll>>) {
+  const guardianUserKey = await createAccountUser({
+    pool,
+    config,
+    email: enrollmentPayload.adult.email,
+    password: 'OperationsParent!234',
+    displayName: enrollmentPayload.adult.display_name,
+    role: 'parent',
+  });
+  await pool.query(
+    `UPDATE onetime.portal_guardian_relationships
+        SET guardian_user_ref = $1
+      WHERE relationship_key = $2`,
+    [guardianUserKey, enrolled.relationship_key],
+  );
+  await pool.query(
+    `UPDATE onetime.adult_household_contact_links
+        SET guardian_user_ref = $1
+      WHERE household_key = $2`,
+    [guardianUserKey, enrolled.household_key],
+  );
+  return guardianUserKey;
+}
+
+async function expectParentResetConflict(householdKey: string, suffix: string) {
+  await expect(
+    requestParentResetForHousehold({
+      pool,
+      config,
+      actor: { userKey: ownerUserKey, role: 'owner' },
+      householdKey,
+      idempotencyKey: `contact-ops-parent-reset-${suffix}`,
+      now,
+    }),
+  ).rejects.toMatchObject({ code: 'IDENTITY_CONFLICT' });
 }

@@ -117,6 +117,27 @@ export const adultContactLinkSchema = z
   })
   .strict();
 
+export const contactOperationsHouseholdSchema = z
+  .object({
+    household_key: opaqueKeySchema,
+    display_name: z.string().trim().min(1).max(180),
+    adult_display_name: z.string().trim().min(1).max(180),
+    access_state: z.string().trim().min(3).max(40),
+    students: z.array(
+      z
+        .object({
+          learner_key: opaqueKeySchema,
+          display_name: z.string().trim().min(1).max(160),
+          username: z.string().trim().min(1).max(160),
+          status: z.string().trim().min(3).max(40),
+        })
+        .strict(),
+    ),
+    adult_link: adultContactLinkSchema,
+  })
+  .strict();
+export type ContactOperationsHousehold = z.infer<typeof contactOperationsHouseholdSchema>;
+
 export const parentAccessShellSchema = z
   .object({
     mode: z.enum(['active', 'paused']),

@@ -184,12 +184,12 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.adult_household_contact_links
        (link_key, account_key, product_key, contact_key, household_key,
-        guardian_user_ref, highlevel_location_id, sync_state)
+        guardian_user_ref, highlevel_location_id, highlevel_contact_id, sync_state)
      VALUES
        ('e2e_adult_link_parent',$1,$2,'e2e_contact_parent','e2e_household_alpha',
-        $5,$4,'sync_pending'),
+        $5,$4,'e2e_highlevel_parent_contact','synced'),
        ('e2e_adult_link_paused',$1,$2,'e2e_contact_paused_parent','e2e_household_paused',
-        $3,$4,'sync_pending')`,
+        $3,$4,NULL,'sync_pending')`,
     [
       config.accountKey,
       config.productKey,
