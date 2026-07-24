@@ -1054,13 +1054,13 @@ async function runEventServiceRestrictionAtomicity(pool: pg.Pool): Promise<Concu
   });
   await pool.query(
     `INSERT INTO onetime.contacts
-       (contact_key, account_key, product_key, display_name, family_school_classification,
-        family_or_school, location_text, timezone, email_normalized, reminder_preference,
-        suppression_state, source)
-     VALUES ($1,$2,$3,'Synthetic restriction contact','family','Synthetic','Synthetic','UTC',
-             'event-restriction-atomic@example.test','none','active','postgres_assurance')
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone, email_normalized,
+        reminder_preference, suppression_state, source)
+     VALUES ($1,$2,$3,$4,'Synthetic restriction contact','family','Synthetic','Synthetic','UTC',
+              'event-restriction-atomic@example.test','none','active','postgres_assurance')
      ON CONFLICT (account_key, product_key, contact_key) DO NOTHING`,
-    [contactKey, PRIMARY_ACCOUNT, PRIMARY_PRODUCT],
+    [contactKey, 'ot37-event-restriction-atomic-public', PRIMARY_ACCOUNT, PRIMARY_PRODUCT],
   );
   await pool.query(
     `CREATE OR REPLACE FUNCTION onetime.ot37_reject_restriction_projection()
@@ -1151,14 +1151,14 @@ async function runEventServiceRestrictionEqualTimeRace(pool: pg.Pool): Promise<C
   });
   await pool.query(
     `INSERT INTO onetime.contacts
-       (contact_key, account_key, product_key, display_name, family_school_classification,
-        family_or_school, location_text, timezone, email_normalized, reminder_preference,
-        suppression_state, source)
-     VALUES ($1,$2,$3,'Synthetic equal-time restriction contact','family','Synthetic','Synthetic',
-             'UTC','event-restriction-equal-time@example.test','none','active',
-             'postgres_assurance')
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone, email_normalized,
+        reminder_preference, suppression_state, source)
+     VALUES ($1,$2,$3,$4,'Synthetic equal-time restriction contact','family','Synthetic',
+              'Synthetic','UTC','event-restriction-equal-time@example.test','none','active',
+              'postgres_assurance')
      ON CONFLICT (account_key, product_key, contact_key) DO NOTHING`,
-    [contactKey, PRIMARY_ACCOUNT, PRIMARY_PRODUCT],
+    [contactKey, 'ot37-event-restriction-equal-time-public', PRIMARY_ACCOUNT, PRIMARY_PRODUCT],
   );
   const results = await Promise.all(
     [

@@ -132,7 +132,26 @@ export async function runHighLevelProjectionBatch(input: {
         const eventCode = event.data.event_code;
         const registrationKey = event.data.registration_key;
         if (!eventCode || !registrationKey) {
-          await revokeIneligibleEventRow(input.pool, input.config, row, 'identity_missing', now);
+          await revokeIneligibleEventRow(
+            input.pool,
+            input.config,
+            row,
+            'identity_missing',
+            'none',
+            now,
+          );
+          quarantined += 1;
+          continue;
+        }
+        if (!eventPayloadMatchesClaim(event, input.config, row.contact_key)) {
+          await revokeIneligibleEventRow(
+            input.pool,
+            input.config,
+            row,
+            'payload_scope_mismatch',
+            'none',
+            now,
+          );
           quarantined += 1;
           continue;
         }
@@ -142,7 +161,14 @@ export async function runHighLevelProjectionBatch(input: {
           contactKey: row.contact_key,
         });
         if (!eligibility.allowed) {
-          await revokeIneligibleEventRow(input.pool, input.config, row, eligibility.reason, now);
+          await revokeIneligibleEventRow(
+            input.pool,
+            input.config,
+            row,
+            eligibility.reason,
+            'none',
+            now,
+          );
           quarantined += 1;
           continue;
         }
@@ -170,6 +196,7 @@ export async function runHighLevelProjectionBatch(input: {
             input.config,
             row,
             eligibility.reason,
+            'contact_upsert_completed',
             input.now ?? new Date(),
           );
           quarantined += 1;
@@ -546,6 +573,9 @@ export async function prepareEventRegistrationCanary(input: {
       !event.data.registration_key
     ) {
       return { prepared: false as const, reason: 'event_contract_invalid' as const };
+    }
+    if (!eventPayloadMatchesClaim(event, input.config, outbox.contact_key)) {
+      return { prepared: false as const, reason: 'event_scope_mismatch' as const };
     }
     const eligibility = await evaluateEventServiceEmailEligibility(client, input.config, {
       eventCode: event.data.event_code,
@@ -1129,6 +1159,19 @@ function projection(event: HighLevelOutboundEvent, row: ClaimedRow): HighLevelPr
   };
 }
 
+function eventPayloadMatchesClaim(
+  event: HighLevelOutboundEvent,
+  config: AppConfig,
+  contactKey: string,
+) {
+  return (
+    event.scope.account_key === config.accountKey &&
+    event.scope.product_key === config.productKey &&
+    event.scope.location_id === config.highLevelLocationId &&
+    event.adult_contact.contact_key === contactKey
+  );
+}
+
 async function markDelivered(
   pool: DbPool,
   config: AppConfig,
@@ -1203,6 +1246,7 @@ async function revokeIneligibleEventRow(
   config: AppConfig,
   row: ClaimedRow,
   reason: string,
+  providerEffectStage: 'none' | 'contact_upsert_completed',
   now: Date,
 ) {
   return inTransaction(pool, async (client) => {
@@ -1233,7 +1277,9 @@ async function revokeIneligibleEventRow(
         JSON.stringify({
           delivery_key: row.delivery_key,
           eligibility_reason: reason,
-          provider_effect_performed: false,
+          provider_effect_performed: providerEffectStage !== 'none',
+          provider_effect_stage: providerEffectStage,
+          tags_written: false,
           retry_authorized: false,
         }),
         now,
