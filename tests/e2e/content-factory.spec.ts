@@ -15,11 +15,8 @@ test('Admin uploads, processes, reviews, and publishes one occurrence-scoped vid
   await page.setViewportSize({ width: 390, height: 844 });
   await useW12AdminSession(page);
   await page.goto('/app/content/factory');
-  await expect(page.getByRole('heading', { name: 'Content Workspace' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Content Factory' })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
+  await expect(page.getByRole('heading', { name: 'Content Factory' })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Content area' })).toHaveValue('factory');
   await expect(
     page.getByRole('heading', { name: 'Approved occurrence-scoped synthetic Mishnah review' }),
   ).toBeVisible();

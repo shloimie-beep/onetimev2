@@ -83,7 +83,7 @@ test('synthetic search text appears nowhere prohibited in the browser', async ({
   expect(consoleMessages.some((message) => message.includes(syntheticSearch))).toBe(false);
 });
 
-test('authenticated shell keeps one CRM destination, no BNA/Operations requests, and mobile controls', async ({
+test('authenticated shell keeps one Contacts destination, no BNA/Operations requests, and mobile controls', async ({
   page,
 }) => {
   const requested: string[] = [];
@@ -91,16 +91,18 @@ test('authenticated shell keeps one CRM destination, no BNA/Operations requests,
   await page.setViewportSize({ width: 1440, height: 1000 });
   await login(page);
 
-  await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Contacts' })).toBeVisible();
   await expect(page.locator('.app-header')).toBeVisible();
   await expect(page.locator('.app-sidebar')).toBeVisible();
   await expect(
-    page.getByRole('navigation', { name: 'One Time app' }).getByRole('link', { name: 'CRM' }),
+    page
+      .getByRole('navigation', { name: 'One Time app' })
+      .getByRole('link', { name: 'Contacts', exact: true }),
   ).toHaveCount(1);
 
   for (const label of [
     'Home',
-    'Contacts',
+    'CRM',
     'Communications',
     'Tasks',
     'Relationships',
@@ -111,7 +113,7 @@ test('authenticated shell keeps one CRM destination, no BNA/Operations requests,
     'Telegram',
     'Reports',
   ]) {
-    await expect(page.getByRole('link', { name: label })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: label, exact: true })).toHaveCount(0);
   }
   await expect(page.getByText('View as Rabbi')).toHaveCount(0);
   await expect(page.getByText('Super Admin')).toHaveCount(0);
@@ -156,7 +158,7 @@ test('mobile drawer traps focus, closes by every shell action, and restores focu
   await menu.click();
   await page
     .getByRole('dialog', { name: 'One Time navigation' })
-    .getByRole('link', { name: 'CRM' })
+    .getByRole('link', { name: 'Contacts', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: 'One Time navigation' })).toBeHidden();
 
