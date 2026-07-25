@@ -575,7 +575,15 @@ export const migrationStatusValues = [
   'Activated',
   'Opted Out',
 ];
-export const portalStatusValues = ['Not Invited', 'Invited', 'Active', 'Suspended', 'Disabled'];
+export const portalStatusValues = [
+  'Not Invited',
+  'Invited',
+  'Active',
+  'Suspended',
+  'Disabled',
+  'invited',
+  'active',
+];
 export const accessStatusValues = ['Inactive', 'Active', 'Grace', 'Complimentary', 'Suspended'];
 export const emailConsentValues = [
   'opted_in',
@@ -583,14 +591,24 @@ export const emailConsentValues = [
   'unknown',
   'opted_out',
   'suppressed',
+  'granted',
+  'not_granted',
 ];
-export const whatsappConsentValues = ['opted_in', 'unknown', 'opted_out', 'suppressed'];
+export const whatsappConsentValues = [
+  'opted_in',
+  'unknown',
+  'opted_out',
+  'suppressed',
+  'granted',
+  'not_granted',
+];
 export const reminderPreferenceValues = ['Email', 'WhatsApp', 'Both', 'None'];
 export const suppressionStateValues = [
   'active',
   'email_suppressed',
   'whatsapp_suppressed',
   'all_marketing_suppressed',
+  'suppressed',
 ];
 export const newsletterStatusValues = [
   'Not Eligible',

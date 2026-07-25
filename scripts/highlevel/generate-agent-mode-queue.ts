@@ -8,6 +8,12 @@ import {
   pipelineDefinitions,
   registryMetadata,
 } from './canonical-registry-data.ts';
+import {
+  buildExecutableWorkflowReport,
+  executableWorkflowSpecs,
+  otE01RepairSubjob,
+  type ExecutableWorkflowSpec,
+} from './agent-mode-executable-specs.ts';
 
 type CurrentRegistry = {
   location_id: string;
@@ -26,6 +32,8 @@ type JobInput = {
   expectedGhlIdsToCapture: string[];
   testContactRules: string[];
   taskInstructions: string[];
+  executionContract?: ExecutableWorkflowSpec;
+  reviewedSubjobs?: unknown[];
 };
 
 type AgentModeJob = {
@@ -56,6 +64,8 @@ type AgentModeJob = {
   };
   completion_checklist: string[];
   result_json_schema: ResultJsonSchema;
+  execution_contract?: ExecutableWorkflowSpec;
+  reviewed_subjobs?: unknown[];
   idempotency_key: string;
   bna_agent_action_dropoff: {
     lane: string;
@@ -89,6 +99,7 @@ const resultsDir = `${queueDir}/results`;
 const queuePath = `${queueDir}/GHL-AGENT-MODE-QUEUE.json`;
 const exportPath = `${queueDir}/GHL-AGENT-MODE-EXPORT.json`;
 const readmePath = `${queueDir}/README.md`;
+const executableReportPath = `${queueDir}/GHL-EXECUTABLE-WORKFLOW-REPORT.md`;
 
 await main();
 
@@ -111,7 +122,7 @@ async function main() {
     `${JSON.stringify(buildExport(locationId, jobs, current), null, 2)}\n`,
   );
   await writeRepoFile(readmePath, buildReadme(jobs));
-  await writeRepoFile(`${resultsDir}/.gitkeep`, '');
+  await writeRepoFile(executableReportPath, buildExecutableWorkflowReport());
   writeStdoutJson({
     generatedAt,
     locationId,
@@ -156,7 +167,9 @@ function buildJobs(locationId: string): AgentModeJob[] {
         readback_required: true,
       },
       completion_checklist: completionChecklist(input),
-      result_json_schema: resultJsonSchema(input.jobId),
+      result_json_schema: resultJsonSchema(input.jobId, Boolean(input.executionContract)),
+      ...(input.executionContract ? { execution_contract: input.executionContract } : {}),
+      ...(input.reviewedSubjobs ? { reviewed_subjobs: input.reviewedSubjobs } : {}),
       idempotency_key: idempotencyKey,
       bna_agent_action_dropoff: {
         lane: 'highlevel_agent_mode',
@@ -291,7 +304,9 @@ function jobInputs(): JobInput[] {
         'Update every canonical workflow sender identity from its registered sender_key and exact custom-value picker entries.',
         'Keep every workflow Draft/unpublished and do not enroll contacts.',
         'Verify OT-07 GHL companion/welcome and separate One Time/Resend activation-token boundary.',
+        'Run the keyed OT-E01 Email A repair subjob only under its narrower controls; do not create a separate job or workflow.',
       ],
+      reviewedSubjobs: [otE01RepairSubjob],
     },
     {
       jobId: 'GHL-UI-05',
@@ -459,17 +474,105 @@ function jobInputs(): JobInput[] {
         'Record the exact unmet prerequisite or, after a separately authorized acceptance run, record all safe acceptance IDs and statuses.',
       ],
     },
+    ...executableWorkflowSpecs.map(executableWorkflowJobInput),
   ];
 }
 
 async function removeStaleJobFiles(jobs: AgentModeJob[]) {
   const expected = new Set(jobs.map((job) => path.basename(jobFilePath(job))));
+  const managedJobIds = new Set(jobs.map((job) => job.job_id));
   const directory = path.join(repoRoot, jobsDir);
   for (const name of await readdir(directory)) {
-    if (name.endsWith('.json') && !expected.has(name)) {
+    const jobId = name.match(/^(GHL-UI-\d+)-/)?.[1];
+    if (jobId && managedJobIds.has(jobId) && name.endsWith('.json') && !expected.has(name)) {
       await unlink(path.join(directory, name));
     }
   }
+}
+
+function executableWorkflowJobInput(spec: ExecutableWorkflowSpec): JobInput {
+  return {
+    jobId: spec.job_id,
+    order: spec.order,
+    title: spec.title,
+    targetUiPath: `HighLevel > Automation > Workflows > ${spec.workflow.full_folder_ancestry}`,
+    canonicalSourceFiles: [
+      'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json',
+      'integrations/highlevel/registry/current.json',
+      'integrations/highlevel/registry/workflow-registry.yaml',
+      'integrations/highlevel/registry/sender-registry.yaml',
+      'integrations/highlevel/registry/message-class-registry.yaml',
+      'integrations/highlevel/registry/communications-contract.json',
+      `integrations/highlevel/ai-workflow-prompts/${workflowSlug(spec)}.md`,
+      `integrations/highlevel/workflow-checklists/${workflowSlug(spec)}.md`,
+      'packages/contracts/src/highlevel/index.ts',
+      'packages/domain/src/highlevel/producer.ts',
+      'packages/domain/src/highlevel/dispatcher.ts',
+      ...(spec.workflow.canonical_key === 'OT-09'
+        ? ['packages/domain/src/classes/schedule.ts']
+        : []),
+    ],
+    allowedAssets: [
+      `${spec.workflow.canonical_name} (${spec.workflow.ghl_id})`,
+      spec.application_contract.trigger_tag.canonical_name,
+      ...spec.application_contract.projected_fields.map((field) => field.canonical_name),
+      spec.message.cta.custom_value.canonical_name,
+      spec.sender.display_name.canonical_name,
+      spec.sender.from.canonical_name,
+      spec.sender.reply_to.canonical_name,
+    ],
+    forbiddenAssets: [
+      'Student contacts, Student fields, Student credentials, or Student learning data',
+      'configuration-phase contact creation, enrollment, workflow publication, or message send',
+      'production contacts or production audiences in a controlled test',
+      'workflow publication before exact save/reopen/readback and separate test authorization',
+      'creating, cloning, renaming, moving, or deleting a workflow',
+      'raw Zoom, Vimeo, meeting-provider, or storage-provider links',
+      'security tokens, credentials, private destinations, or provider payloads',
+      'WhatsApp actions',
+      'broad enrollment or send',
+      'removing unrelated contact tags or fields',
+    ],
+    prerequisites: [
+      ...commonPrerequisites(),
+      `Reconcile exact workflow ID ${spec.workflow.ghl_id} and full folder ancestry ${spec.workflow.full_folder_ancestry} across Draft, Published, Archived, and deprecated views.`,
+      `Verify ${spec.application_contract.event_name}@${spec.application_contract.version} is deployed with provider transport still unauthorized by default.`,
+      'Before a separate controlled test, require an exact protected canary run ID, one allowlisted delivery key, and budget of one.',
+    ],
+    expectedGhlIdsToCapture: [
+      'workflow_id',
+      'folder_ids',
+      'trigger_tag_id',
+      'projected_field_ids',
+      'sender_custom_value_ids',
+      'cta_custom_value_id',
+      'sanitized_workflow_execution_reference',
+    ],
+    testContactRules: [
+      'Configuration phase: zero contact creation, zero enrollment, and zero sends.',
+      'Controlled test phase requires separate explicit authorization and at most one operator-owned adult contact.',
+      'Never create, select, or project a Student contact.',
+      'Never use a production audience or broad enrollment.',
+    ],
+    taskInstructions: [
+      `Configure only ${spec.workflow.canonical_name} at exact ID ${spec.workflow.ghl_id}.`,
+      'Follow execution_contract in exact order without inventing a field, value, wait, message, sender, or URL.',
+      'Save the action and outer workflow separately, navigate away, reload, reopen, and compare every critical value.',
+      'Remain Draft when the contract, picker, control, readback, canary authorization, or bounded-test prerequisite is absent.',
+      'Record ACTIVE_TESTED only after the separately authorized one-contact test and replay/suppression proofs pass.',
+    ],
+    executionContract: spec,
+  };
+}
+
+function workflowSlug(spec: ExecutableWorkflowSpec) {
+  const suffix = spec.workflow.canonical_name
+    .replace(/^OT-\d+\s+/, '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `${spec.workflow.canonical_key}-${suffix}`;
 }
 
 function seedPreparationJob(
@@ -514,6 +617,15 @@ function buildPrompt(
   resultFile: string,
   idempotencyKey: string,
 ) {
+  if (input.executionContract) {
+    return buildExecutablePrompt(
+      input,
+      input.executionContract,
+      locationId,
+      resultFile,
+      idempotencyKey,
+    );
+  }
   return [
     `Job ${input.jobId}: ${input.title}`,
     '',
@@ -535,6 +647,15 @@ function buildPrompt(
     'Task instructions:',
     ...input.taskInstructions.map((instruction) => `- ${instruction}`),
     '',
+    ...(input.reviewedSubjobs
+      ? [
+          'Reviewed keyed subjobs:',
+          JSON.stringify(input.reviewedSubjobs, null, 2),
+          '',
+          'A reviewed subjob overrides the generic no-send/no-publish default only where it states a narrower, separately authorized bounded action. All other parent-job safety rules remain in force.',
+          '',
+        ]
+      : []),
     'Default safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.',
     '',
     `Result path: ${resultFile}`,
@@ -542,7 +663,52 @@ function buildPrompt(
   ].join('\n');
 }
 
+function buildExecutablePrompt(
+  input: JobInput,
+  spec: ExecutableWorkflowSpec,
+  locationId: string,
+  resultFile: string,
+  idempotencyKey: string,
+) {
+  return [
+    `Job ${input.jobId}: ${input.title}`,
+    '',
+    `Use only HighLevel location ${locationId}. Verify the visible location before doing any work.`,
+    `Reconcile exact workflow ID ${spec.workflow.ghl_id} and full folder ancestry ${spec.workflow.full_folder_ancestry} across every visible asset state. Fail closed on a second normalized match and do not create a workflow.`,
+    '',
+    'Read these canonical sources first:',
+    ...input.canonicalSourceFiles.map((file) => `- ${file}`),
+    '',
+    'Use this exact reviewed execution contract without invention:',
+    JSON.stringify(spec, null, 2),
+    '',
+    'Configuration phase authority is zero contacts, zero enrollments, zero sends, zero broad sends, and no publication before exact save/reopen/readback.',
+    'A controlled test is a separate phase. It requires an explicit protected canary run ID, one allowlisted delivery key, a budget of exactly one, one operator-owned adult destination, and the deployed matching application contract. Without every prerequisite, remain Draft and return the exact dependency.',
+    'Select sender, reply-to, fields, tags, and URL only from the registered pickers and IDs in the execution contract. Preserve unrelated contact fields and tags.',
+    'Save the email action layer, save the outer workflow layer, navigate away, reload, reopen the exact ID, and compare every critical field before any publication or test.',
+    'Record ACTIVE_TESTED only after the one-contact delivery, suppression, idempotency, replay, and readback proof all pass. Otherwise use the exact terminal state from the contract.',
+    'Never create or project Student contacts, send credentials or security tokens, use raw provider URLs, add WhatsApp actions, or perform a broad enrollment or send.',
+    '',
+    `Result path: ${resultFile}`,
+    `Idempotency key: ${idempotencyKey}`,
+  ].join('\n');
+}
+
 function completionChecklist(input: JobInput) {
+  if (input.executionContract) {
+    return [
+      `Visible HighLevel location matched ${registryMetadata.locationId}.`,
+      `Exact workflow ID ${input.executionContract.workflow.ghl_id} and full folder ancestry were unique.`,
+      `Application contract ${input.executionContract.application_contract.event_name}@${input.executionContract.application_contract.version} was proven deployed or an exact Draft dependency was recorded.`,
+      'Action layer was saved and reopened with exact copy, CTA, sender, reply-to, fields, gates, waits, and cleanup.',
+      'Outer workflow layer was saved, navigated away from, reloaded, and reopened.',
+      'Configuration phase created zero contacts, enrolled zero contacts, and sent zero messages.',
+      'Any controlled test used separate explicit authorization, one operator-owned adult maximum, and one email maximum.',
+      'Replay and suppression proofs passed before ACTIVE_TESTED was recorded.',
+      'Broad sends = 0 and Student contacts created = 0.',
+      'Safe result JSON was saved and read back without private destinations, message payloads, tokens, credentials, Student data, or provider URLs.',
+    ];
+  }
   return [
     `Visible HighLevel location matched ${registryMetadata.locationId}.`,
     `Canonical source files for ${input.jobId} were read before edits.`,
@@ -560,7 +726,8 @@ function completionChecklist(input: JobInput) {
   ];
 }
 
-function resultJsonSchema(jobId: string): ResultJsonSchema {
+function resultJsonSchema(jobId: string, executable: boolean): ResultJsonSchema {
+  if (executable) return executableResultJsonSchema(jobId);
   return {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     type: 'object',
@@ -616,10 +783,72 @@ function resultJsonSchema(jobId: string): ResultJsonSchema {
   };
 }
 
+function executableResultJsonSchema(jobId: string): ResultJsonSchema {
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    type: 'object',
+    additionalProperties: false,
+    required: [
+      'job_id',
+      'workflow_key',
+      'workflow_id',
+      'full_folder_ancestry',
+      'terminal_state',
+      'action_saved',
+      'outer_workflow_saved',
+      'reopened_and_verified',
+      'publish_state',
+      'controlled_test_authorized',
+      'messages_sent',
+      'broad_sends',
+      'production_contacts_enrolled',
+      'student_contacts_created',
+      'idempotency_replay_result',
+      'safe_evidence',
+      'remaining_dependency',
+      'idempotency_key',
+    ],
+    properties: {
+      job_id: { const: jobId },
+      workflow_key: { type: 'string', pattern: '^OT-' },
+      workflow_id: { type: 'string', minLength: 1 },
+      full_folder_ancestry: { type: 'string', pattern: '^One Time / ' },
+      terminal_state: {
+        enum: [
+          'SAVED_REOPENED',
+          'ACTIVE_CONFIGURED',
+          'ACTIVE_TESTED',
+          'DRAFT_WAITING_EXTERNAL',
+          'DRAFT_NEEDS_OPERATOR_DECISION',
+          'FAILED_CLOSED',
+        ],
+      },
+      action_saved: { type: 'boolean' },
+      outer_workflow_saved: { type: 'boolean' },
+      reopened_and_verified: { type: 'boolean' },
+      publish_state: { enum: ['Draft', 'Published'] },
+      controlled_test_authorized: { type: 'boolean' },
+      messages_sent: { type: 'integer', minimum: 0, maximum: 1 },
+      broad_sends: { const: 0 },
+      production_contacts_enrolled: { const: 0 },
+      student_contacts_created: { const: 0 },
+      idempotency_replay_result: {
+        enum: ['not_run', 'passed_no_duplicate', 'failed_duplicate', 'blocked'],
+      },
+      safe_evidence: {
+        type: 'object',
+        additionalProperties: { type: ['string', 'number', 'boolean', 'null'] },
+      },
+      remaining_dependency: { type: 'string' },
+      idempotency_key: { type: 'string', minLength: 1 },
+    },
+  };
+}
+
 function buildQueue(locationId: string, jobs: AgentModeJob[], current: CurrentRegistry) {
   return {
     schema_id: 'one-time-highlevel-agent-mode-queue',
-    schema_version: '1.1.0',
+    schema_version: '1.2.0',
     generated_at: generatedAt,
     repository: 'shloimie-beep/onetimev2',
     registry_schema: `${registryMetadata.schemaId}@${registryMetadata.schemaVersion}`,
@@ -645,6 +874,20 @@ function buildQueue(locationId: string, jobs: AgentModeJob[], current: CurrentRe
       job_file: jobFilePath(job),
       result_path: job.bna_agent_action_dropoff.result_path,
       idempotency_key: job.idempotency_key,
+      ...(job.execution_contract
+        ? {
+            workflow_key: job.execution_contract.workflow.canonical_key,
+            workflow_id: job.execution_contract.workflow.ghl_id,
+            execution_mode: 'reviewed_bounded_activation',
+          }
+        : {}),
+      ...(job.reviewed_subjobs
+        ? {
+            reviewed_subjob_ids: job.reviewed_subjobs.map((subjob) =>
+              String((subjob as { subjob_id: string }).subjob_id),
+            ),
+          }
+        : {}),
     })),
   };
 }
@@ -652,7 +895,7 @@ function buildQueue(locationId: string, jobs: AgentModeJob[], current: CurrentRe
 function buildExport(locationId: string, jobs: AgentModeJob[], current: CurrentRegistry) {
   return {
     schema_id: 'bna-agent-action-export',
-    schema_version: '1.1.0',
+    schema_version: '1.2.0',
     export_type: 'highlevel_agent_mode_queue',
     generated_at: generatedAt,
     source: {
@@ -690,6 +933,12 @@ function buildReadme(jobs: AgentModeJob[]) {
     `Location: ${registryMetadata.locationId}`,
     '',
     'Run these jobs in order. Every job defaults to no-send, no-publish, no production workflow enrollment, no live payment mutation, and no Student contacts.',
+    '',
+    'GHL-UI-14 through GHL-UI-18 contain reviewed executable contracts. Their configuration phase remains no-send/no-enrollment; a later controlled test requires separate explicit authorization, one operator-owned adult maximum, one email maximum, and zero broad sends.',
+    '',
+    'GHL-UI-04 contains the keyed OT-E01 Email A repair subjob. It is not a duplicate job or workflow and remains DRIFTED until exact readback plus a separately authorized bounded test pass.',
+    '',
+    `Deterministic executable report: ${executableReportPath}`,
     '',
     'Agent Mode must save UI work, verify the saved state, return to the BNA Agent Action drop-off page, save the result JSON, verify the readback result ID, and avoid unsaved chat-only completion claims.',
     '',
@@ -747,7 +996,9 @@ function jobFilePathFromId(jobId: string, title: string) {
 }
 
 function stableKey(locationId: string, jobId: string, title: string) {
-  return `one-time-ghl:${jobId}:${sha256(`${locationId}:${jobId}:${title}:1.1.0`).slice(0, 16)}`;
+  const order = Number(jobId.replace('GHL-UI-', ''));
+  const version = jobId === 'GHL-UI-04' || order >= 14 ? '1.2.0' : '1.1.0';
+  return `one-time-ghl:${jobId}:${sha256(`${locationId}:${jobId}:${title}:${version}`).slice(0, 16)}`;
 }
 
 function slug(value: string) {

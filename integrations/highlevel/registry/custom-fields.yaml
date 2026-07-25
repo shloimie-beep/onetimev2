@@ -265,6 +265,8 @@
     - 'Active'
     - 'Suspended'
     - 'Disabled'
+    - 'invited'
+    - 'active'
   workflowsAllowedToWrite:
     - 'OT-07'
     - 'OT-08'
@@ -319,6 +321,8 @@
     - 'unknown'
     - 'opted_out'
     - 'suppressed'
+    - 'granted'
+    - 'not_granted'
   workflowsAllowedToWrite:
     - 'OT-01'
     - 'OT-02A'
@@ -347,6 +351,8 @@
     - 'unknown'
     - 'opted_out'
     - 'suppressed'
+    - 'granted'
+    - 'not_granted'
   workflowsAllowedToWrite:
     - 'OT-01'
     - 'OT-02A'
@@ -442,6 +448,7 @@
     - 'email_suppressed'
     - 'whatsapp_suppressed'
     - 'all_marketing_suppressed'
+    - 'suppressed'
   workflowsAllowedToWrite:
     - 'OT-01'
     - 'OT-02A'

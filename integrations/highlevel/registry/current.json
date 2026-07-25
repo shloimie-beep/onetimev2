@@ -463,7 +463,15 @@
       "category": "portal_access",
       "purpose": "Parent portal state, not authorization.",
       "sourceOfTruth": "One Time",
-      "allowedValues": ["Not Invited", "Invited", "Active", "Suspended", "Disabled"],
+      "allowedValues": [
+        "Not Invited",
+        "Invited",
+        "Active",
+        "Suspended",
+        "Disabled",
+        "invited",
+        "active"
+      ],
       "workflowsAllowedToWrite": ["OT-07", "OT-08"],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
@@ -510,7 +518,9 @@
         "service_only_current_subscriber",
         "unknown",
         "opted_out",
-        "suppressed"
+        "suppressed",
+        "granted",
+        "not_granted"
       ],
       "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B", "OT-B01", "OT-B05"],
       "oneTimeAllowedToWrite": true,
@@ -532,7 +542,7 @@
       "category": "consent_communication",
       "purpose": "WhatsApp consent state.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["opted_in", "unknown", "opted_out", "suppressed"],
+      "allowedValues": ["opted_in", "unknown", "opted_out", "suppressed", "granted", "not_granted"],
       "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B", "OT-B01", "OT-B05"],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
@@ -620,7 +630,8 @@
         "active",
         "email_suppressed",
         "whatsapp_suppressed",
-        "all_marketing_suppressed"
+        "all_marketing_suppressed",
+        "suppressed"
       ],
       "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B", "OT-B05"],
       "oneTimeAllowedToWrite": true,

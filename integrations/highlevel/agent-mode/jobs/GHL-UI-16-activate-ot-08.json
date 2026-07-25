@@ -1,23 +1,407 @@
 {
   "job_id": "GHL-UI-16",
-  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
-  "workflow": {
-    "key": "OT-08",
-    "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
-    "name": "OT-08 Parent Portal Activated",
-    "full_folder_path": "One Time / 30 - Portal Lifecycle"
+  "order": 16,
+  "title": "activate OT-08",
+  "ghl_location": {
+    "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+    "location_fingerprint": "31fcbd2792f131dc",
+    "verification_required": true
   },
-  "deployed_contract": "parent.portal.activated@1.0.0",
-  "expected": {
-    "trigger": "Contact Tag added: OT | Portal Active",
-    "fields": [
-      "contact.one_time_crm_contact_id",
-      "contact.one_time_portal_status",
-      "contact.one_time_email_consent",
-      "contact.one_time_suppression_state"
+  "exact_target_ui_path": "HighLevel > Automation > Workflows > One Time / 30 - Portal Lifecycle",
+  "canonical_source_files": [
+    "integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json",
+    "integrations/highlevel/registry/current.json",
+    "integrations/highlevel/registry/workflow-registry.yaml",
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/message-class-registry.yaml",
+    "integrations/highlevel/registry/communications-contract.json",
+    "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
+    "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md",
+    "packages/contracts/src/highlevel/index.ts",
+    "packages/domain/src/highlevel/producer.ts",
+    "packages/domain/src/highlevel/dispatcher.ts"
+  ],
+  "exact_copy_paste_prompt": "Job GHL-UI-16: activate OT-08\n\nUse only HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nReconcile exact workflow ID eeca2efb-41be-40a7-bbc4-ee6fe8760dd9 and full folder ancestry One Time / 30 - Portal Lifecycle across every visible asset state. Fail closed on a second normalized match and do not create a workflow.\n\nRead these canonical sources first:\n- integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n- packages/contracts/src/highlevel/index.ts\n- packages/domain/src/highlevel/producer.ts\n- packages/domain/src/highlevel/dispatcher.ts\n\nUse this exact reviewed execution contract without invention:\n{\n  \"job_id\": \"GHL-UI-16\",\n  \"order\": 16,\n  \"title\": \"activate OT-08\",\n  \"workflow\": {\n    \"canonical_key\": \"OT-08\",\n    \"canonical_name\": \"OT-08 Parent Portal Activated\",\n    \"ghl_id\": \"eeca2efb-41be-40a7-bbc4-ee6fe8760dd9\",\n    \"full_folder_ancestry\": \"One Time / 30 - Portal Lifecycle\",\n    \"folder_ids\": {\n      \"root\": \"da1f8359-f399-477e-89b1-61a47d1b3db0\",\n      \"leaf\": \"250ff9f0-4985-46c0-a587-f7e3a0251bab\"\n    },\n    \"observed_state\": \"DRAFT_SHELL\",\n    \"desired_transition\": [\n      \"DRAFT_SHELL\",\n      \"SAVED_REOPENED\",\n      \"ACTIVE_TESTED\"\n    ]\n  },\n  \"application_contract\": {\n    \"version\": \"1.0.0\",\n    \"event_name\": \"parent.portal.activated\",\n    \"adult_only\": true,\n    \"trigger_tag\": {\n      \"canonical_name\": \"OT | Portal Active\",\n      \"ghl_id\": \"lPSHRPcLiURAMyVCrEJO\",\n      \"key\": \"ot_portal_active\"\n    },\n    \"exact_filters\": [\n      \"One Time CRM Contact ID is present and belongs to an adult contact projection.\",\n      \"One Time Email Consent equals the application contract value granted.\",\n      \"One Time Suppression State equals active.\",\n      \"Email is present and syntactically valid.\",\n      \"HighLevel email DND is false.\",\n      \"No unsubscribe, complaint, hard-bounce, or global suppression state is present.\",\n      \"One Time Portal Status equals active.\"\n    ],\n    \"projected_fields\": [\n      {\n        \"canonical_name\": \"One Time CRM Contact ID\",\n        \"ghl_id\": \"TRZGYm5rfFdjpYHM0HLL\",\n        \"key\": \"contact.one_time_crm_contact_id\"\n      },\n      {\n        \"canonical_name\": \"One Time Email Consent\",\n        \"ghl_id\": \"olSxPkya7mkkB61vSXHx\",\n        \"key\": \"contact.one_time_email_consent\"\n      },\n      {\n        \"canonical_name\": \"One Time Suppression State\",\n        \"ghl_id\": \"rdWsApvquRfHwkzvp5mS\",\n        \"key\": \"contact.one_time_suppression_state\"\n      },\n      {\n        \"canonical_name\": \"One Time Portal Status\",\n        \"ghl_id\": \"hxancKIMgrEWUeVSSUYF\",\n        \"key\": \"contact.one_time_portal_status\"\n      }\n    ],\n    \"producer_authority\": \"The Parent lifecycle producer emits after One Time records the adult Parent portal activation transaction.\"\n  },\n  \"enrollment_policy\": {\n    \"reentry\": \"Allow re-entry only after the prior run completed and OT | Portal Active was removed for a later distinct activation event.\",\n    \"dedupe\": \"The application event idempotency key and durable provider operation receipt are authoritative; replay must not create a second welcome.\",\n    \"cleanup\": \"After the portal-ready email succeeds, remove only OT | Portal Active.\"\n  },\n  \"ordered_steps\": [\n    {\n      \"order\": 1,\n      \"kind\": \"trigger\",\n      \"name\": \"Parent portal activation projection\",\n      \"exact_configuration\": \"Contact Tag Added: OT | Portal Active (lPSHRPcLiURAMyVCrEJO).\"\n    },\n    {\n      \"order\": 2,\n      \"kind\": \"branch\",\n      \"name\": \"Active adult email eligibility\",\n      \"exact_configuration\": \"One Time CRM Contact ID is present and belongs to an adult contact projection. One Time Email Consent equals the application contract value granted. One Time Suppression State equals active. Email is present and syntactically valid. HighLevel email DND is false. No unsubscribe, complaint, hard-bounce, or global suppression state is present. One Time Portal Status equals active.\"\n    },\n    {\n      \"order\": 3,\n      \"kind\": \"email\",\n      \"name\": \"Portal activated notice\",\n      \"exact_configuration\": \"Send the exact protected-portal email defined in this job.\"\n    },\n    {\n      \"order\": 4,\n      \"kind\": \"cleanup\",\n      \"name\": \"Clear trigger tag\",\n      \"exact_configuration\": \"Remove only OT | Portal Active after the email action succeeds.\"\n    }\n  ],\n  \"message\": {\n    \"message_class\": \"portal_activated\",\n    \"subject\": \"Your One Time Parent Portal is ready\",\n    \"preheader\": \"Your Parent Portal access is active.\",\n    \"body\": \"Hello,\\n\\nYour One Time Parent Portal is now active. You can use it to manage your household and reach protected One Time class and learning resources.\\n\\nOpen the Parent Portal below.\\n\\nWith bracha,\\nOne Time Mishnayos\",\n    \"cta\": {\n      \"label\": \"Open Parent Portal\",\n      \"protected_reference_path\": \"/app/parent\",\n      \"custom_value\": {\n        \"canonical_name\": \"One Time Parent Portal URL\",\n        \"ghl_id\": \"ixqb7lPdQZmyCmMilVno\",\n        \"key\": \"one_time_parent_portal_url\"\n      }\n    },\n    \"footer\": \"You are receiving this email because you asked for One Time email updates. Use the unsubscribe link in this email to stop optional email updates.\"\n  },\n  \"sender\": {\n    \"sender_key\": \"brand\",\n    \"display_name\": {\n      \"canonical_name\": \"One Time Brand Sender Name\",\n      \"ghl_id\": \"XyASPYbVa4ZBHuJe2yJI\",\n      \"key\": \"one_time_brand_sender_name\"\n    },\n    \"from\": {\n      \"canonical_name\": \"One Time Brand From\",\n      \"ghl_id\": \"o9aOerC0VSMKzDv4hrkX\",\n      \"key\": \"one_time_brand_from\"\n    },\n    \"reply_to\": {\n      \"canonical_name\": \"One Time Default Reply-To\",\n      \"ghl_id\": \"u0msWwGUDL4Upjfe58Bm\",\n      \"key\": \"one_time_default_reply_to\"\n    }\n  },\n  \"suppression_precedence\": [\n    \"Global suppression, explicit opt-out, unsubscribe, complaint, and hard bounce always win.\",\n    \"Email DND always wins over the trigger tag and every positive field.\",\n    \"A missing or non-granted email permission fails closed with no email action.\",\n    \"Do not infer permission from a tag, a portal status, household entitlement, or newsletter state.\",\n    \"Do not add a WhatsApp action; these five jobs are email-only.\"\n  ],\n  \"configuration_run\": {\n    \"messages_sent\": 0,\n    \"contacts_created\": 0,\n    \"contacts_enrolled\": 0,\n    \"broad_sends\": 0\n  },\n  \"controlled_test\": {\n    \"separate_explicit_authorization_required\": true,\n    \"operator_owned_adult_contacts_max\": 1,\n    \"synthetic_events_max\": 1,\n    \"messages_max\": 1,\n    \"broad_sends\": 0,\n    \"required_proof\": [\n      \"Record a sanitized canary run identifier, allowlisted delivery-key hash, and budget of exactly one.\",\n      \"Prove the application event and provider operation receipt completed before the workflow test.\",\n      \"Prove one enrollment and at most one operator-owned email delivery.\",\n      \"Replay the same application idempotency key and prove no second provider intent, enrollment, or email.\",\n      \"Prove an ineligible or suppressed replay sends nothing.\"\n    ]\n  },\n  \"save_reopen_readback\": [\n    \"Save the email action layer.\",\n    \"Save the outer workflow layer.\",\n    \"Navigate away, reload, and reopen the exact workflow ID.\",\n    \"Read back the trigger tag, every filter, action order, sender pickers, subject, body, CTA, and cleanup.\",\n    \"Keep the workflow Draft when any readback differs or the matching deployed contract is absent.\",\n    \"Publish only after exact readback and the separately authorized one-contact test prerequisites are present.\"\n  ],\n  \"rollback_disable\": [\n    \"Turn the exact workflow publish switch off and save.\",\n    \"Reopen the same workflow ID and verify Draft.\",\n    \"Do not delete, clone, rename, or move the workflow.\",\n    \"Do not remove unrelated contact tags or fields.\"\n  ],\n  \"terminal_states\": [\n    \"SAVED_REOPENED\",\n    \"ACTIVE_CONFIGURED\",\n    \"ACTIVE_TESTED\",\n    \"DRAFT_WAITING_EXTERNAL(<exact contract or canary dependency>)\",\n    \"DRAFT_NEEDS_OPERATOR_DECISION(<exact choice>)\",\n    \"FAILED_CLOSED(<exact mismatch>)\"\n  ],\n  \"safe_evidence_fields\": [\n    \"job_id\",\n    \"workflow_key\",\n    \"workflow_id\",\n    \"full_folder_ancestry\",\n    \"observed_trigger_and_filter_summary\",\n    \"sender_picker_keys\",\n    \"action_save_readback\",\n    \"outer_save_readback\",\n    \"publish_state\",\n    \"sanitized_canary_run_hash\",\n    \"sanitized_application_event_hash\",\n    \"sanitized_workflow_execution_reference\",\n    \"messages_sent_count\",\n    \"broad_sends_count\",\n    \"student_contacts_created_count\",\n    \"replay_result\",\n    \"terminal_state\",\n    \"remaining_dependency\"\n  ],\n  \"forbidden_evidence_fields\": [\n    \"contact names, email addresses, phone numbers, or private destinations\",\n    \"message provider payloads or rendered recipient message bodies\",\n    \"security tokens, credentials, secrets, nonces, signatures, or raw headers\",\n    \"Student identity, credentials, learning records, or contact records\",\n    \"raw Zoom, Vimeo, meeting-provider, or storage-provider URLs\"\n  ]\n}\n\nConfiguration phase authority is zero contacts, zero enrollments, zero sends, zero broad sends, and no publication before exact save/reopen/readback.\nA controlled test is a separate phase. It requires an explicit protected canary run ID, one allowlisted delivery key, a budget of exactly one, one operator-owned adult destination, and the deployed matching application contract. Without every prerequisite, remain Draft and return the exact dependency.\nSelect sender, reply-to, fields, tags, and URL only from the registered pickers and IDs in the execution contract. Preserve unrelated contact fields and tags.\nSave the email action layer, save the outer workflow layer, navigate away, reload, reopen the exact ID, and compare every critical field before any publication or test.\nRecord ACTIVE_TESTED only after the one-contact delivery, suppression, idempotency, replay, and readback proof all pass. Otherwise use the exact terminal state from the contract.\nNever create or project Student contacts, send credentials or security tokens, use raw provider URLs, add WhatsApp actions, or perform a broad enrollment or send.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-16.result.json\nIdempotency key: one-time-ghl:GHL-UI-16:80751341be903401",
+  "allowed_assets": [
+    "OT-08 Parent Portal Activated (eeca2efb-41be-40a7-bbc4-ee6fe8760dd9)",
+    "OT | Portal Active",
+    "One Time CRM Contact ID",
+    "One Time Email Consent",
+    "One Time Suppression State",
+    "One Time Portal Status",
+    "One Time Parent Portal URL",
+    "One Time Brand Sender Name",
+    "One Time Brand From",
+    "One Time Default Reply-To"
+  ],
+  "forbidden_assets": [
+    "Student contacts, Student fields, Student credentials, or Student learning data",
+    "configuration-phase contact creation, enrollment, workflow publication, or message send",
+    "production contacts or production audiences in a controlled test",
+    "workflow publication before exact save/reopen/readback and separate test authorization",
+    "creating, cloning, renaming, moving, or deleting a workflow",
+    "raw Zoom, Vimeo, meeting-provider, or storage-provider links",
+    "security tokens, credentials, private destinations, or provider payloads",
+    "WhatsApp actions",
+    "broad enrollment or send",
+    "removing unrelated contact tags or fields"
+  ],
+  "prerequisites": [
+    "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
+    "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
+    "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
+    "Use only one canonical registry and do not create duplicate assets.",
+    "Reconcile exact workflow ID eeca2efb-41be-40a7-bbc4-ee6fe8760dd9 and full folder ancestry One Time / 30 - Portal Lifecycle across Draft, Published, Archived, and deprecated views.",
+    "Verify parent.portal.activated@1.0.0 is deployed with provider transport still unauthorized by default.",
+    "Before a separate controlled test, require an exact protected canary run ID, one allowlisted delivery key, and budget of one."
+  ],
+  "expected_ghl_ids_to_capture": [
+    "workflow_id",
+    "folder_ids",
+    "trigger_tag_id",
+    "projected_field_ids",
+    "sender_custom_value_ids",
+    "cta_custom_value_id",
+    "sanitized_workflow_execution_reference"
+  ],
+  "test_contact_rules": [
+    "Configuration phase: zero contact creation, zero enrollment, and zero sends.",
+    "Controlled test phase requires separate explicit authorization and at most one operator-owned adult contact.",
+    "Never create, select, or project a Student contact.",
+    "Never use a production audience or broad enrollment."
+  ],
+  "defaults": {
+    "no_send": true,
+    "no_publish": true,
+    "no_production_workflow_enrollment": true,
+    "no_live_payment_mutation": true,
+    "no_student_contacts": true,
+    "save_required": true,
+    "readback_required": true
+  },
+  "completion_checklist": [
+    "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
+    "Exact workflow ID eeca2efb-41be-40a7-bbc4-ee6fe8760dd9 and full folder ancestry were unique.",
+    "Application contract parent.portal.activated@1.0.0 was proven deployed or an exact Draft dependency was recorded.",
+    "Action layer was saved and reopened with exact copy, CTA, sender, reply-to, fields, gates, waits, and cleanup.",
+    "Outer workflow layer was saved, navigated away from, reloaded, and reopened.",
+    "Configuration phase created zero contacts, enrolled zero contacts, and sent zero messages.",
+    "Any controlled test used separate explicit authorization, one operator-owned adult maximum, and one email maximum.",
+    "Replay and suppression proofs passed before ACTIVE_TESTED was recorded.",
+    "Broad sends = 0 and Student contacts created = 0.",
+    "Safe result JSON was saved and read back without private destinations, message payloads, tokens, credentials, Student data, or provider URLs."
+  ],
+  "result_json_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "job_id",
+      "workflow_key",
+      "workflow_id",
+      "full_folder_ancestry",
+      "terminal_state",
+      "action_saved",
+      "outer_workflow_saved",
+      "reopened_and_verified",
+      "publish_state",
+      "controlled_test_authorized",
+      "messages_sent",
+      "broad_sends",
+      "production_contacts_enrolled",
+      "student_contacts_created",
+      "idempotency_replay_result",
+      "safe_evidence",
+      "remaining_dependency",
+      "idempotency_key"
     ],
-    "sender_key": "brand",
-    "suppression": "Adult Parent only, portal status active, email consent granted, suppression active, email DND off."
+    "properties": {
+      "job_id": {
+        "const": "GHL-UI-16"
+      },
+      "workflow_key": {
+        "type": "string",
+        "pattern": "^OT-"
+      },
+      "workflow_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "full_folder_ancestry": {
+        "type": "string",
+        "pattern": "^One Time / "
+      },
+      "terminal_state": {
+        "enum": [
+          "SAVED_REOPENED",
+          "ACTIVE_CONFIGURED",
+          "ACTIVE_TESTED",
+          "DRAFT_WAITING_EXTERNAL",
+          "DRAFT_NEEDS_OPERATOR_DECISION",
+          "FAILED_CLOSED"
+        ]
+      },
+      "action_saved": {
+        "type": "boolean"
+      },
+      "outer_workflow_saved": {
+        "type": "boolean"
+      },
+      "reopened_and_verified": {
+        "type": "boolean"
+      },
+      "publish_state": {
+        "enum": ["Draft", "Published"]
+      },
+      "controlled_test_authorized": {
+        "type": "boolean"
+      },
+      "messages_sent": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "broad_sends": {
+        "const": 0
+      },
+      "production_contacts_enrolled": {
+        "const": 0
+      },
+      "student_contacts_created": {
+        "const": 0
+      },
+      "idempotency_replay_result": {
+        "enum": ["not_run", "passed_no_duplicate", "failed_duplicate", "blocked"]
+      },
+      "safe_evidence": {
+        "type": "object",
+        "additionalProperties": {
+          "type": ["string", "number", "boolean", "null"]
+        }
+      },
+      "remaining_dependency": {
+        "type": "string"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
   },
-  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-08 by exact ID eeca2efb-41be-40a7-bbc4-ee6fe8760dd9 and full path One Time / 30 - Portal Lifecycle in all states; do not create or rename an asset. Verify parent.portal.activated@1.0.0 is deployed or remain DRAFT_WAITING_EXTERNAL(parent.portal.activated@1.0.0 deployment). Before any trigger test, prove the application row is explicitly authorized by the exact protected canary run ID, delivery-key allowlist and budget; disabled, mock, held or non-allowlisted rows must remain unclaimed. Configure Contact Tag added OT | Portal Active with portal status active, email consent granted, suppression active and email DND off. Select sender_key brand only from registered custom values. Use only the protected One Time Parent portal URL and no provider URL. After the bounded action and application delivery receipt are complete, remove only OT | Portal Active; do not rely on a time-based replay lease. Save the action layer and outer workflow separately; navigate away, reload, reopen exact ID and compare all critical values before publish. Use one isolated synthetic Parent activation and the operator-owned destination only. Record the canary run hash and prove one execution, one bounded delivery, replay no duplicate, no Student contact and no credential data. Record ACTIVE_CONFIGURED or ACTIVE_TESTED from observed state; zero broad sends."
+  "execution_contract": {
+    "job_id": "GHL-UI-16",
+    "order": 16,
+    "title": "activate OT-08",
+    "workflow": {
+      "canonical_key": "OT-08",
+      "canonical_name": "OT-08 Parent Portal Activated",
+      "ghl_id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
+      "full_folder_ancestry": "One Time / 30 - Portal Lifecycle",
+      "folder_ids": {
+        "root": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+        "leaf": "250ff9f0-4985-46c0-a587-f7e3a0251bab"
+      },
+      "observed_state": "DRAFT_SHELL",
+      "desired_transition": ["DRAFT_SHELL", "SAVED_REOPENED", "ACTIVE_TESTED"]
+    },
+    "application_contract": {
+      "version": "1.0.0",
+      "event_name": "parent.portal.activated",
+      "adult_only": true,
+      "trigger_tag": {
+        "canonical_name": "OT | Portal Active",
+        "ghl_id": "lPSHRPcLiURAMyVCrEJO",
+        "key": "ot_portal_active"
+      },
+      "exact_filters": [
+        "One Time CRM Contact ID is present and belongs to an adult contact projection.",
+        "One Time Email Consent equals the application contract value granted.",
+        "One Time Suppression State equals active.",
+        "Email is present and syntactically valid.",
+        "HighLevel email DND is false.",
+        "No unsubscribe, complaint, hard-bounce, or global suppression state is present.",
+        "One Time Portal Status equals active."
+      ],
+      "projected_fields": [
+        {
+          "canonical_name": "One Time CRM Contact ID",
+          "ghl_id": "TRZGYm5rfFdjpYHM0HLL",
+          "key": "contact.one_time_crm_contact_id"
+        },
+        {
+          "canonical_name": "One Time Email Consent",
+          "ghl_id": "olSxPkya7mkkB61vSXHx",
+          "key": "contact.one_time_email_consent"
+        },
+        {
+          "canonical_name": "One Time Suppression State",
+          "ghl_id": "rdWsApvquRfHwkzvp5mS",
+          "key": "contact.one_time_suppression_state"
+        },
+        {
+          "canonical_name": "One Time Portal Status",
+          "ghl_id": "hxancKIMgrEWUeVSSUYF",
+          "key": "contact.one_time_portal_status"
+        }
+      ],
+      "producer_authority": "The Parent lifecycle producer emits after One Time records the adult Parent portal activation transaction."
+    },
+    "enrollment_policy": {
+      "reentry": "Allow re-entry only after the prior run completed and OT | Portal Active was removed for a later distinct activation event.",
+      "dedupe": "The application event idempotency key and durable provider operation receipt are authoritative; replay must not create a second welcome.",
+      "cleanup": "After the portal-ready email succeeds, remove only OT | Portal Active."
+    },
+    "ordered_steps": [
+      {
+        "order": 1,
+        "kind": "trigger",
+        "name": "Parent portal activation projection",
+        "exact_configuration": "Contact Tag Added: OT | Portal Active (lPSHRPcLiURAMyVCrEJO)."
+      },
+      {
+        "order": 2,
+        "kind": "branch",
+        "name": "Active adult email eligibility",
+        "exact_configuration": "One Time CRM Contact ID is present and belongs to an adult contact projection. One Time Email Consent equals the application contract value granted. One Time Suppression State equals active. Email is present and syntactically valid. HighLevel email DND is false. No unsubscribe, complaint, hard-bounce, or global suppression state is present. One Time Portal Status equals active."
+      },
+      {
+        "order": 3,
+        "kind": "email",
+        "name": "Portal activated notice",
+        "exact_configuration": "Send the exact protected-portal email defined in this job."
+      },
+      {
+        "order": 4,
+        "kind": "cleanup",
+        "name": "Clear trigger tag",
+        "exact_configuration": "Remove only OT | Portal Active after the email action succeeds."
+      }
+    ],
+    "message": {
+      "message_class": "portal_activated",
+      "subject": "Your One Time Parent Portal is ready",
+      "preheader": "Your Parent Portal access is active.",
+      "body": "Hello,\n\nYour One Time Parent Portal is now active. You can use it to manage your household and reach protected One Time class and learning resources.\n\nOpen the Parent Portal below.\n\nWith bracha,\nOne Time Mishnayos",
+      "cta": {
+        "label": "Open Parent Portal",
+        "protected_reference_path": "/app/parent",
+        "custom_value": {
+          "canonical_name": "One Time Parent Portal URL",
+          "ghl_id": "ixqb7lPdQZmyCmMilVno",
+          "key": "one_time_parent_portal_url"
+        }
+      },
+      "footer": "You are receiving this email because you asked for One Time email updates. Use the unsubscribe link in this email to stop optional email updates."
+    },
+    "sender": {
+      "sender_key": "brand",
+      "display_name": {
+        "canonical_name": "One Time Brand Sender Name",
+        "ghl_id": "XyASPYbVa4ZBHuJe2yJI",
+        "key": "one_time_brand_sender_name"
+      },
+      "from": {
+        "canonical_name": "One Time Brand From",
+        "ghl_id": "o9aOerC0VSMKzDv4hrkX",
+        "key": "one_time_brand_from"
+      },
+      "reply_to": {
+        "canonical_name": "One Time Default Reply-To",
+        "ghl_id": "u0msWwGUDL4Upjfe58Bm",
+        "key": "one_time_default_reply_to"
+      }
+    },
+    "suppression_precedence": [
+      "Global suppression, explicit opt-out, unsubscribe, complaint, and hard bounce always win.",
+      "Email DND always wins over the trigger tag and every positive field.",
+      "A missing or non-granted email permission fails closed with no email action.",
+      "Do not infer permission from a tag, a portal status, household entitlement, or newsletter state.",
+      "Do not add a WhatsApp action; these five jobs are email-only."
+    ],
+    "configuration_run": {
+      "messages_sent": 0,
+      "contacts_created": 0,
+      "contacts_enrolled": 0,
+      "broad_sends": 0
+    },
+    "controlled_test": {
+      "separate_explicit_authorization_required": true,
+      "operator_owned_adult_contacts_max": 1,
+      "synthetic_events_max": 1,
+      "messages_max": 1,
+      "broad_sends": 0,
+      "required_proof": [
+        "Record a sanitized canary run identifier, allowlisted delivery-key hash, and budget of exactly one.",
+        "Prove the application event and provider operation receipt completed before the workflow test.",
+        "Prove one enrollment and at most one operator-owned email delivery.",
+        "Replay the same application idempotency key and prove no second provider intent, enrollment, or email.",
+        "Prove an ineligible or suppressed replay sends nothing."
+      ]
+    },
+    "save_reopen_readback": [
+      "Save the email action layer.",
+      "Save the outer workflow layer.",
+      "Navigate away, reload, and reopen the exact workflow ID.",
+      "Read back the trigger tag, every filter, action order, sender pickers, subject, body, CTA, and cleanup.",
+      "Keep the workflow Draft when any readback differs or the matching deployed contract is absent.",
+      "Publish only after exact readback and the separately authorized one-contact test prerequisites are present."
+    ],
+    "rollback_disable": [
+      "Turn the exact workflow publish switch off and save.",
+      "Reopen the same workflow ID and verify Draft.",
+      "Do not delete, clone, rename, or move the workflow.",
+      "Do not remove unrelated contact tags or fields."
+    ],
+    "terminal_states": [
+      "SAVED_REOPENED",
+      "ACTIVE_CONFIGURED",
+      "ACTIVE_TESTED",
+      "DRAFT_WAITING_EXTERNAL(<exact contract or canary dependency>)",
+      "DRAFT_NEEDS_OPERATOR_DECISION(<exact choice>)",
+      "FAILED_CLOSED(<exact mismatch>)"
+    ],
+    "safe_evidence_fields": [
+      "job_id",
+      "workflow_key",
+      "workflow_id",
+      "full_folder_ancestry",
+      "observed_trigger_and_filter_summary",
+      "sender_picker_keys",
+      "action_save_readback",
+      "outer_save_readback",
+      "publish_state",
+      "sanitized_canary_run_hash",
+      "sanitized_application_event_hash",
+      "sanitized_workflow_execution_reference",
+      "messages_sent_count",
+      "broad_sends_count",
+      "student_contacts_created_count",
+      "replay_result",
+      "terminal_state",
+      "remaining_dependency"
+    ],
+    "forbidden_evidence_fields": [
+      "contact names, email addresses, phone numbers, or private destinations",
+      "message provider payloads or rendered recipient message bodies",
+      "security tokens, credentials, secrets, nonces, signatures, or raw headers",
+      "Student identity, credentials, learning records, or contact records",
+      "raw Zoom, Vimeo, meeting-provider, or storage-provider URLs"
+    ]
+  },
+  "idempotency_key": "one-time-ghl:GHL-UI-16:80751341be903401",
+  "bna_agent_action_dropoff": {
+    "lane": "highlevel_agent_mode",
+    "return_surface": "BNA Agent Action drop-off page",
+    "return_route": "/ops/agent-actions/highlevel/drop-off",
+    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-16.result.json",
+    "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
+    "metadata": {
+      "repository": "shloimie-beep/onetimev2",
+      "registry_root": "integrations/highlevel/registry/",
+      "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-16-activate-ot-08.json",
+      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-16.result.json"
+    }
+  }
 }
