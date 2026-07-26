@@ -1,0 +1,54 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+received_at: 2026-07-26T15:18:18Z
+source_ref: protected-thread-reference:current-operator-session-20260726
+source_sha256: ed129b6de4f0669f750f068261f54c2fac67b865da8de230d89f33e2dd74b879
+operator_wording: >-
+  Commit my rambles and exact prompts to Git so ChatGPT Pro and Codex can share
+  the same pushed context. Defer the historic 88-contact reconciliation and
+  attendance. Use a dedicated Rabbi Eli Scheller campaign sender for the new
+  One Time program; keep info@ for office, support, access, billing, and
+  neutral operational communication. Preserve one reviewed program-launch
+  email and make the sender/reply path testable before any customer send.
+observed_problem:
+  - ChatGPT Pro can audit GitHub well but cannot see uncommitted or unpushed local work, so local-only context creates stale or conflicting advice.
+  - The canonical sender registry already distinguishes Rabbi, office, brand, and account-security identities, but the preferred Rabbi address remains pending mailbox, provider, delivery, and reply-path acceptance.
+  - The existing OT-02A and OT-02B workflows identify migration and nurture message classes, but no current packet states the exact new-program email outcome and audience boundaries.
+  - Historic contact reconciliation and attendance analysis are distracting from the operator-owned pilot launch and are not current prerequisites.
+desired_user_outcome: >-
+  Every material operator ramble becomes one sanitized, pushed, Board-linked
+  packet that a fresh ChatGPT Pro or Codex task can read at an exact commit.
+  Rabbi-authored launch and teaching messages visibly come from the dedicated
+  Rabbi campaign identity after acceptance, while office, support, access,
+  billing, and neutral operational messages remain under info@. One reviewed
+  new-program email is ready before any audience enrollment or customer send.
+acceptance_criteria:
+  - A fresh task can begin from AGENTS.md and CURRENT.yaml, find this intake and its exact prompt packet, and avoid stale local-only context.
+  - BOARD.yaml remains the only current status map and workflow-registry.yaml remains the only editable HighLevel automation inventory.
+  - The preferred Rabbi campaign sender is Rabbi Eli Scheller at rabbi@onetimeonetime.com only after mailbox or routing, GHL From acceptance, one operator-owned seed delivery, and reply-to-GHL readback pass.
+  - info@onetimeonetime.com remains the office and neutral brand identity for support, access, billing, administration, and ordinary operational notices.
+  - Account activation, login challenges, password setup, and password reset remain One Time/Resend security messages rather than GHL campaign mail.
+  - One Rabbi-authored program-launch content brief is reusable for the existing-customer migration and separately consented nurture lanes without collapsing their audience rules.
+  - Tisha event registration, attendance, payment history, portal presence, or legacy tags never imply general-marketing permission.
+  - Historic 88-contact reconciliation and attendance analysis remain operator-owned and are not prerequisites for the controlled pilot.
+  - The design packet performs zero GHL mutation, enrollment, send, Stripe mutation, access mutation, or production change.
+affected_track:
+  - goal_system
+  - ghl_app_contract_shells
+decision:
+  status: not_needed
+  reason: The operator explicitly selected Git-published prompt packets, deferred historic contact and attendance work, and separated the Rabbi campaign identity from the info office/brand identity.
+next_executable_task:
+  action: Review and execute the repository-only design packet at ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md before any browser mutation or send.
+  evidence_output:
+    - exact committed source review
+    - canonical sender and message-class diff proposal
+    - reviewed GHL sender-acceptance job proposal
+    - reviewed program-launch content brief
+    - sanitized handoff with zero external effects
+  write_scope: Existing sender/message-class registry, OT-02A/OT-02B prompts and checklists, one proposed GHL UI job, and this existing OT-LAUNCH-01 track only; no BOARD edit by a non-conductor.
+privacy_review:
+  secrets_committed: false
+  private_destinations_committed: false
+  customer_or_student_data_committed: false
+  raw_message_copy_committed: false
