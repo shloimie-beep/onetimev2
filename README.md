@@ -1,24 +1,25 @@
 # One Time One Time
 
-Standalone One Time Mishnayos runtime for the first foundation, landing, and
-lead-capture slice.
+Standalone One Time Mishnayos runtime.
 
 The application is a Node.js 24 + TypeScript modular monolith with Express 5,
 Vite-built public assets, PostgreSQL through `pg`, forward-only migrations, and
-a transactional outbox worker that remains in sink/mock mode for this task.
+a transactional outbox worker.
 
-## Current Scope
+## Canonical Control Plane
 
-- Public landing at `/`
-- Signup form at `/signup`
-- Login placeholder at `/login`
-- Future authenticated CRM route at `/app/crm`
-- Canonical lead API at `POST /api/v1/leads`
-- Temporary compatibility endpoint at `POST /api/one-time/interest`
-- Legacy redirects from `/one-time`, `/one-time/signup`, and `/rabbi-member`
+- Read `AGENTS.md`, then `ops/goals/CURRENT.yaml` and the goal files it
+  references.
+- `ops/goals/OT-LAUNCH-01/BOARD.yaml` is the only current status map.
+- `integrations/highlevel/registry/workflow-registry.yaml` is the single
+  editable HighLevel automation inventory.
+- `integrations/highlevel/workflows.yaml`,
+  `integrations/highlevel/registry/current.json`, and
+  `integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md` are generated
+  projections and must not be edited as status.
 
-No deployment, DNS, production database, payment, portal access, or real
-external messaging change is included.
+This README is repository orientation only. Do not infer current readiness,
+deployment state, or provider authority from historical PRs or evidence files.
 
 ## Local Workflow
 

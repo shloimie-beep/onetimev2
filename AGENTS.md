@@ -42,10 +42,20 @@
 
 ## Director Handoff
 
-- For fresh release-state context, start at `ops/director/START-HERE.md`. It
-  summarizes the current live/deployed source, capability classifications,
-  active branch fleet, and binding product invariants. It does not replace this
-  AGENTS file.
+- For current control-plane context, start at `ops/goals/CURRENT.yaml`, then
+  read the referenced `GOAL.md`, `SPEC.yaml`, `ACCEPTANCE.yaml`, `BOARD.yaml`,
+  and `DECISIONS.yaml`.
+- `BOARD.yaml` is the only current status map. Entrypoints, reports, PR
+  descriptions, and generated projections must point to it rather than copying
+  mutable status, SHAs, PRs, or deployment IDs.
+- HighLevel automation desired state is edited only in
+  `integrations/highlevel/registry/workflow-registry.yaml`. Its
+  `integrations/highlevel/workflows.yaml`,
+  `integrations/highlevel/registry/current.json`, and
+  `integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md` projections are
+  generated and read-only.
+- `ops/director/START-HERE.md` is a pointer-only entrypoint to those canonical
+  files. It does not replace this AGENTS file.
 
 ## Safety
 

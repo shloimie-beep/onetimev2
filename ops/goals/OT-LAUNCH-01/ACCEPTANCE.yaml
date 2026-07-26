@@ -198,11 +198,11 @@ criteria:
     proof: [sanitized_seed_readback, api]
   - id: MIG-001
     track: admin_experience_preview
-    observable: PR #104 retains 2214_learning_delivery_content_factory; Experience Preview is unique source prefix 2215 with exact SHA-256 e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56 and post-deploy ledger readback, while historical live 2209/2210 rows remain untouched.
+    observable: 'PR #104 retains 2214_learning_delivery_content_factory; Experience Preview is unique source prefix 2215 with exact SHA-256 e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56 and post-deploy ledger readback, while historical live 2209/2210 rows remain untouched.'
     proof: [migration_proof]
   - id: DEPLOY-001
     track: persistent_staging
-    observable: PR #97 head equals /version commit, /health and /ready pass at latest migration, worker heartbeat is fresh, and the complete desktop/360px journey passes without production mutation.
+    observable: 'PR #97 head equals /version commit, /health and /ready pass at latest migration, worker heartbeat is fresh, and the complete desktop/360px journey passes without production mutation.'
     proof: [version_health_ready, worker_heartbeat, browser_desktop, browser_mobile]
   - id: TISHA-001
     track: tisha_landing_polish

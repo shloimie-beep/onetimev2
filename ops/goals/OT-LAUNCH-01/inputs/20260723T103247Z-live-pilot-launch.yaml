@@ -46,7 +46,7 @@ next_executable_task:
     - focused automated tests
     - breakpoint browser proof
     - sanitized provider and deployment readback
-  write_scope: Existing OT-LAUNCH-01 goal, PR #97 conductor branch, reviewed provider-action packets, and explicitly assigned application files only.
+  write_scope: 'Existing OT-LAUNCH-01 goal, PR #97 conductor branch, reviewed provider-action packets, and explicitly assigned application files only.'
 privacy_review:
   secrets_committed: false
   private_destinations_committed: false

@@ -293,7 +293,7 @@ golden_paths:
       - Provider-dependent surfaces show provider_off or unavailable when exact gates/evidence are absent.
   video_to_classroom_e2e:
     requirements:
-      - PR #108 has converged; this implementation is eligible for conductor assignment.
+      - 'PR #108 has converged; this implementation is eligible for conductor assignment.'
       - Admin selects one canonical class occurrence and uploads one video to durable protected source
         storage that retains a non-secret opaque locator across restart/redeploy.
       - One idempotent worker advances probe -> conservative trim -> transcription -> captions ->
@@ -331,7 +331,7 @@ security_invariants:
 migrations:
   preserved_external_prefix:
     prefix: 2214
-    owner: PR #104 learning_delivery_content_factory
+    owner: 'PR #104 learning_delivery_content_factory'
     sha256_evidence: 7c5a8ad2…f8068c
   experience_preview:
     prefix: 2215

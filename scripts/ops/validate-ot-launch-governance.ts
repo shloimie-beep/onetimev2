@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { canonicalTextForHash } from './canonical-text.ts';
 
@@ -9,19 +9,37 @@ const yaml = require('js-yaml') as { load(source: string): unknown };
 const repoRoot = process.cwd();
 const boardPath = 'ops/goals/OT-LAUNCH-01/BOARD.yaml';
 const pointerPath = 'ops/previews/current.json';
+const specPath = 'ops/goals/OT-LAUNCH-01/SPEC.yaml';
+const acceptancePath = 'ops/goals/OT-LAUNCH-01/ACCEPTANCE.yaml';
+const decisionsPath = 'ops/goals/OT-LAUNCH-01/DECISIONS.yaml';
+const inputsDirectory = 'ops/goals/OT-LAUNCH-01/inputs';
 const writePointer = process.argv.includes('--write-pointer');
 const checks: Array<{ name: string; passed: boolean; detail: string }> = [];
 
 const current = await readYaml<Record<string, unknown>>('ops/goals/CURRENT.yaml');
-const spec = await readYaml<Record<string, unknown>>('ops/goals/OT-LAUNCH-01/SPEC.yaml');
-const acceptance = await readYaml<Record<string, unknown>>(
-  'ops/goals/OT-LAUNCH-01/ACCEPTANCE.yaml',
-);
-const decisionsPath = 'ops/goals/OT-LAUNCH-01/DECISIONS.yaml';
+const specText = await readText(specPath);
+const spec = parseYaml<Record<string, unknown>>(specText, specPath);
+const acceptanceText = await readText(acceptancePath);
+const acceptance = parseYaml<Record<string, unknown>>(acceptanceText, acceptancePath);
 const decisionsText = await readText(decisionsPath);
 const decisions = parseYaml<Record<string, unknown>>(decisionsText, decisionsPath);
 const boardText = await readFile(path.join(repoRoot, boardPath), 'utf8');
 const board = parseYaml<Record<string, unknown>>(boardText, boardPath);
+const inputRecords = await Promise.all(
+  (await readdir(path.join(repoRoot, inputsDirectory)))
+    .filter((fileName) => fileName.endsWith('.yaml') || fileName.endsWith('.yml'))
+    .sort()
+    .map(async (fileName) => {
+      const filePath = `${inputsDirectory}/${fileName}`;
+      const source = await readText(filePath);
+      return {
+        filePath,
+        source,
+        parsed: parseYaml<Record<string, unknown>>(source, filePath),
+      };
+    }),
+);
+const inputByPath = new Map(inputRecords.map((record) => [record.filePath, record.parsed]));
 const adminIncident = JSON.parse(
   await readText(
     'ops/goals/OT-LAUNCH-01/handoffs/fictional-admin-credential-exposure--20260722.json',
@@ -36,8 +54,23 @@ const goalSkillUi = await readYaml<Record<string, unknown>>(
 const ghlSkillUi = await readYaml<Record<string, unknown>>(
   '.agents/skills/one-time-ghl-ui-job/agents/openai.yaml',
 );
+const canonicalEntrypoints = await Promise.all(
+  [
+    'AGENTS.md',
+    'README.md',
+    'ops/director/START-HERE.md',
+    'integrations/highlevel/agent-mode/README.md',
+  ].map(async (filePath) => ({ filePath, source: await readText(filePath) })),
+);
 
 const sourceHash = `sha256:${createHash('sha256').update(canonicalTextForHash(boardText)).digest('hex')}`;
+const boardLineEndingHashes = new Set(
+  [
+    canonicalTextForHash(boardText),
+    canonicalTextForHash(boardText).replaceAll('\n', '\r\n'),
+    canonicalTextForHash(boardText).replaceAll('\n', '\r'),
+  ].map((value) => createHash('sha256').update(canonicalTextForHash(value)).digest('hex')),
+);
 const expectedPointer = {
   schema_version: 1,
   goal_id: 'OT-LAUNCH-01',
@@ -78,6 +111,34 @@ const suspiciousTruncatedDecisionStrings = parsedDecisionStrings.filter(({ value
 );
 const unquotedHashCommentHazards = findUnquotedHashCommentHazards(boardText);
 const unquotedDecisionHashCommentHazards = findUnquotedHashCommentHazards(decisionsText);
+const canonicalGoalYamlSources = [
+  { filePath: specPath, source: specText },
+  { filePath: acceptancePath, source: acceptanceText },
+  { filePath: boardPath, source: boardText },
+  { filePath: decisionsPath, source: decisionsText },
+  ...inputRecords.map(({ filePath, source }) => ({ filePath, source })),
+];
+const canonicalGoalHashCommentHazards = canonicalGoalYamlSources.flatMap(({ filePath, source }) =>
+  findUnquotedHashCommentHazards(source).map((line) => `${filePath}:${line}`),
+);
+const canonicalGoalLineEndingPortable = canonicalGoalYamlSources.every(({ filePath, source }) => {
+  const lf = source.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+  const crlf = lf.replaceAll('\n', '\r\n');
+  return (
+    JSON.stringify(parseYaml(lf, `${filePath}:lf`)) ===
+    JSON.stringify(parseYaml(crlf, `${filePath}:crlf`))
+  );
+});
+const parsedCanonicalGoalStrings = [
+  ...collectStrings(spec),
+  ...collectStrings(acceptance),
+  ...collectStrings(board),
+  ...collectStrings(decisions),
+  ...inputRecords.flatMap(({ parsed }) => collectStrings(parsed)),
+];
+const suspiciousCanonicalGoalTruncations = parsedCanonicalGoalStrings.filter(({ value }) =>
+  /(?:^|,\s)PR$/u.test(value.trim()),
+);
 const staleCurrentClaims = [
   'Current deployed product source 415d7e49d7567d3e211fb725c0916ece78da4dd0',
   'The current provider-off descendant 4d484c167ab332a6f82b97c7fc4f758c58bb391b',
@@ -109,6 +170,34 @@ const conductorHead = objectAt(conductor, 'head');
 record('unique tracks', new Set(trackIds).size === trackIds.length, `${trackIds.length} tracks`);
 const criteria = arrayAt<Record<string, unknown>>(acceptance, 'criteria');
 const criterionIds = criteria.map((criterion) => String(criterion.id));
+const criterionById = (id: string) => criteria.find((criterion) => criterion.id === id);
+const videoToClassroomSpec = objectAt(objectAt(spec, 'golden_paths'), 'video_to_classroom_e2e');
+const preservedExternalPrefix = objectAt(objectAt(spec, 'migrations'), 'preserved_external_prefix');
+const livePilotInputPath = 'ops/goals/OT-LAUNCH-01/inputs/20260723T103247Z-live-pilot-launch.yaml';
+const livePilotInput = inputByPath.get(livePilotInputPath);
+const livePilotWriteScope = livePilotInput
+  ? objectAt(livePilotInput, 'next_executable_task').write_scope
+  : null;
+record(
+  'critical goal and input PR scalars parse intact',
+  arrayAt<string>(videoToClassroomSpec, 'requirements')[0] ===
+    'PR #108 has converged; this implementation is eligible for conductor assignment.' &&
+    preservedExternalPrefix.owner === 'PR #104 learning_delivery_content_factory' &&
+    collectStrings(spec).some(({ value }) =>
+      value.includes('terminal PR #107 head 1e247c7 saved/reopened the approved Email A copy'),
+    ) &&
+    String(criterionById('MIG-001')?.observable).startsWith(
+      'PR #104 retains 2214_learning_delivery_content_factory',
+    ) &&
+    String(criterionById('MIG-001')?.observable).includes(
+      'while historical live 2209/2210 rows remain untouched.',
+    ) &&
+    criterionById('DEPLOY-001')?.observable ===
+      'PR #97 head equals /version commit, /health and /ready pass at latest migration, worker heartbeat is fresh, and the complete desktop/360px journey passes without production mutation.' &&
+    livePilotWriteScope ===
+      'Existing OT-LAUNCH-01 goal, PR #97 conductor branch, reviewed provider-action packets, and explicitly assigned application files only.',
+  'SPEC PR #107/#108/#104, ACCEPTANCE PR #104/#97, and live-pilot input PR #97',
+);
 const milestones = arrayAt<Record<string, unknown>>(board, 'milestones');
 const currentMilestones = milestones.filter((milestone) => milestone.current === true);
 const currentMilestone = currentMilestones[0];
@@ -186,6 +275,33 @@ record(
       .map(({ path: valuePath, value }) => `${valuePath}=${JSON.stringify(value)}`)
       .join(', ') || 'none'
   }; hazards=${unquotedDecisionHashCommentHazards.join(', ') || 'none'}`,
+);
+record(
+  'canonical goal YAML has no hash-comment truncation',
+  suspiciousCanonicalGoalTruncations.length === 0 && canonicalGoalHashCommentHazards.length === 0,
+  `${canonicalGoalYamlSources.length} files and ${parsedCanonicalGoalStrings.length} strings scanned; suspicious=${
+    suspiciousCanonicalGoalTruncations
+      .map(({ path: valuePath, value }) => `${valuePath}=${JSON.stringify(value)}`)
+      .join(', ') || 'none'
+  }; hazards=${canonicalGoalHashCommentHazards.join(', ') || 'none'}`,
+);
+record(
+  'canonical goal YAML is LF/CRLF portable',
+  canonicalGoalLineEndingPortable,
+  `${canonicalGoalYamlSources.length} canonical goal/input YAML files parse identically`,
+);
+record(
+  'canonical entrypoints are pointer-only',
+  canonicalEntrypoints.every(
+    ({ source }) =>
+      source.includes('ops/goals/CURRENT.yaml') &&
+      source.includes('BOARD.yaml') &&
+      source.includes('integrations/highlevel/registry/workflow-registry.yaml') &&
+      !source.includes('webcraft-media/onetimev2') &&
+      !source.includes('PR #91') &&
+      !source.includes('Generated:'),
+  ),
+  canonicalEntrypoints.map(({ filePath }) => filePath).join(', '),
 );
 record(
   'board has no superseded current or final claims',
@@ -632,6 +748,12 @@ record(
   'both agents/openai.yaml files parse with default prompts',
 );
 record(
+  'pointer source hash is LF/CRLF portable',
+  boardLineEndingHashes.size === 1 &&
+    sourceHash === `sha256:${Array.from(boardLineEndingHashes)[0]}`,
+  `${boardLineEndingHashes.size} distinct hash values across LF, CRLF, and CR`,
+);
+record(
   'pointer-only board projection',
   JSON.stringify(pointer) === JSON.stringify(expectedPointer) &&
     Object.keys(pointer).every((key) => Object.hasOwn(expectedPointer, key)),
@@ -717,7 +839,19 @@ function collectStrings(value: unknown, valuePath = '$'): Array<{ path: string; 
 
 function findUnquotedHashCommentHazards(source: string) {
   const hazards: string[] = [];
+  let blockScalarIndent: number | null = null;
   for (const [lineIndex, line] of source.split(/\r?\n/u).entries()) {
+    const trimmed = line.trim();
+    const indentation = line.length - line.trimStart().length;
+    if (blockScalarIndent !== null) {
+      if (trimmed.length === 0 || indentation > blockScalarIndent) continue;
+      blockScalarIndent = null;
+    }
+    if (trimmed.startsWith('#')) continue;
+    if (/(?:^|:\s+|-\s+)[>|](?:(?:[+-][1-9]?)|(?:[1-9][+-]?))?(?:\s+#.*)?$/u.test(trimmed)) {
+      blockScalarIndent = indentation;
+      continue;
+    }
     let inSingleQuote = false;
     let inDoubleQuote = false;
     for (let index = 0; index < line.length; index += 1) {
