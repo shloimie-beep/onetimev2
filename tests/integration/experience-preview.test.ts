@@ -610,19 +610,13 @@ describe('OT-LAUNCH-01 exact projection truth', () => {
         now: currentTime,
       }),
     ).rejects.toThrow('limited to explicit test or isolated staging');
-    const mixedClassification = loadConfig({
-      ...baseEnvironment(),
-      DELIVERY_ENVIRONMENT: 'isolated_staging',
-      ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
-    });
-    await expect(
-      seedFullAppSyntheticPlayback({
-        pool,
-        config: mixedClassification,
-        authorizationPhrase: 'AUTHORIZE ONE TIME STAGING SYNTHETIC PLAYBACK',
-        now: currentTime,
+    expect(() =>
+      loadConfig({
+        ...baseEnvironment(),
+        DELIVERY_ENVIRONMENT: 'isolated_staging',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
       }),
-    ).rejects.toThrow('limited to explicit test or isolated staging');
+    ).toThrow('DELIVERY_ENVIRONMENT and ONE_TIME_RUNTIME_ENVIRONMENT must name the same runtime.');
     const wrongAccount = previewConfig({
       ONE_TIME_ACCOUNT_KEY: 'another_staging_account',
     });

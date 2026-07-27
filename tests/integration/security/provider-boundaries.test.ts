@@ -20,7 +20,7 @@ describe('W12-100-01 provider and production safety boundaries', () => {
         ONE_TIME_RUNTIME_ENVIRONMENT: 'test',
         PORTAL_TEST_LAB_ENABLED: 'true',
       }),
-    ).toThrow('Portal Test Lab requires explicit test or isolated_staging');
+    ).toThrow('DELIVERY_ENVIRONMENT and ONE_TIME_RUNTIME_ENVIRONMENT must name the same runtime.');
     expect(() =>
       loadConfig({
         NODE_ENV: 'test',
@@ -28,7 +28,7 @@ describe('W12-100-01 provider and production safety boundaries', () => {
         ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
         PORTAL_TEST_LAB_ENABLED: 'true',
       }),
-    ).toThrow('Portal Test Lab requires explicit test or isolated_staging');
+    ).toThrow('DELIVERY_ENVIRONMENT and ONE_TIME_RUNTIME_ENVIRONMENT must name the same runtime.');
     expect(() => productionConfig({ OT89_MOCK_BNA_ENABLED: 'true' })).toThrow(
       'OT89 mock BNA endpoint is forbidden in production.',
     );
