@@ -1149,8 +1149,9 @@ function validateMutationConfirmation(manifest: LaunchManifest, options: CliOpti
 
 function providerReadyChecks(body: unknown): CheckResult[] {
   const snapshot = diagnosticSnapshot(body);
+  const optionalDependencies: unknown[] =
+    snapshot && Array.isArray(snapshot.optional_dependencies) ? snapshot.optional_dependencies : [];
   const present = Boolean(snapshot && Array.isArray(snapshot.optional_dependencies));
-  const optionalDependencies = present ? (snapshot?.optional_dependencies ?? []) : [];
   const unsafe = optionalDependencies
     .filter(isRecord)
     .filter((dependency) =>
