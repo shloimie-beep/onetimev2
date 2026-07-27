@@ -401,7 +401,7 @@ items:
     priority: 1
     title: Repair canonical runtime-classification integration expectations
     assignment_state: assigned
-    dispatch_state: claimed
+    dispatch_state: done
     board_track: audit_wave_04_runtime_classification
     dependencies: []
     required_locks: [OT-PRODUCT]
@@ -420,6 +420,17 @@ items:
       - Weaken or bypass the DELIVERY_ENVIRONMENT and ONE_TIME_RUNTIME_ENVIRONMENT mismatch guard.
       - Broaden into Q04-ZOOM-001 or any other planned product item.
     result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-runtime-regression-repair.md
+    terminal_at: 2026-07-27T12:27:00+03:00
+    terminal_reason: COMPLETED_RUNTIME_CLASSIFICATION_INTEGRATION_EXPECTATION_REPAIR
+    result_commit: f602a6ef31bd0e94a113bf3b7479191c8a35b127
+    result_pr: 129
+    validation_summary: Affected integration tests (21), runtime classification unit tests (11), runtime-version integration tests (2), full integration, typecheck, build, scoped Prettier, secret scan, and diff checks passed.
+    external_effects:
+      provider_mutations: 0
+      deployments: 0
+      production_mutations: 0
+      migration_applications: 0
+      customer_messages: 0
   - id: Q04-ZOOM-001
     lane: 04-OT-PRODUCT
     sequence: 3
