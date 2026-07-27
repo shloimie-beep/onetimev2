@@ -1,0 +1,92 @@
+schema_version: 1
+audit_set: OT-PARALLEL-CONTROL-TOWER-20260726
+intake_status: COMPLETE
+requested_control_checkpoint: e986b5e6502b1168b3eb28e200fd49ac8de46477
+reviewed_conductor_head: 53a18e771488c61cf271cb33a0bcacee2c7135f4
+board_path: ops/goals/OT-LAUNCH-01/BOARD.yaml
+identity_policy: Internal Audit ID, report content, and terminal return block; downloaded filename is non-authoritative.
+normalization:
+  filenames: A01-result.md through A12-result.md
+  line_endings: LF
+  surrounding_envelope_removed: true
+  substantive_report_content_changed: false
+reports:
+  - audit_id: A01
+    title: Master One Time control-tower audit
+    status: COMPLETE
+    raw_sha256: 75511238f17baffb423a394bb8eacd9bcd310225553ec8c06a4903d4fd0f36c9
+    normalized_sha256: 49f3d8679645e20ad334368ff2179a35e21313a89c2f5457273d692346d1d30f
+    path: source-reports/A01-result.md
+  - audit_id: A02
+    title: One Time controlled-production-pilot gap audit
+    status: COMPLETE
+    raw_sha256: bab38c47cdd33d28b68bb4b222995955bde1e2f669c17bac616e02603c1c7b0f
+    normalized_sha256: bab38c47cdd33d28b68bb4b222995955bde1e2f669c17bac616e02603c1c7b0f
+    path: source-reports/A02-result.md
+  - audit_id: A03
+    title: Zoom cleanup and next-canary audit
+    status: COMPLETE
+    raw_sha256: 5e50c35f71d07a742225889b45ba39b207451a8a6cdc045b0f0cd4b69d77bb56
+    normalized_sha256: 014999fd37bd6bf3d87560137f606b8f727901118539c244dff039abb36df237
+    path: source-reports/A03-result.md
+  - audit_id: A04
+    title: Complete HighLevel truth, sender, workflow, and website-assistant audit
+    status: COMPLETE
+    raw_sha256: 016ca39ab6460af4a254f356f51cf47227047b22b086969b802857dcfc4cb646
+    normalized_sha256: 016ca39ab6460af4a254f356f51cf47227047b22b086969b802857dcfc4cb646
+    path: source-reports/A04-result.md
+  - audit_id: A05
+    title: PR, branch, clone, and worktree preservation/closure audit
+    status: COMPLETE
+    raw_sha256: f5e0b407ccba3f75b9ba6cffaca6b3bbebb524062c94998ff8d41ee5e2a79298
+    normalized_sha256: f5e0b407ccba3f75b9ba6cffaca6b3bbebb524062c94998ff8d41ee5e2a79298
+    path: source-reports/A05-result.md
+  - audit_id: A06
+    title: Security, Privacy, Credentials, and History Audit
+    status: COMPLETE
+    raw_sha256: de197a1bbb0c6de565928d72c303e489a61028d4102fb4709546fb4976b8136c
+    normalized_sha256: de197a1bbb0c6de565928d72c303e489a61028d4102fb4709546fb4976b8136c
+    path: source-reports/A06-result.md
+  - audit_id: A07
+    title: BNA current-state and control-plane audit
+    status: COMPLETE
+    raw_sha256: 089ab5487682557a05dcd7ab3262fc009d064b2cfae9fa81d01ebf5b64b60665
+    normalized_sha256: b33154e3d39dae01993e71177945299ac8e95613cd9349e70e9ff1efb84c606a
+    path: source-reports/A07-result.md
+  - audit_id: A08
+    title: BNA School product inventory and extraction audit
+    status: COMPLETE
+    raw_sha256: 254da67800067c603c113385e3e02cabc308e6012d589d9104a3666827b7dcee
+    normalized_sha256: 254da67800067c603c113385e3e02cabc308e6012d589d9104a3666827b7dcee
+    path: source-reports/A08-result.md
+  - audit_id: A09
+    title: Production versus staging UX and role-journey audit
+    status: COMPLETE
+    raw_sha256: 1e5100c85666f1f926f873a1e5309b83525adc30f272f81c44c99ec05ed63f17
+    normalized_sha256: 1e5100c85666f1f926f873a1e5309b83525adc30f272f81c44c99ec05ed63f17
+    path: source-reports/A09-result.md
+  - audit_id: A10
+    title: Contacts, consent, audience, and communication-authority audit
+    status: COMPLETE
+    raw_sha256: 13a0a31914e51582583cd09ba51f8297ad1f754e7bbf9e69b608f9385eabea81
+    normalized_sha256: 13a0a31914e51582583cd09ba51f8297ad1f754e7bbf9e69b608f9385eabea81
+    path: source-reports/A10-result.md
+  - audit_id: A11
+    title: One Time Code Architecture and Security Audit
+    status: COMPLETE
+    raw_sha256: ecbe1961b68044e86be71375d1a3476c1598ff16657a3e17b6bfe60976d391ca
+    normalized_sha256: ecbe1961b68044e86be71375d1a3476c1598ff16657a3e17b6bfe60976d391ca
+    path: source-reports/A11-result.md
+  - audit_id: A12
+    title: Cross-repository contamination and decomposition audit
+    status: COMPLETE
+    raw_sha256: fe30d07cf60bdacc02249bea181671571e8e64cc270eaec19673f4dda10d3d7c
+    normalized_sha256: fe30d07cf60bdacc02249bea181671571e8e64cc270eaec19673f4dda10d3d7c
+    path: source-reports/A12-result.md
+intake_counts:
+  expected: 12
+  complete: 12
+  missing: 0
+  duplicate: 0
+  truncated: 0
+  prompt_only: 0

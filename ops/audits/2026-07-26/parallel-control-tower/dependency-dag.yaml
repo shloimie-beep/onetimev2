@@ -1,0 +1,116 @@
+schema_version: 1
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+note: This file records dependencies only. It is not a status map or external-action authority.
+nodes:
+  - id: AUDIT-INTAKE-A01-A12
+    kind: evidence
+    dependencies: []
+    acceptance: Exactly one complete internally identified report for A01 through A12.
+  - id: AUDIT-CHECKPOINT
+    kind: control
+    dependencies: [AUDIT-INTAKE-A01-A12]
+    acceptance: Normalized reports, classification register, DAG, writer locks, decisions, and checksums committed.
+  - id: WINDOW-02-OT-ZOOM-CLEANUP
+    kind: existing_external_assignment
+    dependencies: []
+    acceptance: Sanitized deletion result, canonical 3001 absence, signed sequence-6 tombstone, zero-call idempotent readback, and exact runner/state removal.
+  - id: WINDOW-03-OT-GHL-INVENTORY
+    kind: proposed_assignment
+    dependencies: [AUDIT-CHECKPOINT]
+    acceptance: Exhaustive visible read-only inventory or explicit UNPROVEN_UI_SCOPE_UNAVAILABLE; every mutation/send/enrollment counter is zero.
+  - id: GHL-RABBI-SENDER-REPOSITORY-DESIGN
+    kind: blocked_future_assignment
+    dependencies: [WINDOW-03-OT-GHL-INVENTORY]
+    acceptance: Current-head repository-only sender/message-class design, regenerated projections, focused tests, and zero external effects.
+  - id: GHL-RABBI-SENDER-CANARY
+    kind: blocked_future_provider_assignment
+    dependencies:
+      - GHL-RABBI-SENDER-REPOSITORY-DESIGN
+      - OPERATOR-GHL-MAILBOX-REPLY-DECISION
+      - FRESH-GHL-CANARY-AUTHORITY
+    acceptance: One operator-owned seed maximum, exact visible From, reply in the same governed conversation, and no customer audience.
+  - id: WINDOW-04-OT-RUNTIME-CLASSIFICATION
+    kind: proposed_assignment
+    dependencies: [AUDIT-CHECKPOINT]
+    acceptance: One canonical allowed runtime tuple model with fail-closed production cookies, startup, migrations, demos, and provider gates.
+  - id: A11-PUBLIC-DIAGNOSTIC-MINIMIZATION
+    kind: queued_future_assignment
+    dependencies: [WINDOW-04-OT-RUNTIME-CLASSIFICATION]
+    acceptance: Public health/readiness/version responses contain no protected topology; protected operator diagnostics remain useful.
+  - id: A11-BEARER-FREE-CLASSROOM-LAUNCH
+    kind: blocked_future_assignment
+    dependencies: [WINDOW-02-OT-ZOOM-CLEANUP, AUDIT-CHECKPOINT]
+    acceptance: No bearer in request target, history, referrer, log, or artifact; one-time/session/learner/expiry/replay and sibling denial remain enforced.
+  - id: ZOOM-SUCCESSOR-SOURCE-CONVERGENCE
+    kind: blocked_future_assignment
+    dependencies: [WINDOW-02-OT-ZOOM-CLEANUP, A11-BEARER-FREE-CLASSROOM-LAUNCH]
+    acceptance: Immutable source contains the normal fictional Student path and prospective cleanup contract.
+  - id: ZOOM-SUCCESSOR-PROVIDER-CANARY
+    kind: blocked_future_provider_assignment
+    dependencies:
+      - ZOOM-SUCCESSOR-SOURCE-CONVERGENCE
+      - FRESH-ZOOM-SUCCESSOR-AUTHORITY
+    acceptance: ZOOM-SDK-001 and ZOOM-S2S-001 with mandatory cleanup and all forbidden-effect counters zero.
+  - id: WINDOW-05-OT-HYGIENE-CENSUS
+    kind: proposed_assignment
+    dependencies: [AUDIT-CHECKPOINT, OPERATOR-PROTECTED-CENSUS-PATHS]
+    acceptance: Metadata-only sanitized One Time/BNA checkout census with source status hashes unchanged and no PR closure.
+  - id: A05-OBJECT-AND-DIRTY-WORK-PRESERVATION
+    kind: queued_future_assignment
+    dependencies: [WINDOW-05-OT-HYGIENE-CENSUS]
+    acceptance: Protected bundles/patches/checksums and disposable restore proof with zero destructive operations.
+  - id: A05-PR-CLOSURE
+    kind: blocked_future_assignment
+    dependencies:
+      - A05-OBJECT-AND-DIRTY-WORK-PRESERVATION
+      - OPERATOR-ACCEPTED-PR-CLOSE-LIST
+    acceptance: Individually approved closures only; branch deletion and force counts remain zero.
+  - id: WINDOW-06-BNA-CONTROL-POINTER
+    kind: proposed_assignment
+    dependencies: [AUDIT-CHECKPOINT]
+    acceptance: Exactly one BNA current pointer and Board, pointer-only entrypoint, no application/runtime/provider changes.
+  - id: BNA-SCHOOL-FOUNDATION
+    kind: blocked_future_assignment
+    dependencies:
+      - WINDOW-06-BNA-CONTROL-POINTER
+      - CONTROLLED-ONE-TIME-PILOT-ACCEPTED
+      - PROTECTED-BNA-SCHOOL-DATA-INVENTORY
+      - OPERATOR-BNA-SCHOOL-DECISIONS
+    acceptance: Standalone BNA School foundation only after exact writer and ownership decisions.
+  - id: PRODUCTION-CANDIDATE
+    kind: blocked_future_assignment
+    dependencies:
+      - ZOOM-SUCCESSOR-PROVIDER-CANARY
+      - WINDOW-04-OT-RUNTIME-CLASSIFICATION
+      - A11-PUBLIC-DIAGNOSTIC-MINIMIZATION
+      - A11-LEARNER-CAP-REPAIR
+      - A11-READONLY-MIGRATION-VERIFY
+      - PRODUCTION-BACKUP-RESTORE-ROLLBACK-PROOF
+    acceptance: Immutable semantic candidate, schema/checksum proof, rollback, separate-device roles, provider-off defaults, and no broad rollout.
+  - id: WINDOW-07-OT-PRODUCTION
+    kind: blocked_not_assigned
+    dependencies:
+      - PRODUCTION-CANDIDATE
+      - FRESH-PRODUCTION-PROMOTION-AUTHORITY
+    acceptance: Narrow separately reviewed operator-owned free pilot only.
+external_gates:
+  - id: OPERATOR-GHL-MAILBOX-REPLY-DECISION
+  - id: FRESH-GHL-CANARY-AUTHORITY
+  - id: FRESH-ZOOM-SUCCESSOR-AUTHORITY
+  - id: OPERATOR-PROTECTED-CENSUS-PATHS
+  - id: OPERATOR-ACCEPTED-PR-CLOSE-LIST
+  - id: PROTECTED-BNA-SCHOOL-DATA-INVENTORY
+  - id: OPERATOR-BNA-SCHOOL-DECISIONS
+  - id: PRODUCTION-BACKUP-RESTORE-ROLLBACK-PROOF
+  - id: FRESH-PRODUCTION-PROMOTION-AUTHORITY
+  - id: CONTROLLED-ONE-TIME-PILOT-ACCEPTED
+forbidden_edges:
+  - from: WINDOW-02-OT-ZOOM-CLEANUP
+    to: ZOOM-SUCCESSOR-PROVIDER-CANARY
+    reason: Cleanup completion does not itself grant fresh meeting or canary authority.
+  - from: WINDOW-03-OT-GHL-INVENTORY
+    to: GHL-RABBI-SENDER-CANARY
+    reason: Read-only inventory does not authorize sender mutation or delivery.
+  - from: AUDIT-CHECKPOINT
+    to: WINDOW-07-OT-PRODUCTION
+    reason: Audit recommendations do not authorize production.
