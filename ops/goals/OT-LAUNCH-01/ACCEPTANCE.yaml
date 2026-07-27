@@ -285,6 +285,18 @@ criteria:
         concurrent_apply_serialization,
         changed_migration_allowlist,
       ]
+  - id: SEC-DELIVERY-IDEMPOTENCY-001
+    track: audit_wave_04_delivery_provider_idempotency
+    observable: Every general-delivery provider attempt uses one stable provider idempotency key per logical delivery; durable operation state distinguishes not-started, in-flight, accepted, rejected, and acceptance-unknown outcomes; recovery retries only with the same key when explicitly safe and otherwise quarantines without a second provider effect.
+    proof:
+      [
+        unit_test,
+        fault_injection,
+        durable_state_test,
+        lease_fencing_test,
+        provider_sink_only,
+        zero_real_send,
+      ]
   - id: HYGIENE-CENSUS-001
     track: audit_wave_05_preservation_census
     observable: A metadata-only protected census separates One Time, BNA, legacy One Time, and unknown checkouts; records hashed paths, repository identities, status/ref/worktree/stash counts and local-only commit metadata; proves every source status hash unchanged; and performs zero source mutation, PR closure, deletion, reset, prune, stash, or force-push.

@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-27T10:23:28Z
+updated_at: 2026-07-27T10:26:02Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -1513,6 +1513,39 @@ tracks:
     blocker: null
     remaining_work: null
     next_action: 'Preserve the accepted read-only migration boundary and continue to the repository-only stable provider delivery idempotency and acceptance-unknown repair. Production remains denied.'
+
+  - id: audit_wave_04_delivery_provider_idempotency
+    status: active
+    window_id: 04-OT-PRODUCT
+    concurrency_lock: OT-PRODUCT-DELIVERY
+    owner:
+      task_id: OT-LAUNCH-01-CONVERGENCE-DELIVERY-IDEMPOTENCY
+      repository: shloimie-beep/onetimev2
+      branch: codex/one-time-launch-convergence-20260727
+      pr: 130
+      head: 1e12e368be0e27825dd3aaeca5527f668e576aea
+      system: One Time general-delivery provider worker
+    write_scope: 'Delivery contracts, activation policy, provider router, worker/repository durable operation state, one forward-only migration, provider sinks/stubs, and focused fault-injection tests. No provider access, destination, send, deployment, environment, staging database, or production database.'
+    handoff_path: apps/worker/src/delivery/worker.ts
+    dependencies: [audit_wave_04_runtime_classification, audit_wave_04_read_only_migration_verification]
+    acceptance_ids: [SEC-DELIVERY-IDEMPOTENCY-001]
+    evidence:
+      - 'A11-P1-01 proves the provider-facing key currently changes with attempts and the accepted receipt cache is process memory only, leaving an accepted-but-unrecorded retry able to repeat the external effect.'
+      - 'Remote branch truth was fetched before assignment; local and origin convergence heads both equal 1e12e368be0e27825dd3aaeca5527f668e576aea.'
+      - 'All real general-delivery provider clients remain absent from the worker composition. This batch is repository-only and may use provider sinks/stubs only.'
+    forbidden_behavior:
+      - Call Resend, WAPI, HighLevel, Zoom, Telegram, or any other provider; use a real destination; send; deploy; or mutate staging/production data or configuration.
+      - Mint an attempt-derived provider key, rely on process memory as durable acceptance proof, or retry an uncertain operation when the adapter has not explicitly declared same-key recovery safe.
+      - Weaken account/product/transport/lease fencing, destination/consent/suppression/authorization gates, or redaction.
+    required_proof:
+      - Accepted-then-timeout, crash before durable completion, expired lease, and two-worker race fault injection.
+      - Retryable rejection before acceptance and permanent rejection state transitions.
+      - One stable provider key, one logical effect in the idempotent sink, durable accepted or acceptance-unknown state, and zero real provider calls.
+      - Focused tests, full unit/integration gates, typecheck, build, migration inventory verification, formatting, diff check, secret scan, and zero external effects.
+    stop_condition: 'Stop if a real provider/destination is required, safe recovery cannot be expressed fail-closed, a migration prefix conflicts, or acceptance would require staging/production database access.'
+    blocker: null
+    remaining_work: 'Implement and validate A11-T04 using provider sinks/stubs only, then bind the immutable content head and exact proof into this Board.'
+    next_action: 'Replace attempt-derived provider keys with a stable logical key, add durable provider-operation state plus fail-closed acceptance-unknown recovery, and run the required fault matrix without external effects.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external
