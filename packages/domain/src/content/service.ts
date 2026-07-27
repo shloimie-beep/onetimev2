@@ -153,6 +153,7 @@ export function createContentPortalAccessAdapter(input: {
         productKey: actor.product_key,
         householdKey: learner.household_key,
       });
+      if (!householdAccess) return [];
       return portalItemsForLearner({
         pool: input.pool,
         config: input.config,
@@ -162,20 +163,16 @@ export function createContentPortalAccessAdapter(input: {
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['video', 'source'],
-        occurrenceScopedOnly: !householdAccess,
       });
     },
     reviewSheetsForLearner: async ({ actor, learner }) => {
-      if (
-        !(await householdHasLearningAccess({
-          pool: input.pool,
-          accountKey: actor.account_key,
-          productKey: actor.product_key,
-          householdKey: learner.household_key,
-        }))
-      ) {
-        return [];
-      }
+      const householdAccess = await householdHasLearningAccess({
+        pool: input.pool,
+        accountKey: actor.account_key,
+        productKey: actor.product_key,
+        householdKey: learner.household_key,
+      });
+      if (!householdAccess) return [];
       return portalItemsForLearner({
         pool: input.pool,
         config: input.config,
@@ -185,7 +182,6 @@ export function createContentPortalAccessAdapter(input: {
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['sheet', 'review'],
-        occurrenceScopedOnly: false,
       });
     },
   };
@@ -468,7 +464,6 @@ async function portalItemsForLearner(input: {
   learnerKey: string;
   householdKey: string;
   itemTypes: ContentItemType[];
-  occurrenceScopedOnly: boolean;
 }): Promise<LibraryItem[]> {
   const studentVisibility =
     input.actorRole === 'student'
@@ -481,28 +476,28 @@ async function portalItemsForLearner(input: {
             END
           ) IS NOT NULL`
       : '';
-  const activeOccurrenceKeys = input.occurrenceScopedOnly
-    ? (
-        await input.pool.query(
-          `SELECT occurrence_key
-             FROM onetime.classroom_occurrence_learner_entitlements
-            WHERE account_key = $1
-              AND product_key = $2
-              AND household_key = $3
-              AND learner_key = $4
-              AND entitlement_state = 'active'
-            ORDER BY occurrence_key ASC`,
-          [input.accountKey, input.productKey, input.householdKey, input.learnerKey],
-        )
-      ).rows.map((row) => String(row.occurrence_key))
-    : [];
-  if (input.occurrenceScopedOnly && activeOccurrenceKeys.length === 0) return [];
-  const occurrenceScopeFilter = input.occurrenceScopedOnly
-    ? `AND factory.source_key IS NOT NULL
-       AND items.occurrence_key IN (${activeOccurrenceKeys
-         .map((_occurrenceKey, index) => `$${index + 6}`)
-         .join(', ')})`
-    : '';
+  const activeOccurrenceKeys = (
+    await input.pool.query(
+      `SELECT occurrence_key
+         FROM onetime.classroom_occurrence_learner_entitlements
+        WHERE account_key = $1
+          AND product_key = $2
+          AND household_key = $3
+          AND learner_key = $4
+          AND entitlement_state = 'active'
+        ORDER BY occurrence_key ASC`,
+      [input.accountKey, input.productKey, input.householdKey, input.learnerKey],
+    )
+  ).rows.map((row) => String(row.occurrence_key));
+  const occurrenceScopeFilter =
+    activeOccurrenceKeys.length > 0
+      ? `AND (
+           items.occurrence_key IS NULL
+           OR items.occurrence_key IN (${activeOccurrenceKeys
+             .map((_occurrenceKey, index) => `$${index + 6}`)
+             .join(', ')})
+         )`
+      : `AND items.occurrence_key IS NULL`;
 
   const result = await input.pool.query(
     `SELECT items.*,

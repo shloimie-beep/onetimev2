@@ -660,9 +660,7 @@ describe('durable occurrence-scoped content factory', () => {
         actor: studentActor(sibling.userKey, 'learner_video_sibling'),
         learner: studentLearner('learner_video_sibling', 'Unentitled sibling'),
       });
-      expect(occurrenceScopedLibrary.map((item) => item.item_key)).toContain(
-        'factory_sample_2026_07_22',
-      );
+      expect(occurrenceScopedLibrary).toEqual([]);
       expect(occurrenceScopedSiblingLibrary).toEqual([]);
       await pool.query(
         `UPDATE onetime.account_access_projections

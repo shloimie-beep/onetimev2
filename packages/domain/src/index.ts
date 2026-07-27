@@ -33,9 +33,28 @@ export {
   createClassPortalAccessAdapter,
   getClassOccurrenceDetail,
   listClassOccurrences,
+  listClassOccurrencesForLearner,
   resolveDailyClassWindow,
   scheduleClassFulfillmentForLead,
 } from './classes/service.ts';
+export {
+  ClassManagementError,
+  attachRecordingToClass,
+  createManagedClassOccurrence,
+  createManagedClassSeries,
+  enrollLearnerInClass,
+  getManagedClassOccurrence,
+  listClassEnrollmentCandidates,
+  listClassEnrollments,
+  listClassRecordingAccess,
+  listClassRecordings,
+  listManagedClassSeries,
+  setClassRecordingLearnerAccess,
+  unenrollLearnerFromClass,
+  updateManagedClassOccurrence,
+  updateManagedClassSeries,
+  type ClassManagementActor,
+} from './classes/management.ts';
 export {
   CLASSROOM_HOST_POLICY_VERSION,
   CLASSROOM_POLICY_VERSION,

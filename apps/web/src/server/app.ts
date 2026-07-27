@@ -67,6 +67,22 @@ import {
   classOccurrenceDetailResponseSchema,
   classOccurrenceListQuerySchema,
   classOccurrenceListResponseSchema,
+  attachClassRecordingPayloadSchema,
+  classEnrollmentCandidateListResponseSchema,
+  classEnrollmentListResponseSchema,
+  classEnrollmentPayloadSchema,
+  classEnrollmentResponseSchema,
+  classRecordingAccessListResponseSchema,
+  classRecordingListResponseSchema,
+  classRecordingResponseSchema,
+  classSeriesListResponseSchema,
+  classSeriesResponseSchema,
+  createClassOccurrencePayloadSchema,
+  createClassSeriesPayloadSchema,
+  managedClassOccurrenceResponseSchema,
+  setClassRecordingAccessPayloadSchema,
+  updateClassOccurrencePayloadSchema,
+  updateClassSeriesPayloadSchema,
   contentAdminActionPayloadSchema,
   contentAdminActionResponseSchema,
   contentAdminActivityResponseSchema,
@@ -113,6 +129,7 @@ import type {
 import {
   CrmDuplicateError,
   CrmVersionConflictError,
+  ClassManagementError,
   ContentIdempotencyConflictError,
   ContentFactoryError,
   ContentFactoryPublicationError,
@@ -138,6 +155,8 @@ import {
   createContact,
   createCrmTag,
   createClassPortalAccessAdapter,
+  createManagedClassOccurrence,
+  createManagedClassSeries,
   createClassroomPortalAccessAdapter,
   createClassroomService,
   createLiveClassService,
@@ -165,6 +184,7 @@ import {
   createStudentPortalService,
   resendEmailChallenge,
   getClassOccurrenceDetail,
+  getManagedClassOccurrence,
   getContentItemDetail,
   getContentFactoryPlayback,
   getContentFactoryWorkspace,
@@ -182,6 +202,11 @@ import {
   buildOwnerDashboard,
   captureTishaBavRegistration,
   listClassOccurrences,
+  listClassEnrollmentCandidates,
+  listClassEnrollments,
+  listClassRecordingAccess,
+  listClassRecordings,
+  listManagedClassSeries,
   listContentLibrary,
   listAssignableUsers,
   listContacts,
@@ -211,6 +236,12 @@ import {
   requestTishaBavJoin,
   resolveTishaBavRedirect,
   stableKey,
+  attachRecordingToClass,
+  enrollLearnerInClass,
+  setClassRecordingLearnerAccess,
+  unenrollLearnerFromClass,
+  updateManagedClassOccurrence,
+  updateManagedClassSeries,
   updateContact,
   editContentFactoryItem,
   inspectLearningDeliveryInputAdapters,
@@ -2625,6 +2656,424 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/admin/classes/series', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const series = await withTiming(req, 'db', () => listManagedClassSeries({ pool, config }));
+      res.json(classSeriesListResponseSchema.parse({ success: true, series }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/classes/series', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = createClassSeriesPayloadSchema.parse(req.body);
+      const series = await withTiming(req, 'db', () =>
+        createManagedClassSeries({
+          pool,
+          config,
+          actor: { userKey: session.user.user_key, role: session.user.role as 'owner' | 'admin' },
+          payload,
+        }),
+      );
+      res.status(201).json(classSeriesResponseSchema.parse({ success: true, series }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.patch('/api/v1/admin/classes/series/:seriesKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = updateClassSeriesPayloadSchema.parse(req.body);
+      const series = await withTiming(req, 'db', () =>
+        updateManagedClassSeries({
+          pool,
+          config,
+          actor: { userKey: session.user.user_key, role: session.user.role as 'owner' | 'admin' },
+          seriesKey: String(req.params.seriesKey),
+          payload,
+        }),
+      );
+      res.json(classSeriesResponseSchema.parse({ success: true, series }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/classes/occurrences', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = createClassOccurrencePayloadSchema.parse(req.body);
+      const occurrence = await withTiming(req, 'db', () =>
+        createManagedClassOccurrence({
+          pool,
+          config,
+          actor: { userKey: session.user.user_key, role: session.user.role as 'owner' | 'admin' },
+          payload,
+        }),
+      );
+      res
+        .status(201)
+        .json(managedClassOccurrenceResponseSchema.parse({ success: true, occurrence }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const occurrence = await withTiming(req, 'db', () =>
+          getManagedClassOccurrence({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        if (!occurrence) {
+          res
+            .status(404)
+            .json(publicError('NOT_FOUND', 'Class occurrence was not found.', req.traceId));
+          return;
+        }
+        res.json(managedClassOccurrenceResponseSchema.parse({ success: true, occurrence }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.patch(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = updateClassOccurrencePayloadSchema.parse(req.body);
+        const occurrence = await withTiming(req, 'db', () =>
+          updateManagedClassOccurrence({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            payload,
+          }),
+        );
+        res.json(managedClassOccurrenceResponseSchema.parse({ success: true, occurrence }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollment-candidates',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const candidates = await withTiming(req, 'db', () =>
+          listClassEnrollmentCandidates({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        res.json(classEnrollmentCandidateListResponseSchema.parse({ success: true, candidates }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollments',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const enrollments = await withTiming(req, 'db', () =>
+          listClassEnrollments({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        res.json(classEnrollmentListResponseSchema.parse({ success: true, enrollments }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings/:itemKey/access',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const access = await withTiming(req, 'db', () =>
+          listClassRecordingAccess({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+            itemKey: String(req.params.itemKey),
+          }),
+        );
+        res.json(classRecordingAccessListResponseSchema.parse({ success: true, access }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollments',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = classEnrollmentPayloadSchema.parse(req.body);
+        const enrollment = await withTiming(req, 'db', () =>
+          enrollLearnerInClass({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            payload,
+          }),
+        );
+        res.status(201).json(classEnrollmentResponseSchema.parse({ success: true, enrollment }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/enrollments/:learnerKey/revoke',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = z
+          .object({ idempotency_key: z.string().trim().min(8).max(180) })
+          .parse(req.body);
+        const enrollment = await withTiming(req, 'db', () =>
+          unenrollLearnerFromClass({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            learnerKey: String(req.params.learnerKey),
+            idempotencyKey: payload.idempotency_key,
+          }),
+        );
+        res.json(classEnrollmentResponseSchema.parse({ success: true, enrollment }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      try {
+        const recordings = await withTiming(req, 'db', () =>
+          listClassRecordings({
+            pool,
+            config,
+            occurrenceKey: String(req.params.occurrenceKey),
+          }),
+        );
+        res.json(classRecordingListResponseSchema.parse({ success: true, recordings }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = attachClassRecordingPayloadSchema.parse(req.body);
+        const recording = await withTiming(req, 'db', () =>
+          attachRecordingToClass({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            payload,
+          }),
+        );
+        res.status(201).json(classRecordingResponseSchema.parse({ success: true, recording }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/recordings/:itemKey/access',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = setClassRecordingAccessPayloadSchema.parse(req.body);
+        const recording = await withTiming(req, 'db', () =>
+          setClassRecordingLearnerAccess({
+            pool,
+            config,
+            actor: {
+              userKey: session.user.user_key,
+              role: session.user.role as 'owner' | 'admin',
+            },
+            occurrenceKey: String(req.params.occurrenceKey),
+            itemKey: String(req.params.itemKey),
+            payload,
+          }),
+        );
+        res.json(classRecordingResponseSchema.parse({ success: true, recording }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
   app.get('/api/v1/content/library', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -4557,6 +5006,17 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
       success: false,
       code: error.code,
       message: error.message,
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof ClassManagementError) {
+    const status = error.code === 'NOT_FOUND' ? 404 : error.code === 'INVALID_STATE' ? 400 : 409;
+    res.status(status).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      ...(error.currentVersion ? { current_version: error.currentVersion } : {}),
       request_id: req.traceId,
     });
     return;

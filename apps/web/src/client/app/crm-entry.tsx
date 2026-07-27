@@ -30,6 +30,7 @@ import {
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
+import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
 import { SupportFeature } from './support/SupportFeature.js';
 import {
   AuthExpiredError,
@@ -965,6 +966,7 @@ function CrmApp() {
       )}
       {surface === 'classes' && (
         <ClassesPanel
+          csrfToken={session?.csrf_token ?? ''}
           section={classroomSection}
           classes={classes}
           selectedClass={selectedClass}
@@ -978,6 +980,7 @@ function CrmApp() {
           onNavigate={(href) => openOwnerSurface('classes', href)}
           onSelectOccurrence={selectClassOccurrence}
           onRetry={() => void loadClasses()}
+          onRefreshOccurrences={loadClasses}
           onRetryDetail={(occurrenceKey) => void loadClassDetail(occurrenceKey)}
           onRetryRewards={() => void loadGamificationDashboard()}
         />
@@ -1301,6 +1304,7 @@ function DashboardPanel({
 }
 
 function ClassesPanel({
+  csrfToken,
   section,
   classes,
   selectedClass,
@@ -1314,9 +1318,11 @@ function ClassesPanel({
   onNavigate,
   onSelectOccurrence,
   onRetry,
+  onRefreshOccurrences,
   onRetryDetail,
   onRetryRewards,
 }: {
+  csrfToken: string;
   section: ClassroomSectionId;
   classes: ClassOccurrenceSummary[];
   selectedClass: ClassOccurrenceDetail | null;
@@ -1330,18 +1336,37 @@ function ClassesPanel({
   onNavigate: (href: string) => void;
   onSelectOccurrence: (occurrenceKey: string) => void;
   onRetry: () => void;
+  onRefreshOccurrences: (preferredOccurrenceKey?: string | null) => Promise<void>;
   onRetryDetail: (occurrenceKey: string) => void;
   onRetryRewards: () => void;
 }) {
+  const isManagementSection = (
+    ['classes', 'occurrences', 'enrollments', 'recordings', 'access'] as ClassroomSectionId[]
+  ).includes(section);
   return (
     <section className="classroom-workspace" aria-busy={loading || detailLoading}>
       <WorkspaceTabs
-        tabs={CLASSROOM_SECTIONS}
+        tabs={CLASSROOM_SECTIONS.map((item) => ({
+          ...item,
+          href: classroomHref(item.id, selectedClass?.occurrence_key),
+        }))}
         currentId={section}
         label="Classroom area"
         onNavigate={onNavigate}
       />
-      {loading && classes.length === 0 ? (
+      {isManagementSection ? (
+        <ClassManagementWorkspace
+          csrfToken={csrfToken}
+          section={section}
+          occurrences={classes}
+          selectedOccurrenceKey={selectedClass?.occurrence_key ?? null}
+          occurrencesLoading={loading}
+          occurrencesError={error}
+          onSelectOccurrence={onSelectOccurrence}
+          onRefreshOccurrences={onRefreshOccurrences}
+          onNavigate={onNavigate}
+        />
+      ) : loading && classes.length === 0 ? (
         <ReadOnlySkeleton label="Loading classroom" />
       ) : error ? (
         <StatePanel
@@ -1430,25 +1455,18 @@ function ClassroomFocusedBody({
   }
 
   const rows =
-    section === 'schedule'
+    section === 'questions'
       ? [
-          ['Starts', formatDate(occurrence.starts_at)],
-          ['Class state', readableState(occurrence.status)],
-          ['Protected access', occurrence.protected_access_state.label],
-          ['Next action', occurrence.next_action ?? 'No owner action needed right now'],
+          ['New questions', occurrence.question_summary.new_questions],
+          ['Featured', occurrence.question_summary.featured_questions],
+          ['Answered', occurrence.question_summary.answered_questions],
         ]
-      : section === 'questions'
-        ? [
-            ['New questions', occurrence.question_summary.new_questions],
-            ['Featured', occurrence.question_summary.featured_questions],
-            ['Answered', occurrence.question_summary.answered_questions],
-          ]
-        : [
-            ['Households', occurrence.enrollment_counts.households],
-            ['Learners', occurrence.enrollment_counts.learners],
-            ['Joined sessions', occurrence.attendance_summary.joined_attempts],
-            ['Recordings', occurrence.content_summary.videos],
-          ];
+      : [
+          ['Households', occurrence.enrollment_counts.households],
+          ['Learners', occurrence.enrollment_counts.learners],
+          ['Joined sessions', occurrence.attendance_summary.joined_attempts],
+          ['Recordings', occurrence.content_summary.videos],
+        ];
 
   return (
     <article

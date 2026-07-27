@@ -52,8 +52,11 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       'Prompts',
     ]);
     expect(CLASSROOM_SECTIONS.map((item) => item.label)).toEqual([
-      'Overview',
-      'Schedule',
+      'Classes',
+      'Occurrences',
+      'Enrollments',
+      'Recordings',
+      'Access',
       'Questions',
       'Rewards',
     ]);
@@ -72,6 +75,10 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
     expect(contentSectionFromPath('/app/content/processing')).toBe('library');
     expect(contentSectionFromPath('/app/content/activity')).toBe('library');
     expect(classroomSectionFromPath('/app/rewards')).toBe('rewards');
+    expect(classroomSectionFromPath('/app/classes/schedule')).toBe('occurrences');
+    expect(classroomSectionFromPath('/app/classes/enrollments')).toBe('enrollments');
+    expect(classroomSectionFromPath('/app/classes/recordings')).toBe('recordings');
+    expect(classroomSectionFromPath('/app/classes/access')).toBe('access');
     expect(classroomSectionFromPath('/app/classes/questions')).toBe('questions');
     expect(classroomOccurrenceFromLocation('/app/classes/occurrence-1', '')).toBe('occurrence-1');
     expect(

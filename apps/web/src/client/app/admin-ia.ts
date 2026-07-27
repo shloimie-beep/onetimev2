@@ -42,8 +42,11 @@ export const CONTENT_SECTIONS = [
 export type ContentSectionId = (typeof CONTENT_SECTIONS)[number]['id'];
 
 export const CLASSROOM_SECTIONS = [
-  { id: 'overview', label: 'Overview', href: '/app/classes' },
-  { id: 'schedule', label: 'Schedule', href: '/app/classes/schedule' },
+  { id: 'classes', label: 'Classes', href: '/app/classes' },
+  { id: 'occurrences', label: 'Occurrences', href: '/app/classes/occurrences' },
+  { id: 'enrollments', label: 'Enrollments', href: '/app/classes/enrollments' },
+  { id: 'recordings', label: 'Recordings', href: '/app/classes/recordings' },
+  { id: 'access', label: 'Access', href: '/app/classes/access' },
   { id: 'questions', label: 'Questions', href: '/app/classes/questions' },
   { id: 'rewards', label: 'Rewards', href: '/app/classes/rewards' },
 ] as const;
@@ -97,9 +100,14 @@ export function contentSectionFromPath(pathname: string): ContentSectionId {
 
 export function classroomSectionFromPath(pathname: string): ClassroomSectionId {
   if (pathname === '/app/rewards' || pathname === '/app/classes/rewards') return 'rewards';
-  if (pathname === '/app/classes/schedule') return 'schedule';
+  if (pathname === '/app/classes/schedule' || pathname === '/app/classes/occurrences') {
+    return 'occurrences';
+  }
+  if (pathname === '/app/classes/enrollments') return 'enrollments';
+  if (pathname === '/app/classes/recordings') return 'recordings';
+  if (pathname === '/app/classes/access') return 'access';
   if (pathname === '/app/classes/questions') return 'questions';
-  return 'overview';
+  return 'classes';
 }
 
 export function classroomOccurrenceFromLocation(pathname: string, search: string) {
@@ -107,7 +115,17 @@ export function classroomOccurrenceFromLocation(pathname: string, search: string
   if (fromQuery) return fromQuery;
   const segments = pathSegments(pathname, '/app/classes');
   const first = segments[0] ?? '';
-  return ['schedule', 'questions', 'rewards'].includes(first) ? null : first || null;
+  return [
+    'schedule',
+    'occurrences',
+    'enrollments',
+    'recordings',
+    'access',
+    'questions',
+    'rewards',
+  ].includes(first)
+    ? null
+    : first || null;
 }
 
 export function classroomHref(section: ClassroomSectionId, occurrenceKey?: string | null) {

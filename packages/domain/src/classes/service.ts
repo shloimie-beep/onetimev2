@@ -255,6 +255,52 @@ export async function getClassOccurrenceDetail(input: {
   };
 }
 
+export async function listClassOccurrencesForLearner(input: {
+  pool: DbPool;
+  config: AppConfig;
+  householdKey: string;
+  learnerKey: string;
+  limit?: number;
+  now?: Date;
+}): Promise<ClassOccurrenceSummary[]> {
+  const now = input.now ?? new Date();
+  const result = await input.pool.query(
+    `SELECT occurrences.*, series.title, series.timezone
+       FROM onetime.classroom_occurrence_learner_entitlements AS enrollment
+       JOIN onetime.portal_learners AS learner
+         ON learner.account_key = enrollment.account_key
+        AND learner.product_key = enrollment.product_key
+        AND learner.household_key = enrollment.household_key
+        AND learner.learner_key = enrollment.learner_key
+        AND learner.learner_status = 'active'
+       JOIN onetime.class_occurrences AS occurrences
+         ON occurrences.account_key = enrollment.account_key
+        AND occurrences.product_key = enrollment.product_key
+        AND occurrences.occurrence_key = enrollment.occurrence_key
+       JOIN onetime.class_series AS series
+         ON series.account_key = occurrences.account_key
+        AND series.product_key = occurrences.product_key
+        AND series.class_series_key = occurrences.class_series_key
+      WHERE enrollment.account_key = $1
+        AND enrollment.product_key = $2
+        AND enrollment.household_key = $3
+        AND enrollment.learner_key = $4
+        AND enrollment.entitlement_state = 'active'
+        AND occurrences.joinable_until >= $5
+      ORDER BY occurrences.starts_at ASC, occurrences.occurrence_key ASC
+      LIMIT $6`,
+    [
+      input.config.accountKey,
+      input.config.productKey,
+      input.householdKey,
+      input.learnerKey,
+      now,
+      input.limit ?? 3,
+    ],
+  );
+  return result.rows.map((row) => occurrenceSummary(row, now));
+}
+
 export function createClassPortalAccessAdapter(input: {
   pool: DbPool;
   config: AppConfig;
@@ -268,18 +314,20 @@ export function createClassPortalAccessAdapter(input: {
         productKey: actor.product_key,
         householdKey: learner.household_key,
       });
-      const rows = await listClassOccurrences({
+      if (!hasAccess) return [];
+      const rows = await listClassOccurrencesForLearner({
         pool: input.pool,
         config: {
           ...input.config,
           accountKey: actor.account_key,
           productKey: actor.product_key,
         },
+        householdKey: learner.household_key,
+        learnerKey: learner.learner_key,
         limit: 3,
         now: input.now?.() ?? new Date(),
       });
-      if (rows.length > 0) return rows.map((row) => portalSummary(row, hasAccess));
-      return [derivedPortalSummary(input.now?.() ?? new Date(), hasAccess)];
+      return rows.map((row) => portalSummary(row, true));
     },
     protectedLaunch: async ({ actor, learner, class_key }) => {
       const hasAccess = await householdHasLearningAccess({
@@ -288,7 +336,33 @@ export function createClassPortalAccessAdapter(input: {
         productKey: actor.product_key,
         householdKey: learner.household_key,
       });
-      return hasAccess ? providerUnavailableAction(class_key) : billingRequiredAction(class_key);
+      if (!hasAccess) return billingRequiredAction(class_key);
+      const enrollment = await input.pool.query(
+        `SELECT occurrences.occurrence_state
+           FROM onetime.classroom_occurrence_learner_entitlements AS enrollment
+           JOIN onetime.class_occurrences AS occurrences
+             ON occurrences.account_key = enrollment.account_key
+            AND occurrences.product_key = enrollment.product_key
+            AND occurrences.occurrence_key = enrollment.occurrence_key
+          WHERE enrollment.account_key = $1
+            AND enrollment.product_key = $2
+            AND enrollment.household_key = $3
+            AND enrollment.learner_key = $4
+            AND enrollment.occurrence_key = $5
+            AND enrollment.entitlement_state = 'active'
+          LIMIT 1`,
+        [
+          actor.account_key,
+          actor.product_key,
+          learner.household_key,
+          learner.learner_key,
+          class_key,
+        ],
+      );
+      if (!enrollment.rows[0] || enrollment.rows[0].occurrence_state === 'cancelled') {
+        return classAccessDeniedAction(class_key);
+      }
+      return providerUnavailableAction(class_key);
     },
   };
 }
@@ -648,28 +722,6 @@ function portalSummary(summary: ClassOccurrenceSummary, hasAccess: boolean): Upc
   };
 }
 
-function derivedPortalSummary(now: Date, hasAccess: boolean): UpcomingClassSummary {
-  const window = resolveDailyClassWindow(now);
-  const occurrenceKey = stableKey('class_occurrence', [
-    'derived',
-    ONE_TIME_CLASS_SERIES_KEY,
-    window.localDate,
-  ]);
-  return {
-    class_key: occurrenceKey,
-    title: ONE_TIME_CLASS_TITLE,
-    starts_at: window.startsAt.toISOString(),
-    local_time: '19:00',
-    timezone: 'Asia/Jerusalem',
-    protected_launch_required: true,
-    provider_state: 'not_configured',
-    status: hasAccess ? 'unavailable' : 'unavailable',
-    launch_action: hasAccess
-      ? providerUnavailableAction(occurrenceKey)
-      : billingRequiredAction(occurrenceKey),
-  };
-}
-
 function providerUnavailableAction(classKey: string): ProtectedActionDescriptor {
   return {
     action_key: stableKey('class_launch_action', [classKey]),
@@ -678,6 +730,18 @@ function providerUnavailableAction(classKey: string): ProtectedActionDescriptor 
     method: 'POST',
     href: null,
     launch_token_ref: 'provider_unavailable',
+    expires_at: null,
+  };
+}
+
+function classAccessDeniedAction(classKey: string): ProtectedActionDescriptor {
+  return {
+    action_key: stableKey('class_access_denied_action', [classKey]),
+    label: 'Class access unavailable',
+    kind: 'class_launch',
+    method: 'POST',
+    href: null,
+    launch_token_ref: 'class_access_denied',
     expires_at: null,
   };
 }

@@ -293,7 +293,11 @@ describe('OT-71 class fulfillment for signup leads', () => {
     expect(detail?.content_summary.needs_review).toBeGreaterThanOrEqual(1);
     expect(detail?.question_summary.new_questions).toBeGreaterThanOrEqual(1);
 
-    const portalAdapter = createClassPortalAccessAdapter({ pool, config });
+    const portalAdapter = createClassPortalAccessAdapter({
+      pool,
+      config,
+      now: () => new Date('2026-07-15T12:00:00.000Z'),
+    });
     const upcoming = await portalAdapter.upcomingForLearner({
       actor: {
         account_key: config.accountKey,
@@ -497,6 +501,14 @@ async function seedClassDetailEvidence(occurrenceKey: string) {
     `INSERT INTO onetime.class_attendance_marks
        (attendance_key, account_key, product_key, occurrence_key, learner_key, attendance_state, source)
      VALUES ('attendance_alpha', $1, $2, $3, 'learner_alpha', 'present', 'owner_admin')`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+       (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+        household_key, learner_key, entitlement_state, source)
+     VALUES ('enrollment_alpha', $1, $2, $3, 'household_alpha', 'learner_alpha',
+             'active', 'isolated_acceptance')`,
     [config.accountKey, config.productKey, occurrenceKey],
   );
   await pool.query(

@@ -11,6 +11,10 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
   const live = readFileSync('apps/web/src/client/app/live-entry.tsx', 'utf8');
   const portalEntry = readFileSync('apps/web/src/client/app/portal-entry.tsx', 'utf8');
   const portals = readFileSync('apps/web/src/client/features/portals/PortalFeatures.tsx', 'utf8');
+  const classManagement = readFileSync(
+    'apps/web/src/client/app/classes/ClassManagementWorkspace.tsx',
+    'utf8',
+  );
 
   it('separates operating areas from utility destinations', () => {
     expect(shell).toContain('label="One Time app"');
@@ -27,9 +31,21 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(content).toContain('className="content-library-view"');
     expect(content).toContain('tabs={studioViews}');
     expect(content).toContain('Activity moved to item history');
-    expect(crm).toContain('tabs={CLASSROOM_SECTIONS}');
+    expect(crm).toContain('tabs={CLASSROOM_SECTIONS.map');
     expect(crm).toContain('className="classroom-occurrence-selector"');
     expect(crm).not.toContain('Open class details');
+    for (const label of [
+      'Create class',
+      'Create occurrence',
+      'Enroll learner',
+      'Attach recording',
+      'Revoke access',
+      'Provision Zoom',
+    ]) {
+      expect(classManagement).toContain(label);
+    }
+    expect(classManagement).toContain('getClassZoomStatus');
+    expect(classManagement).toContain('deleteSyntheticClassZoom');
   });
 
   it('keeps Live Console focused and preserves Stage and OBS under Advanced', () => {

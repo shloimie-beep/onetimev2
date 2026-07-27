@@ -729,42 +729,112 @@ export async function getContentFactoryPlayback(input: {
     throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
   }
   if (!['owner', 'admin'].includes(input.actor.actor_role)) {
-    const entitlementResult = await input.pool.query(
-      `SELECT entitlement.audience, entitlement.household_key, entitlement.learner_key,
-              learner.household_key AS learner_household_key
-         FROM onetime.content_item_entitlements entitlement
-         LEFT JOIN onetime.portal_learners learner
-            ON learner.account_key = entitlement.account_key
-           AND learner.product_key = entitlement.product_key
-           AND learner.learner_key = entitlement.learner_key
-        WHERE entitlement.account_key = $1 AND entitlement.product_key = $2
-          AND entitlement.content_item_key = $3
-          AND entitlement.entitlement_state = 'active'`,
-      [input.config.accountKey, input.config.productKey, input.sourceKey],
-    );
     const learnerKey = input.actor.student_learner?.learner_key;
     const learnerHouseholdKey = input.actor.student_learner?.household_key;
-    const households = new Set(input.actor.authorized_households.map((item) => item.household_key));
-    const entitled = entitlementResult.rows.some((entitlement) => {
-      if (input.actor.actor_role === 'student') {
-        return (
-          entitlement.audience === 'all_active_learners' ||
-          (entitlement.audience === 'learner' && entitlement.learner_key === learnerKey) ||
-          (entitlement.audience === 'household' &&
-            entitlement.household_key === learnerHouseholdKey)
+    const occurrenceKey = String(row.occurrence_key);
+    let entitled = false;
+    if (input.actor.actor_role === 'student' && learnerKey && learnerHouseholdKey) {
+      const entitlement = await input.pool.query(
+        `SELECT 1
+           FROM onetime.portal_learners AS learner
+           JOIN onetime.account_access_projections AS access
+             ON access.account_key = learner.account_key
+            AND access.product_key = learner.product_key
+            AND access.household_key = learner.household_key
+            AND access.state IN ('active', 'grace', 'scheduled_end')
+            AND access.effective_at <= now()
+            AND (access.expires_at IS NULL OR access.expires_at > now())
+           JOIN onetime.content_item_entitlements AS content_access
+             ON content_access.account_key = learner.account_key
+            AND content_access.product_key = learner.product_key
+            AND content_access.content_item_key = $3
+            AND content_access.entitlement_state = 'active'
+            AND (
+              content_access.audience = 'all_active_learners'
+              OR (
+                content_access.audience = 'household'
+                AND content_access.household_key = learner.household_key
+              )
+              OR (
+                content_access.audience = 'learner'
+                AND content_access.learner_key = learner.learner_key
+              )
+            )
+           JOIN onetime.classroom_occurrence_learner_entitlements AS enrollment
+             ON enrollment.account_key = learner.account_key
+            AND enrollment.product_key = learner.product_key
+            AND enrollment.household_key = learner.household_key
+            AND enrollment.learner_key = learner.learner_key
+            AND enrollment.occurrence_key = $6
+            AND enrollment.entitlement_state = 'active'
+          WHERE learner.account_key = $1
+            AND learner.product_key = $2
+            AND learner.learner_key = $4
+            AND learner.household_key = $5
+            AND learner.learner_status = 'active'
+          LIMIT 1`,
+        [
+          input.config.accountKey,
+          input.config.productKey,
+          input.sourceKey,
+          learnerKey,
+          learnerHouseholdKey,
+          occurrenceKey,
+        ],
+      );
+      entitled = Boolean(entitlement.rows[0]);
+    } else if (input.actor.actor_role === 'parent') {
+      const householdKeys = input.actor.authorized_households.map((item) => item.household_key);
+      if (householdKeys.length > 0) {
+        const entitlement = await input.pool.query(
+          `SELECT 1
+             FROM onetime.portal_learners AS learner
+             JOIN onetime.account_access_projections AS access
+               ON access.account_key = learner.account_key
+              AND access.product_key = learner.product_key
+              AND access.household_key = learner.household_key
+              AND access.state IN ('active', 'grace', 'scheduled_end')
+              AND access.effective_at <= now()
+              AND (access.expires_at IS NULL OR access.expires_at > now())
+             JOIN onetime.content_item_entitlements AS content_access
+               ON content_access.account_key = learner.account_key
+              AND content_access.product_key = learner.product_key
+              AND content_access.content_item_key = $3
+              AND content_access.entitlement_state = 'active'
+              AND (
+                content_access.audience = 'all_active_learners'
+                OR (
+                  content_access.audience = 'household'
+                  AND content_access.household_key = learner.household_key
+                )
+                OR (
+                  content_access.audience = 'learner'
+                  AND content_access.learner_key = learner.learner_key
+                )
+              )
+             JOIN onetime.classroom_occurrence_learner_entitlements AS enrollment
+               ON enrollment.account_key = learner.account_key
+              AND enrollment.product_key = learner.product_key
+              AND enrollment.household_key = learner.household_key
+              AND enrollment.learner_key = learner.learner_key
+              AND enrollment.occurrence_key = $5
+              AND enrollment.entitlement_state = 'active'
+            WHERE learner.account_key = $1
+              AND learner.product_key = $2
+              AND learner.household_key = ANY($4)
+              AND learner.learner_status = 'active'
+            LIMIT 1`,
+          [
+            input.config.accountKey,
+            input.config.productKey,
+            input.sourceKey,
+            householdKeys,
+            occurrenceKey,
+          ],
         );
+        entitled = Boolean(entitlement.rows[0]);
       }
-      if (input.actor.actor_role === 'parent') {
-        return (
-          (entitlement.audience === 'all_active_learners' && households.size > 0) ||
-          (entitlement.audience === 'household' &&
-            households.has(String(entitlement.household_key))) ||
-          (entitlement.audience === 'learner' &&
-            households.has(String(entitlement.learner_household_key)))
-        );
-      }
-      return false;
-    });
+    }
     if (!entitled) {
       throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
     }

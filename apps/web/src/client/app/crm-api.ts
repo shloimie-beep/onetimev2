@@ -1,16 +1,29 @@
 import type {
   AdminGamificationDashboardResponse,
+  AttachClassRecordingPayload,
+  ClassEnrollment,
+  ClassEnrollmentCandidate,
+  ClassEnrollmentPayload,
   ClassOccurrenceDetail,
   ClassOccurrenceSummary,
+  ClassRecording,
+  ClassRecordingAccess,
+  ClassSeries,
   ContactDetail,
   ContactListItem,
   ContactOperationsEnrollment,
   ContactOperationsEnrollmentResult,
   ContactOperationsHousehold,
   ContentLibraryItemSummary,
+  CreateClassOccurrencePayload,
+  CreateClassSeriesPayload,
+  ManagedClassOccurrence,
   OwnerDashboardResponse,
   OperatorLaunchStatusResponse,
   SessionUser,
+  SetClassRecordingAccessPayload,
+  UpdateClassOccurrencePayload,
+  UpdateClassSeriesPayload,
   ContactNote,
   ContactTag,
 } from '@onetime/contracts';
@@ -149,6 +162,86 @@ export type ClassListResponse = {
 export type ClassDetailResponse = {
   success: true;
   occurrence: ClassOccurrenceDetail;
+};
+
+export type ManagedClassSeriesListResponse = {
+  success: true;
+  series: ClassSeries[];
+};
+
+export type ManagedClassSeriesResponse = {
+  success: true;
+  series: ClassSeries;
+};
+
+export type ManagedClassOccurrenceResponse = {
+  success: true;
+  occurrence: ManagedClassOccurrence;
+};
+
+export type ClassEnrollmentListResponse = {
+  success: true;
+  enrollments: ClassEnrollment[];
+};
+
+export type ClassEnrollmentCandidateListResponse = {
+  success: true;
+  candidates: ClassEnrollmentCandidate[];
+};
+
+export type ClassEnrollmentResponse = {
+  success: true;
+  enrollment: ClassEnrollment;
+};
+
+export type ClassRecordingListResponse = {
+  success: true;
+  recordings: ClassRecording[];
+};
+
+export type ClassRecordingResponse = {
+  success: true;
+  recording: ClassRecording;
+};
+
+export type ClassRecordingAccessListResponse = {
+  success: true;
+  access: ClassRecordingAccess[];
+};
+
+export type ClassZoomStatus = {
+  occurrence_key: string;
+  title: string;
+  starts_at: string;
+  provider_ready: boolean;
+  meeting_state:
+    | 'not_provisioned'
+    | 'provisioning'
+    | 'active'
+    | 'provision_failed'
+    | 'provision_unknown'
+    | 'deleting'
+    | 'deleted'
+    | 'delete_unknown';
+  purpose: 'normal_class' | 'synthetic_acceptance' | null;
+  enrolled_student_count: number;
+  registered_student_count: number;
+  raw_join_url_present: false;
+  last_error: string | null;
+};
+
+export type ClassZoomStatusResponse = {
+  success: true;
+  data: ClassZoomStatus;
+};
+
+export type ClassZoomDeleteResponse = {
+  success: true;
+  data: {
+    occurrence_key: string;
+    meeting_state: 'deleted';
+    deleted: true;
+  };
 };
 
 export type ContentListResponse = {
@@ -468,6 +561,181 @@ export async function getClassDetail(occurrenceKey: string) {
   );
 }
 
+export async function listManagedClassSeries() {
+  return authenticatedJson<ManagedClassSeriesListResponse>('/api/v1/admin/classes/series');
+}
+
+export async function createManagedClassSeries(
+  csrfToken: string,
+  payload: CreateClassSeriesPayload,
+) {
+  return classManagementWrite<ManagedClassSeriesResponse>(
+    '/api/v1/admin/classes/series',
+    csrfToken,
+    'POST',
+    payload,
+  );
+}
+
+export async function updateManagedClassSeries(
+  csrfToken: string,
+  seriesKey: string,
+  payload: UpdateClassSeriesPayload,
+) {
+  return classManagementWrite<ManagedClassSeriesResponse>(
+    `/api/v1/admin/classes/series/${encodeURIComponent(seriesKey)}`,
+    csrfToken,
+    'PATCH',
+    payload,
+  );
+}
+
+export async function getManagedClassOccurrence(occurrenceKey: string) {
+  return authenticatedJson<ManagedClassOccurrenceResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}`,
+  );
+}
+
+export async function createManagedClassOccurrence(
+  csrfToken: string,
+  payload: CreateClassOccurrencePayload,
+) {
+  return classManagementWrite<ManagedClassOccurrenceResponse>(
+    '/api/v1/admin/classes/occurrences',
+    csrfToken,
+    'POST',
+    payload,
+  );
+}
+
+export async function updateManagedClassOccurrence(
+  csrfToken: string,
+  occurrenceKey: string,
+  payload: UpdateClassOccurrencePayload,
+) {
+  return classManagementWrite<ManagedClassOccurrenceResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}`,
+    csrfToken,
+    'PATCH',
+    payload,
+  );
+}
+
+export async function listClassEnrollmentCandidates(occurrenceKey: string) {
+  return authenticatedJson<ClassEnrollmentCandidateListResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/enrollment-candidates`,
+  );
+}
+
+export async function listClassEnrollments(occurrenceKey: string) {
+  return authenticatedJson<ClassEnrollmentListResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/enrollments`,
+  );
+}
+
+export async function enrollLearnerInClass(
+  csrfToken: string,
+  occurrenceKey: string,
+  payload: ClassEnrollmentPayload,
+) {
+  return classManagementWrite<ClassEnrollmentResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/enrollments`,
+    csrfToken,
+    'POST',
+    payload,
+  );
+}
+
+export async function revokeClassEnrollment(
+  csrfToken: string,
+  occurrenceKey: string,
+  learnerKey: string,
+  idempotencyKey: string,
+) {
+  return classManagementWrite<ClassEnrollmentResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(
+      occurrenceKey,
+    )}/enrollments/${encodeURIComponent(learnerKey)}/revoke`,
+    csrfToken,
+    'POST',
+    { idempotency_key: idempotencyKey },
+  );
+}
+
+export async function listClassRecordings(occurrenceKey: string) {
+  return authenticatedJson<ClassRecordingListResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/recordings`,
+  );
+}
+
+export async function attachClassRecording(
+  csrfToken: string,
+  occurrenceKey: string,
+  payload: AttachClassRecordingPayload,
+) {
+  return classManagementWrite<ClassRecordingResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/recordings`,
+    csrfToken,
+    'POST',
+    payload,
+  );
+}
+
+export async function listClassRecordingAccess(occurrenceKey: string, itemKey: string) {
+  return authenticatedJson<ClassRecordingAccessListResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(
+      occurrenceKey,
+    )}/recordings/${encodeURIComponent(itemKey)}/access`,
+  );
+}
+
+export async function setClassRecordingAccess(
+  csrfToken: string,
+  occurrenceKey: string,
+  itemKey: string,
+  payload: SetClassRecordingAccessPayload,
+) {
+  return classManagementWrite<ClassRecordingResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(
+      occurrenceKey,
+    )}/recordings/${encodeURIComponent(itemKey)}/access`,
+    csrfToken,
+    'POST',
+    payload,
+  );
+}
+
+export async function getClassZoomStatus(occurrenceKey: string) {
+  return authenticatedJson<ClassZoomStatusResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/zoom`,
+  );
+}
+
+export async function provisionClassZoom(
+  csrfToken: string,
+  occurrenceKey: string,
+  payload: {
+    purpose: 'normal_class' | 'synthetic_acceptance';
+    idempotency_key: string;
+  },
+) {
+  return classManagementWrite<ClassZoomStatusResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/zoom/provision`,
+    csrfToken,
+    'POST',
+    payload,
+  );
+}
+
+export async function deleteSyntheticClassZoom(csrfToken: string, occurrenceKey: string) {
+  return classManagementWrite<ClassZoomDeleteResponse>(
+    `/api/v1/admin/classes/occurrences/${encodeURIComponent(occurrenceKey)}/zoom/delete-synthetic`,
+    csrfToken,
+    'POST',
+    { confirmed: true },
+  );
+}
+
 export async function enrollParentHousehold(
   csrfToken: string,
   payload: ContactOperationsEnrollment,
@@ -575,8 +843,10 @@ export async function requestStudentContactReset(input: {
   );
 }
 
-export async function getContentLibrary() {
-  return authenticatedJson<ContentListResponse>('/api/v1/content/library?limit=10');
+export async function getContentLibrary(query = '') {
+  return authenticatedJson<ContentListResponse>(
+    `/api/v1/content/library?limit=50${query ? `&${query}` : ''}`,
+  );
 }
 
 export async function saveContactRequest({
@@ -647,6 +917,22 @@ async function authenticatedJson<T>(path: string, init: RequestInit = {}): Promi
 function contactOperationsWrite<T>(path: string, csrfToken: string, payload: unknown) {
   return authenticatedJson<T>(path, {
     method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+function classManagementWrite<T>(
+  path: string,
+  csrfToken: string,
+  method: 'POST' | 'PATCH',
+  payload: unknown,
+) {
+  return authenticatedJson<T>(path, {
+    method,
     headers: {
       'content-type': 'application/json',
       'x-csrf-token': csrfToken,
