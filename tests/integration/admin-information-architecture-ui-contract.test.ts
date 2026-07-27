@@ -23,7 +23,11 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(crm).toContain('session?.capabilities?.operator_experience?.live_console === true');
     expect(crm).toContain('utilityItems={utilityItems}');
     expect(crm).toContain('className="dashboard-overview-list"');
-    expect(crm).toContain('dashboard.open_experience_preview.button');
+    expect(crm).toContain("label: 'Operations'");
+    expect(crm).toContain("href: '/app/operations'");
+    expect(crm).not.toContain('dashboard.open_experience_preview.button');
+    expect(crm).not.toContain("href: '/app/experience-preview'");
+    expect(crm).not.toContain("href: '/app/launch-status'");
   });
 
   it('folds legacy content and classroom destinations into focused workspaces', () => {
@@ -31,7 +35,8 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(content).toContain('className="content-library-view"');
     expect(content).toContain('tabs={studioViews}');
     expect(content).toContain('Activity moved to item history');
-    expect(crm).toContain('tabs={CLASSROOM_SECTIONS.map');
+    expect(crm).toContain('CLASSROOM_SECTIONS.filter');
+    expect(crm).toContain(': CLASSROOM_SECTIONS');
     expect(crm).toContain('className="classroom-occurrence-selector"');
     expect(crm).not.toContain('Open class details');
     for (const label of [
@@ -55,19 +60,17 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(live).toContain('<h3 id="live-zoom-heading">Zoom</h3>');
   });
 
-  it('provides the bounded app-owned Zoom setup and test actions', () => {
-    for (const label of [
-      'Check Zoom Connection',
-      'Create Disposable Test Meeting',
-      'Register One Operator-Owned Test Learner',
-      'Refresh Status',
-      'Open Secure One Time Classroom',
-      'Delete This App-Created Test Meeting',
-    ]) {
-      expect(live).toContain(label);
-    }
-    expect(live).toContain('window.confirm(');
-    expect(live).toContain('{ confirmed: true }');
+  it('keeps ordinary Zoom lifecycle controls occurrence-scoped', () => {
+    expect(live).toContain('Refresh Status');
+    expect(live).toContain('Open Secure One Time Classroom');
+    expect(live).toContain('Choose and Provision a Class');
+    expect(classManagement).toContain('Provision Zoom');
+    expect(classManagement).toContain('Refresh Zoom status');
+    expect(classManagement).toContain('Delete synthetic Zoom');
+    expect(classManagement).toContain('window.confirm(');
+    expect(live).not.toContain('Create Disposable Test Meeting');
+    expect(live).not.toContain('Register One Operator-Owned Test Learner');
+    expect(live).not.toContain('Delete This App-Created Test Meeting');
     expect(live).not.toMatch(/meeting[_-]?id.*(?:input|searchParams)/i);
   });
 

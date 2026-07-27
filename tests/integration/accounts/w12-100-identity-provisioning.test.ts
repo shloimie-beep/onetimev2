@@ -501,6 +501,11 @@ async function exercisePortalJourneys() {
 }
 
 async function seedVisibilityFixtures() {
+  const classStartsAt = new Date(Date.now() + 24 * 60 * 60_000);
+  const reminderDueAt = new Date(classStartsAt.getTime() - 30 * 60_000);
+  const joinableUntil = new Date(classStartsAt.getTime() + 75 * 60_000);
+  const joinOpensAt = new Date(classStartsAt.getTime() - 15 * 60_000);
+  const localClassDate = classStartsAt.toISOString().slice(0, 10);
   await pool.query(
     `INSERT INTO onetime.account_access_projections
        (access_key, account_key, product_key, household_key, state, source_kind,
@@ -539,11 +544,11 @@ async function seedVisibilityFixtures() {
   );
   await pool.query(
     `INSERT INTO onetime.class_occurrences
-       (occurrence_key, account_key, product_key, class_series_key, local_class_date,
+     (occurrence_key, account_key, product_key, class_series_key, local_class_date,
         starts_at, reminder_due_at, joinable_until, occurrence_state, reminder_state,
         access_state, join_opens_at, join_closes_at, scheduled_ends_at)
-     VALUES ('w12_100_class_occurrence',$1,$2,'w12_100_class_series','2026-07-20',
-        $3,$4,$5,'scheduled','pending','provider_unavailable',$6,$5,$5)
+     VALUES ('w12_100_class_occurrence',$1,$2,'w12_100_class_series',$3,
+        $4,$5,$6,'scheduled','pending','provider_unavailable',$7,$6,$6)
      ON CONFLICT (account_key, product_key, class_series_key, local_class_date)
      DO UPDATE SET starts_at = EXCLUDED.starts_at,
                    reminder_due_at = EXCLUDED.reminder_due_at,
@@ -551,12 +556,34 @@ async function seedVisibilityFixtures() {
     [
       config.accountKey,
       config.productKey,
-      new Date('2026-07-20T16:00:00.000Z'),
-      new Date('2026-07-20T15:30:00.000Z'),
-      new Date('2026-07-20T17:15:00.000Z'),
-      new Date('2026-07-20T15:45:00.000Z'),
+      localClassDate,
+      classStartsAt,
+      reminderDueAt,
+      joinableUntil,
+      joinOpensAt,
     ],
   );
+  for (const [index, learner] of manifest.learners.entries()) {
+    await pool.query(
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, entitlement_state, source)
+       VALUES ($1,$2,$3,'w12_100_class_occurrence',$4,$5,'active','isolated_acceptance')
+       ON CONFLICT (account_key, product_key, occurrence_key, learner_key)
+       DO UPDATE SET household_key = EXCLUDED.household_key,
+                     entitlement_state = 'active',
+                     source = 'isolated_acceptance',
+                     revoked_at = NULL,
+                     updated_at = now()`,
+      [
+        `w12_100_occurrence_entitlement_${index + 1}`,
+        config.accountKey,
+        config.productKey,
+        manifest.household.household_key,
+        learner.learner_key,
+      ],
+    );
+  }
   await pool.query(
     `INSERT INTO onetime.content_items
        (content_item_key, account_key, product_key, occurrence_key, title, item_type,

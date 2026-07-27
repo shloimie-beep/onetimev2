@@ -906,6 +906,29 @@ async function seedLearningContent(
   occurrenceKey: string,
   now: Date,
 ) {
+  for (const [index, learner] of previewLearners.entries()) {
+    await pool.query(
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, entitlement_state, source, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,'active','isolated_acceptance',$7)
+       ON CONFLICT (account_key, product_key, occurrence_key, learner_key)
+       DO UPDATE SET household_key = EXCLUDED.household_key,
+                     entitlement_state = 'active',
+                     source = 'isolated_acceptance',
+                     revoked_at = NULL,
+                     updated_at = EXCLUDED.updated_at`,
+      [
+        `full_app_preview_occurrence_entitlement_${index + 1}`,
+        config.accountKey,
+        config.productKey,
+        occurrenceKey,
+        HOUSEHOLD_KEY,
+        learner.learnerKey,
+        now,
+      ],
+    );
+  }
   const vimeoDigest = digest('full-app-preview-private-vimeo-reference');
   await pool.query(
     `INSERT INTO onetime.learning_delivery_media_sources

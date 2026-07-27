@@ -71,7 +71,7 @@ describe('OT-71 owner/admin dashboard shell', () => {
         '/app/classes',
         '/app/content',
         '/app/billing',
-        '/app/launch-status',
+        '/app/operations',
       ]) {
         const shell = await fetch(`${server.baseUrl}${appPath}`, {
           headers: { cookie: owner.cookies },
@@ -216,10 +216,14 @@ describe('OT-71 owner/admin dashboard shell', () => {
         headers: { cookie: viewer.cookies },
       });
       expect(deniedLaunchStatusApi.status).toBe(403);
-      const deniedLaunchStatusShell = await fetch(`${server.baseUrl}/app/launch-status`, {
+      const deniedOperationsShell = await fetch(`${server.baseUrl}/app/operations`, {
         headers: { cookie: viewer.cookies },
       });
-      expect(deniedLaunchStatusShell.status).toBe(403);
+      expect(deniedOperationsShell.status).toBe(403);
+      const removedLaunchStatusShell = await fetch(`${server.baseUrl}/app/launch-status`, {
+        headers: { cookie: owner.cookies },
+      });
+      expect(removedLaunchStatusShell.status).toBe(404);
       const crmShell = await fetch(`${server.baseUrl}/app/crm`, {
         headers: { cookie: viewer.cookies },
       });

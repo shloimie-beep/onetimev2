@@ -23,12 +23,14 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
 
   it('keeps launch tools contextual and gates canonical operating areas by server capability', () => {
     expect(crmSource).toContain('adminPrimaryNav(adminCurrentArea, liveConsoleReady)');
-    expect(crmSource).toContain("label: 'Experience Preview'");
-    expect(crmSource).toContain("href: '/app/experience-preview'");
-    expect(crmSource).toContain("label: 'Launch Status'");
-    expect(crmSource).toContain('Preview Parent &amp; Student portals');
-    expect(crmSource).toContain('dashboard.open_experience_preview.button');
-    expect(crmSource).toContain('Open portal preview');
+    expect(crmSource).toContain("label: 'Operations'");
+    expect(crmSource).toContain("href: '/app/operations'");
+    expect(crmSource).not.toContain("label: 'Experience Preview'");
+    expect(crmSource).not.toContain("href: '/app/experience-preview'");
+    expect(crmSource).not.toContain("label: 'Launch Status'");
+    expect(crmSource).not.toContain('Preview Parent &amp; Student portals');
+    expect(crmSource).not.toContain('dashboard.open_experience_preview.button');
+    expect(crmSource).not.toContain('Open portal preview');
     expect(crmSource).toContain(
       'session?.capabilities?.operator_experience?.live_console === true',
     );
