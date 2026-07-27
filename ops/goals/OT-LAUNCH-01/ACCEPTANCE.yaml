@@ -297,6 +297,20 @@ criteria:
         provider_sink_only,
         zero_real_send,
       ]
+  - id: SEC-CLASSROOM-BEARER-FREE-001
+    track: audit_wave_04_classroom_bearer_free_transport
+    observable: The authenticated Student classroom uses one constant protected browser route and a strict same-origin CSRF-protected bootstrap POST with no launch reference in the URL or payload; the server consumes one durable pending grant bound to the exact account, product, actor, session, learner, occurrence, TTL, and one-time state, while stale compound URLs, replay, expiry, wrong-session, sibling, and cross-account attempts fail closed without provider calls or sensitive route labels.
+    proof:
+      [
+        integration_test,
+        browser_desktop,
+        browser_mobile,
+        authorization_negative_tests,
+        concurrent_consume_test,
+        request_target_redaction_test,
+        provider_sink_only,
+        zero_real_provider_call,
+      ]
   - id: HYGIENE-CENSUS-001
     track: audit_wave_05_preservation_census
     observable: A metadata-only protected census separates One Time, BNA, legacy One Time, and unknown checkouts; records hashed paths, repository identities, status/ref/worktree/stash counts and local-only commit metadata; proves every source status hash unchanged; and performs zero source mutation, PR closure, deletion, reset, prune, stash, or force-push.
