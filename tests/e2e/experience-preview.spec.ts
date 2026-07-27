@@ -25,7 +25,7 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-  await Promise.all([staging.close(), production.close()]);
+  await Promise.all([staging?.close(), production?.close()]);
 });
 
 test('Admin Experience Preview is isolated, responsive, sibling-scoped, and production-gated', async ({
@@ -377,6 +377,9 @@ function previewConfig() {
 function productionConfig() {
   return loadConfig({
     ...baseEnvironment(),
+    NODE_ENV: 'production',
+    AUTH_CSRF_SECRET: 'e2e-fixture'.padEnd(32, '-'),
+    MFA_SECRET_ENCRYPTION_KEY: 'e2e-fixture'.padEnd(32, '-'),
     DELIVERY_ENVIRONMENT: 'production',
     ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
     ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: 'false',
