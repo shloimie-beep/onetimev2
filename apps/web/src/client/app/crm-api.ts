@@ -462,6 +462,20 @@ export async function archiveContactRequest(csrfToken: string, contactId: string
   );
 }
 
+export async function reactivateContactRequest(csrfToken: string, contactId: string) {
+  return authenticatedJson<{ success: true; reactivated: true; contact_id: string }>(
+    `/api/v1/crm/contacts/${encodeURIComponent(contactId)}/reactivate`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({}),
+    },
+  );
+}
+
 export async function previewReply(
   csrfToken: string,
   contactId: string,

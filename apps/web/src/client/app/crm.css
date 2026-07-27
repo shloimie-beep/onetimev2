@@ -981,3 +981,118 @@
     width: 100%;
   }
 }
+
+.admin-directory {
+  display: grid;
+  gap: var(--ot-space-5);
+}
+
+.admin-directory__heading,
+.admin-directory__filters,
+.admin-directory__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ot-space-3);
+  flex-wrap: wrap;
+}
+
+.admin-directory__heading {
+  justify-content: space-between;
+}
+
+.admin-directory__heading h2,
+.admin-directory__heading p,
+.admin-directory__form-card h3 {
+  margin: 0;
+}
+
+.admin-directory__heading p {
+  color: var(--ot-color-text-muted);
+  margin-top: var(--ot-space-2);
+}
+
+.admin-directory__filters {
+  padding: var(--ot-space-4);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface);
+}
+
+.admin-directory__filters label,
+.admin-directory__form label {
+  display: grid;
+  gap: var(--ot-space-2);
+  min-width: min(100%, 13rem);
+}
+
+.admin-directory__filters label span,
+.admin-directory__form label span {
+  font-weight: 700;
+}
+
+.admin-directory__form-card {
+  display: grid;
+  gap: var(--ot-space-4);
+  padding: var(--ot-space-5);
+}
+
+.admin-directory__form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ot-space-4);
+}
+
+.admin-directory__form-note,
+.admin-directory__form .admin-directory__actions {
+  grid-column: 1 / -1;
+}
+
+.admin-directory__form-note {
+  color: var(--ot-color-text-muted);
+  margin: 0;
+}
+
+.admin-directory__table table {
+  min-width: 56rem;
+}
+
+.admin-directory__table td {
+  vertical-align: top;
+}
+
+.admin-directory__record-title {
+  display: grid;
+  justify-items: start;
+  gap: var(--ot-space-1);
+}
+
+.admin-directory__record-title small {
+  color: var(--ot-color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 42rem) {
+  .admin-directory__heading {
+    align-items: stretch;
+  }
+
+  .admin-directory__heading > .button-primary {
+    width: 100%;
+  }
+
+  .admin-directory__filters,
+  .admin-directory__form {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-directory__filters label,
+  .admin-directory__form label {
+    min-width: 0;
+  }
+
+  .admin-directory__form-note,
+  .admin-directory__form .admin-directory__actions {
+    grid-column: auto;
+  }
+}

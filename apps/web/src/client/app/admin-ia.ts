@@ -10,23 +10,16 @@ export type AdminPrimaryAreaId = (typeof ADMIN_PRIMARY_AREAS)[number]['id'];
 
 export const DASHBOARD_SECTIONS = [
   { id: 'overview', label: 'Overview', href: '/app/dashboard' },
-  {
-    id: 'internal-tasks',
-    label: 'Internal Tasks',
-    href: '/app/dashboard/internal-tasks',
-  },
 ] as const;
 
 export type DashboardSectionId = (typeof DASHBOARD_SECTIONS)[number]['id'];
 
 export const CONTACTS_SECTIONS = [
-  { id: 'parents', label: 'Parents', href: '/app/crm' },
-  { id: 'students', label: 'Students', href: '/app/crm/students' },
-  {
-    id: 'internal-tasks',
-    label: 'Internal Tasks',
-    href: '/app/crm/internal-tasks',
-  },
+  { id: 'people', label: 'People / Contacts', href: '/app/crm' },
+  { id: 'households', label: 'Households', href: '/app/crm/households' },
+  { id: 'users', label: 'Users & Roles', href: '/app/crm/users' },
+  { id: 'learners', label: 'Learners', href: '/app/crm/learners' },
+  { id: 'audit', label: 'Audit History', href: '/app/crm/audit' },
 ] as const;
 
 export type ContactsSectionId = (typeof CONTACTS_SECTIONS)[number]['id'];
@@ -78,14 +71,24 @@ export function adminPrimaryNav(currentId: AdminPrimaryAreaId | null, liveConsol
   );
 }
 
-export function dashboardSectionFromPath(pathname: string): DashboardSectionId {
-  return pathname === '/app/dashboard/internal-tasks' ? 'internal-tasks' : 'overview';
+export function rabbiPrimaryNav(currentId: AdminPrimaryAreaId | null, liveConsoleReady: boolean) {
+  return ADMIN_PRIMARY_AREAS.filter(
+    (item) =>
+      ['dashboard', 'content', 'classroom'].includes(item.id) ||
+      (item.id === 'live-console' && liveConsoleReady),
+  ).map((item) => ({ ...item, current: item.id === currentId }));
+}
+
+export function dashboardSectionFromPath(_pathname: string): DashboardSectionId {
+  return 'overview';
 }
 
 export function contactsSectionFromPath(pathname: string): ContactsSectionId {
-  if (pathname === '/app/crm/students') return 'students';
-  if (pathname === '/app/crm/internal-tasks') return 'internal-tasks';
-  return 'parents';
+  if (pathname === '/app/crm/households') return 'households';
+  if (pathname === '/app/crm/users') return 'users';
+  if (pathname === '/app/crm/learners') return 'learners';
+  if (pathname === '/app/crm/audit') return 'audit';
+  return 'people';
 }
 
 export function contentSectionFromPath(pathname: string): ContentSectionId {

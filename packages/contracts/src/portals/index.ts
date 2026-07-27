@@ -8,6 +8,7 @@ export const portalActorRoleSchema = z.enum([
   'student',
   'owner',
   'admin',
+  'rabbi',
   'crm_agent',
   'viewer',
   'support',

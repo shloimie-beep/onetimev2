@@ -4,6 +4,7 @@ import { accountAccessSourceKindSchema, accountAccessStateSchema } from '../acce
 export const ownerDashboardRoleSchema = z.enum([
   'owner',
   'admin',
+  'rabbi',
   'crm_agent',
   'viewer',
   'parent',

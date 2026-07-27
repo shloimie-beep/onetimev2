@@ -15,6 +15,7 @@ import {
   dashboardSectionFromPath,
   liveConsoleHref,
   liveConsoleSectionFromSearch,
+  rabbiPrimaryNav,
 } from '../../apps/web/src/client/app/admin-ia.ts';
 
 describe('OT-LAUNCH-01 Admin information architecture', () => {
@@ -35,14 +36,23 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
       'Content',
       'Classroom',
     ]);
+    expect(rabbiPrimaryNav('classroom', true).map((item) => item.label)).toEqual([
+      'Dashboard',
+      'Content',
+      'Classroom',
+      'Live Console',
+    ]);
+    expect(rabbiPrimaryNav('classroom', true).some((item) => item.id === 'contacts')).toBe(false);
   });
 
   it('defines one canonical section model for each focused workspace', () => {
-    expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Overview', 'Internal Tasks']);
+    expect(DASHBOARD_SECTIONS.map((item) => item.label)).toEqual(['Overview']);
     expect(CONTACTS_SECTIONS.map((item) => item.label)).toEqual([
-      'Parents',
-      'Students',
-      'Internal Tasks',
+      'People / Contacts',
+      'Households',
+      'Users & Roles',
+      'Learners',
+      'Audit History',
     ]);
     expect(CONTENT_SECTIONS.map((item) => item.label)).toEqual([
       'Library',
@@ -68,8 +78,12 @@ describe('OT-LAUNCH-01 Admin information architecture', () => {
   });
 
   it('maps legacy and deep URLs into safe focused destinations', () => {
-    expect(dashboardSectionFromPath('/app/dashboard/internal-tasks')).toBe('internal-tasks');
-    expect(contactsSectionFromPath('/app/crm/students')).toBe('students');
+    expect(dashboardSectionFromPath('/app/dashboard/internal-tasks')).toBe('overview');
+    expect(contactsSectionFromPath('/app/crm/households')).toBe('households');
+    expect(contactsSectionFromPath('/app/crm/users')).toBe('users');
+    expect(contactsSectionFromPath('/app/crm/audit')).toBe('audit');
+    expect(contactsSectionFromPath('/app/crm/learners')).toBe('learners');
+    expect(contactsSectionFromPath('/app/crm/contacts/contact-1')).toBe('people');
     expect(contentSectionFromPath('/app/content/create')).toBe('studio');
     expect(contentSectionFromPath('/app/content/social')).toBe('studio');
     expect(contentSectionFromPath('/app/content/processing')).toBe('library');

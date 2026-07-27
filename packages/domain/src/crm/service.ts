@@ -74,11 +74,12 @@ export async function listContacts({
 }): Promise<ContactListResult> {
   const parsed = contactSearchCommandSchema.parse(query);
   const params: unknown[] = [config.accountKey, config.productKey];
-  const where = [
-    'contacts.account_key = $1',
-    'contacts.product_key = $2',
-    'contacts.archived_at IS NULL',
-  ];
+  const where = ['contacts.account_key = $1', 'contacts.product_key = $2'];
+  where.push(
+    parsed.lead_status === 'archived'
+      ? 'contacts.archived_at IS NOT NULL'
+      : 'contacts.archived_at IS NULL',
+  );
 
   if (parsed.search) {
     params.push(`%${parsed.search.toLowerCase()}%`);
@@ -207,7 +208,6 @@ export async function getContactDetail({
       WHERE contacts.account_key = $1
         AND contacts.product_key = $2
         AND (contacts.public_contact_id = $3 OR contacts.contact_key = $3)
-        AND contacts.archived_at IS NULL
       ORDER BY leads.created_at DESC
       LIMIT 1`,
     [config.accountKey, config.productKey, contactId],
@@ -452,6 +452,53 @@ export async function archiveContact({
       metadata: { reason: reason ?? 'operator_archive', no_external_side_effects: true },
     });
     return { contact_id: String(row.public_contact_id), archived: true };
+  });
+}
+
+export async function reactivateContact({
+  pool,
+  config,
+  contactId,
+  actorUserKey,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  contactId: string;
+  actorUserKey: string;
+}) {
+  return inTransaction(pool, async (client) => {
+    const result = await client.query(
+      `UPDATE onetime.contacts
+          SET archived_at = NULL,
+              archived_by_user_key = NULL,
+              archive_reason = NULL,
+              lead_status = CASE
+                WHEN prior_lead_status IN ('new', 'in_review', 'contacted', 'scheduled', 'closed')
+                  THEN prior_lead_status
+                ELSE 'new'
+              END,
+              prior_lead_status = NULL,
+              reactivated_at = now(),
+              reactivated_by_user_key = $4,
+              updated_at = now(),
+              last_activity_at = now(),
+              version = version + 1
+        WHERE account_key = $1
+          AND product_key = $2
+          AND (public_contact_id = $3 OR contact_key = $3)
+          AND archived_at IS NOT NULL
+        RETURNING *`,
+      [config.accountKey, config.productKey, contactId, actorUserKey],
+    );
+    const row = result.rows[0];
+    if (!row) return null;
+    await insertCrmAudit(client, config, {
+      contactKey: String(row.contact_key),
+      actorUserKey,
+      eventType: 'crm_contact_reactivated',
+      metadata: { no_external_side_effects: true },
+    });
+    return { contact_id: String(row.public_contact_id), reactivated: true };
   });
 }
 

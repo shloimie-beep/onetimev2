@@ -9,7 +9,7 @@ export const accountLifecycleTokenTypeSchema = z.enum([
 ]);
 export type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
 
-export const accountLifecycleRoleSchema = z.enum(['owner', 'admin', 'parent', 'student']);
+export const accountLifecycleRoleSchema = z.enum(['owner', 'admin', 'rabbi', 'parent', 'student']);
 export type AccountLifecycleRole = z.infer<typeof accountLifecycleRoleSchema>;
 
 export const accountLifecycleErrorCodeSchema = z.enum([
@@ -35,7 +35,7 @@ export const ownerAdminInvitationPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
   email: lifecycleEmailSchema,
   display_name: lifecycleNameSchema,
-  role: z.enum(['owner', 'admin']),
+  role: z.enum(['owner', 'admin', 'rabbi']),
 });
 export type OwnerAdminInvitationPayload = z.infer<typeof ownerAdminInvitationPayloadSchema>;
 

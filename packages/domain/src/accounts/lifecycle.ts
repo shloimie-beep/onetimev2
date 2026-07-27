@@ -54,7 +54,7 @@ export type AccountLifecycleTokenInspection =
       ok: true;
       token_key: string;
       token_type: AccountLifecycleTokenType;
-      target_role: 'owner' | 'admin' | 'parent' | 'student';
+      target_role: 'owner' | 'admin' | 'rabbi' | 'parent' | 'student';
       expires_at: string;
       mfa_required: boolean;
     }
@@ -68,7 +68,7 @@ type TokenRecord = {
   token_type: AccountLifecycleTokenType;
   email_normalized: string | null;
   display_name: string | null;
-  target_role: 'owner' | 'admin' | 'parent' | 'student';
+  target_role: 'owner' | 'admin' | 'rabbi' | 'parent' | 'student';
   subject_user_key: string | null;
   household_key: string | null;
   relationship_key: string | null;
@@ -945,7 +945,7 @@ async function issueAccountToken(
   config: AppConfig,
   input: {
     tokenType: AccountLifecycleTokenType;
-    targetRole: 'owner' | 'admin' | 'parent' | 'student';
+    targetRole: 'owner' | 'admin' | 'rabbi' | 'parent' | 'student';
     emailNormalized: string;
     displayName: string;
     idempotencyKey: string;
@@ -1941,7 +1941,10 @@ function mapToken(row: Record<string, unknown>): TokenRecord {
   };
 }
 
-function requireOwnerAdminInvitationActor(actor: LifecycleActor, targetRole: 'owner' | 'admin') {
+function requireOwnerAdminInvitationActor(
+  actor: LifecycleActor,
+  targetRole: 'owner' | 'admin' | 'rabbi',
+) {
   if (actor.role !== 'owner' && actor.role !== 'admin') {
     throw new AccountLifecycleError('FORBIDDEN', 'Only owner/admin users can invite staff.');
   }
@@ -1965,9 +1968,12 @@ function requireParentOrOwnerAdmin(actor: LifecycleActor) {
   }
 }
 
-function lifecycleRoleFromUserRole(role: string): 'owner' | 'admin' | 'parent' | 'student' {
+function lifecycleRoleFromUserRole(
+  role: string,
+): 'owner' | 'admin' | 'rabbi' | 'parent' | 'student' {
   if (role === 'owner') return 'owner';
   if (role === 'admin') return 'admin';
+  if (role === 'rabbi') return 'rabbi';
   if (role === 'student') return 'student';
   return 'parent';
 }

@@ -148,6 +148,7 @@ export function publicFieldErrors(error: z.ZodError): Record<string, string> {
 export const userRoleSchema = z.enum([
   'owner',
   'admin',
+  'rabbi',
   'crm_agent',
   'viewer',
   'parent',
@@ -158,6 +159,7 @@ export type UserRole = z.infer<typeof userRoleSchema>;
 export const roleDisplayLabel: Record<UserRole, string> = {
   owner: 'Administrator',
   admin: 'Administrator',
+  rabbi: 'Rabbi',
   crm_agent: 'CRM Agent',
   viewer: 'Viewer',
   parent: 'Parent',

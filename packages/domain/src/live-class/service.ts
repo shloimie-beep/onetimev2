@@ -1071,12 +1071,17 @@ function requireStudent(actor: PortalActorContext) {
 
 function requireRabbi(actor: PortalActorContext) {
   if (!isRabbi(actor)) {
-    throw new PortalServiceError('FORBIDDEN', 'The live console requires owner or admin access.');
+    throw new PortalServiceError(
+      'FORBIDDEN',
+      'The live console requires Administrator or Rabbi access.',
+    );
   }
 }
 
 function isRabbi(actor: PortalActorContext) {
-  return actor.actor_role === 'owner' || actor.actor_role === 'admin';
+  return (
+    actor.actor_role === 'owner' || actor.actor_role === 'admin' || actor.actor_role === 'rabbi'
+  );
 }
 
 function publicScope(config: AppConfig) {

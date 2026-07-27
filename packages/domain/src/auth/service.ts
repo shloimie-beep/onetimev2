@@ -617,7 +617,7 @@ export async function authenticateUser({
     }
   }
 
-  if (['owner', 'admin'].includes(row.role)) {
+  if (['owner', 'admin', 'rabbi'].includes(row.role)) {
     if (
       trustedDeviceToken &&
       (await verifyTrustedDeviceForUser({

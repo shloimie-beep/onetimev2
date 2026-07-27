@@ -226,6 +226,7 @@ import {
   receiveOt86PublicationManifest,
   receiveOt86bSocialEvent,
   requestPasswordReset,
+  reactivateContact,
   revokeTrustedDevice,
   resolveOt110aContentAdminActor,
   rollbackOt110aPromptVersion,
@@ -307,6 +308,7 @@ import { registerSupportRoutes } from './features/support/router.ts';
 import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
 import { createContactOperationsRouter } from './features/contact-operations/router.ts';
+import { createAdminDirectoryRouter } from './features/admin-directory/router.ts';
 import { operatorLaunchStatusProjection } from './generated/operator-launch-status.js';
 
 type AppDeps = {
@@ -903,6 +905,11 @@ export function createApp({
       );
       return;
     }
+    if (!canReadContacts(session.user.role)) {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
     await sendAppHtml(res, distDir, 'crm', config);
@@ -926,7 +933,7 @@ export function createApp({
       );
       return;
     }
-    if (!canUseOwnerDashboard(session.user.role)) {
+    if (!canReadContentLibrary(session.user.role)) {
       res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
       return;
     }
@@ -973,7 +980,10 @@ export function createApp({
         );
         return;
       }
-      if (!canUseOwnerDashboard(session.user.role)) {
+      if (
+        !canUseOwnerDashboard(session.user.role) &&
+        !canUseRabbiTeachingSurface(session.user.role, req.path)
+      ) {
         setPrivateNoStore(res);
         res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
         return;
@@ -990,7 +1000,7 @@ export function createApp({
       res.redirect(302, '/login?return_to=%2Fapp%2Flive-console%2Fzoom-host');
       return;
     }
-    if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+    if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
       setPrivateNoStore(res);
       res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
       return;
@@ -1024,7 +1034,7 @@ export function createApp({
       res.redirect(302, '/login?return_to=%2Fapp%2Flive-console');
       return;
     }
-    if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+    if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
       setPrivateNoStore(res);
       res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
       return;
@@ -1044,7 +1054,7 @@ export function createApp({
       );
       return;
     }
-    if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+    if (!['owner', 'admin', 'rabbi'].includes(session.user.role)) {
       setPrivateNoStore(res);
       res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
       return;
@@ -1879,6 +1889,24 @@ export function createApp({
       ...(clock ? { now: clock } : {}),
     }),
   );
+  app.use(
+    '/api/v1/admin-directory',
+    createAdminDirectoryRouter({
+      pool,
+      config,
+      resolveSession: (req) => sessionFromRequest(req, pool, config),
+      verifyCsrf: async (req, session) => {
+        if (!isSameOriginPost(req, config)) return false;
+        return verifySessionCsrf({
+          pool,
+          sessionKey: session.session_key,
+          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+        });
+      },
+      verifyRecentAssurance: (session) =>
+        verifyRecentEmailAssurance({ pool, sessionKey: session.session_key }),
+    }),
+  );
 
   app.get(/^\/classroom\/launch\/.+$/, (_req, res) => {
     setPrivateNoStore(res);
@@ -2033,7 +2061,7 @@ export function createApp({
     }
     try {
       const occurrenceKey = optionalQueryString(req.query.occurrence_key);
-      if (actor.actor_role === 'owner' || actor.actor_role === 'admin') {
+      if (['owner', 'admin', 'rabbi'].includes(actor.actor_role)) {
         const snapshot = await liveClassService.consoleSnapshot(actor, occurrenceKey);
         res.json(liveClassConsoleSnapshotSchema.parse(snapshot));
         return;
@@ -3117,7 +3145,7 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
-    if (!canReadContentLibrary(session.user.role)) {
+    if (!canUseOwnerDashboard(session.user.role)) {
       res
         .status(403)
         .json(publicError('FORBIDDEN', 'Your role cannot admit content.', req.traceId));
@@ -3860,6 +3888,36 @@ export function createApp({
           contactId: String(req.params.contactId),
           actorUserKey: session.user.user_key,
           reason: payload.reason,
+        }),
+      );
+      if (!result) {
+        res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+        return;
+      }
+      res.json({ success: true, ...result });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/crm/contacts/:contactId/reactivate', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canEditContacts(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role can view CRM contacts only.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const result = await withTiming(req, 'db', () =>
+        reactivateContact({
+          pool,
+          config,
+          contactId: String(req.params.contactId),
+          actorUserKey: session.user.user_key,
         }),
       );
       if (!result) {
@@ -4697,7 +4755,7 @@ async function billingActorFromRequest(
   if (!session) return { actor_key: 'anonymous', role: 'public', active: false };
   return {
     actor_key: session.user.user_key,
-    role: session.user.role,
+    role: session.user.role === 'rabbi' ? 'public' : session.user.role,
     active: true,
   };
 }
@@ -5112,7 +5170,7 @@ function statusForOt110aError(code: string) {
 }
 
 function canReadClasses(role: string) {
-  return role === 'owner' || role === 'admin';
+  return role === 'owner' || role === 'admin' || role === 'rabbi';
 }
 
 function canReadContacts(role: string) {
@@ -5120,7 +5178,7 @@ function canReadContacts(role: string) {
 }
 
 function canReadContentLibrary(role: string) {
-  return role === 'owner' || role === 'admin';
+  return role === 'owner' || role === 'admin' || role === 'rabbi';
 }
 
 function isContentFactoryAdmin(session: AuthenticatedSession) {
@@ -5129,6 +5187,16 @@ function isContentFactoryAdmin(session: AuthenticatedSession) {
 
 function canUseOwnerDashboard(role: string) {
   return role === 'owner' || role === 'admin';
+}
+
+function canUseRabbiTeachingSurface(role: string, path: string) {
+  return (
+    role === 'rabbi' &&
+    (path === '/app/dashboard' ||
+      path === '/app/content' ||
+      path === '/app/classes' ||
+      path.startsWith('/app/classes/'))
+  );
 }
 
 function canUseSocialPublishing(role: string) {
@@ -5380,6 +5448,7 @@ function handleTishaBavRouteError(
 
 function defaultRouteForRole(role: string) {
   if (role === 'owner' || role === 'admin') return '/app/dashboard';
+  if (role === 'rabbi') return '/app/dashboard';
   if (role === 'parent') return '/app/parent';
   if (role === 'student') return '/app/student';
   return '/app/crm';
