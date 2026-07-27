@@ -273,6 +273,18 @@ criteria:
         typecheck,
         build,
       ]
+  - id: SEC-MIGRATION-VERIFY-001
+    track: audit_wave_04_read_only_migration_verification
+    observable: db:migrate is the only migration-apply command; db:verify performs only read queries, validates the ordered file/checksum/prefix inventory against the existing ledger, fails closed on missing/unreadable/mismatched/reordered/pending state, and leaves schema objects plus ledger rows/checksums unchanged.
+    proof:
+      [
+        unit_test,
+        disposable_postgresql_16,
+        schema_fingerprint,
+        ledger_fingerprint,
+        concurrent_apply_serialization,
+        changed_migration_allowlist,
+      ]
   - id: HYGIENE-CENSUS-001
     track: audit_wave_05_preservation_census
     observable: A metadata-only protected census separates One Time, BNA, legacy One Time, and unknown checkouts; records hashed paths, repository identities, status/ref/worktree/stash counts and local-only commit metadata; proves every source status hash unchanged; and performs zero source mutation, PR closure, deletion, reset, prune, stash, or force-push.

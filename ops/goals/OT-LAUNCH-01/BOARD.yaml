@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-27T10:08:29Z
+updated_at: 2026-07-27T10:20:27Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -1477,6 +1477,42 @@ tracks:
     blocker: null
     remaining_work: null
     next_action: 'Preserve the minimized public contract and continue to the repository-only read-only db:verify repair. Production remains denied.'
+
+  - id: audit_wave_04_read_only_migration_verification
+    status: waiting_external
+    window_id: 04-OT-PRODUCT
+    concurrency_lock: OT-PRODUCT-MIGRATION-TOOL
+    owner:
+      task_id: OT-LAUNCH-01-CONVERGENCE-READ-ONLY-MIGRATION-VERIFY
+      repository: shloimie-beep/onetimev2
+      branch: codex/one-time-launch-convergence-20260727
+      pr: 130
+      head: fbf1fccdb2fc891939cbdc165912241814fc4b72
+      system: One Time migration inventory and ledger verification
+    write_scope: 'Migration tool/library split, read-only verification CLI, focused pg-mem proof, and a disposable PostgreSQL-16 workflow; no existing migration SQL, deployment, provider, environment, staging database, or production database change.'
+    handoff_path: .github/workflows/a11-migration-verification.yml
+    dependencies: [audit_wave_04_runtime_classification, goal_system]
+    acceptance_ids: [SEC-MIGRATION-VERIFY-001]
+    evidence:
+      - 'A11-T03 repository source is implemented at exact content head fbf1fccdb2fc891939cbdc165912241814fc4b72. npm run db:verify now invokes a dedicated verifier, while scripts/migrate.ts rejects the legacy --verify alias and remains the only apply command.'
+      - 'The verifier reads the sorted SQL inventory and normalized compatible checksums, rejects invalid names and duplicate numeric prefixes before database access, and issues only one SELECT against an existing ledger. Missing, unreadable, unknown, checksum-mismatched, reordered, and strict pending states fail closed; --allow-pending is explicit inventory-only mode.'
+      - 'Five focused unit tests prove missing and unreadable ledgers, strict pending preservation, all-applied success, checksum mismatch, duplicate prefix, reordered history, LF/CRLF checksum compatibility, SELECT-only query capture, and unchanged schema/ledger snapshots.'
+      - 'The complete local gate passes: 82 unit files/538 tests, 67 integration files/376 tests, typecheck, production build, scoped lint/format/diff checks, and a 2172-file secret scan. All 59 existing migration files are byte-untouched.'
+      - 'The new path-scoped PostgreSQL-16 workflow will independently prove missing-ledger and pending verification leave schema/ledger fingerprints unchanged, checksum mismatch fails, and two concurrent applies remain advisory-lock serialized. Until that exact job passes, this track is waiting_external rather than done.'
+      - 'Staging/production database, deployment, environment, provider, Zoom, HighLevel, send, journal, production, and destructive effects are zero. Only pg-mem/local synthetic fixtures ran before this Board state.'
+    forbidden_behavior:
+      - Let db:verify create a schema/table, execute migration SQL, mutate the ledger, take an advisory/write lock, or silently apply pending work.
+      - Edit an existing migration byte, filename, prefix, order, or accepted checksum rule.
+      - Run the proof against staging or production, deploy, mutate a provider/environment, or treat unrun/failing PostgreSQL CI as acceptance.
+    required_proof:
+      - Strict read-only missing, pending, fully applied, mismatch, duplicate, and reordered verification.
+      - Schema-object and ledger-row/checksum fingerprints unchanged before/after every verify case.
+      - PostgreSQL-16 concurrent apply serialization remains intact under the existing advisory transaction lock.
+      - Full unit/integration gates, typecheck, build, scoped lint/format/diff, secret scan, and zero non-fixture effects.
+    stop_condition: 'Stop if verification requires applying SQL, an existing migration changes, a real staging/production database is requested, or the disposable PostgreSQL job cannot prove unchanged schema and ledger state.'
+    blocker: null
+    remaining_work: 'Accept the exact GitHub PostgreSQL-16 workflow result for content head fbf1fccdb2fc891939cbdc165912241814fc4b72; repair only a repository defect if it fails.'
+    next_action: 'Push PR #130, inspect the path-scoped A11 PostgreSQL job, and mark done only after its immutable passing result. Continue other disjoint repository review while it runs.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external
