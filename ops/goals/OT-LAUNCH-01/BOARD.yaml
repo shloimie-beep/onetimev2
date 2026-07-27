@@ -868,15 +868,15 @@ tracks:
     next_action: 'Preserve runner and /canary volume; do not repeat cleanup. Let 01-OT-CONTROL advance only the diagnostic source and read-only classification dependency chain.'
 
   - id: zoom_scope_mismatch_diagnostic_tool
-    status: blocked
+    status: active
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT
     owner:
-      task_id: OT-LAUNCH-01-ZOOM-SCOPE-MISMATCH-DIAGNOSTIC-TOOL-01
+      task_id: OT-LAUNCH-01-CONVERGENCE-ZOOM-SCOPE-DIAGNOSTIC
       repository: shloimie-beep/onetimev2
-      branch: codex/zoom-disposable-scope-diagnostic-20260727
+      branch: codex/one-time-launch-convergence-20260727
       pr: null
-      head: null
+      head: 8b7ebcfe1e85ea847205b8b9615f255993c46f25
       system: Zoom disposable reconciliation diagnostic source
     write_scope: 'Exact repair-base repository-only diagnostic command, focused tests, and separately gated provider-executor prompt; no provider, deployment, environment, journal, Board, staging, or production mutation.'
     handoff_path: ops/execution-windows/2026-07-27/ZOOM-SCOPE-MISMATCH-DIAGNOSTIC-TASK.md
@@ -885,6 +885,7 @@ tracks:
     evidence:
       - 'PR #125 exact head eeb31101e0d8f8a395a1c3833129b1afde4fd845 supplies only the generic reconciliation-scope mismatch and zero-write counters; it cannot support a safe cleanup retry or predicate relaxation.'
       - 'Repair base 2d22f46a40364c670d20fa197e78ead2a2f79c8e already exposes an internal exact-meeting inspection matrix. The smallest source task adds a redacted mutation-impossible command around that existing inspector without changing any reconciliation predicate.'
+      - 'Runtime dependency audit_wave_04_runtime_classification is accepted at convergence content head 8b7ebcfe1e85ea847205b8b9615f255993c46f25 with the full integration gate green. The OT-PRODUCT lock is released for this diagnostic only.'
     forbidden_behavior:
       - Open Zoom/Railway, deploy, read provider state, change environment variables, append/transition the journal, or execute cleanup.
       - Relax a reconciliation predicate, decide that a mismatch is benign, or expose a raw provider/protected value.
@@ -894,11 +895,9 @@ tracks:
       - Hard request budget with POST/PATCH/DELETE impossible and focused tests for every mismatch/redaction/journal-write denial.
       - Typecheck, scoped formatting, secret scan, diff check, changed-file allowlist, and zero external effects.
     stop_condition: 'Stop if the classifier cannot be mutation-impossible, safe output requires protected data, a predicate must be weakened, exact base 2d22f46a is unavailable, or another writer owns a touched file.'
-    blocker:
-      code: OT_PRODUCT_LOCK_RESERVED_FOR_RUNTIME_CLASSIFICATION
-      reason: 'Queue item Q04-001 is the current assigned OT-PRODUCT task. The diagnostic tool is generated and dependency-complete only after that item is terminal and 01-OT-CONTROL promotes Q04-ZOOM-001.'
-    remaining_work: 'When the product lock is free, implement only the task packet and return the separately gated read-only provider prompt.'
-    next_action: 'Do not start concurrently. 01-OT-CONTROL promotes Q04-ZOOM-001 after Q04-001 is accepted.'
+    blocker: null
+    remaining_work: 'Integrate exact cleanup-reconciliation source 2d22f46 once, then add the mutation-impossible, redacted exact-meeting predicate classifier and focused tests without invoking Zoom.'
+    next_action: 'The convergence conductor implements the repository-only classifier. Do not deploy, inspect provider state, append the journal, repeat cleanup, or create another meeting.'
 
   - id: bna_foundation
     status: done
@@ -1363,17 +1362,17 @@ tracks:
     next_action: 'Preserve PR #123 as read-only evidence; continue the same 03-OT-GHL window only with the separately assigned repository-design queue item.'
 
   - id: audit_wave_03_ghl_sender_design
-    status: active
+    status: done
     window_id: 03-OT-GHL
     concurrency_lock: GHL-REPOSITORY
     owner:
-      task_id: OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN-PORTABILITY-REPAIR
+      task_id: OT-LAUNCH-01-CONVERGENCE-GHL-SENDER-DESIGN
       repository: shloimie-beep/onetimev2
-      branch: codex/ghl-rabbi-launch-email-design-portability-20260727
+      branch: codex/one-time-launch-convergence-20260727
       pr: null
-      head: 0fc24128dfb9f5d512c1915ad61bb9c6b3568042
-      system: HighLevel sender-design prompt-fingerprint portability repair
-    write_scope: 'Exact PR #126 semantic design plus only the canonical prompt-fingerprint helper, LF/CRLF/CR portability test, regenerated projections, and updated sanitized handoff; no provider/browser work or design expansion.'
+      head: 8b7ebcfe1e85ea847205b8b9615f255993c46f25
+      system: HighLevel sender design and prompt-fingerprint portability
+    write_scope: 'Semantically integrated PR #126 design and PR #127 portability proof, the operator-fixed Rabbi campaign identity, regenerated projections, focused tests, and a sanitized separately gated GHL-UI-24 handoff; no provider/browser work or send.'
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
     dependencies: [audit_wave_03_ghl_full_inventory, goal_system]
     acceptance_ids: [GHL-SENDER-DESIGN-001]
@@ -1382,6 +1381,9 @@ tracks:
       - 'The conductor adopts post-checkpoint sender packet 53a18e771488c61cf271cb33a0bcacee2c7135f4 only for this repository-only re-authoring task. PR #116 remains forbidden and must not be merged or cherry-picked.'
       - 'Draft PR #126 exact result commit 0fc24128dfb9f5d512c1915ad61bb9c6b3568042 is a single 11-file repository-only attempt from assignment head 1e2e14812db179562f503f4818aeca9b099d5c56. Its Phase-1-safe OT-02A migration and separately consented OT-02B nurture semantics, office From/Reply-To routing, unchanged zero-send GHL-UI-13, separately gated GHL-UI-24, focused tests, and sanitized handoff are within assigned scope.'
       - 'Independent control validation rejects terminal acceptance because the new refreshPromptFingerprints helper hashes raw file text. On the Windows CRLF checkout, the canonical projection check failed at current.json line 5044 and rewrote every prompt fingerprint; the exact result therefore violates the existing LF/CRLF portability contract. Focused sender/design tests passed 3/3, typecheck and secret scan passed, and three GitHub assurance suites are green. PR #126 Node CI stopped earlier only on the twelve checksum-governed A01-A12 source snapshots, so it did not expose this projection defect.'
+      - 'PR #127 semantic source 3a9f953ae132bab32d352a3014d4260f46995758 canonicalizes prompt text before hashing and proves LF, CRLF, and CR portability. The convergence branch integrates that source with PR #126 once; projection check passes with byte-identical generated outputs.'
+      - 'The operator-fixed post-acceptance campaign identity is Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>, Reply-To info@onetimeonetime.com, using the same governed GHL Conversations route with no separately monitored second inbox. The current info@ From remains only a fallback until provider acceptance. This is no longer a product-decision gate and grants no send authority.'
+      - 'Exact convergence content head 8b7ebcfe1e85ea847205b8b9615f255993c46f25 passes sender/portability focused tests, generated-projection convergence, scoped formatting, typecheck, build, the full 375-test integration gate, and a 2164-file secret scan. The registry still fails closed only on the pre-existing exhaustive GitHub workflow-control inventory contract; canonical sender/message-class coverage and prompt SHA checks pass.'
       - 'HighLevel access/mutations, customer messages, contacts changed, enrollments, publications, activations, deletes/quarantines, Stripe mutations, access mutations, production changes, and provider mutations all equal zero. Existing OT-E01, archived, hidden-AI, campaign, and inventory fail-closed findings remain unchanged.'
     forbidden_behavior:
       - Open or mutate HighLevel; send, enroll, publish, activate, import, create or change contacts, select an audience, or run a provider canary.
@@ -1395,20 +1397,21 @@ tracks:
       - External effects remain zero across HighLevel, customer messages, contacts, enrollments, Stripe, access, production, and provider systems.
     stop_condition: 'Stop without implementation if the PR #123 unknowns change sender or assistant identity, mailbox/routing ownership must be invented, final copy cannot map to one exact message class, or protected/customer data would enter Git.'
     blocker: null
-    remaining_work: 'Queue item Q03-002R must preserve PR #126 semantics, canonicalize prompt text before hashing, add LF/CRLF/CR proof, regenerate projections through the canonical script, and return zero external effects.'
-    next_action: '03-OT-GHL claims Q03-002R from the remote queue and repairs only prompt-fingerprint portability. Do not open HighLevel or advance to GHL-UI-24.'
+    remaining_work: null
+    next_action: 'Preserve this repository design. Do not open HighLevel or run GHL-UI-24 until provider acceptance, same-Conversations routing, one protected operator-owned destination, and exact APPROVE SEND authority are all separately proven.'
 
   - id: audit_wave_04_runtime_classification
-    status: active
+    status: done
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT
     owner:
-      task_id: OT-LAUNCH-01-W04-RUNTIME-CLASSIFICATION-REGRESSION-REPAIR
+      task_id: OT-LAUNCH-01-CONVERGENCE-RUNTIME-CLASSIFICATION
       repository: shloimie-beep/onetimev2
-      branch: codex/w04-runtime-classification-regression-repair-20260727
+      branch: codex/one-time-launch-convergence-20260727
       pr: null
+      head: 8b7ebcfe1e85ea847205b8b9615f255993c46f25
       system: One Time canonical runtime and deployment classification
-    write_scope: 'Preserve PR #128 runtime semantics; update only tests/integration/experience-preview.test.ts and tests/integration/security/provider-boundaries.test.ts to assert the canonical mixed-classification loadConfig boundary.'
+    write_scope: 'Semantically integrated PR #128 and PR #129, repaired the canonical runtime matrix and all audited production-sensitive guards, expanded allowed/forbidden tuple proof, and corrected stale production test fixtures; no deployment, provider, database, or production action.'
     handoff_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-runtime-regression-repair.md
     dependencies: [goal_system]
     acceptance_ids: [SEC-RUNTIME-001]
@@ -1416,6 +1419,9 @@ tracks:
       - 'A11-P1-02 remains current because e986b5e..53a18e7 changed only sender governance files; the audited application/config sources are unchanged.'
       - 'A11-T01 is the first sequential OT-PRODUCT repair and requires no provider, deployment, production, customer, or database mutation.'
       - 'Draft PR #128 exact head bdc29725ce253f408d39a2c32120b0628f68721c passed its 28 focused runtime/config unit tests, two runtime-version integration tests, typecheck, formatting, lint, and secret scan. GitHub Node CI then failed two pre-existing integration assertions because the new canonical DELIVERY_ENVIRONMENT/ONE_TIME_RUNTIME_ENVIRONMENT mismatch guard throws at loadConfig before their older downstream messages; build and browser gates were skipped, so Q04-001 is not accepted.'
+      - 'PR #129 exact head f602a6e includes the regression expectation repair and all GitHub suites are green, but independent convergence review found production-sensitive branches still reading NODE_ENV directly and an incomplete tuple matrix.'
+      - 'Exact convergence content head 8b7ebcfe1e85ea847205b8b9615f255993c46f25 permits only development/local or isolated_staging, test/test or isolated_staging, and production/isolated_staging or production. Provider actions, secure cookies, CSRF/MFA production secrets, Telegram and Resend webhooks, OT-89 delivery, migration startup, and demo/fake behavior all use the canonical runtime classification.'
+      - 'Focused runtime, runtime-version, and auth-boundary proof passes alongside typecheck, build, formatting, the complete 67-file/375-test integration gate, and the 2164-file secret scan. No real environment value or credential was read or written.'
     forbidden_behavior:
       - Read or commit real environment values, protected destinations, credentials, or provider identifiers.
       - Activate a provider, deploy, touch production, edit migrations, edit BOARD.yaml, or broaden into A11-T02 through T07.
@@ -1426,8 +1432,8 @@ tracks:
       - Focused unit/integration tests, typecheck, build, scoped Prettier, secret scan, diff check, and a short operator manual-smoke checklist.
     stop_condition: 'Stop if a real secret/environment value is needed, another writer owns either source file, production behavior requires an unresolved operator decision, or the repair would activate a provider.'
     blocker: null
-    remaining_work: 'Queue item Q04-001R must preserve PR #128 runtime behavior, update only the two stale integration assertions to the canonical loadConfig boundary, and pass the focused plus full integration/build gates without external effects.'
-    next_action: '04-OT-PRODUCT claims Q04-001R from the remote queue and performs only the two-test compatibility repair. Do not change config/runtime source or advance to Q04-ZOOM-001.'
+    remaining_work: null
+    next_action: 'Release the OT-PRODUCT dependency and implement only the mutation-impossible Zoom scope diagnostic source. Production remains denied.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external
