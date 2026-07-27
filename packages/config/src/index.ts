@@ -57,12 +57,62 @@ const OT89_KNOWN_TEST_VALUES = new Set([
 
 const deliveryEnvironmentSchema = z.enum(['local', 'test', 'isolated_staging', 'production']);
 
+export type OneTimeRuntimeEnvironment = z.infer<typeof deliveryEnvironmentSchema>;
+
+export type RuntimeClassification = {
+  environment: OneTimeRuntimeEnvironment;
+  isProductionRuntime: boolean;
+  requiresSecureCookies: boolean;
+  allowsMockOrDemo: boolean;
+  allowsProviderActions: boolean;
+  allowsStartupMigrations: boolean;
+};
+
 function defaultDeliveryEnvironment(
   nodeEnv: 'development' | 'test' | 'production',
 ): 'local' | 'test' | 'production' {
   if (nodeEnv === 'test') return 'test';
   if (nodeEnv === 'production') return 'production';
   return 'local';
+}
+
+export function classifyRuntime(input: {
+  nodeEnv: 'development' | 'test' | 'production';
+  deliveryEnvironment?: OneTimeRuntimeEnvironment | undefined;
+  oneTimeRuntimeEnvironment?: OneTimeRuntimeEnvironment | undefined;
+}): RuntimeClassification {
+  const { nodeEnv, deliveryEnvironment, oneTimeRuntimeEnvironment } = input;
+  if (
+    deliveryEnvironment &&
+    oneTimeRuntimeEnvironment &&
+    deliveryEnvironment !== oneTimeRuntimeEnvironment
+  ) {
+    throw new Error(
+      'DELIVERY_ENVIRONMENT and ONE_TIME_RUNTIME_ENVIRONMENT must name the same runtime.',
+    );
+  }
+
+  const environment =
+    oneTimeRuntimeEnvironment ?? deliveryEnvironment ?? defaultDeliveryEnvironment(nodeEnv);
+  const allowedByNodeEnv: Record<typeof nodeEnv, readonly OneTimeRuntimeEnvironment[]> = {
+    development: ['local', 'isolated_staging'],
+    test: ['local', 'test', 'isolated_staging', 'production'],
+    production: ['isolated_staging', 'production'],
+  };
+  if (!allowedByNodeEnv[nodeEnv].includes(environment)) {
+    throw new Error(
+      `Invalid runtime tuple: NODE_ENV=${nodeEnv} cannot run ${environment}; use one of ${allowedByNodeEnv[nodeEnv].join(', ')}.`,
+    );
+  }
+
+  return {
+    environment,
+    isProductionRuntime: environment === 'production',
+    requiresSecureCookies: nodeEnv === 'production' || environment === 'production',
+    allowsMockOrDemo: environment !== 'production',
+    allowsProviderActions: environment === 'test' || environment === 'isolated_staging',
+    allowsStartupMigrations: environment === 'test',
+  };
 }
 
 const envSchema = z.object({
@@ -249,8 +299,12 @@ export type AppConfig = ReturnType<typeof loadConfig>;
 
 export function loadConfig(source: NodeJS.ProcessEnv) {
   const parsed = envSchema.parse(source);
-  const deliveryEnvironment =
-    parsed.DELIVERY_ENVIRONMENT ?? defaultDeliveryEnvironment(parsed.NODE_ENV);
+  const runtime = classifyRuntime({
+    nodeEnv: parsed.NODE_ENV,
+    deliveryEnvironment: parsed.DELIVERY_ENVIRONMENT,
+    oneTimeRuntimeEnvironment: parsed.ONE_TIME_RUNTIME_ENVIRONMENT,
+  });
+  const deliveryEnvironment = runtime.environment;
   const canonicalZoomS2sAccountId = parsed.ZOOM_S2S_ACCOUNT_ID?.trim() || undefined;
   const legacyZoomS2sAccountId = parsed.ZOOM_ACCOUNT_ID?.trim() || undefined;
   const zoomS2sAccountId = canonicalZoomS2sAccountId ?? legacyZoomS2sAccountId;
@@ -266,8 +320,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Real transports are outside this task and must remain disabled.');
   }
 
-  const oneTimeRuntimeEnvironment =
-    parsed.ONE_TIME_RUNTIME_ENVIRONMENT ?? (parsed.NODE_ENV === 'test' ? 'test' : 'local');
+  const oneTimeRuntimeEnvironment = runtime.environment;
   const portalTestLabRuntimeAllowed =
     ['isolated_staging', 'test'].includes(deliveryEnvironment) &&
     ['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment);
@@ -295,20 +348,16 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Production delivery provider mode requires a separate exact authorization.');
   }
 
-  if (
-    parsed.DELIVERY_PROVIDER_MODE === 'provider' &&
-    oneTimeRuntimeEnvironment !== 'test' &&
-    oneTimeRuntimeEnvironment !== 'isolated_staging'
-  ) {
+  if (parsed.DELIVERY_PROVIDER_MODE === 'provider' && !runtime.allowsProviderActions) {
     throw new Error('Delivery provider mode is limited to test or isolated_staging.');
   }
 
-  if (
-    parsed.ZOOM_CLASSROOM_CANARY_ENABLED &&
-    parsed.NODE_ENV !== 'test' &&
-    oneTimeRuntimeEnvironment !== 'isolated_staging'
-  ) {
+  if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && !runtime.allowsProviderActions) {
     throw new Error('Zoom canary execution is limited to test or isolated_staging.');
+  }
+
+  if (parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' && !runtime.allowsProviderActions) {
+    throw new Error('HighLevel provider event sync is limited to test or isolated_staging.');
   }
 
   if (
@@ -383,8 +432,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     }
   }
 
-  if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
-    throw new Error('Production web startup cannot run migrations automatically.');
+  if (parsed.RUN_MIGRATIONS_ON_STARTUP && !runtime.allowsStartupMigrations) {
+    throw new Error('Web startup migrations are limited to the test runtime.');
   }
 
   if (
@@ -413,11 +462,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     );
   }
 
-  if (
-    parsed.NODE_ENV === 'production' &&
-    deliveryEnvironment === 'production' &&
-    parsed.LEARNING_DELIVERY_DEMO_ENABLED
-  ) {
+  if (parsed.LEARNING_DELIVERY_DEMO_ENABLED && !runtime.allowsMockOrDemo) {
     throw new Error('Learning Delivery demo is forbidden in production.');
   }
 
@@ -431,10 +476,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     );
   }
 
-  if (
-    parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED &&
-    (deliveryEnvironment === 'production' || oneTimeRuntimeEnvironment === 'production')
-  ) {
+  if (parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED && !runtime.allowsMockOrDemo) {
     throw new Error('Live class fake adapter is forbidden in production.');
   }
 
@@ -511,6 +553,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   return {
     nodeEnv: parsed.NODE_ENV,
+    runtime,
     deliveryEnvironment,
     isProduction: parsed.NODE_ENV === 'production',
     port: parsed.PORT,
