@@ -1598,7 +1598,7 @@ tracks:
     next_action: 'Preserve the constant bearer-free route and server-side one-time grant consumption. Continue to the repository-only three-active-learner transaction cap; keep Zoom and production disabled.'
 
   - id: audit_wave_04_three_active_learner_enforcement
-    status: waiting_external
+    status: done
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT-PORTAL
     owner:
@@ -1606,7 +1606,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/one-time-launch-convergence-20260727
       pr: 130
-      head: 8771167efec0c1af3156ef8538348024a52523d6
+      head: cd3f3a5b37c7d684a3c28c6b9473566fc1a7892b
       system: One Time Parent/Student household portal
     write_scope: 'Portal repository/service household projection, create/reactivate transaction limits, typed errors, synthetic pg-mem and disposable PostgreSQL concurrency proof, OT-83 acceptance correction, and sanitized Board/PR evidence. No customer/Student identity readback, provider, send, deployment, environment, persistent/staging/production database, production, migration, or destructive change.'
     handoff_path: packages/db/src/portals/repository.ts
@@ -1624,7 +1624,10 @@ tracks:
       - 'Content commit 8771167efec0c1af3156ef8538348024a52523d6 enforces create and inactive-to-active admission after the exact household row lock, rechecks idempotency inside that lock, and returns typed LEARNER_LIMIT_REACHED before learner, access, audit, or idempotency writes.'
       - 'The household projection now reports max_active_learners 3 and learner_limit_reached at active_learner_count >= 3; the preview provisioner now verifies fourth-seat rejection instead of creating and archiving a fourth learner.'
       - 'Synthetic pg-mem proof covers create, archive, restore, replay, credential lifecycle, household scope, and a compliant three-learner classroom launch. Local exact gates passed: 10 portal service tests, 10 classroom tests, 18 experience-preview tests, 547 unit tests, 388 integration tests, typecheck, build, lint, scoped formatting, 2174-file secret scan, diff, governance, and projection convergence.'
-      - 'Disposable PostgreSQL and exact-head GitHub validation are pending on runs CI 30265335291, OT-83 30265335280, A11 30265335398, OT-37 30265335312, OPS-11 30265335304, and OPS-06 30265335381. No current-data census or external mutation was performed.'
+      - 'Acceptance repair cd3f3a5b37c7d684a3c28c6b9473566fc1a7892b replaces the stale unlimited-learner browser assertion with the exact cap journey: fourth create is rejected without a partial learner, archive frees one seat, a replacement succeeds, and restore is rejected while the household remains at three.'
+      - 'At exact acceptance head cd3f3a5b37c7d684a3c28c6b9473566fc1a7892b, CI 30266314131, A11 Read-only Migration Verification 30266314147, OT-83 PostgreSQL Concurrency 30266314118, OT-37 PostgreSQL Assurance 30266314099, OPS-11 PostgreSQL 18 Assurance 30266314133, and OPS-06 Reliability Observability 30266314092 all completed success.'
+      - 'The sanitized OT-83 artifact proves one final-seat winner and one LEARNER_LIMIT_REACHED rejection with three active learners; rejected restore writes no idempotency row, exactly one successful restore audit remains, a synthetic four-active legacy state reports reached=true and stays unchanged, and cross-household access returns NOT_FOUND.'
+      - 'No current-data legacy census was performed. Customer/Student identities, provider access, sends, deployments, environment changes, journal changes, persistent/staging/production database access, production actions, and destructive actions all remain zero.'
     forbidden_behavior:
       - Read or expose customer/Student identities, automatically remediate an over-limit household, or delete/archive/suspend/restore/reassign any legacy learner.
       - Permit a create or inactive-to-active transition when the exact locked household already has three or more active learners, or perform partial learner/access/audit/idempotency writes on rejection.
@@ -1638,8 +1641,8 @@ tracks:
       - Focused tests, disposable PostgreSQL proof, full unit/integration gates, typecheck, build, lint, scoped formatting, diff/secret/governance/projection checks, and zero external effects.
     stop_condition: 'Stop if the code repair requires current customer/Student data, any legacy identity would enter evidence, a learner mutation is proposed as remediation, or a persistent/staging/production database, provider, send, deployment, production, migration, or destructive action is required.'
     blocker: null
-    remaining_work: 'Accept only after all six exact-head workflows pass, including the disposable PostgreSQL final-seat race and no-partial-write proof; keep the separate aggregate legacy-state readback unexecuted.'
-    next_action: 'Re-read exact-head GitHub results for PR #130, inspect the OT-83 disposable PostgreSQL report, and either accept this code batch or record the smallest exact repair.'
+    remaining_work: null
+    next_action: 'Preserve the accepted three-active-learner transaction boundary. Keep the separate aggregate current-data census unexecuted until a protected read is explicitly assigned; if any over-limit household exists, require an operator decision and never auto-remediate.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external
