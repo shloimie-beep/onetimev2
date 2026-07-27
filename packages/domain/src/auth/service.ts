@@ -134,6 +134,296 @@ export function verifyPassword(password: string, storedHash: string) {
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
+export type PasswordChangeResult =
+  | {
+      ok: true;
+      sessions_invalidated: number;
+      password_updated_at: string;
+    }
+  | {
+      ok: false;
+      code:
+        | 'INVALID_CURRENT_PASSWORD'
+        | 'PASSWORD_REUSE'
+        | 'PASSWORD_POLICY_FAILED'
+        | 'RATE_LIMITED'
+        | 'ACCOUNT_UNAVAILABLE';
+      retry_after_seconds?: number;
+    };
+
+export async function changeOwnPassword({
+  pool,
+  config,
+  session,
+  currentPassword,
+  newPassword,
+  ip,
+  userAgent,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  session: AuthenticatedSession;
+  currentPassword: string;
+  newPassword: string;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+}): Promise<PasswordChangeResult> {
+  if (
+    newPassword.length < 10 ||
+    newPassword.length > 256 ||
+    !/[A-Za-z]/u.test(newPassword) ||
+    !/[0-9]/u.test(newPassword)
+  ) {
+    return { ok: false, code: 'PASSWORD_POLICY_FAILED' };
+  }
+  const rateLimit = await consumeRateLimitBudgets({
+    pool,
+    config,
+    budgets: [
+      {
+        scope: 'password_change_user',
+        subject: session.user.user_key,
+        limit: 8,
+        windowMs: config.loginRateLimitWindowMs,
+      },
+      {
+        scope: 'password_change_ip',
+        subject: ip ?? 'unknown',
+        limit: 24,
+        windowMs: config.loginRateLimitWindowMs,
+      },
+    ],
+  });
+  if (!rateLimit.allowed) {
+    await insertAuthAudit(pool, config, {
+      eventType: 'password_change_rate_limited',
+      userKey: session.user.user_key,
+      success: false,
+      reason: 'RATE_LIMITED',
+      ip,
+      userAgent,
+    });
+    return {
+      ok: false,
+      code: 'RATE_LIMITED',
+      ...(rateLimit.retryAfterSeconds ? { retry_after_seconds: rateLimit.retryAfterSeconds } : {}),
+    };
+  }
+
+  return inTransaction(pool, async (client) => {
+    const userResult = await client.query(
+      `SELECT user_key, role, status, password_hash, security_version
+         FROM onetime.account_users
+        WHERE account_key = $1
+          AND product_key = $2
+          AND user_key = $3
+        FOR UPDATE`,
+      [config.accountKey, config.productKey, session.user.user_key],
+    );
+    const user = userResult.rows[0] as Record<string, unknown> | undefined;
+    if (
+      !user ||
+      user.status !== 'active' ||
+      user.role !== session.user.role ||
+      typeof user.password_hash !== 'string'
+    ) {
+      await insertAuthAudit(client, config, {
+        eventType: 'password_change_failed',
+        userKey: session.user.user_key,
+        success: false,
+        reason: 'ACCOUNT_UNAVAILABLE',
+        ip,
+        userAgent,
+      });
+      return { ok: false, code: 'ACCOUNT_UNAVAILABLE' } as const;
+    }
+    const currentSession = await client.query(
+      `SELECT session_key
+         FROM onetime.user_sessions
+        WHERE account_key = $1
+          AND product_key = $2
+          AND user_key = $3
+          AND session_key = $4
+          AND revoked_at IS NULL
+          AND expires_at > now()
+        FOR UPDATE`,
+      [config.accountKey, config.productKey, session.user.user_key, session.session_key],
+    );
+    if (!currentSession.rowCount) {
+      await insertAuthAudit(client, config, {
+        eventType: 'password_change_failed',
+        userKey: session.user.user_key,
+        success: false,
+        reason: 'ACCOUNT_UNAVAILABLE',
+        ip,
+        userAgent,
+      });
+      return { ok: false, code: 'ACCOUNT_UNAVAILABLE' } as const;
+    }
+
+    let studentAccess: Record<string, unknown> | undefined;
+    let currentPasswordValid = verifyPassword(currentPassword, user.password_hash);
+    if (session.user.role === 'student') {
+      const accessResult = await client.query(
+        `SELECT access_state_key, learner_key, password_hash_ref, status, credential_status
+           FROM onetime.portal_student_access_state
+          WHERE account_key = $1
+            AND product_key = $2
+            AND student_user_ref = $3
+          ORDER BY updated_at DESC, access_state_key ASC
+          FOR UPDATE`,
+        [config.accountKey, config.productKey, session.user.user_key],
+      );
+      studentAccess =
+        accessResult.rows.length === 1
+          ? (accessResult.rows[0] as Record<string, unknown>)
+          : undefined;
+      if (
+        !studentAccess ||
+        studentAccess.status !== 'active' ||
+        studentAccess.credential_status !== 'parent_managed' ||
+        typeof studentAccess.password_hash_ref !== 'string'
+      ) {
+        await insertAuthAudit(client, config, {
+          eventType: 'password_change_failed',
+          userKey: session.user.user_key,
+          success: false,
+          reason: 'ACCOUNT_UNAVAILABLE',
+          ip,
+          userAgent,
+        });
+        return { ok: false, code: 'ACCOUNT_UNAVAILABLE' } as const;
+      }
+      currentPasswordValid = verifyStudentPasswordHashRef(
+        currentPassword,
+        studentAccess.password_hash_ref,
+      );
+    }
+
+    if (!currentPasswordValid) {
+      await insertAuthAudit(client, config, {
+        eventType: 'password_change_failed',
+        userKey: session.user.user_key,
+        success: false,
+        reason: 'INVALID_CURRENT_PASSWORD',
+        ip,
+        userAgent,
+      });
+      return { ok: false, code: 'INVALID_CURRENT_PASSWORD' } as const;
+    }
+
+    const reusesCurrentPassword =
+      session.user.role === 'student' && studentAccess
+        ? verifyStudentPasswordHashRef(newPassword, String(studentAccess.password_hash_ref))
+        : verifyPassword(newPassword, user.password_hash);
+    if (reusesCurrentPassword) {
+      await insertAuthAudit(client, config, {
+        eventType: 'password_change_failed',
+        userKey: session.user.user_key,
+        success: false,
+        reason: 'PASSWORD_REUSE',
+        ip,
+        userAgent,
+      });
+      return { ok: false, code: 'PASSWORD_REUSE' } as const;
+    }
+
+    const now = new Date();
+    const securityVersion = Number(user.security_version ?? 1) + 1;
+    await client.query(
+      `UPDATE onetime.account_users
+          SET password_hash = $1,
+              password_updated_at = $2,
+              security_version = $3,
+              security_policy_updated_at = $2,
+              updated_at = $2
+        WHERE account_key = $4
+          AND product_key = $5
+          AND user_key = $6`,
+      [
+        hashPassword(newPassword),
+        now,
+        securityVersion,
+        config.accountKey,
+        config.productKey,
+        session.user.user_key,
+      ],
+    );
+
+    if (session.user.role === 'student' && studentAccess) {
+      await client.query(
+        `UPDATE onetime.portal_student_access_state
+            SET password_hash_ref = $1,
+                password_version = password_version + 1,
+                security_version = security_version + 1,
+                last_reset_at = $2,
+                last_parent_actor_ref = NULL,
+                updated_at = $2
+          WHERE account_key = $3
+            AND product_key = $4
+            AND access_state_key = $5
+            AND student_user_ref = $6`,
+        [
+          studentPasswordHashRef(newPassword),
+          now,
+          config.accountKey,
+          config.productKey,
+          studentAccess.access_state_key,
+          session.user.user_key,
+        ],
+      );
+    }
+
+    const revoked = await client.query(
+      `UPDATE onetime.user_sessions
+          SET revoked_at = COALESCE(revoked_at, $1)
+        WHERE account_key = $2
+          AND product_key = $3
+          AND user_key = $4
+          AND session_key <> $5
+          AND revoked_at IS NULL
+        RETURNING session_key`,
+      [now, config.accountKey, config.productKey, session.user.user_key, session.session_key],
+    );
+    await client.query(
+      `UPDATE onetime.user_sessions
+          SET security_version = $1,
+              last_seen_at = $2
+        WHERE account_key = $3
+          AND product_key = $4
+          AND user_key = $5
+          AND session_key = $6
+          AND revoked_at IS NULL`,
+      [
+        securityVersion,
+        now,
+        config.accountKey,
+        config.productKey,
+        session.user.user_key,
+        session.session_key,
+      ],
+    );
+    const sessionsInvalidated = revoked.rowCount ?? revoked.rows.length;
+    await insertAuthAudit(client, config, {
+      eventType: 'password_changed',
+      userKey: session.user.user_key,
+      success: true,
+      ip,
+      userAgent,
+      metadata: {
+        session_key: session.session_key,
+        sessions_invalidated: sessionsInvalidated,
+        role: session.user.role,
+      },
+    });
+    return {
+      ok: true,
+      sessions_invalidated: sessionsInvalidated,
+      password_updated_at: now.toISOString(),
+    } as const;
+  });
+}
+
 export async function createAccountUser({
   pool,
   config,
@@ -1769,6 +2059,12 @@ function verifyStudentPasswordHashRef(password: string, storedHashRef: string) {
 
 function studentPasswordHashRefForTestsOnly(password: string) {
   const salt = 'dummy-student-password-salt-v1';
+  const derived = scryptSync(password, salt, 32).toString('base64url');
+  return `scrypt:v1:${salt}:${derived}`;
+}
+
+function studentPasswordHashRef(password: string) {
+  const salt = randomBytes(32).toString('hex');
   const derived = scryptSync(password, salt, 32).toString('base64url');
   return `scrypt:v1:${salt}:${derived}`;
 }

@@ -22,6 +22,7 @@ import {
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
+  changeOwnPassword,
   createParentRewardGoal,
   createParentLearner,
   getParentAccessShell,
@@ -118,6 +119,15 @@ function PortalApp() {
   useEffect(() => {
     void load();
   }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      setActiveSection(portalSectionFromLocation(portalRole));
+      document.getElementById('app-main')?.focus();
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [portalRole]);
 
   useEffect(() => {
     if (!parentDashboard || !selectedLearner) return;
@@ -499,6 +509,22 @@ function PortalApp() {
     }
   }
 
+  async function handlePasswordChange(input: { currentPassword: string; newPassword: string }) {
+    if (!session) throw new Error('Please sign in again.');
+    try {
+      const result = await changeOwnPassword({
+        csrfToken: session.csrf_token,
+        currentPassword: input.currentPassword,
+        newPassword: input.newPassword,
+      });
+      setNotice({ kind: 'success', message: 'Password changed securely.' });
+      return result;
+    } catch (error) {
+      if (handleAuthError(error)) throw error;
+      throw error;
+    }
+  }
+
   function handleLoadError(error: unknown) {
     if (handleAuthError(error)) return;
     setNotice({ kind: 'error', message: errorMessage(error, 'Portal could not load.') });
@@ -519,7 +545,9 @@ function PortalApp() {
   }
 
   function signIn() {
-    window.location.assign(`/login?return_to=${encodeURIComponent(location.pathname)}`);
+    window.location.assign(
+      `/login?return_to=${encodeURIComponent(`${location.pathname}${location.search}`)}`,
+    );
   }
 
   async function logout() {
@@ -535,13 +563,6 @@ function PortalApp() {
   }
 
   const navItems = useMemo<ShellNavItem[]>(() => {
-    if (portalRole === 'parent' && parentAccessShell?.mode === 'paused') {
-      return [
-        { id: 'parent-identity', label: 'Identity', href: '#identity', current: true },
-        { id: 'parent-recovery', label: 'Recovery', href: '#recovery', current: false },
-        { id: 'parent-support', label: 'Support', href: '/app/support', current: false },
-      ];
-    }
     const sections = portalRole === 'parent' ? PARENT_PORTAL_SECTIONS : STUDENT_PORTAL_SECTIONS;
     const route = portalRole === 'parent' ? '/app/parent' : '/app/student';
     return sections.map((section) => ({
@@ -550,7 +571,7 @@ function PortalApp() {
       href: `${route}?section=${section.id}`,
       current: activeSection === section.id,
     }));
-  }, [activeSection, parentAccessShell?.mode, portalRole]);
+  }, [activeSection, portalRole]);
   const title = portalRole === 'parent' ? 'Parent Portal' : 'Student Portal';
   const description =
     portalRole === 'parent'
@@ -566,6 +587,11 @@ function PortalApp() {
       workspaceClassName="app-workspace--portal"
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
+        if (href.startsWith('#')) {
+          history.pushState({}, '', href);
+          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
         const target = new URL(href, location.origin);
         const section = target.searchParams.get('section');
         if (
@@ -588,6 +614,17 @@ function PortalApp() {
         parentAccessShell?.mode === 'paused' ? (
           <ParentPausedShell
             displayName={parentAccessShell.display_name}
+            activeSection={activeSection as ParentPortalSection}
+            accountSecurity={
+              session ? (
+                <AccountSecurityPanel
+                  identifier={session.user.email}
+                  role={session.user.role}
+                  roleLabel={session.user.role_label}
+                  onChangePassword={handlePasswordChange}
+                />
+              ) : null
+            }
             onRecovery={async () => {
               if (!session) return;
               try {
@@ -633,6 +670,16 @@ function PortalApp() {
             onPreviewSupport={() => window.location.assign('/app/support')}
             onCreateRewardGoal={(learnerKey, goal) => void handleCreateRewardGoal(learnerKey, goal)}
             onRetry={() => void load()}
+            accountSecurity={
+              session ? (
+                <AccountSecurityPanel
+                  identifier={session.user.email}
+                  role={session.user.role}
+                  roleLabel={session.user.role_label}
+                  onChangePassword={handlePasswordChange}
+                />
+              ) : null
+            }
           />
         )
       ) : (
@@ -659,6 +706,16 @@ function PortalApp() {
           }
           onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
+          accountSecurity={
+            session ? (
+              <AccountSecurityPanel
+                identifier={session.user.email}
+                role={session.user.role}
+                roleLabel={session.user.role_label}
+                onChangePassword={handlePasswordChange}
+              />
+            ) : null
+          }
         />
       )}
       <PortalDialogRenderer
@@ -681,11 +738,49 @@ function PortalApp() {
 
 function ParentPausedShell({
   displayName,
+  activeSection,
+  accountSecurity,
   onRecovery,
 }: {
   displayName: string;
+  activeSection: ParentPortalSection;
+  accountSecurity: React.ReactNode;
   onRecovery: () => void | Promise<void>;
 }) {
+  if (activeSection !== 'learners' && activeSection !== 'billing') {
+    return (
+      <section className="ot-portal-feature" aria-labelledby="paused-parent-title">
+        <div className="ot-panel">
+          <p className="ot-eyebrow">Parent portal</p>
+          <h2 id="paused-parent-title">{parentSectionLabel(activeSection)}</h2>
+          <p>
+            Learning access is paused, so this private area is unavailable. Your Parent identity
+            remains active; open Learners for account recovery or Billing for the access
+            explanation.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (activeSection === 'billing') {
+    return (
+      <section className="ot-portal-feature" aria-labelledby="paused-parent-title">
+        <div className="ot-panel">
+          <p className="ot-eyebrow">Billing</p>
+          <h2 id="paused-parent-title">Learning access is paused</h2>
+          <p>
+            Current paid or complimentary access is not active. No learning content is available
+            until access is restored.
+          </p>
+          <a className="ot-button ot-button--secondary" href="/app/support">
+            Contact Support
+          </a>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="ot-portal-feature" aria-labelledby="paused-parent-title">
       <div className="ot-panel" id="identity">
@@ -707,6 +802,7 @@ function ParentPausedShell({
           Send reset link
         </button>
       </div>
+      <div id="account-security">{accountSecurity}</div>
       <div className="ot-panel">
         <h3>Support</h3>
         <p>Support remains available while learning access is paused.</p>
@@ -716,6 +812,163 @@ function ParentPausedShell({
       </div>
     </section>
   );
+}
+
+function parentSectionLabel(section: ParentPortalSection) {
+  return PARENT_PORTAL_SECTIONS.find((entry) => entry.id === section)?.label ?? 'Parent portal';
+}
+
+function AccountSecurityPanel({
+  identifier,
+  role,
+  roleLabel,
+  onChangePassword,
+}: {
+  identifier: string;
+  role: SessionUser['role'];
+  roleLabel: string;
+  onChangePassword: (input: {
+    currentPassword: string;
+    newPassword: string;
+  }) => Promise<{ sessions_invalidated: number }>;
+}) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<{ kind: 'success' | 'error'; message: string } | null>(null);
+  const passwordReady =
+    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const canSubmit =
+    !saving &&
+    currentPassword.length > 0 &&
+    passwordReady &&
+    newPassword === confirmPassword &&
+    newPassword !== currentPassword;
+
+  return (
+    <section className="ot-subsection" aria-labelledby="account-security-heading">
+      <div className="ot-section-title">
+        <div>
+          <h3 id="account-security-heading">Account &amp; security</h3>
+          <p>Change the password for this signed-in account.</p>
+        </div>
+        <span>{roleLabel}</span>
+      </div>
+      <dl className="ot-mini-metrics">
+        <div>
+          <dt>Sign-in identifier</dt>
+          <dd>{displaySignInIdentifier(identifier, role)}</dd>
+        </div>
+        <div>
+          <dt>Session</dt>
+          <dd>Secure and active</dd>
+        </div>
+      </dl>
+      <p className="ot-muted">
+        {role === 'student' ? (
+          <>If you cannot sign in, ask your Parent or an Administrator to send a secure reset.</>
+        ) : (
+          <>
+            Cannot use your current password? <a href="/forgot-password">Request a secure reset</a>.
+          </>
+        )}
+      </p>
+      <form
+        className="ot-dialog-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!canSubmit) return;
+          setSaving(true);
+          setStatus(null);
+          void onChangePassword({ currentPassword, newPassword })
+            .then((result) => {
+              setCurrentPassword('');
+              setNewPassword('');
+              setConfirmPassword('');
+              setStatus({
+                kind: 'success',
+                message:
+                  result.sessions_invalidated > 0
+                    ? `Password changed. ${result.sessions_invalidated} other session${
+                        result.sessions_invalidated === 1 ? '' : 's'
+                      } signed out.`
+                    : 'Password changed. This session remains signed in.',
+              });
+            })
+            .catch((error) => {
+              setStatus({
+                kind: 'error',
+                message: errorMessage(error, 'Password was not changed.'),
+              });
+            })
+            .finally(() => setSaving(false));
+        }}
+      >
+        <label className="ot-field">
+          <span>Current password</span>
+          <input
+            type="password"
+            value={currentPassword}
+            autoComplete="current-password"
+            required
+            maxLength={256}
+            onChange={(event) => setCurrentPassword(event.currentTarget.value)}
+          />
+        </label>
+        <label className="ot-field">
+          <span>New password</span>
+          <input
+            type="password"
+            value={newPassword}
+            autoComplete="new-password"
+            required
+            minLength={10}
+            maxLength={256}
+            aria-describedby="new-password-help"
+            onChange={(event) => setNewPassword(event.currentTarget.value)}
+          />
+        </label>
+        <p id="new-password-help" className="ot-muted">
+          Use at least 10 characters with at least one letter and one number.
+        </p>
+        <label className="ot-field">
+          <span>Confirm new password</span>
+          <input
+            type="password"
+            value={confirmPassword}
+            autoComplete="new-password"
+            required
+            minLength={10}
+            maxLength={256}
+            onChange={(event) => setConfirmPassword(event.currentTarget.value)}
+          />
+        </label>
+        {confirmPassword && newPassword !== confirmPassword && (
+          <p className="notice-banner error" role="alert">
+            The new passwords do not match.
+          </p>
+        )}
+        {status && (
+          <p
+            className={`notice-banner ${status.kind}`}
+            role={status.kind === 'error' ? 'alert' : 'status'}
+          >
+            {status.message}
+          </p>
+        )}
+        <button type="submit" className="ot-button ot-button-primary" disabled={!canSubmit}>
+          {saving ? 'Changing password' : 'Change password'}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+function displaySignInIdentifier(identifier: string, role: SessionUser['role']) {
+  return role === 'student' && identifier.startsWith('student:')
+    ? identifier.slice('student:'.length)
+    : identifier;
 }
 
 function PortalDialogRenderer({

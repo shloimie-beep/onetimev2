@@ -152,7 +152,9 @@ function LiveConsole() {
       onNavigate={(href) => {
         window.location.assign(href);
       }}
-      onLogout={() => void logout()}
+      onLogout={() => {
+        if (session) void logout(session.csrf_token);
+      }}
       onSignIn={() => window.location.assign('/login?return_to=%2Fapp%2Flive-console')}
     >
       <section className="live-console" aria-busy={loading}>
@@ -718,10 +720,12 @@ function participantFor(participants: LiveClassParticipant[], question: LiveClas
   );
 }
 
-async function logout() {
-  await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(
-    () => undefined,
-  );
+async function logout(csrfToken: string) {
+  await fetch('/api/v1/auth/logout', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'x-csrf-token': csrfToken },
+  }).catch(() => undefined);
   window.location.assign('/login');
 }
 

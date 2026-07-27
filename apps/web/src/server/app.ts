@@ -130,6 +130,7 @@ import {
   assignCrmTag,
   canEditContacts,
   captureLead,
+  changeOwnPassword,
   completePasswordReset,
   completeStudentReset,
   confirmSingleRecipientReply,
@@ -312,6 +313,18 @@ const forgotPasswordApiPayloadSchema = z.object({
 const resetPasswordApiPayloadSchema = tokenCompletionPayloadSchema.extend({
   csrf_token: z.string().trim().min(16).max(160),
 });
+const authenticatedPasswordChangePayloadSchema = z
+  .object({
+    current_password: z.string().min(1).max(256),
+    new_password: z
+      .string()
+      .min(10, 'Use at least 10 characters.')
+      .max(256)
+      .refine((value) => /[A-Za-z]/u.test(value) && /[0-9]/u.test(value), {
+        message: 'Use at least one letter and one number.',
+      }),
+  })
+  .strict();
 const emailChallengeVerifyPayloadSchema = z.object({
   challenge_token: z.string().trim().min(32).max(240),
   code: z
@@ -1200,7 +1213,7 @@ export function createApp({
           message:
             login.code === 'EMAIL_CHALLENGE_REQUIRED'
               ? 'Check your email for a six-digit login code.'
-              : 'Email or password is not correct.',
+              : 'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
           challenge_token: login.challenge_token,
           challenge_expires_at: login.challenge_expires_at,
           delivery_state: login.delivery_state,
@@ -1233,8 +1246,7 @@ export function createApp({
         success: true,
         user: session.user,
         csrf_token: session.csrf_token,
-        return_to:
-          safeReturnPath(payload.return_to, config) ?? defaultRouteForRole(session.user.role),
+        return_to: returnPathForRole(payload.return_to, session.user.role, config),
       });
     } catch (error) {
       if (error instanceof ZodError) {
@@ -1372,6 +1384,78 @@ export function createApp({
     });
     clearTrustedDeviceCookie(res, config);
     res.status(200).json({ success: true, trusted_device_revoked: true });
+  });
+
+  app.post('/api/v1/auth/password', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = authenticatedPasswordChangePayloadSchema.parse(req.body);
+      const result = await changeOwnPassword({
+        pool,
+        config,
+        session,
+        currentPassword: payload.current_password,
+        newPassword: payload.new_password,
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
+      });
+      if (!result.ok) {
+        const status =
+          result.code === 'RATE_LIMITED'
+            ? 429
+            : result.code === 'PASSWORD_REUSE'
+              ? 409
+              : result.code === 'ACCOUNT_UNAVAILABLE'
+                ? 403
+                : 400;
+        if (result.retry_after_seconds) {
+          res.setHeader('retry-after', String(result.retry_after_seconds));
+        }
+        const message =
+          result.code === 'RATE_LIMITED'
+            ? 'Please wait before trying another password change.'
+            : result.code === 'PASSWORD_REUSE'
+              ? 'Choose a password you have not just used.'
+              : result.code === 'PASSWORD_POLICY_FAILED'
+                ? 'Use at least 10 characters with at least one letter and one number.'
+                : result.code === 'ACCOUNT_UNAVAILABLE'
+                  ? 'This account cannot change its password right now.'
+                  : 'The current password is not correct.';
+        res.status(status).json({
+          success: false,
+          code: result.code,
+          message,
+          request_id: req.traceId,
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        password_updated_at: result.password_updated_at,
+        sessions_invalidated: result.sessions_invalidated,
+        current_session_preserved: true,
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          success: false,
+          code: 'VALIDATION_ERROR',
+          message: 'Please check the password form.',
+          field_errors: publicFieldErrors(error),
+          request_id: req.traceId,
+        });
+        return;
+      }
+      res
+        .status(500)
+        .json(
+          publicError('SERVER_ERROR', 'Password change is unavailable right now.', req.traceId),
+        );
+    }
   });
 
   app.post('/api/v1/auth/logout', async (req: RequestWithTrace, res) => {
@@ -3869,7 +3953,7 @@ async function completeEmailChallengeLogin(
     success: true,
     user: session.user,
     csrf_token: session.csrf_token,
-    return_to: safeReturnPath(returnTo, config) ?? defaultRouteForRole(session.user.role),
+    return_to: returnPathForRole(returnTo, session.user.role, config),
   });
 }
 
@@ -4019,7 +4103,7 @@ async function serveProtectedAppShell(
     res.redirect(
       302,
       `/login?return_to=${encodeURIComponent(
-        safeReturnPath(req.path, input.config) ?? input.fallbackPath,
+        safeReturnPath(req.originalUrl, input.config) ?? input.fallbackPath,
       )}`,
     );
     return;
@@ -4839,6 +4923,35 @@ function defaultRouteForRole(role: string) {
   if (role === 'parent') return '/app/parent';
   if (role === 'student') return '/app/student';
   return '/app/crm';
+}
+
+function returnPathForRole(value: string | undefined, role: string, config: AppConfig) {
+  const safe = safeReturnPath(value, config);
+  if (!safe) return defaultRouteForRole(role);
+  const pathname = new URL(safe, config.publicBaseUrl).pathname;
+  const startsWithRoute = (route: string) => pathname === route || pathname.startsWith(`${route}/`);
+  if (role === 'owner' || role === 'admin') {
+    return !startsWithRoute('/app') ||
+      startsWithRoute('/app/parent') ||
+      startsWithRoute('/app/student')
+      ? defaultRouteForRole(role)
+      : safe;
+  }
+  if (role === 'parent') {
+    return startsWithRoute('/app/parent') ||
+      startsWithRoute('/app/support') ||
+      startsWithRoute('/app/billing/checkout')
+      ? safe
+      : defaultRouteForRole(role);
+  }
+  if (role === 'student') {
+    return startsWithRoute('/app/student') || startsWithRoute('/app/support')
+      ? safe
+      : defaultRouteForRole(role);
+  }
+  return startsWithRoute('/app/crm') || startsWithRoute('/app/support')
+    ? safe
+    : defaultRouteForRole(role);
 }
 
 function forbiddenAppHtml(appPage: 'parent' | 'student') {

@@ -4,6 +4,7 @@ import { loadConfig, type AppConfig } from '../../../packages/config/src/index.t
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
   authenticateUser,
+  changeOwnPassword,
   createAccountUser,
   createSession,
   getSessionByToken,
@@ -225,6 +226,86 @@ describe('Parent and Student current-access authentication', () => {
       ok: false,
       code: 'INVALID_CREDENTIALS',
     });
+  });
+
+  it('changes Parent and Student passwords while preserving only the initiating session', async () => {
+    const parentLogin = await authenticateUser({
+      pool,
+      config,
+      identifier: 'parent@example.test',
+      password: parentPassword,
+    });
+    if (!parentLogin.ok) throw new Error('Expected Parent login to succeed.');
+    const parentSession = await createSession({ pool, config, user: parentLogin.user });
+    const secondParentSession = await createSession({ pool, config, user: parentLogin.user });
+    await expect(
+      changeOwnPassword({
+        pool,
+        config,
+        session: parentSession,
+        currentPassword: parentPassword,
+        newPassword: 'too-short',
+      }),
+    ).resolves.toEqual({ ok: false, code: 'PASSWORD_POLICY_FAILED' });
+    const parentChanged = await changeOwnPassword({
+      pool,
+      config,
+      session: parentSession,
+      currentPassword: parentPassword,
+      newPassword: 'ParentChanged!567',
+    });
+    expect(parentChanged).toMatchObject({ ok: true, sessions_invalidated: 1 });
+    await expectLogin('parent@example.test', parentPassword, {
+      ok: false,
+      code: 'INVALID_CREDENTIALS',
+    });
+    await expectLogin('parent@example.test', 'ParentChanged!567', {
+      ok: true,
+      user: { role: 'parent' },
+    });
+    await expect(
+      getSessionByToken({ pool, config, sessionToken: parentSession.session_token }),
+    ).not.toBeNull();
+    await expect(
+      getSessionByToken({ pool, config, sessionToken: secondParentSession.session_token }),
+    ).resolves.toBeNull();
+
+    await grantCurrentAccess();
+    const studentLogin = await authenticateUser({
+      pool,
+      config,
+      identifier: studentUsername,
+      password: studentPassword,
+    });
+    if (!studentLogin.ok) throw new Error('Expected Student login to succeed.');
+    const studentSession = await createSession({ pool, config, user: studentLogin.user });
+    const secondStudentSession = await createSession({ pool, config, user: studentLogin.user });
+    const studentChanged = await changeOwnPassword({
+      pool,
+      config,
+      session: studentSession,
+      currentPassword: studentPassword,
+      newPassword: 'StudentChanged!567',
+    });
+    expect(studentChanged).toMatchObject({ ok: true, sessions_invalidated: 1 });
+    await expectLogin(studentUsername, studentPassword, {
+      ok: false,
+      code: 'INVALID_CREDENTIALS',
+    });
+    await expectLogin(studentUsername, 'StudentChanged!567', {
+      ok: true,
+      user: { role: 'student' },
+    });
+    await expectLogin('student@example.test', 'StudentChanged!567', {
+      ok: true,
+      user: { role: 'student' },
+    });
+    await expect(
+      getSessionByToken({ pool, config, sessionToken: studentSession.session_token }),
+    ).not.toBeNull();
+    await expect(
+      getSessionByToken({ pool, config, sessionToken: secondStudentSession.session_token }),
+    ).resolves.toBeNull();
   });
 });
 

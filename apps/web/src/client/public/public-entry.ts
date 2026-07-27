@@ -706,7 +706,9 @@ if (loginForm) {
             setError(name, message),
           );
         } else if (status) {
-          status.textContent = json.message ?? 'Email or password is not correct.';
+          status.textContent =
+            json.message ??
+            'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.';
         }
         return;
       }

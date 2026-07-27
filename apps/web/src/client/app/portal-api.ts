@@ -48,6 +48,26 @@ export async function getSession() {
   return api<ApiSession>('/api/v1/auth/session');
 }
 
+export async function changeOwnPassword(input: {
+  csrfToken: string;
+  currentPassword: string;
+  newPassword: string;
+}) {
+  return api<{
+    success: true;
+    password_updated_at: string;
+    sessions_invalidated: number;
+    current_session_preserved: true;
+  }>('/api/v1/auth/password', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      current_password: input.currentPassword,
+      new_password: input.newPassword,
+    }),
+  });
+}
+
 export async function getParentDashboard() {
   const json = await api<{ success: true; data: ParentPortalDashboard }>(
     '/api/v1/portals/parent/dashboard',

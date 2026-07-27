@@ -64,6 +64,13 @@ describe('OT-71 mounted parent and student portals', () => {
       const anonymousShell = await fetch(`${server.baseUrl}/app/parent`, { redirect: 'manual' });
       expect(anonymousShell.status).toBe(302);
       expect(anonymousShell.headers.get('location')).toContain('return_to=%2Fapp%2Fparent');
+      const anonymousBilling = await fetch(`${server.baseUrl}/app/parent?section=billing`, {
+        redirect: 'manual',
+      });
+      expect(anonymousBilling.status).toBe(302);
+      expect(anonymousBilling.headers.get('location')).toContain(
+        'return_to=%2Fapp%2Fparent%3Fsection%3Dbilling',
+      );
 
       const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
       const parentShell = await fetch(`${server.baseUrl}/app/parent`, {
@@ -327,6 +334,17 @@ describe('OT-71 mounted parent and student portals', () => {
         headers: { cookie: studentAfterRevoke.cookies },
       });
       expect(expired.status).toBe(401);
+      const suspendedLogin = await postLogin(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+      );
+      expect(suspendedLogin.status).toBe(401);
+      expect(suspendedLogin.json).toMatchObject({
+        success: false,
+        code: 'INVALID_CREDENTIALS',
+      });
+      expect(String(suspendedLogin.json.message)).toContain('access was revoked');
     } finally {
       await server.close();
     }

@@ -330,6 +330,7 @@ export {
 export {
   authenticateUser,
   activateTotpEnrollment,
+  changeOwnPassword,
   canAssignContacts,
   canEditContacts,
   createAccountUser,
@@ -360,6 +361,7 @@ export {
   verifyRecentEmailAssurance,
   verifySessionCsrf,
   type AuthenticatedSession,
+  type PasswordChangeResult,
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
 export {

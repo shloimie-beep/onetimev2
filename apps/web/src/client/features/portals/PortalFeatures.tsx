@@ -51,7 +51,7 @@ export const PARENT_PORTAL_SECTIONS = [
   },
   {
     id: 'billing',
-    label: 'Access',
+    label: 'Billing',
     description: 'Your current learning access. Billing is managed separately in GHL.',
   },
   {
@@ -126,6 +126,7 @@ export type ParentPortalFeatureProps = {
     goal: { title: string; description: string; pointsRequired: number },
   ) => void;
   onRetry?: () => void;
+  accountSecurity?: React.ReactNode;
 };
 
 export type StudentPortalFeatureProps = {
@@ -146,6 +147,7 @@ export type StudentPortalFeatureProps = {
   onSelectSection?: (section: StudentPortalSection) => void;
   onPreviewSupport?: () => void;
   onRetry?: () => void;
+  accountSecurity?: React.ReactNode;
 };
 
 export function ParentPortalFeature({
@@ -171,6 +173,7 @@ export function ParentPortalFeature({
   onPreviewSupport,
   onCreateRewardGoal,
   onRetry,
+  accountSecurity,
 }: ParentPortalFeatureProps) {
   const [activeLearnerKey, setActiveLearnerKey] = useState<string | null>(
     selectedLearnerKey ?? null,
@@ -219,6 +222,7 @@ export function ParentPortalFeature({
             </button>
           )}
         </div>
+        {accountSecurity}
       </section>
     );
   }
@@ -281,62 +285,65 @@ export function ParentPortalFeature({
         }
       >
         {activeSection === 'learners' && selectedLearner && (
-          <div className="ot-focus-columns">
-            <section aria-labelledby="household-heading">
-              <div className="ot-panel-head">
-                <div>
-                  <h2 id="household-heading">Household</h2>
-                  <p>Consent: {label(dashboard.household.consent_status)}</p>
+          <>
+            <div className="ot-focus-columns">
+              <section aria-labelledby="household-heading">
+                <div className="ot-panel-head">
+                  <div>
+                    <h2 id="household-heading">Household</h2>
+                    <p>Consent: {label(dashboard.household.consent_status)}</p>
+                  </div>
                 </div>
-              </div>
-              <p className="ot-muted">
-                Choose a learner above to manage that child’s separate profile and Student access.
-              </p>
-            </section>
-            <section aria-labelledby="learner-heading">
-              <div className="ot-panel-head">
-                <div>
-                  <h2 id="learner-heading">{selectedLearner.display_name}</h2>
-                  <p>{selectedLearner.hebrew_name ?? 'Learner profile'}</p>
+                <p className="ot-muted">
+                  Choose a learner above to manage that child’s separate profile and Student access.
+                </p>
+              </section>
+              <section aria-labelledby="learner-heading">
+                <div className="ot-panel-head">
+                  <div>
+                    <h2 id="learner-heading">{selectedLearner.display_name}</h2>
+                    <p>{selectedLearner.hebrew_name ?? 'Learner profile'}</p>
+                  </div>
+                  <div className="ot-action-row">
+                    {onEditLearner && (
+                      <button
+                        type="button"
+                        className="ot-button"
+                        onClick={() => onEditLearner(selectedLearner.learner_key)}
+                      >
+                        Edit
+                      </button>
+                    )}
+                    {selectedLearner.learner_status === 'archived'
+                      ? onRestoreLearner && (
+                          <button
+                            type="button"
+                            className="ot-button"
+                            onClick={() => onRestoreLearner(selectedLearner.learner_key)}
+                          >
+                            Restore
+                          </button>
+                        )
+                      : onArchiveLearner && (
+                          <button
+                            type="button"
+                            className="ot-button"
+                            onClick={() => onArchiveLearner(selectedLearner.learner_key)}
+                          >
+                            Archive
+                          </button>
+                        )}
+                  </div>
                 </div>
-                <div className="ot-action-row">
-                  {onEditLearner && (
-                    <button
-                      type="button"
-                      className="ot-button"
-                      onClick={() => onEditLearner(selectedLearner.learner_key)}
-                    >
-                      Edit
-                    </button>
-                  )}
-                  {selectedLearner.learner_status === 'archived'
-                    ? onRestoreLearner && (
-                        <button
-                          type="button"
-                          className="ot-button"
-                          onClick={() => onRestoreLearner(selectedLearner.learner_key)}
-                        >
-                          Restore
-                        </button>
-                      )
-                    : onArchiveLearner && (
-                        <button
-                          type="button"
-                          className="ot-button"
-                          onClick={() => onArchiveLearner(selectedLearner.learner_key)}
-                        >
-                          Archive
-                        </button>
-                      )}
-                </div>
-              </div>
-              <StudentAccessControls
-                learner={selectedLearner}
-                access={selectedAccess ?? null}
-                onAction={onStudentAccessAction}
-              />
-            </section>
-          </div>
+                <StudentAccessControls
+                  learner={selectedLearner}
+                  access={selectedAccess ?? null}
+                  onAction={onStudentAccessAction}
+                />
+              </section>
+            </div>
+            {accountSecurity}
+          </>
         )}
 
         {activeSection === 'classes' && selectedLearner && (
@@ -472,6 +479,7 @@ export function StudentPortalFeature({
   onSelectSection,
   onPreviewSupport,
   onRetry,
+  accountSecurity,
 }: StudentPortalFeatureProps) {
   const [sessionMarker, setSessionMarker] = useState(actorFingerprint);
   const [question, setQuestion] = useState('');
@@ -677,6 +685,7 @@ export function StudentPortalFeature({
             >
               Technical help
             </button>
+            {accountSecurity}
           </>
         )}
       </PortalWorkspace>
@@ -996,6 +1005,12 @@ function StudentAccessControls({
             {access.password_version ? ` - version ${access.password_version}` : ''}
           </p>
         )}
+        {(status === 'suspended' || status === 'disabled') && (
+          <p className="ot-warning" role="status">
+            Student sign-in is revoked. Restore access, or send a secure reset so the learner can
+            sign in again.
+          </p>
+        )}
       </div>
       {onAction && actions.length > 0 && (
         <div className="ot-action-row">
@@ -1103,10 +1118,13 @@ function ContentList({
   items: LibraryItem[];
   onOpen?: ((action: ProtectedActionDescriptor) => void) | undefined;
 }) {
-  if (items.length === 0) return <p className="ot-muted">Published materials will appear here.</p>;
+  const visibleItems = items.filter((item) => !item.content_factory?.is_demo);
+  if (visibleItems.length === 0) {
+    return <p className="ot-muted">Published materials will appear here.</p>;
+  }
   return (
     <div className="ot-stack">
-      {items.map((item) => {
+      {visibleItems.map((item) => {
         const action = item.open_action;
         return (
           <article className="ot-item" key={item.item_key}>
@@ -1121,9 +1139,6 @@ function ContentList({
               )}
               {item.content_factory && (
                 <div className="ot-stack">
-                  {item.content_factory.is_demo && (
-                    <span className="ot-guardrail-note">Demo — approved synthetic lesson data</span>
-                  )}
                   <p>{item.content_factory.approved_summary}</p>
                   <span>Captions active · {label(item.content_factory.progress_state)}</span>
                   <details>
@@ -1311,12 +1326,12 @@ function QuestionPanel({
           className="ot-button ot-button-primary"
           disabled={readOnly || !trimmed || !onSubmitQuestion}
         >
-          Preview private question
+          Review private question
         </button>
       </form>
       {preview && (
         <div className="ot-private-preview" role="status">
-          <strong>Private question preview</strong>
+          <strong>Review private question</strong>
           <p>{preview.question}</p>
           <div className="ot-action-row">
             <button
