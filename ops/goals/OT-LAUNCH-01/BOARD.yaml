@@ -1556,7 +1556,7 @@ tracks:
     next_action: 'Preserve stable logical provider keys and durable accepted/acceptance-unknown state. Continue to the repository-only bearer-free classroom launch transport; every real provider and send remains disabled.'
 
   - id: audit_wave_04_classroom_bearer_free_transport
-    status: waiting_external
+    status: done
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT-CLASSROOM
     owner:
@@ -1582,6 +1582,7 @@ tracks:
       - 'The compiled Chromium matrix passes 8/8 across desktop, mobile, retry, real-shaped in-memory retry, URL/history/request-target privacy, accessibility, and performance. No unexpected external network request occurred.'
       - 'The full local code gate passes: 82 unit files/547 tests, 68 integration files/378 tests, typecheck, production build, lint, exact scoped formatting, diff check, and a 2174-file secret scan. The repository-wide brand scanner retains its pre-existing unchanged governance-script color finding; the changed manifest and route registry pass their focused contract tests.'
       - 'Zoom/provider, meeting, credential, send, destination, deployment, environment, migration, persistent/staging/production database, production, and destructive effects are zero. Only process-local sinks, pg-mem fixtures, and local Chromium ran.'
+      - 'At exact PR head c0e3672986e6b4c32025b10f74d059fa9683abda, CI 30263541262, A11 Read-only Migration Verification 30263541243, OT-83 PostgreSQL Concurrency 30263541218, OT-37 PostgreSQL Assurance 30263541236, OPS-11 PostgreSQL 18 Assurance 30263541221, and OPS-06 Reliability Observability 30263541211 all completed success for immutable classroom content head 27152527e9c4ca855ea92aac80fac6ad5a862f3c.'
     forbidden_behavior:
       - Put a launch secret, grant key, learner/account identifier, provider reference, or raw destination in a path, query string, fragment, referrer, log label, analytics field, screenshot-visible page, or failure artifact.
       - Weaken authenticated Student, exact session, exact learner, occurrence, TTL, one-time, replay, same-origin, CSRF, CSP, no-store, no-referrer, or sibling/cross-account denial.
@@ -1593,8 +1594,48 @@ tracks:
       - Focused integration and Playwright tests, full unit/integration gates, typecheck, build, lint, scoped formatting, diff/secret/governance/projection checks, and zero external effects.
     stop_condition: 'Stop if any bearer must remain in a URL/log/artifact, a real meeting/credential/provider call is required, exact session/learner/replay checks would weaken, or the repair requires a staging/production database or migration application.'
     blocker: null
-    remaining_work: 'Accept immutable exact-head GitHub CI and PostgreSQL assurance for 27152527e9c4ca855ea92aac80fac6ad5a862f3c; do not execute Zoom or production work.'
-    next_action: 'Wait for exact-head CI, reconcile every required check, then mark A11-T05 done and continue to the next repository-only P1.'
+    remaining_work: null
+    next_action: 'Preserve the constant bearer-free route and server-side one-time grant consumption. Continue to the repository-only three-active-learner transaction cap; keep Zoom and production disabled.'
+
+  - id: audit_wave_04_three_active_learner_enforcement
+    status: active
+    window_id: 04-OT-PRODUCT
+    concurrency_lock: OT-PRODUCT-PORTAL
+    owner:
+      task_id: OT-LAUNCH-01-CONVERGENCE-THREE-ACTIVE-LEARNERS
+      repository: shloimie-beep/onetimev2
+      branch: codex/one-time-launch-convergence-20260727
+      pr: 130
+      head: c0e3672986e6b4c32025b10f74d059fa9683abda
+      system: One Time Parent/Student household portal
+    write_scope: 'Portal repository/service household projection, create/reactivate transaction limits, typed errors, synthetic pg-mem and disposable PostgreSQL concurrency proof, OT-83 acceptance correction, and sanitized Board/PR evidence. No customer/Student identity readback, provider, send, deployment, environment, persistent/staging/production database, production, migration, or destructive change.'
+    handoff_path: packages/db/src/portals/repository.ts
+    dependencies:
+      [
+        audit_wave_04_classroom_bearer_free_transport,
+        audit_wave_04_read_only_migration_verification,
+      ]
+    acceptance_ids: [PORTAL-THREE-ACTIVE-LEARNERS-001]
+    evidence:
+      - 'A11-P1-05 proves the PostgreSQL repository creates and restores active learners without enforcing the confirmed three-active-learner household contract, while classroom eligibility blocks every sibling when the count exceeds three.'
+      - 'Remote branch truth and PR #130 were re-read at exact accepted head c0e3672986e6b4c32025b10f74d059fa9683abda before assignment; all six exact classroom workflows are green.'
+      - 'The existing typed LEARNER_LIMIT_REACHED contract and commercial-policy maximum of three already exist, but the durable repository projection currently reports max_active_learners null and learner_limit_reached false.'
+      - 'This batch may use only synthetic pg-mem and disposable CI PostgreSQL data. Any current-data legacy census is a later aggregate-only read task; no identity may enter ordinary evidence and no learner may be archived, deleted, suspended, restored, reassigned, or otherwise remediated automatically.'
+    forbidden_behavior:
+      - Read or expose customer/Student identities, automatically remediate an over-limit household, or delete/archive/suspend/restore/reassign any legacy learner.
+      - Permit a create or inactive-to-active transition when the exact locked household already has three or more active learners, or perform partial learner/access/audit/idempotency writes on rejection.
+      - Weaken account/product/household/role/capability/version/idempotency isolation, classroom access for compliant households, or sibling/cross-household privacy.
+      - Access a provider, send, deploy, change an environment, apply a migration, touch persistent/staging/production data, take production action, or perform a destructive action.
+    required_proof:
+      - max_active_learners equals three and learner_limit_reached reflects active_learner_count greater than or equal to three.
+      - Two concurrent creates competing for the final seat yield exactly one success and one LEARNER_LIMIT_REACHED with exactly three active learners.
+      - Create, restore, archive, replay, conflicting idempotency, version, no-partial-write, compliant classroom, and sibling/cross-household negative tests.
+      - Synthetic over-limit state is reported truthfully and remains unchanged; current-data inspection is not inferred or performed by this code batch.
+      - Focused tests, disposable PostgreSQL proof, full unit/integration gates, typecheck, build, lint, scoped formatting, diff/secret/governance/projection checks, and zero external effects.
+    stop_condition: 'Stop if the code repair requires current customer/Student data, any legacy identity would enter evidence, a learner mutation is proposed as remediation, or a persistent/staging/production database, provider, send, deployment, production, migration, or destructive action is required.'
+    blocker: null
+    remaining_work: 'Implement and validate A11-T06 repository code and synthetic/disposable-PostgreSQL proof only; keep the separate aggregate legacy-state readback unexecuted.'
+    next_action: 'Enforce the three-active maximum under the household lock for create and inactive-to-active restore, correct the household projection and OT-83 proof, and prove zero partial writes or privacy regression.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external

@@ -311,6 +311,20 @@ criteria:
         provider_sink_only,
         zero_real_provider_call,
       ]
+  - id: PORTAL-THREE-ACTIVE-LEARNERS-001
+    track: audit_wave_04_three_active_learner_enforcement
+    observable: Parent portal household projection reports a maximum of three active learners and a truthful reached flag; create and inactive-to-active restore enforce that maximum atomically under the exact account/product/household lock, including a final-seat race where exactly one request succeeds, while rejected operations leave no learner, access-state, audit, or idempotency partial writes and synthetic legacy over-limit state remains unchanged pending a separately authorized aggregate-only readback.
+    proof:
+      [
+        unit_test,
+        integration_test,
+        disposable_postgres_concurrency,
+        idempotency_test,
+        no_partial_write_test,
+        authorization_negative_tests,
+        legacy_state_non_mutation,
+        zero_external_effect,
+      ]
   - id: HYGIENE-CENSUS-001
     track: audit_wave_05_preservation_census
     observable: A metadata-only protected census separates One Time, BNA, legacy One Time, and unknown checkouts; records hashed paths, repository identities, status/ref/worktree/stash counts and local-only commit metadata; proves every source status hash unchanged; and performs zero source mutation, PR closure, deletion, reset, prune, stash, or force-push.
