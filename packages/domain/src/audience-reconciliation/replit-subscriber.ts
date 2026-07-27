@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { normalizeEmail, normalizePhone, stableKey } from '../lead/normalize.ts';
+import { normalizeEmail, normalizePhone } from '../lead/normalize.ts';
 
 export const replitContactTaxonomy = {
   sourceTag: 'OT | Source | Legacy Subscriber',

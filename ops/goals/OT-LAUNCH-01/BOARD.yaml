@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-27T10:38:59Z
+updated_at: 2026-07-27T16:40:35Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -130,28 +130,24 @@ outcome:
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
   current_summary: >-
-    Persistent-staging product source a22009f4dce6bae6b0553ea9007ff40eceaffd25 is the
-    accepted live application through exact web deployment
-    8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004 and worker deployment
-    4ee9afc9-8727-4f0c-9074-2fe4bafd41a9 at schema
-    2227_event_service_email_permission_convergence. It integrates the accepted
-    event-only permission and canonical HighLevel-outbox convergence from PR 122 exactly
-    once while HighLevel event/actions stay disabled, canary budget stays zero, and run
-    ID/allowlist stay absent. It retains the accepted structured-prompt, role-scoped
-    knowledge, navigable fictional Student portal, occurrence-scoped content factory, and
-    terminal private-media canary without provider replay. The normal Admin Dashboard
-    still exposes all five explicit role choices; detached Student sessions remain
-    read-only, sibling-scoped, and separate from the authenticated Administrator session.
-    Optional email/WhatsApp transport readiness flags remain enabled and are not treated
-    as HighLevel provider modes. Real Zoom controls remain fail-closed. PR 105 cleanup
-    successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but provider-only
-    cleanup remains paused because the host restart cleared the Railway/GitHub browser
-    session; the disposable non-Tisha meeting still exists and host/Student controls
-    remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but
-    DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective
-    pause, the campaign is untouched, and the target shells remain empty Drafts.
-    Production is unchanged beyond the recorded historical/narrow exceptions.
-  external_action_count: 18
+    Draft convergence PR 130 content head 182c009f435512d1a026ab08b68de8e666b52378
+    is live only in isolated preview onetimev2-pr-130 through web deployment
+    f53c55ef-cda4-4aa0-bb87-c806e95c8d07 and sink-only worker deployment
+    c9679d68-6207-41aa-a0de-e1c3919926de. Protected diagnostics report the exact
+    application commit, healthy web/database, fresh exact-commit content-factory and
+    delivery-outbox heartbeats, zero queued work, and no alerts. Read-only verification
+    reports 61 of 61 migrations applied through 2229_zoom_admin_test_resources with no
+    pending or mismatched row. The candidate contains the bearer-free classroom,
+    transactionally enforced three-active-learner limit, durable delivery acceptance
+    state, complete OT-02A draft copy, protected Replit reconciliation, and six-button
+    app-owned Zoom Admin flow. GHL now has the canonical Replit taxonomy on 84 reconciled
+    adults and an exact 30-contact OT-02A saved segment, but the existing workflow remains
+    Draft, empty, unpublished, inactive, and unenrolled after its action builder rejected
+    the registered One Time Home custom-value expression. No message was sent. The old
+    preserved disposable Zoom meeting is provider housekeeping and does not block this
+    app candidate; no Zoom provider request ran. Persistent staging was read only and
+    production remains unchanged and explicitly unapproved.
+  external_action_count: 192
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
       count: 12
@@ -174,6 +170,24 @@ outcome:
     - kind: media_private_external_canary_lifecycle
       count: 1
       scope: 'The existing PR #117 executor completed one bounded private-media lifecycle for the exact verified operator-owned source: one OpenAI transcription, one private Vimeo asset, one active caption track, and one content-factory import. There was no provider/media-processing retry, customer communication, or production mutation. The accepted fictional publication was sibling-scoped and then unpublished, leaving zero active canary entitlements while the private asset/captions and approved item remain retained.'
+    - kind: replit_ghl_contact_upsert
+      count: 1
+      scope: 'One valid adult Replit row without a prior HighLevel contact ID was safely upserted in the exact One Time location. Student contacts, sends, enrollments, deletions, suppression removal, payment/access mutation, and production effects were zero.'
+    - kind: replit_ghl_tag_add
+      count: 84
+      scope: 'Canonical Replit/source and migration taxonomy was added idempotently to 84 reconciled adult contacts while preserving existing IDs, denial fields, suppression, and unrelated tags.'
+    - kind: replit_ghl_contact_readback
+      count: 84
+      scope: 'All 84 reconciled adult contacts received a protected exact-tag readback. Raw contact identities and provider IDs remain outside Git.'
+    - kind: replit_ghl_saved_segment
+      count: 1
+      scope: 'One exact OT-02A Replit active-migration saved segment was created and reopened with exactly 30 contacts. Workflow enrollments, publication, activation, sends, and deletions were zero.'
+    - kind: pr130_isolated_preview_environment
+      count: 1
+      scope: 'One Railway environment named onetimev2-pr-130 was duplicated for the isolated candidate. Persistent staging and production environment state were not changed.'
+    - kind: pr130_isolated_preview_deployment
+      count: 3
+      scope: 'Two exact-head CLI uploads deployed PR #130 web and worker images; one same-image worker redeploy applied the final sink-only variable snapshot. No production deployment occurred.'
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -614,14 +628,14 @@ tracks:
   - id: ghl_app_contract_shells
     status: blocked
     owner:
-      task_id: 019f84c1-956f-7e82-8e8b-fd940588e440
+      task_id: OT-LAUNCH-01-CONVERGENCE-GHL-OT02A-DRAFT
       repository: shloimie-beep/onetimev2
-      branch: codex/ghl-ui-14-18-activation-results
-      pr: 115
-      head: 06c14e9b59c5e7c963397fb961634fe711b00e0c
-      system: HighLevel UI jobs after governed app-contract convergence
-    write_scope: 'Future reviewed GHL-UI-14..23 jobs only; no shell configuration, publication, enrollment, or send in PR #97'
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json
+      branch: codex/one-time-launch-convergence-20260727
+      pr: 130
+      head: 932636e9b493fa3694090ea4eec6251af00c3357
+      system: HighLevel OT-02A protected draft preparation
+    write_scope: 'Exact adult Replit reconciliation, canonical tags, one OT-02A saved segment, complete reviewed draft copy, and the existing OT-02A Draft workflow only; no send, enrollment, publication, activation, Student contact, deletion, suppression removal, payment/access mutation, or production action'
+    handoff_path: integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md
     dependencies: [ghl_event_dispatcher, event_service_email_permission]
     acceptance_ids: [GHL-003]
     evidence:
@@ -632,11 +646,15 @@ tracks:
       - Closeout sends, enrollments, contact changes, and provider mutations are zero.
       - 'Accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad is semantically integrated and deployed in PR #97 exact head fc1220741dfe0dd00757a4e5013a9cef4438baa8 with GHL-UI-14..23 still review-only and every provider/publication/enrollment gate closed.'
       - 'Terminal PR #115 readback proves OT-01, OT-07, OT-08, OT-09, and OT-10 remain unique exact-ID DRAFT_SHELL assets with empty triggers/actions and 0 total / 0 active. The reviewed jobs were not executable-complete because exact action/template details were absent; the executor made no target workflow mutation, publication, enrollment, or message.'
+      - 'PR #130 reconciled the newest Replit export without committing PII: 86 source rows, 84 valid unique adults, one duplicate group containing two invalid rows, 83 exact existing-contact matches, one safe adult upsert, 31 active source rows, 30 eligible OT-02A candidates, one denied/suppressed active row, zero identity conflicts, and zero OT-02B candidates because the export contains no consent proof.'
+      - 'Protected HighLevel application completed one adult upsert, 84 canonical tag additions, 84 exact-tag readbacks, and one saved segment named OT-02A | Replit Active Migration Candidates | 2026 with exactly 30 contacts. Existing identity, suppression/denial fields, and unrelated tags were preserved. Sends, workflow enrollments, publications, activations, deletions, suppression removals, Student contacts, payment/access mutations, and production effects were zero.'
+      - 'The canonical OT-02A registry now contains reviewed Email 1 plus complete Email 2 and Email 3 copy, rabbi_campaign sender routing, Reply-To info@onetimeonetime.com, standard unsubscribe treatment, no raw Zoom/provider link, and only the registered One Time Home URL token. Cadence remains unset and the workflow remains Draft, unpublished, inactive, and unenrolled.'
+      - 'Authenticated provider readback opened the exact existing OT-02A workflow and proved Draft with zero enrolled contacts and an empty canvas. The action builder rejected the registered One Time Home custom-value expression, then fell into existing-template selection; no action was saved and the provider workflow remained unchanged.'
     blocker:
-      code: GHL_UI_JOBS_NOT_EXECUTABLE_COMPLETE
-      reason: The reviewed job files describe trigger and gate intent but do not provide the exact action/template details required to configure live workflows without invention.
-    remaining_work: Complete and review exact executable actions/templates after the durable event-permission contract is accepted, then run one job at a time with save/reopen/readback and bounded canary evidence.
-    next_action: 'Keep every shell Draft and empty; do not create a duplicate delivery path, infer missing content, or publish/configure them from PR #97.'
+      code: GHL_OT02A_ACTION_BUILDER_HOME_URL_REJECTED
+      reason: 'The exact existing OT-02A workflow is authenticated and its complete reviewed copy exists in Git, but HighLevel rejected the registered One Time Home custom-value expression in the action builder. Continuing in the fallback template state would require guessing a provider token or template and could save the wrong action.'
+    remaining_work: 'Repair or select the verified existing One Time Home custom value, add the three reviewed emails to the same existing workflow, save/reopen/read back the exact actions, and keep Draft with zero enrollments. Publication, activation, enrollment, and send remain separately forbidden.'
+    next_action: 'Preserve the current empty Draft and exact 30-contact saved segment. Do not create a duplicate workflow, guess a custom value/template, publish, activate, enroll, or send.'
 
   - id: ghl_event_dispatcher
     status: done
@@ -821,11 +839,15 @@ tracks:
       - 'PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is independently accepted as code-ready only. Its exact eight-file repair and 59/59 focused plus 355/355 unit proof preserve the original signed target while adding provider-normalization, journal-before-DELETE, one-DELETE idempotency, and canonical 3001-only absence verification. No live cleanup or host/Student control ran from that task.'
       - 'Draft PR #125 exact result head eeb31101e0d8f8a395a1c3833129b1afde4fd845 supersedes the prior not-run claim: one OAuth and one meeting GET ran, reconciliation stopped on the generic exact-scope mismatch before DELETE, and every provider write/customer/staging/production effect remained zero. The signed journal remains cleanup_required sequence 4 without tombstone.'
       - 'Draft convergence PR #130 content head 100a8f442a1dbb6a25f9ac08587a04c02386d1b7 accepts the repository-only classifier with 97/97 focused Zoom tests, build/typecheck, scoped formatting, request-budget/redaction/journal-byte proof, and a 2168-file secret scan. Zoom requests and provider writes from that task were zero.'
+      - 'PR #130 content head 182c009f435512d1a026ab08b68de8e666b52378 adds the normal authenticated Admin flow with six exact actions: Check Zoom Connection, Create Disposable Test Meeting, Register One Operator-Owned Test Learner, Refresh Status, Open Secure One Time Classroom, and Delete This App-Created Test Meeting.'
+      - 'Migration 2229 stores only an AES-GCM scope-bound app-owned meeting target; arbitrary meeting IDs are rejected, raw join URLs are never returned, create/register/delete are idempotent, and provider timeouts become explicit create_unknown/delete_unknown states. Focused Zoom proof, typecheck, build, and the broad repository suite passed.'
+      - 'The isolated PR #130 candidate applies all 61 migrations through 2229 and exposes the secure classroom route behind authentication while Zoom remains sink, real-provider false, canary false, and credential-free. No Zoom OAuth, GET, POST, PATCH, DELETE, meeting, registration, join, control, or customer message occurred.'
+      - 'The old sequence-4 disposable meeting and its preserved runner remain provider housekeeping. Their scope mismatch does not block the new app-owned Admin flow or isolated app staging; it remains only a prerequisite for a later real-provider canary or production authority.'
     blocker:
       code: ZOOM_DISPOSABLE_CANARY_SCOPE_CLASSIFICATION_REQUIRED
       reason: 'The accepted repository diagnostic has not received a separately authorized provider read. Blind cleanup retry, substitution, or broader provider inspection remains forbidden.'
-    remaining_work: 'Run only the later authorized read-only predicate classification before deciding any cleanup repair. Host/Student control remains unaccepted.'
-    next_action: 'Keep provider controls unavailable and preserve the exact runner/journal/volume. Do not repeat cleanup, create another meeting, or infer host control.'
+    remaining_work: 'For real-provider acceptance only, run the separately authorized read-only predicate classification before deciding any cleanup repair, then complete one normal app-owned operator canary under separate authority. The sink-mode Admin application path is implemented and staged.'
+    next_action: 'Keep real provider controls unavailable and preserve the exact runner/journal/volume. Treat the old meeting as housekeeping; do not repeat cleanup, create a substitute meeting, or infer real host control.'
 
   - id: zoom_real_control_operator_change_set
     status: blocked
@@ -1254,6 +1276,11 @@ tracks:
       - 'Current product source a22009f4dce6bae6b0553ea9007ff40eceaffd25 is live through exact staging web deployment 8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004 and worker deployment 4ee9afc9-8727-4f0c-9074-2fe4bafd41a9. /version reports full-app-staging-live-a22009f with exact commit_sha and Railway git_commit_sha; /health is 200 and /ready is healthy with blockers=[], database query ok, and latest=2227_event_service_email_permission_convergence.'
       - 'All five exact-head GitHub workflow suites, Node 24, OPS-06, PostgreSQL 16 assurance, learner-seat proof, PostgreSQL 18 assurance/restore, Railway web, and Railway worker are green. Same-snapshot conductor proof passed 439/439 configured unit tests, 374/374 configured integration tests, 51/51 focused event/HighLevel integration tests, 7/7 focused units, build, lint, typecheck, scoped formatting, a 2,121-file secret scan, migration checksum/uniqueness, goal/projection validation, and diff/marker checks.'
       - 'Only staging-scoped APP_VERSION and COMMIT_SHA were reconciled after the first exact a22009f deployment. Web and worker retain HIGHLEVEL_EVENT_SYNC_MODE=disabled, HIGHLEVEL_ACTIONS_MODE=disabled, HIGHLEVEL_CANARY_BUDGET=0, and absent canary run ID/delivery allowlist; real Zoom/canary gates remain off. Optional email/WhatsApp transport readiness remains enabled, and production/provider/customer state was not changed.'
+      - 'PR #130 content head 182c009f435512d1a026ab08b68de8e666b52378 is deployed only to isolated Railway environment 519f898c-d184-4120-b340-3d8db49ce133 at https://ot99-web-onetimev2-pr-130.up.railway.app through web f53c55ef-cda4-4aa0-bb87-c806e95c8d07 and sink-only worker c9679d68-6207-41aa-a0de-e1c3919926de.'
+      - 'Protected preview readback reports exact application commit 182c009f435512d1a026ab08b68de8e666b52378, public /health, /ready, /version, landing, signup, and login all 200, authenticated app and secure Zoom-host routes correctly redirect anonymous requests to login, fresh exact-commit content-factory and delivery-outbox heartbeats, zero queue depth, and no alerts.'
+      - 'Preview db:verify is read-only and passed with 61 migration files, 61 ledger rows, 61 applied, zero pending, zero accepted aliases, and zero issues. Predeploy applied only forward migrations 2228_delivery_provider_operation_state and 2229_zoom_admin_test_resources.'
+      - 'Preview safety readback fixes NODE_ENV=production with both runtime classifiers isolated_staging; delivery and outbox are sink, every real email/WhatsApp/Telegram/payment transport is false, HighLevel event/actions are disabled with budget zero, and Zoom is sink with real-provider/canary false. The worker initially inherited stale provider subfeatures, failed closed before work, and was redeployed from the same image only after every subfeature and authorization artifact was removed; its final heartbeat is exact-commit ready in sink mode.'
+      - 'Aggregate-only readback returned zero preview contacts, households, learners, access rows, and over-limit households. The separate existing persistent-staging read returned 0 adult contacts, 8 active households, 11 active learners, 7 active Student-access rows, 0 archived, 0 suspended, 0 over-limit households, and maximum 3 active learners; no identity was read and no learner was changed.'
     blocker: null
     remaining_work: null
     next_action: null

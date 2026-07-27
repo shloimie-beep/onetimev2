@@ -30,9 +30,7 @@
       "OT | Existing Subscriber",
       "OT | Migration 2026"
     ],
-    "exclude_any_tags": [
-      "OT | Marketing Suppressed"
-    ],
+    "exclude_any_tags": ["OT | Marketing Suppressed"],
     "workflow_enrollment": false
   },
   "summary": {

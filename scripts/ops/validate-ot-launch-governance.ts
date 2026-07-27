@@ -336,15 +336,18 @@ record(
       );
     })() &&
     String(outcome.current_summary).includes(
-      'web deployment 8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004',
+      'content head 182c009f435512d1a026ab08b68de8e666b52378',
     ) &&
     String(outcome.current_summary).includes(
-      'worker deployment 4ee9afc9-8727-4f0c-9074-2fe4bafd41a9',
+      'web deployment f53c55ef-cda4-4aa0-bb87-c806e95c8d07',
     ) &&
-    String(outcome.current_summary).includes('2227_event_service_email_permission_convergence') &&
+    String(outcome.current_summary).includes(
+      'worker deployment c9679d68-6207-41aa-a0de-e1c3919926de',
+    ) &&
+    String(outcome.current_summary).includes('2229_zoom_admin_test_resources') &&
     parsedBoardStrings.some(({ value }) => value.includes('439/439 configured unit tests')) &&
     parsedBoardStrings.some(({ value }) => value.includes('2,121-file secret scan')),
-  'a22009f deployed through exact web/worker with schema 2227 and same-snapshot gates',
+  'accepted a22009f persistent staging is preserved while the exact PR #130 content head is isolated at schema 2229',
 );
 record(
   'event-only permission convergence is integrated and provider-disabled',
@@ -486,17 +489,41 @@ record(
     const mediaAction = externalActions.find(
       (action) => action.kind === 'media_private_external_canary_lifecycle',
     );
+    const replitUpsert = externalActions.find(
+      (action) => action.kind === 'replit_ghl_contact_upsert',
+    );
+    const replitTags = externalActions.find((action) => action.kind === 'replit_ghl_tag_add');
+    const replitReadback = externalActions.find(
+      (action) => action.kind === 'replit_ghl_contact_readback',
+    );
+    const replitSegment = externalActions.find(
+      (action) => action.kind === 'replit_ghl_saved_segment',
+    );
+    const previewEnvironment = externalActions.find(
+      (action) => action.kind === 'pr130_isolated_preview_environment',
+    );
+    const previewDeployments = externalActions.find(
+      (action) => action.kind === 'pr130_isolated_preview_deployment',
+    );
     return (
       outcome.external_action_count === counted &&
-      outcome.external_action_count === 18 &&
+      outcome.external_action_count === 192 &&
       loginAction?.count === 12 &&
       mediaAction?.count === 1 &&
+      replitUpsert?.count === 1 &&
+      replitTags?.count === 84 &&
+      replitReadback?.count === 84 &&
+      replitSegment?.count === 1 &&
+      previewEnvironment?.count === 1 &&
+      previewDeployments?.count === 3 &&
       String(mediaAction.scope).includes('one OpenAI transcription') &&
       String(mediaAction.scope).includes('one private Vimeo asset') &&
-      String(mediaAction.scope).includes('no provider/media-processing retry')
+      String(mediaAction.scope).includes('no provider/media-processing retry') &&
+      String(replitSegment.scope).includes('exactly 30 contacts') &&
+      String(previewDeployments.scope).includes('No production deployment occurred')
     );
   })(),
-  'external_action_count=18 equals row sum and includes 12 bounded staging login-code emails plus one bounded private-media lifecycle',
+  'external_action_count=192 equals the row sum and covers all historical plus PR #130 GHL and Railway actions',
 );
 record(
   'fictional Admin incident is rotated and auditable',

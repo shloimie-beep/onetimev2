@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:bded7cd71fe32a2c6b75901e3317ba7f6dd0a4974594f87c604788515b811d08',
-  generated_at: '2026-07-27T10:38:59.000Z',
+  board_source_hash: 'sha256:678aabcf0970c0ae7a38450353baa315f6ead9c47c797e8ef1a066613a7e4715',
+  generated_at: '2026-07-27T16:40:35.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 21,
@@ -14,7 +14,7 @@ export const operatorLaunchStatusProjection = {
     percentage: 88,
   },
   what_changed:
-    "Persistent-staging product source a22009f4dce6bae6b0553ea9007ff40eceaffd25 is the accepted live application through exact web deployment 8ac8aae7-fb2e-4b19-9e3e-b8bf27db4004 and worker deployment 4ee9afc9-8727-4f0c-9074-2fe4bafd41a9 at schema 2227_event_service_email_permission_convergence. It integrates the accepted event-only permission and canonical HighLevel-outbox convergence from PR 122 exactly once while HighLevel event/actions stay disabled, canary budget stays zero, and run ID/allowlist stay absent. It retains the accepted structured-prompt, role-scoped knowledge, navigable fictional Student portal, occurrence-scoped content factory, and terminal private-media canary without provider replay. The normal Admin Dashboard still exposes all five explicit role choices; detached Student sessions remain read-only, sibling-scoped, and separate from the authenticated Administrator session. Optional email/WhatsApp transport readiness flags remain enabled and are not treated as HighLevel provider modes. Real Zoom controls remain fail-closed. PR 105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is code-ready, but provider-only cleanup remains paused because the host restart cleared the Railway/GitHub browser session; the disposable non-Tisha meeting still exists and host/Student controls remain unaccepted. Current GHL truth remains fail-closed: OT-E01 is Published but DRIFTED because Email A is disabled, OT-C01's wrapper is Draft after the protective pause, the campaign is untouched, and the target shells remain empty Drafts. Production is unchanged beyond the recorded historical/narrow exceptions.",
+    'Draft convergence PR 130 content head 182c009f435512d1a026ab08b68de8e666b52378 is live only in isolated preview onetimev2-pr-130 through web deployment f53c55ef-cda4-4aa0-bb87-c806e95c8d07 and sink-only worker deployment c9679d68-6207-41aa-a0de-e1c3919926de. Protected diagnostics report the exact application commit, healthy web/database, fresh exact-commit content-factory and delivery-outbox heartbeats, zero queued work, and no alerts. Read-only verification reports 61 of 61 migrations applied through 2229_zoom_admin_test_resources with no pending or mismatched row. The candidate contains the bearer-free classroom, transactionally enforced three-active-learner limit, durable delivery acceptance state, complete OT-02A draft copy, protected Replit reconciliation, and six-button app-owned Zoom Admin flow. GHL now has the canonical Replit taxonomy on 84 reconciled adults and an exact 30-contact OT-02A saved segment, but the existing workflow remains Draft, empty, unpublished, inactive, and unenrolled after its action builder rejected the registered One Time Home custom-value expression. No message was sent. The old preserved disposable Zoom meeting is provider housekeeping and does not block this app candidate; no Zoom provider request ran. Persistent staging was read only and production remains unchanged and explicitly unapproved.',
   works_now: [
     {
       track_id: 'goal_system',
@@ -114,7 +114,7 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom host controls',
       status: 'provider_off',
       next_action:
-        'Keep provider controls unavailable and preserve the exact runner/journal/volume. Do not repeat cleanup, create another meeting, or infer host control.',
+        'Keep real provider controls unavailable and preserve the exact runner/journal/volume. Treat the old meeting as housekeeping; do not repeat cleanup, create a substitute meeting, or infer real host control.',
     },
     {
       track_id: 'zoom_real_control_operator_change_set',
