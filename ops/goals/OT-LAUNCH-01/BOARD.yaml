@@ -1297,7 +1297,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/audit-to-execution-control-tower-20260727
       pr: 124
-      head: null
+      head: 59368066c4debbf6ba80dc0a402d2767edb3d64b
       system: Git-backed execution queue and Board reconciliation
     write_scope: 'BOARD.yaml and generated pointer; ops/execution-windows/2026-07-27 queue, index, locks, dependencies, decisions, bootstrap prompts, and control-only result reconciliation.'
     handoff_path: ops/execution-windows/2026-07-27/queue.yaml
@@ -1309,6 +1309,7 @@ tracks:
       - 'Initial coordination preserves one Board writer, one GHL repository writer, one GHL browser writer, one Zoom provider writer, one One Time product writer, one migration writer, and no production writer before accepted dependencies.'
       - 'The live 03-OT-GHL repository-design worker is fenced by its existing task ID/claim token. PR #125 is seeded as terminal blocked Zoom evidence, so no queue worker can repeat cleanup or create another meeting.'
       - 'The control lane polls GitHub directly for each assigned/claimed branch and reconciles exact result heads without operator relay. It verified PR #123 at b2fd8c73246a3a1e1655b22ee5c837d65c19ec97, PR #125 at eeb31101e0d8f8a395a1c3833129b1afde4fd845, and PR #126 at 0fc24128dfb9f5d512c1915ad61bb9c6b3568042; expected result branches for lanes 04, 05, and 06 currently have no PR, while lane 07 remains unassigned and production-disabled.'
+      - 'Control reconciliation commit 59368066c4debbf6ba80dc0a402d2767edb3d64b independently rejected PR #126 terminal acceptance on an LF/CRLF prompt-fingerprint projection defect, preserved the semantic attempt only as evidence, released the old GHL repository claim, and wrote unblocked repair Q03-002R plus every other lane successor into Git. Provider mutations, sends, production mutations, and destructive actions were zero.'
     forbidden_behavior:
       - Implement product, provider, migration, hygiene, BNA, or production lane work from 01-OT-CONTROL.
       - Let queue dispatch state override Board status, acceptance, provider truth, or external authority.

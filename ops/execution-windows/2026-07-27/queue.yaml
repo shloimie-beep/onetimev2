@@ -109,8 +109,8 @@ items:
     priority: 1
     title: Continuous result reconciliation and safe dispatch
     assignment_state: assigned
-    dispatch_state: ready
-    repeatable: true
+    dispatch_state: done
+    repeatable: false
     board_track: self_driving_execution_queue
     dependencies: []
     required_locks: [BOARD]
@@ -124,6 +124,40 @@ items:
     forbidden:
       - Implement a product, provider, migration, hygiene, BNA, or production lane task.
       - Treat an audit recommendation, PR body, or queue state as acceptance by itself.
+    terminal_at: 2026-07-27T11:26:12+03:00
+    terminal_reason: GITHUB_RESULTS_RECONCILED_AND_SAFE_SUCCESSORS_WRITTEN
+    result_commit: 59368066c4debbf6ba80dc0a402d2767edb3d64b
+    result_pr: 124
+    result_path: ops/execution-windows/2026-07-27/queue.yaml
+    validation_summary: Exact GitHub heads for PRs 123, 125, and 126 verified; expected lane 04-06 branches have no PR; Board/queue/dependency/lock/pointer/governance/projection/format/secret/diff checks passed.
+    external_effects:
+      provider_mutations: 0
+      customer_messages: 0
+      sends: 0
+      production_mutations: 0
+      destructive_actions: 0
+  - id: Q01-002
+    lane: 01-OT-CONTROL
+    sequence: 2
+    priority: 1
+    title: Continuous GitHub result reconciliation and safe dispatch
+    assignment_state: assigned
+    dispatch_state: ready
+    repeatable: true
+    board_track: self_driving_execution_queue
+    dependencies: []
+    required_locks: [BOARD]
+    branch: codex/audit-to-execution-control-tower-20260727
+    work_scope:
+      - Poll GitHub directly for every assigned or claimed lane branch.
+      - Verify exact result heads, changed scope, checks, counters, and stop conditions.
+      - Reconcile accepted evidence into BOARD.yaml and its generated pointer.
+      - Mark terminal queue attempts, release locks, and assign only dependency-satisfied successors.
+      - Append the next Q01 control item before completing this cycle.
+    forbidden:
+      - Ask the operator to paste a SHA, PR number, status, or completed-result summary.
+      - Implement a product, provider, migration, hygiene, BNA, or production lane task.
+      - Treat an audit recommendation, PR body, queue state, or local-only claim as acceptance.
     result_path: ops/execution-windows/2026-07-27/queue.yaml
   - id: Q02-001
     lane: 02-OT-ZOOM

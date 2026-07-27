@@ -10,6 +10,9 @@ nodes:
   - id: Q01-001
     requires: []
     acceptance: Terminal results are validated, Board is reconciled, safe successors are assigned, and no lane work is implemented by control.
+  - id: Q01-002
+    requires: []
+    acceptance: GitHub result branches are polled directly, exact evidence is reconciled, safe successors are assigned, and no operator result relay or lane implementation occurs.
   - id: Q02-001
     requires: []
     acceptance: Exact disposable meeting deletion, canonical absence, signed deleted tombstone, and zero forbidden effects.

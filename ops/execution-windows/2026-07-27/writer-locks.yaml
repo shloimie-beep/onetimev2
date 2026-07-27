@@ -12,7 +12,7 @@ locks:
     permanent_lane: 01-OT-CONTROL
     current_holder:
       lane: 01-OT-CONTROL
-      item: Q01-001
+      item: Q01-002
       claim_token: permanent-01-ot-control
     scope: BOARD.yaml, goal acceptance, generated goal pointer, queue assignments, dependency gates, and control reconciliation.
     forbidden: Any Board write by lanes 02 through 07.
