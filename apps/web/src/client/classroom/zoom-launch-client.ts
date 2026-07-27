@@ -21,6 +21,8 @@ type BootstrapResponse = {
           meeting_number: string;
           signature: string;
           meeting_password: string;
+          registrant_token: string;
+          user_email: string;
           customer_key: string;
           role: 0;
           user_display_name: string;

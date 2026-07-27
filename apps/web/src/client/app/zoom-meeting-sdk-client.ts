@@ -16,6 +16,8 @@ export type ZoomParticipantJoinInput = {
   meetingNumber: string;
   signature: string;
   meetingPassword: string;
+  registrantToken: string;
+  userEmail: string;
   customerKey: string;
   userName: string;
   leaveUrl: string;
@@ -36,6 +38,8 @@ export async function joinZoomMeetingParticipant(input: ZoomParticipantJoinInput
           signature: input.signature,
           meetingNumber: input.meetingNumber,
           passWord: input.meetingPassword,
+          tk: input.registrantToken,
+          userEmail: input.userEmail,
           userName: input.userName,
           customerKey: input.customerKey,
           success: () => resolve(),

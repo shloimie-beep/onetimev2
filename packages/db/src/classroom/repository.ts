@@ -22,6 +22,20 @@ export function createClassroomRepository(pool: DbPool): ClassroomRepository {
     ensureDailyOccurrence: (args) => ensureDailyOccurrence(pool, args),
     getOccurrence: (args) => getOccurrence(pool, args.actor, args.occurrence_key),
     getLearnerEligibility: (args) => getLearnerEligibility(pool, args.actor, args.learner_key),
+    isLearnerEnrolled: async (args) => {
+      const result = await pool.query(
+        `SELECT 1
+           FROM onetime.classroom_occurrence_learner_entitlements
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = $3
+            AND learner_key = $4
+            AND entitlement_state = 'active'
+          LIMIT 1`,
+        [args.actor.account_key, args.actor.product_key, args.occurrence_key, args.learner_key],
+      );
+      return (result.rowCount ?? 0) > 0;
+    },
     issueLaunchGrant: (args) => issueLaunchGrant(pool, args),
     consumePendingLaunchGrant: (args) => consumePendingLaunchGrant(pool, args),
     upsertAttendanceAttempt: (args) => upsertAttendanceAttempt(pool, args),

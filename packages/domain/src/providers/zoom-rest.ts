@@ -71,6 +71,11 @@ export type ZoomIsolatedMeetingPrivateMaterial = {
   password: string;
 };
 
+export type ZoomScheduledClassMeetingPrivateMaterial = {
+  meeting: ZoomIsolatedMeetingRecord;
+  password: string;
+};
+
 export type ZoomOccurrenceReference = {
   occurrence_id: string;
   starts_at: string;
@@ -532,6 +537,50 @@ export function createZoomRestClient(
   const zoomJson = createZoomJsonRequester(options, observer);
 
   return {
+    async createScheduledClassMeeting(input: {
+      hostUserId: string;
+      startsAt: Date;
+      topic: string;
+      durationMinutes: number;
+    }): Promise<ZoomScheduledClassMeetingPrivateMaterial> {
+      const json = await zoomJson(`/users/${encodeURIComponent(input.hostUserId)}/meetings`, {
+        method: 'POST',
+        body: JSON.stringify({
+          topic: input.topic,
+          type: 2,
+          start_time: input.startsAt.toISOString(),
+          timezone: 'Asia/Jerusalem',
+          duration: input.durationMinutes,
+          agenda: 'One Time Mishnayos protected classroom',
+          settings: {
+            approval_type: 0,
+            email_notification: false,
+            registrants_confirmation_email: false,
+            registrants_email_notification: false,
+            join_before_host: false,
+            mute_upon_entry: true,
+            participant_video: false,
+            host_video: true,
+            waiting_room: true,
+          },
+        }),
+      });
+      const parsed = meetingResponseSchema.parse(json);
+      return {
+        meeting: {
+          provider: 'zoom',
+          meeting_id: parsed.id,
+          provider_meeting_ref_digest: redactedRefHash(parsed.id),
+          type: 2,
+          starts_at: input.startsAt.toISOString(),
+          duration_minutes: input.durationMinutes,
+          raw_start_url_present: false,
+          raw_join_url_present: false,
+        },
+        password: parsed.password,
+      };
+    },
+
     async createIsolatedTestMeeting(input: {
       hostUserId: string;
       startsAt: Date;

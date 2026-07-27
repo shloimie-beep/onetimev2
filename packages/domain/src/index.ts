@@ -87,6 +87,15 @@ export {
 } from './live-class/zoom-identifiers.ts';
 export { createClassroomReminderJob } from './classroom/reminders.ts';
 export {
+  createZoomClassOccurrenceProvider,
+  createZoomClassOccurrenceHostLaunchPort,
+  createZoomClassOccurrenceService,
+  createZoomClassroomPorts,
+  type ZoomClassOccurrenceProvider,
+  type ZoomClassOccurrenceRepository,
+  type ZoomClassOccurrenceResourceRecord,
+} from './classroom/zoom-occurrence.ts';
+export {
   ZoomApiError,
   ZOOM_ISOLATED_CANARY_AGENDA,
   ZOOM_ISOLATED_CANARY_TOPIC_PREFIX,

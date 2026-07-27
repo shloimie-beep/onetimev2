@@ -99,13 +99,15 @@ const classroomRealSdkLaunchSchema = z.object({
     .regex(/^\d{9,32}$/),
   signature: z.string().trim().min(16).max(2048),
   meeting_password: z.string().min(1).max(32),
+  registrant_token: z.string().min(1).max(2048),
+  user_email: z.string().trim().email().max(254),
   customer_key: z
     .string()
     .regex(/^zoom_ck_[a-f0-9]{24}$/)
     .max(36),
   role: z.literal(0),
   user_display_name: z.string().trim().min(1).max(160),
-  user_email_required: z.literal(false),
+  user_email_required: z.literal(true),
   leave_url: z
     .string()
     .trim()

@@ -111,6 +111,11 @@ export type ClassroomRepository = {
     actor: PortalActorContext;
     learner_key: string;
   }): Promise<ClassroomEligibility | null>;
+  isLearnerEnrolled(args: {
+    actor: Pick<PortalActorContext, 'account_key' | 'product_key'>;
+    occurrence_key: string;
+    learner_key: string;
+  }): Promise<boolean>;
   issueLaunchGrant(args: {
     actor: PortalActorContext;
     eligibility: ClassroomEligibility;
@@ -236,11 +241,20 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       if (!eligibility) {
         throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
       }
+      const occurrenceEnrollmentReady =
+        deps.config.zoomClassroomProviderMode !== 'real' ||
+        (await deps.repository.isLearnerEnrolled({
+          actor: args.actor,
+          occurrence_key: occurrence.occurrence_key,
+          learner_key: eligibility.learner_key,
+        }));
       const projection = occurrenceProjection({
         config: deps.config,
         realProviderReady: deps.zoomRealProviderReady === true,
         occurrence,
-        eligibility,
+        eligibility: occurrenceEnrollmentReady
+          ? eligibility
+          : { ...eligibility, entitlement_state: null },
         now,
       });
       return projection;
@@ -279,6 +293,19 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       });
       if (!eligibility) {
         throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+      }
+      if (
+        deps.config.zoomClassroomProviderMode === 'real' &&
+        !(await deps.repository.isLearnerEnrolled({
+          actor: args.actor,
+          occurrence_key: occurrence.occurrence_key,
+          learner_key: eligibility.learner_key,
+        }))
+      ) {
+        throw new PortalServiceError(
+          'ENTITLEMENT_REQUIRED',
+          'This Student is not enrolled in that class occurrence.',
+        );
       }
       const projection = occurrenceProjection({
         config: deps.config,
@@ -381,6 +408,19 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       ]);
       if (!occurrence || !eligibility) {
         throw new PortalServiceError('NOT_FOUND', 'The requested classroom was not found.');
+      }
+      if (
+        deps.config.zoomClassroomProviderMode === 'real' &&
+        !(await deps.repository.isLearnerEnrolled({
+          actor: args.actor,
+          occurrence_key: occurrence.occurrence_key,
+          learner_key: eligibility.learner_key,
+        }))
+      ) {
+        throw new PortalServiceError(
+          'ENTITLEMENT_REQUIRED',
+          'This Student is not enrolled in that class occurrence.',
+        );
       }
       const projection = occurrenceProjection({
         config: deps.config,
@@ -679,11 +719,7 @@ function occurrenceProjection(input: {
   eligibility: ClassroomEligibility;
   now: Date;
 }) {
-  const provider =
-    input.config.zoomClassroomProviderMode === 'real' &&
-    input.config.zoomClassroomCanaryLearnerKey !== input.eligibility.learner_key
-      ? 'unconfigured'
-      : providerState(input.config, input.realProviderReady === true);
+  const provider = providerState(input.config, input.realProviderReady === true);
   const state = joinState({
     provider,
     eligibility: input.eligibility,

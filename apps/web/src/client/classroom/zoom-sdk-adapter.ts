@@ -19,6 +19,8 @@ type ClassroomSdkPayload = {
         meeting_number: string;
         signature: string;
         meeting_password: string;
+        registrant_token: string;
+        user_email: string;
         customer_key: string;
         role: 0;
         user_display_name: string;
@@ -53,6 +55,8 @@ export async function startClassroomSdk(
       meetingNumber: data.sdk.meeting_number,
       signature: data.sdk.signature,
       meetingPassword: data.sdk.meeting_password,
+      registrantToken: data.sdk.registrant_token,
+      userEmail: data.sdk.user_email,
       customerKey: data.sdk.customer_key,
       userName: data.sdk.user_display_name,
       leaveUrl: data.sdk.leave_url,

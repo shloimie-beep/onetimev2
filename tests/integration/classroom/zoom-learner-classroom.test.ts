@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -7,8 +8,13 @@ import { loadConfig, type AppConfig } from '../../../packages/config/src/index.t
 import { asCanonicalUserKey } from '../../../packages/contracts/src/telegram/types.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { createClassroomRepository } from '../../../packages/db/src/classroom/repository.ts';
+import { createZoomClassOccurrenceRepository } from '../../../packages/db/src/classroom/zoom-occurrence-repository.ts';
 import { resolveDailyClassWindow } from '../../../packages/domain/src/classes/service.ts';
 import { createAccountUser } from '../../../packages/domain/src/index.ts';
+import {
+  createZoomClassOccurrenceService,
+  type ZoomClassOccurrenceProvider,
+} from '../../../packages/domain/src/classroom/zoom-occurrence.ts';
 import { createOneTimeTelegramApplicationAdapter } from '../../../packages/domain/src/telegram/application-adapter.ts';
 
 let pool: DbPool;
@@ -186,7 +192,106 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
       ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
     });
-    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    const occurrence = await createClassroomRepository(pool).ensureDailyOccurrence({
+      actor: {
+        account_key: config.accountKey,
+        product_key: config.productKey,
+      },
+      window: resolveDailyClassWindow(openClassClock(), {
+        currentOccurrenceStillJoinable: true,
+      }),
+      durationMinutes: config.zoomClassroomClassDurationMinutes,
+      joinOpenOffsetMinutes: config.zoomClassroomJoinOpenOffsetMinutes,
+      joinCloseOffsetMinutes: config.zoomClassroomJoinCloseOffsetMinutes,
+    });
+    await pool.query(
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, source)
+       VALUES ('real_alpha_enrollment', $1, $2, $3, 'household_alpha', 'learner_alpha',
+          'operator')`,
+      [config.accountKey, config.productKey, occurrence.occurrence_key],
+    );
+    const zoomProvider: ZoomClassOccurrenceProvider = {
+      sdkWebVersion: '6.2.0',
+      async createMeeting(input) {
+        return {
+          meeting: {
+            provider: 'zoom',
+            meeting_id: '987654321',
+            provider_meeting_ref_digest: createHash('sha256')
+              .update('987654321')
+              .digest('hex')
+              .slice(0, 48),
+            type: 2,
+            starts_at: input.startsAt.toISOString(),
+            duration_minutes: input.durationMinutes,
+            raw_start_url_present: false,
+            raw_join_url_present: false,
+          },
+          password: 'meeting-passcode-fixture',
+        };
+      },
+      async registerLearner(input) {
+        return {
+          provider: 'zoom',
+          meeting_id_digest: createHash('sha256')
+            .update(input.meetingId)
+            .digest('hex')
+            .slice(0, 48),
+          occurrence_id: 'single',
+          learner_key: input.learnerKey,
+          registrant_id_digest: 'a'.repeat(48),
+          registrant_token: 'registrant-token-fixture',
+          registrant_token_ref: 'zoom_registrant_token_fixture',
+          join_url_digest: 'b'.repeat(48),
+          raw_join_url_present: false,
+        };
+      },
+      async deleteMeeting() {
+        return { already_absent: false };
+      },
+      participantSignature() {
+        return 'real_signature_contract_1234567890';
+      },
+      hostSignature() {
+        return 'real_host_signature_contract_1234567890';
+      },
+      async hostZakToken() {
+        return 'host-zak-token-fixture-value';
+      },
+    };
+    await createZoomClassOccurrenceService({
+      config,
+      repository: createZoomClassOccurrenceRepository(pool),
+      provider: zoomProvider,
+      clock: openClassClock,
+    }).provision(
+      {
+        account_key: config.accountKey,
+        product_key: config.productKey,
+        actor_user_ref: 'owner_real_fixture',
+        actor_role: 'owner',
+        session_key: 'owner_real_session',
+        capabilities: [],
+        authorized_households: [],
+        student_learner: null,
+      },
+      {
+        occurrence_key: occurrence.occurrence_key,
+        purpose: 'normal_class',
+        idempotency_key: 'real-class-provision-001',
+      },
+    );
+    const server = await listenForTest(
+      createApp({
+        config,
+        pool,
+        distDir,
+        clock: openClassClock,
+        zoomClassOccurrenceProvider: zoomProvider,
+      }),
+    );
     try {
       const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
       const issued = await issueLaunch(server.baseUrl, student, 'ot88-real-student-001');
@@ -216,7 +321,7 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       const siblingDashboardJson = await siblingDashboard.json();
       expect(siblingDashboard.status).toBe(200);
       expect(siblingDashboardJson.data.upcoming_classes[0]).toMatchObject({
-        provider_state: 'not_configured',
+        provider_state: 'configured',
         status: 'unavailable',
         launch_action: null,
       });
@@ -224,9 +329,7 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
         headers: { cookie: sibling.cookies },
       });
       expect(siblingLaunchPage.status).toBe(200);
-      expect(siblingLaunchPage.headers.get('content-security-policy')).not.toContain(
-        'source.zoom.us',
-      );
+      expect(siblingLaunchPage.headers.get('content-security-policy')).toContain('source.zoom.us');
       const siblingTheft = await bootstrapLaunch(server.baseUrl, sibling, 390);
       expect(siblingTheft.status, siblingTheft.text).toBe(403);
       expect(siblingTheft.json.code).toBe('FORBIDDEN');
@@ -246,33 +349,18 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
           meeting_number: '987654321',
           role: 0,
           user_display_name: 'Alpha Learner',
-          user_email_required: false,
+          user_email_required: true,
           leave_url: '/app/student',
           video_start_model: 'PARTICIPANT_CONSENT',
         },
       });
+      expect(bootstrap.json.data.sdk.registrant_token).toBe('registrant-token-fixture');
+      expect(bootstrap.json.data.sdk.user_email).toMatch(
+        /^zoom-registration\+[a-f0-9]{24}@onetimeonetime\.com$/,
+      );
       expect(bootstrap.json.data.sdk.customer_key).toMatch(/^zoom_ck_[a-f0-9]{24}$/);
       expect(bootstrap.json.data.sdk.customer_key.length).toBeLessThanOrEqual(36);
       expect(bootstrap.text).not.toMatch(/https?:\/\/|\/j\/|sdk-secret-fixture|s2s-secret-fixture/);
-
-      const participant = await pool.query(
-        `SELECT learner_key, customer_key, approved_display_name, join_state, audio_state,
-                video_state
-           FROM onetime.live_class_participants
-          WHERE account_key = $1
-            AND product_key = $2
-            AND occurrence_key = $3`,
-        [config.accountKey, config.productKey, bootstrap.json.data.occurrence.class_key],
-      );
-      expect(participant.rows).toHaveLength(1);
-      expect(participant.rows[0]).toMatchObject({
-        learner_key: 'learner_alpha',
-        customer_key: bootstrap.json.data.sdk.customer_key,
-        approved_display_name: 'Alpha Learner',
-        join_state: 'waiting',
-        audio_state: 'muted',
-        video_state: 'off',
-      });
 
       const questionResponse = await fetch(`${server.baseUrl}/api/v1/live-class/questions`, {
         method: 'POST',
@@ -328,7 +416,7 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
     }
   });
 
-  it('keeps normal Student real mode provider-off when the final canary gate is absent', async () => {
+  it('keeps normal Student real mode enrollment-gated without a legacy canary gate', async () => {
     config = loadConfig({
       NODE_ENV: 'test',
       ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
@@ -362,7 +450,7 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
       expect(dashboard.status).toBe(200);
       const classSummary = dashboardJson.data.upcoming_classes[0];
       expect(classSummary).toMatchObject({
-        provider_state: 'not_configured',
+        provider_state: 'configured',
         status: 'unavailable',
         launch_action: null,
       });
@@ -373,8 +461,8 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
         `/api/v1/portals/student/classes/${encodeURIComponent(classSummary.class_key)}/launch`,
         'ot88-provider-off-001',
       );
-      expect(deniedLaunch.status, deniedLaunch.text).toBe(503);
-      expect(deniedLaunch.json.code).toBe('ADAPTER_UNAVAILABLE');
+      expect(deniedLaunch.status, deniedLaunch.text).toBe(409);
+      expect(deniedLaunch.json.code).toBe('ENTITLEMENT_REQUIRED');
 
       const legacyLaunchPage = await fetch(
         `${server.baseUrl}/classroom/launch/unissued-grant/unissued-secret`,

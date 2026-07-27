@@ -9,6 +9,7 @@ import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
+import { createZoomClassOccurrenceRepository } from '../../../../packages/db/src/classroom/zoom-occurrence-repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
 import { createLiveClassRepository } from '../../../../packages/db/src/live-class/repository.ts';
 import { createZoomAdminTestResourceRepository } from '../../../../packages/db/src/live-class/zoom-admin-repository.ts';
@@ -141,6 +142,10 @@ import {
   createLiveClassService,
   createZoomAdminProvider,
   createZoomAdminService,
+  createZoomClassOccurrenceProvider,
+  createZoomClassOccurrenceHostLaunchPort,
+  createZoomClassOccurrenceService,
+  createZoomClassroomPorts,
   createZoomHostLaunchPort,
   createContentPortalAccessAdapter,
   createContentFactoryIntake,
@@ -215,7 +220,6 @@ import {
   verifyRecentEmailAssurance,
   verifySessionCsrf,
   verifyWhatsAppWebhookChallenge,
-  zoomCustomerKey,
   TishaBavIdempotencyConflictError,
   TishaBavJoinError,
   type LiveClassRepository,
@@ -224,11 +228,8 @@ import {
   type PortalServiceDeps,
   type ZoomHostLaunchPort,
   type ZoomAdminProviderPort,
+  type ZoomClassOccurrenceProvider,
 } from '../../../../packages/domain/src/index.ts';
-import type {
-  ZoomMeetingLaunchPort,
-  ZoomRegistrantPort,
-} from '../../../../packages/domain/src/providers/zoom.ts';
 import {
   buildProviderControlCenter,
   planProviderCanary,
@@ -284,6 +285,7 @@ type AppDeps = {
   clock?: () => Date;
   contentFactoryJobNotifier?: (intakeKey: string) => Promise<void> | void;
   zoomAdminProvider?: ZoomAdminProviderPort;
+  zoomClassOccurrenceProvider?: ZoomClassOccurrenceProvider;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
@@ -366,6 +368,7 @@ export function createApp({
   clock,
   contentFactoryJobNotifier,
   zoomAdminProvider,
+  zoomClassOccurrenceProvider,
 }: AppDeps) {
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
@@ -1530,11 +1533,33 @@ export function createApp({
     ...(resolvedZoomAdminProvider ? { provider: resolvedZoomAdminProvider } : {}),
     ...(clock ? { clock } : {}),
   });
-  const classroomZoomPorts = createClassroomZoomPorts({
+  const zoomClassOccurrenceRepository = createZoomClassOccurrenceRepository(pool);
+  const resolvedZoomClassOccurrenceProvider =
+    zoomClassOccurrenceProvider ?? createZoomClassOccurrenceProvider(config);
+  const zoomClassOccurrenceHostLaunchPort = createZoomClassOccurrenceHostLaunchPort({
     config,
-    liveClassRepository,
-    zoomHostLaunchPort,
-    clock: clock ?? (() => new Date()),
+    repository: zoomClassOccurrenceRepository,
+    ...(resolvedZoomClassOccurrenceProvider
+      ? { provider: resolvedZoomClassOccurrenceProvider }
+      : {}),
+    ...(clock ? { clock } : {}),
+  });
+  const resolvedZoomHostLaunchPort = zoomClassOccurrenceHostLaunchPort ?? zoomHostLaunchPort;
+  const zoomClassOccurrenceService = createZoomClassOccurrenceService({
+    config,
+    repository: zoomClassOccurrenceRepository,
+    ...(resolvedZoomClassOccurrenceProvider
+      ? { provider: resolvedZoomClassOccurrenceProvider }
+      : {}),
+    ...(clock ? { clock } : {}),
+  });
+  const classroomZoomPorts = createZoomClassroomPorts({
+    config,
+    repository: zoomClassOccurrenceRepository,
+    ...(resolvedZoomClassOccurrenceProvider
+      ? { provider: resolvedZoomClassOccurrenceProvider }
+      : {}),
+    ...(clock ? { clock } : {}),
   });
   const classroomRepository = createClassroomRepository(pool);
   const classroomService = createClassroomService({
@@ -1550,7 +1575,7 @@ export function createApp({
     questionCodec: new AesGcmPayloadCodec(
       `${config.mfaSecretEncryptionKey}:live-class-question-v1`,
     ),
-    ...(zoomHostLaunchPort ? { zoomHostLaunchPort } : {}),
+    ...(resolvedZoomHostLaunchPort ? { zoomHostLaunchPort: resolvedZoomHostLaunchPort } : {}),
     ...(clock ? { clock } : {}),
   });
   const gamificationRepository = createGamificationRepository(pool);
@@ -1633,6 +1658,88 @@ export function createApp({
       assuranceAt && Date.now() - new Date(String(assuranceAt)).getTime() <= 10 * 60 * 1000,
     );
   };
+  app.get(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/zoom',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      const actor = await resolvePortalActor(req);
+      if (!actor) {
+        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      try {
+        const data = await zoomClassOccurrenceService.status(
+          actor,
+          String(req.params.occurrenceKey ?? ''),
+        );
+        res.json({ success: true, data });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/zoom/provision',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!requireSameOriginPost(req, res, config)) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      const actor = await resolvePortalActor(req);
+      if (!actor) {
+        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      try {
+        const payload = z
+          .object({
+            purpose: z.enum(['normal_class', 'synthetic_acceptance']).default('normal_class'),
+            idempotency_key: z.string().trim().min(8).max(160),
+          })
+          .parse(stripCsrfField(req.body));
+        const data = await zoomClassOccurrenceService.provision(actor, {
+          occurrence_key: String(req.params.occurrenceKey ?? ''),
+          ...payload,
+        });
+        res.status(201).json({ success: true, data });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/classes/occurrences/:occurrenceKey/zoom/delete-synthetic',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!requireSameOriginPost(req, res, config)) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      const actor = await resolvePortalActor(req);
+      if (!actor) {
+        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      try {
+        const payload = z
+          .object({ idempotency_key: z.string().trim().min(8).max(160) })
+          .parse(stripCsrfField(req.body));
+        const data = await zoomClassOccurrenceService.deleteSynthetic(actor, {
+          occurrence_key: String(req.params.occurrenceKey ?? ''),
+          ...payload,
+        });
+        res.json({ success: true, data });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
   app.use(
     '/api/v1/contact-operations',
     createContactOperationsRouter({
@@ -1678,9 +1785,7 @@ export function createApp({
     }
     const actor = await resolvePortalActor(req);
     const zoomSdkAllowedForStudent =
-      zoomHostLaunchPort !== undefined &&
-      actor?.actor_role === 'student' &&
-      actor.student_learner?.learner_key === config.zoomClassroomCanaryLearnerKey;
+      resolvedZoomClassOccurrenceProvider !== undefined && actor?.actor_role === 'student';
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
     res.setHeader('Referrer-Policy', 'no-referrer');
@@ -4971,119 +5076,6 @@ function resetPasswordPageHtml(csrfToken: string) {
   <script type="module" src="/assets/public.js"></script>
 </body>
 </html>`;
-}
-
-function createClassroomZoomPorts(input: {
-  config: AppConfig;
-  liveClassRepository: LiveClassRepository;
-  zoomHostLaunchPort: ZoomHostLaunchPort | undefined;
-  clock: () => Date;
-}):
-  | {
-      zoomMeetingLaunchPort: ZoomMeetingLaunchPort;
-      zoomRegistrantPort: ZoomRegistrantPort;
-      zoomRealProviderReady: true;
-    }
-  | Record<string, never> {
-  const zoomHostLaunchPort = input.zoomHostLaunchPort;
-  if (!zoomHostLaunchPort) return {};
-
-  const zoomRegistrantPort: ZoomRegistrantPort = {
-    async resolveRegistrant({ config, occurrence, eligibility, grant }) {
-      if (
-        config.zoomClassroomProviderMode !== 'real' ||
-        !config.zoomClassroomRealProviderEnabled ||
-        !config.zoomClassroomCanaryEnabled ||
-        config.zoomClassroomCanaryLearnerKey !== eligibility.learner_key
-      ) {
-        return {
-          provider: 'zoom',
-          mode: 'real',
-          registration_state: 'not_configured',
-          registrant_token_ref: stableKey('zoom_real_registrant_unavailable', [
-            occurrence.occurrence_key,
-            eligibility.learner_key,
-          ]),
-          provider_registrant_ref_digest: createHash('sha256')
-            .update(`unavailable:${occurrence.occurrence_key}:${eligibility.learner_key}`)
-            .digest('hex'),
-          raw_join_url_present: false,
-        };
-      }
-      const tokenRef = stableKey('zoom_real_registrant', [
-        occurrence.occurrence_key,
-        eligibility.learner_key,
-        grant.grant_key,
-      ]);
-      return {
-        provider: 'zoom',
-        mode: 'real',
-        registration_state: 'real_ready',
-        registrant_token_ref: tokenRef,
-        provider_registrant_ref_digest: createHash('sha256').update(tokenRef).digest('hex'),
-        raw_join_url_present: false,
-      };
-    },
-  };
-
-  const zoomMeetingLaunchPort: ZoomMeetingLaunchPort = {
-    async resolveLaunchMaterial({ config, occurrence, eligibility, registrant, selectedView }) {
-      if (
-        config.zoomClassroomProviderMode !== 'real' ||
-        registrant.registration_state !== 'real_ready' ||
-        selectedView !== 'client'
-      ) {
-        throw new PortalServiceError('PROVIDER_NOT_READY', 'Classroom provider is not configured.');
-      }
-      const customerKey = zoomCustomerKey([occurrence.occurrence_key, eligibility.learner_key]);
-      await input.liveClassRepository.upsertParticipant({
-        actor: {
-          account_key: config.accountKey,
-          product_key: config.productKey,
-        },
-        occurrence_key: occurrence.occurrence_key,
-        participant_key: stableKey('zoom_participant', [occurrence.occurrence_key, customerKey]),
-        learner_key: eligibility.learner_key,
-        customer_key: customerKey,
-        approved_display_name: eligibility.display_name,
-        join_state: 'waiting',
-        audio_state: 'muted',
-        video_state: 'off',
-        active_speaker: false,
-        spotlighted: false,
-      });
-      const launch = await zoomHostLaunchPort.resolveTestParticipantLaunch({
-        occurrenceKey: occurrence.occurrence_key,
-        customerKey,
-        userName: eligibility.display_name,
-        now: input.clock(),
-      });
-      return {
-        mode: 'real',
-        sdk_web_version: launch.sdk_web_version,
-        meeting_number: launch.meeting_number,
-        signature: launch.signature,
-        meeting_password: launch.password,
-        customer_key: launch.customer_key,
-        role: 0,
-        user_display_name: launch.user_name,
-        user_email_required: false,
-        leave_url: '/app/student',
-        video_start_model: 'PARTICIPANT_CONSENT',
-        provider_meeting_ref_digest: createHash('sha256')
-          .update(`zoom-meeting:${launch.meeting_number}`)
-          .digest('hex'),
-        official_sdk_view: 'client',
-        official_client_method: 'ZoomMtg.preLoadWasm.prepareWebSDK.init.join',
-      };
-    },
-  };
-
-  return {
-    zoomMeetingLaunchPort,
-    zoomRegistrantPort,
-    zoomRealProviderReady: true,
-  };
 }
 
 function classroomLaunchHtml() {

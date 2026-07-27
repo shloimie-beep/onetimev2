@@ -23,6 +23,64 @@ import {
 import { DeterministicTestPayloadCodec } from '../../../packages/domain/src/telegram/crypto.ts';
 
 describe('OT-103 Zoom provider fulfillment contracts', () => {
+  it('creates one scheduled app-owned class meeting with provider invitations disabled', async () => {
+    const client = createZoomRestClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        if (String(input).startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        expect(String(input)).toBe('https://api.zoom.us/v2/users/host_test/meetings');
+        expect(JSON.parse(String(init?.body))).toMatchObject({
+          topic: 'Mishnayos Class',
+          type: 2,
+          start_time: '2026-07-16T16:00:00.000Z',
+          timezone: 'Asia/Jerusalem',
+          duration: 60,
+          settings: {
+            approval_type: 0,
+            email_notification: false,
+            registrants_confirmation_email: false,
+            registrants_email_notification: false,
+            join_before_host: false,
+            mute_upon_entry: true,
+            participant_video: false,
+            waiting_room: true,
+          },
+        });
+        return jsonResponse({
+          id: '987654321',
+          type: 2,
+          password: 'private-class-passcode',
+          start_url: 'https://zoom.us/private-host-start',
+          join_url: 'https://zoom.us/private-class-join',
+        });
+      },
+    });
+
+    const created = await client.createScheduledClassMeeting({
+      hostUserId: 'host_test',
+      startsAt: new Date('2026-07-16T16:00:00.000Z'),
+      topic: 'Mishnayos Class',
+      durationMinutes: 60,
+    });
+
+    expect(created.meeting).toMatchObject({
+      provider: 'zoom',
+      meeting_id: '987654321',
+      type: 2,
+      raw_start_url_present: false,
+      raw_join_url_present: false,
+    });
+    expect(JSON.stringify(created.meeting)).not.toMatch(/https?:\/\/|zoom\.us|private-class/i);
+  });
+
   it('creates a sanitized fixed daily recurring meeting and resolves the local occurrence', async () => {
     const calls: Array<{ url: string; init: RequestInit | undefined }> = [];
     const client = createZoomRestClient({
@@ -901,6 +959,7 @@ function grantCapturingRepository(onGrant: (expiresAt: Date) => void): Classroom
     ensureDailyOccurrence: async () => occurrence,
     getOccurrence: async () => occurrence,
     getLearnerEligibility: async () => eligibility,
+    isLearnerEnrolled: async () => true,
     issueLaunchGrant: async (args) => {
       onGrant(args.expires_at);
       return {
