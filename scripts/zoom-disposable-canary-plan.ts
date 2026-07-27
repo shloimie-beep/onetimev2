@@ -15,6 +15,8 @@ export const ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD =
   REVIEWED_ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD;
 export const ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION =
   'RECONCILE_DELETE_ONE_EXISTING_PR105_96E54D_MEETING_ONCE';
+export const ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION =
+  'CLASSIFY_ONE_EXISTING_PR105_96E54D_MEETING_SCOPE_ONCE';
 export const ZOOM_DISPOSABLE_CANARY_LEARNER_KEY = 'full_app_preview_student_1';
 export const ZOOM_DISPOSABLE_CANARY_PURPOSE = 'distinct_disposable_pr105_canary';
 export const ZOOM_DISPOSABLE_CANARY_TOPIC_PREFIX = 'One Time PR105 disposable control ';
@@ -133,6 +135,9 @@ export type ZoomDisposableCanaryReconciliationPreflight = ZoomDisposableCanaryPr
   repairHead: string;
 };
 
+export type ZoomDisposableCanaryScopeDiagnosticPreflight =
+  ZoomDisposableCanaryReconciliationPreflight;
+
 export function assertZoomDisposableCanaryProvisionPreflight(
   source: NodeJS.ProcessEnv,
   options: { now?: Date; repositoryRoot?: string } = {},
@@ -198,6 +203,44 @@ export function assertZoomDisposableCanaryReconciliationPreflight(
   );
   if (hasBoundInput(source, 'ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION')) {
     fail('PROVISION_AUTHORIZATION_MUST_BE_CLEARED');
+  }
+  const repairHead = requireValue(source, 'ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA');
+  const deployedHead = requireValue(source, 'RAILWAY_GIT_COMMIT_SHA');
+  if (
+    !fullSha.test(repairHead) ||
+    repairHead === ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD ||
+    repairHead !== deployedHead
+  ) {
+    fail('REPAIR_SOURCE_SHA');
+  }
+  return {
+    ...shared,
+    executionHead: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+    repairHead,
+  };
+}
+
+export function assertZoomDisposableCanaryScopeDiagnosticPreflight(
+  source: NodeJS.ProcessEnv,
+  options: { repositoryRoot?: string } = {},
+): ZoomDisposableCanaryScopeDiagnosticPreflight {
+  const shared = assertSharedIsolationAndScope(source, options.repositoryRoot);
+  requireExact(
+    source,
+    'ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA',
+    ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+  );
+  requireExact(
+    source,
+    'ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION',
+    ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION,
+  );
+  for (const variable of [
+    'ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION',
+    'ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION',
+    'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION',
+  ]) {
+    if (hasBoundInput(source, variable)) fail(`DIAGNOSTIC_FORBIDDEN_${variable}`);
   }
   const repairHead = requireValue(source, 'ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA');
   const deployedHead = requireValue(source, 'RAILWAY_GIT_COMMIT_SHA');

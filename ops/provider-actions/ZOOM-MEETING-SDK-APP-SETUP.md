@@ -479,11 +479,47 @@ Official references:
 - https://developers.zoom.us/docs/meeting-sdk/web/client-view/participant-events/
 - https://developers.zoom.us/docs/meeting-sdk/web/component-view/supported/
 - https://developers.zoom.us/docs/build/minimum-version/
- The protected state and evidence must never contain raw meeting IDs, passcodes, join URLs, SDK or
-S2S credentials, ZAK, signatures, access tokens, participant identifiers, customer keys, emails,
-or private destinations.
+  The protected state and evidence must never contain raw meeting IDs, passcodes, join URLs, SDK or
+  S2S credentials, ZAK, signatures, access tokens, participant identifiers, customer keys, emails,
+  or private destinations.
+
+## Existing-meeting read-only scope diagnostic
+
+This diagnostic is the only current continuation after PR #125. It requires separate exact Board
+authority and the preserved signed schema-v3 journal at sequence `4`, phase `cleanup_required`,
+failure category `registration_outcome_ambiguous`, zero registrants, and no tombstone. It does not
+authorize cleanup.
+
+Deploy only an immutable accepted source containing
+`zoom:real-control:disposable:classify-scope` to the preserved isolated runner. Keep every
+sink/real/canary gate off and retain the original operation ID, protected journal path, protected
+keyholder path, origin, learner key, and attestation. Require:
+
+- `ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA=96e54d9688ff174ac8265ce3b3a6216abb6292dc`
+- `ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA=<exact accepted diagnostic source SHA>`
+- `RAILWAY_GIT_COMMIT_SHA=<the same exact accepted diagnostic source SHA>`
+- `ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION=CLASSIFY_ONE_EXISTING_PR105_96E54D_MEETING_SCOPE_ONCE`
+- `ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION` absent
+- `ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION` absent
+- `ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION` absent
+
+Run only `npm run zoom:real-control:disposable:classify-scope`. It must obtain the target only from
+the verified signed journal, match the protected keyholder host before constructing the provider
+lifecycle, call only the reviewed `inspectExactMeeting` path, and finish with OAuth `1`, meeting GET
+`1`, and resource POST/PATCH/DELETE all `0`.
+
+The sanitized output is limited to phase `cleanup_required`, sequence `4`, the reviewed
+reconciliation predicate booleans, `start_delta_class` (`exact`,
+`within_reviewed_tolerance`, `outside_reviewed_tolerance`, or `unparseable`), and provider counts.
+It must not contain a raw identifier, topic, agenda, timestamp, delta, notification value,
+alternative host, credential, token, URL, payload, or reversible digest. The journal bytes must be
+unchanged.
 
 ## Existing-meeting reconciliation cleanup only
+
+This cleanup contract is not current execution authority while the scope mismatch is unresolved.
+Do not run it unless the diagnostic result has been accepted and the Board later grants one new
+exact cleanup authorization.
 
 This is a one-time repair for the existing signed schema-v3 journal whose create source is exactly
 `96e54d9688ff174ac8265ce3b3a6216abb6292dc`, sequence is exactly `4`, phase is

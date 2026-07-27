@@ -6,6 +6,7 @@ import {
   assertZoomDisposableCanaryProvisionPreflight,
   assertZoomDisposableCanaryReconciliationJournal,
   assertZoomDisposableCanaryReconciliationPreflight,
+  assertZoomDisposableCanaryScopeDiagnosticPreflight,
   buildZoomDisposableCanarySanitizedResult,
   createZoomDisposableCanaryIntent,
   parseZoomDisposableCanaryState,
@@ -16,6 +17,7 @@ import {
   ZOOM_DISPOSABLE_CANARY_ORIGIN,
   ZOOM_DISPOSABLE_CANARY_PROVISION_AUTHORIZATION,
   ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION,
+  ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION,
 } from '../../../scripts/zoom-disposable-canary-plan.ts';
 
 const operationId = '123e4567-e89b-42d3-a456-426614174000';
@@ -60,6 +62,17 @@ function reconciliationEnvironment(): NodeJS.ProcessEnv {
     ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION: ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION,
     ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION:
       ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION,
+  };
+}
+
+function diagnosticEnvironment(): NodeJS.ProcessEnv {
+  const source = reconciliationEnvironment();
+  delete source.ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION;
+  delete source.ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION;
+  return {
+    ...source,
+    ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION:
+      ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION,
   };
 }
 
@@ -199,6 +212,46 @@ describe('distinct disposable PR #105 Zoom canary plan', () => {
         { repositoryRoot },
       ),
     ).toThrow('ZOOM_DISPOSABLE_CANARY_PREFLIGHT_FAILED:REPAIR_SOURCE_SHA');
+  });
+
+  it('binds the scope diagnostic to the original journal and exact deployed diagnostic source', () => {
+    expect(
+      assertZoomDisposableCanaryScopeDiagnosticPreflight(diagnosticEnvironment(), {
+        repositoryRoot,
+      }),
+    ).toMatchObject({
+      operationId,
+      executionHead: ZOOM_DISPOSABLE_CANARY_ORIGINAL_EXECUTION_HEAD,
+      repairHead: 'b'.repeat(40),
+      origin: ZOOM_DISPOSABLE_CANARY_ORIGIN,
+    });
+  });
+
+  it.each([
+    ['ZOOM_REAL_CONTROL_PROVISION_AUTHORIZATION', ''],
+    ['ZOOM_DISPOSABLE_CANARY_CLEANUP_AUTHORIZATION', ''],
+    ['ZOOM_DISPOSABLE_CANARY_RECONCILIATION_AUTHORIZATION', ''],
+  ])('rejects %s from the mutation-impossible diagnostic environment', (variable, value) => {
+    expect(() =>
+      assertZoomDisposableCanaryScopeDiagnosticPreflight(
+        { ...diagnosticEnvironment(), [variable]: value },
+        { repositoryRoot },
+      ),
+    ).toThrow(`ZOOM_DISPOSABLE_CANARY_PREFLIGHT_FAILED:DIAGNOSTIC_FORBIDDEN_${variable}`);
+  });
+
+  it.each([
+    ['ZOOM_DISPOSABLE_CANARY_SCOPE_DIAGNOSTIC_AUTHORIZATION', 'CLASSIFY_ANY_MEETING'],
+    ['ZOOM_REAL_CONTROL_EXPECTED_SOURCE_SHA', 'c'.repeat(40)],
+    ['ZOOM_DISPOSABLE_CANARY_REPAIR_EXPECTED_SOURCE_SHA', 'c'.repeat(40)],
+    ['RAILWAY_GIT_COMMIT_SHA', 'c'.repeat(40)],
+  ])('rejects diagnostic source or authorization drift in %s', (variable, value) => {
+    expect(() =>
+      assertZoomDisposableCanaryScopeDiagnosticPreflight(
+        { ...diagnosticEnvironment(), [variable]: value },
+        { repositoryRoot },
+      ),
+    ).toThrow('ZOOM_DISPOSABLE_CANARY_PREFLIGHT_FAILED');
   });
 
   it('binds a signed v3 journal to source, operation, exact topic, and Student 1', () => {
