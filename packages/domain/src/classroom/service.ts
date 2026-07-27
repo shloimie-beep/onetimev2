@@ -116,7 +116,7 @@ export type ClassroomRepository = {
     eligibility: ClassroomEligibility;
     occurrence: ClassroomOccurrenceRecord;
     grant_key: string;
-    secret_digest: string;
+    launch_reference_digest: string;
     session_key_digest: string;
     idempotency_key: string;
     request_hash: string;
@@ -124,10 +124,9 @@ export type ClassroomRepository = {
     now: Date;
     expires_at: Date;
   }): Promise<ClassroomLaunchGrantRecord>;
-  consumeLaunchGrant(args: {
+  consumePendingLaunchGrant(args: {
     actor: PortalActorContext;
-    grant_key: string;
-    secret_digest: string;
+    learner_key: string;
     session_key_digest: string;
     now: Date;
   }): Promise<ClassroomLaunchGrantRecord | null>;
@@ -304,14 +303,6 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         occurrence.occurrence_key,
         idempotencyKey,
       ]);
-      const secret = deterministicGrantSecret(deps.config, {
-        grantKey,
-        actorUserRef: args.actor.actor_user_ref,
-        sessionKey: args.actor.session_key,
-        learnerKey: args.learner.learner_key,
-        occurrenceKey: occurrence.occurrence_key,
-        idempotencyKey,
-      });
       const grantTtlSeconds = Math.min(
         5 * 60,
         Math.max(30, deps.config.zoomClassroomJoinGrantTtlSeconds),
@@ -322,8 +313,11 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         eligibility,
         occurrence,
         grant_key: grantKey,
-        secret_digest: digestSecret(deps.config, secret),
-        session_key_digest: digestSecret(deps.config, args.actor.session_key),
+        launch_reference_digest: digestClassroomBinding(
+          deps.config,
+          `non-bearer-reference:${grantKey}`,
+        ),
+        session_key_digest: digestClassroomBinding(deps.config, args.actor.session_key),
         idempotency_key: idempotencyKey,
         request_hash: fingerprint({
           actor: args.actor.actor_user_ref,
@@ -352,9 +346,7 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         label: 'Join class',
         kind: 'class_launch' as const,
         method: 'GET' as const,
-        href: `/classroom/launch/${encodeURIComponent(grant.grant_key)}/${encodeURIComponent(
-          secret,
-        )}`,
+        href: '/classroom/launch',
         launch_token_ref: grant.grant_key,
         expires_at: grant.expires_at,
       };
@@ -364,19 +356,14 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
       actor: PortalActorContext;
       payload: ClassroomLaunchBootstrapPayload;
     }): Promise<ClassroomLaunchBootstrapResponse> {
-      const parsed = parseLaunchPath(args.payload.launch_path);
-      if (!parsed) {
-        throw new PortalServiceError('FORBIDDEN', 'The classroom launch reference is invalid.');
-      }
       if (args.actor.actor_role !== 'student' || !args.actor.student_learner) {
         throw new PortalServiceError('FORBIDDEN', 'This classroom requires a student session.');
       }
       const now = clock();
-      const grant = await deps.repository.consumeLaunchGrant({
+      const grant = await deps.repository.consumePendingLaunchGrant({
         actor: args.actor,
-        grant_key: parsed.grantKey,
-        secret_digest: digestSecret(deps.config, parsed.secret),
-        session_key_digest: digestSecret(deps.config, args.actor.session_key),
+        learner_key: args.actor.student_learner.learner_key,
+        session_key_digest: digestClassroomBinding(deps.config, args.actor.session_key),
         now,
       });
       if (!grant) {
@@ -804,46 +791,10 @@ function selectView(viewportWidth: number | undefined, config: AppConfig): Class
   return 'component';
 }
 
-function deterministicGrantSecret(
-  config: AppConfig,
-  input: {
-    grantKey: string;
-    actorUserRef: string;
-    sessionKey: string;
-    learnerKey: string;
-    occurrenceKey: string;
-    idempotencyKey: string;
-  },
-) {
-  return createHmac('sha256', config.authCsrfSecret)
-    .update(
-      [
-        CLASSROOM_POLICY_VERSION,
-        input.grantKey,
-        input.actorUserRef,
-        input.sessionKey,
-        input.learnerKey,
-        input.occurrenceKey,
-        input.idempotencyKey,
-      ].join('\u001f'),
-    )
-    .digest('base64url')
-    .slice(0, 43);
-}
-
-function digestSecret(config: AppConfig, value: string) {
+function digestClassroomBinding(config: AppConfig, value: string) {
   return createHmac('sha256', `${config.authCsrfSecret}:ot88-classroom`)
     .update(value)
     .digest('hex');
-}
-
-function parseLaunchPath(path: string) {
-  const match = path.match(/^\/classroom\/launch\/([^/]+)\/([^/?#]+)$/);
-  if (!match) return null;
-  return {
-    grantKey: decodeURIComponent(match[1] ?? ''),
-    secret: decodeURIComponent(match[2] ?? ''),
-  };
 }
 
 function questionCodecContext(

@@ -62,11 +62,12 @@ export const classroomLaunchIssueResponseSchema = z.object({
 });
 export type ClassroomLaunchIssueResponse = z.infer<typeof classroomLaunchIssueResponseSchema>;
 
-export const classroomLaunchBootstrapPayloadSchema = z.object({
-  launch_path: z.string().trim().min(12).max(240),
-  viewport_width: z.number().int().min(0).max(10000).optional(),
-  user_agent_hint: z.string().trim().max(160).optional(),
-});
+export const classroomLaunchBootstrapPayloadSchema = z
+  .object({
+    viewport_width: z.number().int().min(0).max(10000).optional(),
+    user_agent_hint: z.string().trim().max(160).optional(),
+  })
+  .strict();
 export type ClassroomLaunchBootstrapPayload = z.infer<typeof classroomLaunchBootstrapPayloadSchema>;
 
 export const classroomSelectedViewSchema = z.enum(['client', 'component']);

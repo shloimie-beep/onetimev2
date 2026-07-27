@@ -1642,7 +1642,14 @@ export function createApp({
     }),
   );
 
-  app.get('/classroom/launch/:grantKey/:secret', async (req: RequestWithTrace, res) => {
+  app.get(/^\/classroom\/launch\/.+$/, (_req, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(410).type('html').send(expiredClassroomLaunchHtml());
+  });
+
+  app.get('/classroom/launch', async (req: RequestWithTrace, res) => {
     const session = await sessionFromRequest(req, pool, config);
     if (!session) {
       res.redirect(302, '/login?return_to=%2Fapp%2Fstudent');
@@ -4986,6 +4993,30 @@ function classroomLaunchHtml() {
     </section>
   </main>
   <script type="module" src="/assets/app-classroom-launch.js"></script>
+</body>
+</html>`;
+}
+
+function expiredClassroomLaunchHtml() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>Classroom link expired | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace classroom-launch-page">
+    <section class="state-panel error" aria-labelledby="classroom-launch-expired-title">
+      <h1 id="classroom-launch-expired-title">Classroom link expired</h1>
+      <p>Return to the Student Portal and choose Join class again.</p>
+      <a class="button button-primary" href="/app/student">Return to Student Portal</a>
+    </section>
+  </main>
 </body>
 </html>`;
 }

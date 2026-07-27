@@ -223,7 +223,7 @@
     "/app/live-stage/:stageSession": "owner-admin",
     "/app/parent": "parent",
     "/app/student": "student",
-    "/classroom/launch/:grantKey/:secret": "student"
+    "/classroom/launch": "student"
   },
   "ticker": {
     "allowlist": ["/"],

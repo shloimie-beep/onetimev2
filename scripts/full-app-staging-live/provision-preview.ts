@@ -279,8 +279,8 @@ export async function runFullAppProvision(
         })
       : null;
     const launchReady =
-      Boolean(protectedLaunch?.href?.startsWith('/classroom/launch/')) &&
-      !String(protectedLaunch?.href ?? '').includes('zoom');
+      protectedLaunch?.href === '/classroom/launch' &&
+      !String(protectedLaunch.href).includes('zoom');
     students.push({
       label: fixture.label,
       learner_key: learner.learner_key,

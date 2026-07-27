@@ -9,7 +9,7 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
     await loginStudent(page);
 
     await page.getByRole('button', { name: 'Join class' }).click();
-    await page.waitForURL('**/classroom/launch/**');
+    await page.waitForURL('**/classroom/launch');
     await expect(page.locator('[data-mocked-zoom-sdk="true"]')).toBeVisible();
     await expect(page.locator('[data-mocked-zoom-sdk="true"]')).toHaveAttribute(
       'data-selected-view',
@@ -30,7 +30,7 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
     await loginStudent(page);
 
     await page.getByRole('button', { name: 'Join class' }).click();
-    await page.waitForURL('**/classroom/launch/**');
+    await page.waitForURL('**/classroom/launch');
     await expect(page.locator('[data-mocked-zoom-sdk="true"]')).toBeVisible();
     await expect(page.locator('[data-mocked-zoom-sdk="true"]')).toHaveAttribute(
       'data-selected-view',
@@ -69,7 +69,7 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
 
     await loginStudent(page);
     await page.getByRole('button', { name: 'Join class' }).click();
-    await page.waitForURL('**/classroom/launch/**');
+    await page.waitForURL('**/classroom/launch');
     await expect(page.locator('[data-classroom-status]')).toContainText(
       'Mock provider temporarily unavailable.',
     );
@@ -90,7 +90,7 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
     let bootstrapPosts = 0;
     const unexpectedZoomRequests: string[] = [];
 
-    await page.route('**/classroom/launch/**', async (route) => {
+    await page.route('**/classroom/launch', async (route) => {
       const response = await route.fetch();
       await route.fulfill({
         response,
@@ -200,7 +200,7 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
 
     await loginStudent(page);
     await page.getByRole('button', { name: 'Join class' }).click();
-    await page.waitForURL('**/classroom/launch/**');
+    await page.waitForURL('**/classroom/launch');
     await expect(page.locator('[data-classroom-status]')).toContainText(
       'Meeting SDK participant join was rejected',
     );
@@ -236,11 +236,11 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
     await page.waitForURL('**/app/student');
   });
 
-  test('checks provider routes without interpreting opaque classroom secrets', () => {
-    const target = providerSafeRequestTarget(
-      'http://127.0.0.1:3100/classroom/launch/classroom_grant_example/kNUEnf0bBNASCg',
-    );
-    expect(target).toContain('/classroom/launch/opaque-grant/opaque-secret');
+  test('checks provider routes without receiving a classroom launch reference', () => {
+    const target = providerSafeRequestTarget('http://127.0.0.1:3100/classroom/launch');
+    expect(target).toBe('http://127.0.0.1:3100/classroom/launch');
+    expect(new URL(target).search).toBe('');
+    expect(new URL(target).hash).toBe('');
     expect(target).not.toMatch(/bna|operations/i);
     expect(providerSafeRequestTarget('http://127.0.0.1:3100/operations/jobs')).toMatch(
       /operations/i,
@@ -266,22 +266,32 @@ function monitorRequests(page: Page) {
 async function assertNoRawZoomLeakage(page: Page, requests: Request[]) {
   const body = await page.textContent('body');
   const html = await page.content();
-  expect(`${body}\n${html}`).not.toMatch(/https?:\/\/|zoom\.us|\/j\//i);
+  expect(`${body}\n${html}`).not.toMatch(
+    /https?:\/\/|zoom\.us|\/j\/|classroom_grant_|launch[_-]?secret/i,
+  );
+  const currentUrl = new URL(page.url());
+  expect(currentUrl.pathname).toBe('/classroom/launch');
+  expect(currentUrl.search).toBe('');
+  expect(currentUrl.hash).toBe('');
+  const navigationTargets = await page.evaluate(() =>
+    performance.getEntriesByType('navigation').map((entry) => entry.name),
+  );
+  expect(navigationTargets.join('\n')).not.toMatch(/\/classroom\/launch\/|classroom_grant_/i);
   const externalRequests = requests
     .map((request) => new URL(request.url()))
     .filter((url) => url.origin !== 'http://127.0.0.1:3100');
   expect(externalRequests.map((url) => url.href)).toEqual([]);
-  expect(
-    requests.map((request) => providerSafeRequestTarget(request.url())).join('\n'),
-  ).not.toMatch(/zoom\.us|source\.zoom\.us|zoomcdn|bna|operations/i);
+  const requestTargets = requests.map((request) => providerSafeRequestTarget(request.url()));
+  expect(requestTargets.join('\n')).not.toMatch(
+    /zoom\.us|source\.zoom\.us|zoomcdn|bna|operations|classroom_grant_/i,
+  );
+  for (const target of requestTargets) {
+    expect(new URL(target).pathname).not.toMatch(/^\/classroom\/launch\/.+/);
+  }
 }
 
 function providerSafeRequestTarget(requestUrl: string) {
-  const url = new URL(requestUrl);
-  if (/^\/classroom\/launch\/[^/]+\/[^/]+$/u.test(url.pathname)) {
-    url.pathname = '/classroom/launch/opaque-grant/opaque-secret';
-  }
-  return url.href;
+  return new URL(requestUrl).href;
 }
 
 function fakeZoomSignature(sdkKey: string) {

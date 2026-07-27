@@ -1786,7 +1786,7 @@
       "action_id": "portal.student.classroom.launch_page.retry.button",
       "label": "Retry",
       "surface": "button",
-      "route": "/classroom/launch/:grantKey/:secret",
+      "route": "/classroom/launch",
       "roles": ["student"],
       "capability": "student:class:launch",
       "handler": {

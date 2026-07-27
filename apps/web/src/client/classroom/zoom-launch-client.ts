@@ -102,7 +102,6 @@ async function bootstrap() {
           'x-csrf-token': csrfToken(),
         },
         body: JSON.stringify({
-          launch_path: location.pathname,
           viewport_width: Math.round(window.innerWidth || 0),
           user_agent_hint: navigator.userAgent.slice(0, 120),
         }),

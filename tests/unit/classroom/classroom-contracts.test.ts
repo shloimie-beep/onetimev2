@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { loadConfig } from '../../../packages/config/src/index.ts';
-import { classroomLaunchBootstrapResponseSchema } from '../../../packages/contracts/src/classroom/index.ts';
+import {
+  classroomLaunchBootstrapPayloadSchema,
+  classroomLaunchBootstrapResponseSchema,
+} from '../../../packages/contracts/src/classroom/index.ts';
 import {
   createClassroomService,
   type ClassroomEligibility,
@@ -19,6 +22,30 @@ import {
 import { DeterministicTestPayloadCodec } from '../../../packages/domain/src/telegram/crypto.ts';
 
 describe('OT-88 classroom contracts and policy', () => {
+  it('accepts only non-bearing launch bootstrap context', () => {
+    expect(
+      classroomLaunchBootstrapPayloadSchema.parse({
+        viewport_width: 390,
+        user_agent_hint: 'test-browser',
+      }),
+    ).toEqual({
+      viewport_width: 390,
+      user_agent_hint: 'test-browser',
+    });
+    expect(() =>
+      classroomLaunchBootstrapPayloadSchema.parse({
+        viewport_width: 390,
+        launch_path: '/classroom/launch/grant/secret',
+      }),
+    ).toThrow();
+    expect(() =>
+      classroomLaunchBootstrapPayloadSchema.parse({
+        viewport_width: 390,
+        launch_token_ref: 'classroom_grant_contract',
+      }),
+    ).toThrow();
+  });
+
   it('keeps the daily class at 19:00 Asia/Jerusalem across seasonal offsets', () => {
     const summer = resolveDailyClassWindow(new Date('2026-07-16T10:00:00.000Z'));
     const winter = resolveDailyClassWindow(new Date('2026-01-16T10:00:00.000Z'));
@@ -363,7 +390,7 @@ function failingRepository(): ClassroomRepository {
     getOccurrence: fail,
     getLearnerEligibility: fail,
     issueLaunchGrant: fail,
-    consumeLaunchGrant: fail,
+    consumePendingLaunchGrant: fail,
     upsertAttendanceAttempt: fail,
     recordAttendanceEvent: fail,
     submitQuestion: fail,

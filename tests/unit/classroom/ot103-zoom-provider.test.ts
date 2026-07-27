@@ -887,7 +887,7 @@ function grantCapturingRepository(onGrant: (expiresAt: Date) => void): Classroom
         consumed_at: null,
       };
     },
-    consumeLaunchGrant: fail,
+    consumePendingLaunchGrant: fail,
     upsertAttendanceAttempt: fail,
     recordAttendanceEvent: fail,
     submitQuestion: fail,

@@ -23,7 +23,7 @@ export function createClassroomRepository(pool: DbPool): ClassroomRepository {
     getOccurrence: (args) => getOccurrence(pool, args.actor, args.occurrence_key),
     getLearnerEligibility: (args) => getLearnerEligibility(pool, args.actor, args.learner_key),
     issueLaunchGrant: (args) => issueLaunchGrant(pool, args),
-    consumeLaunchGrant: (args) => consumeLaunchGrant(pool, args),
+    consumePendingLaunchGrant: (args) => consumePendingLaunchGrant(pool, args),
     upsertAttendanceAttempt: (args) => upsertAttendanceAttempt(pool, args),
     recordAttendanceEvent: (args) => recordAttendanceEvent(pool, args.actor, args.payload),
     submitQuestion: (args) => submitQuestion(pool, args),
@@ -188,6 +188,15 @@ async function issueLaunchGrant(
   args: Parameters<ClassroomRepository['issueLaunchGrant']>[0],
 ) {
   return inTransaction(pool, async (client) => {
+    if (
+      !(await lockLaunchLearner(client, {
+        account_key: args.actor.account_key,
+        product_key: args.actor.product_key,
+        learner_key: args.eligibility.learner_key,
+      }))
+    ) {
+      throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+    }
     const existing = await client.query(
       `SELECT *
          FROM onetime.classroom_launch_grants
@@ -238,9 +247,49 @@ async function issueLaunchGrant(
           'That classroom launch expired. Return to the student portal to rejoin.',
         );
       }
+      await client.query(
+        `UPDATE onetime.classroom_launch_grants
+            SET status = 'revoked'
+          WHERE account_key = $1
+            AND product_key = $2
+            AND actor_user_ref = $3
+            AND session_key_digest = $4
+            AND learner_key = $5
+            AND occurrence_key = $6
+            AND status = 'issued'
+            AND grant_key <> $7`,
+        [
+          args.actor.account_key,
+          args.actor.product_key,
+          args.actor.actor_user_ref,
+          args.session_key_digest,
+          args.eligibility.learner_key,
+          args.occurrence.occurrence_key,
+          String(existingRow.grant_key),
+        ],
+      );
       return mapGrant(existingRow);
     }
 
+    await client.query(
+      `UPDATE onetime.classroom_launch_grants
+          SET status = 'revoked'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND actor_user_ref = $3
+          AND session_key_digest = $4
+          AND learner_key = $5
+          AND occurrence_key = $6
+          AND status = 'issued'`,
+      [
+        args.actor.account_key,
+        args.actor.product_key,
+        args.actor.actor_user_ref,
+        args.session_key_digest,
+        args.eligibility.learner_key,
+        args.occurrence.occurrence_key,
+      ],
+    );
     const inserted = await client.query(
       `INSERT INTO onetime.classroom_launch_grants
          (grant_key, secret_digest, account_key, product_key, household_key, learner_key,
@@ -250,7 +299,7 @@ async function issueLaunchGrant(
        RETURNING *`,
       [
         args.grant_key,
-        args.secret_digest,
+        args.launch_reference_digest,
         args.actor.account_key,
         args.actor.product_key,
         args.eligibility.household_key,
@@ -268,63 +317,60 @@ async function issueLaunchGrant(
   });
 }
 
-async function consumeLaunchGrant(
+async function consumePendingLaunchGrant(
   pool: DbPool,
-  args: Parameters<ClassroomRepository['consumeLaunchGrant']>[0],
+  args: Parameters<ClassroomRepository['consumePendingLaunchGrant']>[0],
 ) {
   return inTransaction(pool, async (client) => {
+    if (
+      !(await lockLaunchLearner(client, {
+        account_key: args.actor.account_key,
+        product_key: args.actor.product_key,
+        learner_key: args.learner_key,
+      }))
+    ) {
+      return null;
+    }
     await client.query(
       `UPDATE onetime.classroom_launch_grants
           SET status = 'expired'
         WHERE account_key = $1
           AND product_key = $2
-          AND grant_key = $3
+          AND actor_user_ref = $3
+          AND session_key_digest = $4
+          AND learner_key = $5
           AND status = 'issued'
-          AND expires_at <= $4`,
-      [args.actor.account_key, args.actor.product_key, args.grant_key, args.now],
-    );
-    const consumed = await client.query(
-      `UPDATE onetime.classroom_launch_grants
-          SET status = 'consumed',
-              consumed_at = COALESCE(consumed_at, now())
-        WHERE account_key = $1
-          AND product_key = $2
-          AND grant_key = $3
-          AND secret_digest = $4
-          AND actor_user_ref = $5
-          AND session_key_digest = $6
-          AND status = 'issued'
-          AND expires_at > $7
-        RETURNING *`,
+          AND expires_at <= $6`,
       [
         args.actor.account_key,
         args.actor.product_key,
-        args.grant_key,
-        args.secret_digest,
         args.actor.actor_user_ref,
         args.session_key_digest,
+        args.learner_key,
         args.now,
       ],
     );
-    if (consumed.rows[0]) return mapGrant(consumed.rows[0] as Record<string, unknown>);
     const current = await client.query(
       `SELECT *
          FROM onetime.classroom_launch_grants
         WHERE account_key = $1
           AND product_key = $2
-          AND grant_key = $3
-        LIMIT 1`,
-      [args.actor.account_key, args.actor.product_key, args.grant_key],
+          AND actor_user_ref = $3
+          AND session_key_digest = $4
+          AND learner_key = $5
+        ORDER BY created_at DESC, grant_key DESC
+        LIMIT 1
+        FOR UPDATE`,
+      [
+        args.actor.account_key,
+        args.actor.product_key,
+        args.actor.actor_user_ref,
+        args.session_key_digest,
+        args.learner_key,
+      ],
     );
     const currentRow = current.rows[0] as Record<string, unknown> | undefined;
     if (!currentRow) return null;
-    if (
-      String(currentRow.secret_digest) !== args.secret_digest ||
-      String(currentRow.actor_user_ref) !== args.actor.actor_user_ref ||
-      String(currentRow.session_key_digest) !== args.session_key_digest
-    ) {
-      return null;
-    }
     const status = String(currentRow.status);
     if (status === 'consumed' || status === 'expired') {
       throw new PortalServiceError(
@@ -335,8 +381,90 @@ async function consumeLaunchGrant(
     if (status === 'revoked') {
       throw new PortalServiceError('FORBIDDEN', 'The classroom launch reference is revoked.');
     }
+    if (status !== 'issued') return null;
+
+    await client.query(
+      `UPDATE onetime.classroom_launch_grants
+          SET status = 'revoked'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND actor_user_ref = $3
+          AND session_key_digest = $4
+          AND learner_key = $5
+          AND status = 'issued'
+          AND grant_key <> $6`,
+      [
+        args.actor.account_key,
+        args.actor.product_key,
+        args.actor.actor_user_ref,
+        args.session_key_digest,
+        args.learner_key,
+        String(currentRow.grant_key),
+      ],
+    );
+    const consumed = await client.query(
+      `UPDATE onetime.classroom_launch_grants
+          SET status = 'consumed',
+              consumed_at = COALESCE(consumed_at, now())
+        WHERE account_key = $1
+          AND product_key = $2
+          AND grant_key = $3
+          AND actor_user_ref = $4
+          AND session_key_digest = $5
+          AND learner_key = $6
+          AND status = 'issued'
+          AND expires_at > $7
+        RETURNING *`,
+      [
+        args.actor.account_key,
+        args.actor.product_key,
+        String(currentRow.grant_key),
+        args.actor.actor_user_ref,
+        args.session_key_digest,
+        args.learner_key,
+        args.now,
+      ],
+    );
+    if (consumed.rows[0]) {
+      return mapGrant(consumed.rows[0] as Record<string, unknown>);
+    }
+    const concurrentState = await client.query(
+      `SELECT status
+         FROM onetime.classroom_launch_grants
+        WHERE account_key = $1
+          AND product_key = $2
+          AND grant_key = $3
+        LIMIT 1`,
+      [args.actor.account_key, args.actor.product_key, String(currentRow.grant_key)],
+    );
+    const concurrentStatus = String(concurrentState.rows[0]?.status ?? '');
+    if (concurrentStatus === 'consumed' || concurrentStatus === 'expired') {
+      throw new PortalServiceError(
+        'LAUNCH_EXPIRED',
+        'That classroom launch expired. Return to the student portal to rejoin.',
+      );
+    }
+    if (concurrentStatus === 'revoked') {
+      throw new PortalServiceError('FORBIDDEN', 'The classroom launch reference is revoked.');
+    }
     return null;
   });
+}
+
+async function lockLaunchLearner(
+  client: Queryable,
+  scope: { account_key: string; product_key: string; learner_key: string },
+) {
+  const learner = await client.query(
+    `SELECT learner_key
+       FROM onetime.portal_learners
+      WHERE account_key = $1
+        AND product_key = $2
+        AND learner_key = $3
+      FOR UPDATE`,
+    [scope.account_key, scope.product_key, scope.learner_key],
+  );
+  return Boolean(learner.rows[0]);
 }
 
 async function upsertAttendanceAttempt(

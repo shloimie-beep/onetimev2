@@ -358,7 +358,7 @@ export const routeBranding: RouteBranding[] = [
     evidenceSelector: '#portal-root, [data-portal-role="student"]',
   },
   {
-    route: '/classroom/launch/:grantKey/:secret',
+    route: '/classroom/launch',
     shell: 'student',
     role: 'student',
     bundle: 'app-crm',
