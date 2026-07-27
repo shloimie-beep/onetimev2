@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-27T07:21:39Z
+updated_at: 2026-07-27T10:08:29Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -1442,6 +1442,41 @@ tracks:
     blocker: null
     remaining_work: null
     next_action: 'Release the OT-PRODUCT dependency and implement only the mutation-impossible Zoom scope diagnostic source. Production remains denied.'
+
+  - id: audit_wave_04_public_diagnostics
+    status: done
+    window_id: 04-OT-PRODUCT
+    concurrency_lock: OT-PRODUCT
+    owner:
+      task_id: OT-LAUNCH-01-CONVERGENCE-PUBLIC-DIAGNOSTICS
+      repository: shloimie-beep/onetimev2
+      branch: codex/one-time-launch-convergence-20260727
+      pr: 130
+      head: b755460f0b20af35299e43f21e7871d04d43405f
+      system: One Time public and protected operational diagnostics
+    write_scope: 'Minimized public health/readiness/release payloads, protected runtime identity, authenticated deployment/probe consumers, active runbooks/projections, and focused tests; no deployment, provider, database, environment, send, or production action.'
+    handoff_path: ops/runbooks/w12-100/post-deploy-verification.md
+    dependencies: [audit_wave_04_runtime_classification, goal_system]
+    acceptance_ids: [SEC-PUBLIC-DIAGNOSTICS-001]
+    evidence:
+      - 'A11-T02 is implemented at exact convergence content head b755460f0b20af35299e43f21e7871d04d43405f. Public /health, /ready, and /version return only a fixed service label and availability code with private no-store headers; readiness still evaluates dependencies internally but emits no dependency, blocker, timestamp, migration, provider, commit, deployment, or topology detail.'
+      - 'Exact version/commit/deployment identity and rich operational snapshot remain available only through token-authenticated /api/internal/ops/diagnostics or owner/admin /api/v1/ops/diagnostics. Forbidden machine access remains 403, and both protected routes emit no-store headers.'
+      - 'Director truth, synthetic probes, Railway launch verification, observability checks, staging guard, and active W12-100/W13-10 runbooks/projections now use fixed public availability contracts plus protected diagnostics for exact runtime, provider, worker, and queue evidence. Missing protected runtime or provider-readiness data fails closed.'
+      - 'Focused integration/toolkit/guard proof passes 16/16, including a forced database failure that returns only PUBLIC_NOT_READY and proves internal host/table/error text absent. Typecheck, build, scoped formatting, diff checks, and a 2168-file secret scan pass.'
+      - 'Deployment, environment, database, provider, Zoom, HighLevel, send, journal, persistent-staging, production, and destructive effects are all zero.'
+    forbidden_behavior:
+      - Restore commit, deployment, dependency, blocker, timestamp, migration, provider, topology, or raw error detail to a public route.
+      - Let a launch verifier infer exact runtime identity from a public availability code or bypass protected diagnostics authentication.
+      - Deploy, touch production, mutate a provider/database/environment, send, or broaden this completed repository batch into a live smoke.
+    required_proof:
+      - Exact fixed public success/failure bodies and no-store headers.
+      - Protected machine and owner/admin runtime readback with unauthenticated denial.
+      - Failure-path redaction plus active launch-toolkit/probe/runbook contract updates.
+      - Focused tests, typecheck, build, scoped formatting, secret scan, diff check, and zero external effects.
+    stop_condition: 'Stop if exact operations evidence cannot remain behind existing machine or owner/admin authentication, a public compatibility exception requires a product decision, or validation would require deployment or protected runtime access.'
+    blocker: null
+    remaining_work: null
+    next_action: 'Preserve the minimized public contract and continue to the repository-only read-only db:verify repair. Production remains denied.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external

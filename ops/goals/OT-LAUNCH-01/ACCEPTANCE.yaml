@@ -261,6 +261,18 @@ criteria:
     track: audit_wave_04_runtime_classification
     observable: One canonical runtime/deployment classification rejects every incoherent tuple and applies production cookie, startup migration, mock/demo, provider, and required-secret gates from that classification, with no provider or deployment mutation.
     proof: [unit_test, integration_test, authorization_negative_tests, typecheck, build]
+  - id: SEC-PUBLIC-DIAGNOSTICS-001
+    track: audit_wave_04_public_diagnostics
+    observable: Public health, readiness, and release routes expose only fixed noncorrelatable availability codes with no-store caching; exact runtime identity, dependency detail, topology, and safe operational errors are available only through authenticated machine or owner/admin diagnostics, and every active launch probe/runbook consumes that protected contract.
+    proof:
+      [
+        integration_test,
+        authorization_negative_tests,
+        failure_serialization_test,
+        operations_projection_check,
+        typecheck,
+        build,
+      ]
   - id: HYGIENE-CENSUS-001
     track: audit_wave_05_preservation_census
     observable: A metadata-only protected census separates One Time, BNA, legacy One Time, and unknown checkouts; records hashed paths, repository identities, status/ref/worktree/stash counts and local-only commit metadata; proves every source status hash unchanged; and performs zero source mutation, PR closure, deletion, reset, prune, stash, or force-push.
