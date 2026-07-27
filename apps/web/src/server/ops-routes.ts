@@ -35,6 +35,7 @@ export function registerOpsRoutes(deps: OpsRouteDeps) {
       success: snapshot.ok,
       snapshot,
       alerts: deterministicAlertSink(alerts),
+      runtime: protectedRuntimeIdentity(deps.config),
     });
   });
 
@@ -67,7 +68,29 @@ export function registerOpsRoutes(deps: OpsRouteDeps) {
       config: deps.config,
       ...(deps.clock ? { now: deps.clock() } : {}),
     });
-    res.status(snapshot.ok ? 200 : 503).json({ success: snapshot.ok, snapshot });
+    res.status(snapshot.ok ? 200 : 503).json({
+      success: snapshot.ok,
+      snapshot,
+      runtime: protectedRuntimeIdentity(deps.config),
+    });
+  });
+}
+
+function protectedRuntimeIdentity(config: AppConfig) {
+  return Object.freeze({
+    version: config.appVersion,
+    commit_sha: config.commitSha,
+    target_app: 'one-time',
+    deployment: {
+      provider: 'railway',
+      deployment_id: config.railwayDeploymentId ?? null,
+      snapshot_id: config.railwaySnapshotId ?? null,
+      project_id: config.railwayProjectId ?? null,
+      environment_id: config.railwayEnvironmentId ?? null,
+      service_id: config.railwayServiceId ?? null,
+      service_name: config.railwayServiceName ?? null,
+      git_commit_sha: config.railwayGitCommitSha ?? null,
+    },
   });
 }
 

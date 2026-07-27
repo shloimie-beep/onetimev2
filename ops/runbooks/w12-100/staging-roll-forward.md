@@ -39,6 +39,6 @@ npx tsx scripts/w12-100/deploy/railway-launch-toolkit.ts migrate-staging --manif
 
 ## Verify
 
-Run `post-deploy-verification.md`. The `/version` commit must equal
-`candidate.commit_sha`, pending migration count must be zero, and worker
+Run `post-deploy-verification.md`. The protected diagnostics runtime commit must
+equal `candidate.commit_sha`, pending migration count must be zero, and worker
 heartbeat must be fresh.

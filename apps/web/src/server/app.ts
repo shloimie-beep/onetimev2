@@ -609,38 +609,28 @@ export function createApp({
   });
 
   app.get('/health', (_req, res) => {
-    res.json({ ok: true, service: 'onetime-web' });
+    setPrivateNoStore(res);
+    res.json({ ok: true, service: 'onetime-web', code: 'PUBLIC_HEALTH_OK' });
   });
 
   app.get('/ready', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
     const readiness = await withTiming(req, 'ops_ready', () =>
       collectOpsReadiness({ pool, config, ...(clock ? { now: clock() } : {}) }),
     );
     res.status(readiness.ok ? 200 : 503).json({
       ok: readiness.ok,
       service: 'onetime-web',
-      generated_at: readiness.generated_at,
-      dependencies: readiness.dependencies,
-      optional_dependencies: readiness.optional_dependencies,
-      blockers: readiness.blockers,
+      code: readiness.ok ? 'PUBLIC_READY' : 'PUBLIC_NOT_READY',
     });
   });
 
   app.get('/version', (_req, res) => {
+    setPrivateNoStore(res);
     res.json({
-      version: config.appVersion,
-      commit_sha: config.commitSha,
-      target_app: 'one-time',
-      deployment: {
-        provider: 'railway',
-        deployment_id: config.railwayDeploymentId ?? null,
-        snapshot_id: config.railwaySnapshotId ?? null,
-        project_id: config.railwayProjectId ?? null,
-        environment_id: config.railwayEnvironmentId ?? null,
-        service_id: config.railwayServiceId ?? null,
-        service_name: config.railwayServiceName ?? null,
-        git_commit_sha: config.railwayGitCommitSha ?? null,
-      },
+      ok: true,
+      service: 'onetime-web',
+      code: 'PUBLIC_RELEASE_AVAILABLE',
     });
   });
 

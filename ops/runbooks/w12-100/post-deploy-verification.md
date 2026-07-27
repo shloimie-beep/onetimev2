@@ -51,7 +51,8 @@ npx tsx scripts/w12-100/ops/observability-checks.ts --input "$RunDir/observabili
 - Toolkit evidence status is `passed`.
 - Observability evidence status is `passed`.
 - Pending migration count is zero.
-- `/version` commit matches the required source for the operation.
+- Protected `/api/internal/ops/diagnostics` runtime commit matches the required
+  source for the operation.
 - Deployment IDs are recorded for web and worker.
 - Image digests match the expected digest when Railway reports them.
 - Provider transports remain off/sink/mock/not configured.

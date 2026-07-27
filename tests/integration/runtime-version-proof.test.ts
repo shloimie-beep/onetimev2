@@ -9,6 +9,7 @@ let pool: DbPool;
 
 const runtimeCommit = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 const railwayGitCommit = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+const opsProbeToken = 'runtime-version-proof-ops-token-0001';
 
 beforeAll(async () => {
   const config = loadConfig({
@@ -22,6 +23,7 @@ beforeAll(async () => {
     RAILWAY_SERVICE_ID: 'service-runtime-proof-123',
     RAILWAY_SERVICE_NAME: 'ot99-web',
     RAILWAY_GIT_COMMIT_SHA: railwayGitCommit,
+    OPERATIONS_PROBE_TOKEN: opsProbeToken,
   });
   pool = createMemoryPool();
   const app = createApp({ config, pool });
@@ -46,27 +48,42 @@ afterAll(async () => {
 });
 
 describe('runtime version proof', () => {
-  it('binds /version to non-secret Railway runtime deployment identity', async () => {
+  it('keeps public version noncorrelatable and protects exact runtime identity', async () => {
     const response = await fetch(`${baseUrl}/version`);
     expect(response.status).toBe(200);
     const body = await response.json();
 
     expect(body).toEqual({
-      version: 'rollback-proof-candidate',
-      commit_sha: runtimeCommit,
-      target_app: 'one-time',
-      deployment: {
-        provider: 'railway',
-        deployment_id: 'deployment-runtime-proof-123',
-        snapshot_id: 'snapshot-runtime-proof-123',
-        project_id: 'project-runtime-proof-123',
-        environment_id: 'environment-runtime-proof-123',
-        service_id: 'service-runtime-proof-123',
-        service_name: 'ot99-web',
-        git_commit_sha: railwayGitCommit,
+      ok: true,
+      service: 'onetime-web',
+      code: 'PUBLIC_RELEASE_AVAILABLE',
+    });
+    expect(response.headers.get('cache-control')).toContain('no-store');
+    expect(JSON.stringify(body)).not.toMatch(
+      /rollback|commit|railway|deploy|snapshot|project|environment|service_id|database|password|secret|token/i,
+    );
+
+    const protectedResponse = await fetch(`${baseUrl}/api/internal/ops/diagnostics`, {
+      headers: { 'x-ops-probe-token': opsProbeToken },
+    });
+    expect(protectedResponse.status).toBe(503);
+    expect(await protectedResponse.json()).toMatchObject({
+      runtime: {
+        version: 'rollback-proof-candidate',
+        commit_sha: runtimeCommit,
+        deployment: {
+          provider: 'railway',
+          deployment_id: 'deployment-runtime-proof-123',
+          snapshot_id: 'snapshot-runtime-proof-123',
+          project_id: 'project-runtime-proof-123',
+          environment_id: 'environment-runtime-proof-123',
+          service_id: 'service-runtime-proof-123',
+          service_name: 'ot99-web',
+          git_commit_sha: railwayGitCommit,
+        },
       },
     });
-    expect(JSON.stringify(body)).not.toMatch(/database|password|secret|token/i);
+    expect(protectedResponse.headers.get('cache-control')).toContain('no-store');
   });
 
   it('uses secure cookies when a production Node process serves isolated staging', async () => {

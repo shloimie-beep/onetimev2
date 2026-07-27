@@ -105,9 +105,10 @@ export const W12_100_ALERT_CHECKS: AlertCheckDefinition[] = [
     id: 'web_readiness',
     title: 'Web readiness',
     severity: 'critical',
-    source: 'GET /health, GET /ready, GET /version, onetime_ready',
+    source:
+      'GET /health, GET /ready, GET /version, protected /api/internal/ops/diagnostics runtime, onetime_ready',
     threshold:
-      '/ready must be 2xx and ok=true; /health must be 2xx; /version commit must match expected source',
+      '/ready, /health, and /version must be 2xx with fixed public codes; protected runtime commit must match expected source',
     evidence_fields: [
       'web.ready',
       'web.health_status',

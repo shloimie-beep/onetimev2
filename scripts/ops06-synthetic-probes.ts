@@ -45,11 +45,7 @@ if (!baseUrl) {
   await probe('public_signup', '/signup', [200]);
   await probe('auth_lifecycle_login_page', '/login', [200]);
   await probe('private_session_role_denial', '/app/crm', [302, 401, 403], { redirect: 'manual' });
-  await probeJson('db_readiness', '/ready', [200, 503], undefined, (body) =>
-    Array.isArray(body.dependencies)
-      ? 'readiness dependency payload present'
-      : 'missing dependencies',
-  );
+  await probeJson('db_readiness', '/ready', [200, 503], undefined, summarizePublicReadiness);
   if (probeToken) {
     await probeJson(
       'worker_heartbeat_and_queue_diagnostics',
@@ -159,6 +155,16 @@ function summarizeOpsSnapshot(body: Record<string, unknown>) {
   const workers = Array.isArray(snapshot.workers) ? snapshot.workers.length : 0;
   const queues = Array.isArray(snapshot.queues) ? snapshot.queues.length : 0;
   return `workers=${workers}; queues=${queues}`;
+}
+
+function summarizePublicReadiness(body: Record<string, unknown>) {
+  if (
+    body.service !== 'onetime-web' ||
+    !['PUBLIC_READY', 'PUBLIC_NOT_READY'].includes(String(body.code))
+  ) {
+    return 'unexpected public readiness contract';
+  }
+  return body.ok === true ? 'public readiness passed' : 'public readiness unavailable';
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

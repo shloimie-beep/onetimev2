@@ -20,7 +20,7 @@ operator approval.
 1. Staging verification passed for the same candidate commit and expected image
    digest.
 2. The production manifest uses `"environment_kind": "production"`.
-3. The manifest records the current production `/version` source under
+3. The manifest records the current protected diagnostics runtime source under
    `predeploy.expected_commit_sha` and `rollback.predeploy_commit_sha`.
 4. Fresh backup/PITR metadata is present.
 5. Provider transports remain off unless a separate provider acceptance window
@@ -80,7 +80,7 @@ must include:
 
 - `/health` 2xx
 - `/ready` 2xx and ok
-- `/version` exact candidate commit
+- protected diagnostics runtime exact candidate commit
 - worker heartbeat fresh
 - pending migration count zero
 - backup metadata fresh

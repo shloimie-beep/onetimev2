@@ -23,7 +23,7 @@ describe('W13-10 staging deploy guard', () => {
     const result = evaluateStagingDeployCommand(goodInput);
     expect(result.allowed).toBe(true);
     expect(result.dryRun).toBe(true);
-    expect(result.requiredReadbacks).toContain('/version after deployment');
+    expect(result.requiredReadbacks).toContain('protected runtime identity after deployment');
   });
 
   it('refuses ambiguous, production, mutable, or provider-enabled commands', () => {
