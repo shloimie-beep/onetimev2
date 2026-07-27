@@ -9,7 +9,7 @@ Exact trigger: registered existing subscriber migration audience entry
 message_class: existing_subscriber_migration
 sender_key: rabbi_campaign
 transport: GHL
-Purpose: Three-email existing-subscriber migration sequence. This reviewed email is email one only; do not invent email two or three copy from it.
+Purpose: Three-email existing-subscriber migration sequence. Use only the three reviewed emails below, in order, and do not invent or expand their claims.
 
 Registry dependencies:
 
@@ -62,8 +62,61 @@ Use this exact subject, preheader, body, signature, and CTA only after the separ
 - CTA: Insert only the registered `One Time Home URL` custom value. Do not substitute a Tisha page, raw Zoom/provider link, price, or unverified application route.
 - Compliance: Use the standard GHL unsubscribe treatment for the selected approved migration audience. Do not claim newsletter permission or infer it from customer history.
 
+## Reviewed Email Two — `rabbi_parent_student_experience_existing_subscriber_migration_v1`
+
+Use this exact subject, preheader, body, signature, and CTA only after the separate audience, publication, and delivery approvals are all present. This copy is not an authorization to send.
+
+- Subject: How One Time works for your family
+- Preheader: Live Mishnah learning, recordings, review, and progress in one secure family experience.
+- Body:
+
+  > Shalom,
+  >
+  > One Time Mishnayos is designed to help a student learn Mishnah live, return to class recordings for review, and keep building steady progress.
+  >
+  > A parent can use the family’s secure One Time access to follow the learning experience while each student’s information stays inside the registered family account.
+  >
+  > You can see how the Parent and Student experience is organized here: [One Time Home URL].
+  >
+  > Viewing this page does not enroll a student, activate access, or change any account or payment status.
+  >
+  > With bracha,
+  > Rabbi Eli Scheller
+  > One Time Mishnayos
+
+- CTA: Insert only the registered `One Time Home URL` custom value with the label `See How One Time Works`.
+- Compliance: Use the standard GHL unsubscribe treatment. Do not place Student data in GHL, imply that access is active, or expose recordings, progress, or provider links outside secure family access.
+
+## Reviewed Email Three — `rabbi_controlled_pilot_existing_subscriber_migration_v1`
+
+Use this exact subject, preheader, body, signature, and CTA only after the separate audience, publication, and delivery approvals are all present. This copy is not an authorization to send.
+
+- Subject: An invitation to the One Time controlled pilot
+- Preheader: Learn about the current pilot through the secure One Time Home.
+- Body:
+
+  > Shalom,
+  >
+  > We are inviting a small group of families to learn about the controlled pilot for the current One Time Mishnayos program.
+  >
+  > The pilot is a limited, controlled step for families who want to experience live Mishnah learning and the supporting review tools.
+  >
+  > To see current pilot information and any available next step, visit: [One Time Home URL].
+  >
+  > This email does not enroll your family, activate access, reserve a place, or change payment status. Participation is confirmed only through the controlled One Time process.
+  >
+  > With bracha,
+  > Rabbi Eli Scheller
+  > One Time Mishnayos
+
+- CTA: Insert only the registered `One Time Home URL` custom value with the label `View the Controlled Pilot`. Do not substitute a direct signup, checkout, Zoom/provider, recording, or application URL.
+- Compliance: Use the standard GHL unsubscribe treatment. Do not promise acceptance, infer consent, enroll a contact, or grant payment or access state from this invitation.
+
 Test state:
 
+- Keep the workflow Draft, unpublished, inactive, and unenrolled.
+- Preserve the reviewed Email One exactly; do not rewrite it while adding Emails Two and Three to the repository specification.
+- Leave cadence values unset until a separate approval supplies them.
 - Do not select an audience or send in this lane.
 - Do not use any contact until a separate exact authority names one protected operator-owned test contact.
 - Record the workflow ID only after it exists in the verified location.

@@ -16,9 +16,15 @@ Registry: integrations/highlevel/registry/workflow-registry.yaml
 - Preserve the current Phase 1 From fallback until GHL-UI-24 proves provider acceptance. Do not activate or send from the desired address in this Draft-only task.
 - Keep Reply-To at `info@onetimeonetime.com`; rabbi@ may use the same governed GHL Conversations route and needs no separately monitored second inbox.
 - Never guess or hardcode an unregistered sender identity.
-- Use only Reviewed Email One `rabbi_new_program_existing_subscriber_migration_v1` from the paired canonical prompt; keep emails two and three blocked pending separately reviewed copy.
-- Insert only the registered One Time Home URL custom value for the CTA.
+- Use the three reviewed emails from the paired canonical prompt, in this exact order: `rabbi_new_program_existing_subscriber_migration_v1`, `rabbi_parent_student_experience_existing_subscriber_migration_v1`, then `rabbi_controlled_pilot_existing_subscriber_migration_v1`.
+- Preserve Reviewed Email One exactly. Do not derive, paraphrase, or overwrite it while adding the reviewed Email Two and Email Three repository specifications.
+- Email Two may describe only the verified Parent/Student experience: live Mishnah learning, recordings for review, steady progress, and secure family access. Keep Student data out of GHL.
+- Email Three may invite the recipient to learn about the controlled pilot only through the registered One Time Home URL. Do not use a direct signup, checkout, Zoom/provider, recording, or application URL.
+- Insert only the registered One Time Home URL custom value for every CTA in this sequence.
+- Apply the standard GHL unsubscribe treatment to each email.
+- Keep cadence values unset until separately approved.
 - Do not select an audience. An operator-selected adult migration list is a later separate authorization; payment, attendance, event registration, portal state, deliverability, and legacy tags never select or authorize it.
+- Keep the workflow Draft, unpublished, inactive, and unenrolled.
 - No Human Handoff action.
 - No human task creation.
 - No production contact enrollment.

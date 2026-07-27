@@ -162,7 +162,7 @@
   status: 'active'
   title: 'OT-02A Existing Subscriber Migration 2026 v1'
   file_path: 'integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md'
-  sha256: '62309a684f4c82babbcb3c9dbcb61d165056285877e4977c71000f503304bd62'
+  sha256: '6da439655218830f84aae6eef6c6cc11c646dd3e86d422d12b86ee74e5ea7e0b'
   source: 'Canonical workflow prompt generated from registry'
   created_date: '2026-07-21'
   approved_date: ''

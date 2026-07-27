@@ -1,0 +1,18 @@
+{
+  "schema_version": "onetime.highlevel.replit_segment_apply.sanitized.v1",
+  "location": "One Time",
+  "smart_list_name": "OT-02A | Replit Active Migration Candidates | 2026",
+  "filter": {
+    "field": "Tag",
+    "operator": "Is",
+    "value": "OT | Migration 2026"
+  },
+  "verified_contact_count": 30,
+  "workflow_enrollments": 0,
+  "workflow_publications": 0,
+  "workflow_activations": 0,
+  "sends": 0,
+  "deletions": 0,
+  "raw_values_included": false,
+  "verified_at": "2026-07-27T19:06:29.2711581+03:00"
+}

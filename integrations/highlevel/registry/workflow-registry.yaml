@@ -168,8 +168,18 @@ business_workflows:
       reply_to: 'info@onetimeonetime.com only'
       sender_decision_status: 'fixed; not an operator decision gate'
       sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
+      reviewed_sequence_version: 'ot_02a_existing_subscriber_migration_three_email_v1'
       reviewed_email_one_identity: 'rabbi_new_program_existing_subscriber_migration_v1'
       reviewed_email_one_cta: 'One Time Home URL custom value only'
+      reviewed_email_two_identity: 'rabbi_parent_student_experience_existing_subscriber_migration_v1'
+      reviewed_email_two_cta: 'One Time Home URL custom value only'
+      reviewed_email_two_verified_scope: 'Parent/Student experience, live Mishnah, recordings for review, progress, and secure family access only'
+      reviewed_email_three_identity: 'rabbi_controlled_pilot_existing_subscriber_migration_v1'
+      reviewed_email_three_cta: 'One Time Home URL custom value only'
+      reviewed_email_three_verified_scope: 'controlled-pilot invitation only; no enrollment, access, payment, acceptance, or reservation claim'
+      standard_unsubscribe_required: true
+      cadence_configured: false
+      workflow_draft_unpublished_inactive_unenrolled: true
       price_and_offer_source: 'registered custom values only'
       enrollment_authorized: false
       publication_authorized: false

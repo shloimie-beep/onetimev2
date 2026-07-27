@@ -23,6 +23,13 @@ describe('Rabbi launch email design', () => {
       "reviewed_email_one_identity: 'rabbi_new_program_existing_subscriber_migration_v1'",
     );
     expect(registry).toContain(
+      "reviewed_email_two_identity: 'rabbi_parent_student_experience_existing_subscriber_migration_v1'",
+    );
+    expect(registry).toContain(
+      "reviewed_email_three_identity: 'rabbi_controlled_pilot_existing_subscriber_migration_v1'",
+    );
+    expect(registry).toContain('workflow_draft_unpublished_inactive_unenrolled: true');
+    expect(registry).toContain(
       "reviewed_email_one_identity: 'rabbi_new_program_prelaunch_nurture_v1'",
     );
     expect(registry).toContain(
@@ -37,6 +44,23 @@ describe('Rabbi launch email design', () => {
     expect(senderRegistry).toContain('no separately monitored second inbox is required');
     expect(migrationPrompt).toContain('operator-selected adult existing-subscriber migration list');
     expect(migrationPrompt).toContain('Tisha event permission is event-purpose only');
+    expect(migrationPrompt).toContain('Subject: A new chapter for One Time Mishnayos');
+    expect(migrationPrompt).toContain(
+      '## Reviewed Email Two — `rabbi_parent_student_experience_existing_subscriber_migration_v1`',
+    );
+    expect(migrationPrompt).toContain(
+      'Live Mishnah learning, recordings, review, and progress in one secure family experience.',
+    );
+    expect(migrationPrompt).toContain(
+      '## Reviewed Email Three — `rabbi_controlled_pilot_existing_subscriber_migration_v1`',
+    );
+    expect(migrationPrompt).toContain(
+      'To see current pilot information and any available next step, visit: [One Time Home URL].',
+    );
+    expect(migrationPrompt).toContain(
+      'Keep the workflow Draft, unpublished, inactive, and unenrolled.',
+    );
+    expect(migrationPrompt).toContain('Use the standard GHL unsubscribe treatment.');
     expect(nurturePrompt).toContain('independently proven general-marketing permission');
     expect(nurturePrompt).toContain(
       'Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never establish that permission',
