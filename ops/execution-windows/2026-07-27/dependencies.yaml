@@ -37,26 +37,29 @@ nodes:
   - id: Q04-001
     requires: []
     acceptance: One canonical fail-closed runtime tuple model with focused proof.
+  - id: Q04-001R
+    requires: []
+    acceptance: PR #128 runtime semantics are preserved while the two stale mixed-classification integration assertions move to the canonical loadConfig boundary and the full integration/build gates pass.
   - id: Q04-ZOOM-001
-    requires: [Q04-001]
+    requires: [Q04-001R]
     acceptance: A repository-only diagnostic command can classify each reconciliation predicate without provider mutation, journal mutation, or protected output.
   - id: Q04-002
-    requires: [Q04-001]
+    requires: [Q04-001R]
     acceptance: Public diagnostics expose no protected topology while protected operator diagnostics remain useful.
   - id: Q04-003
-    requires: [Q04-001]
+    requires: [Q04-001R]
     acceptance: Read-only migration/checksum verification performs no database apply.
   - id: Q04-004
-    requires: [Q04-001]
+    requires: [Q04-001R]
     acceptance: Provider delivery uses stable idempotency and explicit uncertain-acceptance state while providers remain off.
   - id: Q04-005
     requires: [GATE-ZOOM-CLEANUP-ACCEPTED]
     acceptance: Classroom launch carries no bearer in request targets, history, referrers, logs, or artifacts and remains provider-off.
   - id: Q04-006
-    requires: [Q04-001, GATE-LEARNER-CAP-DISPOSITION-IF-NEEDED]
+    requires: [Q04-001R, GATE-LEARNER-CAP-DISPOSITION-IF-NEEDED]
     acceptance: Three-active-learner enforcement is deterministic and legacy over-limit state has an accepted disposition.
   - id: Q04-007
-    requires: [Q04-001]
+    requires: [Q04-001R]
     acceptance: Telegram response persistence and replay are atomic while real delivery remains disabled.
   - id: Q05-001
     requires: [GATE-PROTECTED-CENSUS-AND-BACKUP-ROOTS]
@@ -86,7 +89,7 @@ nodes:
   - id: Q07-001
     requires:
       - GATE-ZOOM-SUCCESSOR-CANARY-ACCEPTED
-      - Q04-001
+      - Q04-001R
       - Q04-002
       - Q04-003
       - Q04-006

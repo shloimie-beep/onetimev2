@@ -1313,12 +1313,14 @@ tracks:
       - 'The live 03-OT-GHL repository-design worker is fenced by its existing task ID/claim token. PR #125 is seeded as terminal blocked Zoom evidence, so no queue worker can repeat cleanup or create another meeting.'
       - 'The control lane polls GitHub directly for each assigned/claimed branch and reconciles exact result heads without operator relay. It verified PR #123 at b2fd8c73246a3a1e1655b22ee5c837d65c19ec97, PR #125 at eeb31101e0d8f8a395a1c3833129b1afde4fd845, and PR #126 at 0fc24128dfb9f5d512c1915ad61bb9c6b3568042; expected result branches for lanes 04, 05, and 06 currently have no PR, while lane 07 remains unassigned and production-disabled.'
       - 'Control reconciliation commit 59368066c4debbf6ba80dc0a402d2767edb3d64b independently rejected PR #126 terminal acceptance on an LF/CRLF prompt-fingerprint projection defect, preserved the semantic attempt only as evidence, released the old GHL repository claim, and wrote unblocked repair Q03-002R plus every other lane successor into Git. Provider mutations, sends, production mutations, and destructive actions were zero.'
+      - 'The 2026-07-27 routing reconciliation found a terminal BNA claim incorrectly copied into GHL-BROWSER and lane 04 incorrectly changed Q01-002 while reporting its own result. Control cleared the cross-lane holder, restored Q01-002, and made exact lane equality plus the QNN prefix a prerequisite before any candidate field may be evaluated.'
     forbidden_behavior:
       - Implement product, provider, migration, hygiene, BNA, or production lane work from 01-OT-CONTROL.
       - Let queue dispatch state override Board status, acceptance, provider truth, or external authority.
       - Steal or age-expire a claim; force-push the queue; or resolve a queue conflict by deleting another lane state.
     required_proof:
       - All seven bootstraps fetch and reread the remote queue/Board before every claim and successor.
+      - Every worker filters candidates to its exact WINDOW ID and QNN prefix before evaluating assignment, dispatch, dependency, lock, branch, or result fields.
       - Claims and terminal updates use non-force compare-and-swap commits and atomically acquire/release exact locks.
       - Routine repository tasks continue without user relay; only the six enumerated manual handoff labels can stop a lane.
       - Queue, dependency, lock, Board, pointer, formatting, secret, and diff validation pass.
@@ -1401,18 +1403,19 @@ tracks:
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT
     owner:
-      task_id: OT-LAUNCH-01-W04-CANONICAL-RUNTIME-CLASSIFICATION
+      task_id: OT-LAUNCH-01-W04-RUNTIME-CLASSIFICATION-REGRESSION-REPAIR
       repository: shloimie-beep/onetimev2
-      branch: codex/w04-canonical-runtime-classification-20260727
+      branch: codex/w04-runtime-classification-regression-repair-20260727
       pr: null
       system: One Time canonical runtime and deployment classification
-    write_scope: 'packages/config/src/index.ts; runtime/cookie/startup classification helpers in apps/web/src/server/app.ts; focused tests under tests/unit/config and tests/integration/runtime-version-proof.test.ts only.'
-    handoff_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-result.md
+    write_scope: 'Preserve PR #128 runtime semantics; update only tests/integration/experience-preview.test.ts and tests/integration/security/provider-boundaries.test.ts to assert the canonical mixed-classification loadConfig boundary.'
+    handoff_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-runtime-regression-repair.md
     dependencies: [goal_system]
     acceptance_ids: [SEC-RUNTIME-001]
     evidence:
       - 'A11-P1-02 remains current because e986b5e..53a18e7 changed only sender governance files; the audited application/config sources are unchanged.'
       - 'A11-T01 is the first sequential OT-PRODUCT repair and requires no provider, deployment, production, customer, or database mutation.'
+      - 'Draft PR #128 exact head bdc29725ce253f408d39a2c32120b0628f68721c passed its 28 focused runtime/config unit tests, two runtime-version integration tests, typecheck, formatting, lint, and secret scan. GitHub Node CI then failed two pre-existing integration assertions because the new canonical DELIVERY_ENVIRONMENT/ONE_TIME_RUNTIME_ENVIRONMENT mismatch guard throws at loadConfig before their older downstream messages; build and browser gates were skipped, so Q04-001 is not accepted.'
     forbidden_behavior:
       - Read or commit real environment values, protected destinations, credentials, or provider identifiers.
       - Activate a provider, deploy, touch production, edit migrations, edit BOARD.yaml, or broaden into A11-T02 through T07.
@@ -1423,8 +1426,8 @@ tracks:
       - Focused unit/integration tests, typecheck, build, scoped Prettier, secret scan, diff check, and a short operator manual-smoke checklist.
     stop_condition: 'Stop if a real secret/environment value is needed, another writer owns either source file, production behavior requires an unresolved operator decision, or the repair would activate a provider.'
     blocker: null
-    remaining_work: 'Implement and prove one canonical runtime-classification model without external effects.'
-    next_action: 'Create the assigned clean branch from the current conductor head and implement only A11-T01 canonical runtime classification with focused fail-closed tests.'
+    remaining_work: 'Queue item Q04-001R must preserve PR #128 runtime behavior, update only the two stale integration assertions to the canonical loadConfig boundary, and pass the focused plus full integration/build gates without external effects.'
+    next_action: '04-OT-PRODUCT claims Q04-001R from the remote queue and performs only the two-test compatibility repair. Do not change config/runtime source or advance to Q04-ZOOM-001.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external

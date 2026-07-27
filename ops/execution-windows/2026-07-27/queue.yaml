@@ -170,7 +170,7 @@ items:
     priority: 1
     title: Continuous GitHub result reconciliation and safe dispatch
     assignment_state: assigned
-    dispatch_state: done
+    dispatch_state: claimed
     repeatable: true
     board_track: self_driving_execution_queue
     dependencies: []
@@ -374,7 +374,7 @@ items:
     priority: 1
     title: Canonical fail-closed runtime classification
     assignment_state: assigned
-    dispatch_state: claimed
+    dispatch_state: blocked
     board_track: audit_wave_04_runtime_classification
     dependencies: []
     required_locks: [OT-PRODUCT]
@@ -384,10 +384,10 @@ items:
     claimed_at: 2026-07-27T12:08:00+03:00
     claimed_from_queue_head: 42a25fffa3ae8a3fb56e3b75f2add693cb02b2ac
     terminal_at: 2026-07-27T12:20:00+03:00
-    terminal_reason: COMPLETED_CANONICAL_FAIL_CLOSED_RUNTIME_CLASSIFICATION
+    terminal_reason: FULL_CI_RUNTIME_TUPLE_REGRESSION
     result_commit: bdc29725ce253f408d39a2c32120b0628f68721c
     result_pr: 128
-    validation_summary: Focused runtime/config unit tests (28), runtime-version integration tests (2), typecheck, build, scoped Prettier, secret scan, and diff check passed.
+    validation_summary: Focused runtime/config unit tests (28), runtime-version integration tests (2), typecheck, build, scoped Prettier, secret scan, and diff check passed. GitHub Node CI failed two existing integration tests because the new canonical mismatch guard now throws before their older downstream error assertions; build and browser gates did not run, so the result is not accepted.
     external_effects:
       provider_mutations: 0
       deployments: 0
@@ -395,15 +395,36 @@ items:
       migration_applications: 0
       customer_messages: 0
     result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-result.md
-  - id: Q04-ZOOM-001
+  - id: Q04-001R
     lane: 04-OT-PRODUCT
     sequence: 2
+    priority: 1
+    title: Repair canonical runtime-classification integration expectations
+    assignment_state: assigned
+    dispatch_state: ready
+    board_track: audit_wave_04_runtime_classification
+    dependencies: []
+    required_locks: [OT-PRODUCT]
+    base_commit: bdc29725ce253f408d39a2c32120b0628f68721c
+    branch: codex/w04-runtime-classification-regression-repair-20260727
+    work_scope:
+      - Preserve the canonical fail-closed runtime classifier and all PR #128 product semantics.
+      - Update only tests/integration/experience-preview.test.ts and tests/integration/security/provider-boundaries.test.ts so mixed classifications assert the canonical loadConfig mismatch boundary.
+      - Prove the two formerly failing tests, the focused runtime suites, the full integration suite, typecheck, build, formatting, secret scan, and diff scope.
+    forbidden:
+      - Change packages/config, application runtime behavior, provider gates, migrations, deployments, production, or BOARD.yaml.
+      - Weaken or bypass the DELIVERY_ENVIRONMENT and ONE_TIME_RUNTIME_ENVIRONMENT mismatch guard.
+      - Broaden into Q04-ZOOM-001 or any other planned product item.
+    result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-runtime-regression-repair.md
+  - id: Q04-ZOOM-001
+    lane: 04-OT-PRODUCT
+    sequence: 3
     priority: 2
     title: Add a mutation-impossible sanitized Zoom scope classifier
     assignment_state: planned
     dispatch_state: planned
     board_track: zoom_scope_mismatch_diagnostic_tool
-    dependencies: [Q04-001]
+    dependencies: [Q04-001R]
     required_locks: [OT-PRODUCT]
     base_commit: 2d22f46a40364c670d20fa197e78ead2a2f79c8e
     branch: codex/zoom-disposable-scope-diagnostic-20260727
@@ -420,37 +441,37 @@ items:
       - Relax any reconciliation predicate or choose which mismatch is safe.
   - id: Q04-002
     lane: 04-OT-PRODUCT
-    sequence: 3
+    sequence: 4
     priority: 3
     title: Public diagnostic minimization
     assignment_state: planned
     dispatch_state: planned
     board_track: null
-    dependencies: [Q04-001]
+    dependencies: [Q04-001R]
     required_locks: [OT-PRODUCT]
   - id: Q04-003
     lane: 04-OT-PRODUCT
-    sequence: 4
+    sequence: 5
     priority: 4
     title: Read-only migration verification
     assignment_state: planned
     dispatch_state: planned
     board_track: null
-    dependencies: [Q04-001]
+    dependencies: [Q04-001R]
     required_locks: [OT-PRODUCT, MIGRATION]
   - id: Q04-004
     lane: 04-OT-PRODUCT
-    sequence: 5
+    sequence: 6
     priority: 5
     title: Stable provider idempotency and uncertain-acceptance state
     assignment_state: planned
     dispatch_state: planned
     board_track: null
-    dependencies: [Q04-001]
+    dependencies: [Q04-001R]
     required_locks: [OT-PRODUCT]
   - id: Q04-005
     lane: 04-OT-PRODUCT
-    sequence: 6
+    sequence: 7
     priority: 6
     title: Bearer-free classroom launch transport
     assignment_state: planned
@@ -460,24 +481,24 @@ items:
     required_locks: [OT-PRODUCT]
   - id: Q04-006
     lane: 04-OT-PRODUCT
-    sequence: 7
+    sequence: 8
     priority: 7
     title: Three-active-learner enforcement
     assignment_state: planned
     dispatch_state: planned
     board_track: null
-    dependencies: [Q04-001, GATE-LEARNER-CAP-DISPOSITION-IF-NEEDED]
+    dependencies: [Q04-001R, GATE-LEARNER-CAP-DISPOSITION-IF-NEEDED]
     required_locks: [OT-PRODUCT, MIGRATION]
     manual_handoff: PRODUCT DECISION REQUIRED
   - id: Q04-007
     lane: 04-OT-PRODUCT
-    sequence: 8
+    sequence: 9
     priority: 8
     title: Telegram response atomicity
     assignment_state: planned
     dispatch_state: planned
     board_track: null
-    dependencies: [Q04-001]
+    dependencies: [Q04-001R]
     required_locks: [OT-PRODUCT]
   - id: Q05-001
     lane: 05-OT-HYGIENE
@@ -587,7 +608,7 @@ items:
     board_track: production_pilot
     dependencies:
       - GATE-ZOOM-SUCCESSOR-CANARY-ACCEPTED
-      - Q04-001
+      - Q04-001R
       - Q04-002
       - Q04-003
       - Q04-006
