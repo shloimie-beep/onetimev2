@@ -779,11 +779,12 @@ tracks:
       - 'The single cleanup attempt made one OAuth request and one meeting GET, then stopped before any POST/PATCH/DELETE because the provider-reported start time and notification-disabled state did not match the signed intent. The meeting still exists and no cleanup tombstone was written.'
       - 'Independent audit accepts PR #105 cleanup-only successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e as code-ready: exactly eight files, no migration, 59/59 focused tests, 355/355 unit tests, typecheck, lint, formatting, build, secret scan, and all GitHub/Railway checks pass. Its signed schema-v3 reconciliation permits only the exact provider-normalized disposable target, journals cleanup_delete_in_flight before a sole DELETE, rejects generic/OAuth 404, and writes a tombstone only after canonical Zoom meeting-resource 3001 absence.'
       - 'Isolated web deployment e5c4b2c8-d538-417b-967e-4b3d34365011 and runner deployment c6d90077-de1c-41ed-b30e-cda5389b98b2 report the exact successor source and healthy /health and /ready. The public /version label intentionally remains pinned to original execution head 96e54d9688ff174ac8265ce3b3a6216abb6292dc; deployment metadata is the source authority for the repair.'
+      - 'Draft PR #125 exact result head eeb31101e0d8f8a395a1c3833129b1afde4fd845 is the current provider evidence. The reviewed reconciliation made OAuth 1 and GET 1, then stopped on ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH before journal sequence 5 or DELETE. POST/PATCH/DELETE, creates, joins, controls, customer messages, staging mutations, and production mutations were zero; the sequence-4 cleanup_required journal, runner, and /canary volume remain preserved.'
     blocker:
-      code: ZOOM_DISPOSABLE_CANARY_PROVIDER_DELETION_UNPROVEN
-      reason: 'The cleanup-only successor is code-ready, but the separate provider-only reconciliation command has not run. The exact disposable meeting still exists; live DELETE, canonical Zoom 3001 absence, and the signed sequence-6 deleted tombstone are unproven. No Student/host join or control proof is accepted.'
-    remaining_work: 'Using only the preserved signed schema-v3 journal and one-shot cleanup authorization, run the reviewed provider-only reconciliation for the exact disposable meeting, require sanitized deleted output plus the signed sequence-6 tombstone, and independently verify canonical provider absence. A later join/control canary remains a separate bounded decision after cleanup.'
-    next_action: 'Preserve runner service d4f10489-1d8a-4518-8db2-a6da309dda8f, runner deployment c6d90077-de1c-41ed-b30e-cda5389b98b2, and state volume 2c0d6ed8-a7e1-4da2-baf9-06323de78dc8. A provider-only executor may run only npm run zoom:real-control:disposable:reconcile-cleanup with provisioning authorization absent; do not create a second meeting, touch the Tisha/recurring/customer target, or remove state before the tombstone.'
+      code: ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH
+      reason: 'PR #125 proves the exact cleanup attempt reached the meeting readback but failed one or more reviewed reconciliation predicates before DELETE. The sanitized result does not identify which predicate, so another cleanup attempt would be an unsafe blind retry.'
+    remaining_work: 'Add and accept one mutation-impossible sanitized predicate classifier on the exact repair descendant, then separately authorize at most one OAuth plus one meeting GET to identify the mismatch. Only that evidence may support a smallest repair or operator decision; no cleanup retry or new meeting is authorized.'
+    next_action: 'Preserve the exact runner, journal, keyholder, and /canary volume. Do not rerun cleanup or create/substitute a meeting. Advance only through queue items Q04-ZOOM-001 and Q02-002.'
 
   - id: zoom_s2s_host_control
     status: provider_off
@@ -814,23 +815,24 @@ tracks:
       - 'PR #105 exact successor 96e54d9688ff174ac8265ce3b3a6216abb6292dc and isolated deployment 08ecdcf7-c954-43a8-a566-498499eab315 prove the fail-closed plan, preflight, compensation, cleanup, and tombstone code with exact healthy source readback. Before the isolated canary, provider invocations and meeting mutations were zero.'
       - 'The separately protected run created one disposable non-Tisha meeting and no customer invite/message. No host/Student join or control ran. Cleanup stopped after read-only provider reconciliation on ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH; the meeting remains, the signed state is cleanup_required, and no tombstone exists.'
       - 'PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is independently accepted as code-ready only. Its exact eight-file repair and 59/59 focused plus 355/355 unit proof preserve the original signed target while adding provider-normalization, journal-before-DELETE, one-DELETE idempotency, and canonical 3001-only absence verification. No live cleanup or host/Student control ran from that task.'
+      - 'Draft PR #125 exact result head eeb31101e0d8f8a395a1c3833129b1afde4fd845 supersedes the prior not-run claim: one OAuth and one meeting GET ran, reconciliation stopped on the generic exact-scope mismatch before DELETE, and every provider write/customer/staging/production effect remained zero. The signed journal remains cleanup_required sequence 4 without tombstone.'
     blocker:
-      code: ZOOM_DISPOSABLE_CANARY_PROVIDER_DELETION_UNPROVEN
-      reason: 'The exact disposable meeting still exists because the separate provider-only reconciliation command has not run. Live DELETE, canonical Zoom 3001 absence, and the signed sequence-6 deleted tombstone remain unproven; host/Student joins and controls were not attempted, and persistent staging remains provider-off.'
-    remaining_work: 'Complete only the reviewed exact-meeting provider reconciliation/delete and tombstone proof. Only after cleanup may a new bounded host/Student canary be proposed; healthy code or meeting existence is not host-control acceptance.'
-    next_action: Keep provider controls unavailable; preserve the exact runner service, runner deployment, signed state volume, keyholder, operation binding, and original execution head. Do not create another meeting or infer host control from the protected Tisha event link.
+      code: ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH
+      reason: 'The current provider read identified a reconciliation predicate mismatch but the sanitized result intentionally does not identify the field. Blind cleanup retry, substitution, or broader provider inspection is forbidden.'
+    remaining_work: 'Use the separately queued repository-only diagnostic tool and one later authorized read-only predicate classification before deciding any cleanup repair. Host/Student control remains unaccepted.'
+    next_action: 'Keep provider controls unavailable and preserve the exact runner/journal/volume. Do not repeat cleanup, create another meeting, or infer host control.'
 
   - id: zoom_real_control_operator_change_set
     status: blocked
     owner:
-      task_id: OT-LAUNCH-01-ZOOM-PROVIDER-ONLY-BROWSER-CANARY
+      task_id: 019fa24b-7f0a-7822-af33-fe27ff19c4cb
       repository: shloimie-beep/onetimev2
-      branch: codex/zoom-real-control-activation
-      pr: 105
-      head: 2d22f46a40364c670d20fa197e78ead2a2f79c8e
-      system: 'Provider-only Browser Agent execution against isolated PR #105'
-    write_scope: 'Consume the signed create intent without repository edits; create exactly one disposable non-Tisha meeting in the isolated PR #105 proof boundary, use exact fictional Student 1, run bounded controls, sanitize evidence, and delete/read back only that disposable meeting.'
-    handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
+      branch: codex/zoom-disposable-cleanup-result-20260727
+      pr: 125
+      head: eeb31101e0d8f8a395a1c3833129b1afde4fd845
+      system: Zoom disposable cleanup terminal result
+    write_scope: 'Sanitized result-only evidence for the exact preserved disposable meeting; no product code, Board, or additional provider action.'
+    handoff_path: ops/codex-runs/OT-LAUNCH-01/ZOOM-DISPOSABLE-CLEANUP-RESULT-20260727.md
     dependencies: []
     acceptance_ids: [ZOOM-SDK-001, ZOOM-S2S-001]
     evidence:
@@ -854,11 +856,46 @@ tracks:
       - 'PR #105 cleanup-only successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is independently accepted as code-ready only. Exact web e5c4b2c8-d538-417b-967e-4b3d34365011 and runner c6d90077-de1c-41ed-b30e-cda5389b98b2 are healthy at the repair source; public /version remains intentionally pinned to original execution head 96e54d9688ff174ac8265ce3b3a6216abb6292dc. This task made zero Zoom requests or meeting mutations.'
       - 'The only permitted live continuation is the provider-only npm run zoom:real-control:disposable:reconcile-cleanup command with provisioning authorization absent, the same private schema-v3 sequence-4 cleanup_required journal, exact operation/origin/HMAC chain, zero registrants, original execution head, repair head, and one-shot reconciliation authorization. The old ZOOM-CLASSROOM-HANDOFF.md is historical; the updated PR body and provider-action runbook are current authority.'
       - 'Provider-only cleanup task 019f9460-bdcc-7f63-9273-0a05e75fcf19 resumed after the host restart and stopped fail-closed before invariant access because the Railway/GitHub browser session was no longer authenticated. The GitHub sign-in page remains open for the operator. Zoom API requests, cleanup commands, meeting mutations/deletions, customer invitations/messages, persistent-staging changes, and production changes were all zero; the runner and volume remain preserved and tombstone/provider absence remain untested.'
+      - 'Draft PR #125 exact head eeb31101e0d8f8a395a1c3833129b1afde4fd845 is now the current provider result. After exact cleanup-only authorization and repair-head binding, the runner performed OAuth 1 and GET 1, then stopped on ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH before sequence 5, DELETE, or tombstone. POST/PATCH/DELETE, meeting creation, registration, joins, controls, customer messages, staging mutations, and production mutations were zero.'
+      - 'The current result does not safely identify which reconciliation predicate failed. The only safe next source task is a mutation-impossible boolean/delta-class classifier on exact repair base 2d22f46a40364c670d20fa197e78ead2a2f79c8e; a later provider read requires separate authority and must hard-cap OAuth=1, GET=1, POST/PATCH/DELETE=0.'
     blocker:
-      code: RAILWAY_PROVIDER_SESSION_NOT_AUTHENTICATED_AFTER_HOST_RESTART
-      reason: 'The computer restart cleared the signed-in Railway/GitHub browser session before the provider-only executor could access the preserved runner and signed journal. No cleanup command or Zoom request ran; the disposable meeting remains at cleanup_required and deletion, canonical 3001 absence, and the signed sequence-6 tombstone are unproven.'
-    remaining_work: 'Run exactly one provider-only cleanup reconciliation for the existing disposable meeting, prove sanitized deleted plus signed sequence-6 tombstone and canonical absence, then remove only the exact runner/volume. Do not combine cleanup with a new join/control attempt.'
-    next_action: 'Operator signs in through the already-open GitHub/Railway page and says signed in; then resume exact task 019f9460-bdcc-7f63-9273-0a05e75fcf19 for the existing disposable meeting, run only the reviewed reconciliation command, require sanitized deleted output plus the signed sequence-6 tombstone and canonical provider absence, and remove only the preserved runner and state volume. Do not retry provisioning, create a second meeting, touch a Tisha/recurring/customer meeting, or change persistent-staging/production variables.'
+      code: ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH
+      reason: 'The exact preserved meeting failed at least one reviewed reconciliation predicate before DELETE. PR #125 proves no provider write occurred but does not identify the mismatch field, so repeating cleanup would be a blind unsafe retry.'
+    remaining_work: 'Complete queue item Q04-ZOOM-001 repository-only, then separately Board-authorize Q02-002 for one mutation-impossible predicate classification. Use that result to create either one smallest exact repair or one operator-decision item. Cleanup retry and a new meeting remain forbidden.'
+    next_action: 'Preserve runner and /canary volume; do not repeat cleanup. Let 01-OT-CONTROL advance only the diagnostic source and read-only classification dependency chain.'
+
+  - id: zoom_scope_mismatch_diagnostic_tool
+    status: blocked
+    window_id: 04-OT-PRODUCT
+    concurrency_lock: OT-PRODUCT
+    owner:
+      task_id: OT-LAUNCH-01-ZOOM-SCOPE-MISMATCH-DIAGNOSTIC-TOOL-01
+      repository: shloimie-beep/onetimev2
+      branch: codex/zoom-disposable-scope-diagnostic-20260727
+      pr: null
+      head: null
+      system: Zoom disposable reconciliation diagnostic source
+    write_scope: 'Exact repair-base repository-only diagnostic command, focused tests, and separately gated provider-executor prompt; no provider, deployment, environment, journal, Board, staging, or production mutation.'
+    handoff_path: ops/execution-windows/2026-07-27/ZOOM-SCOPE-MISMATCH-DIAGNOSTIC-TASK.md
+    dependencies: [audit_wave_04_runtime_classification]
+    acceptance_ids: [ZOOM-SCOPE-DIAGNOSTIC-001]
+    evidence:
+      - 'PR #125 exact head eeb31101e0d8f8a395a1c3833129b1afde4fd845 supplies only the generic reconciliation-scope mismatch and zero-write counters; it cannot support a safe cleanup retry or predicate relaxation.'
+      - 'Repair base 2d22f46a40364c670d20fa197e78ead2a2f79c8e already exposes an internal exact-meeting inspection matrix. The smallest source task adds a redacted mutation-impossible command around that existing inspector without changing any reconciliation predicate.'
+    forbidden_behavior:
+      - Open Zoom/Railway, deploy, read provider state, change environment variables, append/transition the journal, or execute cleanup.
+      - Relax a reconciliation predicate, decide that a mismatch is benign, or expose a raw provider/protected value.
+      - Edit Board or overlap the active OT-PRODUCT writer.
+    required_proof:
+      - Exact safe boolean predicate matrix and start-delta class only.
+      - Hard request budget with POST/PATCH/DELETE impossible and focused tests for every mismatch/redaction/journal-write denial.
+      - Typecheck, scoped formatting, secret scan, diff check, changed-file allowlist, and zero external effects.
+    stop_condition: 'Stop if the classifier cannot be mutation-impossible, safe output requires protected data, a predicate must be weakened, exact base 2d22f46a is unavailable, or another writer owns a touched file.'
+    blocker:
+      code: OT_PRODUCT_LOCK_RESERVED_FOR_RUNTIME_CLASSIFICATION
+      reason: 'Queue item Q04-001 is the current assigned OT-PRODUCT task. The diagnostic tool is generated and dependency-complete only after that item is terminal and 01-OT-CONTROL promotes Q04-ZOOM-001.'
+    remaining_work: 'When the product lock is free, implement only the task packet and return the separately gated read-only provider prompt.'
+    next_action: 'Do not start concurrently. 01-OT-CONTROL promotes Q04-ZOOM-001 after Q04-001 is accepted.'
 
   - id: bna_foundation
     status: done
@@ -1250,6 +1287,40 @@ tracks:
       reason: 'PR #110 visual preview is verified, but the newest real production signup still failed to produce the exact registered tag, OT-E01 enrollment, or event confirmation; production promotion remains gated by the separate durable server registration-to-GHL hotfix and event-permission acceptance.'
     remaining_work: 'OT-TISHA-HANDOFF-01 must prove the server registration/tag/enrollment path, safely reprocess the one affected operator contact exactly once, and return terminal production-hotfix evidence before PR #110 can join the same narrow release.'
     next_action: 'Keep PR #110 isolated and production on acddcc8; promote the visual patch only together with an independently accepted registration-to-GHL hotfix.'
+
+  - id: self_driving_execution_queue
+    status: active
+    window_id: 01-OT-CONTROL
+    concurrency_lock: BOARD
+    owner:
+      task_id: OT-LAUNCH-01-SELF-DRIVING-QUEUE-CONTROL
+      repository: shloimie-beep/onetimev2
+      branch: codex/audit-to-execution-control-tower-20260727
+      pr: 124
+      head: null
+      system: Git-backed execution queue and Board reconciliation
+    write_scope: 'BOARD.yaml and generated pointer; ops/execution-windows/2026-07-27 queue, index, locks, dependencies, decisions, bootstrap prompts, and control-only result reconciliation.'
+    handoff_path: ops/execution-windows/2026-07-27/queue.yaml
+    dependencies: [goal_system]
+    acceptance_ids: [QUEUE-SELF-DRIVING-001]
+    evidence:
+      - 'The operator explicitly replaced manual window-by-window relay with seven permanent numbered lanes that poll remote Git before every claim and successor.'
+      - 'The queue tracks dispatch claims only; BOARD.yaml remains the sole goal-status and acceptance map. Audit reports and result PRs remain evidence, not authority.'
+      - 'Initial coordination preserves one Board writer, one GHL repository writer, one GHL browser writer, one Zoom provider writer, one One Time product writer, one migration writer, and no production writer before accepted dependencies.'
+      - 'The live 03-OT-GHL repository-design worker is fenced by its existing task ID/claim token. PR #125 is seeded as terminal blocked Zoom evidence, so no queue worker can repeat cleanup or create another meeting.'
+    forbidden_behavior:
+      - Implement product, provider, migration, hygiene, BNA, or production lane work from 01-OT-CONTROL.
+      - Let queue dispatch state override Board status, acceptance, provider truth, or external authority.
+      - Steal or age-expire a claim; force-push the queue; or resolve a queue conflict by deleting another lane state.
+    required_proof:
+      - All seven bootstraps fetch and reread the remote queue/Board before every claim and successor.
+      - Claims and terminal updates use non-force compare-and-swap commits and atomically acquire/release exact locks.
+      - Routine repository tasks continue without user relay; only the six enumerated manual handoff labels can stop a lane.
+      - Queue, dependency, lock, Board, pointer, formatting, secret, and diff validation pass.
+    stop_condition: 'Stop only for a genuine enumerated operator/auth/provider/production/send/destructive/product decision or an exhausted technical blocker; ordinary result reconciliation and repository dispatch continue.'
+    blocker: null
+    remaining_work: 'Keep 01-OT-CONTROL polling terminal results, reconciling accepted evidence into Board, and promoting only dependency-satisfied exact successors.'
+    next_action: 'Bootstrap all seven permanent lanes once; thereafter workers re-read remote Git and continue without manual result relay.'
 
   - id: audit_wave_03_ghl_full_inventory
     status: done

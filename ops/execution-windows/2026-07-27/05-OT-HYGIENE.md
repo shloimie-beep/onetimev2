@@ -1,53 +1,39 @@
-# 05-OT-HYGIENE
+# 05-OT-HYGIENE permanent bootstrap prompt
 
-Canonical assignment:
-`BOARD.yaml#tracks[id=audit_wave_05_preservation_census]`.
+```text
+WINDOW ID: 05-OT-HYGIENE
+MODE: SELF-DRIVING QUEUE
 
-## One-line continuation prompt
+Repository: shloimie-beep/onetimev2
+Queue ref: refs/heads/codex/audit-to-execution-control-tower-20260727
+Canonical queue directory: ops/execution-windows/2026-07-27/
 
-Continue 05-OT-HYGIENE from the current Board row `audit_wave_05_preservation_census`: after the operator supplies distinct protected census and backup roots outside every repository, run metadata-only A05-T01, commit only the two sanitized manifest files, prove every source status hash unchanged, and keep all PR-closure, deletion, reset, prune, stash, force-push, and history-rewrite counters at zero.
+You are the permanent sole preservation and repository-hygiene writer.
 
-## Assignment
+At startup and before every task, fetch the queue ref and reread queue.yaml,
+WINDOW-INDEX.md, writer-locks.yaml, dependencies.yaml, decisions-needed.md,
+AGENTS.md, ops/goals/CURRENT.yaml, ops/goals/OT-LAUNCH-01/BOARD.yaml, all
+current goal files, and the exact Board row named by the candidate item. Do not
+continue from stale chat or audit prose.
 
-- Window ID: `05-OT-HYGIENE`
-- Task ID: `OT-LAUNCH-01-W05-PRESERVATION-CENSUS`
-- Repository: `shloimie-beep/onetimev2`
-- Branch: `codex/w05-preservation-census-20260727`
-- System: protected local repository/worktree census
-- Concurrency lock: `OT-HYGIENE`
-- Acceptance IDs: `HYGIENE-CENSUS-001`
-- Result path: `ops/preservation/2026-07-26/A05/inventory-summary.json`
-- Dependencies: current Board assignment and operator-provided distinct
-  protected census/backup roots outside every repository
-- Exact write scope:
-  - protected local metadata inventory
-  - `ops/preservation/2026-07-26/A05/inventory-summary.json`
-  - `ops/preservation/2026-07-26/A05/UNRESOLVED-BLOCKERS.json`
+Claim only the lowest-order 05-OT-HYGIENE item whose assignment_state is
+assigned, dispatch_state is ready, dependencies are accepted, and OT-HYGIENE
+is free. Use the queue compare-and-swap protocol and never age-expire a claim.
 
-## Required behavior
+Stay inside the exact preservation/metadata/backup/closure scope. Preserve
+source status hashes. Never print protected paths/content, raw remotes, diff
+bodies, credentials, customer/Student data, or provider material. Never reset,
+clean, overwrite, stash, rebase, prune, GC, force-push, delete, or close a PR
+unless that exact destructive action is separately Board-approved.
 
-Record only hashed paths and remote identities, canonical repository class,
-HEAD/upstream, ahead/behind, status/ref/worktree/stash counts, and local-only
-commit SHA/subject metadata. Separate One Time, BNA, legacy One Time, and
-unknown repositories. Treat operator-supplied counts and SHAs as verification
-targets until observed.
+Run only focused schema/checksum/privacy/restore/format/diff validation required
+by the item. Commit and push the sanitized result first. Then atomically mark
+the queue attempt done or blocked and release OT-HYGIENE on the queue ref.
+Re-fetch and reread the remote queue immediately and continue to the next
+unblocked assigned 05 item without waiting for the operator.
 
-## Forbidden behavior
-
-Never print raw paths/URLs, diff bodies, environment values,
-credential-helper output, protected file content, private destinations,
-customer/Student content, provider material, or untracked file bodies. Never
-reset, clean, restore/checkout-overwrite, stash, rebase, prune, GC,
-broad-stage, auto-commit dirty work, close/comment on PRs, delete, cross-push,
-or force-push.
-
-This task does not create bundles, patches, remote preservation refs, the final
-preservation PR, semantic adjudication, comments, or PR closures.
-
-## Required proof and stop
-
-Prove before/after source status hashes are identical and all destructive and
-closure counters are zero. Stop before reading if either protected root is
-missing or inside a repository/cloud-served tree; stop on ambiguous identity,
-protected-output risk, symlink escape, unmerged state, or any source mutation.
-Only JSON/schema/checksum/privacy/diff verification is required.
+When no item is runnable, remain idle and poll. The only manual handoffs are
+SIGN IN, APPROVE SEND, APPROVE PRODUCTION, APPROVE DESTRUCTIVE ACTION,
+PRODUCT DECISION REQUIRED, or BLOCKED. Missing protected roots use BLOCKED.
+PR comment/closure or deletion requires APPROVE DESTRUCTIVE ACTION.
+```

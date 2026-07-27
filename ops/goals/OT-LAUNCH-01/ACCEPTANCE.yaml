@@ -73,6 +73,10 @@ criteria:
     track: zoom_s2s_host_control
     observable: ZOOM_REAL_CONTROL becomes true only when separate canonical S2S OAuth account/client credentials plus exact meeting/registrant/host identity are read back and /app/live-console performs scoped mute, unmute, and spotlight in a human-cleared canary with provider/audit evidence.
     proof: [browser_desktop, provider_readback, audit_readback]
+  - id: ZOOM-SCOPE-DIAGNOSTIC-001
+    track: zoom_scope_mismatch_diagnostic_tool
+    observable: One exact-repair-base repository-only command classifies every preserved disposable-meeting reconciliation predicate using safe booleans and a start-delta class, hard-prevents POST/PATCH/DELETE and journal mutation, exposes no protected/provider value, and produces a separately gated one-OAuth/one-GET executor prompt without running it.
+    proof: [unit_test, authorization_negative_tests, secret_scan, changed_file_allowlist]
   - id: BNA-001
     track: bna_foundation
     observable: Agent Action Hub is ready and 14 canonical jobs import and read back without a second job registry.
@@ -242,6 +246,17 @@ criteria:
     track: audit_wave_03_ghl_full_inventory
     observable: One protected read-only HighLevel pass accounts for every visible workflow, campaign, Conversation AI asset, knowledge base, folder ancestry, duplicate, archived/deprecated surface, and cross-kind collision or returns explicit UNPROVEN_UI_SCOPE_UNAVAILABLE; all mutation, save, publication, enrollment, send, contact-change, and deletion counters equal zero.
     proof: [sanitized_provider_readback, coverage_matrix, zero_effect_counters]
+  - id: QUEUE-SELF-DRIVING-001
+    track: self_driving_execution_queue
+    observable: Seven permanent numbered lanes fetch and reread one canonical remote Git queue and Board before every claim and successor, claim only dependency-satisfied assigned work, preserve exclusive non-expiring locks, commit/push terminal results and queue state, continue ordinary repository work without operator relay, and surface only the six enumerated genuine manual handoffs; BOARD.yaml remains the sole goal-status map.
+    proof:
+      [
+        yaml_parse,
+        goal_governance,
+        lock_invariant_scan,
+        dependency_validation,
+        bootstrap_prompt_scan,
+      ]
   - id: SEC-RUNTIME-001
     track: audit_wave_04_runtime_classification
     observable: One canonical runtime/deployment classification rejects every incoherent tuple and applies production cookie, startup migration, mock/demo, provider, and required-secret gates from that classification, with no provider or deployment mutation.

@@ -1,0 +1,83 @@
+schema_version: 1
+queue_id: OT-LAUNCH-01-20260727
+source_of_goal_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+queue_path: ops/execution-windows/2026-07-27/queue.yaml
+note: >-
+  This is coordination state, not goal status. Claims and releases must be
+  committed atomically with the matching queue item update using the
+  compare-and-swap protocol in queue.yaml.
+locks:
+  - id: BOARD
+    concurrency: 1
+    permanent_lane: 01-OT-CONTROL
+    current_holder:
+      lane: 01-OT-CONTROL
+      item: Q01-001
+      claim_token: permanent-01-ot-control
+    scope: BOARD.yaml, goal acceptance, generated goal pointer, queue assignments, dependency gates, and control reconciliation.
+    forbidden: Any Board write by lanes 02 through 07.
+  - id: GHL-REPOSITORY
+    concurrency: 1
+    permanent_lane: 03-OT-GHL
+    current_holder:
+      lane: 03-OT-GHL
+      item: Q03-002
+      worker_task_id: 019fa24b-f845-7262-bea1-883771c3688f
+      claim_token: prequeue-019fa24b-f845-7262-bea1-883771c3688f
+    scope: integrations/highlevel plus directly assigned HighLevel tests and handoffs.
+    forbidden: Parallel HighLevel registry writer, Board edit, or browser/provider mutation.
+  - id: GHL-BROWSER
+    concurrency: 1
+    permanent_lane: 03-OT-GHL
+    current_holder: null
+    scope: One exact Board-assigned HighLevel browser/provider job.
+    forbidden: A second browser writer, an unassigned save, send, enrollment, publication, contact mutation, or destructive action.
+  - id: ZOOM-PROVIDER
+    concurrency: 1
+    permanent_lane: 02-OT-ZOOM
+    current_holder: null
+    scope: One exact Board-assigned Zoom provider job against named preserved state.
+    forbidden: A second provider writer or any guessed/substituted meeting, runner, account, state, or authority.
+  - id: OT-PRODUCT
+    concurrency: 1
+    permanent_lane: 04-OT-PRODUCT
+    current_holder: null
+    scope: One Time application, package, runtime, and focused product tests named by one assigned item.
+    forbidden: Overlapping product writer, Board edit, provider action, or production promotion.
+  - id: MIGRATION
+    concurrency: 1
+    permanent_lane: null
+    current_holder: null
+    scope: One exact migration or migration-verification assignment, held together with the owning product or production lock.
+    forbidden: A second migration writer, reused migration prefix, database apply without authority, or an unscoped schema change.
+  - id: OT-HYGIENE
+    concurrency: 1
+    permanent_lane: 05-OT-HYGIENE
+    current_holder: null
+    scope: Exact preservation, metadata, backup, or individually approved closure item.
+    forbidden: Product change, source destruction, broad staging, force-push, or closure without an accepted close list.
+  - id: BNA-CONTROL
+    concurrency: 1
+    permanent_lane: 06-BNA-CONTROL
+    current_holder: null
+    scope: Exact BNA control/governance paths assigned by the queue.
+    forbidden: One Time changes, BNA product/provider work, or a second BNA status model.
+  - id: PRODUCTION
+    concurrency: 1
+    permanent_lane: 07-OT-PRODUCTION
+    current_holder: null
+    enabled_only_when:
+      - GATE-PRODUCTION-CANDIDATE-ACCEPTED
+      - GATE-BACKUP-RESTORE-ROLLBACK-ACCEPTED
+      - GATE-FRESH-PRODUCTION-AUTHORITY
+    scope: One exact separately approved production promotion item.
+    forbidden: Any production writer or mutation before all gates are accepted in Board and dependencies.yaml.
+invariants:
+  - Only 01-OT-CONTROL writes BOARD.yaml.
+  - At most one GHL repository writer.
+  - At most one GHL browser writer.
+  - At most one Zoom provider writer.
+  - At most one One Time product writer.
+  - At most one migration writer.
+  - No production writer until every named dependency and fresh production authority are accepted.
+  - A claim or lock cannot be stolen or expired by time.

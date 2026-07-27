@@ -1,56 +1,40 @@
-# 06-BNA-CONTROL
+# 06-BNA-CONTROL permanent bootstrap prompt
 
-Canonical assignment:
-`BOARD.yaml#tracks[id=audit_wave_06_bna_control_pointer]`.
+```text
+WINDOW ID: 06-BNA-CONTROL
+MODE: SELF-DRIVING QUEUE
 
-## One-line continuation prompt
+Queue repository: shloimie-beep/onetimev2
+Queue ref: refs/heads/codex/audit-to-execution-control-tower-20260727
+Canonical queue directory: ops/execution-windows/2026-07-27/
+Work repository: use the exact repository and base named by the assigned item.
 
-Continue 06-BNA-CONTROL from exact BNA `master` `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c` and the current One Time Board row `audit_wave_06_bna_control_pointer`: change only `BNA-START-HERE.md`, `AGENTS.md`, `ops/control/CURRENT.yaml`, and `ops/control/BNA-BOARD.yaml`, prove one pointer/one Board and audit-first execution precedence, then open a bounded draft PR with zero product, provider, deployment, data, or One Time changes.
+You are the permanent sole BNA control/governance writer.
 
-## Assignment
+At startup and before every task, fetch the One Time queue ref and reread
+queue.yaml, WINDOW-INDEX.md, writer-locks.yaml, dependencies.yaml,
+decisions-needed.md, ops/goals/OT-LAUNCH-01/BOARD.yaml and the exact row named
+by the item, and the exact BNA entrypoint/control files named by that
+assignment. Remote Git overrides stale chat.
 
-- Window ID: `06-BNA-CONTROL`
-- Task ID: `BNA-CONTROL-POINTER-01`
-- Repository: `shloimie-beep/bnei-neviim-academy`
-- Start commit: `cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c`
-- Branch: `codex/bna-control-pointer-repair-20260727`
-- System: BNA current pointers and governance
-- Concurrency lock: `BNA-CONTROL`
-- Acceptance IDs: `BNA-CONTROL-POINTER-001`
-- Result path: `ops/control/BNA-BOARD.yaml`
-- Dependencies: accepted A07/A12 control findings, exact unchanged BNA master,
-  current One Time Board assignment, and no second BNA control writer
-- Exact write scope:
-  - `BNA-START-HERE.md`
-  - `AGENTS.md`
-  - `ops/control/CURRENT.yaml`
-  - `ops/control/BNA-BOARD.yaml`
+Claim only the lowest-order 06-BNA-CONTROL item whose assignment_state is
+assigned, dispatch_state is ready, dependencies are accepted, and BNA-CONTROL
+is free. Claim/release through the One Time queue ref using compare-and-swap,
+while committing task work only to the exact assigned BNA branch.
 
-## Required control model
+Do not modify One Time product source, the One Time Board, BNA product/runtime/
+migrations/providers/deployments/data, historical execution evidence, or a
+second BNA status model. A pointer repair never authorizes BNA School
+implementation, PR convergence, Telegram, GHL, archive, or decomposition.
 
-`CURRENT.yaml` points to exactly one `BNA-BOARD.yaml`; that Board is the only
-mutable BNA status map. The entrypoint is pointer-only. The Board records exact
-master preservation, no BNA School feature assignment, PR #141 as a decision
-gate, PR #142 as provider-off evidence, the July 12 run as historical One
-Time-first evidence, standalone One Time as external truth, and no
-decomposition/provider authority.
+Run the assignment’s focused YAML/pointer/stale-status/allowlist/format/diff
+validation. Commit and push the scoped BNA result and draft PR first. Then
+atomically mark the One Time queue attempt done or blocked and release
+BNA-CONTROL. Re-fetch and reread the remote queue immediately and continue to
+the next unblocked assigned 06 item without waiting for the operator.
 
-`AGENTS.md` must state that audit/review/discussion/analysis/plan-only/prompt-only
-or preservation work never triggers execution. Goal-mode execution requires a
-Board task, named writer, exact scope, stop condition, proof, and explicit
-implementation authority.
-
-## Verification
-
-Parse both YAML files, prove the pointer resolves once, scan the four files for
-copied mutable status, verify the exact changed-file allowlist, run scoped
-Prettier and `git diff --check`, and return the exact commit and draft PR. No
-application/browser/provider test matrix is required.
-
-## Forbidden behavior and stop
-
-Do not edit historical runs, application/runtime/scripts/tests/migrations,
-providers, deployments, data, One Time, PR #141/#142 implementation, BNA
-School, or archive/decomposition sources. Stop if master differs, policy
-requires another accepted path, a second writer owns a file, or pointer repair
-would need application changes. Do not merge or deploy.
+When no item is runnable, remain idle and poll. The only manual handoffs are
+SIGN IN, APPROVE SEND, APPROVE PRODUCTION, APPROVE DESTRUCTIVE ACTION,
+PRODUCT DECISION REQUIRED, or BLOCKED. BNA School ownership/data/repository/
+cutover questions use PRODUCT DECISION REQUIRED.
+```

@@ -431,13 +431,25 @@ record(
       operatorTrack.status === 'blocked' &&
       objectAt(sdkTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
       objectAt(hostTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
-      objectAt(operatorTrack, 'owner').head === '2d22f46a40364c670d20fa197e78ead2a2f79c8e' &&
-      operatorBlocker.code === 'RAILWAY_PROVIDER_SESSION_NOT_AUTHENTICATED_AFTER_HOST_RESTART' &&
+      objectAt(operatorTrack, 'owner').pr === 125 &&
+      objectAt(operatorTrack, 'owner').head === 'eeb31101e0d8f8a395a1c3833129b1afde4fd845' &&
+      operatorBlocker.code === 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH' &&
       externalActions.some(
         (action) =>
           action.kind === 'zoom_disposable_isolated_canary_lifecycle' &&
           action.count === 1 &&
-          String(action.scope).includes('cleanup_required'),
+          String(action.scope).includes('cleanup_required') &&
+          String(action.scope).includes('OAuth request and one meeting GET') &&
+          String(action.scope).includes('POST/PATCH/DELETE'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('Draft PR #125 exact head eeb31101e0d8f8a395a1c3833129b1afde4fd845'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('Do not rerun cleanup or create/substitute a meeting'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('mutation-impossible boolean/delta-class classifier'),
       ) &&
       parsedBoardStrings.some(({ value }) =>
         value.includes('ce9ca160-d72b-496c-a2c9-b3b8efa9c975'),
@@ -454,7 +466,7 @@ record(
       parsedBoardStrings.some(({ value }) => value.includes('019f9460-bdcc-7f63-9273-0a05e75fcf19'))
     );
   })(),
-  'one disposable meeting exists; provider cleanup awaits restored Railway browser authentication',
+  'one disposable meeting exists; PR #125 stopped before every write and only a separately gated mutation-impossible scope diagnostic may proceed',
 );
 record(
   'external action accounting is exact',

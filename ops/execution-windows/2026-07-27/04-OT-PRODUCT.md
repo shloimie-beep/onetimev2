@@ -1,59 +1,41 @@
-# 04-OT-PRODUCT
+# 04-OT-PRODUCT permanent bootstrap prompt
 
-Canonical assignment:
-`BOARD.yaml#tracks[id=audit_wave_04_runtime_classification]`.
+```text
+WINDOW ID: 04-OT-PRODUCT
+MODE: SELF-DRIVING QUEUE
 
-## One-line continuation prompt
+Repository: shloimie-beep/onetimev2
+Queue ref: refs/heads/codex/audit-to-execution-control-tower-20260727
+Canonical queue directory: ops/execution-windows/2026-07-27/
 
-Continue 04-OT-PRODUCT from the current Board row `audit_wave_04_runtime_classification`: implement only A11-T01’s canonical fail-closed runtime classification on `codex/w04-canonical-runtime-classification-20260727`, run focused tuple/auth/startup tests plus typecheck/build/secret/format/diff checks, and perform zero provider, deployment, production, database, customer, or Board mutation.
+You are the permanent sole One Time product writer.
 
-## Assignment
+At startup and before every task, fetch the queue ref and reread queue.yaml,
+WINDOW-INDEX.md, writer-locks.yaml, dependencies.yaml, decisions-needed.md,
+AGENTS.md, ops/goals/CURRENT.yaml, ops/goals/OT-LAUNCH-01/BOARD.yaml, all
+current goal files, and the exact Board row named by the candidate item.
+Discard any stale chat scope that differs from remote Git.
 
-- Window ID: `04-OT-PRODUCT`
-- Task ID: `OT-LAUNCH-01-W04-CANONICAL-RUNTIME-CLASSIFICATION`
-- Repository: `shloimie-beep/onetimev2`
-- Branch: `codex/w04-canonical-runtime-classification-20260727`
-- System: One Time runtime/config/auth startup boundary
-- Concurrency lock: `OT-PRODUCT`
-- Acceptance IDs: `SEC-RUNTIME-001`
-- Result path:
-  `ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-result.md`
-- Dependencies: accepted audit checkpoint, current Board assignment, and no
-  other OT-PRODUCT writer
-- Exact write scope:
-  - `packages/config/src/index.ts`
-  - runtime/cookie/startup classification helpers in
-    `apps/web/src/server/app.ts`
-  - focused tests under `tests/unit/config/`
-  - `tests/integration/runtime-version-proof.test.ts`
+Claim only the lowest-order 04-OT-PRODUCT item whose assignment_state is
+assigned, dispatch_state is ready, dependencies are accepted, and OT-PRODUCT
+is free. If the item touches migrations or migration verification, also
+acquire MIGRATION atomically. Never hold or clear another lane’s lock.
 
-## Required behavior
+Implement only the exact files and semantics in the Board assignment. Run
+focused tests first, followed by the assignment’s typecheck/build/format/
+secret/diff gates. Do not broaden into a planned successor, provider action,
+deployment, production change, Board edit, real data read, or migration apply
+without explicit authority.
 
-Create one allowed runtime/deployment tuple model and route Secure-cookie,
-mandatory production-secret, startup migration, mock/demo, and provider gates
-through it. Reject incoherent combinations. Do not include actual environment
-values in code, tests, logs, or evidence.
+Commit and push the scoped result and draft PR first. Then atomically mark the
+queue attempt done or blocked and release every held lock on the queue ref.
+Re-fetch and reread the remote queue immediately and continue to the next
+unblocked assigned 04 item without waiting for the operator.
 
-## Verification
-
-Require focused unit/integration tests for every allowed and forbidden tuple,
-Secure-cookie behavior, production secret requirements, startup migration,
-mock/demo, and provider gates. Run typecheck, build, scoped Prettier, secret
-scan, and `git diff --check`.
-
-Operator manual-smoke checklist:
-
-1. Start a disposable isolated-staging instance with sinks/providers off.
-2. Confirm authenticated cookie flags and health/readiness remain correct.
-3. Confirm an incoherent production tuple fails before listening.
-4. Confirm no provider or database migration action ran.
-
-Do not prescribe full repository E2E or screenshot matrices unless focused
-tests reveal a shared auth/routing regression.
-
-## Forbidden behavior and stop
-
-Do not open providers, deploy, touch production, apply migrations, edit the
-Board, or broaden into other A11 repairs. Stop if a real secret is needed, a
-second writer owns either source, production behavior requires an unresolved
-decision, or the repair would activate a provider.
+When no item is runnable, remain idle and poll the remote queue. The only
+manual handoffs are SIGN IN, APPROVE SEND, APPROVE PRODUCTION,
+APPROVE DESTRUCTIVE ACTION, PRODUCT DECISION REQUIRED, or BLOCKED. Use
+PRODUCT DECISION REQUIRED only when implementation materially depends on an
+unresolved product choice; ordinary defects and test failures remain yours to
+diagnose and repair.
+```

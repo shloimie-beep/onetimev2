@@ -1,0 +1,161 @@
+schema_version: 1
+queue_id: OT-LAUNCH-01-20260727
+source_of_goal_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+queue_path: ops/execution-windows/2026-07-27/queue.yaml
+note: >-
+  This file defines edges and acceptance contracts only. It is not a status
+  map and cannot grant provider, send, production, destructive, or product
+  authority.
+nodes:
+  - id: Q01-001
+    requires: []
+    acceptance: Terminal results are validated, Board is reconciled, safe successors are assigned, and no lane work is implemented by control.
+  - id: Q02-001
+    requires: []
+    acceptance: Exact disposable meeting deletion, canonical absence, signed deleted tombstone, and zero forbidden effects.
+  - id: Q02-002
+    requires: [Q04-ZOOM-001, GATE-ZOOM-READONLY-DIAGNOSTIC-AUTHORITY]
+    acceptance: One mutation-impossible run returns only the safe predicate matrix, delta class, journal status, and OAuth 1/GET 1/POST-PATCH-DELETE 0.
+  - id: Q02-003
+    requires: [Q02-002, GATE-ZOOM-SCOPE-MISMATCH-RESOLVED]
+    acceptance: A new exact Board assignment resolves one identified predicate without guessing or substituting protected state, or records the required operator decision.
+  - id: Q03-001
+    requires: []
+    acceptance: Sanitized visible inventory or explicit unavailable scope with every external-effect counter zero.
+  - id: Q03-002
+    requires: [Q03-001]
+    acceptance: Current-head repository-only sender/message-class design, canonical projection sync, focused tests, and zero external effects.
+  - id: Q03-003
+    requires: [Q03-002, GATE-GHL-MAILBOX-REPLY-OWNERSHIP, GATE-FRESH-GHL-CANARY-AUTHORITY]
+    acceptance: One operator-owned seed maximum, exact visible From, reply readback in the governed conversation, no customer audience.
+  - id: Q04-001
+    requires: []
+    acceptance: One canonical fail-closed runtime tuple model with focused proof.
+  - id: Q04-ZOOM-001
+    requires: [Q04-001]
+    acceptance: A repository-only diagnostic command can classify each reconciliation predicate without provider mutation, journal mutation, or protected output.
+  - id: Q04-002
+    requires: [Q04-001]
+    acceptance: Public diagnostics expose no protected topology while protected operator diagnostics remain useful.
+  - id: Q04-003
+    requires: [Q04-001]
+    acceptance: Read-only migration/checksum verification performs no database apply.
+  - id: Q04-004
+    requires: [Q04-001]
+    acceptance: Provider delivery uses stable idempotency and explicit uncertain-acceptance state while providers remain off.
+  - id: Q04-005
+    requires: [GATE-ZOOM-CLEANUP-ACCEPTED]
+    acceptance: Classroom launch carries no bearer in request targets, history, referrers, logs, or artifacts and remains provider-off.
+  - id: Q04-006
+    requires: [Q04-001, GATE-LEARNER-CAP-DISPOSITION-IF-NEEDED]
+    acceptance: Three-active-learner enforcement is deterministic and legacy over-limit state has an accepted disposition.
+  - id: Q04-007
+    requires: [Q04-001]
+    acceptance: Telegram response persistence and replay are atomic while real delivery remains disabled.
+  - id: Q05-001
+    requires: [GATE-PROTECTED-CENSUS-AND-BACKUP-ROOTS]
+    acceptance: Sanitized metadata census with before/after source hashes identical and no destructive/closure effects.
+  - id: Q05-002
+    requires: [Q05-001]
+    acceptance: Bundles, checksums, disposable restore proof, and additive reviewed preservation refs preserve exact objects.
+  - id: Q05-003
+    requires: [Q05-001]
+    acceptance: Protected dirty-work backups verify in disposable clones and leave source status hashes unchanged.
+  - id: Q05-004
+    requires: [Q05-002, Q05-003]
+    acceptance: Sanitized manifest-only draft PR passes schema, privacy, formatting, and diff checks.
+  - id: Q05-005
+    requires: [Q05-004, GATE-ACCEPTED-PR-CLOSE-LIST]
+    acceptance: Only individually approved PRs close; branch deletion and force counts remain zero.
+  - id: Q06-001
+    requires: []
+    acceptance: One BNA pointer and one BNA Board with no product/provider/runtime change.
+  - id: Q06-002
+    requires:
+      - Q06-001
+      - GATE-CONTROLLED-ONE-TIME-PILOT-ACCEPTED
+      - GATE-PROTECTED-BNA-SCHOOL-DATA-INVENTORY
+      - GATE-BNA-SCHOOL-PRODUCT-DECISIONS
+    acceptance: Separately assigned BNA School foundation respects accepted ownership, data, repository, and cutover decisions.
+  - id: Q07-001
+    requires:
+      - GATE-ZOOM-SUCCESSOR-CANARY-ACCEPTED
+      - Q04-001
+      - Q04-002
+      - Q04-003
+      - Q04-006
+      - GATE-PRODUCTION-CANDIDATE-ACCEPTED
+      - GATE-BACKUP-RESTORE-ROLLBACK-ACCEPTED
+      - GATE-FRESH-PRODUCTION-AUTHORITY
+    acceptance: Narrow operator-owned production pilot with immutable source, exact migrations, rollback, role proof, provider gates, and no broad rollout.
+external_gates:
+  - id: GATE-ZOOM-SCOPE-MISMATCH-RESOLVED
+    manual_handoff: BLOCKED
+    acceptance: Control accepts an evidence-backed explanation and creates a new exact non-substituting Board assignment.
+  - id: GATE-ZOOM-CLEANUP-ACCEPTED
+    manual_handoff: BLOCKED
+    acceptance: Exact disposable meeting is absent, signed deleted tombstone is accepted, and preserved runner/state cleanup is terminal.
+  - id: GATE-ZOOM-READONLY-DIAGNOSTIC-AUTHORITY
+    manual_handoff: BLOCKED
+    acceptance: Board separately authorizes one mutation-impossible diagnostic run against the preserved runner/journal with OAuth 1, GET 1, and every write count zero.
+  - id: GATE-FRESH-ZOOM-SUCCESSOR-AUTHORITY
+    manual_handoff: BLOCKED
+    acceptance: Fresh exact provider authority names one new disposable meeting, host, fictional Student, controls, and mandatory cleanup.
+  - id: GATE-ZOOM-SUCCESSOR-CANARY-ACCEPTED
+    manual_handoff: BLOCKED
+    acceptance: Both Zoom SDK and S2S acceptance IDs are terminal with cleanup.
+  - id: GATE-GHL-MAILBOX-REPLY-OWNERSHIP
+    manual_handoff: PRODUCT DECISION REQUIRED
+    acceptance: Mailbox, routing, Reply-To, and governed-conversation ownership are explicit.
+  - id: GATE-FRESH-GHL-CANARY-AUTHORITY
+    manual_handoff: APPROVE SEND
+    acceptance: Exact one-seed send authority is separately granted after repository design acceptance.
+  - id: GATE-PROTECTED-CENSUS-AND-BACKUP-ROOTS
+    manual_handoff: BLOCKED
+    acceptance: Operator supplies distinct protected census and backup roots outside every repository and cloud-served tree.
+  - id: GATE-ACCEPTED-PR-CLOSE-LIST
+    manual_handoff: APPROVE DESTRUCTIVE ACTION
+    acceptance: Board names each exact PR head approved for comment and closure after preservation proof.
+  - id: GATE-LEARNER-CAP-DISPOSITION-IF-NEEDED
+    manual_handoff: PRODUCT DECISION REQUIRED
+    acceptance: Automatically satisfied only when aggregate readback shows no over-limit legacy household; otherwise an explicit disposition is required.
+  - id: GATE-CONTROLLED-ONE-TIME-PILOT-ACCEPTED
+    manual_handoff: APPROVE PRODUCTION
+    acceptance: Controlled One Time pilot is terminal and accepted in Board.
+  - id: GATE-PROTECTED-BNA-SCHOOL-DATA-INVENTORY
+    manual_handoff: BLOCKED
+    acceptance: Protected BNA School data inventory is complete and sanitized.
+  - id: GATE-BNA-SCHOOL-PRODUCT-DECISIONS
+    manual_handoff: PRODUCT DECISION REQUIRED
+    acceptance: Staff/attendance ownership, tuition truth, repository, extraction, and cutover decisions are explicit.
+  - id: GATE-PRODUCTION-CANDIDATE-ACCEPTED
+    manual_handoff: BLOCKED
+    acceptance: Immutable semantic candidate and all release acceptance artifacts are accepted in Board.
+  - id: GATE-BACKUP-RESTORE-ROLLBACK-ACCEPTED
+    manual_handoff: BLOCKED
+    acceptance: Production backup, disposable restore, forward migration, and rollback proof are accepted.
+  - id: GATE-FRESH-PRODUCTION-AUTHORITY
+    manual_handoff: APPROVE PRODUCTION
+    acceptance: Fresh narrow production promotion authority names exact source, schema, cohort, routes, stop conditions, and rollback target.
+forbidden_edges:
+  - from: Q02-001
+    to: Q04-005
+    reason: A blocked cleanup attempt cannot unlock classroom transport work.
+  - from: Q02-001
+    to: Q02-003
+    reason: The generic scope-mismatch category cannot authorize another cleanup attempt.
+  - from: Q04-ZOOM-001
+    to: Q02-003
+    reason: Diagnostic source code alone cannot authorize provider access or choose a safe predicate repair.
+  - from: Q03-001
+    to: Q03-003
+    reason: Read-only inventory cannot authorize a sender canary.
+  - from: Q03-002
+    to: Q03-003
+    reason: Repository design alone cannot authorize a provider mutation or message.
+  - from: Q01-001
+    to: Q07-001
+    reason: Control reconciliation and audit evidence cannot authorize production.
+  - from: GATE-PRODUCTION-CANDIDATE-ACCEPTED
+    to: Q07-001
+    reason: Candidate acceptance still requires backup/rollback and fresh promotion authority.
