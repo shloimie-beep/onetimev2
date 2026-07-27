@@ -1527,7 +1527,8 @@ tracks:
       system: One Time general-delivery provider worker
     write_scope: 'Delivery contracts, activation policy, provider router, worker/repository durable operation state, one forward-only migration, provider sinks/stubs, and focused fault-injection tests. No provider access, destination, send, deployment, environment, staging database, or production database.'
     handoff_path: apps/worker/src/delivery/worker.ts
-    dependencies: [audit_wave_04_runtime_classification, audit_wave_04_read_only_migration_verification]
+    dependencies:
+      [audit_wave_04_runtime_classification, audit_wave_04_read_only_migration_verification]
     acceptance_ids: [SEC-DELIVERY-IDEMPOTENCY-001]
     evidence:
       - 'A11-P1-01 proves the provider-facing key currently changes with attempts and the accepted receipt cache is process memory only, leaving an accepted-but-unrecorded retry able to repeat the external effect.'
