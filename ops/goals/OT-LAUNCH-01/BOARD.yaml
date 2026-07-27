@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-24T18:26:07Z
+updated_at: 2026-07-27T07:21:39Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -1250,3 +1250,126 @@ tracks:
       reason: 'PR #110 visual preview is verified, but the newest real production signup still failed to produce the exact registered tag, OT-E01 enrollment, or event confirmation; production promotion remains gated by the separate durable server registration-to-GHL hotfix and event-permission acceptance.'
     remaining_work: 'OT-TISHA-HANDOFF-01 must prove the server registration/tag/enrollment path, safely reprocess the one affected operator contact exactly once, and return terminal production-hotfix evidence before PR #110 can join the same narrow release.'
     next_action: 'Keep PR #110 isolated and production on acddcc8; promote the visual patch only together with an independently accepted registration-to-GHL hotfix.'
+
+  - id: audit_wave_03_ghl_full_inventory
+    status: active
+    window_id: 03-OT-GHL
+    concurrency_lock: GHL-PROVIDER
+    owner:
+      task_id: OT-LAUNCH-01-W03-GHL-FULL-INVENTORY-02
+      repository: shloimie-beep/onetimev2
+      branch: codex/w03-ghl-full-inventory-20260727
+      pr: null
+      system: HighLevel protected read-only inventory
+    write_scope: 'Provider access is read-only; the only repository write is ops/execution-windows/2026-07-27/results/03-OT-GHL-result.json after sanitization.'
+    handoff_path: ops/execution-windows/2026-07-27/results/03-OT-GHL-result.json
+    dependencies: [goal_system]
+    acceptance_ids: [AUDIT-GHL-INVENTORY-001]
+    evidence:
+      - 'Audit checkpoint c51bcd4 deduplicates A01 through A12 and accepts A04 full-location inventory as the required predecessor to sender design or any HighLevel mutation.'
+      - 'The current Board records no active GHL browser writer; PR #116 remains unassigned/conflicted and is not authority.'
+    forbidden_behavior:
+      - Save, publish, activate, enroll, send, create, rename, move, archive, restore, delete, or change a contact.
+      - Return protected provider IDs, private destinations, customer or Student data, raw message bodies, or secrets.
+      - Claim exhaustive coverage when an archived, hidden, backend, or cross-kind surface is unavailable.
+    required_proof:
+      - Exact protected-location verification without returning its identifier.
+      - Workflow, campaign, Conversation AI, knowledge-base, folder, duplicate, and cross-kind coverage matrix.
+      - Safe identity digests, readback timestamp, unknowns, and every mutation/send/enrollment counter at zero.
+    stop_condition: 'Stop with UNPROVEN_UI_SCOPE_UNAVAILABLE if the protected location cannot be verified, a required surface is unavailable, an identity cannot be disambiguated, or any step would mutate provider state.'
+    blocker: null
+    remaining_work: 'Complete one read-only full-location inventory and return only the sanitized result.'
+    next_action: 'Open WINDOW-03 in the existing protected One Time HighLevel location, verify location without returning its identifier, perform the exact read-only inventory, and stop on any mutation path.'
+
+  - id: audit_wave_04_runtime_classification
+    status: active
+    window_id: 04-OT-PRODUCT
+    concurrency_lock: OT-PRODUCT
+    owner:
+      task_id: OT-LAUNCH-01-W04-CANONICAL-RUNTIME-CLASSIFICATION
+      repository: shloimie-beep/onetimev2
+      branch: codex/w04-canonical-runtime-classification-20260727
+      pr: null
+      system: One Time canonical runtime and deployment classification
+    write_scope: 'packages/config/src/index.ts; runtime/cookie/startup classification helpers in apps/web/src/server/app.ts; focused tests under tests/unit/config and tests/integration/runtime-version-proof.test.ts only.'
+    handoff_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-result.md
+    dependencies: [goal_system]
+    acceptance_ids: [SEC-RUNTIME-001]
+    evidence:
+      - 'A11-P1-02 remains current because e986b5e..53a18e7 changed only sender governance files; the audited application/config sources are unchanged.'
+      - 'A11-T01 is the first sequential OT-PRODUCT repair and requires no provider, deployment, production, customer, or database mutation.'
+    forbidden_behavior:
+      - Read or commit real environment values, protected destinations, credentials, or provider identifiers.
+      - Activate a provider, deploy, touch production, edit migrations, edit BOARD.yaml, or broaden into A11-T02 through T07.
+      - Run broad E2E or screenshot matrices unless focused tests reveal a shared auth/routing regression.
+    required_proof:
+      - Full allowed and forbidden runtime-tuple tests.
+      - Secure-cookie, mandatory production-secret, startup migration, mock/demo, and provider-gate assertions.
+      - Focused unit/integration tests, typecheck, build, scoped Prettier, secret scan, diff check, and a short operator manual-smoke checklist.
+    stop_condition: 'Stop if a real secret/environment value is needed, another writer owns either source file, production behavior requires an unresolved operator decision, or the repair would activate a provider.'
+    blocker: null
+    remaining_work: 'Implement and prove one canonical runtime-classification model without external effects.'
+    next_action: 'Create the assigned clean branch from the current conductor head and implement only A11-T01 canonical runtime classification with focused fail-closed tests.'
+
+  - id: audit_wave_05_preservation_census
+    status: waiting_external
+    window_id: 05-OT-HYGIENE
+    concurrency_lock: OT-HYGIENE
+    owner:
+      task_id: OT-LAUNCH-01-W05-PRESERVATION-CENSUS
+      repository: shloimie-beep/onetimev2
+      branch: codex/w05-preservation-census-20260727
+      pr: null
+      system: Protected repository and worktree preservation census
+    write_scope: 'Protected local metadata inventory plus sanitized ops/preservation/2026-07-26/A05/inventory-summary.json and ops/preservation/2026-07-26/A05/UNRESOLVED-BLOCKERS.json only.'
+    handoff_path: ops/preservation/2026-07-26/A05/inventory-summary.json
+    dependencies: [goal_system]
+    acceptance_ids: [HYGIENE-CENSUS-001]
+    evidence:
+      - 'A05 establishes preservation before closure and classifies current local-only/dirty state as unproven.'
+      - 'This assignment is A05-T01 only; object publication, dirty-work backup, preservation refs, manifest PR, semantic adjudication, comments, and PR closure remain outside scope.'
+    forbidden_behavior:
+      - Print raw paths, remote URLs, diff bodies, environment values, credential-helper output, protected content, private destinations, customer/Student data, or provider material.
+      - Reset, clean, restore/checkout-overwrite, stash, rebase, prune, GC, broad-stage, commit dirty work, delete, close/comment on PRs, or force-push.
+      - Cross-publish One Time and BNA objects.
+    required_proof:
+      - Hashed protected scan roots and repository identities; sanitized HEAD/upstream/status/ref/worktree/stash/local-only metadata.
+      - Separate One Time, BNA, legacy One Time, and unknown counts.
+      - Before/after source status hashes equal and every destructive/closure counter at zero.
+    stop_condition: 'Do not begin until the operator supplies distinct protected census and backup roots outside all repositories; stop on ambiguous identity, protected output risk, source mutation, symlink escape, or unmerged state.'
+    blocker:
+      code: OPERATOR_PROTECTED_CENSUS_PATHS_REQUIRED
+      reason: 'The exact protected census root and separate encrypted backup root are runtime inputs and have not been supplied in this window.'
+    remaining_work: 'Obtain the two protected roots, run metadata-only A05-T01, and commit only the two sanitized manifest files.'
+    next_action: 'Operator supplies protected census and backup roots in WINDOW-05; the executor verifies both are outside every repository before reading metadata.'
+
+  - id: audit_wave_06_bna_control_pointer
+    status: active
+    window_id: 06-BNA-CONTROL
+    concurrency_lock: BNA-CONTROL
+    owner:
+      task_id: BNA-CONTROL-POINTER-01
+      repository: shloimie-beep/bnei-neviim-academy
+      branch: codex/bna-control-pointer-repair-20260727
+      pr: null
+      head: cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c
+      system: BNA current control pointers and governance
+    write_scope: 'Exactly BNA-START-HERE.md, AGENTS.md, ops/control/CURRENT.yaml, and ops/control/BNA-BOARD.yaml in shloimie-beep/bnei-neviim-academy; no other path.'
+    handoff_path: ops/control/BNA-BOARD.yaml
+    dependencies: [goal_system]
+    acceptance_ids: [BNA-CONTROL-POINTER-001]
+    evidence:
+      - 'Current remote BNA master remains exactly cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c, matching A07/A12.'
+      - 'BNA-START-HERE.md still embeds stale mutable status while ops/execution-runs/latest.json points to a later One Time-first run; the current AGENTS goal-mode rule can begin execution before audit/review precedence.'
+    forbidden_behavior:
+      - Edit application, runtime, script, test, migration, provider, deployment, data, One Time repository, or historical execution-run content.
+      - 'Assign BNA School implementation, converge PR #141/#142, operate Telegram/GHL, or authorize decomposition/archive.'
+      - Create a second status model or copy mutable status into the entrypoint.
+    required_proof:
+      - CURRENT.yaml resolves to exactly one BNA Board and BNA-START-HERE points only to CURRENT for mutable status.
+      - 'Board records exact master, no assigned BNA School feature, PR #141 decision gate, PR #142 provider-off evidence, historical run demotion, and One Time-first dependency.'
+      - Parse both YAML files, scan the four-file allowlist for copied mutable status, run scoped formatting and diff check, and return exact commit/draft PR.
+    stop_condition: 'Stop without writing if current BNA master differs, repository policy requires a different accepted canonical path, a second writer owns any of the four files, or the control model would require application changes.'
+    blocker: null
+    remaining_work: 'Create the four-file pointer-only BNA control model and open a bounded draft PR; do not merge or deploy.'
+    next_action: 'Create WINDOW-06 from exact BNA master cebbfc5 and change only the four assigned control files.'

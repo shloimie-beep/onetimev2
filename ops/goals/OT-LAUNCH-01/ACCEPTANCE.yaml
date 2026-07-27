@@ -234,3 +234,19 @@ criteria:
         browser_mobile,
         separate_device_role_proof,
       ]
+  - id: AUDIT-GHL-INVENTORY-001
+    track: audit_wave_03_ghl_full_inventory
+    observable: One protected read-only HighLevel pass accounts for every visible workflow, campaign, Conversation AI asset, knowledge base, folder ancestry, duplicate, archived/deprecated surface, and cross-kind collision or returns explicit UNPROVEN_UI_SCOPE_UNAVAILABLE; all mutation, save, publication, enrollment, send, contact-change, and deletion counters equal zero.
+    proof: [sanitized_provider_readback, coverage_matrix, zero_effect_counters]
+  - id: SEC-RUNTIME-001
+    track: audit_wave_04_runtime_classification
+    observable: One canonical runtime/deployment classification rejects every incoherent tuple and applies production cookie, startup migration, mock/demo, provider, and required-secret gates from that classification, with no provider or deployment mutation.
+    proof: [unit_test, integration_test, authorization_negative_tests, typecheck, build]
+  - id: HYGIENE-CENSUS-001
+    track: audit_wave_05_preservation_census
+    observable: A metadata-only protected census separates One Time, BNA, legacy One Time, and unknown checkouts; records hashed paths, repository identities, status/ref/worktree/stash counts and local-only commit metadata; proves every source status hash unchanged; and performs zero source mutation, PR closure, deletion, reset, prune, stash, or force-push.
+    proof: [sanitized_inventory, checksum_manifest, source_status_readback, zero_effect_counters]
+  - id: BNA-CONTROL-POINTER-001
+    track: audit_wave_06_bna_control_pointer
+    observable: BNA has exactly one pointer-only current entrypoint and one mutable Board, explicitly demotes historical execution-run/task/system-state prose to evidence, records audit-first execution precedence, and changes no application, runtime, migration, provider, deployment, or One Time control source.
+    proof: [yaml_parse, pointer_resolution, stale_status_scan, changed_file_allowlist, diff_check]
