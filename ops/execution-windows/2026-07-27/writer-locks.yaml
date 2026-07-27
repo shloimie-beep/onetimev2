@@ -65,11 +65,7 @@ locks:
   - id: BNA-CONTROL
     concurrency: 1
     permanent_lane: 06-BNA-CONTROL
-    current_holder:
-      claim_token: 348ed713-9e65-489b-836b-d1a28a9cc496
-      worker_task_id: 06-BNA-CONTROL-348ed713-9e65-489b-836b-d1a28a9cc496
-      item_id: Q06-001
-      claimed_at: 2026-07-27T11:49:47+03:00
+    current_holder: null
     scope: Exact BNA control/governance paths assigned by the queue.
     forbidden: One Time changes, BNA product/provider work, or a second BNA status model.
   - id: PRODUCTION

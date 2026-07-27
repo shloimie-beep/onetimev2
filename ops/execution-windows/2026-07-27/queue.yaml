@@ -484,7 +484,7 @@ items:
     priority: 1
     title: BNA current pointer and Board repair
     assignment_state: assigned
-    dispatch_state: claimed
+    dispatch_state: blocked
     board_track: audit_wave_06_bna_control_pointer
     dependencies: []
     required_locks: [BNA-CONTROL]
@@ -494,6 +494,18 @@ items:
     worker_task_id: 06-BNA-CONTROL-348ed713-9e65-489b-836b-d1a28a9cc496
     claimed_at: 2026-07-27T11:49:47+03:00
     claimed_from_queue_head: e2e1cc6a977178155d0cc223f319d3271ee733d2
+    terminal_at: 2026-07-27T11:51:45+03:00
+    terminal_reason: BNA_MASTER_DIVERGED_FROM_ASSIGNED_BASE
+    result_commit: null
+    result_pr: null
+    validation_summary: Remote BNA master is a9528b2d9467174d76d4c25bfb028f9308f24b4f, not required cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c; the required commit is unavailable after fetch, so no BNA file was read or changed.
+    external_effects:
+      bna_source_changes: 0
+      provider_mutations: 0
+      deployments: 0
+      data_changes: 0
+      destructive_actions: 0
+    manual_handoff: BLOCKED
   - id: Q06-002
     lane: 06-BNA-CONTROL
     sequence: 2
