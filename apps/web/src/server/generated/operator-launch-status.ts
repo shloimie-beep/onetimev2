@@ -5,7 +5,7 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:925a2dd6387700f15a0bd66afe20b11745c7b01589309149d7791c1e71f9573e',
+  board_source_hash: 'sha256:9ca4d906ba08098b7527bd25c6b11146e66ecfff4eb443e6c05218665db9e198',
   generated_at: '2026-07-27T07:21:39.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
@@ -107,7 +107,7 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
       next_action:
-        'Preserve the exact runner, journal, keyholder, and /canary volume. Do not rerun cleanup or create/substitute a meeting. Advance only through queue items Q04-ZOOM-001 and Q02-002.',
+        'Preserve the exact runner, journal, keyholder, and /canary volume. Do not rerun cleanup or create/substitute a meeting.',
     },
     {
       track_id: 'zoom_s2s_host_control',
@@ -121,7 +121,7 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom Real Control Operator Change Set',
       status: 'blocked',
       next_action:
-        'Preserve runner and /canary volume; do not repeat cleanup. Let 01-OT-CONTROL advance only the diagnostic source and read-only classification dependency chain.',
+        'Preserve runner and /canary volume. Do not rerun cleanup or create/substitute a meeting.',
     },
     {
       track_id: 'production_pilot',
@@ -136,17 +136,17 @@ export const operatorLaunchStatusProjection = {
       track_id: 'zoom_meeting_sdk',
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
-      code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+      code: 'ZOOM_DISPOSABLE_CANARY_SCOPE_CLASSIFICATION_REQUIRED',
       reason:
-        'PR #125 proves the exact cleanup attempt reached the meeting readback but failed one or more reviewed reconciliation predicates before DELETE. The sanitized result does not identify which predicate, so another cleanup attempt would be an unsafe blind retry.',
+        'The repository classifier is accepted, but no later provider read has been authorized or executed. PR #125 still does not identify the mismatched predicate, so cleanup remains unsafe.',
     },
     {
       track_id: 'zoom_s2s_host_control',
       label: 'Zoom host controls',
       status: 'provider_off',
-      code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
+      code: 'ZOOM_DISPOSABLE_CANARY_SCOPE_CLASSIFICATION_REQUIRED',
       reason:
-        'The current provider read identified a reconciliation predicate mismatch but the sanitized result intentionally does not identify the field. Blind cleanup retry, substitution, or broader provider inspection is forbidden.',
+        'The accepted repository diagnostic has not received a separately authorized provider read. Blind cleanup retry, substitution, or broader provider inspection remains forbidden.',
     },
     {
       track_id: 'zoom_real_control_operator_change_set',
@@ -154,7 +154,7 @@ export const operatorLaunchStatusProjection = {
       status: 'blocked',
       code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
       reason:
-        'The exact preserved meeting failed at least one reviewed reconciliation predicate before DELETE. PR #125 proves no provider write occurred but does not identify the mismatch field, so repeating cleanup would be a blind unsafe retry.',
+        'The exact classifier source is accepted, but the one read-only provider classification remains separately unauthorized and unexecuted. The original failed predicate is still unknown, so repeating cleanup would be a blind unsafe retry.',
     },
     {
       track_id: 'production_pilot',
@@ -191,6 +191,6 @@ export const operatorLaunchStatusProjection = {
     track_id: 'zoom_real_control_operator_change_set',
     label: 'Zoom Real Control Operator Change Set',
     action:
-      'Preserve runner and /canary volume; do not repeat cleanup. Let 01-OT-CONTROL advance only the diagnostic source and read-only classification dependency chain.',
+      'Preserve runner and /canary volume. Do not rerun cleanup or create/substitute a meeting.',
   },
 } as const satisfies OperatorLaunchStatusProjection;

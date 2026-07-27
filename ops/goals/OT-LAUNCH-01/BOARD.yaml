@@ -783,11 +783,12 @@ tracks:
       - 'Independent audit accepts PR #105 cleanup-only successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e as code-ready: exactly eight files, no migration, 59/59 focused tests, 355/355 unit tests, typecheck, lint, formatting, build, secret scan, and all GitHub/Railway checks pass. Its signed schema-v3 reconciliation permits only the exact provider-normalized disposable target, journals cleanup_delete_in_flight before a sole DELETE, rejects generic/OAuth 404, and writes a tombstone only after canonical Zoom meeting-resource 3001 absence.'
       - 'Isolated web deployment e5c4b2c8-d538-417b-967e-4b3d34365011 and runner deployment c6d90077-de1c-41ed-b30e-cda5389b98b2 report the exact successor source and healthy /health and /ready. The public /version label intentionally remains pinned to original execution head 96e54d9688ff174ac8265ce3b3a6216abb6292dc; deployment metadata is the source authority for the repair.'
       - 'Draft PR #125 exact result head eeb31101e0d8f8a395a1c3833129b1afde4fd845 is the current provider evidence. The reviewed reconciliation made OAuth 1 and GET 1, then stopped on ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH before journal sequence 5 or DELETE. POST/PATCH/DELETE, creates, joins, controls, customer messages, staging mutations, and production mutations were zero; the sequence-4 cleanup_required journal, runner, and /canary volume remain preserved.'
+      - 'Draft convergence PR #130 content head 100a8f442a1dbb6a25f9ac08587a04c02386d1b7 integrates exact repair source 2d22f46 once and adds the mutation-impossible scope diagnostic. Its environment rejects provision, cleanup, and reconciliation-delete authority; it imports no journal writer and exposes only inspectExactMeeting, the reviewed booleans, four start-delta classes, and exact request counts.'
     blocker:
-      code: ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH
-      reason: 'PR #125 proves the exact cleanup attempt reached the meeting readback but failed one or more reviewed reconciliation predicates before DELETE. The sanitized result does not identify which predicate, so another cleanup attempt would be an unsafe blind retry.'
-    remaining_work: 'Add and accept one mutation-impossible sanitized predicate classifier on the exact repair descendant, then separately authorize at most one OAuth plus one meeting GET to identify the mismatch. Only that evidence may support a smallest repair or operator decision; no cleanup retry or new meeting is authorized.'
-    next_action: 'Preserve the exact runner, journal, keyholder, and /canary volume. Do not rerun cleanup or create/substitute a meeting. Advance only through queue items Q04-ZOOM-001 and Q02-002.'
+      code: ZOOM_DISPOSABLE_CANARY_SCOPE_CLASSIFICATION_REQUIRED
+      reason: 'The repository classifier is accepted, but no later provider read has been authorized or executed. PR #125 still does not identify the mismatched predicate, so cleanup remains unsafe.'
+    remaining_work: 'After separate exact Board authority, run the accepted classifier once with OAuth=1, GET=1, and POST/PATCH/DELETE=0. Only its sanitized result may support a smallest repair or operator decision.'
+    next_action: 'Preserve the exact runner, journal, keyholder, and /canary volume. Do not rerun cleanup or create/substitute a meeting.'
 
   - id: zoom_s2s_host_control
     status: provider_off
@@ -819,10 +820,11 @@ tracks:
       - 'The separately protected run created one disposable non-Tisha meeting and no customer invite/message. No host/Student join or control ran. Cleanup stopped after read-only provider reconciliation on ZOOM_DISPOSABLE_CANARY_SCOPE_MISMATCH; the meeting remains, the signed state is cleanup_required, and no tombstone exists.'
       - 'PR #105 cleanup successor 2d22f46a40364c670d20fa197e78ead2a2f79c8e is independently accepted as code-ready only. Its exact eight-file repair and 59/59 focused plus 355/355 unit proof preserve the original signed target while adding provider-normalization, journal-before-DELETE, one-DELETE idempotency, and canonical 3001-only absence verification. No live cleanup or host/Student control ran from that task.'
       - 'Draft PR #125 exact result head eeb31101e0d8f8a395a1c3833129b1afde4fd845 supersedes the prior not-run claim: one OAuth and one meeting GET ran, reconciliation stopped on the generic exact-scope mismatch before DELETE, and every provider write/customer/staging/production effect remained zero. The signed journal remains cleanup_required sequence 4 without tombstone.'
+      - 'Draft convergence PR #130 content head 100a8f442a1dbb6a25f9ac08587a04c02386d1b7 accepts the repository-only classifier with 97/97 focused Zoom tests, build/typecheck, scoped formatting, request-budget/redaction/journal-byte proof, and a 2168-file secret scan. Zoom requests and provider writes from that task were zero.'
     blocker:
-      code: ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH
-      reason: 'The current provider read identified a reconciliation predicate mismatch but the sanitized result intentionally does not identify the field. Blind cleanup retry, substitution, or broader provider inspection is forbidden.'
-    remaining_work: 'Use the separately queued repository-only diagnostic tool and one later authorized read-only predicate classification before deciding any cleanup repair. Host/Student control remains unaccepted.'
+      code: ZOOM_DISPOSABLE_CANARY_SCOPE_CLASSIFICATION_REQUIRED
+      reason: 'The accepted repository diagnostic has not received a separately authorized provider read. Blind cleanup retry, substitution, or broader provider inspection remains forbidden.'
+    remaining_work: 'Run only the later authorized read-only predicate classification before deciding any cleanup repair. Host/Student control remains unaccepted.'
     next_action: 'Keep provider controls unavailable and preserve the exact runner/journal/volume. Do not repeat cleanup, create another meeting, or infer host control.'
 
   - id: zoom_real_control_operator_change_set
@@ -861,22 +863,24 @@ tracks:
       - 'Provider-only cleanup task 019f9460-bdcc-7f63-9273-0a05e75fcf19 resumed after the host restart and stopped fail-closed before invariant access because the Railway/GitHub browser session was no longer authenticated. The GitHub sign-in page remains open for the operator. Zoom API requests, cleanup commands, meeting mutations/deletions, customer invitations/messages, persistent-staging changes, and production changes were all zero; the runner and volume remain preserved and tombstone/provider absence remain untested.'
       - 'Draft PR #125 exact head eeb31101e0d8f8a395a1c3833129b1afde4fd845 is now the current provider result. After exact cleanup-only authorization and repair-head binding, the runner performed OAuth 1 and GET 1, then stopped on ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH before sequence 5, DELETE, or tombstone. POST/PATCH/DELETE, meeting creation, registration, joins, controls, customer messages, staging mutations, and production mutations were zero.'
       - 'The current result does not safely identify which reconciliation predicate failed. The only safe next source task is a mutation-impossible boolean/delta-class classifier on exact repair base 2d22f46a40364c670d20fa197e78ead2a2f79c8e; a later provider read requires separate authority and must hard-cap OAuth=1, GET=1, POST/PATCH/DELETE=0.'
+      - 'Draft convergence PR #130 content head 100a8f442a1dbb6a25f9ac08587a04c02386d1b7 completes that source task. The command is locked to the signed sequence-4 journal and original create head, rejects every provision/delete authorization, validates the keyholder host before provider construction, uses exactly one inspectExactMeeting call, emits no raw protected value or delta, and has no append/transition/delete import.'
+      - 'Focused proof passes 97/97 across the exact reconciliation inspector, journal plan, cleanup preservation, and new classifier. Build/typecheck, scoped Prettier, diff checks, exact six-file diagnostic allowlist, and secret scan across 2168 repository text files pass. Repository Zoom/provider/deployment/environment/journal/staging/production effects are zero.'
     blocker:
       code: ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH
-      reason: 'The exact preserved meeting failed at least one reviewed reconciliation predicate before DELETE. PR #125 proves no provider write occurred but does not identify the mismatch field, so repeating cleanup would be a blind unsafe retry.'
-    remaining_work: 'Complete queue item Q04-ZOOM-001 repository-only, then separately Board-authorize Q02-002 for one mutation-impossible predicate classification. Use that result to create either one smallest exact repair or one operator-decision item. Cleanup retry and a new meeting remain forbidden.'
-    next_action: 'Preserve runner and /canary volume; do not repeat cleanup. Let 01-OT-CONTROL advance only the diagnostic source and read-only classification dependency chain.'
+      reason: 'The exact classifier source is accepted, but the one read-only provider classification remains separately unauthorized and unexecuted. The original failed predicate is still unknown, so repeating cleanup would be a blind unsafe retry.'
+    remaining_work: 'Separately authorize and execute one accepted-source classifier read with OAuth=1, GET=1, and POST/PATCH/DELETE=0; then use only its sanitized result to create a smallest repair or operator-decision item.'
+    next_action: 'Preserve runner and /canary volume. Do not rerun cleanup or create/substitute a meeting.'
 
   - id: zoom_scope_mismatch_diagnostic_tool
-    status: active
+    status: done
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT
     owner:
       task_id: OT-LAUNCH-01-CONVERGENCE-ZOOM-SCOPE-DIAGNOSTIC
       repository: shloimie-beep/onetimev2
       branch: codex/one-time-launch-convergence-20260727
-      pr: null
-      head: 8b7ebcfe1e85ea847205b8b9615f255993c46f25
+      pr: 130
+      head: 100a8f442a1dbb6a25f9ac08587a04c02386d1b7
       system: Zoom disposable reconciliation diagnostic source
     write_scope: 'Exact repair-base repository-only diagnostic command, focused tests, and separately gated provider-executor prompt; no provider, deployment, environment, journal, Board, staging, or production mutation.'
     handoff_path: ops/execution-windows/2026-07-27/ZOOM-SCOPE-MISMATCH-DIAGNOSTIC-TASK.md
@@ -886,6 +890,10 @@ tracks:
       - 'PR #125 exact head eeb31101e0d8f8a395a1c3833129b1afde4fd845 supplies only the generic reconciliation-scope mismatch and zero-write counters; it cannot support a safe cleanup retry or predicate relaxation.'
       - 'Repair base 2d22f46a40364c670d20fa197e78ead2a2f79c8e already exposes an internal exact-meeting inspection matrix. The smallest source task adds a redacted mutation-impossible command around that existing inspector without changing any reconciliation predicate.'
       - 'Runtime dependency audit_wave_04_runtime_classification is accepted at convergence content head 8b7ebcfe1e85ea847205b8b9615f255993c46f25 with the full integration gate green. The OT-PRODUCT lock is released for this diagnostic only.'
+      - 'Exact repair source 2d22f46a40364c670d20fa197e78ead2a2f79c8e is integrated once as convergence commit 9122cbd. Exact diagnostic content head 100a8f442a1dbb6a25f9ac08587a04c02386d1b7 adds only the command, fail-closed preflight, runbook boundary, and focused proof without changing a reconciliation predicate.'
+      - 'The diagnostic rejects provision, cleanup, and reconciliation-delete authorization; requires a distinct read-only authorization and exact deployed source; validates HMAC/origin/source/sequence-4/zero-registrant/no-tombstone state and keyholder host before provider construction; imports no journal writer; and exposes only inspectExactMeeting.'
+      - 'Output is limited to phase, sequence, the reviewed predicate booleans, exact/within_reviewed_tolerance/outside_reviewed_tolerance/unparseable start class, and OAuth/GET/POST/PATCH/DELETE counts. Tests prove journal bytes unchanged, every mismatch and delta class, redaction, exclusive lock, sequence-5/6 rejection, host/HMAC/origin/source rejection before inspection, and hard POST/PATCH/DELETE failure.'
+      - 'Focused Zoom proof passes 97/97, build/typecheck passes, scoped formatting and diff checks pass, the changed-file allowlist is exact, and secret scan passes across 2168 repository text files. Zoom requests, provider writes, deployment/environment/journal/staging/production effects are zero.'
     forbidden_behavior:
       - Open Zoom/Railway, deploy, read provider state, change environment variables, append/transition the journal, or execute cleanup.
       - Relax a reconciliation predicate, decide that a mismatch is benign, or expose a raw provider/protected value.
@@ -896,8 +904,8 @@ tracks:
       - Typecheck, scoped formatting, secret scan, diff check, changed-file allowlist, and zero external effects.
     stop_condition: 'Stop if the classifier cannot be mutation-impossible, safe output requires protected data, a predicate must be weakened, exact base 2d22f46a is unavailable, or another writer owns a touched file.'
     blocker: null
-    remaining_work: 'Integrate exact cleanup-reconciliation source 2d22f46 once, then add the mutation-impossible, redacted exact-meeting predicate classifier and focused tests without invoking Zoom.'
-    next_action: 'The convergence conductor implements the repository-only classifier. Do not deploy, inspect provider state, append the journal, repeat cleanup, or create another meeting.'
+    remaining_work: null
+    next_action: 'Repository work is complete. A later provider-only classifier run requires separate exact Board authority; do not deploy or execute it from repository work.'
 
   - id: bna_foundation
     status: done
