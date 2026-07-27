@@ -670,8 +670,8 @@ describe('OT-107 student Class Helper', () => {
 
     expect(helperMarkup).toContain('Class Helper answers from Rabbi Scheller');
     expect(helperMarkup).toContain('Ask helper');
-    expect(helperMarkup).not.toContain('Preview private question');
-    expect(questionsMarkup).toContain('Preview private question');
+    expect(helperMarkup).not.toContain('Review private question');
+    expect(questionsMarkup).toContain('Review private question');
     expect(questionsMarkup).not.toContain('Ask helper');
     expect(questionsMarkup).not.toContain('Submit question');
   });
