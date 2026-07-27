@@ -142,7 +142,7 @@ items:
     priority: 1
     title: Continuous GitHub result reconciliation and safe dispatch
     assignment_state: assigned
-    dispatch_state: ready
+    dispatch_state: claimed
     repeatable: true
     board_track: self_driving_execution_queue
     dependencies: []
@@ -329,11 +329,15 @@ items:
     priority: 1
     title: Canonical fail-closed runtime classification
     assignment_state: assigned
-    dispatch_state: ready
+    dispatch_state: claimed
     board_track: audit_wave_04_runtime_classification
     dependencies: []
     required_locks: [OT-PRODUCT]
     branch: codex/w04-canonical-runtime-classification-20260727
+    claim_token: q04-001-04-ot-product-20260727
+    worker_task_id: 04-OT-PRODUCT
+    claimed_at: 2026-07-27T12:08:00+03:00
+    claimed_from_queue_head: 42a25fffa3ae8a3fb56e3b75f2add693cb02b2ac
     result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-result.md
   - id: Q04-ZOOM-001
     lane: 04-OT-PRODUCT
@@ -486,6 +490,10 @@ items:
     required_locks: [BNA-CONTROL]
     branch: codex/bna-control-pointer-repair-20260727
     result_path: ops/control/BNA-BOARD.yaml
+    claim_token: 348ed713-9e65-489b-836b-d1a28a9cc496
+    worker_task_id: 06-BNA-CONTROL-348ed713-9e65-489b-836b-d1a28a9cc496
+    claimed_at: 2026-07-27T11:47:49+03:00
+    claimed_from_queue_head: 42a25fffa3ae8a3fb56e3b75f2add693cb02b2ac
   - id: Q06-002
     lane: 06-BNA-CONTROL
     sequence: 2

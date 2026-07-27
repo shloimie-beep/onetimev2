@@ -28,7 +28,11 @@ locks:
   - id: GHL-BROWSER
     concurrency: 1
     permanent_lane: 03-OT-GHL
-    current_holder: null
+    current_holder:
+      claim_token: 348ed713-9e65-489b-836b-d1a28a9cc496
+      worker_task_id: 06-BNA-CONTROL-348ed713-9e65-489b-836b-d1a28a9cc496
+      item_id: Q06-001
+      claimed_at: 2026-07-27T11:47:49+03:00
     scope: One exact Board-assigned HighLevel browser/provider job.
     forbidden: A second browser writer, an unassigned save, send, enrollment, publication, contact mutation, or destructive action.
   - id: ZOOM-PROVIDER
@@ -40,7 +44,10 @@ locks:
   - id: OT-PRODUCT
     concurrency: 1
     permanent_lane: 04-OT-PRODUCT
-    current_holder: null
+    current_holder:
+      lane: 04-OT-PRODUCT
+      item: Q04-001
+      claim_token: q04-001-04-ot-product-20260727
     scope: One Time application, package, runtime, and focused product tests named by one assigned item.
     forbidden: Overlapping product writer, Board edit, provider action, or production promotion.
   - id: MIGRATION
