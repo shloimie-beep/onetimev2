@@ -9,9 +9,10 @@ async function readRepoFile(filePath: string) {
 }
 
 describe('Rabbi launch email design', () => {
-  it('keeps OT-02A and OT-02B in separate Phase-1, permission-bound delivery contracts', async () => {
-    const [registry, migrationPrompt, nurturePrompt] = await Promise.all([
+  it('keeps OT-02A and OT-02B in separate permission-bound delivery contracts with the fixed sender', async () => {
+    const [registry, senderRegistry, migrationPrompt, nurturePrompt] = await Promise.all([
       readRepoFile('integrations/highlevel/registry/workflow-registry.yaml'),
+      readRepoFile('integrations/highlevel/registry/sender-registry.yaml'),
       readRepoFile(
         'integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md',
       ),
@@ -24,10 +25,16 @@ describe('Rabbi launch email design', () => {
     expect(registry).toContain(
       "reviewed_email_one_identity: 'rabbi_new_program_prelaunch_nurture_v1'",
     );
-    expect(registry).toContain("phase_1_from: 'info@onetimeonetime.com only'");
     expect(registry).toContain(
-      "phase_2_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'",
+      "desired_from_after_acceptance: 'Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>'",
     );
+    expect(registry).toContain("sender_decision_status: 'fixed; not an operator decision gate'");
+    expect(registry).toContain(
+      "sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'",
+    );
+    expect(senderRegistry).toContain("fromEmail: 'rabbi@onetimeonetime.com'");
+    expect(senderRegistry).toContain("currentFallbackFromEmail: 'info@onetimeonetime.com'");
+    expect(senderRegistry).toContain('no separately monitored second inbox is required');
     expect(migrationPrompt).toContain('operator-selected adult existing-subscriber migration list');
     expect(migrationPrompt).toContain('Tisha event permission is event-purpose only');
     expect(nurturePrompt).toContain('independently proven general-marketing permission');
@@ -36,7 +43,11 @@ describe('Rabbi launch email design', () => {
     );
     for (const prompt of [migrationPrompt, nurturePrompt]) {
       expect(prompt).toContain('One Time Rabbi Campaign Phase 1 From');
-      expect(prompt).toContain('Do not select One Time Rabbi Campaign Phase 2 From');
+      expect(prompt).toContain(
+        'Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>',
+      );
+      expect(prompt).toContain('One Time Rabbi Campaign Phase 2 From');
+      expect(prompt).toContain('does not require a separately monitored second inbox');
       expect(prompt).toContain('One Time Home URL');
       expect(prompt).toContain('This copy is not an authorization to send.');
     }
@@ -76,5 +87,8 @@ describe('Rabbi launch email design', () => {
     expect(successorText).toContain(
       'This is a separately gated job. It is BLOCKED with zero effects unless',
     );
+    expect(successorText).toContain('The sender product decision is fixed');
+    expect(successorText).toContain('APPROVE SEND for exactly one seed');
+    expect(successorText).not.toContain('approval to use rabbi@');
   });
 });

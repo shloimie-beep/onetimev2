@@ -18,12 +18,13 @@ Registry dependencies:
 - `integrations/highlevel/registry/communications-contract.json`
 - `integrations/highlevel/registry/workflow-registry.yaml`
 
-Exact sender custom values to select from the picker for this Phase-1 Draft:
+Exact sender state for this Draft:
 
 - One Time Rabbi Campaign Sender Name
-- One Time Rabbi Campaign Phase 1 From
 - One Time Default Reply-To
-- Do not select One Time Rabbi Campaign Phase 2 From. It remains pending mailbox/routing, HighLevel From acceptance, separately authorized protected seed delivery, and controlled reply-to-Conversations readback.
+- The fixed post-acceptance visible From is `Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>` using One Time Rabbi Campaign Phase 2 From.
+- Reply-To remains `info@onetimeonetime.com`; rabbi@ may route into the same governed GHL Conversations workflow and does not require a separately monitored second inbox.
+- Until GHL-UI-24 records provider acceptance, preserve the current One Time Rabbi Campaign Phase 1 From fallback and do not activate or send from the desired address.
 - Do not type or guess sender display-name, From, reply-to, or provider text.
 - If a registered sender value is absent from the picker, block this workflow instead of inventing it.
 

@@ -96,7 +96,7 @@ export function classifyRuntime(input: {
     oneTimeRuntimeEnvironment ?? deliveryEnvironment ?? defaultDeliveryEnvironment(nodeEnv);
   const allowedByNodeEnv: Record<typeof nodeEnv, readonly OneTimeRuntimeEnvironment[]> = {
     development: ['local', 'isolated_staging'],
-    test: ['local', 'test', 'isolated_staging', 'production'],
+    test: ['test', 'isolated_staging'],
     production: ['isolated_staging', 'production'],
   };
   if (!allowedByNodeEnv[nodeEnv].includes(environment)) {
@@ -316,7 +316,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     parsed.ENABLE_REAL_TELEGRAM_TRANSPORT ||
     (parsed.ENABLE_PAYMENT_TRANSPORT && !guardedStripeTestTransport);
 
-  if (parsed.NODE_ENV !== 'test' && realTransportsEnabled) {
+  if (realTransportsEnabled && !runtime.allowsProviderActions) {
     throw new Error('Real transports are outside this task and must remain disabled.');
   }
 
@@ -437,7 +437,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
 
   if (
-    parsed.NODE_ENV === 'production' &&
+    runtime.isProductionRuntime &&
     parsed.ONE_TIME_RESEND_WEBHOOK_ENABLED &&
     !parsed.RESEND_WEBHOOK_SECRET
   ) {
@@ -448,11 +448,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Production delivery provider mode is disabled pending a reviewed release.');
   }
 
-  if (parsed.NODE_ENV === 'production' && parsed.OT89_SUPPORT_DELIVERY_MODE !== 'disabled') {
+  if (runtime.isProductionRuntime && parsed.OT89_SUPPORT_DELIVERY_MODE !== 'disabled') {
     throw new Error('OT89 support delivery must remain disabled in production.');
   }
 
-  if (parsed.NODE_ENV === 'production' && parsed.OT89_MOCK_BNA_ENABLED) {
+  if (runtime.isProductionRuntime && parsed.OT89_MOCK_BNA_ENABLED) {
     throw new Error('OT89 mock BNA endpoint is forbidden in production.');
   }
 
@@ -488,7 +488,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   ].filter((value): value is string => Boolean(value));
 
   if (
-    parsed.NODE_ENV === 'production' &&
+    runtime.isProductionRuntime &&
     ot89ProvidedSecrets.some((value) => OT89_KNOWN_TEST_VALUES.has(value))
   ) {
     throw new Error('Known OT89 test HMAC defaults are forbidden in production.');
@@ -514,11 +514,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('OT89 support HMAC key IDs and secrets are required when support is enabled.');
   }
 
-  if (parsed.NODE_ENV === 'production' && !parsed.AUTH_CSRF_SECRET) {
+  if (runtime.isProductionRuntime && !parsed.AUTH_CSRF_SECRET) {
     throw new Error('AUTH_CSRF_SECRET is required in production.');
   }
 
-  if (parsed.NODE_ENV === 'production' && parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED) {
+  if (runtime.isProductionRuntime && parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED) {
     if (!parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET) {
       throw new Error(
         'ONE_TIME_TELEGRAM_WEBHOOK_SECRET is required when Telegram webhook is enabled.',
@@ -543,11 +543,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     );
   }
 
-  if (
-    parsed.NODE_ENV === 'production' &&
-    ['owner', 'admin'].some(Boolean) &&
-    !parsed.MFA_SECRET_ENCRYPTION_KEY
-  ) {
+  if (runtime.isProductionRuntime && !parsed.MFA_SECRET_ENCRYPTION_KEY) {
     throw new Error('MFA_SECRET_ENCRYPTION_KEY is required in production.');
   }
 
@@ -555,7 +551,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     nodeEnv: parsed.NODE_ENV,
     runtime,
     deliveryEnvironment,
-    isProduction: parsed.NODE_ENV === 'production',
+    isProduction: runtime.isProductionRuntime,
     port: parsed.PORT,
     publicBaseUrl: parsed.PUBLIC_BASE_URL,
     appVersion: parsed.APP_VERSION,
@@ -598,9 +594,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     lifecycleDeliveryKeyId: parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID,
     lifecycleDeliveryKey:
       parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY ??
-      (parsed.NODE_ENV === 'production'
-        ? undefined
-        : 'test-only-lifecycle-delivery-key-do-not-use'),
+      (runtime.isProductionRuntime ? undefined : 'test-only-lifecycle-delivery-key-do-not-use'),
     lifecycleDeliveryKeyConfigured: Boolean(parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY),
     outboxTransportMode: parsed.OUTBOX_TRANSPORT_MODE,
     oneTimeRuntimeEnvironment,
@@ -732,7 +726,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
       parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED ?? oneTimeRuntimeEnvironment !== 'production',
     liveClassObsBridgeToken:
       parsed.LIVE_CLASS_OBS_BRIDGE_TOKEN ??
-      (parsed.NODE_ENV === 'production' ? undefined : 'local-live-class-obs-bridge'),
+      (runtime.isProductionRuntime ? undefined : 'local-live-class-obs-bridge'),
     liveClassObsBridgeTokenConfigured: Boolean(parsed.LIVE_CLASS_OBS_BRIDGE_TOKEN),
     liveClassTelegramEnabled: parsed.LIVE_CLASS_TELEGRAM_ENABLED,
     supportRateLimitWindowMs: parsed.SUPPORT_RATE_LIMIT_WINDOW_MS,
@@ -743,16 +737,16 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ot89SupportBnaBaseUrl: parsed.OT89_SUPPORT_BNA_BASE_URL,
     ot89SupportHmacKeyId:
       parsed.OT89_SUPPORT_HMAC_KEY_ID ??
-      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_ONETIME_KEY_ID),
+      (runtime.isProductionRuntime ? '' : OT89_LOCAL_ONETIME_KEY_ID),
     ot89SupportHmacSecret:
       parsed.OT89_SUPPORT_HMAC_SECRET ??
-      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_ONETIME_SECRET),
+      (runtime.isProductionRuntime ? '' : OT89_LOCAL_ONETIME_SECRET),
     ot89BnaToOnetimeHmacKeyId:
       parsed.OT89_BNA_TO_ONETIME_HMAC_KEY_ID ??
-      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_BNA_KEY_ID),
+      (runtime.isProductionRuntime ? '' : OT89_LOCAL_BNA_KEY_ID),
     ot89BnaToOnetimeHmacSecret:
       parsed.OT89_BNA_TO_ONETIME_HMAC_SECRET ??
-      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_BNA_SECRET),
+      (runtime.isProductionRuntime ? '' : OT89_LOCAL_BNA_SECRET),
     ot89MockBnaEnabled: parsed.OT89_MOCK_BNA_ENABLED,
     ot89MockBnaOutage: parsed.OT89_MOCK_BNA_OUTAGE,
     ot89SupportDeploymentId: parsed.OT89_SUPPORT_DEPLOYMENT_ID,
@@ -764,9 +758,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
     bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
     portalTestLabEnabled:
-      (parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED) && portalTestLabRuntimeAllowed,
+      (runtime.environment === 'test' || parsed.PORTAL_TEST_LAB_ENABLED) &&
+      portalTestLabRuntimeAllowed,
     learningDeliveryDemoEnabled:
-      parsed.NODE_ENV === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
+      runtime.environment === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
     experiencePreviewEnabled: parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED,
   };
 }

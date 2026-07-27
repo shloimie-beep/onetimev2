@@ -11,9 +11,9 @@
 
 ## Result
 
-Repository-only portability repair completed from the exact PR #126 result base. HighLevel was not opened. GHL-UI-13 remains unchanged and zero-send. GHL-UI-24 remains the sole separately gated successor and is blocked unless a later exact operator authorization supplies every required acceptance input.
+Repository-only portability repair completed from the exact PR #126 result base and corrected during convergence for the final sender decision. HighLevel was not opened. GHL-UI-13 remains unchanged and zero-send. GHL-UI-24 remains the sole separately gated successor and is blocked unless a later exact operator authorization supplies every required provider and one-seed input.
 
-The active Phase-1 Rabbi campaign route remains the existing registered office From and Reply-To. The desired Rabbi Phase-2 From remains pending mailbox/routing ownership, HighLevel From acceptance, one protected operator-owned seed, and one controlled reply readback in GHL Conversations. No address, mailbox ownership, destination, audience, or permission was invented.
+The sender decision is final: visible campaign From after provider acceptance is `Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>`, Reply-To remains `info@onetimeonetime.com`, and rabbi@ may route into the same governed GHL Conversations workflow without a separately monitored second inbox. The existing info@ From remains only the current fallback until provider acceptance. Provider acceptance, one protected operator-owned seed, and one controlled reply readback remain unproven and separately gated; the fixed identity does not authorize a send.
 
 OT-02A and OT-02B now identify separate reviewed Email One concepts in their canonical prompt/checklist paths. OT-02A is limited to an operator-selected adult existing-subscriber migration list. OT-02B is limited to adults with independently proven general-marketing permission. Neither path may infer authority from Tisha registration, attendance, payment, portal state, deliverability, or legacy tags. Both retain the registered One Time Home URL as the sole CTA source and keep any later sequence copy blocked pending review.
 
@@ -21,13 +21,13 @@ Every prompt fingerprint now hashes `canonicalTextForHash` output, so LF, CRLF, 
 
 ## Acceptance results
 
-| Acceptance ID         | Result                                        | Evidence                                                                                                                                                                                                    |
-| --------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GHL-SENDER-DESIGN-001 | Passed for repository-only portability repair | PR #126 sender semantics are preserved; the canonical prompt fingerprint and regenerated projections are LF/CRLF/CR portable; GHL-UI-13 remains unchanged zero-send and GHL-UI-24 remains separately gated. |
+| Acceptance ID         | Result                                        | Evidence                                                                                                                                                                                                            |
+| --------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GHL-SENDER-DESIGN-001 | Passed for repository-only convergence repair | The final Rabbi From and Reply-To decision is canonical, the prompt fingerprint and regenerated projections are LF/CRLF/CR portable, GHL-UI-13 remains unchanged zero-send, and GHL-UI-24 remains separately gated. |
 
 ## Files and evidence
 
-- `integrations/highlevel/registry/workflow-registry.yaml`: canonical OT-02A/OT-02B Phase-1, CTA, permission-boundary, reviewed-copy identity, and successor-job metadata.
+- `integrations/highlevel/registry/sender-registry.yaml` and `integrations/highlevel/registry/workflow-registry.yaml`: fixed Rabbi sender decision plus canonical OT-02A/OT-02B CTA, permission-boundary, reviewed-copy identity, current-fallback, and successor-job metadata.
 - `integrations/highlevel/workflows.yaml`, `integrations/highlevel/registry/current.json`, and `integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md`: regenerated only through the canonical workflow-control scripts.
 - `integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md` and `integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md`: migration-only reviewed Email One instructions.
 - `integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md` and `integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md`: consented-nurture-only reviewed Email One instructions.
@@ -37,7 +37,7 @@ Every prompt fingerprint now hashes `canonicalTextForHash` output, so LF, CRLF, 
 
 ## Later browser-executor prompt
 
-Use only `GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance.json` after a separate exact operator authorization names the immutable registry SHA, authorizes the Rabbi Phase-2 From identity, proves mailbox/routing and GHL From acceptance, identifies one protected operator-owned destination outside Git, grants one unique seed idempotency key, permits exactly one seed, and permits exactly one controlled reply readback. If any item is absent, return `blocked` with every effect counter at zero. Do not select an audience, publish or activate a workflow, enroll anyone, create or change a contact, or write private data to Git.
+Use only `GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance.json` after a separate exact operator authorization names the immutable registry SHA, proves same-Conversations routing and GHL acceptance of the already-fixed Rabbi From, identifies one protected operator-owned destination outside Git, grants one unique seed idempotency key, contains `APPROVE SEND` for exactly one seed, and permits exactly one controlled reply readback. Do not ask for the sender product decision again. If any operational item is absent, return `blocked` with every effect counter at zero. Do not select an audience, publish or activate a workflow, enroll anyone, create or change a contact, or write private data to Git.
 
 ## External-effect counters
 
@@ -57,4 +57,4 @@ Use only `GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance.json` after a separ
 
 ## Remaining work / blocker
 
-No repository-design blocker remains. Browser execution is intentionally blocked pending a separate exact authorization with the protected operational inputs described above. The historic approximately 88 contacts, all customer audiences, and all sender canary activity remain out of scope.
+No repository-design or sender-decision blocker remains. Browser execution is intentionally blocked pending proven same-Conversations routing, provider acceptance, one protected operator-owned destination, and an exact `APPROVE SEND` authorization. The historic approximately 88 contacts, all customer audiences, and all sender canary activity remain out of scope.

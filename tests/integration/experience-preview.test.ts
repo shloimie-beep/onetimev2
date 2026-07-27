@@ -47,6 +47,9 @@ describe('OT-LAUNCH-01 Experience Preview security boundary', () => {
     expect(() =>
       loadConfig({
         ...baseEnvironment(),
+        NODE_ENV: 'production',
+        AUTH_CSRF_SECRET: 'test-only-production-csrf-secret-123456789',
+        MFA_SECRET_ENCRYPTION_KEY: 'production-mfa-secret-for-test-only-32',
         DELIVERY_ENVIRONMENT: 'production',
         ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
         ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: 'true',
@@ -55,6 +58,9 @@ describe('OT-LAUNCH-01 Experience Preview security boundary', () => {
 
     const productionConfig = loadConfig({
       ...baseEnvironment(),
+      NODE_ENV: 'production',
+      AUTH_CSRF_SECRET: 'test-only-production-csrf-secret-123456789',
+      MFA_SECRET_ENCRYPTION_KEY: 'production-mfa-secret-for-test-only-32',
       DELIVERY_ENVIRONMENT: 'production',
       ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
       ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: 'false',
@@ -597,6 +603,9 @@ describe('OT-LAUNCH-01 exact projection truth', () => {
 
     const production = loadConfig({
       ...baseEnvironment(),
+      NODE_ENV: 'production',
+      AUTH_CSRF_SECRET: 'test-only-production-csrf-secret-123456789',
+      MFA_SECRET_ENCRYPTION_KEY: 'production-mfa-secret-for-test-only-32',
       DELIVERY_ENVIRONMENT: 'production',
       ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
       ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: 'false',

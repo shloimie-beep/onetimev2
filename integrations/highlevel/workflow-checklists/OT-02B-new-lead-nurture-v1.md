@@ -11,9 +11,10 @@ Registry: integrations/highlevel/registry/workflow-registry.yaml
 - Confirm every field, tag, and custom value exists in `registry/current.json` before use.
 - Read `sender-registry.yaml`, `message-class-registry.yaml`, and `communications-contract.json` before sender configuration.
 - Select the registered picker value: One Time Rabbi Campaign Sender Name.
-- Select the registered picker value: One Time Rabbi Campaign Phase 1 From.
 - Select the registered picker value: One Time Default Reply-To.
-- Do not select One Time Rabbi Campaign Phase 2 From; it remains pending the separately gated GHL-UI-24 acceptance.
+- The fixed post-acceptance visible From is `Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>` using One Time Rabbi Campaign Phase 2 From; this is not an open product decision.
+- Preserve the current Phase 1 From fallback until GHL-UI-24 proves provider acceptance. Do not activate or send from the desired address in this Draft-only task.
+- Keep Reply-To at `info@onetimeonetime.com`; rabbi@ may use the same governed GHL Conversations route and needs no separately monitored second inbox.
 - Never guess or hardcode an unregistered sender identity.
 - Use only Reviewed Email One `rabbi_new_program_prelaunch_nurture_v1` from the paired canonical prompt; keep later nurture copy blocked pending separate review.
 - Insert only the registered One Time Home URL custom value for the CTA.

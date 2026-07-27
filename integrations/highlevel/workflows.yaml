@@ -10,7 +10,7 @@ production_workflow_enrollment_authorized: false
 workflow_root: One Time
 workflow_projection:
   generated_from: integrations/highlevel/registry/workflow-registry.yaml
-  source_sha256: bae88fb5a72bd79e3bdeeeae438ff7ee4973243f6a02d5b476f978175f4b7fb7
+  source_sha256: 66475d13bd68f3a6912bd931c12ed8c1174a761f7b45f6a1da8adcb35436fd6c
   editable: false
 workflow_folders:
   - order: 0
@@ -1772,7 +1772,7 @@ custom_values:
     objectType: 'custom_value'
     dataType: 'TEXT'
     category: 'one_time_senders'
-    purpose: 'Active phase-1 rabbi_campaign From address.'
+    purpose: 'Current fallback rabbi_campaign From address until provider acceptance.'
     value: 'info@onetimeonetime.com'
     sourceOfTruth: 'Shared'
     allowedValues: []
@@ -1794,7 +1794,7 @@ custom_values:
     objectType: 'custom_value'
     dataType: 'TEXT'
     category: 'one_time_senders'
-    purpose: 'Inactive phase-2 From address pending mailbox and reply acceptance.'
+    purpose: 'Fixed desired rabbi_campaign From address pending provider acceptance and one authorized seed.'
     value: 'rabbi@onetimeonetime.com'
     sourceOfTruth: 'Shared'
     allowedValues: []
@@ -2527,11 +2527,11 @@ sender_profiles:
     provider: 'GHL'
     owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
     displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
-    fromEmail: 'info@onetimeonetime.com'
+    fromEmail: 'rabbi@onetimeonetime.com'
     preferredFromEmail: 'rabbi@onetimeonetime.com'
     currentFallbackFromEmail: 'info@onetimeonetime.com'
     replyTo: 'info@onetimeonetime.com'
-    status: 'active_phase_1'
+    status: 'sender_decision_fixed_provider_acceptance_pending'
     phase1:
       displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
       fromEmail: 'info@onetimeonetime.com'
@@ -2541,9 +2541,9 @@ sender_profiles:
       displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
       fromEmail: 'rabbi@onetimeonetime.com'
       replyTo: 'info@onetimeonetime.com'
-      status: 'pending_mailbox_and_reply_acceptance'
+      status: 'sender_decision_fixed_provider_acceptance_pending'
       activationPrerequisites:
-        - 'rabbi@ mailbox or routing exists'
+        - 'rabbi@ routes into the governed GHL Conversations workflow; no separately monitored second inbox is required'
         - 'HighLevel accepts the From address'
         - 'a seed delivers'
         - 'a reply reaches GHL Conversations'
@@ -3212,7 +3212,7 @@ knowledge_base_readback:
     duplicateCandidates: []
 automation_assets:
   generated_from: integrations/highlevel/registry/workflow-registry.yaml
-  source_sha256: bae88fb5a72bd79e3bdeeeae438ff7ee4973243f6a02d5b476f978175f4b7fb7
+  source_sha256: 66475d13bd68f3a6912bd931c12ed8c1174a761f7b45f6a1da8adcb35436fd6c
   editable: false
   workflows:
     - key: OT-01
@@ -3335,10 +3335,11 @@ automation_assets:
         audience_authority: operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority
         sequence_length: 3
         sender_registry_key: rabbi_campaign
-        phase_1_from: info@onetimeonetime.com only
+        desired_from_after_acceptance: Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>
+        current_fallback_from: info@onetimeonetime.com until provider acceptance
         reply_to: info@onetimeonetime.com only
-        phase_2_from: pending_mailbox_and_reply_acceptance; do not select
-        phase_2_acceptance_job: GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance
+        sender_decision_status: fixed; not an operator decision gate
+        sender_acceptance_job: GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance
         reviewed_email_one_identity: rabbi_new_program_existing_subscriber_migration_v1
         reviewed_email_one_cta: One Time Home URL custom value only
         price_and_offer_source: registered custom values only
@@ -3402,10 +3403,11 @@ automation_assets:
         audience_scope: consented unsuppressed new leads only
         audience_authority: independently proven general-marketing permission only; Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never grant authority
         sender_registry_key: rabbi_campaign
-        phase_1_from: info@onetimeonetime.com only
+        desired_from_after_acceptance: Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>
+        current_fallback_from: info@onetimeonetime.com until provider acceptance
         reply_to: info@onetimeonetime.com only
-        phase_2_from: pending_mailbox_and_reply_acceptance; do not select
-        phase_2_acceptance_job: GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance
+        sender_decision_status: fixed; not an operator decision gate
+        sender_acceptance_job: GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance
         reviewed_email_one_identity: rabbi_new_program_prelaunch_nurture_v1
         reviewed_email_one_cta: One Time Home URL custom value only
         stop_states:

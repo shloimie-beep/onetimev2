@@ -144,7 +144,7 @@
   objectType: 'custom_value'
   dataType: 'TEXT'
   category: 'one_time_senders'
-  purpose: 'Active phase-1 rabbi_campaign From address.'
+  purpose: 'Current fallback rabbi_campaign From address until provider acceptance.'
   value: 'info@onetimeonetime.com'
   sourceOfTruth: 'Shared'
   allowedValues: []
@@ -166,7 +166,7 @@
   objectType: 'custom_value'
   dataType: 'TEXT'
   category: 'one_time_senders'
-  purpose: 'Inactive phase-2 From address pending mailbox and reply acceptance.'
+  purpose: 'Fixed desired rabbi_campaign From address pending provider acceptance and one authorized seed.'
   value: 'rabbi@onetimeonetime.com'
   sourceOfTruth: 'Shared'
   allowedValues: []
