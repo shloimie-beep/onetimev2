@@ -127,6 +127,52 @@ describe('read-only migration verification', () => {
     }
   });
 
+  it('accepts only the exact checksum-pinned historical staging aliases', async () => {
+    const pool = createMemoryPool();
+    const directory = await migrationDirectory({
+      '2213_learning_delivery_autotrim_transcripts.sql':
+        'CREATE TABLE onetime.autotrim_table (id text PRIMARY KEY);',
+      '2214_learning_delivery_content_factory.sql':
+        'CREATE TABLE onetime.content_factory_table (id text PRIMARY KEY);',
+    });
+
+    try {
+      await runMigrations(pool, directory);
+      await pool.query(
+        `INSERT INTO onetime.schema_migrations (id, checksum)
+         VALUES
+           ('2209_learning_delivery_autotrim_transcripts',
+            'ebf4dee57c9366e7b149f54c062b9bcc3ffe9ce66d6bcfef69e60497bfde04a8'),
+           ('2210_learning_delivery_content_factory',
+            '93aa95f1fb14511569f85307e3026fc67449b30d2582a9280f9b1e2750b8349f')`,
+      );
+      const before = await databaseSnapshot(pool);
+      expect(await verifyMigrations(pool, directory)).toMatchObject({
+        ok: true,
+        status: 'verified',
+        ledger_row_count: 4,
+        applied_count: 2,
+        pending_count: 0,
+        accepted_historical_alias_count: 2,
+        issues: [],
+      });
+      expect(await databaseSnapshot(pool)).toEqual(before);
+
+      await pool.query(
+        `UPDATE onetime.schema_migrations
+            SET checksum = $1
+          WHERE id = '2209_learning_delivery_autotrim_transcripts'`,
+        ['0'.repeat(64)],
+      );
+      expect((await verifyMigrations(pool, directory)).issues).toContainEqual({
+        code: 'LEDGER_MIGRATION_NOT_IN_FILES',
+        migration_id: '2209_learning_delivery_autotrim_transcripts',
+      });
+    } finally {
+      await pool.end();
+    }
+  });
+
   it('fails checksum, duplicate-prefix, and reordered-ledger states without writes', async () => {
     const pool = createMemoryPool();
     const directory = await migrationDirectory({

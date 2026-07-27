@@ -3,6 +3,10 @@ import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Pool } from 'pg';
+import {
+  classifyMigrationLedgerRows,
+  type MigrationLedgerRow,
+} from '../../../packages/db/src/migration-ledger-compatibility.ts';
 
 export const MIGRATION_STATUS_SCHEMA = 'onetime.w12_100.migration_status.v1';
 export const PRODUCTION_METADATA_READ_CONFIRMATION = 'W12-100-PRODUCTION-METADATA-READ-OK';
@@ -18,6 +22,9 @@ export type MigrationStatusReport = {
   latest_local_migration: string | null;
   latest_applied_migration: string | null;
   pending_ids_hash: string | null;
+  accepted_historical_alias_count: number;
+  unrecognized_ledger_rows: number;
+  unrecognized_ids_hash: string | null;
   database_mutation_performed: false;
   raw_source_rows_included: false;
   private_values_recorded: false;
@@ -32,25 +39,37 @@ type CliOptions = {
 
 export function buildMigrationStatusReport(input: {
   localIds: string[];
-  appliedIds: string[];
+  appliedIds?: string[];
+  appliedRows?: MigrationLedgerRow[];
   environmentKind: 'staging' | 'production';
   errorSummary?: string;
 }): MigrationStatusReport {
   const local = [...input.localIds].sort();
-  const applied = [...input.appliedIds].sort();
+  const ledgerRows = input.appliedRows
+    ? [...input.appliedRows]
+    : (input.appliedIds ?? []).map((id) => ({ id, checksum: '' }));
+  const classified = classifyMigrationLedgerRows(ledgerRows, new Set(local));
+  const applied = classified.currentRows.map((row) => row.id).sort();
   const appliedSet = new Set(applied);
   const pending = local.filter((id) => !appliedSet.has(id));
+  const unrecognizedIds = classified.unrecognizedRows.map((row) => row.id).sort();
   const report: MigrationStatusReport = {
     schema_version: MIGRATION_STATUS_SCHEMA,
     generated_at: new Date().toISOString(),
-    status: pending.length === 0 && !input.errorSummary ? 'passed' : 'blocked',
+    status:
+      pending.length === 0 && unrecognizedIds.length === 0 && !input.errorSummary
+        ? 'passed'
+        : 'blocked',
     environment_kind: input.environmentKind,
     local_migration_count: local.length,
-    applied_migration_count: applied.length,
+    applied_migration_count: ledgerRows.length,
     pending_migrations: pending.length,
     latest_local_migration: local.at(-1) ?? null,
     latest_applied_migration: applied.at(-1) ?? null,
     pending_ids_hash: pending.length > 0 ? sha256(pending.join('\n')) : null,
+    accepted_historical_alias_count: classified.acceptedHistoricalAliases.length,
+    unrecognized_ledger_rows: unrecognizedIds.length,
+    unrecognized_ids_hash: unrecognizedIds.length > 0 ? sha256(unrecognizedIds.join('\n')) : null,
     database_mutation_performed: false,
     raw_source_rows_included: false,
     private_values_recorded: false,
@@ -71,14 +90,17 @@ async function main() {
   if (!databaseUrl) throw new Error('DATABASE_URL is required but will not be printed.');
 
   const localIds = await localMigrationIds();
-  let appliedIds: string[] = [];
+  let appliedRows: MigrationLedgerRow[] = [];
   let errorSummary: string | undefined;
   const pool = new Pool({ connectionString: databaseUrl, ssl: sslConfig() });
   try {
-    const result = await pool.query<{ id: string }>(
-      'SELECT id FROM onetime.schema_migrations ORDER BY id ASC',
+    const result = await pool.query<{ id: string; checksum: string }>(
+      'SELECT id, checksum FROM onetime.schema_migrations ORDER BY id ASC',
     );
-    appliedIds = result.rows.map((row) => row.id);
+    appliedRows = result.rows.map((row) => ({
+      id: String(row.id),
+      checksum: String(row.checksum),
+    }));
   } catch (error) {
     errorSummary = error instanceof Error ? error.message : String(error);
   } finally {
@@ -86,7 +108,7 @@ async function main() {
   }
   const report = buildMigrationStatusReport({
     localIds,
-    appliedIds,
+    appliedRows,
     environmentKind: options.environmentKind,
     ...(errorSummary ? { errorSummary } : {}),
   });

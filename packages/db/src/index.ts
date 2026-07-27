@@ -4,6 +4,7 @@ import path from 'node:path';
 import pg from 'pg';
 import { DataType, newDb } from 'pg-mem';
 import type { AppConfig } from '../../config/src/index.ts';
+import { classifyMigrationLedgerRows } from './migration-ledger-compatibility.ts';
 
 export type Queryable = Pick<pg.PoolClient, 'query'>;
 export type DbPool = Pick<pg.Pool, 'connect' | 'query' | 'end'>;
@@ -86,6 +87,7 @@ export type MigrationVerificationReport = {
   ledger_row_count: number;
   applied_count: number;
   pending_count: number;
+  accepted_historical_alias_count: number;
   issues: MigrationVerificationIssue[];
 };
 
@@ -206,15 +208,15 @@ export async function verifyMigrations(
     id: String(row.id),
     checksum: String(row.checksum),
   }));
-  const ledgerIds = ledgerRows.map((row) => row.id);
+  const classifiedLedger = classifyMigrationLedgerRows(ledgerRows, new Set(byId.keys()));
+  const ledgerIds = classifiedLedger.currentRows.map((row) => row.id);
   const ledgerIdSet = new Set(ledgerIds);
 
-  for (const row of ledgerRows) {
-    const migration = byId.get(row.id);
-    if (!migration) {
-      issues.push({ code: 'LEDGER_MIGRATION_NOT_IN_FILES', migration_id: row.id });
-      continue;
-    }
+  for (const row of classifiedLedger.unrecognizedRows) {
+    issues.push({ code: 'LEDGER_MIGRATION_NOT_IN_FILES', migration_id: row.id });
+  }
+  for (const row of classifiedLedger.currentRows) {
+    const migration = byId.get(row.id)!;
     if (!migration.compatibleChecksums.has(row.checksum)) {
       issues.push({ code: 'MIGRATION_CHECKSUM_MISMATCH', migration_id: row.id });
     }
@@ -265,6 +267,7 @@ export async function verifyMigrations(
     ledgerRowCount: ledgerRows.length,
     appliedCount,
     pendingCount,
+    acceptedHistoricalAliasCount: classifiedLedger.acceptedHistoricalAliases.length,
     issues,
   });
 }
@@ -310,6 +313,7 @@ function verificationReport(input: {
   ledgerRowCount: number;
   appliedCount: number;
   pendingCount: number;
+  acceptedHistoricalAliasCount?: number;
   issues: MigrationVerificationIssue[];
 }): MigrationVerificationReport {
   return {
@@ -320,6 +324,7 @@ function verificationReport(input: {
     ledger_row_count: input.ledgerRowCount,
     applied_count: input.appliedCount,
     pending_count: input.pendingCount,
+    accepted_historical_alias_count: input.acceptedHistoricalAliasCount ?? 0,
     issues: input.issues,
   };
 }
