@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-27T10:20:27Z
+updated_at: 2026-07-27T10:23:28Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -1479,7 +1479,7 @@ tracks:
     next_action: 'Preserve the minimized public contract and continue to the repository-only read-only db:verify repair. Production remains denied.'
 
   - id: audit_wave_04_read_only_migration_verification
-    status: waiting_external
+    status: done
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT-MIGRATION-TOOL
     owner:
@@ -1498,8 +1498,8 @@ tracks:
       - 'The verifier reads the sorted SQL inventory and normalized compatible checksums, rejects invalid names and duplicate numeric prefixes before database access, and issues only one SELECT against an existing ledger. Missing, unreadable, unknown, checksum-mismatched, reordered, and strict pending states fail closed; --allow-pending is explicit inventory-only mode.'
       - 'Five focused unit tests prove missing and unreadable ledgers, strict pending preservation, all-applied success, checksum mismatch, duplicate prefix, reordered history, LF/CRLF checksum compatibility, SELECT-only query capture, and unchanged schema/ledger snapshots.'
       - 'The complete local gate passes: 82 unit files/538 tests, 67 integration files/376 tests, typecheck, production build, scoped lint/format/diff checks, and a 2172-file secret scan. All 59 existing migration files are byte-untouched.'
-      - 'The new path-scoped PostgreSQL-16 workflow will independently prove missing-ledger and pending verification leave schema/ledger fingerprints unchanged, checksum mismatch fails, and two concurrent applies remain advisory-lock serialized. Until that exact job passes, this track is waiting_external rather than done.'
-      - 'Staging/production database, deployment, environment, provider, Zoom, HighLevel, send, journal, production, and destructive effects are zero. Only pg-mem/local synthetic fixtures ran before this Board state.'
+      - 'GitHub Actions workflow A11 Read-only Migration Verification run 30257798044 completed success on exact PR trigger head ad42f1bd9be8d1389431b0dc731a538561be01dd for immutable content head fbf1fccdb2fc891939cbdc165912241814fc4b72. Its disposable PostgreSQL-16 service proved missing-ledger and pending verification leave schema/ledger fingerprints unchanged, checksum mismatch fails, and two concurrent applies remain advisory-lock serialized.'
+      - 'The successful workflow used only its ephemeral fixture PostgreSQL service. Persistent/staging/production database, deployment, environment, provider, Zoom, HighLevel, send, journal, production, and destructive effects are zero.'
     forbidden_behavior:
       - Let db:verify create a schema/table, execute migration SQL, mutate the ledger, take an advisory/write lock, or silently apply pending work.
       - Edit an existing migration byte, filename, prefix, order, or accepted checksum rule.
@@ -1511,8 +1511,8 @@ tracks:
       - Full unit/integration gates, typecheck, build, scoped lint/format/diff, secret scan, and zero non-fixture effects.
     stop_condition: 'Stop if verification requires applying SQL, an existing migration changes, a real staging/production database is requested, or the disposable PostgreSQL job cannot prove unchanged schema and ledger state.'
     blocker: null
-    remaining_work: 'Accept the exact GitHub PostgreSQL-16 workflow result for content head fbf1fccdb2fc891939cbdc165912241814fc4b72; repair only a repository defect if it fails.'
-    next_action: 'Push PR #130, inspect the path-scoped A11 PostgreSQL job, and mark done only after its immutable passing result. Continue other disjoint repository review while it runs.'
+    remaining_work: null
+    next_action: 'Preserve the accepted read-only migration boundary and continue to the repository-only stable provider delivery idempotency and acceptance-unknown repair. Production remains denied.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external
