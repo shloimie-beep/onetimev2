@@ -23,6 +23,8 @@ import {
   type StudentAccessOperationType,
 } from '../../../domain/src/portals/services.ts';
 
+const MAX_ACTIVE_LEARNERS = 3;
+
 export function createPortalRepository(pool: DbPool): PortalRepository {
   return {
     getHousehold: (args) => getHousehold(pool, args.actor, args.household_key),
@@ -106,9 +108,9 @@ async function getHousehold(
     household_key: String(row.household_key),
     display_name: String(row.display_name),
     active_learner_count: activeLearnerCount,
-    max_active_learners: null,
+    max_active_learners: MAX_ACTIVE_LEARNERS,
     consent_status: 'not_required',
-    learner_limit_reached: false,
+    learner_limit_reached: activeLearnerCount >= MAX_ACTIVE_LEARNERS,
     version: Number(row.version),
   };
 }
@@ -172,6 +174,16 @@ async function createLearner(
     if (replay) return replay;
 
     await lockHousehold(client, actor, householdKey);
+    const lockedReplay = await readIdempotency<LearnerProfile>(
+      client,
+      actor,
+      scope,
+      payload.idempotency_key,
+      requestFingerprint,
+    );
+    if (lockedReplay) return lockedReplay;
+    await requireLearnerSeatAvailable(client, actor, householdKey);
+
     const learnerKey = `learner_${randomUUID()}`;
     const accessStateKey = `student_access_${randomUUID()}`;
     const inserted = await client.query(
@@ -311,6 +323,14 @@ async function setLearnerStatus(
     );
     if (replay) return replay;
     await lockHousehold(client, args.actor, args.householdKey);
+    const lockedReplay = await readIdempotency<LearnerProfile>(
+      client,
+      args.actor,
+      scope,
+      args.idempotencyKey,
+      args.requestFingerprint,
+    );
+    if (lockedReplay) return lockedReplay;
     const current = await lockLearner(client, args.actor, args.householdKey, args.learnerKey);
     if (Number(current.version) !== args.version) {
       throw new PortalServiceError(
@@ -318,6 +338,9 @@ async function setLearnerStatus(
         'This learner changed in another session.',
         Number(current.version),
       );
+    }
+    if (args.status === 'active' && String(current.learner_status) !== 'active') {
+      await requireLearnerSeatAvailable(client, args.actor, args.householdKey);
     }
     const updated = await client.query(
       `UPDATE onetime.portal_learners
@@ -835,6 +858,29 @@ async function lockHousehold(client: Queryable, actor: PortalActorContext, house
   );
   if (!result.rowCount) {
     throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+  }
+}
+
+async function requireLearnerSeatAvailable(
+  client: Queryable,
+  actor: PortalActorContext,
+  householdKey: string,
+) {
+  const result = await client.query(
+    `SELECT count(*)::int AS active_learner_count
+       FROM onetime.portal_learners
+      WHERE account_key = $1
+        AND product_key = $2
+        AND household_key = $3
+        AND learner_status = 'active'`,
+    [actor.account_key, actor.product_key, householdKey],
+  );
+  const activeLearnerCount = Number(result.rows[0]?.active_learner_count ?? 0);
+  if (activeLearnerCount >= MAX_ACTIVE_LEARNERS) {
+    throw new PortalServiceError(
+      'LEARNER_LIMIT_REACHED',
+      'A household can have at most three active learners.',
+    );
   }
 }
 

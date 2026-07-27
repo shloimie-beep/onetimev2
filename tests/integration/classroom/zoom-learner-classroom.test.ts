@@ -79,6 +79,12 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
   it('issues an opaque learner launch and bootstraps sink SDK data without raw provider URLs', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
     try {
+      await pool.query(
+        `INSERT INTO onetime.portal_learners
+           (learner_key, account_key, product_key, household_key, display_name, grade_label)
+         VALUES ('learner_third_active', $1, $2, 'household_alpha', 'Third Active Learner', '5')`,
+        [config.accountKey, config.productKey],
+      );
       const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
       const dashboard = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
         headers: { cookie: student.cookies },
