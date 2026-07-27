@@ -283,7 +283,7 @@ items:
     priority: 1
     title: Repair line-ending-portable GHL prompt fingerprints
     assignment_state: assigned
-    dispatch_state: ready
+    dispatch_state: done
     board_track: audit_wave_03_ghl_sender_design
     dependencies: [Q03-001]
     required_locks: [GHL-REPOSITORY]
@@ -306,6 +306,23 @@ items:
       - Run the projection check from LF and CRLF fixtures/checkouts and require identical canonical hashes.
       - Run focused sender/design tests, typecheck, scoped formatting, secret scan, and diff/scope checks.
     result_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
+    terminal_at: 2026-07-27T11:54:08+03:00
+    terminal_reason: LF_CRLF_CR_PROMPT_FINGERPRINTS_CANONICALIZED
+    result_commit: 3a9f953419d3f103194d9416872071d6e642c826
+    result_pr: 127
+    validation_summary: LF, CRLF, and CR prompt fixtures each passed canonical projection write/check and produced identical prompt-fingerprint, current.json, and workflows.yaml SHA-256 values; focused portability/sender/control-hash tests, typecheck, scoped formatting, secret scan, and diff/scope checks passed.
+    external_effects:
+      highlevel_mutations: 0
+      customer_messages: 0
+      contacts_changed: 0
+      enrollments: 0
+      publications: 0
+      activations: 0
+      deletes_or_quarantines: 0
+      stripe_mutations: 0
+      access_mutations: 0
+      production_mutations: 0
+      provider_mutations: 0
   - id: Q03-003
     lane: 03-OT-GHL
     sequence: 4
