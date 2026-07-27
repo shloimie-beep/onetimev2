@@ -484,7 +484,7 @@ items:
     priority: 1
     title: BNA current pointer and Board repair
     assignment_state: assigned
-    dispatch_state: ready
+    dispatch_state: claimed
     board_track: audit_wave_06_bna_control_pointer
     dependencies: []
     required_locks: [BNA-CONTROL]
@@ -492,8 +492,8 @@ items:
     result_path: ops/control/BNA-BOARD.yaml
     claim_token: 348ed713-9e65-489b-836b-d1a28a9cc496
     worker_task_id: 06-BNA-CONTROL-348ed713-9e65-489b-836b-d1a28a9cc496
-    claimed_at: 2026-07-27T11:47:49+03:00
-    claimed_from_queue_head: 42a25fffa3ae8a3fb56e3b75f2add693cb02b2ac
+    claimed_at: 2026-07-27T11:49:47+03:00
+    claimed_from_queue_head: e2e1cc6a977178155d0cc223f319d3271ee733d2
   - id: Q06-002
     lane: 06-BNA-CONTROL
     sequence: 2
