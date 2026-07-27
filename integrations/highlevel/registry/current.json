@@ -3580,8 +3580,15 @@
       "essentialValues": {
         "configured_state": "draft_saved_reopened",
         "audience_scope": "explicitly approved 2026 existing-subscriber migration segment only",
+        "audience_authority": "operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority",
         "sequence_length": 3,
         "sender_registry_key": "rabbi_campaign",
+        "phase_1_from": "info@onetimeonetime.com only",
+        "reply_to": "info@onetimeonetime.com only",
+        "phase_2_from": "pending_mailbox_and_reply_acceptance; do not select",
+        "phase_2_acceptance_job": "GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance",
+        "reviewed_email_one_identity": "rabbi_new_program_existing_subscriber_migration_v1",
+        "reviewed_email_one_cta": "One Time Home URL custom value only",
         "price_and_offer_source": "registered custom values only",
         "enrollment_authorized": false,
         "publication_authorized": false
@@ -3649,8 +3656,15 @@
       "essentialValues": {
         "configured_state": "draft_saved_reopened",
         "audience_scope": "consented unsuppressed new leads only",
-        "stop_states": ["checkout_started", "active", "opt_out", "suppressed"],
+        "audience_authority": "independently proven general-marketing permission only; Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never grant authority",
         "sender_registry_key": "rabbi_campaign",
+        "phase_1_from": "info@onetimeonetime.com only",
+        "reply_to": "info@onetimeonetime.com only",
+        "phase_2_from": "pending_mailbox_and_reply_acceptance; do not select",
+        "phase_2_acceptance_job": "GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance",
+        "reviewed_email_one_identity": "rabbi_new_program_prelaunch_nurture_v1",
+        "reviewed_email_one_cta": "One Time Home URL custom value only",
+        "stop_states": ["checkout_started", "active", "opt_out", "suppressed"],
         "enrollment_authorized": false,
         "publication_authorized": false
       },
@@ -5177,7 +5191,7 @@
       "status": "active",
       "title": "OT-02A Existing Subscriber Migration 2026 v1",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md",
-      "sha256": "62309a684f4c82babbcb3c9dbcb61d165056285877e4977c71000f503304bd62",
+      "sha256": "9a5ae0801685de6bbd23366fd4c20310feaaf6d6105594dc79be69c1ec8a06df",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -5210,7 +5224,7 @@
       "status": "active",
       "title": "OT-02B New Lead Nurture v1",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md",
-      "sha256": "0461ed09934f0aebfe5f30bd9766a048bcedd1dfcdba5876f14157c7acca7d4e",
+      "sha256": "e0d63da5e42b4f515d77ea21e164f898c750a766d0436482a3c20ab63b175cf6",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -6111,7 +6125,7 @@
   },
   "workflow_projection": {
     "generated_from": "integrations/highlevel/registry/workflow-registry.yaml",
-    "source_sha256": "2cdd81c11de682c2cad3973f13473133803672ec3416342348957b3075ee91f3",
+    "source_sha256": "bae88fb5a72bd79e3bdeeeae438ff7ee4973243f6a02d5b476f978175f4b7fb7",
     "editable": false
   },
   "workflow_control": {
