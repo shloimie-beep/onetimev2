@@ -39,6 +39,22 @@ describe('OT-LAUNCH-01 Admin IA client contract', () => {
     expect(live).toContain('<h3 id="live-zoom-heading">Zoom</h3>');
   });
 
+  it('provides the bounded app-owned Zoom setup and test actions', () => {
+    for (const label of [
+      'Check Zoom Connection',
+      'Create Disposable Test Meeting',
+      'Register One Operator-Owned Test Learner',
+      'Refresh Status',
+      'Open Secure One Time Classroom',
+      'Delete This App-Created Test Meeting',
+    ]) {
+      expect(live).toContain(label);
+    }
+    expect(live).toContain('window.confirm(');
+    expect(live).toContain('{ confirmed: true }');
+    expect(live).not.toMatch(/meeting[_-]?id.*(?:input|searchParams)/i);
+  });
+
   it('lets AppShell own ordinary portal categories while detached previews stay explicit', () => {
     expect(portalEntry.match(/navigationMode="shell"/g)).toHaveLength(2);
     expect(portals).toContain("navigationMode = 'embedded'");

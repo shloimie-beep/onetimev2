@@ -150,6 +150,38 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
     expect(JSON.stringify(registrant)).not.toMatch(/https?:\/\/|zoom\.us|pwd=secret/i);
   });
 
+  it('deletes an internally selected meeting idempotently without returning provider material', async () => {
+    const methods: string[] = [];
+    let deleteCount = 0;
+    const client = createZoomRestClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        if (String(input).startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        methods.push(String(init?.method));
+        expect(String(input)).toBe('https://api.zoom.us/v2/meetings/987654321');
+        deleteCount += 1;
+        return deleteCount === 1
+          ? new Response(null, { status: 204 })
+          : jsonResponse({ code: 3001, message: 'private provider message' }, 404);
+      },
+    });
+
+    expect(await client.deleteMeeting('987654321')).toEqual({ already_absent: false });
+    expect(await client.deleteMeeting('987654321')).toEqual({ already_absent: true });
+    expect(methods).toEqual(['DELETE', 'DELETE']);
+    expect(JSON.stringify(await client.deleteMeeting('987654321'))).not.toMatch(
+      /987654321|zoom\.us|private provider message/i,
+    );
+  });
+
   it('creates one isolated meeting and one-time fictional registrants without returning provider URLs', async () => {
     const calls: string[] = [];
     const meetingSettings: unknown[] = [];

@@ -196,6 +196,61 @@ export const liveClassConsoleSnapshotSchema = z.object({
 });
 export type LiveClassConsoleSnapshot = z.infer<typeof liveClassConsoleSnapshotSchema>;
 
+export const liveClassZoomAdminStatusSchema = z
+  .object({
+    connection_state: z.enum(['not_checked', 'connected', 'unavailable']),
+    connection_checked_at: z.string().datetime().nullable(),
+    provider_configured: z.boolean(),
+    meeting_state: z.enum([
+      'none',
+      'creating',
+      'active',
+      'failed',
+      'create_unknown',
+      'deleting',
+      'deleted',
+      'delete_unknown',
+    ]),
+    app_created_meeting_recorded: z.boolean(),
+    meeting_ref_digest_present: z.boolean(),
+    learner_state: z.enum(['none', 'registering', 'registered', 'failed', 'registration_unknown']),
+    secure_classroom_ready: z.boolean(),
+    can_check_connection: z.boolean(),
+    can_create_meeting: z.boolean(),
+    can_register_learner: z.boolean(),
+    can_delete_meeting: z.boolean(),
+    raw_join_url_present: z.literal(false),
+    recoverable: z.boolean(),
+    message: z.string().trim().min(1).max(240),
+    last_error: z.string().trim().min(1).max(240).nullable(),
+  })
+  .strict();
+export type LiveClassZoomAdminStatus = z.infer<typeof liveClassZoomAdminStatusSchema>;
+
+export const liveClassZoomAdminStatusResponseSchema = z
+  .object({
+    success: z.literal(true),
+    data: liveClassZoomAdminStatusSchema,
+  })
+  .strict();
+export type LiveClassZoomAdminStatusResponse = z.infer<
+  typeof liveClassZoomAdminStatusResponseSchema
+>;
+
+export const liveClassZoomAdminActionPayloadSchema = z
+  .object({
+    idempotency_key: idempotencyKeySchema,
+  })
+  .strict();
+export type LiveClassZoomAdminActionPayload = z.infer<typeof liveClassZoomAdminActionPayloadSchema>;
+
+export const liveClassZoomAdminDeletePayloadSchema = liveClassZoomAdminActionPayloadSchema
+  .extend({
+    confirmed: z.literal(true),
+  })
+  .strict();
+export type LiveClassZoomAdminDeletePayload = z.infer<typeof liveClassZoomAdminDeletePayloadSchema>;
+
 export const liveClassQuestionSubmitPayloadSchema = z.object({
   occurrence_key: opaqueIdSchema,
   body: z.string().trim().min(3).max(360),

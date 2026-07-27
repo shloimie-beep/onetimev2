@@ -675,6 +675,20 @@ export function createZoomRestClient(
       });
     },
 
+    async deleteMeeting(meetingId: string) {
+      try {
+        await zoomJson(`/meetings/${encodeURIComponent(meetingId)}`, {
+          method: 'DELETE',
+        });
+        return Object.freeze({ already_absent: false });
+      } catch (error) {
+        if (error instanceof ZoomApiError && error.status === 404 && error.code === 'ZOOM_3001') {
+          return Object.freeze({ already_absent: true });
+        }
+        throw error;
+      }
+    },
+
     async getHostZakToken(hostUserId: string) {
       const json = await zoomJson(`/users/${encodeURIComponent(hostUserId)}/token?type=zak`, {
         method: 'GET',

@@ -11,6 +11,7 @@ import { createPostgresBillingRepositories } from '../../../../packages/db/src/b
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
 import { createLiveClassRepository } from '../../../../packages/db/src/live-class/repository.ts';
+import { createZoomAdminTestResourceRepository } from '../../../../packages/db/src/live-class/zoom-admin-repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
@@ -50,6 +51,9 @@ import {
   liveClassQuestionSubmitResponseSchema,
   liveClassStageResponseSchema,
   liveClassZoomControlPayloadSchema,
+  liveClassZoomAdminActionPayloadSchema,
+  liveClassZoomAdminDeletePayloadSchema,
+  liveClassZoomAdminStatusResponseSchema,
   liveClassZoomCommandPollResponseSchema,
   liveClassZoomHostBootstrapResponseSchema,
   liveClassZoomParticipantSyncPayloadSchema,
@@ -135,6 +139,8 @@ import {
   createClassroomPortalAccessAdapter,
   createClassroomService,
   createLiveClassService,
+  createZoomAdminProvider,
+  createZoomAdminService,
   createZoomHostLaunchPort,
   createContentPortalAccessAdapter,
   createContentFactoryIntake,
@@ -217,6 +223,7 @@ import {
   PortalServiceError,
   type PortalServiceDeps,
   type ZoomHostLaunchPort,
+  type ZoomAdminProviderPort,
 } from '../../../../packages/domain/src/index.ts';
 import type {
   ZoomMeetingLaunchPort,
@@ -276,6 +283,7 @@ type AppDeps = {
   learningDeliveryDemoReportPath?: string;
   clock?: () => Date;
   contentFactoryJobNotifier?: (intakeKey: string) => Promise<void> | void;
+  zoomAdminProvider?: ZoomAdminProviderPort;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
@@ -357,6 +365,7 @@ export function createApp({
   learningDeliveryDemoReportPath,
   clock,
   contentFactoryJobNotifier,
+  zoomAdminProvider,
 }: AppDeps) {
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
@@ -1514,6 +1523,13 @@ export function createApp({
   const portalRepository = createPortalRepository(pool);
   const liveClassRepository = createLiveClassRepository(pool);
   const zoomHostLaunchPort = createZoomHostLaunchPort(config);
+  const resolvedZoomAdminProvider = zoomAdminProvider ?? createZoomAdminProvider(config);
+  const zoomAdminService = createZoomAdminService({
+    config,
+    repository: createZoomAdminTestResourceRepository(pool),
+    ...(resolvedZoomAdminProvider ? { provider: resolvedZoomAdminProvider } : {}),
+    ...(clock ? { clock } : {}),
+  });
   const classroomZoomPorts = createClassroomZoomPorts({
     config,
     liveClassRepository,
@@ -1921,6 +1937,106 @@ export function createApp({
       handleApiError(error, req, res);
     }
   });
+
+  app.get('/api/v1/live-class/zoom/admin/status', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const data = await zoomAdminService.status(actor);
+      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/admin/check', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      liveClassZoomAdminActionPayloadSchema.parse(req.body);
+      const data = await zoomAdminService.checkConnection(actor);
+      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/admin/test-meeting', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassZoomAdminActionPayloadSchema.parse(req.body);
+      const data = await zoomAdminService.createTestMeeting(actor, payload.idempotency_key);
+      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/admin/test-learner', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassZoomAdminActionPayloadSchema.parse(req.body);
+      const data = await zoomAdminService.registerTestLearner(actor, payload.idempotency_key);
+      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/live-class/zoom/admin/test-meeting/delete',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!requireSameOriginPost(req, res, config)) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      const actor = await resolvePortalActor(req);
+      if (!actor) {
+        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      try {
+        const payload = liveClassZoomAdminDeletePayloadSchema.parse(req.body);
+        const data = await zoomAdminService.deleteTestMeeting(actor, payload.idempotency_key);
+        res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
 
   app.post('/api/v1/live-class/zoom/control', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);

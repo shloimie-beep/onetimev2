@@ -70,6 +70,17 @@ export {
   ZOOM_S2S_MEETING_PROVISIONING_VARIABLES,
 } from './live-class/zoom-host.ts';
 export {
+  ZOOM_ADMIN_TEST_LEARNER_KEY,
+  ZOOM_ADMIN_TEST_LEARNER_NAME,
+  ZOOM_ADMIN_TEST_TOPIC_PREFIX,
+  createZoomAdminProvider,
+  createZoomAdminService,
+  type ZoomAdminProviderPort,
+  type ZoomAdminService,
+  type ZoomAdminTestResourceRecord,
+  type ZoomAdminTestResourceRepository,
+} from './live-class/zoom-admin.ts';
+export {
   ZOOM_CUSTOMER_KEY_MAX_LENGTH,
   assertZoomCustomerKey,
   zoomCustomerKey,
