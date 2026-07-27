@@ -8,7 +8,7 @@ window.
 | Window             | Canonical Board pointer                          | Packet                                                    |
 | ------------------ | ------------------------------------------------ | --------------------------------------------------------- |
 | `02-OT-ZOOM`       | `zoom_real_control_operator_change_set`          | Existing provider task; intentionally not duplicated here |
-| `03-OT-GHL`        | `audit_wave_03_ghl_full_inventory`               | [`03-OT-GHL.md`](03-OT-GHL.md)                            |
+| `03-OT-GHL`        | `audit_wave_03_ghl_sender_design`                | [`03-OT-GHL.md`](03-OT-GHL.md)                            |
 | `04-OT-PRODUCT`    | `audit_wave_04_runtime_classification`           | [`04-OT-PRODUCT.md`](04-OT-PRODUCT.md)                    |
 | `05-OT-HYGIENE`    | `audit_wave_05_preservation_census`              | [`05-OT-HYGIENE.md`](05-OT-HYGIENE.md)                    |
 | `06-BNA-CONTROL`   | `audit_wave_06_bna_control_pointer`              | [`06-BNA-CONTROL.md`](06-BNA-CONTROL.md)                  |

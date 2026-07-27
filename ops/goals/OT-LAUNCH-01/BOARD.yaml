@@ -1252,22 +1252,25 @@ tracks:
     next_action: 'Keep PR #110 isolated and production on acddcc8; promote the visual patch only together with an independently accepted registration-to-GHL hotfix.'
 
   - id: audit_wave_03_ghl_full_inventory
-    status: active
+    status: done
     window_id: 03-OT-GHL
     concurrency_lock: GHL-PROVIDER
     owner:
-      task_id: OT-LAUNCH-01-W03-GHL-FULL-INVENTORY-02
+      task_id: 019fa24b-f845-7262-bea1-883771c3688f
       repository: shloimie-beep/onetimev2
-      branch: codex/w03-ghl-full-inventory-20260727
-      pr: null
+      branch: codex/ghl-readonly-inventory-20260727
+      pr: 123
+      head: b2fd8c73246a3a1e1655b22ee5c837d65c19ec97
       system: HighLevel protected read-only inventory
-    write_scope: 'Provider access is read-only; the only repository write is ops/execution-windows/2026-07-27/results/03-OT-GHL-result.json after sanitization.'
-    handoff_path: ops/execution-windows/2026-07-27/results/03-OT-GHL-result.json
+    write_scope: 'Provider access was read-only; the only repository write was integrations/highlevel/agent-mode/results/GHL-READONLY-INVENTORY-20260727.result.json after sanitization.'
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-READONLY-INVENTORY-20260727.result.json
     dependencies: [goal_system]
     acceptance_ids: [AUDIT-GHL-INVENTORY-001]
     evidence:
       - 'Audit checkpoint c51bcd4 deduplicates A01 through A12 and accepts A04 full-location inventory as the required predecessor to sender design or any HighLevel mutation.'
-      - 'The current Board records no active GHL browser writer; PR #116 remains unassigned/conflicted and is not authority.'
+      - 'Draft PR #123 exact head b2fd8c73246a3a1e1655b22ee5c837d65c19ec97 contains one sanitized result file from source checkpoint e986b5e6502b1168b3eb28e200fd49ac8de46477; JSON parse, scoped formatting, secret scan, and diff checks passed.'
+      - 'The protected location matched. Visible workflow ancestry, OT-C01 wrapper, OT-E01, one class workflow, Conversation AI list, and two distinct knowledge bases were read back. Email Marketing campaign rows, archived workflows, hidden/backend Conversation AI, OT-A1 exact identity, disabled OT-E01 content identity fields, and unopened folder contents remain explicitly UNVERIFIED rather than inferred.'
+      - 'Contacts changed, messages, enrollments, publications, activations, deletes, quarantines, saves, tests, and selected audiences all equal zero. No active GHL browser writer remains.'
     forbidden_behavior:
       - Save, publish, activate, enroll, send, create, rename, move, archive, restore, delete, or change a contact.
       - Return protected provider IDs, private destinations, customer or Student data, raw message bodies, or secrets.
@@ -1276,10 +1279,42 @@ tracks:
       - Exact protected-location verification without returning its identifier.
       - Workflow, campaign, Conversation AI, knowledge-base, folder, duplicate, and cross-kind coverage matrix.
       - Safe identity digests, readback timestamp, unknowns, and every mutation/send/enrollment counter at zero.
-    stop_condition: 'Stop with UNPROVEN_UI_SCOPE_UNAVAILABLE if the protected location cannot be verified, a required surface is unavailable, an identity cannot be disambiguated, or any step would mutate provider state.'
+    stop_condition: 'Satisfied by explicit UNVERIFIED results for unavailable surfaces and zero mutation/effect counters.'
     blocker: null
-    remaining_work: 'Complete one read-only full-location inventory and return only the sanitized result.'
-    next_action: 'Open WINDOW-03 in the existing protected One Time HighLevel location, verify location without returning its identifier, perform the exact read-only inventory, and stop on any mutation path.'
+    remaining_work: null
+    next_action: 'Preserve PR #123 as read-only evidence; continue the same 03-OT-GHL window only with the separately assigned repository-design queue item.'
+
+  - id: audit_wave_03_ghl_sender_design
+    status: active
+    window_id: 03-OT-GHL
+    concurrency_lock: OT-GHL
+    owner:
+      task_id: OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN-REAUTHOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/ghl-rabbi-launch-email-design-reauthor-20260727
+      pr: null
+      head: null
+      system: HighLevel repository sender, message-class, and bounded acceptance-job design
+    write_scope: 'Existing HighLevel sender/message-class/communications/workflow registries, generated projections through canonical scripts, OT-02A/OT-02B prompt and checklist pairs, GHL-UI-13 plus at most one reviewed successor job, focused tests, and one sanitized handoff only.'
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
+    dependencies: [audit_wave_03_ghl_full_inventory, goal_system]
+    acceptance_ids: [GHL-SENDER-DESIGN-001]
+    evidence:
+      - 'PR #123 exact result head b2fd8c73246a3a1e1655b22ee5c837d65c19ec97 completed the read-only predecessor: the protected location matched, OT-C01 workflow wrapper was Draft, OT-E01 was Published with disabled Email A identity fields not rendered, and Email Marketing, archived workflow, hidden/backend Conversation AI, OT-A1 exact identity, and uninspected folder contents remain explicitly UNVERIFIED; every external-effect counter is zero.'
+      - 'The conductor adopts post-checkpoint sender packet 53a18e771488c61cf271cb33a0bcacee2c7135f4 only for this repository-only re-authoring task. PR #116 remains forbidden and must not be merged or cherry-picked.'
+    forbidden_behavior:
+      - Open or mutate HighLevel; send, enroll, publish, activate, import, create or change contacts, select an audience, or run a provider canary.
+      - 'Merge or cherry-pick PR #116, create parallel registries or status models, collapse OT-02A and OT-02B audience/permission contracts, or infer marketing permission from Tisha registration, attendance, payment, portal state, deliverability, or legacy tags.'
+      - Commit a customer list, Student data, private destination, protected provider ID, raw customer message body outside the reviewed canonical prompt/checklist path, or a secret.
+    required_proof:
+      - Current-head canonical registry diff with regenerated projections and no hand-edited generated output.
+      - Explicit sender/message-class separation, phase-one office routing preservation, dedicated Rabbi From/reply prerequisites, unchanged zero-send GHL-UI-13, and one separately gated one-seed/one-reply successor job.
+      - Separate canonical OT-02A migration and OT-02B consented-nurture copy, focused validation, secret scan, formatting/diff checks, sanitized handoff, and exact later browser-executor prompt.
+      - External effects remain zero across HighLevel, customer messages, contacts, enrollments, Stripe, access, production, and provider systems.
+    stop_condition: 'Stop without implementation if the PR #123 unknowns change sender or assistant identity, mailbox/routing ownership must be invented, final copy cannot map to one exact message class, or protected/customer data would enter Git.'
+    blocker: null
+    remaining_work: 'Re-author the smallest repository-only Rabbi sender/message-class design on the current conductor descendant, regenerate canonical projections, validate it, and return one sanitized handoff plus the separately gated browser-executor prompt.'
+    next_action: 'Continue 03-OT-GHL with numbered queue item 02 only. Do not open HighLevel; do not advance to the sender canary.'
 
   - id: audit_wave_04_runtime_classification
     status: active

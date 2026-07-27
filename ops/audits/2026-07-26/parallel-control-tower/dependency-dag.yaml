@@ -15,11 +15,11 @@ nodes:
     dependencies: []
     acceptance: Sanitized deletion result, canonical 3001 absence, signed sequence-6 tombstone, zero-call idempotent readback, and exact runner/state removal.
   - id: WINDOW-03-OT-GHL-INVENTORY
-    kind: proposed_assignment
+    kind: accepted_evidence_predecessor
     dependencies: [AUDIT-CHECKPOINT]
     acceptance: Exhaustive visible read-only inventory or explicit UNPROVEN_UI_SCOPE_UNAVAILABLE; every mutation/send/enrollment counter is zero.
   - id: GHL-RABBI-SENDER-REPOSITORY-DESIGN
-    kind: blocked_future_assignment
+    kind: assigned_repository_only
     dependencies: [WINDOW-03-OT-GHL-INVENTORY]
     acceptance: Current-head repository-only sender/message-class design, regenerated projections, focused tests, and zero external effects.
   - id: GHL-RABBI-SENDER-CANARY
