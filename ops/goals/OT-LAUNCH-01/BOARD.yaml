@@ -1299,7 +1299,7 @@ tracks:
     next_action: 'Keep PR #110 isolated and production on acddcc8; promote the visual patch only together with an independently accepted registration-to-GHL hotfix.'
 
   - id: self_driving_execution_queue
-    status: active
+    status: superseded
     window_id: 01-OT-CONTROL
     concurrency_lock: BOARD
     owner:
@@ -1321,6 +1321,7 @@ tracks:
       - 'The control lane polls GitHub directly for each assigned/claimed branch and reconciles exact result heads without operator relay. It verified PR #123 at b2fd8c73246a3a1e1655b22ee5c837d65c19ec97, PR #125 at eeb31101e0d8f8a395a1c3833129b1afde4fd845, and PR #126 at 0fc24128dfb9f5d512c1915ad61bb9c6b3568042; expected result branches for lanes 04, 05, and 06 currently have no PR, while lane 07 remains unassigned and production-disabled.'
       - 'Control reconciliation commit 59368066c4debbf6ba80dc0a402d2767edb3d64b independently rejected PR #126 terminal acceptance on an LF/CRLF prompt-fingerprint projection defect, preserved the semantic attempt only as evidence, released the old GHL repository claim, and wrote unblocked repair Q03-002R plus every other lane successor into Git. Provider mutations, sends, production mutations, and destructive actions were zero.'
       - 'The 2026-07-27 routing reconciliation found a terminal BNA claim incorrectly copied into GHL-BROWSER and lane 04 incorrectly changed Q01-002 while reporting its own result. Control cleared the cross-lane holder, restored Q01-002, and made exact lane equality plus the QNN prefix a prerequisite before any candidate field may be evaluated.'
+      - 'The later execution override supersedes persistent lane workers with one repository conductor and one draft convergence PR. PR #124 remains preserved as historical queue/backlog evidence at current head 9c7ad4e724357e91bb951815101fc7992a8fad85; its queue must not dispatch or override this Board.'
     forbidden_behavior:
       - Implement product, provider, migration, hygiene, BNA, or production lane work from 01-OT-CONTROL.
       - Let queue dispatch state override Board status, acceptance, provider truth, or external authority.
@@ -1333,8 +1334,8 @@ tracks:
       - Queue, dependency, lock, Board, pointer, formatting, secret, and diff validation pass.
     stop_condition: 'Stop only for a genuine enumerated operator/auth/provider/production/send/destructive/product decision or an exhausted technical blocker; ordinary result reconciliation and repository dispatch continue.'
     blocker: null
-    remaining_work: 'Keep 01-OT-CONTROL polling terminal results, reconciling accepted evidence into Board, and promoting only dependency-satisfied exact successors.'
-    next_action: 'Bootstrap all seven permanent lanes once; thereafter workers re-read remote Git and continue without manual result relay.'
+    remaining_work: null
+    next_action: 'Use BOARD.yaml as the sole status map and continue only through the sole convergence conductor. Preserve the queue files as backlog evidence; do not bootstrap or dispatch persistent lane workers.'
 
   - id: audit_wave_03_ghl_full_inventory
     status: done
@@ -1677,15 +1678,14 @@ tracks:
     next_action: 'Operator supplies protected census and backup roots in WINDOW-05; the executor verifies both are outside every repository before reading metadata.'
 
   - id: audit_wave_06_bna_control_pointer
-    status: active
+    status: unclaimed
     window_id: 06-BNA-CONTROL
     concurrency_lock: BNA-CONTROL
     owner:
-      task_id: BNA-CONTROL-POINTER-01
+      task_id: null
       repository: shloimie-beep/bnei-neviim-academy
-      branch: codex/bna-control-pointer-repair-20260727
+      branch: null
       pr: null
-      head: cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c
       system: BNA current control pointers and governance
     write_scope: 'Exactly BNA-START-HERE.md, AGENTS.md, ops/control/CURRENT.yaml, and ops/control/BNA-BOARD.yaml in shloimie-beep/bnei-neviim-academy; no other path.'
     handoff_path: ops/control/BNA-BOARD.yaml
@@ -1694,6 +1694,7 @@ tracks:
     evidence:
       - 'Current remote BNA master remains exactly cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c, matching A07/A12.'
       - 'BNA-START-HERE.md still embeds stale mutable status while ops/execution-runs/latest.json points to a later One Time-first run; the current AGENTS goal-mode rule can begin execution before audit/review precedence.'
+      - 'Fresh GitHub readback confirms master still equals cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c, but no codex/bna-control-pointer-repair-20260727 branch or result PR exists. The superseded queue claim is released; PR #141/#142 remain untouched.'
     forbidden_behavior:
       - Edit application, runtime, script, test, migration, provider, deployment, data, One Time repository, or historical execution-run content.
       - 'Assign BNA School implementation, converge PR #141/#142, operate Telegram/GHL, or authorize decomposition/archive.'
@@ -1704,5 +1705,5 @@ tracks:
       - Parse both YAML files, scan the four-file allowlist for copied mutable status, run scoped formatting and diff check, and return exact commit/draft PR.
     stop_condition: 'Stop without writing if current BNA master differs, repository policy requires a different accepted canonical path, a second writer owns any of the four files, or the control model would require application changes.'
     blocker: null
-    remaining_work: 'Create the four-file pointer-only BNA control model and open a bounded draft PR; do not merge or deploy.'
-    next_action: 'Create WINDOW-06 from exact BNA master cebbfc5 and change only the four assigned control files.'
+    remaining_work: 'Create the four-file pointer-only BNA control model in a separate BNA repository task only when it is disjoint from the One Time controlled-pilot critical path; do not merge or deploy.'
+    next_action: 'Keep this as unclaimed BNA backlog. Do not open a persistent worker window or let it delay the blocked One Time provider and production dependency chain.'
