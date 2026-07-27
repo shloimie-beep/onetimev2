@@ -68,4 +68,33 @@ describe('runtime version proof', () => {
     });
     expect(JSON.stringify(body)).not.toMatch(/database|password|secret|token/i);
   });
+
+  it('uses secure cookies when a production Node process serves isolated staging', async () => {
+    const isolatedStaging = loadConfig({
+      NODE_ENV: 'production',
+      DELIVERY_ENVIRONMENT: 'isolated_staging',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      AUTH_CSRF_SECRET: 'production-runtime-proof-csrf-secret-value',
+      MFA_SECRET_ENCRYPTION_KEY: 'production-runtime-proof-mfa-secret-value',
+    });
+    const isolatedPool = createMemoryPool();
+    const app = createApp({ config: isolatedStaging, pool: isolatedPool });
+    const isolatedServer = await new Promise<ReturnType<typeof app.listen>>((resolve, reject) => {
+      const listener = app.listen(0, (error?: Error) => {
+        if (error) reject(error);
+        else resolve(listener);
+      });
+    });
+    const address = isolatedServer.address();
+    if (typeof address !== 'object' || !address)
+      throw new Error('missing isolated staging address');
+
+    try {
+      const response = await fetch(`http://127.0.0.1:${address.port}/login`);
+      expect(response.headers.getSetCookie().join('; ')).toMatch(/Secure/i);
+    } finally {
+      await new Promise<void>((resolve) => isolatedServer.close(() => resolve()));
+      await isolatedPool.end();
+    }
+  });
 });

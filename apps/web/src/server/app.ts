@@ -1122,7 +1122,7 @@ export function createApp({
         );
         res.cookie(TISHA_BAV_EVENT_COOKIE, result.sessionToken, {
           httpOnly: true,
-          secure: config.isProduction,
+          secure: config.runtime.requiresSecureCookies,
           sameSite: 'strict',
           path: '/',
           maxAge: Math.max(1, new Date(result.response.expires_at).getTime() - Date.now()),
@@ -4415,7 +4415,7 @@ function getCookie(req: Request, name: string) {
 function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, csrfToken: string) {
   res.cookie(SESSION_COOKIE, sessionToken, {
     httpOnly: true,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
     maxAge: 8 * 60 * 60 * 1000,
@@ -4426,7 +4426,7 @@ function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, 
 function setCsrfCookie(res: Response, config: AppConfig, csrfToken: string) {
   res.cookie(CSRF_COOKIE, csrfToken, {
     httpOnly: false,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
     maxAge: 8 * 60 * 60 * 1000,
@@ -4443,7 +4443,7 @@ function setTrustedDeviceCookie(
   if (maxAge <= 0) return;
   res.cookie(TRUSTED_DEVICE_COOKIE, trustedDeviceToken, {
     httpOnly: true,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
     maxAge,
@@ -4453,7 +4453,7 @@ function setTrustedDeviceCookie(
 function clearTrustedDeviceCookie(res: Response, config: AppConfig) {
   res.clearCookie(TRUSTED_DEVICE_COOKIE, {
     httpOnly: true,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
   });
@@ -4462,13 +4462,13 @@ function clearTrustedDeviceCookie(res: Response, config: AppConfig) {
 function clearAuthCookies(res: Response, config: AppConfig) {
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
   });
   res.clearCookie(CSRF_COOKIE, {
     httpOnly: false,
-    secure: config.isProduction,
+    secure: config.runtime.requiresSecureCookies,
     sameSite: 'strict',
     path: '/',
   });
