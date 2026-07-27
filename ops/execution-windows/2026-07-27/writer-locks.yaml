@@ -37,7 +37,10 @@ locks:
   - id: OT-PRODUCT
     concurrency: 1
     permanent_lane: 04-OT-PRODUCT
-    current_holder: null
+    current_holder:
+      lane: 04-OT-PRODUCT
+      item: Q04-001R
+      claim_token: q04-001r-04-ot-product-20260727
     scope: One Time application, package, runtime, and focused product tests named by one assigned item.
     forbidden: Overlapping product writer, Board edit, provider action, or production promotion.
   - id: MIGRATION

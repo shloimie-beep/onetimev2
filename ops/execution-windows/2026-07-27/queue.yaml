@@ -401,12 +401,16 @@ items:
     priority: 1
     title: Repair canonical runtime-classification integration expectations
     assignment_state: assigned
-    dispatch_state: ready
+    dispatch_state: claimed
     board_track: audit_wave_04_runtime_classification
     dependencies: []
     required_locks: [OT-PRODUCT]
     base_commit: bdc29725ce253f408d39a2c32120b0628f68721c
     branch: codex/w04-runtime-classification-regression-repair-20260727
+    claim_token: q04-001r-04-ot-product-20260727
+    worker_task_id: 04-OT-PRODUCT
+    claimed_at: 2026-07-27T12:15:00+03:00
+    claimed_from_queue_head: f1716aa60fd15f12a120447d9b85c3605ce7584d
     work_scope:
       - Preserve the canonical fail-closed runtime classifier and all PR #128 product semantics.
       - Update only tests/integration/experience-preview.test.ts and tests/integration/security/provider-boundaries.test.ts so mixed classifications assert the canonical loadConfig mismatch boundary.
