@@ -142,7 +142,7 @@ items:
     priority: 1
     title: Continuous GitHub result reconciliation and safe dispatch
     assignment_state: assigned
-    dispatch_state: claimed
+    dispatch_state: done
     repeatable: true
     board_track: self_driving_execution_queue
     dependencies: []
@@ -355,6 +355,17 @@ items:
     worker_task_id: 04-OT-PRODUCT
     claimed_at: 2026-07-27T12:08:00+03:00
     claimed_from_queue_head: 42a25fffa3ae8a3fb56e3b75f2add693cb02b2ac
+    terminal_at: 2026-07-27T12:20:00+03:00
+    terminal_reason: COMPLETED_CANONICAL_FAIL_CLOSED_RUNTIME_CLASSIFICATION
+    result_commit: bdc29725ce253f408d39a2c32120b0628f68721c
+    result_pr: 128
+    validation_summary: Focused runtime/config unit tests (28), runtime-version integration tests (2), typecheck, build, scoped Prettier, secret scan, and diff check passed.
+    external_effects:
+      provider_mutations: 0
+      deployments: 0
+      production_mutations: 0
+      migration_applications: 0
+      customer_messages: 0
     result_path: ops/execution-windows/2026-07-27/results/04-OT-PRODUCT-result.md
   - id: Q04-ZOOM-001
     lane: 04-OT-PRODUCT
