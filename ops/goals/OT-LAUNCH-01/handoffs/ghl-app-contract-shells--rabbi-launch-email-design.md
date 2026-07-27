@@ -3,25 +3,27 @@
 - schema_version: `1`
 - goal_id: `OT-LAUNCH-01`
 - track_id: `audit_wave_03_ghl_sender_design`
-- task_id: `OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN-REAUTHOR`
+- task_id: `OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN-PORTABILITY-REPAIR`
 - owner: `03-OT-GHL`
-- assignment_sha: `1e2e14812db179562f503f4818aeca9b099d5c56`
-- write_scope: existing sender/message-class/communications/workflow registries, generated workflow projections, OT-02A/OT-02B prompt and checklist pairs, GHL-UI-24 successor job, focused test, and this handoff only
+- assignment_sha: `0fc24128dfb9f5d512c1915ad61bb9c6b3568042`
+- write_scope: exact PR #126 semantic design plus only the canonical prompt-fingerprint helper, LF/CRLF/CR portability test, regenerated projections, and this handoff
 - sanitized_at: `2026-07-27`
 
 ## Result
 
-Repository-only design completed. HighLevel was not opened. GHL-UI-13 is unchanged and remains a zero-send, prerequisite-recording job. The new `GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance` is the sole separately gated successor; it is blocked unless a later exact operator authorization supplies every required acceptance input.
+Repository-only portability repair completed from the exact PR #126 result base. HighLevel was not opened. GHL-UI-13 remains unchanged and zero-send. GHL-UI-24 remains the sole separately gated successor and is blocked unless a later exact operator authorization supplies every required acceptance input.
 
 The active Phase-1 Rabbi campaign route remains the existing registered office From and Reply-To. The desired Rabbi Phase-2 From remains pending mailbox/routing ownership, HighLevel From acceptance, one protected operator-owned seed, and one controlled reply readback in GHL Conversations. No address, mailbox ownership, destination, audience, or permission was invented.
 
 OT-02A and OT-02B now identify separate reviewed Email One concepts in their canonical prompt/checklist paths. OT-02A is limited to an operator-selected adult existing-subscriber migration list. OT-02B is limited to adults with independently proven general-marketing permission. Neither path may infer authority from Tisha registration, attendance, payment, portal state, deliverability, or legacy tags. Both retain the registered One Time Home URL as the sole CTA source and keep any later sequence copy blocked pending review.
 
+Every prompt fingerprint now hashes `canonicalTextForHash` output, so LF, CRLF, and CR source inputs produce the same SHA-256 and the same generated workflow-control projection. No sender, message-class, audience, permission, CTA, or GHL-UI-24 meaning changed.
+
 ## Acceptance results
 
-| Acceptance ID         | Result                            | Evidence                                                                                                                                                                                             |
-| --------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GHL-SENDER-DESIGN-001 | Passed for repository-only design | Phase-1 routing is explicit, message classes remain separate, GHL-UI-13 is unchanged zero-send, GHL-UI-24 is separately gated, and workflow projections are regenerated from the canonical registry. |
+| Acceptance ID         | Result                                        | Evidence                                                                                                                                                                                                    |
+| --------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GHL-SENDER-DESIGN-001 | Passed for repository-only portability repair | PR #126 sender semantics are preserved; the canonical prompt fingerprint and regenerated projections are LF/CRLF/CR portable; GHL-UI-13 remains unchanged zero-send and GHL-UI-24 remains separately gated. |
 
 ## Files and evidence
 
@@ -31,6 +33,7 @@ OT-02A and OT-02B now identify separate reviewed Email One concepts in their can
 - `integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md` and `integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md`: consented-nurture-only reviewed Email One instructions.
 - `integrations/highlevel/agent-mode/jobs/GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance.json`: exact later browser executor prompt and result schema.
 - `tests/unit/highlevel/rabbi-launch-email-design.test.ts`: focused separation and successor-gate coverage.
+- `scripts/highlevel/prompt-fingerprint.ts` and `tests/unit/highlevel/prompt-fingerprint-portability.test.ts`: canonical prompt fingerprint helper and all-registered-prompt LF/CRLF/CR proof.
 
 ## Later browser-executor prompt
 

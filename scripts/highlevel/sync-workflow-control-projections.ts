@@ -4,6 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { format, resolveConfig } from 'prettier';
 import { canonicalTextForHash } from '../ops/canonical-text.ts';
+import { promptFingerprint } from './prompt-fingerprint.ts';
 import {
   businessWorkflowRecords,
   botActionWorkflowRecords,
@@ -145,9 +146,7 @@ async function refreshPromptFingerprints(records: PromptProjectionRecord[]) {
   return Promise.all(
     records.map(async (record) => ({
       ...record,
-      sha256: createHash('sha256')
-        .update(await readFile(path.join(repoRoot, record.file_path), 'utf8'))
-        .digest('hex'),
+      sha256: promptFingerprint(await readFile(path.join(repoRoot, record.file_path), 'utf8')),
     })),
   );
 }
