@@ -1598,7 +1598,7 @@ tracks:
     next_action: 'Preserve the constant bearer-free route and server-side one-time grant consumption. Continue to the repository-only three-active-learner transaction cap; keep Zoom and production disabled.'
 
   - id: audit_wave_04_three_active_learner_enforcement
-    status: active
+    status: waiting_external
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT-PORTAL
     owner:
@@ -1606,7 +1606,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/one-time-launch-convergence-20260727
       pr: 130
-      head: c0e3672986e6b4c32025b10f74d059fa9683abda
+      head: 8771167efec0c1af3156ef8538348024a52523d6
       system: One Time Parent/Student household portal
     write_scope: 'Portal repository/service household projection, create/reactivate transaction limits, typed errors, synthetic pg-mem and disposable PostgreSQL concurrency proof, OT-83 acceptance correction, and sanitized Board/PR evidence. No customer/Student identity readback, provider, send, deployment, environment, persistent/staging/production database, production, migration, or destructive change.'
     handoff_path: packages/db/src/portals/repository.ts
@@ -1621,6 +1621,10 @@ tracks:
       - 'Remote branch truth and PR #130 were re-read at exact accepted head c0e3672986e6b4c32025b10f74d059fa9683abda before assignment; all six exact classroom workflows are green.'
       - 'The existing typed LEARNER_LIMIT_REACHED contract and commercial-policy maximum of three already exist, but the durable repository projection currently reports max_active_learners null and learner_limit_reached false.'
       - 'This batch may use only synthetic pg-mem and disposable CI PostgreSQL data. Any current-data legacy census is a later aggregate-only read task; no identity may enter ordinary evidence and no learner may be archived, deleted, suspended, restored, reassigned, or otherwise remediated automatically.'
+      - 'Content commit 8771167efec0c1af3156ef8538348024a52523d6 enforces create and inactive-to-active admission after the exact household row lock, rechecks idempotency inside that lock, and returns typed LEARNER_LIMIT_REACHED before learner, access, audit, or idempotency writes.'
+      - 'The household projection now reports max_active_learners 3 and learner_limit_reached at active_learner_count >= 3; the preview provisioner now verifies fourth-seat rejection instead of creating and archiving a fourth learner.'
+      - 'Synthetic pg-mem proof covers create, archive, restore, replay, credential lifecycle, household scope, and a compliant three-learner classroom launch. Local exact gates passed: 10 portal service tests, 10 classroom tests, 18 experience-preview tests, 547 unit tests, 388 integration tests, typecheck, build, lint, scoped formatting, 2174-file secret scan, diff, governance, and projection convergence.'
+      - 'Disposable PostgreSQL and exact-head GitHub validation are pending on runs CI 30265335291, OT-83 30265335280, A11 30265335398, OT-37 30265335312, OPS-11 30265335304, and OPS-06 30265335381. No current-data census or external mutation was performed.'
     forbidden_behavior:
       - Read or expose customer/Student identities, automatically remediate an over-limit household, or delete/archive/suspend/restore/reassign any legacy learner.
       - Permit a create or inactive-to-active transition when the exact locked household already has three or more active learners, or perform partial learner/access/audit/idempotency writes on rejection.
@@ -1634,8 +1638,8 @@ tracks:
       - Focused tests, disposable PostgreSQL proof, full unit/integration gates, typecheck, build, lint, scoped formatting, diff/secret/governance/projection checks, and zero external effects.
     stop_condition: 'Stop if the code repair requires current customer/Student data, any legacy identity would enter evidence, a learner mutation is proposed as remediation, or a persistent/staging/production database, provider, send, deployment, production, migration, or destructive action is required.'
     blocker: null
-    remaining_work: 'Implement and validate A11-T06 repository code and synthetic/disposable-PostgreSQL proof only; keep the separate aggregate legacy-state readback unexecuted.'
-    next_action: 'Enforce the three-active maximum under the household lock for create and inactive-to-active restore, correct the household projection and OT-83 proof, and prove zero partial writes or privacy regression.'
+    remaining_work: 'Accept only after all six exact-head workflows pass, including the disposable PostgreSQL final-seat race and no-partial-write proof; keep the separate aggregate legacy-state readback unexecuted.'
+    next_action: 'Re-read exact-head GitHub results for PR #130, inspect the OT-83 disposable PostgreSQL report, and either accept this code batch or record the smallest exact repair.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external
