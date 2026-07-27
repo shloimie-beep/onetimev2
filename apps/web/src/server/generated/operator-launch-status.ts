@@ -5,7 +5,7 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:516766c42f214ab0f820b42e0c6a05b0819729e35b2dae663e3a039e9628abc2',
+  board_source_hash: 'sha256:59288cf4c8c312894a1b560849648484d582a044a80161153b7faa4409f27555',
   generated_at: '2026-07-27T07:21:39.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
@@ -107,21 +107,21 @@ export const operatorLaunchStatusProjection = {
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
       next_action:
-        'Preserve runner service d4f10489-1d8a-4518-8db2-a6da309dda8f, runner deployment c6d90077-de1c-41ed-b30e-cda5389b98b2, and state volume 2c0d6ed8-a7e1-4da2-baf9-06323de78dc8. A provider-only executor may run only npm run zoom:real-control:disposable:reconcile-cleanup with provisioning authorization absent; do not create a second meeting, touch the Tisha/recurring/customer target, or remove state before the tombstone.',
+        'Preserve the exact runner, journal, keyholder, and /canary volume. Do not rerun cleanup or create/substitute a meeting. Advance only through queue items Q04-ZOOM-001 and Q02-002.',
     },
     {
       track_id: 'zoom_s2s_host_control',
       label: 'Zoom host controls',
       status: 'provider_off',
       next_action:
-        'Keep provider controls unavailable; preserve the exact runner service, runner deployment, signed state volume, keyholder, operation binding, and original execution head. Do not create another meeting or infer host control from the protected Tisha event link.',
+        'Keep provider controls unavailable and preserve the exact runner/journal/volume. Do not repeat cleanup, create another meeting, or infer host control.',
     },
     {
       track_id: 'zoom_real_control_operator_change_set',
       label: 'Zoom Real Control Operator Change Set',
       status: 'blocked',
       next_action:
-        'Operator signs in through the already-open GitHub/Railway page and says signed in; then resume exact task 019f9460-bdcc-7f63-9273-0a05e75fcf19 for the existing disposable meeting, run only the reviewed reconciliation command, require sanitized deleted output plus the signed sequence-6 tombstone and canonical provider absence, and remove only the preserved runner and state volume. Do not retry provisioning, create a second meeting, touch a Tisha/recurring/customer meeting, or change persistent-staging/production variables.',
+        'Preserve runner and /canary volume; do not repeat cleanup. Let 01-OT-CONTROL advance only the diagnostic source and read-only classification dependency chain.',
     },
     {
       track_id: 'production_pilot',
@@ -136,25 +136,25 @@ export const operatorLaunchStatusProjection = {
       track_id: 'zoom_meeting_sdk',
       label: 'Zoom Meeting SDK',
       status: 'provider_off',
-      code: 'ZOOM_DISPOSABLE_CANARY_PROVIDER_DELETION_UNPROVEN',
+      code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
       reason:
-        'The cleanup-only successor is code-ready, but the separate provider-only reconciliation command has not run. The exact disposable meeting still exists; live DELETE, canonical Zoom 3001 absence, and the signed sequence-6 deleted tombstone are unproven. No Student/host join or control proof is accepted.',
+        'PR #125 proves the exact cleanup attempt reached the meeting readback but failed one or more reviewed reconciliation predicates before DELETE. The sanitized result does not identify which predicate, so another cleanup attempt would be an unsafe blind retry.',
     },
     {
       track_id: 'zoom_s2s_host_control',
       label: 'Zoom host controls',
       status: 'provider_off',
-      code: 'ZOOM_DISPOSABLE_CANARY_PROVIDER_DELETION_UNPROVEN',
+      code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
       reason:
-        'The exact disposable meeting still exists because the separate provider-only reconciliation command has not run. Live DELETE, canonical Zoom 3001 absence, and the signed sequence-6 deleted tombstone remain unproven; host/Student joins and controls were not attempted, and persistent staging remains provider-off.',
+        'The current provider read identified a reconciliation predicate mismatch but the sanitized result intentionally does not identify the field. Blind cleanup retry, substitution, or broader provider inspection is forbidden.',
     },
     {
       track_id: 'zoom_real_control_operator_change_set',
       label: 'Zoom Real Control Operator Change Set',
       status: 'blocked',
-      code: 'RAILWAY_PROVIDER_SESSION_NOT_AUTHENTICATED_AFTER_HOST_RESTART',
+      code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
       reason:
-        'The computer restart cleared the signed-in Railway/GitHub browser session before the provider-only executor could access the preserved runner and signed journal. No cleanup command or Zoom request ran; the disposable meeting remains at cleanup_required and deletion, canonical 3001 absence, and the signed sequence-6 tombstone are unproven.',
+        'The exact preserved meeting failed at least one reviewed reconciliation predicate before DELETE. PR #125 proves no provider write occurred but does not identify the mismatch field, so repeating cleanup would be a blind unsafe retry.',
     },
   ],
   safe_links: [
@@ -183,6 +183,6 @@ export const operatorLaunchStatusProjection = {
     track_id: 'zoom_real_control_operator_change_set',
     label: 'Zoom Real Control Operator Change Set',
     action:
-      'Operator signs in through the already-open GitHub/Railway page and says signed in; then resume exact task 019f9460-bdcc-7f63-9273-0a05e75fcf19 for the existing disposable meeting, run only the reviewed reconciliation command, require sanitized deleted output plus the signed sequence-6 tombstone and canonical provider absence, and remove only the preserved runner and state volume. Do not retry provisioning, create a second meeting, touch a Tisha/recurring/customer meeting, or change persistent-staging/production variables.',
+      'Preserve runner and /canary volume; do not repeat cleanup. Let 01-OT-CONTROL advance only the diagnostic source and read-only classification dependency chain.',
   },
 } as const satisfies OperatorLaunchStatusProjection;
