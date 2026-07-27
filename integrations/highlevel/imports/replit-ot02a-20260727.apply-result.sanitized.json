@@ -1,0 +1,23 @@
+{
+  "schema_version": "onetime.highlevel.replit_tag_apply.sanitized.v1",
+  "authorization_id": "pr130-replit-reconciliation-20260727",
+  "input_sha256": "ff49317a423c1d4dbbf6717cd859060d1fa741b23d57d0773446e37a69502b0f",
+  "expected_rows": 84,
+  "verified_rows": 84,
+  "resumed_verified_rows": 0,
+  "existing_contact_tag_updates": 83,
+  "upserts_without_prior_contact_id": 1,
+  "provider_calls_this_run": {
+    "contact_upserts": 1,
+    "add_tag_requests": 84,
+    "tag_readbacks": 84
+  },
+  "canonical_tags_only": true,
+  "sends": 0,
+  "workflow_enrollments": 0,
+  "deletions": 0,
+  "suppression_removals": 0,
+  "contact_field_replacements": 0,
+  "raw_values_included": false,
+  "completed_at": "2026-07-27T15:57:20.229Z"
+}
