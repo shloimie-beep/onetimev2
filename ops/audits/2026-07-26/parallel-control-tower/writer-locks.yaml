@@ -1,0 +1,52 @@
+schema_version: 1
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+snapshot_board_commit: 53a18e771488c61cf271cb33a0bcacee2c7135f4
+note: Lock contract and snapshot only; BOARD.yaml remains authoritative.
+locks:
+  - slot: OT-CONTROL
+    concurrency: 1
+    current_holder: audit-to-execution-control-tower
+    scope: Board, goal files, Board-derived pointers, audit checkpoint, executor index, and assignment packets.
+    forbidden: Product code, provider actions, deployment, sends, payments, enrollment, PR closure, and history rewrite.
+  - slot: OT-GHL
+    concurrency: 1
+    current_holder: null
+    proposed_holder: WINDOW-03-OT-GHL-SENDER-DESIGN
+    scope: integrations/highlevel and directly related HighLevel tests only.
+    forbidden: Parallel registry writer, provider/browser mutation, and Board edits.
+  - slot: OT-PRODUCT
+    concurrency: 1
+    current_holder: null
+    proposed_holder: WINDOW-04-OT-RUNTIME-CLASSIFICATION
+    scope: One Time application, packages, migrations, and product tests named by one assignment.
+    forbidden: Overlapping product writer, overlapping migration, Board edit, provider action, or production promotion.
+  - slot: OT-HYGIENE
+    concurrency: 1
+    current_holder: null
+    proposed_holder: WINDOW-05-OT-HYGIENE-CENSUS
+    scope: Preservation manifests and PR closure records only.
+    forbidden: Product changes, broad staging, PR closure before proof, deletion, reset, prune, force-push, or history rewrite.
+  - slot: BNA-CONTROL
+    concurrency: 1
+    current_holder: null
+    proposed_holder: WINDOW-06-BNA-CONTROL-POINTER
+    scope: BNA current pointers and governance only.
+    forbidden: BNA product/runtime/migration/provider changes and One Time Board edits.
+  - slot: ZOOM-PROVIDER
+    concurrency: 1
+    current_holder: WINDOW-02-OT-ZOOM-CLEANUP
+    scope: Exact existing disposable Zoom cleanup only.
+    forbidden: Duplicate assignment, new meeting, join/control, protected target, production, or repository source edit.
+  - slot: GHL-PROVIDER
+    concurrency: 1
+    current_holder: null
+    proposed_holder: null
+    scope: Future separately assigned bounded HighLevel provider work only.
+    forbidden: Browser access from the repository-design queue item, unassigned save/mutation/send/enrollment/publication/deletion, raw private content, or a second browser writer.
+invariants:
+  - At most one OT-GHL writer.
+  - At most one GHL browser writer.
+  - At most one OT-PRODUCT writer.
+  - No overlapping migrations.
+  - No production writer before Zoom acceptance and candidate proof.
+  - No PR closure before accepted preservation proof and exact close list.

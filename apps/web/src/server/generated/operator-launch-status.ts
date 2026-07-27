@@ -5,8 +5,8 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:011d806c7bc5a29c1b412334a022754d88c649eca8a7d4d12dd0378922e74e0d',
-  generated_at: '2026-07-24T18:26:07.000Z',
+  board_source_hash: 'sha256:516766c42f214ab0f820b42e0c6a05b0819729e35b2dae663e3a039e9628abc2',
+  generated_at: '2026-07-27T07:21:39.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
     acceptance_complete: 21,

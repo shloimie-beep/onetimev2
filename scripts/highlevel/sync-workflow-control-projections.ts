@@ -36,7 +36,7 @@ const projectionMetadata = {
 
 const currentOriginal = await readFile(path.join(repoRoot, currentPath), 'utf8');
 const currentPrettierConfig = (await resolveConfig(path.join(repoRoot, currentPath))) ?? {};
-const currentExpected = await format(buildCurrentProjection(currentOriginal), {
+const currentExpected = await format(await buildCurrentProjection(currentOriginal), {
   ...currentPrettierConfig,
   filepath: currentPath,
 });
@@ -81,8 +81,11 @@ process.stdout.write(
 
 if (!passed) process.exitCode = 1;
 
-function buildCurrentProjection(source: string) {
-  const parsed = JSON.parse(source) as { counts: Record<string, number> };
+async function buildCurrentProjection(source: string) {
+  const parsed = JSON.parse(source) as {
+    counts: Record<string, number>;
+    prompts: PromptProjectionRecord[];
+  };
   let output = source;
   output = replaceJsonProperty(output, 'counts', 'standard_contact_fields', {
     ...parsed.counts,
@@ -123,7 +126,30 @@ function buildCurrentProjection(source: string) {
     allowedStates: workflowControlPolicy.allowed_states,
     controlReport: workflowControlPolicy.generated_report,
   });
+  output = replaceJsonProperty(
+    output,
+    'prompts',
+    'knowledge_bases',
+    await refreshPromptFingerprints(parsed.prompts),
+  );
   return ensureTrailingNewline(output);
+}
+
+type PromptProjectionRecord = {
+  file_path: string;
+  sha256: string;
+  [key: string]: unknown;
+};
+
+async function refreshPromptFingerprints(records: PromptProjectionRecord[]) {
+  return Promise.all(
+    records.map(async (record) => ({
+      ...record,
+      sha256: createHash('sha256')
+        .update(await readFile(path.join(repoRoot, record.file_path), 'utf8'))
+        .digest('hex'),
+    })),
+  );
 }
 
 function buildManifestProjection(source: string) {

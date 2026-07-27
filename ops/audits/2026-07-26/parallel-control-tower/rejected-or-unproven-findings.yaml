@@ -1,0 +1,110 @@
+schema_version: 1
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+findings:
+  - id: CT-U001
+    classification: SUPERSEDED_HISTORICAL
+    source_audits: [A01, A04]
+    summary: The July 26 sender packet was absent at e986b5e but is present at the current conductor head.
+    reason: Checkpoint-relative finding is preserved as provenance; current head includes the packet but still provides no execution assignment.
+  - id: CT-U002
+    classification: UNPROVEN
+    source_audits: [A02, A09]
+    summary: Exact current production and persistent-staging runtime source/readiness, worker source, subroute state, and role rendering.
+    reason: No fresh protected/live runtime readback was performed by this conductor.
+  - id: CT-U003
+    classification: UNPROVEN
+    source_audits: [A02]
+    summary: Current-state production backup/restore, migrations 2221 through 2227 rehearsal, schema-2227 rollback compatibility, and separate-device production role proof.
+    reason: These require later protected release evidence and are production-pilot gates.
+  - id: CT-U004
+    classification: SUPERSEDED_HISTORICAL
+    source_audits: [A02]
+    summary: Pre-Tisha rollback target, older production-pilot handoff heads, and restore proof ending at schema 2211.
+    reason: Preserve as historical evidence only; do not use as current rollback authority.
+  - id: CT-U005
+    classification: UNPROVEN
+    source_audits: [A03]
+    summary: Live Zoom deletion, canonical absence, signed sequence-6 tombstone, runner/state removal, successor source/job, and fresh successor authority.
+    reason: WINDOW-02 cleanup evidence is still pending; no provider was opened.
+  - id: CT-U006
+    classification: SUPERSEDED_HISTORICAL
+    source_audits: [A03]
+    summary: Old Zoom provisioning/activation handoffs, generic cleanup command, and consumed exactly-one-meeting authority.
+    reason: Cannot authorize a successor meeting or canary.
+  - id: CT-U007
+    classification: UNPROVEN
+    source_audits: [A04]
+    summary: Exhaustive archived/hidden Conversation AI and knowledge-base inventory, exact OT-E01 disabled action identity, and live application-to-GHL handoff.
+    reason: Requires the assigned read-only full-location inventory and later exact readback.
+  - id: CT-U008
+    classification: UNPROVEN
+    source_audits: [A05]
+    source_finding_ids: [P0-02, P0-03, P0-10, P0-11]
+    summary: Current dirty/local-only worktree counts, cross-repository local commits, sole-copy objects, and untracked protected content.
+    reason: Requires metadata-only protected local census; operator claims are not current facts.
+  - id: CT-U009
+    classification: UNPROVEN
+    source_audits: [A06]
+    source_finding_ids: [A06-P1-01, A06-P2-01, A06-P2-02, A06-P2-04]
+    summary: Exact current public BNA tracked-file exposure, retained browser/task history, dirty local state, and public linkability of stable pseudonyms/media metadata.
+    reason: Protected evidence was not re-rendered or broadly rescanned in this control pass.
+  - id: CT-U010
+    classification: UNPROVEN
+    source_audits: [A06]
+    source_finding_ids: [U-A06-01, U-A06-02, U-A06-03, U-A06-04, U-A06-05, U-A06-06, U-A06-07]
+    summary: Provider destination permissions, current live BNA review routes, binary/archive evidence contents, full local state, runtime attestation, GitHub retention surface, and raw transcript/private-content history.
+    reason: Requires protected, provider, local, or live evidence outside this no-mutation conductor task.
+  - id: CT-U011
+    classification: UNPROVEN
+    source_audits: [A07]
+    summary: Fresh BNA live-runtime acceptance and any unpushed local BNA work after the audited master checkpoint.
+    reason: A07 and this conductor used committed Git evidence only.
+  - id: CT-U012
+    classification: UNPROVEN
+    source_audits: [A08]
+    summary: Protected school database inventory, staff/attendance ownership, legacy import feasibility, tuition source of truth, and active-lane collision state.
+    reason: Requires protected data inventory and operator decisions; BNA School implementation remains deferred.
+  - id: CT-U013
+    classification: UNPROVEN
+    source_audits: [A08]
+    source_finding_ids: [A08-P01, A08-P02, A08-P03, A08-P04, A08-P05]
+    summary: Standalone BNA School foundation, directory import, auth/RBAC, attendance, and signed bridge implementation packets.
+    reason: These are future proposals, not completed or assigned product truth.
+  - id: CT-U014
+    classification: UNPROVEN
+    source_audits: [A09]
+    source_finding_ids: [A09-F03]
+    summary: Exact current production countdown copy and runtime expiry behavior.
+    reason: Fresh production readback was not performed; no patch or promotion may rely on it.
+  - id: CT-U015
+    classification: SUPERSEDED_HISTORICAL
+    source_audits: [A09]
+    source_finding_ids: [A09-F04]
+    summary: Production-only Tisha social asset lineage.
+    reason: Preserve asset provenance without treating it as current application or release authority.
+  - id: CT-U016
+    classification: UNPROVEN
+    source_audits: [A10]
+    summary: Any nonzero current OT-C01, newsletter, or approximately-88-adult audience; exact OT-02A/OT-02B execution; OT-E01 current identity and live handoff.
+    reason: No current deduplicated adult-only permission/readback evidence exists.
+  - id: CT-U017
+    classification: SUPERSEDED_HISTORICAL
+    source_audits: [A10]
+    summary: Historical campaign-eligibility flags, 88/86 row counts, OT-C01 send authority, and legacy tags/attendance as consent.
+    reason: Historical classification and counts cannot grant current communication authority.
+  - id: CT-U018
+    classification: UNPROVEN
+    source_audits: [A12]
+    source_finding_ids: [A12-F05, A12-F06, A12-F10]
+    summary: Exhaustive absence of direct BNA imports, current cross-domain cookie collision, and current shared production deployment.
+    reason: Negative/live claims require a fresh exhaustive dependency and protected topology readback.
+  - id: CT-U019
+    classification: UNPROVEN
+    source_audits: [A12]
+    summary: Live shared database, signing secret, duplicate sender, or current provider/runtime collision.
+    reason: No protected live topology, data, outbox, session, or provider readback was authorized.
+  - id: CT-U020
+    classification: SUPERSEDED_HISTORICAL
+    source_audits: [A01, A05]
+    summary: Open done-source PRs and older control/evidence descendants as implementation or release candidates.
+    reason: Preserve as evidence only; do not replay, merge, close, or represent as current product source without explicit later proof.
