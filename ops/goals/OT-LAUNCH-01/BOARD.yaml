@@ -327,7 +327,7 @@ tracks:
     next_action: Keep unclaimed until the controlled production pilot and public website assistant are accepted.
 
   - id: production_pilot
-    status: unclaimed
+    status: blocked
     owner:
       task_id: null
       repository: shloimie-beep/onetimev2
@@ -355,9 +355,12 @@ tracks:
       - Repository safety keeps production promotion in its own reviewed narrow job after candidate, backup, rollback, and exact role acceptance are complete.
       - 'Read-only convergence handoff ops/goals/OT-LAUNCH-01/handoffs/production-pilot--persistent-staging-conductor.json records the semantic candidate, immutable migration, protected restore, rollback, exact-source web/worker, and one-household pilot gates. It also records that current production CLI uploads are not independent Git-backed source attestation; no production action occurred.'
       - 'Persistent-staging checkpoint ad407005a336fbee9ed1fcc47ca124969ec881b0 closes the staging access/playback subset: one explicit free-pilot projection, real Parent and three separate Student logins, sibling isolation, and approved protected synthetic playback passed with payment history and external/provider effects unchanged.'
-    blocker: null
+      - 'On 2026-07-27 the operator denied production approval because Q07-001 is not ready. Production remains disabled until an immutable candidate, accepted backup/restore/rollback proof, every named dependency, and fresh exact Board authority are all present.'
+    blocker:
+      code: PRODUCTION_APPROVAL_DENIED_NOT_READY
+      reason: Q07-001 has no immutable accepted candidate, accepted backup/restore/rollback proof, satisfied dependency set, or fresh exact production authority.
     remaining_work: Build and verify one immutable production candidate, backup/restore and rollback evidence, real Administrator activation, separate-device production role/playback proof, exact provider-off defaults, and the narrow promotion job. Real Zoom production activation remains downstream of a successful staging canary.
-    next_action: Queue the separately reviewed semantic production-pilot candidate after the normal-Student Zoom path and staging canary are accepted; do not promote the evidence-only Board descendant or broaden the initial operator-owned cohort.
+    next_action: Keep Q07-001 blocked and PRODUCTION disabled. Do not request production approval until the immutable candidate, backup/restore/rollback proof, every dependency, and a fresh exact Board authority packet are accepted.
 
   - id: admin_experience_preview
     status: done

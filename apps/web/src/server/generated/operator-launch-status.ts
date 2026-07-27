@@ -5,7 +5,7 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:59288cf4c8c312894a1b560849648484d582a044a80161153b7faa4409f27555',
+  board_source_hash: 'sha256:be608dd00851a4374b9e103b0fa3ab47c19ce62994bda395c4e9ef4b7359c069',
   generated_at: '2026-07-27T07:21:39.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
@@ -126,9 +126,9 @@ export const operatorLaunchStatusProjection = {
     {
       track_id: 'production_pilot',
       label: 'Production Pilot',
-      status: 'unclaimed',
+      status: 'blocked',
       next_action:
-        'Queue the separately reviewed semantic production-pilot candidate after the normal-Student Zoom path and staging canary are accepted; do not promote the evidence-only Board descendant or broaden the initial operator-owned cohort.',
+        'Keep Q07-001 blocked and PRODUCTION disabled. Do not request production approval until the immutable candidate, backup/restore/rollback proof, every dependency, and a fresh exact Board authority packet are accepted.',
     },
   ],
   blockers: [
@@ -155,6 +155,14 @@ export const operatorLaunchStatusProjection = {
       code: 'ZOOM_DISPOSABLE_CANARY_RECONCILIATION_SCOPE_MISMATCH',
       reason:
         'The exact preserved meeting failed at least one reviewed reconciliation predicate before DELETE. PR #125 proves no provider write occurred but does not identify the mismatch field, so repeating cleanup would be a blind unsafe retry.',
+    },
+    {
+      track_id: 'production_pilot',
+      label: 'Production Pilot',
+      status: 'blocked',
+      code: 'PRODUCTION_APPROVAL_DENIED_NOT_READY',
+      reason:
+        'Q07-001 has no immutable accepted candidate, accepted backup/restore/rollback proof, satisfied dependency set, or fresh exact production authority.',
     },
   ],
   safe_links: [

@@ -16,6 +16,7 @@ queue_semantics: >-
 selection:
   order: [priority_ascending, sequence_ascending, id_ascending]
   runnable_when:
+    - item.lane exactly equals the worker WINDOW ID before any other field is evaluated
     - assignment_state is assigned
     - dispatch_state is ready
     - every dependency is terminal done or an accepted external gate
@@ -30,6 +31,33 @@ dispatch_states:
   nonterminal: [planned, ready, claimed]
   terminal: [done, blocked, cancelled, superseded]
 assignment_states: [planned, assigned, withdrawn]
+lane_routing:
+  candidate_filter: >-
+    Before reading assignment state, dispatch state, dependencies, locks,
+    branch, scope, or result fields, build the candidate set by filtering
+    items to item.lane == the worker's exact WINDOW ID. A non-control worker
+    must not evaluate, claim, execute, terminalize, or repair any item outside
+    that filtered set.
+  id_prefix_guard:
+    01-OT-CONTROL: Q01-
+    02-OT-ZOOM: Q02-
+    03-OT-GHL: Q03-
+    04-OT-PRODUCT: Q04-
+    05-OT-HYGIENE: Q05-
+    06-BNA-CONTROL: Q06-
+    07-OT-PRODUCTION: Q07-
+  dependency_rule: >-
+    A cross-lane dependency may be read only as accepted or not accepted. It
+    does not make the dependency item a candidate and grants no authority to
+    inspect, claim, execute, terminalize, or repair that other lane's work.
+  control_exception: >-
+    01-OT-CONTROL may inspect cross-lane GitHub evidence and reconcile
+    canonical state, but its own claim candidates remain limited to
+    lane == 01-OT-CONTROL and IDs beginning Q01-.
+  mismatch_rule: >-
+    If an item's lane and ID prefix disagree, or a lock holder's lane does not
+    match the lock permanent_lane, no worker may act on that item or lock.
+    Leave it unclaimed and let 01-OT-CONTROL repair the coordination state.
 allowed_manual_handoffs:
   - SIGN IN
   - APPROVE SEND
@@ -555,7 +583,7 @@ items:
     priority: 1
     title: Controlled One Time production pilot
     assignment_state: planned
-    dispatch_state: planned
+    dispatch_state: blocked
     board_track: production_pilot
     dependencies:
       - GATE-ZOOM-SUCCESSOR-CANARY-ACCEPTED
@@ -567,7 +595,15 @@ items:
       - GATE-BACKUP-RESTORE-ROLLBACK-ACCEPTED
       - GATE-FRESH-PRODUCTION-AUTHORITY
     required_locks: [OT-PRODUCT, MIGRATION, PRODUCTION]
-    manual_handoff: APPROVE PRODUCTION
+    terminal_reason: PRODUCTION_APPROVAL_DENIED_NOT_READY
+    authority_state: denied
+    unblock_requirements:
+      - An immutable production candidate is accepted in BOARD.yaml.
+      - Backup, disposable restore, forward migration, and rollback proof are accepted in BOARD.yaml.
+      - Every dependency named by Q07-001 is satisfied.
+      - Fresh exact Board authority names source, schema, cohort, routes, stop conditions, and rollback target.
+    manual_handoff: BLOCKED
     forbidden:
       - Claim or prepare production from audit prose, staging health, queue state, or prior general pilot intent.
       - Deploy, migrate, change providers, enroll, message, or mutate production before a new exact Board assignment and fresh authority.
+      - Request APPROVE PRODUCTION again before every unblock requirement is accepted.

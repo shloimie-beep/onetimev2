@@ -407,14 +407,18 @@ record(
     const track = trackById('production_pilot');
     if (!track) return false;
     const dependencies = arrayAt<string>(track, 'dependencies');
+    const blocker = objectAt(track, 'blocker');
     return (
-      track.status === 'unclaimed' &&
+      track.status === 'blocked' &&
+      blocker.code === 'PRODUCTION_APPROVAL_DENIED_NOT_READY' &&
       dependencies.includes('zoom_meeting_sdk') &&
       dependencies.includes('zoom_s2s_host_control') &&
-      dependencies.includes('zoom_real_control_operator_change_set')
+      dependencies.includes('zoom_real_control_operator_change_set') &&
+      String(track.next_action).includes('Keep Q07-001 blocked') &&
+      String(track.next_action).includes('Do not request production approval')
     );
   })(),
-  'production_pilot cannot be projected executable before all three Zoom tracks are done',
+  'Q07-001 is blocked after denied approval and cannot request production authority before all gates are accepted',
 );
 record(
   'Zoom disposable lifecycle remains fail-closed',
