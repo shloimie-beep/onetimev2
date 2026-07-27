@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
-  parseReplitSubscriberCsv,
   parseAcceptedHistoricalImportCsv,
+  parseProtectedHighLevelImportCsv,
+  parseReplitSubscriberCsv,
   reconcileReplitSubscribers,
   replitContactTaxonomy,
+  requiredReplitProviderTags,
   toProtectedHighLevelImportCsv,
   type ExistingAdultIdentity,
   type ReplitSubscriberRow,
@@ -131,6 +133,43 @@ describe('Replit subscriber reconciliation', () => {
     expect(result.summary.existing_historical_matches).toBe(1);
     expect(result.summary.suppressed_or_denied_contacts).toBe(1);
     expect(result.protectedImportRows[0]?.tags).toContain(replitContactTaxonomy.suppressionTag);
+  });
+
+  it('round-trips the protected provider CSV and limits writes to canonical taxonomy', () => {
+    const csv = toProtectedHighLevelImportCsv([
+      {
+        sourceRowNumber: 2,
+        contactId: 'ghl-contact-1',
+        email: 'adult@example.test',
+        firstName: 'Adult',
+        lastName: 'One',
+        phone: '',
+        tags: [
+          'Unrelated Existing Tag',
+          replitContactTaxonomy.sourceTag,
+          replitContactTaxonomy.activeSubscriberTag,
+        ],
+        source: 'replit_legacy_subscriber_2026',
+        activeUser: true,
+        migrationCandidate: false,
+        denied: false,
+        action: 'update',
+      },
+    ]);
+    const [parsed] = parseProtectedHighLevelImportCsv(csv);
+
+    expect(parsed).toMatchObject({
+      protectedRowNumber: 2,
+      contactId: 'ghl-contact-1',
+      email: 'adult@example.test',
+      firstName: 'Adult',
+      lastName: 'One',
+      source: 'replit_legacy_subscriber_2026',
+    });
+    expect(requiredReplitProviderTags(parsed!.tags)).toEqual([
+      replitContactTaxonomy.activeSubscriberTag,
+      replitContactTaxonomy.sourceTag,
+    ]);
   });
 });
 

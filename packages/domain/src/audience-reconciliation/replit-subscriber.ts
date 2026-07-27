@@ -317,6 +317,33 @@ export function toProtectedHighLevelImportCsv(rows: ReplitProtectedImportRow[]) 
     .concat('\n');
 }
 
+export function parseProtectedHighLevelImportCsv(csvText: string) {
+  const [headers = [], ...records] = parseCsvRecords(csvText);
+  const indexes = headerIndexes(headers);
+  return records
+    .filter((record) => record.some((value) => value.trim()))
+    .map((record, index) => ({
+      protectedRowNumber: index + 2,
+      contactId: cell(record, indexes, ['contact_id', 'id']),
+      email: normalizeEmail(cell(record, indexes, ['email', 'email_address'])),
+      firstName: cell(record, indexes, ['first_name']),
+      lastName: cell(record, indexes, ['last_name']),
+      phone: normalizePhone(cell(record, indexes, ['phone', 'phone_number'])) ?? '',
+      tags: splitTags(cell(record, indexes, ['tags'])),
+      source: cell(record, indexes, ['source']),
+    }));
+}
+
+export function requiredReplitProviderTags(tags: string[]) {
+  const allowed = new Set<string>([
+    replitContactTaxonomy.sourceTag,
+    replitContactTaxonomy.activeSubscriberTag,
+    replitContactTaxonomy.migrationCandidateTag,
+    replitContactTaxonomy.suppressionTag,
+  ]);
+  return [...new Set(tags.filter((tag) => allowed.has(tag)))].sort((a, b) => a.localeCompare(b));
+}
+
 function indexIdentities(records: ExistingAdultIdentity[]) {
   const external = new Map<string, ExistingAdultIdentity[]>();
   const email = new Map<string, ExistingAdultIdentity[]>();

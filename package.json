@@ -72,6 +72,7 @@
     "goal:launch-status:check": "tsx scripts/ops/generate-operator-launch-status.ts --check",
     "goal:launch-status:sync": "tsx scripts/ops/generate-operator-launch-status.ts --write",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
+    "highlevel:replit:apply-tags": "tsx scripts/highlevel/apply-replit-tags.ts",
     "highlevel:replit:reconcile": "tsx scripts/highlevel/reconcile-replit-subscribers.ts",
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",
