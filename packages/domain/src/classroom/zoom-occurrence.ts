@@ -319,8 +319,6 @@ export function createZoomClassOccurrenceService(input: {
   provider?: ZoomClassOccurrenceProvider | undefined;
   clock?: (() => Date) | undefined;
 }) {
-  const clock = input.clock ?? (() => new Date());
-
   return {
     async status(actor: PortalActorContext, occurrenceKey: string) {
       requireAdmin(actor);

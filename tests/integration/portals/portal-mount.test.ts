@@ -280,7 +280,7 @@ describe('OT-71 mounted parent and student portals', () => {
       const launchJson = await launch.json();
       expect(launchJson).toMatchObject({
         success: true,
-        data: { kind: 'class_launch', launch_token_ref: 'provider_unavailable' },
+        data: { kind: 'class_launch', launch_token_ref: 'class_access_denied' },
       });
       expect(JSON.stringify(launchJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive/i);
 

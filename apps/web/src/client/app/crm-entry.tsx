@@ -34,6 +34,7 @@ import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
 import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
 import { ClassManagementWorkspace } from './classes/ClassManagementWorkspace.js';
 import { SupportFeature } from './support/SupportFeature.js';
+import { changeOwnPassword } from './portal-api.js';
 import {
   AuthExpiredError,
   appendNote,
@@ -74,18 +75,6 @@ const ContentWorkspace = React.lazy(() =>
   })),
 );
 
-const ExperiencePreview = React.lazy(() =>
-  import('./experience-preview/ExperiencePreview.js').then((module) => ({
-    default: module.ExperiencePreview,
-  })),
-);
-
-const LaunchStatus = React.lazy(() =>
-  import('./launch-status/LaunchStatus.js').then((module) => ({
-    default: module.LaunchStatus,
-  })),
-);
-
 const ContactOperationsPanel = React.lazy(() =>
   import('./contact-operations/ContactOperationsPanel.js').then((module) => ({
     default: module.ContactOperationsPanel,
@@ -118,14 +107,7 @@ type Notice = {
 
 type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
 type OwnerSurface =
-  | 'dashboard'
-  | 'crm'
-  | 'classes'
-  | 'content'
-  | 'billing'
-  | 'support'
-  | 'launch-status'
-  | 'experience-preview';
+  'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'support' | 'operations';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -833,21 +815,11 @@ function CrmApp() {
     ...(canReadOwnerShell
       ? [
           {
-            id: 'launch-status',
-            label: 'Launch Status',
-            href: '/app/launch-status',
-            current: surface === 'launch-status',
+            id: 'operations',
+            label: 'Operations',
+            href: '/app/operations',
+            current: surface === 'operations',
           },
-          ...(session?.capabilities?.operator_experience?.experience_preview
-            ? [
-                {
-                  id: 'experience-preview',
-                  label: 'Experience Preview',
-                  href: '/app/experience-preview',
-                  current: surface === 'experience-preview',
-                },
-              ]
-            : []),
         ]
       : []),
     ...(session && !isRabbi
@@ -925,8 +897,7 @@ function CrmApp() {
         onRefresh={() => void loadDashboard()}
       />
     ) : surface === 'support' ||
-      surface === 'launch-status' ||
-      surface === 'experience-preview' ||
+      surface === 'operations' ||
       (surface === 'crm' &&
         !communicationsMode &&
         contactsSection !== 'people') ? null : communicationsMode?.kind === 'contact' ? (
@@ -1008,13 +979,7 @@ function CrmApp() {
             loading={dashboardState.loading}
             error={dashboardState.error}
             section={dashboardSection}
-            showExperiencePreview={
-              session?.capabilities?.operator_experience?.experience_preview === true
-            }
             onNavigate={(href) => openOwnerSurface('dashboard', href)}
-            onOpenExperiencePreview={() =>
-              openOwnerSurface('experience-preview', '/app/experience-preview')
-            }
             onRetry={() => void loadDashboard()}
           />
         ))}
@@ -1072,24 +1037,22 @@ function CrmApp() {
           onRetry={() => void loadDashboard()}
         />
       )}
-      {surface === 'experience-preview' && (
-        <Suspense
-          fallback={
-            <p className="state-panel" role="status">
-              Loading Experience Preview...
-            </p>
-          }
-        >
-          <ExperiencePreview
-            csrfToken={session?.csrf_token ?? ''}
-            onProtectedStateCleared={clearProtectedState}
-          />
-        </Suspense>
-      )}
-      {surface === 'launch-status' && (
-        <Suspense fallback={<ReadOnlySkeleton label="Loading Launch Status" />}>
-          <LaunchStatus onProtectedStateCleared={clearProtectedState} />
-        </Suspense>
+      {surface === 'operations' && (
+        <OperationsPanel
+          csrfToken={session?.csrf_token ?? ''}
+          dashboard={dashboard}
+          loading={dashboardState.loading}
+          error={dashboardState.error}
+          onNavigate={(href) => {
+            const nextSurface = ownerSurfaceFromPath(href);
+            if (nextSurface && nextSurface !== 'crm') {
+              openOwnerSurface(nextSurface, href);
+              return;
+            }
+            window.location.assign(href);
+          }}
+          onRetry={() => void loadDashboard()}
+        />
       )}
       {surface === 'support' && (
         <SupportFeature
@@ -1375,18 +1338,14 @@ function DashboardPanel({
   loading,
   error,
   section,
-  showExperiencePreview,
   onNavigate,
-  onOpenExperiencePreview,
   onRetry,
 }: {
   dashboard: OwnerDashboardResponse | null;
   loading: boolean;
   error: string;
   section: DashboardSectionId;
-  showExperiencePreview: boolean;
   onNavigate: (href: string) => void;
-  onOpenExperiencePreview: () => void;
   onRetry: () => void;
 }) {
   return (
@@ -1443,25 +1402,189 @@ function DashboardPanel({
                 ))}
             </ul>
           </Card>
-          {showExperiencePreview && (
-            <Card className="experience-preview-dashboard-card">
-              <h2>Preview Parent &amp; Student portals</h2>
-              <p>
-                Walk through the fictional Cohen household without replacing this Administrator
-                session.
-              </p>
-              <Button
-                type="button"
-                variant="primary"
-                data-action-id="dashboard.open_experience_preview.button"
-                onClick={onOpenExperiencePreview}
-              >
-                Open portal preview
-              </Button>
-            </Card>
-          )}
         </>
       )}
+    </section>
+  );
+}
+
+function OperationsPanel({
+  csrfToken,
+  dashboard,
+  loading,
+  error,
+  onNavigate,
+  onRetry,
+}: {
+  csrfToken: string;
+  dashboard: OwnerDashboardResponse | null;
+  loading: boolean;
+  error: string;
+  onNavigate: (href: string) => void;
+  onRetry: () => void;
+}) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordNotice, setPasswordNotice] = useState<Notice | null>(null);
+  const passwordReady =
+    newPassword.length >= 10 && /[A-Za-z]/u.test(newPassword) && /[0-9]/u.test(newPassword);
+  const passwordMatches = newPassword === confirmPassword;
+  const canChangePassword =
+    !savingPassword &&
+    currentPassword.length > 0 &&
+    passwordReady &&
+    passwordMatches &&
+    newPassword !== currentPassword;
+
+  return (
+    <section className="dashboard-surface" data-usable="application-operations" aria-busy={loading}>
+      <Card className="dashboard-overview-card">
+        <h2>Application operations</h2>
+        <p>Live application state and direct access to persistent administrative workflows.</p>
+        {loading && !dashboard ? (
+          <ReadOnlySkeleton label="Loading application operations" />
+        ) : error ? (
+          <StatePanel
+            kind="error"
+            title="Application operations could not load"
+            body={error}
+            actionLabel="Retry"
+            onAction={onRetry}
+          />
+        ) : dashboard ? (
+          <ul className="dashboard-overview-list">
+            {dashboard.dashboard.sections.map((item) => (
+              <li key={item.id}>
+                <span>
+                  <strong>{item.label}</strong>
+                  <small>{item.detail}</small>
+                </span>
+                <span>
+                  <Chip label={productStateLabel(item.state)} tone="status" />
+                  <strong>{item.value_label}</strong>
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <StatePanel
+            kind="empty"
+            title="No application state is available"
+            body="Refresh to load the current persistent application state."
+            actionLabel="Refresh"
+            onAction={onRetry}
+          />
+        )}
+        <div className="form-actions">
+          <Button type="button" onClick={() => onNavigate('/app/crm/audit')}>
+            Audit History
+          </Button>
+          <Button type="button" onClick={() => onNavigate('/app/crm/users')}>
+            Users &amp; Roles
+          </Button>
+          <Button type="button" onClick={() => onNavigate('/app/classes/occurrences')}>
+            Classes &amp; Zoom
+          </Button>
+          <Button type="button" onClick={() => onNavigate('/app/live-console')}>
+            Live Console
+          </Button>
+          <Button type="button" onClick={onRetry}>
+            Refresh status
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="dashboard-overview-card">
+        <h2>Account Security</h2>
+        <p>Change the password for this signed-in Administrator account.</p>
+        <form
+          className="contact-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!canChangePassword) return;
+            setSavingPassword(true);
+            setPasswordNotice(null);
+            void changeOwnPassword({
+              csrfToken,
+              currentPassword,
+              newPassword,
+            })
+              .then((result) => {
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+                setPasswordNotice({
+                  kind: 'success',
+                  message:
+                    result.sessions_invalidated > 0
+                      ? `Password changed. ${result.sessions_invalidated} other session${
+                          result.sessions_invalidated === 1 ? '' : 's'
+                        } signed out.`
+                      : 'Password changed. This session remains signed in.',
+                });
+              })
+              .catch((caught) => {
+                setPasswordNotice({
+                  kind: 'error',
+                  message: errorMessage(caught, 'Password was not changed.'),
+                });
+              })
+              .finally(() => setSavingPassword(false));
+          }}
+        >
+          <label>
+            <span>Current password</span>
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={currentPassword}
+              required
+              maxLength={256}
+              onChange={(event) => setCurrentPassword(event.currentTarget.value)}
+            />
+          </label>
+          <label>
+            <span>New password</span>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={newPassword}
+              required
+              minLength={10}
+              maxLength={256}
+              aria-describedby="admin-password-help"
+              onChange={(event) => setNewPassword(event.currentTarget.value)}
+            />
+          </label>
+          <label>
+            <span>Confirm new password</span>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={confirmPassword}
+              required
+              minLength={10}
+              maxLength={256}
+              onChange={(event) => setConfirmPassword(event.currentTarget.value)}
+            />
+          </label>
+          <p id="admin-password-help">
+            Use at least 10 characters with at least one letter and one number.
+            {confirmPassword && !passwordMatches ? ' The new passwords do not match.' : ''}
+          </p>
+          {passwordNotice && <NoticeBanner notice={passwordNotice} />}
+          <div className="form-actions">
+            <Button type="submit" variant="primary" disabled={!canChangePassword}>
+              {savingPassword ? 'Changing password' : 'Change password'}
+            </Button>
+          </div>
+        </form>
+        <p>
+          Cannot use the current password? <a href="/forgot-password">Request a secure reset</a>.
+        </p>
+      </Card>
     </section>
   );
 }
@@ -1505,11 +1628,13 @@ function ClassesPanel({
   onRetryDetail: (occurrenceKey: string) => void;
   onRetryRewards: () => void;
 }) {
-  const teachingSections = (
-    ['classes', 'occurrences', 'questions', 'rewards'] as ClassroomSectionId[]
-  );
-  const focusedSection =
-    teachingOnly && !teachingSections.includes(section) ? 'classes' : section;
+  const teachingSections = [
+    'classes',
+    'occurrences',
+    'questions',
+    'rewards',
+  ] as ClassroomSectionId[];
+  const focusedSection = teachingOnly && !teachingSections.includes(section) ? 'classes' : section;
   const isManagementSection =
     !teachingOnly &&
     (
@@ -2853,14 +2978,11 @@ function sourceLabel(value: string) {
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/dashboard' || pathname.startsWith('/app/dashboard/')) return 'dashboard';
-  if (pathname === '/app/launch-status') return 'launch-status';
+  if (pathname === '/app/operations') return 'operations';
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
   if (pathname === '/app/rewards') return 'classes';
-  if (pathname === '/app/experience-preview' || pathname.startsWith('/app/experience-preview/')) {
-    return 'experience-preview';
-  }
   if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
     return 'support';
   }
@@ -2875,11 +2997,10 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 
 function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'dashboard') return 'Dashboard';
-  if (surface === 'launch-status') return 'Launch Status';
+  if (surface === 'operations') return 'Operations';
   if (surface === 'classes') return 'Classroom';
   if (surface === 'content') return 'Content';
   if (surface === 'billing') return 'Household Access';
-  if (surface === 'experience-preview') return 'Experience Preview';
   if (surface === 'support') return 'Support';
   return 'Contacts';
 }
@@ -2888,8 +3009,8 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
     return 'A focused overview of the One Time workspace.';
   }
-  if (surface === 'launch-status') {
-    return 'Board-derived launch milestone, working capabilities, exact blockers, and next task.';
+  if (surface === 'operations') {
+    return 'Account security, audit history, provider status, and application operations.';
   }
   if (surface === 'classes')
     return 'One occurrence at a time across schedule, questions, and rewards.';
@@ -2898,9 +3019,6 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
   }
   if (surface === 'billing') {
     return 'Current household learning access; payment history remains in GHL.';
-  }
-  if (surface === 'experience-preview') {
-    return 'Read-only fictional Parent, Student, and Rabbi journeys for the isolated staging runtime.';
   }
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
   return 'Parent and adult contact review.';

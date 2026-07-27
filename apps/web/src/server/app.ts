@@ -236,7 +236,6 @@ import {
   receiveWhatsAppWebhook,
   requestTishaBavJoin,
   resolveTishaBavRedirect,
-  stableKey,
   attachRecordingToClass,
   enrollLearnerInClass,
   setClassRecordingLearnerAccess,
@@ -255,11 +254,9 @@ import {
   verifyWhatsAppWebhookChallenge,
   TishaBavIdempotencyConflictError,
   TishaBavJoinError,
-  type LiveClassRepository,
   type AuthenticatedSession,
   PortalServiceError,
   type PortalServiceDeps,
-  type ZoomHostLaunchPort,
   type ZoomAdminProviderPort,
   type ZoomClassOccurrenceProvider,
 } from '../../../../packages/domain/src/index.ts';
@@ -968,7 +965,7 @@ export function createApp({
   }
 
   app.get(
-    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|launch-status)(?:\/.*)?$/,
+    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support|operations)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await sessionFromRequest(req, pool, config);
       if (!session) {

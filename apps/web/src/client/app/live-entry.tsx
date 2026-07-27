@@ -5,7 +5,6 @@ import type {
   LiveClassParticipant,
   LiveClassQuestion,
   LiveClassStageState,
-  LiveClassZoomAdminStatusResponse,
   SessionUser,
 } from '@onetime/contracts';
 import {
@@ -13,14 +12,13 @@ import {
   adminPrimaryNav,
   liveConsoleHref,
   liveConsoleSectionFromSearch,
+  rabbiPrimaryNav,
 } from './admin-ia.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
-import { zoomProviderOffSummary } from './zoom-sdk-safety.js';
 import './crm.css';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
-type ZoomAdminData = LiveClassZoomAdminStatusResponse['data'];
 
 type ApiSession = {
   authenticated: true;
@@ -46,7 +44,6 @@ function LiveApp() {
 function LiveConsole() {
   const [session, setSession] = useState<ApiSession | null>(null);
   const [data, setData] = useState<ConsoleData | null>(null);
-  const [zoomAdmin, setZoomAdmin] = useState<ZoomAdminData | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
   const occurrenceKey = useMemo(
@@ -64,16 +61,12 @@ function LiveConsole() {
     try {
       const nextSession = await api<ApiSession>('/api/v1/auth/session');
       setSession(nextSession);
-      const [snapshot, zoomStatus] = await Promise.all([
-        api<LiveClassConsoleSnapshot>(
-          occurrenceKey
-            ? `/api/v1/live-class/questions?occurrence_key=${encodeURIComponent(occurrenceKey)}`
-            : '/api/v1/live-class/questions',
-        ),
-        api<LiveClassZoomAdminStatusResponse>('/api/v1/live-class/zoom/admin/status'),
-      ]);
+      const snapshot = await api<LiveClassConsoleSnapshot>(
+        occurrenceKey
+          ? `/api/v1/live-class/questions?occurrence_key=${encodeURIComponent(occurrenceKey)}`
+          : '/api/v1/live-class/questions',
+      );
       setData(snapshot.data);
-      setZoomAdmin(zoomStatus.data);
       setNotice(null);
     } catch (error) {
       setNotice({ kind: 'error', message: messageFor(error, 'Live console could not load.') });
@@ -103,42 +96,18 @@ function LiveConsole() {
     }
   }
 
-  async function postZoomAdmin(path: string, label: string, body: Record<string, unknown> = {}) {
-    if (!session) return;
-    try {
-      const response = await api<LiveClassZoomAdminStatusResponse>(path, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-csrf-token': session.csrf_token },
-        body: JSON.stringify({
-          ...body,
-          idempotency_key: idempotencyKey(label),
-        }),
-      });
-      setZoomAdmin(response.data);
-      setNotice({ kind: 'success', message: response.data.message });
-    } catch (error) {
-      setNotice({ kind: 'error', message: messageFor(error, `${label} failed.`) });
-    }
-  }
-
-  const navItems: ShellNavItem[] = adminPrimaryNav(
-    'live-console',
-    session?.capabilities?.operator_experience?.live_console === true,
-  );
-  const utilityItems: ShellNavItem[] = [
-    { id: 'launch-status', label: 'Launch Status', href: '/app/launch-status', current: false },
-    ...(session?.capabilities?.operator_experience?.experience_preview
-      ? [
-          {
-            id: 'experience-preview',
-            label: 'Experience Preview',
-            href: '/app/experience-preview',
-            current: false,
-          },
-        ]
-      : []),
-    { id: 'support', label: 'Support', href: '/app/support', current: false },
-  ];
+  const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
+  const navItems: ShellNavItem[] =
+    session?.user.role === 'rabbi'
+      ? rabbiPrimaryNav('live-console', liveConsoleReady)
+      : adminPrimaryNav('live-console', liveConsoleReady);
+  const utilityItems: ShellNavItem[] =
+    session?.user.role === 'rabbi'
+      ? []
+      : [
+          { id: 'operations', label: 'Operations', href: '/app/operations', current: false },
+          { id: 'support', label: 'Support', href: '/app/support', current: false },
+        ];
   const selected = data?.selected_question ?? null;
 
   return (
@@ -170,7 +139,7 @@ function LiveConsole() {
             <h2>{data?.stage.class_label ?? 'One Time live class'}</h2>
           </div>
           <div className="live-console__status">
-            <StatusPill label="Zoom" value={data?.zoom.adapter ?? 'fake'} />
+            <StatusPill label="Zoom" value={data?.zoom.adapter ?? 'not configured'} />
             <StatusPill label="OBS" value={data?.obs.connected ? 'connected' : 'optional off'} />
             <StatusPill label="Telegram" value="optional off" />
           </div>
@@ -301,37 +270,15 @@ function LiveConsole() {
             <h3 id="live-zoom-heading">Zoom</h3>
             <ZoomHealth
               data={data}
-              admin={zoomAdmin}
-              onCheck={() =>
-                void postZoomAdmin('/api/v1/live-class/zoom/admin/check', 'Check Zoom connection')
-              }
-              onCreate={() =>
-                void postZoomAdmin(
-                  '/api/v1/live-class/zoom/admin/test-meeting',
-                  'Create Zoom test meeting',
-                )
-              }
-              onRegister={() =>
-                void postZoomAdmin(
-                  '/api/v1/live-class/zoom/admin/test-learner',
-                  'Register Zoom test learner',
-                )
-              }
+              occurrenceKey={occurrenceKey}
               onRefresh={() => void load()}
-              onOpenClassroom={() => window.location.assign('/app/live-console/zoom-host')}
-              onDelete={() => {
-                if (
-                  window.confirm(
-                    'Delete only the disposable Zoom test meeting created and recorded by this app?',
-                  )
-                ) {
-                  void postZoomAdmin(
-                    '/api/v1/live-class/zoom/admin/test-meeting/delete',
-                    'Delete Zoom test meeting',
-                    { confirmed: true },
-                  );
-                }
-              }}
+              onOpenClassroom={() =>
+                occurrenceKey &&
+                window.location.assign(
+                  `/app/live-console/zoom-host?occurrence_key=${encodeURIComponent(occurrenceKey)}`,
+                )
+              }
+              onChooseOccurrence={() => window.location.assign('/app/classes/occurrences')}
             />
             {selected ? (
               <ZoomControls
@@ -547,99 +494,53 @@ function ObsHealth({ data }: { data: ConsoleData | null }) {
 
 function ZoomHealth({
   data,
-  admin,
-  onCheck,
-  onCreate,
-  onRegister,
+  occurrenceKey,
   onRefresh,
   onOpenClassroom,
-  onDelete,
+  onChooseOccurrence,
 }: {
   data: ConsoleData | null;
-  admin: ZoomAdminData | null;
-  onCheck: () => void;
-  onCreate: () => void;
-  onRegister: () => void;
+  occurrenceKey: string | null;
   onRefresh: () => void;
   onOpenClassroom: () => void;
-  onDelete: () => void;
+  onChooseOccurrence: () => void;
 }) {
-  const job = data?.zoom.setup_job;
   return (
     <div className="live-health">
       <p>Surface: {data?.zoom.host_surface_label ?? 'One Time Zoom Stage Host'}</p>
-      <p>Mode: {data?.zoom.adapter ?? 'fake'}</p>
-      <p>REST live control: no</p>
+      <p>Mode: {data?.zoom.adapter ?? 'not configured'}</p>
+      <p>Class occurrence: {occurrenceKey ?? 'none selected'}</p>
       <p>Video start model: participant consent</p>
-      <p role="status">{admin?.message ?? 'Loading Zoom setup status.'}</p>
-      <p>Connection: {admin?.connection_state.replaceAll('_', ' ') ?? 'not checked'}</p>
-      <p>Disposable meeting: {admin?.meeting_state.replaceAll('_', ' ') ?? 'none'}</p>
-      <p>Test learner: {admin?.learner_state.replaceAll('_', ' ') ?? 'none'}</p>
-      <div className="live-action-grid" aria-label="Zoom setup and test actions">
-        <button
-          type="button"
-          className="ot-button"
-          onClick={onCheck}
-          disabled={!admin?.can_check_connection}
-        >
-          Check Zoom Connection
-        </button>
-        <button
-          type="button"
-          className="ot-button"
-          onClick={onCreate}
-          disabled={!admin?.can_create_meeting}
-        >
-          Create Disposable Test Meeting
-        </button>
-        <button
-          type="button"
-          className="ot-button secondary"
-          onClick={onRegister}
-          disabled={!admin?.can_register_learner}
-        >
-          Register One Operator-Owned Test Learner
-        </button>
+      <p role="status">
+        {occurrenceKey
+          ? data?.zoom.host_control_configured
+            ? 'Secure host controls are ready for this class occurrence.'
+            : 'Zoom is not ready for this class occurrence. An Administrator can provision it from Classroom.'
+          : 'Choose a class occurrence before opening the Zoom classroom.'}
+      </p>
+      <div className="live-action-grid" aria-label="Zoom classroom actions">
         <button type="button" className="ot-button secondary" onClick={onRefresh}>
           Refresh Status
         </button>
-        <button
-          type="button"
-          className="ot-button secondary"
-          onClick={onOpenClassroom}
-          disabled={!admin?.secure_classroom_ready}
-        >
-          Open Secure One Time Classroom
-        </button>
-        <button
-          type="button"
-          className="ot-button danger"
-          onClick={onDelete}
-          disabled={!admin?.can_delete_meeting}
-        >
-          Delete This App-Created Test Meeting
-        </button>
+        {occurrenceKey && data?.zoom.host_control_configured ? (
+          <button type="button" className="ot-button" onClick={onOpenClassroom}>
+            Open Secure One Time Classroom
+          </button>
+        ) : (
+          <button type="button" className="ot-button" onClick={onChooseOccurrence}>
+            Choose and Provision a Class
+          </button>
+        )}
       </div>
-      {admin?.last_error && <p className="error">{admin.last_error}</p>}
       {data?.zoom.host_control_configured ? (
         <p>
-          Test learners join from their own protected Student portal. The Admin session never mints
-          or impersonates a learner session.
+          Enrolled Students join from their own protected Student portal. The Admin or Rabbi session
+          never mints or impersonates a learner session.
         </p>
       ) : (
-        <p>{zoomProviderOffSummary(data?.zoom.readiness)}</p>
-      )}
-      {job && (
-        <details>
-          <summary>
-            {job.job_key} {job.title}
-          </summary>
-          <ol>
-            {job.steps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ol>
-        </details>
+        <p>
+          {data?.zoom.readiness.readiness_blockers.join(' ') || 'Zoom provisioning is required.'}
+        </p>
       )}
     </div>
   );

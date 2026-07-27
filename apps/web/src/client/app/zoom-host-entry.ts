@@ -286,7 +286,15 @@ async function start() {
         leave_url: string;
         video_start_model: 'PARTICIPANT_CONSENT';
       };
-    }>('/api/v1/live-class/zoom/host/bootstrap');
+    }>(
+      `/api/v1/live-class/zoom/host/bootstrap${
+        new URLSearchParams(location.search).get('occurrence_key')
+          ? `?occurrence_key=${encodeURIComponent(
+              new URLSearchParams(location.search).get('occurrence_key') ?? '',
+            )}`
+          : ''
+      }`,
+    );
     occurrenceKey = bootstrap.data.occurrence_key;
     const zoom = await loadMeetingSdk(bootstrap.data.sdk_web_version);
     const refresh = () => void syncRoster(zoom);

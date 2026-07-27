@@ -508,7 +508,8 @@ function FactoryView({
   onProtectedStateCleared: () => void;
   onChanged: (message: string) => Promise<void>;
 }) {
-  const [selectedKey, setSelectedKey] = useState(data.items[0]?.source_key ?? '');
+  const visibleItems = useMemo(() => data.items.filter((item) => !item.is_demo), [data.items]);
+  const [selectedKey, setSelectedKey] = useState(visibleItems[0]?.source_key ?? '');
   const [showIntake, setShowIntake] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadOccurrence, setUploadOccurrence] = useState(
@@ -517,12 +518,12 @@ function FactoryView({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const selected =
-    data.items.find((item) => item.source_key === selectedKey) ?? data.items[0] ?? null;
+    visibleItems.find((item) => item.source_key === selectedKey) ?? visibleItems[0] ?? null;
 
   useEffect(() => {
-    if (selectedKey && data.items.some((item) => item.source_key === selectedKey)) return;
-    setSelectedKey(data.items[0]?.source_key ?? '');
-  }, [data.items, selectedKey]);
+    if (selectedKey && visibleItems.some((item) => item.source_key === selectedKey)) return;
+    setSelectedKey(visibleItems[0]?.source_key ?? '');
+  }, [selectedKey, visibleItems]);
 
   async function upload(event: React.FormEvent) {
     event.preventDefault();
@@ -539,7 +540,7 @@ function FactoryView({
       );
       setUploadFile(null);
       setShowIntake(false);
-      await onChanged('Video received in protected staging. No external provider was contacted.');
+      await onChanged('Video received securely. No external provider was contacted.');
     } catch (error) {
       setUploadError(errorMessage(error));
     } finally {
@@ -660,15 +661,15 @@ function FactoryView({
           ))}
         </section>
       )}
-      {data.items.length === 0 && data.intakes.length === 0 ? (
+      {visibleItems.length === 0 && data.intakes.length === 0 ? (
         <EmptyState
           title="No incoming videos"
           body="Use Add class video to place a private source in the content factory."
         />
-      ) : data.items.length > 0 ? (
+      ) : visibleItems.length > 0 ? (
         <div className="content-factory-layout">
           <section className="content-stack" aria-label="Content factory queue">
-            {data.items.map((item) => (
+            {visibleItems.map((item) => (
               <button
                 type="button"
                 className="content-factory-item"
@@ -678,7 +679,7 @@ function FactoryView({
               >
                 <span>
                   <strong>{item.draft.title}</strong>
-                  <small>{item.is_demo ? 'Synthetic demo lesson' : item.display_name}</small>
+                  <small>{item.display_name}</small>
                 </span>
                 <Badge>{readable(item.state)}</Badge>
               </button>
