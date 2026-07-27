@@ -9,7 +9,7 @@ const evidenceRoot = path.resolve(process.cwd(), 'ops/evidence/ot-83r');
 const screenshotRoot = path.join(evidenceRoot, 'real-app-screenshots');
 const evidence: Array<Record<string, unknown>> = [];
 
-test('OT83R parent portal routes unlimited add, edit, archive, restore, secure student access, and content open', async ({
+test('OT83R parent portal enforces the learner cap across add, archive, and restore', async ({
   page,
 }) => {
   const requests = collectRequests(page);
@@ -23,13 +23,21 @@ test('OT83R parent portal routes unlimited add, edit, archive, restore, secure s
   await expect(page.getByText('3 active learners')).toBeVisible();
   await expect(page.getByRole('button', { name: /Gamma Learner/i })).toBeVisible();
 
-  await openAddLearner(page, 'Delta Learner', 'Grade 3');
-  await expect(page.getByText('4 active learners')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Delta Learner/i })).toBeVisible();
+  await page.getByRole('button', { name: 'Add learner' }).first().click();
+  let dialog = page.getByRole('dialog', { name: 'Add learner' });
+  await dialog.getByLabel('Display name').fill('Delta Learner');
+  await dialog.getByLabel('Grade').fill('Grade 3');
+  await dialog.getByRole('button', { name: 'Add learner' }).click();
+  await expect(dialog.getByRole('alert')).toContainText(
+    'A household can have at most three active learners.',
+  );
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByText('3 active learners')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Delta Learner/i })).toHaveCount(0);
 
   await page.getByRole('button', { name: /Gamma Learner/i }).click();
   await page.getByRole('button', { name: 'Edit' }).click();
-  let dialog = page.getByRole('dialog', { name: 'Edit learner' });
+  dialog = page.getByRole('dialog', { name: 'Edit learner' });
   await dialog.getByLabel('Display name').fill('Gamma Edited');
   await dialog.getByRole('button', { name: 'Save learner' }).click();
   await expect(page.getByRole('button', { name: /Gamma Edited/i })).toBeVisible();
@@ -37,14 +45,23 @@ test('OT83R parent portal routes unlimited add, edit, archive, restore, secure s
   await page.getByRole('button', { name: 'Archive' }).click();
   dialog = page.getByRole('dialog', { name: 'Archive learner' });
   await dialog.getByRole('button', { name: 'Archive' }).click();
-  await expect(page.getByText('3 active learners')).toBeVisible();
+  await expect(page.getByText('2 active learners')).toBeVisible();
   await expect(page.getByRole('button', { name: /Gamma Edited.*Archived/i })).toBeVisible();
 
+  await openAddLearner(page, 'Delta Learner', 'Grade 3');
+  await expect(page.getByText('3 active learners')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Delta Learner/i })).toBeVisible();
+
+  await page.getByRole('button', { name: /Gamma Edited.*Archived/i }).click();
   await page.getByRole('button', { name: 'Restore' }).click();
   dialog = page.getByRole('dialog', { name: 'Restore learner' });
   await dialog.getByRole('button', { name: 'Restore' }).click();
-  await expect(page.getByText('4 active learners')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Gamma Edited.*Active/i })).toBeVisible();
+  await expect(dialog.getByRole('alert')).toContainText(
+    'A household can have at most three active learners.',
+  );
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByText('3 active learners')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Gamma Edited.*Archived/i })).toBeVisible();
 
   await page.getByRole('button', { name: /E2E Beta Learner/i }).click();
   await page.getByRole('button', { name: 'Setup' }).click();
@@ -278,7 +295,7 @@ test.afterAll(async () => {
         status: 'completed',
         generated_at: new Date().toISOString(),
         journeys: [
-          'parent unlimited add/edit/archive/restore/secure-student-access/content-open',
+          'parent three-active-learner cap/add/edit/archive/restore/secure-student-access/content-open',
           'student content-open/questions/session-expiry/sibling-household-role-denial/provider-url-guard',
         ],
         evidence,
