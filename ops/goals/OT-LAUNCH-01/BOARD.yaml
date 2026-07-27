@@ -1556,7 +1556,7 @@ tracks:
     next_action: 'Preserve stable logical provider keys and durable accepted/acceptance-unknown state. Continue to the repository-only bearer-free classroom launch transport; every real provider and send remains disabled.'
 
   - id: audit_wave_04_classroom_bearer_free_transport
-    status: in_progress
+    status: waiting_external
     window_id: 04-OT-PRODUCT
     concurrency_lock: OT-PRODUCT-CLASSROOM
     owner:
@@ -1564,7 +1564,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/one-time-launch-convergence-20260727
       pr: 130
-      head: e8c4b10efba48345a5777fb162a238176abd35c4
+      head: 27152527e9c4ca855ea92aac80fac6ad5a862f3c
       system: One Time authenticated Student classroom launch
     write_scope: 'Classroom launch contract/service/repository, constant protected web route and bootstrap client, route-brand projections, focused integration/browser tests, and sanitized Board/PR evidence. No Zoom adapter activation, provider read/write, meeting, credential, deployment, environment, database target, send, or production change.'
     handoff_path: packages/domain/src/classroom/service.ts
@@ -1577,6 +1577,11 @@ tracks:
       - 'Remote branch truth was fetched immediately before assignment; local and origin convergence heads both equal e8c4b10efba48345a5777fb162a238176abd35c4, with all six exact GitHub suites green.'
       - 'The selected transport is a server-side session-and-learner-bound pending grant consumed only by an authenticated same-origin CSRF-protected POST. The browser location is the constant /classroom/launch route; neither URL nor bootstrap payload carries a grant key or secret.'
       - 'The existing durable grant row and one-time/TTL/session/learner/occurrence states are preserved without a migration. Legacy compound launch paths must fail closed and must not be reflected in response bodies or route labels.'
+      - 'Exact content head 27152527e9c4ca855ea92aac80fac6ad5a862f3c implements A11-T05 without a migration: issue keeps at most one pending grant for the exact account/product/actor/session/learner/occurrence; bootstrap accepts only viewport and user-agent context and atomically consumes the latest server-side pending grant behind the constant /classroom/launch route.'
+      - 'Local authorization and replay proof passes strict payload rejection, legacy 410 without echo, one-pending supersession, expiry, revocation, replay, wrong-session, sibling, cross-account, and concurrent consume. The route logger records only the constant route or the static legacy-regex label.'
+      - 'The compiled Chromium matrix passes 8/8 across desktop, mobile, retry, real-shaped in-memory retry, URL/history/request-target privacy, accessibility, and performance. No unexpected external network request occurred.'
+      - 'The full local code gate passes: 82 unit files/547 tests, 68 integration files/378 tests, typecheck, production build, lint, exact scoped formatting, diff check, and a 2174-file secret scan. The repository-wide brand scanner retains its pre-existing unchanged governance-script color finding; the changed manifest and route registry pass their focused contract tests.'
+      - 'Zoom/provider, meeting, credential, send, destination, deployment, environment, migration, persistent/staging/production database, production, and destructive effects are zero. Only process-local sinks, pg-mem fixtures, and local Chromium ran.'
     forbidden_behavior:
       - Put a launch secret, grant key, learner/account identifier, provider reference, or raw destination in a path, query string, fragment, referrer, log label, analytics field, screenshot-visible page, or failure artifact.
       - Weaken authenticated Student, exact session, exact learner, occurrence, TTL, one-time, replay, same-origin, CSRF, CSP, no-store, no-referrer, or sibling/cross-account denial.
@@ -1588,8 +1593,8 @@ tracks:
       - Focused integration and Playwright tests, full unit/integration gates, typecheck, build, lint, scoped formatting, diff/secret/governance/projection checks, and zero external effects.
     stop_condition: 'Stop if any bearer must remain in a URL/log/artifact, a real meeting/credential/provider call is required, exact session/learner/replay checks would weaken, or the repair requires a staging/production database or migration application.'
     blocker: null
-    remaining_work: 'Implement and validate A11-T05 only, then accept immutable exact-head CI before moving to the next P1.'
-    next_action: 'Replace the compound launch path with the constant protected route and server-side pending-grant consumption, add exact security and browser proof, and keep Zoom/provider effects at zero.'
+    remaining_work: 'Accept immutable exact-head GitHub CI and PostgreSQL assurance for 27152527e9c4ca855ea92aac80fac6ad5a862f3c; do not execute Zoom or production work.'
+    next_action: 'Wait for exact-head CI, reconcile every required check, then mark A11-T05 done and continue to the next repository-only P1.'
 
   - id: audit_wave_05_preservation_census
     status: waiting_external
