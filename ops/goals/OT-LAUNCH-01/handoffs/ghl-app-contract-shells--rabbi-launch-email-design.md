@@ -1,57 +1,138 @@
-# OT-LAUNCH-01 Rabbi launch email design — sanitized handoff
+# OT-LAUNCH-01 Rabbi launch email design packet
 
-- schema_version: `1`
-- goal_id: `OT-LAUNCH-01`
-- track_id: `audit_wave_03_ghl_sender_design`
-- task_id: `OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN-REAUTHOR`
-- owner: `03-OT-GHL`
-- assignment_sha: `1e2e14812db179562f503f4818aeca9b099d5c56`
-- write_scope: existing sender/message-class/communications/workflow registries, generated workflow projections, OT-02A/OT-02B prompt and checklist pairs, GHL-UI-24 successor job, focused test, and this handoff only
-- sanitized_at: `2026-07-27`
+This is a proposed, repository-only task packet for the existing
+`ghl_app_contract_shells` Board track. It creates no new status model and
+authorizes no HighLevel mutation, contact enrollment, or message send.
 
-## Result
+## Recommended execution
 
-Repository-only design completed. HighLevel was not opened. GHL-UI-13 is unchanged and remains a zero-send, prerequisite-recording job. The new `GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance` is the sole separately gated successor; it is blocked unless a later exact operator authorization supplies every required acceptance input.
+- Model: Terra
+- Reasoning: high
+- Worktree: clean checkout of the exact pushed
+  `codex/full-app-staging-live` head
+- Output: one reviewable Git diff and one sanitized handoff
 
-The active Phase-1 Rabbi campaign route remains the existing registered office From and Reply-To. The desired Rabbi Phase-2 From remains pending mailbox/routing ownership, HighLevel From acceptance, one protected operator-owned seed, and one controlled reply readback in GHL Conversations. No address, mailbox ownership, destination, audience, or permission was invented.
+## Outcome
 
-OT-02A and OT-02B now identify separate reviewed Email One concepts in their canonical prompt/checklist paths. OT-02A is limited to an operator-selected adult existing-subscriber migration list. OT-02B is limited to adults with independently proven general-marketing permission. Neither path may infer authority from Tisha registration, attendance, payment, portal state, deliverability, or legacy tags. Both retain the registered One Time Home URL as the sole CTA source and keep any later sequence copy blocked pending review.
+Prepare one governed Rabbi-authored new-program email and the exact sender
+acceptance job needed to use the existing `rabbi_campaign` identity without
+guessing addresses, mixing audiences, or sending to customers.
 
-## Acceptance results
+## Canonical sender boundary
 
-| Acceptance ID         | Result                            | Evidence                                                                                                                                                                                             |
-| --------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GHL-SENDER-DESIGN-001 | Passed for repository-only design | Phase-1 routing is explicit, message classes remain separate, GHL-UI-13 is unchanged zero-send, GHL-UI-24 is separately gated, and workflow projections are regenerated from the canonical registry. |
+- `rabbi_campaign`: visible Rabbi-authored migration, warm enrollment,
+  teaching, and launch communication. Preferred From identity is
+  `Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>`.
+  It remains pending until mailbox/routing, HighLevel From acceptance, one
+  operator-owned seed delivery, and reply-to-GHL readback all pass.
+- `rabbi_personal`: later Rabbi-authored Torah answers and follow-up through
+  the same accepted Rabbi address and GHL conversation boundary.
+- `office`: `info@onetimeonetime.com` for support, access, billing,
+  cancellation, complaints, and Parent administration.
+- `brand`: `info@onetimeonetime.com` for neutral program, class, content,
+  receipt, and portal notices.
+- `account_security`: One Time/Resend only for activation, password, email
+  verification, login challenge, and security-token messages.
 
-## Files and evidence
+The public Rabbi identity does not require a second operational inbox if
+`rabbi@` is safely routed into the same governed GHL Conversations workflow.
+The exact Reply-To remains fail-closed until that route is proven.
 
-- `integrations/highlevel/registry/workflow-registry.yaml`: canonical OT-02A/OT-02B Phase-1, CTA, permission-boundary, reviewed-copy identity, and successor-job metadata.
-- `integrations/highlevel/workflows.yaml`, `integrations/highlevel/registry/current.json`, and `integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md`: regenerated only through the canonical workflow-control scripts.
-- `integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md` and `integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md`: migration-only reviewed Email One instructions.
-- `integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md` and `integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md`: consented-nurture-only reviewed Email One instructions.
-- `integrations/highlevel/agent-mode/jobs/GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance.json`: exact later browser executor prompt and result schema.
-- `tests/unit/highlevel/rabbi-launch-email-design.test.ts`: focused separation and successor-gate coverage.
+## Email content brief
 
-## Later browser-executor prompt
+Write one concise, personal email in Rabbi Eli Scheller's voice:
 
-Use only `GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance.json` after a separate exact operator authorization names the immutable registry SHA, authorizes the Rabbi Phase-2 From identity, proves mailbox/routing and GHL From acceptance, identifies one protected operator-owned destination outside Git, grants one unique seed idempotency key, permits exactly one seed, and permits exactly one controlled reply readback. If any item is absent, return `blocked` with every effect counter at zero. Do not select an audience, publish or activate a workflow, enroll anyone, create or change a contact, or write private data to Git.
+- announce that One Time Mishnayos has a new program and application;
+- explain the outcome as helping boys build clarity, memory, consistency, and
+  a love for Mishnah through live learning from Eretz Yisrael;
+- invite the reader to see the current program and controlled pilot;
+- use the current main One Time signup/program page, never the expired Tisha
+  route or a raw Zoom/provider link;
+- make no claim that the recipient attended an event, is paying, is likely to
+  pay, or already has portal access;
+- avoid false urgency, fabricated scarcity, and unverified pricing;
+- sign as Rabbi Eli Scheller / One Time Mishnayos;
+- include the correct permission and unsubscribe treatment for the selected
+  audience.
 
-## External-effect counters
+Do not commit the final raw customer email body in the ramble intake or
+sanitized handoff. Put reviewed copy only in the existing canonical HighLevel
+prompt/checklist path after the message class and audience are selected.
 
-| Counter             | Value |
-| ------------------- | ----: |
-| HighLevel mutations |     0 |
-| Customer messages   |     0 |
-| Contacts changed    |     0 |
-| Enrollments         |     0 |
-| Publications        |     0 |
-| Activations         |     0 |
-| Deletes/quarantines |     0 |
-| Stripe mutations    |     0 |
-| Access mutations    |     0 |
-| Production changes  |     0 |
-| Provider mutations  |     0 |
+## Audience rules
 
-## Remaining work / blocker
+Use one content concept but preserve separate delivery contracts:
 
-No repository-design blocker remains. Browser execution is intentionally blocked pending a separate exact authorization with the protected operational inputs described above. The historic approximately 88 contacts, all customer audiences, and all sender canary activity remain out of scope.
+1. `existing_subscriber_migration` / OT-02A is only for exact adults the
+   operator identifies as prior One Time customers who need an operational
+   migration notice.
+2. `prelaunch_nurture` / OT-02B is only for adults with independently proven
+   general-marketing permission.
+3. Tisha registrants remain event-purpose only unless separate marketing
+   permission exists.
+4. Historic payment, attendance, event registration, portal presence,
+   deliverability, or an old tag never creates marketing permission.
+5. Students and children never enter GHL or any email audience.
+6. The historic approximately 88 contacts remain outside this task until the
+   operator supplies the selected adult list.
+
+## Work
+
+1. Read, in order:
+   - `AGENTS.md`
+   - `ops/goals/CURRENT.yaml` and its complete goal files
+   - `.agents/skills/one-time-goal-executor/SKILL.md`
+   - `.agents/skills/one-time-ghl-ui-job/SKILL.md`
+   - `integrations/highlevel/registry/sender-registry.yaml`
+   - `integrations/highlevel/registry/message-class-registry.yaml`
+   - `integrations/highlevel/registry/communications-contract.json`
+   - `integrations/highlevel/registry/workflow-registry.yaml`
+   - `integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json`
+   - the OT-02A and OT-02B prompt/checklist pairs
+2. Reconcile the requested sender boundary against those canonical files.
+   Reuse existing keys and jobs. Do not create a second sender registry,
+   campaign, workflow, or communications contract.
+3. Propose the smallest exact Git diff that:
+   - makes the desired Rabbi sender and reply-routing prerequisites explicit;
+   - turns GHL-UI-13 or one reviewed successor into an executable
+     acceptance job;
+   - permits exactly one protected operator-owned sender seed and one reply
+     readback only after separate exact authority;
+   - keeps every customer audience, workflow publication, enrollment, and
+     broad send at zero;
+   - adds the reviewed content brief to the correct OT-02A/OT-02B canonical
+     paths without mixing their eligibility rules.
+4. Return a sanitized handoff naming the exact files, unresolved decisions,
+   job ID, expected readback, and the next browser-only executor prompt.
+
+## Done when
+
+- No duplicate sender, message class, workflow, campaign, or status model is
+  introduced.
+- A fresh task can identify the exact preferred Rabbi From identity and every
+  acceptance prerequisite without consulting local chat history.
+- `info@` and the security sender retain their existing responsibilities.
+- The migration and marketing audiences remain distinct and fail closed.
+- One bounded browser executor job can later prove From acceptance, one
+  operator-owned delivery, and one reply reaching GHL.
+- Customer sends, contact mutations, workflow publications/enrollments,
+  Stripe mutations, access mutations, and production changes equal zero in
+  this design task.
+
+## Copy-paste task prompt
+
+Act as the repository-only executor for
+`OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN`.
+
+Read this entire packet and every canonical source it lists. Produce the
+smallest reviewable Git diff that makes the existing Rabbi campaign sender
+acceptance and one Rabbi-authored new-program email implementation-ready.
+Reuse `rabbi_campaign`, `office`, `brand`, `account_security`, OT-02A, OT-02B,
+and GHL-UI-13; do not create a parallel registry, workflow, campaign, or
+status model.
+
+Do not open or mutate HighLevel. Do not send, enroll, publish, activate,
+create contacts, reconcile the historic contact list, infer consent or
+attendance, change Stripe or access, alter production, or commit raw customer
+data. Return the exact diff, validation, sanitized handoff, and the separate
+browser-executor prompt required for the later bounded sender canary.

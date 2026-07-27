@@ -160,15 +160,8 @@ business_workflows:
     essentialValues:
       configured_state: 'draft_saved_reopened'
       audience_scope: 'explicitly approved 2026 existing-subscriber migration segment only'
-      audience_authority: 'operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority'
       sequence_length: 3
       sender_registry_key: 'rabbi_campaign'
-      phase_1_from: 'info@onetimeonetime.com only'
-      reply_to: 'info@onetimeonetime.com only'
-      phase_2_from: 'pending_mailbox_and_reply_acceptance; do not select'
-      phase_2_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
-      reviewed_email_one_identity: 'rabbi_new_program_existing_subscriber_migration_v1'
-      reviewed_email_one_cta: 'One Time Home URL custom value only'
       price_and_offer_source: 'registered custom values only'
       enrollment_authorized: false
       publication_authorized: false
@@ -228,15 +221,8 @@ business_workflows:
     essentialValues:
       configured_state: 'draft_saved_reopened'
       audience_scope: 'consented unsuppressed new leads only'
-      audience_authority: 'independently proven general-marketing permission only; Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never grant authority'
-      sender_registry_key: 'rabbi_campaign'
-      phase_1_from: 'info@onetimeonetime.com only'
-      reply_to: 'info@onetimeonetime.com only'
-      phase_2_from: 'pending_mailbox_and_reply_acceptance; do not select'
-      phase_2_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
-      reviewed_email_one_identity: 'rabbi_new_program_prelaunch_nurture_v1'
-      reviewed_email_one_cta: 'One Time Home URL custom value only'
       stop_states: ['checkout_started', 'active', 'opt_out', 'suppressed']
+      sender_registry_key: 'rabbi_campaign'
       enrollment_authorized: false
       publication_authorized: false
     lastReadback:

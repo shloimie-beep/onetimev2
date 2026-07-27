@@ -27,8 +27,11 @@ Run this loop:
 1. Re-fetch and reread the remote queue and BOARD before every cycle.
 2. Claim only the next ready 01-OT-CONTROL item using the queue
    compare-and-swap protocol and the permanent BOARD lock.
-3. Inspect terminal lane results as evidence. Validate exact commits, changed
-   scope, focused checks, effect counters, and stop conditions.
+3. Query GitHub directly for every assigned or claimed lane branch and inspect
+   terminal lane results as evidence, including results whose workers did not
+   update the queue. Validate exact PR heads, commits, changed scope, focused
+   checks, effect counters, and stop conditions. Never ask the operator to
+   paste a SHA, PR number, status, or result summary.
 4. Update BOARD.yaml only when the evidence changes canonical current truth.
    Regenerate its pointer; never copy Board status into the queue.
 5. Promote a planned successor to assigned/ready only when every dependency is
@@ -40,7 +43,8 @@ Run this loop:
    release/reacquire only the control claim as defined by Git, and immediately
    begin the next cycle.
 8. When nothing needs reconciliation, remain idle and poll/re-read the remote
-   queue. Do not ask the operator to report ordinary window completion.
+   queue and GitHub. Do not ask the operator to report ordinary window
+   completion.
 
 Respect every exclusive lock. Do not clear a claim by age. Clear an abandoned
 claim only after a read-only worker audit and a committed reconciliation.

@@ -25,8 +25,11 @@ nodes:
   - id: Q03-002
     requires: [Q03-001]
     acceptance: Current-head repository-only sender/message-class design, canonical projection sync, focused tests, and zero external effects.
+  - id: Q03-002R
+    requires: [Q03-001]
+    acceptance: PR #126 semantics are preserved while every prompt fingerprint and generated projection is identical across LF, CRLF, and CR inputs, with focused portability proof and zero external effects.
   - id: Q03-003
-    requires: [Q03-002, GATE-GHL-MAILBOX-REPLY-OWNERSHIP, GATE-FRESH-GHL-CANARY-AUTHORITY]
+    requires: [Q03-002R, GATE-GHL-MAILBOX-REPLY-OWNERSHIP, GATE-FRESH-GHL-CANARY-AUTHORITY]
     acceptance: One operator-owned seed maximum, exact visible From, reply readback in the governed conversation, no customer audience.
   - id: Q04-001
     requires: []
@@ -153,6 +156,9 @@ forbidden_edges:
   - from: Q03-002
     to: Q03-003
     reason: Repository design alone cannot authorize a provider mutation or message.
+  - from: Q03-002R
+    to: Q03-003
+    reason: A portability repair and accepted repository design still cannot authorize a provider mutation or message.
   - from: Q01-001
     to: Q07-001
     reason: Control reconciliation and audit evidence cannot authorize production.

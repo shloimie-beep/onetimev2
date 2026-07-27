@@ -19,11 +19,7 @@ locks:
   - id: GHL-REPOSITORY
     concurrency: 1
     permanent_lane: 03-OT-GHL
-    current_holder:
-      lane: 03-OT-GHL
-      item: Q03-002
-      worker_task_id: 019fa24b-f845-7262-bea1-883771c3688f
-      claim_token: prequeue-019fa24b-f845-7262-bea1-883771c3688f
+    current_holder: null
     scope: integrations/highlevel plus directly assigned HighLevel tests and handoffs.
     forbidden: Parallel HighLevel registry writer, Board edit, or browser/provider mutation.
   - id: GHL-BROWSER

@@ -69,9 +69,10 @@ result_protocol:
   - Commit and push the scoped task result before marking the queue attempt terminal.
   - Open or update the task draft PR when the assignment requires one.
   - Mark the attempt terminal and release its locks in one queue-control commit.
+  - The control lane polls GitHub for every assigned or claimed lane branch and reconciles verified result PRs even when a worker did not update the queue.
   - Fetch and reread the remote queue again before selecting a successor.
   - Continue immediately to the next unblocked assigned item in the same lane.
-  - If no assigned item is runnable, remain idle and poll the remote queue; do not ask the operator for ordinary status relay.
+  - If no assigned item is runnable, remain idle and poll remote Git and GitHub; do not ask the operator for ordinary status relay.
 lanes:
   - id: 01-OT-CONTROL
     ordinal: 1
@@ -209,7 +210,7 @@ items:
     priority: 1
     title: Re-author Rabbi launch sender and message-class repository design
     assignment_state: assigned
-    dispatch_state: claimed
+    dispatch_state: blocked
     board_track: audit_wave_03_ghl_sender_design
     dependencies: [Q03-001]
     required_locks: [GHL-REPOSITORY]
@@ -224,17 +225,59 @@ items:
       - Open or mutate HighLevel.
       - Send, enroll, publish, activate, select an audience, import, or change a contact.
       - Merge or cherry-pick divergent PR 116.
+    terminal_at: 2026-07-27T11:18:35+03:00
+    terminal_reason: LF_CRLF_PROMPT_FINGERPRINT_PROJECTION_MISMATCH
+    result_commit: 0fc24128dfb9f5d512c1915ad61bb9c6b3568042
+    result_pr: 126
+    result_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
+    validation_summary: Semantic design tests, typecheck, secret scan, and three GitHub assurance suites passed. Independent control projection validation failed because the new prompt fingerprint helper hashes raw line endings and diverges across LF/CRLF checkouts; the result is not accepted.
+    external_effects:
+      highlevel_mutations: 0
+      customer_messages: 0
+      contacts_changed: 0
+      enrollments: 0
+      publications: 0
+      activations: 0
+      deletes_or_quarantines: 0
+      stripe_mutations: 0
+      access_mutations: 0
+      production_mutations: 0
+      provider_mutations: 0
+  - id: Q03-002R
+    lane: 03-OT-GHL
+    sequence: 3
+    priority: 1
+    title: Repair line-ending-portable GHL prompt fingerprints
+    assignment_state: assigned
+    dispatch_state: ready
+    board_track: audit_wave_03_ghl_sender_design
+    dependencies: [Q03-001]
+    required_locks: [GHL-REPOSITORY]
+    base_commit: 0fc24128dfb9f5d512c1915ad61bb9c6b3568042
+    branch: codex/ghl-rabbi-launch-email-design-portability-20260727
+    work_scope:
+      - Preserve the exact semantic sender/message-class design from PR #126.
+      - Canonicalize every prompt fingerprint across LF, CRLF, and CR before SHA-256.
+      - Add focused portability proof and regenerate projections only through the canonical script.
+      - Return the updated sanitized handoff with zero external effects.
+    forbidden:
+      - Open or mutate HighLevel, send, enroll, publish, activate, select an audience, import, or change a contact.
+      - Change sender, message-class, audience, permission, CTA, or GHL-UI-24 semantics.
+      - Hand-edit generated projections or weaken source-hash convergence.
+    validation:
+      - Run the projection check from LF and CRLF fixtures/checkouts and require identical canonical hashes.
+      - Run focused sender/design tests, typecheck, scoped formatting, secret scan, and diff/scope checks.
     result_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
   - id: Q03-003
     lane: 03-OT-GHL
-    sequence: 3
+    sequence: 4
     priority: 2
     title: Bounded Rabbi sender acceptance and reply-path canary
     assignment_state: planned
     dispatch_state: planned
     board_track: null
     dependencies:
-      - Q03-002
+      - Q03-002R
       - GATE-GHL-MAILBOX-REPLY-OWNERSHIP
       - GATE-FRESH-GHL-CANARY-AUTHORITY
     required_locks: [GHL-BROWSER]

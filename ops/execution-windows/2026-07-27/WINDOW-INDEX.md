@@ -21,6 +21,10 @@ Every worker fetches and rereads the remote queue ref and current Board before
 claiming a task and again before selecting a successor. Chat text is bootstrap
 context, not continuing authority.
 
+`01-OT-CONTROL` also polls GitHub directly for every assigned or claimed lane
+branch. It verifies and reconciles result PRs without requiring the operator to
+paste commits, PR numbers, statuses, or summaries.
+
 ## Permanent lanes
 
 | Lane               | Exclusive scope                                                                   | Bootstrap prompt                             |

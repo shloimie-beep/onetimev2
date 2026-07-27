@@ -1308,6 +1308,7 @@ tracks:
       - 'The queue tracks dispatch claims only; BOARD.yaml remains the sole goal-status and acceptance map. Audit reports and result PRs remain evidence, not authority.'
       - 'Initial coordination preserves one Board writer, one GHL repository writer, one GHL browser writer, one Zoom provider writer, one One Time product writer, one migration writer, and no production writer before accepted dependencies.'
       - 'The live 03-OT-GHL repository-design worker is fenced by its existing task ID/claim token. PR #125 is seeded as terminal blocked Zoom evidence, so no queue worker can repeat cleanup or create another meeting.'
+      - 'The control lane polls GitHub directly for each assigned/claimed branch and reconciles exact result heads without operator relay. It verified PR #123 at b2fd8c73246a3a1e1655b22ee5c837d65c19ec97, PR #125 at eeb31101e0d8f8a395a1c3833129b1afde4fd845, and PR #126 at 0fc24128dfb9f5d512c1915ad61bb9c6b3568042; expected result branches for lanes 04, 05, and 06 currently have no PR, while lane 07 remains unassigned and production-disabled.'
     forbidden_behavior:
       - Implement product, provider, migration, hygiene, BNA, or production lane work from 01-OT-CONTROL.
       - Let queue dispatch state override Board status, acceptance, provider truth, or external authority.
@@ -1358,21 +1359,24 @@ tracks:
   - id: audit_wave_03_ghl_sender_design
     status: active
     window_id: 03-OT-GHL
-    concurrency_lock: OT-GHL
+    concurrency_lock: GHL-REPOSITORY
     owner:
-      task_id: OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN-REAUTHOR
+      task_id: OT-LAUNCH-01-GHL-RABBI-LAUNCH-EMAIL-DESIGN-PORTABILITY-REPAIR
       repository: shloimie-beep/onetimev2
-      branch: codex/ghl-rabbi-launch-email-design-reauthor-20260727
+      branch: codex/ghl-rabbi-launch-email-design-portability-20260727
       pr: null
-      head: null
-      system: HighLevel repository sender, message-class, and bounded acceptance-job design
-    write_scope: 'Existing HighLevel sender/message-class/communications/workflow registries, generated projections through canonical scripts, OT-02A/OT-02B prompt and checklist pairs, GHL-UI-13 plus at most one reviewed successor job, focused tests, and one sanitized handoff only.'
+      head: 0fc24128dfb9f5d512c1915ad61bb9c6b3568042
+      system: HighLevel sender-design prompt-fingerprint portability repair
+    write_scope: 'Exact PR #126 semantic design plus only the canonical prompt-fingerprint helper, LF/CRLF/CR portability test, regenerated projections, and updated sanitized handoff; no provider/browser work or design expansion.'
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-app-contract-shells--rabbi-launch-email-design.md
     dependencies: [audit_wave_03_ghl_full_inventory, goal_system]
     acceptance_ids: [GHL-SENDER-DESIGN-001]
     evidence:
       - 'PR #123 exact result head b2fd8c73246a3a1e1655b22ee5c837d65c19ec97 completed the read-only predecessor: the protected location matched, OT-C01 workflow wrapper was Draft, OT-E01 was Published with disabled Email A identity fields not rendered, and Email Marketing, archived workflow, hidden/backend Conversation AI, OT-A1 exact identity, and uninspected folder contents remain explicitly UNVERIFIED; every external-effect counter is zero.'
       - 'The conductor adopts post-checkpoint sender packet 53a18e771488c61cf271cb33a0bcacee2c7135f4 only for this repository-only re-authoring task. PR #116 remains forbidden and must not be merged or cherry-picked.'
+      - 'Draft PR #126 exact result commit 0fc24128dfb9f5d512c1915ad61bb9c6b3568042 is a single 11-file repository-only attempt from assignment head 1e2e14812db179562f503f4818aeca9b099d5c56. Its Phase-1-safe OT-02A migration and separately consented OT-02B nurture semantics, office From/Reply-To routing, unchanged zero-send GHL-UI-13, separately gated GHL-UI-24, focused tests, and sanitized handoff are within assigned scope.'
+      - 'Independent control validation rejects terminal acceptance because the new refreshPromptFingerprints helper hashes raw file text. On the Windows CRLF checkout, the canonical projection check failed at current.json line 5044 and rewrote every prompt fingerprint; the exact result therefore violates the existing LF/CRLF portability contract. Focused sender/design tests passed 3/3, typecheck and secret scan passed, and three GitHub assurance suites are green. PR #126 Node CI stopped earlier only on the twelve checksum-governed A01-A12 source snapshots, so it did not expose this projection defect.'
+      - 'HighLevel access/mutations, customer messages, contacts changed, enrollments, publications, activations, deletes/quarantines, Stripe mutations, access mutations, production changes, and provider mutations all equal zero. Existing OT-E01, archived, hidden-AI, campaign, and inventory fail-closed findings remain unchanged.'
     forbidden_behavior:
       - Open or mutate HighLevel; send, enroll, publish, activate, import, create or change contacts, select an audience, or run a provider canary.
       - 'Merge or cherry-pick PR #116, create parallel registries or status models, collapse OT-02A and OT-02B audience/permission contracts, or infer marketing permission from Tisha registration, attendance, payment, portal state, deliverability, or legacy tags.'
@@ -1381,11 +1385,12 @@ tracks:
       - Current-head canonical registry diff with regenerated projections and no hand-edited generated output.
       - Explicit sender/message-class separation, phase-one office routing preservation, dedicated Rabbi From/reply prerequisites, unchanged zero-send GHL-UI-13, and one separately gated one-seed/one-reply successor job.
       - Separate canonical OT-02A migration and OT-02B consented-nurture copy, focused validation, secret scan, formatting/diff checks, sanitized handoff, and exact later browser-executor prompt.
+      - Prompt fingerprints and generated projections are byte-identical across LF, CRLF, and CR inputs through the canonical text normalizer.
       - External effects remain zero across HighLevel, customer messages, contacts, enrollments, Stripe, access, production, and provider systems.
     stop_condition: 'Stop without implementation if the PR #123 unknowns change sender or assistant identity, mailbox/routing ownership must be invented, final copy cannot map to one exact message class, or protected/customer data would enter Git.'
     blocker: null
-    remaining_work: 'Re-author the smallest repository-only Rabbi sender/message-class design on the current conductor descendant, regenerate canonical projections, validate it, and return one sanitized handoff plus the separately gated browser-executor prompt.'
-    next_action: 'Continue 03-OT-GHL with numbered queue item 02 only. Do not open HighLevel; do not advance to the sender canary.'
+    remaining_work: 'Queue item Q03-002R must preserve PR #126 semantics, canonicalize prompt text before hashing, add LF/CRLF/CR proof, regenerate projections through the canonical script, and return zero external effects.'
+    next_action: '03-OT-GHL claims Q03-002R from the remote queue and repairs only prompt-fingerprint portability. Do not open HighLevel or advance to GHL-UI-24.'
 
   - id: audit_wave_04_runtime_classification
     status: active
