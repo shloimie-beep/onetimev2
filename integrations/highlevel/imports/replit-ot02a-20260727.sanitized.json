@@ -1,0 +1,78 @@
+{
+  "schema_version": "onetime.replit_contact_reconciliation.v1",
+  "generated_at": "2026-07-27T15:44:56.329Z",
+  "source": {
+    "kind": "replit_subscriber_export",
+    "file_name": "subscribers_detailed (1).csv",
+    "sha256": "0e05cd969c15e73240f4c2d681ca5208d9ada1ff95d908b2f14d337c67cdf6ca",
+    "row_count": 86
+  },
+  "evidence": {
+    "highlevel_export": {
+      "file_name": "Export_Contacts_undefined_Jul_2026_6_33_PM.csv",
+      "sha256": "4e1f7672b83cc8ef7d30e46c3b902e62441ac6896c11a0ce0c8b7c920e5ad49c",
+      "row_count": 1478
+    },
+    "historical_record_count": 1592,
+    "one_time_adult_record_count": 0
+  },
+  "canonical_taxonomy": {
+    "sourceTag": "OT | Source | Legacy Subscriber",
+    "activeSubscriberTag": "OT | Existing Subscriber",
+    "migrationCandidateTag": "OT | Migration 2026",
+    "suppressionTag": "OT | Marketing Suppressed",
+    "workflow": "OT-02A Existing Subscriber Migration 2026 v1",
+    "segment": "OT-02A | Replit Active Migration Candidates | 2026"
+  },
+  "candidate_rule": {
+    "include_all_tags": [
+      "OT | Source | Legacy Subscriber",
+      "OT | Existing Subscriber",
+      "OT | Migration 2026"
+    ],
+    "exclude_any_tags": [
+      "OT | Marketing Suppressed"
+    ],
+    "workflow_enrollment": false
+  },
+  "summary": {
+    "source_rows": 86,
+    "valid_adult_rows": 84,
+    "duplicates_inside_source": 1,
+    "existing_contact_matches": 84,
+    "existing_ghl_matches": 83,
+    "existing_one_time_matches": 0,
+    "existing_historical_matches": 84,
+    "new_contacts": 1,
+    "contact_updates": 83,
+    "unchanged_contacts": 0,
+    "active_users": 31,
+    "migration_candidates": 30,
+    "ot_02b_candidates": 0,
+    "suppressed_or_denied_contacts": 1,
+    "identity_conflicts": 0,
+    "invalid_or_skipped_rows": 2
+  },
+  "quarantine": {
+    "groups": 1,
+    "rows": 2,
+    "reason_counts": {
+      "duplicate_source_identity": 1
+    }
+  },
+  "import_file": {
+    "protected_local_only": true,
+    "row_count": 84,
+    "sha256": "ff49317a423c1d4dbbf6717cd859060d1fa741b23d57d0773446e37a69502b0f"
+  },
+  "provider_effects": {
+    "contacts_created": 0,
+    "contacts_updated": 0,
+    "sends": 0,
+    "workflow_enrollments": 0,
+    "deletions": 0,
+    "suppression_removals": 0
+  },
+  "raw_values_included": false,
+  "production_side_effects": false
+}
