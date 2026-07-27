@@ -36,7 +36,7 @@
     "performance": "npm run build && playwright test tests/performance && tsx scripts/check-bundles.ts",
     "verify": "npm run secret:scan && npm run format && npm run brand:check && npm run lint && npm run typecheck && npm run test && npm run e2e && npm run accessibility && npm run performance",
     "db:migrate": "tsx scripts/migrate.ts",
-    "db:verify": "tsx scripts/migrate.ts --verify",
+    "db:verify": "tsx scripts/verify-migrations.ts",
     "full-app:provision-staging": "tsx scripts/full-app-staging-live/provision-preview-cli.ts",
     "zoom:demo-students": "node --import tsx scripts/smoke-zoom-demo-students.mjs",
     "zoom:real-control:provision": "tsx scripts/zoom-real-control-provision.ts",
