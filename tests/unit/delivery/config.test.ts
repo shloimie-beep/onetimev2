@@ -145,7 +145,11 @@ describe('delivery worker config', () => {
     expect(() =>
       loadDeliveryWorkerConfig({
         ...baseEnv,
+        NODE_ENV: 'production',
         DELIVERY_ENVIRONMENT: 'production',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+        AUTH_CSRF_SECRET: 'production-delivery-config-csrf-secret',
+        MFA_SECRET_ENCRYPTION_KEY: 'production-delivery-config-mfa-key',
         DELIVERY_TRANSPORT_MODE: 'provider',
         ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
       }),
