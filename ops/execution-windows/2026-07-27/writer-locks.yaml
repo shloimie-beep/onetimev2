@@ -19,7 +19,10 @@ locks:
   - id: GHL-REPOSITORY
     concurrency: 1
     permanent_lane: 03-OT-GHL
-    current_holder: null
+    current_holder:
+      lane: 03-OT-GHL
+      item: Q03-002R
+      claim_token: q03-002r-03-ot-ghl-20260727
     scope: integrations/highlevel plus directly assigned HighLevel tests and handoffs.
     forbidden: Parallel HighLevel registry writer, Board edit, or browser/provider mutation.
   - id: GHL-BROWSER

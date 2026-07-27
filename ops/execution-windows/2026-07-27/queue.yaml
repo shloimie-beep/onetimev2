@@ -289,6 +289,10 @@ items:
     required_locks: [GHL-REPOSITORY]
     base_commit: 0fc24128dfb9f5d512c1915ad61bb9c6b3568042
     branch: codex/ghl-rabbi-launch-email-design-portability-20260727
+    claim_token: q03-002r-03-ot-ghl-20260727
+    worker_task_id: 03-OT-GHL-Q03-002R-20260727
+    claimed_at: 2026-07-27T11:46:53+03:00
+    claimed_from_queue_head: 0597b75e1ed2a6607c6838562894ef28df931b0b
     work_scope:
       - Preserve the exact semantic sender/message-class design from PR #126.
       - Canonicalize every prompt fingerprint across LF, CRLF, and CR before SHA-256.
