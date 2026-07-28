@@ -1,8 +1,60 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce
+  kind: interface
+  task_id: P27
+  source_branch: codex/v21-p27-ghl-identity
+  source_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+  target_branch: codex/v21-integration
+  expected_target_head_sha: c4d042e94b3f7e779fd6bfd41127dd9576854805
+  source_delta_base_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+  required_merge_base_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+  merge_after_heads: {}
+  allowed_paths:
+  - apps/worker/src/runners/ghl-identity/index.ts
+  - apps/worker/src/runners/ghl-identity/runner.test.ts
+  - apps/worker/src/runners/ghl-identity/runner.ts
+  - integrations/highlevel/v21/identity/desired-state.ts
+  - integrations/highlevel/v21/identity/index.ts
+  - ops/v2.1-execution/runtime/P27/HANDOFF.md
+  - ops/v2.1-execution/runtime/P27/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P27/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P27/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P27/steward-requests/P27-migration-001.yaml
+  - ops/v2.1-execution/runtime/P27/steward-requests/P27-registration-001.yaml
+  - packages/contracts/src/communications/ghl-identity/index.ts
+  - packages/db/src/communications/ghl-identity/index.ts
+  - packages/db/src/communications/ghl-identity/repository.test.ts
+  - packages/db/src/communications/ghl-identity/repository.ts
+  - packages/domain/src/communications/ghl-identity/classification.ts
+  - packages/domain/src/communications/ghl-identity/errors.ts
+  - packages/domain/src/communications/ghl-identity/index.ts
+  - packages/domain/src/communications/ghl-identity/planner.test.ts
+  - packages/domain/src/communications/ghl-identity/planner.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 276197f4-8be4-4cf3-a9a0-e2f249f50306
+    holder_task_id: I36
+    holder_claim_id: 841f3e65-684b-4529-976b-5e796d9d7e45
+    state_based_on_control_head_sha: 0bd71908e070dc99431df054667beee92cf8f495
+    lease_issued_at: '2026-07-28T21:15:41Z'
+    lease_expires_at: '2026-07-28T22:15:41Z'
+    phase_scope: P27_interface_atomic_claim_only
+  task_packet_digest: 77c5a4de58a57dffea3f9cbe4aa7646ac75bc1f0462afebfff2c0279dc527a74
+  state_handoff_digest: d911136b395a7c8808458f17da20d5017870778482a7031047e8d204273159e3
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 0bd71908e070dc99431df054667beee92cf8f495
+item_payload_digests:
+  26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce: 9bb1b427a2d5c6a85847e858a44f8587e5be00e19054272e6c8c946b69b25d2c
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

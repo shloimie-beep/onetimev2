@@ -289,14 +289,15 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P16 has claimed its renewal at `f865439f` with the
-P16-owned dirty draft preserved unstaged. P27 remains active. P32 is integrated
-at `c4d042e9`; P35 awaits later full admission.
+None for bootstrap. P16 is active under its renewal. P27 is
+`ready_for_review` at `e1933d64`, and its exact interface is queued for I36.
+P32 is integrated at `c4d042e9`; P35 awaits later full admission.
 
 ## Exact next action
 
-Resume P16 from renewal head `f865439f9b37eba1a6dd0fcddc80f67b19c283a8`
-and preserve its exact owned draft. In parallel, let P27 continue implementation.
+Dispatch I36 claim `841f3e65-684b-4529-976b-5e796d9d7e45` for an atomic
+claim-only checkpoint from `c4d042e94b3f7e779fd6bfd41127dd9576854805`.
+Let P16 continue under its renewed lease.
 
 ## Verification
 

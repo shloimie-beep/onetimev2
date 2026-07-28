@@ -89,8 +89,11 @@ P16 consumed its renewal at exact head `f865439f9b37eba1a6dd0fcddc80f67b19c283a8
 with only three runtime files, preserving its owned draft unstaged. I36 merged
 P32 at `7a176159` and published final integration head
 `c4d042e94b3f7e779fd6bfd41127dd9576854805`; all checks passed with zero
-effects and no steward action. The ready and merge queues are empty. Resume P16
-and let P27 continue.
+effects and no steward action. P27 completed `ready_for_review` at `e1933d64`,
+with interface `e706587b`, implementation `7d5edd68`, contract `788e150f...`,
+interface state/handoff `d911136b...`, 10 focused tests, typecheck, and zero
+effects. Its two steward requests are assigned but unapplied. The exact P27
+interface is queued for atomic-claim-only I36 integration while P16 continues.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
