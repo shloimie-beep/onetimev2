@@ -25,6 +25,8 @@ re-audit the repository. Continue until `ready_for_review` or a permitted stop
 condition. Update state/handoff/this next prompt, checkpoint, commit, and push
 before returning.
 
-Exact next action: inspect only the P35-owned paths and named source sections,
-then implement the smallest complete domain-transition, legacy
-re-registration, archive, and verification surface.
+This branch is `ready_for_review`. Exact next action: C00/I36 should review and
+integrate implementation head `6b92adbf893c45f4a767b8036ec41b52744cce4e`,
+then route `P35-route-registration-001`, `P35-config-deploy-001`, and
+`P35-reregistration-integration-001` to their named central/P08/P27 owners. On
+a future C00-issued resume lease, address only a reproduced P35-scoped finding.

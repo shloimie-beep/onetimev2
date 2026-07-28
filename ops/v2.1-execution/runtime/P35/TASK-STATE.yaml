@@ -13,65 +13,108 @@ dependency_heads:
     integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
     interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
-status: claimed
-phase: implementation
+status: ready_for_review
+phase: review
 claimed_by: codex-p35-worker-9ee0d8f8
 claim_time: '2026-07-28T17:54:30Z'
 claim_id: 9ee0d8f8-944d-47f2-b67a-54cb333cc29d
 lease_expires_at: '2026-07-28T18:38:47Z'
-last_heartbeat_at: '2026-07-28T17:54:30Z'
+last_heartbeat_at: '2026-07-28T18:04:02Z'
+lease_released_at: '2026-07-28T18:04:02Z'
 controller_authorization_sha: 3df0ee05af64db67af02e1e64d37ded4810d2cd9
+ready_entry_parent_control_sha: 55c5605acf834318627d54bd3e94eb90d6429a80
 ready_entry_payload_digest: 7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f
-state_based_on_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
-last_implementation_commit_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+writer_slot_leases:
+  DOMAIN_TRANSITION:
+    lease_id: 32c1691c-190a-4449-89cd-bdc937284104
+    lease_expires_at: '2026-07-28T18:38:47Z'
+    released_at: '2026-07-28T18:04:02Z'
+state_based_on_head_sha: 6b92adbf893c45f4a767b8036ec41b52744cce4e
+last_implementation_commit_sha: 6b92adbf893c45f4a767b8036ec41b52744cce4e
 completed_steps:
   - Verified repository identity and exact remote control authorization.
   - Recomputed the canonical P35 ready-entry payload digest.
   - Verified all 200 locked execution blobs and all 15 source-specification blobs.
   - Verified F01 interface integration ancestry and the published dependency identities.
-remaining_steps:
-  - Implement canonical domain and safe transition policy modules.
-  - Implement the legacy-adult re-registration bridge without importing prohibited legacy state.
-  - Archive the Tisha B'Av funnel as an inactive reusable template.
-  - Add task-owned verification and domain-cutover runbooks.
-  - Run focused verification, checkpoint, and publish ready_for_review.
-next_action: Inspect only the P35-owned paths and named source sections, then implement the smallest complete domain-transition, legacy re-registration, archive, and verification surface.
+  - Atomically created and claimed the exact P35 branch from the authorized integration start.
+  - Implemented canonical host classification, safe legacy redirects, attribution allowlisting, and fail-closed cutover gates.
+  - Implemented a no-write 410 response for every historical Tisha B'Av browser/form/API route.
+  - Implemented the legacy-adult clean re-registration seam with exact email normalization, match precedence, ambiguity quarantine, and prohibited-field rejection.
+  - Archived exact historical Tisha B'Av asset identities as a dormant zero-enrollment/zero-send reusable template.
+  - Published read-only domain matrix, cutover, and rollback runbooks.
+  - Published structured central route, config/deploy, and signup/GHL integration steward requests.
+  - Passed focused positive, negative, isolation, authorization, recovery, and deterministic retry assertions plus repository typecheck, scoped lint/format, YAML parse, and diff checks.
+remaining_steps: []
+next_action: C00/I36 should review and integrate implementation head 6b92adbf893c45f4a767b8036ec41b52744cce4e, then route the three structured steward requests to the central composer/config and P08/P27 owners before candidate freeze.
 requirements:
-  OTV2-FOUNDATION-002: in_progress
-  OTV2-DOMAIN-153: in_progress
-  OTV2-DOMAIN-154: in_progress
-  OTV2-DOMAIN-155: in_progress
-  OTV2-DOMAIN-156: in_progress
-  OTV2-DOMAIN-157: in_progress
-  OTV2-MIGRATION-206: in_progress
-  OTV2-MIGRATION-207: in_progress
+  OTV2-FOUNDATION-002: implementation_ready
+  OTV2-DOMAIN-153: implementation_ready
+  OTV2-DOMAIN-154: implementation_ready
+  OTV2-DOMAIN-155: implementation_ready
+  OTV2-DOMAIN-156: implementation_ready
+  OTV2-DOMAIN-157: implementation_ready
+  OTV2-MIGRATION-206: implementation_ready
+  OTV2-MIGRATION-207: implementation_ready
 acceptance_cases:
-  OTV2-FOUNDATION-002-AC01: implementation_pending
-  OTV2-DOMAIN-153-AC01: implementation_pending
-  OTV2-DOMAIN-154-AC01: implementation_pending
-  OTV2-DOMAIN-155-AC01: implementation_pending
-  OTV2-DOMAIN-156-AC01: implementation_pending
-  OTV2-DOMAIN-157-AC01: implementation_pending
-  OTV2-MIGRATION-206-AC01: implementation_pending
-  OTV2-MIGRATION-207-AC01: implementation_pending
+  OTV2-FOUNDATION-002-AC01: implementation_ready
+  OTV2-DOMAIN-153-AC01: implementation_ready
+  OTV2-DOMAIN-154-AC01: implementation_ready
+  OTV2-DOMAIN-155-AC01: implementation_ready
+  OTV2-DOMAIN-156-AC01: implementation_ready
+  OTV2-DOMAIN-157-AC01: implementation_ready
+  OTV2-MIGRATION-206-AC01: implementation_ready
+  OTV2-MIGRATION-207-AC01: implementation_ready
 changed_paths:
+  - apps/web/src/client/public/domain-transition/index.ts
+  - apps/web/src/client/public/domain-transition/links.ts
+  - apps/web/src/server/features/domain-transition/ended-event.ts
+  - apps/web/src/server/features/domain-transition/index.ts
+  - apps/web/src/server/features/domain-transition/legacy-adult.ts
+  - apps/web/src/server/features/domain-transition/policy.ts
+  - apps/web/src/server/features/domain-transition/router.ts
+  - ops/archive/tisha-bav-template/README.md
+  - ops/archive/tisha-bav-template/manifest.yaml
+  - ops/archive/tisha-bav-template/template.yaml
+  - ops/runbooks/v2.1/domain-cutover/CUTOVER.md
+  - ops/runbooks/v2.1/domain-cutover/DOMAIN-MATRIX.yaml
+  - ops/runbooks/v2.1/domain-cutover/ROLLBACK.md
   - ops/v2.1-execution/runtime/P35/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P35/HANDOFF.md
   - ops/v2.1-execution/runtime/P35/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P35/steward-requests/P35-config-deploy-001.yaml
+  - ops/v2.1-execution/runtime/P35/steward-requests/P35-reregistration-integration-001.yaml
+  - ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
+  - scripts/v21-migration/verify-domain-transition.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: P35-config-deploy-001
+    sha256: be7572a96f3ece3d6cdfc2f98b52efee4d712ff6786e36ee8bb50ae58f79c605
+  - request_id: P35-reregistration-integration-001
+    sha256: 020fbb4eaf3e6b73f6386407cbae6115b054ddac53433f280a330e96611e2e4d
+  - request_id: P35-route-registration-001
+    sha256: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
 verification:
   commands_run:
-    - git rev-parse origin/codex/v21-control
-    - canonical ready-entry payload SHA-256 recomputation
-    - LOCKED-SHA256SUMS.txt Git-blob verification
-    - source-spec/SHA256SUMS.txt Git-blob verification
-    - git merge-base --is-ancestor 80c281b7ae5826ed2c6abe95ba68a033ffa52174 eefca0644e57dca48609682cbc3e1b01992d286d
-  known_baseline_failures: []
+    - git rev-parse origin/codex/v21-control (exact 3df0ee05af64db67af02e1e64d37ded4810d2cd9)
+    - canonical ready-entry payload SHA-256 recomputation (passed)
+    - LOCKED-SHA256SUMS.txt Git-blob verification (200/200 passed)
+    - source-spec/SHA256SUMS.txt Git-blob verification (15/15 passed)
+    - git merge-base --is-ancestor 80c281b7ae5826ed2c6abe95ba68a033ffa52174 eefca0644e57dca48609682cbc3e1b01992d286d (passed)
+    - node --import tsx scripts/v21-migration/verify-domain-transition.ts (passed)
+    - npm run typecheck (passed)
+    - npx eslint apps/web/src/client/public/domain-transition apps/web/src/server/features/domain-transition scripts/v21-migration/verify-domain-transition.ts (passed)
+    - npx prettier --check on all P35 implementation, archive, runbook, script, and steward-request paths (passed)
+    - YAML parse of P35 archive, domain matrix, and steward requests (passed)
+    - git diff --check (passed)
+  known_baseline_failures:
+    - The workspace-level validate-v21.cjs hashes CRLF-converted Windows worktree bytes and reports all 200 locked files mismatched; independent hashing of the exact Git blobs passed 200/200 and source-spec blobs passed 15/15.
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - The central server/public build still registers active historical Tisha B'Av routes and requires P35-route-registration-001.
+  - Production ingress/origin configuration and host rejection require P35-config-deploy-001 plus separate DNS/deployment authority.
+  - Family signup and GHL identity consumers require P35-reregistration-integration-001.
