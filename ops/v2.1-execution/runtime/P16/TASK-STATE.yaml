@@ -25,20 +25,26 @@ dependency_heads:
     integration_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
     interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
     interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: complete
 claimed_by: codex-p16-worker-fd104a34
 claim_time: '2026-07-28T21:04:00Z'
 claim_id: afd00130-7e98-4428-b9ef-303b50815189
 writer_slot_lease_id: b9bbf43a-ccce-40a2-a491-e333207e64ab
 lease_expires_at: '2026-07-28T22:04:00Z'
-last_heartbeat_at: '2026-07-28T21:04:00Z'
+lease_released_at: '2026-07-28T21:22:00Z'
+last_heartbeat_at: '2026-07-28T21:22:00Z'
 controller_authorization_sha: 6be24ff7ebe3bd8188aa4d100eb9160c62a414a8
 state_based_on_control_head_sha: c9b4a8085f87fb958ad8688ac345f642bb23f94b
 ready_entry_payload_digest: baa5c566c8d30882b022723ff7cd0d3ab22eb6a9b0d3f4f64c940dcdec8853ac
 state_based_on_head_sha: 45649e52ea792f2ead63415555776497747cacad
 last_implementation_commit_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
 interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
+implementation_artifact_digest: 1fb4658cf45b75fb99b009dad04e5d127d35ffd5c9816bf41a544dd0514e58b4
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 15 non-runtime P16 artifacts, with LF separators and no final newline.
+interface_state_handoff_digest: afd57cbd0cc837caf6b6b007a61269f676f99ee1ea2d7d4edd7f2da65d31714e
+interface_state_handoff_digest_algorithm: SHA-256 over the exact interface-metadata-head Git blobs for HANDOFF.md, NEXT-PROMPT.md, and TASK-STATE.yaml as lexicographically sorted UTF-8 path=sha256 lines, with LF separators and no final newline.
+steward_request_digest: 628fe0cb860057b6dde8b5e214edfe00400ca8f701459993e099e6f923fd34cb
 completed_steps:
   - verified exact remote identity, containing control authorization, registry/ready entry, branch absence, claim, CLASSROOM_CORE lease, and authorized start
   - verified F04, F05, and P15 interface-ready integration bindings from the exact ready entry
@@ -47,17 +53,47 @@ completed_steps:
   - implemented and pushed the versioned class-series, occurrence, canonical-enrollment, transaction, repository, service, Admin workspace, focused-test, and steward-request artifacts
   - passed full typecheck, 17 focused assertions, focused lint, formatting, and diff hygiene
   - published the exact P16 interface artifact hashes and combined contract digest for P17, P18, and P19
+  - published terminal ready_for_review metadata with exact implementation, interface, artifact, state/handoff, and steward-request bindings and released the task-local lease
 remaining_steps:
-  - publish terminal ready_for_review metadata and release the task-local lease
   - I36 must integrate the interface checkpoint and disposition structured migration/registration requests
-next_action: Publish the terminal ready_for_review checkpoint from implementation head 46b5c39aceb6006376903750cfc268b35bbaccdd, then have I36 integrate interface digest 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68.
-requirements: {}
-acceptance_cases: {}
+next_action: I36 should integrate interface digest 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68 from implementation head 46b5c39aceb6006376903750cfc268b35bbaccdd, then disposition P16-MIGRATION-001 and P16-REGISTRATION-001.
+requirements:
+  OTV2-CLASSROOM-065: implementation_ready
+  OTV2-CLASSROOM-066: implementation_ready
+  OTV2-CLASSROOM-067: implementation_ready
+  OTV2-CLASSROOM-184: implementation_ready
+  OTV2-CLASSROOM-223: implementation_ready
+  OTV2-CLASSROOM-234: implementation_ready
+  OTV2-CLASSROOM-235: implementation_ready
+acceptance_cases:
+  OTV2-CLASSROOM-065-SERIES-LIFECYCLE: implementation_ready
+  OTV2-CLASSROOM-066-AC01: implementation_ready
+  OTV2-CLASSROOM-067-AC01: implementation_ready
+  OTV2-CLASSROOM-184-AC01: implementation_ready
+  OTV2-CLASSROOM-223-DRAFT-THEN-ACTIVATE: implementation_ready
+  OTV2-CLASSROOM-234-FULL-LIFECYCLE: implementation_ready
+  OTV2-CLASSROOM-235-ATOMIC-ENROLLMENT: implementation_ready
 changed_paths:
+  - apps/web/src/client/app/admin/classroom/core/ClassSeriesWorkspace.tsx
+  - apps/web/src/client/app/admin/classroom/core/index.ts
+  - apps/web/src/server/features/classes/core/index.ts
+  - apps/web/src/server/features/classes/core/service.test.ts
+  - apps/web/src/server/features/classes/core/service.ts
+  - packages/contracts/src/classes/core/index.ts
+  - packages/db/src/classes/core/index.ts
+  - packages/db/src/classes/core/repository.ts
+  - packages/db/src/classes/core/schema-contract.ts
+  - packages/domain/src/classes/core/classroom-core.test.ts
+  - packages/domain/src/classes/core/enrollment.ts
+  - packages/domain/src/classes/core/errors.ts
+  - packages/domain/src/classes/core/index.ts
+  - packages/domain/src/classes/core/occurrences.ts
+  - packages/domain/src/classes/core/series.ts
   - ops/v2.1-execution/runtime/P16/HANDOFF.md
-  - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P16/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P16/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
 migrations: []
 steward_requests:
   - P16-MIGRATION-001
@@ -72,12 +108,14 @@ verification:
     - focused P16 Vitest suite (passed, 17 tests)
     - focused ESLint over all P16 TypeScript artifacts (passed)
     - focused Prettier check and git diff --check (passed)
+    - exact 15-artifact implementation Git-blob digest derivation (passed)
+    - exact six-export interface digest recomputation from implementation-head Git blobs (passed)
   known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers:
-  - Shared migration and central registration work is recorded for I36 and is not part of the P16 writer scope.
-out_of_scope_findings: []
+blockers: []
+out_of_scope_findings:
+  - Shared migration, root barrel, and central server/client registration changes are captured in STEWARD-REQUESTS.yaml and were not edited by P16.
