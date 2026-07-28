@@ -444,3 +444,9 @@ canonical migration/registration/configuration/dependency requests are
 assigned but unapplied. C00 used the freed slot to authorize P17 Zoom
 preparation from `49431959`; P17 has no provider-effect authority and must
 publish only its three-file atomic claim before implementation.
+
+P17's atomic claim is exact at `25614df1`: sole parent `49431959`, only its
+three task-local runtime files, correct containing authorization, dependency
+and lease bindings, and zero effects. C00 consumed the ready entry. P17 may now
+implement concurrently with the disjoint P29 and P30 lanes; none has provider
+effect authority.

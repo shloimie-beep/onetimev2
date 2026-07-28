@@ -178,3 +178,8 @@ P20 is admitted at final `3d75b57e`. Dispatch P17 claim
 start `49431959` on `codex/v21-p17-zoom-preparation`. Stop after its exact
 three runtime files, reconcile under a fresh C00 lease, then resume full P17
 implementation while continuing P29/P30.
+
+The P17 claim is verified and consumed. Resume P17 at `25614df1` for full task
+implementation, verification, structured steward requests where required,
+ready_for_review publication, and task-local lease release. Continue monitoring
+the independently active P29 and P30 finals.
