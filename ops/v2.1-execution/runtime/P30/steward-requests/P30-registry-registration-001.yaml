@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P30-registry-registration-001
+task_id: P30
+kind: registration
+requirement_ids:
+  - OTV2-GHL-134
+  - OTV2-GHL-135
+  - OTV2-GHL-225
+acceptance_case_ids:
+  - OTV2-GHL-134-AC01
+  - OTV2-GHL-135-AC01
+  - OTV2-GHL-225-SCHEDULE
+  - OTV2-GHL-225-PAID-EXIT
+  - OTV2-GHL-225-SCHOOL-EXIT
+  - OTV2-GHL-225-SUPPRESSION
+rationale: P30 cannot edit the canonical HighLevel registry or central worker composer.
+desired_semantic_change: >-
+  Register the exact P30-campaigns-v1 workflow fragment for OT-14, OT-15,
+  and OT-16 after validating the P28 communication-foundation contract and
+  P31 canonical copy/sender bindings. Compose runOt16Checkpoint behind the
+  durable adult-only campaign job boundary. Preserve fresh send-time
+  suppression, operation reservation, exact office/GHL payloads, and a
+  permanently absent WhatsApp provider port while that channel is dormant.
+  Activation, seed execution, and broad enrollment remain separately governed
+  and receive no authority from this request.
+proposed_symbols_routes_keys_or_dependencies:
+  - P30_CAMPAIGN_WORKFLOW_FRAGMENT
+  - planParentNewsletterLaunch
+  - planFormerMemberReactivationLaunch
+  - planOt16Checkpoint
+  - runOt16Checkpoint
+  - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+compatibility_assumptions:
+  - P28 communication foundation contract remains at semantic version 1.0.0
+  - P31 canonical copy and sender identities remain exact dependencies
+  - direct source imports remain stable until central registration
+  - GHL campaign activation and provider calls require separate external authority
+verification_performed:
+  - six task-owned acceptance cases
+  - worker send-time suppression, dedupe, Student, paid, and School fences
+  - full TypeScript typecheck and focused format/lint
+conflicts_or_risks:
+  - activation before named approval, exact readback, and provider authority must fail closed
+contains_secret_or_private_data: false
