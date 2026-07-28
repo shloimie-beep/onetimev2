@@ -14,10 +14,10 @@ claimed_by: codex-i36-worker-b847548e
 claim_time: '2026-07-28T15:43:03Z'
 claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
 lease_expires_at: '2026-07-28T16:33:58Z'
-last_heartbeat_at: '2026-07-28T15:50:22Z'
+last_heartbeat_at: '2026-07-28T15:53:17Z'
 controller_authorization_sha: 7ccacffa6e460d5e3c1daff66c33a6a73d1b77dc
 ready_entry_payload_digest: 4b429a919e258b635c3c713c023bf83ecb8b28711c63e192d97d52567afa17a1
-state_based_on_head_sha: 34718371ee0ff26758120b11d0d4b788aa11be97
+state_based_on_head_sha: 201bf33a9ba532c696432c707145a798d1f07f9f
 last_implementation_commit_sha: 34718371ee0ff26758120b11d0d4b788aa11be97
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
@@ -29,12 +29,13 @@ completed_steps:
 - Verified rebased merge authorization at control head 0e4b4c0688b57899493447e85a03a7aa9aab7df2.
 - Verified F01 source ancestry, exact allowlisted delta, state/handoff binding, artifact digests, and external-effect counts.
 - Merged F01 interface head fa9e5c92231c4b92340d07945cc91d76c85bd444 with ancestry preserved.
+- Pushed the post-merge checkpoint at 201bf33a9ba532c696432c707145a798d1f07f9f.
+- Installed the exact package-lock dependency tree and passed repository typecheck.
+- Passed focused F01 server/client/worker seam and steward-schema verification.
 remaining_steps:
-- Push this post-merge, pre-verification checkpoint.
-- Install the locked dependencies and run the required interface contract/type checks.
-- Publish the verified integration checkpoint and report its exact SHA to C00.
+- Push this verified integration metadata checkpoint and report its exact SHA to C00.
 - Continue consuming only exact C00-authorized merge queue entries.
-next_action: Push this ancestry-preserving merge checkpoint, install locked dependencies, run typecheck and focused F01 seam verification, then publish the verified integration head to C00.
+next_action: Report the exact pushed verified integration head to C00, then fetch control and consume only the next exact C00-authorized merge item or request renewal before lease expiry.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -73,6 +74,14 @@ verification:
     result: passed; exact 14-path allowlist, source base/merge base, state/handoff, task, and artifact digests
   - command: git merge --no-ff fa9e5c92231c4b92340d07945cc91d76c85bd444
     result: passed; source ancestry preserved at merge commit 34718371ee0ff26758120b11d0d4b788aa11be97
+  - command: npm ci
+    result: passed; exact package-lock dependency tree installed
+  - command: npm run typecheck
+    result: passed
+  - command: focused F01 seam smoke via node --import tsx
+    result: passed; server positive and pre-mount duplicate rejection, client role and duplicate rejection, sequential worker execution and duplicate rejection
+  - command: JSON parse and invariant check of steward-request.schema.json
+    result: passed
   known_baseline_failures: []
 external_effects:
   authority: none

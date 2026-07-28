@@ -29,15 +29,14 @@ Admitted the exact 14-path F01 delta and merged source head
 
 ## Remaining work
 
-Push this post-merge checkpoint, install the locked dependencies, run the
-contract/type and focused F01 seam checks, update this durable runtime state,
-and push the verified integration checkpoint.
+Push this verified integration metadata checkpoint, report its exact remote
+head to C00, and then consume only the next exact C00-authorized merge item.
 
 ## Exact next action
 
-Push this ancestry-preserving merge checkpoint, install locked dependencies,
-run typecheck and focused F01 seam verification, then publish the verified
-integration head to C00.
+Report the exact pushed verified integration head to C00, then fetch control
+and consume only the next exact C00-authorized merge item or request renewal
+before lease expiry.
 
 ## Coverage
 
@@ -67,6 +66,11 @@ integration head to C00.
   handoff, and all six interface artifact digests matched.
 - F01 is an ancestor of merge commit
   `34718371ee0ff26758120b11d0d4b788aa11be97`.
+- `npm ci`: passed against the committed lockfile.
+- `npm run typecheck`: passed.
+- Focused F01 smoke: passed server registration/pre-mount duplicate rejection,
+  client role resolution/duplicate rejection, sequential worker
+  execution/duplicate rejection, and steward-schema parse/invariants.
 
 ## External effects
 
@@ -80,5 +84,6 @@ accessed or recorded.
 
 ## Blockers, deviations, and recovery
 
-No blocker or deviation is present. The merge is locally recoverable at
-`34718371ee0ff26758120b11d0d4b788aa11be97`; verification remains pending.
+No blocker or deviation is present. The verified source merge is recoverable at
+`34718371ee0ff26758120b11d0d4b788aa11be97`; its pushed pre-verification
+checkpoint is `201bf33a9ba532c696432c707145a798d1f07f9f`.
