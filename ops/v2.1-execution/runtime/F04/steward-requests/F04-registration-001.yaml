@@ -1,0 +1,44 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: F04-registration-001
+task_id: F04
+kind: registration
+requirement_ids:
+  - OTV2-ACCOUNT-181
+  - OTV2-ACCOUNT-182
+  - OTV2-ACCOUNT-183
+  - OTV2-ACCOUNT-230
+acceptance_case_ids:
+  - OTV2-ACCOUNT-181-AC01
+  - OTV2-ACCOUNT-182-AC01
+  - OTV2-ACCOUNT-183-AC01
+  - OTV2-ACCOUNT-230-IDENTITY-ROLE-CONTEXT
+rationale: >-
+  F04 cannot edit central package barrels or the server feature registry. Its
+  versioned modules are directly importable and its server service is registration
+  neutral until I36 reconciles the F01 composition seam and the F03 authenticated
+  session interface.
+desired_semantic_change: >-
+  Register only the exact F04 v2.1 exports and mount same-origin CSRF-protected role,
+  household, and Admin-assisted transfer actions. The authenticated account and
+  memberships must come from the F03 server session; request bodies may select a
+  desired role/household but never assert membership or ownership.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/contracts/src/index.ts exports packages/contracts/src/accounts/v21-household-identity.ts
+  - packages/contracts/src/index.ts exports packages/contracts/src/access/v21-household-authorization.ts
+  - packages/domain/src/index.ts exports packages/domain/src/accounts/v21-household-identity.ts
+  - packages/domain/src/index.ts exports packages/domain/src/access/v21-household-authorization.ts
+  - packages/db/src/index.ts exports packages/db/src/accounts/v21-household-identity-repository.ts
+  - apps/web/src/server/features/registry/index.ts registers the F04 account-context service after the F03 session seam is integrated
+compatibility_assumptions:
+  - Adult route context is explicit and never inferred from a requested URL.
+  - Household ownership is always queried by the server-resolved HumanAccount.
+  - Parent routes cannot compose Student-only learning capabilities.
+  - Server context changes rotate the session identifier and apply the exact selected-role expiry policy.
+verification_performed:
+  - npm run typecheck
+  - focused v2.1 household identity contract/domain assertions
+conflicts_or_risks:
+  - Do not re-export or register the legacy owner/rabbi role values as v2.1 authorization roles.
+  - Do not mount routes until the F03 session adapter supplies same-origin, CSRF, security-version, and session-rotation guarantees.
+contains_secret_or_private_data: false
