@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 55c5605acf834318627d54bd3e94eb90d6429a80
-next_action: Dispatch I36 to consume only the verified F02 interface item from integration head eefca064, and dispatch P35 from that same authorized start; keep F01 paused until F03 returns the remaining auth-steward result.
+controller_authorization_sha: 1df96d5a27d6eb2171901d1136f99681d1e39e09
+next_action: I36 consumes only the rebound F02 interface item from exact claim head f922c1de while P35 continues its claimed implementation lane; keep F01 paused until F03 returns the remaining auth-steward result.
 authority_note: Only C00 updates this global control state.

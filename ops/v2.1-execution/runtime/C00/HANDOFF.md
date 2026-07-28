@@ -173,18 +173,27 @@ The exact F02 interface is queued for an I36-only merge from `eefca064`.
 P35 is the only other dependency-valid planned task and is authorized from the
 same integration head; all tasks gated on F02 remain paused until its interface
 is integrated.
+I36 atomically consumed that ready entry at
+`f922c1dea6b69691edcb1f23605d7658f555ebff`, changing only its three
+task-local runtime files and stopping before the merge. P35 atomically created
+its authorized branch from `eefca064` and claimed it at
+`9df4a0a4856023873632cd699526c114617c7dac`, likewise with only its three
+task-local runtime files. C00 verified both parent relationships, scopes,
+claim/lease/controller identities, and zero effects. The ready queue is empty.
+F02 merge item `95985f2c-410b-461b-9360-549591ef624e` is rebound to exact
+target `f922c1de` with payload
+`45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`.
 
 ## Remaining work
 
 None for bootstrap. The current operational wave consists only of I36's
-F02-interface merge and P35 implementation.
+rebound F02-interface merge and P35's claimed implementation.
 
 ## Exact next action
 
-Dispatch I36 under claim `8d31181a-cfe8-493e-b7ce-4ea867da9581` to consume
-only F02 merge item `95985f2c-410b-461b-9360-549591ef624e`, and dispatch P35
-under claim `9ee0d8f8-944d-47f2-b67a-54cb333cc29d`. Hold control fixed until
-both exact ready entries are consumed or safely refused.
+Resume I36 under claim `8d31181a-cfe8-493e-b7ce-4ea867da9581` to consume
+only rebound F02 merge item `95985f2c-410b-461b-9360-549591ef624e` from
+target `f922c1de`. Let P35 continue its already claimed implementation lane.
 
 ## Verification
 
@@ -197,7 +206,7 @@ both exact ready entries are consumed or safely refused.
 - Consumed F02 correction payload: `b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`.
 - Current I36 resume payload: `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`.
 - Current P35 ready payload: `7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f`.
-- Current F02 merge item payload: `1cf403e537176b60462e186b9f3ec5edecf8eb216707b2ff5b25e0df1d5a5d71`.
+- Current rebound F02 merge item payload: `45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`.
 - Corrected F02 checkpoint: metadata `e4673ff1c2e621e26ac93034be245b280c4da4fa`;
   implementation `191dac288ea1721bdc0252bd012060ca974d2242`; interface digest
   `c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`.
@@ -222,9 +231,11 @@ both exact ready entries are consumed or safely refused.
 - Rebound P31 ready payload: `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
 - Rebound F07 merge item payload: `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
 - P31 state/handoff digest: `6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581`.
-- Control parent for this F02-integration/P35 dispatch: `55c5605acf834318627d54bd3e94eb90d6429a80`.
+- Control parent for this F02 merge rebind: `1df96d5a27d6eb2171901d1136f99681d1e39e09`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
-- I36 branch/head: `codex/v21-integration` / `eefca0644e57dca48609682cbc3e1b01992d286d`.
+- I36 branch/head: `codex/v21-integration` / `f922c1dea6b69691edcb1f23605d7658f555ebff`.
+- P35 branch/head: `codex/v21-p35-domain-transition-archive` /
+  `9df4a0a4856023873632cd699526c114617c7dac`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

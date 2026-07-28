@@ -35,17 +35,17 @@ F02's corrected exact checkpoint is
 `c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`,
 and migration-2234 checksum
 `d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`.
-C00 independently verified and admitted it. I36 is resume-ready from
-`eefca064` under claim `8d31181a-cfe8-493e-b7ce-4ea867da9581`, ready
-payload `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`,
-and F02-only merge item `95985f2c-410b-461b-9360-549591ef624e` with
-payload `1cf403e537176b60462e186b9f3ec5edecf8eb216707b2ff5b25e0df1d5a5d71`.
-P35 is ready from the same start head under claim
-`9ee0d8f8-944d-47f2-b67a-54cb333cc29d` and payload
-`7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f`.
-Hold control fixed until both exact ready entries are consumed or safely
-refused. After F02 integrates, recalculate and authorize the newly unblocked
-critical-path lanes.
+C00 independently verified and admitted it. I36 atomically consumed its ready
+entry at `f922c1dea6b69691edcb1f23605d7658f555ebff` under claim
+`8d31181a-cfe8-493e-b7ce-4ea867da9581` and stopped before merging. The
+F02-only item `95985f2c-410b-461b-9360-549591ef624e` is now rebound to that
+exact target with payload
+`45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`.
+P35 atomically consumed its ready entry at
+`9df4a0a4856023873632cd699526c114617c7dac` and is implementing under claim
+`9ee0d8f8-944d-47f2-b67a-54cb333cc29d`. The ready queue is empty.
+Resume I36 only for the rebound F02 item and let P35 continue. After F02
+integrates, recalculate and authorize the newly unblocked critical-path lanes.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
