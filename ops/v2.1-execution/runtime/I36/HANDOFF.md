@@ -4,21 +4,21 @@
 
 - Branch: `codex/v21-integration`
 - Start SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`
-- Expected existing SHA before this atomic claim checkpoint: `972fa43507d6d4391a86dd130a1c38a05820b2ce`
+- Expected existing SHA before this atomic claim checkpoint: `9ba92b070eedfa3756eff4f78fd328de72507a96`
 - Preserved F01 source merge commit: `34718371ee0ff26758120b11d0d4b788aa11be97`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7`
 - Context digest: `7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim ID: `ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6`
-- Writer: `codex-i36-worker-ff8bf935`
-- RELEASE_INTEGRATOR lease: `496f5ac8-09f9-4186-82f3-299de929cd7c`
-- Containing control head: `c3b1cfef9fb52abfa7430dc142e9a8ab6f0b6684`
-- Controller authorization: `c3b1cfef9fb52abfa7430dc142e9a8ab6f0b6684`
-- Ready-entry state-based-on control head: `80e9f304627ef724757604255627d3e2fe033ef8`
-- Ready-entry payload digest: `2745fab06447445301bd9d961475787256028a69dadf0d405ad374dcfb2b7f6c`
-- Lease expiry: `2026-07-28T22:36:49Z`
-- Phase scope: `P16_interface_atomic_claim_only`
+- Claim ID: `391d7764-3f93-43c8-86dc-07df6f59d0b1`
+- Writer: `codex-i36-worker-391d7764`
+- RELEASE_INTEGRATOR lease: `53c90772-6f60-4a52-884f-4498c65c0929`
+- Containing control head: `2bd4a301926bb0b303c06f6f2a1b8e036b18c473`
+- Controller authorization: `2bd4a301926bb0b303c06f6f2a1b8e036b18c473`
+- Ready-entry state-based-on control head: `21b0a40b4ee7186d9360b99c261f1774d65e1c43`
+- Ready-entry payload digest: `450d4c9fb2f4eede4f32d972683b7f1afe72048fc4da25255b1363ae18d740d3`
+- Lease expiry: `2026-07-28T23:23:06Z`
+- Phase scope: `P19_interface_atomic_claim_only`
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
   item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
 - Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
@@ -234,15 +234,31 @@ semantic `2.1.0` plain `<artifact-path>=<sha256>` contract digest
 17 focused tests, raw-Git-blob Prettier verification, and diff checks passed.
 No P16 steward request was adjudicated or applied.
 
+The current P19-interface resume authorization was verified against containing
+control `2bd4a301926bb0b303c06f6f2a1b8e036b18c473`, parent control
+`21b0a40b4ee7186d9360b99c261f1774d65e1c43`, exact integration head
+`9ba92b070eedfa3756eff4f78fd328de72507a96`, canonical ready digest
+`450d4c9fb2f4eede4f32d972683b7f1afe72048fc4da25255b1363ae18d740d3`,
+claim `391d7764-3f93-43c8-86dc-07df6f59d0b1`, and sole
+`RELEASE_INTEGRATOR` lease `53c90772-6f60-4a52-884f-4498c65c0929`.
+Entry-bound package, task, context, dependency, and source-package digests
+matched. This checkpoint consumes only the claim; no P19 source was read or
+merged, no steward request was applied, and optimistic item
+`d3acb266-4c15-4a37-ada7-1a42b616cd12` with pre-claim digest
+`f4c2414a8610e717b00c00b2ed0b252a45a8c706c545111a47d0e2217f485d31`
+remains unconsumed pending an exact target CAS rebind.
+
 ## Remaining work
 
-Push and report the exact P16 integration metadata checkpoint to C00. Await a
-new exact C00 authorization before any further integration or steward work.
+Push and report this exact P19-interface atomic claim checkpoint to C00. Await
+C00 consumption and an exact merge-target CAS rebind before reading or merging
+P19.
 
 ## Exact next action
 
-Push and report the exact P16 integration metadata checkpoint to C00, then
-pause until C00 issues a new exact target authorization.
+Report the exact pushed P19-interface atomic claim checkpoint to C00, then
+pause. Do not read or merge P19, consume its optimistic merge item, or apply
+any steward request until C00 issues a new exact target authorization.
 
 ## Coverage
 
