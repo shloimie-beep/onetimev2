@@ -289,16 +289,17 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P27 is integrated at `972fa435` and P16 at `9ba92b07`.
-The merge and ready queues are empty. P18, P19, and P28 each published exact
-three-file atomic claims from sole parent `9ba92b07`: `9b37f4a0`, `5529d398`,
-and `09082e99`. All three disjoint Wave 6 implementations are active.
+None for bootstrap. P18 is `ready_for_review` at `0a384577` and awaits control
+admission. P19 is independently verified `ready_for_review` at `306c26cf`;
+its exact interface `e420eb83` is queued for I36 from `9ba92b07`, and its
+three steward requests are assigned but unapplied. P28 has published interface
+`aaedc3f2` and is completing its final checkpoint.
 
 ## Exact next action
 
-Monitor P18, P19, and P28. Independently verify any published interface/final
-checkpoint before queueing integration or downstream work. No fourth native
-writer slot is available while all three workers remain active.
+Dispatch I36 claim `391d7764-3f93-43c8-86dc-07df6f59d0b1` for an atomic
+claim-only checkpoint from `9ba92b070eedfa3756eff4f78fd328de72507a96`.
+Then rebind P19's optimistic target CAS before merging it.
 
 ## Verification
 

@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-ca2cd5d1
-claim_time: '2026-07-28T22:08:32Z'
-claim_id: ca2cd5d1-392d-418a-a4f1-42d54a352d5e
-lease_expires_at: '2026-07-28T22:09:59Z'
-last_heartbeat_at: '2026-07-28T22:09:59Z'
-controller_authorization_sha: 98a946ddecec15b1fdb79da595edb0295a9d8fe0
+claimed_by: codex-c00-orchestrator-134469b0
+claim_time: '2026-07-28T22:23:06Z'
+claim_id: 134469b0-25a1-4b0a-b062-7a28ac50fad1
+lease_expires_at: '2026-07-28T22:29:00Z'
+last_heartbeat_at: '2026-07-28T22:29:00Z'
+controller_authorization_sha: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
 ready_entry_payload_digest: null
-state_based_on_head_sha: 98a946ddecec15b1fdb79da595edb0295a9d8fe0
+state_based_on_head_sha: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -117,8 +117,10 @@ completed_steps:
 - verified P16's exact ancestry merge at 387ca78e and final I36 metadata at 9ba92b07 with all checks and zero effects
 - authorized dependency-valid Wave 6 lanes P18, P19, and P28 from exact integration head 9ba92b07
 - verified the exact three-file atomic claim heads for P18, P19, and P28 and consumed their ready entries
+- independently verified P19 final 306c26cf, interface e420eb83, exact 25-path scope, contract/artifact digests, 21 focused tests, typecheck, requests, and zero effects
+- queued only P19 for an I36 atomic-claim-only interface integration from 9ba92b07
 remaining_steps: []
-next_action: Monitor P18, P19, and P28 implementation checkpoints; no additional writer slot is available.
+next_action: I36 atomically claims only P19 from 9ba92b07; C00 then rebinds the P19 target CAS before merge.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -126,12 +128,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 98a946ddecec15b1fdb79da595edb0295a9d8fe0
+  current_control_parent_sha: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: ca2cd5d1-392d-418a-a4f1-42d54a352d5e
-      observed_head: 98a946ddecec15b1fdb79da595edb0295a9d8fe0
+      claim_id: 134469b0-25a1-4b0a-b062-7a28ac50fad1
+      observed_head: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -142,11 +144,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6
+      claim_id: 391d7764-3f93-43c8-86dc-07df6f59d0b1
       observed_head: 9ba92b070eedfa3756eff4f78fd328de72507a96
       authorized_start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
-      lease_expires_at: null
-      scheduling_state: ready_after_P16_integration
+      lease_expires_at: '2026-07-28T23:23:06Z'
+      scheduling_state: ready_for_P19_atomic_claim_only
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -241,17 +243,17 @@ orchestration:
     P18:
       branch: codex/v21-p18-embedded-classroom
       claim_id: 415e950e-cfbb-4635-9f1a-3ffd6af825ac
-      observed_head: 9b37f4a0a123299b0b278ffeaa7b83c763155e3b
+      observed_head: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
       authorized_start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
       lease_expires_at: '2026-07-28T22:55:38Z'
-      scheduling_state: claimed_implementation_active
+      scheduling_state: ready_for_review_pending_admission
     P19:
       branch: codex/v21-p19-content-ingest
       claim_id: de624026-ff9a-4c35-ad02-bc6c1f28a3dc
-      observed_head: 5529d39860f4663b909d544481ad1a028f4dbf8a
+      observed_head: 306c26cfcb84672eb5e593d1bee847a0f3e01243
       authorized_start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
       lease_expires_at: '2026-07-28T22:55:38Z'
-      scheduling_state: claimed_implementation_active
+      scheduling_state: ready_for_review_interface_queued
     P28:
       branch: codex/v21-p28-communication-foundation
       claim_id: 16640fee-ca26-4885-9be7-14fb2baa682c
@@ -260,22 +262,6 @@ orchestration:
       lease_expires_at: '2026-07-28T22:55:38Z'
       scheduling_state: claimed_implementation_active
   active_native_subagents:
-  - task_id: P18
-    agent: /root/i36_worker2
-    branch: codex/v21-p18-embedded-classroom
-    observed_head: 9b37f4a0a123299b0b278ffeaa7b83c763155e3b
-    claim_id: 415e950e-cfbb-4635-9f1a-3ffd6af825ac
-    lease_expires_at: '2026-07-28T22:55:38Z'
-    status: claimed
-    phase: contract
-  - task_id: P19
-    agent: /root/f05_worker
-    branch: codex/v21-p19-content-ingest
-    observed_head: 5529d39860f4663b909d544481ad1a028f4dbf8a
-    claim_id: de624026-ff9a-4c35-ad02-bc6c1f28a3dc
-    lease_expires_at: '2026-07-28T22:55:38Z'
-    status: claimed
-    phase: contract
   - task_id: P28
     agent: /root/f03_worker
     branch: codex/v21-p28-communication-foundation
@@ -398,12 +384,12 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: fde3a456bfd43d1af67c46ecd68fff1f4cfbf186dc9246ed2c64bb1b3a37c7b2
-    control_lease: 01834b5c1cd785e18eb9298df16dbb945e2465a332fd6bd358aaa3cf76434a1d
-    task_registry: 30d75238021111f1cc6310a2ebff4b56438a0b61a419eb6bc22fa212cbf8313b
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
-    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
-    steward_queue: c63e036449fcebfa17d281d84aa28b8073b9a322f714974bac43ac161f3bb21a
+    control_state: c6a06aeefc5f3ad6e1b2212ea7a0be294adf6f5ce59f4cd75599e6ece7440e55
+    control_lease: 211983efbfad592c09ed20e25588fc6bbe3107ca66543108f003242c974fc339
+    task_registry: 2b6cff30f58269c3edc7ab3cbb1dc4041f01d5326cf3608ec2430de541bcc9ee
+    ready_queue: 83de7d724fa4b9cecea7ef5aefcc7901d407d3ad7ce6389b912ad353b96ff202
+    merge_queue: 74edbdfb2ae3fe7defd602d3f4c3f9057533179e0db7d59980cac4b87ffb7888
+    steward_queue: e6e1fcb8bae1f47ba53a27c3d9d02f01df662cb8d04ecd6788c40c1c3ade9dbd
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70

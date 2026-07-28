@@ -1,8 +1,65 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: d3acb266-4c15-4a37-ada7-1a42b616cd12
+  kind: interface
+  task_id: P19
+  source_branch: codex/v21-p19-content-ingest
+  source_head_sha: e420eb833feee26efd431afd93457a7e0bc4d228
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+  source_delta_base_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+  required_merge_base_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: e420eb833feee26efd431afd93457a7e0bc4d228
+  merge_after_heads: {}
+  allowed_paths:
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.test.tsx
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.tsx
+  - apps/web/src/client/app/admin/content/ingest/index.ts
+  - apps/web/src/server/features/content/ingest/index.ts
+  - apps/web/src/server/features/content/ingest/service.test.ts
+  - apps/web/src/server/features/content/ingest/service.ts
+  - apps/worker/src/runners/content-ingest/index.ts
+  - apps/worker/src/runners/content-ingest/runner.test.ts
+  - apps/worker/src/runners/content-ingest/runner.ts
+  - ops/v2.1-execution/runtime/P19/HANDOFF.md
+  - ops/v2.1-execution/runtime/P19/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P19/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P19/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P19/TASK-STATE.yaml
+  - packages/contracts/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/repository.ts
+  - packages/db/src/content/ingest/schema-contract.ts
+  - packages/domain/src/content/ingest/content-ingest.test.ts
+  - packages/domain/src/content/ingest/drive.ts
+  - packages/domain/src/content/ingest/errors.ts
+  - packages/domain/src/content/ingest/index.ts
+  - packages/domain/src/content/ingest/source.ts
+  - packages/domain/src/content/ingest/upload.ts
+  - packages/domain/src/content/ingest/validation.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 53c90772-6f60-4a52-884f-4498c65c0929
+    holder_task_id: I36
+    holder_claim_id: 391d7764-3f93-43c8-86dc-07df6f59d0b1
+    state_based_on_control_head_sha: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
+    lease_issued_at: '2026-07-28T22:23:06Z'
+    lease_expires_at: '2026-07-28T23:23:06Z'
+    phase_scope: P19_interface_atomic_claim_only
+  task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
+  state_handoff_digest: 28d1e4f497ac66bb12ab5d61e5ea03c22b88603ecd54683c842290e284a94eee
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
+item_payload_digests:
+  d3acb266-4c15-4a37-ada7-1a42b616cd12: f4c2414a8610e717b00c00b2ed0b252a45a8c706c545111a47d0e2217f485d31
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

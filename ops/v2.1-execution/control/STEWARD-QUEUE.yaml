@@ -331,6 +331,51 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
+- request_id: P19-MIGRATION-001
+  request_digest: 23a65ab270cac567b8e75bc32ce20e4f79a9bff6ca9f2b857d33910393aeea57
+  requesting_task_id: P19
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P19-REGISTRATION-001
+  request_digest: 6b50403bf2177725e4a980a2656da74e90888671221220dcaf25c581d35c72a8
+  requesting_task_id: P19
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P19-CONFIG-DEPENDENCY-001
+  request_digest: 8896d9023f42ce6f8a424dd1a81faf05938cfa6d03751bb2fc066a81c3c41165
+  requesting_task_id: P19
+  kind: config_dependency
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_configuration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null

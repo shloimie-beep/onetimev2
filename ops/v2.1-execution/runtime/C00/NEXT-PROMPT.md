@@ -128,6 +128,12 @@ P19 `5529d398`, and P28 `09082e99`, each with sole parent `9ba92b07`, only its
 three task-local runtime files, correct containing authorization `e847dd79`,
 and zero effects. The ready queue is consumed; monitor their independent
 implementation/interface checkpoints.
+P19 completed `ready_for_review` at `306c26cf`, with implementation `308a0291`,
+interface `e420eb83`, exact contract `44952e92`, 25-path scope, 21 tests,
+typecheck, and zero effects. Its three canonical steward requests are assigned
+but unapplied. C00 queued only this interface for I36 atomic claim
+`391d7764-3f93-43c8-86dc-07df6f59d0b1` from `9ba92b07`. P18 is also complete
+at `0a384577` pending admission; P28 interface `aaedc3f2` awaits its final.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
