@@ -31,17 +31,20 @@ interface before integration to harden database fencing; ordinal 2234 remains
 reserved with status `superseded_pending_replacement`. Do not integrate the
 old `14793411` checkpoint. P31 is rebound with ready digest
 `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
-I36 consumed its takeover at `7fabdac24f9a952f961be66f327f052ccd3fae40`;
-F07's merge item is rebound to that exact CAS with digest
-`fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
-F02 registry identity is corrected to exact remote
-`191dac288ea1721bdc0252bd012060ca974d2242`; resume F02 immediately so it
-can push its prepared replacement before lease expiry. I36 merges only F07 and
-applies its two assigned F01 requests. P31's initial checkpoint
+I36 consumed its takeover and verified the F07 ancestry merge at exact
+integration head `91349fc1fa9a474ae31cf408ae0364aa10520385`. It is recording
+schema-valid rejections for only the two assigned F01 requests because their
+immutable prerequisites/paths are absent at the authorized target. F02 is
+resume-ready against exact remote
+`191dac288ea1721bdc0252bd012060ca974d2242` with fresh claim
+`2608f241-6a2c-4d1d-a316-d2b1b704cfc0` and payload
+`7b7b122521e9a1fce9500a02f4239529c4c11db0523cc48f5ab7e79671fd89b8`;
+let the worker consume it and push its prepared replacement. P31's initial checkpoint
 `f54827a2e21cceccb50be0d7f93c211c540f04d6` passed artifact, scope, and
 combined-digest reproduction, but P31 announced a superseding consent/timing
-checkpoint; wait for that replacement before queueing. F03 stays gated and P35
-waits for the next slot.
+checkpoint now visible at `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`;
+independently verify it and queue only against the exact settled integration
+CAS. F03 stays gated and P35 waits for the next slot.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

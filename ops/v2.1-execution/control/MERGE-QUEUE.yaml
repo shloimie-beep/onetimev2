@@ -1,52 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items:
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  merge_id: fb37db43-fe31-4f0b-a8d7-e726c435e4bd
-  kind: interface
-  task_id: F07
-  source_branch: codex/v21-f07-design-system-shells
-  source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
-  target_branch: codex/v21-integration
-  expected_target_head_sha: 7fabdac24f9a952f961be66f327f052ccd3fae40
-  source_delta_base_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-  required_merge_base_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-  preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
-  merge_after_heads: {}
-  allowed_paths:
-  - apps/web/src/client/styles/v21/design-system.css
-  - ops/v2.1-execution/runtime/F07/HANDOFF.md
-  - ops/v2.1-execution/runtime/F07/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/F07/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/F07/TASK-STATE.yaml
-  - packages/brand-system/package.json
-  - packages/brand-system/src/index.ts
-  - packages/brand-system/src/react-v21.tsx
-  - packages/brand-system/src/react.tsx
-  - packages/brand-system/src/tokens.css
-  - packages/brand-system/src/v21.contract.test.tsx
-  - packages/brand-system/src/v21.ts
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 1c1c44d6-203b-4d77-a6a0-7157675a38b4
-    holder_task_id: I36
-    holder_claim_id: 89f23125-5016-49e5-968c-d886dfc979dc
-    state_based_on_control_head_sha: 5e7cfad08ff273860156479c16c63dea6d73b775
-    lease_issued_at: '2026-07-28T16:35:01Z'
-    lease_expires_at: '2026-07-28T17:35:01Z'
-    phase_scope: interface_merges_and_assigned_steward_requests
-  task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
-  state_handoff_digest: c92caac59723a2820b5e9f08e80309c40f1ad7255f36a731fd6fcc9bbda8af0e
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-  state_based_on_control_head_sha: da8e69283f9de09463cd8f648fc5212e6ff06930
-item_payload_digests:
-  fb37db43-fe31-4f0b-a8d7-e726c435e4bd: fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0
+items: []
+item_payload_digests: {}
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

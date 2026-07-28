@@ -109,6 +109,19 @@ I36 atomically consumed its takeover at
 `7fabdac24f9a952f961be66f327f052ccd3fae40`. C00 rebound F07's target
 CAS to that claim head while preserving source delta base and merge base
 `80c281b7`.
+I36 then verified and ancestry-merged the exact F07 interface at integration
+head `91349fc1fa9a474ae31cf408ae0364aa10520385`. It is evaluating only the
+two assigned F01 steward requests; both currently require exact rejection
+records because their immutable prerequisites/paths are absent at the
+authorized integration target.
+F02's prior worker lease expired after its hardened implementation reached the
+exact remote head `191dac288ea1721bdc0252bd012060ca974d2242`. With the prior
+worker returned and the remote head unchanged, C00 issued fresh resume claim
+`2608f241-6a2c-4d1d-a316-d2b1b704cfc0` and payload digest
+`7b7b122521e9a1fce9500a02f4239529c4c11db0523cc48f5ab7e79671fd89b8`.
+P31's superseding final checkpoint is now visible at
+`ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`; admission remains pending
+C00's independent verification against the settled integration CAS.
 
 ## Remaining work
 
@@ -117,10 +130,11 @@ after worker branches advance.
 
 ## Exact next action
 
-Resume F02 so it can push its prepared replacement checkpoint before lease
-expiry. Let I36 consume rebound F07 and the two assigned F01 steward requests.
-Await P31's announced superseding consent/timing checkpoint before queueing
-its interface. F03 remains gated until F02's replacement interface is integrated.
+Let F02 consume the new exact resume claim and push its prepared replacement
+checkpoint. Reconcile I36's two immutable steward-request rejection results.
+Independently verify P31's final replacement and queue it only against the exact
+settled integration head. F03 remains gated until F02's replacement interface
+is integrated.
 
 ## Verification
 
@@ -130,8 +144,8 @@ its interface. F03 remains gated until F02's replacement interface is integrated
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
-- Current I36 resume payload: `2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0`.
-- Verified integration head: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
+- Current F02 resume payload: `7b7b122521e9a1fce9500a02f4239529c4c11db0523cc48f5ab7e79671fd89b8`.
+- Verified integration head after F07: `91349fc1fa9a474ae31cf408ae0364aa10520385`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
 - F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
@@ -151,9 +165,9 @@ its interface. F03 remains gated until F02's replacement interface is integrated
 - Rebound P31 ready payload: `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
 - Rebound F07 merge item payload: `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
 - P31 state/handoff digest: `f4b2e27b370c1589c4de2e841dbcd38b9b075a9ff5fe7d00b27eaf8c6e7b5fb2`.
-- Control parent for post-claim reconciliation: `da8e69283f9de09463cd8f648fc5212e6ff06930`.
+- Control parent for F02 resume authorization: `81f99e6e490ce402d86df217f339d09b345791ab`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
-- I36 branch/head: `codex/v21-integration` / `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
+- I36 branch/head: `codex/v21-integration` / `91349fc1fa9a474ae31cf408ae0364aa10520385`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

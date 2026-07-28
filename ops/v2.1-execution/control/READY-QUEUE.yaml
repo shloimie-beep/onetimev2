@@ -2,8 +2,61 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: F02
+  status: resume_ready
+  phase: implementation_hardening
+  branch: codex/v21-f02-schema-state-migrations
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: 81f99e6e490ce402d86df217f339d09b345791ab
+  authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+  expected_existing_head: 191dac288ea1721bdc0252bd012060ca974d2242
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: 81f99e6e490ce402d86df217f339d09b345791ab
+      control_state_digest: c03ecd9da24b04719462156987e800d080f2bc1fa40c7b5ada6e47179525d823
+      task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
+      task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
+    F01:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
+      observed_integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+      interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
+      interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+      task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
+      task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
+  writer_slot_leases:
+  - slot: MIGRATION_AUTHORITY
+    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
+    holder_task_id: F02
+    holder_claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
+    state_based_on_control_head_sha: 81f99e6e490ce402d86df217f339d09b345791ab
+    lease_issued_at: '2026-07-28T17:03:02Z'
+    lease_expires_at: '2026-07-28T18:03:02Z'
+  - slot: SCHEMA_CONTRACT
+    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
+    holder_task_id: F02
+    holder_claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
+    state_based_on_control_head_sha: 81f99e6e490ce402d86df217f339d09b345791ab
+    lease_issued_at: '2026-07-28T17:03:02Z'
+    lease_expires_at: '2026-07-28T18:03:02Z'
+  effect_lock_leases: []
+  claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
+  lease_issued_at: '2026-07-28T17:03:02Z'
+  lease_expires_at: '2026-07-28T18:03:02Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  F02: 7b7b122521e9a1fce9500a02f4239529c4c11db0523cc48f5ab7e79671fd89b8
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

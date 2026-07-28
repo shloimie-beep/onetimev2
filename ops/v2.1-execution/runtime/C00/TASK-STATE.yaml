@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-2e23d428
-claim_time: '2026-07-28T16:49:41Z'
-claim_id: 2e23d428-8f6a-46f4-a6bf-0e12791c63e9
-lease_expires_at: '2026-07-28T17:01:00Z'
-last_heartbeat_at: '2026-07-28T17:01:00Z'
-controller_authorization_sha: da8e69283f9de09463cd8f648fc5212e6ff06930
+claimed_by: codex-c00-orchestrator-e9a412ff
+claim_time: '2026-07-28T17:02:10Z'
+claim_id: e9a412ff-5904-4b92-a352-bad5d2e6a8bb
+lease_expires_at: '2026-07-28T17:09:33Z'
+last_heartbeat_at: '2026-07-28T17:09:33Z'
+controller_authorization_sha: 81f99e6e490ce402d86df217f339d09b345791ab
 ready_entry_payload_digest: null
-state_based_on_head_sha: da8e69283f9de09463cd8f648fc5212e6ff06930
+state_based_on_head_sha: 81f99e6e490ce402d86df217f339d09b345791ab
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -49,8 +49,10 @@ completed_steps:
 - verified P31 atomic claim head 46c19dbb and I36 takeover claim head 7fabdac2, consumed both ready entries, and rebound F07 target CAS to the I36 claim head
 - corrected F02 registry head from a transcribed nonexistent SHA to exact remote 191dac288ea1721bdc0252bd012060ca974d2242 before resuming its prepared final checkpoint
 - verified P31's three immutable artifact hashes, owned-path delta, initial ready_for_review head f54827a2, colon-delimited combined-digest preimage, and zero effects; held merge admission when P31 announced a superseding consent/timing checkpoint
+- verified F02's exact hardened branch head after the prior lease expired and issued a new resume_ready claim with fresh migration/schema writer leases
+- observed I36's verified F07 ancestry merge at integration head 91349fc1 while it evaluated only the two assigned immutable steward requests
 remaining_steps: []
-next_action: Resume F02 to push its prepared replacement checkpoint; release I36 on rebound F07 and assigned F01 steward requests; await P31's superseding consent/timing checkpoint.
+next_action: F02 consumes the new resume claim and pushes its prepared replacement checkpoint; I36 finishes exact steward rejections; C00 independently admits P31 final ba811b3b after the integration head settles.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -58,12 +60,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: da8e69283f9de09463cd8f648fc5212e6ff06930
+  current_control_parent_sha: 81f99e6e490ce402d86df217f339d09b345791ab
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 2e23d428-8f6a-46f4-a6bf-0e12791c63e9
-      observed_head: da8e69283f9de09463cd8f648fc5212e6ff06930
+      claim_id: e9a412ff-5904-4b92-a352-bad5d2e6a8bb
+      observed_head: 81f99e6e490ce402d86df217f339d09b345791ab
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -75,17 +77,17 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: 89f23125-5016-49e5-968c-d886dfc979dc
-      observed_head: 7fabdac24f9a952f961be66f327f052ccd3fae40
+      observed_head: 91349fc1fa9a474ae31cf408ae0364aa10520385
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: '2026-07-28T17:35:01Z'
       scheduling_state: active_native_subagent
     F02:
       branch: codex/v21-f02-schema-state-migrations
-      claim_id: ff826962-97c5-4032-8de8-5b5f4b1dc12c
+      claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
       observed_head: 191dac288ea1721bdc0252bd012060ca974d2242
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-      lease_expires_at: '2026-07-28T16:56:52Z'
-      scheduling_state: resume_after_registry_correction
+      lease_expires_at: '2026-07-28T18:03:02Z'
+      scheduling_state: resume_ready_queued
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -96,27 +98,19 @@ orchestration:
     P31:
       branch: codex/v21-p31-email-copy-approval
       claim_id: 39538a2e-2d15-44a7-9485-0cba68919b21
-      observed_head: f54827a2e21cceccb50be0d7f93c211c540f04d6
+      observed_head: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: '2026-07-28T17:37:00Z'
-      scheduling_state: superseding_ready_checkpoint_active_native_subagent
+      scheduling_state: final_checkpoint_agent_returned_pending_independent_admission
   active_native_subagents:
   - task_id: I36
     agent: /root/i36_worker2
     branch: codex/v21-integration
-    observed_head: 7fabdac24f9a952f961be66f327f052ccd3fae40
+    observed_head: 91349fc1fa9a474ae31cf408ae0364aa10520385
     claim_id: 89f23125-5016-49e5-968c-d886dfc979dc
     lease_expires_at: '2026-07-28T17:35:01Z'
     status: claimed
     phase: integration
-  - task_id: P31
-    agent: /root/p31_worker2
-    branch: codex/v21-p31-email-copy-approval
-    observed_head: f54827a2e21cceccb50be0d7f93c211c540f04d6
-    claim_id: 39538a2e-2d15-44a7-9485-0cba68919b21
-    lease_expires_at: '2026-07-28T17:37:00Z'
-    status: claimed
-    phase: review_hardening
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -145,11 +139,11 @@ steward_requests:
   target_checkpoint: I36_next_steward_checkpoint
 verification:
   control_digests:
-    control_state: c03ecd9da24b04719462156987e800d080f2bc1fa40c7b5ada6e47179525d823
-    control_lease: 4ddfc1e1ac065ef899378208845dfe920c165b5fe049454213bd0af3b3d4edb3
-    task_registry: f120855fdd705bcbeeee5a7fd89345ffa826d08c7dd83f8b2447bb61b0243209
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
-    merge_queue: 6a05dd2f0410e6f5e331ec76de32fd1e927426133f9bb2456e70d4c49578571e
+    control_state: 388fd210d8324496824666d88155207af84b6160e3c04e23077da346a94590b8
+    control_lease: d30ff72c6f1d58b19b5e93c0f220707ee91f37dede5435d1d8272461312837d7
+    task_registry: b32a0b3001ca8c7385e5adbea7c6ca4aac868bbc7327619b6e07c4afaca5a404
+    ready_queue: fd6d79925af21c28e769c258a73c408c5b5f5352fb0559802f95bda95f835ce1
+    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 2dcde5351a737522c0ab2e1235608af6e36d92343c2da745d295bba101b39067
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
