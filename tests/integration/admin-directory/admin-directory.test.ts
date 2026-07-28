@@ -200,6 +200,49 @@ describe('Admin directory database flows', () => {
     expect(listed.filter((learner) => learner.learner_status === 'archived')).toHaveLength(1);
   });
 
+  it('keeps legacy synthetic preview and live-demo identities out of the ordinary directory', async () => {
+    const ordinaryHousehold = await createHousehold('Ordinary Family', 'ordinary-household-0001');
+    const ordinaryLearner = await createAdminLearner({
+      pool,
+      config,
+      actor: actor(),
+      payload: {
+        household_key: ordinaryHousehold.household_key,
+        display_name: 'Ordinary Learner',
+        hebrew_name: null,
+        grade_label: 'Grade 5',
+        idempotency_key: 'ordinary-learner-0001',
+      },
+    });
+
+    await pool.query(
+      `INSERT INTO onetime.portal_households
+         (household_key, account_key, product_key, display_name)
+       VALUES
+         ('live_demo_household_legacy', $1, $2, 'Live Demo Legacy'),
+         ('full_app_preview_household_legacy', $1, $2, 'Preview Legacy')`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_learners
+         (learner_key, account_key, product_key, household_key, display_name, grade_label)
+       VALUES
+         ('live_demo_learner_legacy', $1, $2, 'live_demo_household_legacy',
+          'Demo Learner', 'Demo'),
+         ('full_app_preview_student_legacy', $1, $2, 'full_app_preview_household_legacy',
+          'Preview Learner', 'Preview')`,
+      [config.accountKey, config.productKey],
+    );
+
+    const households = await listAdminHouseholds({ pool, config, query: {} });
+    const learners = await listAdminLearners({ pool, config, query: {} });
+
+    expect(households.map((household) => household.household_key)).toEqual([
+      ordinaryHousehold.household_key,
+    ]);
+    expect(learners.map((learner) => learner.learner_key)).toEqual([ordinaryLearner.learner_key]);
+  });
+
   it('updates learners with optimistic conflicts and blocks household archive with dependents', async () => {
     const household = await createHousehold('Conflict Family', 'conflict-household-0001');
     const learner = await createAdminLearner({

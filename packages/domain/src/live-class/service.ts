@@ -88,12 +88,6 @@ export type LiveClassRepository = {
     now: Date;
     expires_at: Date;
   }): Promise<LiveClassSessionRecord>;
-  ensureFakeDemo(args: {
-    actor: Pick<PortalActorContext, 'account_key' | 'product_key'>;
-    occurrence_key: string;
-    class_label: string;
-    now: Date;
-  }): Promise<void>;
   getLearner(args: {
     actor: PortalActorContext;
     learner_key: string;
@@ -236,7 +230,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
   return {
     async consoleSnapshot(actor: PortalActorContext, occurrenceKey?: string | undefined) {
       requireRabbi(actor);
-      const session = await ensureSession(deps, actor, clock(), occurrenceKey, true);
+      const session = await ensureSession(deps, actor, clock(), occurrenceKey);
       return snapshot(deps, actor, session.occurrence_key, clock());
     },
 
@@ -782,23 +776,13 @@ async function ensureSession(
   actor: Pick<PortalActorContext, 'account_key' | 'product_key'>,
   now: Date,
   occurrenceKey?: string | undefined,
-  seedDemo = false,
 ) {
-  const session = await deps.repository.ensureLiveSession({
+  return deps.repository.ensureLiveSession({
     actor,
     ...(occurrenceKey ? { occurrence_key: occurrenceKey } : {}),
     now,
     expires_at: new Date(now.getTime() + 6 * 60 * 60_000),
   });
-  if (seedDemo && liveClassFakeAdapterEnabled(deps.config)) {
-    await deps.repository.ensureFakeDemo({
-      actor,
-      occurrence_key: session.occurrence_key,
-      class_label: session.class_label,
-      now,
-    });
-  }
-  return session;
 }
 
 async function snapshot(
@@ -1086,12 +1070,6 @@ function isRabbi(actor: PortalActorContext) {
 
 function publicScope(config: AppConfig) {
   return { account_key: config.accountKey, product_key: config.productKey };
-}
-
-function liveClassFakeAdapterEnabled(config: AppConfig) {
-  return Boolean(
-    (config as AppConfig & { liveClassFakeAdapterEnabled?: boolean }).liveClassFakeAdapterEnabled,
-  );
 }
 
 function zoomHostControlConfigured(config: AppConfig) {

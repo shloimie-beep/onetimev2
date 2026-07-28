@@ -297,7 +297,12 @@ export async function listAdminHouseholds(input: {
 }): Promise<AdminHousehold[]> {
   const query = adminDirectoryListQuerySchema.parse(input.query ?? {});
   const params: unknown[] = [input.config.accountKey, input.config.productKey];
-  const where = ['households.account_key = $1', 'households.product_key = $2'];
+  const where = [
+    'households.account_key = $1',
+    'households.product_key = $2',
+    `households.household_key NOT LIKE 'live_demo_household_%'`,
+    `households.household_key NOT LIKE 'full_app_preview_%'`,
+  ];
   if (query.search) {
     params.push(`%${query.search.toLowerCase()}%`);
     where.push(`lower(households.display_name) LIKE $${params.length}`);
@@ -958,7 +963,12 @@ export async function listAdminLearners(input: {
 }): Promise<AdminLearner[]> {
   const query = adminDirectoryListQuerySchema.parse(input.query ?? {});
   const params: unknown[] = [input.config.accountKey, input.config.productKey];
-  const where = ['learners.account_key = $1', 'learners.product_key = $2'];
+  const where = [
+    'learners.account_key = $1',
+    'learners.product_key = $2',
+    `learners.learner_key NOT LIKE 'live_demo_learner_%'`,
+    `learners.learner_key NOT LIKE 'full_app_preview_%'`,
+  ];
   if (query.search) {
     params.push(`%${query.search.toLowerCase()}%`);
     where.push(

@@ -58,7 +58,7 @@ test('Admin uploads, processes, reviews, and publishes one occurrence-scoped vid
   expect(body).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_video_|volume:v1:/i);
 });
 
-test('entitled Student sees approved content with protected captions and progress', async ({
+test('provider-off synthetic content stays out of the ordinary Student library', async ({
   page,
 }) => {
   expect(publishedPlaybackPath).toBeTruthy();
@@ -74,22 +74,14 @@ test('entitled Student sees approved content with protected captions and progres
     .getByRole('region', { name: 'Library', exact: true })
     .getByRole('article')
     .filter({ hasText: 'Browser-published occurrence lesson' });
-  await expect(contentCard).toBeVisible();
-  await expect(contentCard.getByText(/provider-off acceptance content/i)).toBeVisible();
-  await contentCard.getByText('Approved review questions').click();
-  await expect(contentCard.getByRole('listitem').first()).toBeVisible();
-  await contentCard.getByRole('button', { name: 'Open' }).click();
-  await expect(page).toHaveURL(new RegExp(`${escapeRegex(publishedPlaybackPath)}$`));
-  await expect(
-    page.getByRole('heading', { name: 'Browser-published occurrence lesson' }),
-  ).toBeVisible();
-  await expect(page.getByText('E2E Daily Mishnah')).toBeVisible();
-  await expect(page.getByText('Active')).toBeVisible();
-  await expect(page.getByText('not started')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Review questions' })).toBeVisible();
-  await expect(page.locator('iframe')).toHaveAttribute('src', /\/api\/v1\/content\/factory\//);
+  await expect(contentCard).toHaveCount(0);
+  const response = await page.goto(publishedPlaybackPath);
+  expect(response?.status()).toBe(404);
+  await expect(page.getByText('Approved lesson playback is unavailable.')).toBeVisible();
   const body = await page.locator('body').innerText();
-  expect(body).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_video_|volume:v1:/i);
+  expect(body).not.toMatch(
+    /Browser-published occurrence lesson|https?:\/\/player\.vimeo\.com|synthetic_video_|volume:v1:/i,
+  );
 });
 
 test('a non-entitled learner receives a metadata-safe denial', async ({ page }) => {
@@ -154,8 +146,4 @@ function syntheticMp4() {
   bytes.write('isom', 8, 'ascii');
   bytes.write('browser-e2e', 32, 'ascii');
   return bytes;
-}
-
-function escapeRegex(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

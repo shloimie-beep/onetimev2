@@ -67,15 +67,13 @@ test('Admin IA keeps five focused areas across the governed viewport matrix', as
   }
 
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/app/crm/students');
-  await expect(page.getByRole('heading', { name: 'Contacts', exact: true })).toBeVisible();
+  await page.goto('/app/crm/learners');
+  await expect(page.locator('#page-title')).toHaveText('Learners');
   await expect(
-    page.getByRole('navigation', { name: 'Contacts area' }).getByRole('link'),
-  ).toHaveText(['Parents', 'Students', 'Internal Tasks']);
-  await expect(
-    page.getByRole('heading', { name: 'Student contacts are not available yet' }),
-  ).toBeVisible();
-  await expect(page.getByText(/never synthesize a Student or child GHL contact/i)).toBeVisible();
+    page.getByRole('navigation', { name: 'People and family management' }).getByRole('link'),
+  ).toHaveText(['People / Contacts', 'Households', 'Users & Roles', 'Learners', 'Audit History']);
+  await expect(page.locator('#admin-directory-learners-title')).toHaveText('Learners');
+  await expect(page.getByRole('button', { name: 'Add learner' })).toBeVisible();
 
   await page.goto('/app/content/studio');
   await expect(page.getByRole('heading', { name: 'Content' })).toBeVisible();
@@ -88,7 +86,15 @@ test('Admin IA keeps five focused areas across the governed viewport matrix', as
   await expect(page.getByRole('heading', { name: 'Classroom' })).toBeVisible();
   await expect(
     page.getByRole('navigation', { name: 'Classroom area' }).getByRole('link'),
-  ).toHaveText(['Overview', 'Schedule', 'Questions', 'Rewards']);
+  ).toHaveText([
+    'Classes',
+    'Occurrences',
+    'Enrollments',
+    'Recordings',
+    'Access',
+    'Questions',
+    'Rewards',
+  ]);
   await expect(page.getByLabel('Class occurrence')).toBeVisible();
   await expect(
     page.locator(

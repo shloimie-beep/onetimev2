@@ -12,7 +12,6 @@ import {
   type LiveClassLearnerRecord,
   type LiveClassRepository,
   type LiveClassSessionRecord,
-  zoomCustomerKey,
 } from '../../../domain/src/index.ts';
 import {
   ONE_TIME_CLASS_SERIES_KEY,
@@ -25,7 +24,6 @@ import { inTransaction, type DbPool, type Queryable } from '../index.ts';
 export function createLiveClassRepository(pool: DbPool): LiveClassRepository {
   return {
     ensureLiveSession: (args) => ensureLiveSession(pool, args),
-    ensureFakeDemo: (args) => ensureFakeDemo(pool, args),
     getLearner: (args) => getLearner(pool, args),
     submitQuestion: (args) => submitQuestion(pool, args),
     listQuestions: (args) => listQuestions(pool, args),
@@ -142,122 +140,6 @@ async function ensureLiveSession(
   });
 }
 
-async function ensureFakeDemo(
-  pool: DbPool,
-  args: Parameters<LiveClassRepository['ensureFakeDemo']>[0],
-) {
-  await inTransaction(pool, async (client) => {
-    await client.query(
-      `INSERT INTO onetime.portal_households
-         (household_key, account_key, product_key, display_name)
-       VALUES
-         ('live_demo_household_1', $1, $2, 'Live Demo 1'),
-         ('live_demo_household_2', $1, $2, 'Live Demo 2'),
-         ('live_demo_household_3', $1, $2, 'Live Demo 3')
-       ON CONFLICT (account_key, product_key, household_key)
-       DO NOTHING`,
-      [args.actor.account_key, args.actor.product_key],
-    );
-    await client.query(
-      `INSERT INTO onetime.portal_learners
-         (learner_key, account_key, product_key, household_key, display_name, grade_label)
-       VALUES
-         ('live_demo_learner_1', $1, $2, 'live_demo_household_1', 'Student 1', 'Demo'),
-         ('live_demo_learner_2', $1, $2, 'live_demo_household_2', 'Student 2', 'Demo'),
-         ('live_demo_learner_3', $1, $2, 'live_demo_household_3', 'Student 3', 'Demo')
-       ON CONFLICT (account_key, product_key, learner_key)
-       DO NOTHING`,
-      [args.actor.account_key, args.actor.product_key],
-    );
-
-    for (const item of demoQuestions(args.occurrence_key, args.class_label)) {
-      await client.query(
-        `INSERT INTO onetime.live_class_questions
-           (question_key, account_key, product_key, household_key, learner_key, occurrence_key,
-            approved_display_name, question_body_digest, question_preview, status, readiness,
-            mic_ready, video_ready, customer_key, class_label, selected_at, student_ready_at,
-            idempotency_key, request_hash)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
-         ON CONFLICT (account_key, product_key, learner_key, occurrence_key, idempotency_key)
-         DO UPDATE SET
-           customer_key = EXCLUDED.customer_key,
-           updated_at = now(),
-           revision = onetime.live_class_questions.revision + 1
-         WHERE onetime.live_class_questions.customer_key <> EXCLUDED.customer_key`,
-        [
-          item.question_key,
-          args.actor.account_key,
-          args.actor.product_key,
-          item.household_key,
-          item.learner_key,
-          args.occurrence_key,
-          item.approved_display_name,
-          item.question_body_digest,
-          item.question_preview,
-          item.status,
-          item.readiness,
-          item.status === 'student_ready',
-          item.status === 'student_ready',
-          item.customer_key,
-          item.class_label,
-          item.status === 'student_ready' ? args.now : null,
-          item.status === 'student_ready' ? args.now : null,
-          item.idempotency_key,
-          item.request_hash,
-        ],
-      );
-      await client.query(
-        `DELETE FROM onetime.live_class_participants
-          WHERE account_key = $1
-            AND product_key = $2
-            AND occurrence_key = $3
-            AND learner_key = $4
-            AND customer_key <> $5`,
-        [
-          args.actor.account_key,
-          args.actor.product_key,
-          args.occurrence_key,
-          item.learner_key,
-          item.customer_key,
-        ],
-      );
-      await upsertParticipant(client, {
-        actor: args.actor,
-        occurrence_key: args.occurrence_key,
-        participant_key: stableKey('zoom_participant', [args.occurrence_key, item.customer_key]),
-        learner_key: item.learner_key,
-        customer_key: item.customer_key,
-        approved_display_name: item.approved_display_name,
-        join_state: item.join_state,
-        audio_state: item.audio_state,
-        video_state: item.video_state,
-        active_speaker: false,
-        spotlighted: false,
-      });
-    }
-    const selectedDemo = demoQuestions(args.occurrence_key, args.class_label).find(
-      (item) => item.status === 'student_ready',
-    );
-    if (selectedDemo) {
-      await client.query(
-        `UPDATE onetime.live_class_stage_sessions
-            SET current_question_key = COALESCE(current_question_key, $4),
-                current_scene = CASE WHEN current_question_key IS NULL THEN 'OT - Slides' ELSE current_scene END,
-                updated_at = now()
-          WHERE account_key = $1
-            AND product_key = $2
-            AND occurrence_key = $3`,
-        [
-          args.actor.account_key,
-          args.actor.product_key,
-          args.occurrence_key,
-          selectedDemo.question_key,
-        ],
-      );
-    }
-  });
-}
-
 async function getLearner(
   pool: DbPool,
   args: Parameters<LiveClassRepository['getLearner']>[0],
@@ -351,6 +233,8 @@ async function listQuestions(
       WHERE account_key = $1
         AND product_key = $2
         AND occurrence_key = $3
+        AND learner_key NOT LIKE 'live_demo_learner_%'
+        AND learner_key NOT LIKE 'full_app_preview_%'
       ORDER BY
         CASE status
           WHEN 'live' THEN 1
@@ -446,6 +330,8 @@ async function listParticipants(
       WHERE account_key = $1
         AND product_key = $2
         AND occurrence_key = $3
+        AND (learner_key IS NULL OR learner_key NOT LIKE 'live_demo_learner_%')
+        AND (learner_key IS NULL OR learner_key NOT LIKE 'full_app_preview_%')
       ORDER BY updated_at DESC, participant_key`,
     [args.actor.account_key, args.actor.product_key, args.occurrence_key],
   );
@@ -918,57 +804,6 @@ async function getOccurrence(
   );
   const row = result.rows[0] as Record<string, unknown> | undefined;
   return row ? { occurrence_key: String(row.occurrence_key), title: String(row.title) } : null;
-}
-
-function demoQuestions(occurrenceKey: string, classLabel: string) {
-  return [
-    {
-      question_key: stableKey('live_question', [occurrenceKey, 'demo-1']),
-      household_key: 'live_demo_household_1',
-      learner_key: 'live_demo_learner_1',
-      approved_display_name: 'Student 1',
-      question_preview: 'Can the Rabbi explain why this Mishnah uses that example?',
-      status: 'student_ready',
-      readiness: 'ready',
-      join_state: 'joined' as const,
-      audio_state: 'muted' as const,
-      video_state: 'on' as const,
-      idempotency_key: 'live-demo-question-1',
-    },
-    {
-      question_key: stableKey('live_question', [occurrenceKey, 'demo-2']),
-      household_key: 'live_demo_household_2',
-      learner_key: 'live_demo_learner_2',
-      approved_display_name: 'Student 2',
-      question_preview: 'What is the practical difference between the two opinions?',
-      status: 'submitted',
-      readiness: 'pending',
-      join_state: 'joined' as const,
-      audio_state: 'muted' as const,
-      video_state: 'off' as const,
-      idempotency_key: 'live-demo-question-2',
-    },
-    {
-      question_key: stableKey('live_question', [occurrenceKey, 'demo-3']),
-      household_key: 'live_demo_household_3',
-      learner_key: 'live_demo_learner_3',
-      approved_display_name: 'Student 3',
-      question_preview: 'Where do we see this idea again later in the perek?',
-      status: 'submitted',
-      readiness: 'pending',
-      join_state: 'left' as const,
-      audio_state: 'muted' as const,
-      video_state: 'off' as const,
-      idempotency_key: 'live-demo-question-3',
-    },
-  ].map((item) => ({
-    ...item,
-    occurrence_key: occurrenceKey,
-    class_label: classLabel,
-    customer_key: zoomCustomerKey([occurrenceKey, item.learner_key]),
-    question_body_digest: stableKey('live_question_digest', [occurrenceKey, item.question_preview]),
-    request_hash: stableKey('live_question_request', [occurrenceKey, item.idempotency_key]),
-  }));
 }
 
 function commandParams(

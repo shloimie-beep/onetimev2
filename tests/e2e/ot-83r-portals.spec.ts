@@ -144,9 +144,9 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
   await studentPage
     .getByRole('textbox', { name: 'Ask privately', exact: true })
     .fill(privateQuestion);
-  await studentPage.getByRole('button', { name: 'Preview private question' }).click();
+  await studentPage.getByRole('button', { name: 'Review private question' }).click();
   const privatePreview = studentPage.locator('.ot-private-preview');
-  await expect(privatePreview.getByText('Private question preview')).toBeVisible();
+  await expect(privatePreview.getByText('Review private question')).toBeVisible();
   await expect(privatePreview.getByText(privateQuestion)).toBeVisible();
   await studentPage.getByRole('button', { name: 'Send private question' }).click();
   await expect(studentPage.getByText('Question submitted.')).toBeVisible();
@@ -174,7 +174,8 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
 
   const viewerContext = await browser.newContext();
   const viewerPage = await viewerContext.newPage();
-  await loginAs(viewerPage, 'viewer', '/app/parent');
+  await loginAs(viewerPage, 'viewer', '/app/crm');
+  await viewerPage.goto('/app/parent');
   await expect(
     viewerPage.getByRole('heading', { name: 'Parent Portal access unavailable' }),
   ).toBeVisible();

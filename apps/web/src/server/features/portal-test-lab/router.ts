@@ -641,6 +641,26 @@ async function seedPortalLabClassAndContent(input: { pool: DbPool; config: AppCo
       new Date('2026-07-20T17:00:00.000Z'),
     ],
   );
+  for (const learner of W12_PORTAL_TEST_LAB.learners) {
+    await input.pool.query(
+      `INSERT INTO onetime.classroom_occurrence_learner_entitlements
+         (occurrence_entitlement_key, account_key, product_key, occurrence_key,
+          household_key, learner_key, entitlement_state, source)
+       VALUES ($1,$2,$3,$4,$5,$6,'active','isolated_acceptance')
+       ON CONFLICT (account_key, product_key, occurrence_key, learner_key)
+       DO UPDATE SET entitlement_state = 'active',
+                     source = 'isolated_acceptance',
+                     updated_at = now()`,
+      [
+        `w12_occurrence_${learner.learnerKey}`,
+        input.config.accountKey,
+        input.config.productKey,
+        W12_PORTAL_TEST_LAB.occurrenceKey,
+        W12_PORTAL_TEST_LAB.householdKey,
+        learner.learnerKey,
+      ],
+    );
+  }
   await input.pool.query(
     `INSERT INTO onetime.content_items
        (content_item_key, account_key, product_key, occurrence_key, title, item_type,

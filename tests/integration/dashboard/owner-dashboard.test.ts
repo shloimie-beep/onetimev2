@@ -11,7 +11,6 @@ import {
   decryptAuthEmailChallengeDeliveryPayloadForTests,
 } from '../../../packages/domain/src/index.ts';
 import type { OwnerDashboardResponse } from '../../../packages/contracts/src/dashboard/index.ts';
-import type { OperatorLaunchStatusResponse } from '../../../packages/contracts/src/ops/index.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -188,20 +187,16 @@ describe('OT-71 owner/admin dashboard shell', () => {
         headers: { cookie: owner.cookies },
       });
       const launchStatusText = await launchStatus.text();
-      expect(launchStatus.status, launchStatusText).toBe(200);
+      expect(launchStatus.status, launchStatusText).toBe(404);
       expect(launchStatus.headers.get('cache-control')).toContain('no-store');
       expect(launchStatusText).not.toMatch(
         /https?:\/\/|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|provider_secret|password=/iu,
       );
-      const launchStatusJson = JSON.parse(launchStatusText) as OperatorLaunchStatusResponse;
-      expect(launchStatusJson.launch_status.board_source_hash).toMatch(/^sha256:[a-f0-9]{64}$/);
-      expect(launchStatusJson.launch_status.current_milestone.acceptance_total).toBeGreaterThan(0);
-      expect(launchStatusJson.launch_status.remaining.length).toBeGreaterThan(0);
-      expect(launchStatusJson.launch_status.safe_links.length).toBeGreaterThan(0);
-      expect(
-        launchStatusJson.launch_status.safe_links.every((link) => link.href.startsWith('/app/')),
-      ).toBe(true);
-      expect(launchStatusJson.launch_status.next_executable_task.action).toBeTruthy();
+      expect(JSON.parse(launchStatusText)).toMatchObject({
+        success: false,
+        code: 'NOT_FOUND',
+        message: 'Launch status is unavailable.',
+      });
 
       const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');
       const deniedApi = await fetch(`${server.baseUrl}/api/v1/dashboard/owner`, {
@@ -215,7 +210,7 @@ describe('OT-71 owner/admin dashboard shell', () => {
       const deniedLaunchStatusApi = await fetch(`${server.baseUrl}/api/v1/launch-status`, {
         headers: { cookie: viewer.cookies },
       });
-      expect(deniedLaunchStatusApi.status).toBe(403);
+      expect(deniedLaunchStatusApi.status).toBe(404);
       const deniedOperationsShell = await fetch(`${server.baseUrl}/app/operations`, {
         headers: { cookie: viewer.cookies },
       });

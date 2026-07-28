@@ -116,7 +116,6 @@ import {
   parentRewardGoalSchema,
   ot86bReadinessResponseSchema,
   ot86bSocialDraftListResponseSchema,
-  operatorLaunchStatusResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
 import {
   providerCanaryPlanResponseSchema,
@@ -292,11 +291,7 @@ import {
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
 import { registerLearningDeliveryDemoRoutes } from './features/learning-delivery-demo/router.ts';
-import {
-  isExperiencePreviewEnabled,
-  isLiveConsoleNavigationEnabled,
-  registerExperiencePreviewRoutes,
-} from './features/experience-preview/router.ts';
+import { isLiveConsoleNavigationEnabled } from './features/experience-preview/router.ts';
 import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
@@ -306,7 +301,6 @@ import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
 import { createContactOperationsRouter } from './features/contact-operations/router.ts';
 import { createAdminDirectoryRouter } from './features/admin-directory/router.ts';
-import { operatorLaunchStatusProjection } from './generated/operator-launch-status.js';
 
 type AppDeps = {
   config: AppConfig;
@@ -912,30 +906,11 @@ export function createApp({
     await sendAppHtml(res, distDir, 'crm', config);
   });
 
-  app.get('/app/experience-preview', async (req: RequestWithTrace, res) => {
+  app.get('/app/experience-preview', async (_req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     res.setHeader('Referrer-Policy', 'no-referrer');
-    if (!isExperiencePreviewEnabled(config)) {
-      res.status(404).type('text').send('Experience Preview is unavailable.');
-      return;
-    }
-    const session = await sessionFromRequest(req, pool, config);
-    if (!session) {
-      res.redirect(
-        302,
-        `/login?return_to=${encodeURIComponent(
-          safeReturnPath(req.originalUrl, config) ?? '/app/experience-preview',
-        )}`,
-      );
-      return;
-    }
-    if (!canReadContentLibrary(session.user.role)) {
-      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
-      return;
-    }
-    await ensureSessionCsrfCookie(req, res, pool, config, session);
-    await sendAppHtml(res, distDir, 'crm', config);
+    res.status(404).type('text').send('Experience Preview is unavailable.');
   });
 
   if (config.legacyBillingRuntimeEnabled) {
@@ -1525,7 +1500,7 @@ export function createApp({
       expires_at: session.expires_at,
       capabilities: {
         operator_experience: {
-          experience_preview: isExperiencePreviewEnabled(config),
+          experience_preview: false,
           live_console: isLiveConsoleNavigationEnabled(config),
         },
       },
@@ -1582,20 +1557,7 @@ export function createApp({
 
   app.get('/api/v1/launch-status', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!canUseOwnerDashboard(session.user.role)) {
-      res
-        .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot view launch status.', req.traceId));
-      return;
-    }
-    res.json(
-      operatorLaunchStatusResponseSchema.parse({
-        success: true,
-        launch_status: operatorLaunchStatusProjection,
-      }),
-    );
+    res.status(404).json(publicError('NOT_FOUND', 'Launch status is unavailable.', req.traceId));
   });
 
   app.get(
@@ -1727,34 +1689,6 @@ export function createApp({
     helper: createScopedKnowledgeHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
     billing: createParentAccessSummaryAdapter(pool, config),
   };
-  const previewStudentPortalService = createStudentPortalService(portalServiceDeps);
-  registerExperiencePreviewRoutes({
-    app,
-    config,
-    pool,
-    distDir,
-    session: {
-      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
-      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
-      setPrivateNoStore,
-    },
-    studentDashboardForPreview: ({ learnerKey, householdKey, accessStateKey, previewSessionKey }) =>
-      previewStudentPortalService.dashboard({
-        account_key: config.accountKey,
-        product_key: config.productKey,
-        actor_user_ref: previewSessionKey,
-        actor_role: 'student',
-        session_key: previewSessionKey,
-        capabilities: ['student:dashboard:read', 'rewards:read', 'gamification:read'],
-        authorized_households: [],
-        student_learner: {
-          learner_key: learnerKey,
-          household_key: householdKey,
-          access_state_key: accessStateKey,
-        },
-      }),
-    ...(clock ? { clock } : {}),
-  });
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
   const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
     isSameOriginPost(req, config) &&
@@ -3361,6 +3295,9 @@ export function createApp({
         sourceKey: String(req.params.sourceKey),
         actor,
       });
+      if (playback.isDemo || playback.processingMode === 'synthetic') {
+        throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
+      }
       res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
     } catch (error) {
       const status = error instanceof ContentFactoryError && error.code === 'NOT_FOUND' ? 404 : 409;
@@ -3387,13 +3324,8 @@ export function createApp({
         sourceKey: String(req.params.sourceKey),
         actor,
       });
-      if (playback.processingMode === 'synthetic') {
-        res.setHeader(
-          'Content-Security-Policy',
-          "default-src 'self'; style-src 'self'; frame-ancestors 'self'; base-uri 'self'",
-        );
-        res.status(200).type('html').send(contentFactoryDemoEmbedHtml(playback));
-        return;
+      if (playback.isDemo || playback.processingMode === 'synthetic') {
+        throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
       }
       if (!playback.privateProviderAssetId) {
         throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Protected playback is unavailable.');
@@ -5838,36 +5770,6 @@ function zoomHostHtml() {
     </section>
   </main>
   <script type="module" src="/assets/app-zoom-host.js?v=zoom-real-control-3"></script>
-</body>
-</html>`;
-}
-
-function contentFactoryDemoEmbedHtml(
-  playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>,
-) {
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <title>${escapeHtml(playback.title)} — synthetic demo</title>
-  <link rel="stylesheet" href="/assets/app-crm.css">
-</head>
-<body>
-  <main class="app-workspace learning-player-page" data-protected-demo-player="true">
-    <section class="state-panel learning-player-shell" aria-labelledby="demo-player-title">
-      <p class="eyebrow">Synthetic classroom preview</p>
-      <h1 id="demo-player-title">${escapeHtml(playback.title)}</h1>
-      <p>This protected demo uses approved synthetic lesson data without contacting an external media provider.</p>
-      <div role="group" aria-label="Demo caption track">
-        <strong>Captions active</strong>
-        <p>${escapeHtml(
-          playback.syntheticCaptionText ?? 'Approved synthetic caption track unavailable.',
-        )}</p>
-      </div>
-    </section>
-  </main>
 </body>
 </html>`;
 }

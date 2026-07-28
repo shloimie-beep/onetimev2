@@ -148,7 +148,7 @@ describe('durable occurrence-scoped content factory', () => {
     });
   });
 
-  it('survives restart and lease expiry, publishes to one learner, denies a sibling, and revokes on unpublish', async () => {
+  it('survives restart and lease expiry while keeping synthetic output out of ordinary playback', async () => {
     const owner = await createUserSession('owner', 'factory-owner@example.test');
     const parent = await createUserSession('parent', 'factory-parent@example.test');
     const studentOne = await createUserSession('student', 'factory-student-one@example.test');
@@ -362,10 +362,9 @@ describe('durable occurrence-scoped content factory', () => {
 
       const entitledPlayback = await playback(restartedWebProcess.baseUrl, studentOne, sourceKey);
       const entitledHtml = await entitledPlayback.text();
-      expect(entitledPlayback.status, entitledHtml).toBe(200);
-      expect(entitledHtml).toContain('Approved occurrence-scoped Mishnah review');
-      expect(entitledHtml).toContain('Class occurrence for durable video');
-      expect(entitledHtml).toContain('<dt>Captions</dt><dd>Active</dd>');
+      expect(entitledPlayback.status, entitledHtml).toBe(404);
+      expect(entitledHtml).not.toContain('Approved occurrence-scoped Mishnah review');
+      expect(entitledHtml).not.toContain('Class occurrence for durable video');
       expect(entitledHtml).not.toContain('player.vimeo.com');
 
       const siblingPlayback = await playback(restartedWebProcess.baseUrl, sibling, sourceKey);
@@ -374,13 +373,13 @@ describe('durable occurrence-scoped content factory', () => {
       expect(siblingHtml).not.toContain('Approved occurrence-scoped Mishnah review');
 
       const parentPlayback = await playback(restartedWebProcess.baseUrl, parent, sourceKey);
-      expect(parentPlayback.status, await parentPlayback.clone().text()).toBe(200);
+      expect(parentPlayback.status, await parentPlayback.clone().text()).toBe(404);
 
       const syntheticEmbed = await fetch(
         `${restartedWebProcess.baseUrl}/api/v1/content/factory/${encodeURIComponent(sourceKey)}/embed`,
         { headers: { cookie: studentOne.cookie }, redirect: 'manual' },
       );
-      expect(syntheticEmbed.status).toBe(200);
+      expect(syntheticEmbed.status).toBe(404);
       expect(await syntheticEmbed.text()).not.toContain('vimeo.com');
 
       expect(

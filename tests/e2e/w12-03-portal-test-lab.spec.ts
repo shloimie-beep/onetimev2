@@ -36,9 +36,13 @@ test('W12-03 admin lab page is owner/admin-only and secret-free', async ({ brows
   const parentContext = await browser.newContext();
   const parentPage = await parentContext.newPage();
   await loginAs(parentPage, 'parent', W12_PORTAL_TEST_LAB_ROUTE, { waitForReturnTo: false });
+  await parentPage.waitForURL('**/app/parent');
   await expect(
-    parentPage.getByRole('heading', { name: 'Portal Test Lab access unavailable' }),
+    parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
+  const forbidden = await parentPage.request.get(W12_PORTAL_TEST_LAB_ROUTE);
+  expect(forbidden.status()).toBe(403);
+  expect(await forbidden.text()).toContain('Portal Test Lab access unavailable');
   await parentContext.close();
 });
 
@@ -108,7 +112,7 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     parentPage.locator('#app-main').getByRole('heading', { name: 'Parent Portal' }),
   ).toBeVisible();
   await expect(parentPage.getByText('3 active learners')).toBeVisible();
-  await parentPage.getByRole('link', { name: 'Access' }).click();
+  await parentPage.getByRole('link', { name: 'Billing' }).click();
   await expect(parentPage.getByRole('heading', { name: 'Learning access' })).toBeVisible();
   await expect(
     parentPage.getByText(/GHL manages billing|Complimentary pilot access/i),
