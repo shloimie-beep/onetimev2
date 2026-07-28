@@ -1,0 +1,32 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P35-config-deploy-001
+task_id: P35
+kind: config_deploy
+requirement_ids:
+  - OTV2-DOMAIN-153
+  - OTV2-DOMAIN-154
+  - OTV2-DOMAIN-156
+acceptance_case_ids:
+  - OTV2-DOMAIN-153-AC01
+  - OTV2-DOMAIN-154-AC01
+  - OTV2-DOMAIN-156-AC01
+rationale: Canonical origin enforcement, deployment routing, and runtime configuration are steward-owned; DNS/deployment effects also require separate external authority.
+desired_semantic_change: Configure explicit marketing, Join, and App origins; reject unknown production hosts; prove App auth cookies are host-only with Secure HttpOnly SameSite=Strict; keep Join isolated and the old application read-only until production acceptance and rollback gates pass.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/config/src/index.ts canonical origin fields
+  - deployment ingress host allowlist
+  - app.onetimeonetime.com
+  - join.onetimeonetime.com
+  - onetimeonetime.com
+  - www.onetimeonetime.com
+compatibility_assumptions:
+  - Existing auth cookies omit the Domain attribute.
+  - P35 cutover gate remains fail-closed until candidate-bound acceptance.
+verification_performed:
+  - Static inspection of current auth cookie flags
+  - P35 domain matrix and cutover gate verification
+conflicts_or_risks:
+  - No DNS or deployment mutation is authorized by this request.
+  - Misordered ingress rules could expose preview content or share cookies.
+contains_secret_or_private_data: false

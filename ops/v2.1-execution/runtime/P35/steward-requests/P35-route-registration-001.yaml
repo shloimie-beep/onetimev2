@@ -1,0 +1,36 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P35-route-registration-001
+task_id: P35
+kind: route_registration
+requirement_ids:
+  - OTV2-FOUNDATION-002
+  - OTV2-DOMAIN-153
+  - OTV2-DOMAIN-155
+  - OTV2-DOMAIN-157
+  - OTV2-MIGRATION-207
+acceptance_case_ids:
+  - OTV2-FOUNDATION-002-AC01
+  - OTV2-DOMAIN-153-AC01
+  - OTV2-DOMAIN-155-AC01
+  - OTV2-DOMAIN-157-AC01
+  - OTV2-MIGRATION-207-AC01
+rationale: Central composer and public-page build paths are steward-owned and still register the historical Tisha B'Av product surface.
+desired_semantic_change: Register the P35 domain-transition feature before legacy routes; remove the old active Tisha page/form/join/redirect handlers and public build/client hooks; preserve only P35's 410 ended-event/no-write behavior.
+proposed_symbols_routes_keys_or_dependencies:
+  - apps/web/src/server/features/domain-transition/index.ts#domainTransitionFeatureRegistration
+  - /tisha-bav
+  - /tisha-bav/live
+  - /api/v1/events/tisha-bav-2026/register
+  - /api/v1/events/tisha-bav-2026/join
+  - /api/v1/events/tisha-bav-2026/redirect
+compatibility_assumptions:
+  - F01 server feature registry contract 1.0.0 remains integrated.
+  - Historical migrations and evidence remain immutable.
+  - The archived provider assets are not deleted or silently reused.
+verification_performed:
+  - P35 pure policy and archive contract verification
+conflicts_or_risks:
+  - Route order must ensure the no-write 410 handlers precede any historical mutation handler.
+  - Removing historical build registration must not delete archived evidence or assets.
+contains_secret_or_private_data: false
