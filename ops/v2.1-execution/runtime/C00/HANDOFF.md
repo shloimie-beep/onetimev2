@@ -20,6 +20,9 @@ reviewed head: secret scanning passed and Prettier reported 1,736 files before
 the chained command stopped.
 Independent package topology validation passed, and `codex/v21-integration`
 was created and remotely verified at `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
+Control ledgers are initialized with migrations beginning at 2234, provider
+locks unclaimed, empty merge/steward/blocker state, and non-overlapping initial
+ready leases for F01 plus I36 bootstrap adoption.
 
 ## Remaining work
 
@@ -29,8 +32,8 @@ mark the controller operational, and release the controller lease.
 
 ## Exact next action
 
-Initialize the registry, migration allocation mirror, steward/provider/writer
-locks, merge/current-candidate state, and exact F01/I36 ready entries.
+Rebind the ready entries to the committed `control_initialized` head, validate
+their sibling payload digests, mark C00 operational, and release its lease.
 
 ## Verification
 

@@ -12,11 +12,11 @@ phase: bootstrap
 claimed_by: codex-c00-a916ec3f7e8b
 claim_time: '2026-07-28T14:44:41Z'
 claim_id: 73f19375-44c3-4c37-86e6-fcf30d77e244
-lease_expires_at: '2026-07-28T15:53:33Z'
-last_heartbeat_at: '2026-07-28T14:53:33Z'
-controller_authorization_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+lease_expires_at: '2026-07-28T15:57:24Z'
+last_heartbeat_at: '2026-07-28T14:57:24Z'
+controller_authorization_sha: 0123aef472bd18a9d03c47087503bfb1edd00e5c
 ready_entry_payload_digest: null
-state_based_on_head_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+state_based_on_head_sha: 0123aef472bd18a9d03c47087503bfb1edd00e5c
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -28,12 +28,14 @@ completed_steps:
 - measured and fingerprinted the exact reviewed-head repository baseline
 - independently validated package coverage, dependency DAGs, writer scopes, and locked digests
 - created and verified codex/v21-integration at ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+- initialized migration, registry, steward, provider-lock, merge, candidate, and blocker state
+- published collision-free initial F01 and bootstrap-adoption I36 ready entries
 remaining_steps:
 - validate AGENTS.md authority replacement
 - run and record the repository baseline
 - initialize control ledgers and ready entries
 - mark the controller operational and release its lease
-next_action: Initialize the task registry, locks, queues, and exact F01/I36 ready entries.
+next_action: Rebind ready entries to this control checkpoint, mark C00 operational, and release the controller lease.
 requirements: {}
 acceptance_cases: {}
 changed_paths:

@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: bootstrap_required
-bootstrap_phase: integration_created
+bootstrap_phase: control_initialized
 bootstrap_phase_order:
 - package_installed
 - agents_updated
@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-next_action: Initialize the task registry, locks, queues, and exact F01/I36 ready entries.
+controller_authorization_sha: 0123aef472bd18a9d03c47087503bfb1edd00e5c
+next_action: Rebind ready entries to this control checkpoint, mark C00 operational, and release the controller lease.
 authority_note: Only C00 updates this global control state.
