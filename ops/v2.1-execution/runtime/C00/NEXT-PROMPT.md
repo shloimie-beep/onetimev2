@@ -103,6 +103,13 @@ with interface `418ffcc5`, implementation `46b5c39a`, semantic contract
 `95c177d5...`, 17 focused tests, typecheck, and zero effects. Its two steward
 requests are assigned but unapplied. Resume I36 to merge only P27; authorize
 P16 in a separate later integration transaction.
+I36 merged P27 at exact two-parent head `91522295c4b6f7f3871cdd7085d16d7d3620e1ea`
+and published final metadata `972fa43507d6d4391a86dd130a1c38a05820b2ce`.
+The P27 source is ancestral, its exact scope/checks passed, P16 is absent, no
+steward request was applied, and effects remain zero. C00 retired P27's merge
+item and queued only P16 for fresh I36 atomic claim
+`ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6` from `972fa435`. Stop after that claim
+so C00 can rebind the P16 optimistic target CAS before the merge.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

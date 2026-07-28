@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-8072142d
-claim_time: '2026-07-28T21:24:29Z'
-claim_id: 8072142d-49b4-43ee-a06b-be013cc60208
-lease_expires_at: '2026-07-28T21:28:37Z'
-last_heartbeat_at: '2026-07-28T21:28:37Z'
-controller_authorization_sha: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
+claimed_by: codex-c00-orchestrator-1f859d75
+claim_time: '2026-07-28T21:36:23Z'
+claim_id: 1f859d75-4bee-4e41-a90c-18241e6f1360
+lease_expires_at: '2026-07-28T21:39:40Z'
+last_heartbeat_at: '2026-07-28T21:39:40Z'
+controller_authorization_sha: 80e9f304627ef724757604255627d3e2fe033ef8
 ready_entry_payload_digest: null
-state_based_on_head_sha: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
+state_based_on_head_sha: 80e9f304627ef724757604255627d3e2fe033ef8
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -111,8 +111,10 @@ completed_steps:
 - independently verified I36 P27 atomic claim 8d90ca47 exact three-file scope and rebound the P27 merge target CAS
 - independently verified P16 final 72fca16b, interface 418ffcc5, implementation 46b5c39a, six artifact/plain-path contract/interface-state digests, 17 focused tests, typecheck, released lease, and zero effects
 - recorded and assigned P16 migration and registration requests without applying either request
+- independently verified P27's exact merge parents, source ancestry, 20-path interface scope, final I36 metadata, checks, and zero effects
+- queued only P16 for a fresh atomic-claim-only I36 authorization from exact integration head 972fa435
 remaining_steps: []
-next_action: I36 merges only P27 while P16 awaits next integration authorization.
+next_action: I36 atomically claims only P16 from 972fa435; C00 then rebinds the P16 target CAS before merge.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -120,12 +122,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
+  current_control_parent_sha: 80e9f304627ef724757604255627d3e2fe033ef8
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 8072142d-49b4-43ee-a06b-be013cc60208
-      observed_head: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
+      claim_id: 1f859d75-4bee-4e41-a90c-18241e6f1360
+      observed_head: 80e9f304627ef724757604255627d3e2fe033ef8
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -136,11 +138,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: 841f3e65-684b-4529-976b-5e796d9d7e45
-      observed_head: 8d90ca47c5396002a04ed0de53249ce8eac7ca52
-      authorized_start_sha: c4d042e94b3f7e779fd6bfd41127dd9576854805
-      lease_expires_at: '2026-07-28T22:15:41Z'
-      scheduling_state: claimed_P27_target_rebound_resume_authorized
+      claim_id: ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6
+      observed_head: 972fa43507d6d4391a86dd130a1c38a05820b2ce
+      authorized_start_sha: 972fa43507d6d4391a86dd130a1c38a05820b2ce
+      lease_expires_at: '2026-07-28T22:36:49Z'
+      scheduling_state: ready_for_P16_atomic_claim_only
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -217,14 +219,14 @@ orchestration:
       observed_head: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
       authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
       lease_expires_at: null
-      scheduling_state: ready_for_review_interface_verified_awaiting_integration
+      scheduling_state: ready_for_review_interface_queued
     P32:
       branch: codex/v21-p32-privacy-data-rights
       claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
       observed_head: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
       authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
       lease_expires_at: null
-      scheduling_state: ready_for_review_interface_queued_agent_returned
+      scheduling_state: ready_for_review_interface_integrated_at_972fa435
     P27:
       branch: codex/v21-p27-ghl-identity
       claim_id: 83580db4-4a47-44d0-8d6d-83969ae7ccf5
@@ -347,11 +349,11 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 5c32e3340d70545fba07c9c103bc8935fbff91bcbd85cbf31ee52d62ee7669b7
-    control_lease: b8ee6b358b476b74e5a737f6f25d3457cef9280c8274f25151c2141f0f63d455
-    task_registry: 7323b7c06645f9c9bbea1b2a0ddecf10f117412030e699aebbed35a65e8634f8
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
-    merge_queue: 0e52175ed81a5b3979c534e2fb08d7397f5d049526a935414384277903200d50
+    control_state: b9605f44e42ae9d4018807e664ec7a07f265f5f64902ade43ec921e31df55be8
+    control_lease: 70c9f775f93ea857f505de71aa3f6fc2f60a4efd01c891197ef3b7bb4bf1203c
+    task_registry: 8e619c24da92c0629be19bff783ed6f93508bea26394fa51d53c66f17ef5df55
+    ready_queue: 713292df06ff68280dd7579ec365e299eabd5e970aedaa06bde764bb6a58286a
+    merge_queue: d7c09a3de11db596e08d1eb9b8aa2204463d0662ae473bf18ea6ded685bc3822
     steward_queue: c63e036449fcebfa17d281d84aa28b8073b9a322f714974bac43ac161f3bb21a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9

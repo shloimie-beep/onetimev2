@@ -4,57 +4,57 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: 26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce
+  merge_id: cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95
   kind: interface
-  task_id: P27
-  source_branch: codex/v21-p27-ghl-identity
-  source_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+  task_id: P16
+  source_branch: codex/v21-p16-class-series-occurrences
+  source_head_sha: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
   target_branch: codex/v21-integration
-  expected_target_head_sha: 8d90ca47c5396002a04ed0de53249ce8eac7ca52
-  source_delta_base_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
-  required_merge_base_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+  expected_target_head_sha: 972fa43507d6d4391a86dd130a1c38a05820b2ce
+  source_delta_base_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+  required_merge_base_sha: 01cdb992660a1fbc20b204b829d28062fd044679
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+  required_postmerge_ancestor_sha: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
   merge_after_heads: {}
   allowed_paths:
-  - apps/worker/src/runners/ghl-identity/index.ts
-  - apps/worker/src/runners/ghl-identity/runner.test.ts
-  - apps/worker/src/runners/ghl-identity/runner.ts
-  - integrations/highlevel/v21/identity/desired-state.ts
-  - integrations/highlevel/v21/identity/index.ts
-  - ops/v2.1-execution/runtime/P27/HANDOFF.md
-  - ops/v2.1-execution/runtime/P27/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P27/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P27/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P27/steward-requests/P27-migration-001.yaml
-  - ops/v2.1-execution/runtime/P27/steward-requests/P27-registration-001.yaml
-  - packages/contracts/src/communications/ghl-identity/index.ts
-  - packages/db/src/communications/ghl-identity/index.ts
-  - packages/db/src/communications/ghl-identity/repository.test.ts
-  - packages/db/src/communications/ghl-identity/repository.ts
-  - packages/domain/src/communications/ghl-identity/classification.ts
-  - packages/domain/src/communications/ghl-identity/errors.ts
-  - packages/domain/src/communications/ghl-identity/index.ts
-  - packages/domain/src/communications/ghl-identity/planner.test.ts
-  - packages/domain/src/communications/ghl-identity/planner.ts
+  - apps/web/src/client/app/admin/classroom/core/ClassSeriesWorkspace.tsx
+  - apps/web/src/client/app/admin/classroom/core/index.ts
+  - apps/web/src/server/features/classes/core/index.ts
+  - apps/web/src/server/features/classes/core/service.test.ts
+  - apps/web/src/server/features/classes/core/service.ts
+  - ops/v2.1-execution/runtime/P16/HANDOFF.md
+  - ops/v2.1-execution/runtime/P16/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P16/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
+  - packages/contracts/src/classes/core/index.ts
+  - packages/db/src/classes/core/index.ts
+  - packages/db/src/classes/core/repository.ts
+  - packages/db/src/classes/core/schema-contract.ts
+  - packages/domain/src/classes/core/classroom-core.test.ts
+  - packages/domain/src/classes/core/enrollment.ts
+  - packages/domain/src/classes/core/errors.ts
+  - packages/domain/src/classes/core/index.ts
+  - packages/domain/src/classes/core/occurrences.ts
+  - packages/domain/src/classes/core/series.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 276197f4-8be4-4cf3-a9a0-e2f249f50306
+    lease_id: 496f5ac8-09f9-4186-82f3-299de929cd7c
     holder_task_id: I36
-    holder_claim_id: 841f3e65-684b-4529-976b-5e796d9d7e45
-    state_based_on_control_head_sha: 0bd71908e070dc99431df054667beee92cf8f495
-    lease_issued_at: '2026-07-28T21:15:41Z'
-    lease_expires_at: '2026-07-28T22:15:41Z'
-    phase_scope: P27_interface_atomic_claim_only
-  task_packet_digest: 77c5a4de58a57dffea3f9cbe4aa7646ac75bc1f0462afebfff2c0279dc527a74
-  state_handoff_digest: d911136b395a7c8808458f17da20d5017870778482a7031047e8d204273159e3
+    holder_claim_id: ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6
+    state_based_on_control_head_sha: 80e9f304627ef724757604255627d3e2fe033ef8
+    lease_issued_at: '2026-07-28T21:36:49Z'
+    lease_expires_at: '2026-07-28T22:36:49Z'
+    phase_scope: P16_interface_atomic_claim_only
+  task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
+  state_handoff_digest: 2ad3f13c642a7c229e54a4a07f59b49cefc4e0477b5dfa8c22e0e1d9f206ee16
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
+  state_based_on_control_head_sha: 80e9f304627ef724757604255627d3e2fe033ef8
 item_payload_digests:
-  26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce: 462a693c41463fc8cb3b7db2252c9e6c6ccf2c0061ec582d37b4640acc9edfe2
+  cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95: 83eed2911bcb33df7e058b3f8b3847cbc340ac976c4422d91c5baa6dd7ee0a40
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

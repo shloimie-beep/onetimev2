@@ -289,18 +289,19 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P27 is `ready_for_review` at `e1933d64`; I36 consumed its
-atomic-claim-only authorization at `8d90ca47`, and the exact P27 interface item
-is rebound to that target CAS. P16 is independently verified
-`ready_for_review` at `72fca16b` and awaits the next integration authorization.
-P32 is integrated at `c4d042e9`; P35 awaits later full admission.
+None for bootstrap. P27 is ancestry-integrated at merge head `91522295` and
+final integration metadata head `972fa435`; its 20-path scope, exact parents,
+checks, absence of P16, and zero effects passed. P16 is independently verified
+`ready_for_review` at `72fca16b`, and its exact interface is queued from
+`972fa435` for a fresh I36 atomic-claim-only authorization. P32 is integrated
+at `c4d042e9`; P35 awaits later full admission.
 
 ## Exact next action
 
-Resume I36 claim `841f3e65-684b-4529-976b-5e796d9d7e45` to merge only P27
-item `26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce` from exact target
-`8d90ca47c5396002a04ed0de53249ce8eac7ca52`. After that merge is verified,
-queue P16 in a separate integration authorization.
+Dispatch I36 claim `ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6` for an atomic
+claim-only checkpoint from `972fa43507d6d4391a86dd130a1c38a05820b2ce`.
+After C00 rebinds merge item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95` to that
+exact claim head, resume I36 to merge only P16.
 
 ## Verification
 
