@@ -4,75 +4,90 @@
 
 - Branch: `codex/v21-p20-media-processing`
 - Start SHA: `ebf88c8e422a6ad40202fc2b0249810d312edc30`
-- Implementation SHA before this handoff metadata commit: `ebf88c8e422a6ad40202fc2b0249810d312edc30`
-- Current handoff commit: derive with `git rev-parse HEAD`; C00 records the pushed head
-- Task packet digest: `5d8898fed74b2ce8b34d6dd67e48c429fe4e4f57ed3e093498cfe0751848ccee`
-- Context digest: `8d2cc66df60ae692f46d9548bb5fafa6e36ec5f98bb8f139c2e3e5266a835add`
-- Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
+- Atomic claim head: `6f894038117ee19d405e528670eb8bf86e8682b2`
+- Implementation head: `e366ef926d6b2ee3be888eaae9fe2cad08b8a57f`
+- Current terminal metadata commit: derive with `git rev-parse HEAD`; C00 records the pushed head
+- Resume control: `bd24429251acff6393c0311a223e0e723335d7cd`
 - Claim: `1cd7bf99-21a7-4231-8418-b9cdfaf958c4`
-- Writer: `codex-p20-worker-1cd7bf99`
-- Containing control authorization: `4f82565865c615ecf91828b0cae41c1cf7b63dfe`
-- Ready-entry parent control: `c9c3d288fa6cdb3aca756de8cc03d35471abe464`
-- Ready-entry digest: `c509304015a470c8c6c2ca7fa71ffcc13f8341f47b7414ddab093e8127d7e7d7`
-- CONTENT_PROCESSING lease: `447a28a6-1675-4fbb-b52f-a77f75f8d356`
-- Lease issued: `2026-07-28T22:50:05Z`
-- Lease expiry: `2026-07-28T23:50:05Z`
+- Released CONTENT_PROCESSING lease: `447a28a6-1675-4fbb-b52f-a77f75f8d356`
 
 ## Completed behavior
 
-The exact control, ready-entry parent, integration start, branch absence,
-canonical ready digest, package/task/context/source-package digests, dependency
-bindings, claim, and writer lease were verified. All 200 locked and 15
-source-package Git blobs matched. The F05 and P19 interface checkpoints are
-ancestors of the exact start SHA. No effect authority exists and no product,
-provider, or external operation was attempted.
+P20 implements a bounded, checksum-bound processing vertical from confirmed P19
+source through `needs_review`. It validates the preserved versioned
+`eu-central-1` S3/SSE-KMS readback; records OBS-only consent/notice/device/upload
+evidence and the safe local-deletion gate; applies Admin begin/end trim; builds
+shell-free, orientation-aware, no-upscale `OT-VIDEO-1` ffmpeg argv; validates
+exact derivative readback; plans bounded checksum-addressed English
+transcription segments; rejects missing, overlapping, malformed, refused,
+truncated, uncertain, ungrounded, or wrong-version output; generates traceable
+captions and strict review/worksheet/knowledge drafts; supports immutable Admin
+edits and exact-version privacy approval; and persists restart-safe
+retry/dead-letter and idempotent receipt state.
 
-This atomic checkpoint contains only the three P20 runtime files. Product
-implementation has not started.
+Every trim, video, transcript, caption, review, worksheet, and knowledge artifact
+is a draft on creation. P20 contains no publication or Student-visibility
+operation.
 
-## Remaining work
+## Realized contracts and digests
 
-C00 must reconcile this atomic claim. After explicit continuation, P20 must
-implement only its five owned roots, publish any required structured steward
-requests instead of editing shared hotspots, pass focused verification, release
-the lease, and finish at `ready_for_review`.
+- `CONTENT_PROCESSING_CONTRACT_VERSION`: `2.1.0`
+- `OT_VIDEO_1_PROFILE`: `OT-VIDEO-1`
+- Transcription: `OT-TRANSCRIBE-1` / `gpt-4o-transcribe` / language `en`
+- Learning drafts: `OT-LEARNING-DRAFT-1` /
+  `gpt-4.1-mini-2025-04-14` / strict `OT-LEARNING-DRAFT-SCHEMA-1`
+- Schema contract: `P20-CONTENT-PROCESSING-SCHEMA-001`
+- Contract file digest:
+  `cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159`
+- Schema contract digest:
+  `7486ba836282a8f8caf453033286f5e8f8f57d65c95ae9aa914f644774e53fb9`
+- Twelve-artifact implementation digest:
+  `d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249`
+- Steward-request digest:
+  `821607d4c16a4627650ff1bf44ef435fb817d90a07ddf5e94f916269a988e01a`
 
-## Exact next action
-
-Push this three-file atomic claim from sole parent `ebf88c8e`, report the pushed
-claim head to C00, and stop without implementing product code.
-
-## Coverage
-
-- Requirements: six assigned, pending implementation
-- Acceptance cases: seven assigned, pending task-owned verification
-
-## Changed files and migrations
-
-- `ops/v2.1-execution/runtime/P20/TASK-STATE.yaml`
-- `ops/v2.1-execution/runtime/P20/HANDOFF.md`
-- `ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md`
-- Migrations: none
+Primary exported symbols are `OT_VIDEO_1_PROFILE`,
+`OT_TRANSCRIBE_1_OPERATION`, `OT_LEARNING_DRAFT_1_OPERATION`,
+`OT_LEARNING_DRAFT_JSON_SCHEMA`, `ContentProcessingRepository`,
+`validateProcessingInput`, `validateControlledCapture`,
+`localCaptureDeletionDecision`, `selectTrim`, `buildTranscodePlan`,
+`verifyDerivative`, `buildAudioSegmentPlan`, `validateTranscriptDraft`,
+`validateLearningDraft`, `createDraftArtifacts`, `editDraftArtifact`,
+`approveProcessingVersion`, `createContentProcessingRepository`,
+`ContentProcessingRunner`, `digestBoundedMediaStream`,
+`buildFfprobeReadbackPlan`, and `parseFfprobeReadbackJson`.
 
 ## Verification
 
-- Exact repository/control/integration/branch identity: passed
-- Canonical ready-entry digest: passed
-- Locked/source/package/task/context digests: passed
-- F05/P19 checkpoint bindings and ancestry: passed
-- CONTENT_PROCESSING lease and zero effect locks: passed
+- Full workspace typecheck: passed.
+- Focused P20 suite: 4 files, 15 tests, all passed.
+- Seven named acceptance cases: implementation ready.
+- Focused ESLint and Prettier: passed.
+- Secret scan: passed across 2686 repository text files.
+- Diff hygiene and exact owned-path inventory: passed.
 
-## External effects
+## Steward work
 
-Authority: none. Attempted: 0; succeeded: 0; reconciled: 0.
+`STEWARD-REQUESTS.yaml` proposes:
 
-## Security, privacy, and data handling
+- `P20-MIGRATION-001`
+- `P20-WORKER-REGISTRATION-001`
+- `P20-RUNTIME-CONFIG-001`
+- `P20-PINNED-MEDIA-RUNTIME-001`
 
-No secrets, media, provider payloads, learner data, URLs, bearer material,
-uploads, transcodes, model calls, publications, deletions, or deployments were
-accessed or performed.
+No migration, central composer/barrel, package manifest, lockfile, provider
+registry, or deployment configuration was edited by P20.
 
-## Blockers, deviations, and recovery
+## External effects and recovery
 
-None. Recovery base is exact integration head
-`ebf88c8e422a6ad40202fc2b0249810d312edc30`.
+Authority: none. Attempted: 0; succeeded: 0; reconciled: 0. No media, provider
+payload, learner data, credential, upload, transcode, model request, publication,
+local deletion, or deployment was accessed or performed. Recovery base is the
+exact pushed implementation head
+`e366ef926d6b2ee3be888eaae9fe2cad08b8a57f`.
+
+## Next action
+
+C00/I36 should validate the implementation/artifact digests and disposition the
+four steward requests. Any provider sandbox or production-operator canary
+requires a new explicit authority after those integrations.

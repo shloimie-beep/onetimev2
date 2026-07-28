@@ -27,64 +27,93 @@ dependency_heads:
     interface_checkpoint_digest: 44952e92284a1dd20f6fff37e67686cd32328a0a3761e07eee90b70365aaac6f
     task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
     task_context_digest: f517475b52f50996ec6a2551daa091bbe5f3df982ee258d100ee11ffdbd7c7be
-status: claimed
-phase: contract
+status: ready_for_review
+phase: review
 claimed_by: codex-p20-worker-1cd7bf99
 claim_time: '2026-07-28T22:58:09Z'
 claim_id: 1cd7bf99-21a7-4231-8418-b9cdfaf958c4
+lease_expires_at: '2026-07-28T23:50:05Z'
+last_heartbeat_at: '2026-07-28T23:22:00Z'
+lease_released_at: '2026-07-28T23:22:00Z'
 writer_slot_leases:
   - slot: CONTENT_PROCESSING
     lease_id: 447a28a6-1675-4fbb-b52f-a77f75f8d356
     lease_issued_at: '2026-07-28T22:50:05Z'
     lease_expires_at: '2026-07-28T23:50:05Z'
-lease_expires_at: '2026-07-28T23:50:05Z'
-last_heartbeat_at: '2026-07-28T22:58:09Z'
-controller_authorization_sha: 4f82565865c615ecf91828b0cae41c1cf7b63dfe
+    released_at: '2026-07-28T23:22:00Z'
+initial_controller_authorization_sha: 4f82565865c615ecf91828b0cae41c1cf7b63dfe
+controller_authorization_sha: bd24429251acff6393c0311a223e0e723335d7cd
 ready_entry_state_based_on_control_head_sha: c9c3d288fa6cdb3aca756de8cc03d35471abe464
 ready_entry_payload_digest: c509304015a470c8c6c2ca7fa71ffcc13f8341f47b7414ddab093e8127d7e7d7
-state_based_on_head_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
-last_implementation_commit_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
+state_based_on_head_sha: e366ef926d6b2ee3be888eaae9fe2cad08b8a57f
+last_implementation_commit_sha: e366ef926d6b2ee3be888eaae9fe2cad08b8a57f
+implementation_artifact_digest: d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 12 non-runtime P20 artifacts, with LF separators and no final newline.
+contract_digest: cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159
+schema_contract_digest: 7486ba836282a8f8caf453033286f5e8f8f57d65c95ae9aa914f644774e53fb9
+steward_request_digest: 821607d4c16a4627650ff1bf44ef435fb817d90a07ddf5e94f916269a988e01a
+acceptance_matrix_digest: 64880d35b96afe201f459c46671c6d6a603ce1968f4d4c1017fdcdb367d52109
 completed_steps:
-  - Verified repository identity, exact containing control head and sole parent, exact integration start SHA, and absent local/remote P20 branch.
-  - Recomputed and matched the canonical P20 ready-entry payload digest and package/task/context/source-package digests.
-  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and the exact F05/P19 integrated interface bindings and ancestry.
-  - Claimed the CONTENT_PROCESSING writer lease with zero effect locks and created the isolated task branch from the exact authorized start.
+  - Verified exact resume control bd24429251acff6393c0311a223e0e723335d7cd, claim head 6f894038117ee19d405e528670eb8bf86e8682b2, authorized start, dependency bindings, and active CONTENT_PROCESSING lease.
+  - Implemented the versioned processing contract with exact storage, OT-VIDEO-1, OT-TRANSCRIBE-1, dated OT-LEARNING-DRAFT-1, strict schema, source-version, privacy, and draft-only pins.
+  - Implemented bounded validation/hash/probe utilities, OBS evidence and deletion gate, begin/end trim, orientation-aware no-upscale transcode argv, exact derivative readback, bounded checksum-addressed transcription, captions, structured drafts, Admin edits/approval, retry, and dead-letter behavior.
+  - Implemented transaction-scoped parameterized repository and restart-safe worker using deterministic reconcile-or-execute operation identities and idempotent command receipts.
+  - Published structured migration, worker registration, runtime configuration, and pinned ffmpeg/ffprobe dependency requests without editing steward-owned paths.
+  - Passed all seven named acceptance cases, 15 focused tests, full workspace typecheck, focused lint, focused formatting, secret scan, and diff hygiene.
+  - Committed and pushed implementation head e366ef926d6b2ee3be888eaae9fe2cad08b8a57f and released CONTENT_PROCESSING lease 447a28a6-1675-4fbb-b52f-a77f75f8d356.
 remaining_steps:
-  - Push and report this exact three-file atomic claim checkpoint, then stop for C00 reconciliation.
-  - After explicit continuation, inspect only named dependency artifacts and P20-owned paths before implementing media processing.
-  - Implement and verify the six assigned requirements and seven acceptance cases without external effects, then finish ready_for_review.
-next_action: Push this three-file atomic claim from exact parent ebf88c8e, report the pushed claim head for C00 reconciliation, and stop without implementing product code.
+  - I36/F02 must review and disposition P20-MIGRATION-001, P20-WORKER-REGISTRATION-001, P20-RUNTIME-CONFIG-001, and P20-PINNED-MEDIA-RUNTIME-001.
+  - Provider sandbox and production-operator canaries require separate explicit authority after steward integration; P20 performed no external effect.
+next_action: C00/I36 should review implementation head e366ef926d6b2ee3be888eaae9fe2cad08b8a57f, validate artifact digest d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249, and disposition the four structured steward requests.
 requirements:
-  OTV2-CONTENT-084: pending
-  OTV2-CONTENT-085: pending
-  OTV2-CONTENT-086: pending
-  OTV2-CONTENT-191: pending
-  OTV2-CONTENT-193: pending
-  OTV2-CONTENT-233: pending
+  OTV2-CONTENT-084: implementation_ready
+  OTV2-CONTENT-085: implementation_ready
+  OTV2-CONTENT-086: implementation_ready
+  OTV2-CONTENT-191: implementation_ready
+  OTV2-CONTENT-193: implementation_ready
+  OTV2-CONTENT-233: implementation_ready
 acceptance_cases:
-  OTV2-CONTENT-084-AC01: pending
-  OTV2-CONTENT-085-AC01: pending
-  OTV2-CONTENT-086-AC01: pending
-  OTV2-CONTENT-191-AC01: pending
-  OTV2-CONTENT-193-AC01: pending
-  OTV2-CONTENT-233-OBS-CAPTURE: pending
-  OTV2-CONTENT-233-STORAGE-MODELS-TRANSCODE: pending
+  OTV2-CONTENT-084-AC01: implementation_ready
+  OTV2-CONTENT-085-AC01: implementation_ready
+  OTV2-CONTENT-086-AC01: implementation_ready
+  OTV2-CONTENT-191-AC01: implementation_ready
+  OTV2-CONTENT-193-AC01: implementation_ready
+  OTV2-CONTENT-233-OBS-CAPTURE: implementation_ready
+  OTV2-CONTENT-233-STORAGE-MODELS-TRANSCODE: implementation_ready
 changed_paths:
-  - ops/v2.1-execution/runtime/P20/TASK-STATE.yaml
+  - apps/worker/src/runners/content-processing/index.ts
+  - apps/worker/src/runners/content-processing/runner.test.ts
+  - apps/worker/src/runners/content-processing/runner.ts
+  - ops/v2.1-execution/runtime/P20/ACCEPTANCE-MATRIX.md
   - ops/v2.1-execution/runtime/P20/HANDOFF.md
   - ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P20/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P20/TASK-STATE.yaml
+  - packages/contracts/src/content/processing/index.ts
+  - packages/db/src/content/processing/index.ts
+  - packages/db/src/content/processing/repository.test.ts
+  - packages/db/src/content/processing/repository.ts
+  - packages/db/src/content/processing/schema-contract.ts
+  - packages/domain/src/content/processing/content-processing.acceptance.test.ts
+  - packages/domain/src/content/processing/index.ts
+  - scripts/media/v21/streaming-media.test.ts
+  - scripts/media/v21/streaming-media.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - P20-MIGRATION-001
+  - P20-WORKER-REGISTRATION-001
+  - P20-RUNTIME-CONFIG-001
+  - P20-PINNED-MEDIA-RUNTIME-001
 verification:
   commands_run:
-    - command: git remote/control/integration/branch identity and ancestry verification
-      result: passed; exact repository, containing control, sole ready parent, start SHA, dependencies, and absent P20 branch
-    - command: canonical P20 ready-entry digest recomputation
-      result: passed; c509304015a470c8c6c2ca7fa71ffcc13f8341f47b7414ddab093e8127d7e7d7
-    - command: locked/source/package/task/context Git-blob SHA-256 verification
-      result: passed; 200 locked blobs, 15 source-package blobs, and every entry-bound digest
-    - command: claim/writer/effect-lock verification
-      result: passed; one CONTENT_PROCESSING lease and zero effect locks
+    - exact resume control, claim head, branch, dependency, lease, and scope verification (passed)
+    - npm run typecheck using the verified shared dependency runtime (passed)
+    - focused P20 Vitest suite (passed, 4 files and 15 tests)
+    - focused ESLint over every P20 TypeScript artifact (passed)
+    - focused Prettier check over every P20 TypeScript, Markdown, and YAML artifact (passed)
+    - npm run secret:scan (passed across 2686 repository text files)
+    - git diff --check and exact owned-path inventory (passed)
+    - exact 12-artifact implementation Git-blob digest derivation (passed)
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -92,4 +121,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Migration, central worker registration/composition, provider/runtime configuration, package manifests/lockfiles, and pinned ffmpeg/ffprobe runtime changes are captured in STEWARD-REQUESTS.yaml and were not edited by P20.
