@@ -21,8 +21,8 @@ foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
 Current F06/P14-interface-wave atomic-claim-only authority is containing
-control head `d234126ca7be31def06c939ac1886406936987dc`, controller
-authorization `d234126ca7be31def06c939ac1886406936987dc`, ready-entry parent
+control head `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536`, controller
+authorization `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536`, ready-entry parent
 control head `c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb`, claim
 `1b554a42-a2a2-4017-add9-7117ed575b9e`, RELEASE_INTEGRATOR lease
 `6b08c9f1-f266-4b3c-8d54-e678e72f2d13` through
@@ -90,10 +90,21 @@ was reproduced from the semantic version line plus sorted plain artifact-path
 lines, with no literal `path=` prefix. Typecheck, full quiet lint, 12 focused
 tests, and provider-surface absence passed. No steward request was applied.
 
-Current exact next action: report the pushed F06/P14 atomic claim checkpoint
-to C00, then stop before reading or merging either source. Await C00 rebind of
-both merge targets to that exact pushed claim head. No unrelated merge,
-steward, evidence, control, or live-effect work is authorized.
+Control `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536` authorized exact ordered
+F06 item `ffb7242b-c205-444b-b0b9-4ef1b85da558` with payload
+`c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763`
+and exact P14 item `76ced88c-2bfd-4400-89ca-513b576bc2f2` with payload
+`ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858`.
+Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged at
+`f1ba79a9c8e66bda9793d3b22edc78630fca862c`, followed by exact P14 source
+`3393169e2284d65ff0a970d797aa1f83ebf9d895` at pushed head
+`41954f0077308ef4df779472e44c3531f4273b81`. Both plain-path contract
+preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
+steward request, migration, registration, or provider effect was applied.
+
+Current exact next action: report the pushed F06/P14 integration metadata
+checkpoint to C00, then stop and await a new exact control authorization. No
+unrelated merge, steward, evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its

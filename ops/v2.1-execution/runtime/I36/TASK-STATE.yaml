@@ -18,12 +18,12 @@ claim_id: 1b554a42-a2a2-4017-add9-7117ed575b9e
 lease_id: 6b08c9f1-f266-4b3c-8d54-e678e72f2d13
 lease_issued_at: '2026-07-28T20:06:46Z'
 lease_expires_at: '2026-07-28T21:06:46Z'
-last_heartbeat_at: '2026-07-28T20:18:54Z'
-controller_authorization_sha: d234126ca7be31def06c939ac1886406936987dc
+last_heartbeat_at: '2026-07-28T20:31:47Z'
+controller_authorization_sha: f5ae0e8078e1c57b75cf3a59d868596a4b2fe536
 ready_entry_state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
 ready_entry_payload_digest: 0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d
-state_based_on_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-last_implementation_commit_sha: eae9c62adb6711034bbd31bc4aea469c2c65fc21
+state_based_on_head_sha: 41954f0077308ef4df779472e44c3531f4273b81
+last_implementation_commit_sha: 41954f0077308ef4df779472e44c3531f4273b81
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
 - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -135,10 +135,26 @@ completed_steps:
 - Claimed exact F06/P14-interface-wave atomic-claim-only authority under claim
   1b554a42-a2a2-4017-add9-7117ed575b9e and RELEASE_INTEGRATOR lease
   6b08c9f1-f266-4b3c-8d54-e678e72f2d13 without reading or merging either source.
+- Verified rebound control head f5ae0e8078e1c57b75cf3a59d868596a4b2fe536 and canonical F06/P14
+  merge-item payload digests c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763
+  and ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858.
+- Verified both exact source identities, common source/merge base
+  9782a4164662b8059a557c0969de9c35f54d0cf7, 18/25-path allowlists, task/context/source-package
+  and state/handoff digests, every exported artifact hash, implementation ancestry, and zero effects.
+- Recomputed F06 and P14 contract digests
+  7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0 and
+  1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1 from semantic
+  version plus sorted plain <artifact-path>=<sha256> lines with LF, no final newline, and no literal path= prefix.
+- Merged exact F06 source 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7 with ancestry preserved at
+  f1ba79a9c8e66bda9793d3b22edc78630fca862c.
+- Merged exact P14 source 3393169e2284d65ff0a970d797aa1f83ebf9d895 after F06 with ancestry preserved
+  at 41954f0077308ef4df779472e44c3531f4273b81.
+- Passed repository typecheck, full quiet lint, and 20 focused F06/P14 tests; no steward request,
+  migration, registration, or provider effect was applied.
 remaining_steps:
-- Push and report this exact F06/P14 atomic claim checkpoint to C00.
-- Await C00 rebind of both merge targets to the exact pushed claim head.
-next_action: Report the exact pushed F06/P14 atomic claim checkpoint to C00, then stop before reading or merging either source until C00 rebinds both targets.
+- Push and report this exact F06/P14 integration metadata checkpoint to C00.
+- Await a new exact C00 queue/lease authorization.
+next_action: Report the exact pushed F06/P14 integration metadata checkpoint to C00, then pause for a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -250,6 +266,49 @@ changed_paths:
 - packages/domain/src/calendar/recurrence.ts
 - packages/domain/src/calendar/time-zone.ts
 - packages/domain/src/calendar/views.ts
+- apps/worker/src/runners/provider-reconciliation/index.ts
+- apps/worker/src/runners/provider-reconciliation/runner.test.ts
+- apps/worker/src/runners/provider-reconciliation/runner.ts
+- ops/v2.1-execution/runtime/F06/HANDOFF.md
+- ops/v2.1-execution/runtime/F06/INTERFACE-CHECKPOINT.yaml
+- ops/v2.1-execution/runtime/F06/NEXT-PROMPT.md
+- ops/v2.1-execution/runtime/F06/TASK-STATE.yaml
+- ops/v2.1-execution/runtime/F06/steward-requests/F06-migration-001.yaml
+- ops/v2.1-execution/runtime/F06/steward-requests/F06-registration-001.yaml
+- packages/contracts/src/providers/v21-provider-core.ts
+- packages/db/src/providers/v21-provider-core-repository.test.ts
+- packages/db/src/providers/v21-provider-core-repository.ts
+- packages/db/src/providers/v21-schema-contract.ts
+- packages/domain/src/providers/shared/errors.ts
+- packages/domain/src/providers/shared/index.ts
+- packages/domain/src/providers/shared/mapping.ts
+- packages/domain/src/providers/shared/operation.ts
+- packages/domain/src/providers/shared/provider-core.test.ts
+- apps/web/src/client/app/student/account/StudentAccount.tsx
+- apps/web/src/client/app/student/account/index.ts
+- apps/web/src/client/app/student/home/StudentToday.tsx
+- apps/web/src/client/app/student/home/index.ts
+- apps/web/src/client/app/student/profile/StudentProfile.tsx
+- apps/web/src/client/app/student/profile/index.ts
+- apps/web/src/client/app/student/shell/StudentShell.test.tsx
+- apps/web/src/client/app/student/shell/StudentShell.tsx
+- apps/web/src/client/app/student/shell/index.ts
+- apps/web/src/client/app/student/shell/student-shell.css
+- apps/web/src/server/features/portals/student/index.ts
+- apps/web/src/server/features/portals/student/service.test.ts
+- apps/web/src/server/features/portals/student/service.ts
+- ops/v2.1-execution/runtime/P14/HANDOFF.md
+- ops/v2.1-execution/runtime/P14/INTERFACE-CHECKPOINT.yaml
+- ops/v2.1-execution/runtime/P14/NEXT-PROMPT.md
+- ops/v2.1-execution/runtime/P14/STEWARD-REQUESTS.yaml
+- ops/v2.1-execution/runtime/P14/TASK-STATE.yaml
+- packages/contracts/src/portals/student/index.ts
+- packages/domain/src/portals/student/errors.ts
+- packages/domain/src/portals/student/index.ts
+- packages/domain/src/portals/student/isolation.ts
+- packages/domain/src/portals/student/navigation.ts
+- packages/domain/src/portals/student/student-portal.test.ts
+- packages/domain/src/portals/student/view.ts
 migrations:
 - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -424,6 +483,20 @@ verification:
     result: passed; 200 locked Git blobs plus package, source-package, task, and context digests
   - command: F06/P14 atomic claim, writer-slot, branch-head, lease, scope, and effect-lock verification
     result: passed; exact atomic-claim-only authority, sole RELEASE_INTEGRATOR lease, and zero effect locks
+  - command: canonical rebound F06/P14 merge-item digest recomputation
+    result: passed; c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763 and ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858
+  - command: F06/P14 source admission, allowlist, state/handoff, artifact, and contract verification
+    result: passed; exact sources, common merge base 9782a416, 18/25 paths, all exports, both plain-path contracts, and zero effects
+  - command: git merge --no-ff 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    result: passed; source ancestry preserved at f1ba79a9c8e66bda9793d3b22edc78630fca862c
+  - command: git merge --no-ff 3393169e2284d65ff0a970d797aa1f83ebf9d895
+    result: passed after F06; source ancestry preserved at 41954f0077308ef4df779472e44c3531f4273b81
+  - command: npm run typecheck
+    result: passed after F06/P14 ordered micro-batch
+  - command: focused F06/P14 Vitest suites
+    result: passed; 6 files and 20 tests
+  - command: npm run lint -- --quiet
+    result: passed after F06/P14 ordered micro-batch
   known_baseline_failures: []
 external_effects:
   authority: none

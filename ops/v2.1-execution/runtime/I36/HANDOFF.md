@@ -13,8 +13,8 @@
 - Claim ID: `1b554a42-a2a2-4017-add9-7117ed575b9e`
 - Writer: `codex-i36-worker2-1b554a42`
 - RELEASE_INTEGRATOR lease: `6b08c9f1-f266-4b3c-8d54-e678e72f2d13`
-- Containing control head: `d234126ca7be31def06c939ac1886406936987dc`
-- Controller authorization: `d234126ca7be31def06c939ac1886406936987dc`
+- Containing control head: `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536`
+- Controller authorization: `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536`
 - Ready-entry state-based-on control head: `c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb`
 - Ready-entry payload digest: `0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d`
 - Lease expiry: `2026-07-28T21:06:46Z`
@@ -39,6 +39,11 @@
   item `22ea97a2-e2db-4a49-9e2b-7649d3a0e069`, payload digest
   `617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d`
 - Pushed P15 integration head: `eae9c62adb6711034bbd31bc4aea469c2c65fc21`
+- F06/P14 merge authorization: control `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536`;
+  payload digests `c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763`
+  and `ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858`
+- F06 merge head: `f1ba79a9c8e66bda9793d3b22edc78630fca862c`
+- Pushed P14/micro-batch integration head: `41954f0077308ef4df779472e44c3531f4273b81`
 
 ## Completed behavior
 
@@ -140,16 +145,28 @@ phase scope, zero effect locks, and canonical ready payload were verified.
 This three-file checkpoint consumes only that atomic claim. Neither F06 nor P14
 source was read or merged.
 
+C00 rebound the ordered F06/P14 items to exact claim head `98f5689b`.
+I36 independently verified both canonical payloads, exact sources, common
+source/merge base `9782a416`, 18/25-path allowlists, task/context/package and
+state/handoff digests, every export hash, implementation ancestry, and zero
+effects. Both contract digests were reproduced from semantic version plus
+sorted plain `<artifact-path>=<sha256>` lines, with LF, no final newline, and
+no literal `path=` prefix. Exact F06
+source `9a426cca` and P14 source `3393169e` were ancestry-merged in order at
+`f1ba79a9` and `41954f00`. Typecheck, full quiet lint, and 20 focused tests
+passed. No steward request, migration, registration, or provider effect was
+applied.
+
 ## Remaining work
 
-Push and report this exact F06/P14 atomic claim checkpoint to C00. Await C00
-rebind of both merge targets to the exact pushed claim head.
+Push and report this exact F06/P14 integration metadata checkpoint to C00.
+Await a new exact C00 queue/lease authorization.
 
 ## Exact next action
 
-Report the exact pushed F06/P14 atomic claim checkpoint to C00, then stop
-before reading or merging either source. Do not proceed until C00 rebinds both
-merge targets to the exact pushed claim head.
+Report the exact pushed F06/P14 integration metadata checkpoint to C00, then
+pause. Do not integrate another source or apply any steward request without
+new exact authorization.
 
 ## Coverage
 
@@ -169,6 +186,9 @@ merge targets to the exact pushed claim head.
   `4cc95c29c6012174595ba1821e0554aca8572e08`, and `0656380bcfc50cc464dcea7588448dc724049599`
 - Exact allowlisted P15 interface delta at
   `c96b8c55c07e5283e762537934a6bf948833700e`
+- Exact allowlisted F06/P14 interface deltas at
+  `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` and
+  `3393169e2284d65ff0a970d797aa1f83ebf9d895`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -254,6 +274,15 @@ merge targets to the exact pushed claim head.
   and context digests matched.
 - Claim, sole RELEASE_INTEGRATOR lease, F06/P14 atomic-claim-only scope, and
   zero effect locks matched the C00-issued authorization.
+- Rebound control `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536` carried exactly two
+  ordered items with matching canonical payload digests and target `98f5689b`.
+- Exact F06/P14 sources, common base, 18/25-path scopes, task/context/package
+  and state/handoff bindings, all artifact hashes, both plain-path contract
+  preimages, implementation ancestry, and zero effects matched.
+- Exact F06 and P14 sources are ancestors of
+  `41954f0077308ef4df779472e44c3531f4273b81`.
+- Repository typecheck, full quiet lint, and 20 focused F06/P14 tests passed
+  after the ordered micro-batch.
 
 ## External effects
 
