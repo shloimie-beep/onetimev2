@@ -16,13 +16,13 @@ dependency_heads:
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
     task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
     task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
-status: claimed
-phase: contract
+status: interface_ready
+phase: interface_ready
 claimed_by: codex-f02-worker-ff826962
 claim_time: '2026-07-28T16:10:31Z'
 claim_id: ff826962-97c5-4032-8de8-5b5f4b1dc12c
 lease_expires_at: '2026-07-28T16:56:52Z'
-last_heartbeat_at: '2026-07-28T16:10:31Z'
+last_heartbeat_at: '2026-07-28T16:25:04Z'
 controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
 ready_entry_parent_control_sha: 586f1216c27b02915bdca606645d7e1ee335a669
 ready_entry_payload_digest: 8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9
@@ -33,8 +33,8 @@ writer_slot_leases:
   SCHEMA_CONTRACT:
     lease_id: 956f99dc-83c3-4b18-b3cd-98c971d3956f
     lease_expires_at: '2026-07-28T16:56:52Z'
-state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-last_implementation_commit_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+state_based_on_head_sha: 0e1f9a18677e13556222241cd21b1f24383668b6
+last_implementation_commit_sha: 0e1f9a18677e13556222241cd21b1f24383668b6
 completed_steps:
   - verified repository identity and isolated clone
   - fetched and verified containing control head af76c4e990f954794de72db639576b3c9dc73ff4
@@ -42,22 +42,36 @@ completed_steps:
   - verified all 200 locked execution-package checksums
   - independently verified the canonical F02 ready-entry payload digest
   - read the execution contract, task packet, locked context, F01 handoff/interface checkpoint, claim protocol, and runtime templates
+  - read the one named normative domain-model and state-machine source document
+  - recorded the assigned gap map: canonical state roots absent, legacy vocabularies divergent, and migration 2234 available
+  - implemented versioned canonical state/type/transition contracts for every assigned aggregate
+  - implemented fail-closed guards for authorization, isolation, optimistic concurrency, idempotency, retry, reconciliation, and worker fencing
+  - allocated migration 2234 and added canonical current-state and append-only transition schemas with PostgreSQL enforcement
+  - published the exact interface_ready checkpoint for F03, F04, F05, P15, P22, and P32
 remaining_steps:
-  - read the one named normative domain-model source document and record the assigned gap map
-  - implement canonical state contracts and guarded transition behavior
-  - allocate and verify forward-only migrations from 2234 upward without allocating 2231
-  - publish the exact interface checkpoint and notify C00/I36
-  - complete task-owned verification and publish ready_for_review
-next_action: Read only source-spec/06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md, inspect the named state and migration paths, and record the assigned gap map.
+  - notify C00/I36 of the pushed interface checkpoint so I36 can integrate it
+  - run PostgreSQL-only trigger/concurrency proof in a disposable PostgreSQL database when one is available
+  - complete final task-owned verification and publish ready_for_review
+next_action: Push the interface_ready checkpoint and notify C00/I36; then run PostgreSQL-only trigger and concurrent stale-version proof in a disposable PostgreSQL database if available.
 requirements:
   OTV2-STATE-202: in_progress
 acceptance_cases:
-  OTV2-STATE-202-AC01: implementation_pending
+  OTV2-STATE-202-AC01: implementation_ready_pending_postgresql_proof
 changed_paths:
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
-migrations: []
+  - ops/v2.1-execution/runtime/F02/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - packages/contracts/src/state/index.ts
+  - packages/domain/src/state/errors.ts
+  - packages/domain/src/state/index.ts
+  - packages/domain/src/state/transition-guard.ts
+  - packages/db/migrations/2234_canonical_state_machines.sql
+migrations:
+  - ordinal: 2234
+    file: packages/db/migrations/2234_canonical_state_machines.sql
+    sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
 steward_requests: []
 verification:
   commands_run:
@@ -67,6 +81,11 @@ verification:
     - LOCKED-SHA256SUMS.txt 200/200 passed after preserving repository LF bytes
     - F02 ready-entry canonical digest matched 8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9
     - npm ci --ignore-scripts completed from the verified lockfile
+    - npm run typecheck passed
+    - focused canonical transition smoke passed positive, authorization, isolation, concurrency, replay, conflict, retry, recovery, and fencing branches
+    - all 65 migrations applied in disposable pg-mem with 2234 applied last
+    - new TypeScript and YAML artifacts passed Prettier
+    - native PostgreSQL proof unavailable because no Docker, psql, or disposable database URL is present
   known_baseline_failures: []
 external_effects:
   authority: none

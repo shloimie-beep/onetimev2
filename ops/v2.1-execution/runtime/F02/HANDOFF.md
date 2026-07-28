@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-f02-schema-state-migrations`
 - Start SHA: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
-- Implementation SHA before this handoff metadata commit: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
+- Implementation SHA before this handoff metadata commit: `0e1f9a18677e13556222241cd21b1f24383668b6`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce`
 - Context digest: `0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc`
@@ -20,34 +20,38 @@
 
 ## Completed behavior
 
-Verified the exact repository, fetched control authority, absent registered
-remote branch, authorized integration start SHA, claim, unexpired writer
-leases, package/source/task/context digests, canonical READY payload digest,
-and the integrated F01 interface dependency. Read the required execution,
-task, context, dependency, claim, and template materials. No implementation
-behavior has been changed yet.
+Verified the exact repository, authorization, claim, leases, package digests,
+and integrated F01 dependency. Implemented semantic contract `1.0.0` for every
+assigned lifecycle plus fail-closed authorization, isolation, version,
+idempotency, retry, recovery, and billing-operation fencing guards. Allocated
+forward-only migration 2234, added canonical current-state and append-only
+transition tables with PostgreSQL trigger enforcement, and published interface
+contract `bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e`.
 
 ## Remaining work
 
-Read the one named normative state-machine document, record the assigned gap
-map, implement canonical state contracts and guarded transitions, allocate
-forward-only migrations from 2234 upward, verify them against a disposable
-database, publish the interface checkpoint, and finish at `ready_for_review`.
+Notify C00/I36 so I36 can integrate the interface checkpoint. Run the
+PostgreSQL-only trigger and real concurrent stale-version proof in a disposable
+PostgreSQL database when one is available, complete final task-owned
+verification, and finish at `ready_for_review`.
 
 ## Exact next action
 
-Read only `source-spec/06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md`, inspect the
-named state and migration paths, and record the assigned gap map.
+Push the `interface_ready` checkpoint and notify C00/I36; then run
+PostgreSQL-only trigger and concurrent stale-version proof in a disposable
+PostgreSQL database if available.
 
 ## Coverage
 
-- Requirements: `OTV2-STATE-202` is in progress.
-- Acceptance cases: `OTV2-STATE-202-AC01` implementation is pending.
+- Requirements: `OTV2-STATE-202` is implementation-ready.
+- Acceptance cases: `OTV2-STATE-202-AC01` awaits PostgreSQL-only concurrency proof and later candidate-bound verification.
 
 ## Changed files and migrations
 
-Seeded only F02 task state, handoff, and next prompt. No migration was created,
-deleted, edited, or allocated.
+Added the F02 runtime records, state contract/domain guard roots, allocation
+proposal, interface checkpoint, and migration
+`2234_canonical_state_machines.sql`. No applied migration was modified and
+ordinal 2231 remains unallocated.
 
 ## Verification
 
@@ -57,6 +61,11 @@ deleted, edited, or allocated.
 - Canonical ready-entry digest matched.
 - F01 integrated checkpoint, implementation head, and contract digest matched.
 - Lockfile-pinned dependencies installed with lifecycle scripts disabled.
+- `npm run typecheck`: passed.
+- Focused transition smoke: passed positive, authorization, isolation, stale-version, replay/conflict, content retry, billing recovery, and fencing branches.
+- All 65 migrations applied in disposable pg-mem; 2234 applied last.
+- Exact TypeScript/YAML interface artifacts passed Prettier and `git diff --check`.
+- Native PostgreSQL proof was not run: Docker, `psql`, and a disposable database URL are unavailable in this environment.
 
 ## External effects
 
@@ -69,4 +78,6 @@ question, or bearer URL was read or recorded.
 
 ## Blockers, deviations, and recovery
 
-None.
+No normative or scope blocker. Native PostgreSQL verification remains pending
+until a disposable PostgreSQL target is available; all provider-independent
+implementation and in-memory migration work is complete.

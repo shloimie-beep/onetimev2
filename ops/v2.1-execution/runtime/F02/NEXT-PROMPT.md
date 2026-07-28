@@ -24,3 +24,8 @@ recorded `next_action`. If digests match, do not restart completed work or
 globally re-audit the repository. Continue until `ready_for_review` or a
 permitted stop condition. Update state/handoff/this next prompt, checkpoint,
 commit, and push before returning.
+
+Exact next action: verify that C00/I36 received and integrated the pushed F02
+interface checkpoint, then run PostgreSQL-only trigger and concurrent
+stale-version proof against a disposable PostgreSQL database if one is
+available. Do not use a persistent shared database.
