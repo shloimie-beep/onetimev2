@@ -9,10 +9,11 @@
 - Task packet digest: `1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda`
 - Context digest: `5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim: `f5bc9b67-9a49-432f-9ce4-6ebd99d856d9`, held by `codex-f01-worker-4aafff01`
-- Lease expiry: `2026-07-28T16:56:52Z`
-- Containing control head: `af76c4e990f954794de72db639576b3c9dc73ff4`
-- Ready payload digest: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`
+- Claim: `683f3581-a6ca-472d-80a6-51fabb9208f5`, held by `codex-f01-worker-4aafff01`
+- Lease expiry: `2026-07-28T18:13:44Z`
+- Writer slots: none; metadata acknowledgment only
+- Containing control head: `95a2a52e096357738cda2bd7c16bc9a0e24ccd70`
+- Ready payload digest: `f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda`
 - Interface contract digest: `2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713`
 
 ## Completed behavior
@@ -44,18 +45,23 @@ Routine challenge delivery is absent from the owned worker loop. Retired event
 and HighLevel event-sync environment keys are ignored and forced unavailable.
 Three schema-valid immutable steward requests now describe the remaining
 out-of-scope domain-auth, production-client, and compatibility-config cleanup.
+I36 evaluated the client/config requests against exact integration target
+`91349fc1fa9a474ae31cf408ae0364aa10520385` and recorded both as rejected at
+`1976033cfdae1beb249642f0e28f6824b0fcbb8b`. F01 independently recomputed and
+acknowledges exact result digests
+`a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a`
+and `a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f`.
 
 ## Remaining work
 
-Have C00 record and assign the three pushed steward requests, acknowledge the
-exact applied result heads, rerun the exact inventory and direct-access checks,
-and publish `ready_for_review`.
+Wait for F03 to publish the exact `F01-retired-auth-001` result at
+`F03_ready_for_review`, acknowledge and verify it, then publish
+`ready_for_review`.
 
 ## Exact next action
 
-Wait for C00 to record and assign `F01-retired-auth-001`,
-`F01-retired-client-002`, and `F01-config-retirement-003`; then verify and
-acknowledge their exact applied result heads before `ready_for_review`.
+Wait for the exact F03 result for `F01-retired-auth-001`, then resume only
+under a C00-issued exact F01 acknowledgment claim.
 
 ## Coverage
 
@@ -93,6 +99,10 @@ created, deleted, or edited.
   compatibility values remained unavailable.
 - Three request YAML documents validated against the F01 steward-request
   schema.
+- Current F01 ready payload independently matched
+  `f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda`.
+- I36 result-record head and evaluated-target ancestry verified.
+- Both rejected-result payload digests independently recomputed and matched.
 
 ## External effects
 
@@ -105,19 +115,11 @@ question, or bearer URL was read or recorded.
 
 ## Blockers, deviations, and recovery
 
-The renewed F01 lease is active. C00 must record and assign three immutable
-steward requests before F01 can acknowledge result heads and finish:
+The client/config rejections are acknowledged. The sole remaining steward gate
+is `F01-retired-auth-001`, assigned to F03 at `F03_ready_for_review`:
 
 - `packages/domain/src/auth/service.ts` still creates a routine email challenge
   for internal Admin identities after a valid password. The owned server no
   longer exposes challenge endpoints or controls, so the domain implementation
   must be changed by its steward to restore direct email-plus-password Admin
   login.
-- `apps/web/vite.app.config.ts` still emits the retired experience-preview
-  client entry, and `apps/web/src/client/public.ts` retains dormant challenge
-  code. Both are outside F01 ownership. The owned server denies the emitted
-  preview asset and no longer renders challenge controls.
-- Out-of-scope domain modules still consume compatibility AppConfig properties
-  carrying historical MFA/Buffer/demo names. The environment schema and runtime
-  switches are removed or forced unavailable; deleting those compatibility
-  properties requires coordinated consumer migration.

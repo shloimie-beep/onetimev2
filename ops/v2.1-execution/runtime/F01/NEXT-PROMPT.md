@@ -28,11 +28,11 @@ returning.
 The stable interface implementation head is
 `bb7664c44444bf1704d9f63e5c19a15381f2f0b0`; verify
 `INTERFACE-CHECKPOINT.yaml`. The retirement implementation checkpoint is
-`a7bc348b98e79f57618c911c440d3d8713a63d5f`. The current resume claim is
-`f5bc9b67-9a49-432f-9ce4-6ebd99d856d9` under containing control head
-`af76c4e990f954794de72db639576b3c9dc73ff4`. Resume by requiring C00's
-schema-valid recorded assignments and exact applied result heads for
-`F01-retired-auth-001`, `F01-retired-client-002`, and
-`F01-config-retirement-003`. Verify and acknowledge those results, rerun the
-exact inventory/direct-access checks, and publish `ready_for_review`. Do not
-cross F01 owned-path authority.
+`a7bc348b98e79f57618c911c440d3d8713a63d5f`. F01 has acknowledged the exact
+I36 rejected results for `F01-retired-client-002` and
+`F01-config-retirement-003` from result-record head
+`1976033cfdae1beb249642f0e28f6824b0fcbb8b`. Resume only after F03 publishes
+the exact `F01-retired-auth-001` result at `F03_ready_for_review` and C00 issues
+an exact F01 acknowledgment claim against this branch head. Verify and
+acknowledge that result, then publish `ready_for_review`. Do not cross F01
+owned-path authority.

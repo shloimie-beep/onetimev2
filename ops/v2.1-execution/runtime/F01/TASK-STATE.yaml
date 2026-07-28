@@ -13,13 +13,20 @@ dependency_heads:
     control_state_digest: 388fd210d8324496824666d88155207af84b6160e3c04e23077da346a94590b8
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
+  I36_STEWARD_RESULTS:
+    required_state: rejected
+    observed_integration_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    client_result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+    config_result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+    state_handoff_digest: ccc2777c2b873cd7f67bf86cd3349a28d6630bf2a896cf4acb229158f08de7aa
 status: claimed
 phase: verification
 claimed_by: codex-f01-worker-4aafff01
 claim_time: '2026-07-28T17:13:44Z'
 claim_id: 683f3581-a6ca-472d-80a6-51fabb9208f5
 lease_expires_at: '2026-07-28T18:13:44Z'
-last_heartbeat_at: '2026-07-28T17:23:30Z'
+last_heartbeat_at: '2026-07-28T17:25:30Z'
 controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
 ready_entry_payload_digest: f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda
 state_based_on_head_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
@@ -43,11 +50,13 @@ completed_steps:
   - removed routine email-challenge delivery from the owned worker loop
   - removed retired event and HighLevel event-sync environment keys and forced their compatibility values unavailable
   - published three schema-valid structured steward requests for remaining out-of-scope closure
+  - atomically adopted the no-writer-slot F01 steward-acknowledgment resume claim
+  - independently recomputed and acknowledged the exact I36 rejected results for the client and config requests
 remaining_steps:
-  - have C00 record and assign the three immutable steward requests
-  - acknowledge schema-valid applied results and rerun the exact inventory and direct-access checks
+  - wait for F03 to publish the exact F01-retired-auth-001 result at F03_ready_for_review
+  - acknowledge and verify the auth steward result
   - publish ready_for_review
-next_action: Acknowledge the exact I36 rejected results for F01-retired-client-002 and F01-config-retirement-003 while keeping F01-retired-auth-001 pending F03.
+next_action: Wait for the exact F03_ready_for_review result for F01-retired-auth-001, then resume under a C00-issued exact F01 acknowledgment claim.
 requirements:
   OTV2-FOUNDATION-001: in_progress
   OTV2-FOUNDATION-003: in_progress
@@ -89,15 +98,32 @@ steward_requests:
   - request_id: F01-retired-auth-001
     path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-001.yaml
     digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
-    status: requested
+    status: assigned
+    assigned_steward: F03
+    target_checkpoint: F03_ready_for_review
+    acknowledged_by_task: false
   - request_id: F01-retired-client-002
     path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-002.yaml
     digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
-    status: requested
+    status: rejected
+    assigned_steward: I36
+    target_checkpoint: I36_next_steward_checkpoint
+    result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+    acknowledged_by_task: true
+    rejection_reason: Full application required scope expansion because named HTML paths were absent while retired Tisha assets remained outside the exact request path list; partial application would not satisfy the request.
   - request_id: F01-config-retirement-003
     path: ops/v2.1-execution/runtime/F01/steward-requests/config-003.yaml
     digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
-    status: requested
+    status: rejected
+    assigned_steward: I36
+    target_checkpoint: I36_next_steward_checkpoint
+    result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+    acknowledged_by_task: true
+    rejection_reason: The request assumed F01's unmerged protectedPayloadEncryptionKey compatibility state, which was absent from the authorized integration target; applying it would synthesize unqueued implementation.
 verification:
   commands_run:
     - repository remote is https://github.com/shloimie-beep/onetimev2.git
@@ -114,6 +140,10 @@ verification:
     - F01 direct-access absence harness: 29 retired routes and assets returned 404; login HTML contained no challenge or trusted-device controls
     - retired event configuration smoke: supplied legacy event/provider keys were ignored and runtime compatibility values remained unavailable
     - three steward request YAML documents validated against the F01 steward-request schema
+    - F01 acknowledgment ready-entry canonical digest independently matched f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda
+    - I36 result-record head 1976033cfdae1beb249642f0e28f6824b0fcbb8b and evaluated target ancestry verified
+    - F01-retired-client-002 rejected-result canonical digest independently matched a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+    - F01-config-retirement-003 rejected-result canonical digest independently matched a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
   known_baseline_failures:
     - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
@@ -122,7 +152,7 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - C00 must record and assign the three pushed steward requests; F01 must acknowledge applied result heads before ready_for_review
+  - F01-retired-auth-001 remains assigned to F03 at F03_ready_for_review and must be acknowledged before F01 can publish ready_for_review
 out_of_scope_findings:
   - packages/domain/src/auth/service.ts still creates a routine email challenge for legacy internal admin identities after valid password authentication; the owned server no longer exposes the challenge endpoints or controls, so a domain-steward change is required for direct Admin email-plus-password login.
   - apps/web/vite.app.config.ts still emits the retired experience-preview client entry and apps/web/src/client/public.ts retains dormant email-challenge code; both paths are outside F01 ownership. The owned server denies the emitted preview asset and no longer renders challenge controls.
