@@ -1,0 +1,141 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P32
+task_packet_digest: a34f7c16bda5c68fc269cce7fbbb0eb574de64f4a9db66e272c3b99ff8a639f6
+task_context_digest: 62e33c67682a9c6f3e9ce372e920abbdf05090f5a7bf81075aec766594b4f140
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p32-privacy-data-rights
+start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+dependency_heads:
+  F02:
+    required_state: interface_ready_integrated
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_source_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+  F03:
+    required_state: interface_ready_integrated
+    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+  F04:
+    required_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F05:
+    required_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+  F07:
+    required_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+status: interface_ready
+phase: interface
+claimed_by: codex-p32-worker-a9e4c442
+claim_time: '2026-07-28T20:18:13Z'
+claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
+writer_slot_leases:
+  - slot: PRIVACY_DATA_RIGHTS
+    lease_id: 45817ce0-ad6f-444e-9c4b-35082a29879b
+lease_expires_at: '2026-07-28T21:06:46Z'
+last_heartbeat_at: '2026-07-28T20:38:41Z'
+controller_authorization_sha: d234126ca7be31def06c939ac1886406936987dc
+ready_entry_parent_control_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+ready_entry_payload_digest: 3c4b0c6a594701c8f5962dcd7dccf40d0cf6c854fcd5f6442d275af1751ab93e
+state_based_on_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
+last_implementation_commit_sha: 888af54911ed583da99408cfcc791b485a728ddd
+completed_steps:
+  - Verified the exact P32 ready entry, canonical payload digest, immutable package/task/context digests, integrated dependency contracts, branch absence, and unexpired writer lease.
+  - Created the isolated P32 branch from the exact authorized integration start SHA.
+  - Implemented exact dependent and adult-self Student consent authority with immutable occurrence-start participant snapshots and playback-independent recording consent.
+  - Implemented actor-scoped data-rights lifecycle, separate dependent review, exact visible statuses, one-use 15-minute export grants, and closure/erasure separation.
+  - Implemented shared-media redaction, Parent private-body exclusions, recognition anonymity, retention schedules, hash-only purge chaining, dual-copy durability, and restore gates.
+  - Implemented parameterized PostgreSQL adapters, registration-neutral server/worker modules, and safe Parent/Admin UI.
+  - Published migration, registration, and independent purge-ledger configuration steward requests without editing shared hotspots.
+  - Passed 21 focused assertions, full typecheck, focused lint/format, and diff checks.
+  - Published the exact semantic interface checkpoint for P18.
+remaining_steps:
+  - Re-run final verification, release the worker lease in metadata, and publish ready_for_review.
+next_action: Run the exact final verification suite, update durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
+requirements:
+  OTV2-CONSENT-189: implementation_verified
+  OTV2-PRIVACY-212: implementation_verified
+  OTV2-PRIVACY-221: implementation_verified
+  OTV2-PRIVACY-239: implementation_verified
+  OTV2-PRIVACY-240: implementation_verified
+acceptance_cases:
+  OTV2-CONSENT-189-DEPENDENT-STUDENT: task_owned_assertions_passed
+  OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT: task_owned_assertions_passed
+  OTV2-PRIVACY-212-AC01: task_owned_assertions_passed
+  OTV2-PRIVACY-221-AC01: task_owned_assertions_passed
+  OTV2-PRIVACY-239-ACTOR-ROUTES: task_owned_assertions_passed
+  OTV2-PRIVACY-239-REQUEST-WORKFLOW: task_owned_assertions_passed
+  OTV2-PRIVACY-240-SNAPSHOT-REDACTION: task_owned_assertions_passed
+  OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER: task_owned_assertions_passed
+changed_paths:
+  - apps/web/src/client/app/admin/privacy/PrivacyReviewQueue.tsx
+  - apps/web/src/client/app/admin/privacy/index.ts
+  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx
+  - apps/web/src/client/app/parent/privacy/index.ts
+  - apps/web/src/server/features/privacy/index.ts
+  - apps/web/src/server/features/privacy/privacy-service.test.ts
+  - apps/web/src/server/features/privacy/privacy-service.ts
+  - apps/worker/src/runners/privacy-retention/index.ts
+  - apps/worker/src/runners/privacy-retention/runner.test.ts
+  - apps/worker/src/runners/privacy-retention/runner.ts
+  - packages/contracts/src/privacy/index.ts
+  - packages/db/src/privacy/index.ts
+  - packages/db/src/privacy/repository.test.ts
+  - packages/db/src/privacy/repository.ts
+  - packages/db/src/privacy/schema-contract.ts
+  - packages/domain/src/privacy/consent.ts
+  - packages/domain/src/privacy/errors.ts
+  - packages/domain/src/privacy/index.ts
+  - packages/domain/src/privacy/privacy.test.ts
+  - packages/domain/src/privacy/redaction.ts
+  - packages/domain/src/privacy/retention.ts
+  - packages/domain/src/privacy/rights.ts
+  - ops/v2.1-execution/runtime/P32/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-config-001.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-migration-001.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-registration-001.yaml
+  - ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P32/HANDOFF.md
+  - ops/v2.1-execution/runtime/P32/NEXT-PROMPT.md
+migrations: []
+steward_requests:
+  - P32-migration-001
+  - P32-registration-001
+  - P32-config-001
+verification:
+  commands_run:
+    - Verified Git-object SHA-256 values for PACKAGE-LOCK.yaml, P32 task/context, and source SHA256SUMS.txt.
+    - Recomputed the canonical ready-entry digest and verified exact control/registry/start/lease state.
+    - Verified origin identity, exact authorizing control commit and parent, authorized integration start, and absent remote P32 branch.
+    - npm run typecheck
+    - npm exec -- vitest run packages/domain/src/privacy/privacy.test.ts packages/db/src/privacy/repository.test.ts apps/web/src/server/features/privacy/privacy-service.test.ts apps/worker/src/runners/privacy-retention/runner.test.ts apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+    - focused ESLint over all P32 TypeScript artifacts
+    - focused Prettier write/check over all P32 TypeScript/YAML artifacts
+    - git diff --check
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
