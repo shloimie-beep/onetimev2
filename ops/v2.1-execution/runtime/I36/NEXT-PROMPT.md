@@ -31,6 +31,19 @@ head `0bd71908e070dc99431df054667beee92cf8f495`, claim
 The exact pre-claim integration head is
 `c4d042e94b3f7e779fd6bfd41127dd9576854805`.
 
+That P27 atomic claim is now consumed. Control
+`c1d0eb82b59b7a2e5e5850c2b43e6456d6d0dde0` rebound exact item
+`26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce` to target
+`8d90ca47c5396002a04ed0de53249ce8eac7ca52` with canonical payload
+`462a693c41463fc8cb3b7db2252c9e6c6ccf2c0061ec582d37b4640acc9edfe2`.
+Exact source `e706587bfe581f881fb072271b15b4123f9aabe6`, base, 20-path scope,
+state/handoff, exported artifact, plain-path contract, implementation ancestry,
+and zero effects matched. The source was ancestry-merged with exact parents
+`8d90ca47...` and `e706587b...` at pushed integration head
+`91522295c4b6f7f3871cdd7085d16d7d3620e1ea`. Typecheck, focused ESLint,
+10 focused tests, provider-surface and diff checks passed. P16 was not merged
+and no steward request was adjudicated or applied.
+
 Control `538ee781fb805ac13b020a66dadf5573451d7af9` rebound sole P32 item
 `7a187ca7-fd01-46ee-87b5-15050a305be1` to exact claim head `ffd63f4e3c`.
 Its canonical payload `d5babbcb78a67522b2a18c1fc7d9419b3520d5da6d3ad4249dd1d466a4c93d69`,
@@ -111,11 +124,9 @@ Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged 
 preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
 steward request, migration, registration, or provider effect was applied.
 
-Current exact next action: report the pushed P27-interface atomic claim
-checkpoint to C00, then stop. Do not read or merge P27 and do not adjudicate or
-apply any steward request until C00 consumes the ready entry and rebinds the
-merge target CAS to the exact claim head. No unrelated merge, steward,
-evidence, control, or live-effect work is authorized.
+Current exact next action: report the pushed P27 integration metadata checkpoint
+to C00, then stop and await a new exact control authorization. No unrelated
+merge, steward, evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its

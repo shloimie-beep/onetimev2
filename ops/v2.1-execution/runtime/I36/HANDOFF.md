@@ -194,17 +194,29 @@ Entry-bound package, task, context, and source-package digests matched. This
 checkpoint consumes only the claim; no P27 source was read or merged and no
 steward request was adjudicated or applied.
 
+C00 rebound the sole P27 interface item at control
+`c1d0eb82b59b7a2e5e5850c2b43e6456d6d0dde0` to exact claim head
+`8d90ca47c5396002a04ed0de53249ce8eac7ca52`, with canonical payload
+`462a693c41463fc8cb3b7db2252c9e6c6ccf2c0061ec582d37b4640acc9edfe2`.
+I36 independently verified source/merge base `d3516683`, the exact 20-path
+allowlist, state/handoff digest `d911136b...`, the exported artifact hash,
+plain `<artifact-path>=<sha256>` contract digest `788e150f...`, implementation
+ancestry, and zero effects. Exact source
+`e706587bfe581f881fb072271b15b4123f9aabe6` was ancestry-merged with parents
+`8d90ca47...` and `e706587b...` at pushed integration head
+`91522295c4b6f7f3871cdd7085d16d7d3620e1ea`. Typecheck, focused ESLint,
+10 focused tests, provider-surface and diff checks passed. P16 was not merged,
+and no P27 steward request was adjudicated or applied.
+
 ## Remaining work
 
-Push and report this exact P27-interface atomic claim checkpoint to C00. Await
-C00 consumption and an exact merge-target CAS rebind before reading or merging
-P27. Do not adjudicate or apply any P27 steward request.
+Push and report the exact P27 integration metadata checkpoint to C00. Await a
+new exact C00 authorization before any further integration or steward work.
 
 ## Exact next action
 
-Report the exact pushed P27-interface atomic claim checkpoint to C00, then
-pause. Do not read or merge P27 and do not adjudicate any steward request until
-C00 consumes the ready entry and issues a new exact target authorization.
+Push and report the exact P27 integration metadata checkpoint to C00, then
+pause until C00 issues a new exact target authorization.
 
 ## Coverage
 
@@ -229,6 +241,8 @@ C00 consumes the ready entry and issues a new exact target authorization.
   `3393169e2284d65ff0a970d797aa1f83ebf9d895`
 - Exact 30-path allowlisted P32 interface delta at
   `6a33944a75e717041b2f951134459769b8fc2617`
+- Exact 20-path allowlisted P27 interface delta at
+  `e706587bfe581f881fb072271b15b4123f9aabe6`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -333,6 +347,16 @@ C00 consumes the ready entry and issues a new exact target authorization.
   `7a176159aa3f2beb81003972c11c5fa22c2a1c19`.
 - Repository typecheck, focused ESLint, 21 focused P32 tests, and diff checks
   passed after the P32 interface merge.
+- Rebound control `c1d0eb82b59b7a2e5e5850c2b43e6456d6d0dde0` carried the sole P27 item with
+  canonical payload `462a693c41463fc8cb3b7db2252c9e6c6ccf2c0061ec582d37b4640acc9edfe2`
+  and exact target `8d90ca47c5396002a04ed0de53249ce8eac7ca52`.
+- Exact P27 source/base, 20-path scope, state/handoff binding, exported artifact
+  hash, plain-path contract preimage, implementation ancestry, and zero effects
+  matched.
+- Exact P27 source is an ancestor of
+  `91522295c4b6f7f3871cdd7085d16d7d3620e1ea`; P16 is not an ancestor.
+- Repository typecheck, focused ESLint, 10 focused P27 tests, provider-surface
+  scan, and diff checks passed after the P27 interface merge.
 
 ## External effects
 

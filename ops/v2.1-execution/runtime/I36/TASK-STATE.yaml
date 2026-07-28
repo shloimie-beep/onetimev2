@@ -20,12 +20,12 @@ claim_id: 841f3e65-684b-4529-976b-5e796d9d7e45
 lease_id: 276197f4-8be4-4cf3-a9a0-e2f249f50306
 lease_issued_at: '2026-07-28T21:15:41Z'
 lease_expires_at: '2026-07-28T22:15:41Z'
-last_heartbeat_at: '2026-07-28T21:20:02Z'
+last_heartbeat_at: '2026-07-28T21:33:30Z'
 controller_authorization_sha: 25654daba9e2fd9efac7305ab087d2386fc5da2d
 ready_entry_state_based_on_control_head_sha: 0bd71908e070dc99431df054667beee92cf8f495
 ready_entry_payload_digest: 6813f51d690b30a53a5db430452f94804cd607a36b680c6a36b6176a912ea972
-state_based_on_head_sha: c4d042e94b3f7e779fd6bfd41127dd9576854805
-last_implementation_commit_sha: 7a176159aa3f2beb81003972c11c5fa22c2a1c19
+state_based_on_head_sha: 91522295c4b6f7f3871cdd7085d16d7d3620e1ea
+last_implementation_commit_sha: 91522295c4b6f7f3871cdd7085d16d7d3620e1ea
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -183,10 +183,20 @@ completed_steps:
   - Claimed exact P27-interface atomic-claim-only authority under claim
     841f3e65-684b-4529-976b-5e796d9d7e45 and sole RELEASE_INTEGRATOR lease
     276197f4-8be4-4cf3-a9a0-e2f249f50306 without reading, merging, or adjudicating P27 source or requests.
+  - Verified rebound control head c1d0eb82b59b7a2e5e5850c2b43e6456d6d0dde0, exact P27 item
+    26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce, and canonical payload digest
+    462a693c41463fc8cb3b7db2252c9e6c6ccf2c0061ec582d37b4640acc9edfe2.
+  - Verified exact P27 source, source/merge base d35166838267711a514cf73822cd2ca49a3f3ded,
+    20-path allowlist, state/handoff digest, one exported artifact hash, plain-path contract digest,
+    implementation ancestry, and zero external effects.
+  - Merged exact P27 interface source e706587bfe581f881fb072271b15b4123f9aabe6 with ancestry preserved at
+    91522295c4b6f7f3871cdd7085d16d7d3620e1ea.
+  - Passed repository typecheck, 10 focused P27 tests, focused ESLint, and diff checks; P16 was not merged
+    and no P27 steward request was adjudicated or applied.
 remaining_steps:
-  - Push and report this exact P27-interface atomic claim checkpoint to C00.
-  - Await C00 consumption and an exact merge-target CAS rebind before reading or merging P27.
-next_action: Report the exact pushed P27-interface atomic claim checkpoint to C00, then pause without reading or merging P27 until a new exact control authorization.
+  - Push and report the exact P27 integration metadata checkpoint to C00.
+  - Await a new exact C00 authorization before any further integration or steward work.
+next_action: Push and report the exact P27 integration metadata checkpoint to C00, then await a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -371,6 +381,26 @@ changed_paths:
   - packages/domain/src/privacy/redaction.ts
   - packages/domain/src/privacy/retention.ts
   - packages/domain/src/privacy/rights.ts
+  - apps/worker/src/runners/ghl-identity/index.ts
+  - apps/worker/src/runners/ghl-identity/runner.test.ts
+  - apps/worker/src/runners/ghl-identity/runner.ts
+  - integrations/highlevel/v21/identity/desired-state.ts
+  - integrations/highlevel/v21/identity/index.ts
+  - ops/v2.1-execution/runtime/P27/HANDOFF.md
+  - ops/v2.1-execution/runtime/P27/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P27/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P27/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P27/steward-requests/P27-migration-001.yaml
+  - ops/v2.1-execution/runtime/P27/steward-requests/P27-registration-001.yaml
+  - packages/contracts/src/communications/ghl-identity/index.ts
+  - packages/db/src/communications/ghl-identity/index.ts
+  - packages/db/src/communications/ghl-identity/repository.test.ts
+  - packages/db/src/communications/ghl-identity/repository.ts
+  - packages/domain/src/communications/ghl-identity/classification.ts
+  - packages/domain/src/communications/ghl-identity/errors.ts
+  - packages/domain/src/communications/ghl-identity/index.ts
+  - packages/domain/src/communications/ghl-identity/planner.test.ts
+  - packages/domain/src/communications/ghl-identity/planner.ts
 migrations:
   - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -586,6 +616,18 @@ verification:
       result: passed; exact ready-entry digests matched committed Git blobs
     - command: P27-interface atomic claim, writer-slot, branch-head, lease, phase-scope, and effect-lock verification
       result: passed; sole RELEASE_INTEGRATOR lease, phase scope P27_interface_atomic_claim_only, and zero effect locks
+    - command: canonical rebound P27 merge-item digest recomputation
+      result: passed; 462a693c41463fc8cb3b7db2252c9e6c6ccf2c0061ec582d37b4640acc9edfe2
+    - command: P27 source admission, allowlist, state/handoff, artifact, contract, ancestry, and zero-effect verification
+      result: passed; exact source/base, 20 paths, digest d911136b, one export, plain-path contract 788e150f, implementation ancestry, and 0/0/0 effects
+    - command: git merge --no-ff e706587bfe581f881fb072271b15b4123f9aabe6
+      result: passed; exact parents 8d90ca47c5396002a04ed0de53249ce8eac7ca52 and e706587bfe581f881fb072271b15b4123f9aabe6 at merge commit 91522295c4b6f7f3871cdd7085d16d7d3620e1ea
+    - command: npm run typecheck
+      result: passed after P27 interface merge
+    - command: focused P27 Vitest suites
+      result: passed; 3 files and 10 tests
+    - command: focused P27 ESLint, git diff --check, provider-surface scan, and P16 ancestry check
+      result: passed; no unintended provider mutation surface, P16 source absent, and no steward request applied
   known_baseline_failures: []
 external_effects:
   authority: none
