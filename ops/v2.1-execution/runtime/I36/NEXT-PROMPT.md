@@ -30,9 +30,21 @@ head `80e9f304627ef724757604255627d3e2fe033ef8`, claim
 `2745fab06447445301bd9d961475787256028a69dadf0d405ad374dcfb2b7f6c`.
 The exact pre-claim integration head is
 `972fa43507d6d4391a86dd130a1c38a05820b2ce`.
-This checkpoint consumes only the claim. Do not read or merge P16 and do not
-consume optimistic merge item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95` until
-C00 rebinds its expected target to the exact pushed claim head.
+That atomic checkpoint consumed only the claim; the subsequent exact rebound
+and integration are recorded below.
+
+That P16 atomic claim is now consumed. Control
+`a8d0dc737d54a3fbc9f786ff98356a8cbed5dbd1` rebound exact item
+`cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95` to target
+`47166ef026bb34842ec306cf7c2d2fc363773ad7` with canonical payload
+`e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2`.
+Exact source `418ffcc5cbf78643b40b89dbc5da64ea04806f6e`, base, 20-path scope,
+state/handoff, six exported artifacts, semantic `2.1.0` plain-path contract,
+implementation ancestry, and zero effects matched. The source was
+ancestry-merged with exact parents `47166ef0...` and `418ffcc5...` at pushed
+integration head `387ca78ee33af7d2d4fd19d45a1b01981afaaad3`. Typecheck,
+focused ESLint, 17 focused tests, raw-Git-blob Prettier verification, and diff
+checks passed. No P16 steward request was adjudicated or applied.
 
 That P27 atomic claim is now consumed. Control
 `c1d0eb82b59b7a2e5e5850c2b43e6456d6d0dde0` rebound exact item
@@ -127,10 +139,9 @@ Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged 
 preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
 steward request, migration, registration, or provider effect was applied.
 
-Current exact next action: report the pushed P16-interface atomic claim
-checkpoint to C00, then stop. Do not read or merge P16 or consume its optimistic
-merge item until C00 rebinds the merge target CAS to the exact claim head. No
-unrelated merge, steward, evidence, control, or live-effect work is authorized.
+Current exact next action: report the pushed P16 integration metadata checkpoint
+to C00, then stop and await a new exact control authorization. No unrelated
+merge, steward, evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its

@@ -220,17 +220,29 @@ matched. This checkpoint consumes only the claim; no P16 source was read or
 merged, and optimistic item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95` remains
 unconsumed pending an exact target CAS rebind.
 
+C00 rebound the sole P16 interface item at control
+`a8d0dc737d54a3fbc9f786ff98356a8cbed5dbd1` to exact claim head
+`47166ef026bb34842ec306cf7c2d2fc363773ad7`, with canonical payload
+`e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2`.
+I36 independently verified source/merge base `01cdb992`, the exact 20-path
+allowlist, state/handoff digest `2ad3f13c...`, all six exported artifact hashes,
+semantic `2.1.0` plain `<artifact-path>=<sha256>` contract digest
+`95c177d5...`, implementation ancestry, and zero effects. Exact source
+`418ffcc5cbf78643b40b89dbc5da64ea04806f6e` was ancestry-merged with parents
+`47166ef0...` and `418ffcc5...` at pushed integration head
+`387ca78ee33af7d2d4fd19d45a1b01981afaaad3`. Typecheck, focused ESLint,
+17 focused tests, raw-Git-blob Prettier verification, and diff checks passed.
+No P16 steward request was adjudicated or applied.
+
 ## Remaining work
 
-Push and report this exact P16-interface atomic claim checkpoint to C00. Await
-C00 consumption and an exact merge-target CAS rebind before reading or merging
-P16.
+Push and report the exact P16 integration metadata checkpoint to C00. Await a
+new exact C00 authorization before any further integration or steward work.
 
 ## Exact next action
 
-Report the exact pushed P16-interface atomic claim checkpoint to C00, then
-pause. Do not read or merge P16 until C00 consumes the ready entry and issues a
-new exact target authorization.
+Push and report the exact P16 integration metadata checkpoint to C00, then
+pause until C00 issues a new exact target authorization.
 
 ## Coverage
 
@@ -257,6 +269,8 @@ new exact target authorization.
   `6a33944a75e717041b2f951134459769b8fc2617`
 - Exact 20-path allowlisted P27 interface delta at
   `e706587bfe581f881fb072271b15b4123f9aabe6`
+- Exact 20-path allowlisted P16 interface delta at
+  `418ffcc5cbf78643b40b89dbc5da64ea04806f6e`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -371,6 +385,16 @@ new exact target authorization.
   `91522295c4b6f7f3871cdd7085d16d7d3620e1ea`; P16 is not an ancestor.
 - Repository typecheck, focused ESLint, 10 focused P27 tests, provider-surface
   scan, and diff checks passed after the P27 interface merge.
+- Rebound control `a8d0dc737d54a3fbc9f786ff98356a8cbed5dbd1` carried the sole P16 item with
+  canonical payload `e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2`
+  and exact target `47166ef026bb34842ec306cf7c2d2fc363773ad7`.
+- Exact P16 source/base, 20-path scope, state/handoff binding, six export
+  hashes, semantic `2.1.0` plain-path contract preimage, implementation ancestry,
+  and zero effects matched.
+- Exact P16 source is an ancestor of
+  `387ca78ee33af7d2d4fd19d45a1b01981afaaad3`.
+- Repository typecheck, focused ESLint, 17 focused P16 tests, raw-Git-blob
+  Prettier verification, and diff checks passed after the P16 interface merge.
 
 ## External effects
 

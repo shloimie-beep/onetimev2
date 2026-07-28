@@ -21,12 +21,12 @@ claim_id: ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6
 lease_id: 496f5ac8-09f9-4186-82f3-299de929cd7c
 lease_issued_at: '2026-07-28T21:36:49Z'
 lease_expires_at: '2026-07-28T22:36:49Z'
-last_heartbeat_at: '2026-07-28T21:44:19Z'
+last_heartbeat_at: '2026-07-28T21:53:41Z'
 controller_authorization_sha: c3b1cfef9fb52abfa7430dc142e9a8ab6f0b6684
 ready_entry_state_based_on_control_head_sha: 80e9f304627ef724757604255627d3e2fe033ef8
 ready_entry_payload_digest: 2745fab06447445301bd9d961475787256028a69dadf0d405ad374dcfb2b7f6c
-state_based_on_head_sha: 972fa43507d6d4391a86dd130a1c38a05820b2ce
-last_implementation_commit_sha: 91522295c4b6f7f3871cdd7085d16d7d3620e1ea
+state_based_on_head_sha: 387ca78ee33af7d2d4fd19d45a1b01981afaaad3
+last_implementation_commit_sha: 387ca78ee33af7d2d4fd19d45a1b01981afaaad3
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -204,10 +204,20 @@ completed_steps:
   - Claimed exact P16-interface atomic-claim-only authority under claim
     ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6 and sole RELEASE_INTEGRATOR lease
     496f5ac8-09f9-4186-82f3-299de929cd7c without reading or merging P16 source or consuming its optimistic merge item.
+  - Verified rebound control head a8d0dc737d54a3fbc9f786ff98356a8cbed5dbd1, exact P16 item
+    cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95, and canonical payload digest
+    e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2.
+  - Verified exact P16 source, source/merge base 01cdb992660a1fbc20b204b829d28062fd044679,
+    20-path allowlist, state/handoff digest, six exported artifact hashes, plain-path semantic contract digest,
+    implementation ancestry, and zero external effects.
+  - Merged exact P16 interface source 418ffcc5cbf78643b40b89dbc5da64ea04806f6e with ancestry preserved at
+    387ca78ee33af7d2d4fd19d45a1b01981afaaad3.
+  - Passed repository typecheck, 17 focused P16 tests, focused ESLint, raw-Git-blob Prettier verification, and
+    diff checks; no P16 steward request was adjudicated or applied.
 remaining_steps:
-  - Push and report this exact P16-interface atomic claim checkpoint to C00.
-  - Await C00 consumption and an exact merge-target CAS rebind before reading or merging P16.
-next_action: Report the exact pushed P16-interface atomic claim checkpoint to C00, then pause without reading or merging P16 until a new exact control authorization.
+  - Push and report the exact P16 integration metadata checkpoint to C00.
+  - Await a new exact C00 authorization before any further integration or steward work.
+next_action: Push and report the exact P16 integration metadata checkpoint to C00, then await a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -412,6 +422,26 @@ changed_paths:
   - packages/domain/src/communications/ghl-identity/index.ts
   - packages/domain/src/communications/ghl-identity/planner.test.ts
   - packages/domain/src/communications/ghl-identity/planner.ts
+  - apps/web/src/client/app/admin/classroom/core/ClassSeriesWorkspace.tsx
+  - apps/web/src/client/app/admin/classroom/core/index.ts
+  - apps/web/src/server/features/classes/core/index.ts
+  - apps/web/src/server/features/classes/core/service.test.ts
+  - apps/web/src/server/features/classes/core/service.ts
+  - ops/v2.1-execution/runtime/P16/HANDOFF.md
+  - ops/v2.1-execution/runtime/P16/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P16/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
+  - packages/contracts/src/classes/core/index.ts
+  - packages/db/src/classes/core/index.ts
+  - packages/db/src/classes/core/repository.ts
+  - packages/db/src/classes/core/schema-contract.ts
+  - packages/domain/src/classes/core/classroom-core.test.ts
+  - packages/domain/src/classes/core/enrollment.ts
+  - packages/domain/src/classes/core/errors.ts
+  - packages/domain/src/classes/core/index.ts
+  - packages/domain/src/classes/core/occurrences.ts
+  - packages/domain/src/classes/core/series.ts
 migrations:
   - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -645,6 +675,18 @@ verification:
       result: passed; exact ready-entry digests matched committed Git metadata and blobs
     - command: P16-interface atomic claim, writer-slot, branch-head, lease, phase-scope, ancestry, and effect-lock verification
       result: passed; sole RELEASE_INTEGRATOR lease, P16 source/final absent, phase scope P16_interface_atomic_claim_only, and zero effect locks
+    - command: canonical rebound P16 merge-item digest recomputation
+      result: passed; e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2
+    - command: P16 source admission, allowlist, state/handoff, artifact, contract, ancestry, and zero-effect verification
+      result: passed; exact source/base, 20 paths, digest 2ad3f13c, six exports, semantic 2.1.0 plain-path contract 95c177d5, implementation ancestry, and 0/0/0 effects
+    - command: git merge --no-ff 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
+      result: passed; exact parents 47166ef026bb34842ec306cf7c2d2fc363773ad7 and 418ffcc5cbf78643b40b89dbc5da64ea04806f6e at merge commit 387ca78ee33af7d2d4fd19d45a1b01981afaaad3
+    - command: npm run typecheck
+      result: passed after P16 interface merge
+    - command: focused P16 Vitest suites
+      result: passed; 2 files and 17 tests
+    - command: focused P16 ESLint, raw-Git-blob Prettier check, and git diff --check
+      result: passed; exact source blobs formatted, no diff hygiene issue, and no steward request applied
   known_baseline_failures: []
 external_effects:
   authority: none
