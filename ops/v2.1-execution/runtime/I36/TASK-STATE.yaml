@@ -7,496 +7,517 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+  C00: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+  P32: 6a33944a75e717041b2f951134459769b8fc2617
 status: claimed
 phase: integration
-claimed_by: codex-i36-worker2-1b554a42
-claim_time: '2026-07-28T20:18:54Z'
-claim_id: 1b554a42-a2a2-4017-add9-7117ed575b9e
-lease_id: 6b08c9f1-f266-4b3c-8d54-e678e72f2d13
-lease_issued_at: '2026-07-28T20:06:46Z'
-lease_expires_at: '2026-07-28T21:06:46Z'
-last_heartbeat_at: '2026-07-28T20:31:47Z'
-controller_authorization_sha: f5ae0e8078e1c57b75cf3a59d868596a4b2fe536
-ready_entry_state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
-ready_entry_payload_digest: 0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d
-state_based_on_head_sha: 41954f0077308ef4df779472e44c3531f4273b81
+claimed_by: codex-i36-worker-ce7c9fcd
+claim_time: '2026-07-28T20:53:38Z'
+claim_id: ce7c9fcd-dbf3-4d5e-9174-3b7632504e42
+lease_id: 2a26f2f3-e956-4ba0-a4d0-86c02aa51a15
+lease_issued_at: '2026-07-28T20:46:27Z'
+lease_expires_at: '2026-07-28T21:46:27Z'
+last_heartbeat_at: '2026-07-28T20:53:38Z'
+controller_authorization_sha: 1b1ecf75213617df552831df6ca8b04478a60211
+ready_entry_state_based_on_control_head_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
+ready_entry_payload_digest: 602876f452e4b9eea3691fe4c3082f356eb67918af82818f6993c992c3b99ec3
+state_based_on_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
 last_implementation_commit_sha: 41954f0077308ef4df779472e44c3531f4273b81
 completed_steps:
-- Verified repository identity shloimie-beep/onetimev2.
-- Verified the exact remote control, bootstrap integration, and queued F01 heads.
-- Recomputed the canonical I36 ready-entry and F01 merge-item payload digests.
-- Verified all 200 locked Git blobs and all 15 source-package Git blobs.
-- Adopted the C00 bootstrap integration lane locally at the authorized start SHA.
-- Pushed the atomic I36 adoption claim at 3277915caf862bdaa79776794862e6bdbc5762d5.
-- Verified rebased merge authorization at control head 0e4b4c0688b57899493447e85a03a7aa9aab7df2.
-- Verified F01 source ancestry, exact allowlisted delta, state/handoff binding, artifact digests, and external-effect counts.
-- Merged F01 interface head fa9e5c92231c4b92340d07945cc91d76c85bd444 with ancestry preserved.
-- Pushed the post-merge checkpoint at 201bf33a9ba532c696432c707145a798d1f07f9f.
-- Installed the exact package-lock dependency tree and passed repository typecheck.
-- Passed focused F01 server/client/worker seam and steward-schema verification.
-- Verified C00-authorized I36 takeover against exact control head beb72be5ba1f993c1806e9314146e88f951affdb
-  and exact existing integration head 80c281b7ae5826ed2c6abe95ba68a033ffa52174.
-- Recomputed and matched resume-entry payload digest 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0.
-- Claimed the takeover under claim 89f23125-5016-49e5-968c-d886dfc979dc and shared writer lease
-  1c1c44d6-203b-4d77-a6a0-7157675a38b4 without reading or integrating F02.
-- Verified rebound control head 136f5f54520e44415c10b83108314fab4503a42e and canonical F07 merge-item
-  payload digest fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0.
-- Verified exact F07 source base, merge base, 12-path allowlist, state/handoff digest, five artifact blob
-  digests, and interface contract digest 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188.
-- Merged exact F07 interface head 47a2bb6b76225951e0599683499a95f4dc9881be with source ancestry preserved
-  and pushed integration head 91349fc1fa9a474ae31cf408ae0364aa10520385.
-- Passed repository typecheck and all three focused F07 interface contract tests.
-- Verified the two assigned immutable F01 steward-request blob digests at exact source head
-  e8b172c6a7da5003a82cfc8663df6d4159fa4092 and rejected both without product edits because their
-  committed semantics cannot be applied within their exact scopes at the authorized target.
-- Verified C00-authorized I36 resume against exact control head 95a2a52e096357738cda2bd7c16bc9a0e24ccd70,
-  exact integration head 1976033cfdae1beb249642f0e28f6824b0fcbb8b, and ready-entry payload digest
-  a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46.
-- Claimed the P31-interface-only lease under claim 4ee7c853-5fa3-4fde-afc9-d123effe52b6 and lease
-  7b68a523-6fe3-4fdc-a86f-55c8b176aae4.
-- Verified rebound control head d9bb5fd42ad43ccb121d2d749f6176908cac8e9a and P31 merge-item digest
-  7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32.
-- Verified exact P31 source head, source/merge base, 8-path allowlist, state/handoff digest, three artifact
-  blob digests, combined interface digest, and zero external effects.
-- Merged exact P31 source ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d with ancestry preserved and
-  pushed integration head 42b09dc598e0dfc17ada53b441e4cd487e126573.
-- Passed repository typecheck and focused P31 catalog, approval, consent, Student-prohibition, timing, and
-  Resend-only security-template assertions.
-- Verified the exact F02-interface-only resume authorization at control head
-  3df0ee05af64db67af02e1e64d37ded4810d2cd9 and integration head
-  eefca0644e57dca48609682cbc3e1b01992d286d.
-- Recomputed and matched I36 ready-entry payload digest
-  9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4.
-- Claimed exact F02-interface-only authority under claim 8d31181a-cfe8-493e-b7ce-4ea867da9581 and
-  RELEASE_INTEGRATOR lease 9b0d2541-b765-4a2b-af44-014f842efa1a.
-- Verified rebound control head e8e1cfe8b69266535f3413e4cebe22c1b7ca1970 and F02 merge-item digest
-  45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e.
-- Verified exact F02 source head, source/merge base, 10-path allowlist, state/handoff digest, six artifact
-  blob digests, interface contract digest, migration checksum, and zero external effects.
-- Merged exact F02 source e4673ff1c2e621e26ac93034be245b280c4da4fa with ancestry preserved and
-  pushed integration head e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4.
-- Passed repository typecheck, focused F02 domain guard assertions, and the native PGlite PostgreSQL
-  migration proof.
-- Verified the exact F03/F04/F05-interface-only resume authorization at containing control head
-  5217c299c2721a58bdb9ad1c1c0f68525008661a, ready-entry parent control state
-  4d6bc306e542774b68179d9b440ceccd2d5b9967, and integration head
-  d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec.
-- Recomputed and matched I36 ready-entry payload digest
-  02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1.
-- Verified all 200 locked Git blobs plus the package, source-package, task, and context digests.
-- Claimed exact F03/F04/F05-interface-only authority under claim
-  353f2868-2978-4cac-ac73-c56fa184f841 and RELEASE_INTEGRATOR lease
-  80afc839-dc09-4363-b440-d22757451415 without reading or merging any queued source.
-- Corrected the controller authorization binding to the containing control commit while preserving the
-  ready-entry parent control head separately.
-- Verified rebound control head 44202fc53db9781c91e4015d6af004bac4ab037b and exact F03, F04, and F05
-  merge-item payload digests.
-- Verified all three exact source identities, source/merge base d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec,
-  14/17/21-path allowlists, task and state/handoff digests, every exported artifact hash, contract digests,
-  implementation ancestry, and zero external effects.
-- Recomputed F04 contract digest a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
-  using the declared literal path=<artifact-path>=<sha256> line interpretation.
-- Merged exact F03 source 7c638131a0cab757657e95c4d2229a1573e4cde1 with ancestry preserved at
-  c6e87b934d7b916a0772a8dbe046f984812d15dc.
-- Merged exact F04 interface source 4cc95c29c6012174595ba1821e0554aca8572e08 with ancestry preserved at
-  1ca6f5c5cec246e06e45b76b747aa5b758f1196c without merging later F04 heads.
-- Merged exact F05 interface source 0656380bcfc50cc464dcea7588448dc724049599 with ancestry preserved at
-  e88121cb6ddd5023eb75496b25c3ee7281c07621.
-- Passed repository typecheck and 49 focused F03/F04/F05 tests; no migration or registration steward request
-  was applied.
-- Verified the exact P15-interface-only resume authorization at containing control head
-  0341f6303937bebc64e4d3cae6905168183dbb77, ready-entry parent control state
-  f2ace0993937a020a31c364f079bcf52b8c65350, and integration head
-  9782a4164662b8059a557c0969de9c35f54d0cf7.
-- Recomputed and matched I36 ready-entry payload digest
-  3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf.
-- Verified all 200 locked Git blobs plus the package, source-package, task, and context digests.
-- Claimed exact P15-interface-only authority under claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and
-  RELEASE_INTEGRATOR lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 without reading or merging P15 source.
-- Verified rebound control head 5530d24379a31383d19c172bbd3b3b18d9eef5a6 and canonical P15 merge-item
-  payload digest 617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d.
-- Verified exact P15 source, source/merge base, 21-path allowlist, task and state/handoff digests, six exported
-  artifact hashes, plain-path contract digest 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb,
-  implementation ancestry, and zero external effects.
-- Merged exact P15 source c96b8c55c07e5283e762537934a6bf948833700e with ancestry preserved at
-  eae9c62adb6711034bbd31bc4aea469c2c65fc21.
-- Passed repository typecheck, full quiet lint, 12 focused calendar tests, and the Google Calendar/provider
-  absence inventory; no steward request, migration, or registration was applied.
-- Verified the exact F06/P14-interface-wave atomic-claim-only resume authorization at containing control
-  head d234126ca7be31def06c939ac1886406936987dc, ready-entry parent control state
-  c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb, and integration head
-  01cdb992660a1fbc20b204b829d28062fd044679.
-- Recomputed and matched I36 ready-entry payload digest
-  0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d.
-- Verified all 200 locked Git blobs plus the entry-bound package, source-package, task, and context digests.
-- Claimed exact F06/P14-interface-wave atomic-claim-only authority under claim
-  1b554a42-a2a2-4017-add9-7117ed575b9e and RELEASE_INTEGRATOR lease
-  6b08c9f1-f266-4b3c-8d54-e678e72f2d13 without reading or merging either source.
-- Verified rebound control head f5ae0e8078e1c57b75cf3a59d868596a4b2fe536 and canonical F06/P14
-  merge-item payload digests c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763
-  and ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858.
-- Verified both exact source identities, common source/merge base
-  9782a4164662b8059a557c0969de9c35f54d0cf7, 18/25-path allowlists, task/context/source-package
-  and state/handoff digests, every exported artifact hash, implementation ancestry, and zero effects.
-- Recomputed F06 and P14 contract digests
-  7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0 and
-  1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1 from semantic
-  version plus sorted plain <artifact-path>=<sha256> lines with LF, no final newline, and no literal path= prefix.
-- Merged exact F06 source 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7 with ancestry preserved at
-  f1ba79a9c8e66bda9793d3b22edc78630fca862c.
-- Merged exact P14 source 3393169e2284d65ff0a970d797aa1f83ebf9d895 after F06 with ancestry preserved
-  at 41954f0077308ef4df779472e44c3531f4273b81.
-- Passed repository typecheck, full quiet lint, and 20 focused F06/P14 tests; no steward request,
-  migration, registration, or provider effect was applied.
+  - Verified repository identity shloimie-beep/onetimev2.
+  - Verified the exact remote control, bootstrap integration, and queued F01 heads.
+  - Recomputed the canonical I36 ready-entry and F01 merge-item payload digests.
+  - Verified all 200 locked Git blobs and all 15 source-package Git blobs.
+  - Adopted the C00 bootstrap integration lane locally at the authorized start SHA.
+  - Pushed the atomic I36 adoption claim at 3277915caf862bdaa79776794862e6bdbc5762d5.
+  - Verified rebased merge authorization at control head 0e4b4c0688b57899493447e85a03a7aa9aab7df2.
+  - Verified F01 source ancestry, exact allowlisted delta, state/handoff binding, artifact digests, and external-effect counts.
+  - Merged F01 interface head fa9e5c92231c4b92340d07945cc91d76c85bd444 with ancestry preserved.
+  - Pushed the post-merge checkpoint at 201bf33a9ba532c696432c707145a798d1f07f9f.
+  - Installed the exact package-lock dependency tree and passed repository typecheck.
+  - Passed focused F01 server/client/worker seam and steward-schema verification.
+  - Verified C00-authorized I36 takeover against exact control head beb72be5ba1f993c1806e9314146e88f951affdb
+    and exact existing integration head 80c281b7ae5826ed2c6abe95ba68a033ffa52174.
+  - Recomputed and matched resume-entry payload digest 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0.
+  - Claimed the takeover under claim 89f23125-5016-49e5-968c-d886dfc979dc and shared writer lease
+    1c1c44d6-203b-4d77-a6a0-7157675a38b4 without reading or integrating F02.
+  - Verified rebound control head 136f5f54520e44415c10b83108314fab4503a42e and canonical F07 merge-item
+    payload digest fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0.
+  - Verified exact F07 source base, merge base, 12-path allowlist, state/handoff digest, five artifact blob
+    digests, and interface contract digest 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188.
+  - Merged exact F07 interface head 47a2bb6b76225951e0599683499a95f4dc9881be with source ancestry preserved
+    and pushed integration head 91349fc1fa9a474ae31cf408ae0364aa10520385.
+  - Passed repository typecheck and all three focused F07 interface contract tests.
+  - Verified the two assigned immutable F01 steward-request blob digests at exact source head
+    e8b172c6a7da5003a82cfc8663df6d4159fa4092 and rejected both without product edits because their
+    committed semantics cannot be applied within their exact scopes at the authorized target.
+  - Verified C00-authorized I36 resume against exact control head 95a2a52e096357738cda2bd7c16bc9a0e24ccd70,
+    exact integration head 1976033cfdae1beb249642f0e28f6824b0fcbb8b, and ready-entry payload digest
+    a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46.
+  - Claimed the P31-interface-only lease under claim 4ee7c853-5fa3-4fde-afc9-d123effe52b6 and lease
+    7b68a523-6fe3-4fdc-a86f-55c8b176aae4.
+  - Verified rebound control head d9bb5fd42ad43ccb121d2d749f6176908cac8e9a and P31 merge-item digest
+    7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32.
+  - Verified exact P31 source head, source/merge base, 8-path allowlist, state/handoff digest, three artifact
+    blob digests, combined interface digest, and zero external effects.
+  - Merged exact P31 source ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d with ancestry preserved and
+    pushed integration head 42b09dc598e0dfc17ada53b441e4cd487e126573.
+  - Passed repository typecheck and focused P31 catalog, approval, consent, Student-prohibition, timing, and
+    Resend-only security-template assertions.
+  - Verified the exact F02-interface-only resume authorization at control head
+    3df0ee05af64db67af02e1e64d37ded4810d2cd9 and integration head
+    eefca0644e57dca48609682cbc3e1b01992d286d.
+  - Recomputed and matched I36 ready-entry payload digest
+    9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4.
+  - Claimed exact F02-interface-only authority under claim 8d31181a-cfe8-493e-b7ce-4ea867da9581 and
+    RELEASE_INTEGRATOR lease 9b0d2541-b765-4a2b-af44-014f842efa1a.
+  - Verified rebound control head e8e1cfe8b69266535f3413e4cebe22c1b7ca1970 and F02 merge-item digest
+    45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e.
+  - Verified exact F02 source head, source/merge base, 10-path allowlist, state/handoff digest, six artifact
+    blob digests, interface contract digest, migration checksum, and zero external effects.
+  - Merged exact F02 source e4673ff1c2e621e26ac93034be245b280c4da4fa with ancestry preserved and
+    pushed integration head e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4.
+  - Passed repository typecheck, focused F02 domain guard assertions, and the native PGlite PostgreSQL
+    migration proof.
+  - Verified the exact F03/F04/F05-interface-only resume authorization at containing control head
+    5217c299c2721a58bdb9ad1c1c0f68525008661a, ready-entry parent control state
+    4d6bc306e542774b68179d9b440ceccd2d5b9967, and integration head
+    d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec.
+  - Recomputed and matched I36 ready-entry payload digest
+    02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1.
+  - Verified all 200 locked Git blobs plus the package, source-package, task, and context digests.
+  - Claimed exact F03/F04/F05-interface-only authority under claim
+    353f2868-2978-4cac-ac73-c56fa184f841 and RELEASE_INTEGRATOR lease
+    80afc839-dc09-4363-b440-d22757451415 without reading or merging any queued source.
+  - Corrected the controller authorization binding to the containing control commit while preserving the
+    ready-entry parent control head separately.
+  - Verified rebound control head 44202fc53db9781c91e4015d6af004bac4ab037b and exact F03, F04, and F05
+    merge-item payload digests.
+  - Verified all three exact source identities, source/merge base d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec,
+    14/17/21-path allowlists, task and state/handoff digests, every exported artifact hash, contract digests,
+    implementation ancestry, and zero external effects.
+  - Recomputed F04 contract digest a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+    using the declared literal path=<artifact-path>=<sha256> line interpretation.
+  - Merged exact F03 source 7c638131a0cab757657e95c4d2229a1573e4cde1 with ancestry preserved at
+    c6e87b934d7b916a0772a8dbe046f984812d15dc.
+  - Merged exact F04 interface source 4cc95c29c6012174595ba1821e0554aca8572e08 with ancestry preserved at
+    1ca6f5c5cec246e06e45b76b747aa5b758f1196c without merging later F04 heads.
+  - Merged exact F05 interface source 0656380bcfc50cc464dcea7588448dc724049599 with ancestry preserved at
+    e88121cb6ddd5023eb75496b25c3ee7281c07621.
+  - Passed repository typecheck and 49 focused F03/F04/F05 tests; no migration or registration steward request
+    was applied.
+  - Verified the exact P15-interface-only resume authorization at containing control head
+    0341f6303937bebc64e4d3cae6905168183dbb77, ready-entry parent control state
+    f2ace0993937a020a31c364f079bcf52b8c65350, and integration head
+    9782a4164662b8059a557c0969de9c35f54d0cf7.
+  - Recomputed and matched I36 ready-entry payload digest
+    3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf.
+  - Verified all 200 locked Git blobs plus the package, source-package, task, and context digests.
+  - Claimed exact P15-interface-only authority under claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and
+    RELEASE_INTEGRATOR lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 without reading or merging P15 source.
+  - Verified rebound control head 5530d24379a31383d19c172bbd3b3b18d9eef5a6 and canonical P15 merge-item
+    payload digest 617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d.
+  - Verified exact P15 source, source/merge base, 21-path allowlist, task and state/handoff digests, six exported
+    artifact hashes, plain-path contract digest 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb,
+    implementation ancestry, and zero external effects.
+  - Merged exact P15 source c96b8c55c07e5283e762537934a6bf948833700e with ancestry preserved at
+    eae9c62adb6711034bbd31bc4aea469c2c65fc21.
+  - Passed repository typecheck, full quiet lint, 12 focused calendar tests, and the Google Calendar/provider
+    absence inventory; no steward request, migration, or registration was applied.
+  - Verified the exact F06/P14-interface-wave atomic-claim-only resume authorization at containing control
+    head d234126ca7be31def06c939ac1886406936987dc, ready-entry parent control state
+    c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb, and integration head
+    01cdb992660a1fbc20b204b829d28062fd044679.
+  - Recomputed and matched I36 ready-entry payload digest
+    0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d.
+  - Verified all 200 locked Git blobs plus the entry-bound package, source-package, task, and context digests.
+  - Claimed exact F06/P14-interface-wave atomic-claim-only authority under claim
+    1b554a42-a2a2-4017-add9-7117ed575b9e and RELEASE_INTEGRATOR lease
+    6b08c9f1-f266-4b3c-8d54-e678e72f2d13 without reading or merging either source.
+  - Verified rebound control head f5ae0e8078e1c57b75cf3a59d868596a4b2fe536 and canonical F06/P14
+    merge-item payload digests c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763
+    and ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858.
+  - Verified both exact source identities, common source/merge base
+    9782a4164662b8059a557c0969de9c35f54d0cf7, 18/25-path allowlists, task/context/source-package
+    and state/handoff digests, every exported artifact hash, implementation ancestry, and zero effects.
+  - Recomputed F06 and P14 contract digests
+    7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0 and
+    1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1 from semantic
+    version plus sorted plain <artifact-path>=<sha256> lines with LF, no final newline, and no literal path= prefix.
+  - Merged exact F06 source 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7 with ancestry preserved at
+    f1ba79a9c8e66bda9793d3b22edc78630fca862c.
+  - Merged exact P14 source 3393169e2284d65ff0a970d797aa1f83ebf9d895 after F06 with ancestry preserved
+    at 41954f0077308ef4df779472e44c3531f4273b81.
+  - Passed repository typecheck, full quiet lint, and 20 focused F06/P14 tests; no steward request,
+    migration, registration, or provider effect was applied.
+  - Verified the exact P32-interface atomic-claim-only resume authorization at containing control head
+    1b1ecf75213617df552831df6ca8b04478a60211, ready-entry parent control state
+    d3552d3aa9afde6445a3b8772a1de0ac9b134a6b, and integration head
+    d35166838267711a514cf73822cd2ca49a3f3ded.
+  - Recomputed and matched I36 ready-entry payload digest
+    602876f452e4b9eea3691fe4c3082f356eb67918af82818f6993c992c3b99ec3.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and the entry-bound package, task,
+    context, and source-package digests.
+  - Claimed exact P32-interface atomic-claim-only authority under claim
+    ce7c9fcd-dbf3-4d5e-9174-3b7632504e42 and sole RELEASE_INTEGRATOR lease
+    2a26f2f3-e956-4ba0-a4d0-86c02aa51a15 without reading, merging, or adjudicating P32 source or requests.
 remaining_steps:
-- Push and report this exact F06/P14 integration metadata checkpoint to C00.
-- Await a new exact C00 queue/lease authorization.
-next_action: Report the exact pushed F06/P14 integration metadata checkpoint to C00, then pause for a new exact control authorization.
+  - Push and report this exact P32-interface atomic claim checkpoint to C00.
+  - Await C00 consumption and an exact merge-target CAS rebind before reading or merging P32.
+next_action: Report the exact pushed P32-interface atomic claim checkpoint to C00, then pause without reading or merging P32 until a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
-- apps/web/src/client/app/portal-entry.tsx
-- apps/web/src/client/app/router/index.ts
-- apps/web/src/client/app/router/portal-roots.tsx
-- apps/web/src/client/app/router/registry.ts
-- apps/web/src/server/app.ts
-- apps/web/src/server/features/registry/index.ts
-- apps/worker/src/main/index.ts
-- apps/worker/src/runners/registry/index.ts
-- ops/v2.1-execution/runtime/F01/HANDOFF.md
-- ops/v2.1-execution/runtime/F01/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/F01/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/F01/TASK-STATE.yaml
-- ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
-- ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-- ops/v2.1-execution/runtime/I36/HANDOFF.md
-- ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
-- packages/config/src/index.ts
-- apps/web/src/server/features/email/templates/security.ts
-- integrations/highlevel/v21/copy/catalog.ts
-- ops/v2.1-execution/runtime/P31/HANDOFF.md
-- ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
-- packages/domain/src/communications/copy/approval.ts
-- packages/domain/src/communications/copy/catalog.ts
-- ops/v2.1-execution/runtime/F02/HANDOFF.md
-- ops/v2.1-execution/runtime/F02/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-- ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
-- packages/contracts/src/state/index.ts
-- packages/db/migrations/2234_canonical_state_machines.sql
-- packages/domain/src/state/errors.ts
-- packages/domain/src/state/index.ts
-- packages/domain/src/state/transition-guard.ts
-- apps/web/src/client/auth/token-fragment.ts
-- apps/web/src/server/features/auth/http-security.ts
-- ops/v2.1-execution/runtime/F03/HANDOFF.md
-- ops/v2.1-execution/runtime/F03/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
-- packages/contracts/src/identity/auth/index.ts
-- packages/domain/src/auth/index.ts
-- packages/domain/src/auth/policy.ts
-- packages/domain/src/auth/rate-limits.ts
-- packages/domain/src/auth/service.ts
-- packages/domain/src/auth/sessions.ts
-- packages/domain/src/auth/tokens.ts
-- packages/domain/src/auth/v21-auth.contract.test.ts
-- apps/web/src/server/features/accounts/v21-account-context-service.test.ts
-- apps/web/src/server/features/accounts/v21-account-context-service.ts
-- ops/v2.1-execution/runtime/F04/HANDOFF.md
-- ops/v2.1-execution/runtime/F04/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
-- ops/v2.1-execution/runtime/F04/steward-requests/F04-migration-001.yaml
-- ops/v2.1-execution/runtime/F04/steward-requests/F04-registration-001.yaml
-- packages/contracts/src/access/v21-household-authorization.ts
-- packages/contracts/src/accounts/v21-household-identity.test.ts
-- packages/contracts/src/accounts/v21-household-identity.ts
-- packages/db/src/accounts/v21-household-identity-repository.ts
-- packages/domain/src/access/index.ts
-- packages/domain/src/access/v21-household-authorization.ts
-- packages/domain/src/accounts/index.ts
-- packages/domain/src/accounts/v21-household-identity.test.ts
-- packages/domain/src/accounts/v21-household-identity.ts
-- apps/web/src/server/features/jobs/command-handler.ts
-- apps/web/src/server/features/jobs/index.ts
-- apps/worker/src/runners/foundation/index.ts
-- apps/worker/src/runners/foundation/runner.ts
-- ops/v2.1-execution/runtime/F05/HANDOFF.md
-- ops/v2.1-execution/runtime/F05/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/F05/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/F05/TASK-STATE.yaml
-- ops/v2.1-execution/runtime/F05/steward-requests/migration/F05-MIGRATION-001.yaml
-- ops/v2.1-execution/runtime/F05/steward-requests/registration/F05-REGISTRATION-001.yaml
-- packages/contracts/src/api/index.ts
-- packages/contracts/src/jobs/index.ts
-- packages/db/src/jobs/index.ts
-- packages/db/src/jobs/repository.ts
-- packages/db/src/jobs/schema-contract.ts
-- packages/domain/src/jobs/errors.ts
-- packages/domain/src/jobs/foundation.test.ts
-- packages/domain/src/jobs/idempotency.ts
-- packages/domain/src/jobs/index.ts
-- packages/domain/src/jobs/lifecycle.ts
-- packages/domain/src/jobs/saga.ts
-- apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx
-- apps/web/src/client/features/calendar/CalendarWorkspace.tsx
-- apps/web/src/client/features/calendar/calendar.css
-- apps/web/src/client/features/calendar/index.ts
-- apps/web/src/server/features/calendar/index.ts
-- apps/web/src/server/features/calendar/service.ts
-- ops/v2.1-execution/runtime/P15/HANDOFF.md
-- ops/v2.1-execution/runtime/P15/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/P15/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/P15/STEWARD-REQUESTS.yaml
-- ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
-- packages/contracts/src/calendar/index.ts
-- packages/db/src/calendar/index.ts
-- packages/db/src/calendar/repository.ts
-- packages/db/src/calendar/schema-contract.ts
-- packages/domain/src/calendar/calendar.test.ts
-- packages/domain/src/calendar/errors.ts
-- packages/domain/src/calendar/index.ts
-- packages/domain/src/calendar/recurrence.ts
-- packages/domain/src/calendar/time-zone.ts
-- packages/domain/src/calendar/views.ts
-- apps/worker/src/runners/provider-reconciliation/index.ts
-- apps/worker/src/runners/provider-reconciliation/runner.test.ts
-- apps/worker/src/runners/provider-reconciliation/runner.ts
-- ops/v2.1-execution/runtime/F06/HANDOFF.md
-- ops/v2.1-execution/runtime/F06/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/F06/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/F06/TASK-STATE.yaml
-- ops/v2.1-execution/runtime/F06/steward-requests/F06-migration-001.yaml
-- ops/v2.1-execution/runtime/F06/steward-requests/F06-registration-001.yaml
-- packages/contracts/src/providers/v21-provider-core.ts
-- packages/db/src/providers/v21-provider-core-repository.test.ts
-- packages/db/src/providers/v21-provider-core-repository.ts
-- packages/db/src/providers/v21-schema-contract.ts
-- packages/domain/src/providers/shared/errors.ts
-- packages/domain/src/providers/shared/index.ts
-- packages/domain/src/providers/shared/mapping.ts
-- packages/domain/src/providers/shared/operation.ts
-- packages/domain/src/providers/shared/provider-core.test.ts
-- apps/web/src/client/app/student/account/StudentAccount.tsx
-- apps/web/src/client/app/student/account/index.ts
-- apps/web/src/client/app/student/home/StudentToday.tsx
-- apps/web/src/client/app/student/home/index.ts
-- apps/web/src/client/app/student/profile/StudentProfile.tsx
-- apps/web/src/client/app/student/profile/index.ts
-- apps/web/src/client/app/student/shell/StudentShell.test.tsx
-- apps/web/src/client/app/student/shell/StudentShell.tsx
-- apps/web/src/client/app/student/shell/index.ts
-- apps/web/src/client/app/student/shell/student-shell.css
-- apps/web/src/server/features/portals/student/index.ts
-- apps/web/src/server/features/portals/student/service.test.ts
-- apps/web/src/server/features/portals/student/service.ts
-- ops/v2.1-execution/runtime/P14/HANDOFF.md
-- ops/v2.1-execution/runtime/P14/INTERFACE-CHECKPOINT.yaml
-- ops/v2.1-execution/runtime/P14/NEXT-PROMPT.md
-- ops/v2.1-execution/runtime/P14/STEWARD-REQUESTS.yaml
-- ops/v2.1-execution/runtime/P14/TASK-STATE.yaml
-- packages/contracts/src/portals/student/index.ts
-- packages/domain/src/portals/student/errors.ts
-- packages/domain/src/portals/student/index.ts
-- packages/domain/src/portals/student/isolation.ts
-- packages/domain/src/portals/student/navigation.ts
-- packages/domain/src/portals/student/student-portal.test.ts
-- packages/domain/src/portals/student/view.ts
+  - apps/web/src/client/app/portal-entry.tsx
+  - apps/web/src/client/app/router/index.ts
+  - apps/web/src/client/app/router/portal-roots.tsx
+  - apps/web/src/client/app/router/registry.ts
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/registry/index.ts
+  - apps/worker/src/main/index.ts
+  - apps/worker/src/runners/registry/index.ts
+  - ops/v2.1-execution/runtime/F01/HANDOFF.md
+  - ops/v2.1-execution/runtime/F01/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F01/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F01/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
+  - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/I36/HANDOFF.md
+  - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+  - packages/config/src/index.ts
+  - apps/web/src/server/features/email/templates/security.ts
+  - integrations/highlevel/v21/copy/catalog.ts
+  - ops/v2.1-execution/runtime/P31/HANDOFF.md
+  - ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+  - packages/domain/src/communications/copy/approval.ts
+  - packages/domain/src/communications/copy/catalog.ts
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - packages/contracts/src/state/index.ts
+  - packages/db/migrations/2234_canonical_state_machines.sql
+  - packages/domain/src/state/errors.ts
+  - packages/domain/src/state/index.ts
+  - packages/domain/src/state/transition-guard.ts
+  - apps/web/src/client/auth/token-fragment.ts
+  - apps/web/src/server/features/auth/http-security.ts
+  - ops/v2.1-execution/runtime/F03/HANDOFF.md
+  - ops/v2.1-execution/runtime/F03/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
+  - packages/contracts/src/identity/auth/index.ts
+  - packages/domain/src/auth/index.ts
+  - packages/domain/src/auth/policy.ts
+  - packages/domain/src/auth/rate-limits.ts
+  - packages/domain/src/auth/service.ts
+  - packages/domain/src/auth/sessions.ts
+  - packages/domain/src/auth/tokens.ts
+  - packages/domain/src/auth/v21-auth.contract.test.ts
+  - apps/web/src/server/features/accounts/v21-account-context-service.test.ts
+  - apps/web/src/server/features/accounts/v21-account-context-service.ts
+  - ops/v2.1-execution/runtime/F04/HANDOFF.md
+  - ops/v2.1-execution/runtime/F04/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F04/steward-requests/F04-migration-001.yaml
+  - ops/v2.1-execution/runtime/F04/steward-requests/F04-registration-001.yaml
+  - packages/contracts/src/access/v21-household-authorization.ts
+  - packages/contracts/src/accounts/v21-household-identity.test.ts
+  - packages/contracts/src/accounts/v21-household-identity.ts
+  - packages/db/src/accounts/v21-household-identity-repository.ts
+  - packages/domain/src/access/index.ts
+  - packages/domain/src/access/v21-household-authorization.ts
+  - packages/domain/src/accounts/index.ts
+  - packages/domain/src/accounts/v21-household-identity.test.ts
+  - packages/domain/src/accounts/v21-household-identity.ts
+  - apps/web/src/server/features/jobs/command-handler.ts
+  - apps/web/src/server/features/jobs/index.ts
+  - apps/worker/src/runners/foundation/index.ts
+  - apps/worker/src/runners/foundation/runner.ts
+  - ops/v2.1-execution/runtime/F05/HANDOFF.md
+  - ops/v2.1-execution/runtime/F05/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F05/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F05/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F05/steward-requests/migration/F05-MIGRATION-001.yaml
+  - ops/v2.1-execution/runtime/F05/steward-requests/registration/F05-REGISTRATION-001.yaml
+  - packages/contracts/src/api/index.ts
+  - packages/contracts/src/jobs/index.ts
+  - packages/db/src/jobs/index.ts
+  - packages/db/src/jobs/repository.ts
+  - packages/db/src/jobs/schema-contract.ts
+  - packages/domain/src/jobs/errors.ts
+  - packages/domain/src/jobs/foundation.test.ts
+  - packages/domain/src/jobs/idempotency.ts
+  - packages/domain/src/jobs/index.ts
+  - packages/domain/src/jobs/lifecycle.ts
+  - packages/domain/src/jobs/saga.ts
+  - apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx
+  - apps/web/src/client/features/calendar/CalendarWorkspace.tsx
+  - apps/web/src/client/features/calendar/calendar.css
+  - apps/web/src/client/features/calendar/index.ts
+  - apps/web/src/server/features/calendar/index.ts
+  - apps/web/src/server/features/calendar/service.ts
+  - ops/v2.1-execution/runtime/P15/HANDOFF.md
+  - ops/v2.1-execution/runtime/P15/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P15/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P15/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
+  - packages/contracts/src/calendar/index.ts
+  - packages/db/src/calendar/index.ts
+  - packages/db/src/calendar/repository.ts
+  - packages/db/src/calendar/schema-contract.ts
+  - packages/domain/src/calendar/calendar.test.ts
+  - packages/domain/src/calendar/errors.ts
+  - packages/domain/src/calendar/index.ts
+  - packages/domain/src/calendar/recurrence.ts
+  - packages/domain/src/calendar/time-zone.ts
+  - packages/domain/src/calendar/views.ts
+  - apps/worker/src/runners/provider-reconciliation/index.ts
+  - apps/worker/src/runners/provider-reconciliation/runner.test.ts
+  - apps/worker/src/runners/provider-reconciliation/runner.ts
+  - ops/v2.1-execution/runtime/F06/HANDOFF.md
+  - ops/v2.1-execution/runtime/F06/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F06/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F06/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F06/steward-requests/F06-migration-001.yaml
+  - ops/v2.1-execution/runtime/F06/steward-requests/F06-registration-001.yaml
+  - packages/contracts/src/providers/v21-provider-core.ts
+  - packages/db/src/providers/v21-provider-core-repository.test.ts
+  - packages/db/src/providers/v21-provider-core-repository.ts
+  - packages/db/src/providers/v21-schema-contract.ts
+  - packages/domain/src/providers/shared/errors.ts
+  - packages/domain/src/providers/shared/index.ts
+  - packages/domain/src/providers/shared/mapping.ts
+  - packages/domain/src/providers/shared/operation.ts
+  - packages/domain/src/providers/shared/provider-core.test.ts
+  - apps/web/src/client/app/student/account/StudentAccount.tsx
+  - apps/web/src/client/app/student/account/index.ts
+  - apps/web/src/client/app/student/home/StudentToday.tsx
+  - apps/web/src/client/app/student/home/index.ts
+  - apps/web/src/client/app/student/profile/StudentProfile.tsx
+  - apps/web/src/client/app/student/profile/index.ts
+  - apps/web/src/client/app/student/shell/StudentShell.test.tsx
+  - apps/web/src/client/app/student/shell/StudentShell.tsx
+  - apps/web/src/client/app/student/shell/index.ts
+  - apps/web/src/client/app/student/shell/student-shell.css
+  - apps/web/src/server/features/portals/student/index.ts
+  - apps/web/src/server/features/portals/student/service.test.ts
+  - apps/web/src/server/features/portals/student/service.ts
+  - ops/v2.1-execution/runtime/P14/HANDOFF.md
+  - ops/v2.1-execution/runtime/P14/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P14/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P14/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P14/TASK-STATE.yaml
+  - packages/contracts/src/portals/student/index.ts
+  - packages/domain/src/portals/student/errors.ts
+  - packages/domain/src/portals/student/index.ts
+  - packages/domain/src/portals/student/isolation.ts
+  - packages/domain/src/portals/student/navigation.ts
+  - packages/domain/src/portals/student/student-portal.test.ts
+  - packages/domain/src/portals/student/view.ts
 migrations:
-- packages/db/migrations/2234_canonical_state_machines.sql
+  - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
 steward_results:
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  request_id: F01-retired-client-002
-  request_digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
-  requesting_task_id: F01
-  kind: retired_surface
-  status: rejected
-  assigned_steward: I36
-  source_head_sha: e8b172c6a7da5003a82cfc8663df6d4159fa4092
-  evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
-  target_checkpoint: I36_next_steward_checkpoint
-  acknowledged_by_task: false
-  applied_commit_sha: null
-  result_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
-  rejection_reason: The immutable request names three HTML paths that do not exist at the authorized target while
-    retired Tisha event assets remain outside its exact assigned path list; full application would require scope
-    expansion, and partial application would not satisfy the requested public-bundle retirement semantics.
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  request_id: F01-config-retirement-003
-  request_digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
-  requesting_task_id: F01
-  kind: config_key
-  status: rejected
-  assigned_steward: I36
-  source_head_sha: e8b172c6a7da5003a82cfc8663df6d4159fa4092
-  evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
-  target_checkpoint: I36_next_steward_checkpoint
-  acknowledged_by_task: false
-  applied_commit_sha: null
-  result_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
-  rejection_reason: The immutable request assumes F01's unmerged protectedPayloadEncryptionKey compatibility state,
-    but that prerequisite is absent from the authorized integration target; applying it would synthesize unqueued
-    F01 implementation rather than perform an exact central steward change.
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    request_id: F01-retired-client-002
+    request_digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
+    requesting_task_id: F01
+    kind: retired_surface
+    status: rejected
+    assigned_steward: I36
+    source_head_sha: e8b172c6a7da5003a82cfc8663df6d4159fa4092
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    target_checkpoint: I36_next_steward_checkpoint
+    acknowledged_by_task: false
+    applied_commit_sha: null
+    result_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    rejection_reason:
+      The immutable request names three HTML paths that do not exist at the authorized target while
+      retired Tisha event assets remain outside its exact assigned path list; full application would require scope
+      expansion, and partial application would not satisfy the requested public-bundle retirement semantics.
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    request_id: F01-config-retirement-003
+    request_digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
+    requesting_task_id: F01
+    kind: config_key
+    status: rejected
+    assigned_steward: I36
+    source_head_sha: e8b172c6a7da5003a82cfc8663df6d4159fa4092
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    target_checkpoint: I36_next_steward_checkpoint
+    acknowledged_by_task: false
+    applied_commit_sha: null
+    result_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    rejection_reason:
+      The immutable request assumes F01's unmerged protectedPayloadEncryptionKey compatibility state,
+      but that prerequisite is absent from the authorized integration target; applying it would synthesize unqueued
+      F01 implementation rather than perform an exact central steward change.
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
 steward_result_payload_digests:
   F01-retired-client-002: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
   F01-config-retirement-003: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
-steward_result_digest_algorithm: Parse each steward_results entry to a data object, serialize as UTF-8 JSON with keys
+steward_result_digest_algorithm:
+  Parse each steward_results entry to a data object, serialize as UTF-8 JSON with keys
   sorted recursively, separators ',' and ':', ensure_ascii=false, and SHA-256 those bytes; the digest lives in the
   sibling steward_result_payload_digests map and not in the entry.
 verification:
   commands_run:
-  - command: git remote get-url origin
-    result: passed; exact repository identity verified
-  - command: git fetch origin and rev-parse authorized refs
-    result: passed; control, integration, and F01 heads exact
-  - command: canonical ready and merge payload digest recomputation
-    result: passed
-  - command: SHA-256 verification over committed locked and source-package blobs
-    result: passed; 200 locked blobs and 15 source blobs
-  - command: canonical rebased merge payload digest recomputation
-    result: passed; 1db016597e3e76f5213fb775f2fce031401f6f530dc6f7e89716fbf2c65c4bf5
-  - command: F01 source admission and ancestry checks
-    result: passed; exact 14-path allowlist, source base/merge base, state/handoff, task, and artifact digests
-  - command: git merge --no-ff fa9e5c92231c4b92340d07945cc91d76c85bd444
-    result: passed; source ancestry preserved at merge commit 34718371ee0ff26758120b11d0d4b788aa11be97
-  - command: npm ci
-    result: passed; exact package-lock dependency tree installed
-  - command: npm run typecheck
-    result: passed
-  - command: focused F01 seam smoke via node --import tsx
-    result: passed; server positive and pre-mount duplicate rejection, client role and duplicate rejection, sequential worker execution and duplicate rejection
-  - command: JSON parse and invariant check of steward-request.schema.json
-    result: passed
-  - command: git fetch and rev-parse control/integration refs for takeover
-    result: passed; control beb72be5ba1f993c1806e9314146e88f951affdb and integration 80c281b7ae5826ed2c6abe95ba68a033ffa52174 exact
-  - command: canonical I36 resume-entry payload digest recomputation
-    result: passed; 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0
-  - command: resume claim, writer-slot, branch-head, and lease verification
-    result: passed; no live foreign writer and C00-authorized takeover lease expires 2026-07-28T17:35:01Z
-  - command: canonical rebound F07 merge-item digest recomputation
-    result: passed; fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0
-  - command: F07 source admission, allowlist, state/handoff, and artifact verification
-    result: passed; exact source 47a2bb6b, merge base 80c281b7, 12 paths, c92caac5 state/handoff, and 366a1b30 contract
-  - command: git merge --no-ff 47a2bb6b76225951e0599683499a95f4dc9881be
-    result: passed; source ancestry preserved at 91349fc1fa9a474ae31cf408ae0364aa10520385
-  - command: npm run typecheck
-    result: passed after F07 merge
-  - command: npx vitest run packages/brand-system/src/v21.contract.test.tsx
-    result: passed; 3 tests
-  - command: immutable F01 steward-request Git blob digest verification
-    result: passed; c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d and b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575 exact
-  - command: canonical rebound P31 merge-item digest recomputation
-    result: passed; 7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32
-  - command: P31 source admission, allowlist, state/handoff, and artifact verification
-    result: passed; exact source ba811b3b, merge base 80c281b7, 8 paths, 6ec2a92d state/handoff, and d66db410 contract
-  - command: git merge --no-ff ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
-    result: passed; source ancestry preserved at 42b09dc598e0dfc17ada53b441e4cd487e126573
-  - command: npm run typecheck
-    result: passed after P31 merge
-  - command: focused P31 catalog/approval/security assertions via tsx
-    result: passed
-  - command: canonical rebound F02 merge-item digest recomputation
-    result: passed; 45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e
-  - command: F02 source admission, allowlist, state/handoff, artifact, contract, and migration verification
-    result: passed; exact source e4673ff1, merge base 80c281b7, 10 paths, b848936b state/handoff, c03e01d7 contract, and d1352c5e migration checksum
-  - command: git merge --no-ff e4673ff1c2e621e26ac93034be245b280c4da4fa
-    result: passed; source ancestry preserved at e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4
-  - command: npm run typecheck
-    result: passed after F02 merge
-  - command: focused F02 domain transition-guard assertions via tsx
-    result: passed; conclusive reconciliation clears unknown effect and dead-letter retains quarantine
-  - command: native PGlite PostgreSQL execution of migration 2234
-    result: passed; isolation, concurrency, idempotency, recovery, reconciliation, fencing, counters, and append-only audit
-  - command: git fetch and rev-parse exact control/integration refs for F03/F04/F05 resume
-    result: passed; containing control 5217c299c2721a58bdb9ad1c1c0f68525008661a and integration d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec exact
-  - command: canonical I36 ready-entry payload digest recomputation
-    result: passed; 02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1
-  - command: locked Git blob and package/task/context digest verification
-    result: passed; 200 locked blobs and all four entry-bound digests exact
-  - command: resume claim, branch-head, writer lease, scope, and zero-effect-lock verification
-    result: passed; claim 353f2868-2978-4cac-ac73-c56fa184f841 and lease 80afc839-dc09-4363-b440-d22757451415 expire 2026-07-28T19:50:38Z
-  - command: containing-authority versus ready-entry-parent metadata verification
-    result: passed; controller authorization is 5217c299c2721a58bdb9ad1c1c0f68525008661a and ready-entry parent is 4d6bc306e542774b68179d9b440ceccd2d5b9967
-  - command: canonical rebound F03/F04/F05 merge-item digest recomputation
-    result: passed; 3c6f286577e102784c485a1d15d66d2a5efc142c2106d42a842dc071a3d58d6a, 728e72ad164c3620e1655da1e4818d0330c669cab58f7316bfe9772212d9f531, and 2bda976047376b4a865abe5e6c07897502123995890a0c8570a0f8c0b15a80c0
-  - command: F03/F04/F05 source admission, allowlist, state/handoff, artifact, and contract verification
-    result: passed; exact sources, common merge base d8b35b2a, 14/17/21 paths, all exported hashes, all three contracts, and zero effects
-  - command: git merge --no-ff 7c638131a0cab757657e95c4d2229a1573e4cde1
-    result: passed; source ancestry preserved at c6e87b934d7b916a0772a8dbe046f984812d15dc
-  - command: git merge --no-ff 4cc95c29c6012174595ba1821e0554aca8572e08
-    result: passed; interface source ancestry preserved at 1ca6f5c5cec246e06e45b76b747aa5b758f1196c
-  - command: git merge --no-ff 0656380bcfc50cc464dcea7588448dc724049599
-    result: passed; source ancestry preserved at e88121cb6ddd5023eb75496b25c3ee7281c07621
-  - command: npm run typecheck
-    result: passed after F03/F04/F05 micro-batch
-  - command: focused F03 Vitest contract suite
-    result: passed; 2 files and 27 tests
-  - command: focused F04 Vitest contract suite
-    result: passed; 3 files and 14 tests
-  - command: focused F05 Vitest foundation suite
-    result: passed; 1 file and 8 tests
-  - command: git fetch and rev-parse exact control/integration refs for P15 resume
-    result: passed; containing control 0341f6303937bebc64e4d3cae6905168183dbb77 and integration 9782a4164662b8059a557c0969de9c35f54d0cf7 exact
-  - command: canonical I36 ready-entry payload digest recomputation
-    result: passed; 3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf
-  - command: locked Git blob and package/task/context digest verification
-    result: passed; 200 locked blobs and all four entry-bound digests exact
-  - command: resume claim, branch-head, writer lease, scope, and zero-effect-lock verification
-    result: passed; claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 expire 2026-07-28T20:36:08Z
-  - command: canonical rebound P15 merge-item digest recomputation
-    result: passed; 617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d
-  - command: P15 source admission, allowlist, state/handoff, artifact, and contract verification
-    result: passed; exact source c96b8c55, merge base 81602ccc, 21 paths, six exports, plain-path 2ebe108d contract, and zero effects
-  - command: git merge --no-ff c96b8c55c07e5283e762537934a6bf948833700e
-    result: passed; source ancestry preserved at eae9c62adb6711034bbd31bc4aea469c2c65fc21
-  - command: npm run typecheck
-    result: passed after P15 merge
-  - command: npm run lint -- --quiet
-    result: passed after P15 merge
-  - command: focused P15 Vitest calendar suite
-    result: passed; 2 files and 12 tests
-  - command: Google Calendar/provider absence inventory under P15 implementation roots
-    result: passed; no matching route, action, configuration, or job surface
-  - command: git fetch and rev-parse control/integration refs for F06/P14 atomic claim
-    result: passed; containing control d234126ca7be31def06c939ac1886406936987dc and integration 01cdb992660a1fbc20b204b829d28062fd044679 exact
-  - command: canonical I36 F06/P14 resume-entry payload digest recomputation
-    result: passed; 0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d
-  - command: SHA-256 verification over committed locked and entry-bound blobs
-    result: passed; 200 locked Git blobs plus package, source-package, task, and context digests
-  - command: F06/P14 atomic claim, writer-slot, branch-head, lease, scope, and effect-lock verification
-    result: passed; exact atomic-claim-only authority, sole RELEASE_INTEGRATOR lease, and zero effect locks
-  - command: canonical rebound F06/P14 merge-item digest recomputation
-    result: passed; c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763 and ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858
-  - command: F06/P14 source admission, allowlist, state/handoff, artifact, and contract verification
-    result: passed; exact sources, common merge base 9782a416, 18/25 paths, all exports, both plain-path contracts, and zero effects
-  - command: git merge --no-ff 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
-    result: passed; source ancestry preserved at f1ba79a9c8e66bda9793d3b22edc78630fca862c
-  - command: git merge --no-ff 3393169e2284d65ff0a970d797aa1f83ebf9d895
-    result: passed after F06; source ancestry preserved at 41954f0077308ef4df779472e44c3531f4273b81
-  - command: npm run typecheck
-    result: passed after F06/P14 ordered micro-batch
-  - command: focused F06/P14 Vitest suites
-    result: passed; 6 files and 20 tests
-  - command: npm run lint -- --quiet
-    result: passed after F06/P14 ordered micro-batch
+    - command: git remote get-url origin
+      result: passed; exact repository identity verified
+    - command: git fetch origin and rev-parse authorized refs
+      result: passed; control, integration, and F01 heads exact
+    - command: canonical ready and merge payload digest recomputation
+      result: passed
+    - command: SHA-256 verification over committed locked and source-package blobs
+      result: passed; 200 locked blobs and 15 source blobs
+    - command: canonical rebased merge payload digest recomputation
+      result: passed; 1db016597e3e76f5213fb775f2fce031401f6f530dc6f7e89716fbf2c65c4bf5
+    - command: F01 source admission and ancestry checks
+      result: passed; exact 14-path allowlist, source base/merge base, state/handoff, task, and artifact digests
+    - command: git merge --no-ff fa9e5c92231c4b92340d07945cc91d76c85bd444
+      result: passed; source ancestry preserved at merge commit 34718371ee0ff26758120b11d0d4b788aa11be97
+    - command: npm ci
+      result: passed; exact package-lock dependency tree installed
+    - command: npm run typecheck
+      result: passed
+    - command: focused F01 seam smoke via node --import tsx
+      result: passed; server positive and pre-mount duplicate rejection, client role and duplicate rejection, sequential worker execution and duplicate rejection
+    - command: JSON parse and invariant check of steward-request.schema.json
+      result: passed
+    - command: git fetch and rev-parse control/integration refs for takeover
+      result: passed; control beb72be5ba1f993c1806e9314146e88f951affdb and integration 80c281b7ae5826ed2c6abe95ba68a033ffa52174 exact
+    - command: canonical I36 resume-entry payload digest recomputation
+      result: passed; 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0
+    - command: resume claim, writer-slot, branch-head, and lease verification
+      result: passed; no live foreign writer and C00-authorized takeover lease expires 2026-07-28T17:35:01Z
+    - command: canonical rebound F07 merge-item digest recomputation
+      result: passed; fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0
+    - command: F07 source admission, allowlist, state/handoff, and artifact verification
+      result: passed; exact source 47a2bb6b, merge base 80c281b7, 12 paths, c92caac5 state/handoff, and 366a1b30 contract
+    - command: git merge --no-ff 47a2bb6b76225951e0599683499a95f4dc9881be
+      result: passed; source ancestry preserved at 91349fc1fa9a474ae31cf408ae0364aa10520385
+    - command: npm run typecheck
+      result: passed after F07 merge
+    - command: npx vitest run packages/brand-system/src/v21.contract.test.tsx
+      result: passed; 3 tests
+    - command: immutable F01 steward-request Git blob digest verification
+      result: passed; c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d and b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575 exact
+    - command: canonical rebound P31 merge-item digest recomputation
+      result: passed; 7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32
+    - command: P31 source admission, allowlist, state/handoff, and artifact verification
+      result: passed; exact source ba811b3b, merge base 80c281b7, 8 paths, 6ec2a92d state/handoff, and d66db410 contract
+    - command: git merge --no-ff ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+      result: passed; source ancestry preserved at 42b09dc598e0dfc17ada53b441e4cd487e126573
+    - command: npm run typecheck
+      result: passed after P31 merge
+    - command: focused P31 catalog/approval/security assertions via tsx
+      result: passed
+    - command: canonical rebound F02 merge-item digest recomputation
+      result: passed; 45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e
+    - command: F02 source admission, allowlist, state/handoff, artifact, contract, and migration verification
+      result: passed; exact source e4673ff1, merge base 80c281b7, 10 paths, b848936b state/handoff, c03e01d7 contract, and d1352c5e migration checksum
+    - command: git merge --no-ff e4673ff1c2e621e26ac93034be245b280c4da4fa
+      result: passed; source ancestry preserved at e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4
+    - command: npm run typecheck
+      result: passed after F02 merge
+    - command: focused F02 domain transition-guard assertions via tsx
+      result: passed; conclusive reconciliation clears unknown effect and dead-letter retains quarantine
+    - command: native PGlite PostgreSQL execution of migration 2234
+      result: passed; isolation, concurrency, idempotency, recovery, reconciliation, fencing, counters, and append-only audit
+    - command: git fetch and rev-parse exact control/integration refs for F03/F04/F05 resume
+      result: passed; containing control 5217c299c2721a58bdb9ad1c1c0f68525008661a and integration d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec exact
+    - command: canonical I36 ready-entry payload digest recomputation
+      result: passed; 02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1
+    - command: locked Git blob and package/task/context digest verification
+      result: passed; 200 locked blobs and all four entry-bound digests exact
+    - command: resume claim, branch-head, writer lease, scope, and zero-effect-lock verification
+      result: passed; claim 353f2868-2978-4cac-ac73-c56fa184f841 and lease 80afc839-dc09-4363-b440-d22757451415 expire 2026-07-28T19:50:38Z
+    - command: containing-authority versus ready-entry-parent metadata verification
+      result: passed; controller authorization is 5217c299c2721a58bdb9ad1c1c0f68525008661a and ready-entry parent is 4d6bc306e542774b68179d9b440ceccd2d5b9967
+    - command: canonical rebound F03/F04/F05 merge-item digest recomputation
+      result: passed; 3c6f286577e102784c485a1d15d66d2a5efc142c2106d42a842dc071a3d58d6a, 728e72ad164c3620e1655da1e4818d0330c669cab58f7316bfe9772212d9f531, and 2bda976047376b4a865abe5e6c07897502123995890a0c8570a0f8c0b15a80c0
+    - command: F03/F04/F05 source admission, allowlist, state/handoff, artifact, and contract verification
+      result: passed; exact sources, common merge base d8b35b2a, 14/17/21 paths, all exported hashes, all three contracts, and zero effects
+    - command: git merge --no-ff 7c638131a0cab757657e95c4d2229a1573e4cde1
+      result: passed; source ancestry preserved at c6e87b934d7b916a0772a8dbe046f984812d15dc
+    - command: git merge --no-ff 4cc95c29c6012174595ba1821e0554aca8572e08
+      result: passed; interface source ancestry preserved at 1ca6f5c5cec246e06e45b76b747aa5b758f1196c
+    - command: git merge --no-ff 0656380bcfc50cc464dcea7588448dc724049599
+      result: passed; source ancestry preserved at e88121cb6ddd5023eb75496b25c3ee7281c07621
+    - command: npm run typecheck
+      result: passed after F03/F04/F05 micro-batch
+    - command: focused F03 Vitest contract suite
+      result: passed; 2 files and 27 tests
+    - command: focused F04 Vitest contract suite
+      result: passed; 3 files and 14 tests
+    - command: focused F05 Vitest foundation suite
+      result: passed; 1 file and 8 tests
+    - command: git fetch and rev-parse exact control/integration refs for P15 resume
+      result: passed; containing control 0341f6303937bebc64e4d3cae6905168183dbb77 and integration 9782a4164662b8059a557c0969de9c35f54d0cf7 exact
+    - command: canonical I36 ready-entry payload digest recomputation
+      result: passed; 3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf
+    - command: locked Git blob and package/task/context digest verification
+      result: passed; 200 locked blobs and all four entry-bound digests exact
+    - command: resume claim, branch-head, writer lease, scope, and zero-effect-lock verification
+      result: passed; claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 expire 2026-07-28T20:36:08Z
+    - command: canonical rebound P15 merge-item digest recomputation
+      result: passed; 617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d
+    - command: P15 source admission, allowlist, state/handoff, artifact, and contract verification
+      result: passed; exact source c96b8c55, merge base 81602ccc, 21 paths, six exports, plain-path 2ebe108d contract, and zero effects
+    - command: git merge --no-ff c96b8c55c07e5283e762537934a6bf948833700e
+      result: passed; source ancestry preserved at eae9c62adb6711034bbd31bc4aea469c2c65fc21
+    - command: npm run typecheck
+      result: passed after P15 merge
+    - command: npm run lint -- --quiet
+      result: passed after P15 merge
+    - command: focused P15 Vitest calendar suite
+      result: passed; 2 files and 12 tests
+    - command: Google Calendar/provider absence inventory under P15 implementation roots
+      result: passed; no matching route, action, configuration, or job surface
+    - command: git fetch and rev-parse control/integration refs for F06/P14 atomic claim
+      result: passed; containing control d234126ca7be31def06c939ac1886406936987dc and integration 01cdb992660a1fbc20b204b829d28062fd044679 exact
+    - command: canonical I36 F06/P14 resume-entry payload digest recomputation
+      result: passed; 0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d
+    - command: SHA-256 verification over committed locked and entry-bound blobs
+      result: passed; 200 locked Git blobs plus package, source-package, task, and context digests
+    - command: F06/P14 atomic claim, writer-slot, branch-head, lease, scope, and effect-lock verification
+      result: passed; exact atomic-claim-only authority, sole RELEASE_INTEGRATOR lease, and zero effect locks
+    - command: canonical rebound F06/P14 merge-item digest recomputation
+      result: passed; c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763 and ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858
+    - command: F06/P14 source admission, allowlist, state/handoff, artifact, and contract verification
+      result: passed; exact sources, common merge base 9782a416, 18/25 paths, all exports, both plain-path contracts, and zero effects
+    - command: git merge --no-ff 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+      result: passed; source ancestry preserved at f1ba79a9c8e66bda9793d3b22edc78630fca862c
+    - command: git merge --no-ff 3393169e2284d65ff0a970d797aa1f83ebf9d895
+      result: passed after F06; source ancestry preserved at 41954f0077308ef4df779472e44c3531f4273b81
+    - command: npm run typecheck
+      result: passed after F06/P14 ordered micro-batch
+    - command: focused F06/P14 Vitest suites
+      result: passed; 6 files and 20 tests
+    - command: npm run lint -- --quiet
+      result: passed after F06/P14 ordered micro-batch
+    - command: remote control/integration/parent and canonical P32-interface ready-entry verification
+      result: passed; exact heads 1b1ecf75/d3516683/d3552d3a and digest 602876f452e4b9eea3691fe4c3082f356eb67918af82818f6993c992c3b99ec3
+    - command: SHA-256 verification over committed locked and entry-bound blobs
+      result: passed; 200/200 locked Git blobs, 15/15 source-spec Git blobs, and package/task/context/source-package digests
+    - command: P32-interface atomic claim, writer-slot, branch-head, lease, phase-scope, and effect-lock verification
+      result: passed; sole RELEASE_INTEGRATOR lease, phase scope P32_interface_atomic_claim_only, and zero effect locks
   known_baseline_failures: []
 external_effects:
   authority: none

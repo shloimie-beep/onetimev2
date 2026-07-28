@@ -20,16 +20,16 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current F06/P14-interface-wave atomic-claim-only authority is containing
-control head `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536`, controller
-authorization `f5ae0e8078e1c57b75cf3a59d868596a4b2fe536`, ready-entry parent
-control head `c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb`, claim
-`1b554a42-a2a2-4017-add9-7117ed575b9e`, RELEASE_INTEGRATOR lease
-`6b08c9f1-f266-4b3c-8d54-e678e72f2d13` through
-`2026-07-28T21:06:46Z`, and ready-entry digest
-`0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d`.
+Current P32-interface atomic-claim-only authority is containing control head
+`1b1ecf75213617df552831df6ca8b04478a60211`, controller authorization
+`1b1ecf75213617df552831df6ca8b04478a60211`, ready-entry parent control
+head `d3552d3aa9afde6445a3b8772a1de0ac9b134a6b`, claim
+`ce7c9fcd-dbf3-4d5e-9174-3b7632504e42`, sole RELEASE_INTEGRATOR lease
+`2a26f2f3-e956-4ba0-a4d0-86c02aa51a15` through
+`2026-07-28T21:46:27Z`, and ready-entry digest
+`602876f452e4b9eea3691fe4c3082f356eb67918af82818f6993c992c3b99ec3`.
 The exact pre-claim integration head is
-`01cdb992660a1fbc20b204b829d28062fd044679`.
+`d35166838267711a514cf73822cd2ca49a3f3ded`.
 
 F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
 has been ancestry-merged and pushed at exact integration head
@@ -102,9 +102,11 @@ Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged 
 preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
 steward request, migration, registration, or provider effect was applied.
 
-Current exact next action: report the pushed F06/P14 integration metadata
-checkpoint to C00, then stop and await a new exact control authorization. No
-unrelated merge, steward, evidence, control, or live-effect work is authorized.
+Current exact next action: report the pushed P32-interface atomic claim
+checkpoint to C00, then stop. Do not read or merge P32 and do not adjudicate or
+apply any steward request until C00 consumes the ready entry and rebinds the
+merge target CAS to the exact claim head. No unrelated merge, steward,
+evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its
