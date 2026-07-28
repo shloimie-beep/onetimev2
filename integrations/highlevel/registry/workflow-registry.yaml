@@ -771,6 +771,203 @@ business_workflows:
       - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
       - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
       - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
+  - key: 'OT-12'
+    canonicalName: 'OT-12 Adult Support Intake'
+    normalizedName: 'ot_12_adult_support_intake'
+    ghlId: ''
+    ghlKey: 'ot_12_adult_support_intake'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '50 - Support'
+    purpose: 'Adult Parent/public support intake and GHL conversation continuation; Student support remains in One Time.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      - 'adult_only'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+    aliases:
+      - 'ot_12_support_intake_technical_escalation'
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-28'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-12-adult-support-intake.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-12-adult-support-intake.md'
+    messageClass: 'support_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'verified adult Parent or public support intake is recorded'
+    companionDelivery: 'Student support stays inside One Time and never creates or continues a GHL conversation.'
+    providerContract:
+      exactTriggerFilter: 'verified adult Parent or public support intake with a current adult GHL identity'
+      orderedCriticalActions:
+        - 'hard-stop Student subjects before provider access'
+        - 'create or continue only the adult GHL conversation'
+        - 'store only the safe GHL reference in One Time'
+        - 'recheck suppression before an optional acknowledgment'
+      deliveryCategory: 'support_reply'
+      senderKey: 'office'
+    displayOrder: 20
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Receive a verified adult Parent/public support intake.'
+      - 'Reject every Student subject before any GHL contact or conversation operation.'
+    exactOrderedActions:
+      - 'Create or continue the adult GHL conversation idempotently.'
+      - 'Store the One Time ticket and sanitized GHL reference.'
+      - 'Send an approved adult acknowledgment only after a current suppression readback.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-28T20:00:00Z'
+      method: 'Git-authored canonical registry migration; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+      detail: 'No external effect is authorized in P28; adult-support provider realization remains gated.'
+    blocker: 'Provider workflow identity is not yet assigned; keep non-executable until the reviewed adult-support definition, provider ID, save/reopen readback, and approval gates agree.'
+    evidence:
+      - 'integrations/highlevel/v21/foundation/desired-state.ts'
+      - 'packages/contracts/src/communications/foundation/index.ts'
+  - key: 'OT-14'
+    canonicalName: 'OT-14 Parent Newsletter'
+    normalizedName: 'ot_14_parent_newsletter'
+    ghlId: ''
+    ghlKey: 'ot_14_parent_newsletter'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Enrollment & Nurture'
+    purpose: 'Weekly Parent newsletter for current adult account owners with newsletter permission.'
+    sourceOfTruth: 'HighLevel'
+    allowedValues:
+      - 'adult_only'
+      - 'newsletter_permission_required'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'P30 workflow fragment'
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-28'
+    lastVerifiedDate: '2026-07-28'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-14-parent-newsletter.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-14-parent-newsletter.md'
+    messageClass: 'torah_newsletter'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'approved weekly Parent newsletter audience enters at Thursday 12:00 household local time'
+    companionDelivery: 'Drafting and execution remain in GHL; One Time exposes sanitized readback and governed Start/Pause requests only.'
+    providerContract:
+      exactTriggerFilter: 'current adult account owner with current newsletter permission and current send-time suppression eligibility'
+      orderedCriticalActions:
+        - 'recheck audience, permission, and suppression immediately before send'
+        - 'send exact approved newsletter copy from rabbi_campaign'
+        - 'exclude all Student, private-child, billing, and cross-household information'
+        - 'never expose ordinary product test-send, seed-send, or provider-canary actions'
+      deliveryCategory: 'torah_newsletter'
+      senderKey: 'rabbi_campaign'
+    displayOrder: 23
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Await the reviewed P30 workflow fragment, exact audience/copy digests, and explicit Rabbi/Admin approval.'
+      - 'At Thursday 12:00 household local time, recheck adult ownership, newsletter permission, dedupe, and every suppression gate.'
+    exactOrderedActions:
+      - 'Render the approved Rabbi note, recap, schedule, recording/review, approved question highlight, and one CTA.'
+      - 'Send through rabbi_campaign only after every approval and send-time gate passes.'
+      - 'Keep first broad send blocked until the release-verification harness records its bounded operator-only canary.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-28T20:00:00Z'
+      method: 'Git-authored canonical registry reservation; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+      detail: 'P28 authorizes no provider canary; P30 realization and release-verification authority are pending.'
+    blocker: 'P30 workflow fragment, provider identity, exact copy/audience approvals, and release-verification canary are pending.'
+    evidence:
+      - 'integrations/highlevel/v21/foundation/desired-state.ts'
+      - 'packages/contracts/src/communications/foundation/index.ts'
+  - key: 'OT-15'
+    canonicalName: 'OT-15 Former Member Reactivation'
+    normalizedName: 'ot_15_former_member_reactivation'
+    ghlId: ''
+    ghlKey: 'ot_15_former_member_reactivation'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Enrollment & Nurture'
+    purpose: 'Former/canceled adult reactivation after exact segment, copy, consent, and suppression approval.'
+    sourceOfTruth: 'HighLevel'
+    allowedValues:
+      - 'adult_only'
+      - 'former_or_canceled'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'P30 workflow fragment'
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-28'
+    lastVerifiedDate: '2026-07-28'
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-15-former-member-reactivation.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-15-former-member-reactivation.md'
+    messageClass: 'warm_enrollment_campaign'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'approved former/canceled adult segment enters the approved reactivation launch'
+    companionDelivery: 'WhatsApp is dormant; email completes each eligible step without delay.'
+    providerContract:
+      exactTriggerFilter: 'former/canceled adult with current marketing permission who is not an active Parent and not a School contact'
+      orderedCriticalActions:
+        - 'send the approved launch, day 4, and day 9 email sequence'
+        - 'recheck permission and every suppression gate before each email'
+        - 'exit on signup, suppression, active membership, school classification, or completion'
+        - 'record requested WhatsApp as channel_skipped_not_configured with zero provider calls'
+      deliveryCategory: 'warm_enrollment_campaign'
+      senderKey: 'rabbi_campaign'
+    displayOrder: 24
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Await the reviewed P30 workflow fragment and exact segment/copy approval.'
+      - 'Enter only a currently permitted former/canceled adult who is neither active Parent nor School.'
+    exactOrderedActions:
+      - 'Send the approved launch, day 4, and day 9 email sequence through rabbi_campaign.'
+      - 'Recheck suppression and exit conditions immediately before each step.'
+      - 'Record dormant WhatsApp intent truthfully and make zero WhatsApp provider calls.'
+    observedTriggers: []
+    observedActions: []
+    lastReadback:
+      at: '2026-07-28T20:00:00Z'
+      method: 'Git-authored canonical registry reservation; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
+      detail: 'P28 authorizes no provider canary; P30 realization and release-verification authority are pending.'
+    blocker: 'P30 workflow fragment, provider identity, exact segment/copy approvals, and save/reopen readback are pending.'
+    evidence:
+      - 'integrations/highlevel/v21/foundation/desired-state.ts'
+      - 'packages/contracts/src/communications/foundation/index.ts'
   - key: 'OT-13'
     canonicalName: 'OT-13 Refund / Chargeback'
     normalizedName: 'ot_13_refund_chargeback'
@@ -1007,16 +1204,16 @@ business_workflows:
       - 'integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json'
 bot_action_workflows:
   - key: 'OT-B01'
-    canonicalName: 'OT-B01 Complete Signup'
-    normalizedName: 'ot_b01_complete_signup'
-    ghlId: '1c1c0bcd-6185-492e-819f-3b7c749d4c23'
-    ghlKey: 'ot_b01_complete_signup'
+    canonicalName: 'OT-B01 Website Lead-Capture Bot'
+    normalizedName: 'ot_b01_website_lead_capture_bot'
+    ghlId: ''
+    ghlKey: 'ot_b01_website_lead_capture_bot'
     objectType: 'bot_action_workflow'
     dataType: 'workflow'
     asset_kind: 'workflow'
     category: 'bot_action_workflow'
     folder: '60 - Bot Actions'
-    purpose: 'Typed bot action adapter for adult signup.'
+    purpose: 'Public website Family/School adult lead capture; never WhatsApp qualification or Student creation.'
     sourceOfTruth: 'Shared'
     allowedValues: []
     workflowsAllowedToWrite: []
@@ -1028,41 +1225,42 @@ bot_action_workflows:
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: ''
-    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md'
-    checklistPath: 'integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md'
+    promptPath: 'integrations/highlevel/v21/foundation/prompts/OT-B01-website-lead-capture.md'
+    checklistPath: 'integrations/highlevel/v21/foundation/checklists/OT-B01-website-lead-capture.md'
     messageClass: 'signup_confirmation'
     senderKey: 'brand'
     transport: 'GHL'
-    exactTrigger: 'OT-A1 invokes the typed complete-signup adapter for an adult'
-    companionDelivery: ''
+    exactTrigger: 'an adult submits Family or School lead details through the public One Time website assistant'
+    companionDelivery: 'No WhatsApp qualification, Student contact, access grant, or school-pricing promise is permitted.'
     providerContract:
-      exactTriggerFilter: 'OT-A1 invokes the typed complete-signup adapter after all required adult details and consent context are complete'
+      exactTriggerFilter: 'public One Time website assistant submits name, email, family|school, timezone, and optional phone for an adult'
       orderedCriticalActions:
-        - 'validate required adult fields'
-        - 'invoke the protected HighLevel-to-One-Time adapter with idempotency key'
+        - 'identify as the One Time website assistant and answer only from approved public knowledge'
+        - 'offer family signup or record a school inquiry'
+        - 'escalate uncertain answers to adult support'
         - 'never create a Student contact'
       deliveryCategory: 'signup_confirmation'
       senderKey: 'brand'
     displayOrder: 15
     desiredStatus: 'DRAFT_WAITING_EXTERNAL'
-    observedStatus: 'DRAFT_SHELL'
+    observedStatus: 'MISSING'
     exactOrderedTriggers:
-      - 'Receive the typed OT-A1 complete-signup invocation with required adult data and consent.'
+      - 'Receive an adult Family or School lead from the public One Time website assistant.'
     exactOrderedActions:
-      - 'Validate all required adult fields.'
-      - 'Invoke the protected HighLevel-to-One-Time adapter with an idempotency key.'
-      - 'Never create a Student contact.'
+      - 'Validate name, email, family|school, timezone, optional phone, and transcript retention reference.'
+      - 'Offer Family signup or record a School inquiry; escalate uncertain answers to adult support.'
+      - 'Never qualify through WhatsApp, create a Student, promise School pricing, or grant access.'
     observedTriggers: []
     observedActions: []
     lastReadback:
       at: '2026-07-22T14:00:12.763Z'
-      method: 'read-only exhaustive visible UI inventory and exact empty-canvas readback'
+      method: 'read-only historical collision readback; the prior Complete Signup provider ID is intentionally not reused'
       reference: 'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'
     canary:
       result: 'not_run'
       reference: 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
-      detail: 'No executable trigger or critical action exists; controlled execution is not possible.'
-    blocker: 'DRAFT_BLOCKED_APP_CONTRACT: typed complete-signup adapter is absent.'
+      detail: 'The prior provider asset has a different purpose and is not the canonical website lead-capture bot; no executable canonical provider asset exists.'
+    blocker: 'DRAFT_BLOCKED_IDENTITY_COLLISION: the historical Complete Signup provider ID is reserved to its observed purpose and cannot be reused; a separately identified website lead-capture asset plus save/reopen readback is required.'
     evidence:
       - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
       - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
@@ -1313,23 +1511,24 @@ bot_action_workflows:
       - 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json'
 deprecated_workflows:
   - key: 'OT-11'
-    canonicalName: 'OT-11 WhatsApp Lead Qualification'
-    normalizedName: 'ot_11_whatsapp_lead_qualification'
+    canonicalName: 'OT-11 Retired / Reserved'
+    normalizedName: 'ot_11_retired_reserved'
     ghlId: ''
-    ghlKey: 'ot_11_whatsapp_lead_qualification'
+    ghlKey: 'ot_11_retired_reserved'
     objectType: 'deprecated_workflow'
     dataType: 'workflow'
     asset_kind: 'workflow'
     category: 'deprecated_workflow'
     folder: '99 - Deprecated'
-    purpose: 'Superseded by OT-A1 and OT-B01.'
+    purpose: 'Permanently retired and reserved; this identifier may never execute or be reused.'
     sourceOfTruth: 'Shared'
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
-    aliases: []
+    aliases:
+      - 'ot_11_whatsapp_lead_qualification'
     assetLifecycle: 'deprecated'
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
@@ -1339,7 +1538,7 @@ deprecated_workflows:
     messageClass: 'support_acknowledgement'
     senderKey: 'brand'
     transport: 'GHL'
-    exactTrigger: 'deprecated; no active trigger is allowed'
+    exactTrigger: 'permanently retired and reserved; no active trigger is allowed'
     companionDelivery: ''
     displayOrder: 20
     desiredStatus: 'BLOCKED'
@@ -1347,7 +1546,7 @@ deprecated_workflows:
     exactOrderedTriggers:
       - 'No active trigger is allowed.'
     exactOrderedActions:
-      - 'Do not create or activate; OT-A1 and OT-B01 supersede this contract.'
+      - 'Do not create, activate, or reuse this identifier for any purpose.'
     observedTriggers: []
     observedActions: []
     lastReadback:
@@ -1357,57 +1556,8 @@ deprecated_workflows:
     canary:
       result: 'not_applicable'
       reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
-      detail: 'Deprecated contract.'
-    blocker: 'Superseded; dependency-check before any safe quarantine of an unknown historical asset.'
-    evidence:
-      - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
-  - key: 'OT-12'
-    canonicalName: 'OT-12 Support Intake / Technical Escalation'
-    normalizedName: 'ot_12_support_intake_technical_escalation'
-    ghlId: ''
-    ghlKey: 'ot_12_support_intake_technical_escalation'
-    objectType: 'deprecated_workflow'
-    dataType: 'workflow'
-    asset_kind: 'workflow'
-    category: 'deprecated_workflow'
-    folder: '99 - Deprecated'
-    purpose: 'Deprecated when it creates tasks or support escalation workflows.'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    assetLifecycle: 'deprecated'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: ''
-    promptPath: ''
-    checklistPath: ''
-    messageClass: 'support_reply'
-    senderKey: 'office'
-    transport: 'GHL'
-    exactTrigger: 'deprecated when it creates tasks; no active trigger is allowed'
-    companionDelivery: ''
-    displayOrder: 21
-    desiredStatus: 'BLOCKED'
-    observedStatus: 'MISSING'
-    exactOrderedTriggers:
-      - 'No task-creating support trigger is allowed.'
-    exactOrderedActions:
-      - 'Do not create or activate a human-task workflow.'
-    observedTriggers: []
-    observedActions: []
-    lastReadback:
-      at: '2026-07-22T09:09:54.117Z'
-      method: 'navigate-away/reopen plus sanitized UI/API readback'
-      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
-    canary:
-      result: 'not_applicable'
-      reference: 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
-      detail: 'Deprecated contract.'
-    blocker: 'Deprecated; dependency-check before any safe quarantine of an unknown historical asset.'
+      detail: 'Permanently retired/reserved contract; execution is prohibited.'
+    blocker: 'Permanently retired and reserved; dependency-check before any safe quarantine of an unknown historical asset.'
     evidence:
       - 'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json'
   - key: 'OT-HUMAN-HANDOFF'
