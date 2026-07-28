@@ -1,0 +1,68 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P31
+task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
+task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p31-email-copy-approval
+start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+dependency_heads:
+  F01:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
+    observed_integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+    interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
+    interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+status: ready_for_review
+phase: review
+claimed_by: /root/p31_worker2
+claim_time: '2026-07-28T16:44:42Z'
+claim_id: 39538a2e-2d15-44a7-9485-0cba68919b21
+lease_expires_at: '2026-07-28T17:37:00Z'
+last_heartbeat_at: '2026-07-28T16:50:38Z'
+controller_authorization_sha: beb72be5ba1f993c1806e9314146e88f951affdb
+ready_entry_payload_digest: e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74
+state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+last_implementation_commit_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
+completed_steps:
+  - Verified remote control head, branch absence, exact authorized start SHA, P31 task/context digests, F01 integrated interface proof, and active COPY_CATALOG lease.
+  - Seeded first-claim runtime state for atomic remote branch creation.
+  - Implemented the canonical sender/copy catalog, Resend-only token template renderer, GHL adult-only fragments, and digest-bound campaign approval enforcement with current-consent and approval-launch timing semantics.
+  - Published the P31 interface checkpoint for P28, P29, and P30.
+remaining_steps:
+  - I36 must integrate this exact interface checkpoint before C00 authorizes P28, P29, or P30 starts that depend on it.
+next_action: Await C00/I36 observation and integration of INTERFACE-CHECKPOINT.yaml; on a C00-issued resume lease, address only a reproduced P31-scoped finding.
+requirements:
+  OTV2-EMAIL-139: implementation_ready
+  OTV2-EMAIL-140: implementation_ready
+  OTV2-EMAIL-141: implementation_ready
+  OTV2-EMAIL-142: implementation_ready
+  OTV2-EMAIL-143: implementation_ready
+  OTV2-EMAIL-144: implementation_ready
+  OTV2-EMAIL-145: implementation_ready
+  OTV2-EMAIL-146: implementation_ready
+acceptance_cases:
+  OTV2-EMAIL-139-AC01: implementation_ready
+  OTV2-EMAIL-140-AC01: implementation_ready
+  OTV2-EMAIL-141-AC01: implementation_ready
+  OTV2-EMAIL-142-AC01: implementation_ready
+  OTV2-EMAIL-143-AC01: implementation_ready
+  OTV2-EMAIL-144-AC01: implementation_ready
+  OTV2-EMAIL-145-AC01: implementation_ready
+  OTV2-EMAIL-146-AC01: implementation_ready
+changed_paths: []
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - npm run typecheck (passed)
+    - P31 focused catalog/approval/security boundary assertions via node --import tsx (passed)
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
