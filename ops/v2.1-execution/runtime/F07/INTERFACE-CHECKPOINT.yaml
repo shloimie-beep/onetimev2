@@ -1,0 +1,74 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F07
+interface_implementation_head_sha: 9faca9c1ad04e3bda269dfabfeb62bcef61808c3
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+contract_digest: 9886d6d572452b39a1449e0cc896e496f1ea79b389956b2f19569edf39166673
+contract_schema_version: 1
+semantic_contract_version: 2.1.0
+state: interface_ready
+exports:
+  - path: packages/brand-system/src/v21.ts
+    symbols:
+      - DESIGN_SYSTEM_CONTRACT_VERSION
+      - oneTimeV21Tokens
+      - ADMIN_PRIMARY_NAVIGATION
+      - formatEnglishDate
+      - disabledControlDescription
+      - isAdminPrimaryNavigation
+    sha256: 2e9a8de7d0be721eabd50b4093bc57da5001a4de735adbec12d4292d26ee5ca6
+  - path: packages/brand-system/src/react-v21.tsx
+    symbols:
+      - V21AppShell
+      - V21Navigation
+      - V21StatePanel
+      - V21CalendarAgenda
+    sha256: 4c79e5917f59a3c258a2b192884480ba9aef86dbaccf248244b734d085e6446a
+  - path: packages/brand-system/src/tokens.css
+    symbols:
+      - --ot-v21-black
+      - --ot-v21-yellow
+      - --ot-v21-cyan
+      - --ot-v21-focus
+      - --ot-v21-danger
+    sha256: f4eabe775b40f037734aa9ad430c21c7f8a997f80bbdb80289cf7fcbdfbe4077
+  - path: apps/web/src/client/styles/v21/design-system.css
+    symbols:
+      - ot-v21
+      - ot-v21__skip-link
+      - ot-v21__navigation
+      - ot-v21__state
+      - ot-v21__calendar
+    sha256: 02b1d5c7064107a6b12b4ac7ffb941f41c9f4b26cf05d4446f791a526b360f31
+  - path: packages/brand-system/src/v21.contract.test.tsx
+    symbols:
+      - v2.1 design-system contract
+    sha256: 6bd8e7d1e1ee462efc0cacbb1436ad8e8e8f941d31ecc9928c6349b946afc908
+compatibility_invariants:
+  - F07 is additive: it does not edit F01-owned central composition or change existing role routing.
+  - Admin primary navigation is exactly Dashboard, Contacts, Content, Classroom, Live Console in that order.
+  - The v2.1 shell is English/LTR, while names remain safe to render with local dir="auto" outside the shell.
+  - Every unavailable v2.1 navigation control renders an adjacent explanation and no disabled link target.
+  - Every calendar surface has a keyboard-readable agenda equivalent and selected date/event-count announcement.
+  - The style contract has no raw route-local palette or font declaration, reflows to one column at 639px, and disables nonessential motion under reduced-motion preference.
+downstream_tasks:
+  - P08
+  - P10
+  - P11
+  - P12
+  - P13
+  - P14
+  - P15
+  - P22
+  - P23
+  - P24
+  - P25
+  - P32
+verification_commands:
+  - npm run typecheck
+  - npx vitest run packages/brand-system/src/v21.contract.test.tsx
+  - npm run brand:check (F07 paths pass; existing out-of-scope raw-color finding remains in scripts/ops/validate-ot-launch-governance.ts)
+  - rg -n '#|font-family' apps/web/src/client/styles/v21/design-system.css
+contains_product_completion_claim: false
+contains_external_effect: false

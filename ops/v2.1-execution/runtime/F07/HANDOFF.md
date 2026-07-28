@@ -18,13 +18,15 @@
 
 Created the isolated F07 branch from the exact F01-integrated authorization SHA and corrected the claim metadata to the exact containing control head. Verified the exact remote repository, control authorization, ready entry, claim, DESIGN_SYSTEM lease, F01 interface checkpoint, and 200 locked files plus source/task/context digests from immutable Git blobs. Added an additive v2.1 contract that publishes canonical tokens, the exact Admin primary navigation, English date formatting, explained-disabled-control behavior, accessible role shell/navigation/state patterns, and a calendar agenda equivalent. Scoped responsive/reduced-motion CSS is available under the F07-owned v2.1 style root.
 
+The interface contract is stable at implementation head `9faca9c1ad04e3bda269dfabfeb62bcef61808c3`; `INTERFACE-CHECKPOINT.yaml` records exact symbols, artifact hashes, and combined digest `9886d6d572452b39a1449e0cc896e496f1ea79b389956b2f19569edf39166673` (SHA-256 of sorted `path=artifact-sha256` export lines). I36 must merge the checkpoint before C00 authorizes the listed downstream tasks.
+
 ## Remaining work
 
-Install locked dependencies in the isolated clone, run type/brand checks and correct ordinary in-scope failures, then publish the required interface checkpoint with exact paths, symbols, versions, and digests. Complete focused responsive/accessibility verification and final ready_for_review checkpoint.
+Notify C00/I36 of the interface checkpoint, then complete focused responsive/accessibility verification and final ready_for_review checkpoint.
 
 ## Exact next action
 
-Checkpoint the implementation, install locked dependencies in the isolated clone, and run focused type and brand verification.
+Notify C00/I36 of the pushed F07 interface checkpoint, then complete final task-owned verification and ready_for_review persistence.
 
 ## Coverage
 
@@ -39,7 +41,9 @@ Added the versioned F07 package exports and scoped v2.1 style contract plus F07 
 
 - Repository identity, fetched control head, registry/queue identity, F01 dependency, absent F07 remote branch, claim, and lease: passed.
 - Immutable Git-blob verification: 200/200 locked files passed; source/task/context digests matched.
-- `npm run typecheck` and `npm run brand:check` could not start because dependencies are absent in this isolated clone (`tsc`/`tsx` unavailable); install is the next safe verification action.
+- `npm run typecheck`: passed after `npm ci` in the isolated clone.
+- `npx vitest run packages/brand-system/src/v21.contract.test.tsx`: passed (3 tests).
+- Focused F07 CSS governance smoke passed; `npm run brand:check` now reports only the pre-existing out-of-scope raw color in `scripts/ops/validate-ot-launch-governance.ts`.
 
 ## External effects
 

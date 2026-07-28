@@ -13,26 +13,26 @@ dependency_heads:
     observed_integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
     interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
-status: claimed
-phase: implementation
+status: interface_ready
+phase: interface
 claimed_by: codex-f07-worker-fde01134
 claim_time: '2026-07-28T16:07:21Z'
 claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
 lease_expires_at: '2026-07-28T16:56:52Z'
-last_heartbeat_at: '2026-07-28T16:18:00Z'
+last_heartbeat_at: '2026-07-28T16:21:00Z'
 controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
 ready_entry_payload_digest: d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f
 state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-last_implementation_commit_sha: 07ef77bcf0614b650ed9246c524e4e197f994cf5
+last_implementation_commit_sha: 9faca9c1ad04e3bda269dfabfeb62bcef61808c3
 completed_steps:
   - Verified repository identity, remote control authorization, queue digest, dependency integration state, and unexpired F07 claim/lease.
   - Verified LOCKED-SHA256SUMS (200/200) and source/task/context digests against immutable Git blob bytes.
   - Added the additive v2.1 design-system contract, accessible role shell/navigation/state/calendar primitives, and scoped responsive CSS under F07-owned paths.
+  - Passed v2.1 contract tests, focused CSS governance smoke, and TypeScript validation; published the interface checkpoint for I36 integration.
 remaining_steps:
-  - Install locked dependencies in the isolated clone and run type/brand checks; correct ordinary in-scope failures.
-  - Publish the required interface checkpoint with exact export digests and notify C00/I36.
+  - Notify C00/I36 of the interface checkpoint and await integration authorization for downstream consumers.
   - Complete focused responsive/accessibility verification and final ready_for_review checkpoint.
-next_action: Checkpoint the implementation, install locked dependencies in the isolated clone, and run focused type and brand verification.
+next_action: Notify C00/I36 of the pushed F07 interface checkpoint, then complete final task-owned verification and ready_for_review persistence.
 requirements:
   OTV2-UX-158: in_progress
   OTV2-UX-159: in_progress
@@ -57,6 +57,7 @@ changed_paths:
   - ops/v2.1-execution/runtime/F07/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F07/HANDOFF.md
   - ops/v2.1-execution/runtime/F07/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F07/INTERFACE-CHECKPOINT.yaml
   - packages/brand-system/package.json
   - packages/brand-system/src/index.ts
   - packages/brand-system/src/react.tsx
@@ -71,6 +72,10 @@ verification:
     - LOCKED-SHA256SUMS immutable Git-blob verification: 200/200 passed; source/task/context digests matched ready entry.
     - npm run typecheck: blocked locally because node dependencies are not installed (tsc unavailable).
     - npm run brand:check: blocked locally because node dependencies are not installed (tsx unavailable).
+    - npm run typecheck: passed after npm ci.
+    - npx vitest run packages/brand-system/src/v21.contract.test.tsx: passed (3 tests).
+    - F07 CSS token/typography governance smoke: passed.
+    - npm run brand:check: F07 paths passed; out-of-scope baseline raw-color finding remains in scripts/ops/validate-ot-launch-governance.ts.
   known_baseline_failures: []
 external_effects:
   authority: none
