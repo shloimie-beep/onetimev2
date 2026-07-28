@@ -1,0 +1,108 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P28
+task_packet_digest: 3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823
+task_context_digest: 96152f74273391337a3c6b8dd576829e7ddf9467cc867fb3b35ec4cf2c3cc18c
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p28-communication-foundation
+start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+dependency_heads:
+  F06:
+    state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+  P27:
+    state: interface_ready_integrated
+    task_head_sha: e1933d640657835cde17ee23381399f5539fe3cd
+    integration_head_sha: 972fa43507d6d4391a86dd130a1c38a05820b2ce
+    interface_source_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+    interface_implementation_head_sha: 7d5edd687016b827769cc931b3766b2ae566507c
+    interface_checkpoint_digest: 788e150f7819431fecd8036701d1e78d6fe0a39b818795b318d54e70998d5ce6
+  P31:
+    state: interface_ready_integrated
+    task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    integration_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+    interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
+    interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
+status: claimed
+phase: contract
+claimed_by: codex-p28-worker-16640fee
+claim_time: '2026-07-28T22:03:46Z'
+claim_id: 16640fee-ca26-4885-9be7-14fb2baa682c
+writer_slot_leases:
+  - slot: GHL_REGISTRY
+    lease_id: f59eb149-ec9e-4d32-afd7-55ad5e32c899
+    lease_issued_at: '2026-07-28T21:55:38Z'
+    lease_expires_at: '2026-07-28T22:55:38Z'
+  - slot: COMMUNICATION_FOUNDATION
+    lease_id: d2cd17e1-c0d2-4dd9-ab21-62c1b2a24a30
+    lease_issued_at: '2026-07-28T21:55:38Z'
+    lease_expires_at: '2026-07-28T22:55:38Z'
+lease_expires_at: '2026-07-28T22:55:38Z'
+last_heartbeat_at: '2026-07-28T22:03:46Z'
+controller_authorization_sha: e847dd790ae2f99ae526b0edcbd41897474c8f18
+ready_entry_state_based_on_control_head_sha: 3cfe14a6e1171d002f7173c13776dc682fddd6a8
+ready_entry_payload_digest: 2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285
+state_based_on_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+last_implementation_commit_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+completed_steps:
+  - Verified repository identity shloimie-beep/onetimev2 and exact containing control head.
+  - Verified the P28 branch was absent locally and remotely and the integration start SHA matched exactly.
+  - Recomputed and matched the canonical P28 ready-entry payload digest.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and the package/task/context digests.
+  - Verified exact F06, P27, and P31 interface-ready integration bindings.
+  - Claimed the GHL_REGISTRY and COMMUNICATION_FOUNDATION writer leases with zero effect locks.
+remaining_steps:
+  - Push and report this exact three-file atomic claim checkpoint.
+  - Implement only the P28-owned communication-foundation and canonical GHL registry scope.
+  - Publish the P29/P30-unlocking interface checkpoint, pass focused verification, and release at ready_for_review.
+next_action: Push the atomic P28 claim checkpoint, then inspect only named dependency artifacts and P28-owned paths before implementing the communication-foundation contract.
+requirements:
+  OTV2-GHL-120: pending
+  OTV2-GHL-121: pending
+  OTV2-GHL-122: pending
+  OTV2-GHL-137: pending
+  OTV2-GHL-138: pending
+  OTV2-GHL-198: pending
+  OTV2-GHL-199: pending
+  OTV2-GHL-220: pending
+  OTV2-PARENT-226: pending
+acceptance_cases:
+  OTV2-GHL-120-AC01: pending
+  OTV2-GHL-121-AC01: pending
+  OTV2-GHL-122-AC01: pending
+  OTV2-GHL-137-AC01: pending
+  OTV2-GHL-138-COMMUNICATIONS-READBACK: pending
+  OTV2-GHL-198-AC01: pending
+  OTV2-GHL-199-AC01: pending
+  OTV2-GHL-220-AC01: pending
+  OTV2-PARENT-226-PREFERENCES: pending
+  OTV2-PARENT-226-ESSENTIAL-EMAIL: pending
+changed_paths:
+  - ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P28/HANDOFF.md
+  - ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: git remote/control/integration/branch identity verification
+      result: passed; exact repository, containing control, start SHA, and absent P28 branch
+    - command: canonical P28 ready-entry digest recomputation
+      result: passed; 2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; 200 locked blobs, 15 source-package blobs, and entry-bound digests
+    - command: dependency/claim/writer/effect-lock verification
+      result: passed; F06/P27/P31 exact, two P28 leases, and zero effect locks
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
