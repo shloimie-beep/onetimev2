@@ -9,19 +9,19 @@ start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
   C00:
     required_state: operational
-    observed_control_head_sha: 586f1216c27b02915bdca606645d7e1ee335a669
-    control_state_digest: e3cd73b2f07706189605173923b91631decf805c4e007d5d82d7ebdb4c34ed4c
+    observed_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+    control_state_digest: 388fd210d8324496824666d88155207af84b6160e3c04e23077da346a94590b8
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
 status: claimed
-phase: retirement_verification
+phase: verification
 claimed_by: codex-f01-worker-4aafff01
-claim_time: '2026-07-28T15:56:52Z'
-claim_id: f5bc9b67-9a49-432f-9ce4-6ebd99d856d9
-lease_expires_at: '2026-07-28T16:56:52Z'
-last_heartbeat_at: '2026-07-28T16:14:10Z'
-controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
-ready_entry_payload_digest: 913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2
+claim_time: '2026-07-28T17:13:44Z'
+claim_id: 683f3581-a6ca-472d-80a6-51fabb9208f5
+lease_expires_at: '2026-07-28T18:13:44Z'
+last_heartbeat_at: '2026-07-28T17:23:30Z'
+controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
+ready_entry_payload_digest: f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda
 state_based_on_head_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
 last_implementation_commit_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
 completed_steps:
@@ -47,7 +47,7 @@ remaining_steps:
   - have C00 record and assign the three immutable steward requests
   - acknowledge schema-valid applied results and rerun the exact inventory and direct-access checks
   - publish ready_for_review
-next_action: Wait for C00 to record and assign F01-retired-auth-001, F01-retired-client-002, and F01-config-retirement-003; then verify and acknowledge their exact applied result heads before ready_for_review.
+next_action: Acknowledge the exact I36 rejected results for F01-retired-client-002 and F01-config-retirement-003 while keeping F01-retired-auth-001 pending F03.
 requirements:
   OTV2-FOUNDATION-001: in_progress
   OTV2-FOUNDATION-003: in_progress
