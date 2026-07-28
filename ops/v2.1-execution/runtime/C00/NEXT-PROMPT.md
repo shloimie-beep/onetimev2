@@ -18,9 +18,12 @@ Fetch remote refs and require the exact remote control head. Read
 `LOCKED-SHA256SUMS.txt`, the current control/runtime digests, and the active
 C00 lease. Reject any live foreign lease or non-fast-forward collision.
 
-The exact next action is to rebind F01/I36 ready entries to the committed
-`control_initialized` parent, recompute their sibling payload digests, validate
-the complete control plane, mark C00 `operational`, and release its lease.
+Bootstrap is operational. On the next controller invocation, fetch and require
+the exact remote control head, acquire a fresh serialized C00 lease before any
+other mutation, verify locked and current control digests, read remote worker
+state/handoffs, and refresh the critical path and queues. The immediate worker
+action is F01 from its exact ready entry; I36 remains on demand for its
+bootstrap-adoption/integration role.
 Update C00 state, handoff, and this prompt at every phase; commit and normal-push
 each checkpoint. Never implement product code, grant provider authority, or
 force-push.

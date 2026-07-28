@@ -23,17 +23,20 @@ was created and remotely verified at `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 Control ledgers are initialized with migrations beginning at 2234, provider
 locks unclaimed, empty merge/steward/blocker state, and non-overlapping initial
 ready leases for F01 plus I36 bootstrap adoption.
+The ready entries were rebound to the exact `control_initialized` parent,
+validated, and the controller was advanced to `operational` with its lease
+released.
 
 ## Remaining work
 
-Validate and checkpoint each remaining bootstrap phase, measure the repository
-baseline, create the integration branch, initialize exact F01/I36 ready state,
-mark the controller operational, and release the controller lease.
+None for bootstrap. Future C00 invocations perform episodic controller refresh
+after worker branches advance.
 
 ## Exact next action
 
-Rebind the ready entries to the committed `control_initialized` head, validate
-their sibling payload digests, mark C00 operational, and release its lease.
+Dispatch F01 from `ops/v2.1-execution/control/READY-QUEUE.yaml`. Keep I36
+on-demand and use its bootstrap-adoption claim only when opening the merge
+captain window.
 
 ## Verification
 
@@ -42,6 +45,11 @@ their sibling payload digests, mark C00 operational, and release its lease.
 - Baseline failure fingerprint: `049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b`.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
+- F01 ready payload: `f881a8419d7595828cf4dc5294c67e3e130453be2ff17a402ee98f7e5a8e61e5`.
+- I36 ready payload: `c9ac0530657e7cc1e95b4afc309dc13308b3f0a1b2db8bef513de29502a57a03`.
+- Control state digest: `70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88`.
+- Task registry digest: `2c839861d6b097189374d523620fc2600d095b541a3aca3298b6f5e3efaca133`.
+- Ready queue digest: `8cb2774770421a0ab906c16479906bdeb54ab507ad444059476d72a309a1a9f6`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

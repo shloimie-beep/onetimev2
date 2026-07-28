@@ -1,8 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
-status: bootstrap_required
-bootstrap_phase: control_initialized
+status: operational
+bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
 - agents_updated
@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 0123aef472bd18a9d03c47087503bfb1edd00e5c
-next_action: Rebind ready entries to this control checkpoint, mark C00 operational, and release the controller lease.
+controller_authorization_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
+next_action: Dispatch F01 from its exact ready entry; use I36 on demand for bootstrap adoption and integration.
 authority_note: Only C00 updates this global control state.

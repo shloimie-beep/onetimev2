@@ -7,16 +7,16 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
-status: claimed
-phase: bootstrap
+status: operational
+phase: complete
 claimed_by: codex-c00-a916ec3f7e8b
 claim_time: '2026-07-28T14:44:41Z'
 claim_id: 73f19375-44c3-4c37-86e6-fcf30d77e244
-lease_expires_at: '2026-07-28T15:57:24Z'
-last_heartbeat_at: '2026-07-28T14:57:24Z'
-controller_authorization_sha: 0123aef472bd18a9d03c47087503bfb1edd00e5c
+lease_expires_at: '2026-07-28T14:59:24Z'
+last_heartbeat_at: '2026-07-28T14:59:24Z'
+controller_authorization_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
 ready_entry_payload_digest: null
-state_based_on_head_sha: 0123aef472bd18a9d03c47087503bfb1edd00e5c
+state_based_on_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -30,12 +30,10 @@ completed_steps:
 - created and verified codex/v21-integration at ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 - initialized migration, registry, steward, provider-lock, merge, candidate, and blocker state
 - published collision-free initial F01 and bootstrap-adoption I36 ready entries
-remaining_steps:
-- validate AGENTS.md authority replacement
-- run and record the repository baseline
-- initialize control ledgers and ready entries
-- mark the controller operational and release its lease
-next_action: Rebind ready entries to this control checkpoint, mark C00 operational, and release the controller lease.
+- rebound initial ready payloads to the exact control-initialized parent
+- marked the bootstrap operational and released the serialized C00 lease
+remaining_steps: []
+next_action: Dispatch F01 from its exact ready entry; use I36 on demand for bootstrap adoption and integration.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -44,11 +42,24 @@ changed_paths:
 migrations: []
 steward_requests: []
 verification:
+  control_digests:
+    control_state: 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
+    control_lease: 1361f79944d5b7c32b1dc29e66b20bc10c26714b2dafb8f8f8970f1d037c916d
+    task_registry: 2c839861d6b097189374d523620fc2600d095b541a3aca3298b6f5e3efaca133
+    ready_queue: 8cb2774770421a0ab906c16479906bdeb54ab507ad444059476d72a309a1a9f6
+    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
+    steward_queue: b9e2846bf80abd21c6a709137e49124be16a444a9344e0b2ba80df02d58150f3
+    provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
+    authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
+    migration_allocations: f98fcb8f7cb33c79d67ade6a6ba3aa9b1eb98945bde7a34b7568e4b8e6887be8
+    current_candidate: d363b5688183208265274bc5521676505338df544965c36e76ec1205ea9bf724
+    blockers: e3f82402bf15371558d1777351746bb39010d276deef7241c0a0b3329252a3b6
   commands_run:
   - delivery SHA256SUMS.txt: 214/214 passed
   - package inventory: 46 tasks, 46 contexts, 46 prompts, 16 source-spec files
   - 'npm run verify at reviewed head: secret scan passed; Prettier failed on 1736 files; later stages did not run'
   - independent v2.1 package topology validation: passed
+  - control registry, ready payload digests, leases, locks, and queue invariants: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
