@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
-next_action: Dispatch dependency-valid Wave 3 foundation lanes F03, F04, and F05 from exact F02-integrated head d8b35b2a; F03 must evaluate F01-retired-auth-001 at its ready_for_review checkpoint.
+controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
+next_action: F03, F04, and F05 continue their exact claimed foundation lanes; hold control until an interface or terminal checkpoint advances, with F03 also evaluating F01-retired-auth-001.
 authority_note: Only C00 updates this global control state.

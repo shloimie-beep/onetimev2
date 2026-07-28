@@ -45,14 +45,14 @@ scope, and zero effects passed. P35 completed `ready_for_review` at
 `e524a2756fecb4ab6816e972211d858a729872f349459b0863754f3a72d01475`,
 with three immutable steward requests assigned to later I36 checkpoints.
 
-F03, F04, and F05 are now ready from exact start `d8b35b2a`. Their claims are
-`0b100424-7be3-4613-ae07-e7019d140a30`,
-`38e6f374-86dc-4b78-9846-4c328455443c`, and
-`8726d04b-b82f-4c2f-b071-57edab0b3b22`; payloads are `fa68fd0b…`,
-`b04cb5f0…`, and `f58a652f…`. Dispatch those three only and hold control
-fixed until every exact ready entry is consumed or safely refused. F03 must
-evaluate assigned request `F01-retired-auth-001` at its ready-for-review
-checkpoint.
+F03, F04, and F05 atomically consumed their exact ready entries. Authoritative
+remote claim heads are F03 `8b0a5a8b228db12096ab0124cb22b00df0b56d3c`,
+F04 `312906abe369aca74b58343920588abbdf4d7823`, and F05
+`c1002b6b544cf647b893ba6b83aadc886eb5415f`, each with exact parent
+`d8b35b2a` and only three task-local runtime files. The ready queue is empty.
+Let those workers continue and reconcile the first exact interface or terminal
+checkpoint. F03 must evaluate assigned request `F01-retired-auth-001` at its
+ready-for-review checkpoint.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

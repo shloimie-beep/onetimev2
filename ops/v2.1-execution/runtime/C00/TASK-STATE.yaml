@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-dc1586a0
-claim_time: '2026-07-28T18:11:45Z'
-claim_id: dc1586a0-c5f2-4c9b-a16b-092db73e025c
-lease_expires_at: '2026-07-28T18:15:27Z'
-last_heartbeat_at: '2026-07-28T18:15:27Z'
-controller_authorization_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+claimed_by: codex-c00-orchestrator-577c65cd
+claim_time: '2026-07-28T18:26:45Z'
+claim_id: 577c65cd-9c49-432a-8ba2-f5b17090220a
+lease_expires_at: '2026-07-28T18:27:49Z'
+last_heartbeat_at: '2026-07-28T18:27:49Z'
+controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
 ready_entry_payload_digest: null
-state_based_on_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+state_based_on_head_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -68,8 +68,10 @@ completed_steps:
 - independently verified P35 ready_for_review head a85aecc2, exact twenty-path owned delta, eight implementation-ready cases, state/handoff digest e524a275, focused/typecheck results, three immutable steward-request digests, and zero effects
 - recorded the three P35 steward requests for later I36 shared-registration and candidate-integration checkpoints
 - authorized the three critical F02-dependent foundation lanes F03, F04, and F05 from exact integration head d8b35b2a
+- independently fetched and verified the exact F03, F04, and F05 three-file atomic claim heads and parent ancestry; corrected two worker message-only full-SHA transcription errors against authoritative remote refs
+- consumed all three Wave 3 ready entries and recorded the disjoint claimed writer lanes
 remaining_steps: []
-next_action: Dispatch F03, F04, and F05 under their exact ready entries; keep control fixed until all three claims are consumed or safely refused.
+next_action: Let F03, F04, and F05 continue their claimed lanes; reconcile the first exact interface or terminal checkpoint that advances.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -77,12 +79,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+  current_control_parent_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: dc1586a0-c5f2-4c9b-a16b-092db73e025c
-      observed_head: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+      claim_id: 577c65cd-9c49-432a-8ba2-f5b17090220a
+      observed_head: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -129,25 +131,49 @@ orchestration:
     F03:
       branch: codex/v21-f03-adult-student-auth
       claim_id: 0b100424-7be3-4613-ae07-e7019d140a30
-      observed_head: null
+      observed_head: 8b0a5a8b228db12096ab0124cb22b00df0b56d3c
       authorized_start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
       lease_expires_at: '2026-07-28T19:11:45Z'
-      scheduling_state: ready
+      scheduling_state: claimed
     F04:
       branch: codex/v21-f04-household-identity
       claim_id: 38e6f374-86dc-4b78-9846-4c328455443c
-      observed_head: null
+      observed_head: 312906abe369aca74b58343920588abbdf4d7823
       authorized_start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
       lease_expires_at: '2026-07-28T19:11:45Z'
-      scheduling_state: ready
+      scheduling_state: claimed
     F05:
       branch: codex/v21-f05-api-jobs-foundation
       claim_id: 8726d04b-b82f-4c2f-b071-57edab0b3b22
-      observed_head: null
+      observed_head: c1002b6b544cf647b893ba6b83aadc886eb5415f
       authorized_start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
       lease_expires_at: '2026-07-28T19:11:45Z'
-      scheduling_state: ready
-  active_native_subagents: []
+      scheduling_state: claimed
+  active_native_subagents:
+  - task_id: F03
+    agent: /root/f03_worker
+    branch: codex/v21-f03-adult-student-auth
+    observed_head: 8b0a5a8b228db12096ab0124cb22b00df0b56d3c
+    claim_id: 0b100424-7be3-4613-ae07-e7019d140a30
+    lease_expires_at: '2026-07-28T19:11:45Z'
+    status: claimed
+    phase: contract
+  - task_id: F04
+    agent: /root/f04_worker
+    branch: codex/v21-f04-household-identity
+    observed_head: 312906abe369aca74b58343920588abbdf4d7823
+    claim_id: 38e6f374-86dc-4b78-9846-4c328455443c
+    lease_expires_at: '2026-07-28T19:11:45Z'
+    status: claimed
+    phase: contract
+  - task_id: F05
+    agent: /root/f05_worker
+    branch: codex/v21-f05-api-jobs-foundation
+    observed_head: c1002b6b544cf647b893ba6b83aadc886eb5415f
+    claim_id: 8726d04b-b82f-4c2f-b071-57edab0b3b22
+    lease_expires_at: '2026-07-28T19:11:45Z'
+    status: claimed
+    phase: contract
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -202,10 +228,10 @@ steward_requests:
   target_checkpoint: I36_candidate_integration_after_P08_P27
 verification:
   control_digests:
-    control_state: f75baaf99d13114cf2b2791b2b03f680ade03a01919863d140b8d289cafe95b4
-    control_lease: a6892e4bd229ef9635eac926d45699486f643cdcd3cd2fb17b0b60cbfbe07b07
-    task_registry: 1f09f2bd9d5f82b4d54bbf3c3a1eb2c77337628ef1cc283d797014feee5af578
-    ready_queue: 06f9491249608412b594dac196f2d24731def324130f02112ae755bf2a622fcd
+    control_state: d92da712320b2b5ec2f70f4f12fb2bff51f5791399e03d8d8abf5e72a30a2abc
+    control_lease: 2e7fc12b7d8d31174aef901b894a7cb62ba7ae4345e8c497bb976a2227a40821
+    task_registry: 51d5c7a75bf2982ae36db5b27c0f2e30ad1793c7d2dcabb77130deedaeb4312a
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 532327f7d72c126e428bfbe776b76a2541a7c40f502329cd043b4fe7a7777b0e
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -240,6 +266,7 @@ verification:
   - I36 F02 merge parents/source ancestry/exact scope and final metadata-only checkpoint d8b35b2a: passed
   - P35 exact twenty-path scope, state/handoff and steward-request digests, focused/typecheck verification, and zero effects at a85aecc2: passed
   - canonical F03/F04/F05 ready-entry payload digests against control parent 4c72f785: passed
+  - F03 8b0a5a8b, F04 312906ab, and F05 c1002b6b atomic claim ancestry, exact three-file scopes, authorization identities, and zero effects: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

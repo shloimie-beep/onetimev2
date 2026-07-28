@@ -200,18 +200,27 @@ Those requests are assigned to later I36 shared-registration and
 candidate-integration checkpoints. F02 integration now unlocks the three
 highest-fanout Wave 3 foundation lanes; exact ready entries are published for
 F03, F04, and F05 from `d8b35b2a`.
+All three ready entries were atomically consumed. Authoritative fetched remote
+claim heads are F03
+`8b0a5a8b228db12096ab0124cb22b00df0b56d3c`, F04
+`312906abe369aca74b58343920588abbdf4d7823`, and F05
+`c1002b6b544cf647b893ba6b83aadc886eb5415f`. Each has exact parent
+`d8b35b2a` and changes only its task-local TASK/HANDOFF/NEXT files. Two initial
+worker messages transcribed incorrect full SHA suffixes for F03/F04; C00
+fetched the remote refs, rejected the message strings, and both workers
+confirmed the authoritative values above before continuing. The ready queue is
+empty and all three disjoint foundation lanes are claimed.
 
 ## Remaining work
 
-None for bootstrap. The current operational wave consists of F03, F04, and F05
-contract/implementation lanes. P35 awaits later full implementation admission.
+None for bootstrap. F03, F04, and F05 are actively implementing. P35 awaits
+later full implementation admission.
 
 ## Exact next action
 
-Dispatch F03 under claim `0b100424-7be3-4613-ae07-e7019d140a30`, F04 under
-claim `38e6f374-86dc-4b78-9846-4c328455443c`, and F05 under claim
-`8726d04b-b82f-4c2f-b071-57edab0b3b22`. Keep control fixed until all three
-ready entries are consumed or safely refused.
+Let F03, F04, and F05 continue their exact claimed lanes. Reconcile the first
+exact interface or terminal checkpoint that advances; F03 must also publish
+the exact result for assigned request `F01-retired-auth-001`.
 
 ## Verification
 
@@ -232,6 +241,9 @@ ready entries are consumed or safely refused.
 - F03 ready payload: `fa68fd0b273ddffd6769c309fa0e5fd2a1197ed61021fc7eeed9ec36a3a88e66`.
 - F04 ready payload: `b04cb5f0f35d34ed53e48fa0e16fbce22178ffef13842c7e091031d61a979dda`.
 - F05 ready payload: `f58a652f8ee03a8aaf298b6077cd79660e5d9f0bf06947e63b8c7788484f1eed`.
+- F03/F04/F05 exact claim heads: `8b0a5a8b228db12096ab0124cb22b00df0b56d3c` /
+  `312906abe369aca74b58343920588abbdf4d7823` /
+  `c1002b6b544cf647b893ba6b83aadc886eb5415f`.
 - P35 final/implementation heads: `a85aecc22b013d583589a67cf0cc9dfad6745aba` /
   `6b92adbf893c45f4a767b8036ec41b52744cce4e`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
