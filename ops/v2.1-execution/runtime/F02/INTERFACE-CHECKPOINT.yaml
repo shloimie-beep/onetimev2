@@ -1,0 +1,92 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+contract_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/state/index.ts
+    symbols:
+      - CANONICAL_STATE_CONTRACT_VERSION
+      - ONE_TIME_PRODUCT_SCOPE
+      - RUNTIME_TIERS
+      - RuntimeTier
+      - VERIFICATION_ENVIRONMENT_IDS
+      - VerificationEnvironmentId
+      - VERIFICATION_RUNTIME_TIER
+      - CANONICAL_STATE_VALUES
+      - CanonicalAggregateKind
+      - CanonicalState
+      - AnyCanonicalState
+      - CANONICAL_TRANSITION_TARGETS
+      - STATE_ACTOR_KINDS
+      - StateActorKind
+      - StateScope
+      - StateActor
+      - PriorIdempotentTransition
+      - ContentFailureOrigin
+      - AccessTransitionCause
+      - BillingReconciliationOutcome
+      - BillingTransitionEvidence
+      - CanonicalStateTransitionCommand
+      - AppliedStateTransition
+      - ReplayedStateTransition
+      - CanonicalStateTransitionResult
+      - STATE_TRANSITION_ERROR_CODES
+      - StateTransitionErrorCode
+    sha256: 3cdfb85338651646208aec98ad63dada5f818c329e2ad73588d45ebd683052db
+  - path: packages/domain/src/state/errors.ts
+    symbols:
+      - StateTransitionError
+    sha256: f9a16f9d3d2c3af0f6183e39657453d3a3b3a166f80158dbae4fbdb636cd2753
+  - path: packages/domain/src/state/index.ts
+    symbols:
+      - StateTransitionError
+      - assertCanonicalStateTransition
+    sha256: 9c4683c407db83d936e67b5536924288d08ba98a5c560979b74096cd164bfd16
+  - path: packages/domain/src/state/transition-guard.ts
+    symbols:
+      - assertCanonicalStateTransition
+    sha256: b8787e72fdcf2dc01c0e44696715ae1359db03999b845f70c8ed5ff6a598ed06
+  - path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    symbols:
+      - allocations[ordinal=2234]
+      - next_available_ordinal
+    sha256: d0e4d2ac7b406d2f5b9488f2d657cf082abc552a8639720878decb49380d1843
+  - path: packages/db/migrations/2234_canonical_state_machines.sql
+    symbols:
+      - onetime.canonical_aggregate_states
+      - onetime.canonical_state_transition_events
+      - onetime.canonical_state_value_is_valid
+      - onetime.canonical_state_transition_is_allowed
+      - onetime.apply_canonical_state_transition
+    sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+compatibility_invariants:
+  - Aggregate kinds and states are closed vocabularies for human account, Student, access, class occurrence, content, Student question, support, and billing provider operation.
+  - Product scope is always one_time_mishnayos; verification environments map deterministically to isolated_staging or production and cannot cross runtime tiers.
+  - Mutations require a nonempty opaque aggregate/actor identity, explicit authorization, a stable idempotency key, a lowercase SHA-256 canonical request hash, and an exact expected version.
+  - Exact replays return the prior committed result; same-key request drift fails as an idempotency conflict; stale versions produce no write.
+  - Content failure recovery returns only to failed_from, access changes require an exact canonical cause, and terminal states have no unlisted escape.
+  - Billing provider-operation completion is fenced against the lease generation derived from committed event history; dispatch/reconciliation counters are monotonic, acceptance_unknown is quarantined until canonical reconciliation clears or retains the unknown flag as required, and governed dead-letter recovery increments its generation before resetting per-generation counters.
+  - Migration ordinal 2234 is the first v2.1 allocation, 2231 remains unallocated, and the next available ordinal is 2235.
+downstream_tasks:
+  - F03
+  - F04
+  - F05
+  - P15
+  - P22
+  - P32
+verification_commands:
+  - npm run typecheck
+  - focused transition smoke covering positive, authorization, isolation, stale-version, exact replay, request-hash conflict, content retry, billing recovery, and fencing branches
+  - disposable pg-mem application of all 65 migrations with 2234 applied last
+  - disposable PGlite PostgreSQL execution of migration 2234 with concurrent transition, committed-history fencing, monotonic counter, reconciliation, and append-only audit proofs
+  - Prettier check for every TypeScript/YAML interface artifact
+  - full locked checksum verification (200/200)
+contains_product_completion_claim: false
+contains_external_effect: false

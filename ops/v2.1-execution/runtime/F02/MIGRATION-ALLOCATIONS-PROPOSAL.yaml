@@ -1,0 +1,26 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F02
+authority:
+  writer_slot: MIGRATION_AUTHORITY
+  lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
+  claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+  containing_control_head_sha: d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
+  ready_entry_parent_control_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+  lease_expires_at: '2026-07-28T18:27:11Z'
+policy:
+  reviewed_latest: 2233_zoom_class_occurrence_resources.sql
+  first_new_ordinal: 2234
+  never_allocate:
+    - 2231
+  allocation_rule: F02 is the sole allocator for new forward-only v2.1 migrations from ordinal 2234 upward.
+allocations:
+  - ordinal: 2234
+    file: packages/db/migrations/2234_canonical_state_machines.sql
+    owner_task_id: F02
+    state: allocated
+    purpose: Canonical state vocabularies, isolation mapping, optimistic concurrency, append-only idempotency, guarded transitions, and billing-operation fencing.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+next_available_ordinal: 2235
