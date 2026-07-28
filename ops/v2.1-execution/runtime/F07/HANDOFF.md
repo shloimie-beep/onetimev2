@@ -16,29 +16,30 @@
 
 ## Completed behavior
 
-Created the isolated F07 branch from the exact F01-integrated authorization SHA. Verified the exact remote repository, control authorization, absent task branch, ready entry, claim, DESIGN_SYSTEM lease, and F01 interface checkpoint required to begin.
+Created the isolated F07 branch from the exact F01-integrated authorization SHA and corrected the claim metadata to the exact containing control head. Verified the exact remote repository, control authorization, ready entry, claim, DESIGN_SYSTEM lease, F01 interface checkpoint, and 200 locked files plus source/task/context digests from immutable Git blobs. Added an additive v2.1 contract that publishes canonical tokens, the exact Admin primary navigation, English date formatting, explained-disabled-control behavior, accessible role shell/navigation/state patterns, and a calendar agenda equivalent. Scoped responsive/reduced-motion CSS is available under the F07-owned v2.1 style root.
 
 ## Remaining work
 
-Verify immutable package/task/context/source digests from Git blobs; inspect F07-owned design-system paths and the F01 client-router seam; then implement and verify the versioned design system, responsive shells, navigation, and interaction-state primitives.
+Install locked dependencies in the isolated clone, run type/brand checks and correct ordinary in-scope failures, then publish the required interface checkpoint with exact paths, symbols, versions, and digests. Complete focused responsive/accessibility verification and final ready_for_review checkpoint.
 
 ## Exact next action
 
-Verify immutable package/task/context/source digests from Git blob bytes, then record the F07 gap map against owned paths.
+Checkpoint the implementation, install locked dependencies in the isolated clone, and run focused type and brand verification.
 
 ## Coverage
 
-- Requirements: all nine assigned requirements are not started.
-- Acceptance cases: all nine assigned cases are not started.
+- Requirements: all nine assigned requirements are in progress through the shared foundation contract.
+- Acceptance cases: all nine assigned cases are in progress; candidate-bound browser evidence remains downstream.
 
 ## Changed files and migrations
 
-Seeded F07 runtime state, handoff, and next prompt only. No migration was created, deleted, or edited.
+Added the versioned F07 package exports and scoped v2.1 style contract plus F07 runtime persistence. No migration was created, deleted, or edited; central composition was not changed.
 
 ## Verification
 
 - Repository identity, fetched control head, registry/queue identity, F01 dependency, absent F07 remote branch, claim, and lease: passed.
-- Immutable checksum verification: pending Git-blob check because the local checkout has line-ending conversion.
+- Immutable Git-blob verification: 200/200 locked files passed; source/task/context digests matched.
+- `npm run typecheck` and `npm run brand:check` could not start because dependencies are absent in this isolated clone (`tsc`/`tsx` unavailable); install is the next safe verification action.
 
 ## External effects
 
