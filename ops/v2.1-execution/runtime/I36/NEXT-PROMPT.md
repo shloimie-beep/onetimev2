@@ -21,7 +21,8 @@ foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
 Current F03/F04/F05-interface-only authority is containing control head
-`5217c299c2721a58bdb9ad1c1c0f68525008661a`, controller state
+`5217c299c2721a58bdb9ad1c1c0f68525008661a`, controller authorization
+`5217c299c2721a58bdb9ad1c1c0f68525008661a`, ready-entry parent control head
 `4d6bc306e542774b68179d9b440ceccd2d5b9967`, claim
 `353f2868-2978-4cac-ac73-c56fa184f841`, RELEASE_INTEGRATOR lease
 `80afc839-dc09-4363-b440-d22757451415` through

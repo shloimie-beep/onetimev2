@@ -14,7 +14,8 @@
 - Writer: `codex-i36-worker2-353f2868`
 - RELEASE_INTEGRATOR lease: `80afc839-dc09-4363-b440-d22757451415`
 - Containing control head: `5217c299c2721a58bdb9ad1c1c0f68525008661a`
-- Controller authorization / parent control state: `4d6bc306e542774b68179d9b440ceccd2d5b9967`
+- Controller authorization: `5217c299c2721a58bdb9ad1c1c0f68525008661a`
+- Ready-entry state-based-on control head: `4d6bc306e542774b68179d9b440ceccd2d5b9967`
 - Ready-entry payload digest: `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`
 - Lease expiry: `2026-07-28T19:50:38Z`
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
@@ -88,7 +89,7 @@ passed.
 
 C00 authorized a new F03/F04/F05-interface-only resume from exact integration
 head `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`. The containing control head,
-parent controller state, exact branch head, package/task/context/dependency
+ready-entry parent control state, exact branch head, package/task/context/dependency
 digests, 200 locked Git blobs, claim/lease, phase scope, zero effect locks, and
 canonical ready payload were verified. This atomic checkpoint consumes only
 that claim; it does not read the merge queue or any F03/F04/F05 source.
