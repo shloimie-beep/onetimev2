@@ -1,0 +1,64 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P29-registry-projection-001
+task_id: P29
+kind: registration
+requirement_ids:
+  - OTV2-GHL-123
+  - OTV2-GHL-124
+  - OTV2-GHL-125
+  - OTV2-GHL-126
+  - OTV2-GHL-127
+  - OTV2-GHL-128
+  - OTV2-GHL-129
+  - OTV2-GHL-130
+  - OTV2-GHL-131
+  - OTV2-GHL-132
+  - OTV2-GHL-133
+  - OTV2-GHL-136
+acceptance_case_ids:
+  - OTV2-GHL-123-AC01
+  - OTV2-GHL-124-AC01
+  - OTV2-GHL-125-AC01
+  - OTV2-GHL-126-AC01
+  - OTV2-GHL-127-AC01
+  - OTV2-GHL-128-AC01
+  - OTV2-GHL-129-AC01
+  - OTV2-GHL-130-AC01
+  - OTV2-GHL-131-AC01
+  - OTV2-GHL-132-AC01
+  - OTV2-GHL-133-AC01
+  - OTV2-GHL-136-AC01
+rationale: >-
+  P29 owns the versioned workflow fragment but cannot edit the P28 canonical
+  registry, generated workflow-control projections, shared validators, or central
+  fragment composer.
+desired_semantic_change: >-
+  Register P29-core-lifecycle.yaml with the communication fragment composer and
+  reconcile its 12 exact keys against the existing P28 workflow-registry source.
+  Extend fragment validation to accept the canonical OT-02A and OT-02B keys without
+  broadening arbitrary workflow-key syntax. Generate projections only through the
+  existing projection command. Preserve canonical names, provider IDs, sender keys,
+  message classes, exact triggers, and desired statuses. Record ordered action,
+  cadence, exit, constant, copy, audience, and suppression drift without claiming
+  provider realization. Keep OT-02B paused until explicit Admin start and opt-in.
+proposed_symbols_routes_keys_or_dependencies:
+  - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
+  - integrations/highlevel/registry/workflow-registry.yaml
+  - integrations/highlevel/registry/current.json
+  - integrations/highlevel/workflows.yaml
+  - packages/domain/src/communications/foundation/workflow-fragment.ts
+  - scripts/highlevel/sync-workflow-control-projections.ts
+compatibility_assumptions:
+  - workflow-registry.yaml remains the canonical identity and provider-ID source.
+  - The four P31 copy IDs referenced by P29 already exist and are not duplicated.
+  - Missing copy text for other lifecycle steps remains an approval-gated provider configuration concern.
+  - No generated projection is hand-edited and no HighLevel mutation is authorized.
+verification_performed:
+  - all 12 P29 definitions match canonical registry identity, sender, class, trigger, and desired state
+  - owned fragment/domain parity assertions cover ordered steps, waits, exits, and policy constants
+  - zero-effect policy assertions
+conflicts_or_risks:
+  - Current provider canvases may remain shells or drifted; projection generation must preserve observed truth and blockers.
+  - Do not invent provider IDs, mark workflows active/tested, publish, enroll, or send based on this request.
+contains_secret_or_private_data: false

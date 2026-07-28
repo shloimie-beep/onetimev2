@@ -1,0 +1,64 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P29-registration-001
+task_id: P29
+kind: registration
+requirement_ids:
+  - OTV2-GHL-123
+  - OTV2-GHL-124
+  - OTV2-GHL-125
+  - OTV2-GHL-126
+  - OTV2-GHL-127
+  - OTV2-GHL-128
+  - OTV2-GHL-129
+  - OTV2-GHL-130
+  - OTV2-GHL-131
+  - OTV2-GHL-132
+  - OTV2-GHL-133
+  - OTV2-GHL-136
+acceptance_case_ids:
+  - OTV2-GHL-123-AC01
+  - OTV2-GHL-124-AC01
+  - OTV2-GHL-125-AC01
+  - OTV2-GHL-126-AC01
+  - OTV2-GHL-127-AC01
+  - OTV2-GHL-128-AC01
+  - OTV2-GHL-129-AC01
+  - OTV2-GHL-130-AC01
+  - OTV2-GHL-131-AC01
+  - OTV2-GHL-132-AC01
+  - OTV2-GHL-133-AC01
+  - OTV2-GHL-136-AC01
+rationale: >-
+  P29 owns directly importable core lifecycle definitions and the worker adapter
+  but cannot edit package barrels, the central worker composer, route registries,
+  or the P28 persistence implementation.
+desired_semantic_change: >-
+  Register the P29 core domain and worker exports, then bind CoreWorkflowRepository
+  to the stewarded P28 communication decision, delivery-dedupe, and workflow-readback
+  persistence. Compose the worker only behind F05 durable-job fencing and the F06
+  HighLevel adult-email provider boundary. Derive Adult and household identity from
+  trusted local context, require the P29 evidence gates before reservation, re-read
+  suppression immediately before delivery, and preserve zero Student and WhatsApp
+  provider calls.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/domain/src/communications/workflows/core/index.ts
+  - apps/worker/src/runners/ghl-workflows/core/index.ts
+  - runCoreWorkflow
+  - readAndPersistCoreWorkflow
+  - CoreWorkflowRepository adapter over P28 communication persistence
+  - F05 durable job and idempotency boundary
+  - F06 HighLevel adult-email provider boundary
+compatibility_assumptions:
+  - P28 communication migration and repository are integrated before activation.
+  - P28 canonical workflow identities and P31 canonical copy identifiers remain exact.
+  - Direct P29 source imports remain stable until central registration.
+  - Registration does not authorize publish, enrollment, canary, send, billing mutation, or access mutation.
+verification_performed:
+  - 29 focused P29 domain and worker assertions
+  - full TypeScript typecheck
+  - canonical P28 registry parity assertions for all 12 workflow keys
+conflicts_or_risks:
+  - Fail closed if the P28 migration, durable reservation adapter, signed billing projection, local readback, audience approval, copy approval, or send-time suppression snapshot is absent.
+  - Do not configure a WhatsApp provider or represent a Student as a HighLevel contact.
+contains_secret_or_private_data: false

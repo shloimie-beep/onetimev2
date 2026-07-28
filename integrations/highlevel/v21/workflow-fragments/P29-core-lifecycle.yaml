@@ -1,0 +1,324 @@
+contract_version: 1.0.0
+owner_task: P29
+fragment_id: p29-core-lifecycle-v1
+effect_policy:
+  provider_writes: candidate_verification_only
+  messages_sent: 0
+  workflow_publications: 0
+  enrollments: 0
+  financial_mutations: 0
+  access_mutations: 0
+  student_contact_calls: 0
+  whatsapp_provider_calls: 0
+invariants:
+  subject: adult_only
+  household_scoped: true
+  send_time_suppression_recheck: true
+  ghl_student_contact_prohibited: true
+  whatsapp_state: dormant
+  stripe_remains_financial_truth: true
+  one_time_remains_access_truth: true
+  protected_zoom_or_vimeo_bearer_urls_prohibited: true
+workflows:
+  - workflow_key: OT-01
+    requirement_id: 123-AC01
+    canonical_name: OT-01 New Lead Intake
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
+    sender_key: brand
+    message_class: signup_confirmation
+    message_purpose: marketing
+    trigger: adult public signup submitted
+    ordered_steps:
+      - match_or_create_adult_contact_without_student_contact
+      - upsert_one_household_keyed_opportunity
+      - branch_school_inquiry_to_shloimie_acknowledgement_and_stop
+      - branch_family_before_cutover_to_immediate_free_access_without_card
+      - branch_family_at_or_after_cutover_to_inactive_household_and_hosted_checkout
+      - send_one_adult_welcome_after_local_readback
+      - quarantine_ambiguous_crm_match_without_blocking_local_login_or_free_access
+    waits: []
+    policy_constants:
+      - free_access_cutover=2026-09-13T19:24:00+03:00
+    exit_conditions:
+      - family_welcome_sent
+      - school_acknowledgement_sent
+      - ambiguous_adult_match_quarantined
+      - suppression_or_invalid_address
+    idempotency_scope: adult_household_signup_episode
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids: []
+  - workflow_key: OT-02A
+    requirement_id: 124-AC01
+    canonical_name: OT-02A Existing Subscriber Migration 2026 v1
+    desired_initial_state: SAVED_REOPENED
+    sender_key: rabbi_campaign
+    message_class: existing_subscriber_migration
+    message_purpose: marketing
+    trigger: registered existing subscriber migration audience entry
+    ordered_steps:
+      - send_approved_launch_message
+      - send_day_3_only_when_signup_absent
+      - send_day_7_only_when_signup_absent
+    waits:
+      - P3D
+      - P4D
+    policy_constants:
+      - audience=OT-02A | Replit Active Migration Candidates | 2026
+    exit_conditions:
+      - signup
+      - suppression
+      - invalid_address
+      - decline
+      - campaign_complete
+    idempotency_scope: adult_approved_migration_campaign
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids:
+      - ghl.legacy_member_migration.step_1.v1
+  - workflow_key: OT-02B
+    requirement_id: 125-AC01
+    canonical_name: OT-02B New Lead Nurture v1
+    desired_initial_state: SAVED_REOPENED
+    sender_key: rabbi_campaign
+    message_class: prelaunch_nurture
+    message_purpose: marketing
+    trigger: registered new lead nurture audience entry
+    ordered_steps:
+      - send_start
+      - send_day_2
+      - send_day_5
+      - send_day_9_with_start_free_cta
+    waits:
+      - P2D
+      - P3D
+      - P4D
+    policy_constants: []
+    exit_conditions:
+      - signup
+      - school_inquiry
+      - unsubscribe
+      - suppression
+      - complaint
+      - hard_bounce
+      - campaign_complete
+    idempotency_scope: adult_explicit_opt_in_nurture_episode
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids: []
+  - workflow_key: OT-03
+    requirement_id: 126-AC01
+    canonical_name: OT-03 Checkout Started / Abandoned
+    desired_initial_state: SAVED_REOPENED
+    sender_key: rabbi_campaign
+    message_class: warm_enrollment_campaign
+    message_purpose: marketing
+    trigger: checkout started and not completed within the registered wait window
+    ordered_steps:
+      - wait_for_verified_active_projection
+      - send_after_2_hours_without_implying_payment
+      - send_final_after_24_hours_without_implying_payment
+    waits:
+      - PT2H
+      - PT22H
+    policy_constants: []
+    exit_conditions:
+      - verified_active_projection
+      - checkout_canceled
+      - suppression
+      - newer_checkout_episode
+      - follow_up_complete
+    idempotency_scope: household_checkout_episode
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids: []
+  - workflow_key: OT-04
+    requirement_id: 127-AC01
+    canonical_name: OT-04 Payment Active
+    desired_initial_state: SAVED_REOPENED
+    sender_key: brand
+    message_class: signup_confirmation
+    message_purpose: essential_billing_access
+    trigger: One Time payment/access projection becomes Active
+    ordered_steps:
+      - read_exact_standard_67_usd_monthly_or_approved_school_terms
+      - read_next_billing_date_from_projection
+      - request_idempotent_product_access_restore
+      - send_once_per_activation_episode
+    waits: []
+    policy_constants:
+      - standard_family_terms=USD 67/month
+    exit_conditions:
+      - confirmation_sent
+      - projection_no_longer_active
+      - suppression
+    idempotency_scope: household_billing_activation_episode
+    requires_signed_billing_projection: true
+    requires_local_commit_readback: true
+    approved_copy_ids: []
+  - workflow_key: OT-05
+    requirement_id: 128-AC01
+    canonical_name: OT-05 Payment Failed / Grace
+    desired_initial_state: SAVED_REOPENED
+    sender_key: office
+    message_class: payment_failed_support
+    message_purpose: essential_billing_access
+    trigger: One Time payment/access projection becomes Grace after payment failure
+    ordered_steps:
+      - send_immediate_provider_hosted_repair_link_without_card_data
+      - send_day_3_when_unrecovered
+      - send_day_6_when_unrecovered
+      - send_grace_expiry_paused_notice_preserving_parent_restricted_login
+      - send_recovery_restored_notice
+    waits:
+      - P3D
+      - P3D
+      - until_verified_grace_expiry_or_recovery
+    policy_constants: []
+    exit_conditions:
+      - verified_recovery
+      - verified_expiry
+      - suppression
+      - newer_billing_episode
+    idempotency_scope: household_payment_failure_episode
+    requires_signed_billing_projection: true
+    requires_local_commit_readback: true
+    approved_copy_ids: []
+  - workflow_key: OT-06
+    requirement_id: 129-AC01
+    canonical_name: OT-06 Subscription Canceled
+    desired_initial_state: SAVED_REOPENED
+    sender_key: office
+    message_class: cancellation_help
+    message_purpose: essential_billing_access
+    trigger: One Time subscription projection becomes Canceled when support context is required
+    ordered_steps:
+      - send_immediate_exact_final_access_date_without_refund_promise
+      - send_24_hours_before_final_access
+    waits:
+      - until_24_hours_before_verified_final_access
+    policy_constants: []
+    exit_conditions:
+      - reactivation
+      - cancellation_reversed
+      - final_notice_sent
+      - suppression
+    idempotency_scope: household_cancel_at_period_end_episode
+    requires_signed_billing_projection: true
+    requires_local_commit_readback: true
+    approved_copy_ids: []
+  - workflow_key: OT-07
+    requirement_id: 130-AC01
+    canonical_name: OT-07 Parent Portal Invitation
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
+    sender_key: brand
+    message_class: portal_welcome
+    message_purpose: essential_billing_access
+    trigger: One Time access confirmation requests the parent portal companion email
+    ordered_steps:
+      - send_ghl_companion_explanation_without_security_token
+      - leave_setup_token_and_setup_link_delivery_to_resend
+    waits: []
+    policy_constants: []
+    exit_conditions:
+      - companion_sent
+      - invitation_revoked
+      - suppression
+    idempotency_scope: adult_parent_invitation_episode
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids: []
+  - workflow_key: OT-08
+    requirement_id: 131-AC01
+    canonical_name: OT-08 Parent Portal Activated
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
+    sender_key: brand
+    message_class: portal_activated
+    message_purpose: essential_billing_access
+    trigger: One Time parent portal projection becomes Active
+    ordered_steps:
+      - send_parent_portal_activated_copy_once
+    waits: []
+    policy_constants: []
+    exit_conditions:
+      - activation_message_sent
+      - suppression
+    idempotency_scope: adult_first_parent_setup
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids:
+      - ghl.parent_portal_activated.v1
+  - workflow_key: OT-09
+    requirement_id: 132-AC01
+    canonical_name: OT-09 Parent Class Reminder
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
+    sender_key: brand
+    message_class: class_reminder
+    message_purpose: optional_reminder
+    trigger: registered confirmed class reminder schedule and consent gate pass
+    ordered_steps:
+      - send_one_parent_message_30_minutes_before_occurrence
+      - include_parent_protected_schedule_link_only
+      - create_student_in_app_notice_without_ghl_contact
+      - send_immediate_parent_schedule_change_or_cancel_notice
+    waits:
+      - until_30_minutes_before_occurrence
+    policy_constants:
+      - parent_reminder_offset=PT30M
+      - student_delivery=in_app_only
+    exit_conditions:
+      - occurrence_completed
+      - occurrence_canceled
+      - schedule_replaced
+      - suppression
+    idempotency_scope: adult_household_class_occurrence
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids:
+      - ghl.parent_class_reminder.v1
+  - workflow_key: OT-10
+    requirement_id: 133-AC01
+    canonical_name: OT-10 New Recording Available
+    desired_initial_state: DRAFT_WAITING_EXTERNAL
+    sender_key: brand
+    message_class: recording_available
+    message_purpose: optional_reminder
+    trigger: One Time marks a protected recording available for an entitled household
+    ordered_steps:
+      - send_parent_message_with_eligible_student_names_and_parent_login
+      - create_student_in_app_protected_library_notice
+      - never_include_vimeo_bearer_url
+    waits: []
+    policy_constants: []
+    exit_conditions:
+      - recording_notice_sent
+      - publication_reversed
+      - suppression
+    idempotency_scope: adult_household_published_content
+    requires_signed_billing_projection: false
+    requires_local_commit_readback: true
+    approved_copy_ids:
+      - ghl.parent_recording_available.v1
+  - workflow_key: OT-13
+    requirement_id: 136-AC01
+    canonical_name: OT-13 Refund / Chargeback
+    desired_initial_state: SAVED_REOPENED
+    sender_key: office
+    message_class: refund_help
+    message_purpose: essential_billing_access
+    trigger: refund or chargeback support state is recorded
+    ordered_steps:
+      - state_verified_refund_amount_and_status
+      - describe_chargeback_neutrally_without_threat_or_speculation
+      - explain_current_access_and_billing_contact
+      - never_change_access_independently
+    waits: []
+    policy_constants: []
+    exit_conditions:
+      - notice_sent
+      - projection_superseded
+      - suppression
+    idempotency_scope: household_refund_or_chargeback_episode
+    requires_signed_billing_projection: true
+    requires_local_commit_readback: true
+    approved_copy_ids: []

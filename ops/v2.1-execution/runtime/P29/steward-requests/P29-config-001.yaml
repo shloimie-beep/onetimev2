@@ -1,0 +1,60 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P29-config-001
+task_id: P29
+kind: configuration
+requirement_ids:
+  - OTV2-GHL-123
+  - OTV2-GHL-124
+  - OTV2-GHL-125
+  - OTV2-GHL-126
+  - OTV2-GHL-127
+  - OTV2-GHL-128
+  - OTV2-GHL-129
+  - OTV2-GHL-130
+  - OTV2-GHL-131
+  - OTV2-GHL-132
+  - OTV2-GHL-133
+  - OTV2-GHL-136
+acceptance_case_ids:
+  - OTV2-GHL-123-AC01
+  - OTV2-GHL-124-AC01
+  - OTV2-GHL-125-AC01
+  - OTV2-GHL-126-AC01
+  - OTV2-GHL-127-AC01
+  - OTV2-GHL-128-AC01
+  - OTV2-GHL-129-AC01
+  - OTV2-GHL-130-AC01
+  - OTV2-GHL-131-AC01
+  - OTV2-GHL-132-AC01
+  - OTV2-GHL-133-AC01
+  - OTV2-GHL-136-AC01
+rationale: >-
+  P29 has no central runtime configuration or secret-management authority.
+desired_semantic_change: >-
+  Bind the registered runner to the existing HighLevel location/provider client
+  through secret-managed configuration and explicit environment-tier isolation.
+  Enable only readback by default. Delivery requires a separately enabled durable
+  job route, exact adult and household evidence, approved copy and audience where
+  applicable, a fresh suppression snapshot, and signed billing projection for
+  OT-04, OT-05, OT-06, and OT-13. Leave workflow publication, enrollment, provider
+  canary, Student contact, WhatsApp, direct access mutation, and financial mutation
+  disabled.
+proposed_symbols_routes_keys_or_dependencies:
+  - P29 core workflow readback binding
+  - P29 adult-email delivery binding behind durable job authorization
+  - environment-tier and verification-environment isolation
+  - HighLevel location identifier supplied only by existing secret-managed configuration
+  - zero WhatsApp provider binding
+compatibility_assumptions:
+  - Existing F06 provider configuration and safe-reference hashing are reused.
+  - Stripe remains financial truth and One Time remains household/access truth.
+  - Resend remains the only carrier of Parent setup or reset tokens.
+verification_performed:
+  - injected-port tests; no environment or provider configuration changed
+  - Student input fails before repository, suppression, and provider reads
+  - send-time suppression and idempotent delivery fences
+conflicts_or_risks:
+  - A missing or ambiguous environment/location binding must fail closed rather than fall back to production.
+  - Readback readiness never implies permission to publish, enroll, canary, or deliver.
+contains_secret_or_private_data: false
