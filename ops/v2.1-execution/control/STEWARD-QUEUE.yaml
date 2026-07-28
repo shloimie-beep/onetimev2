@@ -1,6 +1,36 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
-items: []
+items:
+- request_id: F01-retired-auth-001
+  request_digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+  requesting_task_id: F01
+  kind: retired_surface
+  status: assigned
+  assigned_steward: F03
+  target_checkpoint: F03_ready_for_review
+  acknowledged_by_task: false
+  applied_commit_sha: null
+  rejection_reason: null
+- request_id: F01-retired-client-002
+  request_digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
+  requesting_task_id: F01
+  kind: retired_surface
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_steward_checkpoint
+  acknowledged_by_task: false
+  applied_commit_sha: null
+  rejection_reason: null
+- request_id: F01-config-retirement-003
+  request_digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
+  requesting_task_id: F01
+  kind: config_key
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_steward_checkpoint
+  acknowledged_by_task: false
+  applied_commit_sha: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null

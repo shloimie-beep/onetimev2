@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 586f1216c27b02915bdca606645d7e1ee335a669
-next_action: Resume F01 under its renewed lease and dispatch F02 and F07 from integration head 80c281b7ae5826ed2c6abe95ba68a033ffa52174; hold P31 and P35 until native capacity opens.
+controller_authorization_sha: c88420c477f871eb36a8f0abfc07a631fff07d11
+next_action: Dispatch P31 from the exact ready entry and have I36 publish renewal_requested from integration head 80c281b7 before its current lease expires; then renew I36 for F02 and F07 interface integration plus the two assigned F01 steward requests.
 authority_note: Only C00 updates this global control state.

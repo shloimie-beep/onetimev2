@@ -21,15 +21,19 @@ C00 lease. Reject any live foreign lease or non-fast-forward collision.
 Bootstrap is operational and autonomous native-subagent orchestration is
 enabled. The root C00 agent alone dispatches workers; child workers never spawn
 product writers or edit control state. F01's interface is verified and
-integrated at `80c281b7ae5826ed2c6abe95ba68a033ffa52174`. F01 is
-`resume_ready` at expected branch head
-`ae65db9db8113b7992b466a70f64ffa05b4eb1e3` with ready digest
-`913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
-The exact next scheduling action is to resume the existing F01 agent and
-dispatch F02 and F07 from the integrated start SHA. Their ready payloads are
-`8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`
-and `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
-Hold P31 and P35 until native capacity opens.
+integrated at `80c281b7ae5826ed2c6abe95ba68a033ffa52174`. F01 is waiting
+after publishing three immutable steward requests: authentication is assigned
+to F03 for `F03_ready_for_review`, while cross-cutting client and config
+retirement are assigned to I36. F02 and F07 have independently verified
+interface checkpoints at `147934114cb267f86943b1fcff1bbcd6b60cdfaf` and
+`47a2bb6b76225951e0599683499a95f4dc9881be`; F07 is also
+`ready_for_review` at `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`.
+Migration 2234 is approved in the global mirror. P31 is ready from exact
+integration head `80c281b7`. Dispatch P31, and resume I36 only to publish
+`renewal_requested` before its existing lease expires. Then issue a renewed
+I36 lease for both interface integrations and the two assigned steward
+requests. F03 remains gated until F02's interface is integrated; hold P35
+until the next capacity slot.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

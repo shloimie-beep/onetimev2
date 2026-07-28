@@ -54,6 +54,37 @@ server/client/worker/schema checks passed. F01 later published a clean
 resume claim and lease. Native capacity permits the two longest critical-path
 Wave 2 lanes, F02 and F07, which are now authorized from `80c281b7`; P31 and
 P35 remain planned until a child slot opens.
+All three dispatches are now durably claimed: renewed F01 at
+`e8b172c6a7da5003a82cfc8663df6d4159fa4092`, F02 at
+`bec1f1834adbde6d6b2cd55acb31541fb9dc134a`, and F07 at
+`9faca9c1ad04e3bda269dfabfeb62bcef61808c3`. F07's first claim recorded the
+ready-entry parent instead of the containing authorizing commit; the same live
+worker corrected only that runtime field by normal fast-forward push before
+product work continued. The ready queue is now empty.
+F01 subsequently proved 29 retired routes/assets fail closed, passed typecheck
+and its client build, and published three immutable steward requests. C00
+assigned the authentication request to F03 for `F03_ready_for_review` and the
+cross-cutting client/config retirement requests to I36 for its next steward
+checkpoint. F01 must acknowledge exact applied or rejected result heads before
+it may publish `ready_for_review`.
+F07 published a first interface checkpoint whose `tokens.css` digest did not
+match the immutable implementation blob. C00 rejected that metadata, the worker
+repaired it without changing implementation semantics, and C00 independently
+reproduced all five artifact hashes plus combined digest
+`366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188`.
+F07 is now `ready_for_review` at
+`2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`; its exact interface metadata
+head is `47a2bb6b76225951e0599683499a95f4dc9881be` and implementation head is
+`a90baae8cf69d6823af6d741161fe0e9e7441321`.
+F02 published its exact interface checkpoint at
+`147934114cb267f86943b1fcff1bbcd6b60cdfaf`, backed by implementation head
+`0e1f9a18677e13556222241cd21b1f24383668b6` and contract digest
+`bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e`.
+C00 reproduced all six export hashes, the combined digest, source ancestry and
+scope, and migration `2234` checksum, then mirrored F02's exact allocation into
+the global ledger with next ordinal `2235`.
+The released native slots now permit P31; its exact ready entry authorizes
+`codex/v21-p31-email-copy-approval` from integration head `80c281b7`.
 
 ## Remaining work
 
@@ -62,9 +93,11 @@ after worker branches advance.
 
 ## Exact next action
 
-Resume the existing F01 native subagent from its exact renewed entry and
-dispatch one F02 and one F07 native subagent. Verify all three pushed atomic
-claim checkpoints remotely.
+Dispatch P31 from its exact ready entry. Resume I36 only to publish
+`renewal_requested` from exact integration head `80c281b7` before its current
+lease expires; then issue a renewed I36 lease for the independently verified
+F02 and F07 interface merges plus the two assigned F01 steward requests. F03's
+request becomes dispatchable only after F02's interface integration.
 
 ## Verification
 
@@ -79,7 +112,21 @@ claim checkpoints remotely.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
 - F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
-- Control parent for these authorizations: `586f1216c27b02915bdca606645d7e1ee335a669`.
+- Current observed heads: F01 `e8b172c6a7da5003a82cfc8663df6d4159fa4092`;
+  F02 `147934114cb267f86943b1fcff1bbcd6b60cdfaf`; F07
+  `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`.
+- F01 steward request digests: auth `b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d`;
+  client `c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d`;
+  config `b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575`.
+- F02 interface: metadata `147934114cb267f86943b1fcff1bbcd6b60cdfaf`;
+  implementation `0e1f9a18677e13556222241cd21b1f24383668b6`; state/handoff
+  `60f4f5b12b8655687be3ef5646c0882e2d5c5738ef765d45acaf38761ea0b211`.
+- F07 interface: metadata `47a2bb6b76225951e0599683499a95f4dc9881be`;
+  implementation `a90baae8cf69d6823af6d741161fe0e9e7441321`; state/handoff
+  `c92caac59723a2820b5e9f08e80309c40f1ad7255f36a731fd6fcc9bbda8af0e`.
+- Migration 2234: `ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e`.
+- P31 ready payload: `722dc8a0c377a1b57539cd3a64f38d0e7d18e3ac3eb04762973eab08b23562b9`.
+- Control parent for claim reconciliation: `c88420c477f871eb36a8f0abfc07a631fff07d11`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
 - I36 branch/head: `codex/v21-integration` / `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - No provider or product effect was attempted.

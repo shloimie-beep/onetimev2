@@ -4,10 +4,19 @@ semantic_owner: F02
 mechanical_control_writer: C00
 proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
 reviewed_latest: 2233_zoom_class_occurrence_resources.sql
-next_available_ordinal: 2234
+next_available_ordinal: 2235
 never_allocate:
 - 2231
-allocations: []
+allocations:
+- ordinal: 2234
+  file: packages/db/migrations/2234_canonical_state_machines.sql
+  task_id: F02
+  purpose: Canonical state vocabularies, isolation mapping, optimistic concurrency, append-only idempotency, guarded transitions, and billing-operation fencing.
+  interface_digest: bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e
+  status: approved
+  checksum_sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
+  replaces_applied_migration: false
+  destructive: false
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00
   is the only writer of this control-plane mirror and copies the exact approved allocation without semantic change.
   Every allocation binds task, purpose, filename, interface digest, and status. Parallel branches use disposable
