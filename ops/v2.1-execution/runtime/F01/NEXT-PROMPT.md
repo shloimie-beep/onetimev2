@@ -27,6 +27,10 @@ returning.
 
 The stable interface implementation head is
 `bb7664c44444bf1704d9f63e5c19a15381f2f0b0`; verify
-`INTERFACE-CHECKPOINT.yaml`, then resume by unmounting the explicitly retired
-server, client, worker, and configuration surfaces from current composition and
-verifying direct access fails closed.
+`INTERFACE-CHECKPOINT.yaml`. The retirement implementation checkpoint is
+`d7dd4aa9accb951447c184d210f024860201b9e1`. Resume only after C00 grants a
+fresh matching F01 lease. Then run the focused direct-access absence harness
+and exact inventory scan, and reconcile the out-of-scope domain auth,
+public-client/Vite entry, and AppConfig compatibility references recorded in
+`TASK-STATE.yaml` and `HANDOFF.md` through the steward mechanism. Do not cross
+F01 owned-path authority.

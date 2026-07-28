@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-f01-foundation-seams`
 - Start SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`
-- Implementation SHA before this handoff metadata commit: `bb7664c44444bf1704d9f63e5c19a15381f2f0b0`
+- Implementation SHA before this handoff metadata commit: `d7dd4aa9accb951447c184d210f024860201b9e1`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda`
 - Context digest: `5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372`
@@ -25,33 +25,47 @@ context, the current remote C00 handoff, and required runtime templates.
 Implemented versioned, fail-closed server feature-router, client route/root,
 worker runner, and steward-request interfaces. The server and worker composers
 consume their registries, and the Parent and Student portal entry now composes
-separate feature roots through the client router. The exact interface contract
-at implementation head `bb7664c44444bf1704d9f63e5c19a15381f2f0b0`
-unlocks F02, F07, P31, and P35 after I36 integration.
+separate feature roots through the client router. The exact stable interface
+contract remains at implementation head
+`bb7664c44444bf1704d9f63e5c19a15381f2f0b0` and unlocks F02, F07, P31, and
+P35 after I36 integration.
+
+At implementation head `d7dd4aa9accb951447c184d210f024860201b9e1`,
+removed current mounts and controls for the WhatsApp assistant/meta webhook,
+social publishing, experience preview, product test/demo lanes, Zoom test
+resources, Class Helper, Parent-created goals, MFA/email challenge, and the
+retired Tisha event funnel. Current client session roles are only Admin, Parent,
+and Student; legacy owner and rabbi identities normalize to Admin while retired
+roles fail closed. Worker content processing now permits only the Vimeo mode,
+and retired environment switches are no longer accepted as runtime flags.
 
 ## Remaining work
 
-Close explicitly retired runtime surfaces while preserving historical
-migrations; complete focused absence and regression verification; publish
-`ready_for_review`.
+Renew the F01 lease, run the focused direct-access absence harness and exact
+inventory scan, reconcile the out-of-scope domain/public-build references
+listed below through the steward mechanism, and publish `ready_for_review`.
 
 ## Exact next action
 
-Unmount the explicitly retired server, client, worker, and configuration
-surfaces from current composition, then verify direct access fails closed.
+After C00 grants a fresh matching F01 lease, verify direct access fails closed
+and reconcile the recorded out-of-scope retired-surface references without
+crossing owned-path authority.
 
 ## Coverage
 
-- Requirements: all eight assigned requirements are in progress.
-- Acceptance cases: five absence/runtime cases await implementation; three
-  deployment/runtime cases require later candidate-bound verification.
+- Requirements: the owned runtime closure for the three absence cases is
+  implemented and pending verification; candidate deployment/runtime cases
+  remain pending.
+- Acceptance cases: the direct-access absence harness remains; deployment
+  runtime cases require later candidate-bound verification.
 
 ## Changed files and migrations
 
 Added the four required interface roots, integrated them through the assigned
-server/client/worker composers, added the config role/surface seam, and
-published `INTERFACE-CHECKPOINT.yaml`. No migration was created, deleted, or
-edited.
+server/client/worker composers, added the config role/surface seam, published
+`INTERFACE-CHECKPOINT.yaml`, and changed only F01-owned server, client, worker,
+config, and runtime-metadata paths for the retirement pass. No migration was
+created, deleted, or edited.
 
 ## Verification
 
@@ -64,6 +78,8 @@ edited.
 - Focused client/server/worker seam smoke: passed positive, authorization
   rejection, duplicate-rejection, and deterministic execution branches.
 - Steward-request JSON schema parsed successfully.
+- `npm run typecheck` after retired-surface closure: passed.
+- `npm run build:client` after retired-surface closure: passed.
 
 ## External effects
 
@@ -76,4 +92,19 @@ question, or bearer URL was read or recorded.
 
 ## Blockers, deviations, and recovery
 
-None.
+Lease renewal is required before more work. Three out-of-scope closure items
+remain:
+
+- `packages/domain/src/auth/service.ts` still creates a routine email challenge
+  for internal Admin identities after a valid password. The owned server no
+  longer exposes challenge endpoints or controls, so the domain implementation
+  must be changed by its steward to restore direct email-plus-password Admin
+  login.
+- `apps/web/vite.app.config.ts` still emits the retired experience-preview
+  client entry, and `apps/web/src/client/public.ts` retains dormant challenge
+  code. Both are outside F01 ownership. The owned server denies the emitted
+  preview asset and no longer renders challenge controls.
+- Out-of-scope domain modules still consume compatibility AppConfig properties
+  carrying historical MFA/Buffer/demo names. The environment schema and runtime
+  switches are removed or forced unavailable; deleting those compatibility
+  properties requires coordinated consumer migration.
