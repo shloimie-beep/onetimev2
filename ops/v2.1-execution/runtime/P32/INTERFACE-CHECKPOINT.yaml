@@ -1,0 +1,145 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P32
+interface_implementation_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: a34f7c16bda5c68fc269cce7fbbb0eb574de64f4a9db66e272c3b99ff8a639f6
+contract_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/privacy/index.ts
+    symbols:
+      - PRIVACY_CONTRACT_VERSION
+      - EXPORT_DOWNLOAD_TTL_MS
+      - EXPORT_PACKAGE_RETENTION_MS
+      - VERIFIED_ERASURE_DEADLINE_MS
+      - CONSENT_SCOPES
+      - ConsentScope
+      - ConsentChoice
+      - ConsentActorKind
+      - PrivacyPolicyVersions
+      - PrivacyActorContext
+      - ConsentEvent
+      - StudentConsentSubject
+      - ConsentMutationInput
+      - ConsentDecision
+      - RecordingParticipantSnapshot
+      - DATA_RIGHTS_REQUEST_KINDS
+      - DataRightsRequestKind
+      - DATA_RIGHTS_INTERNAL_STATES
+      - DataRightsInternalState
+      - REQUESTER_VISIBLE_PRIVACY_STATUSES
+      - RequesterVisiblePrivacyStatus
+      - DataRightsSubjectScope
+      - DataRightsRequesterKind
+      - ProviderCascadeState
+      - DataRightsRequest
+      - DataRightsRequestInput
+      - ExportDownloadGrant
+      - ContentParticipantPrivacyState
+      - SharedMediaPrivacyPlan
+      - PurgeDisposition
+      - PurgeIdentifier
+      - DeletionPurgeRecord
+      - PurgeLedgerReadback
+      - RetentionWorkItem
+      - PrivacyRetentionRepository
+    sha256: 3aa963396d9100edd028eed87cbc432e347085f309813bc9db5cff942eae7b07
+  - path: packages/domain/src/privacy/consent.ts
+    symbols:
+      - appendConsentEvent
+      - currentConsentEvent
+      - decideRecordedClassJoin
+      - decideProtectedPlayback
+      - freezeRecordingParticipantSnapshot
+    sha256: 87876a7762f73e26df749f199cfd6445551903a3a9c8de391306f7b5f355f075
+  - path: packages/domain/src/privacy/errors.ts
+    symbols:
+      - PRIVACY_ERROR_CODES
+      - PrivacyErrorCode
+      - PrivacyError
+    sha256: 73ad77ad4d5942ff5bb4f2a8b6fc87dc681bf8561fcf1b559142ced57ef83456
+  - path: packages/domain/src/privacy/index.ts
+    symbols:
+      - PRIVACY_ERROR_CODES
+      - PrivacyErrorCode
+      - PrivacyError
+      - appendConsentEvent
+      - currentConsentEvent
+      - decideProtectedPlayback
+      - decideRecordedClassJoin
+      - freezeRecordingParticipantSnapshot
+      - createDataRightsRequest
+      - issueExportDownloadGrant
+      - redeemExportDownloadGrant
+      - transitionDataRightsRequest
+      - visiblePrivacyStatus
+      - assertSharedMediaReplacementReady
+      - memberRecognitionProjection
+      - parentExportCategories
+      - planSharedMediaPrivacyTreatment
+      - redactPrivacyDiagnostic
+      - PRIVACY_RETENTION_SCHEDULE
+      - assertPurgeLedgerDurable
+      - createDeletionPurgeRecord
+      - evaluateRestoreTrafficGate
+      - planRetentionWork
+      - retentionDueAt
+      - verifyPurgeLedgerChain
+    sha256: f70501c65efc538b7cdad339cd19b109b5d3c7b8c8947e744f3a037fb1dccd83
+  - path: packages/domain/src/privacy/redaction.ts
+    symbols:
+      - planSharedMediaPrivacyTreatment
+      - assertSharedMediaReplacementReady
+      - memberRecognitionProjection
+      - parentExportCategories
+      - redactPrivacyDiagnostic
+    sha256: 2b3733bdf2a8a03587652a2e417423580a941b7102ed7b02c46e0df4d5456cc8
+  - path: packages/domain/src/privacy/retention.ts
+    symbols:
+      - PRIVACY_RETENTION_SCHEDULE
+      - createDeletionPurgeRecord
+      - verifyPurgeLedgerChain
+      - assertPurgeLedgerDurable
+      - evaluateRestoreTrafficGate
+      - planRetentionWork
+      - retentionDueAt
+    sha256: 5e8950b4f8a7c718510addc25c22b28ce770a6f25fb150db3e1f523d17814e70
+  - path: packages/domain/src/privacy/rights.ts
+    symbols:
+      - createDataRightsRequest
+      - transitionDataRightsRequest
+      - visiblePrivacyStatus
+      - issueExportDownloadGrant
+      - redeemExportDownloadGrant
+    sha256: 81a54aeb407879ee265ce671d3322a526b92dcae6fba14cba3f084e8496ea72e
+compatibility_invariants:
+  - Consent is exact-Student and exact-scope; a dependent Student is represented only by the current account owner, while recording and recognition choices for a self Student require the exact linked adult Student identity.
+  - Service-account, recording-participation, and member-recognition consent remain independent; withdrawal changes only its scope, later recorded joins require current service and recording grants, and protected playback is authorized independently.
+  - RecordingParticipantSnapshot is frozen from exact occurrence-start roster, relationship, consent event, notice, and lifecycle-version evidence and is never rewritten by later identity or consent changes.
+  - Parent and adult-self Student privacy requests require recent-password reauthentication and exact actor/subject scope; dependent Students have no self-service route and dependent requests require separate privacy Admin review.
+  - Parent requests for a Student are limited to relationship=dependent in the exact owned household; a self Student uses the matching adult-self Student context.
+  - Requester-visible status is exactly requested, processing, completed, partially_excepted, failed, or null for canceled; provider-pending uncertainty cannot become failed without canonical noncompletion proof and no unknown effect.
+  - Closure and erasure are distinct request kinds; a completed export grant is hash-only, initiating-session-bound, one-use, and expires exactly 15 minutes after issue.
+  - Ordinary Parent exports exclude recordings/library/playback plus private question, Rabbi answer, Student support, notification, and comparison bodies.
+  - Shared-media treatment restricts immediately, preserves other participants, and requires exact subject redaction, every derivative/search invalidation, human approval, and provider readback before republish.
+  - Recognition consent changes only attribution; rank and learning facts remain, while nonconsented peers receive a stable class-scoped nonidentifying alias.
+  - Purge records contain only HMAC identifiers, hashes, policy/config/release metadata, tombstones, legal holds, scope, sequence, and provider outcomes; deleted content and raw identifiers are forbidden.
+  - Primary deletion waits for checksum-verified Object-Lock primary and replica readback; restore traffic remains closed until the full chain is replayed, negative queries pass, provider effects are disabled, and no provider recreation is pending.
+  - Database migration, central barrels/routes/workers, and independent purge-ledger infrastructure remain gated by P32-migration-001, P32-registration-001, and P32-config-001.
+downstream_tasks:
+  - P18
+verification_commands:
+  - npm run typecheck
+  - focused Vitest assertions covering all eight P32 acceptance cases across domain, PostgreSQL adapter, server authorization/service, retention planner, and rendered Parent UI
+  - focused ESLint over all P32 TypeScript artifacts
+  - focused Prettier write/check over all P32 TypeScript/YAML artifacts
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

@@ -42,8 +42,8 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: claimed
-phase: contract
+status: interface_ready
+phase: interface
 claimed_by: codex-p32-worker-a9e4c442
 claim_time: '2026-07-28T20:18:13Z'
 claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
@@ -51,46 +51,86 @@ writer_slot_leases:
   - slot: PRIVACY_DATA_RIGHTS
     lease_id: 45817ce0-ad6f-444e-9c4b-35082a29879b
 lease_expires_at: '2026-07-28T21:06:46Z'
-last_heartbeat_at: '2026-07-28T20:18:13Z'
+last_heartbeat_at: '2026-07-28T20:38:41Z'
 controller_authorization_sha: d234126ca7be31def06c939ac1886406936987dc
 ready_entry_parent_control_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
 ready_entry_payload_digest: 3c4b0c6a594701c8f5962dcd7dccf40d0cf6c854fcd5f6442d275af1751ab93e
-state_based_on_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-last_implementation_commit_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+state_based_on_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
+last_implementation_commit_sha: 888af54911ed583da99408cfcc791b485a728ddd
 completed_steps:
   - Verified the exact P32 ready entry, canonical payload digest, immutable package/task/context digests, integrated dependency contracts, branch absence, and unexpired writer lease.
   - Created the isolated P32 branch from the exact authorized integration start SHA.
+  - Implemented exact dependent and adult-self Student consent authority with immutable occurrence-start participant snapshots and playback-independent recording consent.
+  - Implemented actor-scoped data-rights lifecycle, separate dependent review, exact visible statuses, one-use 15-minute export grants, and closure/erasure separation.
+  - Implemented shared-media redaction, Parent private-body exclusions, recognition anonymity, retention schedules, hash-only purge chaining, dual-copy durability, and restore gates.
+  - Implemented parameterized PostgreSQL adapters, registration-neutral server/worker modules, and safe Parent/Admin UI.
+  - Published migration, registration, and independent purge-ledger configuration steward requests without editing shared hotspots.
+  - Passed 21 focused assertions, full typecheck, focused lint/format, and diff checks.
+  - Published the exact semantic interface checkpoint for P18.
 remaining_steps:
-  - Map only the assigned consent, actor-scope, data-rights, retention, redaction, purge-ledger, and child-data gaps.
-  - Implement the stable privacy contracts/domain behavior, persistence adapters, server/worker modules, safe UI, and focused verification.
-  - Publish the required P32 interface checkpoint for P18, then complete ready-for-review verification.
-next_action: Read the exact dependency handoffs and named privacy source sections, inspect only P32-owned paths, and implement the stable privacy contract first.
+  - Re-run final verification, release the worker lease in metadata, and publish ready_for_review.
+next_action: Run the exact final verification suite, update durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
 requirements:
-  OTV2-CONSENT-189: planned
-  OTV2-PRIVACY-212: planned
-  OTV2-PRIVACY-221: planned
-  OTV2-PRIVACY-239: planned
-  OTV2-PRIVACY-240: planned
+  OTV2-CONSENT-189: implementation_verified
+  OTV2-PRIVACY-212: implementation_verified
+  OTV2-PRIVACY-221: implementation_verified
+  OTV2-PRIVACY-239: implementation_verified
+  OTV2-PRIVACY-240: implementation_verified
 acceptance_cases:
-  OTV2-CONSENT-189-DEPENDENT-STUDENT: planned
-  OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT: planned
-  OTV2-PRIVACY-212-AC01: planned
-  OTV2-PRIVACY-221-AC01: planned
-  OTV2-PRIVACY-239-ACTOR-ROUTES: planned
-  OTV2-PRIVACY-239-REQUEST-WORKFLOW: planned
-  OTV2-PRIVACY-240-SNAPSHOT-REDACTION: planned
-  OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER: planned
+  OTV2-CONSENT-189-DEPENDENT-STUDENT: task_owned_assertions_passed
+  OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT: task_owned_assertions_passed
+  OTV2-PRIVACY-212-AC01: task_owned_assertions_passed
+  OTV2-PRIVACY-221-AC01: task_owned_assertions_passed
+  OTV2-PRIVACY-239-ACTOR-ROUTES: task_owned_assertions_passed
+  OTV2-PRIVACY-239-REQUEST-WORKFLOW: task_owned_assertions_passed
+  OTV2-PRIVACY-240-SNAPSHOT-REDACTION: task_owned_assertions_passed
+  OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/app/admin/privacy/PrivacyReviewQueue.tsx
+  - apps/web/src/client/app/admin/privacy/index.ts
+  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx
+  - apps/web/src/client/app/parent/privacy/index.ts
+  - apps/web/src/server/features/privacy/index.ts
+  - apps/web/src/server/features/privacy/privacy-service.test.ts
+  - apps/web/src/server/features/privacy/privacy-service.ts
+  - apps/worker/src/runners/privacy-retention/index.ts
+  - apps/worker/src/runners/privacy-retention/runner.test.ts
+  - apps/worker/src/runners/privacy-retention/runner.ts
+  - packages/contracts/src/privacy/index.ts
+  - packages/db/src/privacy/index.ts
+  - packages/db/src/privacy/repository.test.ts
+  - packages/db/src/privacy/repository.ts
+  - packages/db/src/privacy/schema-contract.ts
+  - packages/domain/src/privacy/consent.ts
+  - packages/domain/src/privacy/errors.ts
+  - packages/domain/src/privacy/index.ts
+  - packages/domain/src/privacy/privacy.test.ts
+  - packages/domain/src/privacy/redaction.ts
+  - packages/domain/src/privacy/retention.ts
+  - packages/domain/src/privacy/rights.ts
+  - ops/v2.1-execution/runtime/P32/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-config-001.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-migration-001.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-registration-001.yaml
   - ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P32/HANDOFF.md
   - ops/v2.1-execution/runtime/P32/NEXT-PROMPT.md
 migrations: []
-steward_requests: []
+steward_requests:
+  - P32-migration-001
+  - P32-registration-001
+  - P32-config-001
 verification:
   commands_run:
     - Verified Git-object SHA-256 values for PACKAGE-LOCK.yaml, P32 task/context, and source SHA256SUMS.txt.
     - Recomputed the canonical ready-entry digest and verified exact control/registry/start/lease state.
     - Verified origin identity, exact authorizing control commit and parent, authorized integration start, and absent remote P32 branch.
+    - npm run typecheck
+    - npm exec -- vitest run packages/domain/src/privacy/privacy.test.ts packages/db/src/privacy/repository.test.ts apps/web/src/server/features/privacy/privacy-service.test.ts apps/worker/src/runners/privacy-retention/runner.test.ts apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+    - focused ESLint over all P32 TypeScript artifacts
+    - focused Prettier write/check over all P32 TypeScript/YAML artifacts
+    - git diff --check
   known_baseline_failures: []
 external_effects:
   authority: none

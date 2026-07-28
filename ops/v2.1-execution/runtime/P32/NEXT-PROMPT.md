@@ -3,7 +3,7 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task P32 from its remote checkpoint.
+Continue One Time v2.1 task P32 from its pushed interface checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p32-privacy-data-rights
@@ -19,8 +19,9 @@ entry from that remote ref, verify its expected branch head, canonical entry
 payload digest, the `ready` or `resume_ready` lease/claim appropriate to the
 registered claim mode, package/task/context/dependency digests, and reject a
 live foreign lease or non-fast-forward collision. Then check out the exact task
-branch, read task state and handoff before named work, and resume the recorded
-`next_action`. If digests match, do not restart completed work or globally
-re-audit the repository. Continue until `ready_for_review` or a permitted stop
-condition. Update state/handoff/this next prompt, checkpoint, commit, and push
-before returning.
+branch, read task state, interface checkpoint, and handoff before named work,
+and resume the recorded `next_action`. Do not change the published interface
+artifacts unless a real defect requires a new implementation commit and
+checkpoint digest. Re-run the exact final verification suite, update durable
+metadata to `ready_for_review`, release the task-local lease in metadata, commit,
+and push before returning.
