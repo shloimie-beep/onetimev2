@@ -14,7 +14,7 @@ dependency_heads:
   P19: e420eb833feee26efd431afd93457a7e0bc4d228
   P27: e706587bfe581f881fb072271b15b4123f9aabe6
   P32: 6a33944a75e717041b2f951134459769b8fc2617
-status: claimed
+status: ready
 phase: integration
 claimed_by: codex-i36-worker-391d7764
 claim_time: '2026-07-28T22:31:28Z'
@@ -22,12 +22,13 @@ claim_id: 391d7764-3f93-43c8-86dc-07df6f59d0b1
 lease_id: 53c90772-6f60-4a52-884f-4498c65c0929
 lease_issued_at: '2026-07-28T22:23:06Z'
 lease_expires_at: '2026-07-28T23:23:06Z'
-last_heartbeat_at: '2026-07-28T22:31:28Z'
-controller_authorization_sha: 2bd4a301926bb0b303c06f6f2a1b8e036b18c473
+lease_released_at: '2026-07-28T22:45:42Z'
+last_heartbeat_at: '2026-07-28T22:45:42Z'
+controller_authorization_sha: ccfea34dd850c830618da53f448eda2b20189eb8
 ready_entry_state_based_on_control_head_sha: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
 ready_entry_payload_digest: 450d4c9fb2f4eede4f32d972683b7f1afe72048fc4da25255b1363ae18d740d3
-state_based_on_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
-last_implementation_commit_sha: 387ca78ee33af7d2d4fd19d45a1b01981afaaad3
+state_based_on_head_sha: 80d7f8f1443659b4cf2760d5cc68aa3ef216b926
+last_implementation_commit_sha: 80d7f8f1443659b4cf2760d5cc68aa3ef216b926
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -226,10 +227,21 @@ completed_steps:
     391d7764-3f93-43c8-86dc-07df6f59d0b1 and sole RELEASE_INTEGRATOR lease
     53c90772-6f60-4a52-884f-4498c65c0929 without reading or merging P19 source, consuming optimistic
     item d3acb266-4c15-4a37-ada7-1a42b616cd12, or applying a steward request.
+  - Verified rebound control head ccfea34dd850c830618da53f448eda2b20189eb8 and canonical P19 merge-item
+    payload digest 45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6.
+  - Verified exact P19 source and merge base 9ba92b070eedfa3756eff4f78fd328de72507a96, 25-path allowlist,
+    raw state/handoff digest, exported artifact hash, semantic contract digest, implementation ancestry, and
+    zero external effects.
+  - Merged exact P19 interface source e420eb833feee26efd431afd93457a7e0bc4d228 with ancestry preserved at
+    80d7f8f1443659b4cf2760d5cc68aa3ef216b926 and pushed the integration checkpoint.
+  - Passed repository typecheck, 21 focused P19 tests, focused ESLint, raw-Git-blob Prettier verification, and
+    diff checks; no P19 steward request was adjudicated or applied.
+  - Released claim 391d7764-3f93-43c8-86dc-07df6f59d0b1 and RELEASE_INTEGRATOR lease
+    53c90772-6f60-4a52-884f-4498c65c0929 after the exact P19 integration checkpoint.
 remaining_steps:
-  - Push and report this exact P19-interface atomic claim checkpoint to C00.
-  - Await C00 consumption and an exact merge-target CAS rebind before reading or merging P19.
-next_action: Report the exact pushed P19-interface atomic claim checkpoint to C00, then pause without reading or merging P19 until a new exact control authorization.
+  - Push and report the exact P19 integration metadata checkpoint to C00.
+  - Await a new exact C00 authorization before any further integration or steward work.
+next_action: Push and report the exact P19 integration metadata checkpoint to C00, then await a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -454,6 +466,31 @@ changed_paths:
   - packages/domain/src/classes/core/index.ts
   - packages/domain/src/classes/core/occurrences.ts
   - packages/domain/src/classes/core/series.ts
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.test.tsx
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.tsx
+  - apps/web/src/client/app/admin/content/ingest/index.ts
+  - apps/web/src/server/features/content/ingest/index.ts
+  - apps/web/src/server/features/content/ingest/service.test.ts
+  - apps/web/src/server/features/content/ingest/service.ts
+  - apps/worker/src/runners/content-ingest/index.ts
+  - apps/worker/src/runners/content-ingest/runner.test.ts
+  - apps/worker/src/runners/content-ingest/runner.ts
+  - ops/v2.1-execution/runtime/P19/HANDOFF.md
+  - ops/v2.1-execution/runtime/P19/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P19/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P19/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P19/TASK-STATE.yaml
+  - packages/contracts/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/repository.ts
+  - packages/db/src/content/ingest/schema-contract.ts
+  - packages/domain/src/content/ingest/content-ingest.test.ts
+  - packages/domain/src/content/ingest/drive.ts
+  - packages/domain/src/content/ingest/errors.ts
+  - packages/domain/src/content/ingest/index.ts
+  - packages/domain/src/content/ingest/source.ts
+  - packages/domain/src/content/ingest/upload.ts
+  - packages/domain/src/content/ingest/validation.ts
 migrations:
   - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -705,6 +742,18 @@ verification:
       result: passed; exact ready-entry digests matched committed Git metadata and blobs
     - command: P19-interface atomic claim, writer-slot, branch-head, lease, phase-scope, optimistic-item, and effect-lock verification
       result: passed; sole RELEASE_INTEGRATOR lease, phase scope P19_interface_atomic_claim_only, optimistic item unconsumed, and zero effect locks
+    - command: canonical rebound P19 merge-item digest recomputation
+      result: passed; 45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6
+    - command: P19 source admission, allowlist, raw state/handoff, artifact, contract, ancestry, and zero-effect verification
+      result: passed; exact source/base, 25 paths, digest 28d1e4f4, one export, semantic 2.1.0 contract 44952e92, implementation ancestry, and 0/0/0 effects
+    - command: git merge --no-ff e420eb833feee26efd431afd93457a7e0bc4d228
+      result: passed; exact parents 7aac6f05d302e8dc72788ac8df8912a40707b522 and e420eb833feee26efd431afd93457a7e0bc4d228 at merge commit 80d7f8f1443659b4cf2760d5cc68aa3ef216b926
+    - command: npm run typecheck
+      result: passed after P19 interface merge
+    - command: focused P19 Vitest suites
+      result: passed; 4 files and 21 tests
+    - command: focused P19 ESLint, raw-Git-blob Prettier check, and git diff --check
+      result: passed; exact 25 source blobs formatted, no diff hygiene issue, and no steward request applied
   known_baseline_failures: []
 external_effects:
   authority: none

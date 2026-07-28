@@ -30,11 +30,25 @@ head `21b0a40b4ee7186d9360b99c261f1774d65e1c43`, claim
 `450d4c9fb2f4eede4f32d972683b7f1afe72048fc4da25255b1363ae18d740d3`.
 The exact pre-claim integration head is
 `9ba92b070eedfa3756eff4f78fd328de72507a96`. This checkpoint consumes
-only the claim. Do not read or merge P19, consume optimistic item
+only the claim; the subsequent exact rebound and integration are recorded
+below. Optimistic item
 `d3acb266-4c15-4a37-ada7-1a42b616cd12` with pre-claim digest
 `f4c2414a8610e717b00c00b2ed0b252a45a8c706c545111a47d0e2217f485d31`,
-or apply any P19 steward request until C00 rebinds the expected target to the
-exact pushed claim head.
+was not consumed by the atomic checkpoint.
+
+That P19 atomic claim is now consumed. Control
+`ccfea34dd850c830618da53f448eda2b20189eb8` rebound exact item
+`d3acb266-4c15-4a37-ada7-1a42b616cd12` to target
+`7aac6f05d302e8dc72788ac8df8912a40707b522` with canonical payload
+`45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6`.
+Exact source `e420eb833feee26efd431afd93457a7e0bc4d228`, base, 25-path scope,
+raw state/handoff, exported artifact, semantic `2.1.0` contract,
+implementation ancestry, and zero effects matched. The source was
+ancestry-merged with exact parents `7aac6f05...` and `e420eb83...` at pushed
+integration head `80d7f8f1443659b4cf2760d5cc68aa3ef216b926`.
+Typecheck, focused ESLint, 21 focused tests, raw-Git-blob Prettier verification,
+and diff checks passed. No P19 steward request was adjudicated or applied. The
+claim and lease are released.
 
 That P16 atomic claim is now consumed. Control
 `a8d0dc737d54a3fbc9f786ff98356a8cbed5dbd1` rebound exact item
@@ -142,11 +156,9 @@ Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged 
 preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
 steward request, migration, registration, or provider effect was applied.
 
-Current exact next action: report the pushed P19-interface atomic claim
-checkpoint to C00, then stop. Do not read or merge P19, consume its optimistic
-merge item, or apply a steward request until C00 rebinds the merge-target CAS
-to the exact claim head. No unrelated merge, evidence, control, or live-effect
-work is authorized.
+Current exact next action: report the pushed P19 integration metadata checkpoint
+to C00, then stop and await a new exact control authorization. No unrelated
+merge, steward, evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its

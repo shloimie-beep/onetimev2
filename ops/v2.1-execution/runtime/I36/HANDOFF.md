@@ -12,13 +12,17 @@
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
 - Claim ID: `391d7764-3f93-43c8-86dc-07df6f59d0b1`
 - Writer: `codex-i36-worker-391d7764`
-- RELEASE_INTEGRATOR lease: `53c90772-6f60-4a52-884f-4498c65c0929`
-- Containing control head: `2bd4a301926bb0b303c06f6f2a1b8e036b18c473`
-- Controller authorization: `2bd4a301926bb0b303c06f6f2a1b8e036b18c473`
+- RELEASE_INTEGRATOR lease: `53c90772-6f60-4a52-884f-4498c65c0929`, released `2026-07-28T22:45:42Z`
+- Containing control head: `ccfea34dd850c830618da53f448eda2b20189eb8`
+- Controller authorization: `ccfea34dd850c830618da53f448eda2b20189eb8`
 - Ready-entry state-based-on control head: `21b0a40b4ee7186d9360b99c261f1774d65e1c43`
 - Ready-entry payload digest: `450d4c9fb2f4eede4f32d972683b7f1afe72048fc4da25255b1363ae18d740d3`
 - Lease expiry: `2026-07-28T23:23:06Z`
 - Phase scope: `P19_interface_atomic_claim_only`
+- P19 merge authorization: control `ccfea34dd850c830618da53f448eda2b20189eb8`,
+  item `d3acb266-4c15-4a37-ada7-1a42b616cd12`, payload digest
+  `45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6`
+- Pushed P19 integration head: `80d7f8f1443659b4cf2760d5cc68aa3ef216b926`
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
   item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
 - Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
@@ -248,17 +252,28 @@ merged, no steward request was applied, and optimistic item
 `f4c2414a8610e717b00c00b2ed0b252a45a8c706c545111a47d0e2217f485d31`
 remains unconsumed pending an exact target CAS rebind.
 
+C00 rebound the sole P19 interface item at control
+`ccfea34dd850c830618da53f448eda2b20189eb8` to exact claim head
+`7aac6f05d302e8dc72788ac8df8912a40707b522`, with canonical payload
+`45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6`.
+I36 independently verified source/merge base `9ba92b07`, the exact 25-path
+allowlist, raw state/handoff digest `28d1e4f4...`, the exported artifact hash,
+semantic `2.1.0` contract digest `44952e92...`, implementation ancestry, and
+zero effects. Exact source `e420eb833feee26efd431afd93457a7e0bc4d228`
+was ancestry-merged with parents `7aac6f05...` and `e420eb83...` at pushed
+integration head `80d7f8f1443659b4cf2760d5cc68aa3ef216b926`.
+Typecheck, focused ESLint, 21 focused tests, raw-Git-blob Prettier verification,
+and diff checks passed. No P19 steward request was adjudicated or applied.
+
 ## Remaining work
 
-Push and report this exact P19-interface atomic claim checkpoint to C00. Await
-C00 consumption and an exact merge-target CAS rebind before reading or merging
-P19.
+Push and report the exact P19 integration metadata checkpoint to C00. Await a
+new exact C00 authorization before any further integration or steward work.
 
 ## Exact next action
 
-Report the exact pushed P19-interface atomic claim checkpoint to C00, then
-pause. Do not read or merge P19, consume its optimistic merge item, or apply
-any steward request until C00 issues a new exact target authorization.
+Push and report the exact P19 integration metadata checkpoint to C00, then
+pause until C00 issues a new exact target authorization.
 
 ## Coverage
 
@@ -287,6 +302,8 @@ any steward request until C00 issues a new exact target authorization.
   `e706587bfe581f881fb072271b15b4123f9aabe6`
 - Exact 20-path allowlisted P16 interface delta at
   `418ffcc5cbf78643b40b89dbc5da64ea04806f6e`
+- Exact 25-path allowlisted P19 interface delta at
+  `e420eb833feee26efd431afd93457a7e0bc4d228`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -411,6 +428,16 @@ any steward request until C00 issues a new exact target authorization.
   `387ca78ee33af7d2d4fd19d45a1b01981afaaad3`.
 - Repository typecheck, focused ESLint, 17 focused P16 tests, raw-Git-blob
   Prettier verification, and diff checks passed after the P16 interface merge.
+- Rebound control `ccfea34dd850c830618da53f448eda2b20189eb8` carried the sole P19 item with
+  canonical payload `45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6`
+  and exact target `7aac6f05d302e8dc72788ac8df8912a40707b522`.
+- Exact P19 source/base, 25-path scope, raw state/handoff binding, exported
+  artifact hash, semantic contract preimage, implementation ancestry, and zero
+  effects matched.
+- Exact P19 source is an ancestor of
+  `80d7f8f1443659b4cf2760d5cc68aa3ef216b926`.
+- Repository typecheck, focused ESLint, 21 focused P19 tests, raw-Git-blob
+  Prettier verification, and diff checks passed after the P19 interface merge.
 
 ## External effects
 
