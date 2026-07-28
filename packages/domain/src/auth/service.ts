@@ -22,12 +22,17 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { householdHasLearningAccess } from '../access/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
+import { evaluatePassword, normalizeLegacyAuthRole, unicodeCodePointLength } from './policy.ts';
 
 const ARGON2_MEMORY_KIB = 19_456;
 const ARGON2_PASSES = 2;
 const ARGON2_PARALLELISM = 1;
 const ARGON2_TAG_LENGTH = 32;
-const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+const PARENT_AND_STUDENT_SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const ADMIN_SESSION_IDLE_MS = 30 * 60 * 1000;
+const PARENT_SESSION_IDLE_MS = 24 * 60 * 60 * 1000;
+const STUDENT_SESSION_IDLE_MS = 7 * 24 * 60 * 60 * 1000;
 const DUMMY_PASSWORD_HASH = hashPassword('dummy-password-used-only-to-balance-login-timing');
 const DUMMY_STUDENT_PASSWORD_HASH_REF = studentPasswordHashRefForTestsOnly(
   'dummy-password-used-only-to-balance-student-login-timing',
@@ -41,6 +46,14 @@ const EMAIL_CHALLENGE_DELIVERY_KEY_VERSION = 1;
 const EMAIL_CHALLENGE_DELIVERY_BATCH_SIZE = 10;
 const EMAIL_CHALLENGE_DELIVERY_LEASE_MS = 120_000;
 const TRANSACTIONAL_AUTH_EMAIL_SENDER = 'info@onetimeonetime.com';
+const COMMON_AUTH_PASSWORDS = new Set([
+  '12345678',
+  '123456789',
+  'password',
+  'password123',
+  'qwerty123',
+  'letmein123',
+]);
 
 type AssuranceMethod =
   'password' | 'totp' | 'recovery_code' | 'email_challenge' | 'email_link' | 'trusted_device';
@@ -134,6 +147,16 @@ export function verifyPassword(password: string, storedHash: string) {
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
+export function passwordHashNeedsUpgrade(storedHash: string) {
+  const parts = storedHash.split('$');
+  if (parts.length !== 5 || parts[0] !== 'argon2id' || parts[1] !== 'v=19') return true;
+  return (
+    parts[2] !== `m=${ARGON2_MEMORY_KIB},t=${ARGON2_PASSES},p=${ARGON2_PARALLELISM}` ||
+    Buffer.from(parts[3] ?? '', 'base64url').length !== 16 ||
+    Buffer.from(parts[4] ?? '', 'base64url').length !== ARGON2_TAG_LENGTH
+  );
+}
+
 export type PasswordChangeResult =
   | {
       ok: true;
@@ -168,12 +191,10 @@ export async function changeOwnPassword({
   ip?: string | undefined;
   userAgent?: string | undefined;
 }): Promise<PasswordChangeResult> {
-  if (
-    newPassword.length < 10 ||
-    newPassword.length > 256 ||
-    !/[A-Za-z]/u.test(newPassword) ||
-    !/[0-9]/u.test(newPassword)
-  ) {
+  const passwordLength = unicodeCodePointLength(newPassword);
+  const minimumPasswordLength = session.user.role === 'student' ? 8 : 12;
+  const maximumPasswordLength = session.user.role === 'student' ? 64 : 128;
+  if (passwordLength < minimumPasswordLength || passwordLength > maximumPasswordLength) {
     return { ok: false, code: 'PASSWORD_POLICY_FAILED' };
   }
   const rateLimit = await consumeRateLimitBudgets({
@@ -212,7 +233,7 @@ export async function changeOwnPassword({
 
   return inTransaction(pool, async (client) => {
     const userResult = await client.query(
-      `SELECT user_key, role, status, password_hash, security_version
+      `SELECT user_key, email_normalized, display_name, role, status, password_hash, security_version
          FROM onetime.account_users
         WHERE account_key = $1
           AND product_key = $2
@@ -224,7 +245,7 @@ export async function changeOwnPassword({
     if (
       !user ||
       user.status !== 'active' ||
-      user.role !== session.user.role ||
+      normalizeLegacyAuthRole(String(user.role)) !== session.user.role ||
       typeof user.password_hash !== 'string'
     ) {
       await insertAuthAudit(client, config, {
@@ -265,7 +286,7 @@ export async function changeOwnPassword({
     let currentPasswordValid = verifyPassword(currentPassword, user.password_hash);
     if (session.user.role === 'student') {
       const accessResult = await client.query(
-        `SELECT access_state_key, learner_key, password_hash_ref, status, credential_status
+        `SELECT access_state_key, learner_key, normalized_username, password_hash_ref, status, credential_status
            FROM onetime.portal_student_access_state
           WHERE account_key = $1
             AND product_key = $2
@@ -298,6 +319,28 @@ export async function changeOwnPassword({
         currentPassword,
         studentAccess.password_hash_ref,
       );
+    }
+
+    const passwordEvaluation = evaluatePassword({
+      role: session.user.role === 'student' ? 'student' : 'parent',
+      password: newPassword,
+      ...(session.user.role === 'student'
+        ? { username: String(studentAccess?.normalized_username ?? '') }
+        : { email: String(user.email_normalized ?? '') }),
+      names: [String(user.display_name ?? '')],
+      common_passwords: COMMON_AUTH_PASSWORDS,
+    });
+    if (!passwordEvaluation.accepted) {
+      await insertAuthAudit(client, config, {
+        eventType: 'password_change_failed',
+        userKey: session.user.user_key,
+        success: false,
+        reason: 'PASSWORD_POLICY_FAILED',
+        ip,
+        userAgent,
+        metadata: { policy_reason: passwordEvaluation.reason },
+      });
+      return { ok: false, code: 'PASSWORD_POLICY_FAILED' } as const;
     }
 
     if (!currentPasswordValid) {
@@ -480,7 +523,6 @@ export async function authenticateUser({
   password,
   ip,
   userAgent,
-  trustedDeviceToken,
 }: {
   pool: DbPool;
   config: AppConfig;
@@ -500,13 +542,13 @@ export async function authenticateUser({
       {
         scope: 'login_identifier',
         subject: identifierHash,
-        limit: config.loginIdentifierRateLimitMax,
+        limit: 5,
         windowMs: config.loginRateLimitWindowMs,
       },
       {
         scope: 'login_ip',
         subject: ip ?? 'unknown',
-        limit: config.loginIpRateLimitMax,
+        limit: 50,
         windowMs: config.loginRateLimitWindowMs,
       },
       {
@@ -617,67 +659,23 @@ export async function authenticateUser({
     }
   }
 
-  if (['owner', 'admin', 'rabbi'].includes(row.role)) {
-    if (
-      trustedDeviceToken &&
-      (await verifyTrustedDeviceForUser({
-        pool,
-        config,
-        userKey: row.user_key,
-        trustedDeviceToken,
-        userAgent,
-        ip,
-      }))
-    ) {
-      await insertAuthAudit(pool, config, {
-        eventType: 'login_succeeded_trusted_device',
-        userKey: row.user_key,
-        success: true,
-        ip,
-        userAgent,
-      });
-      return { ok: true, user: rowToSessionUser(row), assuranceMethod: 'trusted_device' };
-    }
-
-    const challenge = await createEmailChallengeForUser({
-      pool,
-      config,
-      userKey: row.user_key,
-      emailNormalized,
-      role: String(row.role),
-      securityVersion: Number(row.security_version ?? 1),
-      ip,
-      userAgent,
-    });
-    if (!challenge.ok) {
-      await insertAuthAudit(pool, config, {
-        eventType: 'login_email_challenge_rate_limited',
-        userKey: row.user_key,
-        success: false,
-        reason: 'RATE_LIMITED',
-        ip,
-        userAgent,
-        metadata: { budget_scope: challenge.scope ?? null },
-      });
-      return challenge.retryAfterSeconds
-        ? { ok: false, code: 'RATE_LIMITED', retry_after_seconds: challenge.retryAfterSeconds }
-        : { ok: false, code: 'RATE_LIMITED' };
-    }
-    await insertAuthAudit(pool, config, {
-      eventType: 'login_password_email_challenge',
-      userKey: row.user_key,
-      success: true,
-      reason: 'EMAIL_CHALLENGE_REQUIRED',
-      ip,
-      userAgent,
-    });
-    return {
-      ok: false,
-      code: 'EMAIL_CHALLENGE_REQUIRED',
-      challenge_token: challenge.challengeToken,
-      challenge_expires_at: challenge.expiresAt,
-      delivery_state: challenge.deliveryState,
-    };
+  if (passwordHashNeedsUpgrade(String(row.password_hash))) {
+    await pool.query(
+      `UPDATE onetime.account_users
+          SET password_hash = $1,
+              updated_at = now()
+        WHERE account_key = $2
+          AND product_key = $3
+          AND user_key = $4
+          AND password_hash = $5`,
+      [
+        hashPassword(password),
+        config.accountKey,
+        config.productKey,
+        row.user_key,
+        row.password_hash,
+      ],
+    );
   }
 
   await insertAuthAudit(pool, config, {
@@ -776,6 +774,24 @@ async function authenticateStudentByUsername({
     });
     return { ok: false, code: 'INVALID_CREDENTIALS' };
   }
+  if (String(row.password_hash_ref).startsWith('scrypt:')) {
+    await pool.query(
+      `UPDATE onetime.portal_student_access_state
+          SET password_hash_ref = $1,
+              updated_at = now()
+        WHERE account_key = $2
+          AND product_key = $3
+          AND access_state_key = $4
+          AND password_hash_ref = $5`,
+      [
+        studentPasswordHashRef(password),
+        config.accountKey,
+        config.productKey,
+        row.access_state_key,
+        row.password_hash_ref,
+      ],
+    );
+  }
   if (
     row.access_status !== 'active' ||
     row.credential_status !== 'parent_managed' ||
@@ -849,7 +865,7 @@ export async function createSession({
   const sessionToken = token();
   const csrfToken = token();
   const sessionKey = `sess_${randomUUID()}`;
-  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  const expiresAt = new Date(Date.now() + absoluteSessionLifetimeMs(user.role));
   const assuranceAt = new Date();
   const resolvedAssuranceMethod = assuranceMethod ?? 'password';
   const userVersion = await pool.query(
@@ -937,6 +953,29 @@ export async function getSessionByToken({
   );
   const row = result.rows[0];
   if (!row) return null;
+  const idleTimeoutMs = idleSessionLifetimeMs(String(row.role));
+  const lastSeenAt = new Date(String(row.last_seen_at));
+  if (
+    !Number.isFinite(lastSeenAt.getTime()) ||
+    Date.now() >= lastSeenAt.getTime() + idleTimeoutMs
+  ) {
+    await pool.query(
+      `UPDATE onetime.user_sessions
+          SET revoked_at = COALESCE(revoked_at, now())
+        WHERE session_key = $1
+          AND account_key = $2
+          AND product_key = $3`,
+      [row.session_key, config.accountKey, config.productKey],
+    );
+    await insertAuthAudit(pool, config, {
+      eventType: 'session_idle_expired',
+      userKey: String(row.user_key),
+      success: false,
+      reason: 'IDLE_TIMEOUT',
+      metadata: { session_key: row.session_key },
+    });
+    return null;
+  }
   if (row.role === 'parent' || row.role === 'student') {
     const access = await currentApplicationAccessForUser({
       pool,
@@ -963,7 +1002,6 @@ export async function getSessionByToken({
       return null;
     }
   }
-  const lastSeenAt = new Date(String(row.last_seen_at));
   if (Date.now() - lastSeenAt.getTime() >= config.sessionLastSeenWriteIntervalMs) {
     await pool.query(
       'UPDATE onetime.user_sessions SET last_seen_at = now() WHERE session_key = $1',
@@ -2019,7 +2057,7 @@ export async function currentApplicationAccessForUser({
 }
 
 function rowToSessionUser(row: Record<string, unknown>): SessionUser {
-  const role = row.role as UserRole;
+  const role = normalizeLegacyAuthRole(String(row.role)) ?? (row.role as UserRole);
   const emailNormalized = String(row.email_normalized);
   return {
     user_key: String(row.user_key),
@@ -2029,8 +2067,20 @@ function rowToSessionUser(row: Record<string, unknown>): SessionUser {
     display_name: String(row.display_name),
     role,
     role_label: roleDisplayLabel[role],
-    mfa_capable: Boolean(row.mfa_capable),
+    mfa_capable: false,
   };
+}
+
+function absoluteSessionLifetimeMs(role: UserRole): number {
+  return role === 'parent' || role === 'student'
+    ? PARENT_AND_STUDENT_SESSION_TTL_MS
+    : ADMIN_SESSION_TTL_MS;
+}
+
+function idleSessionLifetimeMs(role: string): number {
+  if (role === 'parent') return PARENT_SESSION_IDLE_MS;
+  if (role === 'student') return STUDENT_SESSION_IDLE_MS;
+  return ADMIN_SESSION_IDLE_MS;
 }
 
 function normalizeLoginIdentifier(value: string) {
@@ -2042,6 +2092,7 @@ function looksLikeEmail(value: string) {
 }
 
 function verifyStudentPasswordHashRef(password: string, storedHashRef: string) {
+  if (storedHashRef.startsWith('argon2id$')) return verifyPassword(password, storedHashRef);
   const parts = storedHashRef.split(':');
   if (parts.length !== 4 || parts[0] !== 'scrypt' || parts[1] !== 'v1') {
     scryptSync(password, 'invalid-student-password-ref', 32);
@@ -2058,15 +2109,11 @@ function verifyStudentPasswordHashRef(password: string, storedHashRef: string) {
 }
 
 function studentPasswordHashRefForTestsOnly(password: string) {
-  const salt = 'dummy-student-password-salt-v1';
-  const derived = scryptSync(password, salt, 32).toString('base64url');
-  return `scrypt:v1:${salt}:${derived}`;
+  return hashPassword(password);
 }
 
 function studentPasswordHashRef(password: string) {
-  const salt = randomBytes(32).toString('hex');
-  const derived = scryptSync(password, salt, 32).toString('base64url');
-  return `scrypt:v1:${salt}:${derived}`;
+  return hashPassword(password);
 }
 
 function token() {
@@ -2437,65 +2484,6 @@ async function consumeAuthEmailChallenge({
         : {}),
     };
   });
-}
-
-async function verifyTrustedDeviceForUser({
-  pool,
-  config,
-  userKey,
-  trustedDeviceToken,
-  userAgent,
-  ip,
-}: {
-  pool: DbPool;
-  config: AppConfig;
-  userKey: string;
-  trustedDeviceToken: string;
-  userAgent?: string | undefined;
-  ip?: string | undefined;
-}) {
-  const result = await pool.query(
-    `SELECT devices.device_key
-       FROM onetime.auth_trusted_devices AS devices
-       JOIN onetime.account_users AS users
-         ON users.user_key = devices.user_key
-        AND users.account_key = devices.account_key
-        AND users.product_key = devices.product_key
-      WHERE devices.account_key = $1
-        AND devices.product_key = $2
-        AND devices.user_key = $3
-        AND devices.token_hash = $4
-        AND devices.revoked_at IS NULL
-        AND devices.trusted_until > now()
-        AND devices.security_version = users.security_version
-        AND users.status = 'active'
-        AND users.role IN ('owner', 'admin')
-        AND (devices.user_agent_hash IS NULL OR devices.user_agent_hash = $5)
-      LIMIT 1`,
-    [
-      config.accountKey,
-      config.productKey,
-      userKey,
-      hashValue(trustedDeviceToken),
-      userAgent ? hashValue(userAgent) : null,
-    ],
-  );
-  const deviceKey = result.rows[0]?.device_key;
-  if (!deviceKey) return false;
-  await pool.query(
-    `UPDATE onetime.auth_trusted_devices
-        SET last_used_at = now()
-      WHERE device_key = $1`,
-    [deviceKey],
-  );
-  await insertAuthAudit(pool, config, {
-    eventType: 'trusted_device_accepted',
-    userKey,
-    success: true,
-    ip,
-    userAgent,
-  });
-  return true;
 }
 
 async function createTrustedDeviceForUser(
