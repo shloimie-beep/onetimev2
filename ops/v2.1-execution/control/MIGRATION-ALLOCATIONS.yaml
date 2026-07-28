@@ -13,7 +13,7 @@ allocations:
   task_id: F02
   purpose: Canonical state vocabularies, isolation mapping, optimistic concurrency, append-only idempotency, guarded transitions, and billing-operation fencing.
   interface_digest: bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e
-  status: approved
+  status: superseded_pending_replacement
   checksum_sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
   replaces_applied_migration: false
   destructive: false

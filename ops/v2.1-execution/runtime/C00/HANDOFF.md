@@ -81,10 +81,23 @@ F02 published its exact interface checkpoint at
 `0e1f9a18677e13556222241cd21b1f24383668b6` and contract digest
 `bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e`.
 C00 reproduced all six export hashes, the combined digest, source ancestry and
-scope, and migration `2234` checksum, then mirrored F02's exact allocation into
-the global ledger with next ordinal `2235`.
-The released native slots now permit P31; its exact ready entry authorizes
-`codex/v21-p31-email-copy-approval` from integration head `80c281b7`.
+scope, and migration `2234` checksum. Before integration, F02 reported that its
+database fencing still trusted caller-supplied generation state and deliberately
+superseded that checkpoint. C00 withdrew the F02 merge item and marked ordinal
+2234 `superseded_pending_replacement`, preserving the reservation and old
+checksum for audit while the worker publishes a hardened replacement.
+The hardening implementation has advanced to
+`191dac28b6b8207459fb629f6dbe50df1b9c0d46`; replacement interface
+metadata is still pending and is not authorized for integration.
+The first P31 worker safely refused its exact authorization after C00's lease
+acquisition advanced the containing control head. No P31 branch was created.
+C00 rebound the unused claim and COPY_CATALOG lease; the new ready digest is
+`e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
+The old I36 lease expired without a ref change after the prior writer was
+confirmed gone. C00 issued takeover claim
+`89f23125-5016-49e5-968c-d886dfc979dc` against exact integration head
+`80c281b7`, queued only the verified F07 interface, and included authority for
+the two assigned F01 cross-cutting steward requests.
 
 ## Remaining work
 
@@ -93,11 +106,10 @@ after worker branches advance.
 
 ## Exact next action
 
-Dispatch P31 from its exact ready entry. Resume I36 only to publish
-`renewal_requested` from exact integration head `80c281b7` before its current
-lease expires; then issue a renewed I36 lease for the independently verified
-F02 and F07 interface merges plus the two assigned F01 steward requests. F03's
-request becomes dispatchable only after F02's interface integration.
+Dispatch the rebound P31 entry and the exact I36 takeover resume. I36 merges
+only F07's verified interface and applies the two assigned F01 steward
+requests. F02 continues its fencing hardening; admit only its new replacement
+checkpoint. F03 remains gated until that replacement interface is integrated.
 
 ## Verification
 
@@ -107,28 +119,29 @@ request becomes dispatchable only after F02's interface integration.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
-- I36 claim payload: `4b429a919e258b635c3c713c023bf83ecb8b28711c63e192d97d52567afa17a1`.
+- Current I36 resume payload: `2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0`.
 - Verified integration head: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
 - F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
 - Current observed heads: F01 `e8b172c6a7da5003a82cfc8663df6d4159fa4092`;
-  F02 `147934114cb267f86943b1fcff1bbcd6b60cdfaf`; F07
+  F02 `191dac28b6b8207459fb629f6dbe50df1b9c0d46`; F07
   `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`.
 - F01 steward request digests: auth `b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d`;
   client `c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d`;
   config `b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575`.
-- F02 interface: metadata `147934114cb267f86943b1fcff1bbcd6b60cdfaf`;
+- Superseded F02 interface (not authorized for integration): metadata `147934114cb267f86943b1fcff1bbcd6b60cdfaf`;
   implementation `0e1f9a18677e13556222241cd21b1f24383668b6`; state/handoff
   `60f4f5b12b8655687be3ef5646c0882e2d5c5738ef765d45acaf38761ea0b211`.
 - F07 interface: metadata `47a2bb6b76225951e0599683499a95f4dc9881be`;
   implementation `a90baae8cf69d6823af6d741161fe0e9e7441321`; state/handoff
   `c92caac59723a2820b5e9f08e80309c40f1ad7255f36a731fd6fcc9bbda8af0e`.
-- Migration 2234: `ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e`.
-- P31 ready payload: `722dc8a0c377a1b57539cd3a64f38d0e7d18e3ac3eb04762973eab08b23562b9`.
-- Control parent for claim reconciliation: `c88420c477f871eb36a8f0abfc07a631fff07d11`.
+- Superseded migration 2234 checksum: `ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e`.
+- Rebound P31 ready payload: `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
+- F07 merge item payload: `58c0311691b51a91699ececc551ed94446b07ca13085a80e5d72dde767db95d4`.
+- Control parent for takeover/rebind authorization: `5e7cfad08ff273860156479c16c63dea6d73b775`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
-- I36 branch/head: `codex/v21-integration` / `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
+- I36 branch/head: `codex/v21-integration` / `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

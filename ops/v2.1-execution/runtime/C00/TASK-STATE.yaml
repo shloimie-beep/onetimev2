@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-ed2f373e
-claim_time: '2026-07-28T16:12:16Z'
-claim_id: ed2f373e-6aea-46c5-9a3e-34b8e2f135c1
-lease_expires_at: '2026-07-28T16:30:00Z'
-last_heartbeat_at: '2026-07-28T16:30:00Z'
-controller_authorization_sha: c88420c477f871eb36a8f0abfc07a631fff07d11
+claimed_by: codex-c00-orchestrator-b0ec7d8b
+claim_time: '2026-07-28T16:34:20Z'
+claim_id: b0ec7d8b-1417-4614-9389-c003fcfa07d8
+lease_expires_at: '2026-07-28T16:41:00Z'
+last_heartbeat_at: '2026-07-28T16:41:00Z'
+controller_authorization_sha: 5e7cfad08ff273860156479c16c63dea6d73b775
 ready_entry_payload_digest: null
-state_based_on_head_sha: c88420c477f871eb36a8f0abfc07a631fff07d11
+state_based_on_head_sha: 5e7cfad08ff273860156479c16c63dea6d73b775
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -43,10 +43,11 @@ completed_steps:
 - verified F01 renewal claim, F02 first claim, and repaired F07 first claim from their exact remote branch states
 - recorded and assigned F01's three immutable steward requests to F03 and I36
 - independently rejected F07's first interface metadata for a blob-hash mismatch, verified its repaired exact artifact and combined digests, and recorded the final ready_for_review head
-- independently verified F02's exact interface artifacts, combined contract digest, migration proposal, ordinal 2234 checksum, ancestry, and owned-path delta; mirrored the approved allocation
-- authorized capacity-priority P31 from the F01-integrated start head
+- independently verified F02's first interface artifacts and migration 2234 proposal, then withdrew the merge and marked the allocation superseded_pending_replacement when F02 announced a fencing-hardening replacement before integration
+- authorized capacity-priority P31 from the F01-integrated start head; its first worker safely refused after the containing control head advanced, so C00 rebound the unused claim and lease
+- confirmed the old I36 worker was gone and its lease expired with no ref change, then issued an exact takeover resume lease against unchanged integration head 80c281b7
 remaining_steps: []
-next_action: Dispatch exact P31 and have I36 publish renewal_requested before its current lease expires; then issue a renewed I36 lease for F02/F07 integration and the two assigned F01 steward requests.
+next_action: Dispatch rebound P31 and exact I36; I36 integrates F07 and applies two assigned F01 steward requests while F02 publishes its superseding fencing-hardened interface.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -54,12 +55,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: c88420c477f871eb36a8f0abfc07a631fff07d11
+  current_control_parent_sha: 5e7cfad08ff273860156479c16c63dea6d73b775
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: ed2f373e-6aea-46c5-9a3e-34b8e2f135c1
-      observed_head: c88420c477f871eb36a8f0abfc07a631fff07d11
+      claim_id: b0ec7d8b-1417-4614-9389-c003fcfa07d8
+      observed_head: 5e7cfad08ff273860156479c16c63dea6d73b775
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -70,18 +71,18 @@ orchestration:
       scheduling_state: waiting_on_steward_results_agent_returned
     I36:
       branch: codex/v21-integration
-      claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
+      claim_id: 89f23125-5016-49e5-968c-d886dfc979dc
       observed_head: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-      authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-      lease_expires_at: '2026-07-28T16:33:58Z'
-      scheduling_state: renewal_required_before_next_merge
+      authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+      lease_expires_at: '2026-07-28T17:35:01Z'
+      scheduling_state: dispatch_now
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: ff826962-97c5-4032-8de8-5b5f4b1dc12c
-      observed_head: 147934114cb267f86943b1fcff1bbcd6b60cdfaf
+      observed_head: 191dac28b6b8207459fb629f6dbe50df1b9c0d46
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: '2026-07-28T16:56:52Z'
-      scheduling_state: interface_ready_active_native_subagent
+      scheduling_state: superseding_interface_active_native_subagent
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -91,20 +92,20 @@ orchestration:
       scheduling_state: ready_for_review_agent_returned
     P31:
       branch: codex/v21-p31-email-copy-approval
-      claim_id: 3a3ca221-e557-4c1e-9208-8352429e166f
+      claim_id: 39538a2e-2d15-44a7-9485-0cba68919b21
       observed_head: null
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-      lease_expires_at: '2026-07-28T17:26:00Z'
+      lease_expires_at: '2026-07-28T17:37:00Z'
       scheduling_state: dispatch_now
   active_native_subagents:
   - task_id: F02
     agent: /root/f02_worker
     branch: codex/v21-f02-schema-state-migrations
-    observed_head: 147934114cb267f86943b1fcff1bbcd6b60cdfaf
+    observed_head: 191dac28b6b8207459fb629f6dbe50df1b9c0d46
     claim_id: ff826962-97c5-4032-8de8-5b5f4b1dc12c
     lease_expires_at: '2026-07-28T16:56:52Z'
     status: claimed
-    phase: interface_ready
+    phase: implementation_hardening
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -133,15 +134,15 @@ steward_requests:
   target_checkpoint: I36_next_steward_checkpoint
 verification:
   control_digests:
-    control_state: 6fa2502fd04b398113dd4391702e54e112806711e5ab1bc637c5caffe5422535
-    control_lease: b2d8d020476027260629abd7eecbd738fa10badc3236e82a0e96c0f6d0bd0c16
-    task_registry: 739350970694240fdc91c9bca9d5da07ca676487b8f84a8280fd3d248974975c
-    ready_queue: 6f715c668fb64d3c08603a0793c02a93d11e72799b7fbb0c2a60b91b54c386a7
-    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
+    control_state: 7d61b85d122c0148b5c17058f016db66c733a75d7700e80f2bf0f4beec0ef3c1
+    control_lease: faf900e5e9d639c0f307e77c875e11ec7e0a10981e8c6ff8d982481ea44c4685
+    task_registry: 35c71b3c8ab3f0e8e4c2365a4d54b892f8d3fd1e8d40d580a4407c7f73fd8d8e
+    ready_queue: 25fec009f60851c12e6498283b620d75d25c3cc647cdab456e57b028d0cc1df3
+    merge_queue: d43c30c005db6ff3fa1bbf81efa7e472cd3182ee9ee817a42a970fbea99d0806
     steward_queue: 2dcde5351a737522c0ab2e1235608af6e36d92343c2da745d295bba101b39067
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
-    migration_allocations: c0f3a8ca9b19fd23e7140956cda95f389f89514cbb63cc90a90ab3ace0a6ccf8
+    migration_allocations: f9819bdb8d4a6d74132e927658b783682d7e6897307d9628b444ff1b11a5f23b
     current_candidate: d363b5688183208265274bc5521676505338df544965c36e76ec1205ea9bf724
     blockers: e3f82402bf15371558d1777351746bb39010d276deef7241c0a0b3329252a3b6
   commands_run:
@@ -157,7 +158,7 @@ verification:
   - I36 atomic adoption, target-CAS drift detection, and source-base-preserving merge rebind: passed
   - I36 verified F01 interface integration and Wave 2 dependency-gate calculation: passed
   - F01 renewal-request identity, scope, branch head, and lease reauthorization: passed
-  - F02 interface artifact hashes, combined contract digest, source ancestry/scope, state handoff, and migration 2234 allocation/checksum: passed
+  - first F02 interface artifact hashes, combined contract digest, source ancestry/scope, state handoff, and migration 2234 allocation/checksum: passed, then checkpoint superseded before integration for fencing hardening
   - F07 repaired interface artifact hashes, combined contract digest, source ancestry/scope, and final ready_for_review checkpoint: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
