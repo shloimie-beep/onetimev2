@@ -1,0 +1,88 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P30
+task_packet_digest: b8aa34e1cdbe02d65f496c2a22925e90ea2b835644ab895af1ff0f9eede9ba64
+task_context_digest: 5dd28dbffec92036402b291b484dd537317d4c003406f979aecd71edcd770878
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p30-campaign-workflows
+start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+dependency_heads:
+  P28:
+    required_state: interface_ready_integrated
+    task_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
+    integration_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+    interface_source_head_sha: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
+    interface_implementation_head_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
+    interface_checkpoint_digest: 2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86
+  P31:
+    required_state: interface_ready_integrated
+    task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    integration_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+    interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
+    interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
+status: claimed
+phase: contract
+claimed_by: codex-p30-worker-9c4e04b6
+claim_time: '2026-07-28T23:16:50Z'
+claim_id: 9c4e04b6-485c-4d91-aed4-40e2b8be9aab
+writer_slot_leases:
+  - slot: GHL_CAMPAIGNS
+    lease_id: e55a881a-4f1c-4667-9edb-1f5be1d9b492
+    lease_issued_at: '2026-07-28T23:09:14Z'
+    lease_expires_at: '2026-07-29T00:09:14Z'
+lease_expires_at: '2026-07-29T00:09:14Z'
+last_heartbeat_at: '2026-07-28T23:16:50Z'
+controller_authorization_sha: 62db0bf0de280932b07cf86dd8e03501ca708229
+ready_entry_state_based_on_control_head_sha: f0f7ea05f7c50f3ea64782ff107fbfd1c4486c24
+ready_entry_payload_digest: 2b0b3f114514f1661b3b07c18145826615770148e0d69ab8314c9f19e2d51f42
+state_based_on_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+last_implementation_commit_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+completed_steps:
+  - Verified repository identity, exact containing control head, and exact authorized integration start.
+  - Verified the P30 branch was absent locally and remotely before branch creation.
+  - Recomputed and matched the canonical P30 ready-entry payload digest.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and package/task/context digests.
+  - Verified exact P28 and P31 interface-ready integration bindings, ancestry, and exported artifact hashes.
+  - Claimed the sole GHL_CAMPAIGNS writer lease with zero effect locks.
+  - Created the isolated P30 branch from exact authorized start 49431959f58f284bdc13ca931acf09f980fc483a.
+remaining_steps:
+  - Push and report this exact three-file atomic claim checkpoint.
+  - Inspect only named dependency artifacts and P30-owned paths.
+  - Implement and verify the newsletter, reactivation, and OT-16 campaign workflow fragments.
+next_action: After the atomic claim is reported, inspect only the P28/P31 dependency artifacts and P30-owned paths, then implement the smallest coherent campaign-workflow contract with zero external effects.
+requirements:
+  OTV2-GHL-134: claimed_not_started
+  OTV2-GHL-135: claimed_not_started
+  OTV2-GHL-225: claimed_not_started
+acceptance_cases:
+  OTV2-GHL-134-AC01: not_run
+  OTV2-GHL-135-AC01: not_run
+  OTV2-GHL-225-SCHEDULE: not_run
+  OTV2-GHL-225-PAID-EXIT: not_run
+  OTV2-GHL-225-SCHOOL-EXIT: not_run
+  OTV2-GHL-225-SUPPRESSION: not_run
+changed_paths:
+  - ops/v2.1-execution/runtime/P30/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P30/HANDOFF.md
+  - ops/v2.1-execution/runtime/P30/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact remote repository/control/integration/branch identity verification
+      result: passed; control 62db0bf0, start 49431959, and absent P30 branch
+    - command: canonical P30 ready-entry digest recomputation
+      result: passed; 2b0b3f114514f1661b3b07c18145826615770148e0d69ab8314c9f19e2d51f42
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; 200 locked blobs, 15 source-package blobs, and entry-bound digests
+    - command: dependency/claim/writer/effect-lock verification
+      result: passed; P28/P31 exact, sole GHL_CAMPAIGNS lease, and zero effect locks
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
