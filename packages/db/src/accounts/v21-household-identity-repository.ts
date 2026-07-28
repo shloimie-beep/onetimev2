@@ -5,10 +5,7 @@ import type {
   HumanAccount,
   SafeHouseholdContext,
 } from '../../../contracts/src/accounts/v21-household-identity.ts';
-import type {
-  RuntimeTier,
-  VerificationEnvironmentId,
-} from '../../../contracts/src/state/index.ts';
+import type { RuntimeTier, VerificationEnvironmentId } from '../../../contracts/src/state/index.ts';
 import { inTransaction, type DbPool, type Queryable } from '../index.ts';
 
 export class HouseholdIdentityRepositoryError extends Error {
