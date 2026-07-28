@@ -15,6 +15,8 @@ Handoff: ops/v2.1-execution/runtime/P16/HANDOFF.md
 
 Fetch remote refs and verify the exact P16 registry/ready entry, branch head,
 claim, lease, package/task/context and dependency digests. Read task state plus
-handoff before named work and resume the exact next action. Continue through
-interface, implementation, verification, and ready_for_review checkpoints
-without global control/integration edits, steward application, or live effects.
+handoff before named work and resume the exact next action. Preserve and
+continue only the existing P16-owned dirty draft from the exact remote renewal
+checkpoint; do not discard, stage, or absorb unrelated paths. Complete
+verification, then publish interface and ready_for_review checkpoints without
+global control/integration edits, steward application, or live effects.

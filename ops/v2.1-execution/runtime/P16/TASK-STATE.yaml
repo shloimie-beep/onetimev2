@@ -26,26 +26,28 @@ dependency_heads:
     interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
     interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
 status: claimed
-phase: contract
+phase: implementation
 claimed_by: codex-p16-worker-fd104a34
-claim_time: '2026-07-28T20:18:00Z'
-claim_id: fd104a34-4a75-4e5c-83c2-22266452d198
-writer_slot_lease_id: 9116bd67-314d-4f0a-a1fe-77d7f57fc6bf
-lease_expires_at: '2026-07-28T21:06:46Z'
-last_heartbeat_at: '2026-07-28T20:18:00Z'
-controller_authorization_sha: d234126ca7be31def06c939ac1886406936987dc
-state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
-ready_entry_payload_digest: a17a1a5ffda4f266ff38f4adf5061aac68680324b29d3b0d1efd1f79eac09264
-state_based_on_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+claim_time: '2026-07-28T21:04:00Z'
+claim_id: afd00130-7e98-4428-b9ef-303b50815189
+writer_slot_lease_id: b9bbf43a-ccce-40a2-a491-e333207e64ab
+lease_expires_at: '2026-07-28T22:04:00Z'
+last_heartbeat_at: '2026-07-28T21:04:00Z'
+controller_authorization_sha: 6be24ff7ebe3bd8188aa4d100eb9160c62a414a8
+state_based_on_control_head_sha: c9b4a8085f87fb958ad8688ac345f642bb23f94b
+ready_entry_payload_digest: baa5c566c8d30882b022723ff7cd0d3ab22eb6a9b0d3f4f64c940dcdec8853ac
+state_based_on_head_sha: 45649e52ea792f2ead63415555776497747cacad
 last_implementation_commit_sha: 01cdb992660a1fbc20b204b829d28062fd044679
 completed_steps:
   - verified exact remote identity, containing control authorization, registry/ready entry, branch absence, claim, CLASSROOM_CORE lease, and authorized start
   - verified F04, F05, and P15 interface-ready integration bindings from the exact ready entry
+  - read the immutable P16 context, named dependency interfaces, and exact series, occurrence, and atomic enrollment transition contracts
+  - preserved the existing P16-owned implementation draft strictly unstaged while atomically claiming the C00 renewal
 remaining_steps:
-  - verify immutable digests and read the P16 context plus named dependency interfaces
-  - implement and verify only P16-owned classroom-core scope
+  - resume and verify the preserved P16-owned classroom-core implementation draft only after C00 consumes this renewal checkpoint
+  - complete task-owned typecheck and focused tests with an available dependency runtime
   - publish the required interface checkpoint and terminal ready_for_review metadata
-next_action: Verify immutable digests, read P16 context and dependency interfaces, then record the exact class lifecycle/enrollment gap map.
+next_action: After C00 consumes this renewal checkpoint, continue the preserved P16-owned dirty draft from this exact remote head, repair verification findings, and publish the required interface checkpoint.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -57,12 +59,16 @@ steward_requests: []
 verification:
   commands_run:
     - exact control, ready entry, registry, branch absence, lease, and dependency binding verification (passed)
+    - exact renewal control head, expected existing remote head, ready parent, ready payload digest, claim, and lease verification (passed)
+    - prettier on the preserved P16-owned draft (passed before renewal checkpoint)
+    - typecheck and focused Vitest launch (blocked before execution because isolated worktree dependencies were unavailable)
   known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+blockers:
+  - Product implementation remains intentionally unstaged until C00 consumes this atomic renewal checkpoint.
+  - TypeScript and Vitest dependencies were unavailable in the isolated worktree during the pre-renewal verification attempt.
 out_of_scope_findings: []
-
