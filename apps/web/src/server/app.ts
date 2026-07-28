@@ -3857,7 +3857,6 @@ function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
     config.whatsappCanaryRecipientE164,
     env.ONE_TIME_TELEGRAM_CANARY_CHAT_REF,
     env.ONE_TIME_STRIPE_TEST_CANARY_FIXTURE,
-    env.ONE_TIME_HELPER_FIXTURE_ALLOWLIST,
   ];
   return values.filter(
     (value): value is string => typeof value === 'string' && value.trim() !== '',

@@ -268,18 +268,10 @@ const envSchema = z.object({
   ZOOM_HOST_USER_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
-  ONE_TIME_EVENT_EMAIL_FALLBACK: z.enum(['disabled', 'resend']).default('disabled'),
-  ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: z.url().optional(),
-  ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF: optionalTrimmedString(4, 240),
-  HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
   HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
   HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
   HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
   HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
-  HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: optionalTrimmedString(1, 160),
-  HIGHLEVEL_CANARY_RUN_ID: optionalTrimmedString(8, 160),
-  HIGHLEVEL_CANARY_DELIVERY_KEYS: optionalTrimmedString(8, 4000),
-  HIGHLEVEL_CANARY_BUDGET: numberFromString.default(0),
   HIGHLEVEL_PROVIDER_TIMEOUT_MS: numberFromString.default(15_000),
   HIGHLEVEL_ROW_LEASE_MS: numberFromString.default(120_000),
   HIGHLEVEL_ACTIONS_MODE: z.enum(['disabled', 'enabled']).default('disabled'),
@@ -366,31 +358,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Zoom canary execution is limited to test or isolated_staging.');
   }
 
-  if (parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' && !runtime.allowsProviderActions) {
-    throw new Error('HighLevel provider event sync is limited to test or isolated_staging.');
-  }
-
-  if (
-    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
-  ) {
-    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
-  }
-
-  const highLevelCanaryDeliveryKeys = parseUniqueCsv(parsed.HIGHLEVEL_CANARY_DELIVERY_KEYS);
-  if (
-    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    (!parsed.HIGHLEVEL_CANARY_RUN_ID ||
-      highLevelCanaryDeliveryKeys.length < 1 ||
-      parsed.HIGHLEVEL_CANARY_BUDGET < 1 ||
-      !Number.isInteger(parsed.HIGHLEVEL_CANARY_BUDGET) ||
-      parsed.HIGHLEVEL_CANARY_BUDGET > 20 ||
-      highLevelCanaryDeliveryKeys.length > parsed.HIGHLEVEL_CANARY_BUDGET)
-  ) {
-    throw new Error(
-      'HighLevel event sync requires an exact canary run ID, delivery-key allowlist, and sufficient positive budget.',
-    );
-  }
   if (parsed.HIGHLEVEL_ROW_LEASE_MS <= parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS * 2 + 5_000) {
     throw new Error(
       'HIGHLEVEL_ROW_LEASE_MS must fence both provider operations and their safety margin.',
@@ -418,28 +385,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error(
       'HighLevel access-action credentials must be cryptographically separate from bot-action credentials.',
     );
-  }
-
-  if (
-    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    parsed.HIGHLEVEL_LOCATION_ID !== 'pBSnOK2nkdxp6gf9Rg3o'
-  ) {
-    throw new Error('Provider event sync is restricted to the canonical One Time location.');
-  }
-
-  if (parsed.ONE_TIME_EVENT_EMAIL_FALLBACK === 'resend') {
-    const missing = [
-      !parsed.RESEND_API_KEY && 'RESEND_API_KEY',
-      !parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED &&
-        'ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED',
-      !parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED && 'ONE_TIME_RESEND_TRANSPORT_ENABLED',
-      !parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID && 'DELIVERY_PROVIDER_AUTHORIZATION_ID',
-      parsed.DELIVERY_PROVIDER_PER_RUN_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_RUN_BUDGET',
-      parsed.DELIVERY_PROVIDER_PER_PROVIDER_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
-    ].filter(Boolean);
-    if (missing.length) {
-      throw new Error(`Tisha B'Av Resend fallback config missing: ${missing.join(', ')}`);
-    }
   }
 
   if (parsed.RUN_MIGRATIONS_ON_STARTUP && !runtime.allowsStartupMigrations) {
@@ -694,18 +639,18 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomS2sAccountIdConfigured: Boolean(canonicalZoomS2sAccountId),
     zoomS2sClientIdConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_ID),
     zoomS2sClientSecretConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_SECRET),
-    oneTimeEventEmailFallback: parsed.ONE_TIME_EVENT_EMAIL_FALLBACK,
-    tishaBavZoomJoinUrl: parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL,
-    tishaBavZoomMeetingRefConfigured: Boolean(parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF),
-    highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
+    oneTimeEventEmailFallback: 'disabled' as 'disabled' | 'resend',
+    tishaBavZoomJoinUrl: undefined as string | undefined,
+    tishaBavZoomMeetingRefConfigured: false,
+    highLevelEventSyncMode: 'disabled' as 'disabled' | 'mock' | 'provider',
     highLevelApiBaseUrl: parsed.HIGHLEVEL_API_BASE_URL,
     highLevelApiVersion: parsed.HIGHLEVEL_API_VERSION,
     highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
     highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
-    highLevelTishaBavWorkflowId: parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID,
-    highLevelCanaryRunId: parsed.HIGHLEVEL_CANARY_RUN_ID,
-    highLevelCanaryDeliveryKeys,
-    highLevelCanaryBudget: parsed.HIGHLEVEL_CANARY_BUDGET,
+    highLevelTishaBavWorkflowId: undefined as string | undefined,
+    highLevelCanaryRunId: undefined as string | undefined,
+    highLevelCanaryDeliveryKeys: [] as string[],
+    highLevelCanaryBudget: 0,
     highLevelProviderTimeoutMs: parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS,
     highLevelRowLeaseMs: parsed.HIGHLEVEL_ROW_LEASE_MS,
     highLevelActionsMode: parsed.HIGHLEVEL_ACTIONS_MODE,
