@@ -1,0 +1,63 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P18-migration-001
+task_id: P18
+kind: migration
+requirement_ids:
+  - OTV2-CLASSROOM-073
+  - OTV2-CLASSROOM-075
+  - OTV2-CLASSROOM-078
+  - OTV2-CLASSROOM-187
+  - OTV2-CLASSROOM-232
+acceptance_case_ids:
+  - OTV2-CLASSROOM-073-AC01
+  - OTV2-CLASSROOM-075-AC01
+  - OTV2-CLASSROOM-078-AC01
+  - OTV2-CLASSROOM-187-AC01
+  - OTV2-CLASSROOM-232-TIMING
+  - OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
+rationale: >-
+  P18 owns the embedded-classroom schema contract and parameterized repository,
+  but only F02 may allocate and write a forward-only migration. The runtime
+  repository never creates or alters schema.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and create environment-scoped,
+  version-fenced launch-grant and live-Student-session storage plus append-only
+  attendance source events and a reconciled attendance projection.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    onetime.classroom_launch_grants: product/runtime/environment scope,
+    digest-only grant identity, exact Student/household/app-session/occurrence/
+    registrant bindings, 60-second issue/expiry, one-use/revocation timestamps,
+    authorization source versions, and optimistic version.
+  - >-
+    onetime.live_student_classroom_sessions: one exact current row per scoped
+    Student, occurrence/app-session/device lineage, active/revoked/expired state,
+    lease generation, 30-second heartbeat evidence, 90-second expiry, audited
+    Admin revocation, and optimistic version.
+  - >-
+    onetime.classroom_attendance_events_v21: append-only exact
+    occurrence/Student scope, provider/client/Admin source, event kind/time,
+    connection lineage, idempotency key, digest-only source reference,
+    provider-verification flag, and audited correction data; prohibit update and
+    delete.
+  - >-
+    onetime.classroom_attendance_projection_v21: unique scoped
+    occurrence/Student projection with first/last timestamps, merged connected
+    minutes, capped percentage, reconnect count, late flag, reconciliation
+    state, correction evidence, source-event count, and optimistic version.
+compatibility_assumptions:
+  - Every mutable row includes product, runtime_tier, and verification_environment_id.
+  - F03 derives Student/app-session/device identity; request bodies never assert identity.
+  - P16 supplies exact occurrence and enrollment versions; P32 supplies exact current consent evidence.
+  - Active-session uniqueness and transaction fencing prevent overlapping devices without a provider call.
+  - Existing provider attendance tables remain source evidence only and are never display-name matched to Students.
+verification_performed:
+  - npm run typecheck
+  - 17 focused domain, server, database, and Student client assertions
+  - parameterized SQL inspection against fixed allowlisted table names
+conflicts_or_risks:
+  - Do not persist a raw launch secret, raw Zoom URL, Meeting SDK bearer, Student email alias, participant display-name identity match, or private Student data.
+  - Do not update/delete attendance source events or replace them with a correction.
+  - Do not weaken one-use expiry, exact version binding, active-session uniqueness, or optimistic fencing.
+contains_secret_or_private_data: false
