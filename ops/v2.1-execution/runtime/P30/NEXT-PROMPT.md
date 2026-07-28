@@ -1,9 +1,9 @@
 MODEL: GPT-5.6-SOL
 REASONING: HIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: REVIEW_OR_INTEGRATE
 
-Continue One Time v2.1 task P30 from its remote checkpoint.
+Review One Time v2.1 task P30 at its exact pushed remote head.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p30-campaign-workflows
@@ -13,38 +13,29 @@ Task context: ops/v2.1-execution/contexts/P30-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P30/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P30/HANDOFF.md
 
-Fetch remote refs and resume the exact registered branch head. The first-run
-atomic claim uses containing control
-`62db0bf0de280932b07cf86dd8e03501ca708229`, ready-entry parent
-`f0f7ea05f7c50f3ea64782ff107fbfd1c4486c24`, start
-`49431959f58f284bdc13ca931acf09f980fc483a`, claim
-`9c4e04b6-485c-4d91-aed4-40e2b8be9aab`, ready digest
-`2b0b3f114514f1661b3b07c18145826615770148e0d69ab8314c9f19e2d51f42`,
-and GHL_CAMPAIGNS lease `e55a881a-4f1c-4667-9edb-1f5be1d9b492`
-expiring at `2026-07-29T00:09:14Z`. No effect lock or external authority
-exists.
+The branch starts at exact integration head
+`49431959f58f284bdc13ca931acf09f980fc483a`, has atomic claim checkpoint
+`c42eb2b971093c603f2334548bfeadad78a368b1`, and semantic implementation commit
+`b329dd1ba36756977d4c935cea93be6559253e49`. Confirm the final metadata head
+from `origin/codex/v21-p30-campaign-workflows`. Control head
+`9a3b4856edb82556eca38416b853d6bdff5ef8bf` consumed the atomic claim before
+implementation resumed.
 
-All 200 locked blobs, all 15 source-package blobs, the package/task/context
-digests, canonical ready payload, exact P28/P31 dependency bindings, artifact
-hashes, and absent branch were verified before the atomic claim. Resume
-`TASK-STATE.yaml:next_action` without repeating a broad audit.
+Review only the P30-owned campaign domain, worker, workflow fragment, and
+runtime paths. Confirm all six assigned acceptance cases, adult-only delivery,
+exact P31 copy/sender and P28 contract bindings, fresh send-time suppression,
+five OT-16 checkpoints, deterministic dedupe, paid/School exits, exact
+$67/date/no-auto-charge content, and zero WhatsApp provider wiring.
 
-Implement only:
+Focused P30 verification passes 10/10 assertions, typecheck/lint/format/secret
+scan pass, and the YAML representation matches all 15 TypeScript contract keys
+for all three workflows. The full unit suite has one inherited baseline:
+`sender-registry-v1-1.test.ts` expects 19 assets while integrated P28 has 22;
+`P28-registry-projection-001` owns that shared generated-projection change.
 
-- `apps/worker/src/runners/ghl-workflows/campaigns/**`
-- `integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml`
-- `packages/domain/src/communications/workflows/campaigns/**`
-- P30-local runtime metadata and structured steward requests
-
-Do not edit control files, another task runtime, the canonical GHL registry,
-generated projections, a migration, central barrel/composer, package manifest,
-lockfile, or any other steward-owned path. Perform no provider or external
-effect. Preserve adult-only delivery, exact P31 copy/approval contracts, P28
-suppression and dormant-WhatsApp behavior, send-time suppression, and School
-exclusion.
-
-Exact next action: inspect only the P28/P31 dependency artifacts and P30-owned
-paths, implement the smallest coherent newsletter/reactivation/OT-16 workflow
-contract, pass focused verification, submit any required canonical-registry
-registration as a P30-local steward request, and finish `ready_for_review` with
-a clean normally pushed branch.
+Route `P30-registry-registration-001` (SHA-256
+`308be4a67c6bc73317111b54e34edb9022ac6a709144f96783918c66557fbb54`) to
+the canonical registry/worker-composer steward. Do not interpret the request or
+this implementation as activation, provider-seed, broad-enrollment, migration,
+or deployment authority. P30's GHL_CAMPAIGNS lease is released and external
+effects remain zero.
