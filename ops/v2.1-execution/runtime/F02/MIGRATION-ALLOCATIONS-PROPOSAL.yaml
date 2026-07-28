@@ -3,11 +3,11 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 956f99dc-83c3-4b18-b3cd-98c971d3956f
-  claim_id: ff826962-97c5-4032-8de8-5b5f4b1dc12c
-  containing_control_head_sha: af76c4e990f954794de72db639576b3c9dc73ff4
-  ready_entry_parent_control_sha: 586f1216c27b02915bdca606645d7e1ee335a669
-  lease_expires_at: '2026-07-28T16:56:52Z'
+  lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
+  claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
+  containing_control_head_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
+  ready_entry_parent_control_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+  lease_expires_at: '2026-07-28T18:03:02Z'
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
   first_new_ordinal: 2234

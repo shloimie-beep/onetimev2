@@ -1,10 +1,10 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: F02
-interface_implementation_head_sha: 0e1f9a18677e13556222241cd21b1f24383668b6
+interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
-contract_digest: bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e
+contract_digest: 84f156979d7a853071c55584bb404672b01b9058de0c97cf304871e54b08b950
 contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
 contract_schema_version: 1
 semantic_contract_version: 1.0.0
@@ -52,12 +52,12 @@ exports:
   - path: packages/domain/src/state/transition-guard.ts
     symbols:
       - assertCanonicalStateTransition
-    sha256: b52fcdb1a338741bb2ea5a16431f5af2809e09820cdcf2361364104d70691a01
+    sha256: b8787e72fdcf2dc01c0e44696715ae1359db03999b845f70c8ed5ff6a598ed06
   - path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
     symbols:
       - allocations[ordinal=2234]
       - next_available_ordinal
-    sha256: 6831c357f83b5e26db608f3835e79ecd8d15aee20728b160871d0182f0ee2913
+    sha256: 98201329d8f81c5ffe9de703dd8b01ad97971ce3373af8517aa4356f2896c9b3
   - path: packages/db/migrations/2234_canonical_state_machines.sql
     symbols:
       - onetime.canonical_aggregate_states
@@ -65,14 +65,14 @@ exports:
       - onetime.canonical_state_value_is_valid
       - onetime.canonical_state_transition_is_allowed
       - onetime.apply_canonical_state_transition
-    sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
+    sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
 compatibility_invariants:
   - Aggregate kinds and states are closed vocabularies for human account, Student, access, class occurrence, content, Student question, support, and billing provider operation.
   - Product scope is always one_time_mishnayos; verification environments map deterministically to isolated_staging or production and cannot cross runtime tiers.
   - Mutations require a nonempty opaque aggregate/actor identity, explicit authorization, a stable idempotency key, a lowercase SHA-256 canonical request hash, and an exact expected version.
   - Exact replays return the prior committed result; same-key request drift fails as an idempotency conflict; stale versions produce no write.
   - Content failure recovery returns only to failed_from, access changes require an exact canonical cause, and terminal states have no unlisted escape.
-  - Billing provider-operation completion is fenced by the current worker generation; acceptance_unknown is quarantined until canonical reconciliation proves the next state; bounded retry and governed dead-letter recovery preserve the logical key/hash.
+  - Billing provider-operation completion is fenced against the lease generation derived from committed event history; dispatch/reconciliation counters are monotonic, acceptance_unknown is quarantined until canonical reconciliation clears or retains the unknown flag as required, and governed dead-letter recovery increments its generation before resetting per-generation counters.
   - Migration ordinal 2234 is the first v2.1 allocation, 2231 remains unallocated, and the next available ordinal is 2235.
 downstream_tasks:
   - F03
@@ -85,6 +85,7 @@ verification_commands:
   - npm run typecheck
   - focused transition smoke covering positive, authorization, isolation, stale-version, exact replay, request-hash conflict, content retry, billing recovery, and fencing branches
   - disposable pg-mem application of all 65 migrations with 2234 applied last
+  - disposable PGlite PostgreSQL execution of migration 2234 with concurrent transition, committed-history fencing, monotonic counter, reconciliation, and append-only audit proofs
   - Prettier check for every TypeScript/YAML interface artifact
   - full locked checksum verification (200/200)
 contains_product_completion_claim: false

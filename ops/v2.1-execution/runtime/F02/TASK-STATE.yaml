@@ -16,26 +16,31 @@ dependency_heads:
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
     task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
     task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
-status: interface_ready
-phase: interface_ready
-claimed_by: codex-f02-worker-ff826962
-claim_time: '2026-07-28T16:10:31Z'
-claim_id: ff826962-97c5-4032-8de8-5b5f4b1dc12c
-lease_expires_at: '2026-07-28T16:56:52Z'
-last_heartbeat_at: '2026-07-28T16:25:04Z'
-controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
-ready_entry_parent_control_sha: 586f1216c27b02915bdca606645d7e1ee335a669
-ready_entry_payload_digest: 8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9
+status: ready_for_review
+phase: review
+claimed_by: codex-f02-worker-2608f241
+claim_time: '2026-07-28T17:03:02Z'
+claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
+lease_expires_at: '2026-07-28T18:03:02Z'
+last_heartbeat_at: '2026-07-28T17:23:00Z'
+lease_released_at: '2026-07-28T17:23:00Z'
+controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
+ready_entry_parent_control_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+ready_entry_payload_digest: b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: 956f99dc-83c3-4b18-b3cd-98c971d3956f
-    lease_expires_at: '2026-07-28T16:56:52Z'
+    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
+    lease_expires_at: '2026-07-28T18:03:02Z'
+    released_at: '2026-07-28T17:23:00Z'
   SCHEMA_CONTRACT:
-    lease_id: 956f99dc-83c3-4b18-b3cd-98c971d3956f
-    lease_expires_at: '2026-07-28T16:56:52Z'
-state_based_on_head_sha: 0e1f9a18677e13556222241cd21b1f24383668b6
-last_implementation_commit_sha: 0e1f9a18677e13556222241cd21b1f24383668b6
+    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
+    lease_expires_at: '2026-07-28T18:03:02Z'
+    released_at: '2026-07-28T17:23:00Z'
+state_based_on_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+last_implementation_commit_sha: 191dac288ea1721bdc0252bd012060ca974d2242
 completed_steps:
+  - resumed from exact remote head 191dac288ea1721bdc0252bd012060ca974d2242 under corrected resume_existing claim 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
+  - independently recomputed rebound ready-entry payload digest b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11
   - verified repository identity and isolated clone
   - fetched and verified containing control head af76c4e990f954794de72db639576b3c9dc73ff4
   - verified remote task branch absence, exact claim, leases, authorized start, and F01 integration dependency
@@ -48,15 +53,15 @@ completed_steps:
   - implemented fail-closed guards for authorization, isolation, optimistic concurrency, idempotency, retry, reconciliation, and worker fencing
   - allocated migration 2234 and added canonical current-state and append-only transition schemas with PostgreSQL enforcement
   - published the exact interface_ready checkpoint for F03, F04, F05, P15, P22, and P32
-remaining_steps:
-  - notify C00/I36 of the pushed interface checkpoint so I36 can integrate it
-  - run PostgreSQL-only trigger/concurrency proof in a disposable PostgreSQL database when one is available
-  - complete final task-owned verification and publish ready_for_review
-next_action: Push the interface_ready checkpoint and notify C00/I36; then run PostgreSQL-only trigger and concurrent stale-version proof in a disposable PostgreSQL database if available.
+  - ran migration 2234 in disposable PGlite PostgreSQL and proved concurrent stale-version exclusion, exact replay/conflict, reconciliation quarantine, committed-history fencing, monotonic counters, and append-only audit
+  - hardened billing reconciliation so conclusive outcomes clear unknown_effect while unresolved dead-letter work retains quarantine
+  - superseded the interface checkpoint and migration allocation checksum after committed-history fencing hardening
+remaining_steps: []
+next_action: C00/I36 should review and integrate the superseding interface checkpoint, refresh the approved migration allocation mirror to its exact digest/checksum, and then authorize downstream work.
 requirements:
-  OTV2-STATE-202: in_progress
+  OTV2-STATE-202: implementation_ready
 acceptance_cases:
-  OTV2-STATE-202-AC01: implementation_ready_pending_postgresql_proof
+  OTV2-STATE-202-AC01: implementation_ready
 changed_paths:
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
@@ -71,10 +76,13 @@ changed_paths:
 migrations:
   - ordinal: 2234
     file: packages/db/migrations/2234_canonical_state_machines.sql
-    sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
+    sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
 steward_requests: []
 verification:
   commands_run:
+    - rebound containing control head matched 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
+    - rebound resume_existing remote head, claim, and both writer leases matched
+    - rebound F02 ready-entry canonical digest matched b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11
     - repository remote matched https://github.com/shloimie-beep/onetimev2.git
     - remote F02 branch absent before claim
     - authorized integration head matched 80c281b7ae5826ed2c6abe95ba68a033ffa52174
@@ -85,7 +93,8 @@ verification:
     - focused canonical transition smoke passed positive, authorization, isolation, concurrency, replay, conflict, retry, recovery, and fencing branches
     - all 65 migrations applied in disposable pg-mem with 2234 applied last
     - new TypeScript and YAML artifacts passed Prettier
-    - native PostgreSQL proof unavailable because no Docker, psql, or disposable database URL is present
+    - migration 2234 passed disposable PGlite PostgreSQL proof for concurrent writes, replay/conflict, content recovery, acceptance-unknown reconciliation, committed-history fencing, monotonic counters, and append-only events
+    - focused domain proof passed conclusive reconciliation unknown-flag clearing and dead-letter quarantine retention
   known_baseline_failures: []
 external_effects:
   authority: none

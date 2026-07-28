@@ -25,7 +25,11 @@ globally re-audit the repository. Continue until `ready_for_review` or a
 permitted stop condition. Update state/handoff/this next prompt, checkpoint,
 commit, and push before returning.
 
-Exact next action: verify that C00/I36 received and integrated the pushed F02
-interface checkpoint, then run PostgreSQL-only trigger and concurrent
-stale-version proof against a disposable PostgreSQL database if one is
-available. Do not use a persistent shared database.
+Exact next action: review and integrate the superseding F02 interface
+checkpoint whose implementation head is
+`191dac288ea1721bdc0252bd012060ca974d2242` and contract digest is
+`84f156979d7a853071c55584bb404672b01b9058de0c97cf304871e54b08b950`.
+Refresh the control-plane migration allocation mirror to migration checksum
+`d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`.
+F02 is `ready_for_review`; do not resume implementation without a new exact
+C00 resume lease against the final remote head.
