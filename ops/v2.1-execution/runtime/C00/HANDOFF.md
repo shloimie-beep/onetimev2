@@ -450,3 +450,11 @@ three task-local runtime files, correct containing authorization, dependency
 and lease bindings, and zero effects. C00 consumed the ready entry. P17 may now
 implement concurrently with the disjoint P29 and P30 lanes; none has provider
 effect authority.
+
+Cross-audits rejected P29 final `15dc7c87` and P30 final `337baba3` before
+admission. P29 has fail-open approval/digest gates, malformed traceability, and
+two workflow-definition gaps. P30 lacks canonical approval for OT-15 steps 2/3,
+accepts noncanonical OT-16 operation IDs, and does not refresh paid/School
+eligibility before send. No effects occurred. C00 issued resume-existing,
+claim-only correction authorizations under fresh disjoint leases; P17 continues
+independently.

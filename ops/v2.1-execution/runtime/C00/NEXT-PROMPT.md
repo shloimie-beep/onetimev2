@@ -183,3 +183,10 @@ The P17 claim is verified and consumed. Resume P17 at `25614df1` for full task
 implementation, verification, structured steward requests where required,
 ready_for_review publication, and task-local lease release. Continue monitoring
 the independently active P29 and P30 finals.
+
+P29/P30 admission is rejected pending corrections. Dispatch claim-only resume
+checkpoints from exact heads `15dc7c87` and `337baba3` using claims
+`22467835-84ad-4d38-8187-a3b64d88d132` and
+`cea57710-2506-4983-a821-4e23733d0766`, ready digests `4b5b332d...` and
+`f7d3413b...`. Each atomic checkpoint may modify only its three runtime files.
+Reconcile both claims, then resume the bounded audit findings while P17 runs.
