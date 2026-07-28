@@ -4,8 +4,9 @@
 
 - Branch: `codex/v21-p28-communication-foundation`
 - Start SHA: `9ba92b070eedfa3756eff4f78fd328de72507a96`
-- Implementation SHA before this handoff metadata commit: `83355a7b6981073662d71f44a2c8f68264a307d8`
-- Current handoff commit: derive with `git rev-parse HEAD`; C00 records the pushed head
+- Implementation SHA: `83355a7b6981073662d71f44a2c8f68264a307d8`
+- Interface metadata head: `aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`
+- Final ready-for-review head: derive with `git rev-parse HEAD`; C00 records the pushed head
 - Task packet digest: `3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823`
 - Context digest: `96152f74273391337a3c6b8dd576829e7ddf9467cc867fb3b35ec4cf2c3cc18c`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
@@ -17,6 +18,7 @@
 - GHL_REGISTRY lease: `f59eb149-ec9e-4d32-afd7-55ad5e32c899`
 - COMMUNICATION_FOUNDATION lease: `d2cd17e1-c0d2-4dd9-ab21-62c1b2a24a30`
 - Lease expiry: `2026-07-28T22:55:38Z`
+- Both leases released: `2026-07-28T22:28:08Z`
 
 ## Completed behavior
 
@@ -45,14 +47,18 @@ realization and save/reopen readback.
 
 ## Remaining work
 
-Commit and push the interface checkpoint, rerun the exact final suite, release
-both task-local leases, and publish `ready_for_review`.
+P28-owned implementation and final verification are complete, and both writer
+leases are released. I36 must validate/integrate the exact interface checkpoint
+and unlock P29/P30. F02/I36 must adjudicate the three steward requests. Later
+authorized verification waves must supply provider IDs, save/reopen readback,
+and candidate-bound external evidence.
 
 ## Exact next action
 
-Push the metadata checkpoint whose implementation parent is `83355a7b`, run the
-final focused suite plus typecheck/lint/digest/diff verification, then release
-both leases in P28 metadata and push the terminal checkpoint.
+C00 and I36 validate this `ready_for_review` checkpoint, integrate interface
+metadata head `aaedc3f2`, unlock P29/P30, and adjudicate
+`P28-migration-001`, `P28-registration-001`, and
+`P28-registry-projection-001`.
 
 ## Coverage
 
@@ -74,6 +80,7 @@ both leases in P28 metadata and push the terminal checkpoint.
 - Focused ESLint and new-file Prettier checks: passed
 - Canonical YAML source parsing and identity assertions: passed
 - Interface artifact/contract digests and diff check: passed
+- Terminal verification against the clean pushed interface head: passed
 - Generated registry projection checks: expected stale-projection failure,
   stewarded by `P28-registry-projection-001`
 

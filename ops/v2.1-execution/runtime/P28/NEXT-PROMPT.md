@@ -3,7 +3,7 @@ REASONING: HIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task P28 from its pushed interface checkpoint.
+Review One Time v2.1 task P28 from its ready-for-review checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p28-communication-foundation
@@ -21,24 +21,25 @@ start `9ba92b070eedfa3756eff4f78fd328de72507a96`, claim
 `2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285`,
 GHL_REGISTRY lease `f59eb149-ec9e-4d32-afd7-55ad5e32c899`, and
 COMMUNICATION_FOUNDATION lease `d2cd17e1-c0d2-4dd9-ab21-62c1b2a24a30`.
-Both leases expire at `2026-07-28T22:55:38Z`; no effect lock or external
-authority exists.
+Both leases were released at `2026-07-28T22:28:08Z`; no effect lock or external
+authority existed.
 
 The implementation commit is
 `83355a7b6981073662d71f44a2c8f68264a307d8`. The exact P29/P30 interface
 contract digest is
 `2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86`.
-Resume `TASK-STATE.yaml:next_action` without repeating a broad audit.
+The interface metadata head is
+`aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`. Read
+`TASK-STATE.yaml:next_action` without repeating a broad audit.
 
-Do not change the realized interface or implementation unless final verification
-finds an in-scope defect. Do not edit control files, another task runtime, a
-migration, central barrel/composer, package manifest, lockfile, generated GHL
-projection, message-class registry, validator, or other steward-owned path.
-Perform no provider or external effect.
+Do not change the realized interface or implementation during review. Do not
+edit control files from the task branch, another task runtime, a migration,
+central barrel/composer, package manifest, lockfile, generated GHL projection,
+message-class registry, validator, or other steward-owned path. Perform no
+provider or external effect.
 
-Exact next action: verify the pushed metadata checkpoint, run the exact focused
-Vitest suite, full typecheck, focused lint/format, interface digest, YAML source,
-and diff checks; then mark both leases released in P28 task-local metadata,
-finish at `ready_for_review`, commit, push normal fast-forward, and verify a
-clean branch. Preserve the three steward requests and the expected generated
-projection drift record.
+Exact next action: C00/I36 verify the pushed terminal head and the exact
+interface digest, integrate interface metadata head `aaedc3f2`, unlock P29/P30,
+and adjudicate the three structured steward requests. Preserve the expected
+generated-projection drift record and require separately authorized provider
+IDs, save/reopen readback, and candidate-bound external evidence.
