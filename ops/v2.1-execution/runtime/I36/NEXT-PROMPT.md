@@ -50,13 +50,17 @@ unqueued implementation. Their canonical rejected-result payload digests are
 `a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a`
 and `a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f`.
 
-Current exact next action: report the exact pushed P31-only resume claim head
-to C00. Then wait for C00 to rebind merge item
-`e354aedf-1e25-4d05-b917-3f568dcf048e` to that claim head; independently
-revalidate and ancestry-merge only exact P31 source
-`ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` from source/merge base
-`80c281b7ae5826ed2c6abe95ba68a033ffa52174`. Do not integrate F02 or F01,
-edit control, or perform live effects.
+P31 merge item `e354aedf-1e25-4d05-b917-3f568dcf048e` was rebound by control
+`d9bb5fd42ad43ccb121d2d749f6176908cac8e9a` with payload digest
+`7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`.
+Exact P31 source `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` was independently
+verified and ancestry-merged at pushed integration head
+`42b09dc598e0dfc17ada53b441e4cd487e126573`. Typecheck and focused P31
+catalog/approval/security assertions passed.
+
+Current exact next action: report the pushed P31 integration metadata
+checkpoint to C00, then pause until a new exact queue/lease authorization.
+Do not integrate F02 or F01, edit control, or perform live effects.
 
 Do not read or integrate any F02 checkpoint or migration; its replacement is
 pending. Do not edit control files or perform provider/live effects. F01 source

@@ -19,6 +19,9 @@
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
   item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
 - Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
+- P31 merge authorization: control `d9bb5fd42ad43ccb121d2d749f6176908cac8e9a`,
+  item digest `7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`
+- Pushed P31 integration head: `42b09dc598e0dfc17ada53b441e4cd487e126573`
 
 ## Completed behavior
 
@@ -57,16 +60,23 @@ from exact integration head `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
 The new claim, lease, containing control head, and canonical ready payload were
 verified and are bound by this atomic claim checkpoint.
 
+C00 rebound the P31 item to exact claim head `cd4bb17a`. I36 independently
+verified source/merge base `80c281b7`, the exact 8-path delta, state/handoff
+digest `6ec2a92d...`, all three exported artifact hashes, and combined contract
+digest `d66db410...`. Exact source
+`ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` was ancestry-merged and
+pushed at `42b09dc598e0dfc17ada53b441e4cd487e126573`. Typecheck and focused
+catalog/approval/security checks passed.
+
 ## Remaining work
 
-Push and report this P31-only resume claim to C00. C00 must rebind merge item
-`e354aedf-1e25-4d05-b917-3f568dcf048e` to the resulting claim head before
-I36 ancestry-merges the exact P31 source.
+Push and report this exact P31 integration metadata checkpoint to C00. Await a
+new exact queue/lease authorization before any further integration.
 
 ## Exact next action
 
-Report the exact pushed P31-only resume claim head to C00, then wait for the
-rebound target and consume only P31. Do not integrate F02 or F01.
+Report the exact pushed P31 integration checkpoint to C00, then pause. Do not
+integrate F02 or F01 without a new exact authorization.
 
 ## Coverage
 
@@ -114,6 +124,10 @@ rebound target and consume only P31. Do not integrate F02 or F01.
 - Canonical rejected-result payload digests are
   `a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a`
   and `a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f`.
+- Rebound P31 item digest, exact source/base/allowlist, state/handoff, three
+  artifact hashes, combined contract digest, and zero-effect count matched.
+- `npm run typecheck` and focused P31 catalog/approval/security assertions
+  passed after the ancestry merge.
 
 ## External effects
 

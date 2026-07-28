@@ -17,11 +17,11 @@ claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
 lease_id: 7b68a523-6fe3-4fdc-a86f-55c8b176aae4
 lease_issued_at: '2026-07-28T17:13:44Z'
 lease_expires_at: '2026-07-28T18:13:44Z'
-last_heartbeat_at: '2026-07-28T17:21:33Z'
+last_heartbeat_at: '2026-07-28T17:34:27Z'
 controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
 ready_entry_payload_digest: a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46
-state_based_on_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
-last_implementation_commit_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+state_based_on_head_sha: 42b09dc598e0dfc17ada53b441e4cd487e126573
+last_implementation_commit_sha: 42b09dc598e0dfc17ada53b441e4cd487e126573
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
 - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -55,11 +55,18 @@ completed_steps:
   a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46.
 - Claimed the P31-interface-only lease under claim 4ee7c853-5fa3-4fde-afc9-d123effe52b6 and lease
   7b68a523-6fe3-4fdc-a86f-55c8b176aae4.
+- Verified rebound control head d9bb5fd42ad43ccb121d2d749f6176908cac8e9a and P31 merge-item digest
+  7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32.
+- Verified exact P31 source head, source/merge base, 8-path allowlist, state/handoff digest, three artifact
+  blob digests, combined interface digest, and zero external effects.
+- Merged exact P31 source ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d with ancestry preserved and
+  pushed integration head 42b09dc598e0dfc17ada53b441e4cd487e126573.
+- Passed repository typecheck and focused P31 catalog, approval, consent, Student-prohibition, timing, and
+  Resend-only security-template assertions.
 remaining_steps:
-- Push and report this atomic P31-only resume claim checkpoint to C00.
-- After C00 rebinds the optimistic merge target to this claim head, consume only merge item
-  e354aedf-1e25-4d05-b917-3f568dcf048e for exact P31 source ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d.
-next_action: Report the exact pushed P31-only resume claim head to C00, then wait for a rebound merge target before ancestry-merging only P31.
+- Push and report this exact P31 integration metadata checkpoint to C00.
+- Await a new exact C00 queue/lease authorization.
+next_action: Report the exact pushed P31 integration checkpoint to C00, then pause for a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -80,6 +87,14 @@ changed_paths:
 - ops/v2.1-execution/runtime/I36/HANDOFF.md
 - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
 - packages/config/src/index.ts
+- apps/web/src/server/features/email/templates/security.ts
+- integrations/highlevel/v21/copy/catalog.ts
+- ops/v2.1-execution/runtime/P31/HANDOFF.md
+- ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
+- ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
+- ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+- packages/domain/src/communications/copy/approval.ts
+- packages/domain/src/communications/copy/catalog.ts
 migrations: []
 steward_requests: []
 steward_results:
@@ -173,6 +188,16 @@ verification:
     result: passed; 3 tests
   - command: immutable F01 steward-request Git blob digest verification
     result: passed; c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d and b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575 exact
+  - command: canonical rebound P31 merge-item digest recomputation
+    result: passed; 7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32
+  - command: P31 source admission, allowlist, state/handoff, and artifact verification
+    result: passed; exact source ba811b3b, merge base 80c281b7, 8 paths, 6ec2a92d state/handoff, and d66db410 contract
+  - command: git merge --no-ff ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    result: passed; source ancestry preserved at 42b09dc598e0dfc17ada53b441e4cd487e126573
+  - command: npm run typecheck
+    result: passed after P31 merge
+  - command: focused P31 catalog/approval/security assertions via tsx
+    result: passed
   known_baseline_failures: []
 external_effects:
   authority: none
