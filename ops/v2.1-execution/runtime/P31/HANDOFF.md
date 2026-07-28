@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-p31-email-copy-approval`
 - Start SHA: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
-- Implementation SHA before this handoff metadata commit: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
+- Implementation SHA before this handoff metadata commit: `c815cbc8eb5fe301ca0b693eaa64e8db22752213`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374`
 - Context digest: `c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342`
@@ -12,31 +12,36 @@
 
 ## Completed behavior
 
-The initial claim is seeded from the C00-issued P31 ready entry. Remote control head `beb72be5ba1f993c1806e9314146e88f951affdb`, start SHA `80c281b7ae5826ed2c6abe95ba68a033ffa52174`, F01 interface integration proof, claim `39538a2e-2d15-44a7-9485-0cba68919b21`, and the active `COPY_CATALOG` lease were verified. No product files or external effects have been performed.
+The canonical catalog now defines the exact three sender identities, Rabbi greeting/signoff, Resend-only account setup and password-reset copy, and GHL lifecycle fragments for Parent activation, class reminder, recording, newsletter, legacy migration, and former-member reactivation. The approval guard checks every WNC-9 gate and automatically blocks on digest drift, missing approval, wrong sender, over-budget audience, Student contact, delivery/approval gaps, bounce/complaint thresholds, provider failures, and unrelated effects. No provider call or live send was made.
 
 ## Remaining work
 
-Implement the P31-owned canonical copy catalog, Resend security/setup/reset templates, GHL lifecycle/newsletter copy fragments, and digest-bound human approval enforcement. Publish the required P31 interface checkpoint for P28/P29/P30, then run focused task-owned verification and checkpoint ready-for-review.
+No implementation work remains. I36 must integrate `INTERFACE-CHECKPOINT.yaml` and C00 must issue downstream integration start SHAs for P28/P29/P30. Reopen only under a C00-issued resume lease for a reproduced P31-scoped finding.
 
 ## Exact next action
 
-Inspect the P31-owned paths and named WNC-2, WNC-6, and WNC-9 source sections to make the assigned gap map before implementation.
+Await C00/I36 observation and integration of the exact checkpoint.
 
 ## Coverage
 
-- Requirements: all eight P31 requirements are not_started.
-- Acceptance cases: all eight P31 acceptance cases are not_started.
+- Requirements: OTV2-EMAIL-139 through OTV2-EMAIL-146 are implementation_ready.
+- Acceptance cases: OTV2-EMAIL-139-AC01 through OTV2-EMAIL-146-AC01 are implementation_ready; candidate-bound live proof remains V38/operator work only.
 
 ## Changed files and migrations
 
 - `ops/v2.1-execution/runtime/P31/TASK-STATE.yaml`
 - `ops/v2.1-execution/runtime/P31/HANDOFF.md`
 - `ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml`
+- `packages/domain/src/communications/copy/catalog.ts`
+- `packages/domain/src/communications/copy/approval.ts`
+- `integrations/highlevel/v21/copy/catalog.ts`
+- `apps/web/src/server/features/email/templates/security.ts`
 - No migrations.
 
 ## Verification
 
-Verified remote branch absence, authoritative control head, authorized start SHA, P31 task/context blob digests, and F01 dependency data from the ready queue. Product verification has not started.
+`npm run typecheck` passed. Focused runtime assertions passed for: exact approval success; rejection for missing gates/over-budget/Student contact; Resend-only token setup rendering; and the absence of token-bearing GHL fragments. The P31 interface artifacts have combined digest `ad924a549e3eddd6fdb5ba3c9d485b78a9e75de320c003561557128ea9b77f8e`.
 
 ## External effects
 
@@ -48,4 +53,4 @@ No secrets, tokens, provider payloads, child data, Zoom/Vimeo bearers, or live s
 
 ## Blockers, deviations, and recovery
 
-No blocker at the seeded claim checkpoint. Do not continue after lease expiry without a C00-issued resume lease.
+No blocker. The C00-issued lease expires at `2026-07-28T17:37:00Z`; do not continue after that time without a C00-issued resume lease.

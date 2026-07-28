@@ -3,7 +3,7 @@ REASONING: HIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task P31 from its remote checkpoint.
+Continue One Time v2.1 task P31 only if C00 has issued a resume-ready lease for a reproduced P31-scoped finding.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p31-email-copy-approval
