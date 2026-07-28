@@ -123,6 +123,11 @@ is empty. C00 selected the three dependency-valid capacity lanes with the
 largest immediate critical-path value: P18 embedded classroom, P19 content
 ingest (unlocks P20), and P28 communication foundation (unlocks P29/P30).
 Dispatch their exact ready entries from `9ba92b07`.
+All three atomic claims are exact and remotely verified: P18 `9b37f4a0`,
+P19 `5529d398`, and P28 `09082e99`, each with sole parent `9ba92b07`, only its
+three task-local runtime files, correct containing authorization `e847dd79`,
+and zero effects. The ready queue is consumed; monitor their independent
+implementation/interface checkpoints.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

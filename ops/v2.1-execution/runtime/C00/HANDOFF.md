@@ -289,18 +289,16 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P27 is ancestry-integrated at `972fa435`. P16 is
-ancestry-integrated at merge head `387ca78e` and final metadata head
-`9ba92b07`; exact scope, artifacts, contract, typecheck, 17 focused tests,
-formatting, and zero effects passed. The merge queue is empty. Dependency-valid
-Wave 6 lanes P18, P19, and P28 are each authorized from `9ba92b07`.
+None for bootstrap. P27 is integrated at `972fa435` and P16 at `9ba92b07`.
+The merge and ready queues are empty. P18, P19, and P28 each published exact
+three-file atomic claims from sole parent `9ba92b07`: `9b37f4a0`, `5529d398`,
+and `09082e99`. All three disjoint Wave 6 implementations are active.
 
 ## Exact next action
 
-Dispatch P18 claim `415e950e-cfbb-4635-9f1a-3ffd6af825ac`, P19 claim
-`de624026-ff9a-4c35-ad02-bc6c1f28a3dc`, and P28 claim
-`16640fee-ca26-4885-9be7-14fb2baa682c`. Each must first publish only its exact
-three task-local runtime files from `9ba92b070eedfa3756eff4f78fd328de72507a96`.
+Monitor P18, P19, and P28. Independently verify any published interface/final
+checkpoint before queueing integration or downstream work. No fourth native
+writer slot is available while all three workers remain active.
 
 ## Verification
 
