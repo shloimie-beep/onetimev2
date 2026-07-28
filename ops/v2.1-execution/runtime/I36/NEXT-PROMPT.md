@@ -20,21 +20,21 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current P19-interface atomic-claim-only authority is containing control head
-`2bd4a301926bb0b303c06f6f2a1b8e036b18c473`, controller authorization
-`2bd4a301926bb0b303c06f6f2a1b8e036b18c473`, ready-entry parent control
-head `21b0a40b4ee7186d9360b99c261f1774d65e1c43`, claim
-`391d7764-3f93-43c8-86dc-07df6f59d0b1`, sole RELEASE_INTEGRATOR lease
-`53c90772-6f60-4a52-884f-4498c65c0929` through
-`2026-07-28T23:23:06Z`, and ready-entry digest
-`450d4c9fb2f4eede4f32d972683b7f1afe72048fc4da25255b1363ae18d740d3`.
+Current P28-interface atomic-claim-only authority is containing control head
+`4f82565865c615ecf91828b0cae41c1cf7b63dfe`, controller authorization
+`4f82565865c615ecf91828b0cae41c1cf7b63dfe`, ready-entry parent control
+head `c9c3d288fa6cdb3aca756de8cc03d35471abe464`, claim
+`9b1ad11d-f16c-40e7-aec9-e07172c90034`, sole RELEASE_INTEGRATOR lease
+`add98f8a-d111-44a0-9232-44140f8e2b9b` through
+`2026-07-28T23:50:05Z`, and ready-entry digest
+`b661e046bf1f18eb5d8a756e59f51258d19b7774b8d94b7390ea16901676f315`.
 The exact pre-claim integration head is
-`9ba92b070eedfa3756eff4f78fd328de72507a96`. This checkpoint consumes
-only the claim; the subsequent exact rebound and integration are recorded
-below. Optimistic item
-`d3acb266-4c15-4a37-ada7-1a42b616cd12` with pre-claim digest
-`f4c2414a8610e717b00c00b2ed0b252a45a8c706c545111a47d0e2217f485d31`,
-was not consumed by the atomic checkpoint.
+`ebf88c8e422a6ad40202fc2b0249810d312edc30`. This checkpoint consumes
+only the claim. Do not read or merge P28, consume optimistic item
+`58c0a26a-cb58-4dfb-a4a8-082ae171537e` with pre-claim digest
+`3bfa28d14fdf8f0f1a264cf56cb18629d5d8faa452c621a5c82ff62adf96a241`,
+or apply any P28 steward request until C00 rebinds the expected target to the
+exact pushed claim head.
 
 That P19 atomic claim is now consumed. Control
 `ccfea34dd850c830618da53f448eda2b20189eb8` rebound exact item
@@ -156,9 +156,11 @@ Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged 
 preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
 steward request, migration, registration, or provider effect was applied.
 
-Current exact next action: report the pushed P19 integration metadata checkpoint
-to C00, then stop and await a new exact control authorization. No unrelated
-merge, steward, evidence, control, or live-effect work is authorized.
+Current exact next action: report the pushed P28-interface atomic claim
+checkpoint to C00, then stop. Do not read or merge P28, consume its optimistic
+merge item, or apply a steward request until C00 rebinds the merge-target CAS
+to the exact claim head. No unrelated merge, evidence, control, or live-effect
+work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its
