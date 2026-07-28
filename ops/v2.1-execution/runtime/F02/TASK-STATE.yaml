@@ -7,6 +7,13 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-f02-schema-state-migrations
 start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
 dependency_heads:
+  C00:
+    required_state: operational
+    observed_state: operational
+    observed_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+    control_state_digest: 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215
+    task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
+    task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
   F01:
     required_state: interface_ready_integrated
     observed_state: interface_ready_integrated
@@ -18,27 +25,30 @@ dependency_heads:
     task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
 status: ready_for_review
 phase: review
-claimed_by: codex-f02-worker-2608f241
-claim_time: '2026-07-28T17:03:02Z'
-claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
-lease_expires_at: '2026-07-28T18:03:02Z'
-last_heartbeat_at: '2026-07-28T17:23:00Z'
-lease_released_at: '2026-07-28T17:23:00Z'
-controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
-ready_entry_parent_control_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-ready_entry_payload_digest: b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11
+claimed_by: codex-f02-worker-8d0e0d73
+claim_time: '2026-07-28T17:27:11Z'
+claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+lease_expires_at: '2026-07-28T18:27:11Z'
+last_heartbeat_at: '2026-07-28T17:35:30Z'
+lease_released_at: '2026-07-28T17:35:30Z'
+controller_authorization_sha: d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
+ready_entry_parent_control_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+ready_entry_payload_digest: b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
-    lease_expires_at: '2026-07-28T18:03:02Z'
-    released_at: '2026-07-28T17:23:00Z'
+    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
+    lease_expires_at: '2026-07-28T18:27:11Z'
+    released_at: '2026-07-28T17:35:30Z'
   SCHEMA_CONTRACT:
-    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
-    lease_expires_at: '2026-07-28T18:03:02Z'
-    released_at: '2026-07-28T17:23:00Z'
+    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
+    lease_expires_at: '2026-07-28T18:27:11Z'
+    released_at: '2026-07-28T17:35:30Z'
 state_based_on_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
 last_implementation_commit_sha: 191dac288ea1721bdc0252bd012060ca974d2242
 completed_steps:
+  - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+  - independently verified parent CONTROL-STATE.yaml digest 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215 at 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+  - independently recomputed corrective ready-entry payload digest b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d
   - resumed from exact remote head 191dac288ea1721bdc0252bd012060ca974d2242 under corrected resume_existing claim 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
   - independently recomputed rebound ready-entry payload digest b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11
   - verified repository identity and isolated clone
@@ -80,6 +90,10 @@ migrations:
 steward_requests: []
 verification:
   commands_run:
+    - corrective containing control head matched d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
+    - corrective resume_existing remote head, claim, and both writer leases matched
+    - parent CONTROL-STATE.yaml raw SHA-256 matched 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215
+    - corrective F02 ready-entry canonical digest matched b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d
     - rebound containing control head matched 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
     - rebound resume_existing remote head, claim, and both writer leases matched
     - rebound F02 ready-entry canonical digest matched b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11

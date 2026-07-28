@@ -4,7 +4,7 @@ task_id: F02
 interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
-contract_digest: 84f156979d7a853071c55584bb404672b01b9058de0c97cf304871e54b08b950
+contract_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
 contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
 contract_schema_version: 1
 semantic_contract_version: 1.0.0
@@ -57,7 +57,7 @@ exports:
     symbols:
       - allocations[ordinal=2234]
       - next_available_ordinal
-    sha256: 98201329d8f81c5ffe9de703dd8b01ad97971ce3373af8517aa4356f2896c9b3
+    sha256: d0e4d2ac7b406d2f5b9488f2d657cf082abc552a8639720878decb49380d1843
   - path: packages/db/migrations/2234_canonical_state_machines.sql
     symbols:
       - onetime.canonical_aggregate_states

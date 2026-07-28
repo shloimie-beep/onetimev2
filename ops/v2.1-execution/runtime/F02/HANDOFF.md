@@ -9,13 +9,14 @@
 - Task packet digest: `7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce`
 - Context digest: `0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Resume claim: `2608f241-6a2c-4d1d-a316-d2b1b704cfc0`, held by `codex-f02-worker-2608f241`
-- Writer lease: `1e14a6d2-eec5-4616-9e96-cb889428c944` for `MIGRATION_AUTHORITY` and `SCHEMA_CONTRACT`
-- Lease expiry: `2026-07-28T18:03:02Z`
-- Resume lease released in this final checkpoint at `2026-07-28T17:23:00Z`
-- Containing authorizing control head: `95a2a52e096357738cda2bd7c16bc9a0e24ccd70`
-- Ready-entry parent control head: `193df1fbd101ebb5dd7f0f66adf2c1a78283aab0`
-- Ready payload digest: `b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11`
+- Corrective resume claim: `8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78`, held by `codex-f02-worker-8d0e0d73`
+- Writer lease: `a9b18c22-2f8c-4b8e-98f5-567145a852fa` for `MIGRATION_AUTHORITY` and `SCHEMA_CONTRACT`
+- Lease expiry: `2026-07-28T18:27:11Z`
+- Corrective resume lease released in this final checkpoint at `2026-07-28T17:35:30Z`
+- Containing authorizing control head: `d9bb5fd42ad43ccb121d2d749f6176908cac8e9a`
+- Ready-entry parent control head: `3eb407ef050175d7c21f55f67cf99626f1dd5afd`
+- Parent `CONTROL-STATE.yaml` digest: `0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215`
+- Ready payload digest: `b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`
 - F01 interface checkpoint: `fa9e5c92231c4b92340d07945cc91d76c85bd444`
 - F01 implementation/digest: `bb7664c44444bf1704d9f63e5c19a15381f2f0b0` / `2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713`
 
@@ -27,7 +28,7 @@ assigned lifecycle plus fail-closed authorization, isolation, version,
 idempotency, retry, recovery, and billing-operation fencing guards. Allocated
 forward-only migration 2234, added canonical current-state and append-only
 transition tables with PostgreSQL trigger enforcement, and published interface
-contract `84f156979d7a853071c55584bb404672b01b9058de0c97cf304871e54b08b950`.
+contract `c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`.
 The database derives billing lease generation from committed event history,
 enforces exact counter/generation movement, and requires conclusive
 reconciliation to clear unknown-effect quarantine.
@@ -45,7 +46,7 @@ Review and integrate the superseding F02 interface checkpoint. Mirror migration
 2234 checksum
 `d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`
 and interface digest
-`84f156979d7a853071c55584bb404672b01b9058de0c97cf304871e54b08b950`
+`c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`
 without semantic change.
 
 ## Coverage
