@@ -1,0 +1,172 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F01
+title: Repository Convergence, Architecture Seams, and Retired-Surface Closure
+outcome: Make the exact v2.1 package the sole current authority, create low-conflict server/client/worker composition
+  seams, and unmount prohibited production surfaces without deleting immutable migration history.
+kind: foundation
+wave: 1
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-f01-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - C00
+  required_start_states:
+    C00: operational
+  merge_after: []
+  candidate_integration_partners: []
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: true
+  unlocks:
+  - F02
+  - F07
+  - P31
+  - P35
+  contract_schema_version: 1
+  required_export_roots:
+  - apps/web/src/server/features/registry/**
+  - apps/web/src/client/app/router/**
+  - apps/worker/src/runners/registry/**
+  - ops/v2.1-execution/runtime/F01/steward-requests/schema/**
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: Publish and push an exact interface checkpoint; I36 must merge it into the integration branch before C00
+    authorizes downstream start.
+scope:
+  writer_slots:
+  - SERVER_COMPOSER
+  - CLIENT_COMPOSER
+  - WORKER_COMPOSER
+  - CONFIG_DEPS
+  - BARREL_REGISTRAR
+  - RETIRED_SURFACES
+  normalized_owned_globs:
+  - apps/web/src/client/app/crm-entry.tsx
+  - apps/web/src/client/app/live-entry.tsx
+  - apps/web/src/client/app/portal-entry.tsx
+  - apps/web/src/client/app/router/**
+  - apps/web/src/client/features/portals/PortalFeatures.tsx
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/registry/**
+  - apps/web/src/server/index.ts
+  - apps/worker/src/main/index.ts
+  - apps/worker/src/runners/registry/**
+  - ops/v2.1-execution/runtime/F01/steward-requests/schema/**
+  - packages/config/src/index.ts
+  scope_notes_only:
+  - packages/config/src/index.ts seam only
+  - packages/contracts/src/index.ts registration seam only
+  - packages/domain/src/index.ts registration seam only
+  - new feature-router, client-router, runner-registry, and steward-request infrastructure
+  - current runtime mounts/navigation/tests for explicitly retired surfaces
+  explicit_path_excludes: []
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-FOUNDATION-001
+  - OTV2-FOUNDATION-003
+  - OTV2-FOUNDATION-004
+  - OTV2-FOUNDATION-005
+  - OTV2-FOUNDATION-006
+  - OTV2-FOUNDATION-208
+  - OTV2-FOUNDATION-215
+  - OTV2-FOUNDATION-216
+  primary_acceptance_case_ids:
+  - OTV2-FOUNDATION-001-AC01
+  - OTV2-FOUNDATION-003-AC01
+  - OTV2-FOUNDATION-004-AC01
+  - OTV2-FOUNDATION-005-AC01
+  - OTV2-FOUNDATION-006-AC01
+  - OTV2-FOUNDATION-208-AC01
+  - OTV2-FOUNDATION-215-AC01
+  - OTV2-FOUNDATION-216-AC01
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-001
+  - DEC-002
+  - DEC-003
+  - DEC-004
+  - DEC-005
+  - DEC-006
+  - DEC-010
+  - DEC-011
+  - DEC-013
+  - DEC-095
+  - DEC-112
+  - DEC-130
+  - DEC-133
+  - DEC-143
+  - DEC-144
+  - DEC-151
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  - 04-SUPERSESSION-AND-SYSTEM-DISPOSITION-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- thin server feature-router registration
+- thin Admin/Parent/Student/live shell and route composition
+- separate Parent and Student client feature roots
+- worker runner registry
+- central-file steward request mechanism
+- retired surfaces absent from current runtime and current acceptance
+- early interface_ready contract checkpoint
+notes:
+- Preserve all non-retired behavior while extracting seams.
+- Do not delete or edit applied historical migrations.
+- Publish interface_ready as soon as route/runner/registration contracts are stable so Wave 2 can begin.
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

@@ -1,0 +1,1245 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+coverage:
+  requirements: 243
+  acceptance_cases: 265
+  primary_owner_exactly_once: true
+  verification_owner_exactly_once: true
+requirements:
+- requirement_id: OTV2-FOUNDATION-001
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-001-AC01
+- requirement_id: OTV2-FOUNDATION-002
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-FOUNDATION-002-AC01
+- requirement_id: OTV2-FOUNDATION-003
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-003-AC01
+- requirement_id: OTV2-FOUNDATION-004
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-004-AC01
+- requirement_id: OTV2-FOUNDATION-005
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-005-AC01
+- requirement_id: OTV2-FOUNDATION-006
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-006-AC01
+- requirement_id: OTV2-AUTH-007
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-007-AC01
+- requirement_id: OTV2-AUTH-008
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-008-AC01
+- requirement_id: OTV2-AUTH-009
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-009-AC01
+- requirement_id: OTV2-AUTH-010
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-010-AC01
+- requirement_id: OTV2-AUTH-011
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-011-AC01
+- requirement_id: OTV2-AUTH-012
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-012-AC01
+- requirement_id: OTV2-AUTH-013
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-013-SINGLE-USE-TTL
+  - OTV2-AUTH-013-RENEWAL
+- requirement_id: OTV2-AUTH-014
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-014-AC01
+- requirement_id: OTV2-AUTH-015
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-015-AC01
+- requirement_id: OTV2-AUTH-016
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-016-AC01
+- requirement_id: OTV2-AUTH-017
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-017-AC01
+- requirement_id: OTV2-AUTH-018
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-018-AC01
+- requirement_id: OTV2-AUTH-019
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-019-AC01
+- requirement_id: OTV2-AUTH-020
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-020-CSRF
+  - OTV2-AUTH-020-RATE
+  - OTV2-AUTH-020-COOKIE
+  - OTV2-AUTH-020-ROTATE
+- requirement_id: OTV2-ADMIN-021
+  implementation_owner: P11
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-021-AC01
+- requirement_id: OTV2-ADMIN-022
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-022-AC01
+- requirement_id: OTV2-ADMIN-023
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-023-AC01
+- requirement_id: OTV2-ADMIN-024
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-024-AC01
+- requirement_id: OTV2-ADMIN-025
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-025-AC01
+- requirement_id: OTV2-ADMIN-026
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-026-AC01
+- requirement_id: OTV2-ADMIN-027
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-027-AC01
+- requirement_id: OTV2-ADMIN-028
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-028-AC01
+- requirement_id: OTV2-ADMIN-029
+  implementation_owner: P11
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-029-AC01
+- requirement_id: OTV2-ADMIN-030
+  implementation_owner: P10
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-030-AC01
+- requirement_id: OTV2-PARENT-031
+  implementation_owner: P12
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-031-AC01
+- requirement_id: OTV2-PARENT-032
+  implementation_owner: P12
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-032-AC01
+- requirement_id: OTV2-PARENT-033
+  implementation_owner: P12
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-033-AC01
+- requirement_id: OTV2-PARENT-034
+  implementation_owner: P12
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-034-AC01
+- requirement_id: OTV2-PARENT-035
+  implementation_owner: P12
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-035-AC01
+- requirement_id: OTV2-PARENT-036
+  implementation_owner: P12
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-036-AC01
+- requirement_id: OTV2-PARENT-037
+  implementation_owner: P13
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-037-AC01
+- requirement_id: OTV2-PARENT-038
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-PARENT-038-AC01
+- requirement_id: OTV2-PARENT-039
+  implementation_owner: P13
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-039-AC01
+- requirement_id: OTV2-PARENT-040
+  implementation_owner: P12
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-040-AC01
+- requirement_id: OTV2-STUDENT-041
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-041-AC01
+- requirement_id: OTV2-STUDENT-042
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-042-AC01
+- requirement_id: OTV2-STUDENT-043
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-043-AC01
+- requirement_id: OTV2-STUDENT-044
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-044-AC01
+- requirement_id: OTV2-STUDENT-045
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-045-AC01
+- requirement_id: OTV2-STUDENT-046
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-046-AC01
+- requirement_id: OTV2-STUDENT-047
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-047-AC01
+- requirement_id: OTV2-STUDENT-048
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-048-AC01
+- requirement_id: OTV2-STUDENT-049
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-049-AC01
+- requirement_id: OTV2-STUDENT-050
+  implementation_owner: P14
+  verification_owner: V38
+  case_ids:
+  - OTV2-STUDENT-050-AC01
+- requirement_id: OTV2-CALENDAR-051
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-051-AC01
+- requirement_id: OTV2-CALENDAR-052
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-052-AC01
+- requirement_id: OTV2-CALENDAR-053
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-053-AC01
+- requirement_id: OTV2-CALENDAR-054
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-054-AC01
+- requirement_id: OTV2-CALENDAR-055
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-055-AC01
+- requirement_id: OTV2-CALENDAR-056
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-056-AC01
+- requirement_id: OTV2-CALENDAR-057
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-057-AC01
+- requirement_id: OTV2-CALENDAR-058
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-058-AC01
+- requirement_id: OTV2-CALENDAR-059
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-059-AC01
+- requirement_id: OTV2-CALENDAR-060
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-060-AC01
+- requirement_id: OTV2-CALENDAR-061
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-061-AC01
+- requirement_id: OTV2-CALENDAR-062
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-062-AC01
+- requirement_id: OTV2-CALENDAR-063
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-063-AC01
+- requirement_id: OTV2-CALENDAR-064
+  implementation_owner: P15
+  verification_owner: V38
+  case_ids:
+  - OTV2-CALENDAR-064-AC01
+- requirement_id: OTV2-CLASSROOM-065
+  implementation_owner: P16
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-065-SERIES-LIFECYCLE
+- requirement_id: OTV2-CLASSROOM-066
+  implementation_owner: P16
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-066-AC01
+- requirement_id: OTV2-CLASSROOM-067
+  implementation_owner: P16
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-067-AC01
+- requirement_id: OTV2-CLASSROOM-068
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-068-AC01
+- requirement_id: OTV2-CLASSROOM-069
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-069-AC01
+- requirement_id: OTV2-CLASSROOM-070
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-070-AC01
+- requirement_id: OTV2-CLASSROOM-071
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-071-AC01
+- requirement_id: OTV2-CLASSROOM-072
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-072-AC01
+- requirement_id: OTV2-CLASSROOM-073
+  implementation_owner: P18
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-073-AC01
+- requirement_id: OTV2-CLASSROOM-074
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-074-AC01
+- requirement_id: OTV2-CLASSROOM-075
+  implementation_owner: P18
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-075-AC01
+- requirement_id: OTV2-CLASSROOM-076
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-076-AC01
+- requirement_id: OTV2-CLASSROOM-077
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-077-AC01
+- requirement_id: OTV2-CLASSROOM-078
+  implementation_owner: P18
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-078-AC01
+- requirement_id: OTV2-CLASSROOM-079
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-079-AC01
+- requirement_id: OTV2-CONTENT-080
+  implementation_owner: P19
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-080-AC01
+- requirement_id: OTV2-CONTENT-081
+  implementation_owner: P19
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-081-AC01
+- requirement_id: OTV2-CONTENT-082
+  implementation_owner: P19
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-082-AC01
+- requirement_id: OTV2-CONTENT-083
+  implementation_owner: P19
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-083-AC01
+- requirement_id: OTV2-CONTENT-084
+  implementation_owner: P20
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-084-AC01
+- requirement_id: OTV2-CONTENT-085
+  implementation_owner: P20
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-085-AC01
+- requirement_id: OTV2-CONTENT-086
+  implementation_owner: P20
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-086-AC01
+- requirement_id: OTV2-CONTENT-087
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-087-AC01
+- requirement_id: OTV2-CONTENT-088
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-088-AC01
+- requirement_id: OTV2-CONTENT-089
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-089-STUDENT
+  - OTV2-CONTENT-089-PARENT-DENY
+- requirement_id: OTV2-CONTENT-090
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-090-AC01
+- requirement_id: OTV2-CONTENT-091
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-091-AC01
+- requirement_id: OTV2-CONTENT-092
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-092-AC01
+- requirement_id: OTV2-LEARNING-093
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-093-AC01
+- requirement_id: OTV2-LEARNING-094
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-094-AC01
+- requirement_id: OTV2-LEARNING-095
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-095-AC01
+- requirement_id: OTV2-LEARNING-096
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-096-AC01
+- requirement_id: OTV2-LEARNING-097
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-097-AC01
+- requirement_id: OTV2-LEARNING-098
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-098-AC01
+- requirement_id: OTV2-LEARNING-099
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-099-AC01
+- requirement_id: OTV2-LEARNING-100
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-100-AC01
+- requirement_id: OTV2-BILLING-101
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-101-AC01
+- requirement_id: OTV2-BILLING-102
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-102-AC01
+- requirement_id: OTV2-BILLING-103
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-103-AC01
+- requirement_id: OTV2-BILLING-104
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-104-AC01
+- requirement_id: OTV2-BILLING-105
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-105-AC01
+- requirement_id: OTV2-BILLING-106
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-106-AC01
+- requirement_id: OTV2-BILLING-107
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-107-AC01
+- requirement_id: OTV2-BILLING-108
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-108-AC01
+- requirement_id: OTV2-BILLING-109
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-109-AC01
+- requirement_id: OTV2-BILLING-110
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-110-AC01
+- requirement_id: OTV2-BILLING-111
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-111-AC01
+- requirement_id: OTV2-BILLING-112
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-112-AC01
+- requirement_id: OTV2-BILLING-113
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-113-AC01
+- requirement_id: OTV2-BILLING-114
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-114-AC01
+- requirement_id: OTV2-BILLING-115
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-115-AC01
+- requirement_id: OTV2-BILLING-116
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-116-AC01
+- requirement_id: OTV2-GHL-117
+  implementation_owner: P27
+  verification_owner: V41
+  case_ids:
+  - OTV2-GHL-117-AC01
+- requirement_id: OTV2-GHL-118
+  implementation_owner: P27
+  verification_owner: V41
+  case_ids:
+  - OTV2-GHL-118-AC01
+- requirement_id: OTV2-GHL-119
+  implementation_owner: P27
+  verification_owner: V41
+  case_ids:
+  - OTV2-GHL-119-AC01
+- requirement_id: OTV2-GHL-120
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-120-AC01
+- requirement_id: OTV2-GHL-121
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-121-AC01
+- requirement_id: OTV2-GHL-122
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-122-AC01
+- requirement_id: OTV2-GHL-123
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-123-AC01
+- requirement_id: OTV2-GHL-124
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-124-AC01
+- requirement_id: OTV2-GHL-125
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-125-AC01
+- requirement_id: OTV2-GHL-126
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-126-AC01
+- requirement_id: OTV2-GHL-127
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-127-AC01
+- requirement_id: OTV2-GHL-128
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-128-AC01
+- requirement_id: OTV2-GHL-129
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-129-AC01
+- requirement_id: OTV2-GHL-130
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-130-AC01
+- requirement_id: OTV2-GHL-131
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-131-AC01
+- requirement_id: OTV2-GHL-132
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-132-AC01
+- requirement_id: OTV2-GHL-133
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-133-AC01
+- requirement_id: OTV2-GHL-134
+  implementation_owner: P30
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-134-AC01
+- requirement_id: OTV2-GHL-135
+  implementation_owner: P30
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-135-AC01
+- requirement_id: OTV2-GHL-136
+  implementation_owner: P29
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-136-AC01
+- requirement_id: OTV2-GHL-137
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-137-AC01
+- requirement_id: OTV2-GHL-138
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-138-COMMUNICATIONS-READBACK
+- requirement_id: OTV2-EMAIL-139
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-139-AC01
+- requirement_id: OTV2-EMAIL-140
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-140-AC01
+- requirement_id: OTV2-EMAIL-141
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-141-AC01
+- requirement_id: OTV2-EMAIL-142
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-142-AC01
+- requirement_id: OTV2-EMAIL-143
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-143-AC01
+- requirement_id: OTV2-EMAIL-144
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-144-AC01
+- requirement_id: OTV2-EMAIL-145
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-145-AC01
+- requirement_id: OTV2-EMAIL-146
+  implementation_owner: P31
+  verification_owner: V38
+  case_ids:
+  - OTV2-EMAIL-146-AC01
+- requirement_id: OTV2-TICKETS-147
+  implementation_owner: P24
+  verification_owner: V38
+  case_ids:
+  - OTV2-TICKETS-147-AC01
+- requirement_id: OTV2-TICKETS-148
+  implementation_owner: P24
+  verification_owner: V38
+  case_ids:
+  - OTV2-TICKETS-148-AC01
+- requirement_id: OTV2-TICKETS-149
+  implementation_owner: P24
+  verification_owner: V38
+  case_ids:
+  - OTV2-TICKETS-149-AC01
+- requirement_id: OTV2-TICKETS-150
+  implementation_owner: P24
+  verification_owner: V38
+  case_ids:
+  - OTV2-TICKETS-150-AC01
+- requirement_id: OTV2-TICKETS-151
+  implementation_owner: P24
+  verification_owner: V38
+  case_ids:
+  - OTV2-TICKETS-151-AC01
+- requirement_id: OTV2-TICKETS-152
+  implementation_owner: P24
+  verification_owner: V38
+  case_ids:
+  - OTV2-TICKETS-152-AC01
+- requirement_id: OTV2-DOMAIN-153
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-DOMAIN-153-AC01
+- requirement_id: OTV2-DOMAIN-154
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-DOMAIN-154-AC01
+- requirement_id: OTV2-DOMAIN-155
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-DOMAIN-155-AC01
+- requirement_id: OTV2-DOMAIN-156
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-DOMAIN-156-AC01
+- requirement_id: OTV2-DOMAIN-157
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-DOMAIN-157-AC01
+- requirement_id: OTV2-UX-158
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-158-AC01
+- requirement_id: OTV2-UX-159
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-159-AC01
+- requirement_id: OTV2-UX-160
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-160-AC01
+- requirement_id: OTV2-UX-161
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-161-AC01
+- requirement_id: OTV2-UX-162
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-162-AC01
+- requirement_id: OTV2-UX-163
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-163-AC01
+- requirement_id: OTV2-UX-164
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-164-AC01
+- requirement_id: OTV2-UX-165
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-165-AC01
+- requirement_id: OTV2-OPS-166
+  implementation_owner: P33
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-166-AC01
+- requirement_id: OTV2-OPS-167
+  implementation_owner: P33
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-167-AC01
+- requirement_id: OTV2-OPS-168
+  implementation_owner: P34
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-168-AC01
+- requirement_id: OTV2-OPS-169
+  implementation_owner: P34
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-169-AC01
+- requirement_id: OTV2-OPS-170
+  implementation_owner: P34
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-170-AC01
+- requirement_id: OTV2-OPS-171
+  implementation_owner: P33
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-171-AC01
+- requirement_id: OTV2-OPS-172
+  implementation_owner: P33
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-172-AC01
+- requirement_id: OTV2-OPS-173
+  implementation_owner: P33
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-173-AC01
+- requirement_id: OTV2-OPS-174
+  implementation_owner: R44
+  verification_owner: R44
+  case_ids:
+  - OTV2-OPS-174-AC01
+- requirement_id: OTV2-OPS-175
+  implementation_owner: R45
+  verification_owner: R45
+  case_ids:
+  - OTV2-OPS-175-AC01
+- requirement_id: OTV2-SIGNUP-176
+  implementation_owner: P08
+  verification_owner: V37
+  case_ids:
+  - OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH
+- requirement_id: OTV2-SIGNUP-177
+  implementation_owner: P08
+  verification_owner: V37
+  case_ids:
+  - OTV2-SIGNUP-177-AC01
+- requirement_id: OTV2-SIGNUP-178
+  implementation_owner: P09
+  verification_owner: V37
+  case_ids:
+  - OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS
+- requirement_id: OTV2-SIGNUP-179
+  implementation_owner: P08
+  verification_owner: V37
+  case_ids:
+  - OTV2-SIGNUP-179-AC01
+- requirement_id: OTV2-AUTH-180
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-180-AC01
+- requirement_id: OTV2-ACCOUNT-181
+  implementation_owner: F04
+  verification_owner: V37
+  case_ids:
+  - OTV2-ACCOUNT-181-AC01
+- requirement_id: OTV2-ACCOUNT-182
+  implementation_owner: F04
+  verification_owner: V37
+  case_ids:
+  - OTV2-ACCOUNT-182-AC01
+- requirement_id: OTV2-ACCOUNT-183
+  implementation_owner: F04
+  verification_owner: V37
+  case_ids:
+  - OTV2-ACCOUNT-183-AC01
+- requirement_id: OTV2-CLASSROOM-184
+  implementation_owner: P16
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-184-AC01
+- requirement_id: OTV2-PARENT-185
+  implementation_owner: P13
+  verification_owner: V38
+  case_ids:
+  - OTV2-PARENT-185-AC01
+- requirement_id: OTV2-TICKETS-186
+  implementation_owner: P24
+  verification_owner: V38
+  case_ids:
+  - OTV2-TICKETS-186-AC01
+- requirement_id: OTV2-CLASSROOM-187
+  implementation_owner: P18
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-187-AC01
+- requirement_id: OTV2-CLASSROOM-188
+  implementation_owner: P17
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-188-AC01
+- requirement_id: OTV2-CONSENT-189
+  implementation_owner: P32
+  verification_owner: V40
+  case_ids:
+  - OTV2-CONSENT-189-DEPENDENT-STUDENT
+  - OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT
+- requirement_id: OTV2-CONTENT-190
+  implementation_owner: P19
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-190-AC01
+- requirement_id: OTV2-CONTENT-191
+  implementation_owner: P20
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-191-AC01
+- requirement_id: OTV2-CONTENT-192
+  implementation_owner: P19
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-192-AC01
+- requirement_id: OTV2-CONTENT-193
+  implementation_owner: P20
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-193-AC01
+- requirement_id: OTV2-CONTENT-194
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-194-AC01
+- requirement_id: OTV2-CONTENT-195
+  implementation_owner: P21
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-195-AC01
+- requirement_id: OTV2-LEARNING-196
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-196-AC01
+- requirement_id: OTV2-LEARNING-197
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-197-AC01
+- requirement_id: OTV2-GHL-198
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-198-AC01
+- requirement_id: OTV2-GHL-199
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-199-AC01
+- requirement_id: OTV2-SCHOOL-200
+  implementation_owner: P09
+  verification_owner: V37
+  case_ids:
+  - OTV2-SCHOOL-200-AC01
+- requirement_id: OTV2-BILLING-201
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-201-INACTIVE-ROUTE-AUTHORIZATION
+- requirement_id: OTV2-STATE-202
+  implementation_owner: F02
+  verification_owner: V39
+  case_ids:
+  - OTV2-STATE-202-AC01
+- requirement_id: OTV2-NOTIFY-203
+  implementation_owner: P23
+  verification_owner: V40
+  case_ids:
+  - OTV2-NOTIFY-203-AC01
+- requirement_id: OTV2-UX-204
+  implementation_owner: F07
+  verification_owner: V38
+  case_ids:
+  - OTV2-UX-204-AC01
+- requirement_id: OTV2-ADMIN-205
+  implementation_owner: P11
+  verification_owner: V37
+  case_ids:
+  - OTV2-ADMIN-205-AC01
+- requirement_id: OTV2-MIGRATION-206
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-MIGRATION-206-AC01
+- requirement_id: OTV2-MIGRATION-207
+  implementation_owner: P35
+  verification_owner: V43
+  case_ids:
+  - OTV2-MIGRATION-207-AC01
+- requirement_id: OTV2-FOUNDATION-208
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-208-AC01
+- requirement_id: OTV2-PROVIDER-209
+  implementation_owner: F06
+  verification_owner: V41
+  case_ids:
+  - OTV2-PROVIDER-209-AC01
+- requirement_id: OTV2-JOBS-210
+  implementation_owner: F05
+  verification_owner: V39
+  case_ids:
+  - OTV2-JOBS-210-AC01
+- requirement_id: OTV2-JOBS-211
+  implementation_owner: F05
+  verification_owner: V39
+  case_ids:
+  - OTV2-JOBS-211-AC01
+- requirement_id: OTV2-PRIVACY-212
+  implementation_owner: P32
+  verification_owner: V40
+  case_ids:
+  - OTV2-PRIVACY-212-AC01
+- requirement_id: OTV2-SIGNUP-213
+  implementation_owner: P08
+  verification_owner: V37
+  case_ids:
+  - OTV2-SIGNUP-213-AC01
+- requirement_id: OTV2-SCHOOL-214
+  implementation_owner: P09
+  verification_owner: V37
+  case_ids:
+  - OTV2-SCHOOL-214-AC01
+- requirement_id: OTV2-FOUNDATION-215
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-215-AC01
+- requirement_id: OTV2-FOUNDATION-216
+  implementation_owner: F01
+  verification_owner: V37
+  case_ids:
+  - OTV2-FOUNDATION-216-AC01
+- requirement_id: OTV2-API-217
+  implementation_owner: F05
+  verification_owner: V39
+  case_ids:
+  - OTV2-API-217-AC01
+- requirement_id: OTV2-OPS-218
+  implementation_owner: P34
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-218-AC01
+- requirement_id: OTV2-OPS-219
+  implementation_owner: P34
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-219-AC01
+- requirement_id: OTV2-GHL-220
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-220-AC01
+- requirement_id: OTV2-PRIVACY-221
+  implementation_owner: P32
+  verification_owner: V40
+  case_ids:
+  - OTV2-PRIVACY-221-AC01
+- requirement_id: OTV2-OPS-222
+  implementation_owner: R44
+  verification_owner: R44
+  case_ids:
+  - OTV2-OPS-222-AC01
+- requirement_id: OTV2-CLASSROOM-223
+  implementation_owner: P16
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-223-DRAFT-THEN-ACTIVATE
+- requirement_id: OTV2-BILLING-224
+  implementation_owner: P25
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-224-STANDARD
+  - OTV2-BILLING-224-IMMEDIATE-EXCEPTION
+- requirement_id: OTV2-GHL-225
+  implementation_owner: P30
+  verification_owner: V42
+  case_ids:
+  - OTV2-GHL-225-SCHEDULE
+  - OTV2-GHL-225-PAID-EXIT
+  - OTV2-GHL-225-SCHOOL-EXIT
+  - OTV2-GHL-225-SUPPRESSION
+- requirement_id: OTV2-PARENT-226
+  implementation_owner: P28
+  verification_owner: V42
+  case_ids:
+  - OTV2-PARENT-226-PREFERENCES
+  - OTV2-PARENT-226-ESSENTIAL-EMAIL
+- requirement_id: OTV2-AUTH-227
+  implementation_owner: F03
+  verification_owner: V37
+  case_ids:
+  - OTV2-AUTH-227-PASSWORDS-RATE-LIMITS
+  - OTV2-AUTH-227-SESSIONS-TOKENS-LEASES
+  - OTV2-AUTH-227-WEBHOOK-WORKER
+- requirement_id: OTV2-SIGNUP-228
+  implementation_owner: P08
+  verification_owner: V37
+  case_ids:
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+- requirement_id: OTV2-SIGNUP-229
+  implementation_owner: P09
+  verification_owner: V37
+  case_ids:
+  - OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY
+- requirement_id: OTV2-ACCOUNT-230
+  implementation_owner: F04
+  verification_owner: V37
+  case_ids:
+  - OTV2-ACCOUNT-230-IDENTITY-ROLE-CONTEXT
+- requirement_id: OTV2-PROVIDER-231
+  implementation_owner: F06
+  verification_owner: V41
+  case_ids:
+  - OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING
+- requirement_id: OTV2-CLASSROOM-232
+  implementation_owner: P18
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-232-TIMING
+  - OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
+- requirement_id: OTV2-CONTENT-233
+  implementation_owner: P20
+  verification_owner: V39
+  case_ids:
+  - OTV2-CONTENT-233-OBS-CAPTURE
+  - OTV2-CONTENT-233-STORAGE-MODELS-TRANSCODE
+- requirement_id: OTV2-CLASSROOM-234
+  implementation_owner: P16
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-234-FULL-LIFECYCLE
+- requirement_id: OTV2-CLASSROOM-235
+  implementation_owner: P16
+  verification_owner: V39
+  case_ids:
+  - OTV2-CLASSROOM-235-ATOMIC-ENROLLMENT
+- requirement_id: OTV2-PARENT-236
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-PARENT-236-INACTIVE-ALLOWLIST
+  - OTV2-PARENT-236-VERIFIED-RECOVERY
+- requirement_id: OTV2-NOTIFY-237
+  implementation_owner: P23
+  verification_owner: V40
+  case_ids:
+  - OTV2-NOTIFY-237-CATEGORY-LIFETIME
+  - OTV2-NOTIFY-237-DEDUPE-READ-SOUND
+- requirement_id: OTV2-LEARNING-238
+  implementation_owner: P22
+  verification_owner: V40
+  case_ids:
+  - OTV2-LEARNING-238-QUESTION-DEDUPE
+  - OTV2-LEARNING-238-RECOGNITION-CONSENT
+- requirement_id: OTV2-PRIVACY-239
+  implementation_owner: P32
+  verification_owner: V40
+  case_ids:
+  - OTV2-PRIVACY-239-ACTOR-ROUTES
+  - OTV2-PRIVACY-239-REQUEST-WORKFLOW
+- requirement_id: OTV2-PRIVACY-240
+  implementation_owner: P32
+  verification_owner: V40
+  case_ids:
+  - OTV2-PRIVACY-240-SNAPSHOT-REDACTION
+  - OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER
+- requirement_id: OTV2-OPS-241
+  implementation_owner: P34
+  verification_owner: V43
+  case_ids:
+  - OTV2-OPS-241-ENVIRONMENT-MAPPING
+  - OTV2-OPS-241-LEGAL-ARTIFACT-GATE
+- requirement_id: OTV2-BILLING-242
+  implementation_owner: P26
+  verification_owner: V41
+  case_ids:
+  - OTV2-BILLING-242-EVENT-PRECEDENCE-GRACE
+- requirement_id: OTV2-PROVIDER-243
+  implementation_owner: F06
+  verification_owner: V41
+  case_ids:
+  - OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE

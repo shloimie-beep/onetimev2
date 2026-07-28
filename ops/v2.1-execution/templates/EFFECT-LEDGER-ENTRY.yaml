@@ -1,0 +1,29 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+effect_id: ${OPAQUE_IDEMPOTENCY_KEY}
+event_sequence: ${MONOTONIC_INTEGER}
+previous_event_digest: ${PRIOR_EVENT_DIGEST_OR_NONE}
+state: ${RESERVED_CANCELLED_ATTEMPTED_UNKNOWN_SUCCEEDED_RECONCILED_CLEANUP_PENDING_OR_CLOSED}
+task_id: ${TASK_ID}
+canonical_event_path: ops/v2.1-execution/effects/${CANDIDATE_OR_NONE}/${TASK_ID}/${OPAQUE_IDEMPOTENCY_KEY}/events/${MONOTONIC_INTEGER}-${EVENT_STATE}.yaml
+current_pointer_path: ops/v2.1-execution/effects/${CANDIDATE_OR_NONE}/${TASK_ID}/${OPAQUE_IDEMPOTENCY_KEY}/CURRENT.yaml
+candidate_digest: ${CANONICAL_CANDIDATE_DIGEST}
+deployment_instance_digest: ${DEPLOYMENT_INSTANCE_DIGEST_OR_NONE}
+authority_grant_digest: ${AUTHORITY_GRANT_DIGEST}
+authority_status_index_digest: ${AUTHORITY_STATUS_INDEX_DIGEST}
+authority_status_entry_digest: ${AUTHORITY_STATUS_ENTRY_DIGEST}
+latest_revocation_digest: ${REVOCATION_DIGEST_OR_NONE}
+authority_checked_at: ${UTC_TIMESTAMP}
+lock: ${EXACT_LOCK}
+fencing_token: ${FENCING_TOKEN}
+provider_identity: ${EXACT_NON_SECRET_IDENTITY}
+operation: ${EXACT_OPERATION}
+budget_reservation:
+  count: ${COUNT}
+  value: ${VALUE_OR_NOT_APPLICABLE}
+provider_request_or_operation_id: ${NON_SECRET_ID_OR_NONE}
+provider_readback_digest: ${READBACK_DIGEST_OR_NONE}
+cleanup_state: ${NOT_APPLICABLE_PENDING_OR_COMPLETE}
+state_based_on_head_sha: ${HEAD_BEFORE_THIS_EVENT_COMMIT}
+event_at: ${UTC_TIMESTAMP}
+immutable: true

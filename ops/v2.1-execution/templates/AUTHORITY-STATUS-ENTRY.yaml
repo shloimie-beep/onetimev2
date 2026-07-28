@@ -1,0 +1,13 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ${AUTHORITY_ID}
+grant_digest: ${AUTHORITY_GRANT_SHA256}
+status: ${ACTIVE_REVOKED_OR_EXPIRED}
+expires_at: ${UTC_TIMESTAMP}
+latest_revocation_path: ${PATH_OR_NONE}
+latest_revocation_digest: ${DIGEST_OR_NONE}
+provider_lock: ${EXACT_PROVIDER_OR_INFRA_LOCK}
+provider_lock_lease_id: ${LEASE_ID}
+fencing_token: ${OPAQUE_FENCING_TOKEN}
+checked_at: ${UTC_TIMESTAMP}
+state_based_on_control_head_sha: ${PARENT_CONTROL_HEAD_SHA}

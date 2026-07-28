@@ -1,0 +1,50 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+generated_by: C00
+status: bootstrap_required
+ready: []
+entry_payload_digests: {}
+digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
+  separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
+  in this sibling map, never inside the entry.
+entry_schema:
+  task_id: null
+  status: ready_or_resume_ready
+  phase: null
+  branch: null
+  claim_mode: create_new_branch_or_resume_existing_or_adopt_bootstrap_integration
+  state_based_on_control_head_sha: null
+  authorized_start_sha: null
+  expected_existing_head: null
+  package_lock_digest: null
+  source_package_digest: null
+  task_packet_digest: null
+  task_context_digest: null
+  dependency_heads_and_digests: {}
+  writer_slot_leases: []
+  effect_lock_leases: []
+  effect_lock_lease_schema:
+    lock: null
+    lease_id: null
+    fencing_token: null
+    provider_identity: null
+    authorized_operation: null
+    authority_id: null
+    authority_grant_digest: null
+    authority_status_index_digest: null
+    authority_status_entry_digest: null
+    latest_revocation_digest: null
+    authority_checked_at: null
+    lease_expires_at: null
+  claim_id: null
+  lease_issued_at: null
+  lease_expires_at: null
+  heartbeat_interval_minutes: 30
+  prompt_path: null
+  model: null
+  reasoning: null
+rule: C00 populates exact branch/claim mode, parent control head, authorized integration start SHA containing all
+  required interfaces, package/source/task/context/dependency digests, time-bounded writer/effect leases, one claim
+  ID, prompt path, model, and reasoning. The sibling map carries the canonical entry payload digest. The containing
+  authorizing control commit is derived from origin/codex/v21-control after fetch and recorded only on the worker
+  branch/registry observation; it is never self-embedded.

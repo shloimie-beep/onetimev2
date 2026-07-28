@@ -1,0 +1,15 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+integration_branch: codex/v21-integration
+items: []
+item_payload_digests: {}
+digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
+  separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
+  only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
+entry_schema: templates/MERGE-ENTRY.yaml
+rule: C00 independently populates exact interface/full/evidence source, source-delta-base, and optimistic-concurrency
+  target SHA fields; it never defaults or infers the source base from the target. Field values may coincide when
+  Git proves source_delta_base_head_sha equals git merge-base(expected_target_head_sha, source_head_sha). Only source_delta_base_head_sha..source_head_sha
+  is scope-checked. Every evidence item preserves source ancestry. I36 alone mutates integration/evidence branches,
+  verifies the source head becomes an ancestor of the pushed target head, and reports resulting heads for C00 to
+  record.

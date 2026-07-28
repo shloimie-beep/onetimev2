@@ -1,0 +1,373 @@
+schema_version: 1
+purpose: Unlock downstream work from stable interfaces before upstream implementation is completely integrated.
+checkpoints: &id001
+- producer: F01
+  unlocks:
+  - F02
+  - F07
+  - P31
+  - P35
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - apps/web/src/server/features/registry/**
+  - apps/web/src/client/app/router/**
+  - apps/worker/src/runners/registry/**
+  - ops/v2.1-execution/runtime/F01/steward-requests/schema/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: F02
+  unlocks:
+  - F03
+  - F04
+  - F05
+  - P15
+  - P22
+  - P32
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/state/**
+  - packages/domain/src/state/**
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: F03
+  unlocks:
+  - P08
+  - P10
+  - P12
+  - P14
+  - P24
+  - P26
+  - P32
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/identity/auth/**
+  - packages/domain/src/auth/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: F04
+  unlocks:
+  - F06
+  - P08
+  - P10
+  - P12
+  - P14
+  - P16
+  - P24
+  - P25
+  - P26
+  - P27
+  - P32
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/accounts/**
+  - packages/contracts/src/access/**
+  - packages/domain/src/accounts/**
+  - packages/domain/src/access/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: F05
+  unlocks:
+  - F06
+  - P11
+  - P16
+  - P17
+  - P18
+  - P19
+  - P20
+  - P21
+  - P22
+  - P23
+  - P24
+  - P25
+  - P26
+  - P32
+  - P33
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/api/**
+  - packages/contracts/src/jobs/**
+  - packages/domain/src/jobs/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: F06
+  unlocks:
+  - P08
+  - P17
+  - P19
+  - P21
+  - P25
+  - P26
+  - P27
+  - P28
+  - P33
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/providers/**
+  - packages/domain/src/providers/shared/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: F07
+  unlocks:
+  - P08
+  - P10
+  - P11
+  - P12
+  - P13
+  - P14
+  - P15
+  - P22
+  - P23
+  - P24
+  - P25
+  - P32
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/brand-system/**
+  - apps/web/src/client/styles/v21/**
+  - shared AppShell/WorkspaceTabs/navigation primitives
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P08
+  unlocks:
+  - P09
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/signup/family/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P12
+  unlocks:
+  - P13
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/portals/parent-household/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P14
+  unlocks:
+  - P21
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/portals/student/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P15
+  unlocks:
+  - P16
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/calendar/**
+  - packages/domain/src/calendar/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P16
+  unlocks:
+  - P17
+  - P18
+  - P19
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/classes/core/**
+  - packages/domain/src/classes/core/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P19
+  unlocks:
+  - P20
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/content/ingest/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P27
+  unlocks:
+  - P28
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/communications/ghl-identity/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P28
+  unlocks:
+  - P29
+  - P30
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/communications/foundation/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P31
+  unlocks:
+  - P28
+  - P29
+  - P30
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/domain/src/communications/copy/**
+  - integrations/highlevel/v21/copy/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P32
+  unlocks:
+  - P18
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/privacy/**
+  - packages/domain/src/privacy/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+- producer: P33
+  unlocks:
+  - P34
+  state_on_task_branch: interface_ready
+  state_required_before_downstream_start: interface_ready_integrated
+  integration_owner: I36
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/observability/v21/**
+  - apps/web/src/server/operations/**
+  checkpoint_must_record:
+  - exact realized file paths and exported symbols
+  - semantic contract version
+  - SHA-256 digest for each artifact and combined contract
+  - compatibility invariants
+  - verification commands/results
+  - exact interface implementation head and metadata commit observed by C00
+all_required_publishers: *id001

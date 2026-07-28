@@ -1,0 +1,34 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+candidate_core:
+  repository_source_sha: ${PRODUCT_SOURCE_SHA_BEFORE_MANIFEST_METADATA_COMMIT}
+  application_content_sha256: ${APPLICATION_CONTENT_SHA256}
+  product_tree_digest: ${PRODUCT_TREE_DIGEST}
+  web_artifact_digest: ${WEB_DIGEST}
+  worker_artifact_digest: ${WORKER_DIGEST}
+  configuration_bundle_digest: ${NON_SECRET_CONFIGURATION_BUNDLE_DIGEST}
+  migration_inventory_digest: ${MIGRATION_INVENTORY_DIGEST}
+  frontend_asset_digest: ${FRONTEND_DIGEST}
+  route_action_inventory_digest: ${ROUTE_ACTION_DIGEST}
+  workflow_registry_digest: ${WORKFLOW_DIGEST}
+  highlevel_registry_digest: ${HIGHLEVEL_REGISTRY_DIGEST}
+  provider_registry_digest: ${PROVIDER_REGISTRY_DIGEST}
+  message_catalog_digest: ${MESSAGE_CATALOG_DIGEST}
+  acceptance_contract_digest: ${ACCEPTANCE_CONTRACT_DIGEST}
+  environment_profile_schema_digest: ${ENVIRONMENT_PROFILE_SCHEMA_DIGEST}
+canonicalization:
+  algorithm: sha256
+  domain_prefix: "ONE-TIME-V2.1-CANDIDATE\u0000"
+  serialization: "candidate_core as UTF-8 JSON; recursively sorted keys; separators ',' and ':'; ensure_ascii=false; no floats"
+  excludes:
+    - canonical_candidate_digest
+    - manifest path and manifest commit
+    - timestamps
+    - deployment instances and deployment time
+    - per-environment provider assets/readbacks
+    - evidence and result heads
+canonical_candidate_digest: ${SHA256_DOMAIN_PREFIX_PLUS_CANONICAL_CORE}
+candidate_manifest_commit_sha: derive_from_git_and_record_in_control_current_candidate
+frozen_at: ${UTC_TIMESTAMP}
+evidence_branch: codex/v21-evidence-${CANDIDATE_SHORT_SHA}
+immutable: true

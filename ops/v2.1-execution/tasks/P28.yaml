@@ -1,0 +1,156 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P28
+title: Communication Foundation, Suppression, Readback, Website Bot, and WhatsApp Preference
+outcome: Implement the sole GHL registry, sender/suppression truth, readbacks, website lead bot, channel preference
+  model, and email-first workflows that remain correct while WhatsApp is dormant.
+kind: implementation
+wave: 6
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-p28-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - F06
+  - P27
+  - P31
+  required_start_states:
+    F06: interface_ready_integrated
+    P27: interface_ready_integrated
+    P31: interface_ready_integrated
+  merge_after:
+  - F06
+  - P27
+  - P31
+  candidate_integration_partners:
+  - P17
+  - P25
+  - P26
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: true
+  unlocks:
+  - P29
+  - P30
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/communications/foundation/**
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: Publish and push an exact interface checkpoint; I36 must merge it into the integration branch before C00
+    authorizes downstream start.
+scope:
+  writer_slots:
+  - GHL_REGISTRY
+  - COMMUNICATION_FOUNDATION
+  normalized_owned_globs:
+  - apps/worker/src/runners/communications-foundation/**
+  - integrations/highlevel/registry/workflow-registry.yaml
+  - integrations/highlevel/v21/foundation/**
+  - packages/contracts/src/communications/foundation/**
+  - packages/db/src/communications/foundation/**
+  - packages/domain/src/communications/foundation/**
+  scope_notes_only:
+  - packages/db/src/communications/foundation/** except migrations and central index
+  - website bot lead-capture modules
+  - sender/suppression/readback/preference tests
+  - steward requests for config/dependency/route/worker/migration changes
+  explicit_path_excludes: []
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-GHL-120
+  - OTV2-GHL-121
+  - OTV2-GHL-122
+  - OTV2-GHL-137
+  - OTV2-GHL-138
+  - OTV2-GHL-198
+  - OTV2-GHL-199
+  - OTV2-GHL-220
+  - OTV2-PARENT-226
+  primary_acceptance_case_ids:
+  - OTV2-GHL-120-AC01
+  - OTV2-GHL-121-AC01
+  - OTV2-GHL-122-AC01
+  - OTV2-GHL-137-AC01
+  - OTV2-GHL-138-COMMUNICATIONS-READBACK
+  - OTV2-GHL-198-AC01
+  - OTV2-GHL-199-AC01
+  - OTV2-GHL-220-AC01
+  - OTV2-PARENT-226-PREFERENCES
+  - OTV2-PARENT-226-ESSENTIAL-EMAIL
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-091
+  - DEC-093
+  - DEC-094
+  - DEC-095
+  - DEC-096
+  - DEC-098
+  - DEC-100
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
+  - 09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md
+  - 11-ENVIRONMENT-FIXTURE-CANARY-MANIFEST-v2.1.yaml
+  embedded_normative_sections: []
+deliverables:
+- single canonical GHL workflow registry and generation contract
+- sender and suppression readback truth
+- website bot Family/School lead capture
+- email-first channel selection with dormant WhatsApp preference
+notes:
+- Dormant WhatsApp intent must never be represented as a successful send.
+- P29 and P30 create isolated workflow fragments; P28 or I36 registers them.
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

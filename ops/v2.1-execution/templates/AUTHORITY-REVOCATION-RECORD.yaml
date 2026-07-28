@@ -1,0 +1,15 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ${AUTHORITY_ID}
+revocation_sequence: ${MONOTONIC_INTEGER}
+canonical_path: ops/v2.1-execution/control/authority-revocations/${AUTHORITY_ID}/${MONOTONIC_INTEGER}.yaml
+grant_digest: ${AUTHORITY_GRANT_SHA256}
+previous_revocation_digest: ${PRIOR_REVOCATION_DIGEST_OR_NONE}
+status: revoked
+revoked_by: ${EXTERNAL_APPROVER_OR_OPERATOR_IDENTITY}
+revocation_evidence_digest: ${REVOCATION_EVIDENCE_SHA256}
+revocation_reason: ${EXACT_REASON}
+revoked_at: ${UTC_TIMESTAMP}
+state_based_on_control_head_sha: ${PARENT_CONTROL_HEAD_SHA}
+contains_secret: false
+immutable: true

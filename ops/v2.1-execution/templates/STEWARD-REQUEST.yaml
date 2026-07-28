@@ -1,0 +1,14 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: ${TASK_ID}-${KIND}-${SEQUENCE}
+task_id: ${TASK_ID}
+kind: ${KIND}
+requirement_ids: []
+acceptance_case_ids: []
+rationale: ${RATIONALE}
+desired_semantic_change: ${DESIRED_CHANGE}
+proposed_symbols_routes_keys_or_dependencies: []
+compatibility_assumptions: []
+verification_performed: []
+conflicts_or_risks: []
+contains_secret_or_private_data: false

@@ -1,0 +1,154 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P14
+title: Student Application and Isolation
+outcome: Implement the separate Student application, own-profile experience, navigation, account controls, and strict
+  sibling/household isolation.
+kind: implementation
+wave: 4
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-p14-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - F03
+  - F04
+  - F07
+  required_start_states:
+    F03: interface_ready_integrated
+    F04: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F03
+  - F04
+  - F07
+  candidate_integration_partners:
+  - P16
+  - P21
+  - P22
+  - P23
+  - P26
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: true
+  unlocks:
+  - P21
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/portals/student/**
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: Publish and push an exact interface checkpoint; I36 must merge it into the integration branch before C00
+    authorizes downstream start.
+scope:
+  writer_slots:
+  - STUDENT_APP
+  normalized_owned_globs:
+  - apps/web/src/client/app/student/account/**
+  - apps/web/src/client/app/student/home/**
+  - apps/web/src/client/app/student/profile/**
+  - apps/web/src/client/app/student/shell/**
+  - apps/web/src/server/features/portals/student/**
+  - packages/contracts/src/portals/student/**
+  - packages/domain/src/portals/student/**
+  scope_notes_only:
+  - Student isolation focused tests
+  - steward requests for route/migration/registration changes
+  explicit_path_excludes:
+  - apps/web/src/client/app/student/classroom/**
+  - apps/web/src/client/app/student/library/**
+  - apps/web/src/client/app/student/learning/**
+  - apps/web/src/client/app/student/notifications/**
+  - apps/web/src/client/app/student/support/**
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-STUDENT-041
+  - OTV2-STUDENT-042
+  - OTV2-STUDENT-043
+  - OTV2-STUDENT-044
+  - OTV2-STUDENT-045
+  - OTV2-STUDENT-046
+  - OTV2-STUDENT-047
+  - OTV2-STUDENT-048
+  - OTV2-STUDENT-049
+  - OTV2-STUDENT-050
+  primary_acceptance_case_ids:
+  - OTV2-STUDENT-041-AC01
+  - OTV2-STUDENT-042-AC01
+  - OTV2-STUDENT-043-AC01
+  - OTV2-STUDENT-044-AC01
+  - OTV2-STUDENT-045-AC01
+  - OTV2-STUDENT-046-AC01
+  - OTV2-STUDENT-047-AC01
+  - OTV2-STUDENT-048-AC01
+  - OTV2-STUDENT-049-AC01
+  - OTV2-STUDENT-050-AC01
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-014
+  - DEC-063
+  - DEC-111
+  - DEC-121
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- separate Student shell and profile
+- self-only authorized data contract
+- safe account/password controls
+- sibling and cross-household denial
+notes: []
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

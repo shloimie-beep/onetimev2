@@ -1,0 +1,145 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P16
+title: Class Series, Occurrences, and Canonical Enrollment
+outcome: Implement class-series and occurrence lifecycle plus atomic automatic enrollment in the single canonical
+  launch class.
+kind: implementation
+wave: 5
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-p16-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - F04
+  - F05
+  - P15
+  required_start_states:
+    F04: interface_ready_integrated
+    F05: interface_ready_integrated
+    P15: interface_ready_integrated
+  merge_after:
+  - F04
+  - F05
+  - P15
+  candidate_integration_partners:
+  - P12
+  - P14
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: true
+  unlocks:
+  - P17
+  - P18
+  - P19
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/classes/core/**
+  - packages/domain/src/classes/core/**
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: Publish and push an exact interface checkpoint; I36 must merge it into the integration branch before C00
+    authorizes downstream start.
+scope:
+  writer_slots:
+  - CLASSROOM_CORE
+  normalized_owned_globs:
+  - apps/web/src/client/app/admin/classroom/core/**
+  - apps/web/src/server/features/classes/core/**
+  - packages/contracts/src/classes/core/**
+  - packages/db/src/classes/core/**
+  - packages/domain/src/classes/core/**
+  scope_notes_only:
+  - packages/db/src/classes/core/** except migrations and central index
+  - class/enrollment concurrency tests
+  - steward requests for route/migration/registration changes
+  explicit_path_excludes: []
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-CLASSROOM-065
+  - OTV2-CLASSROOM-066
+  - OTV2-CLASSROOM-067
+  - OTV2-CLASSROOM-184
+  - OTV2-CLASSROOM-223
+  - OTV2-CLASSROOM-234
+  - OTV2-CLASSROOM-235
+  primary_acceptance_case_ids:
+  - OTV2-CLASSROOM-065-SERIES-LIFECYCLE
+  - OTV2-CLASSROOM-066-AC01
+  - OTV2-CLASSROOM-067-AC01
+  - OTV2-CLASSROOM-184-AC01
+  - OTV2-CLASSROOM-223-DRAFT-THEN-ACTIVATE
+  - OTV2-CLASSROOM-234-FULL-LIFECYCLE
+  - OTV2-CLASSROOM-235-ATOMIC-ENROLLMENT
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-060
+  - DEC-061
+  - DEC-062
+  - DEC-123
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 03-DECISION-REGISTER-v2.1.md
+  - 05-ACTOR-ROLE-CAPABILITY-ROUTE-MATRIX-v2.1.md
+  - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
+  - 07-SOURCE-OF-TRUTH-AND-PROVIDER-CONTRACTS-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- class series and occurrence lifecycle
+- canonical launch-class singleton invariant
+- atomic active-Student enrollment
+- draft/invisible behavior for additional series
+notes: []
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

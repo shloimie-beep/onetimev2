@@ -1,0 +1,23 @@
+schema_version: 1
+reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+status: to_be_measured_once_by_C00
+measured_at: null
+environment_fingerprint: null
+toolchain_fingerprint: null
+dependency_lock_digest: null
+valid_for_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+expires_when:
+- reviewed or bootstrap source head changes
+- dependency lock digest changes
+- toolchain/runtime fingerprint changes
+- verification environment fingerprint changes
+regeneration_owner: C00
+rule: C00 records baseline command failures before implementation, binds them to source/dependency/toolchain/environment
+  fingerprints, and regenerates them whenever an expiry condition changes. Workers may rely only on still-valid
+  checksum-bound entries and must not relabel new failures as baseline failures.
+commands:
+- npm run verify
+failure_record_schema: templates/BASELINE-FAILURE.yaml
+fingerprint_rule: Normalize volatile paths/timestamps/IDs, redact secrets/private data, then SHA-256 the stable
+  failure signature.
+recorded_failures: []

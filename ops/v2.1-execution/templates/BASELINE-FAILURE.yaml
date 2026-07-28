@@ -1,0 +1,20 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+baseline_sha: ${REVIEWED_OR_BOOTSTRAP_SHA}
+measured_at: ${UTC_TIMESTAMP}
+environment_fingerprint: ${ENVIRONMENT_SHA256}
+toolchain_fingerprint: ${TOOLCHAIN_SHA256}
+dependency_lock_digest: ${DEPENDENCY_LOCK_SHA256}
+command: ${EXACT_COMMAND}
+exit_code: ${EXIT_CODE}
+failure_fingerprint: ${NORMALIZED_SHA256}
+first_relevant_lines_redacted: []
+affected_paths: []
+classification: ${PREEXISTING_OR_NEW}
+recorded_by: C00
+recorded_at: ${UTC_TIMESTAMP}
+expires_when:
+  - source head changes
+  - dependency lock changes
+  - toolchain/runtime changes
+  - verification environment changes

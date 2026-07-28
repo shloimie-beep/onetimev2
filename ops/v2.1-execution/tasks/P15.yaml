@@ -1,0 +1,149 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P15
+title: Calendar, Recurrence, Timezone, and DST
+outcome: Implement canonical class recurrence, role-specific calendars, restrictions, Gregorian display, timezone-safe
+  rendering, DST handling, and responsive calendar interactions.
+kind: implementation
+wave: 3
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-p15-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - F02
+  - F07
+  required_start_states:
+    F02: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F02
+  - F07
+  candidate_integration_partners:
+  - F03
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: true
+  unlocks:
+  - P16
+  contract_schema_version: 1
+  required_export_roots:
+  - packages/contracts/src/calendar/**
+  - packages/domain/src/calendar/**
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: Publish and push an exact interface checkpoint; I36 must merge it into the integration branch before C00
+    authorizes downstream start.
+scope:
+  writer_slots:
+  - CALENDAR
+  normalized_owned_globs:
+  - apps/web/src/client/features/calendar/**
+  - apps/web/src/server/features/calendar/**
+  - packages/contracts/src/calendar/**
+  - packages/db/src/calendar/**
+  - packages/domain/src/calendar/**
+  scope_notes_only:
+  - packages/db/src/calendar/** except migrations and central index
+  - calendar/timezone/DST focused tests
+  - steward requests for route/migration/registration changes
+  explicit_path_excludes: []
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-CALENDAR-051
+  - OTV2-CALENDAR-052
+  - OTV2-CALENDAR-053
+  - OTV2-CALENDAR-054
+  - OTV2-CALENDAR-055
+  - OTV2-CALENDAR-056
+  - OTV2-CALENDAR-057
+  - OTV2-CALENDAR-058
+  - OTV2-CALENDAR-059
+  - OTV2-CALENDAR-060
+  - OTV2-CALENDAR-061
+  - OTV2-CALENDAR-062
+  - OTV2-CALENDAR-063
+  - OTV2-CALENDAR-064
+  primary_acceptance_case_ids:
+  - OTV2-CALENDAR-051-AC01
+  - OTV2-CALENDAR-052-AC01
+  - OTV2-CALENDAR-053-AC01
+  - OTV2-CALENDAR-054-AC01
+  - OTV2-CALENDAR-055-AC01
+  - OTV2-CALENDAR-056-AC01
+  - OTV2-CALENDAR-057-AC01
+  - OTV2-CALENDAR-058-AC01
+  - OTV2-CALENDAR-059-AC01
+  - OTV2-CALENDAR-060-AC01
+  - OTV2-CALENDAR-061-AC01
+  - OTV2-CALENDAR-062-AC01
+  - OTV2-CALENDAR-063-AC01
+  - OTV2-CALENDAR-064-AC01
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-060
+  - DEC-062
+  - DEC-144
+  required_source_documents:
+  - 01-PRODUCT-SPEC-v2.1.md
+  - 06-DOMAIN-MODEL-AND-STATE-MACHINES-v2.1.md
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  embedded_normative_sections: []
+deliverables:
+- rolling recurrence and calendar query contract
+- Admin/Parent/Student role calendar views
+- timezone and DST-safe occurrence rendering
+- responsive accessible calendar UI
+notes: []
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

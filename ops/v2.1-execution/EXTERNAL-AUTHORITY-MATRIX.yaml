@@ -1,0 +1,210 @@
+schema_version: 1
+default:
+  provider_access: none
+  live_mutation_authority: false
+  lock_granularity: effectful subphase only
+  rule: Provider-relevant code, declarative definitions, and local tests may proceed with no provider access. Exact
+    scoped read-only access requires C00 authorization but is nonexclusive. A live/sandbox mutation or bounded send/charge/publish/enroll
+    operation requires an explicit authority record and exclusive time-bounded lock.
+locks:
+- lock: provider:ghl-location
+  provider_relevant_code_tasks:
+  - P27
+  - P28
+  - P29
+  - P30
+  - P25
+  - P26
+  verification_task:
+  - V41
+  - V42
+  - R44
+- lock: provider:stripe-account
+  provider_relevant_code_tasks:
+  - P25
+  - P26
+  verification_task:
+  - V41
+  - R44
+- lock: provider:zoom-account
+  provider_relevant_code_tasks:
+  - P17
+  - P18
+  verification_task:
+  - V39
+  - R44
+- lock: provider:drive-folder
+  provider_relevant_code_tasks:
+  - P19
+  - P20
+  verification_task:
+  - V39
+  - R44
+- lock: provider:vimeo-account
+  provider_relevant_code_tasks:
+  - P20
+  - P21
+  verification_task:
+  - V39
+  - R44
+- lock: provider:resend-domain
+  provider_relevant_code_tasks:
+  - F03
+  - P31
+  verification_task:
+  - V37
+  - V38
+  - R44
+- lock: provider:telegram-bot
+  provider_relevant_code_tasks:
+  - P24
+  verification_task:
+  - V38
+  - R44
+- lock: infra:dns
+  provider_relevant_code_tasks:
+  - P35
+  verification_task:
+  - V43
+  - R45
+- lock: production:deployment
+  provider_relevant_code_tasks:
+  - P33
+  - P34
+  - P35
+  - I36
+  verification_task:
+  - R44
+  - R45
+- lock: provider:s3-kms
+  provider_relevant_code_tasks:
+  - P19
+  - P20
+  - P21
+  - P32
+  - P34
+  verification_task:
+  - V39
+  - V40
+  - V43
+  - R44
+  budget_fields:
+  - bucket_and_key_prefix
+  - object_count
+  - bytes
+  - kms_operations
+  - retention
+  - cleanup
+- lock: provider:openai-project
+  provider_relevant_code_tasks:
+  - P20
+  verification_task:
+  - V39
+  - R44
+  budget_fields:
+  - project_id
+  - model
+  - audio_duration
+  - input_bytes
+  - token_limit
+  - cost_limit
+  - retention
+  - cleanup
+- lock: infra:backup-source
+  provider_relevant_code_tasks:
+  - P34
+  verification_task:
+  - V43
+  - R44
+  - R45
+  budget_fields:
+  - source_identity
+  - snapshot_count
+  - bytes
+  - retention
+- lock: infra:restore-target
+  provider_relevant_code_tasks:
+  - P34
+  verification_task:
+  - V43
+  - R44
+  - R45
+  budget_fields:
+  - isolated_target_identity
+  - unrelated_data_allowed
+  - destructive_cleanup_scope
+- lock: ops:alert-destinations
+  provider_relevant_code_tasks:
+  - P33
+  - P34
+  verification_task:
+  - V43
+  - R44
+  - R45
+  budget_fields:
+  - destination_identity
+  - test_alert_count
+  - recipient_scope
+  - cleanup
+authority_record_requires:
+- task_id
+- candidate_digest when applicable
+- immutable grant digest plus current control-branch authority-status digest
+- approved_by, exact scope, expiry, latest revocation digest, and fencing token
+- exact provider account/location/asset identity
+- allowed operation
+- maximum effect count and value
+- approved fixtures
+- operator identity and timestamp
+- cleanup/reconciliation plan
+- stop conditions
+production_operator_canary_effect_budget:
+  one_time:
+    parent_accounts_created_or_updated_max: 2
+    households_created_or_updated_max: 2
+    student_accounts_created_or_updated_max: 6
+    support_tickets_max: 4
+    student_questions_max: 4
+    unexpected_cross_household_reads_max: 0
+  highlevel:
+    operator_contacts_created_or_updated_max: 2
+    workflow_enrollments_max: 4
+    broad_campaign_contacts_max: 0
+    student_contacts_max: 0
+  email:
+    resend_messages_max: 8
+    ghl_messages_max: 12
+    unrelated_recipients_max: 0
+  whatsapp:
+    messages_max: 0
+    workflow_executions_max: 0
+  zoom:
+    meetings_created_max: 1
+    registrants_created_max: 3
+    simultaneous_student_sessions_max: 3
+    raw_join_urls_exposed_max: 0
+  stripe:
+    live_checkout_sessions_max: 1
+    live_charge_total_usd_max: 67
+    live_refunds_max: 1
+    unrelated_customer_mutations_max: 0
+  drive:
+    files_ingested_max: 1
+    unrelated_files_moved_or_deleted_max: 0
+  vimeo:
+    assets_uploaded_max: 1
+    unrelated_assets_mutated_max: 0
+  telegram:
+    operator_notifications_max: 12
+    customer_messages_max: 0
+  destructive_effects:
+    customer_deletions_max: 0
+    provider_account_deletions_max: 0
+    broad_data_rewrites_max: 0
+prohibitions:
+- No provider mutation using guessed or ambiguous account identity.
+- No direct Stripe financial mutation by One Time.
+- No Student GHL contact creation.
+- No unapproved send, charge, publish, enrollment, DNS change, delete, or deployment.
+- No destructive cleanup without exact target and authority.
+- No provider success claim without provider readback.

@@ -1,0 +1,15 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+status: not_frozen
+canonical_candidate_digest: null
+product_source_sha: null
+application_content_sha256: null
+candidate_manifest_digest: null
+candidate_manifest_commit_sha: null
+candidate_manifest_path: null
+evidence_branch: null
+evidence_head_sha: null
+result_index_digest: null
+production_gate_deployment_digest: null
+acceptance_environment_matrix_digest: 3972640970c37875b70c02165cff2add4a034073b952e4e508481735b55d954d
+rule: C00 records identities reported by I36; C00 does not create or alter product artifacts.

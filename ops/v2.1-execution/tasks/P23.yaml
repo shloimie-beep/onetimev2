@@ -1,0 +1,123 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P23
+title: Student In-App Notifications and Audible Cue
+outcome: Implement exact Student notification lifecycle, unread/read behavior, safe action routing, and optional
+  foreground audible cue while leaving email launch functionality independent.
+kind: implementation
+wave: 4
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-p23-{slug}
+  harness_branch_template: null
+  maximum_active_writers_in_group: 8
+dependencies:
+  start_after:
+  - F05
+  - F07
+  required_start_states:
+    F05: interface_ready_integrated
+    F07: interface_ready_integrated
+  merge_after:
+  - F05
+  - F07
+  candidate_integration_partners:
+  - P17
+  - P21
+  - P22
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - STUDENT_NOTIFICATIONS
+  normalized_owned_globs:
+  - apps/web/src/client/app/student/notifications/**
+  - apps/web/src/server/features/notifications/student/**
+  - packages/contracts/src/notifications/student/**
+  - packages/db/src/notifications/student/**
+  - packages/domain/src/notifications/student/**
+  scope_notes_only:
+  - packages/db/src/notifications/student/** except migrations and central index
+  - notification lifecycle/a11y tests
+  - steward requests for route/migration/registration changes
+  explicit_path_excludes: []
+  forbidden_shared_paths:
+  - applied migration edits
+  - new migration files outside F02
+  - central server/client/worker composer edits after F01 interface checkpoint
+  - root contract/domain barrel edits
+  - package manifests/lockfiles
+  - global styles/design tokens outside F07
+  - canonical GHL registry outside P28/I36
+  - global control/merge ledgers
+  - another task's runtime or evidence files
+  external_authority: none
+coverage:
+  primary_requirement_ids:
+  - OTV2-NOTIFY-203
+  - OTV2-NOTIFY-237
+  primary_acceptance_case_ids:
+  - OTV2-NOTIFY-203-AC01
+  - OTV2-NOTIFY-237-CATEGORY-LIFETIME
+  - OTV2-NOTIFY-237-DEDUPE-READ-SOUND
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids:
+  - DEC-111
+  - DEC-112
+  required_source_documents:
+  - 08-SCREEN-CATALOG-AND-DESIGN-SYSTEM-v2.1.md
+  - 09-WORKFLOW-NOTIFICATION-COPY-CATALOG-v2.1.md
+  embedded_normative_sections:
+  - WNC-8 exact in-app notification catalog and lifecycle
+deliverables:
+- notification center and unread state
+- safe deep-link/action routing
+- optional foreground audible cue
+- exact copy integration points
+notes: []
+terminal_states:
+- ready_for_review
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  ready_for_review.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

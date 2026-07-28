@@ -1,0 +1,98 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: C00
+title: Execution Control Tower and Authority Bootstrap
+outcome: Install the locked v2.1 specification and execution pack into the repository, replace stale status authority,
+  establish durable control/integration branches, validate the plan, and continuously publish the next collision-free
+  ready batch.
+kind: controller
+wave: 0
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-control
+  harness_branch_template: null
+  maximum_active_writers_in_group: 1
+dependencies:
+  start_after: []
+  required_start_states: {}
+  merge_after: []
+  candidate_integration_partners: []
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - AUTHORITY
+  - CONTROL_PLANE
+  normalized_owned_globs:
+  - ops/v2.1-execution/**
+  scope_notes_only:
+  - AGENTS.md authority/status sections
+  - control branch metadata only
+  explicit_path_excludes: []
+  forbidden_shared_paths: []
+  external_authority: none
+coverage:
+  primary_requirement_ids: []
+  primary_acceptance_case_ids: []
+  verification_of_tasks: []
+  verification_requirement_ids: []
+  verification_acceptance_case_ids: []
+  decision_ids: []
+  required_source_documents: []
+  embedded_normative_sections: []
+deliverables:
+- committed v2.1 source package and execution pack
+- v2.1 authority hierarchy in AGENTS.md
+- codex/v21-control and codex/v21-integration remote branches
+- validated task packets, ready queue, writer locks, blocker queue, and merge queue
+- branch-push permission canary
+notes:
+- This task never implements product code.
+- The first invocation is serialized and starts from the exact reviewed head.
+- Later invocations read remote task state and recalculate the critical path without a global re-audit.
+terminal_states:
+- operational
+- release_blocked
+- done
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  operational, release_blocked, done.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

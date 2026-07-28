@@ -1,0 +1,124 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: R44
+title: Real Operator Admin, Parent, and Three-Student Journey
+outcome: Execute the exact production operator canary with real operator-controlled identities/devices, persistent/provider
+  readback, effect-budget reconciliation, and candidate-bound evidence.
+kind: operator_acceptance
+wave: 10
+priority: launch_critical
+execution:
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+  service_tier: PRIORITY
+  mode: START_OR_RESUME
+  branch_template: codex/v21-r44-operator-<candidate-short-sha>
+  harness_branch_template: null
+  maximum_active_writers_in_group: 1
+dependencies:
+  start_after:
+  - V37
+  - V38
+  - V39
+  - V40
+  - V41
+  - V42
+  - V43
+  required_start_states:
+    V37: candidate_verified_passed_and_aggregated
+    V38: candidate_verified_passed_and_aggregated
+    V39: candidate_verified_passed_and_aggregated
+    V40: candidate_verified_passed_and_aggregated
+    V41: candidate_verified_passed_and_aggregated
+    V42: candidate_verified_passed_and_aggregated
+    V43: preoperator_cases_passed_and_aggregated
+  merge_after: []
+  candidate_integration_partners:
+  - P34
+  candidate_requires_all_implementation_tasks: false
+  acceptance_after: []
+  first_run_start_sha_source: origin/codex/v21-control:ops/v2.1-execution/control/READY-QUEUE.yaml authorized_start_sha
+interface_checkpoint:
+  required: false
+  unlocks: []
+  contract_schema_version: 1
+  required_export_roots: []
+  must_record_exact_realized_paths_symbols_versions_and_digests: true
+  rule: No downstream contract checkpoint required.
+scope:
+  writer_slots:
+  - REAL_OPERATOR_ACCEPTANCE
+  normalized_owned_globs:
+  - ops/v2.1-execution/authority/<candidate-digest>/R44/**
+  - ops/v2.1-execution/effects/<candidate-digest>/R44/**
+  - ops/v2.1-execution/results/<candidate-digest>/R44/**
+  scope_notes_only:
+  - operator-canary branch metadata only
+  explicit_path_excludes: []
+  forbidden_shared_paths: []
+  external_authority: explicit production_operator_canary authority and all required provider locks
+coverage:
+  primary_requirement_ids: &id001
+  - OTV2-OPS-174
+  - OTV2-OPS-222
+  primary_acceptance_case_ids: &id002
+  - OTV2-OPS-174-AC01
+  - OTV2-OPS-222-AC01
+  verification_of_tasks: []
+  verification_requirement_ids: *id001
+  verification_acceptance_case_ids: *id002
+  decision_ids:
+  - DEC-004
+  - DEC-007
+  - DEC-150
+  - DEC-151
+  - DEC-152
+  required_source_documents:
+  - 11-ENVIRONMENT-FIXTURE-CANARY-MANIFEST-v2.1.yaml
+  - 12-MIGRATION-CUTOVER-ROLLBACK-v2.1.md
+  - 13-OPERATIONS-SLO-DR-INCIDENT-v2.1.md
+  embedded_normative_sections:
+  - PS-027 exact real production acceptance journeys
+deliverables:
+- authorized bounded canary deployment of the exact frozen artifacts with effects disabled and runtime readback
+- Admin creates/operates real records
+- Parent signs up/manages one household and three Students
+- three Student/device journeys through class, recording, question/review, support, and notifications
+- persistent and provider readback
+- external-effect cleanup/reconciliation and exact evidence
+notes:
+- Use only the approved manifest identities/devices/provider assets.
+- Do not use fictional/demo customers or production customer data as fixtures.
+- Stop on any unexpected, wrong-provider, over-budget, destructive, or acceptance-unknown effect.
+terminal_states:
+- operator_evidence_ready
+definition_of_done:
+- Every assigned behavior is implemented or, for verification/release tasks, every assigned case has a schema-valid
+  candidate-bound result.
+- The diff remains inside owned paths plus structured steward requests.
+- Task-owned verification passes; ordinary in-scope failures are diagnosed and corrected.
+- No prohibited product surface, fake fallback, security/privacy weakening, or unauthorized external effect is introduced.
+- TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md are current.
+- 'All checkpoints are committed and pushed; this task may end only in one of these exact task-local terminal states:
+  operator_evidence_ready.'
+checkpoint_policy:
+  interval_minutes: 30-45
+  mandatory_before:
+  - long-running command
+  - authorized external effect
+  - window end
+  mandatory_after:
+  - interface contract
+  - migration or invariant
+  - meaningful milestone
+  - blocker discovery
+stop_conditions:
+- missing explicit authority or provider identity for a required live effect
+- writer/path/provider lock collision
+- non-fast-forward push
+- normative contradiction requiring operator decision
+- incompatible or absent upstream interface contract
+- applied migration would need modification
+- continuation would weaken a protected invariant
+- destructive operation lacks exact target/authority
+- reproduced out-of-scope failure blocks progress after all safe independent work is complete

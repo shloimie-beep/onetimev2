@@ -1,0 +1,38 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: ${TASK_ID}
+task_packet_digest: ${TASK_PACKET_SHA256}
+task_context_digest: ${TASK_CONTEXT_SHA256}
+spec_package_digest: ${SPEC_PACKAGE_SHA256}
+branch: ${TASK_BRANCH}
+start_sha: ${AUTHORIZED_START_SHA}
+dependency_heads: {}
+status: ${TASK_STATUS}
+phase: ${TASK_PHASE}
+claimed_by: ${WRITER_ID}
+claim_time: ${UTC_TIMESTAMP}
+claim_id: ${CLAIM_ID}
+lease_expires_at: ${UTC_TIMESTAMP}
+last_heartbeat_at: ${UTC_TIMESTAMP}
+controller_authorization_sha: ${CONTROL_COMMIT_SHA}
+ready_entry_payload_digest: ${READY_ENTRY_PAYLOAD_SHA256}
+state_based_on_head_sha: ${HEAD_BEFORE_THIS_STATE_COMMIT}
+last_implementation_commit_sha: ${IMPLEMENTATION_COMMIT_SHA_OR_START_SHA}
+completed_steps: []
+remaining_steps: []
+next_action: ${EXACT_NEXT_ACTION}
+requirements: {}
+acceptance_cases: {}
+changed_paths: []
+migrations: []
+steward_requests: []
+verification:
+  commands_run: []
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
