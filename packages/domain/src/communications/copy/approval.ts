@@ -20,6 +20,7 @@ export type CampaignApprovalInput = Readonly<{
   approvedAudienceDigest?: string;
   actualAudienceDigest: string;
   namedAdminApproval?: string;
+  currentConsentVerified?: boolean;
   hardBounceRate?: number;
   complaintRate?: number;
   providerRejected?: boolean;
@@ -43,6 +44,8 @@ export function canonicalContentDigest(message: CanonicalCopyMessage): string {
     sender: message.sender,
     subject: message.subject,
     tokenBearing: message.tokenBearing,
+    requiresCurrentConsent: message.requiresCurrentConsent,
+    launchTiming: message.launchTiming,
     workflowId: message.workflowId,
   });
   return createHash('sha256').update(canonical, 'utf8').digest('hex');
@@ -55,6 +58,9 @@ export function evaluateCampaignApproval(input: CampaignApprovalInput): Campaign
 
   if (!input.message.requiresApproval)
     reasons.push('message does not declare a campaign approval requirement');
+  if (input.message.requiresCurrentConsent && !input.currentConsentVerified) {
+    reasons.push('current required consent was not verified');
+  }
   if (!input.namedAdminApproval?.trim()) reasons.push('missing named Admin approval');
   if (input.audienceCount < 1) reasons.push('audience count must be positive');
   if (input.audienceCount > input.approvedAudienceCount)

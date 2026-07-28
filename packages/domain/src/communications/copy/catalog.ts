@@ -22,6 +22,8 @@ export type CanonicalCopyMessage = Readonly<{
   body: string;
   ctaLabel?: string;
   requiresApproval: boolean;
+  requiresCurrentConsent: boolean;
+  launchTiming: 'event' | 'approval_launch' | 'weekly_household_local';
   tokenBearing: boolean;
   requiredVariables: readonly string[];
 }>;
@@ -82,6 +84,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: 'Hi {{adult.first_name}},\n\nUse the button below to set your One Time password.\n\nThis link can be used once and expires on {{token.expires_at_local}}. If it expires, request a new link from the sign-in page.\n\nIf you did not request this account, you can ignore this email.',
     ctaLabel: 'Set up my account',
     requiresApproval: false,
+    requiresCurrentConsent: false,
+    launchTiming: 'event',
     tokenBearing: true,
     requiredVariables: ['adult.first_name', 'token.expires_at_local', 'token.opaque_value'],
   },
@@ -95,6 +99,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: 'Hi {{adult.first_name}},\n\nUse the button below to reset your One Time password.\n\nThis link can be used once and expires on {{token.expires_at_local}}. If it expires, request a new link from the sign-in page.\n\nIf you did not request a password reset, you can ignore this email.',
     ctaLabel: 'Reset my password',
     requiresApproval: false,
+    requiresCurrentConsent: false,
+    launchTiming: 'event',
     tokenBearing: true,
     requiredVariables: ['adult.first_name', 'token.expires_at_local', 'token.opaque_value'],
   },
@@ -108,6 +114,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: 'Hi {{contact.first_name}},\n\nYour Parent account is active.\n\nAdd up to three Student accounts. Each Student gets a separate username and password for the live class and recording library. If you also want to learn, you may use one of those three Student seats with separate Student credentials.\n\nAll active Students are automatically added to the daily 7:00 p.m. Jerusalem-time class.',
     ctaLabel: 'Open Parent Dashboard',
     requiresApproval: false,
+    requiresCurrentConsent: false,
+    launchTiming: 'event',
     tokenBearing: false,
     requiredVariables: ['contact.first_name'],
   },
@@ -121,6 +129,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: 'Hi {{contact.first_name}},\n\nRabbi Eli’s One Time Mishnayos class begins in 30 minutes at {{occurrence.parent_local_time}}.\n\nStudents joining today: {{household.active_student_names}}.\n\nEach Student should sign in to the Student Portal on their own device and select Join Class.',
     ctaLabel: 'Open One Time',
     requiresApproval: false,
+    requiresCurrentConsent: false,
+    launchTiming: 'event',
     tokenBearing: false,
     requiredVariables: [
       'contact.first_name',
@@ -138,6 +148,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: 'Hi {{contact.first_name}},\n\nA new One Time recording is ready. Your eligible Students can open it from their Student Library.',
     ctaLabel: 'Open One Time',
     requiresApproval: false,
+    requiresCurrentConsent: false,
+    launchTiming: 'event',
     tokenBearing: false,
     requiredVariables: ['contact.first_name'],
   },
@@ -151,6 +163,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: `${RABBI_GREETING}\n\n{{newsletter.rabbi_note}}\n\nClass recap: {{newsletter.class_recap}}\nUpcoming schedule: {{newsletter.upcoming_schedule}}\nNew recording or review: {{newsletter.recording_or_review}}\nApproved question highlight: {{newsletter.approved_question_highlight}}\n\n${RABBI_SIGNOFF}`,
     ctaLabel: 'Open One Time',
     requiresApproval: true,
+    requiresCurrentConsent: true,
+    launchTiming: 'weekly_household_local',
     tokenBearing: false,
     requiredVariables: [
       'contact.first_name',
@@ -171,6 +185,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: `${RABBI_GREETING}\n\n{{campaign.body}}\n\n${RABBI_SIGNOFF}`,
     ctaLabel: 'Open One Time',
     requiresApproval: true,
+    requiresCurrentConsent: true,
+    launchTiming: 'approval_launch',
     tokenBearing: false,
     requiredVariables: ['contact.first_name', 'campaign.body'],
   },
@@ -184,6 +200,8 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     body: `${RABBI_GREETING}\n\n{{campaign.body}}\n\n${RABBI_SIGNOFF}`,
     ctaLabel: 'Create my new account',
     requiresApproval: true,
+    requiresCurrentConsent: false,
+    launchTiming: 'approval_launch',
     tokenBearing: false,
     requiredVariables: ['contact.first_name', 'campaign.body'],
   },

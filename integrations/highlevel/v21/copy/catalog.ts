@@ -15,6 +15,8 @@ export type GhlCopyFragment = Readonly<{
   ctaLabel?: string;
   audience: 'parent_account_owner' | 'former_adult';
   requiresExactAdminApproval: boolean;
+  requiresCurrentConsent: boolean;
+  launchTiming: 'event' | 'approval_launch' | 'weekly_household_local';
   adultOnly: true;
   tokenBearing: false;
 }>;
@@ -33,6 +35,8 @@ function asGhlFragment(message: CanonicalCopyMessage): GhlCopyFragment {
     ...(message.ctaLabel ? { ctaLabel: message.ctaLabel } : {}),
     audience: message.audience,
     requiresExactAdminApproval: message.requiresApproval,
+    requiresCurrentConsent: message.requiresCurrentConsent,
+    launchTiming: message.launchTiming,
     adultOnly: true,
     tokenBearing: false,
   };
