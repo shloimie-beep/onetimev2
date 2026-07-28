@@ -2,8 +2,69 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: P16
+  status: resume_ready
+  phase: implementation
+  branch: codex/v21-p16-class-series-occurrences
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: c9b4a8085f87fb958ad8688ac345f642bb23f94b
+  authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+  expected_existing_head: 45649e52ea792f2ead63415555776497747cacad
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
+  task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
+  dependency_heads_and_digests:
+    F04:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+      interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+      interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+      interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+      task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+      task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+    F05:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+      interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+      interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+      interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+      task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+      task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+    P15:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
+      observed_integration_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+      interface_source_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
+      interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
+      interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
+      task_packet_digest: cc6d395e0cb231a5180c9f927a64c814148b4946f869d68ee6afc1b74bc5c8df
+      task_context_digest: 0f4326a4a2c00120ae85466af822e8dc1304c2d6f6d975699991e8db75778a6a
+  writer_slot_leases:
+  - slot: CLASSROOM_CORE
+    lease_id: b9bbf43a-ccce-40a2-a491-e333207e64ab
+    holder_task_id: P16
+    holder_claim_id: afd00130-7e98-4428-b9ef-303b50815189
+    state_based_on_control_head_sha: c9b4a8085f87fb958ad8688ac345f642bb23f94b
+    lease_issued_at: '2026-07-28T21:04:00Z'
+    lease_expires_at: '2026-07-28T22:04:00Z'
+    phase_scope: preserve_and_continue_existing_P16_owned_dirty_draft_from_exact_remote_head
+  effect_lock_leases: []
+  claim_id: afd00130-7e98-4428-b9ef-303b50815189
+  lease_issued_at: '2026-07-28T21:04:00Z'
+  lease_expires_at: '2026-07-28T22:04:00Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P16-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  P16: baa5c566c8d30882b022723ff7cd0d3ab22eb6a9b0d3f4f64c940dcdec8853ac
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

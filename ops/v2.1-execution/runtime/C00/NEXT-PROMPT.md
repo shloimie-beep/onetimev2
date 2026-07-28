@@ -83,7 +83,11 @@ P27 `4b55f314f86a0532387d5b6e0a6ace486858f7f1` and I36
 `ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8`, each with only three task-local
 runtime files and zero effects. The ready queue is consumed and the P32 merge
 target CAS is rebound to `ffd63f4e`. Resume P27 implementation and I36's
-P32-only ancestry merge while P16 continues.
+P32-only ancestry merge. P16 stopped at unchanged head `45649e52` before any
+further writes; its implementation remains only as a P16-owned dirty draft.
+A fresh resume entry now authorizes an atomic metadata-only renewal claim
+`afd00130-7e98-4428-b9ef-303b50815189` with CLASSROOM_CORE lease through
+`2026-07-28T22:04:00Z`. Consume that claim before P16 resumes its draft.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
