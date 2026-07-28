@@ -6,6 +6,7 @@ task_context_digest: 5dd28dbffec92036402b291b484dd537317d4c003406f979aecd71edcd7
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
 branch: codex/v21-p30-campaign-workflows
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+expected_existing_head_sha: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
 dependency_heads:
   P28:
     required_state: interface_ready_integrated
@@ -21,61 +22,55 @@ dependency_heads:
     interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
     interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
     interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-status: ready_for_review
-phase: review
-claimed_by: codex-p30-worker-9c4e04b6
-claim_time: '2026-07-28T23:16:50Z'
-claim_id: 9c4e04b6-485c-4d91-aed4-40e2b8be9aab
+status: claimed
+phase: correction
+claim_mode: resume_existing_branch
+claimed_by: codex-p30-worker-cea57710
+claim_time: '2026-07-28T23:56:03Z'
+claim_id: cea57710-2506-4983-a821-4e23733d0766
 writer_slot_leases:
   - slot: GHL_CAMPAIGNS
-    lease_id: e55a881a-4f1c-4667-9edb-1f5be1d9b492
-    lease_issued_at: '2026-07-28T23:09:14Z'
-    lease_expires_at: '2026-07-29T00:09:14Z'
-    released_at: '2026-07-28T23:36:34Z'
-lease_expires_at: '2026-07-29T00:09:14Z'
-last_heartbeat_at: '2026-07-28T23:36:34Z'
-lease_released_at: '2026-07-28T23:36:34Z'
-controller_authorization_sha: 62db0bf0de280932b07cf86dd8e03501ca708229
-claim_consumed_control_head_sha: 9a3b4856edb82556eca38416b853d6bdff5ef8bf
-ready_entry_state_based_on_control_head_sha: f0f7ea05f7c50f3ea64782ff107fbfd1c4486c24
-ready_entry_payload_digest: 2b0b3f114514f1661b3b07c18145826615770148e0d69ab8314c9f19e2d51f42
-state_based_on_head_sha: b329dd1ba36756977d4c935cea93be6559253e49
+    lease_id: 0bc6fecd-2a7c-4c34-8c11-598c03634ab1
+    lease_issued_at: '2026-07-28T23:51:24Z'
+    lease_expires_at: '2026-07-29T00:51:24Z'
+lease_expires_at: '2026-07-29T00:51:24Z'
+last_heartbeat_at: '2026-07-28T23:56:03Z'
+controller_authorization_sha: 89ac83c2e816e9726f1ae2d2193e34e3269fb36c
+ready_entry_state_based_on_control_head_sha: 32c9ef6a0738f0a4fa038f1212ff7019e19992f1
+ready_entry_payload_digest: f7d3413b150bcf942e2a27354bc340c4296ce48b1543df287a6def3b034a611b
+prior_claim_checkpoint_sha: c42eb2b971093c603f2334548bfeadad78a368b1
+prior_implementation_commit_sha: b329dd1ba36756977d4c935cea93be6559253e49
+prior_ready_for_review_head_sha: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
+state_based_on_head_sha: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
 last_implementation_commit_sha: b329dd1ba36756977d4c935cea93be6559253e49
+correction_findings:
+  - OT-15 launch approval validates only canonical step 1 while steps 2 and 3 lack canonical copy/content approval.
+  - OT-16 accepts a caller-supplied operation ID without proving equality to its deterministic operation-ID helper.
 completed_steps:
-  - Verified repository identity, exact containing control head, and exact authorized integration start.
-  - Verified the P30 branch was absent locally and remotely before branch creation.
-  - Recomputed and matched the canonical P30 ready-entry payload digest.
-  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and package/task/context digests.
-  - Verified exact P28 and P31 interface-ready integration bindings, ancestry, and exported artifact hashes.
-  - Verified control head 9a3b4856 consumed the exact atomic claim checkpoint before semantic implementation resumed.
-  - Claimed and subsequently released the sole GHL_CAMPAIGNS writer lease with zero effect locks.
-  - Implemented validated adult-only OT-14, OT-15, and OT-16 workflow definitions under P28 contract version 1.0.0.
-  - Bound OT-14 and OT-15 to exact P31 canonical copy, sender, named approval, audience, consent, seed, and drift gates.
-  - Implemented current newsletter/former-member segment boundaries and fresh send-time suppression plans with dormant WhatsApp truth.
-  - Implemented the five exact OT-16 expiry checkpoints, deterministic operation IDs, exact price/date/no-card/no-auto-charge/Checkout content, and office sender.
-  - Implemented verified-paid, explicit-decline, custom-School, Student, duplicate, and send-time suppression exits before provider effects.
-  - Implemented a local worker boundary with fresh suppression read, durable reservation, GHL-only email payload, retry truth, and no WhatsApp provider port.
-  - Published a structurally matching HighLevel workflow fragment and a task-local canonical-registry/composer steward request.
-  - Passed all 10 focused assertions, full TypeScript typecheck, focused ESLint/Prettier, secret scan, YAML parsing and YAML-to-TypeScript drift verification.
-  - Ran the full unit suite; 566 of 567 assertions passed and the sole failure is the inherited P28 generated-registry count baseline.
-remaining_steps: []
-next_action: C00/I36 should review and integrate implementation commit b329dd1ba36756977d4c935cea93be6559253e49 plus this final metadata head, then route P30-registry-registration-001 to the canonical registry/composer steward before any activation.
+  - Fetched exact correction controller commit 89ac83c2e816e9726f1ae2d2193e34e3269fb36c.
+  - Verified its P30 resume_existing_branch entry is based on control parent 32c9ef6a and authorizes start 49431959 with expected existing head 337baba3.
+  - Recomputed and matched canonical correction ready-entry digest f7d3413b150bcf942e2a27354bc340c4296ce48b1543df287a6def3b034a611b.
+  - Verified exact task, context, source-package, package-lock, P28, and P31 entry bindings.
+  - Verified local and remote P30 heads equal exact expected head 337baba3d9b2d271205f6f2cb9bfd8adeabbb549.
+  - Verified the authorized integration start remains an ancestor and the prior final head has sole parent b329dd1b.
+  - Claimed the sole GHL_CAMPAIGNS correction lease with no effect locks and zero external effects.
+  - Recorded the two bounded correction findings without changing product code.
+remaining_steps:
+  - Push and report this exact three-file atomic correction claim checkpoint.
+  - Await C00 reconciliation of the atomic claim before reading or changing product implementation.
+next_action: Push and report the atomic correction claim, then stop until C00 consumes it; no product repair is authorized before that reconciliation.
 requirements:
-  OTV2-GHL-134: implementation_ready
-  OTV2-GHL-135: implementation_ready
-  OTV2-GHL-225: implementation_ready
+  OTV2-GHL-134: correction_claimed
+  OTV2-GHL-135: correction_claimed
+  OTV2-GHL-225: correction_claimed
 acceptance_cases:
-  OTV2-GHL-134-AC01: task_owned_assertions_passed
-  OTV2-GHL-135-AC01: task_owned_assertions_passed
-  OTV2-GHL-225-SCHEDULE: task_owned_assertions_passed
-  OTV2-GHL-225-PAID-EXIT: task_owned_assertions_passed
-  OTV2-GHL-225-SCHOOL-EXIT: task_owned_assertions_passed
-  OTV2-GHL-225-SUPPRESSION: task_owned_assertions_passed
+  OTV2-GHL-134-AC01: correction_not_run
+  OTV2-GHL-135-AC01: correction_not_run
+  OTV2-GHL-225-SCHEDULE: correction_not_run
+  OTV2-GHL-225-PAID-EXIT: correction_not_run
+  OTV2-GHL-225-SCHOOL-EXIT: correction_not_run
+  OTV2-GHL-225-SUPPRESSION: correction_not_run
 changed_paths:
-  - apps/worker/src/runners/ghl-workflows/campaigns/**
-  - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
-  - packages/domain/src/communications/workflows/campaigns/**
-  - ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml
   - ops/v2.1-execution/runtime/P30/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P30/HANDOFF.md
   - ops/v2.1-execution/runtime/P30/NEXT-PROMPT.md
@@ -85,34 +80,19 @@ steward_requests:
     sha256: 308be4a67c6bc73317111b54e34edb9022ac6a709144f96783918c66557fbb54
 verification:
   commands_run:
-    - command: exact remote repository/control/integration/branch identity verification
-      result: passed; control 62db0bf0, start 49431959, and absent P30 branch
-    - command: canonical P30 ready-entry digest recomputation
-      result: passed; 2b0b3f114514f1661b3b07c18145826615770148e0d69ab8314c9f19e2d51f42
-    - command: locked/source/package/task/context Git-blob SHA-256 verification
-      result: passed; 200 locked blobs, 15 source-package blobs, and entry-bound digests
-    - command: focused P30 Vitest suite
-      result: passed; 2 files and 10 assertions, including all 6 assigned acceptance cases
-    - command: npm run typecheck
-      result: passed
-    - command: focused ESLint and Prettier
-      result: passed for all P30 TypeScript, YAML, and steward-request artifacts
-    - command: workflow fragment parse and YAML-to-TypeScript contract drift check
-      result: passed; 3 workflows, 15 contract keys each, fragment SHA-256 3771f3ccd5c5dd85acb02fed5d2baea87db3aca1cde532449cedefc64edc321d
-    - command: npm run secret:scan
-      result: passed across 2718 repository text files
-    - command: npm run unit
-      result: 566 passed, 1 inherited generated-registry projection baseline failure
-    - command: git diff --check and exact remote head verification
-      result: passed; implementation head b329dd1ba36756977d4c935cea93be6559253e49
-  known_baseline_failures:
-    - tests/unit/highlevel/sender-registry-v1-1.test.ts still expects 19 automation assets while the integrated P28 canonical registry contains 22; P28-registry-projection-001 owns this generated-projection and validator-count update.
+    - command: exact control, local/remote branch, expected-head, and resume-mode verification
+      result: passed; controller 89ac83c2, expected/local/remote head 337baba3, and resume_existing_branch
+    - command: canonical correction ready-entry digest recomputation
+      result: passed; f7d3413b150bcf942e2a27354bc340c4296ce48b1543df287a6def3b034a611b
+    - command: correction dependency, claim, writer-lease, and effect-lock verification
+      result: passed; exact P28/P31, claim cea57710, sole GHL_CAMPAIGNS lease, and zero effect locks
+    - command: exact ancestry verification
+      result: passed; start 49431959 is an ancestor and expected head 337baba3 has sole parent b329dd1b
+  known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings:
-  - Canonical registry and central worker-composer registration require P30-registry-registration-001.
-  - The inherited generated HighLevel projection count remains stale and is already owned by P28-registry-projection-001.
+out_of_scope_findings: []
