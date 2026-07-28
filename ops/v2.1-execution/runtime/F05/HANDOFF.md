@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-f05-api-jobs-foundation`
 - Start SHA: `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`
-- Implementation SHA before this handoff metadata commit: `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`
+- Implementation SHA before this handoff metadata commit: `39a69433d0facbca5cfc5990b2b7ed6aaca984be`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head
 - Task packet digest: `807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3`
 - Context digest: `95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a`
@@ -12,32 +12,37 @@
 
 ## Completed behavior
 
-The exact first-run authorization is validated. The canonical F05 ready payload,
-control parent, task/context/package/source locks, F02 interface integration,
-branch absence, claim, writer-slot lease, and expiry all match. Locked checksum
-verification passed 200/200 plus 15/15 source files.
+F05 now contains typed API command/query/result/error and production-route
+contracts; typed job/saga/runner contracts; canonical idempotency helpers; pure
+fenced lease, retry, quarantine, reconciliation, recovery, and compensation
+transitions; a parameterized PostgreSQL transactional command/outbox repository;
+a machine-readable schema contract; a conservative worker runner; and a
+server-derived typed command seam. Migration and central-registration requests
+are structured under F05 runtime.
 
 ## Remaining work
 
-Implement the F05-owned typed API/job contracts, durable job domain and runner
-interfaces, PostgreSQL transactional outbox repository, interface checkpoint,
-structured steward requests, and focused verification.
+Install the locked dependencies, run and correct focused assertions, typecheck,
+formatting, and scope checks, then publish the exact interface checkpoint and
+final `ready_for_review` metadata.
 
 ## Exact next action
 
-Implement the typed command/query/error and job lifecycle contracts, followed by
-the pure transition guards required for idempotency, fencing, bounded retry,
-acceptance-unknown quarantine, governed recovery, and compensation.
+Install dependencies with the locked package manifest and run F05 focused
+assertions plus repository typecheck.
 
 ## Coverage
 
-- Requirements: OTV2-API-217, OTV2-JOBS-210, and OTV2-JOBS-211 in progress
-- Acceptance cases: all three assigned cases planned
+- Requirements: all three implemented pending verification
+- Acceptance cases: implementation assertions pending
 
 ## Changed files and migrations
 
-Only F05 runtime claim metadata is present. No migration or product source has
-been changed.
+All source changes remain in F05 normalized owned globs. No migration, central
+barrel, app composer, dependency manifest, or global control file changed.
+`F05-MIGRATION-001` requests the two required tables from migration authority;
+`F05-REGISTRATION-001` requests central registration after interface/migration
+integration.
 
 ## Verification
 
@@ -45,6 +50,8 @@ been changed.
 - Locked execution manifest: 200/200 passed
 - Source manifest: 15/15 passed
 - F02 interface checkpoint ancestry and digest: passed
+- Source checkpoint: `39a69433d0facbca5cfc5990b2b7ed6aaca984be`
+- Focused/type/format verification: pending
 
 ## External effects
 
@@ -57,5 +64,5 @@ deployment was accessed or attempted.
 
 ## Blockers, deviations, and recovery
 
-No blocker. The remote branch created by the next atomic push is the durable
-claim checkpoint.
+No blocker. The schema repository is intentionally not activated until the
+stewarded migration is integrated.

@@ -20,6 +20,8 @@ digest, unexpired lease/claim, package/task/context/dependency digests, and
 reject a live foreign lease or non-fast-forward collision. Check out the exact
 task branch and read state/handoff before named work. If a new resume lease is
 required, wait for C00 to issue it; never self-extend. Resume `next_action`
-without repeating completed validation. Continue to `ready_for_review` or a
-permitted stop condition, updating and pushing state, handoff, and this prompt
-before returning.
+without repeating completed validation. Current next action: install locked
+dependencies and run F05 focused assertions, repository typecheck, formatting,
+and scope checks; correct in-scope failures, publish the exact interface
+checkpoint, then finish `ready_for_review`. Update and push state, handoff, and
+this prompt before returning.
