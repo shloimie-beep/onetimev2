@@ -289,19 +289,17 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P27 is ancestry-integrated at merge head `91522295` and
-final integration metadata head `972fa435`; its 20-path scope, exact parents,
-checks, absence of P16, and zero effects passed. P16 is independently verified
-`ready_for_review` at `72fca16b`, and its exact interface is queued from
-`972fa435` for a fresh I36 atomic-claim-only authorization. P32 is integrated
-at `c4d042e9`; P35 awaits later full admission.
+None for bootstrap. P27 is ancestry-integrated at final head `972fa435`.
+I36 consumed P16's atomic authorization at exact three-file claim head
+`47166ef0`; P16 remains absent from that head. Its sole merge item is rebound
+to that target CAS with canonical digest `e58c0de4`. P32 is integrated at
+`c4d042e9`; P35 awaits later full admission.
 
 ## Exact next action
 
-Dispatch I36 claim `ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6` for an atomic
-claim-only checkpoint from `972fa43507d6d4391a86dd130a1c38a05820b2ce`.
-After C00 rebinds merge item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95` to that
-exact claim head, resume I36 to merge only P16.
+Resume I36 claim `ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6` to merge only P16
+item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95` from exact target
+`47166ef026bb34842ec306cf7c2d2fc363773ad7`. Apply no steward request.
 
 ## Verification
 

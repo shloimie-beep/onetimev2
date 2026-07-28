@@ -110,6 +110,11 @@ steward request was applied, and effects remain zero. C00 retired P27's merge
 item and queued only P16 for fresh I36 atomic claim
 `ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6` from `972fa435`. Stop after that claim
 so C00 can rebind the P16 optimistic target CAS before the merge.
+I36 published that atomic claim at `47166ef026bb34842ec306cf7c2d2fc363773ad7`
+with sole parent `972fa435` and exactly its three runtime files. P16 remains
+absent. C00 rebound only merge item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95`
+to `47166ef0`; canonical payload is `e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2`.
+Resume I36 to merge only P16 and apply no steward request.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
