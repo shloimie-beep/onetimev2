@@ -1,0 +1,80 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F03
+task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-f03-adult-student-auth
+start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+dependency_heads:
+  F02:
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+status: claimed
+phase: contract
+claimed_by: codex-f03-worker-0b100424
+claim_time: '2026-07-28T18:24:00Z'
+claim_id: 0b100424-7be3-4613-ae07-e7019d140a30
+lease_id: 82b0973d-b5b7-4ea6-9618-a5c50d3b14ba
+lease_expires_at: '2026-07-28T19:11:45Z'
+last_heartbeat_at: '2026-07-28T18:24:00Z'
+controller_authorization_sha: 398ebf34ec72892d354370af11af297d45302888
+ready_entry_payload_digest: fa68fd0b273ddffd6769c309fa0e5fd2a1197ed61021fc7eeed9ec36a3a88e66
+state_based_on_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+last_implementation_commit_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+completed_steps:
+  - Verified repository identity and exact remote control authorization.
+  - Recomputed the canonical F03 ready-entry payload digest.
+  - Verified the exact integrated F02 dependency checkpoint and digests.
+  - Atomically seeded the first F03 task claim.
+remaining_steps:
+  - Read named normative sections and inspect only F03-owned authentication seams.
+  - Implement the exact adult and Student authentication contract and task-owned verification.
+  - Evaluate immutable steward request F01-retired-auth-001 exactly.
+  - Publish the required interface checkpoint and final ready_for_review metadata.
+next_action: Inspect the named F03-owned authentication paths and the exact source sections, then implement the smallest coherent contract and domain behavior with focused tests.
+requirements:
+  OTV2-AUTH-007: pending
+  OTV2-AUTH-008: pending
+  OTV2-AUTH-009: pending
+  OTV2-AUTH-010: pending
+  OTV2-AUTH-011: pending
+  OTV2-AUTH-012: pending
+  OTV2-AUTH-013: pending
+  OTV2-AUTH-014: pending
+  OTV2-AUTH-015: pending
+  OTV2-AUTH-016: pending
+  OTV2-AUTH-017: pending
+  OTV2-AUTH-018: pending
+  OTV2-AUTH-019: pending
+  OTV2-AUTH-020: pending
+  OTV2-AUTH-180: pending
+  OTV2-AUTH-227: pending
+acceptance_cases:
+  expected: 22
+  implemented: 0
+  verified: 0
+changed_paths:
+  - ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F03/HANDOFF.md
+  - ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
+migrations: []
+steward_requests:
+  - request_id: F01-retired-auth-001
+    request_digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+    status: assigned
+verification:
+  commands_run:
+    - git ls-remote exact control, integration, task, and dependency refs
+    - canonical sorted-JSON SHA-256 recomputation of the F03 ready entry
+    - SHA-256 verification of package lock, task packet, context, prompt, and F01 steward request
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
