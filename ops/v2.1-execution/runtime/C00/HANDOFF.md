@@ -430,3 +430,9 @@ passed; two registry projections remain explicitly assigned steward work.
 C00 cleared the merge queue and authorized P29 core workflows and P30 campaign
 workflows from `49431959`. Each must publish only its three-file atomic claim
 before implementation. P20 remains active on its disjoint lane.
+
+P29 and P30 atomic claims are exact at `704435bd` and `c42eb2b9`: each has
+sole parent `49431959`, three task-local runtime files, correct dependency and
+lease bindings, and zero effects. C00 consumed both ready entries. P20, P29,
+and P30 may now implement concurrently; their writer scopes are disjoint and
+none carries provider-effect authority.

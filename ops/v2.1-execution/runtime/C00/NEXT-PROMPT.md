@@ -167,3 +167,8 @@ P30 claim `9c4e04b6-485c-4d91-aed4-40e2b8be9aab` with ready digest
 `2b0b3f11...`, both from exact start `49431959`. Each stops after the exact
 three runtime files. Reconcile claims under a fresh C00 lease, then resume
 both implementations while continuing to monitor P20.
+
+The P29/P30 claims are verified and consumed. Resume P29 at `704435bd` and
+P30 at `c42eb2b9` for full task implementation, verification, structured
+steward requests where required, ready_for_review publication, and lease
+release. Continue P20 at `6f894038`. Reconcile finals under a fresh C00 lease.
