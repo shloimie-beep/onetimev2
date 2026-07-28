@@ -15,8 +15,10 @@ Handoff: ops/v2.1-execution/runtime/P16/HANDOFF.md
 
 Fetch remote refs and verify the exact P16 registry/ready entry, branch head,
 claim, lease, package/task/context and dependency digests. Read task state plus
-handoff before named work and resume the exact next action. Preserve and
-continue only the existing P16-owned dirty draft from the exact remote renewal
-checkpoint; do not discard, stage, or absorb unrelated paths. Complete
-verification, then publish interface and ready_for_review checkpoints without
-global control/integration edits, steward application, or live effects.
+handoff before named work and resume the exact next action. If P16 is
+ready_for_review, do not reopen implementation without a new exact C00
+resume_ready entry. I36 should integrate interface digest
+95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
+from implementation head 46b5c39aceb6006376903750cfc268b35bbaccdd
+and disposition the two structured steward requests. No global control edits,
+steward application, or live effects belong on the P16 branch.

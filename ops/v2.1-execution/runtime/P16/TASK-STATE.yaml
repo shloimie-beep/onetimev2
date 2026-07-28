@@ -25,8 +25,8 @@ dependency_heads:
     integration_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
     interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
     interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
-status: claimed
-phase: implementation
+status: interface_ready
+phase: interface
 claimed_by: codex-p16-worker-fd104a34
 claim_time: '2026-07-28T21:04:00Z'
 claim_id: afd00130-7e98-4428-b9ef-303b50815189
@@ -37,31 +37,41 @@ controller_authorization_sha: 6be24ff7ebe3bd8188aa4d100eb9160c62a414a8
 state_based_on_control_head_sha: c9b4a8085f87fb958ad8688ac345f642bb23f94b
 ready_entry_payload_digest: baa5c566c8d30882b022723ff7cd0d3ab22eb6a9b0d3f4f64c940dcdec8853ac
 state_based_on_head_sha: 45649e52ea792f2ead63415555776497747cacad
-last_implementation_commit_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+last_implementation_commit_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
+interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
 completed_steps:
   - verified exact remote identity, containing control authorization, registry/ready entry, branch absence, claim, CLASSROOM_CORE lease, and authorized start
   - verified F04, F05, and P15 interface-ready integration bindings from the exact ready entry
   - read the immutable P16 context, named dependency interfaces, and exact series, occurrence, and atomic enrollment transition contracts
   - preserved the existing P16-owned implementation draft strictly unstaged while atomically claiming the C00 renewal
+  - implemented and pushed the versioned class-series, occurrence, canonical-enrollment, transaction, repository, service, Admin workspace, focused-test, and steward-request artifacts
+  - passed full typecheck, 17 focused assertions, focused lint, formatting, and diff hygiene
+  - published the exact P16 interface artifact hashes and combined contract digest for P17, P18, and P19
 remaining_steps:
-  - resume and verify the preserved P16-owned classroom-core implementation draft only after C00 consumes this renewal checkpoint
-  - complete task-owned typecheck and focused tests with an available dependency runtime
-  - publish the required interface checkpoint and terminal ready_for_review metadata
-next_action: After C00 consumes this renewal checkpoint, continue the preserved P16-owned dirty draft from this exact remote head, repair verification findings, and publish the required interface checkpoint.
+  - publish terminal ready_for_review metadata and release the task-local lease
+  - I36 must integrate the interface checkpoint and disposition structured migration/registration requests
+next_action: Publish the terminal ready_for_review checkpoint from implementation head 46b5c39aceb6006376903750cfc268b35bbaccdd, then have I36 integrate interface digest 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
   - ops/v2.1-execution/runtime/P16/HANDOFF.md
   - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P16/INTERFACE-CHECKPOINT.yaml
 migrations: []
-steward_requests: []
+steward_requests:
+  - P16-MIGRATION-001
+  - P16-REGISTRATION-001
 verification:
   commands_run:
     - exact control, ready entry, registry, branch absence, lease, and dependency binding verification (passed)
     - exact renewal control head, expected existing remote head, ready parent, ready payload digest, claim, and lease verification (passed)
     - prettier on the preserved P16-owned draft (passed before renewal checkpoint)
     - typecheck and focused Vitest launch (blocked before execution because isolated worktree dependencies were unavailable)
+    - npm run typecheck with the authorized shared dependency runtime (passed)
+    - focused P16 Vitest suite (passed, 17 tests)
+    - focused ESLint over all P16 TypeScript artifacts (passed)
+    - focused Prettier check and git diff --check (passed)
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -69,6 +79,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - Product implementation remains intentionally unstaged until C00 consumes this atomic renewal checkpoint.
-  - TypeScript and Vitest dependencies were unavailable in the isolated worktree during the pre-renewal verification attempt.
+  - Shared migration and central registration work is recorded for I36 and is not part of the P16 writer scope.
 out_of_scope_findings: []

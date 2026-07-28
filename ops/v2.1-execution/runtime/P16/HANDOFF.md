@@ -5,7 +5,7 @@
 - Branch: `codex/v21-p16-class-series-occurrences`
 - Start SHA: `01cdb992660a1fbc20b204b829d28062fd044679`
 - Renewal base SHA before this handoff metadata commit: `45649e52ea792f2ead63415555776497747cacad`
-- Last committed implementation SHA: `01cdb992660a1fbc20b204b829d28062fd044679`
+- Last committed implementation SHA: `46b5c39aceb6006376903750cfc268b35bbaccdd`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head
 - Task packet digest: `a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e`
 - Context digest: `1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0`
@@ -18,46 +18,44 @@
 
 ## Completed behavior
 
-Validated the exact P16 resume authorization, unchanged remote branch head,
-renewal claim/lease, authorized integration start, and F04/F05/P15 dependency
-bindings. The existing P16-owned product draft remains strictly unstaged. This
-checkpoint contains only the three task-local runtime records.
+Implemented the additive P16 classroom-core contract, exact series and occurrence
+state machines, canonical singleton and draft-zero-effect rules, DST-safe
+rolling occurrence projection, atomic automatic canonical enrollment, idempotent
+reconciliation, tenant/version/replay fences, transaction repository and
+service, and the accessible Admin lifecycle workspace.
+
+The P17/P18/P19 interface is published at implementation head
+`46b5c39aceb6006376903750cfc268b35bbaccdd` with contract digest
+`95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`.
 
 ## Remaining work
 
-Resume the preserved P16-owned class-series, occurrence, canonical-enrollment,
-repository, server, Admin workspace, tests, and steward-request draft after C00
-consumes this renewal checkpoint. Then run task-owned verification and publish
-interface plus final checkpoints.
+Publish terminal task-local metadata and release the lease. I36 must integrate
+the exact interface checkpoint and disposition the migration and central
+registration steward requests.
 
 ## Exact next action
 
-Continue the preserved P16-owned dirty draft from the exact renewal checkpoint,
-repair verification findings, and publish the required interface checkpoint.
+Publish the terminal ready_for_review checkpoint from implementation head
+`46b5c39aceb6006376903750cfc268b35bbaccdd`, then integrate contract digest
+`95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`.
 
 ## Coverage
 
-- Requirements: exact P16 locked context read; implementation draft not checkpointed
-- Acceptance cases: focused domain and atomic-transaction tests drafted but not yet executed
+- Requirements: all seven assigned requirements are implementation-ready.
+- Acceptance cases: all seven assigned cases are implementation-ready; candidate-bound environment proof remains with verification/release lanes.
 
 ## Changed files and migrations
 
-This renewal commit changes only the three P16 runtime records. Preserved,
-strictly unstaged P16-owned draft paths are:
-
-- `packages/contracts/src/classes/core/**`
-- `packages/domain/src/classes/core/**`
-- `packages/db/src/classes/core/**`
-- `apps/web/src/server/features/classes/core/**`
-- `apps/web/src/client/app/admin/classroom/core/**`
-- `ops/v2.1-execution/runtime/P16/STEWARD-REQUESTS.yaml`
+Added only P16-owned contract, domain, database, server, client, test, and
+runtime paths. No migration, shared barrel/composer, control/integration,
+manifest/lock, or global style/token path was edited.
 
 ## Verification
 
-Exact renewal control head, expected existing P16 remote head, ready parent,
-ready payload digest, claim, lease, start SHA, and dependency bindings passed.
-Pre-renewal formatting passed. Typecheck and focused Vitest could not start
-because the isolated worktree had no installed TypeScript/Vitest runtime.
+Exact continuation authority and dependency bindings passed. Full typecheck,
+17 focused lifecycle/enrollment assertions, focused ESLint, focused Prettier,
+and diff hygiene pass using the authorized shared dependency runtime.
 
 ## External effects
 
@@ -70,5 +68,5 @@ accessed or attempted.
 
 ## Blockers, deviations, and recovery
 
-Product draft is intentionally unstaged until C00 consumes this atomic renewal
-checkpoint. Verification also needs an available workspace dependency runtime.
+No task-local blocker. Shared schema and central registration are represented by
+`P16-MIGRATION-001` and `P16-REGISTRATION-001` for I36.
