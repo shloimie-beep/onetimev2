@@ -58,15 +58,15 @@ export function createCalendarRepository(pool: DbPool): CalendarRepository {
                   FILTER (WHERE entitlement.household_key IS NOT NULL), '{}') AS household_ids,
                 COALESCE(array_agg(DISTINCT entitlement.learner_key)
                   FILTER (WHERE entitlement.learner_key IS NOT NULL), '{}') AS student_ids,
-                NULL::text AS attendance_summary,
-                EXISTS (
-                  SELECT 1
-                    FROM onetime.classroom_recordings recording
-                   WHERE recording.account_key = occurrence.account_key
-                     AND recording.product_key = occurrence.product_key
-                     AND recording.occurrence_key = occurrence.occurrence_key
-                     AND recording.availability_state = 'available'
-                ) AS recording_available
+                CASE WHEN occurrence.occurrence_state = 'completed'
+                  THEN concat(
+                    count(DISTINCT attendance.attendance_key)
+                      FILTER (WHERE attendance.attendance_state = 'present'),
+                    ' present'
+                  )
+                  ELSE NULL
+                END AS attendance_summary,
+                occurrence.recording_state = 'available' AS recording_available
            FROM onetime.class_occurrences occurrence
            JOIN onetime.class_series series
              ON series.account_key = occurrence.account_key
@@ -77,6 +77,10 @@ export function createCalendarRepository(pool: DbPool): CalendarRepository {
             AND entitlement.product_key = occurrence.product_key
             AND entitlement.occurrence_key = occurrence.occurrence_key
             AND entitlement.entitlement_state = 'active'
+      LEFT JOIN onetime.class_attendance_marks attendance
+             ON attendance.account_key = occurrence.account_key
+            AND attendance.product_key = occurrence.product_key
+            AND attendance.occurrence_key = occurrence.occurrence_key
           WHERE occurrence.account_key = $1
             AND occurrence.product_key = $2
             AND occurrence.starts_at >= $3::timestamptz

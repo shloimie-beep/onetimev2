@@ -8,7 +8,7 @@ export const CALENDAR_SCHEMA_CONTRACT = {
     'onetime.class_series',
     'onetime.class_occurrences',
     'onetime.classroom_occurrence_learner_entitlements',
-    'onetime.classroom_recordings',
+    'onetime.class_attendance_marks',
   ],
   requiredSeriesColumns: {
     recurrence_weekdays: 'smallint[] NOT NULL',
