@@ -210,17 +210,35 @@ worker messages transcribed incorrect full SHA suffixes for F03/F04; C00
 fetched the remote refs, rejected the message strings, and both workers
 confirmed the authoritative values above before continuing. The ready queue is
 empty and all three disjoint foundation lanes are claimed.
+F03, F04, and F05 have now all returned `ready_for_review`. C00 independently
+reproduced their exact remote ancestry, interface artifact hashes, semantic
+contract digests, interface-era state/handoff bindings, owned source deltas,
+focused checks, and zero-effect records. F03 is admitted at exact source
+`7c638131a0cab757657e95c4d2229a1573e4cde1`; F04 is deliberately admitted
+from interface-era source `4cc95c29c6012174595ba1821e0554aca8572e08`, excluding
+its later repository hardening and final metadata from this interface-only
+wave; F05 is admitted from exact interface source
+`0656380bcfc50cc464dcea7588448dc724049599`.
+F03's applied result for `F01-retired-auth-001` is recorded with canonical
+digest `f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e`;
+F01 must acknowledge it before retirement. The two F04 and two F05 immutable
+migration/registration requests are assigned to F02 and I36 at their next
+governed checkpoints. No migration or central registration was applied.
+One I36 resume entry now authorizes only an atomic claim from unchanged
+integration head `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`, followed by
+an immediate stop so C00 can rebind all three optimistic target CAS fields.
 
 ## Remaining work
 
-None for bootstrap. F03, F04, and F05 are actively implementing. P35 awaits
-later full implementation admission.
+None for bootstrap. The three foundation interfaces await the serialized I36
+claim/rebind/merge wave. P35 awaits later full implementation admission.
 
 ## Exact next action
 
-Let F03, F04, and F05 continue their exact claimed lanes. Reconcile the first
-exact interface or terminal checkpoint that advances; F03 must also publish
-the exact result for assigned request `F01-retired-auth-001`.
+Dispatch I36 with claim `353f2868-2978-4cac-ac73-c56fa184f841` and ready
+payload `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
+It must atomically claim only and stop before any merge. C00 then reacquires
+control and rebinds all three merge-item target heads to the exact claim head.
 
 ## Verification
 
@@ -244,6 +262,27 @@ the exact result for assigned request `F01-retired-auth-001`.
 - F03/F04/F05 exact claim heads: `8b0a5a8b228db12096ab0124cb22b00df0b56d3c` /
   `312906abe369aca74b58343920588abbdf4d7823` /
   `c1002b6b544cf647b893ba6b83aadc886eb5415f`.
+- F03 interface/final source: `7c638131a0cab757657e95c4d2229a1573e4cde1`;
+  implementation `56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e`; contract
+  `66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111`;
+  state/handoff `42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da`.
+- F04 interface source: `4cc95c29c6012174595ba1821e0554aca8572e08`;
+  interface implementation `81c0ee64072386db41aa5a40243c693762ab493a`; final
+  hardening `8ba3f6c83ed3d7239ae672e938829ec9c572cd6b`; contract
+  `a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d`;
+  interface-era state/handoff
+  `91c2133f69386fb8903019a9383542ba120cb8365120204ee41e4bd6f7761395`.
+- F05 interface source: `0656380bcfc50cc464dcea7588448dc724049599`;
+  implementation `1ade14c52e42e59bb8fd1d1de776b91406c45f15`; contract
+  `fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329`;
+  interface-era state/handoff
+  `3829467e01fb8dbdd1b9f46f83feed0d45cb369700481cd1280ba234683312b5`.
+- New I36 ready payload:
+  `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
+- F03/F04/F05 merge payloads:
+  `9e5661be27c712bdc6ceec6b16be3cb2719c30a115d18d368bf6efcbf551781d` /
+  `ba960098a5952aa73b2651d3be2b613a40b048bae61c58d26b2a75ca2308d390` /
+  `f19b8a2c1a1793e71bc905123c3ef3477015e77954ce5eea96bd4bef7fa9c389`.
 - P35 final/implementation heads: `a85aecc22b013d583589a67cf0cc9dfad6745aba` /
   `6b92adbf893c45f4a767b8036ec41b52744cce4e`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.

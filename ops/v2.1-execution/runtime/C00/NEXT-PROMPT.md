@@ -45,14 +45,23 @@ scope, and zero effects passed. P35 completed `ready_for_review` at
 `e524a2756fecb4ab6816e972211d858a729872f349459b0863754f3a72d01475`,
 with three immutable steward requests assigned to later I36 checkpoints.
 
-F03, F04, and F05 atomically consumed their exact ready entries. Authoritative
-remote claim heads are F03 `8b0a5a8b228db12096ab0124cb22b00df0b56d3c`,
-F04 `312906abe369aca74b58343920588abbdf4d7823`, and F05
-`c1002b6b544cf647b893ba6b83aadc886eb5415f`, each with exact parent
-`d8b35b2a` and only three task-local runtime files. The ready queue is empty.
-Let those workers continue and reconcile the first exact interface or terminal
-checkpoint. F03 must evaluate assigned request `F01-retired-auth-001` at its
-ready-for-review checkpoint.
+F03, F04, and F05 are independently verified and `ready_for_review`. Their
+exact admitted interface sources are F03
+`7c638131a0cab757657e95c4d2229a1573e4cde1`, F04
+`4cc95c29c6012174595ba1821e0554aca8572e08`, and F05
+`0656380bcfc50cc464dcea7588448dc724049599`. F04 deliberately uses the
+interface-era checkpoint, excluding its later repository-only hardening from
+this wave. F03's applied `F01-retired-auth-001` result is recorded at digest
+`f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e`.
+F04/F05 migration and registration requests are assigned but unapplied.
+
+The ready queue contains exactly one I36 `resume_ready` entry with claim
+`353f2868-2978-4cac-ac73-c56fa184f841` and payload
+`02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
+Dispatch I36 to perform its mandatory atomic three-file claim only and stop
+before merging. Then acquire a fresh C00 lease and rebind all three merge-item
+`expected_target_head_sha` values to the exact claimed integration head before
+allowing the ordered F03/F04/F05 ancestry merges.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

@@ -5,16 +5,16 @@ items:
   request_digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
   requesting_task_id: F01
   kind: retired_surface
-  status: assigned
+  status: applied
   assigned_steward: F03
   target_checkpoint: F03_ready_for_review
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  applied_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+  result_record_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+  evaluated_target_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+  result_digest: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
   rejection_reason: null
 - request_id: F01-retired-client-002
   request_digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
@@ -83,6 +83,66 @@ items:
   status: assigned
   assigned_steward: I36
   target_checkpoint: I36_candidate_integration_after_P08_P27
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: F04-migration-001
+  request_digest: b42fe840f07e8069a01e178f8a14c793ef50297428955b104f0c9e5bb88edc93
+  requesting_task_id: F04
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: F04-registration-001
+  request_digest: 531258cbac8709280216c74044463037c0e0fb29d9eb73964ae0a7faaedcd8cd
+  requesting_task_id: F04
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: F05-MIGRATION-001
+  request_digest: 450d1e4a3ddedd04971f1f52a70e3fec5fbaefe526f9580c4682bc6fb4062a1d
+  requesting_task_id: F05
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: F05-REGISTRATION-001
+  request_digest: d98642f32d5bea921d9ffce4eeb550c8c8e57f92e607b8a41c35de84f6e963e1
+  requesting_task_id: F05
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
