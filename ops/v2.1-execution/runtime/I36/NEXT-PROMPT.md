@@ -68,18 +68,19 @@ verified and ancestry-merged at pushed integration head
 `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`. Typecheck, focused domain
 guard assertions, and the native PGlite PostgreSQL migration proof passed.
 
-Three interface merge items are queued but are not yet consumable: F03
-`c1b338fe-f972-4f6b-a5e2-fbe0b2518454` /
-`9e5661be27c712bdc6ceec6b16be3cb2719c30a115d18d368bf6efcbf551781d`,
-F04 `5cace310-2242-41c7-b590-f330631223b3` /
-`ba960098a5952aa73b2651d3be2b613a40b048bae61c58d26b2a75ca2308d390`,
-and F05 `f5678805-ee24-4f89-9d98-3548427fcab2` /
-`f19b8a2c1a1793e71bc905123c3ef3477015e77954ce5eea96bd4bef7fa9c389`.
+Control `44202fc53db9781c91e4015d6af004bac4ab037b` rebound F03, F04, and F05
+with exact payload digests `3c6f286577e102784c485a1d15d66d2a5efc142c2106d42a842dc071a3d58d6a`,
+`728e72ad164c3620e1655da1e4818d0330c669cab58f7316bfe9772212d9f531`, and
+`2bda976047376b4a865abe5e6c07897502123995890a0c8570a0f8c0b15a80c0`.
+Exact F03 source `7c638131a0cab757657e95c4d2229a1573e4cde1`, F04 interface-only source
+`4cc95c29c6012174595ba1821e0554aca8572e08`, and F05 source
+`0656380bcfc50cc464dcea7588448dc724049599` were independently verified and
+ancestry-merged in order. The pushed micro-batch head is
+`e88121cb6ddd5023eb75496b25c3ee7281c07621`; typecheck and 49 focused tests
+passed. No steward request was applied and no later F04 head was merged.
 
-Current exact next action: report the pushed F03/F04/F05-interface-only claim
-head to C00, then stop and wait. C00 must rebind all three
-`expected_target_head_sha` values to that exact claim head before I36 reads the
-merge queue or any queued source checkpoint.
+Current exact next action: report the pushed F03/F04/F05 integration metadata
+checkpoint to C00, then stop and wait for a new exact control authorization.
 No unrelated merge, steward, evidence, control, or live-effect work is
 authorized.
 

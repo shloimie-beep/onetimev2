@@ -28,6 +28,13 @@
   item `95985f2c-410b-461b-9360-549591ef624e`, item digest
   `45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`
 - Pushed F02 integration head: `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`
+- F03/F04/F05 merge authorization: control `44202fc53db9781c91e4015d6af004bac4ab037b`;
+  payload digests `3c6f286577e102784c485a1d15d66d2a5efc142c2106d42a842dc071a3d58d6a`,
+  `728e72ad164c3620e1655da1e4818d0330c669cab58f7316bfe9772212d9f531`, and
+  `2bda976047376b4a865abe5e6c07897502123995890a0c8570a0f8c0b15a80c0`
+- F03 merge head: `c6e87b934d7b916a0772a8dbe046f984812d15dc`
+- F04 merge head: `1ca6f5c5cec246e06e45b76b747aa5b758f1196c`
+- Pushed F05/micro-batch integration head: `e88121cb6ddd5023eb75496b25c3ee7281c07621`
 
 ## Completed behavior
 
@@ -91,19 +98,29 @@ C00 authorized a new F03/F04/F05-interface-only resume from exact integration
 head `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`. The containing control head,
 ready-entry parent control state, exact branch head, package/task/context/dependency
 digests, 200 locked Git blobs, claim/lease, phase scope, zero effect locks, and
-canonical ready payload were verified. This atomic checkpoint consumes only
-that claim; it does not read the merge queue or any F03/F04/F05 source.
+canonical ready payload were verified.
+
+C00 rebound all three items at exact target `81602ccc`. I36 independently
+verified the three payload digests, exact sources, common source/merge base
+`d8b35b2a`, 14/17/21-path allowlists, task and state/handoff digests, every
+exported artifact hash, contract digests, implementation ancestry, and zero
+effects. The F04 aggregate was reproduced with literal
+`path=<artifact-path>=<sha256>` lines. Exact sources F03 `7c638131`, F04
+interface-only `4cc95c29`, and F05 `0656380b` were ancestry-merged in order at
+`c6e87b93`, `1ca6f5c5`, and `e88121cb`. Typecheck and 49 focused tests passed.
+No migration or registration request was applied, and no later F04 head was
+merged.
 
 ## Remaining work
 
-Push and report this exact F03/F04/F05-interface-only claim checkpoint to C00.
-Wait for C00 to rebind all three queued items to the exact resulting claim head.
+Push and report this exact F03/F04/F05 integration metadata checkpoint to C00.
+Await a new exact queue/lease authorization before further integration.
 
 ## Exact next action
 
-Report the exact pushed F03/F04/F05-interface-only claim head to C00, then
-pause. Do not read or merge queued source until all three expected target heads
-are rebound by C00.
+Report the exact pushed F03/F04/F05 integration checkpoint to C00, then pause.
+Do not integrate another source or apply any steward request without new exact
+authorization.
 
 ## Coverage
 
@@ -119,6 +136,8 @@ are rebound by C00.
   `fa9e5c92231c4b92340d07945cc91d76c85bd444`
 - Exact allowlisted F02 interface delta at
   `e4673ff1c2e621e26ac93034be245b280c4da4fa`
+- Exact allowlisted F03/F04/F05 interface deltas at `7c638131a0cab757657e95c4d2229a1573e4cde1`,
+  `4cc95c29c6012174595ba1821e0554aca8572e08`, and `0656380bcfc50cc464dcea7588448dc724049599`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -173,6 +192,12 @@ are rebound by C00.
   and context digests matched.
 - Claim, sole RELEASE_INTEGRATOR lease, phase scope, and zero effect locks
   matched the C00-issued authorization.
+- All three rebound payloads, exact source/base/allowlists, task/state-handoff
+  digests, export hashes, contract digests, and zero-effect counts matched.
+- Exact F03, F04 interface-only, and F05 source heads are ancestors of
+  `e88121cb6ddd5023eb75496b25c3ee7281c07621`.
+- Repository typecheck and 49 focused F03/F04/F05 tests passed after the
+  ordered micro-batch.
 
 ## External effects
 
