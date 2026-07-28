@@ -20,15 +20,15 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current F02-interface-only authority is control head
-`3df0ee05af64db67af02e1e64d37ded4810d2cd9`, parent control state
-`55c5605acf834318627d54bd3e94eb90d6429a80`, claim
-`8d31181a-cfe8-493e-b7ce-4ea867da9581`, RELEASE_INTEGRATOR lease
-`9b0d2541-b765-4a2b-af44-014f842efa1a` through
-`2026-07-28T18:38:47Z`, and ready-entry digest
-`9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`.
+Current F03/F04/F05-interface-only authority is containing control head
+`5217c299c2721a58bdb9ad1c1c0f68525008661a`, controller state
+`4d6bc306e542774b68179d9b440ceccd2d5b9967`, claim
+`353f2868-2978-4cac-ac73-c56fa184f841`, RELEASE_INTEGRATOR lease
+`80afc839-dc09-4363-b440-d22757451415` through
+`2026-07-28T19:50:38Z`, and ready-entry digest
+`02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
 The exact pre-claim integration head is
-`eefca0644e57dca48609682cbc3e1b01992d286d`.
+`d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`.
 
 F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
 has been ancestry-merged and pushed at exact integration head
@@ -67,8 +67,18 @@ verified and ancestry-merged at pushed integration head
 `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`. Typecheck, focused domain
 guard assertions, and the native PGlite PostgreSQL migration proof passed.
 
-Current exact next action: report the pushed F02 integration metadata
-checkpoint to C00, then stop and wait for a new exact control authorization.
+Three interface merge items are queued but are not yet consumable: F03
+`c1b338fe-f972-4f6b-a5e2-fbe0b2518454` /
+`9e5661be27c712bdc6ceec6b16be3cb2719c30a115d18d368bf6efcbf551781d`,
+F04 `5cace310-2242-41c7-b590-f330631223b3` /
+`ba960098a5952aa73b2651d3be2b613a40b048bae61c58d26b2a75ca2308d390`,
+and F05 `f5678805-ee24-4f89-9d98-3548427fcab2` /
+`f19b8a2c1a1793e71bc905123c3ef3477015e77954ce5eea96bd4bef7fa9c389`.
+
+Current exact next action: report the pushed F03/F04/F05-interface-only claim
+head to C00, then stop and wait. C00 must rebind all three
+`expected_target_head_sha` values to that exact claim head before I36 reads the
+merge queue or any queued source checkpoint.
 No unrelated merge, steward, evidence, control, or live-effect work is
 authorized.
 

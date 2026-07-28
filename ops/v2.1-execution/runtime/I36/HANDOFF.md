@@ -10,13 +10,13 @@
 - Task packet digest: `55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7`
 - Context digest: `7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim ID: `8d31181a-cfe8-493e-b7ce-4ea867da9581`
-- Writer: `codex-i36-worker2-8d31181a`
-- RELEASE_INTEGRATOR lease: `9b0d2541-b765-4a2b-af44-014f842efa1a`
-- Controller authorization: `3df0ee05af64db67af02e1e64d37ded4810d2cd9`
-- Parent control state: `55c5605acf834318627d54bd3e94eb90d6429a80`
-- Ready-entry payload digest: `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`
-- Lease expiry: `2026-07-28T18:38:47Z`
+- Claim ID: `353f2868-2978-4cac-ac73-c56fa184f841`
+- Writer: `codex-i36-worker2-353f2868`
+- RELEASE_INTEGRATOR lease: `80afc839-dc09-4363-b440-d22757451415`
+- Containing control head: `5217c299c2721a58bdb9ad1c1c0f68525008661a`
+- Controller authorization / parent control state: `4d6bc306e542774b68179d9b440ceccd2d5b9967`
+- Ready-entry payload digest: `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`
+- Lease expiry: `2026-07-28T19:50:38Z`
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
   item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
 - Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
@@ -86,15 +86,23 @@ pushed at `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`. Typecheck, focused
 domain guard assertions, and the native PGlite PostgreSQL migration proof
 passed.
 
+C00 authorized a new F03/F04/F05-interface-only resume from exact integration
+head `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`. The containing control head,
+parent controller state, exact branch head, package/task/context/dependency
+digests, 200 locked Git blobs, claim/lease, phase scope, zero effect locks, and
+canonical ready payload were verified. This atomic checkpoint consumes only
+that claim; it does not read the merge queue or any F03/F04/F05 source.
+
 ## Remaining work
 
-Push and report this exact F02 integration metadata checkpoint to C00. Await a
-new exact queue/lease authorization before any further integration.
+Push and report this exact F03/F04/F05-interface-only claim checkpoint to C00.
+Wait for C00 to rebind all three queued items to the exact resulting claim head.
 
 ## Exact next action
 
-Report the exact pushed F02 integration checkpoint to C00, then pause. Do not
-integrate any other source without a new exact authorization.
+Report the exact pushed F03/F04/F05-interface-only claim head to C00, then
+pause. Do not read or merge queued source until all three expected target heads
+are rebound by C00.
 
 ## Coverage
 
@@ -155,6 +163,15 @@ integrate any other source without a new exact authorization.
   `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`.
 - `npm run typecheck`, focused F02 domain guard assertions, and native PGlite
   PostgreSQL migration execution passed after the ancestry merge.
+- Remote containing control and integration heads matched
+  `5217c299c2721a58bdb9ad1c1c0f68525008661a` and
+  `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`.
+- Canonical ready-entry payload digest recomputed exactly as
+  `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
+- All 200 locked Git blobs and the entry-bound package, source-package, task,
+  and context digests matched.
+- Claim, sole RELEASE_INTEGRATOR lease, phase scope, and zero effect locks
+  matched the C00-issued authorization.
 
 ## External effects
 
