@@ -14,29 +14,47 @@ claimed_by: codex-i36-worker-b847548e
 claim_time: '2026-07-28T15:43:03Z'
 claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
 lease_expires_at: '2026-07-28T16:33:58Z'
-last_heartbeat_at: '2026-07-28T15:43:03Z'
+last_heartbeat_at: '2026-07-28T15:50:22Z'
 controller_authorization_sha: 7ccacffa6e460d5e3c1daff66c33a6a73d1b77dc
 ready_entry_payload_digest: 4b429a919e258b635c3c713c023bf83ecb8b28711c63e192d97d52567afa17a1
-state_based_on_head_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-last_implementation_commit_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+state_based_on_head_sha: 34718371ee0ff26758120b11d0d4b788aa11be97
+last_implementation_commit_sha: 34718371ee0ff26758120b11d0d4b788aa11be97
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
 - Verified the exact remote control, bootstrap integration, and queued F01 heads.
 - Recomputed the canonical I36 ready-entry and F01 merge-item payload digests.
 - Verified all 200 locked Git blobs and all 15 source-package Git blobs.
 - Adopted the C00 bootstrap integration lane locally at the authorized start SHA.
+- Pushed the atomic I36 adoption claim at 3277915caf862bdaa79776794862e6bdbc5762d5.
+- Verified rebased merge authorization at control head 0e4b4c0688b57899493447e85a03a7aa9aab7df2.
+- Verified F01 source ancestry, exact allowlisted delta, state/handoff binding, artifact digests, and external-effect counts.
+- Merged F01 interface head fa9e5c92231c4b92340d07945cc91d76c85bd444 with ancestry preserved.
 remaining_steps:
-- Atomically push this I36 claim checkpoint.
-- Validate and merge the queued F01 interface checkpoint with source ancestry preserved.
-- Run the required interface contract/type checks and push the integration checkpoint.
+- Push this post-merge, pre-verification checkpoint.
+- Install the locked dependencies and run the required interface contract/type checks.
+- Publish the verified integration checkpoint and report its exact SHA to C00.
 - Continue consuming only exact C00-authorized merge queue entries.
-next_action: Atomically fast-forward this claim checkpoint to origin/codex/v21-integration, then verify and merge queued F01 interface item da4bef5a-c064-4fb8-96c4-09a34aa61603.
+next_action: Push this ancestry-preserving merge checkpoint, install locked dependencies, run typecheck and focused F01 seam verification, then publish the verified integration head to C00.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
+- apps/web/src/client/app/portal-entry.tsx
+- apps/web/src/client/app/router/index.ts
+- apps/web/src/client/app/router/portal-roots.tsx
+- apps/web/src/client/app/router/registry.ts
+- apps/web/src/server/app.ts
+- apps/web/src/server/features/registry/index.ts
+- apps/worker/src/main/index.ts
+- apps/worker/src/runners/registry/index.ts
+- ops/v2.1-execution/runtime/F01/HANDOFF.md
+- ops/v2.1-execution/runtime/F01/INTERFACE-CHECKPOINT.yaml
+- ops/v2.1-execution/runtime/F01/NEXT-PROMPT.md
+- ops/v2.1-execution/runtime/F01/TASK-STATE.yaml
+- ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
 - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
 - ops/v2.1-execution/runtime/I36/HANDOFF.md
 - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+- packages/config/src/index.ts
 migrations: []
 steward_requests: []
 verification:
@@ -49,6 +67,12 @@ verification:
     result: passed
   - command: SHA-256 verification over committed locked and source-package blobs
     result: passed; 200 locked blobs and 15 source blobs
+  - command: canonical rebased merge payload digest recomputation
+    result: passed; 1db016597e3e76f5213fb775f2fce031401f6f530dc6f7e89716fbf2c65c4bf5
+  - command: F01 source admission and ancestry checks
+    result: passed; exact 14-path allowlist, source base/merge base, state/handoff, task, and artifact digests
+  - command: git merge --no-ff fa9e5c92231c4b92340d07945cc91d76c85bd444
+    result: passed; source ancestry preserved at merge commit 34718371ee0ff26758120b11d0d4b788aa11be97
   known_baseline_failures: []
 external_effects:
   authority: none

@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-integration`
 - Start SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`
-- Implementation SHA before this handoff metadata commit: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`
+- Implementation SHA before this handoff metadata commit: `34718371ee0ff26758120b11d0d4b788aa11be97`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7`
 - Context digest: `7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813`
@@ -19,21 +19,25 @@
 Verified the exact repository, remote control head, bootstrap integration head,
 F01 source head, I36 ready entry, queued merge item, leases, canonical payload
 digests, and all checksum-locked committed blobs. Prepared the required
-three-file bootstrap adoption checkpoint without changing product or control
-files.
+three-file bootstrap adoption checkpoint and pushed it atomically at
+`3277915caf862bdaa79776794862e6bdbc5762d5`. After C00 rebound the queue CAS,
+verified control head `0e4b4c0688b57899493447e85a03a7aa9aab7df2` and merge
+payload digest `1db016597e3e76f5213fb775f2fce031401f6f530dc6f7e89716fbf2c65c4bf5`.
+Admitted the exact 14-path F01 delta and merged source head
+`fa9e5c92231c4b92340d07945cc91d76c85bd444` with ancestry preserved at
+`34718371ee0ff26758120b11d0d4b788aa11be97`.
 
 ## Remaining work
 
-Push the bootstrap adoption checkpoint by a normal fast-forward update. Then
-scope-check and merge only the exact queued F01 interface checkpoint, run its
-contract/type checks, update this durable runtime state, and push the resulting
-integration checkpoint.
+Push this post-merge checkpoint, install the locked dependencies, run the
+contract/type and focused F01 seam checks, update this durable runtime state,
+and push the verified integration checkpoint.
 
 ## Exact next action
 
-Atomically fast-forward this claim checkpoint to
-`origin/codex/v21-integration`, then verify and merge queued F01 interface item
-`da4bef5a-c064-4fb8-96c4-09a34aa61603`.
+Push this ancestry-preserving merge checkpoint, install locked dependencies,
+run typecheck and focused F01 seam verification, then publish the verified
+integration head to C00.
 
 ## Coverage
 
@@ -45,6 +49,8 @@ Atomically fast-forward this claim checkpoint to
 - `ops/v2.1-execution/runtime/I36/TASK-STATE.yaml`
 - `ops/v2.1-execution/runtime/I36/HANDOFF.md`
 - `ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md`
+- Exact allowlisted F01 interface delta at
+  `fa9e5c92231c4b92340d07945cc91d76c85bd444`
 - Migrations: none
 
 ## Verification
@@ -57,6 +63,10 @@ Atomically fast-forward this claim checkpoint to
   `39e877291294ccb17eb773beedbc7b17a7a85d0e18079841908c35687267abe8`.
 - All 200 locked Git blobs and all 15 source-package Git blobs passed SHA-256
   verification.
+- Rebased merge entry, expected target, source base, merge base, task state and
+  handoff, and all six interface artifact digests matched.
+- F01 is an ancestor of merge commit
+  `34718371ee0ff26758120b11d0d4b788aa11be97`.
 
 ## External effects
 
@@ -70,5 +80,5 @@ accessed or recorded.
 
 ## Blockers, deviations, and recovery
 
-No blocker or deviation is present. The branch remains recoverable from the
-authorized bootstrap SHA until the atomic claim push succeeds.
+No blocker or deviation is present. The merge is locally recoverable at
+`34718371ee0ff26758120b11d0d4b788aa11be97`; verification remains pending.

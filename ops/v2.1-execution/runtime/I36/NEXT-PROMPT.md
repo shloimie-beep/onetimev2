@@ -20,10 +20,11 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current exact next action: atomically fast-forward the three-file I36 claim
-checkpoint to `origin/codex/v21-integration`, then verify and merge queued F01
-interface item `da4bef5a-c064-4fb8-96c4-09a34aa61603` at source
-`fa9e5c92231c4b92340d07945cc91d76c85bd444`. Preserve source ancestry, run the
-required contract/type checks, update all three I36 runtime files, commit, and
-push. Continue until `candidate_frozen`, `evidence_aggregated`, or a permitted
-precise blocker.
+Current exact next action: verify the remote still equals the pushed
+post-merge checkpoint whose implementation parent is
+`34718371ee0ff26758120b11d0d4b788aa11be97`, install locked dependencies, and
+run typecheck plus focused F01 seam verification. F01 source
+`fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor. Update all
+three I36 runtime files, commit, and push the verified integration checkpoint;
+report its exact SHA to C00. Continue until `candidate_frozen`,
+`evidence_aggregated`, or a permitted precise blocker.
