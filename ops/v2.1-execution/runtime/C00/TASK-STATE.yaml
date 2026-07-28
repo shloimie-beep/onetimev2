@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-3d1e958d
-claim_time: '2026-07-28T20:46:01Z'
-claim_id: 3d1e958d-0c82-4273-b180-88cdb535c3d2
-lease_expires_at: '2026-07-28T20:50:07Z'
-last_heartbeat_at: '2026-07-28T20:50:07Z'
-controller_authorization_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
+claimed_by: codex-c00-orchestrator-14911290
+claim_time: '2026-07-28T20:57:11Z'
+claim_id: 14911290-7333-41f7-8fc1-38ad8f1ef047
+lease_expires_at: '2026-07-28T20:59:24Z'
+last_heartbeat_at: '2026-07-28T20:59:24Z'
+controller_authorization_sha: 3725a0e0242bec040294c59ad86ca0701fceed72
 ready_entry_payload_digest: null
-state_based_on_head_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
+state_based_on_head_sha: 3725a0e0242bec040294c59ad86ca0701fceed72
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -99,8 +99,10 @@ completed_steps:
 - independently verified P32 final f4ae1c03, exact interface source 6a33944a, implementation 888af549, 30-path owned delta, seven artifact hashes, contract digest 76d08587, state/handoff digest 215a3e38, 21 focused tests, typecheck, released lease, and zero effects
 - recorded and assigned P32's immutable migration, registration, and configuration requests without applying any request
 - admitted the exact P32 interface for an atomic-claim-only I36 ancestry merge and rebound the still-unused P27 authorization after its safe stale-control stop
+- independently verified P27 atomic claim 4b55f314 and I36 atomic claim ffd63f4e, each with the exact sole parent, three-file task-local scope, containing control, ready parent/digest, lease identity, and zero effects
+- consumed both ready entries and rebound only the P32 merge target CAS to exact I36 claim head ffd63f4e
 remaining_steps: []
-next_action: P27 and I36 atomically claim their rebound GHL identity and P32 integration lanes while P16 continues.
+next_action: P27 resumes GHL identity implementation and I36 merges only the rebound P32 interface while P16 continues.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -108,12 +110,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
+  current_control_parent_sha: 3725a0e0242bec040294c59ad86ca0701fceed72
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 3d1e958d-0c82-4273-b180-88cdb535c3d2
-      observed_head: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
+      claim_id: 14911290-7333-41f7-8fc1-38ad8f1ef047
+      observed_head: 3725a0e0242bec040294c59ad86ca0701fceed72
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -125,10 +127,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: ce7c9fcd-dbf3-4d5e-9174-3b7632504e42
-      observed_head: d35166838267711a514cf73822cd2ca49a3f3ded
+      observed_head: ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8
       authorized_start_sha: d35166838267711a514cf73822cd2ca49a3f3ded
       lease_expires_at: '2026-07-28T21:46:27Z'
-      scheduling_state: ready_for_P32_atomic_claim
+      scheduling_state: claimed_P32_target_rebound_resume_authorized
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -216,10 +218,10 @@ orchestration:
     P27:
       branch: codex/v21-p27-ghl-identity
       claim_id: 83580db4-4a47-44d0-8d6d-83969ae7ccf5
-      observed_head: null
+      observed_head: 4b55f314f86a0532387d5b6e0a6ace486858f7f1
       authorized_start_sha: d35166838267711a514cf73822cd2ca49a3f3ded
       lease_expires_at: '2026-07-28T21:34:49Z'
-      scheduling_state: rebound_ready_for_atomic_claim
+      scheduling_state: claimed_resume_authorized
   active_native_subagents:
   - task_id: P16
     agent: /root/f05_worker
@@ -343,11 +345,11 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 6e1035abeebba161ce6d0c9a812f259c6c711402d7f8e86cf8a91bfff27ad924
-    control_lease: efd4c43124a044a53042ea83bb29bb7fb0f61ac58913643f334021e51140a58a
-    task_registry: 3d970d4faaedc123490ba001d6bc208e526643157f3cc30b8884291ac6ccc678
-    ready_queue: d482db6c3e3894025bf78515ca6d1fe0ac03415aff15448dc3fba0c7e9a36034
-    merge_queue: 037093375cd76f25d765c97c5e7452958e9fd01f757e874672ce2347fba66a6c
+    control_state: 8c5d270088c4236a01abed9183b4a2bc43069281de7ba3cab2adc84ff11b8ed2
+    control_lease: b4ce711323f531fc34e2dfc55a9c93c444a8e9cf68c0c0d0e888d83e5d54273a
+    task_registry: cc9e9492c480c3a14a7f4ac5c16d898a3309fd81a91bfffc8620bcf6754a5a7c
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    merge_queue: 6686778dd9db2977d6e3e33390811b86e68f389236c0858741a1dfb57e1528e3
     steward_queue: 8f83ad6c761408ebcfed0b4e4ec0ac04f0f04534ad7f6ebb2e8cae25cdda9bb9
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9

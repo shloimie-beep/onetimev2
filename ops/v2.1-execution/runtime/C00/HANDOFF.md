@@ -289,14 +289,15 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P16 remains active. P27 and I36 are ready for atomic claims;
+None for bootstrap. P16 remains active. P27 and I36 have exact verified claims;
 P35 awaits later full implementation admission.
 
 ## Exact next action
 
-Dispatch P27 under claim `83580db4-4a47-44d0-8d6d-83969ae7ccf5` and
-I36 under claim `ce7c9fcd-dbf3-4d5e-9174-3b7632504e42` for atomic claim-only
-checkpoints from `d35166838267711a514cf73822cd2ca49a3f3ded`. Let P16 continue.
+Resume P27 under claim `83580db4-4a47-44d0-8d6d-83969ae7ccf5` for its
+GHL identity implementation and I36 under claim
+`ce7c9fcd-dbf3-4d5e-9174-3b7632504e42` to consume only the rebound P32 merge
+item targeting `ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8`. Let P16 continue.
 
 ## Verification
 

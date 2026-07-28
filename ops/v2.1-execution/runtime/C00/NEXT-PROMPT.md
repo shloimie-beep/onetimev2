@@ -78,7 +78,12 @@ state/handoff `215a3e38...`, 21 focused tests, typecheck, and zero effects.
 Its exact interface is queued for an atomic-claim-only I36 merge, and its three
 steward requests are assigned but unapplied. P27 safely refused stale authority
 after the C00 acquisition and is rebound to the same integration parent. Dispatch
-the P27 and I36 atomic claims while P16 continues.
+the P27 and I36 atomic claims while P16 continues. Both claims are now exact:
+P27 `4b55f314f86a0532387d5b6e0a6ace486858f7f1` and I36
+`ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8`, each with only three task-local
+runtime files and zero effects. The ready queue is consumed and the P32 merge
+target CAS is rebound to `ffd63f4e`. Resume P27 implementation and I36's
+P32-only ancestry merge while P16 continues.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
