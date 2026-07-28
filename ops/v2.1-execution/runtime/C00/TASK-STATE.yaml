@@ -12,11 +12,11 @@ phase: bootstrap
 claimed_by: codex-c00-a916ec3f7e8b
 claim_time: '2026-07-28T14:44:41Z'
 claim_id: 73f19375-44c3-4c37-86e6-fcf30d77e244
-lease_expires_at: '2026-07-28T15:49:55Z'
-last_heartbeat_at: '2026-07-28T14:49:55Z'
-controller_authorization_sha: 8d211ccdad296bb6db93f7f9328fe135045b58d8
+lease_expires_at: '2026-07-28T15:53:33Z'
+last_heartbeat_at: '2026-07-28T14:53:33Z'
+controller_authorization_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 ready_entry_payload_digest: null
-state_based_on_head_sha: 8d211ccdad296bb6db93f7f9328fe135045b58d8
+state_based_on_head_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -26,15 +26,14 @@ completed_steps:
 - validated that AGENTS.md reaches the v2.1 authority first and retains compatible engineering guidance
 - passed the normal control-branch creation push permission canary
 - measured and fingerprinted the exact reviewed-head repository baseline
+- independently validated package coverage, dependency DAGs, writer scopes, and locked digests
+- created and verified codex/v21-integration at ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 remaining_steps:
 - validate AGENTS.md authority replacement
 - run and record the repository baseline
-- validate package coverage and control schemas
-- push the permission canary
-- create and verify the integration branch
 - initialize control ledgers and ready entries
 - mark the controller operational and release its lease
-next_action: Measure and record the bound repository command baseline, then create the integration branch.
+next_action: Initialize the task registry, locks, queues, and exact F01/I36 ready entries.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -47,6 +46,7 @@ verification:
   - delivery SHA256SUMS.txt: 214/214 passed
   - package inventory: 46 tasks, 46 contexts, 46 prompts, 16 source-spec files
   - 'npm run verify at reviewed head: secret scan passed; Prettier failed on 1736 files; later stages did not run'
+  - independent v2.1 package topology validation: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

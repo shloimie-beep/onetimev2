@@ -18,9 +18,10 @@ Fetch remote refs and require the exact remote control head. Read
 `LOCKED-SHA256SUMS.txt`, the current control/runtime digests, and the active
 C00 lease. Reject any live foreign lease or non-fast-forward collision.
 
-The exact next action is to measure and record the bound `npm run verify`
-baseline. Continue through package/control validation, integration-branch
-creation, control initialization, and `operational`.
+The exact next action is to initialize exact registry, queue, migration,
+steward, writer/provider-lock, merge, and current-candidate state with ready
+entries for F01 and on-demand I36. Continue through `control_initialized` and
+`operational`.
 Update C00 state, handoff, and this prompt at every phase; commit and normal-push
 each checkpoint. Never implement product code, grant provider authority, or
 force-push.

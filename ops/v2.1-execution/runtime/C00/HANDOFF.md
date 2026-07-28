@@ -18,6 +18,8 @@ and passed the normal control-branch creation push permission canary.
 The canonical verify baseline was measured in a detached worktree at the exact
 reviewed head: secret scanning passed and Prettier reported 1,736 files before
 the chained command stopped.
+Independent package topology validation passed, and `codex/v21-integration`
+was created and remotely verified at `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 
 ## Remaining work
 
@@ -27,15 +29,16 @@ mark the controller operational, and release the controller lease.
 
 ## Exact next action
 
-Measure the actual `npm run verify` baseline with source, dependency lock,
-toolchain/runtime, and environment fingerprints, then create the integration
-branch from the committed bootstrap checkpoint.
+Initialize the registry, migration allocation mirror, steward/provider/writer
+locks, merge/current-candidate state, and exact F01/I36 ready entries.
 
 ## Verification
 
 - Delivery manifest: 214/214 entries passed.
 - Package inventory: 46 tasks, 46 contexts, 46 prompts, 16 source-spec files.
 - Baseline failure fingerprint: `049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b`.
+- Independent package topology validation: PASS.
+- Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery
