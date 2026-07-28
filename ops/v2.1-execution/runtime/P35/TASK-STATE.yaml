@@ -1,0 +1,77 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P35
+task_packet_digest: 533cdac53bcc53fe0abccdd67e1f168b57a6cfbdf63c81d71c611ecb4b29d71f
+task_context_digest: d8d040229639d32c6ec4c94b66ad999d7b0afb1e23abff0aa10ccea9b5d54c06
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p35-domain-transition-archive
+start_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+dependency_heads:
+  F01:
+    required_state: interface_ready_integrated
+    task_head_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
+    integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+    interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
+    interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+status: claimed
+phase: implementation
+claimed_by: codex-p35-worker-9ee0d8f8
+claim_time: '2026-07-28T17:54:30Z'
+claim_id: 9ee0d8f8-944d-47f2-b67a-54cb333cc29d
+lease_expires_at: '2026-07-28T18:38:47Z'
+last_heartbeat_at: '2026-07-28T17:54:30Z'
+controller_authorization_sha: 3df0ee05af64db67af02e1e64d37ded4810d2cd9
+ready_entry_payload_digest: 7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f
+state_based_on_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+last_implementation_commit_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+completed_steps:
+  - Verified repository identity and exact remote control authorization.
+  - Recomputed the canonical P35 ready-entry payload digest.
+  - Verified all 200 locked execution blobs and all 15 source-specification blobs.
+  - Verified F01 interface integration ancestry and the published dependency identities.
+remaining_steps:
+  - Implement canonical domain and safe transition policy modules.
+  - Implement the legacy-adult re-registration bridge without importing prohibited legacy state.
+  - Archive the Tisha B'Av funnel as an inactive reusable template.
+  - Add task-owned verification and domain-cutover runbooks.
+  - Run focused verification, checkpoint, and publish ready_for_review.
+next_action: Inspect only the P35-owned paths and named source sections, then implement the smallest complete domain-transition, legacy re-registration, archive, and verification surface.
+requirements:
+  OTV2-FOUNDATION-002: in_progress
+  OTV2-DOMAIN-153: in_progress
+  OTV2-DOMAIN-154: in_progress
+  OTV2-DOMAIN-155: in_progress
+  OTV2-DOMAIN-156: in_progress
+  OTV2-DOMAIN-157: in_progress
+  OTV2-MIGRATION-206: in_progress
+  OTV2-MIGRATION-207: in_progress
+acceptance_cases:
+  OTV2-FOUNDATION-002-AC01: implementation_pending
+  OTV2-DOMAIN-153-AC01: implementation_pending
+  OTV2-DOMAIN-154-AC01: implementation_pending
+  OTV2-DOMAIN-155-AC01: implementation_pending
+  OTV2-DOMAIN-156-AC01: implementation_pending
+  OTV2-DOMAIN-157-AC01: implementation_pending
+  OTV2-MIGRATION-206-AC01: implementation_pending
+  OTV2-MIGRATION-207-AC01: implementation_pending
+changed_paths:
+  - ops/v2.1-execution/runtime/P35/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P35/HANDOFF.md
+  - ops/v2.1-execution/runtime/P35/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - git rev-parse origin/codex/v21-control
+    - canonical ready-entry payload SHA-256 recomputation
+    - LOCKED-SHA256SUMS.txt Git-blob verification
+    - source-spec/SHA256SUMS.txt Git-blob verification
+    - git merge-base --is-ancestor 80c281b7ae5826ed2c6abe95ba68a033ffa52174 eefca0644e57dca48609682cbc3e1b01992d286d
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
