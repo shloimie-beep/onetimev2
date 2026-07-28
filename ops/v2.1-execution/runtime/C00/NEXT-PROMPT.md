@@ -153,3 +153,10 @@ Each worker must stop after its exact three-file atomic claim. Acquire a fresh
 C00 lease, consume the claims, and rebind only P28 merge item
 `58c0a26a-cb58-4dfb-a4a8-082ae171537e` before I36 merges it. P20 may then
 continue independently under its unchanged owned scope and lease.
+
+The atomic claims are verified and consumed. Resume I36 at `85cfc9f2` to merge
+only P28 item `58c0a26a-cb58-4dfb-a4a8-082ae171537e`, canonical rebound digest
+`ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1`,
+source `aaedc3f2`, base `9ba92b07`, exact 36 paths, and no steward action.
+Resume P20 at `6f894038` for normal implementation. Reconcile both final
+checkpoints under a fresh serialized C00 lease.

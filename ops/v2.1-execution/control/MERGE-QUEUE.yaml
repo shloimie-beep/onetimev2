@@ -10,7 +10,7 @@ items:
   source_branch: codex/v21-p28-communication-foundation
   source_head_sha: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
   target_branch: codex/v21-integration
-  expected_target_head_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
+  expected_target_head_sha: 85cfc9f2f0dbfbbbb30058d5c6473dd0505de8e3
   source_delta_base_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
   required_merge_base_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
   preserve_source_ancestry: true
@@ -68,9 +68,9 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: c9c3d288fa6cdb3aca756de8cc03d35471abe464
+  state_based_on_control_head_sha: 38f99e7a00149ba6820fb05aba8ef11534001658
 item_payload_digests:
-  58c0a26a-cb58-4dfb-a4a8-082ae171537e: 3bfa28d14fdf8f0f1a264cf56cb18629d5d8faa452c621a5c82ff62adf96a241
+  58c0a26a-cb58-4dfb-a4a8-082ae171537e: ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

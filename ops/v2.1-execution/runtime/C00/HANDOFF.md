@@ -415,3 +415,10 @@ resume from `ebf88c8e`; its initial merge digest is `3bfa28d1...`. P20 is now
 dependency-valid and has a disjoint `CONTENT_PROCESSING` ready authorization
 from the same start head. Workers must publish only their three-file atomic
 claims, then stop for C00 target-CAS reconciliation.
+
+I36 and P20 published exact atomic claims `85cfc9f2` and `6f894038`;
+each has sole parent `ebf88c8e`, exactly three task-local runtime files, and
+zero effects. C00 consumed both ready entries. P28 item `58c0a26a` is rebound
+to target `85cfc9f2` with canonical digest `ece27747...`; I36 may merge only
+that item and may not apply a steward request. P20 may continue independently
+inside its five owned roots under the unchanged `CONTENT_PROCESSING` lease.
