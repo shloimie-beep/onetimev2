@@ -134,6 +134,11 @@ typecheck, and zero effects. Its three canonical steward requests are assigned
 but unapplied. C00 queued only this interface for I36 atomic claim
 `391d7764-3f93-43c8-86dc-07df6f59d0b1` from `9ba92b07`. P18 is also complete
 at `0a384577` pending admission; P28 interface `aaedc3f2` awaits its final.
+P18 and P28 are now admitted at finals `0a384577` and `f891f16e`; their exact
+canonical steward requests are assigned but unapplied. I36 consumed the P19
+atomic claim at `7aac6f05`; C00 rebound only item `d3acb266` to that target
+with canonical digest `45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6`.
+Resume I36 to merge only P19. P28 interface remains separate and unqueued.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

@@ -289,17 +289,17 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P18 is `ready_for_review` at `0a384577` and awaits control
-admission. P19 is independently verified `ready_for_review` at `306c26cf`;
-its exact interface `e420eb83` is queued for I36 from `9ba92b07`, and its
-three steward requests are assigned but unapplied. P28 has published interface
-`aaedc3f2` and is completing its final checkpoint.
+None for bootstrap. P18 is admitted `ready_for_review` at `0a384577`. P28 is
+admitted `ready_for_review` at `f891f16e`; interface `aaedc3f2` awaits a later
+separate integration authorization. P19's I36 claim is exact `7aac6f05`, and
+its sole interface item is rebound to that target CAS. All P18/P19/P28 steward
+requests are assigned but unapplied.
 
 ## Exact next action
 
-Dispatch I36 claim `391d7764-3f93-43c8-86dc-07df6f59d0b1` for an atomic
-claim-only checkpoint from `9ba92b070eedfa3756eff4f78fd328de72507a96`.
-Then rebind P19's optimistic target CAS before merging it.
+Resume I36 claim `391d7764-3f93-43c8-86dc-07df6f59d0b1` to merge only P19
+item `d3acb266-4c15-4a37-ada7-1a42b616cd12` from exact target
+`7aac6f05d302e8dc72788ac8df8912a40707b522`. Apply no steward request.
 
 ## Verification
 
