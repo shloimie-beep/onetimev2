@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-8595a5562a8e
-claim_time: '2026-07-28T15:08:35Z'
-claim_id: fa7669a7-b2f1-4a43-bdad-be73dc1a8c57
-lease_expires_at: '2026-07-28T15:09:35Z'
-last_heartbeat_at: '2026-07-28T15:09:35Z'
-controller_authorization_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+claimed_by: codex-c00-orchestrator-efe7c0549292
+claim_time: '2026-07-28T15:21:37Z'
+claim_id: 2430aebb-00f8-4c26-8813-735a0160e52e
+lease_expires_at: '2026-07-28T15:23:40Z'
+last_heartbeat_at: '2026-07-28T15:23:40Z'
+controller_authorization_sha: 6f4c83186cbf15512cb5a48afe576bd2d786ca97
 ready_entry_payload_digest: null
-state_based_on_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+state_based_on_head_sha: 6f4c83186cbf15512cb5a48afe576bd2d786ca97
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -34,8 +34,9 @@ completed_steps:
 - marked the bootstrap operational and released the serialized C00 lease
 - enabled autonomous native-subagent orchestration from the checksum-bound addendum
 - reconciled remote branches, claims, leases, writer slots, provider locks, and the native-agent tree
+- verified F01 atomic claim head e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9 and reconciled it into control state
 remaining_steps: []
-next_action: Spawn exactly one F01 native subagent, verify its pushed checkpoints remotely, and queue I36 only when admissible integration work exists.
+next_action: Wait for F01 interface_ready, verify its pushed checkpoint remotely, and queue I36 only when admissible integration work exists.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -43,28 +44,36 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+  current_control_parent_sha: 6f4c83186cbf15512cb5a48afe576bd2d786ca97
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: fa7669a7-b2f1-4a43-bdad-be73dc1a8c57
-      observed_head: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
-      lease_state: releasing_in_containing_checkpoint
+      claim_id: 2430aebb-00f8-4c26-8813-735a0160e52e
+      observed_head: 6f4c83186cbf15512cb5a48afe576bd2d786ca97
+      lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
       claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-      observed_head: null
+      observed_head: e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9
       authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
       lease_expires_at: '2026-07-28T16:09:35Z'
-      scheduling_state: dispatch_now
+      scheduling_state: active_native_subagent
     I36:
       branch: codex/v21-integration
       claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
       observed_head: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
       authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-      lease_expires_at: '2026-07-28T16:09:35Z'
+      lease_expires_at: '2026-07-28T16:23:40Z'
       scheduling_state: hold_until_merge_work
-  active_native_subagents: []
+  active_native_subagents:
+  - task_id: F01
+    agent: /root/f01_worker
+    branch: codex/v21-f01-foundation-seams
+    observed_head: e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9
+    claim_id: c18310c8-3975-4816-badd-1fa9079edc33
+    lease_expires_at: '2026-07-28T16:09:35Z'
+    status: claimed
+    phase: contract
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -75,10 +84,10 @@ migrations: []
 steward_requests: []
 verification:
   control_digests:
-    control_state: af7a45c0a7b6d88c7359d4177d974213f4c8718b8ff0dc36c759bfe5842a7f33
-    control_lease: 719bd204f410e48fc5d09ebc331310c093cae5ed1f3e7fb0ee7402e15d6648b3
-    task_registry: 98b753b6355276c12035fba7158f9eb03767fcd5fd88d3a752f087c4f6635563
-    ready_queue: bb98084b11431622b4dc96e0343774a0ff8d5085b1cef6bc7ad3855ce382ed4b
+    control_state: 573c40c66c86e555c902be4950dd8276f0edf510d98d7b6cfa12c3450865eb6a
+    control_lease: 368026dad6017b5cd80a8877ec6929a4d71b58e8123a48e9a6eaf6c8030dbf10
+    task_registry: 5c5989843f31e1664bd2b697c81e4d5692fbde118c76c85a3956ccf23acb2812
+    ready_queue: 52a959ba038c09d085111d3eed72be1c79d6b2a58eabf6452162aca32dc911d5
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: b9e2846bf80abd21c6a709137e49124be16a444a9344e0b2ba80df02d58150f3
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -93,6 +102,7 @@ verification:
   - independent v2.1 package topology validation: passed
   - control registry, ready payload digests, leases, locks, and queue invariants: passed
   - autonomous addendum package binding and remote/native-agent reconciliation: passed
+  - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

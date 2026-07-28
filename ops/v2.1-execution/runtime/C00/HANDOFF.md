@@ -30,6 +30,10 @@ Autonomous native-subagent orchestration is enabled under addendum digest
 `6417cb5ee822c72048484b42aafda19ea636a2dd87a8eb472fd473797aacae33`.
 Remote reconciliation found no task-branch, claim, writer-slot, provider-lock,
 or native-agent collision.
+F01 was dispatched as the sole product worker, atomically claimed
+`codex/v21-f01-foundation-seams`, and its remote claim checkpoint was verified
+at `e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9`. Control now records F01 as
+claimed and keeps I36 ready but unspawned.
 
 ## Remaining work
 
@@ -38,9 +42,9 @@ after worker branches advance.
 
 ## Exact next action
 
-Spawn one exclusive F01 native subagent from its exact renewed ready entry.
-Verify every pushed checkpoint remotely. Keep I36 unspawned until an admissible
-interface, implementation, or evidence item is queued.
+Wait for F01 to publish `interface_ready`, verify the pushed checkpoint
+remotely, and keep I36 unspawned until an admissible interface,
+implementation, or evidence item is queued.
 
 ## Verification
 
@@ -50,9 +54,9 @@ interface, implementation, or evidence item is queued.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
-- I36 ready payload: `2d08a12c76a7d6ccdf1c794ff670c75e7770d10fa0f72b5985ecbd31186aba01`.
-- Control parent for renewed ready entries: `0343ae1bf5ee754d28f165f5e522f131ce6d421c`.
-- F01 branch/head: `codex/v21-f01-foundation-seams` / absent before dispatch.
+- I36 ready payload: `544851b889873bd5e4e419cff68dfce2b34dbc9ed0e60be3c4f8d79a8ca610e8`.
+- Control parent for the renewed I36 ready entry: `6f4c83186cbf15512cb5a48afe576bd2d786ca97`.
+- F01 branch/head: `codex/v21-f01-foundation-seams` / `e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9`.
 - I36 branch/head: `codex/v21-integration` / `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - No provider or product effect was attempted.
 
