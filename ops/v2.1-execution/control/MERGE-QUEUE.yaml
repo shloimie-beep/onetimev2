@@ -4,58 +4,113 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: 22ea97a2-e2db-4a49-9e2b-7649d3a0e069
+  merge_id: ffb7242b-c205-444b-b0b9-4ef1b85da558
   kind: interface
-  task_id: P15
-  source_branch: codex/v21-p15-calendar
-  source_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
+  task_id: F06
+  source_branch: codex/v21-f06-provider-core
+  source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   target_branch: codex/v21-integration
-  expected_target_head_sha: e58a2f8d38594cd5774aa65adf035d3cdc132704
-  source_delta_base_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
-  required_merge_base_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
+  expected_target_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+  source_delta_base_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+  required_merge_base_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: c96b8c55c07e5283e762537934a6bf948833700e
+  required_postmerge_ancestor_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   merge_after_heads: {}
   allowed_paths:
-  - apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx
-  - apps/web/src/client/features/calendar/CalendarWorkspace.tsx
-  - apps/web/src/client/features/calendar/calendar.css
-  - apps/web/src/client/features/calendar/index.ts
-  - apps/web/src/server/features/calendar/index.ts
-  - apps/web/src/server/features/calendar/service.ts
-  - ops/v2.1-execution/runtime/P15/HANDOFF.md
-  - ops/v2.1-execution/runtime/P15/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P15/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P15/STEWARD-REQUESTS.yaml
-  - ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
-  - packages/contracts/src/calendar/index.ts
-  - packages/db/src/calendar/index.ts
-  - packages/db/src/calendar/repository.ts
-  - packages/db/src/calendar/schema-contract.ts
-  - packages/domain/src/calendar/calendar.test.ts
-  - packages/domain/src/calendar/errors.ts
-  - packages/domain/src/calendar/index.ts
-  - packages/domain/src/calendar/recurrence.ts
-  - packages/domain/src/calendar/time-zone.ts
-  - packages/domain/src/calendar/views.ts
+  - apps/worker/src/runners/provider-reconciliation/index.ts
+  - apps/worker/src/runners/provider-reconciliation/runner.test.ts
+  - apps/worker/src/runners/provider-reconciliation/runner.ts
+  - ops/v2.1-execution/runtime/F06/HANDOFF.md
+  - ops/v2.1-execution/runtime/F06/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F06/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F06/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F06/steward-requests/F06-migration-001.yaml
+  - ops/v2.1-execution/runtime/F06/steward-requests/F06-registration-001.yaml
+  - packages/contracts/src/providers/v21-provider-core.ts
+  - packages/db/src/providers/v21-provider-core-repository.test.ts
+  - packages/db/src/providers/v21-provider-core-repository.ts
+  - packages/db/src/providers/v21-schema-contract.ts
+  - packages/domain/src/providers/shared/errors.ts
+  - packages/domain/src/providers/shared/index.ts
+  - packages/domain/src/providers/shared/mapping.ts
+  - packages/domain/src/providers/shared/operation.ts
+  - packages/domain/src/providers/shared/provider-core.test.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51
+    lease_id: 6b08c9f1-f266-4b3c-8d54-e678e72f2d13
     holder_task_id: I36
-    holder_claim_id: 15bcce0c-16b9-4c00-b422-ba5053554f14
-    state_based_on_control_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
-    lease_issued_at: '2026-07-28T19:36:08Z'
-    lease_expires_at: '2026-07-28T20:36:08Z'
-    phase_scope: P15_interface_merge_only
-  task_packet_digest: cc6d395e0cb231a5180c9f927a64c814148b4946f869d68ee6afc1b74bc5c8df
-  state_handoff_digest: cb8551031e184df2f727f1df5f54733ab02b1226fb1f00f11ed17b65e0c6f4ce
+    holder_claim_id: 1b554a42-a2a2-4017-add9-7117ed575b9e
+    state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+    lease_issued_at: '2026-07-28T20:06:46Z'
+    lease_expires_at: '2026-07-28T21:06:46Z'
+    phase_scope: F06_P14_interface_wave_atomic_claim_only
+  task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+  state_handoff_digest: afaeee008a8e07a19fcad47d0a5767893faa42c86ddcfd5a581fc53f9fb0ee66
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: ec7068fdab45a6a29825006e41c9bc260991732a
+  state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 76ced88c-2bfd-4400-89ca-513b576bc2f2
+  kind: interface
+  task_id: P14
+  source_branch: codex/v21-p14-student-app
+  source_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+  source_delta_base_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+  required_merge_base_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+  merge_after_heads:
+    F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+  allowed_paths:
+  - apps/web/src/client/app/student/account/StudentAccount.tsx
+  - apps/web/src/client/app/student/account/index.ts
+  - apps/web/src/client/app/student/home/StudentToday.tsx
+  - apps/web/src/client/app/student/home/index.ts
+  - apps/web/src/client/app/student/profile/StudentProfile.tsx
+  - apps/web/src/client/app/student/profile/index.ts
+  - apps/web/src/client/app/student/shell/StudentShell.test.tsx
+  - apps/web/src/client/app/student/shell/StudentShell.tsx
+  - apps/web/src/client/app/student/shell/index.ts
+  - apps/web/src/client/app/student/shell/student-shell.css
+  - apps/web/src/server/features/portals/student/index.ts
+  - apps/web/src/server/features/portals/student/service.test.ts
+  - apps/web/src/server/features/portals/student/service.ts
+  - ops/v2.1-execution/runtime/P14/HANDOFF.md
+  - ops/v2.1-execution/runtime/P14/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P14/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P14/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P14/TASK-STATE.yaml
+  - packages/contracts/src/portals/student/index.ts
+  - packages/domain/src/portals/student/errors.ts
+  - packages/domain/src/portals/student/index.ts
+  - packages/domain/src/portals/student/isolation.ts
+  - packages/domain/src/portals/student/navigation.ts
+  - packages/domain/src/portals/student/student-portal.test.ts
+  - packages/domain/src/portals/student/view.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 6b08c9f1-f266-4b3c-8d54-e678e72f2d13
+    holder_task_id: I36
+    holder_claim_id: 1b554a42-a2a2-4017-add9-7117ed575b9e
+    state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+    lease_issued_at: '2026-07-28T20:06:46Z'
+    lease_expires_at: '2026-07-28T21:06:46Z'
+    phase_scope: F06_P14_interface_wave_atomic_claim_only
+  task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
+  state_handoff_digest: 7afcf4b290d344d54ffff883b9c09036acdb7d09944331a767c3b4b2c9fbcf5b
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
 item_payload_digests:
-  22ea97a2-e2db-4a49-9e2b-7649d3a0e069: 617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d
+  ffb7242b-c205-444b-b0b9-4ef1b85da558: 8664d26c4f7dfdb04fd19983838ca2eb3960899287d7d92e6e1f1286371008a2
+  76ced88c-2bfd-4400-89ca-513b576bc2f2: f9e2811c32aa4f6d71a7f8b7d75e2642c2769a15fd0b404f23a6097244f3f9cb
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

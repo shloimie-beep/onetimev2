@@ -269,21 +269,29 @@ containing authorization, and zero effects. Their ready entries are consumed.
 P15 merge `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` is rebound only at its
 optimistic target CAS to exact I36 claim head `e58a2f8d`; canonical rebound
 payload is `617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d`.
+I36 ancestry-merged P15 at `eae9c62adb6711034bbd31bc4aea469c2c65fc21`
+and published final metadata `01cdb992660a1fbc20b204b829d28062fd044679`;
+all checks passed with zero effects. F06 is `ready_for_review` at
+`ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57`, admitted from interface-era
+source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7`, implementation
+`94281de13063203808ecabef8a818762e5ff1e2e`, and contract `7d0e2e36...`.
+P14 is `ready_for_review` at exact interface source `3393169e...`, backed by
+implementation `9c08e9c6...` and contract `1a9b86f0...`. Their exact ordered
+interface wave is queued. P16 and P32 are newly ready from `01cdb992`.
 
 ## Remaining work
 
-None for bootstrap. F06 and P14 are actively implementing. I36 may perform
-only the rebound exact P15 interface merge. P35 awaits later full
+None for bootstrap. I36 must atomically claim and stop before the ordered
+F06/P14 merge wave; P16 and P32 await atomic claims. P35 awaits later full
 implementation admission.
 
 ## Exact next action
 
-Resume I36 under unchanged claim `15bcce0c-16b9-4c00-b422-ba5053554f14`
-and lease `c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51` to consume only rebound
-P15 merge `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` with expected target
-`e58a2f8d38594cd5774aa65adf035d3cdc132704`. In parallel, let F06 and P14
-continue their disjoint claimed lanes. Reconcile the first exact interface or
-terminal checkpoint.
+Dispatch I36 claim `1b554a42-a2a2-4017-add9-7117ed575b9e`, P16 claim
+`fd104a34-4a75-4e5c-83c2-22266452d198`, and P32 claim
+`a9e4c442-46dd-4bdd-851e-8e2d21c4ad66` from exact integrated start
+`01cdb992`. I36 must stop immediately after its task-local atomic claim so C00
+can rebind both ordered merge targets.
 
 ## Verification
 
