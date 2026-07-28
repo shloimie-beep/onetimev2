@@ -87,7 +87,7 @@ superseded that checkpoint. C00 withdrew the F02 merge item and marked ordinal
 2234 `superseded_pending_replacement`, preserving the reservation and old
 checksum for audit while the worker publishes a hardened replacement.
 The hardening implementation has advanced to
-`191dac28b6b8207459fb629f6dbe50df1b9c0d46`; replacement interface
+`191dac288ea1721bdc0252bd012060ca974d2242`; replacement interface
 metadata is still pending and is not authorized for integration.
 The first P31 worker safely refused its exact authorization after C00's lease
 acquisition advanced the containing control head. No P31 branch was created.
@@ -98,6 +98,17 @@ confirmed gone. C00 issued takeover claim
 `89f23125-5016-49e5-968c-d886dfc979dc` against exact integration head
 `80c281b7`, queued only the verified F07 interface, and included authority for
 the two assigned F01 cross-cutting steward requests.
+P31 then completed at `f54827a2e21cceccb50be0d7f93c211c540f04d6`
+with implementation head `c815cbc8eb5fe301ca0b693eaa64e8db22752213`.
+C00 reproduced all three artifact blob hashes and the exact eight-path owned
+delta. The worker supplied the precise colon-delimited, newline-terminated
+combined-digest preimage and C00 reproduced `ad924a54`, but P31 then announced
+a superseding consent/timing hardening checkpoint. The initial checkpoint is
+not queued; wait for the replacement.
+I36 atomically consumed its takeover at
+`7fabdac24f9a952f961be66f327f052ccd3fae40`. C00 rebound F07's target
+CAS to that claim head while preserving source delta base and merge base
+`80c281b7`.
 
 ## Remaining work
 
@@ -106,10 +117,10 @@ after worker branches advance.
 
 ## Exact next action
 
-Dispatch the rebound P31 entry and the exact I36 takeover resume. I36 merges
-only F07's verified interface and applies the two assigned F01 steward
-requests. F02 continues its fencing hardening; admit only its new replacement
-checkpoint. F03 remains gated until that replacement interface is integrated.
+Resume F02 so it can push its prepared replacement checkpoint before lease
+expiry. Let I36 consume rebound F07 and the two assigned F01 steward requests.
+Await P31's announced superseding consent/timing checkpoint before queueing
+its interface. F03 remains gated until F02's replacement interface is integrated.
 
 ## Verification
 
@@ -125,7 +136,7 @@ checkpoint. F03 remains gated until that replacement interface is integrated.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
 - F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
 - Current observed heads: F01 `e8b172c6a7da5003a82cfc8663df6d4159fa4092`;
-  F02 `191dac28b6b8207459fb629f6dbe50df1b9c0d46`; F07
+  F02 `191dac288ea1721bdc0252bd012060ca974d2242`; F07
   `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`.
 - F01 steward request digests: auth `b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d`;
   client `c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d`;
@@ -138,8 +149,9 @@ checkpoint. F03 remains gated until that replacement interface is integrated.
   `c92caac59723a2820b5e9f08e80309c40f1ad7255f36a731fd6fcc9bbda8af0e`.
 - Superseded migration 2234 checksum: `ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e`.
 - Rebound P31 ready payload: `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
-- F07 merge item payload: `58c0311691b51a91699ececc551ed94446b07ca13085a80e5d72dde767db95d4`.
-- Control parent for takeover/rebind authorization: `5e7cfad08ff273860156479c16c63dea6d73b775`.
+- Rebound F07 merge item payload: `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
+- P31 state/handoff digest: `f4b2e27b370c1589c4de2e841dbcd38b9b075a9ff5fe7d00b27eaf8c6e7b5fb2`.
+- Control parent for post-claim reconciliation: `da8e69283f9de09463cd8f648fc5212e6ff06930`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
 - I36 branch/head: `codex/v21-integration` / `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
 - No provider or product effect was attempted.

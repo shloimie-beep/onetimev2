@@ -31,11 +31,17 @@ interface before integration to harden database fencing; ordinal 2234 remains
 reserved with status `superseded_pending_replacement`. Do not integrate the
 old `14793411` checkpoint. P31 is rebound with ready digest
 `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
-I36 has exact takeover resume digest
-`2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0`
-against integration head `80c281b7`. Dispatch P31 and I36. I36 merges only
-F07 and applies its two assigned F01 requests; admit F02 only after its new
-replacement checkpoint. F03 stays gated and P35 waits for the next slot.
+I36 consumed its takeover at `7fabdac24f9a952f961be66f327f052ccd3fae40`;
+F07's merge item is rebound to that exact CAS with digest
+`fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
+F02 registry identity is corrected to exact remote
+`191dac288ea1721bdc0252bd012060ca974d2242`; resume F02 immediately so it
+can push its prepared replacement before lease expiry. I36 merges only F07 and
+applies its two assigned F01 requests. P31's initial checkpoint
+`f54827a2e21cceccb50be0d7f93c211c540f04d6` passed artifact, scope, and
+combined-digest reproduction, but P31 announced a superseding consent/timing
+checkpoint; wait for that replacement before queueing. F03 stays gated and P35
+waits for the next slot.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

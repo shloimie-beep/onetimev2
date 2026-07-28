@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 5e7cfad08ff273860156479c16c63dea6d73b775
-next_action: Dispatch the rebound P31 entry and the exact I36 resume for F07 interface integration plus two assigned F01 steward requests; hold F02 integration until its superseding fencing-hardened checkpoint is verified.
+controller_authorization_sha: da8e69283f9de09463cd8f648fc5212e6ff06930
+next_action: Resume F02 after the exact registry-SHA correction; I36 consumes rebound F07 and assigned F01 steward requests; wait for P31's announced superseding consent/timing checkpoint.
 authority_note: Only C00 updates this global control state.
