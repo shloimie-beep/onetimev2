@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 2d6cab2675912b89ebdec6fcd46e852f235a56d7
-next_action: I36 is claimed at 3277915caf862bdaa79776794862e6bdbc5762d5; consume the rebound F01 interface merge item against that exact target CAS.
+controller_authorization_sha: 586f1216c27b02915bdca606645d7e1ee335a669
+next_action: Resume F01 under its renewed lease and dispatch F02 and F07 from integration head 80c281b7ae5826ed2c6abe95ba68a033ffa52174; hold P31 and P35 until native capacity opens.
 authority_note: Only C00 updates this global control state.

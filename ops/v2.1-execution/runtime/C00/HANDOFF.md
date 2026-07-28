@@ -46,6 +46,14 @@ advanced the integration CAS head, C00 paused the merge and rebound the same
 source item to target `3277915caf862bdaa79776794862e6bdbc5762d5` while
 preserving the independently verified source delta base and merge base
 `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
+I36 completed the verified ancestry merge at integration head
+`80c281b7ae5826ed2c6abe95ba68a033ffa52174`; typecheck and focused
+server/client/worker/schema checks passed. F01 later published a clean
+`renewal_requested` checkpoint at
+`ae65db9db8113b7992b466a70f64ffa05b4eb1e3`, so C00 issued it an exact new
+resume claim and lease. Native capacity permits the two longest critical-path
+Wave 2 lanes, F02 and F07, which are now authorized from `80c281b7`; P31 and
+P35 remain planned until a child slot opens.
 
 ## Remaining work
 
@@ -54,9 +62,9 @@ after worker branches advance.
 
 ## Exact next action
 
-Resume the already-claimed I36 native subagent against the rebound merge item,
-then verify its pushed integration result. F01 may continue its task-owned
-completion work concurrently.
+Resume the existing F01 native subagent from its exact renewed entry and
+dispatch one F02 and one F07 native subagent. Verify all three pushed atomic
+claim checkpoints remotely.
 
 ## Verification
 
@@ -67,8 +75,11 @@ completion work concurrently.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
 - I36 claim payload: `4b429a919e258b635c3c713c023bf83ecb8b28711c63e192d97d52567afa17a1`.
-- Rebound I36 merge payload: `1db016597e3e76f5213fb775f2fce031401f6f530dc6f7e89716fbf2c65c4bf5`.
-- Control parent for the rebound merge: `2d6cab2675912b89ebdec6fcd46e852f235a56d7`.
+- Verified integration head: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
+- F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
+- F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
+- F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
+- Control parent for these authorizations: `586f1216c27b02915bdca606645d7e1ee335a669`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
 - I36 branch/head: `codex/v21-integration` / `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - No provider or product effect was attempted.
