@@ -18,10 +18,10 @@ Fetch remote refs and require the exact remote control head. Read
 `LOCKED-SHA256SUMS.txt`, the current control/runtime digests, and the active
 C00 lease. Reject any live foreign lease or non-fast-forward collision.
 
-The exact next action is to validate that a fresh agent reading `AGENTS.md`
-reaches the v2.1 authority first, then checkpoint `agents_updated`. Continue
-through baseline measurement, package/control validation, the control push
-canary, integration-branch creation, control initialization, and `operational`.
+The exact next action is to record the successful normal control-branch
+creation push as `control_push_canary_passed`. Continue through baseline
+measurement, package/control validation, integration-branch creation, control
+initialization, and `operational`.
 Update C00 state, handoff, and this prompt at every phase; commit and normal-push
 each checkpoint. Never implement product code, grant provider authority, or
 force-push.

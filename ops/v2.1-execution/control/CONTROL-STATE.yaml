@@ -2,7 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: bootstrap_required
-bootstrap_phase: package_installed
+bootstrap_phase: agents_updated
 bootstrap_phase_order:
 - package_installed
 - agents_updated
@@ -14,6 +14,6 @@ reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 integration_branch: codex/v21-integration
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
-next_action: Validate the v2.1 AGENTS.md authority replacement and advance bootstrap_phase to agents_updated.
+controller_authorization_sha: f307f5b9696a81cd147d31c6c8e6913af3577f47
+next_action: Record the successful normal control-branch push as the permission canary.
 authority_note: Only C00 updates this global control state.

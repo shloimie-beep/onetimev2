@@ -12,8 +12,8 @@
 
 Verified repository identity, PR #130's exact reviewed head, archive structure,
 and every delivery checksum. Installed the complete v2.1 package, added the
-v2.1 authority block to `AGENTS.md`, and seeded the serialized controller
-claim.
+v2.1 authority block to `AGENTS.md`, seeded the serialized controller claim,
+and validated that a fresh agent reaches v2.1 before historical status sources.
 
 ## Remaining work
 
@@ -23,8 +23,8 @@ mark the controller operational, and release the controller lease.
 
 ## Exact next action
 
-Validate that a fresh agent reading `AGENTS.md` reaches v2.1 first, then commit
-and push the `agents_updated` phase checkpoint.
+Record the already successful normal creation push of `codex/v21-control` as
+the permission canary, then continue to baseline measurement.
 
 ## Verification
 
