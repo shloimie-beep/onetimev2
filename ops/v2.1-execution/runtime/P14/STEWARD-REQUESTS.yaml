@@ -1,0 +1,23 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P14
+requests:
+  - request_id: P14-REGISTRATION-001
+    kind: registration
+    requested_steward: I36
+    status: proposed
+    exact_targets:
+      - packages/contracts/src/portals/index.ts
+      - packages/domain/src/portals central barrel
+      - apps/web/src/server central authenticated route composer
+      - apps/web/src/client central role route composer
+    required_changes:
+      - Re-export the P14 Student contract/domain roots without semantic changes.
+      - Build StudentPortalPrincipal only from the F03 authenticated Student session and F04 server-verified Student/household lifecycle projection.
+      - Register the canonical Student route set through authorizeStudentRoute before any feature loader renders protected data.
+      - Compose StudentShell, StudentToday, StudentProfile, and StudentAccount with downstream Calendar/Classroom/Library/Progress/Questions/Updates/Notifications/Support feature owners.
+      - Keep dependent Privacy/Data rights routes absent and server-denied; expose them only for verified self Students.
+      - Preserve logout as session revocation and keep Student password change/reset actions absent.
+    validation:
+      - Run typecheck, Student sibling/cross-household/wrong-role/inactive direct-route denial tests, keyboard/screen-reader shell checks, and route/action inventory.
+    external_effects_authorized: false
