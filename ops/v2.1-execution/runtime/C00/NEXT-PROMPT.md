@@ -55,18 +55,26 @@ this wave. F03's applied `F01-retired-auth-001` result is recorded at digest
 `f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e`.
 F04/F05 migration and registration requests are assigned but unapplied.
 
-I36's first atomic claim metadata at `587476c5` was rejected before any merge
-because it recorded the ready parent in the containing-authorization field.
-The corrected exact head is
-`81602ccc44e134288d2e8cd8d6ad71a249553be2`; all three merge items are now
-rebound to that CAS. Resume I36 to verify and ancestry-merge only those three
-interfaces in order.
+I36 integrated F03/F04/F05 in exact order and published final integration
+head `9782a4164662b8059a557c0969de9c35f54d0cf7`; all sources are ancestral,
+typecheck and 49 focused tests pass, and zero steward/external effects were
+performed. F01 acknowledged the applied F03 result and is `ready_for_review`
+at `b5344992a43a735a9c66047fecd83f951651de27`. P15 is `ready_for_review`
+at `c96b8c55c07e5283e762537934a6bf948833700e`, with implementation
+`ab71afb032b8e004cc655e3e5f5a6b8286aec380`, exact interface digest
+`2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb`,
+state/handoff `cb8551031e184df2f727f1df5f54733ab02b1226fb1f00f11ed17b65e0c6f4ce`,
+two assigned but unapplied steward requests, and zero effects.
 
-The ready queue also contains F01 claim
-`a0810342-31c8-42c7-b758-ce0c4e9f1779`, limited to acknowledging applied
-result digest `f557eacf...`, and dependency-valid P15 calendar claim
-`dc9b1096-19bc-4d6a-91e0-e15dc06d2705` from exact start `81602ccc`.
-Dispatch both in parallel with I36 and reconcile the first exact checkpoint.
+The ready queue now contains F06 provider-core claim
+`6deb862f-e548-4d2a-9966-3ec5c3cfd40f` and P14 student-app claim
+`cd46fd41-66f9-42c3-9215-2d12fbbf7d31`, both from exact integrated start
+`9782a416`, plus I36 atomic-claim-only resume claim
+`15bcce0c-16b9-4c00-b422-ba5053554f14`. P15 merge
+`22ea97a2-e2db-4a49-9e2b-7649d3a0e069` is queued from exact source
+`c96b8c55` to expected target `9782a416`. Dispatch all three claims in
+parallel, require I36 to stop after its task-local atomic claim, then consume
+the exact ready entries and rebind the P15 target CAS before resuming I36.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

@@ -4,155 +4,58 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: c1b338fe-f972-4f6b-a5e2-fbe0b2518454
+  merge_id: 22ea97a2-e2db-4a49-9e2b-7649d3a0e069
   kind: interface
-  task_id: F03
-  source_branch: codex/v21-f03-adult-student-auth
-  source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+  task_id: P15
+  source_branch: codex/v21-p15-calendar
+  source_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
   target_branch: codex/v21-integration
-  expected_target_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
-  source_delta_base_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
-  required_merge_base_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+  expected_target_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+  source_delta_base_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
+  required_merge_base_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+  required_postmerge_ancestor_sha: c96b8c55c07e5283e762537934a6bf948833700e
   merge_after_heads: {}
   allowed_paths:
-  - apps/web/src/client/auth/token-fragment.ts
-  - apps/web/src/server/features/auth/http-security.ts
-  - ops/v2.1-execution/runtime/F03/HANDOFF.md
-  - ops/v2.1-execution/runtime/F03/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
-  - packages/contracts/src/identity/auth/index.ts
-  - packages/domain/src/auth/index.ts
-  - packages/domain/src/auth/policy.ts
-  - packages/domain/src/auth/rate-limits.ts
-  - packages/domain/src/auth/service.ts
-  - packages/domain/src/auth/sessions.ts
-  - packages/domain/src/auth/tokens.ts
-  - packages/domain/src/auth/v21-auth.contract.test.ts
+  - apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx
+  - apps/web/src/client/features/calendar/CalendarWorkspace.tsx
+  - apps/web/src/client/features/calendar/calendar.css
+  - apps/web/src/client/features/calendar/index.ts
+  - apps/web/src/server/features/calendar/index.ts
+  - apps/web/src/server/features/calendar/service.ts
+  - ops/v2.1-execution/runtime/P15/HANDOFF.md
+  - ops/v2.1-execution/runtime/P15/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P15/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P15/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
+  - packages/contracts/src/calendar/index.ts
+  - packages/db/src/calendar/index.ts
+  - packages/db/src/calendar/repository.ts
+  - packages/db/src/calendar/schema-contract.ts
+  - packages/domain/src/calendar/calendar.test.ts
+  - packages/domain/src/calendar/errors.ts
+  - packages/domain/src/calendar/index.ts
+  - packages/domain/src/calendar/recurrence.ts
+  - packages/domain/src/calendar/time-zone.ts
+  - packages/domain/src/calendar/views.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 80afc839-dc09-4363-b440-d22757451415
+    lease_id: c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51
     holder_task_id: I36
-    holder_claim_id: 353f2868-2978-4cac-ac73-c56fa184f841
-    state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
-    lease_issued_at: '2026-07-28T18:50:38Z'
-    lease_expires_at: '2026-07-28T19:50:38Z'
-    phase_scope: F03_F04_F05_interface_merge_only
-  task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
-  state_handoff_digest: 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
+    holder_claim_id: 15bcce0c-16b9-4c00-b422-ba5053554f14
+    state_based_on_control_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
+    lease_issued_at: '2026-07-28T19:36:08Z'
+    lease_expires_at: '2026-07-28T20:36:08Z'
+    phase_scope: P15_interface_merge_only
+  task_packet_digest: cc6d395e0cb231a5180c9f927a64c814148b4946f869d68ee6afc1b74bc5c8df
+  state_handoff_digest: cb8551031e184df2f727f1df5f54733ab02b1226fb1f00f11ed17b65e0c6f4ce
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  merge_id: 5cace310-2242-41c7-b590-f330631223b3
-  kind: interface
-  task_id: F04
-  source_branch: codex/v21-f04-household-identity
-  source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
-  target_branch: codex/v21-integration
-  expected_target_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
-  source_delta_base_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
-  required_merge_base_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
-  preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
-  merge_after_heads:
-    F03: 7c638131a0cab757657e95c4d2229a1573e4cde1
-  allowed_paths:
-  - apps/web/src/server/features/accounts/v21-account-context-service.test.ts
-  - apps/web/src/server/features/accounts/v21-account-context-service.ts
-  - ops/v2.1-execution/runtime/F04/HANDOFF.md
-  - ops/v2.1-execution/runtime/F04/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/F04/steward-requests/F04-migration-001.yaml
-  - ops/v2.1-execution/runtime/F04/steward-requests/F04-registration-001.yaml
-  - packages/contracts/src/access/v21-household-authorization.ts
-  - packages/contracts/src/accounts/v21-household-identity.test.ts
-  - packages/contracts/src/accounts/v21-household-identity.ts
-  - packages/db/src/accounts/v21-household-identity-repository.ts
-  - packages/domain/src/access/index.ts
-  - packages/domain/src/access/v21-household-authorization.ts
-  - packages/domain/src/accounts/index.ts
-  - packages/domain/src/accounts/v21-household-identity.test.ts
-  - packages/domain/src/accounts/v21-household-identity.ts
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 80afc839-dc09-4363-b440-d22757451415
-    holder_task_id: I36
-    holder_claim_id: 353f2868-2978-4cac-ac73-c56fa184f841
-    state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
-    lease_issued_at: '2026-07-28T18:50:38Z'
-    lease_expires_at: '2026-07-28T19:50:38Z'
-    phase_scope: F03_F04_F05_interface_merge_only
-  task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
-  state_handoff_digest: 91c2133f69386fb8903019a9383542ba120cb8365120204ee41e4bd6f7761395
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-  state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  merge_id: f5678805-ee24-4f89-9d98-3548427fcab2
-  kind: interface
-  task_id: F05
-  source_branch: codex/v21-f05-api-jobs-foundation
-  source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
-  target_branch: codex/v21-integration
-  expected_target_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
-  source_delta_base_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
-  required_merge_base_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
-  preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 0656380bcfc50cc464dcea7588448dc724049599
-  merge_after_heads:
-    F04: 4cc95c29c6012174595ba1821e0554aca8572e08
-  allowed_paths:
-  - apps/web/src/server/features/jobs/command-handler.ts
-  - apps/web/src/server/features/jobs/index.ts
-  - apps/worker/src/runners/foundation/index.ts
-  - apps/worker/src/runners/foundation/runner.ts
-  - ops/v2.1-execution/runtime/F05/HANDOFF.md
-  - ops/v2.1-execution/runtime/F05/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/F05/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/F05/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/F05/steward-requests/migration/F05-MIGRATION-001.yaml
-  - ops/v2.1-execution/runtime/F05/steward-requests/registration/F05-REGISTRATION-001.yaml
-  - packages/contracts/src/api/index.ts
-  - packages/contracts/src/jobs/index.ts
-  - packages/db/src/jobs/index.ts
-  - packages/db/src/jobs/repository.ts
-  - packages/db/src/jobs/schema-contract.ts
-  - packages/domain/src/jobs/errors.ts
-  - packages/domain/src/jobs/foundation.test.ts
-  - packages/domain/src/jobs/idempotency.ts
-  - packages/domain/src/jobs/index.ts
-  - packages/domain/src/jobs/lifecycle.ts
-  - packages/domain/src/jobs/saga.ts
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 80afc839-dc09-4363-b440-d22757451415
-    holder_task_id: I36
-    holder_claim_id: 353f2868-2978-4cac-ac73-c56fa184f841
-    state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
-    lease_issued_at: '2026-07-28T18:50:38Z'
-    lease_expires_at: '2026-07-28T19:50:38Z'
-    phase_scope: F03_F04_F05_interface_merge_only
-  task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
-  state_handoff_digest: 3829467e01fb8dbdd1b9f46f83feed0d45cb369700481cd1280ba234683312b5
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-  state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+  state_based_on_control_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
 item_payload_digests:
-  c1b338fe-f972-4f6b-a5e2-fbe0b2518454: 3c6f286577e102784c485a1d15d66d2a5efc142c2106d42a842dc071a3d58d6a
-  5cace310-2242-41c7-b590-f330631223b3: 728e72ad164c3620e1655da1e4818d0330c669cab58f7316bfe9772212d9f531
-  f5678805-ee24-4f89-9d98-3548427fcab2: 2bda976047376b4a865abe5e6c07897502123995890a0c8570a0f8c0b15a80c0
+  22ea97a2-e2db-4a49-9e2b-7649d3a0e069: 033b8c0d2088f3117b42235f54e4afff516a3cf009c85415c0b1d39b52bc8795
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

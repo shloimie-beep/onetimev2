@@ -238,20 +238,44 @@ items are rebound to `81602ccc`.
 The ready queue now also authorizes F01 only to acknowledge the exact applied
 authentication result, plus P15 as the dependency-valid disjoint calendar
 lane from `81602ccc`. No other product lane or steward action is authorized.
+I36 independently resolved the F04 aggregate contract after C00 supplied the
+checkpoint's literal `path=` preimage, then completed the ordered,
+conflict-free merges at `c6e87b93` (F03), `1ca6f5c5` (F04), and
+`e88121cb` (F05). Final integration metadata is exact head
+`9782a4164662b8059a557c0969de9c35f54d0cf7`; all three source heads are
+ancestors, typecheck and 49 focused tests pass, and no migration,
+registration, later F04 head, or external effect was applied.
+F01 completed its exact acknowledgment at `b5344992`, with canonical
+acknowledgment digest `089fab1d...` and final state/handoff
+`77eb0d01...`; every steward result is now acknowledged and F01 is
+`ready_for_review`. P15 completed `ready_for_review` at exact head
+`c96b8c55c07e5283e762537934a6bf948833700e`, backed by implementation
+`ab71afb032b8e004cc655e3e5f5a6b8286aec380`, contract digest
+`2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb`,
+and state/handoff digest
+`cb8551031e184df2f727f1df5f54733ab02b1226fb1f00f11ed17b65e0c6f4ce`.
+C00 verified its exact twenty-one-path delta, six interface artifacts,
+plain `<artifact-path>=<sha>` contract preimage, twelve focused tests,
+typecheck, lint, two canonical steward-request objects, and zero effects.
+Its migration request is assigned to F02 and registration request to I36,
+both unapplied. The exact P15 interface is queued for I36 from settled
+integration head `9782a416`.
 
 ## Remaining work
 
-None for bootstrap. The three foundation interfaces await I36's rebound merge
-wave; F01 awaits its final result acknowledgment and P15 awaits its first
-claim. P35 awaits later full implementation admission.
+None for bootstrap. F06 and P14 await atomic claims. I36 awaits an atomic
+claim-only checkpoint before C00 rebinds the queued P15 merge target. P35
+awaits later full implementation admission.
 
 ## Exact next action
 
-Resume the existing I36 worker from exact corrected head `81602ccc` to verify
-and merge only the three rebound interfaces in order. In parallel, dispatch
-F01 claim `a0810342-31c8-42c7-b758-ce0c4e9f1779` for auth-result
-acknowledgment and P15 claim `dc9b1096-19bc-4d6a-91e0-e15dc06d2705`
-for its exact calendar lane.
+Dispatch F06 claim `6deb862f-e548-4d2a-9966-3ec5c3cfd40f`, P14 claim
+`cd46fd41-66f9-42c3-9215-2d12fbbf7d31`, and I36 claim
+`15bcce0c-16b9-4c00-b422-ba5053554f14` from exact integrated start
+`9782a416`. I36 must stop immediately after its task-local atomic claim.
+Reconcile all three exact claim heads, consume their ready entries, and
+rebind P15 merge `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` to the I36 claim
+head before resuming any merge.
 
 ## Verification
 
@@ -302,6 +326,28 @@ for its exact calendar lane.
   `a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac`.
 - P15 calendar ready payload:
   `b78cc45bd737dc76a8161321f1a656611e6cf59cdc8064eeb7de15cafc05780f`.
+- Final foundation integration head:
+  `9782a4164662b8059a557c0969de9c35f54d0cf7`.
+- F01 final acknowledgment head/state-handoff:
+  `b5344992a43a735a9c66047fecd83f951651de27` /
+  `77eb0d01846351c91d4015657acf7262761e067f7473d4722311bc7baf456ec3`.
+- P15 atomic claim head: `9720701723f26c77719353f386c7cc662ede4a4f`.
+- F06/P14 ready payloads:
+  `e44301bdf281e66a000fa8993a85d1ecf0ce2abf7b14fbba3adbb236c7c37c2c` /
+  `835d7186f4413b121f360335878d3df270b40e50cabd0d74b4f1ba85ce6097d8`.
+- P15 final/interface/implementation heads:
+  `c96b8c55c07e5283e762537934a6bf948833700e` /
+  `c96b8c55c07e5283e762537934a6bf948833700e` /
+  `ab71afb032b8e004cc655e3e5f5a6b8286aec380`.
+- P15 contract/state-handoff:
+  `2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb` /
+  `cb8551031e184df2f727f1df5f54733ab02b1226fb1f00f11ed17b65e0c6f4ce`.
+- P15 migration/registration request digests:
+  `076e781f52302ae1447855c464c4001b028d610a188388b339a917d4fc477fdf` /
+  `03252417bf53b4f011c86a7356c57abecc8bbd82067a2e1be73c7436a063ce97`.
+- I36 ready and P15 merge payloads:
+  `3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf` /
+  `033b8c0d2088f3117b42235f54e4afff516a3cf009c85415c0b1d39b52bc8795`.
 - P35 final/implementation heads: `a85aecc22b013d583589a67cf0cc9dfad6745aba` /
   `6b92adbf893c45f4a767b8036ec41b52744cce4e`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
