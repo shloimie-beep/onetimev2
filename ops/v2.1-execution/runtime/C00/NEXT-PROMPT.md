@@ -55,13 +55,18 @@ this wave. F03's applied `F01-retired-auth-001` result is recorded at digest
 `f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e`.
 F04/F05 migration and registration requests are assigned but unapplied.
 
-The ready queue contains exactly one I36 `resume_ready` entry with claim
-`353f2868-2978-4cac-ac73-c56fa184f841` and payload
-`02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
-Dispatch I36 to perform its mandatory atomic three-file claim only and stop
-before merging. Then acquire a fresh C00 lease and rebind all three merge-item
-`expected_target_head_sha` values to the exact claimed integration head before
-allowing the ordered F03/F04/F05 ancestry merges.
+I36's first atomic claim metadata at `587476c5` was rejected before any merge
+because it recorded the ready parent in the containing-authorization field.
+The corrected exact head is
+`81602ccc44e134288d2e8cd8d6ad71a249553be2`; all three merge items are now
+rebound to that CAS. Resume I36 to verify and ancestry-merge only those three
+interfaces in order.
+
+The ready queue also contains F01 claim
+`a0810342-31c8-42c7-b758-ce0c4e9f1779`, limited to acknowledging applied
+result digest `f557eacf...`, and dependency-valid P15 calendar claim
+`dc9b1096-19bc-4d6a-91e0-e15dc06d2705` from exact start `81602ccc`.
+Dispatch both in parallel with I36 and reconcile the first exact checkpoint.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

@@ -11,19 +11,19 @@ tasks:
   phase_heads:
     bootstrap: 40d5b2e2c32c04500c75c5314acc91266303dc29
   authorized_start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
-  last_known_remote_head: 4d6bc306e542774b68179d9b440ceccd2d5b9967
+  last_known_remote_head: fe5219b4533fc7d7075f209f262e579906cf1e34
   active_claim_id: null
   active_writer_id: null
   lease_expires_at: null
-  last_heartbeat_at: '2026-07-28T18:57:16Z'
-  controller_authorization_sha: 4d6bc306e542774b68179d9b440ceccd2d5b9967
+  last_heartbeat_at: '2026-07-28T19:13:38Z'
+  controller_authorization_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
     state: operational
     producer_task_id: C00
-    producer_head_sha: 4d6bc306e542774b68179d9b440ceccd2d5b9967
+    producer_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
@@ -37,11 +37,11 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 4d6bc306e542774b68179d9b440ceccd2d5b9967
-    transitioned_at: '2026-07-28T18:57:16Z'
+    state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+    transitioned_at: '2026-07-28T19:13:38Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/C00/status_proof
 - task_id: F01
-  status: claimed
+  status: resume_ready
   active_phase: verification
   branch: codex/v21-f01-foundation-seams
   phase_branches:
@@ -56,18 +56,18 @@ tasks:
     verification: dc991ef901617cc6d7e4fe780c53b4833172a0a2
   authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
   last_known_remote_head: dc991ef901617cc6d7e4fe780c53b4833172a0a2
-  active_claim_id: 683f3581-a6ca-472d-80a6-51fabb9208f5
-  active_writer_id: codex-f01-worker-4aafff01
-  lease_expires_at: '2026-07-28T18:13:44Z'
-  last_heartbeat_at: '2026-07-28T17:25:30Z'
-  controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
-  ready_entry_payload_digest: f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda
+  active_claim_id: a0810342-31c8-42c7-b758-ce0c4e9f1779
+  active_writer_id: null
+  lease_expires_at: '2026-07-28T20:05:27Z'
+  last_heartbeat_at: null
+  controller_authorization_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+  ready_entry_payload_digest: a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac
   interface_checkpoint_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
   implementation_head_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
   status_proof:
-    state: claimed
-    producer_task_id: F01
-    producer_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
+    state: resume_ready
+    producer_task_id: C00
+    producer_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
     canonical_candidate_digest: null
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
     integration_or_evidence_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
@@ -81,8 +81,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
-    transitioned_at: '2026-07-28T17:25:30Z'
+    state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+    transitioned_at: '2026-07-28T19:05:27Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F01/status_proof
 - task_id: F02
   status: ready_for_review
@@ -345,30 +345,30 @@ tasks:
     transitioned_at: '2026-07-28T16:26:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: resume_ready
+  status: claimed
   active_phase: integration
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
   phase_heads:
-    integration: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    integration: 81602ccc44e134288d2e8cd8d6ad71a249553be2
   authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-  last_known_remote_head: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+  last_known_remote_head: 81602ccc44e134288d2e8cd8d6ad71a249553be2
   active_claim_id: 353f2868-2978-4cac-ac73-c56fa184f841
-  active_writer_id: null
+  active_writer_id: codex-i36-worker2-353f2868
   lease_expires_at: '2026-07-28T19:50:38Z'
-  last_heartbeat_at: null
-  controller_authorization_sha: 4d6bc306e542774b68179d9b440ceccd2d5b9967
+  last_heartbeat_at: '2026-07-28T19:09:34Z'
+  controller_authorization_sha: 5217c299c2721a58bdb9ad1c1c0f68525008661a
   ready_entry_payload_digest: 02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: resume_ready
-    producer_task_id: C00
-    producer_head_sha: 4d6bc306e542774b68179d9b440ceccd2d5b9967
+    state: claimed
+    producer_task_id: I36
+    producer_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    integration_or_evidence_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
@@ -379,8 +379,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 4d6bc306e542774b68179d9b440ceccd2d5b9967
-    transitioned_at: '2026-07-28T18:50:38Z'
+    state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+    transitioned_at: '2026-07-28T19:09:34Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof
 - task_id: P08
   status: planned
@@ -635,25 +635,26 @@ tasks:
     transitioned_at: null
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P14/status_proof
 - task_id: P15
-  status: planned
-  active_phase: planned
-  branch: null
-  phase_branches: {}
+  status: ready
+  active_phase: contract
+  branch: codex/v21-p15-calendar
+  phase_branches:
+    contract: codex/v21-p15-calendar
   phase_heads: {}
-  authorized_start_sha: null
+  authorized_start_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
   last_known_remote_head: null
-  active_claim_id: null
+  active_claim_id: dc9b1096-19bc-4d6a-91e0-e15dc06d2705
   active_writer_id: null
-  lease_expires_at: null
+  lease_expires_at: '2026-07-28T20:05:27Z'
   last_heartbeat_at: null
-  controller_authorization_sha: null
-  ready_entry_payload_digest: null
+  controller_authorization_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+  ready_entry_payload_digest: b78cc45bd737dc76a8161321f1a656611e6cf59cdc8064eeb7de15cafc05780f
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: planned
-    producer_task_id: null
-    producer_head_sha: null
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -666,9 +667,9 @@ tasks:
       blocked: 0
       stale: 0
       waived: 0
-    external_effects_reconciled: null
-    state_based_on_control_head_sha: null
-    transitioned_at: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+    transitioned_at: '2026-07-28T19:05:27Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P15/status_proof
 - task_id: P16
   status: planned

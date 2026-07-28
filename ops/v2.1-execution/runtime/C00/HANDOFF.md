@@ -227,18 +227,31 @@ governed checkpoints. No migration or central registration was applied.
 One I36 resume entry now authorizes only an atomic claim from unchanged
 integration head `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`, followed by
 an immediate stop so C00 can rebind all three optimistic target CAS fields.
+I36 pushed its exact atomic claim at `587476c54324dc3089186f4a64c4928b889c7cd8`.
+C00 rejected that metadata before any merge because the worker conflated the
+ready-entry parent with the containing authorizing control commit. I36 then
+corrected only its three task-local files at exact head
+`81602ccc44e134288d2e8cd8d6ad71a249553be2`, preserving parent
+`587476c5`, recording containing authorization `5217c299` and separate ready
+parent `4d6bc306`, with the same claim/lease and zero effects. All three merge
+items are rebound to `81602ccc`.
+The ready queue now also authorizes F01 only to acknowledge the exact applied
+authentication result, plus P15 as the dependency-valid disjoint calendar
+lane from `81602ccc`. No other product lane or steward action is authorized.
 
 ## Remaining work
 
-None for bootstrap. The three foundation interfaces await the serialized I36
-claim/rebind/merge wave. P35 awaits later full implementation admission.
+None for bootstrap. The three foundation interfaces await I36's rebound merge
+wave; F01 awaits its final result acknowledgment and P15 awaits its first
+claim. P35 awaits later full implementation admission.
 
 ## Exact next action
 
-Dispatch I36 with claim `353f2868-2978-4cac-ac73-c56fa184f841` and ready
-payload `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
-It must atomically claim only and stop before any merge. C00 then reacquires
-control and rebinds all three merge-item target heads to the exact claim head.
+Resume the existing I36 worker from exact corrected head `81602ccc` to verify
+and merge only the three rebound interfaces in order. In parallel, dispatch
+F01 claim `a0810342-31c8-42c7-b758-ce0c4e9f1779` for auth-result
+acknowledgment and P15 claim `dc9b1096-19bc-4d6a-91e0-e15dc06d2705`
+for its exact calendar lane.
 
 ## Verification
 
@@ -280,9 +293,15 @@ control and rebinds all three merge-item target heads to the exact claim head.
 - New I36 ready payload:
   `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
 - F03/F04/F05 merge payloads:
-  `9e5661be27c712bdc6ceec6b16be3cb2719c30a115d18d368bf6efcbf551781d` /
-  `ba960098a5952aa73b2651d3be2b613a40b048bae61c58d26b2a75ca2308d390` /
-  `f19b8a2c1a1793e71bc905123c3ef3477015e77954ce5eea96bd4bef7fa9c389`.
+  `3c6f286577e102784c485a1d15d66d2a5efc142c2106d42a842dc071a3d58d6a` /
+  `728e72ad164c3620e1655da1e4818d0330c669cab58f7316bfe9772212d9f531` /
+  `2bda976047376b4a865abe5e6c07897502123995890a0c8570a0f8c0b15a80c0`.
+- Corrected I36 claim head:
+  `81602ccc44e134288d2e8cd8d6ad71a249553be2`.
+- F01 acknowledgment ready payload:
+  `a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac`.
+- P15 calendar ready payload:
+  `b78cc45bd737dc76a8161321f1a656611e6cf59cdc8064eeb7de15cafc05780f`.
 - P35 final/implementation heads: `a85aecc22b013d583589a67cf0cc9dfad6745aba` /
   `6b92adbf893c45f4a767b8036ec41b52744cce4e`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
