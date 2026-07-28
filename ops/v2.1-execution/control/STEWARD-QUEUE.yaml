@@ -46,6 +46,51 @@ items:
   evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
   result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
   rejection_reason: The immutable request assumes F01's unmerged protectedPayloadEncryptionKey compatibility state, but that prerequisite is absent from the authorized integration target; applying it would synthesize unqueued F01 implementation rather than perform an exact central steward change.
+- request_id: P35-route-registration-001
+  request_digest: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
+  requesting_task_id: P35
+  kind: route_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P35-config-deploy-001
+  request_digest: be7572a96f3ece3d6cdfc2f98b52efee4d712ff6786e36ee8bb50ae58f79c605
+  requesting_task_id: P35
+  kind: config_deploy
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P35-reregistration-integration-001
+  request_digest: 020fbb4eaf3e6b73f6386407cbae6115b054ddac53433f280a330e96611e2e4d
+  requesting_task_id: P35
+  kind: feature_integration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_candidate_integration_after_P08_P27
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null

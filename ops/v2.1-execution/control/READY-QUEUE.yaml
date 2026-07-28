@@ -2,8 +2,125 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: F03
+  status: ready
+  phase: contract
+  branch: codex/v21-f03-adult-student-auth
+  claim_mode: create_new_branch
+  state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+  authorized_start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+  expected_existing_head: null
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+  task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+  dependency_heads_and_digests:
+    F02:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+      observed_integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+      interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+      interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+      task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+      task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  writer_slot_leases:
+  - slot: IDENTITY_AUTH_ACCESS
+    lease_id: 82b0973d-b5b7-4ea6-9618-a5c50d3b14ba
+    holder_task_id: F03
+    holder_claim_id: 0b100424-7be3-4613-ae07-e7019d140a30
+    state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+    lease_issued_at: '2026-07-28T18:11:45Z'
+    lease_expires_at: '2026-07-28T19:11:45Z'
+  effect_lock_leases: []
+  claim_id: 0b100424-7be3-4613-ae07-e7019d140a30
+  lease_issued_at: '2026-07-28T18:11:45Z'
+  lease_expires_at: '2026-07-28T19:11:45Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/F03-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+- task_id: F04
+  status: ready
+  phase: contract
+  branch: codex/v21-f04-household-identity
+  claim_mode: create_new_branch
+  state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+  authorized_start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+  expected_existing_head: null
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+  task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+  dependency_heads_and_digests:
+    F02:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+      observed_integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+      interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+      interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+      task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+      task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  writer_slot_leases:
+  - slot: ACCOUNT_HOUSEHOLD_IDENTITY
+    lease_id: 520d3ff9-ec5a-43cf-bfcd-0cdb5ab7886e
+    holder_task_id: F04
+    holder_claim_id: 38e6f374-86dc-4b78-9846-4c328455443c
+    state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+    lease_issued_at: '2026-07-28T18:11:45Z'
+    lease_expires_at: '2026-07-28T19:11:45Z'
+  effect_lock_leases: []
+  claim_id: 38e6f374-86dc-4b78-9846-4c328455443c
+  lease_issued_at: '2026-07-28T18:11:45Z'
+  lease_expires_at: '2026-07-28T19:11:45Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/F04-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+- task_id: F05
+  status: ready
+  phase: contract
+  branch: codex/v21-f05-api-jobs-foundation
+  claim_mode: create_new_branch
+  state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+  authorized_start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+  expected_existing_head: null
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+  task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  dependency_heads_and_digests:
+    F02:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+      observed_integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+      interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+      interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+      task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+      task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  writer_slot_leases:
+  - slot: API_JOB_FOUNDATION
+    lease_id: 5caac8ad-5b97-4697-855c-f39f28efef24
+    holder_task_id: F05
+    holder_claim_id: 8726d04b-b82f-4c2f-b071-57edab0b3b22
+    state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+    lease_issued_at: '2026-07-28T18:11:45Z'
+    lease_expires_at: '2026-07-28T19:11:45Z'
+  effect_lock_leases: []
+  claim_id: 8726d04b-b82f-4c2f-b071-57edab0b3b22
+  lease_issued_at: '2026-07-28T18:11:45Z'
+  lease_expires_at: '2026-07-28T19:11:45Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/F05-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  F03: fa68fd0b273ddffd6769c309fa0e5fd2a1197ed61021fc7eeed9ec36a3a88e66
+  F04: b04cb5f0f35d34ed53e48fa0e16fbce22178ffef13842c7e091031d61a979dda
+  F05: f58a652f8ee03a8aaf298b6077cd79660e5d9f0bf06947e63b8c7788484f1eed
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

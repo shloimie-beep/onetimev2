@@ -183,17 +183,35 @@ claim/lease/controller identities, and zero effects. The ready queue is empty.
 F02 merge item `95985f2c-410b-461b-9360-549591ef624e` is rebound to exact
 target `f922c1de` with payload
 `45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`.
+I36 then ancestry-merged the exact F02 source at
+`e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4` and published its
+metadata-only checkpoint at exact integration head
+`d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`. C00 verified both merge
+parents, F02 ancestry, exact ten-path scope, typecheck, focused transition
+proof, native PostgreSQL migration proof, and zero effects.
+P35 completed `ready_for_review` at
+`a85aecc22b013d583589a67cf0cc9dfad6745aba`, backed by implementation
+`6b92adbf893c45f4a767b8036ec41b52744cce4e`. C00 independently verified
+its exact twenty-path owned delta, all eight implementation-ready cases,
+state/handoff digest
+`e524a2756fecb4ab6816e972211d858a729872f349459b0863754f3a72d01475`,
+focused/typecheck results, and three immutable steward-request digests.
+Those requests are assigned to later I36 shared-registration and
+candidate-integration checkpoints. F02 integration now unlocks the three
+highest-fanout Wave 3 foundation lanes; exact ready entries are published for
+F03, F04, and F05 from `d8b35b2a`.
 
 ## Remaining work
 
-None for bootstrap. The current operational wave consists only of I36's
-rebound F02-interface merge and P35's claimed implementation.
+None for bootstrap. The current operational wave consists of F03, F04, and F05
+contract/implementation lanes. P35 awaits later full implementation admission.
 
 ## Exact next action
 
-Resume I36 under claim `8d31181a-cfe8-493e-b7ce-4ea867da9581` to consume
-only rebound F02 merge item `95985f2c-410b-461b-9360-549591ef624e` from
-target `f922c1de`. Let P35 continue its already claimed implementation lane.
+Dispatch F03 under claim `0b100424-7be3-4613-ae07-e7019d140a30`, F04 under
+claim `38e6f374-86dc-4b78-9846-4c328455443c`, and F05 under claim
+`8726d04b-b82f-4c2f-b071-57edab0b3b22`. Keep control fixed until all three
+ready entries are consumed or safely refused.
 
 ## Verification
 
@@ -204,13 +222,18 @@ target `f922c1de`. Let P35 continue its already claimed implementation lane.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
 - Consumed F02 correction payload: `b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`.
-- Current I36 resume payload: `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`.
-- Current P35 ready payload: `7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f`.
-- Current rebound F02 merge item payload: `45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`.
+- Consumed I36 resume payload: `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`.
+- Consumed P35 ready payload: `7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f`.
+- Consumed rebound F02 merge item payload: `45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`.
 - Corrected F02 checkpoint: metadata `e4673ff1c2e621e26ac93034be245b280c4da4fa`;
   implementation `191dac288ea1721bdc0252bd012060ca974d2242`; interface digest
   `c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`.
-- Verified integration head after P31: `eefca0644e57dca48609682cbc3e1b01992d286d`.
+- Verified integration head after F02: `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`.
+- F03 ready payload: `fa68fd0b273ddffd6769c309fa0e5fd2a1197ed61021fc7eeed9ec36a3a88e66`.
+- F04 ready payload: `b04cb5f0f35d34ed53e48fa0e16fbce22178ffef13842c7e091031d61a979dda`.
+- F05 ready payload: `f58a652f8ee03a8aaf298b6077cd79660e5d9f0bf06947e63b8c7788484f1eed`.
+- P35 final/implementation heads: `a85aecc22b013d583589a67cf0cc9dfad6745aba` /
+  `6b92adbf893c45f4a767b8036ec41b52744cce4e`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
 - F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
@@ -233,9 +256,9 @@ target `f922c1de`. Let P35 continue its already claimed implementation lane.
 - P31 state/handoff digest: `6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581`.
 - Control parent for this F02 merge rebind: `1df96d5a27d6eb2171901d1136f99681d1e39e09`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
-- I36 branch/head: `codex/v21-integration` / `f922c1dea6b69691edcb1f23605d7658f555ebff`.
+- I36 branch/head: `codex/v21-integration` / `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`.
 - P35 branch/head: `codex/v21-p35-domain-transition-archive` /
-  `9df4a0a4856023873632cd699526c114617c7dac`.
+  `a85aecc22b013d583589a67cf0cc9dfad6745aba`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

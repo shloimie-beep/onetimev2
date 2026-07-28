@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 1df96d5a27d6eb2171901d1136f99681d1e39e09
-next_action: I36 consumes only the rebound F02 interface item from exact claim head f922c1de while P35 continues its claimed implementation lane; keep F01 paused until F03 returns the remaining auth-steward result.
+controller_authorization_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+next_action: Dispatch dependency-valid Wave 3 foundation lanes F03, F04, and F05 from exact F02-integrated head d8b35b2a; F03 must evaluate F01-retired-auth-001 at its ready_for_review checkpoint.
 authority_note: Only C00 updates this global control state.
