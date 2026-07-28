@@ -21,72 +21,66 @@ dependency_heads:
     interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
     interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
     interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-status: ready_for_review
-phase: complete
-claimed_by: codex-p29-worker-6b96052a
-claim_time: '2026-07-28T23:13:40Z'
-claim_id: 6b96052a-b3f4-429f-9aab-3cbc8ec78e7e
-writer_slot_lease_id: 76d9c9a9-554e-4c3a-83f8-52d30002ca36
-lease_issued_at: '2026-07-28T23:09:14Z'
-lease_expires_at: '2026-07-29T00:09:14Z'
-last_heartbeat_at: '2026-07-28T23:36:30Z'
-lease_released_at: '2026-07-28T23:36:30Z'
-controller_authorization_sha: 9a3b4856edb82556eca38416b853d6bdff5ef8bf
-ready_entry_state_based_on_control_head_sha: f0f7ea05f7c50f3ea64782ff107fbfd1c4486c24
-ready_entry_payload_digest: 193b50e837b10a2e9890d909c6295e5801aab9757102425bdb5175d7d92f3efc
-claim_checkpoint_sha: 704435bdd00c175e36d2946872784ded7ab09cf4
-state_based_on_head_sha: 0a42c8701d75d2a15e59c5e7a2f4a3e5d7fb0d18
+status: claimed
+phase: correction
+claimed_by: codex-p29-worker-22467835
+claim_time: '2026-07-28T23:55:22Z'
+claim_id: 22467835-84ad-4d38-8187-a3b64d88d132
+writer_slot_lease_id: 2eab904c-0a0d-4402-bd46-f1deedf1c5c7
+lease_issued_at: '2026-07-28T23:51:24Z'
+lease_expires_at: '2026-07-29T00:51:24Z'
+last_heartbeat_at: '2026-07-28T23:55:22Z'
+lease_released_at: null
+controller_authorization_sha: 89ac83c2e816e9726f1ae2d2193e34e3269fb36c
+ready_entry_state_based_on_control_head_sha: 32c9ef6a0738f0a4fa038f1212ff7019e19992f1
+ready_entry_payload_digest: 4b5b332d4f27cf354d5b66f75370552ee288b018e39013839f555d8115939898
+claim_mode: resume_existing_branch
+expected_existing_head_sha: 15dc7c87948c3df9dc6c77be89c79b706860448f
+correction_parent_head_sha: 15dc7c87948c3df9dc6c77be89c79b706860448f
+prior_claim_id: 6b96052a-b3f4-429f-9aab-3cbc8ec78e7e
+prior_claim_checkpoint_sha: 704435bdd00c175e36d2946872784ded7ab09cf4
+prior_ready_for_review_head_sha: 15dc7c87948c3df9dc6c77be89c79b706860448f
+state_based_on_head_sha: 15dc7c87948c3df9dc6c77be89c79b706860448f
 last_implementation_commit_sha: 0a42c8701d75d2a15e59c5e7a2f4a3e5d7fb0d18
 workflow_fragment_sha256: 182e5da30fa41db34b8609d019c21a7f04a34c88752678869fb2bf43f43e4434
 completed_steps:
-  - Verified exact remote identity, consumed controller authorization, ready entry, atomic claim checkpoint, GHL_CORE_WORKFLOWS lease, and authorized start.
-  - Recomputed the canonical P29 ready-entry digest and verified package, source-package, task, context, P28, and P31 dependency digests.
-  - Implemented all 12 assigned OT-01 through OT-10 and OT-13 core lifecycle definitions with exact canonical registry identity, sender, message class, trigger, and desired state.
-  - Implemented exact ordered steps, waits, exits, signup cutover, dated migration audience, billing projection gates, Parent-only class reminder, secure-token boundary, and P31 copy references.
-  - Implemented adult-only household-scoped planning, deterministic idempotency, local-readback and approval evidence, suppression decisions, zero Student/WhatsApp calls, and no direct billing/access mutation.
-  - Implemented exact save/reopen workflow readback comparison and drift reporting with zero provider effects.
-  - Implemented a worker runner that denies Student/evidence failures before effects, reserves delivery durably, rechecks suppression immediately before send, fences duplicates, and records safe retry state.
-  - Published central registration, registry projection/composer, and runtime configuration steward requests without editing shared hotspots or requiring a new P29 migration.
-  - Passed 29 focused assertions, full TypeScript typecheck, focused ESLint/Prettier, secret scan, canonical registry parity, and diff checks.
-  - Released the GHL_CORE_WORKFLOWS lease in task-local metadata with zero external effects.
+  - Preserved the exact previously pushed P29 implementation and ready-for-review checkpoint without product changes.
+  - Fetched control authorization 89ac83c2e816e9726f1ae2d2193e34e3269fb36c and verified sole parent 32c9ef6a0738f0a4fa038f1212ff7019e19992f1.
+  - Verified resume_existing_branch against exact local and remote head 15dc7c87948c3df9dc6c77be89c79b706860448f.
+  - Recomputed and matched canonical P29 correction ready-entry digest 4b5b332d4f27cf354d5b66f75370552ee288b018e39013839f555d8115939898.
+  - Verified exact task, context, package, source-package, dependency, claim, GHL_CORE_WORKFLOWS lease, and zero effect-lock bindings.
+  - Seeded this correction claim checkpoint in task-local runtime metadata only.
 remaining_steps:
-  - C00 and I36 must validate and integrate the exact P29 ready-for-review head.
-  - I36 must adjudicate P29-registration-001, P29-registry-projection-001, and P29-config-001.
-  - Later separately authorized provider work must configure/save/reopen workflows and supply candidate-bound sandbox/canary evidence.
-next_action: C00 and I36 validate the pushed P29 ready_for_review head, integrate it, and adjudicate the three structured steward requests without authorizing provider effects.
+  - Push and report this exact correction atomic claim checkpoint.
+  - Await C00 reconciliation of the correction claim before modifying any product, fragment, test, or steward-request file.
+next_action: Push this three-file atomic correction claim checkpoint, report its exact head, and stop until C00 explicitly reconciles claim 22467835-84ad-4d38-8187-a3b64d88d132.
 requirements:
-  OTV2-GHL-123: implementation_verified
-  OTV2-GHL-124: implementation_verified
-  OTV2-GHL-125: implementation_verified
-  OTV2-GHL-126: implementation_verified
-  OTV2-GHL-127: implementation_verified
-  OTV2-GHL-128: implementation_verified
-  OTV2-GHL-129: implementation_verified
-  OTV2-GHL-130: implementation_verified
-  OTV2-GHL-131: implementation_verified
-  OTV2-GHL-132: implementation_verified
-  OTV2-GHL-133: implementation_verified
-  OTV2-GHL-136: implementation_verified
+  OTV2-GHL-123: implementation_verified_pending_traceability_correction
+  OTV2-GHL-124: implementation_verified_pending_traceability_correction
+  OTV2-GHL-125: implementation_verified_pending_traceability_correction
+  OTV2-GHL-126: implementation_verified_pending_traceability_correction
+  OTV2-GHL-127: implementation_verified_pending_traceability_correction
+  OTV2-GHL-128: implementation_verified_pending_traceability_correction
+  OTV2-GHL-129: implementation_verified_pending_traceability_correction
+  OTV2-GHL-130: implementation_verified_pending_traceability_correction
+  OTV2-GHL-131: implementation_verified_pending_traceability_correction
+  OTV2-GHL-132: implementation_verified_pending_traceability_correction
+  OTV2-GHL-133: implementation_verified_pending_traceability_correction
+  OTV2-GHL-136: implementation_verified_pending_traceability_correction
 acceptance_cases:
-  OTV2-GHL-123-AC01: task_owned_assertions_passed
-  OTV2-GHL-124-AC01: task_owned_assertions_passed
-  OTV2-GHL-125-AC01: task_owned_assertions_passed
-  OTV2-GHL-126-AC01: task_owned_assertions_passed
-  OTV2-GHL-127-AC01: task_owned_assertions_passed
-  OTV2-GHL-128-AC01: task_owned_assertions_passed
-  OTV2-GHL-129-AC01: task_owned_assertions_passed
-  OTV2-GHL-130-AC01: task_owned_assertions_passed
-  OTV2-GHL-131-AC01: task_owned_assertions_passed
-  OTV2-GHL-132-AC01: task_owned_assertions_passed
-  OTV2-GHL-133-AC01: task_owned_assertions_passed
-  OTV2-GHL-136-AC01: task_owned_assertions_passed
+  OTV2-GHL-123-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-124-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-125-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-126-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-127-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-128-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-129-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-130-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-131-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-132-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-133-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-136-AC01: task_owned_assertions_passed_pending_traceability_correction
 changed_paths:
-  - apps/worker/src/runners/ghl-workflows/core/**
-  - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
-  - packages/domain/src/communications/workflows/core/**
-  - ops/v2.1-execution/runtime/P29/steward-requests/P29-config-001.yaml
-  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registration-001.yaml
-  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registry-projection-001.yaml
   - ops/v2.1-execution/runtime/P29/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P29/HANDOFF.md
   - ops/v2.1-execution/runtime/P29/NEXT-PROMPT.md
@@ -100,21 +94,11 @@ steward_requests:
     sha256: a7bfb4bb94d0bbf0271c956d86a4052eb399a3c9b5ec7594a044268b54890004
 verification:
   commands_run:
-    - command: canonical authorization, claim, dependency, digest, and lease verification
-      result: passed
-    - command: npx vitest run --environment node packages/domain/src/communications/workflows/core/core-workflows.test.ts apps/worker/src/runners/ghl-workflows/core/runner.test.ts
-      result: passed; 2 files and 29 assertions
-    - command: npm run typecheck
-      result: passed
-    - command: npx eslint packages/domain/src/communications/workflows/core apps/worker/src/runners/ghl-workflows/core
-      result: passed
-    - command: focused Prettier write/check for P29 implementation, fragment, and steward requests
-      result: passed
-    - command: npm run secret:scan
-      result: passed
-    - command: canonical P28 workflow-registry parity assertions
-      result: passed for all 12 P29 identities, states, senders, classes, and triggers
-    - command: git diff --check
+    - command: fetch exact P29 branch and control authorization
+      result: passed; control 89ac83c2 and local/remote P29 head 15dc7c87
+    - command: canonical correction ready-entry digest recomputation
+      result: passed; 4b5b332d4f27cf354d5b66f75370552ee288b018e39013839f555d8115939898
+    - command: correction claim, sole writer lease, dependency, start, expected-head, and zero effect-lock verification
       result: passed
   known_baseline_failures: []
 external_effects:
@@ -124,5 +108,4 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - Central barrels, worker composition, durable persistence adapter, generated registry projections, shared fragment-validator semantics, and runtime configuration require the three P29 steward requests.
-  - Provider workflow configuration, save/reopen evidence, publication, enrollment, delivery, and candidate-bound canaries require later separate authorization.
+  - Product repair is intentionally deferred until C00 reconciles this atomic correction claim.
