@@ -422,3 +422,11 @@ zero effects. C00 consumed both ready entries. P28 item `58c0a26a` is rebound
 to target `85cfc9f2` with canonical digest `ece27747...`; I36 may merge only
 that item and may not apply a steward request. P20 may continue independently
 inside its five owned roots under the unchanged `CONTENT_PROCESSING` lease.
+
+P28 is integrated at final I36 head `49431959`; merge `b5f77d75` preserves
+source `aaedc3f2` ancestry and the exact 36-path scope. All 32 tests,
+typecheck, lint, formatting, registry assertions, and zero-effect checks
+passed; two registry projections remain explicitly assigned steward work.
+C00 cleared the merge queue and authorized P29 core workflows and P30 campaign
+workflows from `49431959`. Each must publish only its three-file atomic claim
+before implementation. P20 remains active on its disjoint lane.

@@ -160,3 +160,10 @@ only P28 item `58c0a26a-cb58-4dfb-a4a8-082ae171537e`, canonical rebound digest
 source `aaedc3f2`, base `9ba92b07`, exact 36 paths, and no steward action.
 Resume P20 at `6f894038` for normal implementation. Reconcile both final
 checkpoints under a fresh serialized C00 lease.
+
+P28 integration is complete at `49431959`. Dispatch P29 claim
+`6b96052a-b3f4-429f-9aab-3cbc8ec78e7e` with ready digest `193b50e8...` and
+P30 claim `9c4e04b6-485c-4d91-aed4-40e2b8be9aab` with ready digest
+`2b0b3f11...`, both from exact start `49431959`. Each stops after the exact
+three runtime files. Reconcile claims under a fresh C00 lease, then resume
+both implementations while continuing to monitor P20.
