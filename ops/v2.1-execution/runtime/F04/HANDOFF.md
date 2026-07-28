@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-f04-household-identity`
 - Start SHA: `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`
-- Implementation SHA before this handoff metadata commit: `81c0ee64072386db41aa5a40243c693762ab493a`
+- Implementation SHA before this handoff metadata commit: `8ba3f6c83ed3d7239ae672e938829ec9c572cd6b`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head.
 - Task packet digest: `8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5`
 - Context digest: `ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367`
@@ -19,11 +19,11 @@ Ownership transfer is version-checked, idempotent, single-use, Admin-assisted, a
 
 ## Remaining work
 
-F04-owned implementation is complete. F02 must adjudicate `F04-migration-001`; I36 must adjudicate `F04-registration-001`, integrate the exact interface checkpoint, and reconcile the F03 session seam. Candidate-bound browser/persistence proof remains for the verification waves.
+No F04-owned implementation remains. F02 must adjudicate `F04-migration-001`; I36 must adjudicate `F04-registration-001`, integrate the exact interface checkpoint, and reconcile the F03 session seam. Candidate-bound browser/persistence proof remains for the verification waves.
 
 ## Exact next action
 
-Run final verification, publish `ready_for_review`, then C00/I36 may validate and integrate the exact interface checkpoint.
+C00 validates the exact remote F04 head, interface/artifact/contract digests, scope, task-owned verification, zero effects, and steward requests before queueing I36.
 
 ## Coverage
 
@@ -41,6 +41,7 @@ Thirteen implementation/request files were added within F04-owned paths plus F04
 - Focused ESLint: passed.
 - Focused Prettier: passed.
 - Git diff check: passed.
+- Repository secret scan across 2,477 text files: passed.
 
 ## External effects
 

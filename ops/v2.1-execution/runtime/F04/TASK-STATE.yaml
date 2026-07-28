@@ -13,8 +13,8 @@ dependency_heads:
     integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
     interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
     interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: review
 claimed_by: codex-f04-worker-38e6f374
 claim_time: '2026-07-28T18:21:39Z'
 claim_id: 38e6f374-86dc-4b78-9846-4c328455443c
@@ -22,11 +22,12 @@ writer_slot_leases:
   - slot: ACCOUNT_HOUSEHOLD_IDENTITY
     lease_id: 520d3ff9-ec5a-43cf-bfcd-0cdb5ab7886e
 lease_expires_at: '2026-07-28T19:11:45Z'
-last_heartbeat_at: '2026-07-28T18:40:21Z'
+last_heartbeat_at: '2026-07-28T18:43:54Z'
+lease_released_at: '2026-07-28T18:43:54Z'
 controller_authorization_sha: 398ebf34ec72892d354370af11af297d45302888
 ready_entry_payload_digest: b04cb5f0f35d34ed53e48fa0e16fbce22178ffef13842c7e091031d61a979dda
-state_based_on_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
-last_implementation_commit_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+state_based_on_head_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
+last_implementation_commit_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
 completed_steps:
   - Verified and atomically consumed the exact F04 ready claim and writer lease.
   - Implemented normalized one-adult/one-HumanAccount identity linking with exact admin/parent memberships.
@@ -37,9 +38,11 @@ completed_steps:
   - Published migration and registration steward requests without editing central hotspots.
   - Passed 14 focused assertions, full typecheck, focused lint/format, and diff checks.
   - Published the exact semantic interface checkpoint for downstream integration.
+  - Re-ran final verification and the repository secret scan, then released the worker lease.
 remaining_steps:
-  - Re-run final verification, release the worker lease in metadata, and publish ready_for_review.
-next_action: Run the exact final verification suite, update the durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
+  - F02/C00/I36 adjudicate the two structured steward requests and integrate the exact interface checkpoint.
+  - Candidate verification lanes produce environment-bound acceptance evidence; F04 makes no candidate proof claim.
+next_action: C00 validates the exact remote F04 head, interface/artifact/contract digests, task-owned verification, scope, zero effects, and steward requests before queueing I36.
 requirements:
   OTV2-ACCOUNT-181: implementation_verified
   OTV2-ACCOUNT-182: implementation_verified
@@ -79,6 +82,7 @@ verification:
     - focused eslint over all F04 TypeScript artifacts
     - focused prettier --check over all F04 TypeScript/YAML artifacts
     - git diff --check
+    - npm run secret:scan
   known_baseline_failures: []
 external_effects:
   authority: none
