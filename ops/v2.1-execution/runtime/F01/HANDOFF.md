@@ -4,15 +4,15 @@
 
 - Branch: `codex/v21-f01-foundation-seams`
 - Start SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`
-- Implementation SHA before this handoff metadata commit: `d7dd4aa9accb951447c184d210f024860201b9e1`
+- Implementation SHA before this handoff metadata commit: `a7bc348b98e79f57618c911c440d3d8713a63d5f`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda`
 - Context digest: `5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim: `c18310c8-3975-4816-badd-1fa9079edc33`, held by `codex-f01-worker-4aafff01`
-- Lease expiry: `2026-07-28T16:09:35Z`
-- Containing control head: `e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce`
-- Ready payload digest: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`
+- Claim: `f5bc9b67-9a49-432f-9ce4-6ebd99d856d9`, held by `codex-f01-worker-4aafff01`
+- Lease expiry: `2026-07-28T16:56:52Z`
+- Containing control head: `af76c4e990f954794de72db639576b3c9dc73ff4`
+- Ready payload digest: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`
 - Interface contract digest: `2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713`
 
 ## Completed behavior
@@ -38,18 +38,24 @@ retired Tisha event funnel. Current client session roles are only Admin, Parent,
 and Student; legacy owner and rabbi identities normalize to Admin while retired
 roles fail closed. Worker content processing now permits only the Vimeo mode,
 and retired environment switches are no longer accepted as runtime flags.
+The focused direct-access harness proved 29 retired routes and emitted assets
+return 404 and that login HTML contains no challenge/trusted-device controls.
+Routine challenge delivery is absent from the owned worker loop. Retired event
+and HighLevel event-sync environment keys are ignored and forced unavailable.
+Three schema-valid immutable steward requests now describe the remaining
+out-of-scope domain-auth, production-client, and compatibility-config cleanup.
 
 ## Remaining work
 
-Renew the F01 lease, run the focused direct-access absence harness and exact
-inventory scan, reconcile the out-of-scope domain/public-build references
-listed below through the steward mechanism, and publish `ready_for_review`.
+Have C00 record and assign the three pushed steward requests, acknowledge the
+exact applied result heads, rerun the exact inventory and direct-access checks,
+and publish `ready_for_review`.
 
 ## Exact next action
 
-After C00 grants a fresh matching F01 lease, verify direct access fails closed
-and reconcile the recorded out-of-scope retired-surface references without
-crossing owned-path authority.
+Wait for C00 to record and assign `F01-retired-auth-001`,
+`F01-retired-client-002`, and `F01-config-retirement-003`; then verify and
+acknowledge their exact applied result heads before `ready_for_review`.
 
 ## Coverage
 
@@ -80,6 +86,13 @@ created, deleted, or edited.
 - Steward-request JSON schema parsed successfully.
 - `npm run typecheck` after retired-surface closure: passed.
 - `npm run build:client` after retired-surface closure: passed.
+- F01 direct-access absence harness: 29 retired routes/assets returned 404.
+- Login HTML absence assertions: no challenge, one-time-code, six-digit, or
+  trusted-device controls.
+- Retired event configuration smoke: supplied legacy keys were ignored and
+  compatibility values remained unavailable.
+- Three request YAML documents validated against the F01 steward-request
+  schema.
 
 ## External effects
 
@@ -92,8 +105,8 @@ question, or bearer URL was read or recorded.
 
 ## Blockers, deviations, and recovery
 
-Lease renewal is required before more work. Three out-of-scope closure items
-remain:
+The renewed F01 lease is active. C00 must record and assign three immutable
+steward requests before F01 can acknowledge result heads and finish:
 
 - `packages/domain/src/auth/service.ts` still creates a routine email challenge
   for internal Admin identities after a valid password. The owned server no

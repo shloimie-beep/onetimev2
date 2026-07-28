@@ -19,11 +19,11 @@ claimed_by: codex-f01-worker-4aafff01
 claim_time: '2026-07-28T15:56:52Z'
 claim_id: f5bc9b67-9a49-432f-9ce4-6ebd99d856d9
 lease_expires_at: '2026-07-28T16:56:52Z'
-last_heartbeat_at: '2026-07-28T16:06:30Z'
+last_heartbeat_at: '2026-07-28T16:14:10Z'
 controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
 ready_entry_payload_digest: 913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2
-state_based_on_head_sha: d7dd4aa9accb951447c184d210f024860201b9e1
-last_implementation_commit_sha: d7dd4aa9accb951447c184d210f024860201b9e1
+state_based_on_head_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
+last_implementation_commit_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
 completed_steps:
   - verified repository identity and isolated clone
   - fetched and verified containing control head e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce
@@ -39,11 +39,15 @@ completed_steps:
   - removed the routine email-challenge endpoints and login-page controls from the owned server surface
   - verified the owned retirement delta with full typecheck and production client build
   - verified and atomically adopted the C00-issued F01 resume claim and renewed six-slot lease
+  - proved 29 retired direct routes and emitted assets fail closed with 404
+  - removed routine email-challenge delivery from the owned worker loop
+  - removed retired event and HighLevel event-sync environment keys and forced their compatibility values unavailable
+  - published three schema-valid structured steward requests for remaining out-of-scope closure
 remaining_steps:
-  - complete the direct-access absence harness and exact inventory scan
-  - reconcile out-of-scope domain auth, public bundle, Vite entry, and compatibility config references through the central-file steward mechanism
+  - have C00 record and assign the three immutable steward requests
+  - acknowledge schema-valid applied results and rerun the exact inventory and direct-access checks
   - publish ready_for_review
-next_action: Verify direct access fails closed and reconcile the recorded out-of-scope retired-surface references without crossing owned-path authority.
+next_action: Wait for C00 to record and assign F01-retired-auth-001, F01-retired-client-002, and F01-config-retirement-003; then verify and acknowledge their exact applied result heads before ready_for_review.
 requirements:
   OTV2-FOUNDATION-001: in_progress
   OTV2-FOUNDATION-003: in_progress
@@ -81,7 +85,19 @@ changed_paths:
   - packages/config/src/index.ts
   - ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: F01-retired-auth-001
+    path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-001.yaml
+    digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+    status: requested
+  - request_id: F01-retired-client-002
+    path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-002.yaml
+    digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
+    status: requested
+  - request_id: F01-config-retirement-003
+    path: ops/v2.1-execution/runtime/F01/steward-requests/config-003.yaml
+    digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
+    status: requested
 verification:
   commands_run:
     - repository remote is https://github.com/shloimie-beep/onetimev2.git
@@ -95,6 +111,9 @@ verification:
     - interface contract digest 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
     - npm run typecheck after retired-surface closure: passed
     - npm run build:client after retired-surface closure: passed
+    - F01 direct-access absence harness: 29 retired routes and assets returned 404; login HTML contained no challenge or trusted-device controls
+    - retired event configuration smoke: supplied legacy event/provider keys were ignored and runtime compatibility values remained unavailable
+    - three steward request YAML documents validated against the F01 steward-request schema
   known_baseline_failures:
     - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
@@ -103,7 +122,7 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - out-of-scope retired-surface references require steward coordination before ready_for_review
+  - C00 must record and assign the three pushed steward requests; F01 must acknowledge applied result heads before ready_for_review
 out_of_scope_findings:
   - packages/domain/src/auth/service.ts still creates a routine email challenge for legacy internal admin identities after valid password authentication; the owned server no longer exposes the challenge endpoints or controls, so a domain-steward change is required for direct Admin email-plus-password login.
   - apps/web/vite.app.config.ts still emits the retired experience-preview client entry and apps/web/src/client/public.ts retains dormant email-challenge code; both paths are outside F01 ownership. The owned server denies the emitted preview asset and no longer renders challenge controls.

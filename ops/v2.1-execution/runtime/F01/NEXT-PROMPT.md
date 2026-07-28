@@ -28,9 +28,11 @@ returning.
 The stable interface implementation head is
 `bb7664c44444bf1704d9f63e5c19a15381f2f0b0`; verify
 `INTERFACE-CHECKPOINT.yaml`. The retirement implementation checkpoint is
-`d7dd4aa9accb951447c184d210f024860201b9e1`. Resume only after C00 grants a
-fresh matching F01 lease. Then run the focused direct-access absence harness
-and exact inventory scan, and reconcile the out-of-scope domain auth,
-public-client/Vite entry, and AppConfig compatibility references recorded in
-`TASK-STATE.yaml` and `HANDOFF.md` through the steward mechanism. Do not cross
-F01 owned-path authority.
+`a7bc348b98e79f57618c911c440d3d8713a63d5f`. The current resume claim is
+`f5bc9b67-9a49-432f-9ce4-6ebd99d856d9` under containing control head
+`af76c4e990f954794de72db639576b3c9dc73ff4`. Resume by requiring C00's
+schema-valid recorded assignments and exact applied result heads for
+`F01-retired-auth-001`, `F01-retired-client-002`, and
+`F01-config-retirement-003`. Verify and acknowledge those results, rerun the
+exact inventory/direct-access checks, and publish `ready_for_review`. Do not
+cross F01 owned-path authority.
