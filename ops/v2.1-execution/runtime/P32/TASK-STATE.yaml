@@ -42,21 +42,25 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: review
 claimed_by: codex-p32-worker-a9e4c442
 claim_time: '2026-07-28T20:18:13Z'
 claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
 writer_slot_leases:
   - slot: PRIVACY_DATA_RIGHTS
     lease_id: 45817ce0-ad6f-444e-9c4b-35082a29879b
+    lease_expires_at: '2026-07-28T21:06:46Z'
+    released_at: '2026-07-28T20:43:29Z'
 lease_expires_at: '2026-07-28T21:06:46Z'
-last_heartbeat_at: '2026-07-28T20:38:41Z'
+last_heartbeat_at: '2026-07-28T20:43:29Z'
+lease_released_at: '2026-07-28T20:43:29Z'
 controller_authorization_sha: d234126ca7be31def06c939ac1886406936987dc
 ready_entry_parent_control_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
 ready_entry_payload_digest: 3c4b0c6a594701c8f5962dcd7dccf40d0cf6c854fcd5f6442d275af1751ab93e
 state_based_on_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
 last_implementation_commit_sha: 888af54911ed583da99408cfcc791b485a728ddd
+interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
 completed_steps:
   - Verified the exact P32 ready entry, canonical payload digest, immutable package/task/context digests, integrated dependency contracts, branch absence, and unexpired writer lease.
   - Created the isolated P32 branch from the exact authorized integration start SHA.
@@ -67,24 +71,24 @@ completed_steps:
   - Published migration, registration, and independent purge-ledger configuration steward requests without editing shared hotspots.
   - Passed 21 focused assertions, full typecheck, focused lint/format, and diff checks.
   - Published the exact semantic interface checkpoint for P18.
-remaining_steps:
-  - Re-run final verification, release the worker lease in metadata, and publish ready_for_review.
-next_action: Run the exact final verification suite, update durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
+  - Re-ran final task-owned verification and released the PRIVACY_DATA_RIGHTS writer-slot lease.
+remaining_steps: []
+next_action: C00/I36 should validate and integrate the exact P32 interface checkpoint, adjudicate the three steward requests, and authorize P18 from the resulting integration head.
 requirements:
-  OTV2-CONSENT-189: implementation_verified
-  OTV2-PRIVACY-212: implementation_verified
-  OTV2-PRIVACY-221: implementation_verified
-  OTV2-PRIVACY-239: implementation_verified
-  OTV2-PRIVACY-240: implementation_verified
+  OTV2-CONSENT-189: implementation_ready
+  OTV2-PRIVACY-212: implementation_ready
+  OTV2-PRIVACY-221: implementation_ready
+  OTV2-PRIVACY-239: implementation_ready
+  OTV2-PRIVACY-240: implementation_ready
 acceptance_cases:
-  OTV2-CONSENT-189-DEPENDENT-STUDENT: task_owned_assertions_passed
-  OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT: task_owned_assertions_passed
-  OTV2-PRIVACY-212-AC01: task_owned_assertions_passed
-  OTV2-PRIVACY-221-AC01: task_owned_assertions_passed
-  OTV2-PRIVACY-239-ACTOR-ROUTES: task_owned_assertions_passed
-  OTV2-PRIVACY-239-REQUEST-WORKFLOW: task_owned_assertions_passed
-  OTV2-PRIVACY-240-SNAPSHOT-REDACTION: task_owned_assertions_passed
-  OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER: task_owned_assertions_passed
+  OTV2-CONSENT-189-DEPENDENT-STUDENT: implementation_ready
+  OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT: implementation_ready
+  OTV2-PRIVACY-212-AC01: implementation_ready
+  OTV2-PRIVACY-221-AC01: implementation_ready
+  OTV2-PRIVACY-239-ACTOR-ROUTES: implementation_ready
+  OTV2-PRIVACY-239-REQUEST-WORKFLOW: implementation_ready
+  OTV2-PRIVACY-240-SNAPSHOT-REDACTION: implementation_ready
+  OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER: implementation_ready
 changed_paths:
   - apps/web/src/client/app/admin/privacy/PrivacyReviewQueue.tsx
   - apps/web/src/client/app/admin/privacy/index.ts

@@ -1,9 +1,9 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: REVIEW
 
-Continue One Time v2.1 task P32 from its pushed interface checkpoint.
+Review completed One Time v2.1 task P32 from its terminal checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p32-privacy-data-rights
@@ -19,9 +19,8 @@ entry from that remote ref, verify its expected branch head, canonical entry
 payload digest, the `ready` or `resume_ready` lease/claim appropriate to the
 registered claim mode, package/task/context/dependency digests, and reject a
 live foreign lease or non-fast-forward collision. Then check out the exact task
-branch, read task state, interface checkpoint, and handoff before named work,
-and resume the recorded `next_action`. Do not change the published interface
-artifacts unless a real defect requires a new implementation commit and
-checkpoint digest. Re-run the exact final verification suite, update durable
-metadata to `ready_for_review`, release the task-local lease in metadata, commit,
-and push before returning.
+branch, read task state, interface checkpoint, handoff, and steward requests.
+Validate the exact implementation and interface hashes without restarting the
+task. C00/I36 should integrate the checkpoint and adjudicate steward requests;
+any implementation change requires a new C00-issued resume lease and a newly
+published interface digest.
