@@ -19,12 +19,12 @@ claim_id: ce7c9fcd-dbf3-4d5e-9174-3b7632504e42
 lease_id: 2a26f2f3-e956-4ba0-a4d0-86c02aa51a15
 lease_issued_at: '2026-07-28T20:46:27Z'
 lease_expires_at: '2026-07-28T21:46:27Z'
-last_heartbeat_at: '2026-07-28T20:53:38Z'
+last_heartbeat_at: '2026-07-28T21:03:06Z'
 controller_authorization_sha: 1b1ecf75213617df552831df6ca8b04478a60211
 ready_entry_state_based_on_control_head_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
 ready_entry_payload_digest: 602876f452e4b9eea3691fe4c3082f356eb67918af82818f6993c992c3b99ec3
-state_based_on_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
-last_implementation_commit_sha: 41954f0077308ef4df779472e44c3531f4273b81
+state_based_on_head_sha: 7a176159aa3f2beb81003972c11c5fa22c2a1c19
+last_implementation_commit_sha: 7a176159aa3f2beb81003972c11c5fa22c2a1c19
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -163,10 +163,19 @@ completed_steps:
   - Claimed exact P32-interface atomic-claim-only authority under claim
     ce7c9fcd-dbf3-4d5e-9174-3b7632504e42 and sole RELEASE_INTEGRATOR lease
     2a26f2f3-e956-4ba0-a4d0-86c02aa51a15 without reading, merging, or adjudicating P32 source or requests.
+  - Verified rebound control head 538ee781fb805ac13b020a66dadf5573451d7af9 and canonical P32 merge-item
+    payload digest d5babbcb78a67522b2a18c1fc7d9419b3520d5da6d3ad4249dd1d466a4c93d69.
+  - Verified exact P32 source, source/merge base 01cdb992660a1fbc20b204b829d28062fd044679,
+    30-path allowlist, task and state/handoff digests, seven exported artifact hashes, literal-path contract
+    digest, implementation ancestry, and zero external effects.
+  - Merged exact P32 interface source 6a33944a75e717041b2f951134459769b8fc2617 with ancestry preserved at
+    7a176159aa3f2beb81003972c11c5fa22c2a1c19.
+  - Passed repository typecheck, 21 focused P32 tests, focused ESLint, and diff checks; no P32 steward
+    request was adjudicated or applied.
 remaining_steps:
-  - Push and report this exact P32-interface atomic claim checkpoint to C00.
-  - Await C00 consumption and an exact merge-target CAS rebind before reading or merging P32.
-next_action: Report the exact pushed P32-interface atomic claim checkpoint to C00, then pause without reading or merging P32 until a new exact control authorization.
+  - Push and report this exact P32 interface integration metadata checkpoint to C00.
+  - Await a new exact C00 queue/lease authorization.
+next_action: Report the exact pushed P32 interface integration metadata checkpoint to C00, then pause for a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -321,6 +330,36 @@ changed_paths:
   - packages/domain/src/portals/student/navigation.ts
   - packages/domain/src/portals/student/student-portal.test.ts
   - packages/domain/src/portals/student/view.ts
+  - apps/web/src/client/app/admin/privacy/PrivacyReviewQueue.tsx
+  - apps/web/src/client/app/admin/privacy/index.ts
+  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
+  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx
+  - apps/web/src/client/app/parent/privacy/index.ts
+  - apps/web/src/server/features/privacy/index.ts
+  - apps/web/src/server/features/privacy/privacy-service.test.ts
+  - apps/web/src/server/features/privacy/privacy-service.ts
+  - apps/worker/src/runners/privacy-retention/index.ts
+  - apps/worker/src/runners/privacy-retention/runner.test.ts
+  - apps/worker/src/runners/privacy-retention/runner.ts
+  - ops/v2.1-execution/runtime/P32/HANDOFF.md
+  - ops/v2.1-execution/runtime/P32/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P32/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-config-001.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-migration-001.yaml
+  - ops/v2.1-execution/runtime/P32/steward-requests/P32-registration-001.yaml
+  - packages/contracts/src/privacy/index.ts
+  - packages/db/src/privacy/index.ts
+  - packages/db/src/privacy/repository.test.ts
+  - packages/db/src/privacy/repository.ts
+  - packages/db/src/privacy/schema-contract.ts
+  - packages/domain/src/privacy/consent.ts
+  - packages/domain/src/privacy/errors.ts
+  - packages/domain/src/privacy/index.ts
+  - packages/domain/src/privacy/privacy.test.ts
+  - packages/domain/src/privacy/redaction.ts
+  - packages/domain/src/privacy/retention.ts
+  - packages/domain/src/privacy/rights.ts
 migrations:
   - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -518,6 +557,18 @@ verification:
       result: passed; 200/200 locked Git blobs, 15/15 source-spec Git blobs, and package/task/context/source-package digests
     - command: P32-interface atomic claim, writer-slot, branch-head, lease, phase-scope, and effect-lock verification
       result: passed; sole RELEASE_INTEGRATOR lease, phase scope P32_interface_atomic_claim_only, and zero effect locks
+    - command: canonical rebound P32 merge-item digest recomputation
+      result: passed; d5babbcb78a67522b2a18c1fc7d9419b3520d5da6d3ad4249dd1d466a4c93d69
+    - command: P32 source admission, allowlist, state/handoff, artifact, contract, ancestry, and zero-effect verification
+      result: passed; exact source/base, 30 paths, digest 215a3e38, seven exports, contract 76d08587, implementation ancestry, and 0/0/0 effects
+    - command: git merge --no-ff 6a33944a75e717041b2f951134459769b8fc2617
+      result: passed; source ancestry preserved at 7a176159aa3f2beb81003972c11c5fa22c2a1c19
+    - command: npm run typecheck
+      result: passed after P32 interface merge
+    - command: focused P32 Vitest suites
+      result: passed; 5 files and 21 tests
+    - command: focused P32 ESLint and git diff --check
+      result: passed after P32 interface merge
   known_baseline_failures: []
 external_effects:
   authority: none

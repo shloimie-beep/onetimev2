@@ -20,7 +20,7 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current P32-interface atomic-claim-only authority is containing control head
+The consumed P32-interface atomic-claim-only authority was containing control head
 `1b1ecf75213617df552831df6ca8b04478a60211`, controller authorization
 `1b1ecf75213617df552831df6ca8b04478a60211`, ready-entry parent control
 head `d3552d3aa9afde6445a3b8772a1de0ac9b134a6b`, claim
@@ -30,6 +30,15 @@ head `d3552d3aa9afde6445a3b8772a1de0ac9b134a6b`, claim
 `602876f452e4b9eea3691fe4c3082f356eb67918af82818f6993c992c3b99ec3`.
 The exact pre-claim integration head is
 `d35166838267711a514cf73822cd2ca49a3f3ded`.
+
+Control `538ee781fb805ac13b020a66dadf5573451d7af9` rebound sole P32 item
+`7a187ca7-fd01-46ee-87b5-15050a305be1` to exact claim head `ffd63f4e3c`.
+Its canonical payload `d5babbcb78a67522b2a18c1fc7d9419b3520d5da6d3ad4249dd1d466a4c93d69`,
+exact source/base/30-path scope, state/handoff, seven artifacts, contract,
+implementation ancestry, and zero effects matched. Exact source `6a33944a`
+was ancestry-merged at pushed integration head `7a176159aa3f2beb81003972c11c5fa22c2a1c19`.
+Typecheck, focused ESLint, 21 focused tests, and diff checks passed. No P32
+steward request was adjudicated or applied.
 
 F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
 has been ancestry-merged and pushed at exact integration head
@@ -102,11 +111,9 @@ Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged 
 preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
 steward request, migration, registration, or provider effect was applied.
 
-Current exact next action: report the pushed P32-interface atomic claim
-checkpoint to C00, then stop. Do not read or merge P32 and do not adjudicate or
-apply any steward request until C00 consumes the ready entry and rebinds the
-merge target CAS to the exact claim head. No unrelated merge, steward,
-evidence, control, or live-effect work is authorized.
+Current exact next action: report the pushed P32 interface integration metadata
+checkpoint to C00, then stop and await a new exact control authorization. No
+unrelated merge, steward, evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its

@@ -169,17 +169,30 @@ All 200 locked and 15 source-spec blobs passed. This checkpoint consumes only
 the claim; no P32 source was read or merged and no steward request was
 adjudicated or applied.
 
+C00 rebound the sole P32 interface item at control
+`538ee781fb805ac13b020a66dadf5573451d7af9` to exact claim head
+`ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8`, with canonical payload
+`d5babbcb78a67522b2a18c1fc7d9419b3520d5da6d3ad4249dd1d466a4c93d69`.
+I36 independently verified source/merge base `01cdb992`, the exact 30-path
+allowlist, state/handoff digest `215a3e38...`, all seven exported artifact
+hashes, literal `path=<artifact-path>=<sha256>` contract digest `76d08587...`,
+implementation ancestry, and zero effects. Exact source
+`6a33944a75e717041b2f951134459769b8fc2617` was ancestry-merged with
+parents `ffd63f4e...` and `6a33944a...` at pushed integration head
+`7a176159aa3f2beb81003972c11c5fa22c2a1c19`. Typecheck, focused ESLint,
+21 focused tests, and diff checks passed. No P32 steward request was
+adjudicated or applied.
+
 ## Remaining work
 
-Push and report this exact P32-interface atomic claim checkpoint to C00. Await
-C00 consumption and an exact merge-target CAS rebind before reading or merging
-P32. Do not adjudicate or apply any P32 steward request.
+Push and report this exact P32 interface integration metadata checkpoint to
+C00. Await a new exact C00 queue/lease authorization.
 
 ## Exact next action
 
-Report the exact pushed P32-interface atomic claim checkpoint to C00, then
-pause. Do not read or merge P32 and do not adjudicate any steward request until
-C00 consumes the ready entry and issues a new exact target authorization.
+Report the exact pushed P32 interface integration metadata checkpoint to C00,
+then pause. Do not integrate another source or adjudicate any steward request
+without new exact authorization.
 
 ## Coverage
 
@@ -202,6 +215,8 @@ C00 consumes the ready entry and issues a new exact target authorization.
 - Exact allowlisted F06/P14 interface deltas at
   `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` and
   `3393169e2284d65ff0a970d797aa1f83ebf9d895`
+- Exact 30-path allowlisted P32 interface delta at
+  `6a33944a75e717041b2f951134459769b8fc2617`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -296,6 +311,16 @@ C00 consumes the ready entry and issues a new exact target authorization.
   `41954f0077308ef4df779472e44c3531f4273b81`.
 - Repository typecheck, full quiet lint, and 20 focused F06/P14 tests passed
   after the ordered micro-batch.
+- Rebound control `538ee781fb805ac13b020a66dadf5573451d7af9` carried the sole P32 item with
+  canonical payload `d5babbcb78a67522b2a18c1fc7d9419b3520d5da6d3ad4249dd1d466a4c93d69`
+  and exact target `ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8`.
+- Exact P32 source/base, 30-path scope, task/state-handoff bindings, seven
+  export hashes, literal-path contract preimage, implementation ancestry, and
+  zero effects matched.
+- Exact P32 source is an ancestor of
+  `7a176159aa3f2beb81003972c11c5fa22c2a1c19`.
+- Repository typecheck, focused ESLint, 21 focused P32 tests, and diff checks
+  passed after the P32 interface merge.
 
 ## External effects
 
