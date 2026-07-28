@@ -1,8 +1,54 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: da4bef5a-c064-4fb8-96c4-09a34aa61603
+  kind: interface
+  task_id: F01
+  source_branch: codex/v21-f01-foundation-seams
+  source_head_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
+  target_branch: codex/v21-integration
+  expected_target_head_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+  source_delta_base_head_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+  required_merge_base_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
+  merge_after_heads: {}
+  allowed_paths:
+  - apps/web/src/client/app/portal-entry.tsx
+  - apps/web/src/client/app/router/index.ts
+  - apps/web/src/client/app/router/portal-roots.tsx
+  - apps/web/src/client/app/router/registry.ts
+  - apps/web/src/server/app.ts
+  - apps/web/src/server/features/registry/index.ts
+  - apps/worker/src/main/index.ts
+  - apps/worker/src/runners/registry/index.ts
+  - ops/v2.1-execution/runtime/F01/HANDOFF.md
+  - ops/v2.1-execution/runtime/F01/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F01/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F01/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
+  - packages/config/src/index.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 512eba3f-b41f-4144-af5e-3a0849bc709d
+    holder_task_id: I36
+    holder_claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
+    state_based_on_control_head_sha: 7b8c1631128b32d23da948bea178d0790d86b806
+    lease_issued_at: '2026-07-28T15:33:58Z'
+    lease_expires_at: '2026-07-28T16:33:58Z'
+    phase_scope: interface_merge_only
+  task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
+  state_handoff_digest: 09c809068394d7118d18a02e7165220b6849147e90703261ad05eae5c48a1ce6
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 7b8c1631128b32d23da948bea178d0790d86b806
+item_payload_digests:
+  da4bef5a-c064-4fb8-96c4-09a34aa61603: 39e877291294ccb17eb773beedbc7b17a7a85d0e18079841908c35687267abe8
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

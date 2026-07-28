@@ -34,6 +34,12 @@ F01 was dispatched as the sole product worker, atomically claimed
 `codex/v21-f01-foundation-seams`, and its remote claim checkpoint was verified
 at `e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9`. Control now records F01 as
 claimed and keeps I36 ready but unspawned.
+F01 then published its exact `interface_ready` checkpoint at
+`fa9e5c92231c4b92340d07945cc91d76c85bd444`, backed by implementation head
+`bb7664c44444bf1704d9f63e5c19a15381f2f0b0`. All six export hashes and the
+canonical contract digest were independently reproduced. Merge item
+`da4bef5a-c064-4fb8-96c4-09a34aa61603` now authorizes I36 to ancestry-merge
+that exact checkpoint into integration head `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 
 ## Remaining work
 
@@ -42,9 +48,9 @@ after worker branches advance.
 
 ## Exact next action
 
-Wait for F01 to publish `interface_ready`, verify the pushed checkpoint
-remotely, and keep I36 unspawned until an admissible interface,
-implementation, or evidence item is queued.
+Dispatch exactly one I36 native subagent from the current ready and merge
+entries, then verify its pushed integration result. F01 may continue its
+task-owned completion work concurrently.
 
 ## Verification
 
@@ -54,9 +60,10 @@ implementation, or evidence item is queued.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
-- I36 ready payload: `544851b889873bd5e4e419cff68dfce2b34dbc9ed0e60be3c4f8d79a8ca610e8`.
-- Control parent for the renewed I36 ready entry: `6f4c83186cbf15512cb5a48afe576bd2d786ca97`.
-- F01 branch/head: `codex/v21-f01-foundation-seams` / `e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9`.
+- I36 ready payload: `4b429a919e258b635c3c713c023bf83ecb8b28711c63e192d97d52567afa17a1`.
+- I36 merge payload: `39e877291294ccb17eb773beedbc7b17a7a85d0e18079841908c35687267abe8`.
+- Control parent for the I36 authorization: `7b8c1631128b32d23da948bea178d0790d86b806`.
+- F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
 - I36 branch/head: `codex/v21-integration` / `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - No provider or product effect was attempted.
 
