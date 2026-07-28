@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-next_action: F02 consumes its rebound exact resume claim; I36 consumes the P31-only integration claim; F01 acknowledges the two rejected steward results. Do not advance control until the three unused ready claims are consumed or safely refused.
+controller_authorization_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+next_action: I36 consumes the rebound P31-only item at claim head cd4bb17a; F02 republishes metadata under the corrected parent control-state digest; F01 waits for F03's remaining auth-steward result.
 authority_note: Only C00 updates this global control state.

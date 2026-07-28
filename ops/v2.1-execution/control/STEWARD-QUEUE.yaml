@@ -9,6 +9,8 @@ items:
   assigned_steward: F03
   target_checkpoint: F03_ready_for_review
   acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null
@@ -21,7 +23,9 @@ items:
   status: rejected
   assigned_steward: I36
   target_checkpoint: I36_next_steward_checkpoint
-  acknowledged_by_task: false
+  acknowledged_by_task: true
+  acknowledgment_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
+  acknowledgment_state_handoff_digest: 875e0472b9d5f0fd31307ddef4a431d8b16a95d8d6c024490b7344f1397fa145
   applied_commit_sha: null
   result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
   evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
@@ -34,7 +38,9 @@ items:
   status: rejected
   assigned_steward: I36
   target_checkpoint: I36_next_steward_checkpoint
-  acknowledged_by_task: false
+  acknowledged_by_task: true
+  acknowledgment_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
+  acknowledgment_state_handoff_digest: 875e0472b9d5f0fd31307ddef4a431d8b16a95d8d6c024490b7344f1397fa145
   applied_commit_sha: null
   result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
   evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
@@ -49,6 +55,8 @@ entry_schema:
   assigned_steward: null
   target_checkpoint: null
   acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null

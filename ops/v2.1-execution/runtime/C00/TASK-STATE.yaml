@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-d88fa142
-claim_time: '2026-07-28T17:10:59Z'
-claim_id: d88fa142-c767-4b91-90a6-cdc20c98a8a6
-lease_expires_at: '2026-07-28T17:19:41Z'
-last_heartbeat_at: '2026-07-28T17:19:41Z'
-controller_authorization_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+claimed_by: codex-c00-orchestrator-e0421420
+claim_time: '2026-07-28T17:25:24Z'
+claim_id: e0421420-0baf-4d9d-acec-8da82b1de47e
+lease_expires_at: '2026-07-28T17:31:52Z'
+last_heartbeat_at: '2026-07-28T17:31:52Z'
+controller_authorization_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
 ready_entry_payload_digest: null
-state_based_on_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+state_based_on_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -54,8 +54,12 @@ completed_steps:
 - independently reproduced both I36 rejected steward-result digests, exact request blob digests, state/handoff binding, and zero-effect record at integration head 1976033c
 - independently verified P31 final ancestry, exact eight-path scope, three artifact hashes, colon-delimited contract digest d66db410, state/handoff binding, and zero effects
 - rebound the still-unused F02 authorization to the current control parent and queued exact resume claims for P31-only I36 integration and F01 rejection acknowledgment
+- verified F01's task-local acknowledgment checkpoint at dc991ef9 and recorded both rejected steward results acknowledged while leaving the F03 auth request pending
+- verified I36's exact P31-only atomic claim head cd4bb17a and rebound the unchanged merge item's optimistic target CAS
+- reproduced F02's hardened artifact, contract, interface-file, migration, source-scope, and state/handoff digests at 347f9461, but withheld admission because the consumed F02 ready entry retained a stale embedded C00 control-state digest
+- issued F02 a metadata-only correction resume claim against exact head 347f9461 and the correct parent control-state digest
 remaining_steps: []
-next_action: Dispatch the three exact unused ready claims for F02 replacement publication, P31-only I36 integration, and F01 steward-result acknowledgment; do not advance control until they claim or safely refuse.
+next_action: Let I36 consume the rebound P31-only merge item and F02 consume the corrected metadata-only resume entry; keep F01 paused until F03 returns the remaining auth-steward result.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -63,34 +67,34 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+  current_control_parent_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: d88fa142-c767-4b91-90a6-cdc20c98a8a6
-      observed_head: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+      claim_id: e0421420-0baf-4d9d-acec-8da82b1de47e
+      observed_head: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
       claim_id: 683f3581-a6ca-472d-80a6-51fabb9208f5
-      observed_head: e8b172c6a7da5003a82cfc8663df6d4159fa4092
+      observed_head: dc991ef901617cc6d7e4fe780c53b4833172a0a2
       authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
       lease_expires_at: '2026-07-28T18:13:44Z'
-      scheduling_state: resume_ready_for_steward_rejection_acknowledgment
+      scheduling_state: acknowledged_two_rejections_waiting_on_F03_auth_result_agent_returned
     I36:
       branch: codex/v21-integration
       claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
-      observed_head: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+      observed_head: cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c
       authorized_start_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
       lease_expires_at: '2026-07-28T18:13:44Z'
-      scheduling_state: resume_ready_for_P31_interface_only
+      scheduling_state: claimed_waiting_on_rebound_P31_item
     F02:
       branch: codex/v21-f02-schema-state-migrations
-      claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
-      observed_head: 191dac288ea1721bdc0252bd012060ca974d2242
+      claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+      observed_head: 347f9461cee523341102101355c6f38dbc9418d4
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-      lease_expires_at: '2026-07-28T18:03:02Z'
-      scheduling_state: rebound_resume_ready_queued
+      lease_expires_at: '2026-07-28T18:27:11Z'
+      scheduling_state: metadata_reauthorization_resume_ready
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -106,14 +110,22 @@ orchestration:
       lease_expires_at: null
       scheduling_state: ready_for_review_interface_queued
   active_native_subagents:
+  - task_id: I36
+    agent: /root/i36_worker2
+    branch: codex/v21-integration
+    observed_head: cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c
+    claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
+    lease_expires_at: '2026-07-28T18:13:44Z'
+    status: claimed
+    phase: integration
   - task_id: F02
     agent: /root/f02_worker
     branch: codex/v21-f02-schema-state-migrations
-    observed_head: 191dac288ea1721bdc0252bd012060ca974d2242
-    claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
-    lease_expires_at: '2026-07-28T18:03:02Z'
+    observed_head: 347f9461cee523341102101355c6f38dbc9418d4
+    claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+    lease_expires_at: '2026-07-28T18:27:11Z'
     status: resume_ready
-    phase: implementation
+    phase: verification
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -136,6 +148,8 @@ steward_requests:
   target_checkpoint: I36_next_steward_checkpoint
   result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
   result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+  acknowledged_by_task: true
+  acknowledgment_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
 - request_id: F01-config-retirement-003
   request_digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
   requesting_task_id: F01
@@ -144,14 +158,16 @@ steward_requests:
   target_checkpoint: I36_next_steward_checkpoint
   result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
   result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+  acknowledged_by_task: true
+  acknowledgment_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
 verification:
   control_digests:
-    control_state: 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215
-    control_lease: 0a6fb354302e3757908a87018277700ff3c12d5a2751404be367efb07e784186
-    task_registry: 8b51f2535a273c72f0030bf008609c874611a63b9128903e3b02d19cb43c54ee
-    ready_queue: 73a25034d681b054327c5b76b31b48e610b1a779590361370fdce113b85844a1
-    merge_queue: 6bb79c5367614aa6c43ec125432754168b8ef7aec5ccc35b2043836e77c6e1dc
-    steward_queue: 2cfdf3c9b6790fa7d9b47a3865e74ad8db9948e0680b8a0ab12f5c28df2c5eea
+    control_state: 63a404fee8d7129dae50e8ec8ddde9b8d4b0c8268c1e2a0249065746ef76859f
+    control_lease: 47d84d9651dbe1ff858697e580634950b23488ec04842b4a14216d55a5642929
+    task_registry: e18096e0f8d49ee3b4b1d5e30a47b74b500c4a577bf3441fc660e9648e8dbd91
+    ready_queue: c0d8badc1b68bcfbbd378d3441d959dab15a6875c46493d1a3d042b3ffa0a1a3
+    merge_queue: a04c2a39a0223b91f5b0ae8166a3ab29572ca60dd8b20a17adafa07da37e5fa6
+    steward_queue: aa7a6ad4acfd3baff63a0b821c1a2448d88bd35a5272b539549b7230645227fc
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
     migration_allocations: f9819bdb8d4a6d74132e927658b783682d7e6897307d9628b444ff1b11a5f23b
@@ -174,6 +190,8 @@ verification:
   - F07 repaired interface artifact hashes, combined contract digest, source ancestry/scope, and final ready_for_review checkpoint: passed
   - I36 rejected steward-result canonical digests, immutable request blobs, exact three-path checkpoint scope, and state/handoff digest: passed
   - P31 final ancestry, exact eight-path scope, artifact hashes, contract digest, state/handoff digest, focused/typecheck reports, and zero effects: passed
+  - F01 acknowledgment-only three-path scope, exact result digests, and state/handoff digest: passed
+  - F02 hardened artifact, contract, interface-file, migration, source-scope, and state/handoff digests: passed; admission withheld for stale embedded C00 control-state dependency digest and correction reauthorized
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

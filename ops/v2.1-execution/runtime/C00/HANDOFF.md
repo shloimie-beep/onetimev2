@@ -137,6 +137,22 @@ Because C00 acquired a later serialized lease before F02 consumed its first
 resume entry, the unchanged unused claim was rebound to the new control parent.
 The current F02 payload is
 `b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11`.
+F02 published that hardened checkpoint at
+`347f9461cee523341102101355c6f38dbc9418d4`; C00 reproduced its exact
+artifact, contract, migration, scope, and state/handoff digests. Admission is
+withheld because the consumed entry's embedded C00 control-state digest was
+not rebound with its parent even though its own payload hash matched. C00
+issued metadata-correction claim `8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78`
+against exact head `347f9461` with corrected payload
+`b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`.
+No F02 interface or replacement migration checksum is admitted until that
+correction lands.
+F01 acknowledged both I36 rejection results at
+`dc991ef901617cc6d7e4fe780c53b4833172a0a2`; the auth-steward request remains
+assigned to F03. I36 consumed the P31-only ready entry at claim head
+`cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c`; the same P31 merge item is
+rebound to that exact target with payload
+`7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`.
 
 ## Remaining work
 
@@ -145,10 +161,10 @@ after worker branches advance.
 
 ## Exact next action
 
-Dispatch the three exact ready entries without advancing the control ref:
-F02 publishes its replacement checkpoint, I36 integrates only P31, and F01
-acknowledges only the two recorded rejection results. F03 remains gated until
-F02's replacement interface is integrated.
+Let I36 consume the rebound P31-only item and let F02 publish only the corrected
+metadata checkpoint. Keep F01 paused until F03 produces the remaining exact
+auth-steward result. F03 itself remains gated until F02's corrected interface
+is integrated.
 
 ## Verification
 
@@ -158,9 +174,9 @@ F02's replacement interface is integrated.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
-- Current F02 resume payload: `b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11`.
+- Current F02 correction payload: `b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`.
 - Current I36 resume payload: `a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`.
-- Current F01 acknowledgment payload: `f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda`.
+- Current rebound P31 merge item: `7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`.
 - Verified integration head after F07 and steward results: `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
@@ -181,9 +197,9 @@ F02's replacement interface is integrated.
 - Rebound P31 ready payload: `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
 - Rebound F07 merge item payload: `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
 - P31 state/handoff digest: `f4b2e27b370c1589c4de2e841dbcd38b9b075a9ff5fe7d00b27eaf8c6e7b5fb2`.
-- Control parent for the three ready authorizations: `193df1fbd101ebb5dd7f0f66adf2c1a78283aab0`.
+- Control parent for F02 correction and P31 rebind: `3eb407ef050175d7c21f55f67cf99626f1dd5afd`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
-- I36 branch/head: `codex/v21-integration` / `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
+- I36 branch/head: `codex/v21-integration` / `cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

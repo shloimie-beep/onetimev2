@@ -5,12 +5,12 @@ status: operational
 ready:
 - task_id: F02
   status: resume_ready
-  phase: implementation
+  phase: verification
   branch: codex/v21-f02-schema-state-migrations
   claim_mode: resume_existing
-  state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+  state_based_on_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
   authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-  expected_existing_head: 191dac288ea1721bdc0252bd012060ca974d2242
+  expected_existing_head: 347f9461cee523341102101355c6f38dbc9418d4
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
   task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
@@ -19,8 +19,8 @@ ready:
     C00:
       required_state: operational
       observed_state: operational
-      observed_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-      control_state_digest: c03ecd9da24b04719462156987e800d080f2bc1fa40c7b5ada6e47179525d823
+      observed_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+      control_state_digest: 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215
       task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
       task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
     F01:
@@ -34,113 +34,29 @@ ready:
       task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
   writer_slot_leases:
   - slot: MIGRATION_AUTHORITY
-    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
+    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
     holder_task_id: F02
-    holder_claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
-    state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-    lease_issued_at: '2026-07-28T17:03:02Z'
-    lease_expires_at: '2026-07-28T18:03:02Z'
+    holder_claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+    state_based_on_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+    lease_issued_at: '2026-07-28T17:27:11Z'
+    lease_expires_at: '2026-07-28T18:27:11Z'
   - slot: SCHEMA_CONTRACT
-    lease_id: 1e14a6d2-eec5-4616-9e96-cb889428c944
+    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
     holder_task_id: F02
-    holder_claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
-    state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-    lease_issued_at: '2026-07-28T17:03:02Z'
-    lease_expires_at: '2026-07-28T18:03:02Z'
+    holder_claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+    state_based_on_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+    lease_issued_at: '2026-07-28T17:27:11Z'
+    lease_expires_at: '2026-07-28T18:27:11Z'
   effect_lock_leases: []
-  claim_id: 2608f241-6a2c-4d1d-a316-d2b1b704cfc0
-  lease_issued_at: '2026-07-28T17:03:02Z'
-  lease_expires_at: '2026-07-28T18:03:02Z'
+  claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
+  lease_issued_at: '2026-07-28T17:27:11Z'
+  lease_expires_at: '2026-07-28T18:27:11Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
-- task_id: I36
-  status: resume_ready
-  phase: integration
-  branch: codex/v21-integration
-  claim_mode: resume_existing
-  state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-  authorized_start_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
-  expected_existing_head: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
-  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
-  task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
-  dependency_heads_and_digests:
-    C00:
-      required_state: operational
-      observed_state: operational
-      observed_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-      control_state_digest: 388fd210d8324496824666d88155207af84b6160e3c04e23077da346a94590b8
-      task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
-      task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
-    P31:
-      required_state: interface_ready
-      observed_state: ready_for_review
-      observed_task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
-      interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
-      interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-      state_handoff_digest: 6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581
-      task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
-      task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 7b68a523-6fe3-4fdc-a86f-55c8b176aae4
-    holder_task_id: I36
-    holder_claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
-    state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-    lease_issued_at: '2026-07-28T17:13:44Z'
-    lease_expires_at: '2026-07-28T18:13:44Z'
-    phase_scope: P31_interface_merge_only
-  effect_lock_leases: []
-  claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
-  lease_issued_at: '2026-07-28T17:13:44Z'
-  lease_expires_at: '2026-07-28T18:13:44Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: XHIGH
-- task_id: F01
-  status: resume_ready
-  phase: verification
-  branch: codex/v21-f01-foundation-seams
-  claim_mode: resume_existing
-  state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-  authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-  expected_existing_head: e8b172c6a7da5003a82cfc8663df6d4159fa4092
-  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
-  task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
-  dependency_heads_and_digests:
-    C00:
-      required_state: operational
-      observed_state: operational
-      observed_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-      control_state_digest: 388fd210d8324496824666d88155207af84b6160e3c04e23077da346a94590b8
-      task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
-      task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
-    I36_STEWARD_RESULTS:
-      required_state: rejected
-      observed_integration_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
-      evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
-      client_result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
-      config_result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
-      state_handoff_digest: ccc2777c2b873cd7f67bf86cd3349a28d6630bf2a896cf4acb229158f08de7aa
-  writer_slot_leases: []
-  effect_lock_leases: []
-  claim_id: 683f3581-a6ca-472d-80a6-51fabb9208f5
-  lease_issued_at: '2026-07-28T17:13:44Z'
-  lease_expires_at: '2026-07-28T18:13:44Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/F01-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: XHIGH
 entry_payload_digests:
-  F02: b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11
-  I36: a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46
-  F01: f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda
+  F02: b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
