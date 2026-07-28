@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-next_action: Dispatch F01 from its exact ready entry; use I36 on demand for bootstrap adoption and integration.
+controller_authorization_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+next_action: Autonomous native-subagent orchestration dispatches F01 now and holds I36 until integration work is queued.
 authority_note: Only C00 updates this global control state.

@@ -8,7 +8,7 @@ ready:
   phase: contract
   branch: codex/v21-f01-foundation-seams
   claim_mode: create_new_branch
-  state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
+  state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
   authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
   expected_existing_head: null
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
@@ -18,58 +18,58 @@ ready:
   dependency_heads_and_digests:
     C00:
       required_state: operational
-      observed_state: control_initialized
-      observed_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-      control_state_digest: c21ced83a484f067de257a573638779da2052b10e6299b1082cb215fc562bc34
+      observed_state: operational
+      observed_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+      control_state_digest: 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
       task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
       task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
   writer_slot_leases:
   - slot: SERVER_COMPOSER
-    lease_id: 40addf44-c3c7-4cc7-bf56-c6a1c0b17ef0
+    lease_id: 6a39d127-9a96-42d9-b616-169570e21416
     holder_task_id: F01
     holder_claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-    state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-    lease_issued_at: '2026-07-28T14:56:04Z'
-    lease_expires_at: '2026-07-28T15:56:04Z'
+    state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    lease_issued_at: '2026-07-28T15:09:35Z'
+    lease_expires_at: '2026-07-28T16:09:35Z'
   - slot: CLIENT_COMPOSER
-    lease_id: 40addf44-c3c7-4cc7-bf56-c6a1c0b17ef0
+    lease_id: 6a39d127-9a96-42d9-b616-169570e21416
     holder_task_id: F01
     holder_claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-    state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-    lease_issued_at: '2026-07-28T14:56:04Z'
-    lease_expires_at: '2026-07-28T15:56:04Z'
+    state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    lease_issued_at: '2026-07-28T15:09:35Z'
+    lease_expires_at: '2026-07-28T16:09:35Z'
   - slot: WORKER_COMPOSER
-    lease_id: 40addf44-c3c7-4cc7-bf56-c6a1c0b17ef0
+    lease_id: 6a39d127-9a96-42d9-b616-169570e21416
     holder_task_id: F01
     holder_claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-    state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-    lease_issued_at: '2026-07-28T14:56:04Z'
-    lease_expires_at: '2026-07-28T15:56:04Z'
+    state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    lease_issued_at: '2026-07-28T15:09:35Z'
+    lease_expires_at: '2026-07-28T16:09:35Z'
   - slot: CONFIG_DEPS
-    lease_id: 40addf44-c3c7-4cc7-bf56-c6a1c0b17ef0
+    lease_id: 6a39d127-9a96-42d9-b616-169570e21416
     holder_task_id: F01
     holder_claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-    state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-    lease_issued_at: '2026-07-28T14:56:04Z'
-    lease_expires_at: '2026-07-28T15:56:04Z'
+    state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    lease_issued_at: '2026-07-28T15:09:35Z'
+    lease_expires_at: '2026-07-28T16:09:35Z'
   - slot: BARREL_REGISTRAR
-    lease_id: 40addf44-c3c7-4cc7-bf56-c6a1c0b17ef0
+    lease_id: 6a39d127-9a96-42d9-b616-169570e21416
     holder_task_id: F01
     holder_claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-    state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-    lease_issued_at: '2026-07-28T14:56:04Z'
-    lease_expires_at: '2026-07-28T15:56:04Z'
+    state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    lease_issued_at: '2026-07-28T15:09:35Z'
+    lease_expires_at: '2026-07-28T16:09:35Z'
   - slot: RETIRED_SURFACES
-    lease_id: 40addf44-c3c7-4cc7-bf56-c6a1c0b17ef0
+    lease_id: 6a39d127-9a96-42d9-b616-169570e21416
     holder_task_id: F01
     holder_claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-    state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-    lease_issued_at: '2026-07-28T14:56:04Z'
-    lease_expires_at: '2026-07-28T15:56:04Z'
+    state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    lease_issued_at: '2026-07-28T15:09:35Z'
+    lease_expires_at: '2026-07-28T16:09:35Z'
   effect_lock_leases: []
   claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-  lease_issued_at: '2026-07-28T14:56:04Z'
-  lease_expires_at: '2026-07-28T15:56:04Z'
+  lease_issued_at: '2026-07-28T15:09:35Z'
+  lease_expires_at: '2026-07-28T16:09:35Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/F01-START-OR-RESUME.md
   model: GPT-5.6-SOL
@@ -79,7 +79,7 @@ ready:
   phase: integration
   branch: codex/v21-integration
   claim_mode: adopt_bootstrap_integration
-  state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
+  state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
   authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
   expected_existing_head: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
@@ -89,31 +89,31 @@ ready:
   dependency_heads_and_digests:
     C00:
       required_state: operational
-      observed_state: control_initialized
-      observed_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-      control_state_digest: c21ced83a484f067de257a573638779da2052b10e6299b1082cb215fc562bc34
+      observed_state: operational
+      observed_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+      control_state_digest: 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
       task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
       task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 8b68862e-2474-4145-951d-5f40a308e5e8
+    lease_id: fe21a5fb-fe6d-404f-bf56-283a71ec0808
     holder_task_id: I36
     holder_claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
-    state_based_on_control_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
-    lease_issued_at: '2026-07-28T14:56:04Z'
-    lease_expires_at: '2026-07-28T15:56:04Z'
+    state_based_on_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    lease_issued_at: '2026-07-28T15:09:35Z'
+    lease_expires_at: '2026-07-28T16:09:35Z'
     phase_scope: bootstrap_adoption_only
   effect_lock_leases: []
   claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
-  lease_issued_at: '2026-07-28T14:56:04Z'
-  lease_expires_at: '2026-07-28T15:56:04Z'
+  lease_issued_at: '2026-07-28T15:09:35Z'
+  lease_expires_at: '2026-07-28T16:09:35Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
 entry_payload_digests:
-  F01: f881a8419d7595828cf4dc5294c67e3e130453be2ff17a402ee98f7e5a8e61e5
-  I36: c9ac0530657e7cc1e95b4afc309dc13308b3f0a1b2db8bef513de29502a57a03
+  F01: 02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2
+  I36: 2d08a12c76a7d6ccdf1c794ff670c75e7770d10fa0f72b5985ecbd31186aba01
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

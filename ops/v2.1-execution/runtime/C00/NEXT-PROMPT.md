@@ -18,12 +18,15 @@ Fetch remote refs and require the exact remote control head. Read
 `LOCKED-SHA256SUMS.txt`, the current control/runtime digests, and the active
 C00 lease. Reject any live foreign lease or non-fast-forward collision.
 
-Bootstrap is operational. On the next controller invocation, fetch and require
-the exact remote control head, acquire a fresh serialized C00 lease before any
-other mutation, verify locked and current control digests, read remote worker
-state/handoffs, and refresh the critical path and queues. The immediate worker
-action is F01 from its exact ready entry; I36 remains on demand for its
-bootstrap-adoption/integration role.
+Bootstrap is operational and autonomous native-subagent orchestration is
+enabled. The root C00 agent alone dispatches workers; child workers never spawn
+product writers or edit control state. The exact next scheduling action is to
+spawn one F01 worker from ready payload
+`02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`,
+verify its pushed branch evidence, and dispatch I36 only after admissible
+integration work is queued. Before every later control mutation, acquire a
+fresh serialized C00 lease against the exact fetched remote control head;
+release it before waiting for workers.
 Update C00 state, handoff, and this prompt at every phase; commit and normal-push
 each checkpoint. Never implement product code, grant provider authority, or
 force-push.

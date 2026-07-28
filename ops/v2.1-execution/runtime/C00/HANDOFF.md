@@ -26,6 +26,10 @@ ready leases for F01 plus I36 bootstrap adoption.
 The ready entries were rebound to the exact `control_initialized` parent,
 validated, and the controller was advanced to `operational` with its lease
 released.
+Autonomous native-subagent orchestration is enabled under addendum digest
+`6417cb5ee822c72048484b42aafda19ea636a2dd87a8eb472fd473797aacae33`.
+Remote reconciliation found no task-branch, claim, writer-slot, provider-lock,
+or native-agent collision.
 
 ## Remaining work
 
@@ -34,9 +38,9 @@ after worker branches advance.
 
 ## Exact next action
 
-Dispatch F01 from `ops/v2.1-execution/control/READY-QUEUE.yaml`. Keep I36
-on-demand and use its bootstrap-adoption claim only when opening the merge
-captain window.
+Spawn one exclusive F01 native subagent from its exact renewed ready entry.
+Verify every pushed checkpoint remotely. Keep I36 unspawned until an admissible
+interface, implementation, or evidence item is queued.
 
 ## Verification
 
@@ -45,11 +49,11 @@ captain window.
 - Baseline failure fingerprint: `049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b`.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
-- F01 ready payload: `f881a8419d7595828cf4dc5294c67e3e130453be2ff17a402ee98f7e5a8e61e5`.
-- I36 ready payload: `c9ac0530657e7cc1e95b4afc309dc13308b3f0a1b2db8bef513de29502a57a03`.
-- Control state digest: `70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88`.
-- Task registry digest: `2c839861d6b097189374d523620fc2600d095b541a3aca3298b6f5e3efaca133`.
-- Ready queue digest: `8cb2774770421a0ab906c16479906bdeb54ab507ad444059476d72a309a1a9f6`.
+- F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
+- I36 ready payload: `2d08a12c76a7d6ccdf1c794ff670c75e7770d10fa0f72b5985ecbd31186aba01`.
+- Control parent for renewed ready entries: `0343ae1bf5ee754d28f165f5e522f131ce6d421c`.
+- F01 branch/head: `codex/v21-f01-foundation-seams` / absent before dispatch.
+- I36 branch/head: `codex/v21-integration` / `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

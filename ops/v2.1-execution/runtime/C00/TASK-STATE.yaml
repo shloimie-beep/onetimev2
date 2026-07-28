@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-a916ec3f7e8b
-claim_time: '2026-07-28T14:44:41Z'
-claim_id: 73f19375-44c3-4c37-86e6-fcf30d77e244
-lease_expires_at: '2026-07-28T14:59:24Z'
-last_heartbeat_at: '2026-07-28T14:59:24Z'
-controller_authorization_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
+claimed_by: codex-c00-orchestrator-8595a5562a8e
+claim_time: '2026-07-28T15:08:35Z'
+claim_id: fa7669a7-b2f1-4a43-bdad-be73dc1a8c57
+lease_expires_at: '2026-07-28T15:09:35Z'
+last_heartbeat_at: '2026-07-28T15:09:35Z'
+controller_authorization_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
 ready_entry_payload_digest: null
-state_based_on_head_sha: 40d5b2e2c32c04500c75c5314acc91266303dc29
+state_based_on_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -32,8 +32,40 @@ completed_steps:
 - published collision-free initial F01 and bootstrap-adoption I36 ready entries
 - rebound initial ready payloads to the exact control-initialized parent
 - marked the bootstrap operational and released the serialized C00 lease
+- enabled autonomous native-subagent orchestration from the checksum-bound addendum
+- reconciled remote branches, claims, leases, writer slots, provider locks, and the native-agent tree
 remaining_steps: []
-next_action: Dispatch F01 from its exact ready entry; use I36 on demand for bootstrap adoption and integration.
+next_action: Spawn exactly one F01 native subagent, verify its pushed checkpoints remotely, and queue I36 only when admissible integration work exists.
+orchestration:
+  enabled: true
+  mechanism: native_subagents
+  addendum_sha256: 6417cb5ee822c72048484b42aafda19ea636a2dd87a8eb472fd473797aacae33
+  enabled_at: '2026-07-28T15:09:35Z'
+  controlling_agent: /root
+  child_spawn_policy: root_C00_only
+  current_control_parent_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+  current_task_branch_claim_head_map:
+    C00:
+      branch: codex/v21-control
+      claim_id: fa7669a7-b2f1-4a43-bdad-be73dc1a8c57
+      observed_head: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+      lease_state: releasing_in_containing_checkpoint
+    F01:
+      branch: codex/v21-f01-foundation-seams
+      claim_id: c18310c8-3975-4816-badd-1fa9079edc33
+      observed_head: null
+      authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+      lease_expires_at: '2026-07-28T16:09:35Z'
+      scheduling_state: dispatch_now
+    I36:
+      branch: codex/v21-integration
+      claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
+      observed_head: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+      authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+      lease_expires_at: '2026-07-28T16:09:35Z'
+      scheduling_state: hold_until_merge_work
+  active_native_subagents: []
+  unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -43,10 +75,10 @@ migrations: []
 steward_requests: []
 verification:
   control_digests:
-    control_state: 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
-    control_lease: 1361f79944d5b7c32b1dc29e66b20bc10c26714b2dafb8f8f8970f1d037c916d
-    task_registry: 2c839861d6b097189374d523620fc2600d095b541a3aca3298b6f5e3efaca133
-    ready_queue: 8cb2774770421a0ab906c16479906bdeb54ab507ad444059476d72a309a1a9f6
+    control_state: af7a45c0a7b6d88c7359d4177d974213f4c8718b8ff0dc36c759bfe5842a7f33
+    control_lease: 719bd204f410e48fc5d09ebc331310c093cae5ed1f3e7fb0ee7402e15d6648b3
+    task_registry: 98b753b6355276c12035fba7158f9eb03767fcd5fd88d3a752f087c4f6635563
+    ready_queue: bb98084b11431622b4dc96e0343774a0ff8d5085b1cef6bc7ad3855ce382ed4b
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: b9e2846bf80abd21c6a709137e49124be16a444a9344e0b2ba80df02d58150f3
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -60,6 +92,7 @@ verification:
   - 'npm run verify at reviewed head: secret scan passed; Prettier failed on 1736 files; later stages did not run'
   - independent v2.1 package topology validation: passed
   - control registry, ready payload digests, leases, locks, and queue invariants: passed
+  - autonomous addendum package binding and remote/native-agent reconciliation: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
