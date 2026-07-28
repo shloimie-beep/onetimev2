@@ -21,43 +21,101 @@ dependency_heads:
     interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
     interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
     interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-status: claimed
-phase: contract
+status: ready_for_review
+phase: complete
 claimed_by: codex-p29-worker-6b96052a
 claim_time: '2026-07-28T23:13:40Z'
 claim_id: 6b96052a-b3f4-429f-9aab-3cbc8ec78e7e
 writer_slot_lease_id: 76d9c9a9-554e-4c3a-83f8-52d30002ca36
 lease_issued_at: '2026-07-28T23:09:14Z'
 lease_expires_at: '2026-07-29T00:09:14Z'
-last_heartbeat_at: '2026-07-28T23:13:40Z'
-controller_authorization_sha: 62db0bf0de280932b07cf86dd8e03501ca708229
-state_based_on_control_head_sha: f0f7ea05f7c50f3ea64782ff107fbfd1c4486c24
+last_heartbeat_at: '2026-07-28T23:36:30Z'
+lease_released_at: '2026-07-28T23:36:30Z'
+controller_authorization_sha: 9a3b4856edb82556eca38416b853d6bdff5ef8bf
+ready_entry_state_based_on_control_head_sha: f0f7ea05f7c50f3ea64782ff107fbfd1c4486c24
 ready_entry_payload_digest: 193b50e837b10a2e9890d909c6295e5801aab9757102425bdb5175d7d92f3efc
-state_based_on_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-last_implementation_commit_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+claim_checkpoint_sha: 704435bdd00c175e36d2946872784ded7ab09cf4
+state_based_on_head_sha: 0a42c8701d75d2a15e59c5e7a2f4a3e5d7fb0d18
+last_implementation_commit_sha: 0a42c8701d75d2a15e59c5e7a2f4a3e5d7fb0d18
+workflow_fragment_sha256: 182e5da30fa41db34b8609d019c21a7f04a34c88752678869fb2bf43f43e4434
 completed_steps:
-  - verified exact remote identity, containing control authorization, ready entry, remote branch absence, claim, GHL_CORE_WORKFLOWS lease, and authorized start
-  - recomputed the canonical P29 ready-entry digest and verified package, source-package, task, and context Git-blob digests
-  - verified exact P28 and P31 interface-ready integration bindings and source ancestry at the authorized start
+  - Verified exact remote identity, consumed controller authorization, ready entry, atomic claim checkpoint, GHL_CORE_WORKFLOWS lease, and authorized start.
+  - Recomputed the canonical P29 ready-entry digest and verified package, source-package, task, context, P28, and P31 dependency digests.
+  - Implemented all 12 assigned OT-01 through OT-10 and OT-13 core lifecycle definitions with exact canonical registry identity, sender, message class, trigger, and desired state.
+  - Implemented exact ordered steps, waits, exits, signup cutover, dated migration audience, billing projection gates, Parent-only class reminder, secure-token boundary, and P31 copy references.
+  - Implemented adult-only household-scoped planning, deterministic idempotency, local-readback and approval evidence, suppression decisions, zero Student/WhatsApp calls, and no direct billing/access mutation.
+  - Implemented exact save/reopen workflow readback comparison and drift reporting with zero provider effects.
+  - Implemented a worker runner that denies Student/evidence failures before effects, reserves delivery durably, rechecks suppression immediately before send, fences duplicates, and records safe retry state.
+  - Published central registration, registry projection/composer, and runtime configuration steward requests without editing shared hotspots or requiring a new P29 migration.
+  - Passed 29 focused assertions, full TypeScript typecheck, focused ESLint/Prettier, secret scan, canonical registry parity, and diff checks.
+  - Released the GHL_CORE_WORKFLOWS lease in task-local metadata with zero external effects.
 remaining_steps:
-  - push and report this exact P29 atomic claim checkpoint
-  - await explicit continuation before reading the locked P29 workflow context or implementing task scope
-next_action: Report the exact pushed P29 atomic claim checkpoint, then pause without implementing until explicit continuation under the same exact claim, lease, control binding, and branch head.
-requirements: {}
-acceptance_cases: {}
+  - C00 and I36 must validate and integrate the exact P29 ready-for-review head.
+  - I36 must adjudicate P29-registration-001, P29-registry-projection-001, and P29-config-001.
+  - Later separately authorized provider work must configure/save/reopen workflows and supply candidate-bound sandbox/canary evidence.
+next_action: C00 and I36 validate the pushed P29 ready_for_review head, integrate it, and adjudicate the three structured steward requests without authorizing provider effects.
+requirements:
+  OTV2-GHL-123: implementation_verified
+  OTV2-GHL-124: implementation_verified
+  OTV2-GHL-125: implementation_verified
+  OTV2-GHL-126: implementation_verified
+  OTV2-GHL-127: implementation_verified
+  OTV2-GHL-128: implementation_verified
+  OTV2-GHL-129: implementation_verified
+  OTV2-GHL-130: implementation_verified
+  OTV2-GHL-131: implementation_verified
+  OTV2-GHL-132: implementation_verified
+  OTV2-GHL-133: implementation_verified
+  OTV2-GHL-136: implementation_verified
+acceptance_cases:
+  OTV2-GHL-123-AC01: task_owned_assertions_passed
+  OTV2-GHL-124-AC01: task_owned_assertions_passed
+  OTV2-GHL-125-AC01: task_owned_assertions_passed
+  OTV2-GHL-126-AC01: task_owned_assertions_passed
+  OTV2-GHL-127-AC01: task_owned_assertions_passed
+  OTV2-GHL-128-AC01: task_owned_assertions_passed
+  OTV2-GHL-129-AC01: task_owned_assertions_passed
+  OTV2-GHL-130-AC01: task_owned_assertions_passed
+  OTV2-GHL-131-AC01: task_owned_assertions_passed
+  OTV2-GHL-132-AC01: task_owned_assertions_passed
+  OTV2-GHL-133-AC01: task_owned_assertions_passed
+  OTV2-GHL-136-AC01: task_owned_assertions_passed
 changed_paths:
+  - apps/worker/src/runners/ghl-workflows/core/**
+  - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
+  - packages/domain/src/communications/workflows/core/**
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-config-001.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registration-001.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registry-projection-001.yaml
+  - ops/v2.1-execution/runtime/P29/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P29/HANDOFF.md
   - ops/v2.1-execution/runtime/P29/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P29/TASK-STATE.yaml
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: P29-config-001
+    sha256: 523a5bd10c2ecc4b0d8668b287eda58071ccd202ecf2a5567c2aa604d38932b7
+  - request_id: P29-registration-001
+    sha256: baf20e3d4376980393411d3d85282ece8591070e63a9c5f53cacfe7b7a09d10d
+  - request_id: P29-registry-projection-001
+    sha256: a7bfb4bb94d0bbf0271c956d86a4052eb399a3c9b5ec7594a044268b54890004
 verification:
   commands_run:
-    - exact repository, containing control, ready parent, authorized/expected start, and remote branch-absence verification (passed)
-    - canonical P29 ready-entry payload digest recomputation (passed)
-    - package, source-package, P29 task, and P29 context Git-blob SHA-256 verification (passed)
-    - P28/P31 dependency binding and authorized-start ancestry verification (passed)
-    - P29 claim, sole GHL_CORE_WORKFLOWS lease, lease expiry, and zero effect-lock verification (passed)
+    - command: canonical authorization, claim, dependency, digest, and lease verification
+      result: passed
+    - command: npx vitest run --environment node packages/domain/src/communications/workflows/core/core-workflows.test.ts apps/worker/src/runners/ghl-workflows/core/runner.test.ts
+      result: passed; 2 files and 29 assertions
+    - command: npm run typecheck
+      result: passed
+    - command: npx eslint packages/domain/src/communications/workflows/core apps/worker/src/runners/ghl-workflows/core
+      result: passed
+    - command: focused Prettier write/check for P29 implementation, fragment, and steward requests
+      result: passed
+    - command: npm run secret:scan
+      result: passed
+    - command: canonical P28 workflow-registry parity assertions
+      result: passed for all 12 P29 identities, states, senders, classes, and triggers
+    - command: git diff --check
+      result: passed
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -65,4 +123,6 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Central barrels, worker composition, durable persistence adapter, generated registry projections, shared fragment-validator semantics, and runtime configuration require the three P29 steward requests.
+  - Provider workflow configuration, save/reopen evidence, publication, enrollment, delivery, and candidate-bound canaries require later separate authorization.
