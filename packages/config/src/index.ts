@@ -175,7 +175,7 @@ const envSchema = z.object({
   LOGIN_GLOBAL_RATE_LIMIT_MAX: numberFromString.default(600),
   SESSION_LAST_SEEN_WRITE_INTERVAL_MS: numberFromString.default(5 * 60_000),
   AUTH_CSRF_SECRET: z.string().min(32).optional(),
-  MFA_SECRET_ENCRYPTION_KEY: z.string().optional(),
+  PROTECTED_PAYLOAD_ENCRYPTION_KEY: z.string().optional(),
   ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID: z.string().min(1).max(120).default('local-lifecycle-v1'),
   ONE_TIME_LIFECYCLE_DELIVERY_KEY: z.string().min(32).optional(),
   OUTBOX_TRANSPORT_MODE: z.enum(['sink', 'mock', 'provider']).default('sink'),
@@ -212,17 +212,10 @@ const envSchema = z.object({
   ONETIME_WHATSAPP_CANARY_AUTHORIZED: booleanFromString,
   ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK: z.url().optional(),
   ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT: z.string().trim().max(240).optional(),
-  ONE_TIME_WHATSAPP_ASSISTANT_COPY_VERSION: z.string().min(1).default('w12-06-public-assistant-v1'),
-  WHATSAPP_ASSISTANT_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
-  WHATSAPP_ASSISTANT_SENDER_RATE_LIMIT_MAX: numberFromString.default(8),
-  WHATSAPP_ASSISTANT_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(300),
   OT86_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
   OT86_PUBLISH_SIGNING_SECRET: z.string().optional(),
   OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
   OT86_PREVIOUS_PUBLISH_SIGNING_SECRET: z.string().optional(),
-  BUFFER_ACCESS_TOKEN: z.string().optional(),
-  BUFFER_ORGANIZATION_ID: z.string().optional(),
-  BUFFER_DESTINATION_IDS: z.string().optional(),
   ENABLE_REAL_EMAIL_TRANSPORT: booleanFromString,
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
@@ -314,9 +307,6 @@ const envSchema = z.object({
   OT89_MOCK_BNA_OUTAGE: booleanFromString,
   OT89_SUPPORT_DEPLOYMENT_ID: z.string().min(1).max(64).default('local-ot89a'),
   LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
-  PORTAL_TEST_LAB_ENABLED: booleanFromString,
-  LEARNING_DELIVERY_DEMO_ENABLED: booleanFromString,
-  ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: booleanFromString,
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -345,10 +335,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
 
   const oneTimeRuntimeEnvironment = runtime.environment;
-  const portalTestLabRuntimeAllowed =
-    ['isolated_staging', 'test'].includes(deliveryEnvironment) &&
-    ['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment);
-
   if (
     parsed.ONE_TIME_RABBI_GHL_REPLY_MODE === 'synthetic' &&
     !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
@@ -480,26 +466,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('OT89 mock BNA endpoint is forbidden in production.');
   }
 
-  if (parsed.PORTAL_TEST_LAB_ENABLED && !portalTestLabRuntimeAllowed) {
-    throw new Error(
-      'Portal Test Lab requires explicit test or isolated_staging runtime classification.',
-    );
-  }
-
-  if (parsed.LEARNING_DELIVERY_DEMO_ENABLED && !runtime.allowsMockOrDemo) {
-    throw new Error('Learning Delivery demo is forbidden in production.');
-  }
-
-  if (
-    parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED &&
-    (deliveryEnvironment === 'production' ||
-      !['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment))
-  ) {
-    throw new Error(
-      'Experience Preview requires explicit test or isolated_staging runtime classification.',
-    );
-  }
-
   if (parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED && !runtime.allowsMockOrDemo) {
     throw new Error('Live class fake adapter is forbidden in production.');
   }
@@ -567,8 +533,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     );
   }
 
-  if (runtime.isProductionRuntime && !parsed.MFA_SECRET_ENCRYPTION_KEY) {
-    throw new Error('MFA_SECRET_ENCRYPTION_KEY is required in production.');
+  if (runtime.isProductionRuntime && !parsed.PROTECTED_PAYLOAD_ENCRYPTION_KEY) {
+    throw new Error('PROTECTED_PAYLOAD_ENCRYPTION_KEY is required in production.');
   }
 
   return {
@@ -613,8 +579,12 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     sessionLastSeenWriteIntervalMs: parsed.SESSION_LAST_SEEN_WRITE_INTERVAL_MS,
     authCsrfSecret:
       parsed.AUTH_CSRF_SECRET ?? 'local-only-auth-csrf-secret-for-tests-and-development',
+    protectedPayloadEncryptionKey:
+      parsed.PROTECTED_PAYLOAD_ENCRYPTION_KEY ??
+      'test-only-32-byte-protected-payload-key-do-not-use',
     mfaSecretEncryptionKey:
-      parsed.MFA_SECRET_ENCRYPTION_KEY ?? 'test-only-32-byte-mfa-key-do-not-use',
+      parsed.PROTECTED_PAYLOAD_ENCRYPTION_KEY ??
+      'test-only-32-byte-protected-payload-key-do-not-use',
     lifecycleDeliveryKeyId: parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID,
     lifecycleDeliveryKey:
       parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY ??
@@ -651,10 +621,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     whatsappCanaryAuthorized: parsed.ONETIME_WHATSAPP_CANARY_AUTHORIZED,
     whatsappPublicDeepLink: parsed.ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK,
     whatsappPublicPrefillText: parsed.ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT,
-    whatsappAssistantCopyVersion: parsed.ONE_TIME_WHATSAPP_ASSISTANT_COPY_VERSION,
-    whatsappAssistantRateLimitWindowMs: parsed.WHATSAPP_ASSISTANT_RATE_LIMIT_WINDOW_MS,
-    whatsappAssistantSenderRateLimitMax: parsed.WHATSAPP_ASSISTANT_SENDER_RATE_LIMIT_MAX,
-    whatsappAssistantAccountRateLimitMax: parsed.WHATSAPP_ASSISTANT_ACCOUNT_RATE_LIMIT_MAX,
+    whatsappAssistantCopyVersion: 'retired',
+    whatsappAssistantRateLimitWindowMs: 0,
+    whatsappAssistantSenderRateLimitMax: 0,
+    whatsappAssistantAccountRateLimitMax: 0,
     oneTimeTelegramWebhookEnabled: parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED,
     oneTimeTelegramWebhookSecret: parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET,
     oneTimeTelegramWebhookSecretConfigured:
@@ -778,14 +748,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ot86PublishSigningSecret: parsed.OT86_PUBLISH_SIGNING_SECRET,
     ot86PreviousPublishSigningKeyId: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID,
     ot86PreviousPublishSigningSecret: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_SECRET,
-    bufferAccessToken: parsed.BUFFER_ACCESS_TOKEN,
-    bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
-    bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
-    portalTestLabEnabled:
-      (runtime.environment === 'test' || parsed.PORTAL_TEST_LAB_ENABLED) &&
-      portalTestLabRuntimeAllowed,
-    learningDeliveryDemoEnabled:
-      runtime.environment === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
-    experiencePreviewEnabled: parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED,
+    bufferAccessToken: undefined,
+    bufferOrganizationId: undefined,
+    bufferDestinationIds: undefined,
+    portalTestLabEnabled: false,
+    learningDeliveryDemoEnabled: false,
+    experiencePreviewEnabled: false,
   };
 }

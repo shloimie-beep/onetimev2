@@ -355,13 +355,20 @@ async function runDurableContentFactoryWorkerOnce(input: {
   if (input.source.CONTENT_FACTORY_WORKER_ENABLED !== 'true') {
     return { enabled: false as const, provider_calls_performed: false as const };
   }
+  if (input.source.CONTENT_FACTORY_PROCESSING_MODE !== 'vimeo') {
+    return {
+      enabled: false as const,
+      provider_calls_performed: false as const,
+      safe_error_code: 'retired_processing_mode',
+    };
+  }
   try {
     const result = await runContentFactoryWorkerOnce({
       pool: input.pool,
       config: input.config,
       storage: contentFactoryStorageFromEnv(input.source),
       workerIdentity: input.workerInstanceKey,
-      mode: input.source.CONTENT_FACTORY_PROCESSING_MODE === 'vimeo' ? 'vimeo' : 'synthetic',
+      mode: 'vimeo',
     });
     return { enabled: true as const, provider_calls_performed: false as const, result };
   } catch (error) {

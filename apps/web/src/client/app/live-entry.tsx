@@ -12,7 +12,6 @@ import {
   adminPrimaryNav,
   liveConsoleHref,
   liveConsoleSectionFromSearch,
-  rabbiPrimaryNav,
 } from './admin-ia.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import { WorkspaceTabs } from './shell/WorkspaceTabs.js';
@@ -27,7 +26,6 @@ type ApiSession = {
   expires_at: string;
   capabilities?: {
     operator_experience?: {
-      experience_preview?: boolean;
       live_console?: boolean;
     };
   };
@@ -97,17 +95,11 @@ function LiveConsole() {
   }
 
   const liveConsoleReady = session?.capabilities?.operator_experience?.live_console === true;
-  const navItems: ShellNavItem[] =
-    session?.user.role === 'rabbi'
-      ? rabbiPrimaryNav('live-console', liveConsoleReady)
-      : adminPrimaryNav('live-console', liveConsoleReady);
-  const utilityItems: ShellNavItem[] =
-    session?.user.role === 'rabbi'
-      ? []
-      : [
-          { id: 'operations', label: 'Operations', href: '/app/operations', current: false },
-          { id: 'support', label: 'Support', href: '/app/support', current: false },
-        ];
+  const navItems: ShellNavItem[] = adminPrimaryNav('live-console', liveConsoleReady);
+  const utilityItems: ShellNavItem[] = [
+    { id: 'operations', label: 'Operations', href: '/app/operations', current: false },
+    { id: 'support', label: 'Support', href: '/app/support', current: false },
+  ];
   const selected = data?.selected_question ?? null;
 
   return (
@@ -135,7 +127,7 @@ function LiveConsole() {
         />
         <header className="live-console__header">
           <div>
-            <p className="ot-kicker">Rabbi Console</p>
+            <p className="ot-kicker">Admin Console</p>
             <h2>{data?.stage.class_label ?? 'One Time live class'}</h2>
           </div>
           <div className="live-console__status">
@@ -534,8 +526,8 @@ function ZoomHealth({
       </div>
       {data?.zoom.host_control_configured ? (
         <p>
-          Enrolled Students join from their own protected Student portal. The Admin or Rabbi session
-          never mints or impersonates a learner session.
+          Enrolled Students join from their own protected Student portal. The Admin session never
+          mints or impersonates a learner session.
         </p>
       ) : (
         <p>
@@ -634,7 +626,7 @@ function shellUserFromSession(user: SessionUser): ShellUser {
   return {
     displayName: user.display_name,
     email: user.email,
-    roleLabel: user.role_label,
+    roleLabel: user.role === 'admin' ? 'Admin' : user.role_label,
   };
 }
 

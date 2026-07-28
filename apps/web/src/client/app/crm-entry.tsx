@@ -21,7 +21,6 @@ import {
   classroomSectionFromPath,
   contactsSectionFromPath,
   dashboardSectionFromPath,
-  rabbiPrimaryNav,
   type DashboardSectionId,
   type ClassroomSectionId,
 } from './admin-ia.js';
@@ -205,14 +204,10 @@ function CrmApp() {
   const canCreate = capabilities.contacts.create;
   const canEdit = capabilities.contacts.update;
   const canAssign = capabilities.contacts.assign;
-  const canReadCommunications = session?.user.role === 'owner' || session?.user.role === 'admin';
+  const canReadCommunications = session?.user.role === 'admin';
   const canReadOwnerShell = canReadCommunications;
-  const isRabbi = session?.user.role === 'rabbi';
-  const canReadCrm =
-    session?.user.role === 'owner' ||
-    session?.user.role === 'admin' ||
-    session?.user.role === 'crm_agent' ||
-    session?.user.role === 'viewer';
+  const isRabbi = false;
+  const canReadCrm = session?.user.role === 'admin';
 
   useEffect(() => {
     void loadSession();
@@ -249,7 +244,7 @@ function CrmApp() {
     try {
       const json = await getSession();
       setSession(json);
-      if (['owner', 'admin'].includes(json.user.role)) {
+      if (json.user.role === 'admin') {
         const assigneeJson = await getAssignees();
         setAssignees(assigneeJson.assignees);
       }
@@ -806,11 +801,9 @@ function CrmApp() {
     isRabbi || session?.capabilities?.operator_experience?.live_console === true;
   const navItems: ShellNavItem[] = canReadOwnerShell
     ? adminPrimaryNav(adminCurrentArea, liveConsoleReady)
-    : isRabbi
-      ? rabbiPrimaryNav(adminCurrentArea, liveConsoleReady)
-      : canReadCrm
-        ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
-        : [];
+    : canReadCrm
+      ? [{ id: 'contacts', label: 'Contacts', href: '/app/crm', current: true }]
+      : [];
   const utilityItems: ShellNavItem[] = [
     ...(canReadOwnerShell
       ? [
@@ -2945,8 +2938,7 @@ function shellUserFromSession(user: SessionUser): ShellUser {
 }
 
 function roleLabel(user: SessionUser) {
-  if (user.role === 'owner') return 'Owner';
-  if (user.role === 'admin') return 'Administrator';
+  if (user.role === 'admin') return 'Admin';
   return user.role_label;
 }
 
