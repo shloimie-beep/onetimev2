@@ -10,14 +10,14 @@
 - Task packet digest: `55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7`
 - Context digest: `7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim ID: `353f2868-2978-4cac-ac73-c56fa184f841`
-- Writer: `codex-i36-worker2-353f2868`
-- RELEASE_INTEGRATOR lease: `80afc839-dc09-4363-b440-d22757451415`
-- Containing control head: `5217c299c2721a58bdb9ad1c1c0f68525008661a`
-- Controller authorization: `5217c299c2721a58bdb9ad1c1c0f68525008661a`
-- Ready-entry state-based-on control head: `4d6bc306e542774b68179d9b440ceccd2d5b9967`
-- Ready-entry payload digest: `02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`
-- Lease expiry: `2026-07-28T19:50:38Z`
+- Claim ID: `15bcce0c-16b9-4c00-b422-ba5053554f14`
+- Writer: `codex-i36-worker2-15bcce0c`
+- RELEASE_INTEGRATOR lease: `c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51`
+- Containing control head: `0341f6303937bebc64e4d3cae6905168183dbb77`
+- Controller authorization: `0341f6303937bebc64e4d3cae6905168183dbb77`
+- Ready-entry state-based-on control head: `f2ace0993937a020a31c364f079bcf52b8c65350`
+- Ready-entry payload digest: `3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf`
+- Lease expiry: `2026-07-28T20:36:08Z`
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
   item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
 - Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
@@ -111,16 +111,24 @@ interface-only `4cc95c29`, and F05 `0656380b` were ancestry-merged in order at
 No migration or registration request was applied, and no later F04 head was
 merged.
 
+C00 authorized a P15-interface-only resume from exact integration head
+`9782a4164662b8059a557c0969de9c35f54d0cf7`. The containing authorization,
+ready-entry parent control state, exact branch head, package/task/context and
+dependency digests, 200 locked Git blobs, claim/lease, phase scope, zero effect
+locks, and canonical ready payload were verified. This atomic checkpoint
+consumes only that claim; P15 source and steward requests remain unread and
+unmerged.
+
 ## Remaining work
 
-Push and report this exact F03/F04/F05 integration metadata checkpoint to C00.
-Await a new exact queue/lease authorization before further integration.
+Push and report this exact P15-interface-only claim checkpoint to C00. Wait for
+C00 to rebind queued item `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` to the exact
+resulting claim head.
 
 ## Exact next action
 
-Report the exact pushed F03/F04/F05 integration checkpoint to C00, then pause.
-Do not integrate another source or apply any steward request without new exact
-authorization.
+Report the exact pushed P15-interface-only claim head to C00, then pause. Do
+not read or merge P15 source, or apply any steward request, before the rebound.
 
 ## Coverage
 
@@ -198,6 +206,15 @@ authorization.
   `e88121cb6ddd5023eb75496b25c3ee7281c07621`.
 - Repository typecheck and 49 focused F03/F04/F05 tests passed after the
   ordered micro-batch.
+- Remote containing control and integration heads matched
+  `0341f6303937bebc64e4d3cae6905168183dbb77` and
+  `9782a4164662b8059a557c0969de9c35f54d0cf7`.
+- Canonical ready-entry payload digest recomputed exactly as
+  `3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf`.
+- All 200 locked Git blobs and the entry-bound package, source-package, task,
+  and context digests matched.
+- Claim, sole RELEASE_INTEGRATOR lease, P15-interface-only scope, and zero
+  effect locks matched the C00-issued authorization.
 
 ## External effects
 

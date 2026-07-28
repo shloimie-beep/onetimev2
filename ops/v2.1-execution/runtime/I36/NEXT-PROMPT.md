@@ -20,16 +20,16 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current F03/F04/F05-interface-only authority is containing control head
-`5217c299c2721a58bdb9ad1c1c0f68525008661a`, controller authorization
-`5217c299c2721a58bdb9ad1c1c0f68525008661a`, ready-entry parent control head
-`4d6bc306e542774b68179d9b440ceccd2d5b9967`, claim
-`353f2868-2978-4cac-ac73-c56fa184f841`, RELEASE_INTEGRATOR lease
-`80afc839-dc09-4363-b440-d22757451415` through
-`2026-07-28T19:50:38Z`, and ready-entry digest
-`02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1`.
+Current P15-interface-only authority is containing control head
+`0341f6303937bebc64e4d3cae6905168183dbb77`, controller authorization
+`0341f6303937bebc64e4d3cae6905168183dbb77`, ready-entry parent control head
+`f2ace0993937a020a31c364f079bcf52b8c65350`, claim
+`15bcce0c-16b9-4c00-b422-ba5053554f14`, RELEASE_INTEGRATOR lease
+`c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51` through
+`2026-07-28T20:36:08Z`, and ready-entry digest
+`3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf`.
 The exact pre-claim integration head is
-`d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`.
+`9782a4164662b8059a557c0969de9c35f54d0cf7`.
 
 F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
 has been ancestry-merged and pushed at exact integration head
@@ -79,8 +79,15 @@ ancestry-merged in order. The pushed micro-batch head is
 `e88121cb6ddd5023eb75496b25c3ee7281c07621`; typecheck and 49 focused tests
 passed. No steward request was applied and no later F04 head was merged.
 
-Current exact next action: report the pushed F03/F04/F05 integration metadata
-checkpoint to C00, then stop and wait for a new exact control authorization.
+P15 item `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` is queued with its pre-claim
+target and must not be consumed until C00 rebound. For later P15 verification,
+contract digest `2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb`
+uses `semantic_contract_version=<version>` followed by lexicographically sorted
+plain `<artifact-path>=<sha256>` lines, LF separators, and no final newline;
+there is no literal `path=` prefix.
+
+Current exact next action: report the pushed P15-interface-only claim head to
+C00, then stop and wait for its exact rebound target binding.
 No unrelated merge, steward, evidence, control, or live-effect work is
 authorized.
 

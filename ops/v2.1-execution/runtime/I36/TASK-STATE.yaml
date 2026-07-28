@@ -7,23 +7,21 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 4d6bc306e542774b68179d9b440ceccd2d5b9967
-  F03: 7c638131a0cab757657e95c4d2229a1573e4cde1
-  F04: 4cc95c29c6012174595ba1821e0554aca8572e08
-  F05: 0656380bcfc50cc464dcea7588448dc724049599
+  C00: f2ace0993937a020a31c364f079bcf52b8c65350
+  P15: c96b8c55c07e5283e762537934a6bf948833700e
 status: claimed
 phase: integration
-claimed_by: codex-i36-worker2-353f2868
-claim_time: '2026-07-28T19:02:38Z'
-claim_id: 353f2868-2978-4cac-ac73-c56fa184f841
-lease_id: 80afc839-dc09-4363-b440-d22757451415
-lease_issued_at: '2026-07-28T18:50:38Z'
-lease_expires_at: '2026-07-28T19:50:38Z'
-last_heartbeat_at: '2026-07-28T19:23:45Z'
-controller_authorization_sha: 5217c299c2721a58bdb9ad1c1c0f68525008661a
-ready_entry_state_based_on_control_head_sha: 4d6bc306e542774b68179d9b440ceccd2d5b9967
-ready_entry_payload_digest: 02c03eb6b750186687cce74ea63c6546affd463973cf9dfbf7187914a9efe4e1
-state_based_on_head_sha: e88121cb6ddd5023eb75496b25c3ee7281c07621
+claimed_by: codex-i36-worker2-15bcce0c
+claim_time: '2026-07-28T19:46:48Z'
+claim_id: 15bcce0c-16b9-4c00-b422-ba5053554f14
+lease_id: c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51
+lease_issued_at: '2026-07-28T19:36:08Z'
+lease_expires_at: '2026-07-28T20:36:08Z'
+last_heartbeat_at: '2026-07-28T19:46:48Z'
+controller_authorization_sha: 0341f6303937bebc64e4d3cae6905168183dbb77
+ready_entry_state_based_on_control_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
+ready_entry_payload_digest: 3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf
+state_based_on_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
 last_implementation_commit_sha: e88121cb6ddd5023eb75496b25c3ee7281c07621
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
@@ -108,10 +106,19 @@ completed_steps:
   e88121cb6ddd5023eb75496b25c3ee7281c07621.
 - Passed repository typecheck and 49 focused F03/F04/F05 tests; no migration or registration steward request
   was applied.
+- Verified the exact P15-interface-only resume authorization at containing control head
+  0341f6303937bebc64e4d3cae6905168183dbb77, ready-entry parent control state
+  f2ace0993937a020a31c364f079bcf52b8c65350, and integration head
+  9782a4164662b8059a557c0969de9c35f54d0cf7.
+- Recomputed and matched I36 ready-entry payload digest
+  3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf.
+- Verified all 200 locked Git blobs plus the package, source-package, task, and context digests.
+- Claimed exact P15-interface-only authority under claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and
+  RELEASE_INTEGRATOR lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 without reading or merging P15 source.
 remaining_steps:
-- Push and report this exact F03/F04/F05 integration metadata checkpoint to C00.
-- Await a new exact C00 queue/lease authorization.
-next_action: Report the exact pushed F03/F04/F05 integration checkpoint to C00, then pause for a new exact control authorization.
+- Push and report this atomic P15-interface-only claim checkpoint to C00.
+- Wait for C00 to rebind merge item 22ea97a2-e2db-4a49-9e2b-7649d3a0e069 to the exact pushed claim head.
+next_action: Report the exact pushed P15-interface-only claim head to C00, then stop and wait for the rebound expected-target binding before reading or merging P15 source.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -346,6 +353,14 @@ verification:
     result: passed; 3 files and 14 tests
   - command: focused F05 Vitest foundation suite
     result: passed; 1 file and 8 tests
+  - command: git fetch and rev-parse exact control/integration refs for P15 resume
+    result: passed; containing control 0341f6303937bebc64e4d3cae6905168183dbb77 and integration 9782a4164662b8059a557c0969de9c35f54d0cf7 exact
+  - command: canonical I36 ready-entry payload digest recomputation
+    result: passed; 3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf
+  - command: locked Git blob and package/task/context digest verification
+    result: passed; 200 locked blobs and all four entry-bound digests exact
+  - command: resume claim, branch-head, writer lease, scope, and zero-effect-lock verification
+    result: passed; claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 expire 2026-07-28T20:36:08Z
   known_baseline_failures: []
 external_effects:
   authority: none
