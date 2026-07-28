@@ -1,0 +1,154 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P28
+task_packet_digest: 3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823
+task_context_digest: 96152f74273391337a3c6b8dd576829e7ddf9467cc867fb3b35ec4cf2c3cc18c
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p28-communication-foundation
+start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+dependency_heads:
+  F06:
+    state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+  P27:
+    state: interface_ready_integrated
+    task_head_sha: e1933d640657835cde17ee23381399f5539fe3cd
+    integration_head_sha: 972fa43507d6d4391a86dd130a1c38a05820b2ce
+    interface_source_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+    interface_implementation_head_sha: 7d5edd687016b827769cc931b3766b2ae566507c
+    interface_checkpoint_digest: 788e150f7819431fecd8036701d1e78d6fe0a39b818795b318d54e70998d5ce6
+  P31:
+    state: interface_ready_integrated
+    task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    integration_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+    interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
+    interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
+status: interface_ready
+phase: interface
+claimed_by: codex-p28-worker-16640fee
+claim_time: '2026-07-28T22:03:46Z'
+claim_id: 16640fee-ca26-4885-9be7-14fb2baa682c
+writer_slot_leases:
+  - slot: GHL_REGISTRY
+    lease_id: f59eb149-ec9e-4d32-afd7-55ad5e32c899
+    lease_issued_at: '2026-07-28T21:55:38Z'
+    lease_expires_at: '2026-07-28T22:55:38Z'
+  - slot: COMMUNICATION_FOUNDATION
+    lease_id: d2cd17e1-c0d2-4dd9-ab21-62c1b2a24a30
+    lease_issued_at: '2026-07-28T21:55:38Z'
+    lease_expires_at: '2026-07-28T22:55:38Z'
+lease_expires_at: '2026-07-28T22:55:38Z'
+last_heartbeat_at: '2026-07-28T22:24:58Z'
+controller_authorization_sha: e847dd790ae2f99ae526b0edcbd41897474c8f18
+ready_entry_state_based_on_control_head_sha: 3cfe14a6e1171d002f7173c13776dc682fddd6a8
+ready_entry_payload_digest: 2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285
+state_based_on_head_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
+last_implementation_commit_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
+interface_contract_digest: 2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86
+completed_steps:
+  - Verified repository identity shloimie-beep/onetimev2 and exact containing control head.
+  - Verified the P28 branch was absent locally and remotely and the integration start SHA matched exactly.
+  - Recomputed and matched the canonical P28 ready-entry payload digest.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and the package/task/context digests.
+  - Verified exact F06, P27, and P31 interface-ready integration bindings.
+  - Claimed the GHL_REGISTRY and COMMUNICATION_FOUNDATION writer leases with zero effect locks.
+  - Implemented the versioned sender, suppression, preference, website-lead, readback, governed-request, workflow-fragment, and repository contracts.
+  - Implemented adult-only planning with exact four-value preferences, email-first dormant-WhatsApp behavior, essential Resend boundaries, and send-time suppression rechecks.
+  - Implemented Admin-before-data Communications Review authorization with only governed Start/Pause and no ordinary campaign authoring or test/canary actions.
+  - Implemented public-website Family/School lead capture with zero Student, WhatsApp-qualification, access, or school-pricing effects.
+  - Implemented parameterized persistence with optimistic fencing, delivery dedupe, sanitized readback/request storage, and no runtime DDL.
+  - Implemented the local-first worker boundary with Student hard stop, suppression recheck, dedupe, truthful dormant-channel recording, and zero WhatsApp provider wiring.
+  - Reconciled the canonical workflow source to reserve OT-11, restore OT-12 adult support, reserve OT-14/OT-15, and replace OT-B01 with a provider-ID-empty website-bot identity.
+  - Published migration, central-registration, and generated-registry-projection steward requests without editing shared hotspots.
+  - Passed 32 focused assertions, full typecheck, focused lint/format, YAML source parsing, and diff checks.
+  - Published the exact semantic interface checkpoint for downstream P29 and P30.
+remaining_steps:
+  - Commit and push this interface checkpoint, then run exact final verification.
+  - Release both P28 leases in task-local metadata and publish ready_for_review.
+next_action: Commit and push the P29/P30-unlocking interface checkpoint, run exact final verification, then release both leases and finish ready_for_review.
+requirements:
+  OTV2-GHL-120: implementation_verified
+  OTV2-GHL-121: implementation_verified
+  OTV2-GHL-122: implementation_verified
+  OTV2-GHL-137: implementation_verified
+  OTV2-GHL-138: implementation_verified
+  OTV2-GHL-198: implementation_verified
+  OTV2-GHL-199: implementation_verified
+  OTV2-GHL-220: implementation_verified
+  OTV2-PARENT-226: implementation_verified
+acceptance_cases:
+  OTV2-GHL-120-AC01: task_owned_assertions_passed
+  OTV2-GHL-121-AC01: task_owned_assertions_passed
+  OTV2-GHL-122-AC01: task_owned_assertions_passed
+  OTV2-GHL-137-AC01: task_owned_assertions_passed
+  OTV2-GHL-138-COMMUNICATIONS-READBACK: task_owned_assertions_passed
+  OTV2-GHL-198-AC01: task_owned_assertions_passed
+  OTV2-GHL-199-AC01: task_owned_assertions_passed
+  OTV2-GHL-220-AC01: task_owned_assertions_passed
+  OTV2-PARENT-226-PREFERENCES: task_owned_assertions_passed
+  OTV2-PARENT-226-ESSENTIAL-EMAIL: task_owned_assertions_passed
+changed_paths:
+  - apps/worker/src/runners/communications-foundation/**
+  - integrations/highlevel/registry/workflow-registry.yaml
+  - integrations/highlevel/v21/foundation/**
+  - packages/contracts/src/communications/foundation/**
+  - packages/db/src/communications/foundation/**
+  - packages/domain/src/communications/foundation/**
+  - ops/v2.1-execution/runtime/P28/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-migration-001.yaml
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registration-001.yaml
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registry-projection-001.yaml
+  - ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P28/HANDOFF.md
+  - ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md
+migrations: []
+steward_requests:
+  - request_id: P28-migration-001
+    sha256: 14ee00a4e9338fa377fc51e6767472829bafb821bd095b4ed6046dc21faec3bc
+  - request_id: P28-registration-001
+    sha256: da30f956ad97a84f77ba6ab4e69360ac58f194084008bf5b8d5389d67d24650c
+  - request_id: P28-registry-projection-001
+    sha256: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
+verification:
+  commands_run:
+    - command: git remote/control/integration/branch identity verification
+      result: passed; exact repository, containing control, start SHA, and absent P28 branch
+    - command: canonical P28 ready-entry digest recomputation
+      result: passed; 2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; 200 locked blobs, 15 source-package blobs, and entry-bound digests
+    - command: dependency/claim/writer/effect-lock verification
+      result: passed; F06/P27/P31 exact, two P28 leases, and zero effect locks
+    - command: npm run typecheck
+      result: passed
+    - command: focused P28 Vitest suite
+      result: passed; 5 files and 32 assertions
+    - command: focused ESLint and Prettier
+      result: passed for all new P28 TypeScript, Markdown, and steward-request artifacts
+    - command: workflow registry source parse and canonical identity assertions
+      result: passed; 17 business, 5 bot-action, 2 deprecated and unique OT-11/12/14/15/B01 identities
+    - command: npm run highlevel:registry:check
+      result: expected stewarded failure; current generated projection still has 14 business workflows and old validator semantics
+    - command: npm run highlevel:workflow-control:projection-check
+      result: expected stewarded failure; current.json and workflows.yaml do not yet reflect canonical source digest 58946e1a70a396ab6541e927ab7765a2f01b2f989ccc1ba15d74d3383e622940
+    - command: canonical interface artifact and contract digest verification
+      result: passed; artifact 4c0bac7b and contract 2b8b6854
+    - command: git diff --check
+      result: passed
+  known_baseline_failures:
+    - workflow-registry.yaml is not Prettier-canonical at the integration baseline or P28 head; focused new-file formatting passes
+    - generated HighLevel projections and hard-coded validator counts/OT-11/OT-12 assumptions remain stale by design and are covered by P28-registry-projection-001
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - Generated HighLevel projections, message-class OT-14/OT-15 coverage, and validator semantics require P28-registry-projection-001.
+  - Applied migration and central runtime/route registration require P28-migration-001 and P28-registration-001.
