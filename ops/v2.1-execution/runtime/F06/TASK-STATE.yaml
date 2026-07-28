@@ -1,0 +1,103 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F06
+task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-f06-provider-core
+start_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+dependency_heads:
+  F04:
+    required_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F05:
+    required_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+status: interface_ready
+phase: interface
+claimed_by: codex-f06-worker-6deb862f
+claim_time: '2026-07-28T19:48:07Z'
+claim_id: 6deb862f-e548-4d2a-9966-3ec5c3cfd40f
+writer_slot_leases:
+  - slot: PROVIDER_CORE
+    lease_id: d06252cd-3076-44d0-87da-bf14e661830f
+  - slot: PROVIDER_REGISTRY
+    lease_id: e0abf770-88d6-4d8c-937f-846b858aa919
+lease_expires_at: '2026-07-28T20:27:38Z'
+last_heartbeat_at: '2026-07-28T20:01:55Z'
+controller_authorization_sha: 0341f6303937bebc64e4d3cae6905168183dbb77
+ready_entry_payload_digest: e44301bdf281e66a000fa8993a85d1ecf0ce2abf7b14fbba3adbb236c7c37c2c
+state_based_on_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+last_implementation_commit_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+completed_steps:
+  - Verified the exact F06 ready entry, immutable package/task/context digests, dependency interface contracts, branch absence, and unexpired writer leases.
+  - Created the isolated F06 branch from the exact authorized integration start SHA.
+  - Implemented the versioned ProviderOperation registry/readback contract on the F05 fenced job foundation.
+  - Implemented exact provider binding, Stripe no-write enforcement, and acceptance-unknown reconciliation.
+  - Implemented adult GHL identity matching/quarantine/resolution and contact-level suppression.
+  - Implemented isolated household GHL/Stripe mappings, lifecycle updates, and ownership reassociation with exact readback.
+  - Implemented parameterized PostgreSQL persistence contracts and a reconciliation-only worker runner.
+  - Published migration and registration steward requests without editing central hotspots.
+  - Passed 11 focused assertions, full typecheck, focused lint/format, and diff checks.
+  - Published the exact semantic interface checkpoint for downstream integration.
+remaining_steps:
+  - Re-run final verification, release the worker leases in metadata, and publish ready_for_review.
+next_action: Run the exact final verification suite, update durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
+requirements:
+  OTV2-PROVIDER-209: implementation_verified
+  OTV2-PROVIDER-231: implementation_verified
+  OTV2-PROVIDER-243: implementation_verified
+acceptance_cases:
+  OTV2-PROVIDER-209-AC01: task_owned_assertions_passed
+  OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING: task_owned_assertions_passed
+  OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE: task_owned_assertions_passed
+changed_paths:
+  - apps/worker/src/runners/provider-reconciliation/index.ts
+  - apps/worker/src/runners/provider-reconciliation/runner.test.ts
+  - apps/worker/src/runners/provider-reconciliation/runner.ts
+  - packages/contracts/src/providers/v21-provider-core.ts
+  - packages/db/src/providers/v21-provider-core-repository.test.ts
+  - packages/db/src/providers/v21-provider-core-repository.ts
+  - packages/db/src/providers/v21-schema-contract.ts
+  - packages/domain/src/providers/shared/errors.ts
+  - packages/domain/src/providers/shared/index.ts
+  - packages/domain/src/providers/shared/mapping.ts
+  - packages/domain/src/providers/shared/operation.ts
+  - packages/domain/src/providers/shared/provider-core.test.ts
+  - ops/v2.1-execution/runtime/F06/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F06/steward-requests/F06-migration-001.yaml
+  - ops/v2.1-execution/runtime/F06/steward-requests/F06-registration-001.yaml
+  - ops/v2.1-execution/runtime/F06/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F06/HANDOFF.md
+  - ops/v2.1-execution/runtime/F06/NEXT-PROMPT.md
+migrations: []
+steward_requests:
+  - F06-migration-001
+  - F06-registration-001
+verification:
+  commands_run:
+    - Verified Git-object SHA-256 values for PACKAGE-LOCK.yaml, F06 task/context, and source SHA256SUMS.txt.
+    - Verified F04/F05 semantic interface checkpoint digests and exact integrated implementation heads.
+    - Verified origin identity, exact authorizing control commit, authorized start ancestry, and absent remote F06 branch.
+    - npm run typecheck
+    - npm exec -- vitest run packages/domain/src/providers/shared/provider-core.test.ts packages/db/src/providers/v21-provider-core-repository.test.ts apps/worker/src/runners/provider-reconciliation/runner.test.ts
+    - focused ESLint over all F06 TypeScript artifacts
+    - focused Prettier check over all F06 TypeScript/YAML artifacts
+    - canonical contract digest and per-artifact SHA-256 verification
+    - git diff --check
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
