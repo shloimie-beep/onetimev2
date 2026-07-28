@@ -1,0 +1,73 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P19
+interface_implementation_head_sha: 308a029144f9d9e7170c4c98d7306f06e39493ea
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
+contract_digest: 44952e92284a1dd20f6fff37e67686cd32328a0a3761e07eee90b70365aaac6f
+contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 2.1.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/content/ingest/index.ts
+    symbols:
+      - CONTENT_INGEST_CONTRACT_VERSION
+      - CONTENT_INGEST_MAX_BYTES
+      - CONTENT_INGEST_PART_BYTES
+      - CONTENT_INGEST_MAX_CONCURRENT_PARTS
+      - CONTENT_INGEST_PART_AUTHORIZATION_SECONDS
+      - CONTENT_INGEST_DRIVE_STABILITY_SECONDS
+      - CONTENT_INGEST_INCOMPLETE_UPLOAD_HOURS
+      - CONTENT_INGEST_MAX_ATTEMPTS
+      - CONTENT_INGEST_REGION
+      - CONTENT_INGEST_CONTAINERS
+      - CONTENT_INGEST_MIME_TYPES
+      - ContentIngestContainer
+      - ContentIngestMimeType
+      - ContentSourceKind
+      - ContentCaptureMethod
+      - ContentLifecycleState
+      - ContentRetryState
+      - UploadSessionState
+      - DriveIntakeState
+      - OccurrenceMatchConfidence
+      - IngestRuntimeTier
+      - ContentIngestScope
+      - ContentIngestAdminActor
+      - ContentSourceRecord
+      - ContentSourceLinkRecord
+      - UploadSessionRecord
+      - UploadPartRecord
+      - DriveFileObservation
+      - MultipartUploadPlan
+      - ManagedObjectReadback
+      - RecoveryJournalReceipt
+      - BeginDirectUploadCommand
+      - ConfirmDirectUploadCommand
+      - RecordUploadPartCommand
+      - MatchContentSourceCommand
+      - ContentIngestCommandReceipt
+      - ContentIngestUnitOfWork
+      - ContentIngestRepository
+      - CONTENT_INGEST_ERROR_CODES
+    sha256: 3f6b10d290e698ff3719b3894e4510498dc9408be8b5b98ff566a7a201ac7d40
+compatibility_invariants:
+  - App upload and registered private Drive intake create one account/product-scoped ContentSource identity from the full streamed SHA-256; filenames and provider references are provenance only.
+  - Only OBS MP4, MOV, or MKV originals from 1 byte through 5 GiB are accepted; originals remain preserved and never use a filename-derived managed object key.
+  - Multipart transfer uses 64 MiB parts except the final part, at most four concurrent parts, 15-minute part authorization, and a 24-hour incomplete-upload abort boundary; provider ETags are never content checksums.
+  - Confirmation requires exact agreement among the durable source/session, private versioned eu-central-1 SSE-KMS object readback, and independently read recovery-journal receipt.
+  - Drive inventory paginates to completion, remains inside the registered incoming folder, requires unchanged nonzero size plus change marker for at least 120 seconds, and streams bounded ranges through the same managed-object contract.
+  - Content lifecycle transitions are received to validating to processing to needs_review to approved to publishing to published, with exact failed_from recovery, governed archive transitions, bounded retry/dead-letter state, and no Student visibility before published.
+  - Occurrence association is an explicit Admin confirmation over account/product-scoped P16 occurrence identity; date, time, and filename signals are hints rather than authority.
+  - Commands are Admin-, tenant-, product-, version-, and request-hash-fenced; replay is idempotent and conflicting reuse fails without a write.
+downstream_tasks:
+  - P20
+verification_commands:
+  - npm run typecheck
+  - npx vitest run packages/domain/src/content/ingest/content-ingest.test.ts apps/web/src/server/features/content/ingest/service.test.ts apps/worker/src/runners/content-ingest/runner.test.ts apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.test.tsx
+  - focused ESLint over all P19 TypeScript and TSX artifacts
+  - focused Prettier check over all P19 TypeScript, TSX, and YAML artifacts
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

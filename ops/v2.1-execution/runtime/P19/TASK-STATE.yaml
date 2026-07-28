@@ -1,0 +1,119 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P19
+task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
+task_context_digest: f517475b52f50996ec6a2551daa091bbe5f3df982ee258d100ee11ffdbd7c7be
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p19-content-ingest
+start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+dependency_heads:
+  F05:
+    state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+  F06:
+    state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+  P16:
+    state: interface_ready_integrated
+    task_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+    integration_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+    interface_implementation_head_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
+    interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
+status: interface_ready
+phase: interface
+claimed_by: codex-p19-worker-de624026
+claim_time: '2026-07-28T21:55:38Z'
+claim_id: de624026-ff9a-4c35-ad02-bc6c1f28a3dc
+writer_slot_lease_id: 318f7a4b-99c1-4e1f-aff6-960e5f14acfe
+lease_expires_at: '2026-07-28T22:55:38Z'
+last_heartbeat_at: '2026-07-28T22:21:00Z'
+controller_authorization_sha: e847dd790ae2f99ae526b0edcbd41897474c8f18
+state_based_on_control_head_sha: 3cfe14a6e1171d002f7173c13776dc682fddd6a8
+ready_entry_payload_digest: 21b9ce89c53779bac1c79373b18de9afe860c72511249d7cfd180ecf98a50374
+state_based_on_head_sha: 308a029144f9d9e7170c4c98d7306f06e39493ea
+last_implementation_commit_sha: 308a029144f9d9e7170c4c98d7306f06e39493ea
+interface_checkpoint_digest: 44952e92284a1dd20f6fff37e67686cd32328a0a3761e07eee90b70365aaac6f
+implementation_artifact_digest: 58cb774522dfc7ded075ccb75d1d33a83945369ab2fbf142fc8e7bac5acff5eb
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 20 non-runtime P19 artifacts, with LF separators and no final newline.
+steward_request_digest: 96d2cf2b1fd4ca948ecd5f3e95f68a0dd8d3e456cf8831c90fb18c30301fac47
+completed_steps:
+  - verified exact remote identity, containing control authorization, registry/ready entry, branch absence, claim, CONTENT_INGEST lease, and authorized start
+  - verified F05, F06, and P16 interface-ready integration bindings from the exact ready entry
+  - verified immutable package, task, and context digests and read the exact dependency interfaces
+  - implemented and pushed the bounded direct-upload, stable Drive-intake, checksum-deduplication, lifecycle, occurrence-match, repository, service, worker, Admin workspace, and steward-request artifacts
+  - passed full typecheck, 21 focused assertions, focused lint, formatting, and diff hygiene
+  - published the exact P19 contract artifact hash and combined interface digest for P20
+remaining_steps:
+  - publish terminal ready_for_review metadata and release the task-local lease
+  - I36 must integrate the interface checkpoint and disposition structured migration, registration, and config/dependency requests
+next_action: Publish the terminal P19 checkpoint, then I36 should integrate interface digest 44952e92284a1dd20f6fff37e67686cd32328a0a3761e07eee90b70365aaac6f from implementation head 308a029144f9d9e7170c4c98d7306f06e39493ea.
+requirements:
+  OTV2-CONTENT-080: implementation_ready
+  OTV2-CONTENT-081: implementation_ready
+  OTV2-CONTENT-082: implementation_ready
+  OTV2-CONTENT-083: implementation_ready
+  OTV2-CONTENT-190: implementation_ready
+  OTV2-CONTENT-192: implementation_ready
+acceptance_cases:
+  OTV2-CONTENT-080-AC01: implementation_ready
+  OTV2-CONTENT-081-AC01: implementation_ready
+  OTV2-CONTENT-082-AC01: implementation_ready
+  OTV2-CONTENT-083-AC01: implementation_ready
+  OTV2-CONTENT-190-AC01: implementation_ready
+  OTV2-CONTENT-192-AC01: implementation_ready
+changed_paths:
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.test.tsx
+  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.tsx
+  - apps/web/src/client/app/admin/content/ingest/index.ts
+  - apps/web/src/server/features/content/ingest/index.ts
+  - apps/web/src/server/features/content/ingest/service.test.ts
+  - apps/web/src/server/features/content/ingest/service.ts
+  - apps/worker/src/runners/content-ingest/index.ts
+  - apps/worker/src/runners/content-ingest/runner.test.ts
+  - apps/worker/src/runners/content-ingest/runner.ts
+  - ops/v2.1-execution/runtime/P19/HANDOFF.md
+  - ops/v2.1-execution/runtime/P19/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P19/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P19/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P19/TASK-STATE.yaml
+  - packages/contracts/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/index.ts
+  - packages/db/src/content/ingest/repository.ts
+  - packages/db/src/content/ingest/schema-contract.ts
+  - packages/domain/src/content/ingest/content-ingest.test.ts
+  - packages/domain/src/content/ingest/drive.ts
+  - packages/domain/src/content/ingest/errors.ts
+  - packages/domain/src/content/ingest/index.ts
+  - packages/domain/src/content/ingest/source.ts
+  - packages/domain/src/content/ingest/upload.ts
+  - packages/domain/src/content/ingest/validation.ts
+migrations: []
+steward_requests:
+  - P19-MIGRATION-001
+  - P19-REGISTRATION-001
+  - P19-CONFIG-DEPENDENCY-001
+verification:
+  commands_run:
+    - exact control, ready entry, registry, branch absence, lease, start, and dependency binding verification (passed)
+    - immutable package, task, context, and exact dependency interface digest verification (passed)
+    - npm run typecheck with the authorized shared dependency runtime (passed)
+    - focused P19 Vitest suite (passed, 21 tests)
+    - focused ESLint over all P19 TypeScript and TSX artifacts (passed)
+    - focused Prettier check and git diff --check (passed)
+    - exact 20-artifact implementation Git-blob digest derivation (passed)
+    - exact contract export digest recomputation from the implementation-head Git blob (passed)
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - Shared migration, root barrels, central server/client/worker registration, manifests, dependencies, provider configuration, and secret registry changes are captured in STEWARD-REQUESTS.yaml and were not edited by P19.

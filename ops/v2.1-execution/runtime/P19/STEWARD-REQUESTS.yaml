@@ -1,0 +1,59 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P19
+requests:
+  - request_id: P19-MIGRATION-001
+    kind: migration
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      path: packages/db/src/content/ingest/schema-contract.ts
+      version: P19-CONTENT-INGEST-SCHEMA-001
+    exact_targets:
+      - packages/db/migrations/<allocated>_v21_content_ingest.sql
+    required_changes:
+      - Add the six tables and constraints described by CONTENT_INGEST_SCHEMA_CONTRACT without modifying applied media migrations.
+      - Enforce one canonical source per account, product, and full SHA-256 across app-upload and Drive provenance.
+      - Enforce 5 GiB session bounds, 64 MiB part bounds, immutable part receipts, optimistic versions, command replay identity, and original_preserved=true.
+      - Preserve existing legacy media tables as historical inputs only; do not backfill Zoom cloud recordings as canonical OBS sources.
+    validation:
+      - Apply the full migration inventory in a disposable PostgreSQL-compatible database.
+      - Prove checksum deduplication, part uniqueness, replay conflict, transaction rollback, and exact source/readback/journal binding.
+    external_effects_authorized: false
+  - request_id: P19-REGISTRATION-001
+    kind: registration
+    requested_steward: I36
+    status: proposed
+    exact_targets:
+      - packages/contracts/src/index.ts
+      - packages/domain/src/index.ts
+      - packages/db/src/index.ts
+      - apps/web/src/server central authenticated route composer
+      - apps/web/src/client central Admin route composer
+      - apps/worker/src/main central runner composer
+    required_changes:
+      - Re-export the P19 ingest contract, domain, and database roots without semantic changes.
+      - Register createContentIngestService behind authenticated Admin-only routes and register the content-ingest worker runner.
+      - Derive account, product, principal, runtime tier, and verification environment only from authenticated/configured server context.
+      - Return no AWS credential and log no signed authorization, Drive file ID, object locator, filename-derived object key, or provider payload.
+    validation:
+      - Run typecheck, route authorization and direct-route denial tests, worker registration tests, accessibility checks, and provider-reference log scanning.
+    external_effects_authorized: false
+  - request_id: P19-CONFIG-DEPENDENCY-001
+    kind: config_dependency
+    requested_steward: I36
+    status: proposed
+    exact_targets:
+      - package.json
+      - package-lock.json
+      - packages/config/src/index.ts
+      - deployment secret/config registry
+    required_changes:
+      - Add the official AWS S3 multipart/checksum client and Google Drive API client used by production adapters.
+      - Register distinct staging/production eu-central-1 bucket references, customer-managed KMS key references, registered Drive tree/folder references, service identity, and OPS-063 recovery-journal binding.
+      - Validate S3 versioning, Block Public Access, bucket-owner-enforced ownership, TLS-only policy, expected KMS key, and registered Drive-tree scope before enabling intake.
+      - Keep all provider credentials and signed part authorizations out of committed config, logs, URLs recorded by One Time, and durable handoffs.
+    validation:
+      - Provider-off startup/readiness proof for missing or mismatched config.
+      - Isolated-staging adapter contract tests for multipart create/part/complete/readback/abort, Drive pagination/range/move, and recovery-journal write/readback.
+    external_effects_authorized: false
