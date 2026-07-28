@@ -281,17 +281,16 @@ interface wave is queued. P16 and P32 are newly ready from `01cdb992`.
 
 ## Remaining work
 
-None for bootstrap. I36 must atomically claim and stop before the ordered
-F06/P14 merge wave; P16 and P32 await atomic claims. P35 awaits later full
-implementation admission.
+None for bootstrap. I36 has claimed and both ordered merge targets are rebound;
+P16 and P32 are actively implementing. P35 awaits later full implementation
+admission.
 
 ## Exact next action
 
-Dispatch I36 claim `1b554a42-a2a2-4017-add9-7117ed575b9e`, P16 claim
-`fd104a34-4a75-4e5c-83c2-22266452d198`, and P32 claim
-`a9e4c442-46dd-4bdd-851e-8e2d21c4ad66` from exact integrated start
-`01cdb992`. I36 must stop immediately after its task-local atomic claim so C00
-can rebind both ordered merge targets.
+Resume I36 under claim `1b554a42-a2a2-4017-add9-7117ed575b9e` to consume
+only the rebound ordered F06/P14 merge items with expected target
+`98f5689bf72a6da6bb0a622dc73d802ce6fb1e72`. In parallel, let P16 and P32
+continue their disjoint claimed lanes.
 
 ## Verification
 

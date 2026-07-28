@@ -10,7 +10,7 @@ items:
   source_branch: codex/v21-f06-provider-core
   source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   target_branch: codex/v21-integration
-  expected_target_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+  expected_target_head_sha: 98f5689bf72a6da6bb0a622dc73d802ce6fb1e72
   source_delta_base_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
   required_merge_base_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
   preserve_source_ancestry: true
@@ -50,7 +50,7 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+  state_based_on_control_head_sha: eece33bb5134ac4865b7c7293ea63912f142945f
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
   merge_id: 76ced88c-2bfd-4400-89ca-513b576bc2f2
@@ -59,7 +59,7 @@ items:
   source_branch: codex/v21-p14-student-app
   source_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
   target_branch: codex/v21-integration
-  expected_target_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
+  expected_target_head_sha: 98f5689bf72a6da6bb0a622dc73d802ce6fb1e72
   source_delta_base_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
   required_merge_base_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
   preserve_source_ancestry: true
@@ -107,10 +107,10 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+  state_based_on_control_head_sha: eece33bb5134ac4865b7c7293ea63912f142945f
 item_payload_digests:
-  ffb7242b-c205-444b-b0b9-4ef1b85da558: 8664d26c4f7dfdb04fd19983838ca2eb3960899287d7d92e6e1f1286371008a2
-  76ced88c-2bfd-4400-89ca-513b576bc2f2: f9e2811c32aa4f6d71a7f8b7d75e2642c2769a15fd0b404f23a6097244f3f9cb
+  ffb7242b-c205-444b-b0b9-4ef1b85da558: c2e390ab1d52796de65c3ee5f12870bc51aa6316113b4e9b6a74c290b49e9763
+  76ced88c-2bfd-4400-89ca-513b576bc2f2: ad280303fb35e33165647c4561a204f8199234ee9ab53c0d87948e6f59f20858
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

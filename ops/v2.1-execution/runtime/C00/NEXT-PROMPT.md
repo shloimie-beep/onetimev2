@@ -66,14 +66,11 @@ at `c96b8c55c07e5283e762537934a6bf948833700e`, with implementation
 state/handoff `cb8551031e184df2f727f1df5f54733ab02b1226fb1f00f11ed17b65e0c6f4ce`,
 two assigned but unapplied steward requests, and zero effects.
 
-P15 is ancestry-integrated at merge `eae9c62a` and final integration head
-`01cdb992660a1fbc20b204b829d28062fd044679`. F06 and P14 are independently
-verified `ready_for_review`; their exact interface sources `9a426cca` and
-`3393169e` are queued in order. The ready queue authorizes I36 atomic claim
-`1b554a42-a2a2-4017-add9-7117ed575b9e`, P16 claim
-`fd104a34-4a75-4e5c-83c2-22266452d198`, and P32 claim
-`a9e4c442-46dd-4bdd-851e-8e2d21c4ad66`. Dispatch all three from exact start
-`01cdb992`; I36 must stop after its atomic claim for both target-CAS rebinds.
+P15 is ancestry-integrated at final head `01cdb992`. I36, P16, and P32
+atomically claimed at `98f5689b`, `45649e52`, and `a174a5e7`; exact scopes,
+bindings, and zero effects passed. The ready queue is empty and both ordered
+F06/P14 merge items are rebound to target `98f5689b`. Resume I36 to consume
+only that ordered interface wave while P16 and P32 continue.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
