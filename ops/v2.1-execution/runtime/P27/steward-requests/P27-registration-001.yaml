@@ -1,0 +1,36 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P27-registration-001
+task_id: P27
+kind: registration
+requirement_ids:
+  - OTV2-GHL-117
+  - OTV2-GHL-118
+  - OTV2-GHL-119
+acceptance_case_ids:
+  - OTV2-GHL-117-AC01
+  - OTV2-GHL-118-AC01
+  - OTV2-GHL-119-AC01
+rationale: P27 cannot edit the worker composer or root contract/domain/database barrels.
+desired_semantic_change: >-
+  After P27's migration is active, register runGhlIdentitySync with the
+  configured GHL adult-identity adapter and export the P27 direct-import
+  contract/domain/repository modules from central barrels if aliases are
+  required. Registration must fail closed without an exact registry binding,
+  must never accept a Student subject, and must not introduce a live-effect
+  authority or provider client.
+proposed_symbols_routes_keys_or_dependencies:
+  - runGhlIdentitySync
+  - packages/contracts/src/communications/ghl-identity/index.ts
+  - packages/domain/src/communications/ghl-identity/index.ts
+  - createPostgresGhlIdentityRepository
+compatibility_assumptions:
+  - F06 provider reconciliation and F05 job/outbox registration are integrated first
+  - direct source imports remain stable until central registration
+  - exact provider binding and live-effect authority remain separately governed
+verification_performed:
+  - focused P27 planner/repository/worker tests
+  - full TypeScript typecheck
+conflicts_or_risks:
+  - starting the runner before migrations and exact provider registry binding are active must fail closed
+contains_secret_or_private_data: false

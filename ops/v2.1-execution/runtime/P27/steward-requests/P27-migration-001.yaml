@@ -1,0 +1,35 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P27-migration-001
+task_id: P27
+kind: migration
+requirement_ids:
+  - OTV2-GHL-117
+  - OTV2-GHL-118
+  - OTV2-GHL-119
+acceptance_case_ids:
+  - OTV2-GHL-117-AC01
+  - OTV2-GHL-118-AC01
+  - OTV2-GHL-119-AC01
+rationale: P27 owns the parameterized persistence contract but cannot create a migration outside F02 authority.
+desired_semantic_change: >-
+  Add optimistic-versioned GHL identity sync operation, household identity
+  projection, and visible identity review case tables matching
+  packages/db/src/communications/ghl-identity/repository.ts. Enforce adult-only
+  rows, immutable household keys, protected provider-reference hashes,
+  append-safe retry counters, and transactional operation/household/review
+  persistence without runtime schema creation.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.ghl_identity_sync_operation
+  - onetime.ghl_household_identity_projection
+  - onetime.ghl_identity_review_case
+compatibility_assumptions:
+  - F06 provider-core tables and F05 durable job/outbox foundations are integrated first
+  - migration is forward-only and uses the next C00/F02 allocated ordinal
+  - Student identities have no representable contact row
+verification_performed:
+  - focused P27 domain, worker, and parameterized repository tests
+  - full TypeScript typecheck
+conflicts_or_risks:
+  - repository activation must remain disabled until the stewarded migration is active
+contains_secret_or_private_data: false
