@@ -20,7 +20,9 @@ payload digest, the `ready` or `resume_ready` lease/claim appropriate to the
 registered claim mode, package/task/context/dependency digests, and reject a
 live foreign lease or non-fast-forward collision. Then check out the exact task
 branch, read task state and handoff before named work, and resume the recorded
-`next_action`. If digests match, do not restart completed work or globally
+`next_action`: run the exact final verification suite, update the durable
+runtime files to `ready_for_review`, release the task-local writer leases in
+metadata, and push the normal final checkpoint. If digests match, do not restart completed work or globally
 re-audit the repository. Continue until `ready_for_review` or a permitted stop
 condition. Update state/handoff/this next prompt, checkpoint, commit, and push
 before returning.
