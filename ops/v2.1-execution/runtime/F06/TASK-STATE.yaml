@@ -21,22 +21,28 @@ dependency_heads:
     interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
     interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
     interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: review
 claimed_by: codex-f06-worker-6deb862f
 claim_time: '2026-07-28T19:48:07Z'
 claim_id: 6deb862f-e548-4d2a-9966-3ec5c3cfd40f
 writer_slot_leases:
   - slot: PROVIDER_CORE
     lease_id: d06252cd-3076-44d0-87da-bf14e661830f
+    lease_expires_at: '2026-07-28T20:27:38Z'
+    released_at: '2026-07-28T20:03:24Z'
   - slot: PROVIDER_REGISTRY
     lease_id: e0abf770-88d6-4d8c-937f-846b858aa919
+    lease_expires_at: '2026-07-28T20:27:38Z'
+    released_at: '2026-07-28T20:03:24Z'
 lease_expires_at: '2026-07-28T20:27:38Z'
-last_heartbeat_at: '2026-07-28T20:01:55Z'
+last_heartbeat_at: '2026-07-28T20:03:24Z'
+lease_released_at: '2026-07-28T20:03:24Z'
 controller_authorization_sha: 0341f6303937bebc64e4d3cae6905168183dbb77
 ready_entry_payload_digest: e44301bdf281e66a000fa8993a85d1ecf0ce2abf7b14fbba3adbb236c7c37c2c
 state_based_on_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
 last_implementation_commit_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
 completed_steps:
   - Verified the exact F06 ready entry, immutable package/task/context digests, dependency interface contracts, branch absence, and unexpired writer leases.
   - Created the isolated F06 branch from the exact authorized integration start SHA.
@@ -48,17 +54,17 @@ completed_steps:
   - Published migration and registration steward requests without editing central hotspots.
   - Passed 11 focused assertions, full typecheck, focused lint/format, and diff checks.
   - Published the exact semantic interface checkpoint for downstream integration.
-remaining_steps:
-  - Re-run final verification, release the worker leases in metadata, and publish ready_for_review.
-next_action: Run the exact final verification suite, update durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
+  - Re-ran final task-owned verification and released both writer-slot leases.
+remaining_steps: []
+next_action: C00/I36 should validate and integrate the exact F06 interface checkpoint, adjudicate the migration and registration requests, and authorize downstream tasks from the resulting integration head.
 requirements:
-  OTV2-PROVIDER-209: implementation_verified
-  OTV2-PROVIDER-231: implementation_verified
-  OTV2-PROVIDER-243: implementation_verified
+  OTV2-PROVIDER-209: implementation_ready
+  OTV2-PROVIDER-231: implementation_ready
+  OTV2-PROVIDER-243: implementation_ready
 acceptance_cases:
-  OTV2-PROVIDER-209-AC01: task_owned_assertions_passed
-  OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING: task_owned_assertions_passed
-  OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE: task_owned_assertions_passed
+  OTV2-PROVIDER-209-AC01: implementation_ready
+  OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING: implementation_ready
+  OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE: implementation_ready
 changed_paths:
   - apps/worker/src/runners/provider-reconciliation/index.ts
   - apps/worker/src/runners/provider-reconciliation/runner.test.ts
