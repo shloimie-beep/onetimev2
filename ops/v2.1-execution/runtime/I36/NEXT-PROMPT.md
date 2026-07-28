@@ -20,16 +20,16 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current P15-interface-only authority is containing control head
-`0341f6303937bebc64e4d3cae6905168183dbb77`, controller authorization
-`0341f6303937bebc64e4d3cae6905168183dbb77`, ready-entry parent control head
-`f2ace0993937a020a31c364f079bcf52b8c65350`, claim
-`15bcce0c-16b9-4c00-b422-ba5053554f14`, RELEASE_INTEGRATOR lease
-`c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51` through
-`2026-07-28T20:36:08Z`, and ready-entry digest
-`3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf`.
+Current F06/P14-interface-wave atomic-claim-only authority is containing
+control head `d234126ca7be31def06c939ac1886406936987dc`, controller
+authorization `d234126ca7be31def06c939ac1886406936987dc`, ready-entry parent
+control head `c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb`, claim
+`1b554a42-a2a2-4017-add9-7117ed575b9e`, RELEASE_INTEGRATOR lease
+`6b08c9f1-f266-4b3c-8d54-e678e72f2d13` through
+`2026-07-28T21:06:46Z`, and ready-entry digest
+`0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d`.
 The exact pre-claim integration head is
-`9782a4164662b8059a557c0969de9c35f54d0cf7`.
+`01cdb992660a1fbc20b204b829d28062fd044679`.
 
 F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
 has been ancestry-merged and pushed at exact integration head
@@ -90,10 +90,10 @@ was reproduced from the semantic version line plus sorted plain artifact-path
 lines, with no literal `path=` prefix. Typecheck, full quiet lint, 12 focused
 tests, and provider-surface absence passed. No steward request was applied.
 
-Current exact next action: report the pushed P15 integration metadata
-checkpoint to C00, then stop and wait for a new exact control authorization.
-No unrelated merge, steward, evidence, control, or live-effect work is
-authorized.
+Current exact next action: report the pushed F06/P14 atomic claim checkpoint
+to C00, then stop before reading or merging either source. Await C00 rebind of
+both merge targets to that exact pushed claim head. No unrelated merge,
+steward, evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its

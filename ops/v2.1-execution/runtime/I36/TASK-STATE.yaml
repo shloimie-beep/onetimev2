@@ -7,21 +7,22 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: f2ace0993937a020a31c364f079bcf52b8c65350
-  P15: c96b8c55c07e5283e762537934a6bf948833700e
+  C00: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+  F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+  P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
 status: claimed
 phase: integration
-claimed_by: codex-i36-worker2-15bcce0c
-claim_time: '2026-07-28T19:46:48Z'
-claim_id: 15bcce0c-16b9-4c00-b422-ba5053554f14
-lease_id: c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51
-lease_issued_at: '2026-07-28T19:36:08Z'
-lease_expires_at: '2026-07-28T20:36:08Z'
-last_heartbeat_at: '2026-07-28T19:59:16Z'
-controller_authorization_sha: 0341f6303937bebc64e4d3cae6905168183dbb77
-ready_entry_state_based_on_control_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
-ready_entry_payload_digest: 3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf
-state_based_on_head_sha: eae9c62adb6711034bbd31bc4aea469c2c65fc21
+claimed_by: codex-i36-worker2-1b554a42
+claim_time: '2026-07-28T20:18:54Z'
+claim_id: 1b554a42-a2a2-4017-add9-7117ed575b9e
+lease_id: 6b08c9f1-f266-4b3c-8d54-e678e72f2d13
+lease_issued_at: '2026-07-28T20:06:46Z'
+lease_expires_at: '2026-07-28T21:06:46Z'
+last_heartbeat_at: '2026-07-28T20:18:54Z'
+controller_authorization_sha: d234126ca7be31def06c939ac1886406936987dc
+ready_entry_state_based_on_control_head_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
+ready_entry_payload_digest: 0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d
+state_based_on_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
 last_implementation_commit_sha: eae9c62adb6711034bbd31bc4aea469c2c65fc21
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
@@ -124,10 +125,20 @@ completed_steps:
   eae9c62adb6711034bbd31bc4aea469c2c65fc21.
 - Passed repository typecheck, full quiet lint, 12 focused calendar tests, and the Google Calendar/provider
   absence inventory; no steward request, migration, or registration was applied.
+- Verified the exact F06/P14-interface-wave atomic-claim-only resume authorization at containing control
+  head d234126ca7be31def06c939ac1886406936987dc, ready-entry parent control state
+  c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb, and integration head
+  01cdb992660a1fbc20b204b829d28062fd044679.
+- Recomputed and matched I36 ready-entry payload digest
+  0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d.
+- Verified all 200 locked Git blobs plus the entry-bound package, source-package, task, and context digests.
+- Claimed exact F06/P14-interface-wave atomic-claim-only authority under claim
+  1b554a42-a2a2-4017-add9-7117ed575b9e and RELEASE_INTEGRATOR lease
+  6b08c9f1-f266-4b3c-8d54-e678e72f2d13 without reading or merging either source.
 remaining_steps:
-- Push and report this exact P15 integration metadata checkpoint to C00.
-- Await a new exact C00 queue/lease authorization.
-next_action: Report the exact pushed P15 integration checkpoint to C00, then pause for a new exact control authorization.
+- Push and report this exact F06/P14 atomic claim checkpoint to C00.
+- Await C00 rebind of both merge targets to the exact pushed claim head.
+next_action: Report the exact pushed F06/P14 atomic claim checkpoint to C00, then stop before reading or merging either source until C00 rebinds both targets.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -405,6 +416,14 @@ verification:
     result: passed; 2 files and 12 tests
   - command: Google Calendar/provider absence inventory under P15 implementation roots
     result: passed; no matching route, action, configuration, or job surface
+  - command: git fetch and rev-parse control/integration refs for F06/P14 atomic claim
+    result: passed; containing control d234126ca7be31def06c939ac1886406936987dc and integration 01cdb992660a1fbc20b204b829d28062fd044679 exact
+  - command: canonical I36 F06/P14 resume-entry payload digest recomputation
+    result: passed; 0d3ca65635602277525a3881376b2b2fa034137ebf3581ba1209c9fc8511219d
+  - command: SHA-256 verification over committed locked and entry-bound blobs
+    result: passed; 200 locked Git blobs plus package, source-package, task, and context digests
+  - command: F06/P14 atomic claim, writer-slot, branch-head, lease, scope, and effect-lock verification
+    result: passed; exact atomic-claim-only authority, sole RELEASE_INTEGRATOR lease, and zero effect locks
   known_baseline_failures: []
 external_effects:
   authority: none
