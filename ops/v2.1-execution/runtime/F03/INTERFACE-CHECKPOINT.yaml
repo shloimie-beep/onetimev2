@@ -1,0 +1,130 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F03
+interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+contract_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/identity/auth/index.ts
+    symbols:
+      - AUTH_CONTRACT_VERSION
+      - AUTH_ROLES
+      - AuthRole
+      - ADULT_AUTH_ROLES
+      - AdultAuthRole
+      - HUMAN_ACCOUNT_STATES
+      - HumanAccountState
+      - PASSWORD_POLICIES
+      - PasswordPolicy
+      - SESSION_POLICIES
+      - SessionPolicy
+      - AUTH_TOKEN_POLICIES
+      - AuthTokenPurpose
+      - AUTH_RATE_LIMITS
+      - GENERIC_AUTH_RESPONSES
+      - AUTH_SECURITY_INVARIANTS
+      - CROSS_DOMAIN_SECURITY_BOUNDARIES
+      - AUTH_REQUEST_SECURITY
+      - AUTH_SESSION_COOKIE
+      - LoginCommand
+      - LoginDecision
+      - AuthenticatedPrincipal
+      - AuthTokenRecord
+      - SessionRecord
+      - SessionValidity
+      - StudentCredentialActor
+      - StudentCredentialTarget
+    sha256: bb87ffab13b93ec800ae9e1a082f60697ca4f44f3ddfac410ef1e6a3574b4c50
+  - path: packages/domain/src/auth/index.ts
+    symbols:
+      - exports from policy.ts
+      - exports from rate-limits.ts
+      - exports from sessions.ts
+      - exports from tokens.ts
+    sha256: f617f99b03bd65738ed1ce167716e65ea6f598cf5248fba9c62709ae49feb276
+  - path: packages/domain/src/auth/policy.ts
+    symbols:
+      - ARGON2ID_POLICY_VERSION
+      - ARGON2ID_PARAMETERS
+      - normalizeAuthIdentifier
+      - unicodeCodePointLength
+      - evaluatePassword
+      - hashAuthPassword
+      - verifyAuthPassword
+      - authPasswordHashNeedsUpgrade
+      - verifyAuthPasswordWithUpgrade
+      - normalizeLegacyAuthRole
+    sha256: 86095623cf9a7ce80d6df192550bac385d4f7193b3e5602653fdc9ee335d1790
+  - path: packages/domain/src/auth/rate-limits.ts
+    symbols:
+      - AuthRateLimitKind
+      - evaluateAuthRateLimit
+    sha256: 7fca2a0d79fb692743ea4766d469d0a0b86d69ab40d13b66971cf5a1b66a89a8
+  - path: packages/domain/src/auth/service.ts
+    symbols:
+      - authenticateUser
+      - createSession
+      - getSessionByToken
+      - changeOwnPassword
+      - hashPassword
+      - verifyPassword
+      - passwordHashNeedsUpgrade
+    sha256: 89be0d352f3c231798c0c70e81d971e8ee49f7d31136dd5086a6146991e44ffe
+  - path: packages/domain/src/auth/sessions.ts
+    symbols:
+      - sessionDeadlines
+      - evaluateSession
+      - accountMayAuthenticate
+      - sessionRevocationRequired
+      - authorizeStudentCredentialChange
+      - defaultRouteForRole
+      - safeReturnTo
+    sha256: 39173ebff2d5a4ba8217eef3a23856770af1bca5ce15f9fd11e61ffa0d96cab8
+  - path: packages/domain/src/auth/tokens.ts
+    symbols:
+      - issueAuthToken
+      - consumeAuthToken
+      - supersedeAuthTokens
+    sha256: 91558bbd052a580c69d982544ebf5d20d3e03ae7dc687831fb2d88997bbd578e
+  - path: apps/web/src/server/features/auth/http-security.ts
+    symbols:
+      - sessionCookieHeader
+      - clearSessionCookieHeader
+      - authReturnLocation
+    sha256: 36a64dae2f20e1e57abdb586ffa52f947d2bcc7b3713e81ff6a4c7776da96961
+  - path: apps/web/src/client/auth/token-fragment.ts
+    symbols:
+      - consumeAuthTokenFromLocation
+    sha256: e2fa7b32d3b43cafff1bbba025b88dd853ae71432807c01fbdd68db62ddec010
+compatibility_invariants:
+  - Assignable public roles are exactly admin, parent, and student; owner and rabbi migration-history values normalize to admin at the application boundary.
+  - Adult login is normalized email plus password; Student login is normalized username plus password and never requires Student email or a HighLevel contact.
+  - Routine authentication is password-only with no email challenge, MFA, recovery code, or trusted-device requirement.
+  - Adult passwords contain 12 through 128 Unicode code points and Student passwords contain 8 through 64; no composition rule is invented, and common, compromised, or identity-equivalent values are rejected.
+  - New credentials use uniquely salted versioned Argon2id hashes; successful authentication may replace an obsolete valid hash without exposing or transforming the password.
+  - Admin, Parent, and Student sessions use exact idle/absolute limits of 30 minutes/12 hours, 24 hours/30 days, and 7 days/30 days; absolute expiry is never sliding.
+  - Setup and reset tokens are stored only by hash, single-use, valid for exactly seven days and 60 minutes respectively, and a replacement supersedes every earlier unused token for the subject and purpose.
+  - Login, reset, and setup resend throttles use the exact v2.1 account/IP thresholds and recover after the configured window without permanent lockout or account enumeration.
+  - Credential, role, ownership, disable/archive, and explicit revocation events revoke affected sessions; reactivation never restores an old credential or session.
+  - Same-origin state changes require CSRF, session cookies are host-only Secure HttpOnly SameSite=Lax, and return targets remain within role-allowlisted same-origin paths.
+  - Passwords, raw token values, child data, provider links, and external identities are absent from audit-safe interfaces and public denial responses.
+downstream_tasks:
+  - P08
+  - P10
+  - P12
+  - P14
+  - P24
+  - P26
+  - P32
+verification_commands:
+  - npm run typecheck
+  - focused ESLint over the ten F03 TypeScript artifacts
+  - vitest run packages/domain/src/auth/v21-auth.contract.test.ts tests/integration/accounts/current-access-auth.test.ts
+  - canonical contract digest recomputation over nine interface artifacts
+contains_product_completion_claim: false
+contains_external_effect: false
