@@ -19,16 +19,17 @@ claimed_by: codex-f07-worker-fde01134
 claim_time: '2026-07-28T16:07:21Z'
 claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
 lease_expires_at: '2026-07-28T16:56:52Z'
-last_heartbeat_at: '2026-07-28T16:21:00Z'
+last_heartbeat_at: '2026-07-28T16:23:00Z'
 controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
 ready_entry_payload_digest: d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f
 state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-last_implementation_commit_sha: 9faca9c1ad04e3bda269dfabfeb62bcef61808c3
+last_implementation_commit_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
 completed_steps:
   - Verified repository identity, remote control authorization, queue digest, dependency integration state, and unexpired F07 claim/lease.
   - Verified LOCKED-SHA256SUMS (200/200) and source/task/context digests against immutable Git blob bytes.
   - Added the additive v2.1 design-system contract, accessible role shell/navigation/state/calendar primitives, and scoped responsive CSS under F07-owned paths.
   - Passed v2.1 contract tests, focused CSS governance smoke, and TypeScript validation; published the interface checkpoint for I36 integration.
+  - Recomputed interface artifact and combined digests from exact Git blob bytes after formatting; checkpoint now points at the current implementation head.
 remaining_steps:
   - Notify C00/I36 of the interface checkpoint and await integration authorization for downstream consumers.
   - Complete focused responsive/accessibility verification and final ready_for_review checkpoint.

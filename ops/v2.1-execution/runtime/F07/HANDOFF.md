@@ -18,7 +18,7 @@
 
 Created the isolated F07 branch from the exact F01-integrated authorization SHA and corrected the claim metadata to the exact containing control head. Verified the exact remote repository, control authorization, ready entry, claim, DESIGN_SYSTEM lease, F01 interface checkpoint, and 200 locked files plus source/task/context digests from immutable Git blobs. Added an additive v2.1 contract that publishes canonical tokens, the exact Admin primary navigation, English date formatting, explained-disabled-control behavior, accessible role shell/navigation/state patterns, and a calendar agenda equivalent. Scoped responsive/reduced-motion CSS is available under the F07-owned v2.1 style root.
 
-The interface contract is stable at implementation head `9faca9c1ad04e3bda269dfabfeb62bcef61808c3`; `INTERFACE-CHECKPOINT.yaml` records exact symbols, artifact hashes, and combined digest `9886d6d572452b39a1449e0cc896e496f1ea79b389956b2f19569edf39166673` (SHA-256 of sorted `path=artifact-sha256` export lines). I36 must merge the checkpoint before C00 authorizes the listed downstream tasks.
+The interface contract is stable at implementation head `a90baae8cf69d6823af6d741161fe0e9e7441321`; `INTERFACE-CHECKPOINT.yaml` records exact symbols, artifact hashes, and combined digest `366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188` (SHA-256 of sorted `path=artifact-sha256` export lines). Every artifact digest was computed from immutable Git blob bytes. I36 must merge the checkpoint before C00 authorizes the listed downstream tasks.
 
 ## Remaining work
 
