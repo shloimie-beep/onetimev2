@@ -10,27 +10,36 @@ items:
   target_checkpoint: F03_ready_for_review
   acknowledged_by_task: false
   applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
   rejection_reason: null
 - request_id: F01-retired-client-002
   request_digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
   requesting_task_id: F01
   kind: retired_surface
-  status: assigned
+  status: rejected
   assigned_steward: I36
   target_checkpoint: I36_next_steward_checkpoint
   acknowledged_by_task: false
   applied_commit_sha: null
-  rejection_reason: null
+  result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+  evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+  result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+  rejection_reason: The immutable request names three HTML paths that do not exist at the authorized target while retired Tisha event assets remain outside its exact assigned path list; full application would require scope expansion, and partial application would not satisfy the requested public-bundle retirement semantics.
 - request_id: F01-config-retirement-003
   request_digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
   requesting_task_id: F01
   kind: config_key
-  status: assigned
+  status: rejected
   assigned_steward: I36
   target_checkpoint: I36_next_steward_checkpoint
   acknowledged_by_task: false
   applied_commit_sha: null
-  rejection_reason: null
+  result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+  evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+  result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+  rejection_reason: The immutable request assumes F01's unmerged protectedPayloadEncryptionKey compatibility state, but that prerequisite is absent from the authorized integration target; applying it would synthesize unqueued F01 implementation rather than perform an exact central steward change.
 entry_schema:
   request_id: null
   request_digest: null
@@ -41,6 +50,9 @@ entry_schema:
   target_checkpoint: null
   acknowledged_by_task: false
   applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
   rejection_reason: null
 rule: A task pushes the immutable request on its own branch. C00 records its digest and lifecycle here, assigns
   the exact steward/checkpoint, and records the steward result. The requester must acknowledge the applied/rejected

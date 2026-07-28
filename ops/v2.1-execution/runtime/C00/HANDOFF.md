@@ -122,6 +122,21 @@ worker returned and the remote head unchanged, C00 issued fresh resume claim
 P31's superseding final checkpoint is now visible at
 `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`; admission remains pending
 C00's independent verification against the settled integration CAS.
+C00 independently reproduced P31's three artifact hashes, exact eight-path
+delta, combined contract digest
+`d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59`,
+and state/handoff digest
+`6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581`.
+The exact interface is queued for an I36-only ancestry merge from settled
+integration head `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
+I36's two rejected steward-result digests were also independently reproduced
+at that checkpoint and recorded in `STEWARD-QUEUE.yaml`. F01 is resume-ready
+only to acknowledge those two precise rejection records; its authentication
+request remains assigned to F03.
+Because C00 acquired a later serialized lease before F02 consumed its first
+resume entry, the unchanged unused claim was rebound to the new control parent.
+The current F02 payload is
+`b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11`.
 
 ## Remaining work
 
@@ -130,11 +145,10 @@ after worker branches advance.
 
 ## Exact next action
 
-Let F02 consume the new exact resume claim and push its prepared replacement
-checkpoint. Reconcile I36's two immutable steward-request rejection results.
-Independently verify P31's final replacement and queue it only against the exact
-settled integration head. F03 remains gated until F02's replacement interface
-is integrated.
+Dispatch the three exact ready entries without advancing the control ref:
+F02 publishes its replacement checkpoint, I36 integrates only P31, and F01
+acknowledges only the two recorded rejection results. F03 remains gated until
+F02's replacement interface is integrated.
 
 ## Verification
 
@@ -144,8 +158,10 @@ is integrated.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
-- Current F02 resume payload: `7b7b122521e9a1fce9500a02f4239529c4c11db0523cc48f5ab7e79671fd89b8`.
-- Verified integration head after F07: `91349fc1fa9a474ae31cf408ae0364aa10520385`.
+- Current F02 resume payload: `b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11`.
+- Current I36 resume payload: `a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`.
+- Current F01 acknowledgment payload: `f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda`.
+- Verified integration head after F07 and steward results: `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
 - F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
@@ -165,9 +181,9 @@ is integrated.
 - Rebound P31 ready payload: `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
 - Rebound F07 merge item payload: `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
 - P31 state/handoff digest: `f4b2e27b370c1589c4de2e841dbcd38b9b075a9ff5fe7d00b27eaf8c6e7b5fb2`.
-- Control parent for F02 resume authorization: `81f99e6e490ce402d86df217f339d09b345791ab`.
+- Control parent for the three ready authorizations: `193df1fbd101ebb5dd7f0f66adf2c1a78283aab0`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
-- I36 branch/head: `codex/v21-integration` / `91349fc1fa9a474ae31cf408ae0364aa10520385`.
+- I36 branch/head: `codex/v21-integration` / `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery

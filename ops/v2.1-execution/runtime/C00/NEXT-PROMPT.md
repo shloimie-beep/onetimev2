@@ -31,20 +31,20 @@ interface before integration to harden database fencing; ordinal 2234 remains
 reserved with status `superseded_pending_replacement`. Do not integrate the
 old `14793411` checkpoint. P31 is rebound with ready digest
 `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
-I36 consumed its takeover and verified the F07 ancestry merge at exact
-integration head `91349fc1fa9a474ae31cf408ae0364aa10520385`. It is recording
-schema-valid rejections for only the two assigned F01 requests because their
-immutable prerequisites/paths are absent at the authorized target. F02 is
-resume-ready against exact remote
-`191dac288ea1721bdc0252bd012060ca974d2242` with fresh claim
-`2608f241-6a2c-4d1d-a316-d2b1b704cfc0` and payload
-`7b7b122521e9a1fce9500a02f4239529c4c11db0523cc48f5ab7e79671fd89b8`;
-let the worker consume it and push its prepared replacement. P31's initial checkpoint
-`f54827a2e21cceccb50be0d7f93c211c540f04d6` passed artifact, scope, and
-combined-digest reproduction, but P31 announced a superseding consent/timing
-checkpoint now visible at `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`;
-independently verify it and queue only against the exact settled integration
-CAS. F03 stays gated and P35 waits for the next slot.
+I36's F07 merge and two exact steward-result rejections are recorded at
+integration checkpoint `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
+F02 is rebound resume-ready against exact remote
+`191dac288ea1721bdc0252bd012060ca974d2242`, claim
+`2608f241-6a2c-4d1d-a316-d2b1b704cfc0`, payload
+`b7671c575e870760f2e7880dd34263c25341597521228a584aaf59ba987fff11`.
+P31 final `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` is independently verified
+and queued only for I36 under claim `4ee7c853-5fa3-4fde-afc9-d123effe52b6`
+and payload `a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`.
+F01 is queued only to acknowledge the two rejected result digests under claim
+`683f3581-a6ca-472d-80a6-51fabb9208f5` and payload
+`f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda`.
+Do not advance control until these unused entries are consumed or safely
+refused. F03 stays gated and P35 waits for the next slot.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

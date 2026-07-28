@@ -1,8 +1,48 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: e354aedf-1e25-4d05-b917-3f568dcf048e
+  kind: interface
+  task_id: P31
+  source_branch: codex/v21-p31-email-copy-approval
+  source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+  source_delta_base_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+  required_merge_base_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  merge_after_heads: {}
+  allowed_paths:
+  - apps/web/src/server/features/email/templates/security.ts
+  - integrations/highlevel/v21/copy/catalog.ts
+  - ops/v2.1-execution/runtime/P31/HANDOFF.md
+  - ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+  - packages/domain/src/communications/copy/approval.ts
+  - packages/domain/src/communications/copy/catalog.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 7b68a523-6fe3-4fdc-a86f-55c8b176aae4
+    holder_task_id: I36
+    holder_claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
+    state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+    lease_issued_at: '2026-07-28T17:13:44Z'
+    lease_expires_at: '2026-07-28T18:13:44Z'
+    phase_scope: P31_interface_merge_only
+  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
+  state_handoff_digest: 6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+item_payload_digests:
+  e354aedf-1e25-4d05-b917-3f568dcf048e: 9984944a36d25b2512d0e0b203e00f751a660074a3c89cc59e75a441214cf7bf
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
