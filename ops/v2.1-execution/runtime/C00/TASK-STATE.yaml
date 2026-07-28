@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-af6463f4
-claim_time: '2026-07-28T20:34:49Z'
-claim_id: af6463f4-7278-4ea9-873e-cb9512f1c8e9
-lease_expires_at: '2026-07-28T20:39:30Z'
-last_heartbeat_at: '2026-07-28T20:39:30Z'
-controller_authorization_sha: b02229c7bf28fb33b5a3fd88f618e60dd03d4225
+claimed_by: codex-c00-orchestrator-3d1e958d
+claim_time: '2026-07-28T20:46:01Z'
+claim_id: 3d1e958d-0c82-4273-b180-88cdb535c3d2
+lease_expires_at: '2026-07-28T20:50:07Z'
+last_heartbeat_at: '2026-07-28T20:50:07Z'
+controller_authorization_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
 ready_entry_payload_digest: null
-state_based_on_head_sha: b02229c7bf28fb33b5a3fd88f618e60dd03d4225
+state_based_on_head_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -96,8 +96,11 @@ completed_steps:
 - consumed all three ready entries and rebound both ordered F06/P14 target CAS fields to exact I36 claim head 98f5689b
 - independently verified the ordered F06/P14 ancestry merges f1ba79a9 and 41954f00, final integration metadata d3516683, exact source ancestry and scope, typecheck, focused tests, and zero effects
 - cleared the completed merge wave and authorized the newly unlocked P27 GHL identity lane from exact integration head d3516683
+- independently verified P32 final f4ae1c03, exact interface source 6a33944a, implementation 888af549, 30-path owned delta, seven artifact hashes, contract digest 76d08587, state/handoff digest 215a3e38, 21 focused tests, typecheck, released lease, and zero effects
+- recorded and assigned P32's immutable migration, registration, and configuration requests without applying any request
+- admitted the exact P32 interface for an atomic-claim-only I36 ancestry merge and rebound the still-unused P27 authorization after its safe stale-control stop
 remaining_steps: []
-next_action: P27 atomically claims the GHL identity lane while P16 and P32 continue their disjoint claimed product lanes.
+next_action: P27 and I36 atomically claim their rebound GHL identity and P32 integration lanes while P16 continues.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -105,12 +108,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: b02229c7bf28fb33b5a3fd88f618e60dd03d4225
+  current_control_parent_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: af6463f4-7278-4ea9-873e-cb9512f1c8e9
-      observed_head: b02229c7bf28fb33b5a3fd88f618e60dd03d4225
+      claim_id: 3d1e958d-0c82-4273-b180-88cdb535c3d2
+      observed_head: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -121,11 +124,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: 1b554a42-a2a2-4017-add9-7117ed575b9e
+      claim_id: ce7c9fcd-dbf3-4d5e-9174-3b7632504e42
       observed_head: d35166838267711a514cf73822cd2ca49a3f3ded
-      authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-      lease_expires_at: null
-      scheduling_state: integration_wave_complete_agent_returned
+      authorized_start_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+      lease_expires_at: '2026-07-28T21:46:27Z'
+      scheduling_state: ready_for_P32_atomic_claim
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -206,31 +209,23 @@ orchestration:
     P32:
       branch: codex/v21-p32-privacy-data-rights
       claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
-      observed_head: a174a5e786e2cd19160241fe0f17697ae3e9b737
+      observed_head: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
       authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-      lease_expires_at: '2026-07-28T21:06:46Z'
-      scheduling_state: claimed_active
+      lease_expires_at: null
+      scheduling_state: ready_for_review_interface_queued_agent_returned
     P27:
       branch: codex/v21-p27-ghl-identity
       claim_id: 83580db4-4a47-44d0-8d6d-83969ae7ccf5
       observed_head: null
       authorized_start_sha: d35166838267711a514cf73822cd2ca49a3f3ded
       lease_expires_at: '2026-07-28T21:34:49Z'
-      scheduling_state: ready_for_atomic_claim
+      scheduling_state: rebound_ready_for_atomic_claim
   active_native_subagents:
   - task_id: P16
     agent: /root/f05_worker
     branch: codex/v21-p16-class-series-occurrences
     observed_head: 45649e52ea792f2ead63415555776497747cacad
     claim_id: fd104a34-4a75-4e5c-83c2-22266452d198
-    lease_expires_at: '2026-07-28T21:06:46Z'
-    status: claimed
-    phase: contract
-  - task_id: P32
-    agent: /root/f03_worker
-    branch: codex/v21-p32-privacy-data-rights
-    observed_head: a174a5e786e2cd19160241fe0f17697ae3e9b737
-    claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
     lease_expires_at: '2026-07-28T21:06:46Z'
     status: claimed
     phase: contract
@@ -348,12 +343,12 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: b4f74d45d08dbd8250d56c804ddcedca1ffe10206089783a7254c1ac6e895bcd
-    control_lease: b8637811dfafc01291658cb810d8c769dfd9416cbf2da60f8343645d53e02ee4
-    task_registry: 0f493d6b8b2e6db2d682269e03c3689bda5bb10da1772caf72160fbea26d6d56
-    ready_queue: 75f45e82e2f5d614fb0c0540bc0e4ac1c6d64a1e83cd8cf51504d21f49c830dc
-    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
-    steward_queue: 750170972d9e9768e94bf78a452e4dd8a0b498097eb46bce9fc389aef6ae8edf
+    control_state: 6e1035abeebba161ce6d0c9a812f259c6c711402d7f8e86cf8a91bfff27ad924
+    control_lease: efd4c43124a044a53042ea83bb29bb7fb0f61ac58913643f334021e51140a58a
+    task_registry: 3d970d4faaedc123490ba001d6bc208e526643157f3cc30b8884291ac6ccc678
+    ready_queue: d482db6c3e3894025bf78515ca6d1fe0ac03415aff15448dc3fba0c7e9a36034
+    merge_queue: 037093375cd76f25d765c97c5e7452958e9fd01f757e874672ce2347fba66a6c
+    steward_queue: 8f83ad6c761408ebcfed0b4e4ec0ac04f0f04534ad7f6ebb2e8cae25cdda9bb9
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70

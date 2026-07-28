@@ -280,19 +280,23 @@ implementation `9c08e9c6...` and contract `1a9b86f0...`. Their exact ordered
 interface wave was merged in order at `f1ba79a9` and `41954f00`; final
 integration metadata is `d35166838267711a514cf73822cd2ca49a3f3ded`.
 Source ancestry, exact scope, typecheck, focused tests, and zero effects passed.
-P16 and P32 continue implementing, and P27 is now authorized from `d3516683`.
+P32 is now `ready_for_review` at `f4ae1c03`, with exact interface source
+`6a33944a`, implementation `888af549`, contract digest `76d08587...`,
+state/handoff digest `215a3e38...`, 21 focused tests, typecheck, and zero
+effects. Its three immutable steward requests are assigned but unapplied. The
+exact P32 interface is queued for I36. P27 safely stopped before its first push
+when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P16 and P32 are actively implementing, P27 is ready for
-its atomic GHL identity claim, and P35 awaits later full implementation admission.
+None for bootstrap. P16 remains active. P27 and I36 are ready for atomic claims;
+P35 awaits later full implementation admission.
 
 ## Exact next action
 
-Dispatch P27 under claim `83580db4-4a47-44d0-8d6d-83969ae7ccf5` to
-atomically create `codex/v21-p27-ghl-identity` from
-`d35166838267711a514cf73822cd2ca49a3f3ded`. In parallel, let P16 and P32
-continue their disjoint claimed lanes.
+Dispatch P27 under claim `83580db4-4a47-44d0-8d6d-83969ae7ccf5` and
+I36 under claim `ce7c9fcd-dbf3-4d5e-9174-3b7632504e42` for atomic claim-only
+checkpoints from `d35166838267711a514cf73822cd2ca49a3f3ded`. Let P16 continue.
 
 ## Verification
 

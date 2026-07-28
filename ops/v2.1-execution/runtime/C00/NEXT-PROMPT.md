@@ -71,8 +71,14 @@ atomically claimed at `98f5689b`, `45649e52`, and `a174a5e7`; exact scopes,
 bindings, and zero effects passed. I36 completed the ordered F06/P14 ancestry
 wave at merge heads `f1ba79a9` and `41954f00`, with final integration metadata
 `d35166838267711a514cf73822cd2ca49a3f3ded`; all checks and zero-effect
-verification passed. The completed merge queue is clear. P27 is authorized
-from `d3516683` for an atomic GHL identity claim while P16 and P32 continue.
+verification passed. P32 completed `ready_for_review` at `f4ae1c03`, with
+interface source `6a33944a`, implementation `888af549`, exact contract digest
+`76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217`,
+state/handoff `215a3e38...`, 21 focused tests, typecheck, and zero effects.
+Its exact interface is queued for an atomic-claim-only I36 merge, and its three
+steward requests are assigned but unapplied. P27 safely refused stale authority
+after the C00 acquisition and is rebound to the same integration parent. Dispatch
+the P27 and I36 atomic claims while P16 continues.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
