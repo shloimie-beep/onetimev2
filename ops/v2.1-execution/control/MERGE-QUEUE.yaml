@@ -1,60 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items:
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  merge_id: cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95
-  kind: interface
-  task_id: P16
-  source_branch: codex/v21-p16-class-series-occurrences
-  source_head_sha: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
-  target_branch: codex/v21-integration
-  expected_target_head_sha: 47166ef026bb34842ec306cf7c2d2fc363773ad7
-  source_delta_base_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-  required_merge_base_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-  preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
-  merge_after_heads: {}
-  allowed_paths:
-  - apps/web/src/client/app/admin/classroom/core/ClassSeriesWorkspace.tsx
-  - apps/web/src/client/app/admin/classroom/core/index.ts
-  - apps/web/src/server/features/classes/core/index.ts
-  - apps/web/src/server/features/classes/core/service.test.ts
-  - apps/web/src/server/features/classes/core/service.ts
-  - ops/v2.1-execution/runtime/P16/HANDOFF.md
-  - ops/v2.1-execution/runtime/P16/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P16/STEWARD-REQUESTS.yaml
-  - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
-  - packages/contracts/src/classes/core/index.ts
-  - packages/db/src/classes/core/index.ts
-  - packages/db/src/classes/core/repository.ts
-  - packages/db/src/classes/core/schema-contract.ts
-  - packages/domain/src/classes/core/classroom-core.test.ts
-  - packages/domain/src/classes/core/enrollment.ts
-  - packages/domain/src/classes/core/errors.ts
-  - packages/domain/src/classes/core/index.ts
-  - packages/domain/src/classes/core/occurrences.ts
-  - packages/domain/src/classes/core/series.ts
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 496f5ac8-09f9-4186-82f3-299de929cd7c
-    holder_task_id: I36
-    holder_claim_id: ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6
-    state_based_on_control_head_sha: 80e9f304627ef724757604255627d3e2fe033ef8
-    lease_issued_at: '2026-07-28T21:36:49Z'
-    lease_expires_at: '2026-07-28T22:36:49Z'
-    phase_scope: P16_interface_atomic_claim_only
-  task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
-  state_handoff_digest: 2ad3f13c642a7c229e54a4a07f59b49cefc4e0477b5dfa8c22e0e1d9f206ee16
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-  state_based_on_control_head_sha: ff31c09d547dad37dc3d2ab8eb02d1c600ffeddf
-item_payload_digests:
-  cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95: e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2
+items: []
+item_payload_digests: {}
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

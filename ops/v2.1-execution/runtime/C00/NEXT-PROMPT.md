@@ -115,6 +115,14 @@ with sole parent `972fa435` and exactly its three runtime files. P16 remains
 absent. C00 rebound only merge item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95`
 to `47166ef0`; canonical payload is `e58c0de4886e2d9f40355848a6d3e3bdeb2db47ee6594d6f9d3ca7c931dc99c2`.
 Resume I36 to merge only P16 and apply no steward request.
+I36 merged P16 at exact two-parent head `387ca78ee33af7d2d4fd19d45a1b01981afaaad3`
+and published final metadata `9ba92b070eedfa3756eff4f78fd328de72507a96`.
+All scope, artifact, contract, typecheck, 17-test, lint, formatting, ancestry,
+and zero-effect checks passed; no steward request was applied. The merge queue
+is empty. C00 selected the three dependency-valid capacity lanes with the
+largest immediate critical-path value: P18 embedded classroom, P19 content
+ingest (unlocks P20), and P28 communication foundation (unlocks P29/P30).
+Dispatch their exact ready entries from `9ba92b07`.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

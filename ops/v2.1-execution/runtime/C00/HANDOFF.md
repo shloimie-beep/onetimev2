@@ -289,17 +289,18 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P27 is ancestry-integrated at final head `972fa435`.
-I36 consumed P16's atomic authorization at exact three-file claim head
-`47166ef0`; P16 remains absent from that head. Its sole merge item is rebound
-to that target CAS with canonical digest `e58c0de4`. P32 is integrated at
-`c4d042e9`; P35 awaits later full admission.
+None for bootstrap. P27 is ancestry-integrated at `972fa435`. P16 is
+ancestry-integrated at merge head `387ca78e` and final metadata head
+`9ba92b07`; exact scope, artifacts, contract, typecheck, 17 focused tests,
+formatting, and zero effects passed. The merge queue is empty. Dependency-valid
+Wave 6 lanes P18, P19, and P28 are each authorized from `9ba92b07`.
 
 ## Exact next action
 
-Resume I36 claim `ff8bf935-3e65-4ed9-aa52-4032cfb5f7e6` to merge only P16
-item `cbf396c5-6b57-4ce6-b343-9a8c8fb3ae95` from exact target
-`47166ef026bb34842ec306cf7c2d2fc363773ad7`. Apply no steward request.
+Dispatch P18 claim `415e950e-cfbb-4635-9f1a-3ffd6af825ac`, P19 claim
+`de624026-ff9a-4c35-ad02-bc6c1f28a3dc`, and P28 claim
+`16640fee-ca26-4885-9be7-14fb2baa682c`. Each must first publish only its exact
+three task-local runtime files from `9ba92b070eedfa3756eff4f78fd328de72507a96`.
 
 ## Verification
 
