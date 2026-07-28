@@ -1,0 +1,80 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F01
+task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
+task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-f01-foundation-seams
+start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+dependency_heads:
+  C00:
+    required_state: operational
+    observed_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
+    control_state_digest: 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
+    task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
+    task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
+status: claimed
+phase: contract
+claimed_by: codex-f01-worker-4aafff01
+claim_time: '2026-07-28T15:19:34Z'
+claim_id: c18310c8-3975-4816-badd-1fa9079edc33
+lease_expires_at: '2026-07-28T16:09:35Z'
+last_heartbeat_at: '2026-07-28T15:19:34Z'
+controller_authorization_sha: e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce
+ready_entry_payload_digest: 02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2
+state_based_on_head_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+last_implementation_commit_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+completed_steps:
+- verified repository identity and isolated clone
+- fetched and verified containing control head e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce
+- verified F01 branch absence, exact claim, leases, authorized start, and ready payload digest
+- verified all 200 locked execution-package checksums
+- verified C00 operational dependency state and checksum-bound dependency metadata
+- read the execution contract, task packet, locked context, dependency handoff, and runtime templates
+remaining_steps:
+- record the assigned-path gap map
+- implement and verify stable server, client, worker, and steward-request interface seams
+- publish and push the interface_ready checkpoint
+- implement retired-surface closure and remaining assigned behavior
+- complete task-owned verification and publish ready_for_review
+next_action: Inspect only F01-owned implementation paths and named tests, record the assigned requirement gap map, then implement the stable interface seams.
+requirements:
+  OTV2-FOUNDATION-001: in_progress
+  OTV2-FOUNDATION-003: in_progress
+  OTV2-FOUNDATION-004: in_progress
+  OTV2-FOUNDATION-005: in_progress
+  OTV2-FOUNDATION-006: in_progress
+  OTV2-FOUNDATION-208: in_progress
+  OTV2-FOUNDATION-215: in_progress
+  OTV2-FOUNDATION-216: in_progress
+acceptance_cases:
+  OTV2-FOUNDATION-001-AC01: pending_candidate_verification
+  OTV2-FOUNDATION-003-AC01: pending_candidate_verification
+  OTV2-FOUNDATION-004-AC01: pending_candidate_verification
+  OTV2-FOUNDATION-005-AC01: implementation_pending
+  OTV2-FOUNDATION-006-AC01: implementation_pending
+  OTV2-FOUNDATION-208-AC01: implementation_pending
+  OTV2-FOUNDATION-215-AC01: implementation_pending
+  OTV2-FOUNDATION-216-AC01: pending_candidate_verification
+changed_paths:
+- ops/v2.1-execution/runtime/F01/TASK-STATE.yaml
+- ops/v2.1-execution/runtime/F01/HANDOFF.md
+- ops/v2.1-execution/runtime/F01/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+  - repository remote is https://github.com/shloimie-beep/onetimev2.git
+  - remote F01 branch absent before claim
+  - LOCKED-SHA256SUMS.txt 200/200 passed against authorized start Git blobs
+  - F01 ready-entry canonical digest matched 02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2
+  - C00 control-state digest matched 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
+  known_baseline_failures:
+  - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
