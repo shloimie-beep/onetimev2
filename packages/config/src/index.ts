@@ -59,6 +59,30 @@ const deliveryEnvironmentSchema = z.enum(['local', 'test', 'isolated_staging', '
 
 export type OneTimeRuntimeEnvironment = z.infer<typeof deliveryEnvironmentSchema>;
 
+export const CURRENT_APPLICATION_ROLES = ['admin', 'parent', 'student'] as const;
+export type CurrentApplicationRole = (typeof CURRENT_APPLICATION_ROLES)[number];
+
+export const RETIRED_PRODUCTION_SURFACE_IDS = [
+  'preview',
+  'experience-demo',
+  'fictional-customer',
+  'class-helper',
+  'buffer-social-publishing',
+  'whatsapp-assistant',
+  'test-lane',
+  'parent-created-goal',
+  'editable-badge-rule',
+  'favorites',
+  'background-pwa-push',
+  'mfa',
+  'school-administration',
+] as const;
+export type RetiredProductionSurfaceId = (typeof RETIRED_PRODUCTION_SURFACE_IDS)[number];
+
+export function isCurrentApplicationRole(role: string): role is CurrentApplicationRole {
+  return (CURRENT_APPLICATION_ROLES as readonly string[]).includes(role);
+}
+
 export type RuntimeClassification = {
   environment: OneTimeRuntimeEnvironment;
   isProductionRuntime: boolean;
