@@ -27,6 +27,7 @@ import { PostgresDeliveryRepository } from '../delivery/repository.ts';
 import { SinkDeliveryRouter } from '../delivery/sink-router.ts';
 import { runDeliveryBatch } from '../delivery/worker.ts';
 import { HighLevelHttpAdapter } from '../highlevel/adapter.ts';
+import { runWorkerRunners, workerRunnerRegistrations } from '../runners/registry/index.ts';
 
 const WORKER_TYPE = 'delivery_outbox';
 
@@ -112,6 +113,16 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       workerInstanceKey,
       logger,
     });
+    const registeredRunners = await runWorkerRunners({
+      context: {
+        config: config.appConfig,
+        pool,
+        source,
+        workerInstanceKey,
+        logger,
+      },
+      registrations: workerRunnerRegistrations,
+    });
     return {
       ...delivery,
       support,
@@ -120,6 +131,7 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       highLevel,
       learningDelivery,
       contentFactory,
+      registeredRunners,
     };
   } finally {
     await safeHeartbeat(
@@ -238,6 +250,16 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             source,
             workerInstanceKey,
             logger,
+          });
+          await runWorkerRunners({
+            context: {
+              config: config.appConfig,
+              pool,
+              source,
+              workerInstanceKey,
+              logger,
+            },
+            registrations: workerRunnerRegistrations,
           });
         } catch (error) {
           void error;

@@ -301,6 +301,10 @@ import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
 import { createContactOperationsRouter } from './features/contact-operations/router.ts';
 import { createAdminDirectoryRouter } from './features/admin-directory/router.ts';
+import {
+  installServerFeatureRouters,
+  type ServerFeatureRegistration,
+} from './features/registry/index.ts';
 
 type AppDeps = {
   config: AppConfig;
@@ -311,6 +315,7 @@ type AppDeps = {
   contentFactoryJobNotifier?: (intakeKey: string) => Promise<void> | void;
   zoomAdminProvider?: ZoomAdminProviderPort;
   zoomClassOccurrenceProvider?: ZoomClassOccurrenceProvider;
+  featureRegistrations?: readonly ServerFeatureRegistration[];
 };
 
 const SESSION_COOKIE = 'otcrm_session';
@@ -406,6 +411,7 @@ export function createApp({
   contentFactoryJobNotifier,
   zoomAdminProvider,
   zoomClassOccurrenceProvider,
+  featureRegistrations = [],
 }: AppDeps) {
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
@@ -624,6 +630,17 @@ export function createApp({
   );
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+
+  installServerFeatureRouters({
+    app,
+    context: {
+      config,
+      pool,
+      distDir,
+      ...(clock ? { clock } : {}),
+    },
+    registrations: featureRegistrations,
+  });
 
   registerOpsRoutes({
     app,

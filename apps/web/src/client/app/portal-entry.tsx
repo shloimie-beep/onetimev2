@@ -12,13 +12,12 @@ import type {
 } from '@onetime/contracts';
 import {
   PARENT_PORTAL_SECTIONS,
-  ParentPortalFeature,
   STUDENT_PORTAL_SECTIONS,
-  StudentPortalFeature,
   type ParentPortalSection,
   type PortalViewState,
   type StudentPortalSection,
 } from '../features/portals/PortalFeatures.js';
+import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
@@ -89,7 +88,7 @@ type PortalDialog =
     };
 
 function PortalApp() {
-  const portalRole = location.pathname.startsWith('/app/student') ? 'student' : 'parent';
+  const portalRole = portalRoleFromLocation(location.pathname);
   const [activeSection, setActiveSection] = useState<ParentPortalSection | StudentPortalSection>(
     () => portalSectionFromLocation(portalRole),
   );
@@ -646,7 +645,7 @@ function PortalApp() {
             }}
           />
         ) : (
-          <ParentPortalFeature
+          <ParentClientRoot
             viewState={viewState}
             dashboard={parentDashboard}
             selectedLearnerKey={selectedLearner?.learner_key ?? null}
@@ -683,7 +682,7 @@ function PortalApp() {
           />
         )
       ) : (
-        <StudentPortalFeature
+        <StudentClientRoot
           viewState={viewState}
           dashboard={studentDashboard}
           activeSection={activeSection as StudentPortalSection}
@@ -1378,6 +1377,13 @@ function portalSectionFromLocation(
   const requested = new URLSearchParams(location.search).get('section');
   if (requested && isPortalSection(role, requested)) return requested;
   return role === 'parent' ? 'learners' : 'today';
+}
+
+function portalRoleFromLocation(pathname: string): 'parent' | 'student' {
+  const route = resolveCurrentClientRoute(pathname);
+  if (route?.shell === 'parent') return 'parent';
+  if (route?.shell === 'student') return 'student';
+  throw new Error(`No current Parent or Student route is registered for "${pathname}".`);
 }
 
 function isPortalSection(
