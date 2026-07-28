@@ -6,6 +6,8 @@ import React, {
 } from 'react';
 import { brandAssetPaths } from './tokens.ts';
 
+export * from './react-v21.tsx';
+
 type PrimitiveProps = {
   className?: string;
   children?: React.ReactNode;
