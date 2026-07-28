@@ -68,9 +68,11 @@ two assigned but unapplied steward requests, and zero effects.
 
 P15 is ancestry-integrated at final head `01cdb992`. I36, P16, and P32
 atomically claimed at `98f5689b`, `45649e52`, and `a174a5e7`; exact scopes,
-bindings, and zero effects passed. The ready queue is empty and both ordered
-F06/P14 merge items are rebound to target `98f5689b`. Resume I36 to consume
-only that ordered interface wave while P16 and P32 continue.
+bindings, and zero effects passed. I36 completed the ordered F06/P14 ancestry
+wave at merge heads `f1ba79a9` and `41954f00`, with final integration metadata
+`d35166838267711a514cf73822cd2ca49a3f3ded`; all checks and zero-effect
+verification passed. The completed merge queue is clear. P27 is authorized
+from `d3516683` for an atomic GHL identity claim while P16 and P32 continue.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

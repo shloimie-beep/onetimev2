@@ -277,19 +277,21 @@ source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7`, implementation
 `94281de13063203808ecabef8a818762e5ff1e2e`, and contract `7d0e2e36...`.
 P14 is `ready_for_review` at exact interface source `3393169e...`, backed by
 implementation `9c08e9c6...` and contract `1a9b86f0...`. Their exact ordered
-interface wave is queued. P16 and P32 are newly ready from `01cdb992`.
+interface wave was merged in order at `f1ba79a9` and `41954f00`; final
+integration metadata is `d35166838267711a514cf73822cd2ca49a3f3ded`.
+Source ancestry, exact scope, typecheck, focused tests, and zero effects passed.
+P16 and P32 continue implementing, and P27 is now authorized from `d3516683`.
 
 ## Remaining work
 
-None for bootstrap. I36 has claimed and both ordered merge targets are rebound;
-P16 and P32 are actively implementing. P35 awaits later full implementation
-admission.
+None for bootstrap. P16 and P32 are actively implementing, P27 is ready for
+its atomic GHL identity claim, and P35 awaits later full implementation admission.
 
 ## Exact next action
 
-Resume I36 under claim `1b554a42-a2a2-4017-add9-7117ed575b9e` to consume
-only the rebound ordered F06/P14 merge items with expected target
-`98f5689bf72a6da6bb0a622dc73d802ce6fb1e72`. In parallel, let P16 and P32
+Dispatch P27 under claim `83580db4-4a47-44d0-8d6d-83969ae7ccf5` to
+atomically create `codex/v21-p27-ghl-identity` from
+`d35166838267711a514cf73822cd2ca49a3f3ded`. In parallel, let P16 and P32
 continue their disjoint claimed lanes.
 
 ## Verification
