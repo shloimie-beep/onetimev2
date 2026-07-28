@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-p31-email-copy-approval`
 - Start SHA: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
-- Implementation SHA before this handoff metadata commit: `c815cbc8eb5fe301ca0b693eaa64e8db22752213`
+- Implementation SHA before this handoff metadata commit: `0e1f7bc6debb57826420f55f7f5c6e937761fca0`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374`
 - Context digest: `c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342`
@@ -12,7 +12,7 @@
 
 ## Completed behavior
 
-The canonical catalog now defines the exact three sender identities, Rabbi greeting/signoff, Resend-only account setup and password-reset copy, and GHL lifecycle fragments for Parent activation, class reminder, recording, newsletter, legacy migration, and former-member reactivation. The approval guard checks every WNC-9 gate and automatically blocks on digest drift, missing approval, wrong sender, over-budget audience, Student contact, delivery/approval gaps, bounce/complaint thresholds, provider failures, and unrelated effects. No provider call or live send was made.
+The canonical catalog now defines the exact three sender identities, Rabbi greeting/signoff, Resend-only account setup and password-reset copy, and GHL lifecycle fragments for Parent activation, class reminder, recording, newsletter, legacy migration, and former-member reactivation. The approval guard checks every WNC-9 gate and automatically blocks on digest drift, missing approval or required current consent, wrong sender, over-budget audience, Student contact, delivery/approval gaps, bounce/complaint thresholds, provider failures, and unrelated effects. Legacy migration and former-member reactivation explicitly declare approval-launch timing; the newsletter declares weekly household-local timing. No provider call or live send was made.
 
 ## Remaining work
 
@@ -41,7 +41,7 @@ Await C00/I36 observation and integration of the exact checkpoint.
 
 ## Verification
 
-`npm run typecheck` passed. Focused runtime assertions passed for: exact approval success; rejection for missing gates/over-budget/Student contact; Resend-only token setup rendering; and the absence of token-bearing GHL fragments. The P31 interface artifacts have combined digest `ad924a549e3eddd6fdb5ba3c9d485b78a9e75de320c003561557128ea9b77f8e`.
+`npm run typecheck` passed. Focused runtime assertions passed for: exact approval success; rejection for missing consent/gates/over-budget/Student contact; Resend-only token setup rendering; the absence of token-bearing GHL fragments; and approval-launch timing for active migration. The P31 interface artifacts have combined digest `d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59`.
 
 ## External effects
 

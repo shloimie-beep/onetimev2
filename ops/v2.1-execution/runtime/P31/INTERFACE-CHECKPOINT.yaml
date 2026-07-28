@@ -1,10 +1,10 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: P31
-interface_implementation_head_sha: c815cbc8eb5fe301ca0b693eaa64e8db22752213
+interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
-contract_digest: ad924a549e3eddd6fdb5ba3c9d485b78a9e75de320c003561557128ea9b77f8e
+contract_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
 contract_schema_version: 1
 semantic_contract_version: 1.0.0
 state: interface_ready
@@ -18,24 +18,25 @@ exports:
       - CANONICAL_COPY_CATALOG
       - findCanonicalCopy
       - requiresRabbiVoice
-    sha256: 2a13e9682363743ebeaf49150e236517dca84098cdc4c0b48236d197f8c47efe
+    sha256: c9921e79315e1b0f885d36b25b4bb8a19ae8db7bc2e2b8d1d864fbdccd0b6fa4
   - path: packages/domain/src/communications/copy/approval.ts
     symbols:
       - CAMPAIGN_APPROVAL_SEMANTIC_VERSION
       - canonicalContentDigest
       - evaluateCampaignApproval
-    sha256: 10b60ed42c7dd3f34d50eecefc97999b894d955a9e198e2f431040ebee38ddbc
+    sha256: 000dca8d6342c164eb544c33cc052e3ee64d82627dc0c8baf4ff51aecbeedf73
   - path: integrations/highlevel/v21/copy/catalog.ts
     symbols:
       - GHL_COPY_FRAGMENT_VERSION
       - GHL_COPY_FRAGMENTS
       - findGhlCopyFragment
-    sha256: c5a7d3d497a84b87a1a77d43b26462230a7ad78ab06371e4c315a31df83e64ff
+    sha256: 0fc345996dd03cbb6de2f8a6a35e6a8a501c1d152ffee6261489f0de53a97bc9
 compatibility_invariants:
   - Copy catalog exports are module-local; P28/P29/P30 consume the exact checkpointed paths rather than a root barrel.
   - Token-bearing account setup and password reset templates are Resend-only and never appear in GHL fragments.
   - GHL fragments are adult-only; a Student recipient is rejected by campaign approval enforcement.
-  - Campaign execution is denied on missing named Admin approval, content or audience digest drift, an over-budget audience, failed readback/render/seed gates, wrong sender, or any automatic pause trigger.
+  - Campaign execution is denied on missing named Admin approval, required current consent, content or audience digest drift, an over-budget audience, failed readback/render/seed gates, wrong sender, or any automatic pause trigger.
+  - Active migration and former-member reactivation declare approval-launch timing; the newsletter declares weekly household-local timing and current-consent enforcement.
   - Rabbi campaign copy begins with Hi {{contact.first_name}} and ends with the required Rabbi Eli Scheller / One Time Mishnayos signature.
 downstream_tasks:
   - P28

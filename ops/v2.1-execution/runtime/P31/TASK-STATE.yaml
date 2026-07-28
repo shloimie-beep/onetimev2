@@ -24,11 +24,11 @@ last_heartbeat_at: '2026-07-28T16:50:38Z'
 controller_authorization_sha: beb72be5ba1f993c1806e9314146e88f951affdb
 ready_entry_payload_digest: e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74
 state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-last_implementation_commit_sha: c815cbc8eb5fe301ca0b693eaa64e8db22752213
+last_implementation_commit_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
 completed_steps:
   - Verified remote control head, branch absence, exact authorized start SHA, P31 task/context digests, F01 integrated interface proof, and active COPY_CATALOG lease.
   - Seeded first-claim runtime state for atomic remote branch creation.
-  - Implemented the canonical sender/copy catalog, Resend-only token template renderer, GHL adult-only fragments, and digest-bound campaign approval enforcement.
+  - Implemented the canonical sender/copy catalog, Resend-only token template renderer, GHL adult-only fragments, and digest-bound campaign approval enforcement with current-consent and approval-launch timing semantics.
   - Published the P31 interface checkpoint for P28, P29, and P30.
 remaining_steps:
   - I36 must integrate this exact interface checkpoint before C00 authorizes P28, P29, or P30 starts that depend on it.
