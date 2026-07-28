@@ -9,19 +9,19 @@ start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
   C00:
     required_state: operational
-    observed_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
-    control_state_digest: 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
+    observed_control_head_sha: 586f1216c27b02915bdca606645d7e1ee335a669
+    control_state_digest: e3cd73b2f07706189605173923b91631decf805c4e007d5d82d7ebdb4c34ed4c
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
-status: renewal_requested
+status: claimed
 phase: retirement_verification
 claimed_by: codex-f01-worker-4aafff01
-claim_time: '2026-07-28T15:19:34Z'
-claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-lease_expires_at: '2026-07-28T16:09:35Z'
-last_heartbeat_at: '2026-07-28T15:55:30Z'
-controller_authorization_sha: e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce
-ready_entry_payload_digest: 02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2
+claim_time: '2026-07-28T15:56:52Z'
+claim_id: f5bc9b67-9a49-432f-9ce4-6ebd99d856d9
+lease_expires_at: '2026-07-28T16:56:52Z'
+last_heartbeat_at: '2026-07-28T16:06:30Z'
+controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
+ready_entry_payload_digest: 913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2
 state_based_on_head_sha: d7dd4aa9accb951447c184d210f024860201b9e1
 last_implementation_commit_sha: d7dd4aa9accb951447c184d210f024860201b9e1
 completed_steps:
@@ -38,12 +38,12 @@ completed_steps:
   - normalized legacy owner and rabbi sessions to the current public admin role and rejected retired account roles
   - removed the routine email-challenge endpoints and login-page controls from the owned server surface
   - verified the owned retirement delta with full typecheck and production client build
+  - verified and atomically adopted the C00-issued F01 resume claim and renewed six-slot lease
 remaining_steps:
-  - renew the F01 lease before any further work
   - complete the direct-access absence harness and exact inventory scan
   - reconcile out-of-scope domain auth, public bundle, Vite entry, and compatibility config references through the central-file steward mechanism
   - publish ready_for_review
-next_action: After C00 grants a fresh matching F01 lease, verify direct access fails closed and reconcile the recorded out-of-scope retired-surface references without crossing owned-path authority.
+next_action: Verify direct access fails closed and reconcile the recorded out-of-scope retired-surface references without crossing owned-path authority.
 requirements:
   OTV2-FOUNDATION-001: in_progress
   OTV2-FOUNDATION-003: in_progress
@@ -103,7 +103,7 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - lease renewal required before the direct-access absence harness and reconciliation work
+  - out-of-scope retired-surface references require steward coordination before ready_for_review
 out_of_scope_findings:
   - packages/domain/src/auth/service.ts still creates a routine email challenge for legacy internal admin identities after valid password authentication; the owned server no longer exposes the challenge endpoints or controls, so a domain-steward change is required for direct Admin email-plus-password login.
   - apps/web/vite.app.config.ts still emits the retired experience-preview client entry and apps/web/src/client/public.ts retains dormant email-challenge code; both paths are outside F01 ownership. The owned server denies the emitted preview asset and no longer renders challenge controls.
