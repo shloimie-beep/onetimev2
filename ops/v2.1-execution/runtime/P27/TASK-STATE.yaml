@@ -1,0 +1,88 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P27
+task_packet_digest: 77c5a4de58a57dffea3f9cbe4aa7646ac75bc1f0462afebfff2c0279dc527a74
+task_context_digest: c1016b9b4f97895cc60c173a0cc69d409f16eef2d83d7680e35ee4d604cadf48
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p27-ghl-identity
+start_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+dependency_heads:
+  F04:
+    required_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F06:
+    required_state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+status: claimed
+phase: contract
+claimed_by: codex-p27-worker-83580db4
+claim_time: '2026-07-28T20:44:57Z'
+claim_id: 83580db4-4a47-44d0-8d6d-83969ae7ccf5
+writer_slot_lease_id: 62f708f5-43b5-4f50-8cc8-623c8f448a0a
+lease_issued_at: '2026-07-28T20:34:49Z'
+lease_expires_at: '2026-07-28T21:34:49Z'
+last_heartbeat_at: '2026-07-28T20:44:57Z'
+controller_authorization_sha: 1b1ecf75213617df552831df6ca8b04478a60211
+state_based_on_control_head_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
+ready_entry_payload_digest: cade386eb849cf7481bb51c7e8d443f5bb10ab8a2698c565b5856f139be23110
+state_based_on_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+last_implementation_commit_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+completed_steps:
+- Verified repository identity shloimie-beep/onetimev2 and exact containing control head
+  1b1ecf75213617df552831df6ca8b04478a60211.
+- Recomputed and matched the canonical P27 ready-entry payload digest
+  cade386eb849cf7481bb51c7e8d443f5bb10ab8a2698c565b5856f139be23110.
+- Verified the ready/registry branch, authorized start, claim, sole GHL_IDENTITY lease, and zero effect locks.
+- Verified all 200 locked Git blobs plus package-lock, source-package, task, and context digests.
+- Verified the exact integrated F04/F06 dependency heads, ancestry, task/context bindings, interface
+  implementation/checkpoint digests, and every exported artifact hash.
+- Verified the autonomous orchestration binding that reserves worker dispatch to root/C00 and prohibits
+  child spawning or worker control-state edits.
+- Created the isolated P27 branch from exact authorized start
+  d35166838267711a514cf73822cd2ca49a3f3ded without reading or changing product implementation paths.
+remaining_steps:
+- Push and report this exact three-file atomic P27 claim checkpoint to C00.
+- Await C00 consumption of the ready entry before any product implementation.
+next_action: Report the exact pushed atomic P27 claim checkpoint to C00, then pause until C00 consumes the ready entry and publishes exact continuation authority.
+requirements:
+  OTV2-GHL-117: claimed_not_started
+  OTV2-GHL-118: claimed_not_started
+  OTV2-GHL-119: claimed_not_started
+acceptance_cases:
+  OTV2-GHL-117-AC01: not_run
+  OTV2-GHL-118-AC01: not_run
+  OTV2-GHL-119-AC01: not_run
+changed_paths:
+- ops/v2.1-execution/runtime/P27/TASK-STATE.yaml
+- ops/v2.1-execution/runtime/P27/HANDOFF.md
+- ops/v2.1-execution/runtime/P27/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+  - command: git remote get-url origin and exact ref/head verification
+    result: passed; repository, containing control 1b1ecf75213617df552831df6ca8b04478a60211, and authorized start exact
+  - command: canonical P27 READY payload recomputation
+    result: passed; cade386eb849cf7481bb51c7e8d443f5bb10ab8a2698c565b5856f139be23110
+  - command: ready/registry/branch/claim/lease/effect-lock verification
+    result: passed; remote branch absent, claim exact, sole GHL_IDENTITY lease live, zero effect locks
+  - command: locked Git blob and entry-bound digest verification
+    result: passed; 200 locked blobs plus package-lock, source-package, task, and context digests
+  - command: F04/F06 dependency contract and ancestry verification
+    result: passed; exact integrated heads, task/context/checkpoint bindings, contract preimages, and all artifact hashes
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
