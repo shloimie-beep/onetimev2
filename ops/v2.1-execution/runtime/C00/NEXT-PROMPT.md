@@ -66,15 +66,16 @@ at `c96b8c55c07e5283e762537934a6bf948833700e`, with implementation
 state/handoff `cb8551031e184df2f727f1df5f54733ab02b1226fb1f00f11ed17b65e0c6f4ce`,
 two assigned but unapplied steward requests, and zero effects.
 
-The ready queue now contains F06 provider-core claim
-`6deb862f-e548-4d2a-9966-3ec5c3cfd40f` and P14 student-app claim
-`cd46fd41-66f9-42c3-9215-2d12fbbf7d31`, both from exact integrated start
-`9782a416`, plus I36 atomic-claim-only resume claim
-`15bcce0c-16b9-4c00-b422-ba5053554f14`. P15 merge
-`22ea97a2-e2db-4a49-9e2b-7649d3a0e069` is queued from exact source
-`c96b8c55` to expected target `9782a416`. Dispatch all three claims in
-parallel, require I36 to stop after its task-local atomic claim, then consume
-the exact ready entries and rebind the P15 target CAS before resuming I36.
+The ready queue is empty. I36, F06, and P14 atomically claimed at exact heads
+`e58a2f8d38594cd5774aa65adf035d3cdc132704`,
+`aeafa9111d87ca3d1a6e09a4e1c3d85608778dab`, and
+`fbf25b9c2e8e80ca0cf480836d1e407b4999cdc3`; all three exact task-local
+claim scopes and authorization bindings passed with zero effects. P15 merge
+`22ea97a2-e2db-4a49-9e2b-7649d3a0e069` is rebound from exact source
+`c96b8c55` to expected target `e58a2f8d`, canonical payload
+`617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d`.
+Resume I36 to perform only that merge while F06 and P14 continue their
+disjoint claimed lanes.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

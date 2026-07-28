@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-3118dcbf
-claim_time: '2026-07-28T19:26:59Z'
-claim_id: 3118dcbf-47c1-48ad-b41c-e7f4f05a17d1
-lease_expires_at: '2026-07-28T19:40:32Z'
-last_heartbeat_at: '2026-07-28T19:40:32Z'
-controller_authorization_sha: f2ace0993937a020a31c364f079bcf52b8c65350
+claimed_by: codex-c00-orchestrator-3cc9c609
+claim_time: '2026-07-28T19:49:46Z'
+claim_id: 3cc9c609-0ab9-449f-bfcc-908ed9103c17
+lease_expires_at: '2026-07-28T19:54:22Z'
+last_heartbeat_at: '2026-07-28T19:54:22Z'
+controller_authorization_sha: ec7068fdab45a6a29825006e41c9bc260991732a
 ready_entry_payload_digest: null
-state_based_on_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
+state_based_on_head_sha: ec7068fdab45a6a29825006e41c9bc260991732a
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -87,8 +87,10 @@ completed_steps:
 - independently verified P15's final c96b8c55 checkpoint, exact twenty-one-path source delta, six interface artifacts, plain path/hash contract preimage 2ebe108d, state/handoff binding cb855103, twelve focused tests, typecheck, lint, and zero effects
 - recorded and assigned P15's immutable migration and shared-registration requests to F02 and I36 without applying either request
 - admitted only P15's exact interface for an I36 ancestry merge from settled integration head 9782a416 and issued an atomic-claim-only I36 resume authorization before target-CAS rebind
+- independently verified I36 e58a2f8d, F06 aeafa911, and P14 fbf25b9c atomic claims from exact parent 9782a416, each with exact three-file task-local scope, authorization binding, lease identity, and zero effects
+- consumed all three exact ready entries and rebound only the P15 merge target CAS to I36 claim head e58a2f8d while preserving source identity, source base, allowed paths, and ancestry requirement
 remaining_steps: []
-next_action: I36 atomically claims and stops before the P15 merge while F06 and P14 atomically claim their disjoint lanes; reconcile the three exact claim heads and rebind P15 target CAS before resuming I36.
+next_action: I36 performs only the rebound P15 interface merge while F06 and P14 continue their disjoint claimed product lanes; reconcile the first exact interface or terminal checkpoint.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -96,12 +98,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: f2ace0993937a020a31c364f079bcf52b8c65350
+  current_control_parent_sha: ec7068fdab45a6a29825006e41c9bc260991732a
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 3118dcbf-47c1-48ad-b41c-e7f4f05a17d1
-      observed_head: f2ace0993937a020a31c364f079bcf52b8c65350
+      claim_id: 3cc9c609-0ab9-449f-bfcc-908ed9103c17
+      observed_head: ec7068fdab45a6a29825006e41c9bc260991732a
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -113,10 +115,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: 15bcce0c-16b9-4c00-b422-ba5053554f14
-      observed_head: 9782a4164662b8059a557c0969de9c35f54d0cf7
+      observed_head: e58a2f8d38594cd5774aa65adf035d3cdc132704
       authorized_start_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
       lease_expires_at: '2026-07-28T20:36:08Z'
-      scheduling_state: resume_authorized_atomic_claim_only
+      scheduling_state: claimed_P15_target_rebound_resume_authorized
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -176,18 +178,42 @@ orchestration:
     F06:
       branch: codex/v21-f06-provider-core
       claim_id: 6deb862f-e548-4d2a-9966-3ec5c3cfd40f
-      observed_head: null
+      observed_head: aeafa9111d87ca3d1a6e09a4e1c3d85608778dab
       authorized_start_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
       lease_expires_at: '2026-07-28T20:27:38Z'
-      scheduling_state: ready
+      scheduling_state: claimed_active
     P14:
       branch: codex/v21-p14-student-app
       claim_id: cd46fd41-66f9-42c3-9215-2d12fbbf7d31
-      observed_head: null
+      observed_head: 9c08e9c6735a61e201f7b05116a3406e6092e08b
       authorized_start_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
       lease_expires_at: '2026-07-28T20:27:38Z'
-      scheduling_state: ready
-  active_native_subagents: []
+      scheduling_state: claimed_active
+  active_native_subagents:
+  - task_id: F06
+    agent: /root/f03_worker
+    branch: codex/v21-f06-provider-core
+    observed_head: aeafa9111d87ca3d1a6e09a4e1c3d85608778dab
+    claim_id: 6deb862f-e548-4d2a-9966-3ec5c3cfd40f
+    lease_expires_at: '2026-07-28T20:27:38Z'
+    status: claimed
+    phase: contract
+  - task_id: P14
+    agent: /root/f05_worker
+    branch: codex/v21-p14-student-app
+    observed_head: 9c08e9c6735a61e201f7b05116a3406e6092e08b
+    claim_id: cd46fd41-66f9-42c3-9215-2d12fbbf7d31
+    lease_expires_at: '2026-07-28T20:27:38Z'
+    status: claimed
+    phase: contract
+  - task_id: I36
+    agent: /root/i36_worker2
+    branch: codex/v21-integration
+    observed_head: e58a2f8d38594cd5774aa65adf035d3cdc132704
+    claim_id: 15bcce0c-16b9-4c00-b422-ba5053554f14
+    lease_expires_at: '2026-07-28T20:36:08Z'
+    status: claimed_target_rebound
+    phase: integration
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -284,11 +310,11 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 958f682bac1cebe2bf6fb5db2b3b517b4ed2eb3deb9a08c12b453e22871ca1fc
-    control_lease: 2536a31646d5d2e694ba1b62239131386024e7036da952e0e02e58743bff926a
-    task_registry: 974ea7f58935e2dc1488ea80dec981f6c8fb801915c88f7f56f247086c41c0eb
-    ready_queue: 7c14a8b14b9a047d7fb9a8f3de662a94c99c65e9e26b89307757bb4ee1fc706f
-    merge_queue: f21f73899128d9960f371cb8501a98131aa45dc2feeb4a708bcb60652f047bbc
+    control_state: 5c4a75e09a06f10fabd8213d815fc228e6f0edf2a8940e5cd1708076b8dd3ef0
+    control_lease: 84d359d8efd8fd337dbb554b5e3271d09dc5a296ae4548fdbbdc5317670aebe8
+    task_registry: 7d5ce2670dc9c194a8ced3b2e30a9426fb85094395db2d6c310b9e019e0ecd87
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    merge_queue: 8f019d7aba39e17a0641733ff41e728f976d2140e9efbde12d3374ea4b35c3d9
     steward_queue: 452575b6fe438baa0826c44e246ff1c3a507863b047c1d83caac65e62fa70dec
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
@@ -332,6 +358,8 @@ verification:
   - P15 97207017 atomic claim exact parent/scope/authorization/lease and canonical F06/P14 frontier ready payloads against acquisition parent f2ace099: passed
   - P15 c96b8c55 final ancestry, exact twenty-one-path scope, six artifact hashes, plain path/hash 2ebe108d contract preimage, cb855103 state/handoff digest, request-object digests, focused/typecheck/lint verification, and zero effects: passed
   - canonical F06, P14, and I36 ready-entry payload digests plus P15 merge-item payload digest against acquisition parent f2ace099: passed
+  - I36 e58a2f8d, F06 aeafa911, and P14 fbf25b9c atomic claim parent ancestry, exact three-file scopes, authorization/lease bindings, and zero effects: passed
+  - canonical rebound P15 merge payload 617e791e against acquisition parent ec7068fd with exact target e58a2f8d and unchanged source/base/scope: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -260,22 +260,30 @@ typecheck, lint, two canonical steward-request objects, and zero effects.
 Its migration request is assigned to F02 and registration request to I36,
 both unapplied. The exact P15 interface is queued for I36 from settled
 integration head `9782a416`.
+C00 independently verified the three atomic claims: I36
+`e58a2f8d38594cd5774aa65adf035d3cdc132704`, F06
+`aeafa9111d87ca3d1a6e09a4e1c3d85608778dab`, and P14
+`fbf25b9c2e8e80ca0cf480836d1e407b4999cdc3`. Each has sole parent
+`9782a416`, exact three-file task-local scope, the expected claim/lease and
+containing authorization, and zero effects. Their ready entries are consumed.
+P15 merge `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` is rebound only at its
+optimistic target CAS to exact I36 claim head `e58a2f8d`; canonical rebound
+payload is `617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d`.
 
 ## Remaining work
 
-None for bootstrap. F06 and P14 await atomic claims. I36 awaits an atomic
-claim-only checkpoint before C00 rebinds the queued P15 merge target. P35
-awaits later full implementation admission.
+None for bootstrap. F06 and P14 are actively implementing. I36 may perform
+only the rebound exact P15 interface merge. P35 awaits later full
+implementation admission.
 
 ## Exact next action
 
-Dispatch F06 claim `6deb862f-e548-4d2a-9966-3ec5c3cfd40f`, P14 claim
-`cd46fd41-66f9-42c3-9215-2d12fbbf7d31`, and I36 claim
-`15bcce0c-16b9-4c00-b422-ba5053554f14` from exact integrated start
-`9782a416`. I36 must stop immediately after its task-local atomic claim.
-Reconcile all three exact claim heads, consume their ready entries, and
-rebind P15 merge `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` to the I36 claim
-head before resuming any merge.
+Resume I36 under unchanged claim `15bcce0c-16b9-4c00-b422-ba5053554f14`
+and lease `c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51` to consume only rebound
+P15 merge `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` with expected target
+`e58a2f8d38594cd5774aa65adf035d3cdc132704`. In parallel, let F06 and P14
+continue their disjoint claimed lanes. Reconcile the first exact interface or
+terminal checkpoint.
 
 ## Verification
 
