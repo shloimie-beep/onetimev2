@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-f01-foundation-seams`
 - Start SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`
-- Implementation SHA before this handoff metadata commit: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`
+- Implementation SHA before this handoff metadata commit: `bb7664c44444bf1704d9f63e5c19a15381f2f0b0`
 - Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
 - Task packet digest: `1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda`
 - Context digest: `5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372`
@@ -13,6 +13,7 @@
 - Lease expiry: `2026-07-28T16:09:35Z`
 - Containing control head: `e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce`
 - Ready payload digest: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`
+- Interface contract digest: `2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713`
 
 ## Completed behavior
 
@@ -21,18 +22,23 @@ remote branch, authorized start SHA, claim, unexpired leases, package and source
 locks, F01 task/context digests, canonical ready-entry digest, and C00
 operational dependency. Read the execution contract, F01 packet and locked
 context, the current remote C00 handoff, and required runtime templates.
+Implemented versioned, fail-closed server feature-router, client route/root,
+worker runner, and steward-request interfaces. The server and worker composers
+consume their registries, and the Parent and Student portal entry now composes
+separate feature roots through the client router. The exact interface contract
+at implementation head `bb7664c44444bf1704d9f63e5c19a15381f2f0b0`
+unlocks F02, F07, P31, and P35 after I36 integration.
 
 ## Remaining work
 
-Record the assigned-path gap map; implement stable server/client/worker and
-steward-request seams; publish `interface_ready`; close explicitly retired
-runtime surfaces while preserving historical migrations; complete focused
-verification and publish `ready_for_review`.
+Close explicitly retired runtime surfaces while preserving historical
+migrations; complete focused absence and regression verification; publish
+`ready_for_review`.
 
 ## Exact next action
 
-Inspect only the F01-owned implementation paths and named tests, record the
-assigned requirement gap map, then implement the stable interface seams.
+Unmount the explicitly retired server, client, worker, and configuration
+surfaces from current composition, then verify direct access fails closed.
 
 ## Coverage
 
@@ -42,8 +48,10 @@ assigned requirement gap map, then implement the stable interface seams.
 
 ## Changed files and migrations
 
-Only the three F01 runtime-memory files are changed for the atomic claim.
-No migration was created, deleted, or edited.
+Added the four required interface roots, integrated them through the assigned
+server/client/worker composers, added the config role/surface seam, and
+published `INTERFACE-CHECKPOINT.yaml`. No migration was created, deleted, or
+edited.
 
 ## Verification
 
@@ -52,6 +60,10 @@ No migration was created, deleted, or edited.
 - `LOCKED-SHA256SUMS.txt`: 200/200 Git blobs passed.
 - Canonical ready-entry digest matched.
 - C00 operational control-state digest and task/context digests matched.
+- `npm run typecheck`: passed.
+- Focused client/server/worker seam smoke: passed positive, authorization
+  rejection, duplicate-rejection, and deterministic execution branches.
+- Steward-request JSON schema parsed successfully.
 
 ## External effects
 

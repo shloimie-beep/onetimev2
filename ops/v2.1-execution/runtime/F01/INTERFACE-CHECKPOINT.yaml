@@ -1,0 +1,76 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F01
+interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
+contract_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: apps/web/src/server/features/registry/index.ts
+    symbols:
+      - SERVER_FEATURE_REGISTRY_CONTRACT_VERSION
+      - ServerFeatureContext
+      - ServerFeatureRegistration
+      - InstalledServerFeature
+      - defineServerFeature
+      - installServerFeatureRouters
+    sha256: b18e369029cf171ddd193ae17a2c867dfb125658b8d91a693349d2f9df918021
+  - path: apps/web/src/client/app/router/index.ts
+    symbols:
+      - CLIENT_ROUTER_CONTRACT_VERSION
+      - CURRENT_CLIENT_ROUTES
+      - createClientRouteRegistry
+      - defineClientRoute
+      - resolveCurrentClientRoute
+      - ParentClientRoot
+      - StudentClientRoot
+    sha256: c0c3a52586766b97d2d39f8a5008da25f96c3ccd3f6e919eaacc0af0621b5cc4
+  - path: apps/web/src/client/app/router/registry.ts
+    symbols:
+      - ClientRouteDefinition
+      - ClientRouteRegistry
+      - ClientShellId
+      - CurrentClientRole
+    sha256: 05005792eb99087a13d8827fbedf1e8f428f0b80c4312651842e1562461cf838
+  - path: apps/web/src/client/app/router/portal-roots.tsx
+    symbols:
+      - ParentClientRoot
+      - ParentClientRootProps
+      - StudentClientRoot
+      - StudentClientRootProps
+    sha256: a529b3b3ad2c4f41a903413861aba6bfcb202550b530a77017e735f51f9d99c4
+  - path: apps/worker/src/runners/registry/index.ts
+    symbols:
+      - WORKER_RUNNER_REGISTRY_CONTRACT_VERSION
+      - WorkerRunnerContext
+      - WorkerRunnerRegistration
+      - WorkerRunnerResult
+      - WorkerRunnerResults
+      - defineWorkerRunner
+      - runWorkerRunners
+      - workerRunnerRegistrations
+    sha256: f27a2ef4c5b1248ab7af4848e1703c2d130e150f0f54df242ee915e27610fde5
+  - path: ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
+    symbols:
+      - https://onetimeonetime.com/schemas/v2.1/steward-request.schema.json
+    sha256: 9e431aacac0527eac99ae87e0e5105b3bb78a95e23618964fbf6433e84de675d
+compatibility_invariants:
+  - Server feature IDs and mount paths are unique; all registrations are validated before the first router is mounted.
+  - Client route IDs and matchers are unique, ambiguity fails closed, and assignable roles are limited to admin, parent, and student.
+  - Parent and Student portals have separate React feature roots while retaining their existing persistent-data behavior.
+  - Worker runner IDs are unique and registrations execute sequentially in declared order after full validation.
+  - Central composer changes require a schema-valid, non-secret steward request after this checkpoint.
+downstream_tasks:
+  - F02
+  - F07
+  - P31
+  - P35
+verification_commands:
+  - npm run typecheck
+  - focused F01 seam smoke covering positive resolution/execution plus duplicate and authorization rejection
+  - JSON parse of steward-request.schema.json
+contains_product_completion_claim: false
+contains_external_effect: false

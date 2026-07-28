@@ -24,3 +24,9 @@ If digests match, do not restart completed work or globally re-audit the
 repository. Continue until `ready_for_review` or a permitted stop condition.
 Update state, handoff, and this next prompt; checkpoint, commit, and push before
 returning.
+
+The stable interface implementation head is
+`bb7664c44444bf1704d9f63e5c19a15381f2f0b0`; verify
+`INTERFACE-CHECKPOINT.yaml`, then resume by unmounting the explicitly retired
+server, client, worker, and configuration surfaces from current composition and
+verifying direct access fails closed.
