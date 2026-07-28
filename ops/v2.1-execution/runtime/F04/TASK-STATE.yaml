@@ -13,8 +13,8 @@ dependency_heads:
     integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
     interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
     interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
-status: claimed
-phase: contract
+status: interface_ready
+phase: interface
 claimed_by: codex-f04-worker-38e6f374
 claim_time: '2026-07-28T18:21:39Z'
 claim_id: 38e6f374-86dc-4b78-9846-4c328455443c
@@ -22,39 +22,63 @@ writer_slot_leases:
   - slot: ACCOUNT_HOUSEHOLD_IDENTITY
     lease_id: 520d3ff9-ec5a-43cf-bfcd-0cdb5ab7886e
 lease_expires_at: '2026-07-28T19:11:45Z'
-last_heartbeat_at: '2026-07-28T18:21:39Z'
+last_heartbeat_at: '2026-07-28T18:40:21Z'
 controller_authorization_sha: 398ebf34ec72892d354370af11af297d45302888
 ready_entry_payload_digest: b04cb5f0f35d34ed53e48fa0e16fbce22178ffef13842c7e091031d61a979dda
-state_based_on_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
-last_implementation_commit_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+state_based_on_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+last_implementation_commit_sha: 81c0ee64072386db41aa5a40243c693762ab493a
 completed_steps:
-  - Verified exact remote control head, ready-entry payload digest, package/source/task/context digests, dependency checkpoint, unclaimed branch, claim, and writer-slot lease.
-  - Created the authorized task branch from the exact integration start SHA.
+  - Verified and atomically consumed the exact F04 ready claim and writer lease.
+  - Implemented normalized one-adult/one-HumanAccount identity linking with exact admin/parent memberships.
+  - Implemented explicit role and server-resolved household context rotation with exact session policies.
+  - Implemented fail-closed Parent/Student capability separation and cross-household isolation.
+  - Implemented atomic ownership-transfer planning, self-Student archive/move invariants, dependent attestations, session/token revocation, audit, and provider intent.
+  - Implemented parameterized PostgreSQL persistence adapter and registration-neutral server services.
+  - Published migration and registration steward requests without editing central hotspots.
+  - Passed 14 focused assertions, full typecheck, focused lint/format, and diff checks.
+  - Published the exact semantic interface checkpoint for downstream integration.
 remaining_steps:
-  - Implement the normalized adult identity, role/context, multi-household, ownership-transfer, and isolation contracts.
-  - Publish the exact interface checkpoint and complete task-owned verification.
-next_action: Inspect only the named account/access implementation paths and locked F04 source sections, then implement the smallest coherent contract and domain vertical.
+  - Re-run final verification, release the worker lease in metadata, and publish ready_for_review.
+next_action: Run the exact final verification suite, update the durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
 requirements:
-  OTV2-ACCOUNT-181: pending
-  OTV2-ACCOUNT-182: pending
-  OTV2-ACCOUNT-183: pending
-  OTV2-ACCOUNT-230: pending
+  OTV2-ACCOUNT-181: implementation_verified
+  OTV2-ACCOUNT-182: implementation_verified
+  OTV2-ACCOUNT-183: implementation_verified
+  OTV2-ACCOUNT-230: implementation_verified
 acceptance_cases:
-  OTV2-ACCOUNT-181-AC01: pending
-  OTV2-ACCOUNT-182-AC01: pending
-  OTV2-ACCOUNT-183-AC01: pending
-  OTV2-ACCOUNT-230-IDENTITY-ROLE-CONTEXT: pending
+  OTV2-ACCOUNT-181-AC01: task_owned_assertions_passed
+  OTV2-ACCOUNT-182-AC01: task_owned_assertions_passed
+  OTV2-ACCOUNT-183-AC01: task_owned_assertions_passed
+  OTV2-ACCOUNT-230-IDENTITY-ROLE-CONTEXT: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/server/features/accounts/v21-account-context-service.test.ts
+  - apps/web/src/server/features/accounts/v21-account-context-service.ts
+  - packages/contracts/src/access/v21-household-authorization.ts
+  - packages/contracts/src/accounts/v21-household-identity.test.ts
+  - packages/contracts/src/accounts/v21-household-identity.ts
+  - packages/db/src/accounts/v21-household-identity-repository.ts
+  - packages/domain/src/access/index.ts
+  - packages/domain/src/access/v21-household-authorization.ts
+  - packages/domain/src/accounts/index.ts
+  - packages/domain/src/accounts/v21-household-identity.test.ts
+  - packages/domain/src/accounts/v21-household-identity.ts
+  - ops/v2.1-execution/runtime/F04/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F04/steward-requests/F04-migration-001.yaml
+  - ops/v2.1-execution/runtime/F04/steward-requests/F04-registration-001.yaml
   - ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F04/HANDOFF.md
   - ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
 migrations: []
-steward_requests: []
+steward_requests:
+  - F04-migration-001
+  - F04-registration-001
 verification:
   commands_run:
-    - git ls-remote origin refs/heads/codex/v21-control refs/heads/codex/v21-f04-household-identity
-    - canonical SHA-256 verification of the F04 ready entry
-    - Git-object SHA-256 verification of package/source/task/context inputs
+    - npm run typecheck
+    - npx vitest run packages/contracts/src/accounts/v21-household-identity.test.ts packages/domain/src/accounts/v21-household-identity.test.ts apps/web/src/server/features/accounts/v21-account-context-service.test.ts
+    - focused eslint over all F04 TypeScript artifacts
+    - focused prettier --check over all F04 TypeScript/YAML artifacts
+    - git diff --check
   known_baseline_failures: []
 external_effects:
   authority: none
