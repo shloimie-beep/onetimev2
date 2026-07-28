@@ -376,7 +376,14 @@ BEGIN
       OR (p_previous = 'resolved' AND p_next IN ('in_progress', 'closed'));
   ELSIF p_kind = 'billing_operation' THEN
     IF p_previous IS NULL THEN
-      RETURN p_next = 'not_started';
+      RETURN p_next = 'not_started'
+        AND p_dispatch_attempts = 0
+        AND p_reconciliation_attempts = 0
+        AND p_recovery_generation = 0
+        AND p_current_lease_generation IS NULL
+        AND p_presented_lease_generation IS NULL
+        AND NOT p_provider_request_occurred
+        AND NOT p_unknown_effect;
     ELSIF p_previous IN ('not_started', 'retry_wait') AND p_next = 'leased' THEN
       RETURN p_dispatch_attempts < 8
         AND p_presented_lease_generation IS NOT NULL
@@ -401,14 +408,20 @@ BEGIN
     ELSIF p_previous = 'accepted' AND p_next = 'complete' THEN
       RETURN p_reconciliation_digest IS NOT NULL;
     ELSIF p_previous = 'acceptance_unknown' THEN
-      RETURN p_unknown_effect
-        AND p_reconciliation_digest IS NOT NULL
+      RETURN p_reconciliation_digest IS NOT NULL
         AND (
-          (p_next = 'accepted' AND p_reconciliation_outcome = 'effect_exists_accepted')
-          OR (p_next = 'complete' AND p_reconciliation_outcome = 'effect_exists_complete')
-          OR (p_next = 'retry_wait' AND p_reconciliation_outcome = 'effect_absent_retry_safe')
-          OR (p_next = 'rejected' AND p_reconciliation_outcome = 'effect_permanently_rejected')
+          (
+            NOT p_unknown_effect
+            AND (
+              (p_next = 'accepted' AND p_reconciliation_outcome = 'effect_exists_accepted')
+              OR (p_next = 'complete' AND p_reconciliation_outcome = 'effect_exists_complete')
+              OR (p_next = 'retry_wait' AND p_reconciliation_outcome = 'effect_absent_retry_safe')
+              OR (p_next = 'rejected' AND p_reconciliation_outcome = 'effect_permanently_rejected')
+            )
+          )
           OR (
+            p_unknown_effect
+            AND
             p_next = 'dead_letter'
             AND p_reconciliation_outcome = 'attempts_exhausted'
             AND p_dispatch_attempts + p_reconciliation_attempts >= 8
@@ -417,7 +430,12 @@ BEGIN
     ELSIF p_previous = 'retry_wait' AND p_next = 'dead_letter' THEN
       RETURN p_dispatch_attempts >= 8;
     ELSIF p_previous IN ('not_started', 'leased', 'retry_wait') AND p_next = 'canceled' THEN
-      RETURN NOT p_provider_request_occurred AND NOT p_unknown_effect;
+      RETURN NOT p_provider_request_occurred
+        AND NOT p_unknown_effect
+        AND (
+          p_previous <> 'leased'
+          OR p_presented_lease_generation = p_current_lease_generation
+        );
     ELSIF p_previous = 'dead_letter' AND p_next = 'not_started' THEN
       RETURN p_admin_recovery_authorized AND p_recovery_generation > 0;
     END IF;
@@ -433,7 +451,9 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
   prior_event onetime.canonical_state_transition_events%ROWTYPE;
+  committed_event onetime.canonical_state_transition_events%ROWTYPE;
   current_record onetime.canonical_aggregate_states%ROWTYPE;
+  committed_lease_generation bigint;
 BEGIN
   SELECT *
     INTO prior_event
@@ -451,6 +471,83 @@ BEGIN
     END IF;
     RAISE EXCEPTION 'canonical state idempotency conflict'
       USING ERRCODE = '23505';
+  END IF;
+
+  SELECT *
+    INTO current_record
+    FROM onetime.canonical_aggregate_states
+   WHERE aggregate_kind = NEW.aggregate_kind
+     AND aggregate_key = NEW.aggregate_key
+   FOR UPDATE;
+
+  IF NEW.previous_state IS NULL THEN
+    IF FOUND OR NEW.expected_version <> 0 THEN
+      RAISE EXCEPTION 'canonical state creation version conflict'
+        USING ERRCODE = '40001';
+    END IF;
+  ELSE
+    IF NOT FOUND
+      OR current_record.current_state <> NEW.previous_state
+      OR current_record.version <> NEW.expected_version
+      OR current_record.product_key <> NEW.product_key
+      OR current_record.runtime_tier <> NEW.runtime_tier
+      OR current_record.verification_environment_id <> NEW.verification_environment_id THEN
+      RAISE EXCEPTION 'canonical state stale version or scope conflict'
+        USING ERRCODE = '40001';
+    END IF;
+  END IF;
+
+  IF NEW.aggregate_kind = 'billing_operation' AND NEW.previous_state IS NOT NULL THEN
+    SELECT *
+      INTO STRICT committed_event
+      FROM onetime.canonical_state_transition_events
+     WHERE transition_key = current_record.last_transition_key;
+
+    committed_lease_generation := CASE
+      WHEN committed_event.next_state = 'leased'
+        THEN committed_event.presented_lease_generation
+      ELSE committed_event.current_lease_generation
+    END;
+
+    IF NEW.current_lease_generation IS DISTINCT FROM committed_lease_generation THEN
+      RAISE EXCEPTION 'canonical billing current lease generation conflict'
+        USING ERRCODE = '40001';
+    END IF;
+
+    IF NEW.previous_state = 'dead_letter' AND NEW.next_state = 'not_started' THEN
+      IF NEW.provider_recovery_generation <> committed_event.provider_recovery_generation + 1
+        OR NEW.provider_dispatch_attempts <> 0
+        OR NEW.provider_reconciliation_attempts <> 0 THEN
+        RAISE EXCEPTION 'canonical billing recovery generation or counter conflict'
+          USING ERRCODE = '23514';
+      END IF;
+    ELSIF NEW.provider_recovery_generation <> committed_event.provider_recovery_generation
+      OR NEW.provider_dispatch_attempts < committed_event.provider_dispatch_attempts
+      OR NEW.provider_reconciliation_attempts < committed_event.provider_reconciliation_attempts THEN
+      RAISE EXCEPTION 'canonical billing attempt or recovery counter regression'
+        USING ERRCODE = '23514';
+    ELSIF (
+        NEW.previous_state = 'leased'
+        AND NEW.next_state IN ('in_flight', 'acceptance_unknown')
+        AND NEW.provider_dispatch_attempts <> committed_event.provider_dispatch_attempts + 1
+      )
+      OR (
+        NOT (NEW.previous_state = 'leased' AND NEW.next_state IN ('in_flight', 'acceptance_unknown'))
+        AND NEW.provider_dispatch_attempts <> committed_event.provider_dispatch_attempts
+      ) THEN
+      RAISE EXCEPTION 'canonical billing dispatch attempt counter conflict'
+        USING ERRCODE = '23514';
+    ELSIF (
+        NEW.previous_state = 'acceptance_unknown'
+        AND NEW.provider_reconciliation_attempts <> committed_event.provider_reconciliation_attempts + 1
+      )
+      OR (
+        NEW.previous_state <> 'acceptance_unknown'
+        AND NEW.provider_reconciliation_attempts <> committed_event.provider_reconciliation_attempts
+      ) THEN
+      RAISE EXCEPTION 'canonical billing reconciliation attempt counter conflict'
+        USING ERRCODE = '23514';
+    END IF;
   END IF;
 
   IF NOT onetime.canonical_state_transition_is_allowed(
@@ -474,19 +571,7 @@ BEGIN
       USING ERRCODE = '23514';
   END IF;
 
-  SELECT *
-    INTO current_record
-    FROM onetime.canonical_aggregate_states
-   WHERE aggregate_kind = NEW.aggregate_kind
-     AND aggregate_key = NEW.aggregate_key
-   FOR UPDATE;
-
   IF NEW.previous_state IS NULL THEN
-    IF FOUND OR NEW.expected_version <> 0 THEN
-      RAISE EXCEPTION 'canonical state creation version conflict'
-        USING ERRCODE = '40001';
-    END IF;
-
     INSERT INTO onetime.canonical_aggregate_states (
       aggregate_kind,
       aggregate_key,
@@ -521,16 +606,6 @@ BEGIN
       NEW.created_at
     );
   ELSE
-    IF NOT FOUND
-      OR current_record.current_state <> NEW.previous_state
-      OR current_record.version <> NEW.expected_version
-      OR current_record.product_key <> NEW.product_key
-      OR current_record.runtime_tier <> NEW.runtime_tier
-      OR current_record.verification_environment_id <> NEW.verification_environment_id THEN
-      RAISE EXCEPTION 'canonical state stale version or scope conflict'
-        USING ERRCODE = '40001';
-    END IF;
-
     UPDATE onetime.canonical_aggregate_states
        SET current_state = NEW.next_state,
            version = NEW.resulting_version,

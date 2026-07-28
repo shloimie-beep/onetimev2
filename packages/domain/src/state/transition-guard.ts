@@ -450,10 +450,18 @@ function assertUnknownRecovery(
   toState: CanonicalState<'billing_operation'>,
   evidence: BillingTransitionEvidence,
 ) {
-  if (!evidence.unknownEffect || !hasDigest(evidence.reconciliationDigest)) {
+  if (!hasDigest(evidence.reconciliationDigest)) {
     throw new StateTransitionError(
       'missing_transition_evidence',
       'Acceptance-unknown recovery requires a canonical reconciliation digest.',
+    );
+  }
+  if (toState === 'dead_letter' ? !evidence.unknownEffect : evidence.unknownEffect) {
+    throw new StateTransitionError(
+      'missing_transition_evidence',
+      toState === 'dead_letter'
+        ? 'Dead-lettered unknown work must remain quarantined as an unknown effect.'
+        : 'A conclusive reconciliation must clear the unknown-effect flag.',
     );
   }
 
