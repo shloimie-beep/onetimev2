@@ -20,14 +20,15 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current authority is control head
-`95a2a52e096357738cda2bd7c16bc9a0e24ccd70`, claim
-`4ee7c853-5fa3-4fde-afc9-d123effe52b6`, RELEASE_INTEGRATOR lease
-`7b68a523-6fe3-4fdc-a86f-55c8b176aae4` through
-`2026-07-28T18:13:44Z`, and ready-entry digest
-`a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`.
+Current F02-interface-only authority is control head
+`3df0ee05af64db67af02e1e64d37ded4810d2cd9`, parent control state
+`55c5605acf834318627d54bd3e94eb90d6429a80`, claim
+`8d31181a-cfe8-493e-b7ce-4ea867da9581`, RELEASE_INTEGRATOR lease
+`9b0d2541-b765-4a2b-af44-014f842efa1a` through
+`2026-07-28T18:38:47Z`, and ready-entry digest
+`9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`.
 The exact pre-claim integration head is
-`1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
+`eefca0644e57dca48609682cbc3e1b01992d286d`.
 
 F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
 has been ancestry-merged and pushed at exact integration head
@@ -58,9 +59,13 @@ verified and ancestry-merged at pushed integration head
 `42b09dc598e0dfc17ada53b441e4cd487e126573`. Typecheck and focused P31
 catalog/approval/security assertions passed.
 
-Current exact next action: report the pushed P31 integration metadata
-checkpoint to C00, then pause until a new exact queue/lease authorization.
-Do not integrate F02 or F01, edit control, or perform live effects.
+Current exact next action: report the pushed F02-interface-only claim head to
+C00, then stop and wait. C00 must rebind item
+`95985f2c-410b-461b-9360-549591ef624e` from its old target
+`eefca0644e57dca48609682cbc3e1b01992d286d` to the exact claim head before
+I36 reads or merges F02 source `e4673ff1c2e621e26ac93034be245b280c4da4fa`.
+No unrelated merge, steward, evidence, control, or live-effect work is
+authorized.
 
 Do not read or integrate any F02 checkpoint or migration; its replacement is
 pending. Do not edit control files or perform provider/live effects. F01 source

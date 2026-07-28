@@ -10,12 +10,13 @@
 - Task packet digest: `55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7`
 - Context digest: `7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim ID: `4ee7c853-5fa3-4fde-afc9-d123effe52b6`
-- Writer: `codex-i36-worker2-4ee7c853`
-- RELEASE_INTEGRATOR lease: `7b68a523-6fe3-4fdc-a86f-55c8b176aae4`
-- Controller authorization: `95a2a52e096357738cda2bd7c16bc9a0e24ccd70`
-- Ready-entry payload digest: `a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`
-- Lease expiry: `2026-07-28T18:13:44Z`
+- Claim ID: `8d31181a-cfe8-493e-b7ce-4ea867da9581`
+- Writer: `codex-i36-worker2-8d31181a`
+- RELEASE_INTEGRATOR lease: `9b0d2541-b765-4a2b-af44-014f842efa1a`
+- Controller authorization: `3df0ee05af64db67af02e1e64d37ded4810d2cd9`
+- Parent control state: `55c5605acf834318627d54bd3e94eb90d6429a80`
+- Ready-entry payload digest: `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`
+- Lease expiry: `2026-07-28T18:38:47Z`
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
   item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
 - Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
@@ -68,15 +69,22 @@ digest `d66db410...`. Exact source
 pushed at `42b09dc598e0dfc17ada53b441e4cd487e126573`. Typecheck and focused
 catalog/approval/security checks passed.
 
+C00 authorized an F02-interface-only resume from exact integration head
+`eefca0644e57dca48609682cbc3e1b01992d286d`. The containing control head,
+parent control state, exact branch head, new claim/lease, phase scope, and
+canonical ready payload were verified. This checkpoint consumes only that
+claim; it does not read or merge the F02 source.
+
 ## Remaining work
 
-Push and report this exact P31 integration metadata checkpoint to C00. Await a
-new exact queue/lease authorization before any further integration.
+Push and report this exact F02-interface-only claim checkpoint to C00. Wait for
+C00 to rebind merge item `95985f2c-410b-461b-9360-549591ef624e` from old
+target `eefca064...` to the resulting claim head.
 
 ## Exact next action
 
-Report the exact pushed P31 integration checkpoint to C00, then pause. Do not
-integrate F02 or F01 without a new exact authorization.
+Report the exact pushed F02-interface-only claim head to C00, then stop and
+wait for the rebound. Do not read or merge F02 before that authorization.
 
 ## Coverage
 

@@ -7,20 +7,21 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+  C00: 55c5605acf834318627d54bd3e94eb90d6429a80
   P31: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  F02: e4673ff1c2e621e26ac93034be245b280c4da4fa
 status: claimed
 phase: integration
-claimed_by: codex-i36-worker2-4ee7c853
-claim_time: '2026-07-28T17:21:33Z'
-claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
-lease_id: 7b68a523-6fe3-4fdc-a86f-55c8b176aae4
-lease_issued_at: '2026-07-28T17:13:44Z'
-lease_expires_at: '2026-07-28T18:13:44Z'
-last_heartbeat_at: '2026-07-28T17:34:27Z'
-controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
-ready_entry_payload_digest: a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46
-state_based_on_head_sha: 42b09dc598e0dfc17ada53b441e4cd487e126573
+claimed_by: codex-i36-worker2-8d31181a
+claim_time: '2026-07-28T17:50:23Z'
+claim_id: 8d31181a-cfe8-493e-b7ce-4ea867da9581
+lease_id: 9b0d2541-b765-4a2b-af44-014f842efa1a
+lease_issued_at: '2026-07-28T17:38:47Z'
+lease_expires_at: '2026-07-28T18:38:47Z'
+last_heartbeat_at: '2026-07-28T17:50:23Z'
+controller_authorization_sha: 3df0ee05af64db67af02e1e64d37ded4810d2cd9
+ready_entry_payload_digest: 9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4
+state_based_on_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
 last_implementation_commit_sha: 42b09dc598e0dfc17ada53b441e4cd487e126573
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
@@ -63,10 +64,17 @@ completed_steps:
   pushed integration head 42b09dc598e0dfc17ada53b441e4cd487e126573.
 - Passed repository typecheck and focused P31 catalog, approval, consent, Student-prohibition, timing, and
   Resend-only security-template assertions.
+- Verified the exact F02-interface-only resume authorization at control head
+  3df0ee05af64db67af02e1e64d37ded4810d2cd9 and integration head
+  eefca0644e57dca48609682cbc3e1b01992d286d.
+- Recomputed and matched I36 ready-entry payload digest
+  9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4.
+- Claimed exact F02-interface-only authority under claim 8d31181a-cfe8-493e-b7ce-4ea867da9581 and
+  RELEASE_INTEGRATOR lease 9b0d2541-b765-4a2b-af44-014f842efa1a.
 remaining_steps:
-- Push and report this exact P31 integration metadata checkpoint to C00.
-- Await a new exact C00 queue/lease authorization.
-next_action: Report the exact pushed P31 integration checkpoint to C00, then pause for a new exact control authorization.
+- Push and report this atomic F02-interface-only claim checkpoint to C00.
+- Wait for C00 to rebind merge item 95985f2c-410b-461b-9360-549591ef624e to the exact pushed claim head.
+next_action: Report the exact pushed F02-interface-only claim head to C00, then stop and wait for the rebound merge-item target before reading or merging F02 source.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
