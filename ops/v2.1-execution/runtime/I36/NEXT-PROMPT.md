@@ -20,14 +20,14 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current takeover authority is control head
-`beb72be5ba1f993c1806e9314146e88f951affdb`, claim
-`89f23125-5016-49e5-968c-d886dfc979dc`, shared writer lease
-`1c1c44d6-203b-4d77-a6a0-7157675a38b4` through
-`2026-07-28T17:35:01Z`, and ready-entry digest
-`2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0`.
-The exact pre-takeover integration head is
-`80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
+Current authority is control head
+`95a2a52e096357738cda2bd7c16bc9a0e24ccd70`, claim
+`4ee7c853-5fa3-4fde-afc9-d123effe52b6`, RELEASE_INTEGRATOR lease
+`7b68a523-6fe3-4fdc-a86f-55c8b176aae4` through
+`2026-07-28T18:13:44Z`, and ready-entry digest
+`a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`.
+The exact pre-claim integration head is
+`1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
 
 F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
 has been ancestry-merged and pushed at exact integration head
@@ -50,9 +50,13 @@ unqueued implementation. Their canonical rejected-result payload digests are
 `a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a`
 and `a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f`.
 
-Current exact next action: report the exact pushed steward-result checkpoint to
-C00, then pause until C00 records both rejections and publishes a new exact
-control authorization.
+Current exact next action: report the exact pushed P31-only resume claim head
+to C00. Then wait for C00 to rebind merge item
+`e354aedf-1e25-4d05-b917-3f568dcf048e` to that claim head; independently
+revalidate and ancestry-merge only exact P31 source
+`ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` from source/merge base
+`80c281b7ae5826ed2c6abe95ba68a033ffa52174`. Do not integrate F02 or F01,
+edit control, or perform live effects.
 
 Do not read or integrate any F02 checkpoint or migration; its replacement is
 pending. Do not edit control files or perform provider/live effects. F01 source

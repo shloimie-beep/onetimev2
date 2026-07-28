@@ -7,19 +7,20 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 5e7cfad08ff273860156479c16c63dea6d73b775
+  C00: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+  P31: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
 status: claimed
 phase: integration
-claimed_by: codex-i36-worker2-89f23125
-claim_time: '2026-07-28T16:47:10Z'
-claim_id: 89f23125-5016-49e5-968c-d886dfc979dc
-lease_id: 1c1c44d6-203b-4d77-a6a0-7157675a38b4
-lease_issued_at: '2026-07-28T16:35:01Z'
-lease_expires_at: '2026-07-28T17:35:01Z'
-last_heartbeat_at: '2026-07-28T17:04:08Z'
-controller_authorization_sha: beb72be5ba1f993c1806e9314146e88f951affdb
-ready_entry_payload_digest: 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0
-state_based_on_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+claimed_by: codex-i36-worker2-4ee7c853
+claim_time: '2026-07-28T17:21:33Z'
+claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
+lease_id: 7b68a523-6fe3-4fdc-a86f-55c8b176aae4
+lease_issued_at: '2026-07-28T17:13:44Z'
+lease_expires_at: '2026-07-28T18:13:44Z'
+last_heartbeat_at: '2026-07-28T17:21:33Z'
+controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
+ready_entry_payload_digest: a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46
+state_based_on_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
 last_implementation_commit_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
@@ -49,10 +50,16 @@ completed_steps:
 - Verified the two assigned immutable F01 steward-request blob digests at exact source head
   e8b172c6a7da5003a82cfc8663df6d4159fa4092 and rejected both without product edits because their
   committed semantics cannot be applied within their exact scopes at the authorized target.
+- Verified C00-authorized I36 resume against exact control head 95a2a52e096357738cda2bd7c16bc9a0e24ccd70,
+  exact integration head 1976033cfdae1beb249642f0e28f6824b0fcbb8b, and ready-entry payload digest
+  a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46.
+- Claimed the P31-interface-only lease under claim 4ee7c853-5fa3-4fde-afc9-d123effe52b6 and lease
+  7b68a523-6fe3-4fdc-a86f-55c8b176aae4.
 remaining_steps:
-- Push and report this exact steward-result checkpoint to C00.
-- Await C00 recording of the two rejected results and a new exact queue/lease authorization.
-next_action: Report the exact pushed F07 and steward-result checkpoint to C00, then pause for C00 to record the two precise rejections and issue any subsequent exact authorization.
+- Push and report this atomic P31-only resume claim checkpoint to C00.
+- After C00 rebinds the optimistic merge target to this claim head, consume only merge item
+  e354aedf-1e25-4d05-b917-3f568dcf048e for exact P31 source ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d.
+next_action: Report the exact pushed P31-only resume claim head to C00, then wait for a rebound merge target before ancestry-merging only P31.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -172,15 +179,5 @@ external_effects:
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers:
-- type: steward_request_semantic_mismatch
-  request_id: F01-retired-client-002
-  disposition: rejected
-  detail: Exact request paths cannot achieve the required public-bundle retirement because named HTML paths are
-    absent and remaining retired public assets are outside the assigned path list.
-- type: steward_request_semantic_mismatch
-  request_id: F01-config-retirement-003
-  disposition: rejected
-  detail: The protectedPayloadEncryptionKey prerequisite exists only on the unmerged F01 implementation head and
-    cannot be synthesized under this request-only authorization.
+blockers: []
 out_of_scope_findings: []

@@ -10,12 +10,12 @@
 - Task packet digest: `55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7`
 - Context digest: `7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim ID: `89f23125-5016-49e5-968c-d886dfc979dc`
-- Writer: `codex-i36-worker2-89f23125`
-- Shared writer lease: `1c1c44d6-203b-4d77-a6a0-7157675a38b4`
-- Controller authorization: `beb72be5ba1f993c1806e9314146e88f951affdb`
-- Ready-entry payload digest: `2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0`
-- Lease expiry: `2026-07-28T17:35:01Z`
+- Claim ID: `4ee7c853-5fa3-4fde-afc9-d123effe52b6`
+- Writer: `codex-i36-worker2-4ee7c853`
+- RELEASE_INTEGRATOR lease: `7b68a523-6fe3-4fdc-a86f-55c8b176aae4`
+- Controller authorization: `95a2a52e096357738cda2bd7c16bc9a0e24ccd70`
+- Ready-entry payload digest: `a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`
+- Lease expiry: `2026-07-28T18:13:44Z`
 - F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
   item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
 - Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
@@ -52,16 +52,21 @@ its exact path list; the config request assumes an unmerged
 `protectedPayloadEncryptionKey` compatibility state. Partial application or
 copying the F01 implementation would violate the assigned immutable semantics.
 
+C00 recorded those steward results and authorized a P31-interface-only resume
+from exact integration head `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
+The new claim, lease, containing control head, and canonical ready payload were
+verified and are bound by this atomic claim checkpoint.
+
 ## Remaining work
 
-Push and report this steward-result checkpoint to C00. C00 must record the two
-precise rejected dispositions before either request is reconsidered with a new
-immutable scope or prerequisite integration.
+Push and report this P31-only resume claim to C00. C00 must rebind merge item
+`e354aedf-1e25-4d05-b917-3f568dcf048e` to the resulting claim head before
+I36 ancestry-merges the exact P31 source.
 
 ## Exact next action
 
-Report the exact pushed F07/steward-result checkpoint to C00, then pause for a
-new exact control authorization. Do not read or integrate F02.
+Report the exact pushed P31-only resume claim head to C00, then wait for the
+rebound target and consume only P31. Do not integrate F02 or F01.
 
 ## Coverage
 
