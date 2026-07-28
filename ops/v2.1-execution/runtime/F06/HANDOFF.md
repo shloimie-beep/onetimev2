@@ -4,12 +4,12 @@
 
 - Branch: `codex/v21-f06-provider-core`
 - Start SHA: `9782a4164662b8059a557c0969de9c35f54d0cf7`
-- Implementation SHA before this handoff metadata commit: `6c1ea83b4e005a92494e6f955a25f19979c8d983`
+- Implementation SHA before this handoff metadata commit: `94281de13063203808ecabef8a818762e5ff1e2e`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head.
 - Task packet digest: `f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66`
 - Context digest: `872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Interface contract digest: `23842f7878bc9adf1eb97f517a67abfdf6bc724664fbae550a6e571761d6db9e`
+- Interface contract digest: `7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0`
 
 ## Completed behavior
 
@@ -39,7 +39,7 @@ Fourteen implementation/request files were added within F06-owned paths plus F06
 ## Verification
 
 - Full TypeScript typecheck: passed.
-- Focused Vitest: 3 files, 10 assertions, all passed.
+- Focused Vitest: 3 files, 11 assertions, all passed.
 - Focused ESLint: passed.
 - Focused Prettier: passed.
 - Canonical interface contract and artifact digests: verified.

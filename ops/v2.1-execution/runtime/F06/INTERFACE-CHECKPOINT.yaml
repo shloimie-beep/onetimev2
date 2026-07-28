@@ -1,10 +1,10 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: F06
-interface_implementation_head_sha: 6c1ea83b4e005a92494e6f955a25f19979c8d983
+interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
-contract_digest: 23842f7878bc9adf1eb97f517a67abfdf6bc724664fbae550a6e571761d6db9e
+contract_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
 contract_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
   followed by exact path=<artifact SHA-256> lines sorted lexicographically by
@@ -70,7 +70,7 @@ exports:
       - updateHouseholdLifecycle
       - transferHouseholdProviderOwner
       - completeHouseholdOwnerReassociation
-    sha256: 80fc2276c4a6ecfb37fdac81ec85c8262909a0e2490aa5d6abff76cdcaa692c7
+    sha256: 592a039e8b3f531972b05b6ce70958a90b199d145c1dad2eb73b9300c14d030b
   - path: packages/domain/src/providers/shared/operation.ts
     symbols:
       - assertProviderRegistryBinding
