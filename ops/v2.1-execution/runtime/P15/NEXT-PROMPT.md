@@ -1,5 +1,5 @@
 MODEL: GPT-5.6-SOL
-REASONING: XHIGH
+REASONING: HIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
@@ -14,11 +14,13 @@ Task state: ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P15/HANDOFF.md
 
 Fetch remote refs and derive the containing control commit. Verify P15's exact
-registry and ready/resume entry, expected branch head, canonical payload digest,
-unexpired lease/claim, package/task/context/dependency digests, and reject a
-foreign lease or non-fast-forward collision. Check out the exact branch and
-read task state/handoff before named work. If a new resume lease is required,
-wait for C00; never self-extend. Resume `next_action` without repeating
-completed validation. Continue to `ready_for_review` or a permitted stop
-condition, updating and pushing state, handoff, and this prompt before
-returning.
+registry entry, expected branch head, claim/lease disposition, package/task/
+context/dependency digests, and read task state plus handoff before named work.
+
+P15 is ready_for_review. Its interface implementation head is
+`ab71afb032b8e004cc655e3e5f5a6b8286aec380`, and exact interface digest is
+`2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb`.
+I36 must integrate that checkpoint before C00 authorizes P16. Then disposition
+`P15-MIGRATION-001` and `P15-REGISTRATION-001` from the structured steward
+request without semantic changes. Do not resume P15 implementation without a
+new exact C00 resume authorization against the final remote head.

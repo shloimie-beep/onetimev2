@@ -1,0 +1,41 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P15
+requests:
+  - request_id: P15-MIGRATION-001
+    kind: migration
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      path: packages/db/src/calendar/schema-contract.ts
+      version: P15-CALENDAR-SCHEMA-001
+    exact_targets:
+      - packages/db/migrations/<allocated>_v21_calendar_recurrence.sql
+    required_changes:
+      - Add recurrence_weekdays, recurrence_starts_on, recurrence_ends_on, duration_minutes, series_state, and version to onetime.class_series with safe backfill for the canonical series.
+      - Preserve the existing unique occurrence constraint on account_key, product_key, class_series_key, and local_class_date.
+      - Permit the rescheduled occurrence projection while preserving existing scheduled/live/completed/cancelled states.
+      - Keep draft series invisible and free of occurrence, enrollment, provider, or communication side effects until activation.
+    validation:
+      - Apply the full migration inventory in a disposable PostgreSQL-compatible database.
+      - Prove canonical backfill, draft invisibility, unique occurrence identity, version fencing, and Friday/Saturday rejection at the domain boundary.
+    external_effects_authorized: false
+  - request_id: P15-REGISTRATION-001
+    kind: registration
+    requested_steward: I36
+    status: proposed
+    exact_targets:
+      - packages/contracts/src/index.ts
+      - packages/domain/src/index.ts
+      - packages/db/src/index.ts
+      - apps/web/src/server central authenticated route composer
+      - apps/web/src/client central role route composer
+    required_changes:
+      - Re-export the P15 calendar contract, domain, and database roots without semantic changes.
+      - Instantiate createCalendarRepository and createCalendarQueryService behind the F02 authenticated account/household lifecycle adapter.
+      - Register role routes that compose CalendarWorkspace for Admin, Parent, and Student using the F07 shell and styles.
+      - Derive account, product, role, household, Student, access, and preferred-time-zone scopes only from authenticated server context.
+      - Keep Google Calendar routes, actions, configuration, and jobs absent.
+    validation:
+      - Run typecheck, focused role authorization tests, direct-route denial tests, responsive accessibility checks, and route/action/job absence inventory.
+    external_effects_authorized: false
