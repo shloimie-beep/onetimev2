@@ -1,70 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items:
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  merge_id: 7a187ca7-fd01-46ee-87b5-15050a305be1
-  kind: interface
-  task_id: P32
-  source_branch: codex/v21-p32-privacy-data-rights
-  source_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
-  target_branch: codex/v21-integration
-  expected_target_head_sha: ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8
-  source_delta_base_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-  required_merge_base_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-  preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 6a33944a75e717041b2f951134459769b8fc2617
-  merge_after_heads: {}
-  allowed_paths:
-  - apps/web/src/client/app/admin/privacy/PrivacyReviewQueue.tsx
-  - apps/web/src/client/app/admin/privacy/index.ts
-  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.test.tsx
-  - apps/web/src/client/app/parent/privacy/PrivacyDataRightsPanel.tsx
-  - apps/web/src/client/app/parent/privacy/index.ts
-  - apps/web/src/server/features/privacy/index.ts
-  - apps/web/src/server/features/privacy/privacy-service.test.ts
-  - apps/web/src/server/features/privacy/privacy-service.ts
-  - apps/worker/src/runners/privacy-retention/index.ts
-  - apps/worker/src/runners/privacy-retention/runner.test.ts
-  - apps/worker/src/runners/privacy-retention/runner.ts
-  - ops/v2.1-execution/runtime/P32/HANDOFF.md
-  - ops/v2.1-execution/runtime/P32/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P32/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P32/steward-requests/P32-config-001.yaml
-  - ops/v2.1-execution/runtime/P32/steward-requests/P32-migration-001.yaml
-  - ops/v2.1-execution/runtime/P32/steward-requests/P32-registration-001.yaml
-  - packages/contracts/src/privacy/index.ts
-  - packages/db/src/privacy/index.ts
-  - packages/db/src/privacy/repository.test.ts
-  - packages/db/src/privacy/repository.ts
-  - packages/db/src/privacy/schema-contract.ts
-  - packages/domain/src/privacy/consent.ts
-  - packages/domain/src/privacy/errors.ts
-  - packages/domain/src/privacy/index.ts
-  - packages/domain/src/privacy/privacy.test.ts
-  - packages/domain/src/privacy/redaction.ts
-  - packages/domain/src/privacy/retention.ts
-  - packages/domain/src/privacy/rights.ts
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 2a26f2f3-e956-4ba0-a4d0-86c02aa51a15
-    holder_task_id: I36
-    holder_claim_id: ce7c9fcd-dbf3-4d5e-9174-3b7632504e42
-    state_based_on_control_head_sha: d3552d3aa9afde6445a3b8772a1de0ac9b134a6b
-    lease_issued_at: '2026-07-28T20:46:27Z'
-    lease_expires_at: '2026-07-28T21:46:27Z'
-    phase_scope: P32_interface_atomic_claim_only
-  task_packet_digest: a34f7c16bda5c68fc269cce7fbbb0eb574de64f4a9db66e272c3b99ff8a639f6
-  state_handoff_digest: 215a3e38b4a19e391a28f5fd4df50997fcf2657b2c69bb87c79b636a0d0c063f
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-  state_based_on_control_head_sha: 3725a0e0242bec040294c59ad86ca0701fceed72
-item_payload_digests:
-  7a187ca7-fd01-46ee-87b5-15050a305be1: d5babbcb78a67522b2a18c1fc7d9419b3520d5da6d3ad4249dd1d466a4c93d69
+items: []
+item_payload_digests: {}
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

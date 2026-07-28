@@ -289,15 +289,14 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P16 is safely stopped at unchanged remote claim head
-`45649e52` with a P16-owned dirty draft and has a fresh renewal ready entry.
-P27 and I36 have exact verified claims; P35 awaits later full admission.
+None for bootstrap. P16 has claimed its renewal at `f865439f` with the
+P16-owned dirty draft preserved unstaged. P27 remains active. P32 is integrated
+at `c4d042e9`; P35 awaits later full admission.
 
 ## Exact next action
 
-Have P16 atomically consume renewal claim `afd00130-7e98-4428-b9ef-303b50815189`
-without staging its dirty product draft. In parallel, let P27 implement and I36
-consume only the rebound P32 merge targeting `ffd63f4e3cdaa671f0c84645cf4b82edf8d95ac8`.
+Resume P16 from renewal head `f865439f9b37eba1a6dd0fcddc80f67b19c283a8`
+and preserve its exact owned draft. In parallel, let P27 continue implementation.
 
 ## Verification
 
