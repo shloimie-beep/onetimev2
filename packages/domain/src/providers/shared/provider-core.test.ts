@@ -112,8 +112,11 @@ describe('F06 GHL ambiguity and household mappings', () => {
       adult_id: 'adult-1',
       normalized_email_hash: HASH_A,
       verified_contact_ref_hash: null,
+      verified_contact_email_hash: null,
       exact_email_match_ref_hashes: [HASH_B, HASH_C],
       outbox_intent_ids: ['intent-contact', 'intent-workflow', 'intent-billing'],
+      marketing_suppressed: false,
+      service_suppressed: false,
       suppression_evidence_digest: HASH_D,
     });
     expect(link.state).toBe('identity_review');
@@ -160,6 +163,24 @@ describe('F06 GHL ambiguity and household mappings', () => {
     ).toThrow(/governed resolution/i);
   });
 
+  it('quarantines disagreement between a verified provider link and submitted normalized email', () => {
+    const link = resolveGhlIdentityLink({
+      adult_id: 'adult-1',
+      normalized_email_hash: HASH_A,
+      verified_contact_ref_hash: HASH_B,
+      verified_contact_email_hash: HASH_C,
+      exact_email_match_ref_hashes: [HASH_D],
+      outbox_intent_ids: ['intent-contact'],
+      marketing_suppressed: true,
+      service_suppressed: false,
+      suppression_evidence_digest: HASH_E,
+    });
+    expect(link.state).toBe('identity_review');
+    expect(link.candidate_contact_ref_hashes).toEqual([HASH_B, HASH_D]);
+    expect(link.suppression.marketing_suppressed).toBe(true);
+    expect(decideIdentityBoundEffect(link, 'ghl_contact_upsert').allowed).toBe(false);
+  });
+
   it('allows one adult contact to own isolated household records and Stripe Customers', () => {
     const first = household({
       household_id: 'household-1',
@@ -175,7 +196,11 @@ describe('F06 GHL ambiguity and household mappings', () => {
     expect(() =>
       assertHouseholdProviderMappings([
         first,
-        { ...second, stripe_customer_ref_hash: first.stripe_customer_ref_hash },
+        {
+          ...second,
+          billing_program: 'another-program',
+          stripe_customer_ref_hash: first.stripe_customer_ref_hash,
+        },
       ]),
     ).toThrow(/household-scoped Stripe Customers/i);
 
@@ -196,10 +221,14 @@ describe('F06 GHL ambiguity and household mappings', () => {
       adult_id: 'adult-1',
       normalized_email_hash: HASH_A,
       verified_contact_ref_hash: HASH_B,
+      verified_contact_email_hash: HASH_A,
       exact_email_match_ref_hashes: [HASH_B],
       outbox_intent_ids: [],
+      marketing_suppressed: true,
+      service_suppressed: false,
       suppression_evidence_digest: HASH_C,
     });
+    expect(priorLink.suppression.marketing_suppressed).toBe(true);
     const suppressed = updateAdultSuppression(priorLink, {
       expected_version: 1,
       marketing_suppressed: true,
@@ -212,8 +241,11 @@ describe('F06 GHL ambiguity and household mappings', () => {
       adult_id: 'adult-2',
       normalized_email_hash: HASH_C,
       verified_contact_ref_hash: HASH_D,
+      verified_contact_email_hash: HASH_C,
       exact_email_match_ref_hashes: [HASH_D],
       outbox_intent_ids: [],
+      marketing_suppressed: false,
+      service_suppressed: false,
       suppression_evidence_digest: HASH_E,
     });
     const before = household({});

@@ -18,8 +18,11 @@ export function resolveGhlIdentityLink(input: {
   adult_id: string;
   normalized_email_hash: string;
   verified_contact_ref_hash: string | null;
+  verified_contact_email_hash: string | null;
   exact_email_match_ref_hashes: readonly string[];
   outbox_intent_ids: readonly string[];
+  marketing_suppressed: boolean;
+  service_suppressed: boolean;
   suppression_evidence_digest: string;
 }): AdultGhlIdentityLink {
   assertHash(input.normalized_email_hash, 'normalized_email_hash');
@@ -27,10 +30,26 @@ export function resolveGhlIdentityLink(input: {
   const candidates = uniqueHashes(input.exact_email_match_ref_hashes);
   if (input.verified_contact_ref_hash !== null) {
     assertHash(input.verified_contact_ref_hash, 'verified_contact_ref_hash');
+    if (input.verified_contact_email_hash === null) {
+      throw new ProviderCoreError(
+        'invalid_contract',
+        'A verified provider reference requires its observed normalized-email hash.',
+      );
+    }
+    assertHash(input.verified_contact_email_hash, 'verified_contact_email_hash');
+  } else if (input.verified_contact_email_hash !== null) {
+    throw new ProviderCoreError(
+      'invalid_contract',
+      'A provider email observation requires its verified contact reference.',
+    );
   }
-  const disagreement =
+  const referenceEmailDisagrees =
+    input.verified_contact_email_hash !== null &&
+    input.verified_contact_email_hash !== input.normalized_email_hash;
+  const referenceCandidatesDisagree =
     input.verified_contact_ref_hash !== null &&
     candidates.some((candidate) => candidate !== input.verified_contact_ref_hash);
+  const disagreement = referenceEmailDisagrees || referenceCandidatesDisagree;
   const state =
     disagreement || candidates.length > 1
       ? 'identity_review'
@@ -39,17 +58,24 @@ export function resolveGhlIdentityLink(input: {
         : 'unlinked';
   const verified =
     state === 'linked' ? (input.verified_contact_ref_hash ?? candidates[0] ?? null) : null;
+  const reviewCandidates =
+    state === 'identity_review'
+      ? uniqueHashes([
+          ...candidates,
+          ...(input.verified_contact_ref_hash === null ? [] : [input.verified_contact_ref_hash]),
+        ])
+      : candidates;
   return {
     adult_id: requiredOpaque(input.adult_id, 'adult_id'),
     normalized_email_hash: input.normalized_email_hash,
     state,
     verified_contact_ref_hash: verified,
-    candidate_contact_ref_hashes: candidates,
+    candidate_contact_ref_hashes: reviewCandidates,
     quarantined_outbox_intent_ids:
       state === 'identity_review' ? uniqueOpaque(input.outbox_intent_ids) : [],
     suppression: {
-      marketing_suppressed: false,
-      service_suppressed: false,
+      marketing_suppressed: input.marketing_suppressed,
+      service_suppressed: input.service_suppressed,
       evidence_digest: input.suppression_evidence_digest,
       version: 1,
     },
@@ -116,7 +142,7 @@ export function resolveGhlIdentityReview(
 export function assertHouseholdProviderMappings(
   mappings: readonly HouseholdProviderMapping[],
 ): void {
-  const households = new Set<string>();
+  const householdPrograms = new Set<string>();
   const ghlRecords = new Set<string>();
   const stripeCustomers = new Set<string>();
   for (const mapping of mappings) {
@@ -126,10 +152,12 @@ export function assertHouseholdProviderMappings(
     assertHash(mapping.projected_owner_contact_ref_hash, 'projected_owner_contact_ref_hash');
     assertHash(mapping.stripe_customer_ref_hash, 'stripe_customer_ref_hash');
     assertHash(mapping.last_readback_digest, 'last_readback_digest');
-    const stripeKey = `${mapping.runtime_tier}:${mapping.verification_environment_id}:${mapping.billing_program}:${mapping.stripe_customer_ref_hash}`;
+    const householdProgramKey = `${mapping.runtime_tier}:${mapping.verification_environment_id}:${mapping.household_id}:${mapping.billing_program}`;
+    const ghlKey = `${mapping.runtime_tier}:${mapping.verification_environment_id}:${mapping.ghl_household_record_ref_hash}`;
+    const stripeKey = `${mapping.runtime_tier}:${mapping.verification_environment_id}:${mapping.stripe_customer_ref_hash}`;
     if (
-      households.has(mapping.household_id) ||
-      ghlRecords.has(mapping.ghl_household_record_ref_hash) ||
+      householdPrograms.has(householdProgramKey) ||
+      ghlRecords.has(ghlKey) ||
       stripeCustomers.has(stripeKey)
     ) {
       throw new ProviderCoreError(
@@ -137,8 +165,8 @@ export function assertHouseholdProviderMappings(
         'Households require distinct GHL records and household-scoped Stripe Customers.',
       );
     }
-    households.add(mapping.household_id);
-    ghlRecords.add(mapping.ghl_household_record_ref_hash);
+    householdPrograms.add(householdProgramKey);
+    ghlRecords.add(ghlKey);
     stripeCustomers.add(stripeKey);
   }
 }
