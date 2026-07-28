@@ -7,17 +7,19 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 7b8c1631128b32d23da948bea178d0790d86b806
+  C00: 5e7cfad08ff273860156479c16c63dea6d73b775
 status: claimed
 phase: integration
-claimed_by: codex-i36-worker-b847548e
-claim_time: '2026-07-28T15:43:03Z'
-claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
-lease_expires_at: '2026-07-28T16:33:58Z'
-last_heartbeat_at: '2026-07-28T15:53:17Z'
-controller_authorization_sha: 7ccacffa6e460d5e3c1daff66c33a6a73d1b77dc
-ready_entry_payload_digest: 4b429a919e258b635c3c713c023bf83ecb8b28711c63e192d97d52567afa17a1
-state_based_on_head_sha: 201bf33a9ba532c696432c707145a798d1f07f9f
+claimed_by: codex-i36-worker2-89f23125
+claim_time: '2026-07-28T16:47:10Z'
+claim_id: 89f23125-5016-49e5-968c-d886dfc979dc
+lease_id: 1c1c44d6-203b-4d77-a6a0-7157675a38b4
+lease_issued_at: '2026-07-28T16:35:01Z'
+lease_expires_at: '2026-07-28T17:35:01Z'
+last_heartbeat_at: '2026-07-28T16:47:10Z'
+controller_authorization_sha: beb72be5ba1f993c1806e9314146e88f951affdb
+ready_entry_payload_digest: 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0
+state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
 last_implementation_commit_sha: 34718371ee0ff26758120b11d0d4b788aa11be97
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
@@ -32,10 +34,18 @@ completed_steps:
 - Pushed the post-merge checkpoint at 201bf33a9ba532c696432c707145a798d1f07f9f.
 - Installed the exact package-lock dependency tree and passed repository typecheck.
 - Passed focused F01 server/client/worker seam and steward-schema verification.
+- Verified C00-authorized I36 takeover against exact control head beb72be5ba1f993c1806e9314146e88f951affdb
+  and exact existing integration head 80c281b7ae5826ed2c6abe95ba68a033ffa52174.
+- Recomputed and matched resume-entry payload digest 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0.
+- Claimed the takeover under claim 89f23125-5016-49e5-968c-d886dfc979dc and shared writer lease
+  1c1c44d6-203b-4d77-a6a0-7157675a38b4 without reading or integrating F02.
 remaining_steps:
-- Push this verified integration metadata checkpoint and report its exact SHA to C00.
-- Continue consuming only exact C00-authorized merge queue entries.
-next_action: Report the exact pushed verified integration head to C00, then fetch control and consume only the next exact C00-authorized merge item or request renewal before lease expiry.
+- Report this atomic takeover checkpoint's exact pushed head to C00.
+- Consume only merge item fb37db43-fe31-4f0b-a8d7-e726c435e4bd for exact F07 interface head
+  47a2bb6b76225951e0599683499a95f4dc9881be, preserving ancestry from target/base 80c281b7.
+- Process only F01-retired-client-002 and F01-config-retirement-003 from exact F01 head
+  e8b172c6a7da5003a82cfc8663df6d4159fa4092 under the granted CLIENT_COMPOSER and CONFIG_DEPS slots.
+next_action: Report the exact pushed takeover head to C00, then admit and ancestry-merge only authorized F07 merge item fb37db43-fe31-4f0b-a8d7-e726c435e4bd; do not read or integrate F02.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -82,6 +92,12 @@ verification:
     result: passed; server positive and pre-mount duplicate rejection, client role and duplicate rejection, sequential worker execution and duplicate rejection
   - command: JSON parse and invariant check of steward-request.schema.json
     result: passed
+  - command: git fetch and rev-parse control/integration refs for takeover
+    result: passed; control beb72be5ba1f993c1806e9314146e88f951affdb and integration 80c281b7ae5826ed2c6abe95ba68a033ffa52174 exact
+  - command: canonical I36 resume-entry payload digest recomputation
+    result: passed; 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0
+  - command: resume claim, writer-slot, branch-head, and lease verification
+    result: passed; no live foreign writer and C00-authorized takeover lease expires 2026-07-28T17:35:01Z
   known_baseline_failures: []
 external_effects:
   authority: none
