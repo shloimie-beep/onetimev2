@@ -4,62 +4,73 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: d3acb266-4c15-4a37-ada7-1a42b616cd12
+  merge_id: 58c0a26a-cb58-4dfb-a4a8-082ae171537e
   kind: interface
-  task_id: P19
-  source_branch: codex/v21-p19-content-ingest
-  source_head_sha: e420eb833feee26efd431afd93457a7e0bc4d228
+  task_id: P28
+  source_branch: codex/v21-p28-communication-foundation
+  source_head_sha: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
   target_branch: codex/v21-integration
-  expected_target_head_sha: 7aac6f05d302e8dc72788ac8df8912a40707b522
+  expected_target_head_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
   source_delta_base_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
   required_merge_base_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: e420eb833feee26efd431afd93457a7e0bc4d228
+  required_postmerge_ancestor_sha: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
   merge_after_heads: {}
   allowed_paths:
-  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.test.tsx
-  - apps/web/src/client/app/admin/content/ingest/ContentIngestWorkspace.tsx
-  - apps/web/src/client/app/admin/content/ingest/index.ts
-  - apps/web/src/server/features/content/ingest/index.ts
-  - apps/web/src/server/features/content/ingest/service.test.ts
-  - apps/web/src/server/features/content/ingest/service.ts
-  - apps/worker/src/runners/content-ingest/index.ts
-  - apps/worker/src/runners/content-ingest/runner.test.ts
-  - apps/worker/src/runners/content-ingest/runner.ts
-  - ops/v2.1-execution/runtime/P19/HANDOFF.md
-  - ops/v2.1-execution/runtime/P19/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P19/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P19/STEWARD-REQUESTS.yaml
-  - ops/v2.1-execution/runtime/P19/TASK-STATE.yaml
-  - packages/contracts/src/content/ingest/index.ts
-  - packages/db/src/content/ingest/index.ts
-  - packages/db/src/content/ingest/repository.ts
-  - packages/db/src/content/ingest/schema-contract.ts
-  - packages/domain/src/content/ingest/content-ingest.test.ts
-  - packages/domain/src/content/ingest/drive.ts
-  - packages/domain/src/content/ingest/errors.ts
-  - packages/domain/src/content/ingest/index.ts
-  - packages/domain/src/content/ingest/source.ts
-  - packages/domain/src/content/ingest/upload.ts
-  - packages/domain/src/content/ingest/validation.ts
+  - apps/worker/src/runners/communications-foundation/index.ts
+  - apps/worker/src/runners/communications-foundation/runner.test.ts
+  - apps/worker/src/runners/communications-foundation/runner.ts
+  - integrations/highlevel/registry/workflow-registry.yaml
+  - integrations/highlevel/v21/foundation/checklists/OT-12-adult-support-intake.md
+  - integrations/highlevel/v21/foundation/checklists/OT-14-parent-newsletter.md
+  - integrations/highlevel/v21/foundation/checklists/OT-15-former-member-reactivation.md
+  - integrations/highlevel/v21/foundation/checklists/OT-B01-website-lead-capture.md
+  - integrations/highlevel/v21/foundation/desired-state.test.ts
+  - integrations/highlevel/v21/foundation/desired-state.ts
+  - integrations/highlevel/v21/foundation/index.ts
+  - integrations/highlevel/v21/foundation/prompts/OT-12-adult-support-intake.md
+  - integrations/highlevel/v21/foundation/prompts/OT-14-parent-newsletter.md
+  - integrations/highlevel/v21/foundation/prompts/OT-15-former-member-reactivation.md
+  - integrations/highlevel/v21/foundation/prompts/OT-B01-website-lead-capture.md
+  - integrations/highlevel/v21/foundation/registry-source.test.ts
+  - ops/v2.1-execution/runtime/P28/HANDOFF.md
+  - ops/v2.1-execution/runtime/P28/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-migration-001.yaml
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registration-001.yaml
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registry-projection-001.yaml
+  - ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
+  - packages/contracts/src/communications/foundation/index.ts
+  - packages/db/src/communications/foundation/index.ts
+  - packages/db/src/communications/foundation/repository.test.ts
+  - packages/db/src/communications/foundation/repository.ts
+  - packages/db/src/communications/foundation/schema-contract.ts
+  - packages/domain/src/communications/foundation/errors.ts
+  - packages/domain/src/communications/foundation/foundation.test.ts
+  - packages/domain/src/communications/foundation/index.ts
+  - packages/domain/src/communications/foundation/lead-capture.ts
+  - packages/domain/src/communications/foundation/preference.ts
+  - packages/domain/src/communications/foundation/readback.ts
+  - packages/domain/src/communications/foundation/registry.ts
+  - packages/domain/src/communications/foundation/workflow-fragment.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 53c90772-6f60-4a52-884f-4498c65c0929
+    lease_id: add98f8a-d111-44a0-9232-44140f8e2b9b
     holder_task_id: I36
-    holder_claim_id: 391d7764-3f93-43c8-86dc-07df6f59d0b1
-    state_based_on_control_head_sha: 21b0a40b4ee7186d9360b99c261f1774d65e1c43
-    lease_issued_at: '2026-07-28T22:23:06Z'
-    lease_expires_at: '2026-07-28T23:23:06Z'
-    phase_scope: P19_interface_atomic_claim_only
-  task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
-  state_handoff_digest: 28d1e4f497ac66bb12ab5d61e5ea03c22b88603ecd54683c842290e284a94eee
+    holder_claim_id: 9b1ad11d-f16c-40e7-aec9-e07172c90034
+    state_based_on_control_head_sha: c9c3d288fa6cdb3aca756de8cc03d35471abe464
+    lease_issued_at: '2026-07-28T22:50:05Z'
+    lease_expires_at: '2026-07-28T23:50:05Z'
+    phase_scope: P28_interface_atomic_claim_only
+  task_packet_digest: 3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823
+  state_handoff_digest: c84c00894d08a391ee413ca040a2c44eb07ad835f5cbd44f350c21d45f18d10d
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: c08ccb7bc1ea1ecf3d68fed133112d930838c7f6
+  state_based_on_control_head_sha: c9c3d288fa6cdb3aca756de8cc03d35471abe464
 item_payload_digests:
-  d3acb266-4c15-4a37-ada7-1a42b616cd12: 45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6
+  58c0a26a-cb58-4dfb-a4a8-082ae171537e: 3bfa28d14fdf8f0f1a264cf56cb18629d5d8faa452c621a5c82ff62adf96a241
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

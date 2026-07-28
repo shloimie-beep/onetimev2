@@ -145,3 +145,11 @@ release it before waiting for workers.
 Update C00 state, handoff, and this prompt at every phase; commit and normal-push
 each checkpoint. Never implement product code, grant provider authority, or
 force-push.
+
+P19 is integrated at final I36 head `ebf88c8e`. Dispatch I36 claim
+`9b1ad11d-f16c-40e7-aec9-e07172c90034` for P28-only integration and P20 claim
+`1cd7bf99-21a7-4231-8418-b9cdfaf958c4` for the new media-processing branch.
+Each worker must stop after its exact three-file atomic claim. Acquire a fresh
+C00 lease, consume the claims, and rebind only P28 merge item
+`58c0a26a-cb58-4dfb-a4a8-082ae171537e` before I36 merges it. P20 may then
+continue independently under its unchanged owned scope and lease.

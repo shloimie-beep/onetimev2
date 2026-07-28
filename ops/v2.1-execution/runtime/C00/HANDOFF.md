@@ -405,3 +405,13 @@ item `d3acb266-4c15-4a37-ada7-1a42b616cd12` from exact target
 
 None. The attached `(1)` ZIP and the exact-basename ZIP were byte-identical;
 the isolated staging area contains only the required exact-basename package.
+
+P19 is integrated. I36 published exact merge `80d7f8f1` and final metadata
+`ebf88c8e`; the 25-path allowlist, source ancestry, 21 tests, typecheck, lint,
+formatting, released lease, zero effects, and absence of steward actions all
+passed independent reconciliation. C00 queued P28 interface source `aaedc3f2`
+as the sole next integration item and authorized an atomic-claim-only I36
+resume from `ebf88c8e`; its initial merge digest is `3bfa28d1...`. P20 is now
+dependency-valid and has a disjoint `CONTENT_PROCESSING` ready authorization
+from the same start head. Workers must publish only their three-file atomic
+claims, then stop for C00 target-CAS reconciliation.
