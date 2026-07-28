@@ -84,8 +84,14 @@ export function leaseProviderJob(
       'The recovery generation has exhausted its eight dispatch attempts.',
     );
   }
-  if (job.next_attempt_at !== null && new Date(job.next_attempt_at).getTime() > input.now.getTime()) {
-    throw new JobFoundationError('invalid_transition', 'The retry not-before time has not arrived.');
+  if (
+    job.next_attempt_at !== null &&
+    new Date(job.next_attempt_at).getTime() > input.now.getTime()
+  ) {
+    throw new JobFoundationError(
+      'invalid_transition',
+      'The retry not-before time has not arrived.',
+    );
   }
   const expiresAt = new Date(input.now.getTime() + JOB_LEASE_DURATION_MS).toISOString();
   return {
@@ -365,10 +371,7 @@ export function fullJitterRetryDelayMs(input: {
     BASE_RETRY_DELAY_MS * 2 ** (input.dispatch_attempt - 1),
   );
   const jitter = Math.floor(cap * input.random_unit_interval);
-  const retryAfter = Math.min(
-    JOB_MAX_RETRY_DELAY_MS,
-    Math.max(0, input.retry_after_ms ?? 0),
-  );
+  const retryAfter = Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, input.retry_after_ms ?? 0));
   return Math.max(jitter, retryAfter);
 }
 

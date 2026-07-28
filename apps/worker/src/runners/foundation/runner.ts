@@ -57,21 +57,13 @@ export async function runFoundationJobBatch(input: {
       continue;
     }
     const lease = leaseFrom(job);
-    const inFlight = await input.repository.markInFlight(
-      lease,
-      job.version,
-      input.options.clock(),
-    );
+    const inFlight = await input.repository.markInFlight(lease, job.version, input.options.clock());
     if (!inFlight) {
       summary.lease_lost += 1;
       continue;
     }
 
-    const heartbeat = startHeartbeat(
-      input.repository,
-      leaseFrom(inFlight),
-      input.options.clock,
-    );
+    const heartbeat = startHeartbeat(input.repository, leaseFrom(inFlight), input.options.clock);
     let outcome: ProviderDispatchOutcome;
     try {
       outcome = await dispatchWithTimeout(handler, inFlight, input.options.dispatch_timeout_ms);

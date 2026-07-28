@@ -4,7 +4,8 @@ export const JOB_FOUNDATION_SCHEMA_CONTRACT = {
   schema: 'onetime',
   tables: {
     job_command_idempotency: {
-      purpose: 'durable command replay/conflict record committed with local mutation and outbox intents',
+      purpose:
+        'durable command replay/conflict record committed with local mutation and outbox intents',
       required_columns: [
         'product',
         'runtime_tier',
@@ -15,15 +16,10 @@ export const JOB_FOUNDATION_SCHEMA_CONTRACT = {
         'canonical_request_hash',
         'response_json',
         'resulting_version',
+        'outbox_job_ids',
         'created_at',
       ],
-      unique_key: [
-        'product',
-        'runtime_tier',
-        'actor_ref',
-        'operation_scope',
-        'idempotency_key',
-      ],
+      unique_key: ['product', 'runtime_tier', 'actor_ref', 'operation_scope', 'idempotency_key'],
     },
     job_outbox: {
       purpose: 'one durable versioned ProviderOperation per logical external effect',
@@ -59,12 +55,7 @@ export const JOB_FOUNDATION_SCHEMA_CONTRACT = {
         'created_at',
         'updated_at',
       ],
-      unique_key: [
-        'product',
-        'runtime_tier',
-        'verification_environment_id',
-        'idempotency_key',
-      ],
+      unique_key: ['product', 'runtime_tier', 'verification_environment_id', 'idempotency_key'],
     },
   },
   required_invariants: [

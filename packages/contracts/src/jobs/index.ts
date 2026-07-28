@@ -1,7 +1,4 @@
-import type {
-  RuntimeTier,
-  VerificationEnvironmentId,
-} from '../state/index.ts';
+import type { RuntimeTier, VerificationEnvironmentId } from '../state/index.ts';
 
 export const JOB_CONTRACT_VERSION = '1.0.0' as const;
 export const JOB_LEASE_DURATION_MS = 5 * 60 * 1000;

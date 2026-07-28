@@ -86,13 +86,7 @@ export async function executeTypedJobCommand<Command, Response>(input: {
   } catch (error) {
     const message = error instanceof Error ? error.message : '';
     if (message.includes('idempotency_conflict')) {
-      return failure(
-        409,
-        'idempotency_conflict',
-        input.envelope.correlation_id,
-        false,
-        null,
-      );
+      return failure(409, 'idempotency_conflict', input.envelope.correlation_id, false, null);
     }
     if (message.includes('stale') || message.includes('nonmonotonic')) {
       return failure(

@@ -1,4 +1,1 @@
-export {
-  executeTypedJobCommand,
-  type TypedCommandStore,
-} from './command-handler.ts';
+export { executeTypedJobCommand, type TypedCommandStore } from './command-handler.ts';

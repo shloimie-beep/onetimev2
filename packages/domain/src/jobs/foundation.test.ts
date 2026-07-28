@@ -18,7 +18,7 @@ import {
   recordDispatchOutcome,
   recoverDeadLetter,
 } from './lifecycle.ts';
-import { canonicalRequestHash } from './idempotency.ts';
+import { assertStableJobIdentity, canonicalRequestHash } from './idempotency.ts';
 import { transitionVersionedSaga } from './saga.ts';
 
 const HASH_A = 'a'.repeat(64);
@@ -61,11 +61,11 @@ describe('F05 typed API and durable job foundation', () => {
         expected_version: 3,
       },
       store: {
-        async executeTransactionalCommand() {
+        async executeTransactionalCommand<Response>() {
           calls += 1;
           return {
             disposition: 'applied' as const,
-            response: { state: 'draft' },
+            response: { state: 'draft' } as Response,
             resulting_version: 4,
             outbox_job_ids: [],
           };
@@ -90,9 +90,7 @@ describe('F05 typed API and durable job foundation', () => {
         scope: { ...current.scope, runtime_tier: 'production' },
       }),
     ).toThrowError(JobFoundationError);
-    expect(() => assertSafeRoutePath('/api/jobs/:email/retry')).toThrowError(
-      JobFoundationError,
-    );
+    expect(() => assertSafeRoutePath('/api/jobs/:email/retry')).toThrowError(JobFoundationError);
     expect(() =>
       leaseProviderJob(current, {
         owner: 'worker_1',
@@ -177,12 +175,13 @@ describe('F05 typed API and durable job foundation', () => {
         random_unit_interval: 0.999,
         retry_after_ms: 2_000_000,
       }),
-    ).toBe(1_800_000);
+    ).toBe(2_000_000);
 
-    const leased = leaseProviderJob(
-      job({ dispatch_attempts: 7, lifetime_dispatch_attempts: 12 }),
-      { owner: 'worker_1', now: NOW, expected_version: 1 },
-    );
+    const leased = leaseProviderJob(job({ dispatch_attempts: 7, lifetime_dispatch_attempts: 12 }), {
+      owner: 'worker_1',
+      now: NOW,
+      expected_version: 1,
+    });
     const inFlight = markJobInFlight(leased, leaseFrom(leased), leased.version, NOW);
     const dead = recordDispatchOutcome(
       inFlight,
@@ -275,6 +274,18 @@ describe('F05 typed API and durable job foundation', () => {
     expect(canonicalRequestHash({ b: 2, a: ['x', 1] })).toBe(
       canonicalRequestHash({ a: ['x', 1], b: 2 }),
     );
+    expect(() =>
+      assertStableJobIdentity(
+        { idempotency_key: 'stable:opaque', canonical_request_hash: HASH_A },
+        { idempotency_key: 'stable:opaque', canonical_request_hash: HASH_A },
+      ),
+    ).not.toThrow();
+    expect(() =>
+      assertStableJobIdentity(
+        { idempotency_key: 'stable:opaque', canonical_request_hash: HASH_A },
+        { idempotency_key: 'stable:opaque', canonical_request_hash: HASH_B },
+      ),
+    ).toThrowError(JobFoundationError);
   });
 });
 

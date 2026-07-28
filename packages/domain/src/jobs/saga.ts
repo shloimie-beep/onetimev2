@@ -1,7 +1,4 @@
-import type {
-  VersionedSaga,
-  VersionedSagaState,
-} from '../../../contracts/src/jobs/index.ts';
+import type { VersionedSaga, VersionedSagaState } from '../../../contracts/src/jobs/index.ts';
 import { JobFoundationError } from './errors.ts';
 import { assertSha256 } from './idempotency.ts';
 
@@ -10,13 +7,7 @@ const SAGA_TARGETS = {
   validating: ['preview_ready', 'failed', 'canceled'],
   preview_ready: ['confirmed', 'invalidated', 'canceled'],
   confirmed: ['provisioning', 'invalidated', 'canceled'],
-  provisioning: [
-    'ready_to_notify',
-    'partial_failure',
-    'failed',
-    'acceptance_unknown',
-    'canceled',
-  ],
+  provisioning: ['ready_to_notify', 'partial_failure', 'failed', 'acceptance_unknown', 'canceled'],
   ready_to_notify: ['notifying', 'canceled'],
   notifying: ['complete', 'partial_failure', 'failed', 'acceptance_unknown', 'canceled'],
   partial_failure: ['provisioning', 'notifying', 'canceled'],

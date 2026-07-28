@@ -1,13 +1,14 @@
 import type {
-  ClaimDueJobsInput,
   JobFoundationRepository,
   JobLeaseToken,
   JobScope,
   ProviderJobRecord,
-  RecordDispatchOutcomeInput,
   TransactionalOutboxIntent,
 } from '../../../contracts/src/jobs/index.ts';
 import {
+  assertJobScope,
+  assertOutboxIntent,
+  assertSha256,
   heartbeatProviderJob,
   leaseProviderJob,
   markJobInFlight,
@@ -36,9 +37,7 @@ export interface ExecuteTransactionalCommandInput<Response> {
   idempotency_key: string;
   canonical_request_hash: string;
   expected_version: number;
-  mutate(
-    client: JobSqlClient,
-  ): Promise<{
+  mutate(client: JobSqlClient): Promise<{
     response: Response;
     resulting_version: number;
     outbox_intents: readonly TransactionalOutboxIntent[];
@@ -134,6 +133,15 @@ export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
     async executeTransactionalCommand<Response>(
       input: ExecuteTransactionalCommandInput<Response>,
     ): Promise<TransactionalCommandResult<Response>> {
+      assertJobScope(input.scope);
+      assertSha256(input.canonical_request_hash, 'canonical_request_hash');
+      if (
+        input.actor_ref.trim() === '' ||
+        input.operation_scope.trim() === '' ||
+        input.idempotency_key.trim() === ''
+      ) {
+        throw new Error('job_command_invalid_identity');
+      }
       return withTransaction(pool, async (client) => {
         const lockIdentity = [
           input.scope.product,
@@ -142,9 +150,7 @@ export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
           input.operation_scope,
           input.idempotency_key,
         ].join('\u0000');
-        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [
-          lockIdentity,
-        ]);
+        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [lockIdentity]);
         const existing = await client.query<{
           canonical_request_hash: unknown;
           response_json: unknown;
@@ -184,10 +190,10 @@ export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
         if (mutation.resulting_version !== input.expected_version + 1) {
           throw new Error('job_command_stale_or_nonmonotonic_version');
         }
+        const outboxJobIds: string[] = [];
         for (const intent of mutation.outbox_intents) {
-          await insertOutboxIntent(client, intent);
+          outboxJobIds.push(await insertOutboxIntent(client, intent));
         }
-        const outboxJobIds = mutation.outbox_intents.map((intent) => intent.job_id);
         await client.query(
           `INSERT INTO onetime.job_command_idempotency
              (product, runtime_tier, verification_environment_id, actor_ref,
@@ -221,8 +227,9 @@ export function createPostgresJobFoundationRepository(pool: JobSqlPool) {
 async function insertOutboxIntent(
   client: JobSqlClient,
   intent: TransactionalOutboxIntent,
-): Promise<void> {
-  await client.query(
+): Promise<string> {
+  assertOutboxIntent(intent);
+  const inserted = await client.query(
     `INSERT INTO onetime.job_outbox
        (job_id, operation_type, aggregate_ref, source_version, provider, product,
         runtime_tier, verification_environment_id, idempotency_key,
@@ -233,7 +240,15 @@ async function insertOutboxIntent(
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,
              'not_started',1,0,0,0,0,0,false,now(),now())
      ON CONFLICT (product, runtime_tier, verification_environment_id, idempotency_key)
-     DO NOTHING`,
+     DO UPDATE SET idempotency_key = EXCLUDED.idempotency_key
+       WHERE job_outbox.operation_type = EXCLUDED.operation_type
+         AND job_outbox.aggregate_ref = EXCLUDED.aggregate_ref
+         AND job_outbox.source_version = EXCLUDED.source_version
+         AND job_outbox.provider = EXCLUDED.provider
+         AND job_outbox.canonical_request_hash = EXCLUDED.canonical_request_hash
+         AND job_outbox.payload_digest = EXCLUDED.payload_digest
+         AND job_outbox.compensation_for_job_id IS NOT DISTINCT FROM EXCLUDED.compensation_for_job_id
+     RETURNING job_id`,
     [
       intent.job_id,
       intent.operation_type,
@@ -250,6 +265,9 @@ async function insertOutboxIntent(
       intent.compensation_for_job_id,
     ],
   );
+  const actual = inserted.rows[0]?.job_id;
+  if (actual === undefined) throw new Error('job_outbox_idempotency_conflict');
+  return String(actual);
 }
 
 async function transitionOwnedJob<T>(
