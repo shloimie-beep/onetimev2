@@ -20,7 +20,7 @@ claim_time: '2026-07-28T16:07:21Z'
 claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
 lease_expires_at: '2026-07-28T16:56:52Z'
 last_heartbeat_at: '2026-07-28T16:07:21Z'
-controller_authorization_sha: 586f1216c27b02915bdca606645d7e1ee335a669
+controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
 ready_entry_payload_digest: d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f
 state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
 last_implementation_commit_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
