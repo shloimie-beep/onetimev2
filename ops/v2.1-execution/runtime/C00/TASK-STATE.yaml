@@ -12,11 +12,11 @@ phase: bootstrap
 claimed_by: codex-c00-a916ec3f7e8b
 claim_time: '2026-07-28T14:44:41Z'
 claim_id: 73f19375-44c3-4c37-86e6-fcf30d77e244
-lease_expires_at: '2026-07-28T15:46:23Z'
-last_heartbeat_at: '2026-07-28T14:46:23Z'
-controller_authorization_sha: f307f5b9696a81cd147d31c6c8e6913af3577f47
+lease_expires_at: '2026-07-28T15:47:01Z'
+last_heartbeat_at: '2026-07-28T14:47:01Z'
+controller_authorization_sha: e29bf2cbcaf7fe8e6e52b37cf0299de932425bfa
 ready_entry_payload_digest: null
-state_based_on_head_sha: f307f5b9696a81cd147d31c6c8e6913af3577f47
+state_based_on_head_sha: e29bf2cbcaf7fe8e6e52b37cf0299de932425bfa
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -24,6 +24,7 @@ completed_steps:
 - installed the complete execution package
 - seeded the serialized C00 lease and runtime memory
 - validated that AGENTS.md reaches the v2.1 authority first and retains compatible engineering guidance
+- passed the normal control-branch creation push permission canary
 remaining_steps:
 - validate AGENTS.md authority replacement
 - run and record the repository baseline
@@ -32,7 +33,7 @@ remaining_steps:
 - create and verify the integration branch
 - initialize control ledgers and ready entries
 - mark the controller operational and release its lease
-next_action: Record the successful normal control-branch push as the permission canary.
+next_action: Measure and record the bound repository command baseline, then create the integration branch.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
