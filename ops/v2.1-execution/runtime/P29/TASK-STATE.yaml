@@ -1,0 +1,68 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P29
+task_packet_digest: f32a6fae95aa2b14f58c3bdfd17a5639580d049e5daa369ee8dcc43173197b20
+task_context_digest: 0e9928a67c5f82b97ff1ef54802e90334c7d7958bc0a4f9349b2534fc603fa27
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p29-core-workflows
+start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+dependency_heads:
+  P28:
+    state: interface_ready_integrated
+    task_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
+    integration_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+    interface_source_head_sha: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
+    interface_implementation_head_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
+    interface_checkpoint_digest: 2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86
+  P31:
+    state: interface_ready_integrated
+    task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    integration_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+    interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
+    interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
+status: claimed
+phase: contract
+claimed_by: codex-p29-worker-6b96052a
+claim_time: '2026-07-28T23:13:40Z'
+claim_id: 6b96052a-b3f4-429f-9aab-3cbc8ec78e7e
+writer_slot_lease_id: 76d9c9a9-554e-4c3a-83f8-52d30002ca36
+lease_issued_at: '2026-07-28T23:09:14Z'
+lease_expires_at: '2026-07-29T00:09:14Z'
+last_heartbeat_at: '2026-07-28T23:13:40Z'
+controller_authorization_sha: 62db0bf0de280932b07cf86dd8e03501ca708229
+state_based_on_control_head_sha: f0f7ea05f7c50f3ea64782ff107fbfd1c4486c24
+ready_entry_payload_digest: 193b50e837b10a2e9890d909c6295e5801aab9757102425bdb5175d7d92f3efc
+state_based_on_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+last_implementation_commit_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+completed_steps:
+  - verified exact remote identity, containing control authorization, ready entry, remote branch absence, claim, GHL_CORE_WORKFLOWS lease, and authorized start
+  - recomputed the canonical P29 ready-entry digest and verified package, source-package, task, and context Git-blob digests
+  - verified exact P28 and P31 interface-ready integration bindings and source ancestry at the authorized start
+remaining_steps:
+  - push and report this exact P29 atomic claim checkpoint
+  - await explicit continuation before reading the locked P29 workflow context or implementing task scope
+next_action: Report the exact pushed P29 atomic claim checkpoint, then pause without implementing until explicit continuation under the same exact claim, lease, control binding, and branch head.
+requirements: {}
+acceptance_cases: {}
+changed_paths:
+  - ops/v2.1-execution/runtime/P29/HANDOFF.md
+  - ops/v2.1-execution/runtime/P29/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P29/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - exact repository, containing control, ready parent, authorized/expected start, and remote branch-absence verification (passed)
+    - canonical P29 ready-entry payload digest recomputation (passed)
+    - package, source-package, P29 task, and P29 context Git-blob SHA-256 verification (passed)
+    - P28/P31 dependency binding and authorized-start ancestry verification (passed)
+    - P29 claim, sole GHL_CORE_WORKFLOWS lease, lease expiry, and zero effect-lock verification (passed)
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
