@@ -20,31 +20,32 @@ C00 lease. Reject any live foreign lease or non-fast-forward collision.
 
 Bootstrap is operational and autonomous native-subagent orchestration is
 enabled. The root C00 agent alone dispatches workers; child workers never spawn
-product writers or edit control state. F01's interface is verified and
-integrated at `80c281b7ae5826ed2c6abe95ba68a033ffa52174`. F01 is waiting
-after publishing three immutable steward requests: authentication is assigned
-to F03 for `F03_ready_for_review`, while cross-cutting client and config
-retirement are assigned to I36. F07 has an independently verified interface at
-`47a2bb6b76225951e0599683499a95f4dc9881be` and is `ready_for_review`
-at `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`. F02 superseded its first
-interface before integration to harden database fencing; ordinal 2234 remains
-reserved with status `superseded_pending_replacement`. Do not integrate the
-old `14793411` checkpoint. P31 is rebound with ready digest
-`e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
-I36's F07 merge and two exact steward-result rejections are recorded at
-integration checkpoint `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
-F02 hardened metadata at `347f9461cee523341102101355c6f38dbc9418d4`
-passed artifact/scope/digest review but is withheld because its consumed ready
-entry retained a stale embedded C00 control-state digest. F02 is reauthorized
-only to correct metadata under claim `8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78`
-and payload `b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`.
-I36 claimed the P31-only lease at
-`cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c`; consume only the rebound P31
-item digest `7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`.
-F01 acknowledged both rejected results at
-`dc991ef901617cc6d7e4fe780c53b4833172a0a2` and now waits for F03's auth
-result. Do not advance control until F02 consumes its correction entry; P35
-waits for the next slot.
+product writers or edit control state. F01's interface is integrated at
+`80c281b7ae5826ed2c6abe95ba68a033ffa52174`; F01 acknowledged both I36
+rejection results at `dc991ef901617cc6d7e4fe780c53b4833172a0a2` and waits
+for F03's remaining auth-steward result. F07 remains independently verified
+and `ready_for_review`. P31 is ancestry-integrated at merge commit
+`42b09dc598e0dfc17ada53b441e4cd487e126573`, with I36's final metadata
+checkpoint at exact integration head
+`eefca0644e57dca48609682cbc3e1b01992d286d`.
+
+F02's corrected exact checkpoint is
+`e4673ff1c2e621e26ac93034be245b280c4da4fa`, backed by implementation
+`191dac288ea1721bdc0252bd012060ca974d2242`, interface digest
+`c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`,
+and migration-2234 checksum
+`d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`.
+C00 independently verified and admitted it. I36 is resume-ready from
+`eefca064` under claim `8d31181a-cfe8-493e-b7ce-4ea867da9581`, ready
+payload `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`,
+and F02-only merge item `95985f2c-410b-461b-9360-549591ef624e` with
+payload `1cf403e537176b60462e186b9f3ec5edecf8eb216707b2ff5b25e0df1d5a5d71`.
+P35 is ready from the same start head under claim
+`9ee0d8f8-944d-47f2-b67a-54cb333cc29d` and payload
+`7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f`.
+Hold control fixed until both exact ready entries are consumed or safely
+refused. After F02 integrates, recalculate and authorize the newly unblocked
+critical-path lanes.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.

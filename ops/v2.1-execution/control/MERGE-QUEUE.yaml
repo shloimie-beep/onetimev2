@@ -4,45 +4,47 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: e354aedf-1e25-4d05-b917-3f568dcf048e
+  merge_id: 95985f2c-410b-461b-9360-549591ef624e
   kind: interface
-  task_id: P31
-  source_branch: codex/v21-p31-email-copy-approval
-  source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  task_id: F02
+  source_branch: codex/v21-f02-schema-state-migrations
+  source_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
   target_branch: codex/v21-integration
-  expected_target_head_sha: cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c
+  expected_target_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
   source_delta_base_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
   required_merge_base_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  required_postmerge_ancestor_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
   merge_after_heads: {}
   allowed_paths:
-  - apps/web/src/server/features/email/templates/security.ts
-  - integrations/highlevel/v21/copy/catalog.ts
-  - ops/v2.1-execution/runtime/P31/HANDOFF.md
-  - ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
-  - packages/domain/src/communications/copy/approval.ts
-  - packages/domain/src/communications/copy/catalog.ts
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - packages/contracts/src/state/index.ts
+  - packages/db/migrations/2234_canonical_state_machines.sql
+  - packages/domain/src/state/errors.ts
+  - packages/domain/src/state/index.ts
+  - packages/domain/src/state/transition-guard.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 7b68a523-6fe3-4fdc-a86f-55c8b176aae4
+    lease_id: 9b0d2541-b765-4a2b-af44-014f842efa1a
     holder_task_id: I36
-    holder_claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
-    state_based_on_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
-    lease_issued_at: '2026-07-28T17:13:44Z'
-    lease_expires_at: '2026-07-28T18:13:44Z'
-    phase_scope: P31_interface_merge_only
-  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
-  state_handoff_digest: 6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581
+    holder_claim_id: 8d31181a-cfe8-493e-b7ce-4ea867da9581
+    state_based_on_control_head_sha: 55c5605acf834318627d54bd3e94eb90d6429a80
+    lease_issued_at: '2026-07-28T17:38:47Z'
+    lease_expires_at: '2026-07-28T18:38:47Z'
+    phase_scope: F02_interface_merge_only
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  state_handoff_digest: b848936b7fbbfc4aa088e2062d82a4f472dcfa4cd8b3b8518e9e832362f5e2bd
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+  state_based_on_control_head_sha: 55c5605acf834318627d54bd3e94eb90d6429a80
 item_payload_digests:
-  e354aedf-1e25-4d05-b917-3f568dcf048e: 7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32
+  95985f2c-410b-461b-9360-549591ef624e: 1cf403e537176b60462e186b9f3ec5edecf8eb216707b2ff5b25e0df1d5a5d71
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-e0421420
-claim_time: '2026-07-28T17:25:24Z'
-claim_id: e0421420-0baf-4d9d-acec-8da82b1de47e
-lease_expires_at: '2026-07-28T17:31:52Z'
-last_heartbeat_at: '2026-07-28T17:31:52Z'
-controller_authorization_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+claimed_by: codex-c00-orchestrator-3fe66ada
+claim_time: '2026-07-28T17:37:46Z'
+claim_id: 3fe66ada-7bcd-4975-942b-c9f690ce8027
+lease_expires_at: '2026-07-28T17:42:49Z'
+last_heartbeat_at: '2026-07-28T17:42:49Z'
+controller_authorization_sha: 55c5605acf834318627d54bd3e94eb90d6429a80
 ready_entry_payload_digest: null
-state_based_on_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+state_based_on_head_sha: 55c5605acf834318627d54bd3e94eb90d6429a80
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -58,8 +58,12 @@ completed_steps:
 - verified I36's exact P31-only atomic claim head cd4bb17a and rebound the unchanged merge item's optimistic target CAS
 - reproduced F02's hardened artifact, contract, interface-file, migration, source-scope, and state/handoff digests at 347f9461, but withheld admission because the consumed F02 ready entry retained a stale embedded C00 control-state digest
 - issued F02 a metadata-only correction resume claim against exact head 347f9461 and the correct parent control-state digest
+- verified P31 source ancestry at merge commit 42b09dc5 and the final I36 metadata checkpoint eefca064; recorded the exact integrated evidence head without altering P31 product state
+- independently reproduced F02's corrected dependency binding, exact ten-path source delta, six artifact hashes, contract digest c03e01d7, migration checksum d1352c5e, state/handoff digest b848936b, native PostgreSQL proof, and zero effects at e4673ff1
+- admitted F02's corrected interface for an I36-only ancestry merge and rebound migration ordinal 2234 from its superseded audit record to the exact replacement checksum
+- authorized P35 as the only additional dependency-valid product lane and generated canonical ready-entry and merge-item payload digests against control parent 55c5605a
 remaining_steps: []
-next_action: Let I36 consume the rebound P31-only merge item and F02 consume the corrected metadata-only resume entry; keep F01 paused until F03 returns the remaining auth-steward result.
+next_action: Dispatch I36 to consume only the verified F02 interface merge item and dispatch P35 from integration head eefca064; hold control fixed until both exact ready claims are consumed or safely refused.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -67,12 +71,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+  current_control_parent_sha: 55c5605acf834318627d54bd3e94eb90d6429a80
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: e0421420-0baf-4d9d-acec-8da82b1de47e
-      observed_head: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
+      claim_id: 3fe66ada-7bcd-4975-942b-c9f690ce8027
+      observed_head: 55c5605acf834318627d54bd3e94eb90d6429a80
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -83,18 +87,18 @@ orchestration:
       scheduling_state: acknowledged_two_rejections_waiting_on_F03_auth_result_agent_returned
     I36:
       branch: codex/v21-integration
-      claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
-      observed_head: cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c
-      authorized_start_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
-      lease_expires_at: '2026-07-28T18:13:44Z'
-      scheduling_state: claimed_waiting_on_rebound_P31_item
+      claim_id: 8d31181a-cfe8-493e-b7ce-4ea867da9581
+      observed_head: eefca0644e57dca48609682cbc3e1b01992d286d
+      authorized_start_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+      lease_expires_at: '2026-07-28T18:38:47Z'
+      scheduling_state: resume_ready_F02_interface_merge_only
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
-      observed_head: 347f9461cee523341102101355c6f38dbc9418d4
+      observed_head: e4673ff1c2e621e26ac93034be245b280c4da4fa
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-      lease_expires_at: '2026-07-28T18:27:11Z'
-      scheduling_state: metadata_reauthorization_resume_ready
+      lease_expires_at: null
+      scheduling_state: ready_for_review_interface_queued
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -108,24 +112,15 @@ orchestration:
       observed_head: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: null
-      scheduling_state: ready_for_review_interface_queued
-  active_native_subagents:
-  - task_id: I36
-    agent: /root/i36_worker2
-    branch: codex/v21-integration
-    observed_head: cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c
-    claim_id: 4ee7c853-5fa3-4fde-afc9-d123effe52b6
-    lease_expires_at: '2026-07-28T18:13:44Z'
-    status: claimed
-    phase: integration
-  - task_id: F02
-    agent: /root/f02_worker
-    branch: codex/v21-f02-schema-state-migrations
-    observed_head: 347f9461cee523341102101355c6f38dbc9418d4
-    claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
-    lease_expires_at: '2026-07-28T18:27:11Z'
-    status: resume_ready
-    phase: verification
+      scheduling_state: ready_for_review_interface_integrated_at_eefca064
+    P35:
+      branch: codex/v21-p35-domain-transition-archive
+      claim_id: 9ee0d8f8-944d-47f2-b67a-54cb333cc29d
+      observed_head: null
+      authorized_start_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+      lease_expires_at: '2026-07-28T18:38:47Z'
+      scheduling_state: ready
+  active_native_subagents: []
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -162,15 +157,15 @@ steward_requests:
   acknowledgment_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
 verification:
   control_digests:
-    control_state: 63a404fee8d7129dae50e8ec8ddde9b8d4b0c8268c1e2a0249065746ef76859f
-    control_lease: 47d84d9651dbe1ff858697e580634950b23488ec04842b4a14216d55a5642929
-    task_registry: e18096e0f8d49ee3b4b1d5e30a47b74b500c4a577bf3441fc660e9648e8dbd91
-    ready_queue: c0d8badc1b68bcfbbd378d3441d959dab15a6875c46493d1a3d042b3ffa0a1a3
-    merge_queue: a04c2a39a0223b91f5b0ae8166a3ab29572ca60dd8b20a17adafa07da37e5fa6
+    control_state: 13ca93f49dedf5fe4a44794c398af258328217cb5b40f4e8d8aecc43def29ce7
+    control_lease: 14607914f9955bf88f6fc08e30633f808da5f74f710a5f47f23d8736e9559698
+    task_registry: 8d288d1a9f2c7502f4c7302b39370282fd15c4cd46e25993a9ac4e8331e3c991
+    ready_queue: 352057183ffd6849494c31ea112cce1279ea85cc697a4fac468b179c2eb0b38a
+    merge_queue: eec80121d8ee54622aa979a6114131dfffc9185fbb444fa93a7ec0f6b5ac437a
     steward_queue: aa7a6ad4acfd3baff63a0b821c1a2448d88bd35a5272b539549b7230645227fc
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
-    migration_allocations: f9819bdb8d4a6d74132e927658b783682d7e6897307d9628b444ff1b11a5f23b
+    migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70
     current_candidate: d363b5688183208265274bc5521676505338df544965c36e76ec1205ea9bf724
     blockers: e3f82402bf15371558d1777351746bb39010d276deef7241c0a0b3329252a3b6
   commands_run:
@@ -192,6 +187,9 @@ verification:
   - P31 final ancestry, exact eight-path scope, artifact hashes, contract digest, state/handoff digest, focused/typecheck reports, and zero effects: passed
   - F01 acknowledgment-only three-path scope, exact result digests, and state/handoff digest: passed
   - F02 hardened artifact, contract, interface-file, migration, source-scope, and state/handoff digests: passed; admission withheld for stale embedded C00 control-state dependency digest and correction reauthorized
+  - P31 ancestry merge at 42b09dc5 and final I36 checkpoint eefca064: passed
+  - F02 corrected parent dependency, exact source delta, artifact/contract/migration/state-handoff digests, native PostgreSQL proof, and zero effects at e4673ff1: passed
+  - canonical I36/P35 ready-entry and F02 merge-item payload digests against control parent 55c5605a: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

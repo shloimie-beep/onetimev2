@@ -12,9 +12,11 @@ allocations:
   file: packages/db/migrations/2234_canonical_state_machines.sql
   task_id: F02
   purpose: Canonical state vocabularies, isolation mapping, optimistic concurrency, append-only idempotency, guarded transitions, and billing-operation fencing.
-  interface_digest: bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e
-  status: superseded_pending_replacement
-  checksum_sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
+  interface_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+  status: allocated
+  checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+  supersedes_interface_digest: bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e
+  supersedes_checksum_sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
   replaces_applied_migration: false
   destructive: false
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00

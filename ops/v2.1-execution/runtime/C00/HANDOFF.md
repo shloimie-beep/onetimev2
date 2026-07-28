@@ -153,18 +153,38 @@ assigned to F03. I36 consumed the P31-only ready entry at claim head
 `cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c`; the same P31 merge item is
 rebound to that exact target with payload
 `7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`.
+I36 subsequently ancestry-merged P31 at
+`42b09dc598e0dfc17ada53b441e4cd487e126573` and published its task-local
+metadata checkpoint at exact integration head
+`eefca0644e57dca48609682cbc3e1b01992d286d`. C00 verified both parents,
+P31 ancestry, focused assertions, typecheck, and the metadata-only final
+delta. F02 published its corrected checkpoint at
+`e4673ff1c2e621e26ac93034be245b280c4da4fa`. C00 independently reproduced
+the corrected parent control-state binding, exact ten-path source delta, six
+artifact hashes, contract digest
+`c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`,
+migration checksum
+`d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`,
+state/handoff digest
+`b848936b7fbbfc4aa088e2062d82a4f472dcfa4cd8b3b8518e9e832362f5e2bd`,
+native PostgreSQL proof, and zero effects. Migration ordinal 2234 is now
+allocated to that replacement while preserving the superseded checksum audit.
+The exact F02 interface is queued for an I36-only merge from `eefca064`.
+P35 is the only other dependency-valid planned task and is authorized from the
+same integration head; all tasks gated on F02 remain paused until its interface
+is integrated.
 
 ## Remaining work
 
-None for bootstrap. Future C00 invocations perform episodic controller refresh
-after worker branches advance.
+None for bootstrap. The current operational wave consists only of I36's
+F02-interface merge and P35 implementation.
 
 ## Exact next action
 
-Let I36 consume the rebound P31-only item and let F02 publish only the corrected
-metadata checkpoint. Keep F01 paused until F03 produces the remaining exact
-auth-steward result. F03 itself remains gated until F02's corrected interface
-is integrated.
+Dispatch I36 under claim `8d31181a-cfe8-493e-b7ce-4ea867da9581` to consume
+only F02 merge item `95985f2c-410b-461b-9360-549591ef624e`, and dispatch P35
+under claim `9ee0d8f8-944d-47f2-b67a-54cb333cc29d`. Hold control fixed until
+both exact ready entries are consumed or safely refused.
 
 ## Verification
 
@@ -174,15 +194,19 @@ is integrated.
 - Independent package topology validation: PASS.
 - Integration bootstrap SHA: `ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0`.
 - F01 ready payload: `02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2`.
-- Current F02 correction payload: `b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`.
-- Current I36 resume payload: `a88604a039dbbb805aef2f8eb32a5838362a1f49ab9c109ebd0b491990e10d46`.
-- Current rebound P31 merge item: `7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`.
-- Verified integration head after F07 and steward results: `1976033cfdae1beb249642f0e28f6824b0fcbb8b`.
+- Consumed F02 correction payload: `b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d`.
+- Current I36 resume payload: `9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4`.
+- Current P35 ready payload: `7f53c07831911d21d07ebe7f3067f5cd046087cb89841b19c1a1a37ad901d27f`.
+- Current F02 merge item payload: `1cf403e537176b60462e186b9f3ec5edecf8eb216707b2ff5b25e0df1d5a5d71`.
+- Corrected F02 checkpoint: metadata `e4673ff1c2e621e26ac93034be245b280c4da4fa`;
+  implementation `191dac288ea1721bdc0252bd012060ca974d2242`; interface digest
+  `c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`.
+- Verified integration head after P31: `eefca0644e57dca48609682cbc3e1b01992d286d`.
 - F01 renewal payload: `913ff78ed729865e7d554e2f407afe7b48f7d8451f09907330c91a42fcf050a2`.
 - F02 ready payload: `8089425dc63820f5c65755815bf1078a66aa28c0d7f84fa199dc0a9a4c2870f9`.
 - F07 ready payload: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`.
-- Current observed heads: F01 `e8b172c6a7da5003a82cfc8663df6d4159fa4092`;
-  F02 `191dac288ea1721bdc0252bd012060ca974d2242`; F07
+- Current observed heads: F01 `dc991ef901617cc6d7e4fe780c53b4833172a0a2`;
+  F02 `e4673ff1c2e621e26ac93034be245b280c4da4fa`; F07
   `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`.
 - F01 steward request digests: auth `b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d`;
   client `c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d`;
@@ -193,13 +217,14 @@ is integrated.
 - F07 interface: metadata `47a2bb6b76225951e0599683499a95f4dc9881be`;
   implementation `a90baae8cf69d6823af6d741161fe0e9e7441321`; state/handoff
   `c92caac59723a2820b5e9f08e80309c40f1ad7255f36a731fd6fcc9bbda8af0e`.
-- Superseded migration 2234 checksum: `ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e`.
+- Migration 2234 replacement checksum: `d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`;
+  superseded audit checksum `ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e`.
 - Rebound P31 ready payload: `e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74`.
 - Rebound F07 merge item payload: `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`.
-- P31 state/handoff digest: `f4b2e27b370c1589c4de2e841dbcd38b9b075a9ff5fe7d00b27eaf8c6e7b5fb2`.
-- Control parent for F02 correction and P31 rebind: `3eb407ef050175d7c21f55f67cf99626f1dd5afd`.
+- P31 state/handoff digest: `6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581`.
+- Control parent for this F02-integration/P35 dispatch: `55c5605acf834318627d54bd3e94eb90d6429a80`.
 - F01 branch/head: `codex/v21-f01-foundation-seams` / `fa9e5c92231c4b92340d07945cc91d76c85bd444`.
-- I36 branch/head: `codex/v21-integration` / `cd4bb17a0a45effe275d20f5e5cf13dbd6e42e0c`.
+- I36 branch/head: `codex/v21-integration` / `eefca0644e57dca48609682cbc3e1b01992d286d`.
 - No provider or product effect was attempted.
 
 ## Blockers, deviations, and recovery
