@@ -20,16 +20,26 @@ dependency_heads:
     client_result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
     config_result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
     state_handoff_digest: ccc2777c2b873cd7f67bf86cd3349a28d6630bf2a896cf4acb229158f08de7aa
+  F03_STEWARD_RESULT:
+    required_state: applied
+    observed_state: applied
+    observed_task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    evaluated_target_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    applied_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_record_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_digest: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+    state_handoff_digest: 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
 status: claimed
 phase: verification
-claimed_by: codex-f01-worker-4aafff01
-claim_time: '2026-07-28T17:13:44Z'
-claim_id: 683f3581-a6ca-472d-80a6-51fabb9208f5
-lease_expires_at: '2026-07-28T18:13:44Z'
-last_heartbeat_at: '2026-07-28T17:25:30Z'
-controller_authorization_sha: 95a2a52e096357738cda2bd7c16bc9a0e24ccd70
-ready_entry_payload_digest: f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda
-state_based_on_head_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
+claimed_by: codex-f01-ack-a0810342
+claim_time: '2026-07-28T19:16:30Z'
+claim_id: a0810342-31c8-42c7-b758-ce0c4e9f1779
+lease_expires_at: '2026-07-28T20:05:27Z'
+last_heartbeat_at: '2026-07-28T19:16:30Z'
+controller_authorization_sha: 44202fc53db9781c91e4015d6af004bac4ab037b
+ready_entry_parent_control_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+ready_entry_payload_digest: a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac
+state_based_on_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
 last_implementation_commit_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
 completed_steps:
   - verified repository identity and isolated clone
@@ -52,11 +62,12 @@ completed_steps:
   - published three schema-valid structured steward requests for remaining out-of-scope closure
   - atomically adopted the no-writer-slot F01 steward-acknowledgment resume claim
   - independently recomputed and acknowledged the exact I36 rejected results for the client and config requests
+  - atomically adopted the C00-issued final F03 steward-result acknowledgment resume claim
 remaining_steps:
   - wait for F03 to publish the exact F01-retired-auth-001 result at F03_ready_for_review
   - acknowledge and verify the auth steward result
   - publish ready_for_review
-next_action: Wait for the exact F03_ready_for_review result for F01-retired-auth-001, then resume under a C00-issued exact F01 acknowledgment claim.
+next_action: Acknowledge the exact applied F03 result for F01-retired-auth-001, rerun the narrow retirement verification, and publish ready_for_review.
 requirements:
   OTV2-FOUNDATION-001: in_progress
   OTV2-FOUNDATION-003: in_progress
