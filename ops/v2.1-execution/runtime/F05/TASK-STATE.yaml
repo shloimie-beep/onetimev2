@@ -1,0 +1,66 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F05
+task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-f05-api-jobs-foundation
+start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+dependency_heads:
+  F02:
+    state: interface_ready_integrated
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+status: claimed
+phase: contract
+claimed_by: codex-f05-worker-8726d04b
+claim_time: '2026-07-28T18:24:58Z'
+claim_id: 8726d04b-b82f-4c2f-b071-57edab0b3b22
+writer_slot_lease_id: 5caac8ad-5b97-4697-855c-f39f28efef24
+lease_expires_at: '2026-07-28T19:11:45Z'
+last_heartbeat_at: '2026-07-28T18:24:58Z'
+controller_authorization_sha: 398ebf34ec72892d354370af11af297d45302888
+state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+ready_entry_payload_digest: f58a652f8ee03a8aaf298b6077cd79660e5d9f0bf06947e63b8c7788484f1eed
+state_based_on_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+last_implementation_commit_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+completed_steps:
+  - verified exact control, ready-entry, package, source, task, context, dependency, branch-absence, and unexpired lease bindings
+  - verified locked manifests at 200/200 and source manifest at 15/15
+remaining_steps:
+  - publish typed API and job contracts
+  - implement domain retry, quarantine, recovery, compensation, and runner primitives
+  - implement the PostgreSQL transactional outbox and idempotency repository
+  - publish required interface checkpoint and steward requests
+  - run focused and repository verification
+next_action: Implement the smallest coherent typed API/job contract and pure domain transition foundation inside F05-owned paths.
+requirements:
+  OTV2-API-217: in_progress
+  OTV2-JOBS-210: in_progress
+  OTV2-JOBS-211: in_progress
+acceptance_cases:
+  OTV2-API-217-AC01: planned
+  OTV2-JOBS-210-AC01: planned
+  OTV2-JOBS-211-AC01: planned
+changed_paths:
+  - ops/v2.1-execution/runtime/F05/HANDOFF.md
+  - ops/v2.1-execution/runtime/F05/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F05/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - canonical READY-QUEUE F05 digest verification (passed)
+    - locked SHA-256 manifest verification (200/200 passed)
+    - source SHA-256 manifest verification (15/15 passed)
+    - F02 interface ancestry and digest verification (passed)
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
