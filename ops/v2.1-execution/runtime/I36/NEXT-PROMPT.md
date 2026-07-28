@@ -59,16 +59,20 @@ verified and ancestry-merged at pushed integration head
 `42b09dc598e0dfc17ada53b441e4cd487e126573`. Typecheck and focused P31
 catalog/approval/security assertions passed.
 
-Current exact next action: report the pushed F02-interface-only claim head to
-C00, then stop and wait. C00 must rebind item
-`95985f2c-410b-461b-9360-549591ef624e` from its old target
-`eefca0644e57dca48609682cbc3e1b01992d286d` to the exact claim head before
-I36 reads or merges F02 source `e4673ff1c2e621e26ac93034be245b280c4da4fa`.
+F02 merge item `95985f2c-410b-461b-9360-549591ef624e` was rebound by control
+`e8e1cfe8b69266535f3413e4cebe22c1b7ca1970` with payload digest
+`45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`.
+Exact F02 source `e4673ff1c2e621e26ac93034be245b280c4da4fa` was independently
+verified and ancestry-merged at pushed integration head
+`e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`. Typecheck, focused domain
+guard assertions, and the native PGlite PostgreSQL migration proof passed.
+
+Current exact next action: report the pushed F02 integration metadata
+checkpoint to C00, then stop and wait for a new exact control authorization.
 No unrelated merge, steward, evidence, control, or live-effect work is
 authorized.
 
-Do not read or integrate any F02 checkpoint or migration; its replacement is
-pending. Do not edit control files or perform provider/live effects. F01 source
+Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its
 source merge commit is `34718371ee0ff26758120b11d0d4b788aa11be97`.
 Typecheck and focused F01 seam verification passed.

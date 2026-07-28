@@ -23,6 +23,10 @@
 - P31 merge authorization: control `d9bb5fd42ad43ccb121d2d749f6176908cac8e9a`,
   item digest `7a7373c66621981772391947f00778fec9ded1726b8f0b5068cf46cc7aa66c32`
 - Pushed P31 integration head: `42b09dc598e0dfc17ada53b441e4cd487e126573`
+- F02 merge authorization: control `e8e1cfe8b69266535f3413e4cebe22c1b7ca1970`,
+  item `95985f2c-410b-461b-9360-549591ef624e`, item digest
+  `45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e`
+- Pushed F02 integration head: `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`
 
 ## Completed behavior
 
@@ -72,19 +76,25 @@ catalog/approval/security checks passed.
 C00 authorized an F02-interface-only resume from exact integration head
 `eefca0644e57dca48609682cbc3e1b01992d286d`. The containing control head,
 parent control state, exact branch head, new claim/lease, phase scope, and
-canonical ready payload were verified. This checkpoint consumes only that
-claim; it does not read or merge the F02 source.
+canonical ready payload were verified. C00 then rebound the exact F02 item to
+claim head `f922c1de`. I36 independently verified source/merge base
+`80c281b7`, the exact 10-path delta, state/handoff digest `b848936b...`, all
+six artifact blob hashes, contract digest `c03e01d7...`, migration checksum
+`d1352c5e...`, and zero external effects. Exact source
+`e4673ff1c2e621e26ac93034be245b280c4da4fa` was ancestry-merged and
+pushed at `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`. Typecheck, focused
+domain guard assertions, and the native PGlite PostgreSQL migration proof
+passed.
 
 ## Remaining work
 
-Push and report this exact F02-interface-only claim checkpoint to C00. Wait for
-C00 to rebind merge item `95985f2c-410b-461b-9360-549591ef624e` from old
-target `eefca064...` to the resulting claim head.
+Push and report this exact F02 integration metadata checkpoint to C00. Await a
+new exact queue/lease authorization before any further integration.
 
 ## Exact next action
 
-Report the exact pushed F02-interface-only claim head to C00, then stop and
-wait for the rebound. Do not read or merge F02 before that authorization.
+Report the exact pushed F02 integration checkpoint to C00, then pause. Do not
+integrate any other source without a new exact authorization.
 
 ## Coverage
 
@@ -98,7 +108,9 @@ wait for the rebound. Do not read or merge F02 before that authorization.
 - `ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md`
 - Exact allowlisted F01 interface delta at
   `fa9e5c92231c4b92340d07945cc91d76c85bd444`
-- Migrations: none
+- Exact allowlisted F02 interface delta at
+  `e4673ff1c2e621e26ac93034be245b280c4da4fa`
+- Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
 
@@ -136,6 +148,13 @@ wait for the rebound. Do not read or merge F02 before that authorization.
   artifact hashes, combined contract digest, and zero-effect count matched.
 - `npm run typecheck` and focused P31 catalog/approval/security assertions
   passed after the ancestry merge.
+- Rebound F02 item digest, exact source/base/allowlist, state/handoff, six
+  artifact hashes, contract digest, migration checksum, and zero-effect count
+  matched.
+- F02 source is an ancestor of integration head
+  `e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4`.
+- `npm run typecheck`, focused F02 domain guard assertions, and native PGlite
+  PostgreSQL migration execution passed after the ancestry merge.
 
 ## External effects
 

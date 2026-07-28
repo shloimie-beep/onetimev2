@@ -18,11 +18,11 @@ claim_id: 8d31181a-cfe8-493e-b7ce-4ea867da9581
 lease_id: 9b0d2541-b765-4a2b-af44-014f842efa1a
 lease_issued_at: '2026-07-28T17:38:47Z'
 lease_expires_at: '2026-07-28T18:38:47Z'
-last_heartbeat_at: '2026-07-28T17:50:23Z'
+last_heartbeat_at: '2026-07-28T18:05:48Z'
 controller_authorization_sha: 3df0ee05af64db67af02e1e64d37ded4810d2cd9
 ready_entry_payload_digest: 9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4
-state_based_on_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
-last_implementation_commit_sha: 42b09dc598e0dfc17ada53b441e4cd487e126573
+state_based_on_head_sha: e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4
+last_implementation_commit_sha: e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
 - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -71,10 +71,18 @@ completed_steps:
   9758c3f53dcecec282041590350bdf8ec2ac2283357fa5893b72786824703aa4.
 - Claimed exact F02-interface-only authority under claim 8d31181a-cfe8-493e-b7ce-4ea867da9581 and
   RELEASE_INTEGRATOR lease 9b0d2541-b765-4a2b-af44-014f842efa1a.
+- Verified rebound control head e8e1cfe8b69266535f3413e4cebe22c1b7ca1970 and F02 merge-item digest
+  45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e.
+- Verified exact F02 source head, source/merge base, 10-path allowlist, state/handoff digest, six artifact
+  blob digests, interface contract digest, migration checksum, and zero external effects.
+- Merged exact F02 source e4673ff1c2e621e26ac93034be245b280c4da4fa with ancestry preserved and
+  pushed integration head e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4.
+- Passed repository typecheck, focused F02 domain guard assertions, and the native PGlite PostgreSQL
+  migration proof.
 remaining_steps:
-- Push and report this atomic F02-interface-only claim checkpoint to C00.
-- Wait for C00 to rebind merge item 95985f2c-410b-461b-9360-549591ef624e to the exact pushed claim head.
-next_action: Report the exact pushed F02-interface-only claim head to C00, then stop and wait for the rebound merge-item target before reading or merging F02 source.
+- Push and report this exact F02 integration metadata checkpoint to C00.
+- Await a new exact C00 queue/lease authorization.
+next_action: Report the exact pushed F02 integration checkpoint to C00, then pause for a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -103,7 +111,18 @@ changed_paths:
 - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
 - packages/domain/src/communications/copy/approval.ts
 - packages/domain/src/communications/copy/catalog.ts
-migrations: []
+- ops/v2.1-execution/runtime/F02/HANDOFF.md
+- ops/v2.1-execution/runtime/F02/INTERFACE-CHECKPOINT.yaml
+- ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+- ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+- ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+- packages/contracts/src/state/index.ts
+- packages/db/migrations/2234_canonical_state_machines.sql
+- packages/domain/src/state/errors.ts
+- packages/domain/src/state/index.ts
+- packages/domain/src/state/transition-guard.ts
+migrations:
+- packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
 steward_results:
 - schema_version: 1
@@ -206,6 +225,18 @@ verification:
     result: passed after P31 merge
   - command: focused P31 catalog/approval/security assertions via tsx
     result: passed
+  - command: canonical rebound F02 merge-item digest recomputation
+    result: passed; 45e33d239f3d26a8e998ee6a82387d8e725e27b912ce8d988ade34e4cf83428e
+  - command: F02 source admission, allowlist, state/handoff, artifact, contract, and migration verification
+    result: passed; exact source e4673ff1, merge base 80c281b7, 10 paths, b848936b state/handoff, c03e01d7 contract, and d1352c5e migration checksum
+  - command: git merge --no-ff e4673ff1c2e621e26ac93034be245b280c4da4fa
+    result: passed; source ancestry preserved at e6b49dff79911f3f11b6d2c0ce6a9a52d50bf7f4
+  - command: npm run typecheck
+    result: passed after F02 merge
+  - command: focused F02 domain transition-guard assertions via tsx
+    result: passed; conclusive reconciliation clears unknown effect and dead-letter retains quarantine
+  - command: native PGlite PostgreSQL execution of migration 2234
+    result: passed; isolation, concurrency, idempotency, recovery, reconciliation, fencing, counters, and append-only audit
   known_baseline_failures: []
 external_effects:
   authority: none
