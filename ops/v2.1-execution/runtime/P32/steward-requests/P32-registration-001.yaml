@@ -1,0 +1,69 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P32-registration-001
+task_id: P32
+kind: registration
+requirement_ids:
+  - OTV2-CONSENT-189
+  - OTV2-PRIVACY-212
+  - OTV2-PRIVACY-221
+  - OTV2-PRIVACY-239
+  - OTV2-PRIVACY-240
+acceptance_case_ids:
+  - OTV2-CONSENT-189-DEPENDENT-STUDENT
+  - OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT
+  - OTV2-PRIVACY-212-AC01
+  - OTV2-PRIVACY-221-AC01
+  - OTV2-PRIVACY-239-ACTOR-ROUTES
+  - OTV2-PRIVACY-239-REQUEST-WORKFLOW
+  - OTV2-PRIVACY-240-SNAPSHOT-REDACTION
+  - OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER
+rationale: >-
+  P32 cannot edit root package barrels or central client, server, and worker
+  composers. Its versioned modules are directly importable and registration-neutral
+  until I36 reconciles the integrated F01/F03/F04/F05 seams.
+desired_semantic_change: >-
+  Export the exact P32 contract/domain/database roots, register the privacy service
+  and retention planner, and mount same-origin CSRF-protected Parent, verified
+  adult-self Student, and Admin privacy routes. Derive all actor and subject scope
+  from the F03 authenticated session and F04 ownership/relationship readback;
+  request bodies never assert identity, household membership, or dependent
+  authority.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/contracts/src/index.ts exports packages/contracts/src/privacy/index.ts
+  - packages/domain/src/index.ts exports packages/domain/src/privacy/index.ts
+  - packages/db/src/index.ts exports packages/db/src/privacy/index.ts
+  - >-
+    apps/web server registry mounts createPrivacyService and authorizePrivacyRoute
+    only after F03 recent-password/session and F04 exact ownership/relationship
+    adapters are integrated.
+  - >-
+    Parent routes expose account-owner/household and separately reviewed dependent
+    Student requests; ordinary exports use parentExportCategories and exclude
+    private question, Rabbi answer, Student support, notification, comparison, and
+    shared-recording bodies.
+  - >-
+    Student routes exist only for relationship=self where the active Student,
+    linked adult identity, household owner, and authenticated session all match;
+    dependent Students receive no self-service route.
+  - >-
+    Admin privacy-review routes expose safe request metadata, review decisions,
+    exception/provider states, and no private bodies, raw tokens, or deleted
+    content.
+  - >-
+    apps/worker central composer registers runPrivacyRetentionPlanningBatch with
+    exact JobScope and lease/version fencing; provider dispatch remains through
+    approved F02 outbox runners and is not performed by the planner.
+compatibility_assumptions:
+  - Recording join checks exact current service-account and recording-participation consent; protected playback authorization remains an independent F04/F05 decision.
+  - Consent scopes are mutated separately and carry their own consequence preview.
+  - Export grants are hash-only, initiating-session-bound, one-use, and expire exactly 15 minutes after issue.
+  - Closure and erasure are distinct request kinds and must never share terminal evidence.
+verification_performed:
+  - npm run typecheck
+  - 21 focused privacy domain, repository, server, worker, and rendered-UI assertions
+conflicts_or_risks:
+  - Do not mount a generic Student privacy route that permits dependent Students.
+  - Do not infer Parent consent or rights authority household-wide.
+  - Do not directly dispatch providers from the retention-planning runner.
+contains_secret_or_private_data: false

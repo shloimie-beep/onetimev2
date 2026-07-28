@@ -1,0 +1,73 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P32-migration-001
+task_id: P32
+kind: migration
+requirement_ids:
+  - OTV2-CONSENT-189
+  - OTV2-PRIVACY-212
+  - OTV2-PRIVACY-221
+  - OTV2-PRIVACY-239
+  - OTV2-PRIVACY-240
+acceptance_case_ids:
+  - OTV2-CONSENT-189-DEPENDENT-STUDENT
+  - OTV2-CONSENT-189-SELF-MANAGED-ADULT-STUDENT
+  - OTV2-PRIVACY-212-AC01
+  - OTV2-PRIVACY-221-AC01
+  - OTV2-PRIVACY-239-ACTOR-ROUTES
+  - OTV2-PRIVACY-239-REQUEST-WORKFLOW
+  - OTV2-PRIVACY-240-SNAPSHOT-REDACTION
+  - OTV2-PRIVACY-240-RETENTION-PURGE-LEDGER
+rationale: >-
+  P32 owns the privacy schema contract and parameterized repository, but only
+  F02 may allocate and write a forward-only migration. The runtime repository
+  does not create or alter schema.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and create normalized, scoped,
+  append-only consent and recording-snapshot storage plus version-fenced
+  data-rights, one-time export-download, retention-work, and purge-ledger-receipt
+  storage. The primary database stores only a receipt for each independently
+  durable purge record, never the purge-ledger object itself.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    onetime.privacy_consent_event: append-only unique(idempotency_key), exact
+    actor/adult/household/Student/scope/choice/policy/evidence fields, and a
+    supersedes reference; reject update and delete.
+  - >-
+    onetime.recording_participant_snapshot: append-only
+    unique(occurrence_id,student_id), immutable snapshot_json plus relationship,
+    created_at, and audit_ref; reject update and delete.
+  - >-
+    onetime.data_rights_request: request/subject/requester scope, recent-password
+    session reference, exact internal and requester-visible state checks,
+    dependent-review evidence, exceptions, provider cascades, optimistic version,
+    due/completion fields, and append-only audit references.
+  - >-
+    onetime.export_download_grant: hash-only token and subject binding,
+    initiating-session binding, 15-minute expiry, one-use/revocation timestamps,
+    and optimistic version.
+  - >-
+    onetime.privacy_retention_work: exact F02 product/runtime/environment scope,
+    due/category/legal-hold/provider-outbox fields, purge-record digest,
+    state/version fencing, and a due-work index.
+  - >-
+    onetime.purge_ledger_receipt: append-only ledger_event_id/request_id,
+    record digest, primary and replica object-version hashes, and replication
+    completion; prohibit content, raw provider identifiers, or deletion-capable
+    foreign keys.
+compatibility_assumptions:
+  - The migration composes with the exact F02 isolation contract and includes product, runtime_tier, and verification_environment_id on mutable work rows.
+  - F03 supplies recent-password and session identity; only a non-secret session reference is persisted.
+  - F04 supplies exact adult, HumanAccount, household, Student relationship, and ownership references.
+  - F05 supplies recording occurrence and participant references.
+  - F07 owns design tokens only and has no persistence dependency.
+  - Independent Object-Lock purge objects and replica configuration are handled by P32-config-001.
+verification_performed:
+  - npm run typecheck
+  - focused privacy domain, repository, server, worker, and UI assertions
+  - parameterized SQL inspection against fixed allowlisted table names
+conflicts_or_risks:
+  - Do not store raw export tokens, deleted content, private question/support bodies, media, raw provider identifiers, age, date of birth, age band, or grade.
+  - Do not make the primary database purge receipt authoritative for restore replay or deletion durability.
+  - Do not weaken append-only snapshot, consent, purge-receipt, idempotency, or optimistic-version invariants.
+contains_secret_or_private_data: false
