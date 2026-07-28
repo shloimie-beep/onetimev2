@@ -20,11 +20,20 @@ describe('v2.1 design-system contract', () => {
     const navigation = ADMIN_PRIMARY_NAVIGATION.map((item, index) => ({
       ...item,
       current: index === 0,
-      ...(item.id === 'content' ? { disabledReason: 'Content is unavailable while your access is being refreshed.' } : {}),
+      ...(item.id === 'content'
+        ? { disabledReason: 'Content is unavailable while your access is being refreshed.' }
+        : {}),
     }));
     const html = renderToStaticMarkup(
-      <V21AppShell role="admin" title="Dashboard" navigation={navigation} onNavigate={() => undefined}>
-        <V21StatePanel kind="loading" title="Loading dashboard">Loading dashboard</V21StatePanel>
+      <V21AppShell
+        role="admin"
+        title="Dashboard"
+        navigation={navigation}
+        onNavigate={() => undefined}
+      >
+        <V21StatePanel kind="loading" title="Loading dashboard">
+          Loading dashboard
+        </V21StatePanel>
         <V21CalendarAgenda
           selectedDate="2026-09-14T12:00:00Z"
           items={[{ id: 'class-1', title: 'Next Class', startsAt: '2026-09-14T12:00:00Z' }]}
@@ -44,7 +53,14 @@ describe('v2.1 design-system contract', () => {
     const html = renderToStaticMarkup(
       <V21Navigation
         onNavigate={() => undefined}
-        items={[{ id: 'admin', label: 'Admin', href: '/app/dashboard', disabledReason: 'Use a tablet or desktop.' }]}
+        items={[
+          {
+            id: 'admin',
+            label: 'Admin',
+            href: '/app/dashboard',
+            disabledReason: 'Use a tablet or desktop.',
+          },
+        ]}
       />,
     );
     expect(html).toContain('aria-disabled="true"');

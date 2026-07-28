@@ -28,9 +28,26 @@ export const oneTimeV21Tokens = {
     info: '#67E8F9',
     focus: '#67E8F9',
   },
-  space: { 1: '4px', 2: '8px', 3: '12px', 4: '16px', 5: '20px', 6: '24px', 8: '32px', 10: '40px', 12: '48px', 16: '64px' },
+  space: {
+    1: '4px',
+    2: '8px',
+    3: '12px',
+    4: '16px',
+    5: '20px',
+    6: '24px',
+    8: '32px',
+    10: '40px',
+    12: '48px',
+    16: '64px',
+  },
   radius: { sm: '6px', md: '10px', lg: '14px', xl: '20px' },
-  layout: { contentMax: '1440px', readingMax: '720px', mobile: '639px', tablet: '1023px', desktop: '1024px' },
+  layout: {
+    contentMax: '1440px',
+    readingMax: '720px',
+    mobile: '639px',
+    tablet: '1023px',
+    desktop: '1024px',
+  },
   focus: { width: '3px', offset: '2px' },
   touchTarget: '44px',
 } as const;
@@ -79,5 +96,8 @@ export function disabledControlDescription(reason?: string) {
 }
 
 export function isAdminPrimaryNavigation(items: readonly Pick<V21NavigationItem, 'label'>[]) {
-  return items.map((item) => item.label).join('|') === ADMIN_PRIMARY_NAVIGATION.map((item) => item.label).join('|');
+  return (
+    items.map((item) => item.label).join('|') ===
+    ADMIN_PRIMARY_NAVIGATION.map((item) => item.label).join('|')
+  );
 }

@@ -1,24 +1,149 @@
 /* F07 v2.1 shell contract. Import from a feature root; no route-local palette is needed. */
-.ot-v21 { min-height: 100vh; overflow-x: clip; background: var(--ot-v21-black); color: var(--ot-v21-white); }
-.ot-v21__skip-link { position: fixed; z-index: 1001; top: 8px; left: 8px; transform: translateY(-160%); padding: 8px 12px; border-radius: 6px; background: var(--ot-v21-yellow); color: var(--ot-v21-black); font-weight: 700; }
-.ot-v21__skip-link:focus { transform: translateY(0); }
-.ot-v21__header { display: flex; min-height: 64px; align-items: center; justify-content: space-between; gap: 16px; padding: 12px max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left)); border-bottom: 1px solid var(--ot-v21-border); }
-.ot-v21__brand { color: var(--ot-v21-white); font-size: 20px; font-weight: 700; text-decoration: none; }
-.ot-v21__role { color: var(--ot-v21-muted); text-transform: capitalize; }
-.ot-v21__layout { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); max-width: 1440px; min-height: calc(100vh - 64px); margin: 0 auto; }
-.ot-v21__navigation { display: grid; align-content: start; gap: 4px; padding: 16px; border-inline-end: 1px solid var(--ot-v21-border); }
-.ot-v21__nav-item { display: grid; gap: 4px; min-height: 44px; align-content: center; padding: 8px 12px; border-radius: 10px; color: var(--ot-v21-white); text-decoration: none; }
-.ot-v21__nav-item[aria-current="page"] { background: var(--ot-v21-yellow); color: var(--ot-v21-black); font-weight: 700; }
-.ot-v21__nav-item--disabled { color: var(--ot-v21-muted); cursor: not-allowed; }
-.ot-v21__nav-item--disabled small { font-size: 12px; line-height: 16px; }
-.ot-v21__main { min-width: 0; padding: clamp(16px, 3vw, 48px); }
-.ot-v21__main > h1 { margin: 0 0 24px; font-size: clamp(28px, 4vw, 32px); line-height: 1.25; }
-.ot-v21__state, .ot-v21__calendar { display: grid; gap: 12px; padding: 20px; border: 1px solid var(--ot-v21-border); border-radius: 14px; background: var(--ot-v21-raised); }
-.ot-v21__state h2, .ot-v21__calendar h2, .ot-v21__calendar p { margin: 0; }
-.ot-v21__state--error, .ot-v21__state--denied, .ot-v21__state--session-expired { border-color: var(--ot-v21-danger); }
-.ot-v21__calendar ol { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
-.ot-v21__calendar li { display: grid; gap: 4px; padding: 12px; border-radius: 10px; background: var(--ot-v21-overlay); }
-.ot-v21__calendar li span { color: var(--ot-v21-muted); }
-.ot-v21 :focus-visible { outline: 3px solid var(--ot-v21-focus); outline-offset: 2px; }
-@media (max-width: 639px) { .ot-v21__layout { grid-template-columns: 1fr; } .ot-v21__navigation { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; border-inline-end: 0; border-bottom: 1px solid var(--ot-v21-border); } }
-@media (prefers-reduced-motion: reduce) { .ot-v21 *, .ot-v21 *::before, .ot-v21 *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
+.ot-v21 {
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--ot-v21-black);
+  color: var(--ot-v21-white);
+}
+.ot-v21__skip-link {
+  position: fixed;
+  z-index: 1001;
+  top: 8px;
+  left: 8px;
+  transform: translateY(-160%);
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--ot-v21-yellow);
+  color: var(--ot-v21-black);
+  font-weight: 700;
+}
+.ot-v21__skip-link:focus {
+  transform: translateY(0);
+}
+.ot-v21__header {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--ot-v21-border);
+}
+.ot-v21__brand {
+  color: var(--ot-v21-white);
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.ot-v21__role {
+  color: var(--ot-v21-muted);
+  text-transform: capitalize;
+}
+.ot-v21__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  max-width: 1440px;
+  min-height: calc(100vh - 64px);
+  margin: 0 auto;
+}
+.ot-v21__navigation {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 16px;
+  border-inline-end: 1px solid var(--ot-v21-border);
+}
+.ot-v21__nav-item {
+  display: grid;
+  gap: 4px;
+  min-height: 44px;
+  align-content: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: var(--ot-v21-white);
+  text-decoration: none;
+}
+.ot-v21__nav-item[aria-current='page'] {
+  background: var(--ot-v21-yellow);
+  color: var(--ot-v21-black);
+  font-weight: 700;
+}
+.ot-v21__nav-item--disabled {
+  color: var(--ot-v21-muted);
+  cursor: not-allowed;
+}
+.ot-v21__nav-item--disabled small {
+  font-size: 12px;
+  line-height: 16px;
+}
+.ot-v21__main {
+  min-width: 0;
+  padding: clamp(16px, 3vw, 48px);
+}
+.ot-v21__main > h1 {
+  margin: 0 0 24px;
+  font-size: clamp(28px, 4vw, 32px);
+  line-height: 1.25;
+}
+.ot-v21__state,
+.ot-v21__calendar {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--ot-v21-border);
+  border-radius: 14px;
+  background: var(--ot-v21-raised);
+}
+.ot-v21__state h2,
+.ot-v21__calendar h2,
+.ot-v21__calendar p {
+  margin: 0;
+}
+.ot-v21__state--error,
+.ot-v21__state--denied,
+.ot-v21__state--session-expired {
+  border-color: var(--ot-v21-danger);
+}
+.ot-v21__calendar ol {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.ot-v21__calendar li {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--ot-v21-overlay);
+}
+.ot-v21__calendar li span {
+  color: var(--ot-v21-muted);
+}
+.ot-v21 :focus-visible {
+  outline: 3px solid var(--ot-v21-focus);
+  outline-offset: 2px;
+}
+@media (max-width: 639px) {
+  .ot-v21__layout {
+    grid-template-columns: 1fr;
+  }
+  .ot-v21__navigation {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--ot-v21-border);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ot-v21 *,
+  .ot-v21 *::before,
+  .ot-v21 *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
