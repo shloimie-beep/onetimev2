@@ -20,8 +20,7 @@ digest, lease/claim, package/task/context/dependency digests, and reject a live
 foreign lease or non-fast-forward collision. Check out the exact integration
 branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
 
-Current exact next action: report the exact pushed verified integration head
-to C00. Current takeover authority is control head
+Current takeover authority is control head
 `beb72be5ba1f993c1806e9314146e88f951affdb`, claim
 `89f23125-5016-49e5-968c-d886dfc979dc`, shared writer lease
 `1c1c44d6-203b-4d77-a6a0-7157675a38b4` through
@@ -30,26 +29,30 @@ to C00. Current takeover authority is control head
 The exact pre-takeover integration head is
 `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
 
-Then consume only merge item `fb37db43-fe31-4f0b-a8d7-e726c435e4bd` /
-digest `58c0311691b51a91699ececc551ed94446b07ca13085a80e5d72dde767db95d4`:
-validate and ancestry-merge exact F07 interface head
-`47a2bb6b76225951e0599683499a95f4dc9881be` from exact target/base
-`80c281b7ae5826ed2c6abe95ba68a033ffa52174`, preserve source ancestry, verify
-the allowed paths and interface artifact digest
-`366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188`,
-run typecheck and focused contract checks, then push and report the exact
-integration head.
+F07 interface head `47a2bb6b76225951e0599683499a95f4dc9881be`
+has been ancestry-merged and pushed at exact integration head
+`91349fc1fa9a474ae31cf408ae0364aa10520385`. Rebound control head was
+`136f5f54520e44415c10b83108314fab4503a42e`, merge-item payload
+digest was `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`,
+and typecheck plus all three focused F07 contract tests passed.
 
-Under the current `CLIENT_COMPOSER` and `CONFIG_DEPS` leases, process only
-assigned immutable requests `F01-retired-client-002` /
+The assigned immutable requests `F01-retired-client-002` /
 `c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d`
 and `F01-config-retirement-003` /
 `b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575`
-from exact F01 head `e8b172c6a7da5003a82cfc8663df6d4159fa4092`.
-Apply the approved central steward semantics once, verify no retired-surface or
-security regression, and record schema-valid applied or rejected result
-heads/digests in I36 runtime state and handoff before pushing the steward
-checkpoint for C00.
+were evaluated from exact F01 head
+`e8b172c6a7da5003a82cfc8663df6d4159fa4092` and rejected without
+product edits. The client request cannot achieve its public-bundle retirement
+within its exact path list because named HTML paths are absent and remaining
+retired assets are outside scope. The config request assumes F01's unmerged
+`protectedPayloadEncryptionKey` state, so applying it would synthesize
+unqueued implementation. Their canonical rejected-result payload digests are
+`a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a`
+and `a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f`.
+
+Current exact next action: report the exact pushed steward-result checkpoint to
+C00, then pause until C00 records both rejections and publishes a new exact
+control authorization.
 
 Do not read or integrate any F02 checkpoint or migration; its replacement is
 pending. Do not edit control files or perform provider/live effects. F01 source

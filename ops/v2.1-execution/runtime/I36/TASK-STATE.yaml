@@ -16,11 +16,11 @@ claim_id: 89f23125-5016-49e5-968c-d886dfc979dc
 lease_id: 1c1c44d6-203b-4d77-a6a0-7157675a38b4
 lease_issued_at: '2026-07-28T16:35:01Z'
 lease_expires_at: '2026-07-28T17:35:01Z'
-last_heartbeat_at: '2026-07-28T16:47:10Z'
+last_heartbeat_at: '2026-07-28T17:04:08Z'
 controller_authorization_sha: beb72be5ba1f993c1806e9314146e88f951affdb
 ready_entry_payload_digest: 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0
-state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-last_implementation_commit_sha: 34718371ee0ff26758120b11d0d4b788aa11be97
+state_based_on_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+last_implementation_commit_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
 - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -39,13 +39,20 @@ completed_steps:
 - Recomputed and matched resume-entry payload digest 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0.
 - Claimed the takeover under claim 89f23125-5016-49e5-968c-d886dfc979dc and shared writer lease
   1c1c44d6-203b-4d77-a6a0-7157675a38b4 without reading or integrating F02.
+- Verified rebound control head 136f5f54520e44415c10b83108314fab4503a42e and canonical F07 merge-item
+  payload digest fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0.
+- Verified exact F07 source base, merge base, 12-path allowlist, state/handoff digest, five artifact blob
+  digests, and interface contract digest 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188.
+- Merged exact F07 interface head 47a2bb6b76225951e0599683499a95f4dc9881be with source ancestry preserved
+  and pushed integration head 91349fc1fa9a474ae31cf408ae0364aa10520385.
+- Passed repository typecheck and all three focused F07 interface contract tests.
+- Verified the two assigned immutable F01 steward-request blob digests at exact source head
+  e8b172c6a7da5003a82cfc8663df6d4159fa4092 and rejected both without product edits because their
+  committed semantics cannot be applied within their exact scopes at the authorized target.
 remaining_steps:
-- Report this atomic takeover checkpoint's exact pushed head to C00.
-- Consume only merge item fb37db43-fe31-4f0b-a8d7-e726c435e4bd for exact F07 interface head
-  47a2bb6b76225951e0599683499a95f4dc9881be, preserving ancestry from target/base 80c281b7.
-- Process only F01-retired-client-002 and F01-config-retirement-003 from exact F01 head
-  e8b172c6a7da5003a82cfc8663df6d4159fa4092 under the granted CLIENT_COMPOSER and CONFIG_DEPS slots.
-next_action: Report the exact pushed takeover head to C00, then admit and ancestry-merge only authorized F07 merge item fb37db43-fe31-4f0b-a8d7-e726c435e4bd; do not read or integrate F02.
+- Push and report this exact steward-result checkpoint to C00.
+- Await C00 recording of the two rejected results and a new exact queue/lease authorization.
+next_action: Report the exact pushed F07 and steward-result checkpoint to C00, then pause for C00 to record the two precise rejections and issue any subsequent exact authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -68,6 +75,55 @@ changed_paths:
 - packages/config/src/index.ts
 migrations: []
 steward_requests: []
+steward_results:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  request_id: F01-retired-client-002
+  request_digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
+  requesting_task_id: F01
+  kind: retired_surface
+  status: rejected
+  assigned_steward: I36
+  source_head_sha: e8b172c6a7da5003a82cfc8663df6d4159fa4092
+  evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+  target_checkpoint: I36_next_steward_checkpoint
+  acknowledged_by_task: false
+  applied_commit_sha: null
+  result_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+  rejection_reason: The immutable request names three HTML paths that do not exist at the authorized target while
+    retired Tisha event assets remain outside its exact assigned path list; full application would require scope
+    expansion, and partial application would not satisfy the requested public-bundle retirement semantics.
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  request_id: F01-config-retirement-003
+  request_digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
+  requesting_task_id: F01
+  kind: config_key
+  status: rejected
+  assigned_steward: I36
+  source_head_sha: e8b172c6a7da5003a82cfc8663df6d4159fa4092
+  evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+  target_checkpoint: I36_next_steward_checkpoint
+  acknowledged_by_task: false
+  applied_commit_sha: null
+  result_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+  rejection_reason: The immutable request assumes F01's unmerged protectedPayloadEncryptionKey compatibility state,
+    but that prerequisite is absent from the authorized integration target; applying it would synthesize unqueued
+    F01 implementation rather than perform an exact central steward change.
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+steward_result_payload_digests:
+  F01-retired-client-002: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+  F01-config-retirement-003: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+steward_result_digest_algorithm: Parse each steward_results entry to a data object, serialize as UTF-8 JSON with keys
+  sorted recursively, separators ',' and ':', ensure_ascii=false, and SHA-256 those bytes; the digest lives in the
+  sibling steward_result_payload_digests map and not in the entry.
 verification:
   commands_run:
   - command: git remote get-url origin
@@ -98,11 +154,33 @@ verification:
     result: passed; 2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0
   - command: resume claim, writer-slot, branch-head, and lease verification
     result: passed; no live foreign writer and C00-authorized takeover lease expires 2026-07-28T17:35:01Z
+  - command: canonical rebound F07 merge-item digest recomputation
+    result: passed; fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0
+  - command: F07 source admission, allowlist, state/handoff, and artifact verification
+    result: passed; exact source 47a2bb6b, merge base 80c281b7, 12 paths, c92caac5 state/handoff, and 366a1b30 contract
+  - command: git merge --no-ff 47a2bb6b76225951e0599683499a95f4dc9881be
+    result: passed; source ancestry preserved at 91349fc1fa9a474ae31cf408ae0364aa10520385
+  - command: npm run typecheck
+    result: passed after F07 merge
+  - command: npx vitest run packages/brand-system/src/v21.contract.test.tsx
+    result: passed; 3 tests
+  - command: immutable F01 steward-request Git blob digest verification
+    result: passed; c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d and b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575 exact
   known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+blockers:
+- type: steward_request_semantic_mismatch
+  request_id: F01-retired-client-002
+  disposition: rejected
+  detail: Exact request paths cannot achieve the required public-bundle retirement because named HTML paths are
+    absent and remaining retired public assets are outside the assigned path list.
+- type: steward_request_semantic_mismatch
+  request_id: F01-config-retirement-003
+  disposition: rejected
+  detail: The protectedPayloadEncryptionKey prerequisite exists only on the unmerged F01 implementation head and
+    cannot be synthesized under this request-only authorization.
 out_of_scope_findings: []

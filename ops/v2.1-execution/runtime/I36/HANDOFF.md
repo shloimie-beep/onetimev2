@@ -16,6 +16,9 @@
 - Controller authorization: `beb72be5ba1f993c1806e9314146e88f951affdb`
 - Ready-entry payload digest: `2baec3cd42b79c9156c2202e23792d0072cc2009185b9dc5fbc4be5e4d6918b0`
 - Lease expiry: `2026-07-28T17:35:01Z`
+- F07 merge authorization: control `136f5f54520e44415c10b83108314fab4503a42e`,
+  item digest `fc8a9a3401d327d21bf1c716bcecb63323436031ff893b40221b7bdff052d6c0`
+- Pushed F07 integration head: `91349fc1fa9a474ae31cf408ae0364aa10520385`
 
 ## Completed behavior
 
@@ -34,20 +37,31 @@ the stale prior writer at exact integration head
 claim, lease, control head, ready-entry digest, and unchanged expected branch
 head. No F02 checkpoint, migration, or registry entry was read or integrated.
 
+The rebound F07 queue item was verified against exact target `7fabdac2`, source
+base/merge base `80c281b7`, exact source `47a2bb6b`, its 12-path allowlist,
+state/handoff digest, and all artifact digests. It was ancestry-merged and
+pushed at `91349fc1fa9a474ae31cf408ae0364aa10520385`; typecheck and all
+three focused F07 contract tests passed.
+
+The two assigned immutable F01 steward requests were evaluated at exact F01
+head `e8b172c6a7da5003a82cfc8663df6d4159fa4092` and exact integration
+head `91349fc1fa9a474ae31cf408ae0364aa10520385`. Both request blob
+digests matched. Both were rejected without product edits: the client request's
+named HTML paths are absent while remaining retired public assets fall outside
+its exact path list; the config request assumes an unmerged
+`protectedPayloadEncryptionKey` compatibility state. Partial application or
+copying the F01 implementation would violate the assigned immutable semantics.
+
 ## Remaining work
 
-Report this exact takeover checkpoint to C00. Then consume only merge item
-`fb37db43-fe31-4f0b-a8d7-e726c435e4bd` / digest
-`58c0311691b51a91699ececc551ed94446b07ca13085a80e5d72dde767db95d4`
-for exact F07 source head `47a2bb6b76225951e0599683499a95f4dc9881be`.
-After the F07 checkpoint, process only the assigned immutable F01 steward
-requests `F01-retired-client-002` and `F01-config-retirement-003` from exact
-F01 head `e8b172c6a7da5003a82cfc8663df6d4159fa4092`.
+Push and report this steward-result checkpoint to C00. C00 must record the two
+precise rejected dispositions before either request is reconsidered with a new
+immutable scope or prerequisite integration.
 
 ## Exact next action
 
-Report the exact pushed takeover head to C00, then validate and
-ancestry-merge only the exact F07 queue item. Do not read or integrate F02.
+Report the exact pushed F07/steward-result checkpoint to C00, then pause for a
+new exact control authorization. Do not read or integrate F02.
 
 ## Coverage
 
@@ -87,6 +101,14 @@ ancestry-merge only the exact F07 queue item. Do not read or integrate F02.
   `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
 - Resume claim, expected branch head, three writer slots, and lease matched the
   C00-issued takeover; no live foreign writer or ref change was present.
+- Rebound F07 item digest recomputed exactly; the source delta, artifact
+  contract, no-effect count, source ancestry, typecheck, and focused tests all
+  passed.
+- F01 request files at exact head `e8b172c6` hashed to the assigned
+  `c0175c98...` and `b26b5b4b...` digests.
+- Canonical rejected-result payload digests are
+  `a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a`
+  and `a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f`.
 
 ## External effects
 
@@ -100,8 +122,11 @@ accessed or recorded.
 
 ## Blockers, deviations, and recovery
 
-No blocker or deviation is present. The verified source merge is recoverable at
-`34718371ee0ff26758120b11d0d4b788aa11be97`; its pushed pre-verification
-checkpoint is `201bf33a9ba532c696432c707145a798d1f07f9f`. The exact
+The two immutable F01 requests are precisely blocked and rejected as described
+above; no partial semantic change or out-of-scope path edit was made. The
+verified F07 merge is recoverable at
+`91349fc1fa9a474ae31cf408ae0364aa10520385`. The earlier F01 source merge is
+recoverable at `34718371ee0ff26758120b11d0d4b788aa11be97`; its pushed
+pre-verification checkpoint is `201bf33a9ba532c696432c707145a798d1f07f9f`. The exact
 pre-takeover integration head is
 `80c281b7ae5826ed2c6abe95ba68a033ffa52174`.
