@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-57d165cf
-claim_time: '2026-07-28T15:33:58Z'
-claim_id: 57d165cf-d871-41b1-96e3-1dbea85bb05e
-lease_expires_at: '2026-07-28T15:36:23Z'
-last_heartbeat_at: '2026-07-28T15:36:23Z'
-controller_authorization_sha: 7b8c1631128b32d23da948bea178d0790d86b806
+claimed_by: codex-c00-orchestrator-6c8fe04d
+claim_time: '2026-07-28T15:45:19Z'
+claim_id: 6c8fe04d-91ed-4a4b-925c-ec7e81d6867c
+lease_expires_at: '2026-07-28T15:47:07Z'
+last_heartbeat_at: '2026-07-28T15:47:07Z'
+controller_authorization_sha: 2d6cab2675912b89ebdec6fcd46e852f235a56d7
 ready_entry_payload_digest: null
-state_based_on_head_sha: 7b8c1631128b32d23da948bea178d0790d86b806
+state_based_on_head_sha: 2d6cab2675912b89ebdec6fcd46e852f235a56d7
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -36,8 +36,9 @@ completed_steps:
 - reconciled remote branches, claims, leases, writer slots, provider locks, and the native-agent tree
 - verified F01 atomic claim head e85d34887e4c6bce124c6c84bb6dc15e9ee9a0f9 and reconciled it into control state
 - verified F01 interface_ready head fa9e5c92231c4b92340d07945cc91d76c85bd444, every export hash, and canonical contract digest
+- verified I36 atomic integration-branch adoption at 3277915caf862bdaa79776794862e6bdbc5762d5 and rebound the queued interface target CAS
 remaining_steps: []
-next_action: Dispatch I36 for merge da4bef5a-c064-4fb8-96c4-09a34aa61603 and verify its pushed integration result.
+next_action: Resume I36 against the rebound merge payload and verify its pushed integration result.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -45,12 +46,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 7b8c1631128b32d23da948bea178d0790d86b806
+  current_control_parent_sha: 2d6cab2675912b89ebdec6fcd46e852f235a56d7
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 57d165cf-d871-41b1-96e3-1dbea85bb05e
-      observed_head: 7b8c1631128b32d23da948bea178d0790d86b806
+      claim_id: 6c8fe04d-91ed-4a4b-925c-ec7e81d6867c
+      observed_head: 2d6cab2675912b89ebdec6fcd46e852f235a56d7
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -62,10 +63,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
-      observed_head: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
+      observed_head: 3277915caf862bdaa79776794862e6bdbc5762d5
       authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
       lease_expires_at: '2026-07-28T16:33:58Z'
-      scheduling_state: dispatch_queued_interface
+      scheduling_state: active_native_subagent_rebound_merge
   active_native_subagents:
   - task_id: F01
     agent: /root/f01_worker
@@ -75,6 +76,14 @@ orchestration:
     lease_expires_at: '2026-07-28T16:09:35Z'
     status: interface_ready
     phase: interface_ready
+  - task_id: I36
+    agent: /root/i36_worker
+    branch: codex/v21-integration
+    observed_head: 3277915caf862bdaa79776794862e6bdbc5762d5
+    claim_id: b847548e-4655-4711-ba68-384d87aa6cb3
+    lease_expires_at: '2026-07-28T16:33:58Z'
+    status: claimed
+    phase: integration
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -85,11 +94,11 @@ migrations: []
 steward_requests: []
 verification:
   control_digests:
-    control_state: 0c8e17ad8206787c4ccd7333ff66450a51adf0cdbc96affb5a9493fe40e95184
-    control_lease: e3e07f9f4d4aeb6359ddc90894556ac590f3dfab14bb7c792c7dd468a29ab877
-    task_registry: 524fc24f32e7615401c442ce12213c236d0434bb1a2fe9dff16069aa268d56a0
-    ready_queue: d24f236d5857457487b8de984dcc595b3c5daab21968c92d1c78b48fa0ecc4f8
-    merge_queue: 504d38a031d8449dbf57577d4741075ec559ac8837ef36eb02594e9ba164d089
+    control_state: e3cd73b2f07706189605173923b91631decf805c4e007d5d82d7ebdb4c34ed4c
+    control_lease: deea8ece73521a9d5b3891594442636fd40c85f9152af89874202af17f9bffb8
+    task_registry: acf49ee093e937db399d3d41eaf879d99de9b055153ed4f54b12bf13db664982
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    merge_queue: 76cb339193b68750e94d783d15e85353e88bc52aadd2390250a049f71f12b294
     steward_queue: b9e2846bf80abd21c6a709137e49124be16a444a9344e0b2ba80df02d58150f3
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
@@ -106,6 +115,7 @@ verification:
   - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   - F01 interface checkpoint schema, export hashes, canonical digest, merge base, and allowed-path admission: passed
   - F01 state_handoff_digest 09c809068394d7118d18a02e7165220b6849147e90703261ad05eae5c48a1ce6 is SHA-256 of exact TASK-STATE.yaml bytes followed by exact HANDOFF.md bytes
+  - I36 atomic adoption, target-CAS drift detection, and source-base-preserving merge rebind: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
