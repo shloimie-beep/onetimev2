@@ -451,6 +451,66 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
+- request_id: P20-MIGRATION-001
+  request_digest: e9be9aeb464daf586d3cdcdd7f3cd06b8e22cc93e6486d97055b3584853e41a1
+  requesting_task_id: P20
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P20-WORKER-REGISTRATION-001
+  request_digest: b9158df6aa8fda7142cd1bf08c7f160c9f9429f6254180a6c15e7545bf0fd72a
+  requesting_task_id: P20
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P20-RUNTIME-CONFIG-001
+  request_digest: 1436bbe841665fff24c54e6a8f2372410850ec9e763f4c323c6266b222b2302b
+  requesting_task_id: P20
+  kind: configuration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_configuration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P20-PINNED-MEDIA-RUNTIME-001
+  request_digest: 651b8177e3d227e63f7562824d07a04f5261c9277e3e36929b6881ce2168434f
+  requesting_task_id: P20
+  kind: dependency
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_configuration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null

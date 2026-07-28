@@ -172,3 +172,9 @@ The P29/P30 claims are verified and consumed. Resume P29 at `704435bd` and
 P30 at `c42eb2b9` for full task implementation, verification, structured
 steward requests where required, ready_for_review publication, and lease
 release. Continue P20 at `6f894038`. Reconcile finals under a fresh C00 lease.
+
+P20 is admitted at final `3d75b57e`. Dispatch P17 claim
+`863e3375-64af-4763-8efd-80d424da2ed9`, ready digest `7c6eda01...`, from exact
+start `49431959` on `codex/v21-p17-zoom-preparation`. Stop after its exact
+three runtime files, reconcile under a fresh C00 lease, then resume full P17
+implementation while continuing P29/P30.

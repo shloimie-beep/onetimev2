@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-991a89a6
-claim_time: '2026-07-28T23:19:07Z'
-claim_id: 991a89a6-c3a6-485d-94a9-92a20bc1bce2
-lease_expires_at: '2026-07-28T23:21:00Z'
-last_heartbeat_at: '2026-07-28T23:21:00Z'
-controller_authorization_sha: 38b12b0e62d99295e7fa50f499d781112af7299f
+claimed_by: codex-c00-orchestrator-e874d528
+claim_time: '2026-07-28T23:29:13Z'
+claim_id: e874d528-dc54-4e8c-8d47-f66357dd22e2
+lease_expires_at: '2026-07-28T23:33:00Z'
+last_heartbeat_at: '2026-07-28T23:33:00Z'
+controller_authorization_sha: 7145e4d43f18238c086805f57c0b1af8c97c2dd4
 ready_entry_payload_digest: null
-state_based_on_head_sha: 38b12b0e62d99295e7fa50f499d781112af7299f
+state_based_on_head_sha: 7145e4d43f18238c086805f57c0b1af8c97c2dd4
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -129,8 +129,10 @@ completed_steps:
 - cleared the completed P28 merge and authorized newly dependency-valid P29 core workflows and P30 campaigns from exact integration head 49431959
 - independently verified P29 atomic claim 704435bd and P30 atomic claim c42eb2b9, each with exact sole parent 49431959, three-file task-local scope, containing authorization, dependency bindings, lease identity, and zero effects
 - consumed both workflow ready entries and authorized P20, P29, and P30 to implement concurrently under disjoint writer leases
+- independently verified P20 final 3d75b57e, implementation e366ef92, exact 17-path scope, 12-artifact digest d58ec3c6, 15 focused tests, four canonical steward requests, released lease, and zero effects
+- admitted P20 ready_for_review and authorized dependency-valid P17 Zoom preparation from exact integration head 49431959 with no provider-effect authority
 remaining_steps: []
-next_action: P20, P29, and P30 implement independently and publish ready_for_review finals.
+next_action: P17 publishes only its atomic claim while P29 and P30 implement independently.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -138,12 +140,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 38b12b0e62d99295e7fa50f499d781112af7299f
+  current_control_parent_sha: 7145e4d43f18238c086805f57c0b1af8c97c2dd4
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 991a89a6-c3a6-485d-94a9-92a20bc1bce2
-      observed_head: 38b12b0e62d99295e7fa50f499d781112af7299f
+      claim_id: e874d528-dc54-4e8c-8d47-f66357dd22e2
+      observed_head: 7145e4d43f18238c086805f57c0b1af8c97c2dd4
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -274,10 +276,17 @@ orchestration:
     P20:
       branch: codex/v21-p20-media-processing
       claim_id: 1cd7bf99-21a7-4231-8418-b9cdfaf958c4
-      observed_head: 6f894038117ee19d405e528670eb8bf86e8682b2
+      observed_head: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
       authorized_start_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
-      lease_expires_at: '2026-07-28T23:50:05Z'
-      scheduling_state: claimed_contract_implementation_authorized
+      lease_expires_at: null
+      scheduling_state: ready_for_review_admitted
+    P17:
+      branch: codex/v21-p17-zoom-preparation
+      claim_id: 863e3375-64af-4763-8efd-80d424da2ed9
+      observed_head: null
+      authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+      lease_expires_at: '2026-07-29T00:29:13Z'
+      scheduling_state: ready_contract_atomic_claim_pending
     P29:
       branch: codex/v21-p29-core-workflows
       claim_id: 6b96052a-b3f4-429f-9aab-3cbc8ec78e7e
@@ -293,13 +302,13 @@ orchestration:
       lease_expires_at: '2026-07-29T00:09:14Z'
       scheduling_state: claimed_contract_implementation_authorized
   active_native_subagents:
-  - task_id: P20
+  - task_id: P17
     agent: /root/f03_worker
-    branch: codex/v21-p20-media-processing
-    observed_head: 6f894038117ee19d405e528670eb8bf86e8682b2
-    claim_id: 1cd7bf99-21a7-4231-8418-b9cdfaf958c4
-    lease_expires_at: '2026-07-28T23:50:05Z'
-    status: claimed
+    branch: codex/v21-p17-zoom-preparation
+    observed_head: null
+    claim_id: 863e3375-64af-4763-8efd-80d424da2ed9
+    lease_expires_at: '2026-07-29T00:29:13Z'
+    status: ready
     phase: contract
   - task_id: P29
     agent: /root/f05_worker
@@ -431,12 +440,12 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 7d69240ab214953b03e0ce6f2380765fec4a7f3ded2f8ea68108fe0f4f505c43
-    control_lease: 270721dcc54db0d32cc1a63648f9a35161c3812d6c0cb98ed6991165b12f40d7
-    task_registry: b6a21af38100876c80c996b5a4d6b23b41c6dc55048e6784a053ad3a6024d9d7
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 72d6c548fd346a7db6eecf47d81afb42dd351df19ea0bbc83ed6a72080186175
+    control_lease: f7b087ccbc0ed598d04fdbc93ae3f0b50f1dbe18bd9d0ae3c3fb5cf768b1edb2
+    task_registry: 73afb35aad1e99a0292e16c416d7d85a35c26c900f58f1f271037fc218cd0719
+    ready_queue: 9c5f3c29a21a05a7385bfacbb3295c11e10ec5e7b19dbc6bbd0930c127e794b0
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
-    steward_queue: 22d28efe240e3255c81ebe1ea2ebb75a37bf65e66eb167f34867f65400f7209e
+    steward_queue: 367563ad60f3674c5a6116e12593341c6be5bda8363072be6e6250f253ce9d93
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70

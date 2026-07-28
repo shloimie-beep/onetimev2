@@ -436,3 +436,11 @@ sole parent `49431959`, three task-local runtime files, correct dependency and
 lease bindings, and zero effects. C00 consumed both ready entries. P20, P29,
 and P30 may now implement concurrently; their writer scopes are disjoint and
 none carries provider-effect authority.
+
+P20 is admitted `ready_for_review` at `3d75b57e` with implementation
+`e366ef92`, exact 17-path scope, 12-artifact digest `d58ec3c6...`, 15 focused
+tests, full verification, a released lease, and zero effects. Its four
+canonical migration/registration/configuration/dependency requests are
+assigned but unapplied. C00 used the freed slot to authorize P17 Zoom
+preparation from `49431959`; P17 has no provider-effect authority and must
+publish only its three-file atomic claim before implementation.
