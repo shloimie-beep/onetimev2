@@ -17,12 +17,12 @@ claim_id: 15bcce0c-16b9-4c00-b422-ba5053554f14
 lease_id: c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51
 lease_issued_at: '2026-07-28T19:36:08Z'
 lease_expires_at: '2026-07-28T20:36:08Z'
-last_heartbeat_at: '2026-07-28T19:46:48Z'
+last_heartbeat_at: '2026-07-28T19:59:16Z'
 controller_authorization_sha: 0341f6303937bebc64e4d3cae6905168183dbb77
 ready_entry_state_based_on_control_head_sha: f2ace0993937a020a31c364f079bcf52b8c65350
 ready_entry_payload_digest: 3006897b48df8f678f1c70815e6fb053fea7c1894e6f1b1b4473deb36f944aaf
-state_based_on_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
-last_implementation_commit_sha: e88121cb6ddd5023eb75496b25c3ee7281c07621
+state_based_on_head_sha: eae9c62adb6711034bbd31bc4aea469c2c65fc21
+last_implementation_commit_sha: eae9c62adb6711034bbd31bc4aea469c2c65fc21
 completed_steps:
 - Verified repository identity shloimie-beep/onetimev2.
 - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -115,10 +115,19 @@ completed_steps:
 - Verified all 200 locked Git blobs plus the package, source-package, task, and context digests.
 - Claimed exact P15-interface-only authority under claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and
   RELEASE_INTEGRATOR lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 without reading or merging P15 source.
+- Verified rebound control head 5530d24379a31383d19c172bbd3b3b18d9eef5a6 and canonical P15 merge-item
+  payload digest 617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d.
+- Verified exact P15 source, source/merge base, 21-path allowlist, task and state/handoff digests, six exported
+  artifact hashes, plain-path contract digest 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb,
+  implementation ancestry, and zero external effects.
+- Merged exact P15 source c96b8c55c07e5283e762537934a6bf948833700e with ancestry preserved at
+  eae9c62adb6711034bbd31bc4aea469c2c65fc21.
+- Passed repository typecheck, full quiet lint, 12 focused calendar tests, and the Google Calendar/provider
+  absence inventory; no steward request, migration, or registration was applied.
 remaining_steps:
-- Push and report this atomic P15-interface-only claim checkpoint to C00.
-- Wait for C00 to rebind merge item 22ea97a2-e2db-4a49-9e2b-7649d3a0e069 to the exact pushed claim head.
-next_action: Report the exact pushed P15-interface-only claim head to C00, then stop and wait for the rebound expected-target binding before reading or merging P15 source.
+- Push and report this exact P15 integration metadata checkpoint to C00.
+- Await a new exact C00 queue/lease authorization.
+next_action: Report the exact pushed P15 integration checkpoint to C00, then pause for a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -209,6 +218,27 @@ changed_paths:
 - packages/domain/src/jobs/index.ts
 - packages/domain/src/jobs/lifecycle.ts
 - packages/domain/src/jobs/saga.ts
+- apps/web/src/client/features/calendar/CalendarWorkspace.test.tsx
+- apps/web/src/client/features/calendar/CalendarWorkspace.tsx
+- apps/web/src/client/features/calendar/calendar.css
+- apps/web/src/client/features/calendar/index.ts
+- apps/web/src/server/features/calendar/index.ts
+- apps/web/src/server/features/calendar/service.ts
+- ops/v2.1-execution/runtime/P15/HANDOFF.md
+- ops/v2.1-execution/runtime/P15/INTERFACE-CHECKPOINT.yaml
+- ops/v2.1-execution/runtime/P15/NEXT-PROMPT.md
+- ops/v2.1-execution/runtime/P15/STEWARD-REQUESTS.yaml
+- ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
+- packages/contracts/src/calendar/index.ts
+- packages/db/src/calendar/index.ts
+- packages/db/src/calendar/repository.ts
+- packages/db/src/calendar/schema-contract.ts
+- packages/domain/src/calendar/calendar.test.ts
+- packages/domain/src/calendar/errors.ts
+- packages/domain/src/calendar/index.ts
+- packages/domain/src/calendar/recurrence.ts
+- packages/domain/src/calendar/time-zone.ts
+- packages/domain/src/calendar/views.ts
 migrations:
 - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -361,6 +391,20 @@ verification:
     result: passed; 200 locked blobs and all four entry-bound digests exact
   - command: resume claim, branch-head, writer lease, scope, and zero-effect-lock verification
     result: passed; claim 15bcce0c-16b9-4c00-b422-ba5053554f14 and lease c6b4b8e0-ae22-4e59-bdbe-dfeca334dc51 expire 2026-07-28T20:36:08Z
+  - command: canonical rebound P15 merge-item digest recomputation
+    result: passed; 617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d
+  - command: P15 source admission, allowlist, state/handoff, artifact, and contract verification
+    result: passed; exact source c96b8c55, merge base 81602ccc, 21 paths, six exports, plain-path 2ebe108d contract, and zero effects
+  - command: git merge --no-ff c96b8c55c07e5283e762537934a6bf948833700e
+    result: passed; source ancestry preserved at eae9c62adb6711034bbd31bc4aea469c2c65fc21
+  - command: npm run typecheck
+    result: passed after P15 merge
+  - command: npm run lint -- --quiet
+    result: passed after P15 merge
+  - command: focused P15 Vitest calendar suite
+    result: passed; 2 files and 12 tests
+  - command: Google Calendar/provider absence inventory under P15 implementation roots
+    result: passed; no matching route, action, configuration, or job surface
   known_baseline_failures: []
 external_effects:
   authority: none

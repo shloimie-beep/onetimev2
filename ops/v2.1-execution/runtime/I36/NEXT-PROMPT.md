@@ -79,15 +79,19 @@ ancestry-merged in order. The pushed micro-batch head is
 `e88121cb6ddd5023eb75496b25c3ee7281c07621`; typecheck and 49 focused tests
 passed. No steward request was applied and no later F04 head was merged.
 
-P15 item `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` is queued with its pre-claim
-target and must not be consumed until C00 rebound. For later P15 verification,
-contract digest `2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb`
-uses `semantic_contract_version=<version>` followed by lexicographically sorted
-plain `<artifact-path>=<sha256>` lines, LF separators, and no final newline;
-there is no literal `path=` prefix.
+Control `5530d24379a31383d19c172bbd3b3b18d9eef5a6` rebound P15 item
+`22ea97a2-e2db-4a49-9e2b-7649d3a0e069` with canonical payload digest
+`617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d`.
+Exact P15 source `c96b8c55c07e5283e762537934a6bf948833700e` was independently verified
+and ancestry-merged at pushed integration head
+`eae9c62adb6711034bbd31bc4aea469c2c65fc21`. Contract digest
+`2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb`
+was reproduced from the semantic version line plus sorted plain artifact-path
+lines, with no literal `path=` prefix. Typecheck, full quiet lint, 12 focused
+tests, and provider-surface absence passed. No steward request was applied.
 
-Current exact next action: report the pushed P15-interface-only claim head to
-C00, then stop and wait for its exact rebound target binding.
+Current exact next action: report the pushed P15 integration metadata
+checkpoint to C00, then stop and wait for a new exact control authorization.
 No unrelated merge, steward, evidence, control, or live-effect work is
 authorized.
 

@@ -35,6 +35,10 @@
 - F03 merge head: `c6e87b934d7b916a0772a8dbe046f984812d15dc`
 - F04 merge head: `1ca6f5c5cec246e06e45b76b747aa5b758f1196c`
 - Pushed F05/micro-batch integration head: `e88121cb6ddd5023eb75496b25c3ee7281c07621`
+- P15 merge authorization: control `5530d24379a31383d19c172bbd3b3b18d9eef5a6`,
+  item `22ea97a2-e2db-4a49-9e2b-7649d3a0e069`, payload digest
+  `617e791e254208a1d5d760e27a8455d6ebe7c6834de23ce5f25fabc53c31e62d`
+- Pushed P15 integration head: `eae9c62adb6711034bbd31bc4aea469c2c65fc21`
 
 ## Completed behavior
 
@@ -116,19 +120,28 @@ C00 authorized a P15-interface-only resume from exact integration head
 ready-entry parent control state, exact branch head, package/task/context and
 dependency digests, 200 locked Git blobs, claim/lease, phase scope, zero effect
 locks, and canonical ready payload were verified. This atomic checkpoint
-consumes only that claim; P15 source and steward requests remain unread and
-unmerged.
+consumed only that claim and preceded any P15 source read or merge.
+
+C00 rebound the exact P15 item to claim head `e58a2f8d`. I36 independently
+verified payload digest `617e791e...`, exact source/base/merge-base, the
+21-path allowlist, task and state/handoff digests, all six exported artifact
+hashes, plain-path contract digest `2ebe108d...`, implementation ancestry, and
+zero effects. Exact source `c96b8c55c07e5283e762537934a6bf948833700e`
+was ancestry-merged and pushed at
+`eae9c62adb6711034bbd31bc4aea469c2c65fc21`. Typecheck, full quiet lint,
+12 focused tests, and the Google Calendar/provider absence inventory passed.
+The proposed migration and registration requests were not applied.
 
 ## Remaining work
 
-Push and report this exact P15-interface-only claim checkpoint to C00. Wait for
-C00 to rebind queued item `22ea97a2-e2db-4a49-9e2b-7649d3a0e069` to the exact
-resulting claim head.
+Push and report this exact P15 integration metadata checkpoint to C00. Await a
+new exact queue/lease authorization before further integration.
 
 ## Exact next action
 
-Report the exact pushed P15-interface-only claim head to C00, then pause. Do
-not read or merge P15 source, or apply any steward request, before the rebound.
+Report the exact pushed P15 integration checkpoint to C00, then pause. Do not
+integrate another source or apply any steward request without new exact
+authorization.
 
 ## Coverage
 
@@ -146,6 +159,8 @@ not read or merge P15 source, or apply any steward request, before the rebound.
   `e4673ff1c2e621e26ac93034be245b280c4da4fa`
 - Exact allowlisted F03/F04/F05 interface deltas at `7c638131a0cab757657e95c4d2229a1573e4cde1`,
   `4cc95c29c6012174595ba1821e0554aca8572e08`, and `0656380bcfc50cc464dcea7588448dc724049599`
+- Exact allowlisted P15 interface delta at
+  `c96b8c55c07e5283e762537934a6bf948833700e`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -215,6 +230,13 @@ not read or merge P15 source, or apply any steward request, before the rebound.
   and context digests matched.
 - Claim, sole RELEASE_INTEGRATOR lease, P15-interface-only scope, and zero
   effect locks matched the C00-issued authorization.
+- Rebound P15 payload, exact source/base/21-path scope, task/state-handoff
+  digests, six export hashes, plain-path contract digest, and zero-effect count
+  matched.
+- Exact P15 source is an ancestor of
+  `eae9c62adb6711034bbd31bc4aea469c2c65fc21`.
+- Repository typecheck, full quiet lint, 12 focused calendar tests, and the
+  provider-surface absence inventory passed after the merge.
 
 ## External effects
 
