@@ -28,54 +28,99 @@ dependency_heads:
     interface_source_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
     interface_implementation_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
     interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
-status: claimed
-phase: contract
+status: ready_for_review
+phase: complete
 claimed_by: codex-p18-worker-415e950e
 claim_time: '2026-07-28T22:05:45Z'
 claim_id: 415e950e-cfbb-4635-9f1a-3ffd6af825ac
 writer_slot_lease_id: d44e1690-90e5-44b6-b17f-2faa92dfb220
 lease_issued_at: '2026-07-28T21:55:38Z'
 lease_expires_at: '2026-07-28T22:55:38Z'
-last_heartbeat_at: '2026-07-28T22:05:45Z'
+last_heartbeat_at: '2026-07-28T22:23:56Z'
+lease_released_at: '2026-07-28T22:23:56Z'
 controller_authorization_sha: e847dd790ae2f99ae526b0edcbd41897474c8f18
 state_based_on_control_head_sha: 3cfe14a6e1171d002f7173c13776dc682fddd6a8
 ready_entry_payload_digest: 5bd82837c0f7aa83ac813092c767f1dec82f2671f7ea6562e53313c4325586f5
-state_based_on_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
-last_implementation_commit_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+state_based_on_head_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
+last_implementation_commit_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
+implementation_manifest_digest: b4048000148bb93a9e3debbe4ed933dcc1732f2bbf0f8e0f20dc19530b56f4ba
+contract_artifact_digest: de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c
 completed_steps:
   - Verified repository identity, exact containing control authority e847dd790ae2f99ae526b0edcbd41897474c8f18, and exact authorized integration start.
   - Verified the ready/registry branch, canonical ready digest, claim, sole live EMBEDDED_CLASSROOM lease, and zero effect locks.
   - Verified all 200 locked blobs plus package-lock, source-package, task, context, and prompt digests.
   - Verified exact F05/P16/P32 implementation and integration ancestry, all three canonical contract preimages, and every exported dependency artifact hash.
   - Created the isolated P18 branch from exact authorized start 9ba92b070eedfa3756eff4f78fd328de72507a96.
+  - Published the exact sole-parent three-file atomic P18 claim checkpoint 9b37f4a0a123299b0b278ffeaa7b83c763155e3b.
+  - Implemented exact join-window, current-consent, Student/session/household, access, enrollment, registrant, and revocation authorization.
+  - Implemented digest-only 60-second single-use launch grants and a no-store, no-referrer, raw-URL-free Meeting SDK bootstrap boundary.
+  - Implemented one live Student session with 30-second heartbeat, 90-second lease, same-lineage reconnect, second-device denial, expiry reacquisition, and audited Admin reset.
+  - Implemented append-only attendance evidence with provider precedence, overlap-safe reconnect merging, mismatch state, capped percentage, and append-only Admin correction.
+  - Implemented parameterized PostgreSQL persistence and atomic grant/session and Admin-reset transactions without runtime schema creation.
+  - Implemented Student camera guidance, recording disclosure/indicator, safe denial copy, and heartbeat view model.
+  - Published immutable migration and central-registration steward requests.
+  - Passed full typecheck, 17 focused assertions, focused lint/format, exact source-scope, digest, and diff checks.
+  - Released the EMBEDDED_CLASSROOM lease in task-local terminal metadata.
 remaining_steps:
-  - Push and report this exact three-file atomic P18 claim checkpoint to C00.
-  - Read only the named normative source sections and P18-owned implementation paths, then implement and verify the assigned behavior.
-next_action: Push and report the sole-parent atomic claim checkpoint, then map and implement P18 within its owned paths through ready_for_review.
+  - C00/I36 must validate and integrate this exact ready_for_review head.
+  - F02 and I36 must adjudicate the migration and registration steward requests.
+  - Candidate-bound provider sandbox and production-operator proof remains for verification waves.
+next_action: C00 and I36 validate and integrate this exact ready_for_review checkpoint, then adjudicate P18-migration-001 and P18-registration-001.
 requirements:
-  OTV2-CLASSROOM-073: claimed_not_started
-  OTV2-CLASSROOM-075: claimed_not_started
-  OTV2-CLASSROOM-078: claimed_not_started
-  OTV2-CLASSROOM-187: claimed_not_started
-  OTV2-CLASSROOM-232: claimed_not_started
+  OTV2-CLASSROOM-073: implementation_verified
+  OTV2-CLASSROOM-075: implementation_verified
+  OTV2-CLASSROOM-078: implementation_verified
+  OTV2-CLASSROOM-187: implementation_verified
+  OTV2-CLASSROOM-232: implementation_verified
 acceptance_cases:
-  OTV2-CLASSROOM-073-AC01: not_run
-  OTV2-CLASSROOM-075-AC01: not_run
-  OTV2-CLASSROOM-078-AC01: not_run
-  OTV2-CLASSROOM-187-AC01: not_run
-  OTV2-CLASSROOM-232-TIMING: not_run
-  OTV2-CLASSROOM-232-BOOTSTRAP-LEASE: not_run
+  OTV2-CLASSROOM-073-AC01: task_owned_assertions_passed
+  OTV2-CLASSROOM-075-AC01: task_owned_assertions_passed
+  OTV2-CLASSROOM-078-AC01: task_owned_assertions_passed
+  OTV2-CLASSROOM-187-AC01: task_owned_assertions_passed
+  OTV2-CLASSROOM-232-TIMING: task_owned_assertions_passed
+  OTV2-CLASSROOM-232-BOOTSTRAP-LEASE: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/app/student/classroom/index.ts
+  - apps/web/src/client/app/student/classroom/view-model.test.ts
+  - apps/web/src/client/app/student/classroom/view-model.ts
+  - apps/web/src/server/features/classroom/embedded/index.ts
+  - apps/web/src/server/features/classroom/embedded/service.test.ts
+  - apps/web/src/server/features/classroom/embedded/service.ts
+  - packages/contracts/src/classroom/embedded/index.ts
+  - packages/db/src/classroom/attendance/index.ts
+  - packages/db/src/classroom/attendance/repository.test.ts
+  - packages/db/src/classroom/attendance/repository.ts
+  - packages/db/src/classroom/attendance/schema-contract.ts
+  - packages/domain/src/classroom/embedded/attendance.ts
+  - packages/domain/src/classroom/embedded/embedded-classroom.test.ts
+  - packages/domain/src/classroom/embedded/errors.ts
+  - packages/domain/src/classroom/embedded/index.ts
+  - packages/domain/src/classroom/embedded/join-policy.ts
+  - packages/domain/src/classroom/embedded/launch-grant.ts
+  - packages/domain/src/classroom/embedded/live-session.ts
   - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P18/HANDOFF.md
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-001.yaml
+  - ops/v2.1-execution/runtime/P18/steward-requests/P18-registration-001.yaml
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: P18-migration-001
+    sha256: acb6ed1d81e05e338875ada7309629d418dafa4b06ee555037e40988b7b7ff1a
+  - request_id: P18-registration-001
+    sha256: 1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0
 verification:
   commands_run:
     - Exact remote/control/integration/branch/claim/lease/effect-lock verification passed.
     - Locked Git blob and entry-bound digest verification passed for 200 locked blobs plus package/task/context/prompt/source-package digests.
     - F05/P16/P32 dependency ancestry, three canonical contract digests, and 27 exported artifact hashes passed.
+    - npm run typecheck passed.
+    - Focused Vitest passed 4 files and 17 assertions.
+    - Focused ESLint passed 18 TypeScript artifacts.
+    - Focused Prettier passed 23 TypeScript, YAML, and Markdown artifacts.
+    - Exact 23-path normalized-owned-scope inventory passed.
+    - Implementation manifest, contract artifact, and steward-request digests passed.
+    - git diff --check and clean-tree source verification passed.
   known_baseline_failures: []
 external_effects:
   authority: none
