@@ -29,17 +29,18 @@ dependency_heads:
     result_record_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
     result_digest: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
     state_handoff_digest: 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
-status: claimed
-phase: verification
+status: ready_for_review
+phase: review
 claimed_by: codex-f01-ack-a0810342
 claim_time: '2026-07-28T19:16:30Z'
 claim_id: a0810342-31c8-42c7-b758-ce0c4e9f1779
 lease_expires_at: '2026-07-28T20:05:27Z'
-last_heartbeat_at: '2026-07-28T19:16:30Z'
+last_heartbeat_at: '2026-07-28T19:19:00Z'
+lease_released_at: '2026-07-28T19:19:00Z'
 controller_authorization_sha: 44202fc53db9781c91e4015d6af004bac4ab037b
 ready_entry_parent_control_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
 ready_entry_payload_digest: a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac
-state_based_on_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
+state_based_on_head_sha: 684fb81ab7f6c5cece30ab49ae8c6ad869fecb75
 last_implementation_commit_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
 completed_steps:
   - verified repository identity and isolated clone
@@ -63,29 +64,32 @@ completed_steps:
   - atomically adopted the no-writer-slot F01 steward-acknowledgment resume claim
   - independently recomputed and acknowledged the exact I36 rejected results for the client and config requests
   - atomically adopted the C00-issued final F03 steward-result acknowledgment resume claim
-remaining_steps:
-  - wait for F03 to publish the exact F01-retired-auth-001 result at F03_ready_for_review
-  - acknowledge and verify the auth steward result
-  - publish ready_for_review
-next_action: Acknowledge the exact applied F03 result for F01-retired-auth-001, rerun the narrow retirement verification, and publish ready_for_review.
+  - independently recomputed the exact F03 applied steward-result payload and state/handoff digests
+  - verified the F01 request digest, evaluated target, applied/result commit ancestry, F03 final task head, and zero-effect summary
+  - reran the exact F03 database steward proof and observed direct owner password login as public admin with zero email-challenge and trusted-device artifacts
+  - acknowledged the exact applied F03 result for F01-retired-auth-001
+  - reran F01 typecheck, steward-request schema/privacy checks, owned retired-auth surface absence scan, YAML, formatting, and diff validation
+  - released the no-writer-slot metadata acknowledgment lease and published ready_for_review
+remaining_steps: []
+next_action: C00 should record the exact F01 acknowledgment, clear the final steward gate, and admit the existing F01 implementation for dependency-ordered integration review.
 requirements:
-  OTV2-FOUNDATION-001: in_progress
-  OTV2-FOUNDATION-003: in_progress
-  OTV2-FOUNDATION-004: in_progress
-  OTV2-FOUNDATION-005: implemented_pending_verification
-  OTV2-FOUNDATION-006: implemented_pending_verification
-  OTV2-FOUNDATION-208: implemented_pending_verification
-  OTV2-FOUNDATION-215: in_progress
-  OTV2-FOUNDATION-216: in_progress
+  OTV2-FOUNDATION-001: implementation_ready
+  OTV2-FOUNDATION-003: implementation_ready
+  OTV2-FOUNDATION-004: implementation_ready
+  OTV2-FOUNDATION-005: implementation_ready
+  OTV2-FOUNDATION-006: implementation_ready
+  OTV2-FOUNDATION-208: implementation_ready
+  OTV2-FOUNDATION-215: implementation_ready
+  OTV2-FOUNDATION-216: implementation_ready
 acceptance_cases:
-  OTV2-FOUNDATION-001-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-003-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-004-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-005-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-006-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-208-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-215-AC01: implementation_pending
-  OTV2-FOUNDATION-216-AC01: pending_candidate_verification
+  OTV2-FOUNDATION-001-AC01: implementation_ready
+  OTV2-FOUNDATION-003-AC01: implementation_ready
+  OTV2-FOUNDATION-004-AC01: implementation_ready
+  OTV2-FOUNDATION-005-AC01: implementation_ready
+  OTV2-FOUNDATION-006-AC01: implementation_ready
+  OTV2-FOUNDATION-208-AC01: implementation_ready
+  OTV2-FOUNDATION-215-AC01: implementation_ready
+  OTV2-FOUNDATION-216-AC01: implementation_ready
 changed_paths:
   - ops/v2.1-execution/runtime/F01/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F01/HANDOFF.md
@@ -109,10 +113,16 @@ steward_requests:
   - request_id: F01-retired-auth-001
     path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-001.yaml
     digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
-    status: assigned
+    status: applied
     assigned_steward: F03
     target_checkpoint: F03_ready_for_review
-    acknowledged_by_task: false
+    result_task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    result_record_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    evaluated_target_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    applied_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_digest: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+    result_state_handoff_digest: 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
+    acknowledged_by_task: true
   - request_id: F01-retired-client-002
     path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-002.yaml
     digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
@@ -155,6 +165,16 @@ verification:
     - I36 result-record head 1976033cfdae1beb249642f0e28f6824b0fcbb8b and evaluated target ancestry verified
     - F01-retired-client-002 rejected-result canonical digest independently matched a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
     - F01-config-retirement-003 rejected-result canonical digest independently matched a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+    - F01 final acknowledgment ready-entry canonical digest independently matched a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac
+    - F03 result task head independently matched 7c638131a0cab757657e95c4d2229a1573e4cde1
+    - F03 state/handoff raw-concatenation digest independently matched 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
+    - F01-retired-auth-001 applied-result canonical digest independently matched f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+    - F01-retired-auth-001 request digest independently matched b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+    - F03 applied commit 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e is an ancestor of its final result task head
+    - exact F03 pg-mem steward proof passed with public admin login and zero challenge/trusted-device artifacts
+    - npm run typecheck at the F01 acknowledgment head passed
+    - three F01 steward requests satisfy the committed schema required fields and privacy invariant
+    - F01-owned current composition contains no email-challenge, trusted-device, six-digit, or one-time-code strings
   known_baseline_failures:
     - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
@@ -162,9 +182,7 @@ external_effects:
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers:
-  - F01-retired-auth-001 remains assigned to F03 at F03_ready_for_review and must be acknowledged before F01 can publish ready_for_review
+blockers: []
 out_of_scope_findings:
-  - packages/domain/src/auth/service.ts still creates a routine email challenge for legacy internal admin identities after valid password authentication; the owned server no longer exposes the challenge endpoints or controls, so a domain-steward change is required for direct Admin email-plus-password login.
   - apps/web/vite.app.config.ts still emits the retired experience-preview client entry and apps/web/src/client/public.ts retains dormant email-challenge code; both paths are outside F01 ownership. The owned server denies the emitted preview asset and no longer renders challenge controls.
   - out-of-scope domain modules still consume compatibility properties named mfaSecretEncryptionKey and Buffer/demo feature properties from AppConfig. The environment schema and runtime flags are removed or forced unavailable, but deleting the compatibility properties requires coordinated consumer migration.
