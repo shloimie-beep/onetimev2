@@ -1,0 +1,192 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F05
+interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+contract_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: apps/web/src/server/features/jobs/command-handler.ts
+    symbols:
+      - TypedCommandStore
+      - executeTypedJobCommand
+    sha256: 735e5ca403ab939437cc253e4f7319921ee302f43e452f85fdb97ba97dfa562b
+  - path: apps/web/src/server/features/jobs/index.ts
+    symbols:
+      - TypedCommandStore
+      - executeTypedJobCommand
+    sha256: 303351f53c7ead3ee468615963f4ae1237c37f29d6aeb774cc4597399c4aec8f
+  - path: apps/worker/src/runners/foundation/index.ts
+    symbols:
+      - FoundationRunnerLogger
+      - FoundationRunnerOptions
+      - FoundationRunSummary
+      - runFoundationJobBatch
+    sha256: f0f0258a0dad6ddd552df6b3514b7b2a58d9dee3c438b769645d1817804e9a8a
+  - path: apps/worker/src/runners/foundation/runner.ts
+    symbols:
+      - FoundationRunnerLogger
+      - FoundationRunnerOptions
+      - FoundationRunSummary
+      - runFoundationJobBatch
+    sha256: d7fe234226e9fe557e347c1fdfe4e4a024f5d998d2a4d7ddd3da81344613ac97
+  - path: packages/contracts/src/api/index.ts
+    symbols:
+      - API_CONTRACT_VERSION
+      - API_ACTOR_ROLES
+      - ApiActorRole
+      - API_ERROR_CODES
+      - ApiErrorCode
+      - ApiHttpMethod
+      - ApiCommandEnvelope
+      - ApiQueryEnvelope
+      - ServerDerivedApiContext
+      - ApiErrorBody
+      - ApiResult
+      - TypedApiRouteContract
+      - defineTypedApiRouteContract
+    sha256: 49bf9477b542190920d79659a7c4b989dfb1890a36e92334819d6ec5e6a31285
+  - path: packages/contracts/src/jobs/index.ts
+    symbols:
+      - JOB_CONTRACT_VERSION
+      - JOB_LEASE_DURATION_MS
+      - JOB_HEARTBEAT_INTERVAL_MS
+      - JOB_MAX_DISPATCH_ATTEMPTS
+      - JOB_MAX_RETRY_DELAY_MS
+      - PROVIDER_JOB_STATES
+      - ProviderJobState
+      - VERSIONED_SAGA_STATES
+      - VersionedSagaState
+      - JobScope
+      - TransactionalOutboxIntent
+      - ProviderJobRecord
+      - JobLeaseToken
+      - VersionedSaga
+      - ProviderDispatchOutcome
+      - ProviderReconciliationOutcome
+      - ClaimDueJobsInput
+      - RecordDispatchOutcomeInput
+      - JobFoundationRepository
+      - ProviderJobHandler
+    sha256: 479646418bbe010fe73141476f05b86d2788d364fb73a7f51538091a5c790774
+  - path: packages/db/src/jobs/index.ts
+    symbols:
+      - JOB_FOUNDATION_SCHEMA_CONTRACT
+      - JOB_FOUNDATION_SCHEMA_CONTRACT_VERSION
+      - ExecuteTransactionalCommandInput
+      - JobSqlClient
+      - JobSqlPool
+      - TransactionalCommandResult
+      - createPostgresJobFoundationRepository
+    sha256: 3ab1eff6229f24fa856f2664f578fc6cec669ce85a3e3fc2ce486e5ec895a346
+  - path: packages/db/src/jobs/repository.ts
+    symbols:
+      - ExecuteTransactionalCommandInput
+      - JobSqlClient
+      - JobSqlPool
+      - TransactionalCommandResult
+      - createPostgresJobFoundationRepository
+    sha256: 45ca585135ae32af581a814000b5eb10252024d128af585bc3adf7d05dc4813f
+  - path: packages/db/src/jobs/schema-contract.ts
+    symbols:
+      - JOB_FOUNDATION_SCHEMA_CONTRACT
+      - JOB_FOUNDATION_SCHEMA_CONTRACT_VERSION
+    sha256: 6be34a155f6019f7a72057f3e097b34372c8d4f1d450500ba0dcae844fc74d99
+  - path: packages/domain/src/jobs/errors.ts
+    symbols:
+      - JOB_FOUNDATION_ERROR_CODES
+      - JobFoundationError
+      - JobFoundationErrorCode
+    sha256: b1ad8a2a6755c998a4e9818d9e10428c1a811dda31d21535654c9fb332550907
+  - path: packages/domain/src/jobs/idempotency.ts
+    symbols:
+      - assertSha256
+      - assertStableJobIdentity
+      - canonicalJson
+      - canonicalRequestHash
+      - sha256Hex
+    sha256: d6d089a281fb7890ee25b0a926478d32477175edfd328ab884d0004a6d5a81d3
+  - path: packages/domain/src/jobs/index.ts
+    symbols:
+      - JOB_FOUNDATION_ERROR_CODES
+      - JobFoundationError
+      - JobFoundationErrorCode
+      - assertSha256
+      - assertStableJobIdentity
+      - canonicalJson
+      - canonicalRequestHash
+      - sha256Hex
+      - assertJobScope
+      - assertOutboxIntent
+      - assertSafeRoutePath
+      - createCompensationIntent
+      - fullJitterRetryDelayMs
+      - heartbeatProviderJob
+      - leaseProviderJob
+      - markJobInFlight
+      - reconcileAcceptanceUnknown
+      - recordDispatchOutcome
+      - recoverDeadLetter
+      - transitionVersionedSaga
+    sha256: 47c490a000bbc7096c3751f8b05ded579304e5f940c4be2238207d3b1bd7a364
+  - path: packages/domain/src/jobs/lifecycle.ts
+    symbols:
+      - assertJobScope
+      - assertOutboxIntent
+      - assertSafeRoutePath
+      - createCompensationIntent
+      - fullJitterRetryDelayMs
+      - heartbeatProviderJob
+      - leaseProviderJob
+      - markJobInFlight
+      - reconcileAcceptanceUnknown
+      - recordDispatchOutcome
+      - recoverDeadLetter
+    sha256: de4c0079ec160d40cb2f39f50a45de94c9b7036ba7c6b9dab2d01db328af3242
+  - path: packages/domain/src/jobs/saga.ts
+    symbols:
+      - transitionVersionedSaga
+    sha256: b8a33b289616cc58036cb5767fba84192f1a7d3bc0ba88bb5edfd4dbb5776bd2
+compatibility_invariants:
+  - API scope and actor identity are server-derived; command envelopes carry stable idempotency keys, canonical request hashes, and expected versions.
+  - Public route paths reject query strings and fields that imply PII, credentials, or bearer material.
+  - One logical external effect keeps one idempotency key and request hash across bounded retries and recovery generations.
+  - A worker lease lasts five minutes, heartbeats every 60 seconds, and fences completion by job, owner, generation, expiry, and expected version.
+  - Each recovery generation permits at most eight dispatch attempts; retry uses full jitter through the exact 30-minute exponential cap while provider Retry-After remains an additional not-before constraint.
+  - Timeout or ambiguous acknowledgment enters acceptance_unknown and disables mutating retry until canonical readback proves accepted, absent-and-safe, or permanently rejected.
+  - Dead-letter recovery is Admin-authorized, increments recovery generation, resets only per-generation counters, and preserves lifetime history and logical identity.
+  - Compensation is a separate idempotent ProviderOperation referencing the proven accepted original operation.
+  - Local mutation, command replay record, and outbox intents commit in one database transaction; the web process performs no runtime schema creation.
+  - Database activation and central registration remain gated by F05-MIGRATION-001 and F05-REGISTRATION-001.
+downstream_tasks:
+  - F06
+  - P11
+  - P16
+  - P17
+  - P18
+  - P19
+  - P20
+  - P21
+  - P22
+  - P23
+  - P24
+  - P25
+  - P26
+  - P32
+  - P33
+verification_commands:
+  - npm run typecheck
+  - npm exec -- vitest run --root packages/domain/src/jobs foundation.test.ts
+  - npm exec -- eslint apps/web/src/server/features/jobs apps/worker/src/runners/foundation packages/contracts/src/api packages/contracts/src/jobs packages/db/src/jobs packages/domain/src/jobs
+  - focused Prettier check over every F05 TypeScript, Markdown, and YAML artifact
+  - canonical contract digest and per-artifact SHA-256 verification
+  - exact normalized-owned-scope diff verification
+contains_product_completion_claim: false
+contains_external_effect: false

@@ -4,7 +4,7 @@
 
 - Branch: `codex/v21-f05-api-jobs-foundation`
 - Start SHA: `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`
-- Implementation SHA before this handoff metadata commit: `39a69433d0facbca5cfc5990b2b7ed6aaca984be`
+- Implementation SHA before this handoff metadata commit: `1ade14c52e42e59bb8fd1d1de776b91406c45f15`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head
 - Task packet digest: `807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3`
 - Context digest: `95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a`
@@ -22,19 +22,21 @@ are structured under F05 runtime.
 
 ## Remaining work
 
-Install the locked dependencies, run and correct focused assertions, typecheck,
-formatting, and scope checks, then publish the exact interface checkpoint and
-final `ready_for_review` metadata.
+Independently revalidate the interface/artifact digests and exact branch scope,
+then publish the final `ready_for_review` metadata and release the task-local
+writer lease.
 
 ## Exact next action
 
-Install dependencies with the locked package manifest and run F05 focused
-assertions plus repository typecheck.
+Recompute contract digest
+`fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329`
+from the exact 14 artifacts at implementation head `1ade14c5`, validate scope,
+then finalize durable metadata.
 
 ## Coverage
 
-- Requirements: all three implemented pending verification
-- Acceptance cases: implementation assertions pending
+- Requirements: all three implementation-ready
+- Acceptance cases: all three implementation-ready; candidate-bound acceptance remains downstream
 
 ## Changed files and migrations
 
@@ -50,8 +52,12 @@ integration.
 - Locked execution manifest: 200/200 passed
 - Source manifest: 15/15 passed
 - F02 interface checkpoint ancestry and digest: passed
-- Source checkpoint: `39a69433d0facbca5cfc5990b2b7ed6aaca984be`
-- Focused/type/format verification: pending
+- Implementation checkpoint: `1ade14c52e42e59bb8fd1d1de776b91406c45f15`
+- F05 focused assertions: 8/8 passed
+- Full repository typecheck: passed
+- Focused ESLint: passed
+- Focused Prettier: passed
+- Interface contract: `fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329`
 
 ## External effects
 
@@ -65,4 +71,5 @@ deployment was accessed or attempted.
 ## Blockers, deviations, and recovery
 
 No blocker. The schema repository is intentionally not activated until the
-stewarded migration is integrated.
+stewarded migration is integrated. Candidate-bound acceptance remains outside
+this implementation task.
