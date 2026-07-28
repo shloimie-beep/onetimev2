@@ -12,13 +12,17 @@
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
 - Claim ID: `9b1ad11d-f16c-40e7-aec9-e07172c90034`
 - Writer: `codex-i36-worker-9b1ad11d`
-- RELEASE_INTEGRATOR lease: `add98f8a-d111-44a0-9232-44140f8e2b9b`
-- Containing control head: `4f82565865c615ecf91828b0cae41c1cf7b63dfe`
-- Controller authorization: `4f82565865c615ecf91828b0cae41c1cf7b63dfe`
+- RELEASE_INTEGRATOR lease: `add98f8a-d111-44a0-9232-44140f8e2b9b`, released `2026-07-28T23:06:07Z`
+- Containing control head: `bd24429251acff6393c0311a223e0e723335d7cd`
+- Controller authorization: `bd24429251acff6393c0311a223e0e723335d7cd`
 - Ready-entry state-based-on control head: `c9c3d288fa6cdb3aca756de8cc03d35471abe464`
 - Ready-entry payload digest: `b661e046bf1f18eb5d8a756e59f51258d19b7774b8d94b7390ea16901676f315`
 - Lease expiry: `2026-07-28T23:50:05Z`
 - Phase scope: `P28_interface_atomic_claim_only`
+- P28 merge authorization: control `bd24429251acff6393c0311a223e0e723335d7cd`,
+  item `58c0a26a-cb58-4dfb-a4a8-082ae171537e`, payload digest
+  `ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1`
+- Pushed P28 integration head: `b5f77d758b251b49c1603b5e6a1eab85aa64c800`
 - P19 merge authorization: control `ccfea34dd850c830618da53f448eda2b20189eb8`,
   item `d3acb266-4c15-4a37-ada7-1a42b616cd12`, payload digest
   `45eb7d395582ee4509dde7e26ad6a1099c46c476628b8e40dc9933b4b2a55aa6`
@@ -279,17 +283,30 @@ merged, no steward request was applied, and optimistic 36-path item
 `3bfa28d14fdf8f0f1a264cf56cb18629d5d8faa452c621a5c82ff62adf96a241`
 remains unconsumed pending an exact target CAS rebind.
 
+C00 rebound the sole P28 interface item at control
+`bd24429251acff6393c0311a223e0e723335d7cd` to exact claim head
+`85cfc9f2f0dbfbbbb30058d5c6473dd0505de8e3`, with canonical payload
+`ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1`.
+I36 independently verified source/merge base `9ba92b07`, the exact 36-path
+allowlist, raw state/handoff digest `c84c0089...`, the exported artifact hash,
+semantic `1.0.0` contract digest `2b8b6854...`, implementation ancestry, and
+zero effects. Exact source `aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`
+was ancestry-merged with parents `85cfc9f2...` and `aaedc3f2...` at pushed
+integration head `b5f77d758b251b49c1603b5e6a1eab85aa64c800`.
+Typecheck, focused ESLint, 32 focused tests, raw-Git-blob Prettier verification,
+registry identity assertions, and clean-worktree diff checks passed. The two
+generated registry/projection checks remain expected steward-dependent
+failures. No P28 steward request was adjudicated or applied.
+
 ## Remaining work
 
-Push and report this exact P28-interface atomic claim checkpoint to C00. Await
-C00 consumption and an exact merge-target CAS rebind before reading or merging
-P28.
+Push and report the exact P28 integration metadata checkpoint to C00. Await a
+new exact C00 authorization before any further integration or steward work.
 
 ## Exact next action
 
-Report the exact pushed P28-interface atomic claim checkpoint to C00, then
-pause. Do not read or merge P28, consume its optimistic merge item, or apply
-any steward request until C00 issues a new exact target authorization.
+Push and report the exact P28 integration metadata checkpoint to C00, then
+pause until C00 issues a new exact target authorization.
 
 ## Coverage
 
@@ -320,6 +337,8 @@ any steward request until C00 issues a new exact target authorization.
   `418ffcc5cbf78643b40b89dbc5da64ea04806f6e`
 - Exact 25-path allowlisted P19 interface delta at
   `e420eb833feee26efd431afd93457a7e0bc4d228`
+- Exact 36-path allowlisted P28 interface delta at
+  `aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`
 - Migration: `packages/db/migrations/2234_canonical_state_machines.sql`
 
 ## Verification
@@ -454,6 +473,18 @@ any steward request until C00 issues a new exact target authorization.
   `80d7f8f1443659b4cf2760d5cc68aa3ef216b926`.
 - Repository typecheck, focused ESLint, 21 focused P19 tests, raw-Git-blob
   Prettier verification, and diff checks passed after the P19 interface merge.
+- Rebound control `bd24429251acff6393c0311a223e0e723335d7cd` carried the sole P28 item with
+  canonical payload `ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1`
+  and exact target `85cfc9f2f0dbfbbbb30058d5c6473dd0505de8e3`.
+- Exact P28 source/base, 36-path scope, raw state/handoff binding, exported
+  artifact hash, semantic contract preimage, implementation ancestry, and zero
+  effects matched.
+- Exact P28 source is an ancestor of
+  `b5f77d758b251b49c1603b5e6a1eab85aa64c800`.
+- Repository typecheck, focused ESLint, 32 focused P28 tests, raw-Git-blob
+  Prettier verification, registry identity assertions, and clean-worktree diff
+  checks passed after the P28 interface merge. The generated registry and
+  workflow-control projections remain steward-dependent expected failures.
 
 ## External effects
 

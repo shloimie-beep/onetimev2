@@ -15,7 +15,7 @@ dependency_heads:
   P27: e706587bfe581f881fb072271b15b4123f9aabe6
   P28: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
   P32: 6a33944a75e717041b2f951134459769b8fc2617
-status: claimed
+status: ready
 phase: integration
 claimed_by: codex-i36-worker-9b1ad11d
 claim_time: '2026-07-28T22:56:11Z'
@@ -23,12 +23,13 @@ claim_id: 9b1ad11d-f16c-40e7-aec9-e07172c90034
 lease_id: add98f8a-d111-44a0-9232-44140f8e2b9b
 lease_issued_at: '2026-07-28T22:50:05Z'
 lease_expires_at: '2026-07-28T23:50:05Z'
-last_heartbeat_at: '2026-07-28T22:56:11Z'
-controller_authorization_sha: 4f82565865c615ecf91828b0cae41c1cf7b63dfe
+lease_released_at: '2026-07-28T23:06:07Z'
+last_heartbeat_at: '2026-07-28T23:06:07Z'
+controller_authorization_sha: bd24429251acff6393c0311a223e0e723335d7cd
 ready_entry_state_based_on_control_head_sha: c9c3d288fa6cdb3aca756de8cc03d35471abe464
 ready_entry_payload_digest: b661e046bf1f18eb5d8a756e59f51258d19b7774b8d94b7390ea16901676f315
-state_based_on_head_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
-last_implementation_commit_sha: 80d7f8f1443659b4cf2760d5cc68aa3ef216b926
+state_based_on_head_sha: b5f77d758b251b49c1603b5e6a1eab85aa64c800
+last_implementation_commit_sha: b5f77d758b251b49c1603b5e6a1eab85aa64c800
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -249,10 +250,23 @@ completed_steps:
     9b1ad11d-f16c-40e7-aec9-e07172c90034 and sole RELEASE_INTEGRATOR lease
     add98f8a-d111-44a0-9232-44140f8e2b9b without reading or merging P28 source, consuming optimistic
     item 58c0a26a-cb58-4dfb-a4a8-082ae171537e, or applying a steward request.
+  - Verified rebound control head bd24429251acff6393c0311a223e0e723335d7cd and canonical P28 merge-item
+    payload digest ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1.
+  - Verified exact P28 source and merge base 9ba92b070eedfa3756eff4f78fd328de72507a96, 36-path allowlist,
+    raw state/handoff digest, exported artifact hash, semantic contract digest, implementation ancestry, and
+    zero external effects.
+  - Merged exact P28 interface source aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c with ancestry preserved at
+    b5f77d758b251b49c1603b5e6a1eab85aa64c800 and pushed the integration checkpoint.
+  - Passed repository typecheck, 32 focused P28 tests, focused ESLint, raw-Git-blob Prettier verification,
+    workflow-registry identity assertions, and clean-worktree diff checks.
+  - Confirmed the two generated HighLevel registry/projection checks remain the expected steward-dependent
+    failures; no P28 steward request was adjudicated or applied.
+  - Released claim 9b1ad11d-f16c-40e7-aec9-e07172c90034 and RELEASE_INTEGRATOR lease
+    add98f8a-d111-44a0-9232-44140f8e2b9b after the exact P28 integration checkpoint.
 remaining_steps:
-  - Push and report this exact P28-interface atomic claim checkpoint to C00.
-  - Await C00 consumption and an exact merge-target CAS rebind before reading or merging P28.
-next_action: Report the exact pushed P28-interface atomic claim checkpoint to C00, then pause without reading or merging P28 until a new exact control authorization.
+  - Push and report the exact P28 integration metadata checkpoint to C00.
+  - Await a new exact C00 authorization before any further integration or steward work.
+next_action: Push and report the exact P28 integration metadata checkpoint to C00, then await a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
@@ -502,6 +516,42 @@ changed_paths:
   - packages/domain/src/content/ingest/source.ts
   - packages/domain/src/content/ingest/upload.ts
   - packages/domain/src/content/ingest/validation.ts
+  - apps/worker/src/runners/communications-foundation/index.ts
+  - apps/worker/src/runners/communications-foundation/runner.test.ts
+  - apps/worker/src/runners/communications-foundation/runner.ts
+  - integrations/highlevel/registry/workflow-registry.yaml
+  - integrations/highlevel/v21/foundation/checklists/OT-12-adult-support-intake.md
+  - integrations/highlevel/v21/foundation/checklists/OT-14-parent-newsletter.md
+  - integrations/highlevel/v21/foundation/checklists/OT-15-former-member-reactivation.md
+  - integrations/highlevel/v21/foundation/checklists/OT-B01-website-lead-capture.md
+  - integrations/highlevel/v21/foundation/desired-state.test.ts
+  - integrations/highlevel/v21/foundation/desired-state.ts
+  - integrations/highlevel/v21/foundation/index.ts
+  - integrations/highlevel/v21/foundation/prompts/OT-12-adult-support-intake.md
+  - integrations/highlevel/v21/foundation/prompts/OT-14-parent-newsletter.md
+  - integrations/highlevel/v21/foundation/prompts/OT-15-former-member-reactivation.md
+  - integrations/highlevel/v21/foundation/prompts/OT-B01-website-lead-capture.md
+  - integrations/highlevel/v21/foundation/registry-source.test.ts
+  - ops/v2.1-execution/runtime/P28/HANDOFF.md
+  - ops/v2.1-execution/runtime/P28/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-migration-001.yaml
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registration-001.yaml
+  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registry-projection-001.yaml
+  - ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
+  - packages/contracts/src/communications/foundation/index.ts
+  - packages/db/src/communications/foundation/index.ts
+  - packages/db/src/communications/foundation/repository.test.ts
+  - packages/db/src/communications/foundation/repository.ts
+  - packages/db/src/communications/foundation/schema-contract.ts
+  - packages/domain/src/communications/foundation/errors.ts
+  - packages/domain/src/communications/foundation/foundation.test.ts
+  - packages/domain/src/communications/foundation/index.ts
+  - packages/domain/src/communications/foundation/lead-capture.ts
+  - packages/domain/src/communications/foundation/preference.ts
+  - packages/domain/src/communications/foundation/readback.ts
+  - packages/domain/src/communications/foundation/registry.ts
+  - packages/domain/src/communications/foundation/workflow-fragment.ts
 migrations:
   - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -771,7 +821,25 @@ verification:
       result: passed; exact ready-entry digests matched committed Git metadata and blobs
     - command: P28-interface atomic claim, writer-slot, branch-head, lease, phase-scope, optimistic-item, and effect-lock verification
       result: passed; sole RELEASE_INTEGRATOR lease, 36-path queued scope, phase P28_interface_atomic_claim_only, optimistic item unconsumed, and zero effect locks
-  known_baseline_failures: []
+    - command: canonical rebound P28 merge-item digest recomputation
+      result: passed; ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1
+    - command: P28 source admission, allowlist, raw state/handoff, artifact, contract, ancestry, and zero-effect verification
+      result: passed; exact source/base, 36 paths, digest c84c0089, one export, semantic 1.0.0 contract 2b8b6854, implementation ancestry, and 0/0/0 effects
+    - command: git merge --no-ff aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
+      result: passed; exact parents 85cfc9f2f0dbfbbbb30058d5c6473dd0505de8e3 and aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c at merge commit b5f77d758b251b49c1603b5e6a1eab85aa64c800
+    - command: npm run typecheck
+      result: passed after P28 interface merge
+    - command: focused P28 Vitest suites
+      result: passed; 5 files and 32 tests
+    - command: focused P28 ESLint, exact workflow-registry assertions, raw-Git-blob Prettier check, and git diff --check
+      result: passed; exact 36 source blobs formatted, canonical identities verified, and no worktree diff hygiene issue
+    - command: npm run highlevel:registry:check
+      result: expected stewarded failure; generated control contract, workflow overlap counts, and asset counts remain stale
+    - command: npm run highlevel:workflow-control:projection-check
+      result: expected stewarded failure; current projection and manifest remain stale
+  known_baseline_failures:
+    - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
+    - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
 external_effects:
   authority: none
   attempted: 0

@@ -30,11 +30,27 @@ head `c9c3d288fa6cdb3aca756de8cc03d35471abe464`, claim
 `b661e046bf1f18eb5d8a756e59f51258d19b7774b8d94b7390ea16901676f315`.
 The exact pre-claim integration head is
 `ebf88c8e422a6ad40202fc2b0249810d312edc30`. This checkpoint consumes
-only the claim. Do not read or merge P28, consume optimistic item
+only the claim; the subsequent exact rebound and integration are recorded
+below. Optimistic item
 `58c0a26a-cb58-4dfb-a4a8-082ae171537e` with pre-claim digest
 `3bfa28d14fdf8f0f1a264cf56cb18629d5d8faa452c621a5c82ff62adf96a241`,
-or apply any P28 steward request until C00 rebinds the expected target to the
-exact pushed claim head.
+was not consumed by the atomic checkpoint.
+
+That P28 atomic claim is now consumed. Control
+`bd24429251acff6393c0311a223e0e723335d7cd` rebound exact item
+`58c0a26a-cb58-4dfb-a4a8-082ae171537e` to target
+`85cfc9f2f0dbfbbbb30058d5c6473dd0505de8e3` with canonical payload
+`ece27747cee4dbad47e53eb34f8d8548cf36753624d2d256d3a0991c172342e1`.
+Exact source `aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`, base, 36-path scope,
+raw state/handoff, exported artifact, semantic `1.0.0` contract,
+implementation ancestry, and zero effects matched. The source was
+ancestry-merged with exact parents `85cfc9f2...` and `aaedc3f2...` at pushed
+integration head `b5f77d758b251b49c1603b5e6a1eab85aa64c800`.
+Typecheck, focused ESLint, 32 focused tests, raw-Git-blob Prettier verification,
+registry identity assertions, and clean-worktree diff checks passed. The two
+generated registry/projection checks remain expected steward-dependent
+failures. No P28 steward request was adjudicated or applied. The claim and
+lease are released.
 
 That P19 atomic claim is now consumed. Control
 `ccfea34dd850c830618da53f448eda2b20189eb8` rebound exact item
@@ -156,11 +172,9 @@ Exact F06 source `9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7` was ancestry-merged 
 preimages matched; typecheck, quiet lint, and 20 focused tests passed. No
 steward request, migration, registration, or provider effect was applied.
 
-Current exact next action: report the pushed P28-interface atomic claim
-checkpoint to C00, then stop. Do not read or merge P28, consume its optimistic
-merge item, or apply a steward request until C00 rebinds the merge-target CAS
-to the exact claim head. No unrelated merge, evidence, control, or live-effect
-work is authorized.
+Current exact next action: report the pushed P28 integration metadata checkpoint
+to C00, then stop and await a new exact control authorization. No unrelated
+merge, steward, evidence, control, or live-effect work is authorized.
 
 Do not edit control files or perform provider/live effects. F01 source
 `fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its
