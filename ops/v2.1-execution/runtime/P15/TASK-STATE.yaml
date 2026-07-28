@@ -1,0 +1,62 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P15
+task_packet_digest: cc6d395e0cb231a5180c9f927a64c814148b4946f869d68ee6afc1b74bc5c8df
+task_context_digest: 0f4326a4a2c00120ae85466af822e8dc1304c2d6f6d975699991e8db75778a6a
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p15-calendar
+start_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
+dependency_heads:
+  F02:
+    state: interface_ready_integrated
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+  F07:
+    state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+status: claimed
+phase: contract
+claimed_by: codex-p15-worker-dc9b1096
+claim_time: '2026-07-28T19:16:53Z'
+claim_id: dc9b1096-19bc-4d6a-91e0-e15dc06d2705
+writer_slot_lease_id: 83e9dbb8-9007-4c75-bc14-5b0accfe90a1
+lease_expires_at: '2026-07-28T20:05:27Z'
+last_heartbeat_at: '2026-07-28T19:16:53Z'
+controller_authorization_sha: 44202fc53db9781c91e4015d6af004bac4ab037b
+state_based_on_control_head_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+ready_entry_payload_digest: b78cc45bd737dc76a8161321f1a656611e6cf59cdc8064eeb7de15cafc05780f
+state_based_on_head_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
+last_implementation_commit_sha: 81602ccc44e134288d2e8cd8d6ad71a249553be2
+completed_steps:
+  - verified exact control, ready-entry, package, source, task, context, branch-absence, and unexpired lease bindings
+  - verified F02 and F07 interface implementation ancestry at the authorized integration start
+remaining_steps:
+  - read the locked P15 prompt, packet, context, required source sections, and dependency interfaces
+  - implement and verify only the P15 calendar-owned scope
+  - publish any required interface checkpoint and final ready_for_review metadata
+next_action: Read the locked P15 prompt, task packet, context, required source sections, and dependency interfaces, then record the exact assigned gap map.
+requirements: {}
+acceptance_cases: {}
+changed_paths:
+  - ops/v2.1-execution/runtime/P15/HANDOFF.md
+  - ops/v2.1-execution/runtime/P15/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P15/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - canonical READY-QUEUE P15 digest verification (passed)
+    - F02 and F07 interface ancestry verification (passed)
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
