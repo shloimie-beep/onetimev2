@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-85e0817a
-claim_time: '2026-07-28T21:15:41Z'
-claim_id: 85e0817a-2f59-471f-8540-530e6e4942d5
-lease_expires_at: '2026-07-28T21:18:46Z'
-last_heartbeat_at: '2026-07-28T21:18:46Z'
-controller_authorization_sha: 0bd71908e070dc99431df054667beee92cf8f495
+claimed_by: codex-c00-orchestrator-8072142d
+claim_time: '2026-07-28T21:24:29Z'
+claim_id: 8072142d-49b4-43ee-a06b-be013cc60208
+lease_expires_at: '2026-07-28T21:28:37Z'
+last_heartbeat_at: '2026-07-28T21:28:37Z'
+controller_authorization_sha: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
 ready_entry_payload_digest: null
-state_based_on_head_sha: 0bd71908e070dc99431df054667beee92cf8f495
+state_based_on_head_sha: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -108,8 +108,11 @@ completed_steps:
 - independently verified P27 final e1933d64, exact interface e706587b, implementation 7d5edd68, 20-path owned delta, artifact/plain-path contract/state-handoff digests, 10 focused tests, typecheck, lease release, and zero effects
 - recorded and assigned P27's immutable migration and registration requests without applying either request
 - admitted only the exact P27 interface for an atomic-claim-only I36 ancestry merge from c4d042e9
+- independently verified I36 P27 atomic claim 8d90ca47 exact three-file scope and rebound the P27 merge target CAS
+- independently verified P16 final 72fca16b, interface 418ffcc5, implementation 46b5c39a, six artifact/plain-path contract/interface-state digests, 17 focused tests, typecheck, released lease, and zero effects
+- recorded and assigned P16 migration and registration requests without applying either request
 remaining_steps: []
-next_action: I36 atomically claims the P27 integration lane while P16 continues.
+next_action: I36 merges only P27 while P16 awaits next integration authorization.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -117,12 +120,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 0bd71908e070dc99431df054667beee92cf8f495
+  current_control_parent_sha: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 85e0817a-2f59-471f-8540-530e6e4942d5
-      observed_head: 0bd71908e070dc99431df054667beee92cf8f495
+      claim_id: 8072142d-49b4-43ee-a06b-be013cc60208
+      observed_head: 4be155eefc4cd90c3f3f96d1b3ec6a13f1179f67
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -134,10 +137,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: 841f3e65-684b-4529-976b-5e796d9d7e45
-      observed_head: c4d042e94b3f7e779fd6bfd41127dd9576854805
+      observed_head: 8d90ca47c5396002a04ed0de53249ce8eac7ca52
       authorized_start_sha: c4d042e94b3f7e779fd6bfd41127dd9576854805
       lease_expires_at: '2026-07-28T22:15:41Z'
-      scheduling_state: ready_for_P27_atomic_claim
+      scheduling_state: claimed_P27_target_rebound_resume_authorized
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -211,10 +214,10 @@ orchestration:
     P16:
       branch: codex/v21-p16-class-series-occurrences
       claim_id: afd00130-7e98-4428-b9ef-303b50815189
-      observed_head: f865439f9b37eba1a6dd0fcddc80f67b19c283a8
+      observed_head: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
       authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-      lease_expires_at: '2026-07-28T22:04:00Z'
-      scheduling_state: renewal_claimed_resume_authorized
+      lease_expires_at: null
+      scheduling_state: ready_for_review_interface_verified_awaiting_integration
     P32:
       branch: codex/v21-p32-privacy-data-rights
       claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
@@ -229,15 +232,7 @@ orchestration:
       authorized_start_sha: d35166838267711a514cf73822cd2ca49a3f3ded
       lease_expires_at: null
       scheduling_state: ready_for_review_interface_queued_agent_returned
-  active_native_subagents:
-  - task_id: P16
-    agent: /root/f05_worker
-    branch: codex/v21-p16-class-series-occurrences
-    observed_head: 45649e52ea792f2ead63415555776497747cacad
-    claim_id: fd104a34-4a75-4e5c-83c2-22266452d198
-    lease_expires_at: '2026-07-28T21:06:46Z'
-    status: claimed
-    phase: contract
+  active_native_subagents: []
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -352,12 +347,12 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 701bee45b53650a42a4c94e5c775aacad474f36900bbd8e862409458d5545437
-    control_lease: d83de1d4cfc407908dfb2888f90499e8860bafd7303d087acd9bbcac7a6c8918
-    task_registry: 686f9e2e3dac2b74ddda9680617503e8d6caadd62e2c943395164783a3429794
-    ready_queue: 195f62aad10c70bb4108cb4b93e60ba63c2b416b7714e89fcea71ec10b051ff2
-    merge_queue: fa3d8349159a78a1a2b573c89214f56bb2a91db8ba81f4a605b5e7fb65ad5779
-    steward_queue: 19c9ec1164132b34fb81190ceb06948468c43ba06fa639f029eee57611c75968
+    control_state: 5c32e3340d70545fba07c9c103bc8935fbff91bcbd85cbf31ee52d62ee7669b7
+    control_lease: b8ee6b358b476b74e5a737f6f25d3457cef9280c8274f25151c2141f0f63d455
+    task_registry: 7323b7c06645f9c9bbea1b2a0ddecf10f117412030e699aebbed35a65e8634f8
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    merge_queue: 0e52175ed81a5b3979c534e2fb08d7397f5d049526a935414384277903200d50
+    steward_queue: c63e036449fcebfa17d281d84aa28b8073b9a322f714974bac43ac161f3bb21a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70

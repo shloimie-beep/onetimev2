@@ -289,15 +289,18 @@ when the control ref advanced and is rebound without changing claim or lease.
 
 ## Remaining work
 
-None for bootstrap. P16 is active under its renewal. P27 is
-`ready_for_review` at `e1933d64`, and its exact interface is queued for I36.
+None for bootstrap. P27 is `ready_for_review` at `e1933d64`; I36 consumed its
+atomic-claim-only authorization at `8d90ca47`, and the exact P27 interface item
+is rebound to that target CAS. P16 is independently verified
+`ready_for_review` at `72fca16b` and awaits the next integration authorization.
 P32 is integrated at `c4d042e9`; P35 awaits later full admission.
 
 ## Exact next action
 
-Dispatch I36 claim `841f3e65-684b-4529-976b-5e796d9d7e45` for an atomic
-claim-only checkpoint from `c4d042e94b3f7e779fd6bfd41127dd9576854805`.
-Let P16 continue under its renewed lease.
+Resume I36 claim `841f3e65-684b-4529-976b-5e796d9d7e45` to merge only P27
+item `26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce` from exact target
+`8d90ca47c5396002a04ed0de53249ce8eac7ca52`. After that merge is verified,
+queue P16 in a separate integration authorization.
 
 ## Verification
 

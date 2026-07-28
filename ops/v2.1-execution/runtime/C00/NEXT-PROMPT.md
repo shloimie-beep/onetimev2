@@ -94,6 +94,15 @@ with interface `e706587b`, implementation `7d5edd68`, contract `788e150f...`,
 interface state/handoff `d911136b...`, 10 focused tests, typecheck, and zero
 effects. Its two steward requests are assigned but unapplied. The exact P27
 interface is queued for atomic-claim-only I36 integration while P16 continues.
+I36 consumed that atomic authorization at exact integration head
+`8d90ca47c5396002a04ed0de53249ce8eac7ca52`. C00 rebound P27 merge item
+`26b826f0-b0b1-4c03-8bf5-06af4ad5e7ce` to that target with canonical digest
+`462a693c41463fc8cb3b7db2252c9e6c6ccf2c0061ec582d37b4640acc9edfe2`.
+P16 completed `ready_for_review` at `72fca16b3a9cd82c666e293f8bfd7d84c30722a1`,
+with interface `418ffcc5`, implementation `46b5c39a`, semantic contract
+`95c177d5...`, 17 focused tests, typecheck, and zero effects. Its two steward
+requests are assigned but unapplied. Resume I36 to merge only P27; authorize
+P16 in a separate later integration transaction.
 Before every later control mutation, acquire a
 fresh serialized C00 lease against the exact fetched remote control head;
 release it before waiting for workers.
