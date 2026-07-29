@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
-next_action: P11 may continue only its reconciled bounded correction. P21 and P09 are independently dependency-ready and may each create only their exact new branch from integration head 088b4047, publish exactly three runtime-memory files under READY digests d2b127c6/d40ec2fe and their disjoint CONTENT_PUBLICATION/SCHOOL_INQUIRY leases, then stop for C00 reconciliation. No live provider inspection, steward application, send, or external effect is authorized.
+controller_authorization_sha: c284998cc927cb4a48516c9d1ba34c325d28a04b
+next_action: P09 claim 64e56268 and P21 claim 6a065ef4 are reconciled. P09 may implement only source-owned manual-sales School inquiry/approved-school behavior; P21 may implement only source-owned approval-gated publication/protected-library behavior using local ports and mocks. Both must keep structured steward requests unapplied and perform no live provider inspection or effect. P11 final 17538da1 remains read-only pending independent semantic re-audit.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

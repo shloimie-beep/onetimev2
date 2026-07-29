@@ -730,10 +730,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: a003b9d541898913a73e7cdefe0667b22933d81352d72e1c59cf0dac07b1a610
-    control_lease: f32e314ac70e67a67e90a628993b38f8c5ef55c949e10e4946d3f78b0ab9a4e1
-    task_registry: 9d38307016b59654b85423c56d2486b37726de515e1b15c90e40fd6e1a45aac4
-    ready_queue: 762743f6afe7ec9000b6dbd5d8287eac0bdf8d3b5147e04b58d7e9a700dcb223
+    control_state: 06cfc82ff9c0e8f4078c75d94e580f4f08a936f7723900bb5e94c68f7aa02e18
+    control_lease: 041dd724562583d5a4b06699497ffc72d2ecd2327b5157c8fff792548d82c6a7
+    task_registry: c34448f765b6d0869517280cee1403246409be361efafb54fd13ce2e87eff368
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -888,6 +888,8 @@ verification:
   - consumed P11 ready entry and authorized only the bounded revoked-render/stale-completion/option-ID/Bearer-redaction correction under the unchanged claim and lease: passed
   - P21 F05/F06/P14 and P09 P08 dependency/interface/integration ancestry, 20/1 locked artifact bindings, absent branches, disjoint writer roots, and source-only zero-effect eligibility at integration 088b4047: passed
   - canonical P21/P09 atomic-claim READY digests d2b127c6/d40ec2fe against acquisition d99fde51, exact start 088b4047, fresh claims and disjoint CONTENT_PUBLICATION/SCHOOL_INQUIRY leases: passed
+  - P09 64e56268 and P21 6a065ef4 atomic new-branch claims, exact authorized-start parent, exact three-runtime-file scopes, authorization/acquisition/claim/lease/ready/dependency bindings, clean remote state, and zero effects: passed
+  - consumed P09/P21 ready entries and authorized only source-owned local implementation/tests with no live provider/effect authority: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

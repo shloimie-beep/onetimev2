@@ -1312,3 +1312,12 @@ claim `92d411ff`, SCHOOL_INQUIRY lease `55f80667`. Each first push must contain
 exactly its `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then stop for
 C00 reconciliation. Live Vimeo/Drive/S3/GHL inspection or mutation, provider
 locks, steward application, sends, and external effects remain unauthorized.
+
+P09 claim `64e5626832e3b849f61e1f020d12acb25d13e0e9` and P21 claim
+`6a065ef4f8a23bce3c7ef6d6caa70a342114f12e` are exact atomic children of
+start `088b4047`, each changing only its three runtime-memory files. C00
+reconciled both claims. P09 may now implement its source-owned manual-sales
+School inquiry and approved-school invariants with local tests. P21 may now
+implement its source-owned publication/protected-library lifecycle using local
+ports and mocks. Neither may inspect or mutate live GHL/Vimeo/Drive/S3,
+apply steward requests, send, or perform an external effect.

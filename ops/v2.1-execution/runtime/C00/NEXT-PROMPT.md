@@ -1034,6 +1034,15 @@ normal atomic branch creation, and stop for C00 reconciliation. Do not edit
 product code, inspect live providers, apply steward work, or perform effects
 in either first push.
 
+P09 claim `64e5626832e3b849f61e1f020d12acb25d13e0e9` and P21 claim
+`6a065ef4f8a23bce3c7ef6d6caa70a342114f12e` are reconciled. Resume them
+under their unchanged claims and leases. Implement only each task's normalized
+owned roots plus immutable structured steward requests, use local provider
+ports/mocks only, run focused tests/typecheck/scope/digest checks, release
+leases, publish ready-for-review finals, and stop for independent audit. Do not
+apply migration/registration/config requests or inspect/mutate live GHL,
+Vimeo, Drive, S3, or any external provider.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
