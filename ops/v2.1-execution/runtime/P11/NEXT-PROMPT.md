@@ -1,9 +1,11 @@
 MODEL: GPT-5.6-SOL
 REASONING: HIGH
 SERVICE TIER: PRIORITY
-MODE: REVIEW_AND_INTEGRATE
+MODE: RECONCILE_THEN_CORRECT_AUTHORIZATION_RACES_IDS_SECRETS
 
-Review and integrate the residual-corrected One Time v2.1 P11 implementation.
+Reconcile the exact P11 authorization/race/identity/secret correction atomic
+claim before permitting product, test, request, registration, provider,
+steward, or effect work.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p11-admin-operations
@@ -11,41 +13,36 @@ Authoritative control ref: origin/codex/v21-control
 Task state: ops/v2.1-execution/runtime/P11/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P11/HANDOFF.md
 
-Exact implementation:
-`f27f16a77fde21d283d594a7987ccd600bc1b367`.
-Residual atomic claim:
-`ce87a6c2808216214870d4b2343c82c0a36aaf36`.
-Reconciled control:
-`fff9a0a79f2db87ffca97451f8295080b9736549`.
-Claim `6efc5db3-43b4-4dad-ae3f-59031adddbd5` and ADMIN_OPERATIONS_UI
-lease `84e7a42a-d2a5-4c88-ba45-57b34ecc6de9` were released cleanly.
+Rejected final:
+`899ef6a7fad4f0946378721a0af7d7ed66c25c81`.
+Containing authorization:
+`46a7bfeb51401d2b1df03f0eb58fa800751ba1e1`.
+Sole acquisition parent:
+`6cd1efc5fdba8c2c6369ce15877eb3f008149f2b`.
+Current control head preserving that authorization:
+`7345a2c518fceefe7162e37de243774f534d1fca`.
+READY digest:
+`aeea25ddac610fb96f090609a9c17e3b67400aeff8209772b0b99e3efa85c456`.
+Claim: `d76c097a-d2df-4e8c-ae99-659deba00c64`.
+ADMIN_OPERATIONS_UI lease:
+`84cd0230-d35a-4149-845c-9cd4bcfb6ff5`, issued
+`2026-07-29T09:40:29Z` and expiring `2026-07-29T10:40:29Z`.
 
-Verify the final remote metadata head and ancestry through exact implementation
-`f27f16a77fde21d283d594a7987ccd600bc1b367`. Reproduce:
+First reconcile the immutable three-runtime-file claim. Only after fresh C00
+reconciliation may P11:
 
-- artifact digest
-  `497dcc8690ee8dec109f6c48d5216cb3ea074089881bbc48fc57fa54e816776f`;
-- P11-registration-001 digest
-  `68a99cc059304f66570f2296a5872bfa379062ae854401c54c196ec12b56fa42`;
-- request aggregate
-  `2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e`.
+- suppress revoked dashboard/search rendering and prevent stale asynchronous
+  completions from repopulating invalidated private state;
+- derive collision-free option IDs across entity kinds and repeated safe
+  identifiers while preserving valid combobox/listbox/active-descendant
+  relationships; and
+- reject and redact Bearer credentials containing the standard separating
+  space.
 
-Independently prove:
-
-- provider readiness is returned only when the stored row itself carries exact
-  matching runtime-tier and verification-environment provenance;
-- `provider_sandbox` cannot be relabeled as `persistent_staging`;
-- sign-out, role revocation, credential-version change, stale resolution, and
-  bfcache restore clear private query text together with results, cursors,
-  selection/error state, and recent values; and
-- multiple result groups produce one unique combobox-controlled listbox and a
-  valid unique active descendant.
-
-Preserve every earlier P11 current-Admin/target resolver, canonical same-origin
-route, POST-body/no-store/CSRF, eight-kind, redaction, exact scope, 24-hour
-activity, honest operations, keyboard, visible Jerusalem timezone, and
-real-data-only invariant. Disposition but do not weaken P11-registration-001.
+Add direct revoked-render, stale-completion, colliding-option-ID,
+active-descendant, and Bearer-space leakage tests, then rerun bounded validation
+and publish a superseding final. Do not modify or apply P11-registration-001
+unless a later reconciled authorization explicitly requires it.
 
 External authority is `none`; effects attempted `0`, succeeded `0`, reconciled
-`0`. No migration, registration application, steward action, provider call, or
-external effect is part of P11.
+`0`. This atomic claim performs no product correction or external effect.
