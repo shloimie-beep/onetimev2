@@ -82,8 +82,8 @@ metadata_correction_control:
     packages/db/migrations/2238_v21_provider_core.sql: 3f48e64956cc3b7683e4c6c45df08d4c60375b03
   checksum_sha256_kind: normalized_lf_sql_bytes
   pg_mem_checksum_sha256_kind: repository_runner_sql_after_postgres_only_block_stripping
-  audit_status: canonical_lf_format_correction_required
-status: claimed
+  audit_status: PASS
+status: ready_for_review
 phase: migration_lease_A_canonical_format_correction
 claimed_by: codex-f02-lease-a-format-7acb5991
 claim_time: '2026-07-29T19:50:00Z'
@@ -91,24 +91,24 @@ claim_id: 7acb5991-7704-4a6f-b590-020e47824876
 writer_slot_lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
 lease_issued_at: '2026-07-29T19:47:22Z'
 lease_expires_at: '2026-07-29T21:02:22Z'
-last_heartbeat_at: '2026-07-29T19:50:00Z'
-lease_released_at: null
-controller_authorization_sha: 70fc583372b793c0fb2f009d0bfa327188f6e1e7
-ready_entry_parent_control_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
-state_based_on_control_head_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
+last_heartbeat_at: '2026-07-29T20:01:43Z'
+lease_released_at: '2026-07-29T20:01:43Z'
+controller_authorization_sha: 974985a321b71ad05d491b8c981ece5e38bed52c
+ready_entry_parent_control_sha: c9b0f526907d62f782ef3d44a752a9467d03e986
+state_based_on_control_head_sha: c9b0f526907d62f782ef3d44a752a9467d03e986
 ready_entry_payload_digest: 40b3587f43321e1682abe17477310cedb20ea4c5d44cb353ee2a0480a440c21c
 writer_slot_leases:
   MIGRATION_AUTHORITY:
     lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
     lease_issued_at: '2026-07-29T19:47:22Z'
     lease_expires_at: '2026-07-29T21:02:22Z'
-    released_at: null
+    released_at: '2026-07-29T20:01:43Z'
   SCHEMA_CONTRACT:
     lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
     lease_issued_at: '2026-07-29T19:47:22Z'
     lease_expires_at: '2026-07-29T21:02:22Z'
-    released_at: null
-state_based_on_head_sha: caf4e2be5776c9f33c5d07ff6eef79ab411f9477
+    released_at: '2026-07-29T20:01:43Z'
+state_based_on_head_sha: e669c0e85d0bdf2bc72f2f8a9ff3646c0a6a1df6
 last_implementation_commit_sha: 7132cd81ea260558777859cd4c7485a357e8f5fb
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -150,11 +150,14 @@ completed_steps:
   - Passed YAML, repository Prettier, native/pg-mem derivation, protected SQL blob, 200/200 Git-byte package, secret, exact four-path, diff, disposable 69-migration apply/verify, and zero-effect gates.
   - Independently verified formatting-correction control 70fc5833, sole acquisition da6645bf, READY digest 40b3587f, exact caf4e2be head, protected SQL/checksum semantics, claim and lease, and effects 0/0/0.
   - Claimed only the F02 runtime triplet for canonical LF formatting; the proposal and SQL were not edited.
-  - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-29T19:30:25Z before lease expiry.
+  - C00 reconciled canonical-format claim e669c0e8 at containing control 974985a3 with sole acquisition c9b0f526.
+  - Applied repository Prettier with forced LF output only to the proposal and runtime triplet, preserving checksum semantics and protected SQL bytes.
+  - Passed canonical raw Git-blob Prettier API, YAML, exact four-path scope, package Git-byte, secret, checksum, protected SQL, diff, lease-release, and effects 0/0/0 gates.
+  - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-29T20:01:43Z before lease expiry.
 remaining_steps:
-  - C00 must reconcile this exact atomic formatting claim before the proposal or canonical metadata formatting may change.
-  - After reconciliation, format only the proposal and runtime triplet with canonical LF Git bytes, preserve checksum semantics and SQL, and re-run Prettier plus secret and scope gates.
-next_action: Stop after publishing the canonical-format atomic claim. Await C00 reconciliation; do not edit the proposal or SQL.
+  - An independent auditor and C00 must admit the exact final head before I36 integration.
+  - I36 may integrate only the exact admitted eight-path Lease A result under a fresh bounded claim and merge item.
+next_action: Stop after publishing the canonical-format correction. Await independent and C00 audit; do not edit SQL, allocate ordinal 2239, register, inspect providers, deploy, send, integrate, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
