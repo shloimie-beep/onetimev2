@@ -35,12 +35,20 @@ export function StudentNotificationCenter({
   onPlayForegroundCue?: () => void;
 }) {
   const panelRef = React.useRef<HTMLDivElement>(null);
+  const tabRefs = React.useRef<
+    Partial<Record<StudentNotificationFilter, HTMLButtonElement | null>>
+  >({});
   const priorFilterRef = React.useRef(snapshot.filter);
+  const keepTabFocusRef = React.useRef(false);
   const playedNoticeIdsRef = React.useRef(new Set<string>());
 
   React.useEffect(() => {
     if (priorFilterRef.current !== snapshot.filter) {
-      panelRef.current?.focus();
+      if (keepTabFocusRef.current) {
+        keepTabFocusRef.current = false;
+      } else {
+        panelRef.current?.focus();
+      }
       priorFilterRef.current = snapshot.filter;
     }
   }, [snapshot.filter]);
@@ -70,12 +78,27 @@ export function StudentNotificationCenter({
           <button
             key={filter.id}
             id={`student-notifications-tab-${filter.id}`}
+            ref={(element) => {
+              tabRefs.current[filter.id] = element;
+            }}
             type="button"
             role="tab"
             aria-selected={snapshot.filter === filter.id}
             aria-controls={`student-notifications-panel-${filter.id}`}
             tabIndex={snapshot.filter === filter.id ? 0 : -1}
             onClick={() => onFilterChange(filter.id)}
+            onKeyDown={(event) => {
+              handleStudentNotificationTabKey({
+                key: event.key,
+                currentFilter: filter.id,
+                preventDefault: () => event.preventDefault(),
+                selectFilter: (nextFilter) => {
+                  keepTabFocusRef.current = nextFilter !== snapshot.filter;
+                  onFilterChange(nextFilter);
+                },
+                focusFilter: (nextFilter) => tabRefs.current[nextFilter]?.focus(),
+              });
+            }}
           >
             {filter.label}
           </button>
@@ -187,6 +210,39 @@ function NotificationItem({
 
 function labelForFilter(filter: StudentNotificationFilter) {
   return FILTERS.find((candidate) => candidate.id === filter)?.label ?? 'All';
+}
+
+export function handleStudentNotificationTabKey(input: {
+  key: string;
+  currentFilter: StudentNotificationFilter;
+  preventDefault: () => void;
+  selectFilter: (filter: StudentNotificationFilter) => void;
+  focusFilter: (filter: StudentNotificationFilter) => void;
+}) {
+  const currentIndex = FILTERS.findIndex((filter) => filter.id === input.currentFilter);
+  let nextIndex: number;
+  switch (input.key) {
+    case 'ArrowLeft':
+      nextIndex = (currentIndex - 1 + FILTERS.length) % FILTERS.length;
+      break;
+    case 'ArrowRight':
+      nextIndex = (currentIndex + 1) % FILTERS.length;
+      break;
+    case 'Home':
+      nextIndex = 0;
+      break;
+    case 'End':
+      nextIndex = FILTERS.length - 1;
+      break;
+    default:
+      return false;
+  }
+  const nextFilter = FILTERS[nextIndex]?.id;
+  if (!nextFilter) return false;
+  input.preventDefault();
+  input.selectFilter(nextFilter);
+  input.focusFilter(nextFilter);
+  return true;
 }
 
 export interface ForegroundCueCandidate {

@@ -13,6 +13,27 @@ import { StudentNotificationError } from './errors.ts';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const EXPIRED_VISIBILITY_MS = 30 * DAY_MS;
 const NINETY_DAYS_MS = 90 * DAY_MS;
+const STUDENT_NOTIFICATION_STATIC_ROUTES = new Set([
+  '/app/student',
+  '/app/student/calendar',
+  '/app/student/library',
+  '/app/student/progress',
+  '/app/student/questions',
+  '/app/student/questions/new',
+  '/app/student/updates',
+  '/app/student/notifications',
+  '/app/student/support',
+  '/app/student/account',
+  '/app/student/privacy',
+  '/app/student/data-rights',
+]);
+const STUDENT_NOTIFICATION_PARAMETERIZED_ROUTE_PATTERNS = [
+  /^\/app\/student\/classes\/[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/,
+  /^\/app\/student\/class\/[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/,
+  /^\/app\/student\/library\/[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/,
+  /^\/app\/student\/questions\/[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/,
+  /^\/app\/student\/support\/[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/,
+];
 
 export function buildStudentNotification(event: StudentNotificationEvent): {
   notification: StudentNotificationRecord;
@@ -206,7 +227,7 @@ function renderEvent(event: StudentNotificationEvent): {
           `Your class is now ${approvedText(event.studentLocalTime, 'studentLocalTime')}.`,
           event.adminMessage,
         ),
-        action: action('open_schedule', 'Open schedule', '/app/student/schedule'),
+        action: action('open_schedule', 'Open calendar', '/app/student/calendar'),
       };
     case 'class_canceled':
       return {
@@ -215,7 +236,7 @@ function renderEvent(event: StudentNotificationEvent): {
           `The class scheduled for ${approvedText(event.studentLocalTime, 'studentLocalTime')} was canceled.`,
           event.adminMessage,
         ),
-        action: action('open_schedule', 'Open schedule', '/app/student/schedule'),
+        action: action('open_schedule', 'Open calendar', '/app/student/calendar'),
       };
     case 'recording_available':
       return {
@@ -346,17 +367,20 @@ function action(
 }
 
 function approvedInternalRoute(route: string) {
-  if (
-    !/^\/app\/student(?:\/[A-Za-z0-9_-]+)*$/.test(route) ||
-    route.includes('..') ||
-    route.includes('//')
-  ) {
+  if (!isApprovedStudentNotificationRoute(route)) {
     throw new StudentNotificationError(
       'invalid_internal_route',
       'Notification actions must use an approved internal Student route.',
     );
   }
   return route;
+}
+
+export function isApprovedStudentNotificationRoute(route: string) {
+  return (
+    STUDENT_NOTIFICATION_STATIC_ROUTES.has(route) ||
+    STUDENT_NOTIFICATION_PARAMETERIZED_ROUTE_PATTERNS.some((pattern) => pattern.test(route))
+  );
 }
 
 function safeSegment(value: string) {

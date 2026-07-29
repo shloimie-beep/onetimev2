@@ -2,6 +2,7 @@ export { STUDENT_NOTIFICATION_ERROR_CODES, StudentNotificationError } from './er
 export {
   buildStudentNotification,
   canOpenStudentNotificationAction,
+  isApprovedStudentNotificationRoute,
   projectStudentNotification,
   sourceFamilyForCategory,
   shouldPlayForegroundNotificationSound,

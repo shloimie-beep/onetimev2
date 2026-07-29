@@ -9,6 +9,7 @@ import {
   StudentNotificationCenter,
   consumeForegroundNotificationCue,
   formatStudentNotificationTimestamp,
+  handleStudentNotificationTabKey,
 } from './StudentNotificationCenter.tsx';
 
 function notification(
@@ -189,5 +190,42 @@ describe('StudentNotificationCenter', () => {
     expect(formatStudentNotificationTimestamp('invalid', 'Asia/Jerusalem')).toBe(
       'Time unavailable',
     );
+  });
+
+  it('moves tab selection and DOM focus with Arrow, Home, and End keys', () => {
+    const preventDefault = vi.fn();
+    const selectFilter = vi.fn();
+    const focus = {
+      unread: vi.fn(),
+      read: vi.fn(),
+      all: vi.fn(),
+    };
+    const run = (key: string, currentFilter: 'unread' | 'read' | 'all') =>
+      handleStudentNotificationTabKey({
+        key,
+        currentFilter,
+        preventDefault,
+        selectFilter,
+        focusFilter: (filter) => focus[filter](),
+      });
+
+    expect(run('ArrowRight', 'unread')).toBe(true);
+    expect(selectFilter).toHaveBeenLastCalledWith('read');
+    expect(focus.read).toHaveBeenCalledTimes(1);
+    expect(run('ArrowRight', 'all')).toBe(true);
+    expect(selectFilter).toHaveBeenLastCalledWith('unread');
+    expect(focus.unread).toHaveBeenCalledTimes(1);
+    expect(run('ArrowLeft', 'unread')).toBe(true);
+    expect(selectFilter).toHaveBeenLastCalledWith('all');
+    expect(focus.all).toHaveBeenCalledTimes(1);
+    expect(run('Home', 'all')).toBe(true);
+    expect(selectFilter).toHaveBeenLastCalledWith('unread');
+    expect(focus.unread).toHaveBeenCalledTimes(2);
+    expect(run('End', 'unread')).toBe(true);
+    expect(selectFilter).toHaveBeenLastCalledWith('all');
+    expect(focus.all).toHaveBeenCalledTimes(2);
+    expect(run('Tab', 'read')).toBe(false);
+    expect(preventDefault).toHaveBeenCalledTimes(5);
+    expect(selectFilter).toHaveBeenCalledTimes(5);
   });
 });

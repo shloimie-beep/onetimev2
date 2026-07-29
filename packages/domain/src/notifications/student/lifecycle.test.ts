@@ -8,6 +8,7 @@ import { StudentNotificationError } from './errors.ts';
 import {
   buildStudentNotification,
   canOpenStudentNotificationAction,
+  isApprovedStudentNotificationRoute,
   projectStudentNotification,
   shouldPlayForegroundNotificationSound,
   supersedeStudentNotification,
@@ -108,7 +109,7 @@ describe('P23 Student notification lifecycle', () => {
         createdAt: '2026-08-01T14:00:00.000Z',
         approvedTitle: 'Schedule note',
         approvedShortBody: 'Review the updated week.',
-        approvedInternalRoute: '/app/student/schedule',
+        approvedInternalRoute: '/app/student/calendar',
         configuredExpiresAt: '2026-08-08T14:00:00.000Z',
       },
     ];
@@ -132,9 +133,54 @@ describe('P23 Student notification lifecycle', () => {
       },
     });
     expect(rendered[4]?.body).toBe('Status: Answered.');
+    expect(rendered[1]?.action).toMatchObject({
+      label: 'Open calendar',
+      route: '/app/student/calendar',
+    });
+    expect(rendered[2]?.action).toMatchObject({
+      label: 'Open calendar',
+      route: '/app/student/calendar',
+    });
     expect(rendered.every((notification) => !notification.action?.route.includes('://'))).toBe(
       true,
     );
+  });
+
+  it('admits only exact canonical static and parameterized Student routes', () => {
+    const allowed = [
+      '/app/student',
+      '/app/student/calendar',
+      '/app/student/library',
+      '/app/student/progress',
+      '/app/student/questions',
+      '/app/student/questions/new',
+      '/app/student/updates',
+      '/app/student/notifications',
+      '/app/student/support',
+      '/app/student/account',
+      '/app/student/privacy',
+      '/app/student/data-rights',
+      '/app/student/classes/occurrence_one',
+      '/app/student/class/occurrence_one',
+      '/app/student/library/content_one',
+      '/app/student/questions/question_one',
+      '/app/student/support/ticket_one',
+    ];
+    const rejected = [
+      '/app/student/schedule',
+      '/app/student/anything',
+      '/app/student/library/content_one/extra',
+      '/app/student/classes',
+      '/app/student/support/',
+      '/app/student/calendar?month=8',
+      '/app/student/notifications#new',
+      '/app/student/questions/../support',
+      '/app/student//calendar',
+      'https://outside.invalid/app/student/calendar',
+    ];
+
+    expect(allowed.every(isApprovedStudentNotificationRoute)).toBe(true);
+    expect(rejected.every((route) => !isApprovedStudentNotificationRoute(route))).toBe(true);
   });
 
   it('uses the exact source-version dedupe tuple and stable notification identity', () => {
