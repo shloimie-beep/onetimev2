@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-c7b16a63
-claim_time: '2026-07-29T03:20:30Z'
-claim_id: c7b16a63-9def-4636-9af5-9bcf2807166c
-lease_expires_at: '2026-07-29T03:32:00Z'
-last_heartbeat_at: '2026-07-29T03:32:00Z'
-controller_authorization_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+claimed_by: codex-c00-orchestrator-603c3ea1
+claim_time: '2026-07-29T03:38:38Z'
+claim_id: 603c3ea1-8521-43cd-bc76-b0cffddd7fac
+lease_expires_at: '2026-07-29T03:43:00Z'
+last_heartbeat_at: '2026-07-29T03:43:00Z'
+controller_authorization_sha: bd4519976ba6b354cb7c4a087b4d144cc5ed59ab
 ready_entry_payload_digest: null
-state_based_on_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+state_based_on_head_sha: bd4519976ba6b354cb7c4a087b4d144cc5ed59ab
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -208,8 +208,10 @@ completed_steps:
 - assigned P33 configuration, deployment, and registration steward requests to I36 without applying any request
 - queued exact P33 interface merge 0798f93b from target f1cecb53 and authorized only I36 atomic claim d824f937
 - authorized dependency-valid P12 contract and P22 implementation new-branch atomic claims from exact post-P10 integration head f1cecb53 under disjoint writer leases and zero effect authority
+- independently verified I36 P33 claim 76ab4719, P12 claim bd0c8122, and P22 claim 4acf752d, each with sole parent f1cecb53, exactly three task-local runtime paths, containing authorization ab393d7e, acquisition 3c4130ae, exact claim/lease/ready bindings, clean remote state, and zero effects
+- consumed all three ready entries, rebound only P33 interface merge 0798f93b to exact target 76ab4719 with canonical digest b4a71eb8, and authorized the bounded P33 merge plus P12/P22 implementations
 remaining_steps: []
-next_action: I36 publishes only atomic claim d824f937 for queued P33 interface merge 0798f93b from target f1cecb53; P12 and P22 publish only new-branch atomic claims 776c6b8b and eba236e0 from f1cecb53; all three stop for C00 reconciliation before product or merge work.
+next_action: I36 merges only queued P33 source 295c125e into reconciled target 76ab4719 and publishes a release checkpoint; P12 implements only the Parent household contract lane from bd0c8122; P22 implements only learning engagement from 4acf752d; all external effects remain unauthorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -217,12 +219,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+  current_control_parent_sha: bd4519976ba6b354cb7c4a087b4d144cc5ed59ab
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: c7b16a63-9def-4636-9af5-9bcf2807166c
-      observed_head: 3c4130ae4d015471ce21e7d70a39d98dde113318
+      claim_id: 603c3ea1-8521-43cd-bc76-b0cffddd7fac
+      observed_head: bd4519976ba6b354cb7c4a087b4d144cc5ed59ab
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -234,10 +236,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: d824f937-9896-4110-8b0b-567929ede386
-      observed_head: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+      observed_head: 76ab4719aba2016c1fb93a9301b0db56f062b3d8
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T04:20:30Z'
-      scheduling_state: P33_v3_interface_atomic_claim_authorized_not_reconciled
+      scheduling_state: P33_v3_interface_claim_reconciled_merge_authorized
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -395,17 +397,17 @@ orchestration:
     P12:
       branch: codex/v21-p12-parent-household
       claim_id: 776c6b8b-8729-49ea-a9ca-f505fbaf320c
-      observed_head: null
+      observed_head: bd0c8122dcaccc077b9c4ef51983f9ed1321d467
       authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
       lease_expires_at: '2026-07-29T04:20:30Z'
-      scheduling_state: contract_atomic_claim_authorized_not_reconciled
+      scheduling_state: contract_claim_reconciled_implementation_authorized
     P22:
       branch: codex/v21-p22-learning-engagement
       claim_id: eba236e0-164c-4b7d-a71e-20646f4ec5ab
-      observed_head: null
+      observed_head: 4acf752ddf6e173b3a41714e00bce28dab491dd0
       authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
       lease_expires_at: '2026-07-29T04:20:30Z'
-      scheduling_state: implementation_atomic_claim_authorized_not_reconciled
+      scheduling_state: implementation_claim_reconciled_implementation_authorized
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: null
@@ -582,11 +584,11 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 45ac837cc72a50bfa6de0fd5a47d097d5ae18ff65bdc9aa24ed1626c34e26289
-    control_lease: 5993e4f2a7c3497322776792e6e8b2e30a5993ffcfd1984e3d89769904b1b8b7
-    task_registry: c7aee7b351bb656aa4ce6455f7f6ff58410808bb4c63f4e962b8a6267fd1e160
-    ready_queue: e0d0feea992c4f9952c270aae600e0b4dfad66d3cd1536dbbb42490bef9c52ab
-    merge_queue: 18c0dd36dbf6aedb4769fd65e41ba1eda33b1d79edd2d0d545d98a799423c3f6
+    control_state: 4ace4bcdac099e15725610927cc58e5f842826e44113c11c13f91e39202213ae
+    control_lease: a52592804bcd5de929ddd496bab9a1dd2d725e501c760dd75ef819860c217da4
+    task_registry: d8936715beeae7ff733a332d30451efef49f4a62665baf6c56ed18240684ecc6
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    merge_queue: e0223234d53485ba414893718f2366aa8926521660e5a26805045d54b723e73a
     steward_queue: 0114ee435005854047e6c28da262176ecc334bd1b6302f478cba04bb11263d74
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
@@ -637,6 +639,8 @@ verification:
   - P10 merge 522fe505 exact parents, source ancestry, fourteen-path scope, final release f1cecb53, 20 focused tests, typecheck, released lease, and zero effects: passed
   - P33 final 295c125e linear ancestry, twelve-path correction and twenty-five-path full source scope, seven export hashes, contract a0aa9fd8, state-handoff 65d5bdac, 68 focused tests, typecheck, direct probes, released lease, clean worktree, and zero effects: passed
   - canonical I36, P12, and P22 ready-entry digests plus P33 interface merge-item digest against acquisition 3c4130ae: passed
+  - I36 76ab4719, P12 bd0c8122, and P22 4acf752d atomic claim ancestry, exact three-file scopes, authorization/acquisition/claim/lease/ready bindings, clean remote state, and zero effects: passed
+  - rebound P33 interface merge 0798f93b canonical digest b4a71eb8 against exact claim target 76ab4719: passed
   - autonomous addendum package binding and remote/native-agent reconciliation: passed
   - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   - F01 interface checkpoint schema, export hashes, canonical digest, merge base, and allowed-path admission: passed

@@ -457,3 +457,26 @@ For P22, create branch `codex/v21-p22-learning-engagement` from exact
 `93a7fddb-d025-475d-8d09-f9c9e7661515` and ready digest
 `983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471`.
 Change only the three P22 runtime files and stop before product work.
+
+I36 claim `76ab4719aba2016c1fb93a9301b0db56f062b3d8` is reconciled.
+Merge only queued P33 source
+`295c125ec6ed3ea41382e5ea44db6f6be1b98933` into that exact target under
+merge id `0798f93b-9b95-4fbb-aebc-cd98a6414f66` and rebound digest
+`b4a71eb8ac8f8f2460abf2ec4405abb251f1efce3f002bf29422d6c00af804c5`.
+Require the source to become an ancestor and the exact twenty-five allowed
+paths, rerun the exact four-file P33 suite with 68 tests plus typecheck, then
+publish an I36 metadata-only release checkpoint, release lease `7ceb45bf`,
+keep effects at zero, and stop for C00 reconciliation.
+
+P12 claim `bd0c8122dcaccc077b9c4ef51983f9ed1321d467` is reconciled.
+Implement only the locked P12 Parent household and Student-seat scope, publish
+the required exact interface checkpoint before downstream P13, keep every
+change inside P12-owned paths plus structured steward requests, run focused
+tests and typecheck, release lease `992f62c1`, publish ready_for_review, and
+keep effects at zero.
+
+P22 claim `4acf752ddf6e173b3a41714e00bce28dab491dd0` is reconciled.
+Implement only the locked P22 learning-engagement scope, keep every change
+inside P22-owned paths plus structured steward requests, run focused tests and
+typecheck, release lease `93a7fddb`, publish ready_for_review, and keep
+effects at zero.

@@ -754,3 +754,23 @@ lease `992f62c1`, and ready digest `9c85fefc`. P22 uses branch
 `codex/v21-p22-learning-engagement`, claim `eba236e0`, LEARNING_ENGAGEMENT
 lease `93a7fddb`, and ready digest `983929b1`. Both have zero effect
 authority and must stop before product work for C00 reconciliation.
+
+The three atomic claims are independently reconciled under acquisition
+`bd451997`: I36 `76ab4719`, P12 `bd0c8122`, and P22 `4acf752d` each have
+sole parent `f1cecb53`, exactly three task-local runtime paths, containing
+authorization `ab393d7e`, their exact claim/lease/ready bindings, clean
+remote state, and zero effects. All three ready entries are consumed.
+
+Only P33 interface merge `0798f93b-9b95-4fbb-aebc-cd98a6414f66` is
+rebound to target `76ab4719`, with canonical digest `b4a71eb8`. I36 may
+merge only source `295c125e`, require its ancestry and exact twenty-five
+paths, rerun the 68 focused tests and typecheck, publish a metadata-only
+release checkpoint, release the lease, keep effects at zero, and stop.
+
+P12 may now implement only its locked Parent household contract/experience
+scope from claim `bd0c8122`, prioritizing the required interface checkpoint
+that unlocks P13. P22 may implement only its locked learning-engagement scope
+from claim `4acf752d`. Both must remain within their owned paths plus
+structured steward requests, may not edit migrations or central composers,
+must publish exact verification and runtime memory, release their leases, and
+must keep all external-effect counters at zero.
