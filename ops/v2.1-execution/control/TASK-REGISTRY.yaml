@@ -87,7 +87,7 @@ tasks:
     transitioned_at: '2026-07-29T13:48:24Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F01/status_proof
 - task_id: F02
-  status: ready
+  status: claimed
   active_phase: migration_lease_A_checksum_metadata_correction
   branch: codex/v21-f02-schema-state-migrations
   phase_branches:
@@ -104,21 +104,22 @@ tasks:
     interface_ready: 147934114cb267f86943b1fcff1bbcd6b60cdfaf
     implementation_hardening: 191dac288ea1721bdc0252bd012060ca974d2242
     migration_lease_A_2235_2238: e8dcbd750ce41424102b4d2ead4b786ff3c9c764
+    migration_lease_A_checksum_metadata_correction: 1ab8243fc4380104ae2431783f31792197f9ed77
     verification: e4673ff1c2e621e26ac93034be245b280c4da4fa
   authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-  last_known_remote_head: e8dcbd750ce41424102b4d2ead4b786ff3c9c764
+  last_known_remote_head: 1ab8243fc4380104ae2431783f31792197f9ed77
   active_claim_id: 937b224d-ee11-4936-82d7-719f177d31da
-  active_writer_id: null
+  active_writer_id: codex-f02-lease-a-correction-937b224d
   lease_expires_at: '2026-07-29T20:23:53Z'
-  last_heartbeat_at: '2026-07-29T19:08:53Z'
-  controller_authorization_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
+  last_heartbeat_at: '2026-07-29T19:23:30Z'
+  controller_authorization_sha: 174bc6656fbc2a1c0526e7bdec0e361dfd1e7c35
   ready_entry_payload_digest: fb3f35593548c28c591dbeef4eb5c4997f9858abc1734668cb98ad867d17ae42
   interface_checkpoint_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
   implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
+    state: claimed
+    producer_task_id: F02
+    producer_head_sha: 1ab8243fc4380104ae2431783f31792197f9ed77
     canonical_candidate_digest: null
     interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
     integration_or_evidence_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
@@ -132,8 +133,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
-    transitioned_at: '2026-07-29T19:12:42Z'
+    state_based_on_control_head_sha: 174bc6656fbc2a1c0526e7bdec0e361dfd1e7c35
+    transitioned_at: '2026-07-29T19:25:11Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F02/status_proof
 - task_id: F03
   status: ready_for_review
