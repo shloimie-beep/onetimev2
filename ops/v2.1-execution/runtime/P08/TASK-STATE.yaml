@@ -60,13 +60,14 @@ interface_checkpoint:
     - P09
   status: interface_ready
   implementation_head_sha: 0c386529ea7e9487a457e51cc5be9500a6c29b52
-  contract_digest: d20fe1e9303aa3bab879e35294de4d6a38e5c80303f62934420a3e985b6177f4
+  contract_digest: f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c
 completed_steps:
   - Fetched corrected control authorization eb3b0e1deecbffe05177a07df0d8e52d648d109c and verified sole parent de271a6cab5fc74e8c77b5defc302094fe9a22fc.
   - Verified the P08 create_new_branch entry, exact authorized start, task/context/package digests, four integrated dependency contracts, unexpired FAMILY_SIGNUP lease, and zero effect locks.
   - Created branch codex/v21-p08-family-signup from exact authorized start 49431959f58f284bdc13ca931acf09f980fc483a.
   - Seeded this atomic claim checkpoint in the three P08 runtime files only.
-  - Published the stable family-signup contract at 0c386529ea7e9487a457e51cc5be9500a6c29b52 with exact interface digest d20fe1e9303aa3bab879e35294de4d6a38e5c80303f62934420a3e985b6177f4.
+  - Published the stable family-signup contract at 0c386529ea7e9487a457e51cc5be9500a6c29b52.
+  - Corrected the interface metadata to the independently reproduced repository-canonical digest f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c without changing the export artifact.
 remaining_steps:
   - Notify C00/I36 of the exact pushed interface checkpoint so P09 can be queued after integration.
   - Implement the domain, server, and client Family signup behavior and complete task-owned verification.

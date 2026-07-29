@@ -35,7 +35,7 @@ provider, deployment, or external-effect change is authorized or present.
 The claim was reconciled by control
 `d8639ce20ce92a0f49ce8d69b57b09b355d09246`. The stable contract implementation
 is `0c386529ea7e9487a457e51cc5be9500a6c29b52`; its exact interface digest is
-`d20fe1e9303aa3bab879e35294de4d6a38e5c80303f62934420a3e985b6177f4`.
+`f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c`.
 
 Push and report the interface checkpoint so C00/I36 can queue P09 integration,
 then continue the authorized P08 domain, server, and client implementation.
