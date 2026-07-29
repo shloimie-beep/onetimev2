@@ -17,8 +17,11 @@ import {
   V21StatePanel,
 } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
 import {
+  bindAdminCredentialSnapshot,
   captureAdminPrivateCompletion,
+  isAdminCredentialSnapshotCurrent,
   isAdminPrivateCompletionCurrent,
+  type AdminCredentialBoundSnapshot,
 } from '../adminPrivateCompletion.ts';
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -100,9 +103,9 @@ export function clearAdminPrivateSearchState(ports: {
 }
 
 export function AdminGlobalSearch(props: {
-  initialPage?: AdminSearchPage | null;
-  initialRequest?: AdminSearchRequest | null;
-  recentQueries?: readonly string[];
+  initialPage?: AdminCredentialBoundSnapshot<AdminSearchPage | null>;
+  initialRequest?: AdminCredentialBoundSnapshot<AdminSearchRequest | null>;
+  recentQueries?: AdminCredentialBoundSnapshot<readonly string[]>;
   onSearch: (request: AdminSearchRequest) => Promise<AdminSearchPage>;
   authorization: { state: 'admin' | 'signed_out' | 'revoked'; credentialVersion: number };
   onResolveOpen: (
@@ -113,15 +116,24 @@ export function AdminGlobalSearch(props: {
   onNavigate: (href: string) => void;
 }) {
   const initiallyAuthorized = props.authorization.state === 'admin';
+  const retainedInputsCurrent =
+    initiallyAuthorized &&
+    [props.initialPage, props.initialRequest, props.recentQueries].every(
+      (snapshot) =>
+        snapshot === undefined ||
+        snapshot.credentialVersion === props.authorization.credentialVersion,
+    );
   const [query, setQuery] = useState('');
   const [selectedKinds, setSelectedKinds] =
     useState<readonly AdminSearchKind[]>(ADMIN_SEARCH_KINDS);
-  const [page, setPage] = useState<AdminSearchPage | null>(
-    initiallyAuthorized ? (props.initialPage ?? null) : null,
-  );
-  const [lastRequest, setLastRequest] = useState<AdminSearchRequest | null>(
-    initiallyAuthorized ? (props.initialRequest ?? null) : null,
-  );
+  const [pageSnapshot, setPageSnapshot] =
+    useState<AdminCredentialBoundSnapshot<AdminSearchPage | null> | null>(
+      retainedInputsCurrent && props.initialPage ? props.initialPage : null,
+    );
+  const [lastRequestSnapshot, setLastRequestSnapshot] =
+    useState<AdminCredentialBoundSnapshot<AdminSearchRequest | null> | null>(
+      retainedInputsCurrent && props.initialRequest ? props.initialRequest : null,
+    );
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [activeIndex, setActiveIndex] = useState(0);
   const [observedCredentialVersion, setObservedCredentialVersion] = useState(
@@ -138,6 +150,31 @@ export function AdminGlobalSearch(props: {
     completionGenerationRef.current += 1;
   }
   authorizationRef.current = props.authorization;
+  const retainedPropsCurrent = [props.initialPage, props.initialRequest, props.recentQueries].every(
+    (snapshot) =>
+      snapshot === undefined ||
+      isAdminCredentialSnapshotCurrent<unknown>(snapshot, props.authorization),
+  );
+  const privateStateCurrent =
+    props.authorization.state === 'admin' &&
+    observedCredentialVersion === props.authorization.credentialVersion &&
+    retainedPropsCurrent;
+  const page =
+    privateStateCurrent && isAdminCredentialSnapshotCurrent(pageSnapshot, props.authorization)
+      ? pageSnapshot.value
+      : null;
+  const lastRequest =
+    privateStateCurrent &&
+    isAdminCredentialSnapshotCurrent(lastRequestSnapshot, props.authorization)
+      ? lastRequestSnapshot.value
+      : null;
+  const visibleQuery = privateStateCurrent ? query : '';
+  const visibleState = privateStateCurrent ? state : 'idle';
+  const recentQueries =
+    privateStateCurrent &&
+    isAdminCredentialSnapshotCurrent(props.recentQueries, props.authorization)
+      ? props.recentQueries.value
+      : [];
   const grouped = useMemo(() => groupResults(page?.results ?? []), [page]);
   const navigation = [
     ...ADMIN_CANONICAL_PRIMARY_NAVIGATION.map((item) => ({
@@ -151,8 +188,14 @@ export function AdminGlobalSearch(props: {
     if (advanceGeneration) completionGenerationRef.current += 1;
     clearAdminPrivateSearchState({
       setQuery,
-      setPage,
-      setLastRequest,
+      setPage: (value) =>
+        setPageSnapshot(
+          bindAdminCredentialSnapshot(value, authorizationRef.current.credentialVersion),
+        ),
+      setLastRequest: (value) =>
+        setLastRequestSnapshot(
+          bindAdminCredentialSnapshot(value, authorizationRef.current.credentialVersion),
+        ),
       setActiveIndex,
       setState,
       clearRecentQueries: props.onClearRecentQueries,
@@ -173,6 +216,10 @@ export function AdminGlobalSearch(props: {
   }, []);
 
   const runSearch = async (cursor: string | null = null) => {
+    if (!privateStateCurrent) {
+      clearPrivateState();
+      return;
+    }
     const completion = captureAdminPrivateCompletion(
       ++completionGenerationRef.current,
       authorizationRef.current,
@@ -186,7 +233,7 @@ export function AdminGlobalSearch(props: {
       const request =
         cursor && lastRequest
           ? { ...lastRequest, cursor }
-          : buildAdminSearchRequest(query, selectedKinds, cursor);
+          : buildAdminSearchRequest(visibleQuery, selectedKinds, cursor);
       const result = await props.onSearch(request);
       if (
         !isAdminPrivateCompletionCurrent(
@@ -197,8 +244,10 @@ export function AdminGlobalSearch(props: {
       ) {
         return;
       }
-      setPage(result);
-      setLastRequest({ ...request, cursor: null });
+      setPageSnapshot(bindAdminCredentialSnapshot(result, completion.credentialVersion));
+      setLastRequestSnapshot(
+        bindAdminCredentialSnapshot({ ...request, cursor: null }, completion.credentialVersion),
+      );
       setActiveIndex(0);
       setState('idle');
     } catch {
@@ -211,7 +260,7 @@ export function AdminGlobalSearch(props: {
       ) {
         return;
       }
-      setPage(null);
+      setPageSnapshot(bindAdminCredentialSnapshot(null, completion.credentialVersion));
       setState('error');
     }
   };
@@ -287,7 +336,7 @@ export function AdminGlobalSearch(props: {
             aria-activedescendant={
               page?.results[activeIndex] ? resultOptionId(page.results[activeIndex]) : undefined
             }
-            value={query}
+            value={visibleQuery}
             minLength={2}
             maxLength={128}
             autoComplete="off"
@@ -302,7 +351,7 @@ export function AdminGlobalSearch(props: {
               } else if (
                 event.key === 'Enter' &&
                 page?.results[activeIndex] &&
-                query.trim() === lastRequest?.query
+                visibleQuery.trim() === lastRequest?.query
               ) {
                 event.preventDefault();
                 void resolveAndOpen(page.results[activeIndex]);
@@ -329,16 +378,19 @@ export function AdminGlobalSearch(props: {
             </label>
           ))}
         </fieldset>
-        <button type="submit" disabled={query.trim().length < 2 || selectedKinds.length === 0}>
+        <button
+          type="submit"
+          disabled={visibleQuery.trim().length < 2 || selectedKinds.length === 0}
+        >
           Search
         </button>
       </form>
 
-      {(props.recentQueries?.length ?? 0) > 0 ? (
+      {recentQueries.length > 0 ? (
         <section aria-labelledby="recent-search-heading">
           <h2 id="recent-search-heading">Recent searches on this device</h2>
           <ul>
-            {props.recentQueries?.map((value) => (
+            {recentQueries.map((value) => (
               <li key={value}>{value}</li>
             ))}
           </ul>
@@ -348,11 +400,11 @@ export function AdminGlobalSearch(props: {
         </section>
       ) : null}
 
-      {state === 'loading' ? (
+      {visibleState === 'loading' ? (
         <V21StatePanel kind="loading" title="Searching authorized records">
           <p>Results will appear after server-side authorization.</p>
         </V21StatePanel>
-      ) : state === 'error' ? (
+      ) : visibleState === 'error' ? (
         <V21StatePanel kind="error" title="Search unavailable">
           <p>No fallback or cached private result is shown. Try again.</p>
         </V21StatePanel>

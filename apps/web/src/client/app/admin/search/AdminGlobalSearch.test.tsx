@@ -15,7 +15,9 @@ import {
   shouldClearAdminPrivateState,
 } from './AdminGlobalSearch.tsx';
 import {
+  bindAdminCredentialSnapshot,
   captureAdminPrivateCompletion,
+  isAdminCredentialSnapshotCurrent,
   isAdminPrivateCompletionCurrent,
   type AdminClientAuthorization,
 } from '../adminPrivateCompletion.ts';
@@ -45,12 +47,16 @@ const page: AdminSearchPage = {
   nextCursor: 'MjA',
 };
 
+function retained<T>(value: T, credentialVersion = 7) {
+  return bindAdminCredentialSnapshot(value, credentialVersion);
+}
+
 describe('P11 private Admin global search', () => {
   it('groups safe authorized results and supports recent-query clearing', () => {
     const html = renderToStaticMarkup(
       <AdminGlobalSearch
-        initialPage={page}
-        recentQueries={['Student One']}
+        initialPage={retained(page)}
+        recentQueries={retained(['Student One'])}
         authorization={{ state: 'admin', credentialVersion: 7 }}
         onSearch={() => Promise.resolve(page)}
         onResolveOpen={() =>
@@ -150,8 +156,8 @@ describe('P11 private Admin global search', () => {
     const groupedPage: AdminSearchPage = { ...page, results: [result, ticket] };
     const html = renderToStaticMarkup(
       <AdminGlobalSearch
-        initialPage={groupedPage}
-        recentQueries={[]}
+        initialPage={retained(groupedPage)}
+        recentQueries={retained([])}
         authorization={{ state: 'admin', credentialVersion: 7 }}
         onSearch={() => Promise.resolve(groupedPage)}
         onResolveOpen={() =>
@@ -171,9 +177,9 @@ describe('P11 private Admin global search', () => {
   it('renders no private page, recent query, or request state when initially revoked', () => {
     const html = renderToStaticMarkup(
       <AdminGlobalSearch
-        initialPage={page}
-        initialRequest={buildAdminSearchRequest('Student One', ['student'])}
-        recentQueries={['Student One']}
+        initialPage={retained(page)}
+        initialRequest={retained(buildAdminSearchRequest('Student One', ['student']))}
+        recentQueries={retained(['Student One'])}
         authorization={{ state: 'revoked', credentialVersion: 8 }}
         onSearch={() => Promise.resolve(page)}
         onResolveOpen={() =>
@@ -186,7 +192,7 @@ describe('P11 private Admin global search', () => {
     expect(html).toContain('Authorization no longer permits private Admin search');
     expect(html).not.toContain('Student One');
     expect(html).not.toContain('role="combobox"');
-    expect(html).not.toContain('admin-search-results');
+    expect(html).not.toContain('id="admin-search-results"');
   });
 
   it('drops stale search and resolver promises after generation or authorization changes', async () => {
@@ -220,6 +226,70 @@ describe('P11 private Admin global search', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  it('fails closed on the first render for a rotated Admin credential', () => {
+    const html = renderToStaticMarkup(
+      <AdminGlobalSearch
+        initialPage={retained(page, 7)}
+        initialRequest={retained(buildAdminSearchRequest('Student One', ['student']), 7)}
+        recentQueries={retained(['Student One'], 7)}
+        authorization={{ state: 'admin', credentialVersion: 8 }}
+        onSearch={() => Promise.resolve(page)}
+        onResolveOpen={() =>
+          Promise.resolve({ state: 'open', href: '/app/students/student-one', cache: 'no-store' })
+        }
+        onClearRecentQueries={() => undefined}
+        onNavigate={() => undefined}
+      />,
+    );
+    expect(html).toContain('role="combobox"');
+    expect(html).not.toContain('Student One');
+    expect(html).not.toContain('Recent searches on this device');
+    expect(html).not.toContain('id="admin-search-results"');
+    expect(html).not.toContain('aria-activedescendant');
+  });
+
+  it('invalidates every retained snapshot on a same-state credential-version change', () => {
+    const authorization7: AdminClientAuthorization = {
+      state: 'admin',
+      credentialVersion: 7,
+    };
+    const authorization8: AdminClientAuthorization = {
+      state: 'admin',
+      credentialVersion: 8,
+    };
+    const pageSnapshot = retained(page, 7);
+    const requestSnapshot = retained(buildAdminSearchRequest('Student One', ['student']), 7);
+    const recentSnapshot = retained(['Student One'], 7);
+
+    expect(isAdminCredentialSnapshotCurrent(pageSnapshot, authorization7)).toBe(true);
+    expect(isAdminCredentialSnapshotCurrent(requestSnapshot, authorization7)).toBe(true);
+    expect(isAdminCredentialSnapshotCurrent(recentSnapshot, authorization7)).toBe(true);
+    expect(isAdminCredentialSnapshotCurrent(pageSnapshot, authorization8)).toBe(false);
+    expect(isAdminCredentialSnapshotCurrent(requestSnapshot, authorization8)).toBe(false);
+    expect(isAdminCredentialSnapshotCurrent(recentSnapshot, authorization8)).toBe(false);
+    expect(shouldClearAdminPrivateState(7, authorization8)).toBe(true);
+  });
+
+  it('fails all retained state closed when any snapshot has a stale credential binding', () => {
+    const html = renderToStaticMarkup(
+      <AdminGlobalSearch
+        initialPage={retained(page, 8)}
+        initialRequest={retained(buildAdminSearchRequest('Student One', ['student']), 7)}
+        recentQueries={retained(['Student One'], 8)}
+        authorization={{ state: 'admin', credentialVersion: 8 }}
+        onSearch={() => Promise.resolve(page)}
+        onResolveOpen={() =>
+          Promise.resolve({ state: 'open', href: '/app/students/student-one', cache: 'no-store' })
+        }
+        onClearRecentQueries={() => undefined}
+        onNavigate={() => undefined}
+      />,
+    );
+    expect(html).not.toContain('Student One');
+    expect(html).not.toContain('Recent searches on this device');
+    expect(html).not.toContain('id="admin-search-results"');
+  });
+
   it('uses injective DOM-safe option IDs for dotted and colon target IDs', () => {
     const dotted = { ...result, targetId: 'student.one' };
     const colon = { ...result, targetId: 'student:one' };
@@ -231,8 +301,8 @@ describe('P11 private Admin global search', () => {
 
     const html = renderToStaticMarkup(
       <AdminGlobalSearch
-        initialPage={{ ...page, results: [dotted, colon] }}
-        recentQueries={[]}
+        initialPage={retained({ ...page, results: [dotted, colon] })}
+        recentQueries={retained([])}
         authorization={{ state: 'admin', credentialVersion: 7 }}
         onSearch={() => Promise.resolve(page)}
         onResolveOpen={() =>

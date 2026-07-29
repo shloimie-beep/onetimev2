@@ -8,6 +8,30 @@ export type AdminPrivateCompletion = {
   credentialVersion: number;
 };
 
+export type AdminCredentialBoundSnapshot<T> = Readonly<{
+  credentialVersion: number;
+  value: T;
+}>;
+
+export function bindAdminCredentialSnapshot<T>(
+  value: T,
+  credentialVersion: number,
+): AdminCredentialBoundSnapshot<T> {
+  return { credentialVersion, value };
+}
+
+export function isAdminCredentialSnapshotCurrent<T>(
+  snapshot: AdminCredentialBoundSnapshot<T> | null | undefined,
+  authorization: AdminClientAuthorization,
+): snapshot is AdminCredentialBoundSnapshot<T> {
+  return (
+    snapshot !== null &&
+    snapshot !== undefined &&
+    authorization.state === 'admin' &&
+    snapshot.credentialVersion === authorization.credentialVersion
+  );
+}
+
 export function captureAdminPrivateCompletion(
   generation: number,
   authorization: AdminClientAuthorization,
