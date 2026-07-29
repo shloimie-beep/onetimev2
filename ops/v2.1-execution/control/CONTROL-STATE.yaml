@@ -18,9 +18,9 @@ active_writer_limit: 8
 controller_authorization_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
 next_action: >-
   Wave B part 1 is independently audited and released at integration head 255d35b2; the F06, F07, and P16 merge
-  queue is cleared. I36 may atomically claim only P35 from that exact integration head under claim 5f6577ac and
-  RELEASE_INTEGRATOR lease 11eac672, recording the exact P35 merge item and then stopping for C00 reconciliation
-  before any source merge. P35's exact source head, fixed base, 20-path tail, digests, and F01 ancestry are verified.
+  queue is cleared. I36 may atomically claim only the queued P35 item from that exact integration head under claim
+  5f6577ac and RELEASE_INTEGRATOR lease 11eac672, then stop for C00 reconciliation before any source merge. P35's
+  exact source head, fixed base, 20-path tail, queue digest, and F01 ancestry are verified.
   Its three steward requests remain assigned and unapplied. No provider inspection, Telegram action, steward
   application, external effect, or source merge is authorized before claim reconciliation.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

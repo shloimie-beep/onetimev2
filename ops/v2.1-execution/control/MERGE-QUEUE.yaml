@@ -1,8 +1,61 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 6754c434-bf7a-44ad-97e2-ea367ff38e1d
+  kind: full
+  task_id: P35
+  source_branch: codex/v21-p35-domain-transition-archive
+  source_head_sha: a85aecc22b013d583589a67cf0cc9dfad6745aba
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 255d35b2fb5e7db20d166bcf2b7c1a7eeba8f33d
+  source_delta_base_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+  required_merge_base_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: a85aecc22b013d583589a67cf0cc9dfad6745aba
+  merge_after_heads:
+    F01: b5344992a43a735a9c66047fecd83f951651de27
+  allowed_paths:
+  - apps/web/src/client/public/domain-transition/index.ts
+  - apps/web/src/client/public/domain-transition/links.ts
+  - apps/web/src/server/features/domain-transition/ended-event.ts
+  - apps/web/src/server/features/domain-transition/index.ts
+  - apps/web/src/server/features/domain-transition/legacy-adult.ts
+  - apps/web/src/server/features/domain-transition/policy.ts
+  - apps/web/src/server/features/domain-transition/router.ts
+  - ops/archive/tisha-bav-template/README.md
+  - ops/archive/tisha-bav-template/manifest.yaml
+  - ops/archive/tisha-bav-template/template.yaml
+  - ops/runbooks/v2.1/domain-cutover/CUTOVER.md
+  - ops/runbooks/v2.1/domain-cutover/DOMAIN-MATRIX.yaml
+  - ops/runbooks/v2.1/domain-cutover/ROLLBACK.md
+  - ops/v2.1-execution/runtime/P35/HANDOFF.md
+  - ops/v2.1-execution/runtime/P35/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P35/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P35/steward-requests/P35-config-deploy-001.yaml
+  - ops/v2.1-execution/runtime/P35/steward-requests/P35-reregistration-integration-001.yaml
+  - ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
+  - scripts/v21-migration/verify-domain-transition.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 11eac672-8eda-4188-baed-82e0a2a9ef8b
+    holder_task_id: I36
+    holder_claim_id: 5f6577ac-9fcd-4558-8d8a-1318b5b002b5
+    state_based_on_control_head_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
+    lease_issued_at: '2026-07-29T14:23:14Z'
+    lease_expires_at: '2026-07-29T15:38:14Z'
+    phase_scope: P35_full_integration_atomic_claim_only
+  task_packet_digest: 533cdac53bcc53fe0abccdd67e1f168b57a6cfbdf63c81d71c611ecb4b29d71f
+  state_handoff_digest: e524a2756fecb4ab6816e972211d858a729872f349459b0863754f3a72d01475
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
+item_payload_digests:
+  6754c434-bf7a-44ad-97e2-ea367ff38e1d: 6c0c90143d90e79835a4e7c9b7464a3678084fb87d8a41e122c335ca32e12dd5
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
