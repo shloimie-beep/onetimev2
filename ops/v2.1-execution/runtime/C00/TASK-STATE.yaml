@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-4b849399
-claim_time: '2026-07-29T09:26:12Z'
-claim_id: 4b849399-79ee-4256-882b-5d5805479eae
-lease_expires_at: '2026-07-29T09:41:12Z'
-last_heartbeat_at: '2026-07-29T09:28:41Z'
-controller_authorization_sha: af433361f49dc4842835cf340c06f904ff2919b0
+claimed_by: codex-c00-orchestrator-565c6760
+claim_time: '2026-07-29T09:40:29Z'
+claim_id: 565c6760-c6f4-4dc5-9fae-0a463337f6bb
+lease_expires_at: '2026-07-29T09:55:29Z'
+last_heartbeat_at: '2026-07-29T09:44:01Z'
+controller_authorization_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
 ready_entry_payload_digest: null
-state_based_on_head_sha: af433361f49dc4842835cf340c06f904ff2919b0
+state_based_on_head_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -277,11 +277,13 @@ completed_steps:
 - rejected P23 superseding final 24ec3a4e after exact-source re-audit confirmed locked Open-schedule copy was changed and the raw NUL-delimited dedupe key cannot be persisted by PostgreSQL
 - authorized only a fresh three-runtime-file P23 copy/dedupe-persistence correction claim from exact rejected final 24ec3a4e under claim 096ffffc and STUDENT_NOTIFICATIONS lease 471de353
 - independently reconciled P23 copy/dedupe-persistence correction claim 102c75c2 as an exact three-runtime-file child of rejected final 24ec3a4e with zero effects
+- rejected P11 superseding final 899ef6a7 after exact-source re-audit confirmed revoked initial private render and unguarded in-flight completions, option-ID collisions for valid dotted/colon target IDs, and a Bearer-space redaction gap
+- authorized only a fresh three-runtime-file P11 authorization-race/ID/secret correction claim from exact rejected final 899ef6a7 under claim d76c097a and ADMIN_OPERATIONS_UI lease 84cd0230
 remaining_steps:
-- receive and independently re-audit the bounded P11 provider/privacy/accessibility correction
-- receive and independently re-audit the bounded P23 locked-copy/PostgreSQL-safe-dedupe correction
+- reconcile the exact P11 authorization-race/ID/secret correction claim, then authorize and independently re-audit only that bounded correction
+- complete the read-only exact-source re-audit of P23 superseding final 32f3a464
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P11 and P23 may implement only their confirmed residual corrections from reconciled claims ce87a6c2 and 102c75c2 under disjoint leases, publish superseding finals with exact probes and effects 0/0/0, then stop for independent re-audit. No provider or external effect is authorized.
+next_action: P11 may publish only its three-runtime-file correction claim from exact rejected final 899ef6a7 under ready digest aeea25dd, claim d76c097a, and lease 84cd0230, then stop for reconciliation. P23 remains under read-only audit. No product correction, provider action, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -289,12 +291,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: af433361f49dc4842835cf340c06f904ff2919b0
+  current_control_parent_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 4b849399-79ee-4256-882b-5d5805479eae
-      observed_head: af433361f49dc4842835cf340c06f904ff2919b0
+      claim_id: 565c6760-c6f4-4dc5-9fae-0a463337f6bb
+      observed_head: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -473,11 +475,11 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_44fd5363
     P11:
       branch: codex/v21-p11-admin-operations
-      claim_id: 6efc5db3-43b4-4dad-ae3f-59031adddbd5
-      observed_head: ce87a6c2808216214870d4b2343c82c0a36aaf36
+      claim_id: d76c097a-d2df-4e8c-ae99-659deba00c64
+      observed_head: 899ef6a7fad4f0946378721a0af7d7ed66c25c81
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      lease_expires_at: '2026-07-29T10:09:26Z'
-      scheduling_state: provider_privacy_accessibility_claim_reconciled_correction_authorized
+      lease_expires_at: '2026-07-29T10:40:29Z'
+      scheduling_state: atomic_authorization_race_id_secret_correction_claim_authorized
     P13:
       branch: codex/v21-p13-parent-summary
       claim_id: null
@@ -494,11 +496,11 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_44fd5363
     P23:
       branch: codex/v21-p23-student-notifications
-      claim_id: 096ffffc-1637-4602-a9a8-3084e03a50e1
-      observed_head: 102c75c257dda033750d38e95b84ab05b8781507
+      claim_id: null
+      observed_head: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      lease_expires_at: '2026-07-29T10:18:31Z'
-      scheduling_state: copy_dedupe_persistence_claim_reconciled_correction_authorized
+      lease_expires_at: null
+      scheduling_state: superseding_final_read_only_semantic_reaudit_in_progress
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: null
@@ -529,7 +531,7 @@ orchestration:
       scheduling_state: ready_for_review_full_integrated_at_cecc1c0d
   active_native_subagents:
   - f03_worker
-  - f05_worker
+  - i36_worker2
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -716,10 +718,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 272c99c6c1b6b731486b77d2395f7fb536e698b54c2e190b058bc9b49405c923
-    control_lease: c61bbea19127570717e866d16fad3ae4c359de648ed4cb89523a7afab0d41962
-    task_registry: 0ead58c73135387e7dd69f3d5c868748e89817f81a627c17bbdeb9f02d9ce776
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 046fda3d83b12855712f58869dabe49c0c99de02cd3ee41480e95d6a4163401e
+    control_lease: 9105e8cbd8ecfc0ba3849440ab537d66af1ac30338d544c72295706cf634eac8
+    task_registry: c05a03af412a2a2a4895834076387205dacd151d85ab5bd5b7407884967d1c0d
+    ready_queue: 3e3ce54feef7ef3f701374414ce4b597cc800d9dfa12db184a20d5648d321e78
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -860,6 +862,9 @@ verification:
   - P23 final 24ec3a4e exact-source semantic re-audit: rejected for noncanonical locked Open-schedule label and a raw NUL-delimited dedupe key incompatible with PostgreSQL character persistence
   - canonical P23 copy/dedupe-persistence correction ready-entry digest 67ad844e against acquisition ca8eb4ab, rejected head 24ec3a4e, fresh claim 096ffffc, sole STUDENT_NOTIFICATIONS lease 471de353, and zero effect locks: passed
   - P23 copy/dedupe-persistence claim 102c75c2 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, and zero effects: passed
+  - P11 final 899ef6a7 exact 17-path scope, artifact/request digests, 14 focused tests, typecheck, and provider/query/listbox fixes: rejected for revoked-first-render and stale-completion races, dotted/colon option-ID collision, and Bearer-space secret leakage
+  - canonical P11 authorization-race/ID/secret correction ready-entry digest aeea25dd against acquisition 6cd1efc5, rejected head 899ef6a7, fresh claim d76c097a, sole ADMIN_OPERATIONS_UI lease 84cd0230, and zero effect locks: passed
+  - P23 final 32f3a464 exact 19-path scope, 14-artifact digest 14ab3136, unchanged request aggregate f984e5ee, 22 focused tests, typecheck, locked-copy/PostgreSQL-boundary proof, released lease, and independent semantic re-audit: passed and ready for admission
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

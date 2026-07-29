@@ -951,6 +951,33 @@ typecheck, lint/format/scope/digests, publish a superseding final, release the
 lease, and stop with effects `0/0/0`. Apply no migration/registration/steward
 request and perform no provider/send action.
 
+P11 final `899ef6a7fad4f0946378721a0af7d7ed66c25c81` must not be
+integrated. First resume it only for a three-runtime-file claim under claim
+`d76c097a-d2df-4e8c-ae99-659deba00c64`, ADMIN_OPERATIONS_UI lease
+`84cd0230-d35a-4149-845c-9cd4bcfb6ff5`, ready parent
+`6cd1efc5fdba8c2c6369ce15877eb3f008149f2b`, and ready digest
+`aeea25ddac610fb96f090609a9c17e3b67400aeff8209772b0b99e3efa85c456`.
+Change exactly the three P11 runtime files, bind the fresh identities/rejected
+head, push normally, remote-verify, and stop for C00 reconciliation. Do not
+edit product, tests, requests, registration, or steward files in that push.
+
+Only after reconciliation may P11 enforce a no-private-render state
+synchronously whenever authorization is not current Admin, generation-guard
+every in-flight search and resolver completion against the exact credential
+version/authorization state before state update or navigation, replace lossy
+option-ID sanitization with a deterministic injective DOM-safe encoding, and
+redact/reject Bearer secrets separated by whitespace as well as `:`/`=`.
+Add direct revoked-first-render, stale-promise completion, dotted/colon ID
+collision, active-descendant uniqueness, and Bearer-space leakage tests.
+Preserve all earlier passing corrections. Re-run focused tests, typecheck,
+lint/format/scope/digests, release the lease, publish a superseding final, and
+stop for independent re-audit. Do not apply registration/steward work or
+perform provider/external actions.
+
+P23 final `32f3a4649632c5768b46430c13b4cb2a3546cfc3` remains read-only
+pending its independent exact-source semantic verdict. Do not queue or
+integrate it before PASS.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,

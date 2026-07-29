@@ -1231,3 +1231,28 @@ negative tests, preserve every earlier correction, release lease `471de353`,
 publish a superseding final, and stop for independent re-audit. Migrations,
 registrations, steward application, provider/send actions, and external effects
 remain unauthorized.
+
+P11 superseding final `899ef6a7fad4f0946378721a0af7d7ed66c25c81`
+remains rejected from admission despite exact lineage/scope/digests, 14 tests,
+typecheck, and the corrected provider provenance/query clearing/listbox
+structure. Exact-source probes confirmed three residual blockers: revoked
+sessions can render retained private results/recent queries before the
+post-render effect clears them and in-flight completions are not credential-
+generation guarded; valid dotted and colon target IDs collapse to the same DOM
+option ID; and `Bearer <token>` metadata bypasses the secret matcher. No
+provider or external effect occurred.
+
+C00 authorized only a fresh runtime-memory claim from exact rejected P11 final
+`899ef6a7`. Ready digest is
+`aeea25ddac610fb96f090609a9c17e3b67400aeff8209772b0b99e3efa85c456`,
+claim is `d76c097a-d2df-4e8c-ae99-659deba00c64`, and the sole
+ADMIN_OPERATIONS_UI lease is `84cd0230-d35a-4149-845c-9cd4bcfb6ff5`
+through `2026-07-29T10:40:29Z`. Its first push may change exactly P11
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
+reconciliation. Product/test/request edits, registration/steward work,
+provider actions, and external effects remain unauthorized in that first phase.
+
+P23 final `32f3a464` passed C00 mechanical replay with exact 19-path scope,
+22 focused tests, typecheck, artifact `14ab3136`, unchanged request aggregate
+`f984e5ee`, locked copy, and NUL-free PostgreSQL-boundary proof. It remains
+unadmitted until the independent semantic re-audit returns.
