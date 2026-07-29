@@ -7,6 +7,7 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
 branch: codex/v21-p17-zoom-preparation
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+expected_existing_head: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
 dependency_heads:
   F05:
     required_state: interface_ready_integrated
@@ -38,26 +39,25 @@ dependency_heads:
     interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
     task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
     task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
-status: ready_for_review
-phase: review
-claimed_by: codex-p17-worker-863e3375
-claim_time: '2026-07-28T23:35:40Z'
-claim_id: 863e3375-64af-4763-8efd-80d424da2ed9
-claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
+status: claimed
+phase: correction
+correction_work_status: pending_c00_reconciliation
+claimed_by: codex-p17-correction-worker-ad77a398
+claim_time: '2026-07-29T00:20:40Z'
+claim_id: ad77a398-b287-4a51-b7cc-25dd147f33de
+previous_claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
+previous_final_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
 writer_slot_leases:
   - slot: ZOOM_PREPARATION
-    lease_id: 2718de31-a532-45fe-819a-be67a2112cfc
-    lease_issued_at: '2026-07-28T23:29:13Z'
-    lease_expires_at: '2026-07-29T00:29:13Z'
-    released_at: '2026-07-28T23:58:47Z'
-lease_expires_at: '2026-07-29T00:29:13Z'
-lease_released_at: '2026-07-28T23:58:47Z'
-last_heartbeat_at: '2026-07-28T23:58:47Z'
-controller_authorization_sha: c242c76e889c1e70330911217b7bb34a04dbf26b
-continuation_authorization_sha: 53a429970083fb780afa64adaa7a32d3e39f6602
-ready_entry_state_based_on_control_head_sha: 7145e4d43f18238c086805f57c0b1af8c97c2dd4
-ready_entry_payload_digest: 7c6eda01af12a1cc7ea9b9df71588580ce1e289dcdcf74efb33db07afebb69b0
-state_based_on_head_sha: fda8317ee46da875b486b7e27f5f59fcdcbd890e
+    lease_id: b7211f31-df73-40fa-8281-5765ca37d3b9
+    lease_issued_at: '2026-07-29T00:13:59Z'
+    lease_expires_at: '2026-07-29T01:13:59Z'
+lease_expires_at: '2026-07-29T01:13:59Z'
+last_heartbeat_at: '2026-07-29T00:20:40Z'
+controller_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
+ready_entry_payload_digest: 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf
+state_based_on_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
 last_implementation_commit_sha: fda8317ee46da875b486b7e27f5f59fcdcbd890e
 implementation_artifact_digest: 65b034b1f4328e313cd66d7b1760e7d8df5d11eb02098677cecb6dcc35b037ca
 implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 13 non-runtime P17 artifacts, with LF separators and no final newline.
@@ -66,19 +66,14 @@ schema_contract_artifact_digest: 908048ef2f7ad13277a00f63f452390480bdc9b065163fd
 steward_request_digest: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
 acceptance_matrix_digest: 01ef787bb90e502ec53823d475f66d5401f5ceb224325bc0c45f6fc0839febff
 completed_steps:
-  - Verified and published the exact atomic claim checkpoint from the authorized integration start, then resumed only after C00 reconciled it at continuation control 53a429970083fb780afa64adaa7a32d3e39f6602.
-  - Inspected only the named F05 job, F06 provider-core, and P16 classroom-core interfaces and preserved their exact integrated bindings.
-  - Implemented the versioned Zoom preparation contract, exact locked meeting settings, roster snapshot and preview confirmation, stable provider-operation planning, canonical readback validation, and acceptance-unknown quarantine.
-  - Implemented one meeting per occurrence, one registrant per included Student, protected authenticated launch state, 60-second single-use grants, 30-second heartbeats, 90-second device leases, same-lineage reconnect, second-device denial, and disposable-canary isolation.
-  - Implemented transactional task-local persistence, a seven-table migration contract, web orchestration, worker reconciliation, safe household reminder intents, and four canonical structured steward requests.
-  - Passed full workspace typecheck, 16 focused assertions, focused lint, focused formatting, diff hygiene, and a repository-wide secret scan.
-  - Published the immutable implementation checkpoint fda8317ee46da875b486b7e27f5f59fcdcbd890e by normal non-force update and released the ZOOM_PREPARATION task-local lease in terminal metadata.
+  - Fetched exact containing control 0c911664217efe3dbb89b93b6fe29eb9eda2fec3 and verified its sole parent e54ea923a743caf760ef47638a2c8d8a875faf34.
+  - Recomputed canonical ready-entry digest 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf from the parsed P17 resume_existing_branch entry.
+  - Verified exact state-based control binding, authorized integration start, existing local/remote head, F05/F06/P16 bindings, fresh correction claim, active ZOOM_PREPARATION lease, and zero effect locks.
+  - Seeded this correction atomic claim by changing only the three task-local P17 runtime files from exact expected head 0e6119a491795737e3d7aa079fc3aefa1b5071c2; no product repair was performed.
 remaining_steps:
-  - I36 must review and register the P17 server/worker seam and disposition the Zoom configuration/dependency request.
-  - F02 must allocate and apply the P17 migration from the exact schema contract.
-  - P28 must disposition the safe Parent reminder-routing request.
-  - Provider sandbox or production canaries remain prohibited until separate explicit Zoom effect authority and effect locks exist.
-next_action: C00/I36 should review implementation head fda8317ee46da875b486b7e27f5f59fcdcbd890e and canonical digest 65b034b1f4328e313cd66d7b1760e7d8df5d11eb02098677cecb6dcc35b037ca, then disposition the four structured steward requests without performing provider effects.
+  - Push and report this exact three-file correction claim checkpoint, then stop for C00 reconciliation.
+  - Begin correction investigation or product repair only after C00 explicitly reconciles this new claim and authorizes continuation.
+next_action: Push this three-file correction claim with sole parent 0e6119a491795737e3d7aa079fc3aefa1b5071c2, report the pushed head to C00, and stop without repairing product code.
 requirements:
   OTV2-CLASSROOM-068: implementation_ready
   OTV2-CLASSROOM-069: implementation_ready
@@ -102,24 +97,9 @@ acceptance_cases:
   OTV2-CLASSROOM-079-AC01: implementation_ready
   OTV2-CLASSROOM-188-AC01: implementation_ready
 changed_paths:
-  - apps/web/src/server/features/classroom/zoom-preparation/index.ts
-  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
-  - apps/web/src/server/features/classroom/zoom-preparation/service.ts
-  - apps/worker/src/runners/zoom-preparation/index.ts
-  - apps/worker/src/runners/zoom-preparation/runner.test.ts
-  - apps/worker/src/runners/zoom-preparation/runner.ts
-  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P17/HANDOFF.md
   - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
-  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
-  - packages/contracts/src/classroom/zoom-preparation/index.ts
-  - packages/db/src/classroom/zoom-preparation/index.ts
-  - packages/db/src/classroom/zoom-preparation/repository.test.ts
-  - packages/db/src/classroom/zoom-preparation/repository.ts
-  - packages/db/src/classroom/zoom-preparation/schema-contract.ts
-  - packages/domain/src/classroom/zoom-preparation/index.ts
-  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
 migrations: []
 steward_requests:
   - P17-MIGRATION-001
@@ -128,15 +108,9 @@ steward_requests:
   - P17-REMINDER-ROUTING-001
 verification:
   commands_run:
-    - Exact remote continuation control, claim checkpoint, branch head, dependency ancestry, claim, lease, and zero effect-lock verification (passed).
-    - npm run typecheck (passed).
-    - Focused Vitest over the domain acceptance, database, server service, and worker runner suites (passed, 16 tests across four files).
-    - Focused ESLint over all P17 TypeScript artifacts (passed).
-    - Focused Prettier check over all P17 artifacts (passed).
-    - npm run secret:scan (passed, 2723 repository text files).
-    - git diff --check (passed).
-    - Exact 13-artifact implementation Git-blob digest and four named artifact digest recomputation (passed).
-    - Normal non-force remote update of the immutable implementation checkpoint (passed).
+    - Exact control, ready-state parent binding, resume-existing mode, authorized start, expected local/remote head, dependencies, claim, lease, registry, and zero effect-lock verification (passed).
+    - Canonical sorted-JSON SHA-256 recomputation of the parsed P17 ready entry (passed).
+    - Exact three-file correction claim path and sole-parent verification (pending commit).
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -145,5 +119,4 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - Shared migrations, root barrels, central server/worker registration, manifests, lockfiles, provider configuration/secrets, and communication composition are captured in STEWARD-REQUESTS.yaml and were not edited by P17.
-  - No live Zoom/provider request, credential access, account mutation, registrant creation, reminder delivery, bootstrap issuance, deployment, or canary was performed.
+  - No product, steward-request, acceptance-matrix, migration, shared runtime, provider, manifest, or lockfile path was changed for this correction claim.
