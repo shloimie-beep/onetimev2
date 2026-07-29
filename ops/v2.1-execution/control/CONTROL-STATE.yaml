@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
-next_action: P09 and P21 may continue only their source-owned zero-effect implementations. P11 final 17538da1 is rejected for retained private page/request/recent-query state lacking a credential-version binding; P11 may publish only a fresh exact three-runtime-file correction claim under READY digest daa56dab, then stop for C00 reconciliation. No live provider inspection, steward application, send, or external effect is authorized.
+controller_authorization_sha: 024e8860153b53ca44740bc7e8e7a063291687c0
+next_action: P11 atomic claim bd40e5f0 is reconciled. Under unchanged claim 95a4b423 and ADMIN_OPERATIONS_UI lease c9c69acd, P11 may now bind every retained private page, request, and recent-query snapshot to its producing credential version and synchronously render only when that version equals the current Admin credential, with rotated-Admin SSR/first-render and same-state credential-change tests. Preserve every earlier passing P11 correction, publish a superseding final, release the lease, and stop for independent re-audit. P09 and P21 may continue only their source-owned zero-effect work. No steward application, live provider action, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

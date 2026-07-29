@@ -730,10 +730,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 8745d1694399ca67b7417879ef00620989fba6237a600d7b87889b9db6683ba7
-    control_lease: b5d86d8169031b75334cb1813b1bd373746f65e91592b0cd9f04bcc65e496a63
-    task_registry: 540ac1e1e23dd8c466dd5d370503a79dd84f9a6b22e4f5da9029d8755375547c
-    ready_queue: f0d56be3d3ae90d00932409493296846b2a7b13fff3e6a455161fe1a5352984d
+    control_state: 257c59ec7a68205246c471ed6a675de9a642ae6fe164770ea5ffdf7f530f014f
+    control_lease: 17a4146fd0d8a89bb9654294edabc22e04098198c674a2f9010e665db27c48b6
+    task_registry: 473286cee53201d969ec19c05ecced686e053dfb190a4e80938ccbc4f2643c69
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -893,6 +893,8 @@ verification:
   - P11 final 17538da1 exact 18-path scope, linear implementation/final ancestry, artifact 3529decc, unchanged request aggregate 2327a180, 4 focused files/18 tests, typecheck, released lease, and zero effects: mechanical replay passed
   - P11 exact-source semantic re-audit: rejected because retained AdminSearchPage/initialRequest/recentQueries have no credential-version binding and render synchronously under a rotated Admin credential before deferred clearing
   - canonical P11 retained-credential correction READY digest daa56dab against acquisition 930b5ab5, rejected head 17538da1, fresh claim 95a4b423, sole ADMIN_OPERATIONS_UI lease c9c69acd, and zero effect locks: passed
+  - P11 claim bd40e5f0 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, no product edit, and zero effects: passed
+  - consumed P11 ready entry and authorized only credential-version-bound retained private state with synchronous current-Admin render gating and direct rotated-credential tests under the unchanged claim and lease: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

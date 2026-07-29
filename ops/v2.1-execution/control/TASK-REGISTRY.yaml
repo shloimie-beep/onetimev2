@@ -519,7 +519,7 @@ tasks:
     transitioned_at: '2026-07-29T03:20:30Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P10/status_proof
 - task_id: P11
-  status: ready
+  status: claimed
   active_phase: retained_credential_binding_correction
   branch: codex/v21-p11-admin-operations
   phase_branches:
@@ -537,20 +537,21 @@ tasks:
     review: 17538da1ff15066c3e242567970062db4589577b
     provider_privacy_accessibility_correction: ce87a6c2808216214870d4b2343c82c0a36aaf36
     authorization_race_id_secret_correction: 77c168d0a4a27b81ba1f7cddaa8d31821a8654f6
+    retained_credential_binding_correction: bd40e5f0547eb9ad629c47fb4ab294982765978f
   authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-  last_known_remote_head: 17538da1ff15066c3e242567970062db4589577b
+  last_known_remote_head: bd40e5f0547eb9ad629c47fb4ab294982765978f
   active_claim_id: 95a4b423-1906-4b24-846b-c4f9d3c1c32a
-  active_writer_id: null
+  active_writer_id: codex-p11-worker-95a4b423
   lease_expires_at: '2026-07-29T11:44:39Z'
   last_heartbeat_at: '2026-07-29T10:44:39Z'
-  controller_authorization_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
+  controller_authorization_sha: 024e8860153b53ca44740bc7e8e7a063291687c0
   ready_entry_payload_digest: daa56dabb6b8f3d28f7a4d23ce252143d51f8b8b08fbad35802ac9fedef34dcb
   interface_checkpoint_sha: null
   implementation_head_sha: f27f16a77fde21d283d594a7987ccd600bc1b367
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
+    state: claimed
+    producer_task_id: P11
+    producer_head_sha: bd40e5f0547eb9ad629c47fb4ab294982765978f
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -564,8 +565,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
-    transitioned_at: '2026-07-29T10:44:39Z'
+    state_based_on_control_head_sha: 024e8860153b53ca44740bc7e8e7a063291687c0
+    transitioned_at: '2026-07-29T10:56:24Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P11/status_proof
 - task_id: P12
   status: ready_for_review

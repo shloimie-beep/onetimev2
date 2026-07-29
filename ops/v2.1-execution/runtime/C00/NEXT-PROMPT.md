@@ -1099,3 +1099,18 @@ correction already enumerated above, add direct TOCTOU/environment/leakage/
 cache/time-window/timezone/keyboard/a11y proof, strengthen but do not apply the
 structured registration request, publish a superseding final, release the
 lease, and stop with effects `0/0/0`.
+
+P11 claim `bd40e5f0547eb9ad629c47fb4ab294982765978f` is reconciled.
+Resume it under unchanged claim `95a4b423-1906-4b24-846b-c4f9d3c1c32a`
+and ADMIN_OPERATIONS_UI lease `c9c69acd-9df5-4411-9cbd-887f33f237f1`.
+Bind retained `AdminSearchPage`, initial-request state, and recent-query state
+to the exact credential version that produced each snapshot. Before state
+initialization or synchronous render, fail closed unless every retained
+snapshot's version equals the current exact Admin credential version. Clear on
+a same-state Admin credential-version change and add direct rotated-Admin
+SSR/first-render and same-state version-change tests. Preserve all passing
+revoked-render, generation, authorization, navigation, injective-ID,
+Bearer-filtering, provenance, window, timezone, privacy, and accessibility
+behavior. Run focused verification and typecheck, release the lease before
+expiry, publish a superseding final, and stop for independent re-audit. Apply
+no steward request and perform no provider or external effect.

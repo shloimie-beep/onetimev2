@@ -1336,3 +1336,18 @@ claim `95a4b423-1906-4b24-846b-c4f9d3c1c32a`, ADMIN_OPERATIONS_UI lease
 `2026-07-29T11:44:39Z`. The first push changes only P11's three runtime files
 and stops for reconciliation. Product/test/request/provider/effect work remains
 unauthorized in that phase.
+
+P11 published exact atomic claim
+`bd40e5f0547eb9ad629c47fb4ab294982765978f`: sole parent rejected final
+`17538da1`, exactly its three runtime files, exact authorization/acquisition/
+claim/lease/READY bindings, clean remote, no product edit, and effects
+`0/0/0`. C00 consumed its READY entry. Under unchanged claim `95a4b423` and
+ADMIN_OPERATIONS_UI lease `c9c69acd` through `2026-07-29T11:44:39Z`, P11 may
+now bind every retained private page, request, and recent-query snapshot to the
+credential version that produced it and synchronously render only when that
+version equals the current exact Admin credential. Add rotated-Admin
+SSR/first-render and same-state credential-version-change tests. Preserve every
+earlier passing P11 authorization, generation, ID, secret, provenance, window,
+timezone, accessibility, and navigation correction; publish a superseding
+final, release the lease, and stop for independent re-audit. No steward,
+provider, or external effect is authorized.
