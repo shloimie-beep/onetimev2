@@ -11,6 +11,7 @@ import type { AuthenticatedPrincipal } from '../../identity/auth/index.ts';
 import type { RuntimeTier, VerificationEnvironmentId } from '../../state/index.ts';
 
 export const ADMIN_DIRECTORY_CONTRACT_VERSION = '2.1.0' as const;
+export const FAMILY_STUDENT_SEAT_LIMIT = 3 as const;
 
 export type AdminDirectoryScope = {
   product: 'one_time_mishnayos';
@@ -29,13 +30,74 @@ export type AdminStudentRecord = StudentProfile & {
   credentialState: 'active' | 'reset_required' | 'disabled';
 };
 
+export type SchoolSeatAllowance = AdminDirectoryScope & {
+  householdId: string;
+  seatLimit: number;
+  contractReference: string;
+  reason: string;
+  authorizedAt: string;
+};
+
+export type AdminHouseholdRecord = Household & {
+  accessState: 'free' | 'active' | 'grace' | 'inactive';
+  schoolSeatAllowance: SchoolSeatAllowance | null;
+};
+
+export type ServiceAccountAcceptanceEvidence = AdminDirectoryScope & {
+  acceptanceId: string;
+  householdId: string;
+  studentId: string;
+  acceptedByAdultId: string;
+  acceptedServiceAccountVersion: string;
+  canonicalRequestHash: string;
+  immutableEvidenceReference: string;
+  acceptedAt: string;
+};
+
+export type CanonicalStudentEnrollment = AdminDirectoryScope & {
+  enrollmentId: string;
+  householdId: string;
+  studentId: string;
+  serviceAccountAcceptanceId: string;
+  state: 'active' | 'revoked';
+  version: number;
+  updatedAt: string;
+};
+
+export type ActiveAccessSubject =
+  | { subjectType: 'adult'; subjectId: string }
+  | { subjectType: 'student'; subjectId: string }
+  | { subjectType: 'household'; subjectId: string };
+
+export type RevokeAllActiveAccessCommand = ActiveAccessSubject & {
+  reason:
+    | 'adult_email_changed'
+    | 'adult_lifecycle_changed'
+    | 'adult_membership_changed'
+    | 'household_archived'
+    | 'student_archived'
+    | 'student_credential_changed';
+};
+
+export type ActiveAccessRevocationReadback = AdminDirectoryScope &
+  ActiveAccessSubject & {
+    readbackId: string;
+    complete: true;
+    activeSessionIdsRevoked: readonly string[];
+    classroomGrantIdsRevoked: readonly string[];
+    playbackGrantIdsRevoked: readonly string[];
+    enrollmentIdsRevoked: readonly string[];
+    revokedAt: string;
+  };
+
 export type StudentCredentialReset = AdminDirectoryScope & {
   resetId: string;
+  kind: 'initial_activation' | 'reset';
   studentId: string;
   credentialId: string;
   replacementCredentialHash: string;
   credentialVersion: number;
-  studentSessionIdsRevoked: readonly string[];
+  revocationReadbackId: string | null;
   discloseExistingPassword: false;
   createdAt: string;
 };
@@ -86,15 +148,38 @@ export interface AdminDirectoryUnitOfWork {
   saveAdult(adult: AdultIdentity): Promise<void>;
   lockAccount(scope: AdminDirectoryScope, humanAccountId: string): Promise<HumanAccount | null>;
   saveAccount(account: HumanAccount): Promise<void>;
-  lockHousehold(scope: AdminDirectoryScope, householdId: string): Promise<Household | null>;
-  saveHousehold(household: Household): Promise<void>;
+  lockHousehold(
+    scope: AdminDirectoryScope,
+    householdId: string,
+  ): Promise<AdminHouseholdRecord | null>;
+  saveHousehold(household: AdminHouseholdRecord): Promise<void>;
   lockStudent(scope: AdminDirectoryScope, studentId: string): Promise<AdminStudentRecord | null>;
+  lockStudentByNormalizedUsername(
+    scope: AdminDirectoryScope,
+    normalizedUsername: string,
+  ): Promise<AdminStudentRecord | null>;
+  lockActiveStudentsByHousehold(
+    scope: AdminDirectoryScope,
+    householdId: string,
+  ): Promise<readonly AdminStudentRecord[]>;
+  lockActiveAdminCount(scope: AdminDirectoryScope): Promise<number>;
+  lockOwnedHouseholdIds(scope: AdminDirectoryScope, adultId: string): Promise<readonly string[]>;
+  lockCurrentServiceAccountVersion(scope: AdminDirectoryScope): Promise<string>;
   saveStudent(student: AdminStudentRecord): Promise<void>;
+  saveStudentEnrollment(enrollment: CanonicalStudentEnrollment): Promise<void>;
+  saveServiceAccountAcceptance(evidence: ServiceAccountAcceptanceEvidence): Promise<void>;
+  revokeAllActiveAccess(
+    scope: AdminDirectoryScope,
+    command: RevokeAllActiveAccessCommand,
+  ): Promise<ActiveAccessRevocationReadback>;
   lockOwnershipTransfer(
     scope: AdminDirectoryScope,
     transferId: string,
   ): Promise<HouseholdOwnershipTransfer | null>;
-  saveCredentialReset(reset: StudentCredentialReset): Promise<void>;
+  saveCredentialReset(
+    reset: StudentCredentialReset,
+    revocation: ActiveAccessRevocationReadback | null,
+  ): Promise<void>;
   saveOwnershipTransfer(result: OwnershipTransferAcceptanceResult): Promise<void>;
   getReceipt(
     scope: AdminDirectoryScope,

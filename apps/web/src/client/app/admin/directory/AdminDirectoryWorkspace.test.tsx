@@ -1,7 +1,12 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { AdminDirectoryWorkspace } from './AdminDirectoryWorkspace.tsx';
+import {
+  AdminDirectoryWorkspace,
+  directoryActionConsequence,
+  directoryUrl,
+  parseDirectoryQuery,
+} from './AdminDirectoryWorkspace.tsx';
 
 const scope = {
   product: 'one_time_mishnayos',
@@ -17,6 +22,7 @@ describe('P10 Admin directory workspace', () => {
   it('renders accessible English/LTR adult, household, and Student lifecycle controls', () => {
     const html = renderToStaticMarkup(
       <AdminDirectoryWorkspace
+        url="/admin/directory?status=all&sort=name_asc&page=1"
         adults={[
           {
             adult: {
@@ -53,6 +59,8 @@ describe('P10 Admin directory workspace', () => {
             seatLimit: 3,
             activeSeatCount: 1,
             state: 'active',
+            accessState: 'active',
+            schoolSeatAllowance: null,
             version: 1,
           },
         ]}
@@ -88,8 +96,9 @@ describe('P10 Admin directory workspace', () => {
     expect(html).toContain('dir="auto"');
     expect(html).toContain('Create Admin');
     expect(html).toContain('Create Parent');
-    expect(html).toContain('Transfer ownership');
-    expect(html).toContain('Reset password');
+    expect(html).toContain('Review ownership transfer');
+    expect(html).toContain('Review password reset');
+    expect(html).not.toContain('Confirm consequence and continue');
     expect(html).toContain('student.one');
     expect(html).not.toContain('student@example');
   });
@@ -97,6 +106,7 @@ describe('P10 Admin directory workspace', () => {
   it('announces an empty directory and keeps a clear first action', () => {
     const html = renderToStaticMarkup(
       <AdminDirectoryWorkspace
+        url="/admin/directory"
         adults={[]}
         households={[]}
         students={[]}
@@ -112,5 +122,58 @@ describe('P10 Admin directory workspace', () => {
     expect(html).toContain('role="status"');
     expect(html).toContain('aria-live="polite"');
     expect(html).toContain('Create first Parent');
+  });
+
+  it('uses URL-backed search, sort, filter, archived visibility, and pagination state', () => {
+    expect(
+      parseDirectoryQuery(
+        '/admin/directory?q=Levi&kind=student&status=archived&sort=updated_desc&page=2',
+      ),
+    ).toEqual({
+      search: 'Levi',
+      kind: 'student',
+      status: 'archived',
+      sort: 'updated_desc',
+      page: 2,
+    });
+    expect(
+      directoryUrl('/admin/directory?status=active', {
+        search: 'Student One',
+        status: 'all',
+        page: 3,
+      }),
+    ).toContain('q=Student+One');
+    expect(
+      directoryUrl('/admin/directory?status=active', {
+        search: 'Student One',
+        status: 'all',
+        page: 3,
+      }),
+    ).toContain('status=all');
+  });
+
+  it('defines explicit consequences before destructive and credential actions', () => {
+    expect(
+      directoryActionConsequence({
+        kind: 'credential_reset',
+        id: 'student-one',
+        label: 'Student One',
+      }),
+    ).toMatch(/every active session.*existing password is never displayed/iu);
+    expect(
+      directoryActionConsequence({
+        kind: 'household_transition',
+        id: 'household-one',
+        label: 'Household One',
+        to: 'archived',
+      }),
+    ).toMatch(/revokes every affected active session and access grant/iu);
+    expect(
+      directoryActionConsequence({
+        kind: 'ownership_transfer',
+        id: 'household-one',
+        label: 'Household One',
+      }),
+    ).toMatch(/changes the sole household owner/iu);
   });
 });

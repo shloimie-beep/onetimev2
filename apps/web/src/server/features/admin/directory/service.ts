@@ -5,13 +5,16 @@ import type {
   AdminDirectoryReceipt,
   AdminDirectoryRepository,
   AdminDirectoryScope,
+  AdminHouseholdRecord,
   AdminStudentRecord,
+  CanonicalStudentEnrollment,
+  RevokeAllActiveAccessCommand,
+  ServiceAccountAcceptanceEvidence,
   StudentCredentialReset,
   AdminDirectoryUnitOfWork,
 } from '../../../../../../../packages/contracts/src/admin/directory/index.ts';
 import type {
   AdultIdentity,
-  Household,
   HumanAccount,
   OwnershipTransferAcceptanceResult,
 } from '../../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
@@ -30,8 +33,11 @@ export type AdminDirectoryMutationBatch = {
   resultVersion: number;
   adults?: readonly AdultIdentity[];
   accounts?: readonly HumanAccount[];
-  households?: readonly Household[];
+  households?: readonly AdminHouseholdRecord[];
   students?: readonly AdminStudentRecord[];
+  enrollments?: readonly CanonicalStudentEnrollment[];
+  serviceAccountAcceptances?: readonly ServiceAccountAcceptanceEvidence[];
+  revokeAllAccess?: readonly RevokeAllActiveAccessCommand[];
   credentialReset?: StudentCredentialReset;
   ownershipTransfer?: OwnershipTransferAcceptanceResult;
 };
@@ -100,12 +106,48 @@ export class AdminDirectoryService {
           assertSameScope(input.actor, mutation.ownershipTransfer.replacementAccount);
         }
       }
+      assertRequiredEffects(input.operation, mutation);
+      await assertLockedInvariants(unit, input.actor, input.operation, mutation);
 
       for (const adult of mutation.adults ?? []) await unit.saveAdult(adult);
       for (const account of mutation.accounts ?? []) await unit.saveAccount(account);
       for (const household of mutation.households ?? []) await unit.saveHousehold(household);
       for (const student of mutation.students ?? []) await unit.saveStudent(student);
-      if (mutation.credentialReset) await unit.saveCredentialReset(mutation.credentialReset);
+      for (const evidence of mutation.serviceAccountAcceptances ?? []) {
+        assertSameScope(input.actor, evidence);
+        await unit.saveServiceAccountAcceptance(evidence);
+      }
+      for (const enrollment of mutation.enrollments ?? []) {
+        assertSameScope(input.actor, enrollment);
+        await unit.saveStudentEnrollment(enrollment);
+      }
+      const revocations = [];
+      for (const command of mutation.revokeAllAccess ?? []) {
+        const readback = await unit.revokeAllActiveAccess(input.actor, command);
+        assertCompleteRevocation(input.actor, command, readback);
+        revocations.push(readback);
+      }
+      if (mutation.credentialReset) {
+        const revocation =
+          mutation.credentialReset.kind === 'reset'
+            ? revocations.find(
+                (value) =>
+                  value.subjectType === 'student' &&
+                  value.subjectId === mutation.credentialReset?.studentId,
+              )
+            : null;
+        const reset = {
+          ...mutation.credentialReset,
+          revocationReadbackId: revocation?.readbackId ?? null,
+        };
+        if (reset.kind === 'reset' && !reset.revocationReadbackId) {
+          throw new AdminDirectoryError(
+            'admin_directory_invalid_state',
+            'Credential reset requires revoke-all readback.',
+          );
+        }
+        await unit.saveCredentialReset(reset, revocation ?? null);
+      }
       if (mutation.ownershipTransfer) await unit.saveOwnershipTransfer(mutation.ownershipTransfer);
 
       const receipt: AdminDirectoryReceipt = {
@@ -139,6 +181,200 @@ export class AdminDirectoryService {
       await unit.saveReceipt(receipt);
       return { disposition: 'committed', receipt };
     });
+  }
+}
+
+async function assertLockedInvariants(
+  unit: AdminDirectoryUnitOfWork,
+  scope: AdminDirectoryScope,
+  operation: AdminDirectoryReceipt['operation'],
+  mutation: AdminDirectoryMutationBatch,
+) {
+  const revocations = mutation.revokeAllAccess ?? [];
+  for (const student of mutation.students ?? []) {
+    const collision = await unit.lockStudentByNormalizedUsername(scope, student.username);
+    if (collision && collision.studentId !== student.studentId) {
+      throw new AdminDirectoryError(
+        'admin_directory_invalid_input',
+        'Normalized Student username is already assigned.',
+      );
+    }
+    if (
+      (operation === 'student_upsert' || operation === 'student_transition') &&
+      student.state === 'active'
+    ) {
+      const household = await unit.lockHousehold(scope, student.householdId);
+      const currentStudent = await unit.lockStudent(scope, student.studentId);
+      if (
+        !household ||
+        household.state !== 'active' ||
+        household.accessState === 'inactive' ||
+        ((!currentStudent || currentStudent.state === 'archived') &&
+          household.activeSeatCount >= household.seatLimit)
+      ) {
+        throw new AdminDirectoryError(
+          'admin_directory_seat_limit',
+          'Locked household cannot activate another Student.',
+        );
+      }
+      const evidence = mutation.serviceAccountAcceptances?.find(
+        (value) => value.studentId === student.studentId,
+      );
+      if (
+        !evidence ||
+        evidence.acceptedServiceAccountVersion !==
+          (await unit.lockCurrentServiceAccountVersion(scope))
+      ) {
+        throw new AdminDirectoryError(
+          'admin_directory_invalid_state',
+          'Locked current service-account acceptance is required.',
+        );
+      }
+    }
+  }
+  for (const household of mutation.households ?? []) {
+    if (household.state !== 'archived') continue;
+    const activeStudents = await unit.lockActiveStudentsByHousehold(scope, household.householdId);
+    if (
+      !activeStudents.every((student) =>
+        revocations.some(
+          (value) => value.subjectType === 'student' && value.subjectId === student.studentId,
+        ),
+      )
+    ) {
+      throw new AdminDirectoryError(
+        'admin_directory_invalid_state',
+        'Household archive must revoke every locked active Student.',
+      );
+    }
+  }
+  if (operation === 'adult_transition') {
+    for (const adult of mutation.adults ?? []) {
+      const account = mutation.accounts?.find((value) => value.adultId === adult.adultId);
+      if (!account) continue;
+      const lockedAccount = await unit.lockAccount(scope, account.humanAccountId);
+      if (account.state === 'active' && lockedAccount?.state === 'disabled') {
+        throw new AdminDirectoryError(
+          'admin_directory_invalid_state',
+          'Disabled HumanAccount cannot be reactivated.',
+        );
+      }
+      if (adult.state === 'archived') {
+        if (
+          account.memberships.includes('admin') &&
+          (await unit.lockActiveAdminCount(scope)) <= 1
+        ) {
+          throw new AdminDirectoryError(
+            'admin_directory_invalid_state',
+            'Final active Admin cannot be archived.',
+          );
+        }
+        if ((await unit.lockOwnedHouseholdIds(scope, adult.adultId)).length > 0) {
+          throw new AdminDirectoryError(
+            'admin_directory_invalid_state',
+            'Household owner cannot be archived.',
+          );
+        }
+      }
+    }
+  }
+}
+
+function assertRequiredEffects(
+  operation: AdminDirectoryReceipt['operation'],
+  mutation: AdminDirectoryMutationBatch,
+) {
+  const revocations = mutation.revokeAllAccess ?? [];
+  const hasRevocation = (subjectType: 'adult' | 'student' | 'household', subjectId: string) =>
+    revocations.some((value) => value.subjectType === subjectType && value.subjectId === subjectId);
+  if (operation === 'student_credential_reset') {
+    if (
+      !mutation.credentialReset ||
+      mutation.credentialReset.kind !== 'reset' ||
+      !hasRevocation('student', mutation.credentialReset.studentId)
+    ) {
+      throw new AdminDirectoryError(
+        'admin_directory_invalid_state',
+        'Credential reset requires a Student credential write and revoke-all operation.',
+      );
+    }
+  }
+  for (const student of mutation.students ?? []) {
+    if (student.state === 'archived' && !hasRevocation('student', student.studentId)) {
+      throw new AdminDirectoryError(
+        'admin_directory_invalid_state',
+        'Archived Student requires revoke-all access.',
+      );
+    }
+    if (
+      (operation === 'student_upsert' || operation === 'student_transition') &&
+      student.state === 'active' &&
+      student.credentialState === 'active'
+    ) {
+      const enrollment = mutation.enrollments?.find(
+        (value) => value.studentId === student.studentId && value.state === 'active',
+      );
+      const evidence = mutation.serviceAccountAcceptances?.find(
+        (value) =>
+          value.studentId === student.studentId &&
+          value.acceptanceId === enrollment?.serviceAccountAcceptanceId,
+      );
+      if (!enrollment || !evidence || !mutation.credentialReset) {
+        throw new AdminDirectoryError(
+          'admin_directory_invalid_state',
+          'Active Student write requires credential, enrollment, and acceptance evidence.',
+        );
+      }
+    }
+  }
+  for (const household of mutation.households ?? []) {
+    if (
+      household.state === 'archived' &&
+      (household.accessState !== 'inactive' || !hasRevocation('household', household.householdId))
+    ) {
+      throw new AdminDirectoryError(
+        'admin_directory_invalid_state',
+        'Archived household requires inactive access and revoke-all access.',
+      );
+    }
+  }
+  if (
+    operation === 'adult_transition' &&
+    mutation.accounts?.some((account) => !hasRevocation('adult', account.humanAccountId))
+  ) {
+    throw new AdminDirectoryError(
+      'admin_directory_invalid_state',
+      'Adult lifecycle changes require revoke-all access.',
+    );
+  }
+  if (
+    operation === 'adult_upsert' &&
+    mutation.accounts?.some(
+      (account) => account.securityVersion > 1 && !hasRevocation('adult', account.humanAccountId),
+    )
+  ) {
+    throw new AdminDirectoryError(
+      'admin_directory_invalid_state',
+      'Adult security changes require revoke-all access.',
+    );
+  }
+}
+
+function assertCompleteRevocation(
+  scope: AdminDirectoryScope,
+  command: RevokeAllActiveAccessCommand,
+  readback: Awaited<ReturnType<AdminDirectoryUnitOfWork['revokeAllActiveAccess']>>,
+) {
+  assertSameScope(scope, readback);
+  if (
+    readback.complete !== true ||
+    readback.subjectType !== command.subjectType ||
+    readback.subjectId !== command.subjectId
+  ) {
+    throw new AdminDirectoryError(
+      'admin_directory_invalid_state',
+      'Revoke-all operation did not return complete exact readback.',
+    );
   }
 }
 

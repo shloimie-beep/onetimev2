@@ -1,9 +1,15 @@
 import {
   ADMIN_DIRECTORY_ERROR_CODES,
+  FAMILY_STUDENT_SEAT_LIMIT,
   type AdminDirectoryActor,
+  type AdminHouseholdRecord,
   type AdminDirectoryScope,
   type AdminStudentRecord,
   type AdultUpsertInput,
+  type CanonicalStudentEnrollment,
+  type RevokeAllActiveAccessCommand,
+  type SchoolSeatAllowance,
+  type ServiceAccountAcceptanceEvidence,
   type StudentCredentialReset,
 } from '../../../contracts/src/admin/directory/index.ts';
 import {
@@ -15,7 +21,7 @@ import {
   type StudentProfile,
 } from '../../../contracts/src/accounts/v21-household-identity.ts';
 import { VERIFICATION_RUNTIME_TIER } from '../../../contracts/src/state/index.ts';
-import { authorizeStudentCredentialChange, sessionRevocationRequired } from '../auth/index.ts';
+import { authPasswordHashNeedsUpgrade, authorizeStudentCredentialChange } from '../auth/index.ts';
 import {
   acceptHouseholdOwnershipTransfer,
   createOrLinkAdultIdentity,
@@ -63,7 +69,16 @@ export function upsertAdultContact(input: AdultUpsertInput) {
     now: validDate(input.occurredAt),
   });
   assertScope(input.actor, result.adult, result.account);
-  return result;
+  const membershipChanged =
+    input.existingAccount !== null &&
+    [...input.existingAccount.memberships].sort().join(',') !==
+      [...result.account.memberships].sort().join(',');
+  return {
+    ...result,
+    revokeAllAccess: membershipChanged
+      ? [adultRevocation(result.account.humanAccountId, 'adult_membership_changed')]
+      : [],
+  };
 }
 
 export function editAdultContact(input: {
@@ -100,7 +115,9 @@ export function editAdultContact(input: {
           updatedAt: occurredAt,
         }
       : input.account,
-    revokeSessions: emailChanged,
+    revokeAllAccess: emailChanged
+      ? [adultRevocation(input.account.humanAccountId, 'adult_email_changed')]
+      : [],
   };
 }
 
@@ -111,6 +128,8 @@ export function transitionAdultContact(input: {
   expectedAdultVersion: number;
   expectedAccountVersion: number;
   to: 'archived' | 'active';
+  lockedActiveAdminCount: number;
+  lockedOwnedHouseholdIds: readonly string[];
   occurredAt: string;
 }) {
   assertRuntimeAdmin(input.actor, input.adult);
@@ -119,6 +138,19 @@ export function transitionAdultContact(input: {
   assertVersion(input.account.version, input.expectedAccountVersion);
   if (input.account.adultId !== input.adult.adultId) fail('crossScope', 'Adult account mismatch.');
   if (input.adult.state === input.to) fail('invalidState', 'Adult already has requested state.');
+  if (input.to === 'active' && input.account.state === 'disabled') {
+    fail('invalidState', 'A disabled HumanAccount cannot be reactivated by the directory.');
+  }
+  if (
+    input.to === 'archived' &&
+    input.account.memberships.includes('admin') &&
+    (!Number.isSafeInteger(input.lockedActiveAdminCount) || input.lockedActiveAdminCount <= 1)
+  ) {
+    fail('invalidState', 'The final active Admin cannot be archived.');
+  }
+  if (input.to === 'archived' && uniqueIds(input.lockedOwnedHouseholdIds).length > 0) {
+    fail('invalidState', 'Transfer every owned household before archiving its owner.');
+  }
   const occurredAt = validDate(input.occurredAt).toISOString();
   return {
     adult: {
@@ -134,9 +166,7 @@ export function transitionAdultContact(input: {
       version: input.account.version + 1,
       updatedAt: occurredAt,
     },
-    revokeSessions: sessionRevocationRequired({
-      kind: input.to === 'archived' ? 'account_archived' : 'account_reactivated',
-    }),
+    revokeAllAccess: [adultRevocation(input.account.humanAccountId, 'adult_lifecycle_changed')],
   };
 }
 
@@ -148,8 +178,9 @@ export function createHousehold(input: {
   displayName: string;
   classification: Household['classification'];
   seatLimit: number;
+  schoolSeatAllowance: SchoolSeatAllowance | null;
   occurredAt: string;
-}): Household {
+}): AdminHouseholdRecord {
   assertRuntimeAdmin(input.actor, input.owner);
   assertScope(input.actor, input.ownerAccount);
   if (
@@ -160,9 +191,13 @@ export function createHousehold(input: {
   ) {
     fail('invalidState', 'Household owner requires one active Parent membership.');
   }
-  if (!Number.isSafeInteger(input.seatLimit) || input.seatLimit < 1) {
-    fail('invalidInput', 'Household requires a positive Student seat limit.');
-  }
+  assertSeatAllowance(
+    input.actor,
+    safeDirectoryIdentifier(input.householdId, 'household'),
+    input.classification,
+    input.seatLimit,
+    input.schoolSeatAllowance,
+  );
   const occurredAt = validDate(input.occurredAt).toISOString();
   return {
     product: ONE_TIME_PRODUCT_SCOPE,
@@ -176,6 +211,8 @@ export function createHousehold(input: {
     seatLimit: input.seatLimit,
     activeSeatCount: 0,
     state: 'active',
+    accessState: 'inactive',
+    schoolSeatAllowance: input.schoolSeatAllowance,
     version: 1,
     createdAt: occurredAt,
     updatedAt: occurredAt,
@@ -184,16 +221,24 @@ export function createHousehold(input: {
 
 export function editHousehold(input: {
   actor: AdminDirectoryActor;
-  household: Household;
+  household: AdminHouseholdRecord;
   expectedVersion: number;
   displayName: string;
   classification: Household['classification'];
   seatLimit: number;
+  schoolSeatAllowance: SchoolSeatAllowance | null;
   occurredAt: string;
 }) {
   assertRuntimeAdmin(input.actor, input.household);
   assertVersion(input.household.version, input.expectedVersion);
-  if (!Number.isSafeInteger(input.seatLimit) || input.seatLimit < input.household.activeSeatCount) {
+  assertSeatAllowance(
+    input.actor,
+    input.household.householdId,
+    input.classification,
+    input.seatLimit,
+    input.schoolSeatAllowance,
+  );
+  if (input.seatLimit < input.household.activeSeatCount) {
     fail('seatLimit', 'Seat limit cannot be lower than active Student seats.');
   }
   return {
@@ -201,6 +246,7 @@ export function editHousehold(input: {
     displayName: safeDirectoryLabel(input.displayName, 'household_name'),
     classification: input.classification,
     seatLimit: input.seatLimit,
+    schoolSeatAllowance: input.schoolSeatAllowance,
     version: input.household.version + 1,
     updatedAt: validDate(input.occurredAt).toISOString(),
   };
@@ -208,38 +254,89 @@ export function editHousehold(input: {
 
 export function transitionHousehold(input: {
   actor: AdminDirectoryActor;
-  household: Household;
+  household: AdminHouseholdRecord;
   expectedVersion: number;
   to: 'archived' | 'active';
+  lockedActiveStudents: readonly AdminStudentRecord[];
+  owner: AdultIdentity;
+  ownerAccount: HumanAccount;
   occurredAt: string;
 }) {
   assertRuntimeAdmin(input.actor, input.household);
   assertVersion(input.household.version, input.expectedVersion);
   if (input.household.state === input.to)
     fail('invalidState', 'Household already has requested state.');
+  for (const student of input.lockedActiveStudents) {
+    assertScope(input.actor, student);
+    if (student.householdId !== input.household.householdId || student.state !== 'active') {
+      fail('crossScope', 'Locked active Student inventory is invalid.');
+    }
+  }
+  if (
+    input.to === 'active' &&
+    (input.owner.adultId !== input.household.ownerAdultId ||
+      input.ownerAccount.humanAccountId !== input.household.ownerHumanAccountId ||
+      input.ownerAccount.adultId !== input.owner.adultId ||
+      input.owner.state !== 'active' ||
+      input.ownerAccount.state !== 'active' ||
+      !input.ownerAccount.memberships.includes('parent'))
+  ) {
+    fail('invalidState', 'Household restore requires its active locked owner.');
+  }
+  assertScope(input.actor, input.owner, input.ownerAccount);
+  const occurredAt = validDate(input.occurredAt).toISOString();
   return {
-    ...input.household,
-    state: input.to,
-    version: input.household.version + 1,
-    updatedAt: validDate(input.occurredAt).toISOString(),
+    household: {
+      ...input.household,
+      state: input.to,
+      accessState: 'inactive' as const,
+      version: input.household.version + 1,
+      updatedAt: occurredAt,
+    },
+    revokeAllAccess:
+      input.to === 'archived'
+        ? [
+            {
+              subjectType: 'household' as const,
+              subjectId: input.household.householdId,
+              reason: 'household_archived' as const,
+            },
+            ...input.lockedActiveStudents.map((student) =>
+              studentRevocation(student.studentId, 'student_archived'),
+            ),
+          ]
+        : [],
   };
 }
 
 export function createStudent(input: {
   actor: AdminDirectoryActor;
-  household: Household;
+  household: AdminHouseholdRecord;
+  expectedHouseholdVersion: number;
   studentId: string;
   displayName: string;
   username: string;
+  lockedUsernameMatch: AdminStudentRecord | null;
   relationship: StudentProfile['relationship'];
   selfAdultId: string | null;
   credentialId: string;
+  replacementCredentialHash: string;
+  serviceAccountAcceptance: ServiceAccountAcceptanceEvidence;
+  currentServiceAccountVersion: string;
   immutableHistoryReference: string;
   occurredAt: string;
-}): { student: AdminStudentRecord; household: Household } {
+}): {
+  student: AdminStudentRecord;
+  household: AdminHouseholdRecord;
+  credentialReset: StudentCredentialReset;
+  enrollment: CanonicalStudentEnrollment;
+  serviceAccountAcceptance: ServiceAccountAcceptanceEvidence;
+} {
   assertRuntimeAdmin(input.actor, input.household);
+  assertVersion(input.household.version, input.expectedHouseholdVersion);
   if (
     input.household.state !== 'active' ||
+    input.household.accessState === 'inactive' ||
     input.household.activeSeatCount >= input.household.seatLimit
   ) {
     fail('seatLimit', 'Household has no available Student seat.');
@@ -251,30 +348,66 @@ export function createStudent(input: {
   ) {
     fail('invalidInput', 'Student relationship and self identity must match.');
   }
+  const studentId = safeDirectoryIdentifier(input.studentId, 'student');
+  const username = safeUsername(input.username);
+  assertUsernameAvailable(username, studentId, input.lockedUsernameMatch);
+  assertCurrentCredentialHash(input.replacementCredentialHash);
+  assertServiceAccountAcceptance(
+    input.actor,
+    input.serviceAccountAcceptance,
+    input.household.householdId,
+    studentId,
+    input.currentServiceAccountVersion,
+  );
   const occurredAt = validDate(input.occurredAt).toISOString();
+  const credentialId = safeDirectoryIdentifier(input.credentialId, 'credential');
+  const credentialReset: StudentCredentialReset = {
+    product: ONE_TIME_PRODUCT_SCOPE,
+    runtimeTier: input.actor.runtimeTier,
+    verificationEnvironmentId: input.actor.verificationEnvironmentId,
+    resetId: adminDirectorySha256(`${studentId}:1:${occurredAt}`),
+    kind: 'initial_activation',
+    studentId,
+    credentialId,
+    replacementCredentialHash: input.replacementCredentialHash,
+    credentialVersion: 1,
+    revocationReadbackId: null,
+    discloseExistingPassword: false,
+    createdAt: occurredAt,
+  };
+  const enrollment = activeEnrollment(
+    input.actor,
+    studentId,
+    input.household.householdId,
+    input.serviceAccountAcceptance,
+    occurredAt,
+  );
   return {
     student: {
       product: ONE_TIME_PRODUCT_SCOPE,
       runtimeTier: input.actor.runtimeTier,
       verificationEnvironmentId: input.actor.verificationEnvironmentId,
-      studentId: safeDirectoryIdentifier(input.studentId, 'student'),
+      studentId,
       householdId: input.household.householdId,
       relationship: input.relationship,
       selfAdultId: input.selfAdultId,
       state: 'active',
-      credentialId: safeDirectoryIdentifier(input.credentialId, 'credential'),
+      credentialId,
       immutableHistoryReference: safeDirectoryIdentifier(
         input.immutableHistoryReference,
         'history',
       ),
       displayName: safeDirectoryLabel(input.displayName, 'student_name'),
-      username: safeUsername(input.username),
+      username,
       credentialVersion: 1,
-      credentialState: 'reset_required',
+      credentialState: 'active',
       version: 1,
       createdAt: occurredAt,
       updatedAt: occurredAt,
     },
+    credentialReset,
+    enrollment,
+    serviceAccountAcceptance: input.serviceAccountAcceptance,
     household: {
       ...input.household,
       activeSeatCount: input.household.activeSeatCount + 1,
@@ -290,14 +423,17 @@ export function editStudent(input: {
   expectedVersion: number;
   displayName: string;
   username: string;
+  lockedUsernameMatch: AdminStudentRecord | null;
   occurredAt: string;
 }) {
   assertRuntimeAdmin(input.actor, input.student);
   assertVersion(input.student.version, input.expectedVersion);
+  const username = safeUsername(input.username);
+  assertUsernameAvailable(username, input.student.studentId, input.lockedUsernameMatch);
   return {
     ...input.student,
     displayName: safeDirectoryLabel(input.displayName, 'student_name'),
-    username: safeUsername(input.username),
+    username,
     version: input.student.version + 1,
     updatedAt: validDate(input.occurredAt).toISOString(),
   };
@@ -306,10 +442,15 @@ export function editStudent(input: {
 export function transitionStudent(input: {
   actor: AdminDirectoryActor;
   student: AdminStudentRecord;
-  household: Household;
+  household: AdminHouseholdRecord;
   expectedStudentVersion: number;
   expectedHouseholdVersion: number;
   to: 'archived' | 'active';
+  lockedUsernameMatch: AdminStudentRecord | null;
+  currentEnrollment: CanonicalStudentEnrollment;
+  replacementCredentialHash: string | null;
+  serviceAccountAcceptance: ServiceAccountAcceptanceEvidence | null;
+  currentServiceAccountVersion: string;
   occurredAt: string;
 }) {
   assertRuntimeAdmin(input.actor, input.student);
@@ -321,6 +462,12 @@ export function transitionStudent(input: {
   }
   if (input.student.state === input.to)
     fail('invalidState', 'Student already has requested state.');
+  if (
+    input.to === 'active' &&
+    (input.household.state !== 'active' || input.household.accessState === 'inactive')
+  ) {
+    fail('invalidState', 'Student restore requires active household access.');
+  }
   const delta = input.to === 'active' ? 1 : -1;
   if (
     input.household.activeSeatCount + delta < 0 ||
@@ -329,12 +476,58 @@ export function transitionStudent(input: {
     fail('seatLimit', 'Student transition conflicts with household seat capacity.');
   }
   const occurredAt = validDate(input.occurredAt).toISOString();
+  assertUsernameAvailable(
+    input.student.username,
+    input.student.studentId,
+    input.lockedUsernameMatch,
+  );
+  let credentialReset: StudentCredentialReset | null = null;
+  let enrollment: CanonicalStudentEnrollment;
+  if (input.to === 'active') {
+    if (!input.replacementCredentialHash || !input.serviceAccountAcceptance) {
+      fail('invalidInput', 'Student restore requires a new credential and current acceptance.');
+    }
+    assertCurrentCredentialHash(input.replacementCredentialHash);
+    assertServiceAccountAcceptance(
+      input.actor,
+      input.serviceAccountAcceptance,
+      input.household.householdId,
+      input.student.studentId,
+      input.currentServiceAccountVersion,
+    );
+    credentialReset = credentialWrite(
+      input.actor,
+      input.student,
+      input.replacementCredentialHash,
+      'reset',
+      occurredAt,
+      null,
+    );
+    enrollment = activeEnrollment(
+      input.actor,
+      input.student.studentId,
+      input.household.householdId,
+      input.serviceAccountAcceptance,
+      occurredAt,
+    );
+  } else {
+    assertEnrollment(input.actor, input.currentEnrollment, input.student);
+    enrollment = {
+      ...input.currentEnrollment,
+      state: 'revoked',
+      version: input.currentEnrollment.version + 1,
+      updatedAt: occurredAt,
+    };
+  }
   return {
     student: {
       ...input.student,
       state: input.to,
-      credentialState:
-        input.to === 'archived' ? ('disabled' as const) : ('reset_required' as const),
+      credentialState: input.to === 'archived' ? ('disabled' as const) : ('active' as const),
+      credentialVersion:
+        input.to === 'active'
+          ? input.student.credentialVersion + 1
+          : input.student.credentialVersion,
       version: input.student.version + 1,
       updatedAt: occurredAt,
     },
@@ -344,7 +537,13 @@ export function transitionStudent(input: {
       version: input.household.version + 1,
       updatedAt: occurredAt,
     },
-    revokeSessions: input.to === 'archived',
+    credentialReset,
+    enrollment,
+    serviceAccountAcceptance: input.to === 'active' ? input.serviceAccountAcceptance : null,
+    revokeAllAccess:
+      input.to === 'archived'
+        ? [studentRevocation(input.student.studentId, 'student_archived')]
+        : [],
   };
 }
 
@@ -352,9 +551,12 @@ export function planStudentCredentialReset(input: {
   actor: AdminDirectoryActor;
   student: AdminStudentRecord;
   replacementCredentialHash: string;
-  studentSessionIds: readonly string[];
   occurredAt: string;
-}): { student: AdminStudentRecord; reset: StudentCredentialReset } {
+}): {
+  student: AdminStudentRecord;
+  reset: StudentCredentialReset;
+  revokeAllAccess: readonly RevokeAllActiveAccessCommand[];
+} {
   assertRuntimeAdmin(input.actor, input.student);
   const authorization = authorizeStudentCredentialChange({
     actor: { role: input.actor.principal.role, household_ids: [] },
@@ -365,14 +567,8 @@ export function planStudentCredentialReset(input: {
     },
   });
   if (!authorization.allowed) fail('credentialDenied', authorization.public_message);
-  if (
-    !input.replacementCredentialHash.startsWith('$argon2id$') ||
-    /(?:password|secret|bearer)/iu.test(input.replacementCredentialHash)
-  ) {
-    fail('invalidInput', 'Credential reset accepts only a protected Argon2id hash.');
-  }
+  assertCurrentCredentialHash(input.replacementCredentialHash);
   const occurredAt = validDate(input.occurredAt).toISOString();
-  const sessionIds = uniqueIds(input.studentSessionIds);
   const student = {
     ...input.student,
     credentialVersion: input.student.credentialVersion + 1,
@@ -382,21 +578,15 @@ export function planStudentCredentialReset(input: {
   };
   return {
     student,
-    reset: {
-      product: ONE_TIME_PRODUCT_SCOPE,
-      runtimeTier: input.actor.runtimeTier,
-      verificationEnvironmentId: input.actor.verificationEnvironmentId,
-      resetId: adminDirectorySha256(
-        `${student.studentId}:${student.credentialVersion}:${occurredAt}`,
-      ),
-      studentId: student.studentId,
-      credentialId: student.credentialId,
-      replacementCredentialHash: input.replacementCredentialHash,
-      credentialVersion: student.credentialVersion,
-      studentSessionIdsRevoked: sessionIds,
-      discloseExistingPassword: false,
-      createdAt: occurredAt,
-    },
+    reset: credentialWrite(
+      input.actor,
+      input.student,
+      input.replacementCredentialHash,
+      'reset',
+      occurredAt,
+      null,
+    ),
+    revokeAllAccess: [studentRevocation(input.student.studentId, 'student_credential_changed')],
   };
 }
 
@@ -446,6 +636,171 @@ function safeUsername(value: string) {
     fail('invalidInput', 'Student username must be local, opaque, and email-free.');
   }
   return normalized;
+}
+
+function assertSeatAllowance(
+  actor: AdminDirectoryActor,
+  householdId: string,
+  classification: Household['classification'],
+  seatLimit: number,
+  allowance: SchoolSeatAllowance | null,
+) {
+  if (classification === 'family') {
+    if (seatLimit !== FAMILY_STUDENT_SEAT_LIMIT || allowance !== null) {
+      fail('seatLimit', 'A Family household has exactly three Student seats.');
+    }
+    return;
+  }
+  if (
+    !allowance ||
+    allowance.householdId !== householdId ||
+    allowance.seatLimit !== seatLimit ||
+    !Number.isSafeInteger(seatLimit) ||
+    seatLimit < 1
+  ) {
+    fail('seatLimit', 'A School seat change requires its exact allowance.');
+  }
+  assertScope(actor, allowance);
+  safeDirectoryIdentifier(allowance.contractReference, 'contract');
+  safeDirectoryLabel(allowance.reason, 'school_seat_reason');
+  validDate(allowance.authorizedAt);
+}
+
+function assertUsernameAvailable(
+  normalizedUsername: string,
+  studentId: string,
+  lockedMatch: AdminStudentRecord | null,
+) {
+  if (
+    lockedMatch &&
+    (lockedMatch.studentId !== studentId || lockedMatch.username !== normalizedUsername)
+  ) {
+    fail('invalidInput', 'Student username is already assigned.');
+  }
+}
+
+function assertCurrentCredentialHash(value: string) {
+  if (
+    !value.startsWith('argon2id-v1$v=19$') ||
+    authPasswordHashNeedsUpgrade(value) ||
+    /(?:password|secret|bearer)/iu.test(value)
+  ) {
+    fail('invalidInput', 'Credential must match the current F03 Argon2id policy.');
+  }
+}
+
+function assertServiceAccountAcceptance(
+  actor: AdminDirectoryActor,
+  evidence: ServiceAccountAcceptanceEvidence,
+  householdId: string,
+  studentId: string,
+  currentServiceAccountVersion: string,
+) {
+  assertScope(actor, evidence);
+  if (
+    evidence.householdId !== householdId ||
+    evidence.studentId !== studentId ||
+    evidence.acceptedServiceAccountVersion !== currentServiceAccountVersion
+  ) {
+    fail('invalidState', 'Current exact service-account acceptance is required.');
+  }
+  for (const value of [
+    evidence.acceptanceId,
+    evidence.acceptedByAdultId,
+    evidence.immutableEvidenceReference,
+    currentServiceAccountVersion,
+  ]) {
+    safeDirectoryIdentifier(value, 'acceptance');
+  }
+  if (!/^[a-f0-9]{64}$/u.test(evidence.canonicalRequestHash)) {
+    fail('invalidInput', 'Acceptance request hash is invalid.');
+  }
+  validDate(evidence.acceptedAt);
+}
+
+function activeEnrollment(
+  actor: AdminDirectoryActor,
+  studentId: string,
+  householdId: string,
+  evidence: ServiceAccountAcceptanceEvidence,
+  occurredAt: string,
+): CanonicalStudentEnrollment {
+  return {
+    product: ONE_TIME_PRODUCT_SCOPE,
+    runtimeTier: actor.runtimeTier,
+    verificationEnvironmentId: actor.verificationEnvironmentId,
+    enrollmentId: adminDirectorySha256(`${householdId}:${studentId}:${evidence.acceptanceId}`),
+    householdId,
+    studentId,
+    serviceAccountAcceptanceId: evidence.acceptanceId,
+    state: 'active',
+    version: 1,
+    updatedAt: occurredAt,
+  };
+}
+
+function assertEnrollment(
+  actor: AdminDirectoryActor,
+  enrollment: CanonicalStudentEnrollment,
+  student: AdminStudentRecord,
+) {
+  assertScope(actor, enrollment);
+  if (
+    enrollment.studentId !== student.studentId ||
+    enrollment.householdId !== student.householdId ||
+    enrollment.state !== 'active'
+  ) {
+    fail('invalidState', 'Canonical active enrollment is required.');
+  }
+}
+
+function credentialWrite(
+  actor: AdminDirectoryActor,
+  student: AdminStudentRecord,
+  replacementCredentialHash: string,
+  kind: StudentCredentialReset['kind'],
+  occurredAt: string,
+  revocationReadbackId: string | null,
+): StudentCredentialReset {
+  const credentialVersion = student.credentialVersion + (kind === 'reset' ? 1 : 0);
+  return {
+    product: ONE_TIME_PRODUCT_SCOPE,
+    runtimeTier: actor.runtimeTier,
+    verificationEnvironmentId: actor.verificationEnvironmentId,
+    resetId: adminDirectorySha256(
+      `${student.studentId}:${credentialVersion}:${occurredAt}:${kind}`,
+    ),
+    kind,
+    studentId: student.studentId,
+    credentialId: student.credentialId,
+    replacementCredentialHash,
+    credentialVersion,
+    revocationReadbackId,
+    discloseExistingPassword: false,
+    createdAt: occurredAt,
+  };
+}
+
+function adultRevocation(
+  humanAccountId: string,
+  reason: RevokeAllActiveAccessCommand['reason'],
+): RevokeAllActiveAccessCommand {
+  return {
+    subjectType: 'adult',
+    subjectId: safeDirectoryIdentifier(humanAccountId, 'human_account'),
+    reason,
+  };
+}
+
+function studentRevocation(
+  studentId: string,
+  reason: RevokeAllActiveAccessCommand['reason'],
+): RevokeAllActiveAccessCommand {
+  return {
+    subjectType: 'student',
+    subjectId: safeDirectoryIdentifier(studentId, 'student'),
+    reason,
+  };
 }
 
 function uniqueIds(values: readonly string[]) {
