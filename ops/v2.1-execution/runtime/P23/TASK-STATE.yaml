@@ -28,8 +28,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: route_accessibility_correction
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing_branch
 claimed_by: codex-p23-worker-f7e3fb0e
 claim_time: '2026-07-29T08:43:00Z'
@@ -41,33 +41,36 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T09:37:54Z'
     state_based_on_control_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
     phase_scope: P23_atomic_claim_route_accessibility_correction_only
-    lease_released_at: null
-    state: active
+    lease_released_at: '2026-07-29T08:54:00Z'
+    state: released
 lease_expires_at: '2026-07-29T09:37:54Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T08:43:00Z'
+lease_released_at: '2026-07-29T08:54:00Z'
+last_heartbeat_at: '2026-07-29T08:54:00Z'
 controller_authorization_sha: a95a1406200b139b4acd501c7b96821e6f74070a
 authorization_acquisition_parent_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
+residual_claim_reconciled_control_sha: 3df02f221b14c937dd1b721013b5067245fb4493
+residual_claim_reconciled_acquisition_parent_sha: 4ca740bd8c2bbfcae7755038d88bdc616dd3444a
+atomic_residual_claim_head_sha: 433cc88b34d99099ca75f64876713406c6e43053
 ready_entry_state_based_on_control_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
 ready_entry_payload_digest: 976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204
 phase_scope: P23_atomic_claim_route_accessibility_correction_only
-state_based_on_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
-last_implementation_commit_sha: 8fdeaddb84a6c8e71271711fbd6b095046b6df21
+state_based_on_head_sha: dafdd046b7048e67829b2f2a2496c8b830b23fec
+last_implementation_commit_sha: dafdd046b7048e67829b2f2a2496c8b830b23fec
 prior_claim_id: 29e8b1d9-8769-479d-8a7a-df26137f185a
 prior_atomic_claim_head_sha: b341ce5209909771647c2ca02167e077468fd597
 prior_claim_reconciled_control_sha: 331ffc12ba126aafa2c25fb48293a7fd0a8734e6
 prior_rejected_final_head_sha: 39b050949a0874a1ea397c6c3f3420eb4fa19ccc
 rejected_final_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
 rejection_status: residual_correction_required_before_admission
-implementation_artifact_digest: eb657253f3b531aa0c34b800a7c6a9643e4cfdacb75ca986193f21cdad1511f6
+implementation_artifact_digest: d6a527d064c3289db0acb9f8482645e012bd0384990379b27644c55758a31dcc
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
   the 13 implementation and focused-test artifacts, sorted lexicographically
   by path, with LF separators and no final newline.
 implementation_artifacts:
-  apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx: 196380406fca191b6a208755b7bdd1e6da036b273ae5b0b4e0d5408c5f38a093
-  apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx: 5e88bd86998f9d00b3ae2cc338e082aa488d97ed3be1c36909d9ac7ede1382a4
-  apps/web/src/client/app/student/notifications/index.ts: 1f4367ec8aa5c99ac6afeba8ce3fb33c5cb087f1f0588f11ec06366efc1e1af3
+  apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx: 5eb34d0d68b4dc46ef94a7d99f083b29ca2ba9eb684018e94bfee4974f5ebd14
+  apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx: cd79e280aa6c8149e5fc8fb0f3cba5a8e650cdc9336d28c969071800b58185a3
+  apps/web/src/client/app/student/notifications/index.ts: 578f22c4905ce5becb0bad9999850d94af2cbf9c787197974dc854e16c7ef48f
   apps/web/src/server/features/notifications/student/index.ts: 5a2cfb38692f7d14d6000b9c2686e4c49c78979de038a0dc5d93cbb9fbb5f0f2
   apps/web/src/server/features/notifications/student/service.test.ts: da456a22ee28f9a841dd4727b841a6b0871b4a5949b36ba8a2dd99ddc8cea62f
   apps/web/src/server/features/notifications/student/service.ts: dee31945fcff6352d58c413df32403cb1f4ee228b17897f2d1955e52042c7dfa
@@ -75,9 +78,9 @@ implementation_artifacts:
   packages/db/src/notifications/student/index.ts: b3aeb5580165804053e5816109274280e9b371ccee09b5ecff09410b283cfb1f
   packages/db/src/notifications/student/repository.ts: 013313e1642f6c52f8666a06be1079ae7538bc876ab97460f8bdf2ca1d6e78fc
   packages/domain/src/notifications/student/errors.ts: 9b252d9132c7037e129aed9331b699c4db3046d2ad9ac0ebb57034876df61b4f
-  packages/domain/src/notifications/student/index.ts: ccde9d2add5f7d63317f70dc89b11c89f455b56d1ddb9914c535d8b8eb27432a
-  packages/domain/src/notifications/student/lifecycle.test.ts: 5a30de340c1e7b10f75ef27c3cac15eb58be793e2b73bbd02a8d6835d7efa707
-  packages/domain/src/notifications/student/lifecycle.ts: 2d5223fad39d361ba8cfc880dedd868314cb5a894a9071996f3cc769ff6c4f6e
+  packages/domain/src/notifications/student/index.ts: 2de9351d8c6c9404dd294baf7f74f97c0c3af1c1489fc0e10daf4562cf125419
+  packages/domain/src/notifications/student/lifecycle.test.ts: c757098dcbb733186c40812e9a13af101734b22553e657ca5fea3088835c5896
+  packages/domain/src/notifications/student/lifecycle.ts: 8b5b3129046476ef51048affd165d4671b993a5164dc567a55cfc52aa3a876e6
 steward_request_payload_digests:
   P23-migration-001: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
   P23-registration-001: 20d08ffa80042c0f894eba99fcc932409f90bb9c511c1e49705fd026bff1d261
@@ -118,18 +121,21 @@ completed_steps:
   - Verified containing authorization a95a1406200b139b4acd501c7b96821e6f74070a, its sole acquisition parent 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4, exact clean local/tracking/remote rejected head 87da1f244ea8e19838c2695678089d1bcbe9687a, fresh claim f7e3fb0e-a8d4-416b-8c79-786a696e2dc4, sole unexpired STUDENT_NOTIFICATIONS lease f7b63d5e-489c-40aa-a793-9a7210f91bca, and zero effect locks.
   - Recomputed the 2806-byte canonical recursively key-sorted READY preimage and matched digest 976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204.
   - Claimed only the three-file residual-correction checkpoint; no product, test, request, migration, registration, steward, provider, send, or external-effect work was performed.
+  - C00 reconciled residual claim 433cc88b34d99099ca75f64876713406c6e43053 at control 3df02f221b14c937dd1b721013b5067245fb4493 with sole acquisition parent 4ca740bd8c2bbfcae7755038d88bdc616dd3444a.
+  - Replaced nonexistent class-change/cancellation schedule actions with canonical /app/student/calendar and constrained notification actions to the exact closed static and opaque-identifier Student route catalog.
+  - Added ArrowLeft/ArrowRight wrapping plus Home/End tab selection with preventDefault, controlled filter selection, actual button-ref focus, and preservation of tab focus across the controlled rerender.
+  - Added direct closed-route admission/rejection and tab-keyboard/focus tests; passed 3 files and 20 tests, workspace typecheck, focused ESLint/Prettier, exact residual scope, diff hygiene, and secret scan across 2876 text files.
+  - Corrected dependency ancestry evidence to state only integration/interface heads are ancestors while task heads are exact control identity bindings, committed implementation dafdd046b7048e67829b2f2a2496c8b830b23fec, reproduced all artifact/request digests, and released the writer lease before expiry.
 remaining_steps:
-  - Commit, normally push, and remote-verify this exact three-runtime-file residual-correction claim.
-  - C00 must reconcile the exact pushed claim head before P23 changes product, tests, requests, or any other file.
-  - Only after explicit reconciliation may P23 correct the enumerated residual route/accessibility defects and dependency-ancestry statement.
-next_action: Stop after pushing and remote-verifying this exact three-file residual-correction claim; wait for C00 reconciliation.
+  - C00 review or integrate the superseding ready-for-review final; migration and central registration remain unapplied.
+next_action: REVIEW_OR_INTEGRATE the superseding P23 final after exact remote verification.
 requirements:
-  OTV2-NOTIFY-203: residual_correction_claimed
-  OTV2-NOTIFY-237: residual_correction_claimed
+  OTV2-NOTIFY-203: implementation_verified_residual_corrected
+  OTV2-NOTIFY-237: implementation_verified_residual_corrected
 acceptance_cases:
-  OTV2-NOTIFY-203-AC01: rejected_requires_residual_correction
-  OTV2-NOTIFY-237-CATEGORY-LIFETIME: prior_correction_passes_residual_route_fix_required
-  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: rejected_requires_residual_accessibility_correction
+  OTV2-NOTIFY-203-AC01: task_owned_residual_corrected_assertions_passed
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: task_owned_corrected_assertions_passed
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: task_owned_residual_corrected_assertions_passed
 changed_paths:
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
@@ -168,13 +174,13 @@ verification:
     - command: exact C00 reconciliation and resumed-head verification
       result: passed; control 8172f8cd, sole parent 98cde826, and atomic claim head 05ef6060
     - command: npx vitest run packages/domain/src/notifications/student/lifecycle.test.ts apps/web/src/server/features/notifications/student/service.test.ts apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
-      result: passed; 3 files and 13 tests
+      result: passed; 3 files and 20 tests
     - command: npm run typecheck -- --pretty false
       result: passed
     - command: focused ESLint and Prettier over all P23 source, test, runtime, and request paths
       result: passed
     - command: exact raw Git-blob artifact and steward-request digest reproduction
-      result: passed; 13 artifacts, two immutable requests, artifact digest 804943c4, request aggregate 144e8ebb
+      result: passed; 13 artifacts, two unchanged requests, artifact digest d6a527d0, request aggregate f984e5ee
     - command: exact start-to-implementation changed-path audit and git diff --check
       result: passed; only normalized P23 roots, P23 runtime memory, and structured steward requests
     - command: npm run secret:scan
