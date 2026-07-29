@@ -7,6 +7,7 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
 branch: codex/v21-p22-learning-engagement
 start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+claim_checkpoint_sha: 4acf752ddf6e173b3a41714e00bce28dab491dd0
 dependency_heads:
   F02:
     required_state: interface_ready_integrated
@@ -38,75 +39,101 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: implementation
+status: ready_for_review
+phase: review
 claim_mode: create_new_branch
 claimed_by: codex-p22-worker-eba236e0
 claim_time: '2026-07-29T03:33:51Z'
 claim_id: eba236e0-164c-4b7d-a71e-20646f4ec5ab
+claim_released_at: '2026-07-29T03:54:57Z'
 writer_slot_leases:
   - slot: LEARNING_ENGAGEMENT
     lease_id: 93a7fddb-d025-475d-8d09-f9c9e7661515
     lease_issued_at: '2026-07-29T03:20:30Z'
     lease_expires_at: '2026-07-29T04:20:30Z'
     state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+    released_at: '2026-07-29T03:54:57Z'
+    release_reason: terminal_ready_for_review
 lease_expires_at: '2026-07-29T04:20:30Z'
-last_heartbeat_at: '2026-07-29T03:33:51Z'
+last_heartbeat_at: '2026-07-29T03:54:57Z'
 controller_authorization_sha: ab393d7eb3b7f55b910ba110949c05c40b7383e6
+resume_containing_control_sha: 9a8f5265e5ba8457fb1427abebda83d1d91499af
 ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
 ready_entry_payload_digest: 983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471
-state_based_on_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-last_implementation_commit_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+state_based_on_head_sha: 374a2d0fbfb5e18e26d7187d0e0760e0e612bb10
+last_implementation_commit_sha: 374a2d0fbfb5e18e26d7187d0e0760e0e612bb10
+implementation_artifact_digest: a9ecb2fe48a9da6e27a9527b31b5a8b566ef82117a891ab2e6c99f193111c174
 completed_steps:
-  - Fetched containing control ab393d7eb3b7f55b910ba110949c05c40b7383e6 and verified its sole parent/acquisition 3c4130ae4d015471ce21e7d70a39d98dde113318.
-  - Verified exact authorized start f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635, exact locked packet/context/package/source digests, and all F02/F05/F07 integrated interface bindings.
-  - Verified remote branch codex/v21-p22-learning-engagement was absent and created the local branch at the exact authorized start.
-  - Bound claim eba236e0-164c-4b7d-a71e-20646f4ec5ab, sole LEARNING_ENGAGEMENT lease 93a7fddb-d025-475d-8d09-f9c9e7661515, ready digest 983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471, and zero effect locks.
+  - Verified reconciled control 9a8f5265 records the exact 4acf752d claim head, claim, branch, and sole unexpired LEARNING_ENGAGEMENT lease.
+  - Read the locked packet, context, prompt, cited source specifications, and F02/F05/F07 handoffs.
+  - Implemented private Student question submission, Rabbi/Admin answer and moderation lifecycle, idempotent recognition, audited correction, and Parent/peer denial.
+  - Implemented reconnect-deduplicated attendance, household/Student/Admin projections, audited correction, fixed badge thresholds, and unique Admin-published review completion.
+  - Implemented program/class/Parent/Student announcements with read state and authenticated, class-scoped, separate rolling-30-day leaderboards.
+  - Implemented default-off recognition consent, self label You, first-name/last-initial opt-in, and stable class-scoped aliases after withdrawal without rank mutation.
+  - Added parameterized PostgreSQL repository and schema contract, registration-neutral server service, and accessible Admin/Student views.
+  - Published migration and registration steward requests without changing migrations, central composers, barrels, manifests, or locks.
+  - Passed seven focused assertions, full workspace typecheck, focused ESLint/Prettier, diff checks, and repository secret scan.
 remaining_steps:
-  - Push and report this exact three-file atomic new-branch claim.
-  - Stop before product work and await C00 reconciliation of the exact remote claim head.
-next_action: Push and report the atomic claim checkpoint, then stop until C00 consumes its exact remote head and explicitly resumes P22.
+  - I36/F02 review and fulfill P22-migration-001 and P22-registration-001 before candidate integration.
+  - Candidate-bound staging and production evidence remains with downstream verification tasks.
+next_action: Review implementation commit 374a2d0f and fulfill the two structured steward requests without semantic weakening.
 requirements:
-  OTV2-LEARNING-093: claimed
-  OTV2-LEARNING-094: claimed
-  OTV2-LEARNING-095: claimed
-  OTV2-LEARNING-096: claimed
-  OTV2-LEARNING-097: claimed
-  OTV2-LEARNING-098: claimed
-  OTV2-LEARNING-099: claimed
-  OTV2-LEARNING-100: claimed
-  OTV2-LEARNING-196: claimed
-  OTV2-LEARNING-197: claimed
-  OTV2-LEARNING-238: claimed
+  OTV2-LEARNING-093: implementation_verified
+  OTV2-LEARNING-094: implementation_verified
+  OTV2-LEARNING-095: implementation_verified
+  OTV2-LEARNING-096: implementation_verified
+  OTV2-LEARNING-097: implementation_verified
+  OTV2-LEARNING-098: implementation_verified
+  OTV2-LEARNING-099: implementation_verified
+  OTV2-LEARNING-100: implementation_verified
+  OTV2-LEARNING-196: implementation_verified
+  OTV2-LEARNING-197: implementation_verified
+  OTV2-LEARNING-238: implementation_verified
 acceptance_cases:
-  OTV2-LEARNING-093-AC01: pending_implementation
-  OTV2-LEARNING-094-AC01: pending_implementation
-  OTV2-LEARNING-095-AC01: pending_implementation
-  OTV2-LEARNING-096-AC01: pending_implementation
-  OTV2-LEARNING-097-AC01: pending_implementation
-  OTV2-LEARNING-098-AC01: pending_implementation
-  OTV2-LEARNING-099-AC01: pending_implementation
-  OTV2-LEARNING-100-AC01: pending_implementation
-  OTV2-LEARNING-196-AC01: pending_implementation
-  OTV2-LEARNING-197-AC01: pending_implementation
-  OTV2-LEARNING-238-QUESTION-DEDUPE: pending_implementation
-  OTV2-LEARNING-238-RECOGNITION-CONSENT: pending_implementation
+  OTV2-LEARNING-093-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-094-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-095-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-096-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-097-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-098-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-099-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-100-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-196-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-197-AC01: task_owned_assertions_passed
+  OTV2-LEARNING-238-QUESTION-DEDUPE: task_owned_assertions_passed
+  OTV2-LEARNING-238-RECOGNITION-CONSENT: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx
+  - apps/web/src/client/app/student/learning/StudentLearningOverview.tsx
+  - apps/web/src/server/features/learning/service.ts
+  - packages/contracts/src/learning/index.ts
+  - packages/db/src/learning/repository.ts
+  - packages/db/src/learning/schema-contract.ts
+  - packages/domain/src/learning/engagement.ts
+  - packages/domain/src/learning/engagement.test.ts
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-001.yaml
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-registration-001.yaml
   - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P22/HANDOFF.md
   - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
 migrations: []
-steward_requests: []
+steward_requests:
+  - P22-migration-001
+  - P22-registration-001
 verification:
   commands_run:
-    - command: containing control and sole-parent/acquisition verification
-      result: passed; ab393d7e has sole parent 3c4130ae
-    - command: exact authorized start and local/remote branch-absence verification
-      result: passed; local branch created at f1cecb53 and remote branch absent
-    - command: ready entry claim, digest, dependency, writer lease, and effect-lock verification
-      result: passed; claim eba236e0, digest 983929b1, lease 93a7fddb expires 2026-07-29T04:20:30Z, and zero effect locks
-    - command: exact claim-only changed-path verification
-      result: passed; only the three P22 runtime handoff files
+    - command: npx vitest run packages/domain/src/learning/engagement.test.ts
+      result: passed; seven focused positive/negative/authorization/isolation/deduplication/correction/consent assertions
+    - command: npm run typecheck
+      result: passed
+    - command: focused ESLint over all P22 TypeScript artifacts
+      result: passed
+    - command: focused Prettier over all P22 TypeScript/YAML artifacts
+      result: passed
+    - command: git diff --check
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2747 repository text files
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -114,5 +141,4 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings:
-  - Product implementation is intentionally deferred until C00 reconciles the exact pushed claim head.
+out_of_scope_findings: []

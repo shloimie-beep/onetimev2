@@ -1,45 +1,61 @@
-# P22 Atomic New-Branch Claim Handoff
+# P22 Ready-for-Review Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p22-learning-engagement`
-- Exact authorized start/parent:
-  `f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635`
-- Containing controller:
-  `ab393d7eb3b7f55b910ba110949c05c40b7383e6`
-- Controller sole parent/acquisition:
-  `3c4130ae4d015471ce21e7d70a39d98dde113318`
-- Ready digest:
-  `983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471`
+- Start SHA: `f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635`
+- Atomic claim SHA: `4acf752ddf6e173b3a41714e00bce28dab491dd0`
+- Implementation SHA before this metadata commit:
+  `374a2d0fbfb5e18e26d7187d0e0760e0e612bb10`
+- Implementation artifact digest:
+  `a9ecb2fe48a9da6e27a9527b31b5a8b566ef82117a891ab2e6c99f193111c174`
+- Reconciled containing control:
+  `9a8f5265e5ba8457fb1427abebda83d1d91499af`
 - Claim: `eba236e0-164c-4b7d-a71e-20646f4ec5ab`
 - LEARNING_ENGAGEMENT lease:
-  `93a7fddb-d025-475d-8d09-f9c9e7661515`
-- Lease issued / expiry:
-  `2026-07-29T03:20:30Z` / `2026-07-29T04:20:30Z`
-- This checkpoint head: derive with `git rev-parse HEAD`; C00 records the
-  observed pushed remote head.
+  `93a7fddb-d025-475d-8d09-f9c9e7661515`, released at
+  `2026-07-29T03:54:57Z` for terminal `ready_for_review`.
 
-## Claim verification
+## Completed behavior
 
-The fetched containing controller has the exact sole parent/acquisition above.
-The ready entry binds the exact authorized start, branch, locked packet,
-context, package and source digests, F02/F05/F07 integrated interfaces, claim,
-sole writer lease, and zero effect locks. The remote P22 branch was absent
-before local creation from the exact authorized start.
+P22 implements private Student questions and Rabbi/Admin answer/moderation,
+idempotent first-qualification recognition, audited correction, Parent and peer
+denial, reconnect-deduplicated attendance, audited attendance correction,
+fixed Consistency/Curious Learner/Review Ready badges, unique published-review
+completion, and program/class/Parent/Student announcements with read state.
 
-## Preserved implementation state
+The authenticated class leaderboard exposes three separate rolling-30-day
+categories and no combined score. Recognition consent defaults off; self sees
+`You`, opt-in peers see first name plus last initial, and withdrawal restores a
+stable class-scoped alias without changing facts or rank. The zero-effect
+contract prohibits public ranking, redeemable rewards, peer chat, and Student
+GHL contact creation.
 
-No product implementation was performed. This checkpoint changes only
-`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` in the P22 runtime
-directory. No owned product, test, migration, interface, steward, shared
-composer, manifest, lockfile, provider registry, or control path changed.
+## Verification
+
+- Focused Vitest: 7/7 passed across positive, negative, authorization,
+  isolation, reconnect, replay, correction, deduplication, and consent branches.
+- Full workspace typecheck passed.
+- Focused ESLint and Prettier passed.
+- `git diff --check` passed.
+- Repository secret scan passed across 2,747 text files.
+
+## Steward work
+
+`P22-migration-001` requests only the normalized schema described by
+`P22-LEARNING-ENGAGEMENT-SCHEMA-001`. `P22-registration-001` requests root
+exports and authenticated route composition. P22 edited no migration, central
+composer, root barrel, provider registry, manifest, or lockfile.
+
+## Effects and data handling
+
+External authority is none; attempted/succeeded/reconciled `0/0/0`. Tests used
+fictional identifiers and question text only. No provider call, secret, real
+identity, child record, private production body, bearer, send, deployment, or
+other live mutation occurred.
 
 ## Next action
 
-Push and report this exact atomic new-branch claim, then stop. Product work may
-begin only after C00 consumes the exact pushed claim head and explicitly
-resumes P22.
-
-## Effects
-
-Authority none; attempted/succeeded/reconciled `0/0/0`.
+Review implementation commit `374a2d0f`, then I36/F02 may fulfill the two
+structured steward requests without semantic weakening. Candidate-bound
+staging/production evidence belongs to downstream verification.
