@@ -5,6 +5,7 @@ import type {
   StudentNotificationRecord,
   StudentNotificationRepository,
   StudentNotificationScope,
+  StudentNotificationSourceFamily,
 } from '../../../../contracts/src/notifications/student/index.ts';
 
 export interface StudentNotificationSqlClient {
@@ -25,8 +26,10 @@ interface NotificationRow extends Record<string, unknown> {
   scope_json: StudentNotificationScope;
   category: StudentNotificationCategory;
   event_type: StudentNotificationCategory;
+  source_family: StudentNotificationSourceFamily;
   source_entity_id: string;
   source_version: number | string;
+  current_for_source: boolean;
   dedupe_key: string;
   title: string;
   body: string;
@@ -48,6 +51,13 @@ export function createPostgresStudentNotificationRepository(
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
+        await client.query(`SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, [
+          [
+            input.notification.recipientStudentId,
+            input.notification.sourceFamily,
+            input.notification.sourceEntityId,
+          ].join('\u0000'),
+        ]);
         const existing = await client.query<NotificationRow>(
           `${SELECT_COLUMNS}
              FROM onetime.student_notifications
@@ -68,18 +78,19 @@ export function createPostgresStudentNotificationRepository(
              FROM onetime.student_notifications
             WHERE recipient_student_id = $1
               AND source_entity_id = $2
-              AND event_type = $3
+              AND source_family = $3
+              AND current_for_source = TRUE
             ORDER BY source_version DESC
             LIMIT 1
             FOR UPDATE`,
           [
             input.notification.recipientStudentId,
             input.notification.sourceEntityId,
-            input.notification.eventType,
+            input.notification.sourceFamily,
           ],
         );
         const latestRecord = latest.rows[0] ? mapNotification(latest.rows[0]) : null;
-        if (latestRecord && latestRecord.sourceVersion >= input.notification.sourceVersion) {
+        if (latestRecord && incomingIsStale(latestRecord, input.notification)) {
           await client.query('COMMIT');
           return { disposition: 'stale', notification: latestRecord };
         }
@@ -87,17 +98,20 @@ export function createPostgresStudentNotificationRepository(
         await client.query(
           `UPDATE onetime.student_notifications
               SET superseded_at = COALESCE(superseded_at, $1::timestamptz),
-                  expired_at = COALESCE(expired_at, $1::timestamptz)
+                  expired_at = COALESCE(expired_at, $1::timestamptz),
+                  expires_at = COALESCE(expires_at, $1::timestamptz),
+                  retain_until = COALESCE(retain_until, $1::timestamptz + INTERVAL '30 days'),
+                  current_for_source = FALSE
             WHERE recipient_student_id = $2
               AND source_entity_id = $3
-              AND event_type = ANY($4::text[])
+              AND source_family = $4
               AND source_version <= $5
-              AND archived_at IS NULL`,
+              AND current_for_source = TRUE`,
           [
             input.notification.createdAt,
             input.notification.recipientStudentId,
             input.notification.sourceEntityId,
-            input.supersededEventTypes,
+            input.notification.sourceFamily,
             input.notification.sourceVersion,
           ],
         );
@@ -105,12 +119,14 @@ export function createPostgresStudentNotificationRepository(
         const inserted = await client.query<NotificationRow>(
           `INSERT INTO onetime.student_notifications (
              notification_id, recipient_student_id, scope_json, category, event_type,
-             source_entity_id, source_version, dedupe_key, title, body, action_json,
+             source_family, source_entity_id, source_version, current_for_source,
+             dedupe_key, title, body, action_json,
              created_at, expires_at, retain_until, read_at, expired_at, archived_at,
              superseded_at
            ) VALUES (
-             $1, $2, $3::jsonb, $4, $5, $6, $7, $8, $9, $10, $11::jsonb,
-             $12::timestamptz, $13::timestamptz, $14::timestamptz, NULL, NULL, NULL, NULL
+             $1, $2, $3::jsonb, $4, $5, $6, $7, $8, TRUE, $9, $10, $11,
+             $12::jsonb, $13::timestamptz, $14::timestamptz, $15::timestamptz,
+             NULL, NULL, NULL, NULL
            )
            ON CONFLICT (dedupe_key) DO NOTHING
            RETURNING *`,
@@ -120,6 +136,7 @@ export function createPostgresStudentNotificationRepository(
             JSON.stringify(input.notification.scope),
             input.notification.category,
             input.notification.eventType,
+            input.notification.sourceFamily,
             input.notification.sourceEntityId,
             input.notification.sourceVersion,
             input.notification.dedupeKey,
@@ -217,11 +234,12 @@ export function createPostgresStudentNotificationRepository(
     async markRead(recipientStudentId, notificationId, readAt) {
       const client = await pool.connect();
       try {
-        const result = await client.query<NotificationRow>(
+        const applied = await client.query<NotificationRow>(
           `UPDATE onetime.student_notifications
-              SET read_at = COALESCE(read_at, $3::timestamptz)
+              SET read_at = $3::timestamptz
             WHERE recipient_student_id = $1
               AND notification_id = $2
+              AND read_at IS NULL
               AND archived_at IS NULL
               AND expired_at IS NULL
               AND superseded_at IS NULL
@@ -229,7 +247,31 @@ export function createPostgresStudentNotificationRepository(
           RETURNING *`,
           [recipientStudentId, notificationId, readAt],
         );
-        return result.rows[0] ? mapNotification(result.rows[0]) : null;
+        if (applied.rows[0]) {
+          return {
+            disposition: 'applied',
+            notification: mapNotification(applied.rows[0]),
+          };
+        }
+        const replayed = await client.query<NotificationRow>(
+          `${SELECT_COLUMNS}
+             FROM onetime.student_notifications
+            WHERE recipient_student_id = $1
+              AND notification_id = $2
+              AND read_at IS NOT NULL
+              AND archived_at IS NULL
+              AND expired_at IS NULL
+              AND superseded_at IS NULL
+              AND (expires_at IS NULL OR expires_at > $3::timestamptz)
+            LIMIT 1`,
+          [recipientStudentId, notificationId, readAt],
+        );
+        return replayed.rows[0]
+          ? {
+              disposition: 'replayed',
+              notification: mapNotification(replayed.rows[0]),
+            }
+          : null;
       } finally {
         client.release();
       }
@@ -290,7 +332,8 @@ export function createPostgresStudentNotificationRepository(
 
 const SELECT_COLUMNS = `SELECT
   notification_id, recipient_student_id, scope_json, category, event_type,
-  source_entity_id, source_version, dedupe_key, title, body, action_json,
+  source_family, source_entity_id, source_version, current_for_source,
+  dedupe_key, title, body, action_json,
   created_at, expires_at, retain_until, read_at, expired_at, archived_at,
   superseded_at`;
 
@@ -301,8 +344,10 @@ function mapNotification(row: NotificationRow): StudentNotificationRecord {
     scope: row.scope_json,
     category: row.category,
     eventType: row.event_type,
+    sourceFamily: row.source_family,
     sourceEntityId: row.source_entity_id,
     sourceVersion: Number(row.source_version),
+    currentForSource: row.current_for_source,
     dedupeKey: row.dedupe_key,
     title: row.title,
     body: row.body,
@@ -328,4 +373,22 @@ function nullableIso(value: Date | string | null) {
 function requiredRow(row: NotificationRow | undefined) {
   if (!row) throw new Error('student_notification_delivery_conflict');
   return row;
+}
+
+function incomingIsStale(current: StudentNotificationRecord, incoming: StudentNotificationRecord) {
+  if (
+    current.category === 'class_canceled' &&
+    (incoming.category === 'class_reminder' || incoming.category === 'class_changed')
+  ) {
+    return true;
+  }
+  if (current.sourceVersion > incoming.sourceVersion) return true;
+  if (current.sourceVersion < incoming.sourceVersion) return false;
+  return categoryPrecedence(current.category) >= categoryPrecedence(incoming.category);
+}
+
+function categoryPrecedence(category: StudentNotificationCategory) {
+  if (category === 'class_canceled') return 3;
+  if (category === 'class_changed') return 2;
+  return 1;
 }

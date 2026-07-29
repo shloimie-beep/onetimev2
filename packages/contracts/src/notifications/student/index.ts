@@ -13,6 +13,24 @@ export const STUDENT_NOTIFICATION_CATEGORIES = [
 
 export type StudentNotificationCategory = (typeof STUDENT_NOTIFICATION_CATEGORIES)[number];
 
+export const STUDENT_SAFE_QUESTION_STATUSES = [
+  'Submitted',
+  'Under review',
+  'Answered',
+  'Resolved',
+  'Closed',
+] as const;
+
+export type StudentSafeQuestionStatus = (typeof STUDENT_SAFE_QUESTION_STATUSES)[number];
+
+export type StudentNotificationSourceFamily =
+  | 'class_occurrence'
+  | 'recording_available'
+  | 'question_updated'
+  | 'support_updated'
+  | 'badge_awarded'
+  | 'announcement';
+
 export interface StudentNotificationScope {
   product: 'one_time_mishnayos';
   studentId: string;
@@ -40,8 +58,10 @@ export interface StudentNotificationRecord {
   scope: StudentNotificationScope;
   category: StudentNotificationCategory;
   eventType: StudentNotificationCategory;
+  sourceFamily: StudentNotificationSourceFamily;
   sourceEntityId: string;
   sourceVersion: number;
+  currentForSource: boolean;
   dedupeKey: string;
   title: string;
   body: string;
@@ -65,7 +85,6 @@ interface StudentNotificationEventBase {
 
 export interface ClassReminderNotificationEvent extends StudentNotificationEventBase {
   category: 'class_reminder';
-  rabbiDisplayName: string;
   studentLocalTime: string;
   occurrenceClosesAt: string;
 }
@@ -89,9 +108,6 @@ export interface RecordingAvailableNotificationEvent extends StudentNotification
   contentTitle: string;
   contentAvailableUntil: string | null;
 }
-
-export type StudentSafeQuestionStatus =
-  'Submitted' | 'Under review' | 'Answered' | 'Resolved' | 'Closed';
 
 export interface QuestionUpdatedNotificationEvent extends StudentNotificationEventBase {
   category: 'question_updated';
@@ -164,7 +180,10 @@ export interface StudentNotificationRepository {
     recipientStudentId: string,
     notificationId: string,
     readAt: string,
-  ): Promise<StudentNotificationRecord | null>;
+  ): Promise<{
+    disposition: 'applied' | 'replayed';
+    notification: StudentNotificationRecord;
+  } | null>;
   markAllRead(recipientStudentId: string, readAt: string): Promise<number>;
   getSoundPreference(recipientStudentId: string): Promise<boolean>;
   setSoundPreference(recipientStudentId: string, enabled: boolean): Promise<void>;

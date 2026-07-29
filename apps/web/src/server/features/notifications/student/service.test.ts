@@ -4,6 +4,7 @@ import type {
   StudentNotificationRecord,
   StudentNotificationRepository,
 } from '../../../../../../../packages/contracts/src/notifications/student/index.ts';
+import { supersedeStudentNotification } from '../../../../../../../packages/domain/src/notifications/student/index.ts';
 import { createStudentNotificationService } from './service.ts';
 
 const scope = {
@@ -23,7 +24,6 @@ function reminder(
     sourceEntityId: 'occurrence_one',
     sourceVersion: 1,
     createdAt: '2026-08-01T11:30:00.000Z',
-    rabbiDisplayName: 'Rabbi Eli',
     studentLocalTime: '3:00 PM',
     occurrenceClosesAt: '2026-08-01T13:00:00.000Z',
     ...overrides,
@@ -163,7 +163,7 @@ describe('Student notification service', () => {
       }),
     ).resolves.toEqual({
       status: 'allowed',
-      route: '/student/classes/occurrence_one',
+      route: '/app/student/classes/occurrence_one',
       message: null,
     });
     authorized = false;
@@ -234,13 +234,120 @@ describe('Student notification service', () => {
     });
     expect(background.playForegroundSound).toBe(false);
   });
+
+  it('keeps cancellation terminal against a stale reminder and serializes v1/v2 delivery to one current row', async () => {
+    const repository = memoryRepository();
+    const service = createStudentNotificationService({
+      repository,
+      authorizeAction: async () => true,
+    });
+    const deliveryContext = {
+      portalVisibility: 'foreground' as const,
+      browserInteractionPermitsAudio: true,
+      visualNoticeRendered: true,
+    };
+    await service.deliver({
+      event: {
+        category: 'class_canceled',
+        recipientStudentId: 'student_one',
+        scope,
+        sourceEntityId: 'occurrence_terminal',
+        sourceVersion: 4,
+        createdAt: '2026-08-01T10:00:00.000Z',
+        studentLocalTime: '3:00 PM',
+        adminMessage: '',
+        occurrenceClosesAt: '2026-08-01T13:00:00.000Z',
+      },
+      deliveryContext,
+    });
+    const stale = await service.deliver({
+      event: reminder({
+        sourceEntityId: 'occurrence_terminal',
+        sourceVersion: 3,
+        createdAt: '2026-08-01T10:01:00.000Z',
+      }),
+      deliveryContext,
+    });
+    expect(stale.disposition).toBe('stale');
+
+    await Promise.all([
+      service.deliver({
+        event: reminder({
+          sourceEntityId: 'occurrence_race',
+          sourceVersion: 1,
+          createdAt: '2026-08-01T10:02:00.000Z',
+        }),
+        deliveryContext,
+      }),
+      service.deliver({
+        event: reminder({
+          sourceEntityId: 'occurrence_race',
+          sourceVersion: 2,
+          createdAt: '2026-08-01T10:03:00.000Z',
+        }),
+        deliveryContext,
+      }),
+    ]);
+    const all = await service.center({
+      principal,
+      filter: 'all',
+      now: new Date('2026-08-01T11:00:00.000Z'),
+    });
+    const terminalCurrent = all.notifications.filter(
+      (view) =>
+        view.notification.sourceEntityId === 'occurrence_terminal' && view.lifecycle !== 'expired',
+    );
+    const raceCurrent = all.notifications.filter(
+      (view) =>
+        view.notification.sourceEntityId === 'occurrence_race' && view.lifecycle !== 'expired',
+    );
+    expect(terminalCurrent).toHaveLength(1);
+    expect(terminalCurrent[0]?.notification.category).toBe('class_canceled');
+    expect(raceCurrent).toHaveLength(1);
+    expect(raceCurrent[0]?.notification.sourceVersion).toBe(2);
+  });
+
+  it('replays mark-one without a second persistence write', async () => {
+    const repository = memoryRepository();
+    const service = createStudentNotificationService({
+      repository,
+      authorizeAction: async () => true,
+    });
+    const delivered = await service.deliver({
+      event: reminder(),
+      deliveryContext: {
+        portalVisibility: 'foreground',
+        browserInteractionPermitsAudio: true,
+        visualNoticeRendered: true,
+      },
+    });
+    await expect(
+      service.markRead({
+        principal,
+        notificationId: delivered.notification.id,
+        now: new Date('2026-08-01T12:00:00.000Z'),
+      }),
+    ).resolves.toEqual({ disposition: 'applied' });
+    await expect(
+      service.markRead({
+        principal,
+        notificationId: delivered.notification.id,
+        now: new Date('2026-08-01T12:01:00.000Z'),
+      }),
+    ).resolves.toEqual({ disposition: 'replayed' });
+    expect(repository.stats.markReadWrites).toBe(1);
+  });
 });
 
-function memoryRepository(): StudentNotificationRepository {
+function memoryRepository(): StudentNotificationRepository & {
+  stats: { markReadWrites: number };
+} {
   const records = new Map<string, StudentNotificationRecord>();
   const preferences = new Map<string, boolean>();
+  const stats = { markReadWrites: 0 };
 
   return {
+    stats,
     async deliver(input) {
       const existing = [...records.values()].find(
         (record) => record.dedupeKey === input.notification.dedupeKey,
@@ -251,25 +358,25 @@ function memoryRepository(): StudentNotificationRepository {
           (record) =>
             record.recipientStudentId === input.notification.recipientStudentId &&
             record.sourceEntityId === input.notification.sourceEntityId &&
-            record.eventType === input.notification.eventType,
+            record.sourceFamily === input.notification.sourceFamily &&
+            record.currentForSource,
         )
         .sort((left, right) => right.sourceVersion - left.sourceVersion)[0];
-      if (latest && latest.sourceVersion >= input.notification.sourceVersion) {
+      if (latest && incomingIsStale(latest, input.notification)) {
         return { disposition: 'stale', notification: latest };
       }
       for (const record of records.values()) {
         if (
           record.recipientStudentId === input.notification.recipientStudentId &&
           record.sourceEntityId === input.notification.sourceEntityId &&
-          input.supersededEventTypes.includes(record.eventType) &&
+          record.sourceFamily === input.notification.sourceFamily &&
           record.sourceVersion <= input.notification.sourceVersion &&
-          record.archivedAt === null
+          record.currentForSource
         ) {
-          records.set(record.id, {
-            ...record,
-            supersededAt: record.supersededAt ?? input.notification.createdAt,
-            expiredAt: record.expiredAt ?? input.notification.createdAt,
-          });
+          records.set(
+            record.id,
+            supersedeStudentNotification(record, input.notification.createdAt),
+          );
         }
       }
       records.set(input.notification.id, input.notification);
@@ -327,9 +434,13 @@ function memoryRepository(): StudentNotificationRepository {
       ) {
         return null;
       }
+      if (record.readAt !== null) {
+        return { disposition: 'replayed', notification: record };
+      }
       const next = { ...record, readAt: record.readAt ?? readAt };
       records.set(record.id, next);
-      return next;
+      stats.markReadWrites += 1;
+      return { disposition: 'applied', notification: next };
     },
 
     async markAllRead(recipientStudentId, readAt) {
@@ -358,4 +469,22 @@ function memoryRepository(): StudentNotificationRepository {
       preferences.set(recipientStudentId, enabled);
     },
   };
+}
+
+function incomingIsStale(current: StudentNotificationRecord, incoming: StudentNotificationRecord) {
+  if (
+    current.category === 'class_canceled' &&
+    (incoming.category === 'class_reminder' || incoming.category === 'class_changed')
+  ) {
+    return true;
+  }
+  if (current.sourceVersion > incoming.sourceVersion) return true;
+  if (current.sourceVersion < incoming.sourceVersion) return false;
+  return categoryPrecedence(current.category) >= categoryPrecedence(incoming.category);
+}
+
+function categoryPrecedence(category: StudentNotificationRecord['category']) {
+  if (category === 'class_canceled') return 3;
+  if (category === 'class_changed') return 2;
+  return 1;
 }

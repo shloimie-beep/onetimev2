@@ -1,1 +1,6 @@
-export { StudentNotificationCenter } from './StudentNotificationCenter.tsx';
+export {
+  StudentNotificationCenter,
+  consumeForegroundNotificationCue,
+  formatStudentNotificationTimestamp,
+  type ForegroundCueCandidate,
+} from './StudentNotificationCenter.tsx';

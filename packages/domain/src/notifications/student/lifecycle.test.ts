@@ -10,6 +10,7 @@ import {
   canOpenStudentNotificationAction,
   projectStudentNotification,
   shouldPlayForegroundNotificationSound,
+  supersedeStudentNotification,
 } from './lifecycle.ts';
 
 const scope = {
@@ -28,7 +29,6 @@ function reminder(
     sourceEntityId: 'occurrence_one',
     sourceVersion: 4,
     createdAt: '2026-08-01T11:30:00.000Z',
-    rabbiDisplayName: 'Rabbi Eli',
     studentLocalTime: '3:00 PM',
     occurrenceClosesAt: '2026-08-01T13:00:00.000Z',
     ...overrides,
@@ -108,7 +108,7 @@ describe('P23 Student notification lifecycle', () => {
         createdAt: '2026-08-01T14:00:00.000Z',
         approvedTitle: 'Schedule note',
         approvedShortBody: 'Review the updated week.',
-        approvedInternalRoute: '/student/schedule',
+        approvedInternalRoute: '/app/student/schedule',
         configuredExpiresAt: '2026-08-08T14:00:00.000Z',
       },
     ];
@@ -126,7 +126,10 @@ describe('P23 Student notification lifecycle', () => {
     ]);
     expect(rendered[0]).toMatchObject({
       body: 'Rabbi Eli\u2019s class begins at 3:00 PM.',
-      action: { label: 'Open class', route: '/student/classes/occurrence_one' },
+      action: {
+        label: 'Open class',
+        route: '/app/student/classes/occurrence_one',
+      },
     });
     expect(rendered[4]?.body).toBe('Status: Answered.');
     expect(rendered.every((notification) => !notification.action?.route.includes('://'))).toBe(
@@ -216,13 +219,18 @@ describe('P23 Student notification lifecycle', () => {
     ).toBe(false);
   });
 
-  it('rejects provider URLs, unsafe announcement routes, cross-scope recipients, and excessive lifetime', () => {
+  it('rejects provider/private runtime copy, unsafe routes, cross-scope recipients, and excessive lifetime', () => {
     expect(() =>
-      buildStudentNotification(
-        reminder({
-          rabbiDisplayName: 'https://provider.invalid/private',
-        }),
-      ),
+      buildStudentNotification({
+        category: 'recording_available',
+        recipientStudentId: 'student_one',
+        scope,
+        sourceEntityId: 'content_private',
+        sourceVersion: 1,
+        createdAt: '2026-08-01T00:00:00.000Z',
+        contentTitle: 'https://provider.invalid/private',
+        contentAvailableUntil: null,
+      }),
     ).toThrowError(expect.objectContaining({ code: 'invalid_copy' }));
     expect(() =>
       buildStudentNotification({
@@ -260,6 +268,45 @@ describe('P23 Student notification lifecycle', () => {
     expect(() => buildStudentNotification(tooLong)).toThrowError(
       expect.objectContaining({ code: 'invalid_lifetime' }),
     );
+    expect(() =>
+      buildStudentNotification({
+        category: 'question_updated',
+        recipientStudentId: 'student_one',
+        scope,
+        sourceEntityId: 'question_private',
+        sourceVersion: 2,
+        createdAt: '2026-08-01T00:00:00.000Z',
+        studentSafeStatus: 'Private answer body' as 'Answered',
+        terminalResolvedAt: null,
+      }),
+    ).toThrowError(expect.objectContaining({ code: 'invalid_copy' }));
+  });
+
+  it('assigns 30-day retention when an indefinite active notice is superseded', () => {
+    const indefinite = buildStudentNotification({
+      category: 'recording_available',
+      recipientStudentId: 'student_one',
+      scope,
+      sourceEntityId: 'content_one',
+      sourceVersion: 1,
+      createdAt: '2026-08-01T00:00:00.000Z',
+      contentTitle: 'Mishnah Review',
+      contentAvailableUntil: null,
+    }).notification;
+    const superseded = supersedeStudentNotification(indefinite, '2026-08-02T00:00:00.000Z');
+    expect(superseded).toMatchObject({
+      currentForSource: false,
+      expiresAt: '2026-08-02T00:00:00.000Z',
+      expiredAt: '2026-08-02T00:00:00.000Z',
+      retainUntil: '2026-09-01T00:00:00.000Z',
+    });
+    expect(
+      projectStudentNotification({
+        notification: superseded,
+        now: new Date('2026-09-01T00:00:00.000Z'),
+        actionAuthorized: true,
+      }),
+    ).toBeNull();
   });
 
   it('permits sound only for a new visual foreground notice after interaction and opt-in', () => {

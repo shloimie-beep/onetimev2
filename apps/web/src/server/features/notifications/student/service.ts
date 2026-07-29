@@ -94,7 +94,9 @@ export function createStudentNotificationService(deps: {
         input.notificationId,
         nowIso,
       );
-      return { disposition: notification ? ('applied' as const) : ('unavailable' as const) };
+      return {
+        disposition: notification?.disposition ?? ('unavailable' as const),
+      };
     },
 
     async markAllRead(input: { principal: StudentNotificationPrincipal; now: Date }) {

@@ -23,7 +23,9 @@ proposed_symbols_routes_keys_or_dependencies:
   - re-export packages/contracts/src/notifications/student/index.ts from the governed notifications contract barrel
   - re-export packages/domain/src/notifications/student/index.ts and packages/db/src/notifications/student/index.ts from governed barrels
   - register createStudentNotificationService in the authenticated server composer with per-action authorization rechecks
-  - register StudentNotificationCenter at the canonical Student notifications route and expose its unread badge through the F07 shell
+  - register StudentNotificationCenter at the canonical /app/student notifications route and expose its unread badge through the F07 shell
+  - pass the authenticated Student timezone to the center so visible timestamps include an unambiguous zone label
+  - wire newlyRenderedNotice and onPlayForegroundCue to an approved local cue only after browser interaction, with the visual notice rendered in the same foreground delivery
   - wire only internal source events to service.deliver after their own authorization and source-version checks
   - do not register background push, PWA notifications, Student email, provider delivery, or pre-interaction audio
 compatibility_assumptions:
@@ -31,7 +33,7 @@ compatibility_assumptions:
   - F05 supplies the governed PostgreSQL repository runtime.
   - F07 supplies the Student portal shell, safe internal navigation, and browser interaction boundary.
 verification_performed:
-  - 13 focused P23 domain, service, and static-render tests
+  - 18 focused P23 domain, service, race, idempotency, sound, timezone, and accessibility tests
   - workspace TypeScript typecheck
   - focused ESLint and Prettier checks
   - exact owned-path and provider-absence review
@@ -39,4 +41,5 @@ conflicts_or_risks:
   - Direct action routes must reauthorize at open time and return the neutral unavailable state after expiry or revocation.
   - Notification copy must never include private question/support bodies, provider URLs, Student credentials, or secrets.
   - Registration must not convert local in-app delivery into a provider send or external effect.
+  - Sound remains default-off and must never play for background, visual-less, or pre-interaction delivery.
 contains_secret_or_private_data: false

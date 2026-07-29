@@ -3,8 +3,10 @@ import type {
   StudentNotificationCategory,
   StudentNotificationEvent,
   StudentNotificationRecord,
+  StudentNotificationSourceFamily,
   StudentNotificationView,
 } from '../../../../contracts/src/notifications/student/index.ts';
+import { STUDENT_SAFE_QUESTION_STATUSES } from '../../../../contracts/src/notifications/student/index.ts';
 import { sha256Hex } from '../../jobs/idempotency.ts';
 import { StudentNotificationError } from './errors.ts';
 
@@ -39,8 +41,10 @@ export function buildStudentNotification(event: StudentNotificationEvent): {
       scope: { ...event.scope },
       category: event.category,
       eventType: event.category,
+      sourceFamily: sourceFamilyForCategory(event.category),
       sourceEntityId: event.sourceEntityId,
       sourceVersion: event.sourceVersion,
+      currentForSource: true,
       dedupeKey,
       title: rendered.title,
       body: rendered.body,
@@ -149,6 +153,36 @@ export function supersededEventTypes(
   return [category];
 }
 
+export function sourceFamilyForCategory(
+  category: StudentNotificationCategory,
+): StudentNotificationSourceFamily {
+  if (
+    category === 'class_reminder' ||
+    category === 'class_changed' ||
+    category === 'class_canceled'
+  ) {
+    return 'class_occurrence';
+  }
+  return category;
+}
+
+export function supersedeStudentNotification(
+  notification: StudentNotificationRecord,
+  supersededAt: string,
+): StudentNotificationRecord {
+  const supersededAtMs = parseTime(supersededAt, 'supersededAt');
+  const normalizedSupersededAt = new Date(supersededAtMs).toISOString();
+  return {
+    ...notification,
+    currentForSource: false,
+    supersededAt: notification.supersededAt ?? normalizedSupersededAt,
+    expiredAt: notification.expiredAt ?? normalizedSupersededAt,
+    expiresAt: notification.expiresAt ?? normalizedSupersededAt,
+    retainUntil:
+      notification.retainUntil ?? new Date(supersededAtMs + EXPIRED_VISIBILITY_MS).toISOString(),
+  };
+}
+
 function renderEvent(event: StudentNotificationEvent): {
   title: string;
   body: string;
@@ -158,11 +192,11 @@ function renderEvent(event: StudentNotificationEvent): {
     case 'class_reminder':
       return {
         title: 'Class begins in 30 minutes',
-        body: `${approvedText(event.rabbiDisplayName, 'rabbiDisplayName')}\u2019s class begins at ${approvedText(event.studentLocalTime, 'studentLocalTime')}.`,
+        body: `Rabbi Eli\u2019s class begins at ${approvedText(event.studentLocalTime, 'studentLocalTime')}.`,
         action: action(
           'open_class',
           'Open class',
-          `/student/classes/${safeSegment(event.sourceEntityId)}`,
+          `/app/student/classes/${safeSegment(event.sourceEntityId)}`,
         ),
       };
     case 'class_changed':
@@ -172,7 +206,7 @@ function renderEvent(event: StudentNotificationEvent): {
           `Your class is now ${approvedText(event.studentLocalTime, 'studentLocalTime')}.`,
           event.adminMessage,
         ),
-        action: action('open_schedule', 'Open schedule', '/student/schedule'),
+        action: action('open_schedule', 'Open schedule', '/app/student/schedule'),
       };
     case 'class_canceled':
       return {
@@ -181,7 +215,7 @@ function renderEvent(event: StudentNotificationEvent): {
           `The class scheduled for ${approvedText(event.studentLocalTime, 'studentLocalTime')} was canceled.`,
           event.adminMessage,
         ),
-        action: action('open_schedule', 'Open schedule', '/student/schedule'),
+        action: action('open_schedule', 'Open schedule', '/app/student/schedule'),
       };
     case 'recording_available':
       return {
@@ -190,17 +224,27 @@ function renderEvent(event: StudentNotificationEvent): {
         action: action(
           'watch_recording',
           'Watch recording',
-          `/student/library/${safeSegment(event.sourceEntityId)}`,
+          `/app/student/library/${safeSegment(event.sourceEntityId)}`,
         ),
       };
     case 'question_updated':
+      if (
+        !STUDENT_SAFE_QUESTION_STATUSES.includes(
+          event.studentSafeStatus as (typeof STUDENT_SAFE_QUESTION_STATUSES)[number],
+        )
+      ) {
+        throw new StudentNotificationError(
+          'invalid_copy',
+          'studentSafeStatus must be a canonical Student-visible lifecycle label.',
+        );
+      }
       return {
         title: 'Your question was updated',
         body: `Status: ${event.studentSafeStatus}.`,
         action: action(
           'open_question',
           'Open question',
-          `/student/questions/${safeSegment(event.sourceEntityId)}`,
+          `/app/student/questions/${safeSegment(event.sourceEntityId)}`,
         ),
       };
     case 'support_updated':
@@ -210,14 +254,14 @@ function renderEvent(event: StudentNotificationEvent): {
         action: action(
           'open_support_request',
           'Open support request',
-          `/student/support/${safeSegment(event.sourceEntityId)}`,
+          `/app/student/support/${safeSegment(event.sourceEntityId)}`,
         ),
       };
     case 'badge_awarded':
       return {
         title: `You earned ${approvedText(event.badgeName, 'badgeName')}`,
         body: 'Open Progress to see what you achieved.',
-        action: action('view_progress', 'View progress', '/student/progress'),
+        action: action('view_progress', 'View progress', '/app/student/progress'),
       };
     case 'announcement':
       return {
@@ -303,7 +347,7 @@ function action(
 
 function approvedInternalRoute(route: string) {
   if (
-    !/^\/student(?:\/[A-Za-z0-9_-]+)*$/.test(route) ||
+    !/^\/app\/student(?:\/[A-Za-z0-9_-]+)*$/.test(route) ||
     route.includes('..') ||
     route.includes('//')
   ) {
