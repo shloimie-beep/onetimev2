@@ -8,6 +8,7 @@ package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0e
 branch: codex/v21-p22-learning-engagement
 start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
 claim_checkpoint_sha: 4acf752ddf6e173b3a41714e00bce28dab491dd0
+correction_claim_checkpoint_sha: 0430569088aeb4f244e5540dddf778b72525bc64
 dependency_heads:
   F02:
     required_state: interface_ready_integrated
@@ -39,12 +40,13 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: correction
+status: ready_for_review
+phase: review
 claim_mode: resume_existing_branch
 claimed_by: codex-p22-worker-e2ac53ae
 claim_time: '2026-07-29T04:05:39Z'
 claim_id: e2ac53ae-128f-4d0c-b9a2-e74d05858f29
+claim_released_at: '2026-07-29T04:18:18Z'
 writer_slot_leases:
   - slot: LEARNING_ENGAGEMENT
     lease_id: 9fd6a3b7-decc-454a-9a2e-953aaaebfe63
@@ -52,16 +54,20 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T05:00:52Z'
     state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
     phase_scope: class_authorization_publication_and_leaderboard_correction_claim_only
+    released_at: '2026-07-29T04:18:18Z'
+    release_reason: terminal_ready_for_review
 lease_expires_at: '2026-07-29T05:00:52Z'
-last_heartbeat_at: '2026-07-29T04:05:39Z'
+last_heartbeat_at: '2026-07-29T04:18:18Z'
 controller_authorization_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
 resume_containing_control_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
+reconciled_control_sha: ddef233830979fd2a0e2d3a146bdd389b23a9c84
 ready_entry_state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
 ready_entry_payload_digest: 40bb6fd8a17894f529f881d087427047427db54f573bc1cd5cfe36dc6000a2a0
-state_based_on_head_sha: cad7259304253eff531307fecfc9de298fac1a34
-last_implementation_commit_sha: 374a2d0fbfb5e18e26d7187d0e0760e0e612bb10
-implementation_artifact_digest: a9ecb2fe48a9da6e27a9527b31b5a8b566ef82117a891ab2e6c99f193111c174
+state_based_on_head_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
+last_implementation_commit_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
+implementation_artifact_digest: 2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967
 completed_steps:
+  - Verified reconciled control ddef233830979fd2a0e2d3a146bdd389b23a9c84 records exact correction claim head 0430569088aeb4f244e5540dddf778b72525bc64, claim, branch, and sole unexpired lease.
   - Fetched containing correction control 71df400bd85cdca40b4eb0e01fc749f362e3d0e8 and verified its sole parent/acquisition 36451ec88e05bb64be0b27b8bc148166b6fe9837.
   - Verified exact existing local/remote P22 head cad7259304253eff531307fecfc9de298fac1a34, resume claim e2ac53ae-128f-4d0c-b9a2-e74d05858f29, ready digest 40bb6fd8a17894f529f881d087427047427db54f573bc1cd5cfe36dc6000a2a0, and sole LEARNING_ENGAGEMENT lease 9fd6a3b7-decc-454a-9a2e-953aaaebfe63.
   - Verified reconciled control 9a8f5265 records the exact 4acf752d claim head, claim, branch, and sole unexpired LEARNING_ENGAGEMENT lease.
@@ -73,10 +79,16 @@ completed_steps:
   - Added parameterized PostgreSQL repository and schema contract, registration-neutral server service, and accessible Admin/Student views.
   - Published migration and registration steward requests without changing migrations, central composers, barrels, manifests, or locks.
   - Passed seven focused assertions, full workspace typecheck, focused ESLint/Prettier, diff checks, and repository secret scan.
+  - Enforced Admin class assignment on question transitions, recognition corrections, attendance writes, and attendance corrections.
+  - Added a sanitized five-field published-question projection limited to authenticated Admin/Student members assigned to the exact class.
+  - Separated first-answer/approval Curious recognition from approvedQuestionCount, which now counts only approved_for_class and published questions.
+  - Passed nine focused assertions including direct cross-class mutation/projection denials and answered-versus-approved leaderboard separation.
+  - Bound the rolling approvedQuestionCount timestamp to the first approved_for_class or published transition, never an earlier private answer and never refreshed by later publication.
+  - Added service-layer negative assertions proving cross-class question and attendance attempts perform no repository save; eleven focused assertions pass.
 remaining_steps:
-  - Push and report this exact three-file atomic resume claim.
-  - Stop before product correction work and await C00 reconciliation of the exact remote claim head.
-next_action: Push and report the atomic correction-resume claim, then stop until C00 consumes its exact remote head and explicitly resumes P22.
+  - I36/F02 review and fulfill P22-migration-001 and the corrected P22-registration-001 before candidate integration.
+  - Candidate-bound staging and production evidence remains with downstream verification tasks.
+next_action: Review correction implementation 459e9187 and fulfill the two structured steward requests without semantic weakening.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -103,6 +115,12 @@ acceptance_cases:
   OTV2-LEARNING-238-QUESTION-DEDUPE: task_owned_assertions_passed
   OTV2-LEARNING-238-RECOGNITION-CONSENT: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/server/features/learning/service.test.ts
+  - apps/web/src/server/features/learning/service.ts
+  - packages/contracts/src/learning/index.ts
+  - packages/domain/src/learning/engagement.ts
+  - packages/domain/src/learning/engagement.test.ts
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-registration-001.yaml
   - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P22/HANDOFF.md
   - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
@@ -112,14 +130,20 @@ steward_requests:
   - P22-registration-001
 verification:
   commands_run:
-    - command: correction containing-control and sole-parent/acquisition verification
-      result: passed; 71df400b has sole parent 36451ec8
-    - command: exact existing local/remote head verification
-      result: passed; both equal cad7259304253eff531307fecfc9de298fac1a34 before resume claim
-    - command: correction ready entry claim, digest, writer lease, and effect-lock verification
-      result: passed; claim e2ac53ae, digest 40bb6fd8, lease 9fd6a3b7 expires 2026-07-29T05:00:52Z, and zero effect locks
-    - command: exact claim-only changed-path verification
-      result: passed; only the three P22 runtime handoff files
+    - command: correction authorization and reconciled-control verification
+      result: passed; claim head 04305690 consumed by control ddef2338 with unchanged claim/lease
+    - command: npx vitest run packages/domain/src/learning/engagement.test.ts
+      result: passed together with server suite; eleven focused assertions including direct cross-class denials, no-save proofs, sanitized projection, and first-approval rolling-window calculation
+    - command: npm run typecheck
+      result: passed
+    - command: focused ESLint over corrected P22 TypeScript artifacts
+      result: passed
+    - command: focused Prettier over corrected P22 TypeScript/YAML artifacts
+      result: passed
+    - command: git diff --check
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2748 repository text files
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -127,5 +151,4 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings:
-  - Product correction is intentionally deferred until C00 reconciles the exact pushed resume claim head.
+out_of_scope_findings: []
