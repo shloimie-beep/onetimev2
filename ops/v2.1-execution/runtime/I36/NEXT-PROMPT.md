@@ -1,20 +1,29 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: STOP
+MODE: START_OR_RESUME
 
-I36 completed the exact P11 ancestry-preserving full integration and released
-claim 5be2d721-aff2-494a-bb22-ad324334b376 and RELEASE_INTEGRATOR lease
-33a465ad-1fa2-4600-9259-044f6bc767a2.
+Resume I36 only after C00 reconciles the exact pushed P09 atomic integration
+claim head.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Control: 5fffad0a8fed3c7901233d0ca84a1251491924c9
-Reconciled claim target: ce3bf023ce2f9cfab4413ac3af711885caeb95ad
-P11 source: 15660c1115d9d8066651573100acd8acaaac574e
-P11 merge head: 00b027578fad21177d99204c59b4f90136070d80
+Expected pre-claim target: eeac03afdd7a5db493885ef507b7c09478b0454a
+Containing authorization: 3f2cfad9a004046986be9998ac32f7991b76bb64
+State-based acquisition: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
+READY I36 digest: 3be45d6892c86e6fb44fc74f7c99dfe4daa81604f6385a2f8e94b75b0a004037
 
-Derive the final metadata release head with `git rev-parse HEAD` and reconcile
-it in C00. Do not resume I36, apply `P11-registration-001`, modify shared
-registration, perform steward/provider/send work, or cause an external effect
-without new explicit authorization. Effects remain `0/0/0`.
+Claim: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
+RELEASE_INTEGRATOR lease: 495eba01-e9b3-4e71-9e53-4864c9d93bac
+Lease expires: 2026-07-29T13:06:14Z
+Phase scope: P09_full_integration_atomic_claim_only
+
+P09 merge id: 3901c87f-82ff-4795-ae69-5f2ac3c02ac4
+P09 source: 33a21a45005271f1bbe09c8587df1e52fac1a95a
+P09 merge digest: e6b820e1862fac0a3eaf5ecd76c7fff8c143e61b48b631e64ce571e2d0c85fd0
+
+The current checkpoint is atomic-claim-only. Do not fetch, inspect, edit, or
+merge P09 source; edit product or tests; touch or apply P09 migration or
+registration requests or P11 registration requests; perform steward,
+provider, or send work; or cause an external effect until a subsequent
+explicit resume. Effects remain `0/0/0`.

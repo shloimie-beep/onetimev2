@@ -1,55 +1,48 @@
-# I36 P11 Full-Integration Release
+# I36 P09 Full-Integration Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Reconciled claim target:
-  `ce3bf023ce2f9cfab4413ac3af711885caeb95ad`
-- Containing merge authorization:
-  `5fffad0a8fed3c7901233d0ca84a1251491924c9`
-- State-based authorization parent:
-  `0cd3c1e0dd424fb8bcb72717ca57c90c030a3681`
-- P11 source: `15660c1115d9d8066651573100acd8acaaac574e`
-- P11 merge head: `00b027578fad21177d99204c59b4f90136070d80`
-- P11 rebound merge digest:
-  `02c2f9db6892d5c3df3f315ec5583287ba71c5a5f492ba42755f627abb61f964`
-- Claim: `5be2d721-aff2-494a-bb22-ad324334b376`
-- RELEASE_INTEGRATOR lease: `33a465ad-1fa2-4600-9259-044f6bc767a2`
-- Lease released: `2026-07-29T11:45:40Z`, before its
-  `2026-07-29T12:42:09Z` expiry.
-- Final metadata release head: derive with `git rev-parse HEAD`; C00 records the
-  observed pushed remote head.
+- Exact existing target: `eeac03afdd7a5db493885ef507b7c09478b0454a`
+- Containing authorization: `3f2cfad9a004046986be9998ac32f7991b76bb64`
+- Sole state-based acquisition parent:
+  `7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3`
+- READY I36 digest:
+  `3be45d6892c86e6fb44fc74f7c99dfe4daa81604f6385a2f8e94b75b0a004037`
+- P09 merge item: `3901c87f-82ff-4795-ae69-5f2ac3c02ac4`
+- P09 source: `33a21a45005271f1bbe09c8587df1e52fac1a95a`
+- P09 merge digest:
+  `e6b820e1862fac0a3eaf5ecd76c7fff8c143e61b48b631e64ce571e2d0c85fd0`
+- Claim: `26d3ae42-c9c9-4913-9534-1d4c71b55f13`
+- RELEASE_INTEGRATOR lease: `495eba01-e9b3-4e71-9e53-4864c9d93bac`
+- Lease window: `2026-07-29T11:51:14Z` through
+  `2026-07-29T13:06:14Z`
+- Phase scope: `P09_full_integration_atomic_claim_only`
+- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
+  pushed remote head.
 
-## Merge record
+## Authority verification
 
-P11 was ancestry-merged with exact first parent
-`ce3bf023ce2f9cfab4413ac3af711885caeb95ad` and exact second parent
-`15660c1115d9d8066651573100acd8acaaac574e` at
-`00b027578fad21177d99204c59b4f90136070d80`. The source and required merge
-base were both `cecc1c0dc6ff57562e5d89dd731289d860086bf7`. The first-parent
-delta is exactly the 18 authorized queue paths, and the exact P11 source is an
-ancestor of the merge result.
+The fetched integration and control refs exactly matched the authorized target
+and containing control commit. The control commit has the exact sole
+state-based acquisition parent. Its committed READY entry and queued P09 item
+bind the exact claim, lease, target, source identity, phase scope, and payload
+digests above. The remote P09 branch advertises the exact queued source head.
 
-## Verification
+## Preserved state
 
-- Exact P11 focused suite: 4 files and 21 tests passed.
-- Workspace TypeScript typecheck passed.
-- Focused ESLint, CRLF-aware Prettier, and diff hygiene passed.
-- Repository secret scan passed across 2895 text files.
-- Merge parents, source ancestry, required base, canonical rebound queue
-  digest, and exact 18-path scope passed.
-- This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
-  `NEXT-PROMPT.md`.
-
-`P11-registration-001` was admitted only as an immutable source artifact. It
-remains assigned to a later shared registration checkpoint and was not
-applied. No steward, registration, provider, send, or external effect was
-performed.
+This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md` in the I36 runtime directory. P09 source content was not
+fetched, inspected, edited, or merged. No product, test, migration,
+registration, structured request, steward, provider, send, or external-effect
+action was performed. P09 migration/registration and P11 registration requests
+remain unapplied.
 
 ## Next action
 
-C00 should reconcile the exact pushed metadata release head and P11 merge head
-above. I36 must stop after reporting this checkpoint.
+C00 must reconcile the exact pushed atomic claim head. I36 must stop after
+reporting that checkpoint; P09 integration requires a subsequent explicit
+resume.
 
 ## Effects
 
