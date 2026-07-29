@@ -1,4 +1,4 @@
-# P11 Corrected Atomic Claim Handoff
+# P11 Admin Operations Implementation Handoff
 
 ## Identity
 
@@ -7,59 +7,79 @@
   `cecc1c0dc6ff57562e5d89dd731289d860086bf7`
 - Corrected-claim parent:
   `396bf74d855f294c744cf3eaa7d30c3f0e26e60a`
-- Containing controller:
+- Corrected-claim controller:
   `9f1609933ceeaa315115a49d8612276002e33330`
+- Reconciled implementation controller:
+  `8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84`
+- Reconciliation parent:
+  `98cde826b118f2b8162e29a7761bf9d0f9fcf285`
+- Corrected atomic claim:
+  `c0fe1ec4fc16cc626e5b827f12e977851ede2bf1`
+- Implementation head:
+  `f482ebb76a1278eb6adbc6895b08c26ef111e452`
 - Ready-entry parent/acquisition:
   `2dc1ffa0f4c3a2de22cfd8660571a355cda0b928`
-- Corrected atomic claim head: derive with `git rev-parse HEAD`; C00 records the
-  exact observed remote head.
+- Final metadata head: derive with `git rev-parse HEAD`; C00 records the exact
+  observed remote head.
 - Claim: `31da6bdb-f7ce-46f1-96a4-a6a78853d9eb`
 - Writer: `codex-p11-worker-31da6bdb`
 - ADMIN_OPERATIONS_UI lease:
   `0e828d7b-9ee3-4cd0-919d-da27022ba243`
 - Lease issued: `2026-07-29T06:26:07Z`
 - Lease expiry: `2026-07-29T07:26:07Z`
+- Lease released: `2026-07-29T07:02:21Z`
 - Ready-entry digest:
   `1f887010e21ae02c218a043d8d1892307bbff7da16bf9b1b2f6f7ae1d049efb3`
 
-## Metadata correction
+## Completed behavior
 
-The prior claim head recorded a malformed 65-character F05 task-packet digest
-ending in `...ec3e`. This metadata-only claim corrects it to the exact
-64-character digest
-`807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3`.
-All other F05 and F07 dependency bindings remain unchanged.
+P11 implements an authorized persistent-store Admin dashboard with the locked
+Now & Next, Needs Attention, Content Pipeline, People and Learning, Recent
+Activity, Provider Health, and operational-view hierarchy. Missing or invalid
+aggregate data fails closed; no demo, fictional, cached, or zero-value fallback
+is constructed.
 
-## Exact dependency bindings
+Global search uses a private `POST /api/v2.1/admin/search` body and opaque
+cursor. It covers adults, households, Students, classes, occurrences, published
+content, questions, and tickets; every query is account/product scoped and
+every returned result is revalidated for current Admin authority, exact runtime
+scope, persistent provenance, supported kind, safe metadata, and canonical
+destination. Terms never enter a URL or analytics state.
 
-- F05: task `9174d845e1c04916e2f1884cfadfaef624ac6862`,
-  integration proof `9782a4164662b8059a557c0969de9c35f54d0cf7`, interface
-  source `0656380bcfc50cc464dcea7588448dc724049599`, implementation
-  `1ade14c52e42e59bb8fd1d1de776b91406c45f15`, checkpoint digest
-  `fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329`,
-  packet digest
-  `807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3`,
-  context digest
-  `95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a`.
-- F07: task `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`,
-  integration proof `91349fc1fa9a474ae31cf408ae0364aa10520385`, interface
-  source `47a2bb6b76225951e0599683499a95f4dc9881be`, implementation
-  `a90baae8cf69d6823af6d741161fe0e9e7441321`, checkpoint digest
-  `366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188`,
-  packet digest
-  `49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b`,
-  context digest
-  `db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408`.
+The dashboard and search workspaces provide truthful empty/error states, grouped
+results, entity filters, keyboard selection, recent-query clearing, and the
+canonical static Communications, Tickets, Billing & Access, Integrations,
+Operations, Audit, and Live Console links.
 
-## Scope and stop
+## Exact digests
 
-This metadata-only correction changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md` under P11 runtime memory. No product, migration, central
-composer or registration, steward application, provider call, or external
-effect was performed.
+- Implementation artifact digest:
+  `bbfa303ea3fb60e5033c05c3e08bf3ec0ea553eba45371482effbe58a8e3af58`
+  over 13 exact implementation/test Git blobs.
+- P11-registration-001 payload digest:
+  `9525fd3ee1f4a79debee0e4d2f4bb7c39a4254556504586a8e3d00eae484a365`.
+- Steward-request aggregate digest:
+  `5135e83079188e7bb233cc0ca78dd1f72bade500bff6e9d922499e158c6f370a`.
 
-C00 must reconcile the exact pushed corrected claim head before P11 resumes.
-Stop after push and remote verification.
+## Verification
+
+- Four focused files and eight positive/negative tests passed.
+- Workspace typecheck passed.
+- Focused ESLint and Prettier passed.
+- Exact scope and diff hygiene passed.
+- Secret scan passed across 2875 repository text files.
+- Artifact and steward-request digests reproduced from immutable Git blobs.
+
+## Review and steward work
+
+I36 must review and integrate exact implementation head
+`f482ebb76a1278eb6adbc6895b08c26ef111e452`, independently reproduce the
+digests, and disposition structured request `P11-registration-001`. Central
+barrels, authenticated routes, and client composition were not edited.
+
+Candidate-bound persistent-staging and production-operator-canary evidence
+remains downstream. P11 stops after the final metadata push and remote
+verification.
 
 ## External effects
 

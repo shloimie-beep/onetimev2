@@ -29,8 +29,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: metadata_correction
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing
 claimed_by: codex-p11-worker-31da6bdb
 claim_time: '2026-07-29T06:33:40Z'
@@ -42,14 +42,47 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T07:26:07Z'
     state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
     phase_scope: P11_atomic_claim_metadata_correction_only
-    state: active
+    reconciled_resume_scope: P11_owned_admin_operations_implementation
+    reconciled_resume_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
+    lease_released_at: '2026-07-29T07:02:21Z'
+    state: released
 lease_expires_at: '2026-07-29T07:26:07Z'
-last_heartbeat_at: '2026-07-29T06:33:40Z'
+lease_released_at: '2026-07-29T07:02:21Z'
+last_heartbeat_at: '2026-07-29T07:02:21Z'
 controller_authorization_sha: 9f1609933ceeaa315115a49d8612276002e33330
+claim_reconciled_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
+claim_reconciled_control_parent_sha: 98cde826b118f2b8162e29a7761bf9d0f9fcf285
+atomic_claim_head_sha: c0fe1ec4fc16cc626e5b827f12e977851ede2bf1
 ready_entry_state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
 ready_entry_payload_digest: 1f887010e21ae02c218a043d8d1892307bbff7da16bf9b1b2f6f7ae1d049efb3
-state_based_on_head_sha: 396bf74d855f294c744cf3eaa7d30c3f0e26e60a
-last_implementation_commit_sha: null
+state_based_on_head_sha: f482ebb76a1278eb6adbc6895b08c26ef111e452
+last_implementation_commit_sha: f482ebb76a1278eb6adbc6895b08c26ef111e452
+implementation_artifact_digest: bbfa303ea3fb60e5033c05c3e08bf3ec0ea553eba45371482effbe58a8e3af58
+implementation_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
+  the 13 implementation and focused-test artifacts, sorted lexicographically
+  by path, with LF separators and no final newline.
+implementation_artifact_paths:
+  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
+  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.tsx
+  - apps/web/src/client/app/admin/dashboard/index.ts
+  - apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx
+  - apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx
+  - apps/web/src/client/app/admin/search/index.ts
+  - apps/web/src/server/features/admin/operations/index.ts
+  - apps/web/src/server/features/admin/operations/repository.ts
+  - apps/web/src/server/features/admin/operations/service.test.ts
+  - apps/web/src/server/features/admin/operations/service.ts
+  - packages/contracts/src/admin/operations/index.ts
+  - packages/domain/src/admin-search/admin-search.test.ts
+  - packages/domain/src/admin-search/index.ts
+steward_request_payload_digests:
+  P11-registration-001: 9525fd3ee1f4a79debee0e4d2f4bb7c39a4254556504586a8e3d00eae484a365
+steward_request_aggregate_digest: 5135e83079188e7bb233cc0ca78dd1f72bade500bff6e9d922499e158c6f370a
+steward_request_digest_algorithm: >-
+  Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
+  SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
+  and no final newline.
 completed_steps:
   - Verified exact released controller 6ff71b774f9b125c8f20df4ad2e159610782b476 and its sole acquisition parent 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56.
   - Verified exact settled integration start cecc1c0dc6ff57562e5d89dd731289d860086bf7 and absent local and remote P11 branch before branch creation.
@@ -59,24 +92,50 @@ completed_steps:
   - Seeded only the three P11 runtime-memory files; no product, migration, central composer or registration, steward, provider, or effect work has started.
   - Verified fresh containing controller 9f1609933ceeaa315115a49d8612276002e33330, its sole acquisition parent 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928, exact existing remote head 396bf74d855f294c744cf3eaa7d30c3f0e26e60a, correction claim 31da6bdb-f7ce-46f1-96a4-a6a78853d9eb, active ADMIN_OPERATIONS_UI lease 0e828d7b-9ee3-4cd0-919d-da27022ba243, and zero effect locks.
   - Corrected only the malformed 65-character F05 task-packet digest to exact 64-character digest 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3 and rebound the three P11 runtime-memory files to the fresh metadata-only authority.
+  - Verified exact C00 reconciliation 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84 with sole parent 98cde826b118f2b8162e29a7761bf9d0f9fcf285, exact corrected claim head c0fe1ec4fc16cc626e5b827f12e977851ede2bf1, unchanged claim and lease, bounded implementation scope, and zero effect authority.
+  - Implemented a versioned Admin operations contract for real dashboard snapshots, canonical operational views, private POST-body search, opaque pagination, exact safe destinations, and all required adult, household, Student, class, occurrence, content, question, and ticket kinds.
+  - Implemented fail-closed domain authorization that requires a current unbound Admin principal, exact product/runtime/environment scope, persistent-store provenance, canonical routes, safe identifiers, supported kinds, and printable bounded queries.
+  - Implemented a product/account-scoped PostgreSQL dashboard and search repository that reads Now & Next, attention, content, people/learning, activity, provider readiness, and authorized cross-entity results without a fictional, demo, cached, or zero-value fallback.
+  - Implemented accessible dashboard and search workspaces with the locked hierarchy, operational utility links, truthful empty/error states, grouped results, entity filters, keyboard selection, recent-query clearing, and POST-body pagination without URL or analytics search terms.
+  - Published structured registration request P11-registration-001 for steward-owned barrels, authenticated routes, and client composition; no request was applied.
+  - Passed 4 focused files and 8 positive/negative tests, workspace typecheck, focused ESLint and Prettier, diff hygiene, exact scope validation, and repository secret scan across 2875 text files.
+  - Reproduced all 13 implementation Git-blob digests, canonical artifact digest bbfa303ea3fb60e5033c05c3e08bf3ec0ea553eba45371482effbe58a8e3af58, request payload digest 9525fd3ee1f4a79debee0e4d2f4bb7c39a4254556504586a8e3d00eae484a365, and request aggregate digest 5135e83079188e7bb233cc0ca78dd1f72bade500bff6e9d922499e158c6f370a from immutable Git blobs.
+  - Released claim 31da6bdb-f7ce-46f1-96a4-a6a78853d9eb and ADMIN_OPERATIONS_UI lease 0e828d7b-9ee3-4cd0-919d-da27022ba243 before expiry with no external effect attempted.
 remaining_steps:
-  - C00 must reconcile the exact pushed corrected atomic claim head into released control state.
-  - P11 may begin implementation only after exact C00 reconciliation and fresh resume authority.
-next_action: Push and remote-verify this three-file corrected atomic claim, report its exact head to C00, and stop.
+  - I36 must independently review and integrate exact implementation head f482ebb76a1278eb6adbc6895b08c26ef111e452.
+  - I36 must reproduce the implementation and steward-request digests and disposition P11-registration-001 without weakening the private-query, Admin-only, persistent-store, or fail-closed boundaries.
+  - Candidate-bound persistence and production-operator-canary evidence remains with the assigned verification and release lanes.
+next_action: I36 should review exact implementation head f482ebb76a1278eb6adbc6895b08c26ef111e452, reproduce artifact digest bbfa303ea3fb60e5033c05c3e08bf3ec0ea553eba45371482effbe58a8e3af58 and steward aggregate 5135e83079188e7bb233cc0ca78dd1f72bade500bff6e9d922499e158c6f370a, then integrate only after all authorization and real-data invariants pass.
 requirements:
-  OTV2-ADMIN-021: pending
-  OTV2-ADMIN-029: pending
-  OTV2-ADMIN-205: pending
+  OTV2-ADMIN-021: implementation_verified
+  OTV2-ADMIN-029: implementation_verified
+  OTV2-ADMIN-205: implementation_verified
 acceptance_cases:
-  OTV2-ADMIN-021-AC01: pending
-  OTV2-ADMIN-029-AC01: pending
-  OTV2-ADMIN-205-AC01: pending
+  OTV2-ADMIN-021-AC01: task_owned_assertions_passed
+  OTV2-ADMIN-029-AC01: task_owned_assertions_passed
+  OTV2-ADMIN-205-AC01: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
+  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.tsx
+  - apps/web/src/client/app/admin/dashboard/index.ts
+  - apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx
+  - apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx
+  - apps/web/src/client/app/admin/search/index.ts
+  - apps/web/src/server/features/admin/operations/index.ts
+  - apps/web/src/server/features/admin/operations/repository.ts
+  - apps/web/src/server/features/admin/operations/service.test.ts
+  - apps/web/src/server/features/admin/operations/service.ts
   - ops/v2.1-execution/runtime/P11/HANDOFF.md
   - ops/v2.1-execution/runtime/P11/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P11/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P11/steward-requests/P11-registration-001.yaml
+  - packages/contracts/src/admin/operations/index.ts
+  - packages/domain/src/admin-search/admin-search.test.ts
+  - packages/domain/src/admin-search/index.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - id: P11-registration-001
+    sha256: 9525fd3ee1f4a79debee0e4d2f4bb7c39a4254556504586a8e3d00eae484a365
 verification:
   commands_run:
     - command: exact controller, acquisition, settled start, registry, READY, claim, lease, effect-lock, and branch-absence verification
@@ -89,6 +148,20 @@ verification:
       result: passed; branch created from exact authorized start
     - command: fresh metadata-correction controller, parent, expected-head, digest, claim, lease, and effect-lock verification
       result: passed; exact corrected authority, existing P11 head, sole fresh writer lease, and zero effect locks
+    - command: exact C00 implementation reconciliation, claim, lease, corrected F05 digest, branch, and effect verification
+      result: passed; exact reconciled control 8172f8cd, existing head c0fe1ec4, unchanged claim/lease, and zero effects
+    - command: npx vitest run <four P11 focused test files>
+      result: passed; 4 files and 8 positive/negative tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over all P11 TypeScript, TSX, Markdown, and YAML artifacts
+      result: passed
+    - command: exact normalized-root scope audit and git diff --check
+      result: passed; exactly 13 implementation/test artifacts, one structured steward request, and three P11 runtime-memory files
+    - command: npm run secret:scan
+      result: passed across 2875 repository text files
+    - command: exact Git-blob artifact and steward-request digest reproduction
+      result: passed; 13-artifact digest bbfa303e and request aggregate 5135e830
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -96,4 +169,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Central contract/domain barrels, authenticated server routes, and client route/header composition are captured in P11-registration-001 and were not edited.
