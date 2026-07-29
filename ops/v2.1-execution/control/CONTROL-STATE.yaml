@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
-next_action: I36 claim ce3bf023 is reconciled and the P11 merge target is rebound to that exact head under canonical item digest 02c2f9db. I36 may ancestry-merge only admitted P11 final 15660c11 with the exact queued 18-path scope, preserve source ancestry, run 4 focused files/21 tests and workspace typecheck, then publish a metadata-only release checkpoint and release its lease. P11-registration-001 remains assigned but unapplied. P09/P21 may continue only their bounded local corrections. No live provider action, send, steward application, or external effect is authorized.
+controller_authorization_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
+next_action: P11 integration is complete at release eeac03af and must not be repeated; its registration request remains unapplied. P09 final 33a21a45 is independently admitted with both requests assigned but unapplied. I36 may first publish only an exact three-runtime-file claim from eeac03af under READY digest 3be45d68, claim 26d3ae42, and RELEASE_INTEGRATOR lease 495eba01, then stop for C00 reconciliation before merging P09. P21 may continue only its bounded local correction. No live provider action, send, steward application, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

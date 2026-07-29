@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-71556d53
-claim_time: '2026-07-29T11:38:25Z'
-claim_id: 71556d53-f5fc-4b8e-a29f-d947abbcc110
-lease_expires_at: '2026-07-29T11:53:25Z'
-last_heartbeat_at: '2026-07-29T11:40:56Z'
-controller_authorization_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
+claimed_by: codex-c00-orchestrator-b8dc1908
+claim_time: '2026-07-29T11:50:50Z'
+claim_id: b8dc1908-2c5e-480c-9618-dd0b293a0c30
+lease_expires_at: '2026-07-29T12:05:50Z'
+last_heartbeat_at: '2026-07-29T11:55:13Z'
+controller_authorization_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
 ready_entry_payload_digest: null
-state_based_on_head_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
+state_based_on_head_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -280,10 +280,10 @@ completed_steps:
 - rejected P11 superseding final 899ef6a7 after exact-source re-audit confirmed revoked initial private render and unguarded in-flight completions, option-ID collisions for valid dotted/colon target IDs, and a Bearer-space redaction gap
 - authorized only a fresh three-runtime-file P11 authorization-race/ID/secret correction claim from exact rejected final 899ef6a7 under claim d76c097a and ADMIN_OPERATIONS_UI lease 84cd0230
 remaining_steps:
-- independently verify I36's P11 ancestry merge and metadata-only release checkpoint
+- reconcile the exact I36 P09-integration claim, then authorize only the queued P09 ancestry merge
 - independently re-audit the bounded P09 and P21 correction finals when published
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: I36 claim ce3bf023 is reconciled and may ancestry-merge only P11 final 15660c11 under rebound merge digest 02c2f9db, verify the exact 18-path scope with 4 files/21 tests and typecheck, publish a metadata-only release checkpoint, release the lease, and stop. P11-registration-001 remains unapplied. P09/P21 continue only bounded local corrections. No provider action, send, steward application, or external effect is authorized.
+next_action: P11 integration is complete at eeac03af. P09 final 33a21a45 is admitted; I36 may publish only its three-runtime-file integration claim from eeac03af under READY digest 3be45d68, claim 26d3ae42, and lease 495eba01, then stop for reconciliation before the P09 merge. P09 migration/registration and P11 registration requests remain unapplied. P21 continues only bounded local correction. No provider action, send, steward application, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -291,12 +291,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
+  current_control_parent_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 71556d53-f5fc-4b8e-a29f-d947abbcc110
-      observed_head: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
+      claim_id: b8dc1908-2c5e-480c-9618-dd0b293a0c30
+      observed_head: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -307,11 +307,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: 5be2d721-aff2-494a-bb22-ad324334b376
-      observed_head: ce3bf023ce2f9cfab4413ac3af711885caeb95ad
-      authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
-      lease_expires_at: '2026-07-29T12:42:09Z'
-      scheduling_state: claimed_P11_full_integration_authorized
+      claim_id: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
+      observed_head: eeac03afdd7a5db493885ef507b7c09478b0454a
+      authorized_start_sha: eeac03afdd7a5db493885ef507b7c09478b0454a
+      lease_expires_at: '2026-07-29T13:06:14Z'
+      scheduling_state: ready_P09_full_integration_atomic_claim_only
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -730,12 +730,12 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: f3bead8e471057407d88aca6907b8160d85d2a28be905d8f6865e7a95391f4fb
-    control_lease: 199829147e2ce3d505f2a0bb7d3c506ecaf935a7f079f46652eb5319b7a68a5c
-    task_registry: d0b0ccc17e0f12a299e4d848cb2294a0bcc14ce607b47263aa0133522f7f4466
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
-    merge_queue: e67927d384acc213bce6518b1f21244cd501dfbc1909c458e77b46a1c0fd88a4
-    steward_queue: 7bae1223c670087461ca493454d8127af113cb1f22251ff3ae581a3d9455d1d2
+    control_state: 9cced94ed167ef8c952493564ca90a109de203975cf51ecea2811a9356c47af4
+    control_lease: fcbd2524a3695e6c01b42b46b3919ba7b19c4d114569f68bc890f9a4a3f21158
+    task_registry: 32e866d8b24fe8c6357c17bcfa02cc8c2b8579229cc042b4505ff6f8060e010a
+    ready_queue: ff8ec791a4a99ea6d76f39716cb50a082e6ce54745d704a7e93cd24e8b422cb9
+    merge_queue: 7702e993522d0c2bd46475f8469422eb8a72d657c57c500b04d282f97bfb5f05
+    steward_queue: b0be4201c92d44ff3968ef8fa97e1d34b6d7521660181ff48598d23af18b51f0
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70
@@ -904,6 +904,11 @@ verification:
   - P11 registration request 68a99cc0 assigned to I36's next shared-registration checkpoint but left unapplied; provider locks and effects remain zero: passed
   - I36 P11 integration claim ce3bf023 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/READY/merge bindings, clean remote state, no source merge, and zero effects: passed
   - consumed the I36 READY entry and rebound the P11 merge target to exact claim head ce3bf023 with canonical digest 02c2f9db: passed
+  - P11 merge 00b02757 exact parents ce3bf023/15660c11, preserved source ancestry, exact 18-path first-parent scope, 4 focused files/21 tests, workspace typecheck, and zero effects: passed
+  - I36 metadata-only release eeac03af sole parent 00b02757, exact three-runtime-file scope, released lease before expiry, clean remote state, unapplied P11 request, and zero effects: passed
+  - P09 final 33a21a45 exact linear ancestry and 14-path scope, 9-artifact digest 1635950b, unchanged request aggregate 9229edbd, state/handoff 464aa964, 4 files/16 tests, typecheck, released lease, direct semantic probes, and zero effects: passed and admitted
+  - canonical I36 P09 integration READY digest 3be45d68 and P09 full merge digest e6b820e1 against acquisition 7761608f and exact target eeac03af: passed
+  - P09 migration/registration requests assigned to F02/I36 checkpoints but left unapplied; provider locks and effects remain zero: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -2,8 +2,39 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: I36
+  status: resume_ready
+  phase: P09_full_integration
+  branch: codex/v21-integration
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
+  authorized_start_sha: eeac03afdd7a5db493885ef507b7c09478b0454a
+  expected_existing_head: eeac03afdd7a5db493885ef507b7c09478b0454a
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
+  task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
+  dependency_heads_and_digests: {}
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 495eba01-e9b3-4e71-9e53-4864c9d93bac
+    holder_task_id: I36
+    holder_claim_id: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
+    state_based_on_control_head_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
+    lease_issued_at: '2026-07-29T11:51:14Z'
+    lease_expires_at: '2026-07-29T13:06:14Z'
+    phase_scope: P09_full_integration_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
+  lease_issued_at: '2026-07-29T11:51:14Z'
+  lease_expires_at: '2026-07-29T13:06:14Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+entry_payload_digests:
+  I36: 3be45d6892c86e6fb44fc74f7c99dfe4daa81604f6385a2f8e94b75b0a004037
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

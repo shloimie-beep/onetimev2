@@ -4,55 +4,51 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: c5fe9e7d-f54a-46e6-8754-a90f433c991e
+  merge_id: 3901c87f-82ff-4795-ae69-5f2ac3c02ac4
   kind: full
-  task_id: P11
-  source_branch: codex/v21-p11-admin-operations
-  source_head_sha: 15660c1115d9d8066651573100acd8acaaac574e
+  task_id: P09
+  source_branch: codex/v21-p09-school-inquiry
+  source_head_sha: 33a21a45005271f1bbe09c8587df1e52fac1a95a
   target_branch: codex/v21-integration
-  expected_target_head_sha: ce3bf023ce2f9cfab4413ac3af711885caeb95ad
-  source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-  required_merge_base_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+  expected_target_head_sha: eeac03afdd7a5db493885ef507b7c09478b0454a
+  source_delta_base_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+  required_merge_base_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 15660c1115d9d8066651573100acd8acaaac574e
+  required_postmerge_ancestor_sha: 33a21a45005271f1bbe09c8587df1e52fac1a95a
   merge_after_heads: {}
   allowed_paths:
-  - apps/web/src/client/app/admin/adminPrivateCompletion.ts
-  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
-  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.tsx
-  - apps/web/src/client/app/admin/dashboard/index.ts
-  - apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx
-  - apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx
-  - apps/web/src/client/app/admin/search/index.ts
-  - apps/web/src/server/features/admin/operations/index.ts
-  - apps/web/src/server/features/admin/operations/repository.ts
-  - apps/web/src/server/features/admin/operations/service.test.ts
-  - apps/web/src/server/features/admin/operations/service.ts
-  - ops/v2.1-execution/runtime/P11/HANDOFF.md
-  - ops/v2.1-execution/runtime/P11/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P11/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P11/steward-requests/P11-registration-001.yaml
-  - packages/contracts/src/admin/operations/index.ts
-  - packages/domain/src/admin-search/admin-search.test.ts
-  - packages/domain/src/admin-search/index.ts
+  - apps/web/src/client/public/school/model.test.ts
+  - apps/web/src/client/public/school/model.ts
+  - apps/web/src/server/features/signup/school/service.test.ts
+  - apps/web/src/server/features/signup/school/service.ts
+  - ops/v2.1-execution/runtime/P09/HANDOFF.md
+  - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-001.yaml
+  - ops/v2.1-execution/runtime/P09/steward-requests/P09-registration-001.yaml
+  - packages/contracts/src/signup/school/index.ts
+  - packages/contracts/src/signup/school/school-signup.contract.test.ts
+  - packages/domain/src/signup/school/index.ts
+  - packages/domain/src/signup/school/policy.test.ts
+  - packages/domain/src/signup/school/policy.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 33a465ad-1fa2-4600-9259-044f6bc767a2
+    lease_id: 495eba01-e9b3-4e71-9e53-4864c9d93bac
     holder_task_id: I36
-    holder_claim_id: 5be2d721-aff2-494a-bb22-ad324334b376
-    state_based_on_control_head_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
-    lease_issued_at: '2026-07-29T11:27:09Z'
-    lease_expires_at: '2026-07-29T12:42:09Z'
-    phase_scope: P11_full_integration_atomic_claim_only
-  task_packet_digest: 3439d8b6974be681521959310f0b5bae2b1668aad1f984c0202cd74b6f4fc70c
-  state_handoff_digest: 07ce1d1860bdd8ccd2c1ab9c2f4d8a5202b632106116ee85b552404a82d7891e
+    holder_claim_id: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
+    state_based_on_control_head_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
+    lease_issued_at: '2026-07-29T11:51:14Z'
+    lease_expires_at: '2026-07-29T13:06:14Z'
+    phase_scope: P09_full_integration_atomic_claim_only
+  task_packet_digest: 191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8
+  state_handoff_digest: 464aa9641f00d3c5ff034aa067bd1afccffaa76dc51b96c8540781255f9330d1
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
+  state_based_on_control_head_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
 item_payload_digests:
-  c5fe9e7d-f54a-46e6-8754-a90f433c991e: 02c2f9db6892d5c3df3f315ec5583287ba71c5a5f492ba42755f627abb61f964
+  3901c87f-82ff-4795-ae69-5f2ac3c02ac4: e6b820e1862fac0a3eaf5ecd76c7fff8c143e61b48b631e64ce571e2d0c85fd0
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

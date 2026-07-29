@@ -1415,3 +1415,23 @@ ancestry-merge only P11 final `15660c11` with the exact queued 18-path scope,
 run the 4 focused files / 21 tests and workspace typecheck, publish a
 metadata-only release checkpoint, release the lease, and stop. The P11
 registration request remains unapplied.
+
+P11 integration completed at merge
+`00b027578fad21177d99204c59b4f90136070d80` and metadata release
+`eeac03afdd7a5db493885ef507b7c09478b0454a`: exact parents, preserved
+source ancestry, exact 18-path merge scope, 4 files / 21 tests, typecheck,
+three-file release, lease release, unapplied registration, and effects
+`0/0/0`.
+
+P09 final `33a21a45005271f1bbe09c8587df1e52fac1a95a` is independently
+admitted after exact lineage/scope replay, artifact digest `1635950b`,
+unchanged request aggregate `9229edbd`, state/handoff digest `464aa964`,
+4 files / 16 tests, typecheck, and direct concurrency/optional/template
+semantic probes. Its migration and registration requests are assigned to F02
+and I36 checkpoints but remain unapplied.
+
+I36 is authorized only for an atomic three-runtime-file claim from exact
+integration head `eeac03af`: READY `3be45d68`, claim `26d3ae42`,
+RELEASE_INTEGRATOR lease `495eba01` through `2026-07-29T13:06:14Z`, and
+queued P09 merge digest `e6b820e1`. It must stop for C00 reconciliation
+before merging P09.

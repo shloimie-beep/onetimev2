@@ -864,6 +864,22 @@ integration heads, add direct tests, refresh digests, publish a superseding
 final, release the lease, and stop. Apply no request/migration/registration and
 perform no provider/send/external effect.
 
+P11 integration is complete at release
+`eeac03afdd7a5db493885ef507b7c09478b0454a`; do not repeat it and do
+not apply `P11-registration-001` outside its steward checkpoint.
+
+P09 final `33a21a45005271f1bbe09c8587df1e52fac1a95a` has passed
+independent audit and is admitted. Resume I36 only from exact integration
+head `eeac03afdd7a5db493885ef507b7c09478b0454a` under claim
+`26d3ae42-c9c9-4913-9534-1d4c71b55f13`, RELEASE_INTEGRATOR lease
+`495eba01-e9b3-4e71-9e53-4864c9d93bac`, acquisition
+`7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3`, and READY digest
+`3be45d6892c86e6fb44fc74f7c99dfe4daa81604f6385a2f8e94b75b0a004037`.
+Change exactly I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+push normally, remote-verify, and stop for C00 reconciliation. Do not merge
+P09 or apply its migration/registration requests in this first push. No
+provider action, send, or external effect is authorized.
+
 P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
 reconciled. Resume it under unchanged claim
 `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease
