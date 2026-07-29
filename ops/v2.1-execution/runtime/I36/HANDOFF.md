@@ -1,73 +1,65 @@
-# I36 P35 Full-Integration Release
+# I36 Wave C Part 1 Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Atomic claim target:
-  `550106c61716b5e11825610ea4e5b1ce7e93b930`
-- Reconciled authorizing control:
-  `f93eaaa3b57f403847ceb18c6c79af7eb808e50c`
+- Exact existing target:
+  `fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d`
+- Authorizing control:
+  `6be130a490df6654e9a840a0dcf112b095bc97de`
 - Sole acquisition parent:
-  `d8a031e92ad3b02c8b3f62af2063737a20253af0`
+  `f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31`
 - READY I36 digest:
-  `70c2781a19242cd1b6bcc0452dd755c3b1964dd9b68b4694d5fa5a606d8ee4d9`
-- Claim: `5f6577ac-9fcd-4558-8d8a-1318b5b002b5`
-- RELEASE_INTEGRATOR lease: `11eac672-8eda-4188-baed-82e0a2a9ef8b`
-- Lease window: `2026-07-29T14:23:14Z` through
-  `2026-07-29T15:38:14Z`
-- Lease released: `2026-07-29T14:45:50Z`
-- Phase scope: `P35_full_integration_atomic_claim_only`
-- Release head: derive with `git rev-parse HEAD`; C00 records and audits the
-  observed pushed head and its sole parent.
+  `276719a894ddcedafbe28c85e98ede89f7e47d0e93601dc4478f6b45e93dd1c1`
+- Claim: `eeb23846-ea26-4d4e-9a96-54678160a0d2`
+- RELEASE_INTEGRATOR lease: `b726b1c2-f572-474b-bf16-b9ca2959b2f8`
+- Lease window: `2026-07-29T14:53:08Z` through
+  `2026-07-29T16:08:08Z`
+- Phase scope: `P19_P27_P32_full_integration_atomic_claim_only`
+- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
+  pushed head, its sole parent, and the I36 state/handoff digests.
 
-## Merge result
+## Ordered queue
 
-- Merge ID: `6754c434-bf7a-44ad-97e2-ea367ff38e1d`
-- Payload digest:
-  `6c0c90143d90e79835a4e7c9b7464a3678084fb87d8a41e122c335ca32e12dd5`
-- Source: `a85aecc22b013d583589a67cf0cc9dfad6745aba`
-- Fixed source/merge base:
-  `eefca0644e57dca48609682cbc3e1b01992d286d`
-- Merge head: `3655909a3ccbfb2d9b319c45c3a6ad945dffbafb`
-- Merge parents:
-  `550106c61716b5e11825610ea4e5b1ce7e93b930` and
-  `a85aecc22b013d583589a67cf0cc9dfad6745aba`
-- Required F01 full ancestor:
-  `b5344992a43a735a9c66047fecd83f951651de27`
-- First-parent delta: exactly the 20 control-authorized P35 paths
+1. P19 merge `8bd435bd-d5d6-4e40-b142-7cdeee817637`, source
+   `306c26cfcb84672eb5e593d1bee847a0f3e01243`, fixed base
+   `e420eb833feee26efd431afd93457a7e0bc4d228`, payload
+   `b7848cda8ffc3f29da777716f1c82a2941d6474480e4e14acfb3b66af37ce4a5`.
+2. P27 merge `09ce44f1-2b87-4f9f-8812-cb61539e1736`, source
+   `e1933d640657835cde17ee23381399f5539fe3cd`, fixed base
+   `e706587bfe581f881fb072271b15b4123f9aabe6`, payload
+   `ce5ef0bc0cbe673c9de46212c37f50958aab1f321c70f34455617d4620e670ab`.
+3. P32 merge `ebaf848d-ad8d-4c56-8d16-9c02809af62d`, source
+   `f4ae1c03c60917a23a825d46a4d0ec63ff4fc125`, fixed base
+   `6a33944a75e717041b2f951134459769b8fc2617`, payload
+   `60456d1fd7256dbd8d4d54029171d81573c01bf55e7d636df29bfe2bc84dbf5b`.
+
+Each queued tail is exactly that task's `HANDOFF.md`, `NEXT-PROMPT.md`, and
+`TASK-STATE.yaml`. All queue-declared merge-after heads are ancestors of the
+exact target.
 
 ## Verification
 
-The reconciled control, registry, claim head, sole lease, canonical merge item,
-source head, fixed merge base, F01 prerequisite, task/state-handoff/tail
-digests, request blob digests, YAML syntax, and 0/0/0 effect record all passed.
-The non-fast-forward merge preserves exact source ancestry and parents.
+The remote control and integration refs matched exactly. The canonical READY
+entry and all three merge items recomputed to their sibling-map digests. All
+200 locked blobs, all 15 source-package blobs, the package/task/context/
+control-state bindings, and prior I36 state/handoff digest passed.
 
-The focused P35 domain-transition contract proof passed, as did repository
-typecheck, full lint, full build, exact-path Prettier and diff hygiene, all
-200 locked blobs, all 15 source-package blobs, seven YAML parses, and the
-secret scan across 2932 repository text files.
+The exact P19, P27, and P32 branch refs were verified by `ls-remote` without
+fetching source content. Their recorded bases are target ancestors; order,
+merge-after prerequisites, exact triplet tails, claim, unexpired sole lease,
+and 0/0/0 effects all passed.
 
-The repository-wide formatting command retains the pre-existing baseline
-reported in the preceding release; all exact P35 paths pass the CRLF-aware
-Prettier check. The prior broader unit/integration baseline was not rerun
-because the focused P35 proof plus typecheck/lint/build was the proportionate
-gate for this isolated source tail.
-
-## Steward and effect boundary
-
-`P35-config-deploy-001`, `P35-reregistration-integration-001`, and
-`P35-route-registration-001` are present as immutable request records but
-remain unapplied. No provider inspection, send, DNS/deployment action, product
-edit beyond the exact source merge, or external effect occurred.
-
-This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`.
+This checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. No queued source was fetched, read, or merged. No steward
+request was applied, and no product, provider, send, or external effect was
+performed.
 
 ## Next action
 
-C00 must audit and reconcile the exact pushed release head and its sole parent.
-I36 must stop after reporting it.
+C00 must reconcile the exact pushed atomic claim head and its sole parent. I36
+must stop after reporting the claim and I36 state/handoff digests. Source
+admission and ordered merges require a subsequent explicit resume.
 
 ## Effects
 
