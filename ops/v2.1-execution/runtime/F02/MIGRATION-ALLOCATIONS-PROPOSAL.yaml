@@ -3,11 +3,11 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
-  claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
-  containing_control_head_sha: d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
-  ready_entry_parent_control_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
-  lease_expires_at: '2026-07-28T18:27:11Z'
+  lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
+  claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
+  containing_control_head_sha: fa1330ff11955fe03ac9c1dfba8d29407cac11a8
+  ready_entry_parent_control_sha: 3143e8d0c93bfff3925edcd61500345bd92c621d
+  lease_expires_at: '2026-07-29T18:51:43Z'
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
   first_new_ordinal: 2234
@@ -23,4 +23,40 @@ allocations:
     replaces_applied_migration: false
     destructive: false
     checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
-next_available_ordinal: 2235
+  - ordinal: 2235
+    file: packages/db/migrations/2235_v21_household_identity.sql
+    owner_task_id: F04
+    request_id: F04-migration-001
+    state: allocated
+    purpose: Normalized adult identities, human accounts and roles, households, Student profiles, sessions, ownership transfers, attestations, action tokens, billing portal sessions, provider reassociation intents, and append-only account audit.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
+  - ordinal: 2236
+    file: packages/db/migrations/2236_v21_job_foundation.sql
+    owner_task_id: F05
+    request_id: F05-MIGRATION-001
+    state: allocated
+    purpose: Durable command idempotency and provider job outbox foundations with scoped uniqueness, monotonic counters, leasing, quarantine, compensation, and due-work indexes.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+  - ordinal: 2237
+    file: packages/db/migrations/2237_v21_calendar_recurrence.sql
+    owner_task_id: P15
+    request_id: P15-MIGRATION-001
+    state: allocated
+    purpose: Recurring calendar series windows, weekdays, duration, lifecycle and optimistic versioning with safe legacy backfill, rescheduled occurrences, and draft-series occurrence fencing.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
+  - ordinal: 2238
+    file: packages/db/migrations/2238_v21_provider_core.sql
+    owner_task_id: F06
+    request_id: F06-migration-001
+    state: allocated
+    purpose: Provider operation bindings, adult GHL identity quarantine, household provider mappings, append-only readback evidence, and provider reconciliation indexing over the existing outbox state machine.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
+next_available_ordinal: 2239
