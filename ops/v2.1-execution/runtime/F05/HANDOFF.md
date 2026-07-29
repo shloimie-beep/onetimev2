@@ -22,16 +22,14 @@ are structured under F05 runtime.
 
 ## Remaining work
 
-Independently revalidate the interface/artifact digests and exact branch scope,
-then publish the final `ready_for_review` metadata and release the task-local
-writer lease.
+No task-owned implementation work remains. C00/I36 review and interface
+integration are next; migration and central registration remain stewarded.
 
 ## Exact next action
 
-Recompute contract digest
-`fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329`
-from the exact 14 artifacts at implementation head `1ade14c5`, validate scope,
-then finalize durable metadata.
+C00/I36 should validate and integrate interface checkpoint
+`0656380bcfc50cc464dcea7588448dc724049599`, then route
+`F05-MIGRATION-001` and `F05-REGISTRATION-001` through their exact stewards.
 
 ## Coverage
 
@@ -58,6 +56,8 @@ integration.
 - Focused ESLint: passed
 - Focused Prettier: passed
 - Interface contract: `fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329`
+- Interface metadata checkpoint: `0656380bcfc50cc464dcea7588448dc724049599`
+- Start and implementation ancestry, 14 artifact digests, exact normalized-owned scope, and zero effects: independently revalidated
 
 ## External effects
 
@@ -72,4 +72,5 @@ deployment was accessed or attempted.
 
 No blocker. The schema repository is intentionally not activated until the
 stewarded migration is integrated. Candidate-bound acceptance remains outside
-this implementation task.
+this implementation task. The F05 writer lease was cleanly released at
+`2026-07-28T18:43:00Z`.

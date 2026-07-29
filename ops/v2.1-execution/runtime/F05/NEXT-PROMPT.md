@@ -20,8 +20,9 @@ digest, unexpired lease/claim, package/task/context/dependency digests, and
 reject a live foreign lease or non-fast-forward collision. Check out the exact
 task branch and read state/handoff before named work. If a new resume lease is
 required, wait for C00 to issue it; never self-extend. Resume `next_action`
-without repeating completed validation. Current next action: independently
-recompute interface/artifact digests at implementation head `1ade14c5`, validate
-exact scope and remote ancestry, then publish final `ready_for_review` metadata
-and release the task-local writer lease. Update and push state, handoff, and this
-prompt before returning.
+without repeating completed validation. F05 is `ready_for_review`; its task-local
+lease is released and no worker may continue without a new C00 `resume_ready`
+lease bound to the exact expected remote head. Current next action belongs to
+C00/I36: validate and integrate interface checkpoint `0656380b`, then route the
+two steward requests. If C00 later requests corrections, update and push state,
+handoff, and this prompt before returning.

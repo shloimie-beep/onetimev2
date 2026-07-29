@@ -13,14 +13,20 @@ dependency_heads:
     integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
     interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
     interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
-status: interface_ready
+status: ready_for_review
 phase: verification
 claimed_by: codex-f05-worker-8726d04b
 claim_time: '2026-07-28T18:24:58Z'
 claim_id: 8726d04b-b82f-4c2f-b071-57edab0b3b22
 writer_slot_lease_id: 5caac8ad-5b97-4697-855c-f39f28efef24
 lease_expires_at: '2026-07-28T19:11:45Z'
-last_heartbeat_at: '2026-07-28T18:42:00Z'
+last_heartbeat_at: '2026-07-28T18:43:00Z'
+lease_released_at: '2026-07-28T18:43:00Z'
+writer_slot_leases:
+  API_JOB_FOUNDATION:
+    lease_id: 5caac8ad-5b97-4697-855c-f39f28efef24
+    lease_expires_at: '2026-07-28T19:11:45Z'
+    released_at: '2026-07-28T18:43:00Z'
 controller_authorization_sha: 398ebf34ec72892d354370af11af297d45302888
 state_based_on_control_head_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
 ready_entry_payload_digest: f58a652f8ee03a8aaf298b6077cd79660e5d9f0bf06947e63b8c7788484f1eed
@@ -37,10 +43,9 @@ completed_steps:
   - passed focused F05 assertions 8/8, repository typecheck, focused ESLint, Prettier, and diff checks
   - hardened outbox duplicate conflict detection and honored provider Retry-After as an additional not-before constraint
   - published interface contract fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329 over 14 exact artifacts
-remaining_steps:
-  - independently revalidate interface/artifact digests and exact branch scope
-  - publish final ready_for_review metadata and release the task-local writer lease
-next_action: Independently recompute the interface contract and state/handoff digests, verify exact scope and remote ancestry, then publish the final ready_for_review checkpoint.
+  - independently revalidated every interface artifact/digest, start and implementation ancestry, exact branch scope, and clean external-effect count
+remaining_steps: []
+next_action: C00/I36 should validate and integrate interface checkpoint 0656380bcfc50cc464dcea7588448dc724049599; migration and central registration remain governed by F05-MIGRATION-001 and F05-REGISTRATION-001.
 requirements:
   OTV2-API-217: implementation_ready
   OTV2-JOBS-210: implementation_ready
