@@ -1220,3 +1220,14 @@ through `2026-07-29T10:18:31Z`. Its first push may change exactly P23
 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
 reconciliation. Product/test/request edits and every external effect remain
 unauthorized in that first phase.
+
+P23 atomic copy/dedupe-persistence claim
+`102c75c257dda033750d38e95b84ab05b8781507` is independently
+reconciled as the exact three-runtime-file child of rejected final `24ec3a4e`.
+P23 may now restore the locked **Open schedule** label while retaining the
+canonical calendar route, replace raw NUL persistence with an injective
+PostgreSQL-safe exact-tuple encoding, add exact-copy and database-boundary
+negative tests, preserve every earlier correction, release lease `471de353`,
+publish a superseding final, and stop for independent re-audit. Migrations,
+registrations, steward application, provider/send actions, and external effects
+remain unauthorized.

@@ -1031,8 +1031,8 @@ tasks:
     transitioned_at: '2026-07-29T05:20:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P22/status_proof
 - task_id: P23
-  status: ready
-  active_phase: copy_dedupe_persistence_correction
+  status: claimed
+  active_phase: copy_dedupe_persistence_correction_claim
   branch: codex/v21-p23-student-notifications
   phase_branches:
     implementation: codex/v21-p23-student-notifications
@@ -1044,20 +1044,21 @@ tasks:
     correction: 8fdeaddb84a6c8e71271711fbd6b095046b6df21
     route_accessibility_correction: 433cc88b34d99099ca75f64876713406c6e43053
     review: 24ec3a4effc622f384915d892cbaad046e1ea5d1
+    copy_dedupe_persistence_correction: 102c75c257dda033750d38e95b84ab05b8781507
   authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-  last_known_remote_head: 24ec3a4effc622f384915d892cbaad046e1ea5d1
+  last_known_remote_head: 102c75c257dda033750d38e95b84ab05b8781507
   active_claim_id: 096ffffc-1637-4602-a9a8-3084e03a50e1
-  active_writer_id: null
+  active_writer_id: codex-p23-worker-096ffffc
   lease_expires_at: '2026-07-29T10:18:31Z'
-  last_heartbeat_at: null
-  controller_authorization_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+  last_heartbeat_at: '2026-07-29T09:24:30Z'
+  controller_authorization_sha: fff9a0a79f2db87ffca97451f8295080b9736549
   ready_entry_payload_digest: 67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b
   interface_checkpoint_sha: null
   implementation_head_sha: dafdd046b7048e67829b2f2a2496c8b830b23fec
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+    state: claimed
+    producer_task_id: P23
+    producer_head_sha: 102c75c257dda033750d38e95b84ab05b8781507
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -1071,8 +1072,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
-    transitioned_at: '2026-07-29T09:18:31Z'
+    state_based_on_control_head_sha: af433361f49dc4842835cf340c06f904ff2919b0
+    transitioned_at: '2026-07-29T09:26:12Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P23/status_proof
 - task_id: P24
   status: planned

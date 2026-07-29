@@ -939,6 +939,18 @@ the lease, publish a superseding final, and stop for independent re-audit. Do
 not apply migration/registration/steward requests or perform provider/send
 actions.
 
+P23 copy/dedupe-persistence claim
+`102c75c257dda033750d38e95b84ab05b8781507` is reconciled. Resume it
+under unchanged claim `096ffffc-1637-4602-a9a8-3084e03a50e1` and lease
+`471de353-37c6-4e38-a6da-d2db92c4b207`. Implement only the locked
+**Open schedule** label/canonical calendar route pairing and an injective
+PostgreSQL-safe exact-tuple dedupe representation with direct no-NUL,
+same-tuple-stability, and collision-negative tests inside P23-owned/runtime
+paths. Preserve every earlier passing correction. Re-run focused tests,
+typecheck, lint/format/scope/digests, publish a superseding final, release the
+lease, and stop with effects `0/0/0`. Apply no migration/registration/steward
+request and perform no provider/send action.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
