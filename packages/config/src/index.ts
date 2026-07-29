@@ -30,18 +30,6 @@ const optionalTrimmedString = (minimum: number, maximum: number) =>
     z.string().trim().min(minimum).max(maximum).optional(),
   );
 
-function parseUniqueCsv(value: string | undefined) {
-  if (!value) return [];
-  return [
-    ...new Set(
-      value
-        .split(',')
-        .map((part) => part.trim())
-        .filter(Boolean),
-    ),
-  ];
-}
-
 const OT89_LOCAL_ONETIME_KEY_ID = 'ot89-onetime-local';
 const OT89_LOCAL_ONETIME_SECRET = 'ot89-test-secret-do-not-use-local-producer';
 const OT89_LOCAL_BNA_KEY_ID = 'ot89-bna-local';
