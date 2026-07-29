@@ -1,0 +1,94 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P09
+task_packet_digest: 191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8
+task_context_digest: a79a242f32c782ee37ffe345b419a443e5ce22dacec10b2390958456fc8cfece
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p09-school-inquiry
+start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+claim_mode: create_new_branch
+expected_existing_head: null
+dependency_heads:
+  P08: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+dependency_bindings:
+  P08:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+    observed_integration_head_sha: 1b338e66d10a31db790377be38eed3d1e325fb55
+    interface_source_head_sha: 594570798a5af8145d7949ba10572e8b1e644f17
+    interface_implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
+    interface_checkpoint_digest: 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
+    task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
+    task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
+status: claimed
+phase: implementation
+claimed_by: codex-p09-worker-92d411ff
+claim_time: '2026-07-29T10:23:53Z'
+claim_id: 92d411ff-e9c0-431d-ab69-e7b71935e4e5
+lease_slot: SCHOOL_INQUIRY
+lease_id: 55f80667-a56c-4eeb-b04c-dcd40700466e
+lease_issued_at: '2026-07-29T10:23:53Z'
+lease_expires_at: '2026-07-29T11:23:53Z'
+lease_phase_scope: P09_atomic_claim_only
+heartbeat_interval_minutes: 30
+last_heartbeat_at: '2026-07-29T10:23:53Z'
+controller_authorization_sha: 4c029e8d6e4ea3a2a4e4942affb61a39e5508129
+ready_entry_state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+ready_entry_payload_digest: d40ec2fea20f686e5cf866e7f25c2693465ae2f1a7d6afe45f96de8a7b98e529
+effect_lock_leases: []
+state_based_on_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+last_implementation_commit_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+completed_steps:
+  - Verified exact fetched control 4c029e8d6e4ea3a2a4e4942affb61a39e5508129
+    and state-based acquisition d99fde51092abdee97f42f28e8bdee8a08c5e22c.
+  - Verified exact local and remote integration start
+    088b40476bd5ceeb0af901b6f78a4cb8c556671b and absence of the registered P09
+    branch locally and remotely.
+  - Independently recomputed canonical P09 READY digest
+    d40ec2fea20f686e5cf866e7f25c2693465ae2f1a7d6afe45f96de8a7b98e529.
+  - Verified the exact P08 interface-ready-integrated dependency binding, sole
+    SCHOOL_INQUIRY lease, and zero effect-lock leases.
+  - Created codex/v21-p09-school-inquiry from the exact authorized start and
+    seeded only the three P09 runtime-memory files from the execution templates.
+remaining_steps:
+  - Commit and atomically create the remote task branch with this exact
+    three-runtime-file claim checkpoint.
+  - Report the exact pushed claim head to C00 and stop for reconciliation.
+next_action: C00 must reconcile the exact pushed P09 atomic claim head before any implementation work begins.
+requirements:
+  OTV2-SIGNUP-178: not_started
+  OTV2-SIGNUP-229: not_started
+  OTV2-SCHOOL-200: not_started
+  OTV2-SCHOOL-214: not_started
+acceptance_cases:
+  OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS: not_started
+  OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY: not_started
+  OTV2-SCHOOL-200-AC01: not_started
+  OTV2-SCHOOL-214-AC01: not_started
+changed_paths:
+  - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P09/HANDOFF.md
+  - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: git fetch --no-tags origin and exact ref verification
+      result: passed; control, integration start, clean worktree, and absent local/remote P09 branch exact
+    - command: canonical P09 READY payload recomputation
+      result: passed; d40ec2fea20f686e5cf866e7f25c2693465ae2f1a7d6afe45f96de8a7b98e529
+    - command: P09 task/context and P08 dependency binding verification
+      result: passed; all recorded task, context, interface, and dependency digests and heads exact
+    - command: claim, SCHOOL_INQUIRY lease, branch mode, expiry, and effect-lock verification
+      result: passed; exact claim, one unexpired writer lease, create-new-branch mode, and zero effect locks
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
