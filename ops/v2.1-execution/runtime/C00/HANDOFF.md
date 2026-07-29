@@ -790,3 +790,27 @@ exact integration head `d075dc18`. C00 authorized branch
 `5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f`,
 and zero effect authority. The first push must change only the three P34
 runtime memory files and stop for C00 reconciliation before product work.
+
+P34 claim `8499fdb5` is independently reconciled: sole parent `d075dc18`,
+exactly three P34 runtime files, containing authorization `aedf1fcb`,
+acquisition `b35a24ab`, exact claim/lease/ready binding, clean worktree, and
+zero effects. P34 may now implement only provider-independent backup/restore,
+rollback, legal-gate, and canary-budget mechanisms. It may not fabricate
+provider proof, legal artifacts, approvals, backup/restore proof, or perform
+any live effect.
+
+P12 final `7c06fe62` is held. Its current lifecycle same-state branches still
+increment the household revision and emit an audit/commit, and its capacity
+guard trusts an arbitrary record allowance above the locked hard maximum of
+three active Students. The released lease cannot be reused. C00 issued only
+fresh atomic correction claim `eedf369a-f247-481b-bca6-7e48abdf1f26`
+from exact final `7c06fe62`, lease `3f2cd863`, and ready digest `a9df3b69`.
+
+P22 final `cad72593` is held. Admin question/attendance mutations enforce only
+account/product scope and omit the actor's assigned class, published questions
+have no sanitized class-member projection, and answered-private recognition is
+incorrectly included in the approved/published leaderboard category. C00
+issued only fresh atomic correction claim
+`e2ac53ae-128f-4d0c-b9a2-e74d05858f29` from exact final `cad72593`, lease
+`9fd6a3b7`, and ready digest `40bb6fd8`. Both correction workers must first
+change only their three task-runtime files and stop for C00 reconciliation.

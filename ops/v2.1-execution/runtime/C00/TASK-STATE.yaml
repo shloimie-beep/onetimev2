@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-e79fe9f6
-claim_time: '2026-07-29T03:48:26Z'
-claim_id: e79fe9f6-cdaa-455c-95d4-a3a320996ce6
-lease_expires_at: '2026-07-29T03:50:27Z'
-last_heartbeat_at: '2026-07-29T03:50:27Z'
-controller_authorization_sha: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
+claimed_by: codex-c00-orchestrator-4d3294f9
+claim_time: '2026-07-29T03:59:53Z'
+claim_id: 4d3294f9-bfac-40e9-8643-469aba8378e6
+lease_expires_at: '2026-07-29T04:00:52Z'
+last_heartbeat_at: '2026-07-29T04:00:52Z'
+controller_authorization_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
 ready_entry_payload_digest: null
-state_based_on_head_sha: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
+state_based_on_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -212,8 +212,11 @@ completed_steps:
 - consumed all three ready entries, rebound only P33 interface merge 0798f93b to exact target 76ab4719 with canonical digest b4a71eb8, and authorized the bounded P33 merge plus P12/P22 implementations
 - independently verified P33 merge 770696f8 exact parents 76ab4719 and 295c125e, source ancestry, exact twenty-five-path scope, 68 focused tests, typecheck, metadata-only release d075dc18, released I36 lease, and zero effects
 - recorded P33 interface integrated at d075dc18, cleared its completed merge item, and authorized dependency-valid P34 only for a new-branch atomic claim under OPERATIONS_RECOVERY lease b8e703f5 and zero effect authority
+- independently verified P34 atomic claim 8499fdb5 with sole parent d075dc18, exactly three P34 runtime files, containing authorization aedf1fcb, exact claim/lease/ready bindings, clean worktree, and zero effects
+- held P12 final 7c06fe62 for hard three-seat and lifecycle-resubmit corrections; invalidated reuse of its released lease and issued only fresh correction claim eedf369a
+- held P22 final cad72593 for class-assignment authorization, sanitized published-class projection, and approved/published-only leaderboard corrections; issued only fresh correction claim e2ac53ae
 remaining_steps: []
-next_action: P34 publishes only atomic claim d1959518 from exact integrated P33 head d075dc18 and stops for reconciliation; P12 and P22 continue only their authorized owned scopes under live leases; all external effects remain unauthorized.
+next_action: P34 implements only provider-independent recovery mechanisms from claim 8499fdb5; P12 and P22 publish only fresh atomic correction claims from exact held finals and stop for reconciliation; all external effects remain unauthorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -221,12 +224,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
+  current_control_parent_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: e79fe9f6-cdaa-455c-95d4-a3a320996ce6
-      observed_head: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
+      claim_id: 4d3294f9-bfac-40e9-8643-469aba8378e6
+      observed_head: 36451ec88e05bb64be0b27b8bc148166b6fe9837
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -398,18 +401,18 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_f1cecb53
     P12:
       branch: codex/v21-p12-parent-household
-      claim_id: 776c6b8b-8729-49ea-a9ca-f505fbaf320c
-      observed_head: bd0c8122dcaccc077b9c4ef51983f9ed1321d467
+      claim_id: eedf369a-f247-481b-bca6-7e48abdf1f26
+      observed_head: 7c06fe62e8555aeafa917e855e34f9cc07e3ce3b
       authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-      lease_expires_at: '2026-07-29T04:20:30Z'
-      scheduling_state: contract_claim_reconciled_implementation_authorized
+      lease_expires_at: '2026-07-29T05:00:52Z'
+      scheduling_state: correction_atomic_claim_authorized_from_held_final
     P22:
       branch: codex/v21-p22-learning-engagement
-      claim_id: eba236e0-164c-4b7d-a71e-20646f4ec5ab
-      observed_head: 4acf752ddf6e173b3a41714e00bce28dab491dd0
+      claim_id: e2ac53ae-128f-4d0c-b9a2-e74d05858f29
+      observed_head: cad7259304253eff531307fecfc9de298fac1a34
       authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-      lease_expires_at: '2026-07-29T04:20:30Z'
-      scheduling_state: implementation_claim_reconciled_implementation_authorized
+      lease_expires_at: '2026-07-29T05:00:52Z'
+      scheduling_state: correction_atomic_claim_authorized_from_held_final
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: null
@@ -420,12 +423,13 @@ orchestration:
     P34:
       branch: codex/v21-p34-operations-recovery
       claim_id: d1959518-2cbc-49a8-9d39-ddd38a06564e
-      observed_head: null
+      observed_head: 8499fdb5425f699f14ef8294b0945cd6dd2c1638
       authorized_start_sha: d075dc1839660205845e7da039a182bbe44778d2
       lease_expires_at: '2026-07-29T04:50:27Z'
-      scheduling_state: implementation_atomic_claim_authorized
+      scheduling_state: implementation_claim_reconciled_implementation_authorized
   active_native_subagents:
   - f03_worker
+  - f05_worker
   - i36_worker2
   unresolved_blockers: []
 requirements: {}
@@ -595,10 +599,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 37030b9b3c14e7b6b5d57718b613751f922a23778afb91b058456978a50ce29a
-    control_lease: cc0a39bd985e0413ca02a06cb57d14f13c176b8df731c205fece1921bed6346d
-    task_registry: f9c2d6b4e7f3e89315eb0eef601cb7ccbb24f69c4909c195119897b95385d8ad
-    ready_queue: 1e2b14a7088446baed50283a3cf53d4de2745d398b59327eb06fb77186b91959
+    control_state: 6af2ceef01fbfacb495a59b4bcebef6b7390199ada26b1f8babca584172fc033
+    control_lease: 575603c32208f99c2d3205ee9f9294de5b7a95cb7ad12b13a3430af78ffa947d
+    task_registry: ee15eaa02b7ecb0a5e9d8e532da69ad93951b45ec4bd53c0c31ac0136fd51a68
+    ready_queue: 766df4300e5ad0da62510d3b035f34b75abde04d1d8e54a802b037aa1657c0ed
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 0114ee435005854047e6c28da262176ecc334bd1b6302f478cba04bb11263d74
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8

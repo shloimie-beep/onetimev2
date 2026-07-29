@@ -496,3 +496,28 @@ atomic claim `d1959518-2cbc-49a8-9d39-ddd38a06564e`, binding acquisition
 `5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f`.
 Change only P34's three runtime memory files and stop for C00 reconciliation
 before any product implementation. No external effect is authorized.
+
+P34 claim `8499fdb5425f699f14ef8294b0945cd6dd2c1638` is reconciled.
+Implement only provider-independent P34 mechanisms under its unchanged
+OPERATIONS_RECOVERY lease. Do not fabricate or perform legal approval,
+backup/restore proof, provider, deploy, canary, or other external effects.
+
+For P12, publish only atomic correction claim
+`eedf369a-f247-481b-bca6-7e48abdf1f26` from exact held final
+`7c06fe62e8555aeafa917e855e34f9cc07e3ce3b`, binding acquisition
+`36451ec88e05bb64be0b27b8bc148166b6fe9837`, PARENT_HOUSEHOLD_UI lease
+`3f2cd863-1f04-40fa-875b-87c14469a454`, and ready digest
+`a9df3b69b8177c1e0e589109de5aff4260bdb99471f12ff7de0a915166824e8b`.
+Change only P12's three runtime files and stop for reconciliation before
+correcting the hard three-seat cap and lifecycle same-state duplicate write.
+
+For P22, publish only atomic correction claim
+`e2ac53ae-128f-4d0c-b9a2-e74d05858f29` from exact held final
+`cad7259304253eff531307fecfc9de298fac1a34`, binding acquisition
+`36451ec88e05bb64be0b27b8bc148166b6fe9837`, LEARNING_ENGAGEMENT lease
+`9fd6a3b7-decc-454a-9a2e-953aaaebfe63`, and ready digest
+`40bb6fd8a17894f529f881d087427047427db54f573bc1cd5cfe36dc6000a2a0`.
+Change only P22's three runtime files and stop for reconciliation before
+correcting class-assignment authorization, sanitized published-class
+projection, and approved/published-only leaderboard counting. No effect is
+authorized.
