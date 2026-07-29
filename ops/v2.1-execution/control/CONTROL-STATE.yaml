@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: I36 merges only the exact P08 v2.0.0 interface from reconciled integration claim 931b6fe7; P10 corrected final 5fccc345 is independently admitted and waits behind P08 with its migration and registration requests assigned; P33 continues its bounded correction.
+next_action: I36 continues only the authorized P08 merge from reconciled claim 931b6fe7; P33 publishes only atomic claim a3a5253b from rejected final 16029937 to correct exact street-address, retry-count, and active-lease evidence gaps; P10 remains admitted behind P08.
 authority_note: Only C00 updates this global control state.

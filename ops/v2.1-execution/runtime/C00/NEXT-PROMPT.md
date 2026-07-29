@@ -378,3 +378,14 @@ implementation `da5576d3f675b90a5db812d293801f9f5fa17d38`, digest
 and steward digest
 `0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea`.
 It waits behind P08; do not integrate it in the current I36 checkpoint.
+
+P33 final `160299371e203f84a5af3f87bfd5c8e8115a5063` is rejected:
+`street_address`, unmatched `retry_count: 9`, and a ten-minute active lease
+still pass exact direct probes. Publish only atomic claim
+`a3a5253b-019d-4600-aa04-1da9ff1eccea` from that exact final, binding
+acquisition `7b1aae190d4bf6eb9b36fc2521345ac976c49ff8`,
+OPERATIONS_RUNTIME lease `12ddddaa-2196-47ca-b63a-a20d9b3ad124`, and ready
+digest `06ddf0377b93d940b8f0e1a2e44cb4cb29a43232387f1d86ba99b2497344122c`.
+Stop for C00 reconciliation before product edits. After reconciliation, close
+only those three evidence gaps with exact negative tests and republish all
+affected digests.

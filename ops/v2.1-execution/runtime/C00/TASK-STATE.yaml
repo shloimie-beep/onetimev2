@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-0a39d8c2
-claim_time: '2026-07-29T02:43:11Z'
-claim_id: 0a39d8c2-5e33-4022-badc-948568abea08
-lease_expires_at: '2026-07-29T02:47:24Z'
-last_heartbeat_at: '2026-07-29T02:47:24Z'
-controller_authorization_sha: 4d4ae9e7a047aa14cb04e95c0b9e0fd9e431565a
+claimed_by: codex-c00-orchestrator-a3019e84
+claim_time: '2026-07-29T02:52:01Z'
+claim_id: a3019e84-ad8f-4a47-a203-54f4ec8f258b
+lease_expires_at: '2026-07-29T02:55:01Z'
+last_heartbeat_at: '2026-07-29T02:55:01Z'
+controller_authorization_sha: 7b1aae190d4bf6eb9b36fc2521345ac976c49ff8
 ready_entry_payload_digest: null
-state_based_on_head_sha: 4d4ae9e7a047aa14cb04e95c0b9e0fd9e431565a
+state_based_on_head_sha: 7b1aae190d4bf6eb9b36fc2521345ac976c49ff8
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -194,8 +194,11 @@ completed_steps:
 - consumed I36 claim under exact acquisition 4d4ae9e7 and rebound only P08 merge 6fc2b7ae to target 931b6fe7 with canonical digest 683cb042
 - independently verified P10 corrected final 5fccc345 ancestry and exact nine-path correction scope, implementation digest 07d90e33, steward digest 0bb00ea1, 20 focused tests, released lease, clean worktree, and zero effects
 - admitted P10 corrected final and assigned its exact migration and registration requests to F02 and I36 without applying either request
+- reproduced P33 final 16029937 ancestry, exact eighteen-path correction scope, v3.0.0 interface digest 0e890eab, 60 focused tests, released lease, clean worktree, and zero effects, but rejected semantic admission
+- reproduced that P33 still passes street_address leakage, retry_count 9 with no matching retry evidence, and a ten-minute active lease as healthy/evidence-ready
+- issued P33 exact follow-up atomic claim a3a5253b from final 16029937 under a fresh OPERATIONS_RUNTIME lease, canonical ready digest 06ddf037, and zero effect authority
 remaining_steps: []
-next_action: I36 merges only P08 source e15a7af6 into reconciled integration claim 931b6fe7, proves exact ancestry and fifteen-path scope, publishes a metadata release checkpoint, and reports; P10 waits admitted behind P08; P33 continues its bounded correction.
+next_action: I36 continues only the authorized P08 merge; P33 publishes only atomic claim a3a5253b from exact final 16029937 and stops for reconciliation before correcting street-address, retry-count, and active-lease evidence; P10 waits admitted behind P08.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -203,12 +206,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 4d4ae9e7a047aa14cb04e95c0b9e0fd9e431565a
+  current_control_parent_sha: 7b1aae190d4bf6eb9b36fc2521345ac976c49ff8
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 0a39d8c2-5e33-4022-badc-948568abea08
-      observed_head: 4d4ae9e7a047aa14cb04e95c0b9e0fd9e431565a
+      claim_id: a3019e84-ad8f-4a47-a203-54f4ec8f258b
+      observed_head: 7b1aae190d4bf6eb9b36fc2521345ac976c49ff8
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -380,11 +383,11 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_admitted_waiting_for_integration
     P33:
       branch: codex/v21-p33-runtime-operations
-      claim_id: c37c6dea-d395-4a57-8068-f519dad03c89
-      observed_head: 0ecfd73c6f5e1a352d995269efbf1cf1a731ddf4
+      claim_id: a3a5253b-019d-4600-aa04-1da9ff1eccea
+      observed_head: 160299371e203f84a5af3f87bfd5c8e8115a5063
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T03:22:38Z'
-      scheduling_state: identity_heartbeat_queue_alert_leakage_claim_reconciled_implementation_authorized
+      lease_expires_at: '2026-07-29T03:52:01Z'
+      scheduling_state: street_address_retry_lease_claim_authorized_not_reconciled
   active_native_subagents: []
   unresolved_blockers: []
 requirements: {}
@@ -554,10 +557,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: d82ff1976385dda805d1853ef49b64c731da1e0d068cf670661032b17a9d2108
-    control_lease: f85e1033785debe0bb04f9cbbe24c87c7bd97e21d4df513ae4e83c2690f6ef76
-    task_registry: 383770a5980b457ac6f41a6504e5d3efcd67de4ef80f63684ec822f69c99ab97
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 4828a9326ce2eb0a2aba3e74b00f22298bfe1e67c13f9b25cf2ebefa92bee79e
+    control_lease: d3d0592f4d76d29e6653b4341fd6c40abe0e5ff46ecb2b0fdce9d43533765dec
+    task_registry: afe2d417efb954106b1e1248ec85527896cf898d299415189c9b477e905f08b3
+    ready_queue: 5a699ca35f0b575b2d3a8514f341021759b34d4a82ba43101357b9f4683c9ead
     merge_queue: c17bc8bf44e6175e6216c2c1c8dff6efac9c74554a813bf8d0ed48379eb044ab
     steward_queue: 1664edfc2a222c01089e979e65961d8e16a59a00e39b06aa226cb07b6baa20f4
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -597,6 +600,10 @@ verification:
   - P10 final 5fccc345 and implementation da5576d3 exact ancestry, nine-path correction scope, released lease, clean worktree, and zero effects: passed
   - P10 focused domain, server, and client verification: 3 files and 20 tests passed
   - P10 implementation digest 07d90e33, steward digest 0bb00ea1, migration request 33dbeedf, and registration request 7946526e: passed
+  - P33 final 16029937 exact linear ancestry, eighteen-path correction scope, v3.0.0 interface digest 0e890eab, released lease, clean worktree, and zero effects: passed mechanically
+  - P33 focused operations, steward consistency, protected router, and worker heartbeat verification: 4 files and 60 tests passed
+  - P33 street_address leakage, unmatched retry_count 9, and ten-minute active-lease direct probes: reproduced semantic defects
+  - P33 follow-up ready-entry canonical payload digest 06ddf037 for exact final 16029937 and fresh OPERATIONS_RUNTIME lease: passed
   - autonomous addendum package binding and remote/native-agent reconciliation: passed
   - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   - F01 interface checkpoint schema, export hashes, canonical digest, merge base, and allowed-path admission: passed

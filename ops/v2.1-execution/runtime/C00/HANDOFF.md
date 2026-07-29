@@ -679,3 +679,14 @@ persistence. The exact `07d90e33` implementation digest, `0bb00ea1` steward
 digest, 20 focused tests, released lease, clean worktree, and zero effects
 pass. Migration and registration requests are assigned to F02 and I36 and
 remain unapplied; P10 waits behind P08 for integration.
+
+P33 final `16029937` passes its linear eighteen-path mechanical scope,
+v3.0.0 interface digest `0e890eab`, 60 focused tests, released lease, clean
+worktree, and zero effects, but remains semantically rejected. Exact direct
+probes still report `street_address` as leakage-free, `retry_count: 9` without
+matching retry evidence as healthy, and a ten-minute active lease as healthy
+and evidence-ready. C00 authorized only atomic claim `a3a5253b` from exact
+final `16029937` under a fresh OPERATIONS_RUNTIME lease and canonical ready
+digest `06ddf037`; no product edit may occur before reconciliation. The next
+bounded correction must add exact negative tests and close only these
+street-address, retry-consistency, and active-lease-age gaps.
