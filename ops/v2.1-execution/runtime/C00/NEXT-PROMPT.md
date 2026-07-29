@@ -293,3 +293,15 @@ heads under their unchanged leases for only the recorded audit repairs and
 negative regression tests. Refresh every changed artifact/interface/state and
 steward-request digest, release each lease, and publish new ready_for_review
 finals. Keep effects at zero; do not integrate either prior rejected interface.
+
+P08 final `605c659afe488e32114bae57b3751c044301bdca` is mechanically
+clean but semantically rejected after exact comparison with PS-006.2,
+ACT-PUBLIC, UI-010.2, and UI-010.3. Publish only atomic task-runtime claim
+`a456f914-02cb-4c08-9717-af9709f1948a` from that exact head, then stop for
+C00 reconciliation. After reconciliation, correct server IANA validation and
+editable/searchable timezone form metadata; exact password confirmation and
+separate optional general-marketing/Parent-newsletter choices without inferred
+consent; remove P09-owned School command/form details while preserving the
+mutually exclusive branch seam; and block post-expiry Checkout while GHL
+identity is `identity_review`. Republish the superseding interface and all
+digests with negative tests, a released lease, and zero effects.

@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-798b9c2d
-claim_time: '2026-07-29T01:48:46Z'
-claim_id: 798b9c2d-bce5-4ccf-967d-39384ea298e2
-lease_expires_at: '2026-07-29T01:55:00Z'
-last_heartbeat_at: '2026-07-29T01:55:00Z'
-controller_authorization_sha: 34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4
+claimed_by: codex-c00-orchestrator-2d2a3f6e
+claim_time: '2026-07-29T01:56:18Z'
+claim_id: 2d2a3f6e-72d6-423e-8185-f516adcbef7f
+lease_expires_at: '2026-07-29T02:03:04Z'
+last_heartbeat_at: '2026-07-29T02:03:04Z'
+controller_authorization_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
 ready_entry_payload_digest: null
-state_based_on_head_sha: 34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4
+state_based_on_head_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -168,8 +168,12 @@ completed_steps:
 - independently verified P10 atomic correction claim 0b34fdf6 with sole parent 92212a7b, exact three-file P10 runtime-only scope, containing authorization b0aeb1d1, canonical ready digest 526ce8d0, live lease, and zero effects
 - independently verified P33 atomic correction claim a956c9dd with sole parent 122608b5, exact three-file P33 runtime-only scope, containing authorization b0aeb1d1, canonical ready digest 639b020e, preserved pending interface lineage, and zero effects
 - consumed both correction ready entries under exact acquisition 34d3cea8 and authorized only their recorded semantic repairs with negative regression coverage and no external effects
+- reproduced P08 corrected final 605c659a ancestry, exact thirteen-path correction scope, corrected v1.1.0 artifact/checkpoint and steward digests, 16 focused tests, released lease, and zero effects, but rejected semantic admission
+- reproduced that P08 accepts invalid non-IANA timezone definitely/not-a-zone and compared its Family and School form models with the exact PS-006.2, ACT-PUBLIC, UI-010.2, and UI-010.3 source contracts
+- rejected P08 v1.1.0 because it omits password confirmation and both separate optional adult communication choices, fails server-side IANA validation/editable form metadata, owns a conflicting incorrect School form contract assigned to downstream P09, and does not block post-expiry checkout during GHL identity_review
+- authorized only atomic follow-up correction claim a456f914 from exact rejected final 605c659a under a fresh FAMILY_SIGNUP lease with zero effect authority
 remaining_steps: []
-next_action: P10 resumes from 0b34fdf6 and P33 resumes from a956c9dd for only their recorded bounded corrections while P08 continues independently.
+next_action: P08 publishes only atomic claim a456f914 from 605c659a and stops for reconciliation; P10 and P33 continue only their already reconciled bounded corrections.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -177,12 +181,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4
+  current_control_parent_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 798b9c2d-bce5-4ccf-967d-39384ea298e2
-      observed_head: 34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4
+      claim_id: 2d2a3f6e-72d6-423e-8185-f516adcbef7f
+      observed_head: 95883ac406ec38b6c9399c0447022aa906532b5d
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -340,11 +344,11 @@ orchestration:
       scheduling_state: ready_for_review_admitted
     P08:
       branch: codex/v21-p08-family-signup
-      claim_id: e9148002-e9ff-4b7c-ab6e-63080c66bd00
-      observed_head: 53e1ef74fc988aab22d12d6716f30cb841130fde
+      claim_id: a456f914-02cb-4c08-9717-af9709f1948a
+      observed_head: 605c659afe488e32114bae57b3751c044301bdca
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T02:18:05Z'
-      scheduling_state: correction_claim_reconciled_implementation_authorized
+      lease_expires_at: '2026-07-29T02:57:52Z'
+      scheduling_state: follow_up_correction_claim_authorized_not_reconciled
     P10:
       branch: codex/v21-p10-admin-directory
       claim_id: 0f061200-ff84-449d-aaa7-b0ebd7cd9c02
@@ -528,10 +532,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 24f5ae6ee9b7690ebe5688bd014b2cfe69938100f16b909664848aadc1ef9ae1
-    control_lease: d1e0c8442ec2af15dc1adbfa3203f69a2360323b968ee2cdf57eebd8f81e6e59
-    task_registry: 8ad4665d87e3e3eb0980eff135714ec6aff04fbe2ead99e78a09e25632ffec11
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 3188606ca8598222f8f47a0cc4e6dcec206f12db56d3ee482d6c8d44777ac107
+    control_lease: 7e995bd233381fc8152e5ead744311ff211f698fa0369540b6b1432453220510
+    task_registry: 956fa53cec5e702823c86a9f1855611460b9faad325bbba66ee98f730e983260
+    ready_queue: 45cd72e660646f9f47d4b0e46c13dec0d0979954e69fdc01f5d6f9966eb8e553
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: e4205fe1518700587b91dacd55ddb78190ce03944ad25a762941f6c67d4586ba
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -545,6 +549,9 @@ verification:
   - 'npm run verify at reviewed head: secret scan passed; Prettier failed on 1736 files; later stages did not run'
   - independent v2.1 package topology validation: passed
   - control registry, ready payload digests, leases, locks, and queue invariants: passed
+  - P08 corrected final focused contract/domain/server/client verification: 4 files and 16 tests passed
+  - P08 invalid-IANA direct negative probe with definitely/not-a-zone: reproduced acceptance defect
+  - P08 exact PS-006.2, ACT-PUBLIC, UI-010.2, and UI-010.3 source-contract comparison: failed admission and bounded correction authorized
   - autonomous addendum package binding and remote/native-agent reconciliation: passed
   - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   - F01 interface checkpoint schema, export hashes, canonical digest, merge base, and allowed-path admission: passed

@@ -588,3 +588,16 @@ runtime-agreement, worker-readiness, exact Admin-authorization, and active
 steward-digest defects. Both must refresh all changed material digests and
 publish new ready_for_review finals with released leases. No prior interface is
 admitted or queued.
+
+P08 corrected final `605c659a` has exact ancestry from correction claim
+`53e1ef74`, changes thirteen permitted source/runtime/steward paths, publishes
+superseding interface checkpoint `ca06599f` with contract digest `922f9624`,
+passes its 16 focused tests, releases its lease, and records zero effects.
+Independent source-contract review still rejects admission. The server accepts
+the non-IANA value `definitely/not-a-zone`; the Family form omits password
+confirmation and the two separate optional adult communication choices; the
+public model owns an incorrect School form contract that belongs to downstream
+P09; and post-expiry GHL `identity_review` still returns Checkout instead of
+blocking that GHL-hosted effect. C00 therefore authorized only atomic follow-up
+claim `a456f914` from exact final `605c659a`, with no product work before
+reconciliation and no provider effects.
