@@ -1,0 +1,64 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P34
+task_packet_digest: d17be80574cbdfdd1bc9ce5e5f836591cd14da96d29b013a65cb0b0bc53ac0cf
+task_context_digest: 3048a5a74e141e6fd688eb38845209bb0ecfbec3489c83c1ee729fc519e93c22
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p34-operations-recovery
+start_sha: d075dc1839660205845e7da039a182bbe44778d2
+dependency_heads:
+  P33: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
+dependency_integration_heads:
+  P33: d075dc1839660205845e7da039a182bbe44778d2
+status: claimed
+phase: implementation_atomic_claim
+claim_mode: create_new_branch
+claimed_by: codex-p34-worker-d1959518
+claim_time: '2026-07-29T03:57:10Z'
+claim_id: d1959518-2cbc-49a8-9d39-ddd38a06564e
+writer_slot: OPERATIONS_RECOVERY
+lease_id: b8e703f5-43a2-4a7d-9f25-9af6f32be4f0
+lease_issued_at: '2026-07-29T03:50:27Z'
+lease_expires_at: '2026-07-29T04:50:27Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T03:57:10Z'
+controller_authorization_sha: aedf1fcb4de2d127e47407e7fb097da1274a8570
+ready_entry_state_based_on_control_head_sha: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
+ready_entry_payload_digest: 5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f
+state_based_on_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+last_implementation_commit_sha: d075dc1839660205845e7da039a182bbe44778d2
+completed_steps:
+  - Verified fetched control head aedf1fcb4de2d127e47407e7fb097da1274a8570 and its sole READY-entry parent b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9.
+  - Verified P34 registry status ready, create-new-branch mode, exact authorized start d075dc1839660205845e7da039a182bbe44778d2, and absence of local and remote P34 branches.
+  - Recomputed canonical READY digest 5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f and verified the exact claim, live OPERATIONS_RECOVERY lease, dependency binding, and zero effect locks.
+  - Read the P34 start-or-resume and claim-and-lease protocols and created the local task branch from the exact authorized start.
+  - Seeded the atomic branch-creation claim in exactly the three P34 runtime files without inspecting or editing product, runbook, or script scope.
+remaining_steps:
+  - Push this exact three-file branch-creation claim atomically and report the remote head to C00.
+  - Stop until C00 reconciles the claim before inspecting or implementing P34 product, runbook, or script scope.
+next_action: Push and report the P34 atomic branch-creation claim, then stop for C00 reconciliation.
+requirements: {}
+acceptance_cases: {}
+changed_paths:
+  - ops/v2.1-execution/runtime/P34/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P34/HANDOFF.md
+  - ops/v2.1-execution/runtime/P34/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: fetch and verify exact remote control and integration refs
+      result: passed; control aedf1fcb and authorized start d075dc18 exact
+    - command: canonical P34 READY-entry digest recomputation
+      result: passed; 5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f
+    - command: P34 registry, remote-branch absence, claim, lease, dependency, and effect-lock verification
+      result: passed; create-new-branch claim is unconsumed, one live OPERATIONS_RECOVERY lease, and zero effect locks
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
