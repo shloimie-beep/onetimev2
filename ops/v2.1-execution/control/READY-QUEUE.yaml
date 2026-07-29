@@ -3,38 +3,68 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-- task_id: I36
+- task_id: P21
   status: resume_ready
-  phase: P09_full_integration
-  branch: codex/v21-integration
+  phase: provider_operation_occurrence_audience_correction
+  branch: codex/v21-p21-content-publication
   claim_mode: resume_existing
-  state_based_on_control_head_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
-  authorized_start_sha: eeac03afdd7a5db493885ef507b7c09478b0454a
-  expected_existing_head: eeac03afdd7a5db493885ef507b7c09478b0454a
+  state_based_on_control_head_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+  authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+  expected_existing_head: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
-  task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
-  dependency_heads_and_digests: {}
+  task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173ef550
+  task_context_digest: 36e4fb76ff399ae66d3ccd9f4e5851ec31395c247d80a3d7f4392bb8ad30858e
+  dependency_heads_and_digests:
+    F05:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+      interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+      interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+      interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+      task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+      task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+    F06:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+      observed_integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+      interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+      interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+      interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+      task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+      task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+    P14:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+      observed_integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+      interface_source_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+      interface_implementation_head_sha: 9c08e9c6735a61e201f7b05116a3406e6092e08b
+      interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
+      task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
+      task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
   writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 495eba01-e9b3-4e71-9e53-4864c9d93bac
-    holder_task_id: I36
-    holder_claim_id: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
-    state_based_on_control_head_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
-    lease_issued_at: '2026-07-29T11:51:14Z'
-    lease_expires_at: '2026-07-29T13:06:14Z'
-    phase_scope: P09_full_integration_atomic_claim_only
+  - slot: CONTENT_PUBLICATION
+    lease_id: d4c8a72c-7beb-40e9-93d4-73d4f3c62668
+    holder_task_id: P21
+    holder_claim_id: eba3bd79-7a63-46fe-89eb-edace22f1a1e
+    state_based_on_control_head_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+    lease_issued_at: '2026-07-29T12:03:14Z'
+    lease_expires_at: '2026-07-29T13:18:14Z'
+    phase_scope: P21_atomic_claim_provider_operation_occurrence_audience_correction_only
   effect_lock_leases: []
-  claim_id: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
-  lease_issued_at: '2026-07-29T11:51:14Z'
-  lease_expires_at: '2026-07-29T13:06:14Z'
+  claim_id: eba3bd79-7a63-46fe-89eb-edace22f1a1e
+  lease_issued_at: '2026-07-29T12:03:14Z'
+  lease_expires_at: '2026-07-29T13:18:14Z'
   heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
+  prompt_path: ops/v2.1-execution/prompts/P21-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: HIGH
 entry_payload_digests:
-  I36: 3be45d6892c86e6fb44fc74f7c99dfe4daa81604f6385a2f8e94b75b0a004037
+  P21: f0875254206ba39499fe3d21ad147ec252551aa4e25dcfb0f3f4c162fd237528
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

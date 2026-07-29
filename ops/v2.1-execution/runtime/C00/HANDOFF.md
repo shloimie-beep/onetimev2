@@ -1435,3 +1435,25 @@ integration head `eeac03af`: READY `3be45d68`, claim `26d3ae42`,
 RELEASE_INTEGRATOR lease `495eba01` through `2026-07-29T13:06:14Z`, and
 queued P09 merge digest `e6b820e1`. It must stop for C00 reconciliation
 before merging P09.
+
+I36 P09 claim `e952671b1b214be51a01ef7f4abcaef6a50ce9da` is
+reconciled: sole parent `eeac03af`, exactly three I36 runtime files, exact
+authorization/acquisition/claim/lease/READY/merge bindings, no source merge,
+and effects `0/0/0`. The P09 merge target is rebound to that exact head under
+canonical digest `16559951`. I36 may now merge only P09 final `33a21a45`,
+verify the exact 14 paths with 4 files / 16 tests and typecheck, publish a
+metadata-only release, release the lease, and stop. P09 requests remain
+unapplied.
+
+P21 final `29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af` passed mechanical
+replay—exact ancestry/scope, 17-artifact digest `3b25a254`, request aggregate
+`c961e502`, 5 files / 13 tests, typecheck, released lease, zero effects—but is
+rejected on three residual safety defects. The original publish outbox exposes
+only `pending` and has no completion/closure transition after readback;
+occurrence attachment trusts caller-asserted identifiers instead of looking up
+the canonical governed occurrence/product/series relation; and publication
+materializes active assignments/notices from positive version numbers without
+current Student/enrollment/access/consent/privacy/revocation eligibility.
+C00 authorized only an exact three-runtime-file claim from that final: READY
+`f0875254`, claim `eba3bd79`, CONTENT_PUBLICATION lease `d4c8a72c` through
+`2026-07-29T13:18:14Z`. Product correction must wait for reconciliation.

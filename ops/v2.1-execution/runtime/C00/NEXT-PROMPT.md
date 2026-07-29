@@ -880,6 +880,39 @@ push normally, remote-verify, and stop for C00 reconciliation. Do not merge
 P09 or apply its migration/registration requests in this first push. No
 provider action, send, or external effect is authorized.
 
+I36 claim `e952671b1b214be51a01ef7f4abcaef6a50ce9da` is reconciled.
+Resume it under unchanged claim `26d3ae42-c9c9-4913-9534-1d4c71b55f13`
+and RELEASE_INTEGRATOR lease `495eba01-e9b3-4e71-9e53-4864c9d93bac`.
+Verify rebound P09 item digest
+`16559951b731a12e2a530b35a232c685eb8f6509e380e66dc111ee4d2942f3a5`,
+then ancestry-merge only P09 final `33a21a45` with exact queued parents and
+14 paths. Run 4 focused files / 16 tests and typecheck, publish the
+metadata-only I36 release checkpoint, release the lease, and leave all P09
+requests unapplied. Perform no provider/send/external effect.
+
+P21 final `29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af` is rejected and
+must not be integrated. Resume it only for an exact three-runtime-file atomic
+claim under claim `eba3bd79-7a63-46fe-89eb-edace22f1a1e`,
+CONTENT_PUBLICATION lease `d4c8a72c-7beb-40e9-93d4-73d4f3c62668`,
+acquisition `d633726e427e659adf55d71d009919ae4f6b4dde`, and READY digest
+`f0875254206ba39499fe3d21ad147ec252551aa4e25dcfb0f3f4c162fd237528`.
+Change exactly P21 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+bind the rejected head and fresh identities, push normally, remote-verify, and
+stop for C00 reconciliation.
+
+After reconciliation only, add a durable exact ProviderOperation/outbox
+completion transition tied to the original operation and canonical request so
+readback cannot leave the publish intent pending; require a repository-backed
+canonical governed occurrence/product/version/series lookup before attaching
+an idempotent constrained relation; and derive or validate publication
+audience against transactionally current Student, enrollment, access,
+service-account consent, privacy, and revocation eligibility before creating
+any active assignment or Student/adult notice. Add direct pending-outbox,
+invented-occurrence, and inactive/revoked-audience tests. Preserve all passing
+approval, readback, grant, unpublish/archive, denial, search, resume, privacy,
+and zero-effect behavior. Strengthen but do not apply the request; use local
+ports/mocks only and perform no live provider or external effect.
+
 P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
 reconciled. Resume it under unchanged claim
 `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease
