@@ -679,3 +679,24 @@ The queued order and initial canonical merge digests are P13
 steward application, migration, central registration, provider action, or
 external effect is authorized until the atomic claim is reconciled and all
 three optimistic target heads are rebound.
+
+I36 claim `4e17ad727b6f31f10985113fc24f187369a9e544` is reconciled.
+Execute only this ordered wave from that exact claim head:
+
+1. P13 full source `a9d641e6da6a08c805f34d3f827816fcd8c6138a`,
+   merge `bd4f6b09-a471-4673-b783-3235ad31adda`, rebound digest
+   `fee466d093216e2121a08ef8395f7bc70b1c3887d451da952cc831285a5c5238`;
+2. P25 full source `0979e151f80900cea75edecabe8967ce382d168d`,
+   merge `106dafb7-915d-4b6e-97b7-d7d97bf945cb`, rebound digest
+   `0f10a07accdbfa2a80b2dc5fe47037c23895ae9f881f2c9c63228a4240d46ec2`;
+3. P26 full source `5e33807200a24ec53be889234dbaafdda9717dcb`,
+   merge `34c0cb63-ec36-46c0-ac0e-ae8b3a85fe26`, rebound digest
+   `ae0c21d8ddf513f8e7f61e077c1306781cdf7bad628a1f11a2632d4b020d69f7`.
+
+Preserve source ancestry and exact 19/15/20-path scopes. Re-run the 11, 13,
+and 11 focused tests plus workspace typecheck, verify cumulative diff hygiene,
+publish exact merge heads and one metadata-only release, release
+`6077f8e5-c498-405e-9cd8-754340775f53`, and stop with effects `0/0/0`.
+Do not apply P13's client-route, contract-barrel, or server-registration
+requests; do not apply any migration or shared registration; and do not
+perform provider work or any external effect.

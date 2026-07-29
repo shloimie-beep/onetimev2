@@ -955,3 +955,22 @@ authorized only for a three-runtime-file atomic claim before target-CAS
 reconciliation. Canonical ready digest is `080fac5c`. No source merge,
 steward application, migration, registration, provider action, or external
 effect is authorized in that first phase.
+
+I36 atomic claim `4e17ad727b6f31f10985113fc24f187369a9e544` is independently
+reconciled: its sole parent is release `44fd536381e7af8885f31247d6bf91dd6266b195`,
+its delta is exactly the three I36 runtime files, and it binds containing
+authorization `8f7a425ac5ba883e04d534857363aee3c4c881be`, acquisition
+`d7df4df6954fcb3cdd06704461f86894285b09f6`, claim `d17f9dc5`,
+lease `6077f8e5`, ready digest `080fac5c`, clean remote state, no source
+admission, and zero effects.
+
+C00 consumed that ready entry and rebound the ordered full-source wave to the
+exact claim head. I36 may merge only P13 `a9d641e6` with merge
+`bd4f6b09-a471-4673-b783-3235ad31adda` / digest `fee466d0`, then P25
+`0979e151` with `106dafb7-915d-4b6e-97b7-d7d97bf945cb` / `0f10a07a`,
+then P26 `5e338072` with `34c0cb63-ec36-46c0-ac0e-ae8b3a85fe26` /
+`ae0c21d8`. Preserve exact 19/15/20-path scopes and source ancestry, run the
+11/13/11 focused suites and workspace typecheck, publish a metadata-only
+release, and release lease `6077f8e5-c498-405e-9cd8-754340775f53`.
+P13's three steward requests remain assigned but unapplied; migrations,
+registrations, provider actions, and all external effects remain unauthorized.
