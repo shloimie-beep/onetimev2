@@ -1,0 +1,192 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P12
+task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
+task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p12-parent-household
+start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+dependency_heads:
+  F03:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+  F04:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+status: ready_for_review
+phase: complete
+claim_mode: resume_existing_branch
+claimed_by: codex-p12-worker-86e406be
+claim_time: '2026-07-29T04:30:11Z'
+claim_id: 86e406be-cec6-493e-a2a8-4d0744168ed9
+writer_slot_leases:
+  - slot: PARENT_HOUSEHOLD_UI
+    lease_id: 79c5cf83-4438-4c68-ba4f-8e18b87de1f4
+    lease_issued_at: '2026-07-29T04:24:36Z'
+    lease_expires_at: '2026-07-29T05:24:36Z'
+    state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
+    phase_scope: interface_digest_separator_metadata_correction_claim_only
+    lease_released_at: '2026-07-29T04:39:16Z'
+    state: released
+lease_expires_at: '2026-07-29T05:24:36Z'
+lease_released_at: '2026-07-29T04:39:16Z'
+last_heartbeat_at: '2026-07-29T04:39:16Z'
+controller_authorization_sha: 5d2877fa0eb5071572c2c08bbe5f0169e27b12ba
+ready_entry_state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
+ready_entry_payload_digest: 8bb0d6d8bcc996fe9a50ebafec45046d3a65bad9cf85f193d90c083fc6b1eb30
+state_based_on_head_sha: e5f59e707f9b3a12c9b64b30aaa23e638c2d816f
+last_implementation_commit_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
+active_interface:
+  status: interface_ready
+  interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
+  interface_checkpoint_sha: e5f59e707f9b3a12c9b64b30aaa23e638c2d816f
+  semantic_contract_version: 1.0.1
+  interface_checkpoint_digest: ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
+completed_steps:
+  - Verified repository identity, exact containing control authorization ab393d7eb3b7f55b910ba110949c05c40b7383e6, sole acquisition parent 3c4130ae4d015471ce21e7d70a39d98dde113318, and exact authorized integration start f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635.
+  - Verified the P12 task branch was absent locally and remotely before branch creation.
+  - Recomputed and matched canonical ready-entry digest 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and exact package/task/context digests.
+  - Verified exact F03, F04, and F07 interface-ready integration bindings and ancestry in the authorized start.
+  - Claimed the sole PARENT_HOUSEHOLD_UI writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P12 runtime-memory files; no product or contract implementation has started.
+  - Implemented the isolated P12 contract, domain aggregate, server orchestration, and Parent client workspace with exact scope, seat, lifecycle, credential, enrollment, and audit invariants.
+  - Passed 3 focused files and 11 tests, workspace typecheck, focused ESLint, and focused Prettier.
+  - Published semantic interface 1.0.0 for P13 with canonical digest 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7.
+  - Pushed exact interface checkpoint f265d163d6007e91fb2a332ebff6f173da81700e.
+  - Passed repository-wide secret scan across 2750 text files, exact 16-path scope audit, final YAML/Prettier and diff hygiene checks, and released PARENT_HOUSEHOLD_UI lease 992f62c1-faba-4709-bae6-6c201cc776b2 with no external effect attempted.
+  - Verified exact correction controller 71df400bd85cdca40b4eb0e01fc749f362e3d0e8, its sole parent 36451ec88e05bb64be0b27b8bc148166b6fe9837, existing remote head 7c06fe62e8555aeafa917e855e34f9cc07e3ce3b, correction claim eedf369a-f247-481b-bca6-7e48abdf1f26, sole PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454, and zero effect locks.
+  - Consumed the correction authorization only in the three P12 runtime-memory files; no product, contract, interface, test, steward, migration, shared, or external-effect work was performed.
+  - Verified exact C00 reconciliation ddef233830979fd2a0e2d3a146bdd389b23a9c84 and resumed only the bounded hard-three-seat and lifecycle-idempotency correction.
+  - Hard-capped effective Standard Family Student allowance at three even for inflated repository records.
+  - Made same-state archive/restore resubmits fail closed with parent_student_lifecycle_unchanged before replacement, revision increment, audit construction, effects, or repository commit.
+  - Added direct domain and server negative probes; focused domain/server/client verification passes 3 files and 14 tests, workspace typecheck, focused ESLint, and focused Prettier.
+  - Published semantic interface 1.0.1 for downstream P13 after I36 integration; its initial separator-derived digest was later held and superseded by the exact documented-LF correction.
+  - Aligned the client contract-version fixture to 1.0.1 after final typecheck identified the stale 1.0.0 literal; client test and workspace typecheck then passed.
+  - Pushed and remote-verified exact corrected interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907.
+  - Re-passed 3 focused files and 14 tests, workspace typecheck, all P12-focused ESLint and Prettier, exact 16-path scope, diff hygiene, and repository-wide secret scan across 2750 text files.
+  - Released PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454 with no external effect attempted.
+  - Reproduced the published 7ac6f511 digest only with literal backslash-n separator bytes, proved the documented LF/no-final-newline preimage hashes to ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26, and reported the interface metadata defect without modifying the branch.
+  - Verified exact metadata-correction controller 5d2877fa0eb5071572c2c08bbe5f0169e27b12ba, sole parent/acquisition 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8, expected existing head 2faa49871ae34fa39e6387f264580e246244075b, claim 86e406be-cec6-493e-a2a8-4d0744168ed9, sole PARENT_HOUSEHOLD_UI lease 79c5cf83-4438-4c68-ba4f-8e18b87de1f4, and zero effect locks.
+  - Consumed the fresh metadata-correction authorization only in P12 TASK-STATE, HANDOFF, and NEXT-PROMPT; no interface, product, export, steward, migration, shared, or effect file was changed.
+  - Verified exact C00 reconciliation c8957e599763556d8eb6140e499783d52818d49f and resumed only the bounded interface-digest separator metadata correction.
+  - Corrected the interface contract digest to ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26, independently reproduced from the exact 515-byte UTF-8/LF/no-final-newline preimage.
+  - Reproduced the unchanged client, server, contract, domain export hashes and immutable steward-request digest from implementation head d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2; product, export, steward, migration, shared, and effect artifacts remain byte-identical.
+  - Pushed and remote-verified exact corrected interface metadata checkpoint e5f59e707f9b3a12c9b64b30aaa23e638c2d816f.
+  - Passed exact four-path claim-delta and sixteen-path start-delta audits, Prettier/YAML parse, diff hygiene, repository secret scan across 2750 text files, 515-byte LF digest reproduction, and clean remote verification.
+  - Released PARENT_HOUSEHOLD_UI lease 79c5cf83-4438-4c68-ba4f-8e18b87de1f4 with no external effect attempted.
+remaining_steps:
+  - I36 must independently review and integrate product implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and corrected interface metadata checkpoint e5f59e707f9b3a12c9b64b30aaa23e638c2d816f.
+  - I36 must reproduce the exact 515-byte LF/no-final-newline semantic digest and disposition P12-registration-001 without changing its immutable digest.
+  - C00 may authorize P13 only after exact corrected P12 interface integration.
+next_action: I36 should review and integrate implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and corrected interface checkpoint e5f59e707f9b3a12c9b64b30aaa23e638c2d816f, reproduce semantic digest ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26, and disposition steward digest 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733.
+requirements:
+  OTV2-PARENT-031: ready_for_review
+  OTV2-PARENT-032: ready_for_review
+  OTV2-PARENT-033: ready_for_review
+  OTV2-PARENT-034: ready_for_review
+  OTV2-PARENT-035: ready_for_review
+  OTV2-PARENT-036: ready_for_review
+  OTV2-PARENT-040: ready_for_review
+acceptance_cases:
+  OTV2-PARENT-031-AC01: task_owned_assertions_passed
+  OTV2-PARENT-032-AC01: task_owned_assertions_passed
+  OTV2-PARENT-033-AC01: task_owned_assertions_passed
+  OTV2-PARENT-034-AC01: task_owned_assertions_passed
+  OTV2-PARENT-035-AC01: task_owned_assertions_passed
+  OTV2-PARENT-036-AC01: task_owned_assertions_passed
+  OTV2-PARENT-040-AC01: task_owned_assertions_passed
+changed_paths:
+  - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+  - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.tsx
+  - apps/web/src/client/app/parent/household/index.ts
+  - apps/web/src/server/features/portals/parent-household/index.ts
+  - apps/web/src/server/features/portals/parent-household/service.test.ts
+  - apps/web/src/server/features/portals/parent-household/service.ts
+  - ops/v2.1-execution/runtime/P12/HANDOFF.md
+  - ops/v2.1-execution/runtime/P12/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P12/steward-requests/P12-registration-001.yaml
+  - packages/contracts/src/portals/parent-household/index.ts
+  - packages/domain/src/portals/parent-household/aggregate.ts
+  - packages/domain/src/portals/parent-household/errors.ts
+  - packages/domain/src/portals/parent-household/index.ts
+  - packages/domain/src/portals/parent-household/parent-household.test.ts
+migrations: []
+steward_requests:
+  - id: P12-registration-001
+    sha256: 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733
+verification:
+  commands_run:
+    - command: exact remote repository/control/integration/branch identity verification
+      result: passed; control ab393d7e, acquisition 3c4130ae, start f1cecb53, and absent P12 branch
+    - command: canonical P12 ready-entry digest recomputation
+      result: passed; 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; all 200 locked blobs, all 15 source-package blobs, and entry-bound digests match
+    - command: dependency/claim/writer/effect-lock verification
+      result: passed; exact F03/F04/F07 bindings, sole PARENT_HOUSEHOLD_UI lease, and zero effect locks
+    - command: npx vitest run packages/domain/src/portals/parent-household/parent-household.test.ts apps/web/src/server/features/portals/parent-household/service.test.ts apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+      result: passed; 3 files and 11 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: npx eslint apps/web/src/client/app/parent/household apps/web/src/server/features/portals/parent-household packages/contracts/src/portals/parent-household packages/domain/src/portals/parent-household
+      result: passed
+    - command: npx prettier --check on all 16 P12 changed paths
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2750 repository text files
+    - command: exact start-to-interface changed-path audit and git diff --check
+      result: passed; exactly 16 authorized P12 paths and clean diff hygiene
+    - command: correction controller/parent/existing-head/claim/lease/effect-lock verification
+      result: passed; exact controller 71df400b, sole parent 36451ec8, existing head 7c06fe62, claim eedf369a, sole fresh PARENT_HOUSEHOLD_UI lease, and zero effect locks
+    - command: C00 correction reconciliation verification
+      result: passed; exact released control head ddef233830979fd2a0e2d3a146bdd389b23a9c84 admits claim e1cfcd590e8e359c6616cac523337c183f2bc43f
+    - command: npx vitest run packages/domain/src/portals/parent-household/parent-household.test.ts apps/web/src/server/features/portals/parent-household/service.test.ts apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+      result: passed; 3 files and 14 tests including direct hard-cap and same-state no-commit regressions
+    - command: npm run typecheck -- --pretty false
+      result: passed after bounded correction
+    - command: focused ESLint and Prettier over the four correction paths
+      result: passed
+    - command: corrected interface push and exact local/tracking/ls-remote verification
+      result: passed; exact interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907
+    - command: final focused Vitest, workspace typecheck, all P12-focused ESLint and Prettier, exact scope, diff, and secret verification
+      result: passed; 3 files/14 tests, 16 authorized paths, and secret scan across 2750 text files
+    - command: semantic digest separator reproduction
+      result: invalid published digest 7ac6f511 uses literal backslash-n bytes; exact documented LF preimage is 515 UTF-8 bytes with no final LF and hashes to ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
+    - command: metadata-correction controller/parent/head/claim/lease/effect verification
+      result: passed; exact controller 5d2877fa, parent 76c1c2d9, head 2faa4987, claim 86e406be, sole fresh lease 79c5cf83, and zero effects
+    - command: C00 metadata-correction reconciliation verification
+      result: passed; exact released control head c8957e599763556d8eb6140e499783d52818d49f admits claim b8d43694b93b5f932c35d065e633c887761f67a1
+    - command: exact semantic preimage and immutable artifact recomputation
+      result: passed; 515-byte LF/no-final-newline digest ec615147 and unchanged four export plus steward-request hashes
+    - command: final corrected metadata scope, YAML, diff, secret, and remote verification
+      result: passed; exact four-path claim delta, sixteen-path start delta, 2750-file secret scan, and local/tracking/ls-remote equality
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
