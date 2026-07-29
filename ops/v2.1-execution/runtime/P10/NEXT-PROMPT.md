@@ -3,7 +3,7 @@ REASONING: HIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Resume One Time v2.1 task P10 from its atomic audited correction claim.
+Review One Time v2.1 task P10 from its bounded corrected final.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p10-admin-directory
@@ -13,22 +13,27 @@ Task context: ops/v2.1-execution/contexts/P10-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P10/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P10/HANDOFF.md
 
-Fetch remote refs and verify the exact claim checkpoint, its sole parent, task
-state, and handoff before doing anything else.
+Fetch remote refs and verify the exact final, its implementation parent, task
+state, handoff, implementation artifact digest, and steward-request digest
+before review.
 
-The containing controller is
-`04ebe46bc1cff1223bdade3379457cf774c0dce1`; its sole parent/acquisition is
-`765ad933964ce0019895c2133ff10a491b7938a2`. The canonical ready-entry digest
-is `e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b`.
-The exact checkpoint parent/rejected final is
-`551d483e9678336655546eef6002a7a7daf9d4da`.
+The exact corrected implementation head is
+`da5576d3f675b90a5db812d293801f9f5fa17d38`; its ten-artifact digest is
+`07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873`.
+The refreshed steward-request digest is
+`0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea`.
 
-The claim is `cd15a4ba-db91-44ff-b522-f111fbcd9a0d`; its ADMIN_DIRECTORY lease
-is `f7660370-d954-4ee3-8513-4069bef54025`, issued
-`2026-07-29T02:12:48Z` and expiring `2026-07-29T03:12:48Z`. Effect locks are
-empty, and external effects remain attempted `0`, succeeded `0`, reconciled
-`0`.
+The reconciled claim head is
+`6ec92d288e4ed511449e5061d21a2dfb49c1abae`; containing controller
+`802b522f2a5ff0613bdba6cb754cb2eeb340537f` consumed it under acquisition
+`81f10c6535db733cc0505b43f37fe5a3e7887934`. Claim
+`cd15a4ba-db91-44ff-b522-f111fbcd9a0d` and ADMIN_DIRECTORY lease
+`f7660370-d954-4ee3-8513-4069bef54025` are released task-locally. External
+effects remain attempted `0`, succeeded `0`, reconciled `0`.
 
-This is a claim-only checkpoint. Stop for C00 reconciliation. Do not edit any
-product, contract, test, steward-request, migration, configuration, or shared
-file, and do not resume implementation without a new exact C00 authorization.
+I36 must independently review and integrate the exact implementation, then
+disposition P10-MIGRATION-001 and P10-REGISTRATION-001 without weakening
+relationship-authorized owner acceptance, identity-preserving monotonic
+enrollment restore, exhaustive locked ownership-effect inventory, atomic exact
+readback, or rollback. Do not resume P10 implementation without new exact C00
+authorization.
