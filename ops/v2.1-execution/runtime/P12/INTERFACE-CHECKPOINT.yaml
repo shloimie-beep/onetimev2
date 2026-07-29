@@ -4,7 +4,7 @@ task_id: P12
 interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
-contract_digest: 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373
+contract_digest: ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
 contract_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
   followed by exact path=<artifact SHA-256> lines sorted lexicographically by
