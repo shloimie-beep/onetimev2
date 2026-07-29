@@ -1,0 +1,120 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P21
+task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173ef550
+task_context_digest: 36e4fb76ff399ae66d3ccd9f4e5851ec31395c247d80a3d7f4392bb8ad30858e
+prompt_digest: 81b77db37a7ecd71e39c86b6cb700acafac66c05aec0a6c16b6f03a4d1b415df
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p21-content-publication
+start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+dependency_heads:
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F06:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    observed_integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+    task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+    task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+  P14:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+    observed_integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+    interface_implementation_head_sha: 9c08e9c6735a61e201f7b05116a3406e6092e08b
+    interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
+    task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
+    task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
+status: claimed
+phase: implementation_claim
+claim_mode: create_new_branch
+claimed_by: codex-p21-worker-3a93eeca
+claim_time: '2026-07-29T10:31:08Z'
+claim_id: 3a93eeca-5035-4328-b685-e580f2b32ce6
+writer_slot_leases:
+  - slot: CONTENT_PUBLICATION
+    lease_id: 31423c6c-74ef-43cc-b3a8-75b425568619
+    holder_task_id: P21
+    holder_claim_id: 3a93eeca-5035-4328-b685-e580f2b32ce6
+    lease_issued_at: '2026-07-29T10:23:53Z'
+    lease_expires_at: '2026-07-29T11:23:53Z'
+    state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+    phase_scope: P21_atomic_claim_only
+    state: active
+effect_lock_leases: []
+lease_expires_at: '2026-07-29T11:23:53Z'
+last_heartbeat_at: '2026-07-29T10:31:08Z'
+controller_authorization_sha: 4c029e8d6e4ea3a2a4e4942affb61a39e5508129
+controller_authorization_parent_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+ready_entry_state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+ready_entry_payload_digest: d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2
+state_based_on_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+last_implementation_commit_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+completed_steps:
+  - Verified exact containing controller 4c029e8d6e4ea3a2a4e4942affb61a39e5508129 and its sole acquisition parent d99fde51092abdee97f42f28e8bdee8a08c5e22c.
+  - Recomputed and matched the canonical P21 READY digest d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2.
+  - Recomputed and matched the package, source, task, context, and prompt digests.
+  - Verified the exact F05, F06, and P14 interface source, implementation, and integration-proof heads are ancestors of authorized start 088b40476bd5ceeb0af901b6f78a4cb8c556671b.
+  - Verified the remote P21 branch was absent, consumed the sole CONTENT_PUBLICATION writer lease, and confirmed zero effect locks.
+  - Created the isolated local branch from the exact authorized start and seeded only the three P21 runtime-memory files.
+remaining_steps:
+  - C00 must reconcile this exact atomic claim before any product, test, structured-request, steward, provider, or effect work starts.
+  - After reconciliation, implement the P21 requirements within its normalized owned roots and verify the assigned acceptance cases without live external effects.
+next_action: Push and remote-verify this exact three-runtime-file atomic claim, report its immutable head to C00, and stop without editing or testing product/request code.
+requirements:
+  OTV2-CONTENT-087: not_started
+  OTV2-CONTENT-088: not_started
+  OTV2-CONTENT-089: not_started
+  OTV2-CONTENT-090: not_started
+  OTV2-CONTENT-091: not_started
+  OTV2-CONTENT-092: not_started
+  OTV2-CONTENT-194: not_started
+  OTV2-CONTENT-195: not_started
+acceptance_cases:
+  OTV2-CONTENT-087-AC01: not_started
+  OTV2-CONTENT-088-AC01: not_started
+  OTV2-CONTENT-089-STUDENT: not_started
+  OTV2-CONTENT-089-PARENT-DENY: not_started
+  OTV2-CONTENT-090-AC01: not_started
+  OTV2-CONTENT-091-AC01: not_started
+  OTV2-CONTENT-092-AC01: not_started
+  OTV2-CONTENT-194-AC01: not_started
+  OTV2-CONTENT-195-AC01: not_started
+changed_paths:
+  - ops/v2.1-execution/runtime/P21/HANDOFF.md
+  - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact controller, sole acquisition parent, registry, READY, claim, lease, zero-effect-lock, and branch-absence verification
+      result: passed
+    - command: package, source, task, context, prompt, canonical READY, and dependency checkpoint digest verification
+      result: passed
+    - command: exact F05, F06, and P14 interface ancestry verification
+      result: passed
+    - command: git worktree add -b codex/v21-p21-content-publication <isolated-worktree> 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+      result: passed; branch created from exact authorized start
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
