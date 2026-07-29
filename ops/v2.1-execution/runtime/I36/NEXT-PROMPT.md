@@ -1,31 +1,25 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: STOP
 
-Resume I36 only after C00 has consumed the exact P13/P25/P26 full-wave atomic
-claim head and published explicit target-CAS reconciliation.
+I36 completed the exact ordered P13/P25/P26 full-source wave and released claim
+d17f9dc5-0f97-44ea-bb44-600c6c3635a3 and RELEASE_INTEGRATOR lease
+6077f8e5-c498-405e-9cd8-754340775f53.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Expected pre-claim target: 44fd536381e7af8885f31247d6bf91dd6266b195
-Task packet: ops/v2.1-execution/tasks/I36.yaml
-Task context: ops/v2.1-execution/contexts/I36-CONTEXT.md
-Task state: ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/I36/HANDOFF.md
+Clean claim head: 4e17ad727b6f31f10985113fc24f187369a9e544
+Control: 44670793103e9f54476b76a038f962004dfed30c
+Acquisition: d4c8eada7e6d5d85b193ffc06b2124ac901bfd6f
 
-Authority binds control 8f7a425ac5ba883e04d534857363aee3c4c881be,
-acquisition d7df4df6954fcb3cdd06704461f86894285b09f6, ready digest
-080fac5c73a526228fc7a8b0c957389362942b7e094decedf1454066bff56862,
-claim d17f9dc5-0f97-44ea-bb44-600c6c3635a3, and RELEASE_INTEGRATOR
-lease 6077f8e5-c498-405e-9cd8-754340775f53 expiring
-2026-07-29T06:46:11Z.
+Ordered merge heads:
 
-Before source admission, fetch remote control/integration refs and verify C00
-consumed the exact pushed claim head, local and remote equal it, the lease
-remains valid, and no foreign writer or path collision exists. Read the exact
-rebound queue authorization before fetching or reading queued source content.
+- P13: 585d6fb268207c21c91873908e2b44e089583966
+- P25: 2b5049e248dd48b9203daa2f55e2b24379af7d7b
+- P26: 5016b50914c693b6ba123d29c82189263aa8781c
 
-Do not merge P13, P25, or P26, apply a P13 steward request, create or modify a
-migration, perform registration/provider work, or cause an external effect
-without explicit post-reconciliation authorization. Effects remain `0/0/0`.
+Derive the final metadata release head with `git rev-parse HEAD` and reconcile
+it in C00. Do not resume I36, apply any P13 steward request, modify a migration
+or shared registration, perform provider work, or cause an external effect
+without new explicit authorization. Effects remain `0/0/0`.
