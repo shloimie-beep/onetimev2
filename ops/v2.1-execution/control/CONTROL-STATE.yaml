@@ -15,12 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 40e9030116d7f2a4012526841c147e74704b4209
+controller_authorization_sha: 9f0fa8d1ac1a69e5b8728e1c1161e7292ec7e5f7
 next_action: >-
-  F02 Lease A release e156003b is independently audited and ready for micro-integration. I36 may atomically claim
-  only exact integration head 26cbebdf under claim a66df456 and RELEASE_INTEGRATOR lease 6e20c91b, record merge
-  item 5c3d9201 with exact F02 head, merge base e4673ff1, eight-path scope, canonical digest f3d55402, immutable
-  native/pg-mem checksums, and effects 0/0/0, then stop before fetching or merging F02 for C00 reconciliation.
-  Migration requests remain assigned until the exact source is integrated and audited. No SQL edit, new ordinal,
-  registration, provider inspection, deployment, send, or external effect is authorized.
+  I36 claim 1badb343 is reconciled under claim a66df456 and RELEASE_INTEGRATOR lease 6e20c91b. I36 may now fetch
+  and merge only exact F02 head e156003b as queue item 5c3d9201 onto claimed head 1badb343, preserving source
+  ancestry and the exact eight-path scope. It must recompute queue/source/checksum/protected-SQL bindings, apply and
+  verify all 69 migrations in a fresh disposable database, run typecheck/lint/build/raw-Git-blob formatting/package/
+  secret/diff/YAML/parent/scope/effects gates, update only its runtime triplet, release the lease, push, and stop for
+  C00 audit. Requests remain assigned until release audit. No SQL edit, new ordinal, registration, provider
+  inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

@@ -361,30 +361,30 @@ tasks:
     transitioned_at: '2026-07-29T14:23:14Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: ready
-  active_phase: F02_lease_A_micro_integration
+  status: claimed
+  active_phase: integration
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
   phase_heads:
-    integration: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+    integration: 1badb3430d171182da2e43314e286b594c2df538
   authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-  last_known_remote_head: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+  last_known_remote_head: 1badb3430d171182da2e43314e286b594c2df538
   active_claim_id: a66df456-06ec-4c28-80fe-1ef48c0004f7
-  active_writer_id: null
+  active_writer_id: codex-i36-release-integrator-a66df456
   lease_expires_at: '2026-07-29T21:31:15Z'
-  last_heartbeat_at: '2026-07-29T20:16:15Z'
-  controller_authorization_sha: 40e9030116d7f2a4012526841c147e74704b4209
+  last_heartbeat_at: '2026-07-29T20:22:46Z'
+  controller_authorization_sha: 9f0fa8d1ac1a69e5b8728e1c1161e7292ec7e5f7
   ready_entry_payload_digest: abea17f9e9fc4a77f1a9dd8fc88252d5fd58596deab1d5b474227019103ec8eb
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: 40e9030116d7f2a4012526841c147e74704b4209
+    state: claimed
+    producer_task_id: I36
+    producer_head_sha: 1badb3430d171182da2e43314e286b594c2df538
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+    integration_or_evidence_head_sha: 1badb3430d171182da2e43314e286b594c2df538
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
@@ -395,8 +395,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 40e9030116d7f2a4012526841c147e74704b4209
-    transitioned_at: '2026-07-29T20:19:06Z'
+    state_based_on_control_head_sha: 9f0fa8d1ac1a69e5b8728e1c1161e7292ec7e5f7
+    transitioned_at: '2026-07-29T20:28:09Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof
 - task_id: P08
   status: ready_for_review
