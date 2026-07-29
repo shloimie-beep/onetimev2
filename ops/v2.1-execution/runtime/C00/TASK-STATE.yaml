@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-4d3294f9
-claim_time: '2026-07-29T03:59:53Z'
-claim_id: 4d3294f9-bfac-40e9-8643-469aba8378e6
-lease_expires_at: '2026-07-29T04:00:52Z'
-last_heartbeat_at: '2026-07-29T04:00:52Z'
-controller_authorization_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+claimed_by: codex-c00-orchestrator-26e2cfd4
+claim_time: '2026-07-29T04:07:53Z'
+claim_id: 26e2cfd4-05c8-4442-b290-200a9d5677bc
+lease_expires_at: '2026-07-29T04:11:03Z'
+last_heartbeat_at: '2026-07-29T04:11:03Z'
+controller_authorization_sha: aac993089f9fbe04ad6d2854ab82c8a58e89e82f
 ready_entry_payload_digest: null
-state_based_on_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+state_based_on_head_sha: aac993089f9fbe04ad6d2854ab82c8a58e89e82f
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -215,8 +215,11 @@ completed_steps:
 - independently verified P34 atomic claim 8499fdb5 with sole parent d075dc18, exactly three P34 runtime files, containing authorization aedf1fcb, exact claim/lease/ready bindings, clean worktree, and zero effects
 - held P12 final 7c06fe62 for hard three-seat and lifecycle-resubmit corrections; invalidated reuse of its released lease and issued only fresh correction claim eedf369a
 - held P22 final cad72593 for class-assignment authorization, sanitized published-class projection, and approved/published-only leaderboard corrections; issued only fresh correction claim e2ac53ae
+- independently verified P12 atomic correction claim e1cfcd59 with sole parent 7c06fe62, exactly three P12 runtime files, containing authorization 71df400b, exact claim/lease/ready bindings, clean worktree, and zero effects
+- independently verified P22 atomic correction claim 04305690 with sole parent cad72593, exactly three P22 runtime files, containing authorization 71df400b, exact claim/lease/ready bindings, clean worktree, and zero effects
+- consumed both correction ready entries and authorized only the bounded P12 hard-cap/lifecycle-idempotency and P22 class-authorization/publication/leaderboard repairs while P34 continues provider-independent implementation
 remaining_steps: []
-next_action: P34 implements only provider-independent recovery mechanisms from claim 8499fdb5; P12 and P22 publish only fresh atomic correction claims from exact held finals and stop for reconciliation; all external effects remain unauthorized.
+next_action: P34 continues only provider-independent recovery mechanisms; P12 corrects only the hard three-seat and lifecycle-resubmit gaps from claim e1cfcd59; P22 corrects only class authorization, sanitized publication, and leaderboard counting from claim 04305690; all external effects remain unauthorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -224,12 +227,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+  current_control_parent_sha: aac993089f9fbe04ad6d2854ab82c8a58e89e82f
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 4d3294f9-bfac-40e9-8643-469aba8378e6
-      observed_head: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+      claim_id: 26e2cfd4-05c8-4442-b290-200a9d5677bc
+      observed_head: aac993089f9fbe04ad6d2854ab82c8a58e89e82f
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -402,17 +405,17 @@ orchestration:
     P12:
       branch: codex/v21-p12-parent-household
       claim_id: eedf369a-f247-481b-bca6-7e48abdf1f26
-      observed_head: 7c06fe62e8555aeafa917e855e34f9cc07e3ce3b
+      observed_head: e1cfcd590e8e359c6616cac523337c183f2bc43f
       authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
       lease_expires_at: '2026-07-29T05:00:52Z'
-      scheduling_state: correction_atomic_claim_authorized_from_held_final
+      scheduling_state: correction_claim_reconciled_product_correction_authorized
     P22:
       branch: codex/v21-p22-learning-engagement
       claim_id: e2ac53ae-128f-4d0c-b9a2-e74d05858f29
-      observed_head: cad7259304253eff531307fecfc9de298fac1a34
+      observed_head: 0430569088aeb4f244e5540dddf778b72525bc64
       authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
       lease_expires_at: '2026-07-29T05:00:52Z'
-      scheduling_state: correction_atomic_claim_authorized_from_held_final
+      scheduling_state: correction_claim_reconciled_product_correction_authorized
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: null
@@ -599,10 +602,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 6af2ceef01fbfacb495a59b4bcebef6b7390199ada26b1f8babca584172fc033
-    control_lease: 575603c32208f99c2d3205ee9f9294de5b7a95cb7ad12b13a3430af78ffa947d
-    task_registry: ee15eaa02b7ecb0a5e9d8e532da69ad93951b45ec4bd53c0c31ac0136fd51a68
-    ready_queue: 766df4300e5ad0da62510d3b035f34b75abde04d1d8e54a802b037aa1657c0ed
+    control_state: 9144b3ff774158261b01608ceb62f32cb8538bd6de68f8be775a3d4baa1bd250
+    control_lease: 3c5ed8d93ab90b9411c23b273d849dca96f6119a5b240f00fd7d2fbd9c821d5b
+    task_registry: 13e9b9748a4b0c236198146bd45fddf28993878e303dd1469f26e518774e6978
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 0114ee435005854047e6c28da262176ecc334bd1b6302f478cba04bb11263d74
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8

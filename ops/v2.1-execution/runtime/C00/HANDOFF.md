@@ -814,3 +814,18 @@ issued only fresh atomic correction claim
 `e2ac53ae-128f-4d0c-b9a2-e74d05858f29` from exact final `cad72593`, lease
 `9fd6a3b7`, and ready digest `40bb6fd8`. Both correction workers must first
 change only their three task-runtime files and stop for C00 reconciliation.
+
+P12 correction claim `e1cfcd59` is independently reconciled: sole parent
+`7c06fe62`, exactly three P12 runtime files, containing authorization
+`71df400b`, acquisition `36451ec8`, exact claim/lease/ready bindings, clean
+worktree, and zero effects. P12 may now correct only the hard maximum of three
+active Students and same-state archive/restore resubmit behavior. Direct
+negative tests must prove no duplicate write, revision, audit, or commit.
+
+P22 correction claim `04305690` is independently reconciled: sole parent
+`cad72593`, exactly three P22 runtime files, containing authorization
+`71df400b`, acquisition `36451ec8`, exact claim/lease/ready bindings, clean
+worktree, and zero effects. P22 may now correct only assigned-class
+authorization for Admin question/attendance mutations, a sanitized
+class-scoped published-question projection, and approved/published-only
+leaderboard counting while preserving first-answer Curious recognition.

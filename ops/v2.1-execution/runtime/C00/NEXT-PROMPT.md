@@ -521,3 +521,20 @@ Change only P22's three runtime files and stop for reconciliation before
 correcting class-assignment authorization, sanitized published-class
 projection, and approved/published-only leaderboard counting. No effect is
 authorized.
+
+P12 claim `e1cfcd590e8e359c6616cac523337c183f2bc43f` is reconciled.
+Correct only the hard three-active-Student cap and archive/restore same-state
+resubmit behavior. Add direct negative tests proving arbitrary stored allowance
+cannot exceed three and same-state resubmits cause no duplicate write,
+household revision, audit, or commit. Refresh exact implementation/interface
+artifacts and digests as required, publish a final ready_for_review checkpoint,
+release lease `3f2cd863-1f04-40fa-875b-87c14469a454`, and keep effects at zero.
+
+P22 claim `0430569088aeb4f244e5540dddf778b72525bc64` is reconciled.
+Correct only assigned-class authorization on Admin question and attendance
+mutations, a sanitized class-member projection for published questions that
+omits Student, household, and private moderation metadata, and leaderboard
+counting limited to approved_for_class/published states. Preserve Curious
+recognition on first answer/approval. Add direct negative tests, refresh exact
+artifacts and digests, publish ready_for_review, release lease
+`9fd6a3b7-decc-454a-9a2e-953aaaebfe63`, and keep effects at zero.
