@@ -472,3 +472,11 @@ resource identity across revisions, cross-bound join/session acceptance, and
 non-exact worker operation/readback sets. C00 issued a resume-existing,
 claim-only correction authorization from that exact head. P29/P30 corrections
 continue independently.
+
+C00 then detected an internal ledger error: the prior P17/P29/P30 resume
+entries contained correct eight-character control prefixes but incorrect full
+parent-SHA suffixes. All workers were paused; no effects occurred. Those claim
+bindings are invalidated. From actual acquisition `e54ea923...`, C00 reissued
+fresh claim-only resume entries for exact observed heads P17 `0e6119a4`, P29
+`d5c779ca`, and P30 `f6d074e9`. No product work may resume until all three new
+atomic claims are reconciled.

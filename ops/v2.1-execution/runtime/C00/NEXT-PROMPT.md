@@ -203,3 +203,12 @@ Dispatch a claim-only resume checkpoint from exact head `0e6119a4` using claim
 ZOOM_PREPARATION lease `bbf96443-a927-4198-bd2a-85e40b7162cd`. The atomic
 checkpoint may modify only P17's three runtime memory files. Reconcile it before
 product repair while P29/P30 continue.
+
+Discard the superseded P17/P29/P30 claim bindings whose recorded parent SHA
+only matched the short prefix. Dispatch new claim-only resume checkpoints from
+P17 `0e6119a4`, P29 `d5c779ca`, and P30 `f6d074e9`, all bound to exact actual
+control parent `e54ea923a743caf760ef47638a2c8d8a875faf34`. Claims are
+`ad77a398-b287-4a51-b7cc-25dd147f33de`,
+`308031d1-15e8-4ff5-aca0-6560e9a8c93d`, and
+`87608f7e-3d2b-448b-8376-da025b05d1b7`; ready digests are `81174a93...`,
+`634d4c80...`, and `380e1f3d...`. Reconcile before any product continuation.
