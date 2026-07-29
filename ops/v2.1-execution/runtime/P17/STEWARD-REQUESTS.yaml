@@ -1,0 +1,80 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P17
+external_effects_authorized: false
+requests:
+  - request_id: P17-MIGRATION-001
+    kind: migration
+    requested_steward: F02
+    status: proposed
+    source_contract:
+      path: packages/db/src/classroom/zoom-preparation/schema-contract.ts
+      version: P17-ZOOM-PREPARATION-SCHEMA-001
+    exact_targets:
+      - packages/db/migrations/<allocated>_v21_zoom_preparation.sql
+    required_changes:
+      - Add the seven P17 tables and constraints described by ZOOM_PREPARATION_SCHEMA_CONTRACT without modifying applied migrations.
+      - Enforce one preparation per occurrence/schedule/roster version, one current normal-class resource per occurrence, one registrant per occurrence/Student, and one current live-device lease per occurrence/Student.
+      - Store protected provider, technical-alias, and launch-grant digests only; never store raw Zoom join URLs or browser-transferable bearers.
+    validation:
+      - Apply the full migration inventory in disposable PostgreSQL.
+      - Prove optimistic conflict, replay conflict, immutable roster/preview, one-meeting, one-registrant, one-use grant, and concurrent-device constraints.
+    external_effects_authorized: false
+  - request_id: P17-SERVER-WORKER-REGISTRATION-001
+    kind: registration
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      paths:
+        - apps/web/src/server/features/classroom/zoom-preparation/index.ts
+        - apps/worker/src/runners/zoom-preparation/index.ts
+      exports:
+        - ZoomPreparationService
+        - runZoomPreparation
+    exact_targets:
+      - <central-server-composer-owned-path>
+      - <central-worker-composer-owned-path>
+    required_changes:
+      - Register the same-origin CSRF-protected preparation/bootstrap server seam and asynchronous Zoom preparation runner.
+      - Keep provider mutation outside web transactions and disabled until migration plus exact provider binding readiness.
+      - Preserve constant authenticated routes, private no-store/no-referrer bootstrap responses, and no raw Zoom URL in URLs, logs, email, GHL, or UI.
+    validation:
+      - Prove provider-off behavior, command replay, wrong-scope denial, acceptance-unknown quarantine, and no fake-ready fallback.
+    external_effects_authorized: false
+  - request_id: P17-ZOOM-CONFIG-DEPENDENCY-001
+    kind: configuration_dependency
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      path: packages/contracts/src/classroom/zoom-preparation/index.ts
+      version: 2.1.0
+    exact_targets:
+      - <canonical-provider-registry-owned-path>
+      - <runtime-secret-reference-owned-path>
+      - package.json
+      - package-lock.json
+    required_changes:
+      - Bind one canonical Zoom Server-to-Server OAuth app for meeting/registrant/readback operations and one canonical Meeting SDK app for embedded launch.
+      - Bind the protected provider account to Rabbi Eli's canonical host identity and registered production origin https://app.onetimeonetime.com.
+      - Provision reviewed pinned server/Meeting-SDK dependencies without exposing credentials to browser status/configuration.
+      - Read back auto_recording=none plus every OT-ZOOM-SETTINGS-1 participant restriction before ready.
+    validation:
+      - Prove wrong account, origin, environment, host, capability, or setting fails closed.
+      - Prove timeout after dispatch becomes acceptance_unknown and readback-only before any retry.
+    external_effects_authorized: false
+  - request_id: P17-REMINDER-ROUTING-001
+    kind: communication_registration
+    requested_steward: P28
+    status: proposed
+    source_contract:
+      path: packages/contracts/src/classroom/zoom-preparation/index.ts
+      route: /app/parent/classes
+    exact_targets:
+      - <canonical-communication-intent-composer-owned-path>
+    required_changes:
+      - Route the bound 30-minute account-owner class reminder through the approved current-preference/suppression workflow only after every named Student has active registrant and protected portal state.
+      - Include affected Student labels and a safe constant One Time app path; never include a Zoom URL, launch grant, technical alias, or Student authentication.
+      - Preserve prepared in-app access when email delivery fails and keep failure visible/retryable.
+    validation:
+      - Prove household grouping, current suppression, partial preparation no-send, replay safety, and no raw provider bearer.
+    external_effects_authorized: false

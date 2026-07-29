@@ -1,0 +1,150 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P17
+task_packet_digest: 0509dc95a4e0695db4cba7e7ebccd3050176ef06eca3320ba0c190808c34d034
+task_context_digest: 3d3841e11f5a0c6d2ea7b07d7f2f41debd66c1bced78d8c217cacac21b8ce1c6
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p17-zoom-preparation
+start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+expected_existing_head: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
+dependency_heads:
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F06:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+    task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+    task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+  P16:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+    integration_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+    interface_source_head_sha: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
+    interface_implementation_head_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
+    interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
+    task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
+    task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
+status: ready_for_review
+phase: review
+correction_work_status: completed
+claimed_by: codex-p17-correction-worker-ad77a398
+claim_time: '2026-07-29T00:20:40Z'
+claim_id: ad77a398-b287-4a51-b7cc-25dd147f33de
+correction_claim_checkpoint_sha: a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368
+previous_claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
+previous_final_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
+writer_slot_leases:
+  - slot: ZOOM_PREPARATION
+    lease_id: b7211f31-df73-40fa-8281-5765ca37d3b9
+    lease_issued_at: '2026-07-29T00:13:59Z'
+    lease_expires_at: '2026-07-29T01:13:59Z'
+    released_at: '2026-07-29T00:39:05Z'
+lease_expires_at: '2026-07-29T01:13:59Z'
+lease_released_at: '2026-07-29T00:39:05Z'
+last_heartbeat_at: '2026-07-29T00:39:05Z'
+controller_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+continuation_authorization_sha: 268ab601b89573238befe70de7995908925575cc
+continuation_acquisition_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
+ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
+ready_entry_payload_digest: 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf
+state_based_on_head_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
+last_implementation_commit_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
+implementation_artifact_digest: 6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0
+implementation_artifact_digest_algorithm: SHA-256 over exact correction implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the canonical 13 non-runtime P17 product artifacts, with LF separators and no final newline.
+correction_checkpoint_digest: 43c8795f9f53557abf5a5c1f7e3d1431eae674b2a48055f2448a03c959272d5d
+correction_checkpoint_digest_algorithm: SHA-256 over the seven exact Git blobs changed by correction implementation commit 3560b053a535b2889ea95e1d05ab58bb82b219cc as lexicographically sorted UTF-8 path=sha256 lines, with LF separators and no final newline.
+correction_product_digest: 969e0807db933ecf9a1ec7849b6fd5d95a45164e7bd1ce66cfac0532669febd7
+contract_artifact_digest: 1408feedc82fd0009d996d2699a04289093db191196f4c4a2ae659e3a32d8ae9
+schema_contract_artifact_digest: 908048ef2f7ad13277a00f63f452390480bdc9b065163fda3381f17bd645ed3e
+steward_request_digest: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
+acceptance_matrix_digest: b3fafe36b3e3aabe9c6a592dcef201629d94847b231d6a9184afa7c861a908a2
+completed_steps:
+  - Verified repaired containing control 0c911664217efe3dbb89b93b6fe29eb9eda2fec3 with exact sole parent e54ea923a743caf760ef47638a2c8d8a875faf34 and recomputed ready-entry digest 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf.
+  - Published and stopped at correction claim checkpoint a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368, then resumed only after C00 reconciliation at continuation control 268ab601b89573238befe70de7995908925575cc.
+  - Corrected exact enrollment identity binding, confirmed occurrence-version binding, and stable per-occurrence meeting and per-occurrence/Student registrant identities.
+  - Corrected join, grant, live-session acquire/reconnect, and runtime Admin revoke scope bindings with cross-bound negative tests.
+  - Enforced an exact unique worker operation set, exact readback counts/types/aggregates, duplicate-result rejection, meeting-first short-circuit, and durable safe quarantine for invalid or missing accepted readbacks.
+  - Required exact reconciled registry evidence and canonical-set exclusion for disposable-canary cleanup.
+  - Recomputed prepare/confirm request hashes from canonical command bodies before receipt/replay handling.
+  - Passed full workspace typecheck, 21 focused tests across four files, focused ESLint and Prettier, repository-wide secret scan over 2723 files, and diff hygiene.
+  - Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released the task-local lease in terminal metadata.
+remaining_steps:
+  - C00/I36 must independently review the corrected implementation and refreshed artifact digests.
+  - F02, I36, and P28 must disposition the four existing structured steward requests.
+  - Provider sandbox or production canaries remain prohibited until separate explicit Zoom effect authority and effect locks exist.
+next_action: C00/I36 should review correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc and canonical product digest 6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0, then disposition the four structured requests without provider effects.
+requirements:
+  OTV2-CLASSROOM-068: implementation_ready
+  OTV2-CLASSROOM-069: implementation_ready
+  OTV2-CLASSROOM-070: implementation_ready
+  OTV2-CLASSROOM-071: implementation_ready
+  OTV2-CLASSROOM-072: implementation_ready
+  OTV2-CLASSROOM-074: implementation_ready
+  OTV2-CLASSROOM-076: implementation_ready
+  OTV2-CLASSROOM-077: implementation_ready
+  OTV2-CLASSROOM-079: implementation_ready
+  OTV2-CLASSROOM-188: implementation_ready
+acceptance_cases:
+  OTV2-CLASSROOM-068-AC01: implementation_ready
+  OTV2-CLASSROOM-069-AC01: implementation_ready
+  OTV2-CLASSROOM-070-AC01: implementation_ready
+  OTV2-CLASSROOM-071-AC01: implementation_ready
+  OTV2-CLASSROOM-072-AC01: implementation_ready
+  OTV2-CLASSROOM-074-AC01: implementation_ready
+  OTV2-CLASSROOM-076-AC01: implementation_ready
+  OTV2-CLASSROOM-077-AC01: implementation_ready
+  OTV2-CLASSROOM-079-AC01: implementation_ready
+  OTV2-CLASSROOM-188-AC01: implementation_ready
+changed_paths:
+  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.ts
+  - apps/worker/src/runners/zoom-preparation/runner.test.ts
+  - apps/worker/src/runners/zoom-preparation/runner.ts
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/HANDOFF.md
+  - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - packages/domain/src/classroom/zoom-preparation/index.ts
+  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
+migrations: []
+steward_requests:
+  - P17-MIGRATION-001
+  - P17-SERVER-WORKER-REGISTRATION-001
+  - P17-ZOOM-CONFIG-DEPENDENCY-001
+  - P17-REMINDER-ROUTING-001
+verification:
+  commands_run:
+    - Exact repaired control/parent, canonical ready digest, claim checkpoint, dependency ancestry, correction lease, and zero effect-lock verification (passed).
+    - npm run typecheck (passed).
+    - Focused Vitest over domain acceptance, database, server service, and worker runner suites (passed, 21 tests across four files).
+    - Focused ESLint over all six corrected TypeScript artifacts (passed).
+    - Focused Prettier over all corrected artifacts and acceptance evidence (passed).
+    - npm run secret:scan (passed, 2723 repository text files).
+    - git diff --check (passed).
+    - Exact canonical 13-product-artifact, seven-file correction checkpoint, six-file correction product, and named artifact digest recomputation (passed).
+    - Normal non-force remote update of immutable correction implementation checkpoint (passed).
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - No contract, database, migration, steward-request, shared runtime, provider configuration, manifest, lockfile, or communication-composer path changed during correction.
+  - No Zoom/provider request, credential access, account mutation, meeting/registrant creation, reminder delivery, bootstrap issuance, deployment, or canary was performed.
