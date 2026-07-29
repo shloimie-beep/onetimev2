@@ -27,19 +27,19 @@ dependency_heads:
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
   P11: 15660c1115d9d8066651573100acd8acaaac574e
   P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-status: claimed
-phase: integration
+status: ready
+phase: release
 claimed_by: codex-i36-worker-257056a3
 claim_time: '2026-07-29T13:09:01Z'
 claim_id: 257056a3-d401-4f0f-bd90-e032d855ee3e
 lease_id: 32382426-de6d-46c0-afb7-1157ef2f6a2e
 lease_issued_at: '2026-07-29T13:09:01Z'
 lease_expires_at: '2026-07-29T14:24:01Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T13:09:01Z'
-controller_authorization_sha: f4b48937dc37518e63954ccf985815ba964253a0
-latest_valid_observed_control_head_sha: a4fda5d21837c7140083ce70619e301f26db2590
-reconciled_state_based_on_control_head_sha: 2b103162715c18a144cc26c329eed2e09a62b1d4
+lease_released_at: '2026-07-29T13:42:37Z'
+last_heartbeat_at: '2026-07-29T13:42:37Z'
+controller_authorization_sha: a20241476ce5491ce9066cb0ee0ed12f12d53da4
+latest_valid_observed_control_head_sha: a20241476ce5491ce9066cb0ee0ed12f12d53da4
+reconciled_state_based_on_control_head_sha: a505c0bdf39891810becf8a011306cef89eadc87
 ready_entry_state_based_on_control_head_sha: 2b103162715c18a144cc26c329eed2e09a62b1d4
 ready_entry_payload_digest: 5103960074b68850afdd64c58960276a278de7b6fc76ed84d1bc81b781202a96
 claim_mode: resume_existing
@@ -68,14 +68,19 @@ queued_merge_order:
 queued_expected_target_head_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
 prior_merge_result_head_sha: 38307b26f243597df79ef18c928c9a3e935cd5fc
 prior_release_head_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
-merge_authorization_state_based_on_control_head_sha: f4b48937dc37518e63954ccf985815ba964253a0
+merge_authorization_state_based_on_control_head_sha: a20241476ce5491ce9066cb0ee0ed12f12d53da4
 lease_origin_state_based_on_control_head_sha: 2b103162715c18a144cc26c329eed2e09a62b1d4
 source_delta_base_head_sha: null
-merge_result_head_sha: 38307b26f243597df79ef18c928c9a3e935cd5fc
-merge_parent_target_head_sha: e952671b1b214be51a01ef7f4abcaef6a50ce9da
-merge_parent_source_head_sha: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-state_based_on_head_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
-last_implementation_commit_sha: 38307b26f243597df79ef18c928c9a3e935cd5fc
+merge_result_heads:
+  F01: f8b5a1530152a4fd02ad05f6b2582d3d61a7901c
+  F04: 375fabcd884c28302ed20762b1891560ea031a21
+  F05: eb05db1f487a85ef66287d38641d1abf7ef3c0b7
+merge_result_head_sha: eb05db1f487a85ef66287d38641d1abf7ef3c0b7
+merge_parent_target_head_sha: 375fabcd884c28302ed20762b1891560ea031a21
+merge_parent_source_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
+state_based_on_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
+last_implementation_commit_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -515,12 +520,45 @@ completed_steps:
   - Claimed only the three I36 runtime-memory files for the ordered
     F01/F04/F05 full-integration wave; no source was merged, no steward request
     was applied, and no product, provider, send, or external effect occurred.
+  - Verified C00 reconciliation at exact control
+    a20241476ce5491ce9066cb0ee0ed12f12d53da4 with sole acquisition parent
+    a505c0bdf39891810becf8a011306cef89eadc87 and exact claimed integration head
+    fd53e789623dfb070d62c5bfd17b18ed37a4a262.
+  - Recomputed all three queue payload digests, reverified exact source refs,
+    source/merge bases, 13/4/3-path allowlists, task/state-handoff bindings,
+    dependency order, released producer leases, and 0/0/0 effects.
+  - Merged exact F01 source b5344992a43a735a9c66047fecd83f951651de27
+    with parents fd53e789623dfb070d62c5bfd17b18ed37a4a262 and
+    b5344992a43a735a9c66047fecd83f951651de27 at
+    f8b5a1530152a4fd02ad05f6b2582d3d61a7901c.
+  - Merged exact F04 source 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    with parents f8b5a1530152a4fd02ad05f6b2582d3d61a7901c and
+    54a0ac28b51d271aacab60003451dbcc66ffcac8 at
+    375fabcd884c28302ed20762b1891560ea031a21.
+  - Merged exact F05 source 9174d845e1c04916e2f1884cfadfaef624ac6862
+    with parents 375fabcd884c28302ed20762b1891560ea031a21 and
+    9174d845e1c04916e2f1884cfadfaef624ac6862 at
+    eb05db1f487a85ef66287d38641d1abf7ef3c0b7.
+  - Removed the now-unused retired config CSV parser in the authorized
+    packages/config/src/index.ts path at integrator fix
+    c9e63ad339eafcec23697f6c317d873faf5532a8 after focused ESLint detected it.
+  - Passed 22 focused F04/F05 assertions, workspace typecheck twice, focused
+    ESLint and CRLF-aware Prettier, client production build, exact merge-parent
+    and 20-path scope checks, diff hygiene, and the repository secret scan over
+    2912 text files.
+  - Left all F04/F05 migration and registration requests unapplied and
+    performed no provider, send, steward, migration, registration, or external
+    effect.
+  - Released claim 257056a3-d401-4f0f-bd90-e032d855ee3e and
+    RELEASE_INTEGRATOR lease 32382426-de6d-46c0-afb7-1157ef2f6a2e at
+    2026-07-29T13:42:37Z, before expiry, with effects remaining 0/0/0.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 atomic claim checkpoint.
-  - Report the exact pushed claim head and sole parent to C00, then stop.
-  - Merge F01/F04/F05 only after C00 reconciles this exact claim head and
-    explicitly resumes I36.
-next_action: C00 must reconcile the exact pushed I36 F01/F04/F05 atomic claim head before I36 merges any queued source or applies any steward request.
+  - Commit and normally push this exact three-file I36 release checkpoint.
+  - Report the exact merge, integrator-fix, and pushed release heads to C00,
+    then stop.
+  - Retain all F04/F05 migration and registration requests for later explicit
+    steward checkpoints.
+next_action: C00 should reconcile exact F01 merge f8b5a1530152a4fd02ad05f6b2582d3d61a7901c, F04 merge 375fabcd884c28302ed20762b1891560ea031a21, F05 merge eb05db1f487a85ef66287d38641d1abf7ef3c0b7, integrator fix c9e63ad339eafcec23697f6c317d873faf5532a8, and the exact pushed I36 metadata-only release head, then stop.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -1333,6 +1371,22 @@ verification:
       result: passed; exact READY 51039600 and F01/F04/F05 items 2e2a87aa/f34bd785/e38844ec
     - command: claim, lease, queue order, task/context, and effect-lock verification
       result: passed; exact claim 257056a3, live lease 32382426, ordered sources F01/F04/F05, task/context digests exact, and zero effect locks
+    - command: reconciled control, source refs, source bases, allowlists, and payload bindings
+      result: passed; exact control a2024147, acquisition a505c0bd, claimed target fd53e789, source refs exact, 13/4/3-path scopes exact, and queue/task/state-handoff digests matched
+    - command: ordered git merge --no-ff for F01, F04, and F05
+      result: passed; exact merge heads f8b5a153, 375fabcd, and eb05db1f with source ancestry and exact parents preserved
+    - command: focused F04/F05 Vitest suites
+      result: passed; 4 files and 22 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed twice, including after the integrator config cleanup
+    - command: focused ESLint and CRLF-aware Prettier
+      result: passed after removing the unused retired config parser in an authorized I36 config path
+    - command: npm run build:client
+      result: passed; both public and application client bundles built
+    - command: exact parent, ancestry, first-parent scope, overall scope, and diff hygiene checks
+      result: passed; every merge matched its allowlist and the complete integration delta matched the 20-path queue union
+    - command: npm run secret:scan
+      result: passed across 2912 repository text files
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
