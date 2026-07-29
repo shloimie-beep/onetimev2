@@ -15,13 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: c9b0f526907d62f782ef3d44a752a9467d03e986
+controller_authorization_sha: 40e9030116d7f2a4012526841c147e74704b4209
 next_action: >-
-  F02 canonical-format claim e669c0e8 is reconciled under claim 7acb5991 and shared MIGRATION_AUTHORITY /
-  SCHEMA_CONTRACT lease bf42793b. F02 may now apply repository Prettier with forced LF output only to
-  MIGRATION-ALLOCATIONS-PROPOSAL.yaml and its runtime triplet, preserving checksum semantics and SQL bytes. It must
-  validate formatting from a fresh canonical LF Git archive, YAML, exact four-path scope, protected SQL/checksum
-  hashes, package Git bytes, secret scan, diff hygiene, lease release, and effects 0/0/0, then push and stop for
-  independent re-audit. No SQL edit, ordinal allocation, registration, provider inspection, deployment, send, or
-  external effect is authorized.
+  F02 Lease A release e156003b is independently audited and ready for micro-integration. I36 may atomically claim
+  only exact integration head 26cbebdf under claim a66df456 and RELEASE_INTEGRATOR lease 6e20c91b, record merge
+  item 5c3d9201 with exact F02 head, merge base e4673ff1, eight-path scope, canonical digest f3d55402, immutable
+  native/pg-mem checksums, and effects 0/0/0, then stop before fetching or merging F02 for C00 reconciliation.
+  Migration requests remain assigned until the exact source is integrated and audited. No SQL edit, new ordinal,
+  registration, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

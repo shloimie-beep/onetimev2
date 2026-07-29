@@ -1,8 +1,66 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 5c3d9201-e10b-46cb-9cdf-64b5ee8afef6
+  kind: implementation
+  task_id: F02
+  source_branch: codex/v21-f02-schema-state-migrations
+  source_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+  source_delta_base_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+  required_merge_base_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  merge_after_heads:
+    F02: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    P18_collision_correction_release: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+  allowed_paths:
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - packages/db/migrations/2235_v21_household_identity.sql
+  - packages/db/migrations/2236_v21_job_foundation.sql
+  - packages/db/migrations/2237_v21_calendar_recurrence.sql
+  - packages/db/migrations/2238_v21_provider_core.sql
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 6e20c91b-828c-4008-993d-a58f2c1ff43b
+    holder_task_id: I36
+    holder_claim_id: a66df456-06ec-4c28-80fe-1ef48c0004f7
+    state_based_on_control_head_sha: 40e9030116d7f2a4012526841c147e74704b4209
+    lease_issued_at: '2026-07-29T20:16:15Z'
+    lease_expires_at: '2026-07-29T21:31:15Z'
+    phase_scope: F02_lease_A_micro_integration_atomic_claim_only
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  state_handoff_digest: f9db3e59bc32735a612d7cb5ccd9aa9960645783da2625218ddcc4ed22a35baa
+  source_path_inventory_digest: cdfcda1a1c3eec073a5f77d72caf175784eeed9592c3e12c6d5f027fb398f00e
+  source_manifest_digest: 641cc6885e14dde048e52989cc029bc0ed5b5c101cf09361fae291d024d9280e
+  proposal_raw_digest: 77f4299af5f13a0555d784c248874c9336c7bcb911adb527be96fdb426af0485
+  migration_checksums:
+  - ordinal: 2235
+    checksum_sha256: 442231550a3aed2360772a9fbc4aebe96edf0510ee175e0b8c7d1097d94f7c1e
+    pg_mem_checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
+  - ordinal: 2236
+    checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+    pg_mem_checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+  - ordinal: 2237
+    checksum_sha256: 7b58a07ff8bb949260715bd630d02c34cb1f7188a7d0a9a9f52380d7a82eca86
+    pg_mem_checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
+  - ordinal: 2238
+    checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
+    pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 40e9030116d7f2a4012526841c147e74704b4209
+item_payload_digests:
+  5c3d9201-e10b-46cb-9cdf-64b5ee8afef6: f3d55402a133e7149e7970b6c6a4079baaeaa2e3f6128cdf7ce5138f84b2a36a
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
