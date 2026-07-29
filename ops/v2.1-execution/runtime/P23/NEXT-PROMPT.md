@@ -1,22 +1,22 @@
 # P23 Next Prompt
 
-REVIEW_OR_INTEGRATE the superseding residual-corrected P23 final on
+STOP pending C00 reconciliation of the exact pushed P23
+copy/dedupe/persistence correction claim on
 `codex/v21-p23-student-notifications`.
 
-Verify its final metadata has sole parent implementation
-`dafdd046b7048e67829b2f2a2496c8b830b23fec`, and that implementation has sole
-parent reconciled claim `433cc88b34d99099ca75f64876713406c6e43053`.
+Verify its sole parent is rejected final
+`24ec3a4effc622f384915d892cbaad046e1ea5d1`, its delta contains exactly
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` under the P23 runtime,
+and it binds:
 
-Confirm:
-
-- artifact digest
-  `d6a527d064c3289db0acb9f8482645e012bd0384990379b27644c55758a31dcc`;
-- unchanged request aggregate
-  `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`;
-- status `ready_for_review`;
-- released lease `f7b63d5e-489c-40aa-a793-9a7210f91bca`;
-- 3 focused files / 20 tests plus typecheck, lint, format, scope, diff, and
-  secret-scan evidence;
+- authorization `fff9a0a79f2db87ffca97451f8295080b9736549`;
+- sole acquisition parent `ca8eb4ab9957b6616664cfd5e944a73608596020`;
+- claim `096ffffc-1637-4602-a9a8-3084e03a50e1`;
+- lease `471de353-37c6-4e38-a6da-d2db92c4b207`;
+- READY digest
+  `67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b`;
 - external effects `none / 0 / 0 / 0`.
 
-Migration and central registration remain unapplied.
+Do not correct locked copy, dedupe persistence, tests, requests, or any other
+file until C00 explicitly reconciles this claim and grants bounded
+continuation.

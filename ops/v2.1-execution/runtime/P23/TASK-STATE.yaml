@@ -28,40 +28,37 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
+status: claimed
+phase: copy_dedupe_persistence_correction
 claim_mode: resume_existing_branch
-claimed_by: codex-p23-worker-f7e3fb0e
-claim_time: '2026-07-29T08:43:00Z'
-claim_id: f7e3fb0e-a8d4-416b-8c79-786a696e2dc4
+claimed_by: codex-p23-worker-096ffffc
+claim_time: '2026-07-29T09:24:30Z'
+claim_id: 096ffffc-1637-4602-a9a8-3084e03a50e1
 writer_slot_leases:
   - slot: STUDENT_NOTIFICATIONS
-    lease_id: f7b63d5e-489c-40aa-a793-9a7210f91bca
-    lease_issued_at: '2026-07-29T08:37:54Z'
-    lease_expires_at: '2026-07-29T09:37:54Z'
-    state_based_on_control_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
-    phase_scope: P23_atomic_claim_route_accessibility_correction_only
-    lease_released_at: '2026-07-29T08:54:00Z'
-    state: released
-lease_expires_at: '2026-07-29T09:37:54Z'
-lease_released_at: '2026-07-29T08:54:00Z'
-last_heartbeat_at: '2026-07-29T08:54:00Z'
-controller_authorization_sha: a95a1406200b139b4acd501c7b96821e6f74070a
-authorization_acquisition_parent_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
-residual_claim_reconciled_control_sha: 3df02f221b14c937dd1b721013b5067245fb4493
-residual_claim_reconciled_acquisition_parent_sha: 4ca740bd8c2bbfcae7755038d88bdc616dd3444a
-atomic_residual_claim_head_sha: 433cc88b34d99099ca75f64876713406c6e43053
-ready_entry_state_based_on_control_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
-ready_entry_payload_digest: 976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204
-phase_scope: P23_atomic_claim_route_accessibility_correction_only
-state_based_on_head_sha: dafdd046b7048e67829b2f2a2496c8b830b23fec
+    lease_id: 471de353-37c6-4e38-a6da-d2db92c4b207
+    lease_issued_at: '2026-07-29T09:18:31Z'
+    lease_expires_at: '2026-07-29T10:18:31Z'
+    state_based_on_control_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+    phase_scope: P23_atomic_claim_copy_dedupe_persistence_correction_only
+    lease_released_at: null
+    state: active
+lease_expires_at: '2026-07-29T10:18:31Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T09:24:30Z'
+controller_authorization_sha: fff9a0a79f2db87ffca97451f8295080b9736549
+authorization_acquisition_parent_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+ready_entry_state_based_on_control_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+ready_entry_payload_digest: 67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b
+phase_scope: P23_atomic_claim_copy_dedupe_persistence_correction_only
+state_based_on_head_sha: 24ec3a4effc622f384915d892cbaad046e1ea5d1
 last_implementation_commit_sha: dafdd046b7048e67829b2f2a2496c8b830b23fec
-prior_claim_id: 29e8b1d9-8769-479d-8a7a-df26137f185a
-prior_atomic_claim_head_sha: b341ce5209909771647c2ca02167e077468fd597
-prior_claim_reconciled_control_sha: 331ffc12ba126aafa2c25fb48293a7fd0a8734e6
-prior_rejected_final_head_sha: 39b050949a0874a1ea397c6c3f3420eb4fa19ccc
-rejected_final_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
-rejection_status: residual_correction_required_before_admission
+prior_claim_id: f7e3fb0e-a8d4-416b-8c79-786a696e2dc4
+prior_atomic_claim_head_sha: 433cc88b34d99099ca75f64876713406c6e43053
+prior_claim_reconciled_control_sha: 3df02f221b14c937dd1b721013b5067245fb4493
+prior_rejected_final_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
+rejected_final_head_sha: 24ec3a4effc622f384915d892cbaad046e1ea5d1
+rejection_status: copy_dedupe_persistence_correction_required_before_admission
 implementation_artifact_digest: d6a527d064c3289db0acb9f8482645e012bd0384990379b27644c55758a31dcc
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
@@ -126,16 +123,22 @@ completed_steps:
   - Added ArrowLeft/ArrowRight wrapping plus Home/End tab selection with preventDefault, controlled filter selection, actual button-ref focus, and preservation of tab focus across the controlled rerender.
   - Added direct closed-route admission/rejection and tab-keyboard/focus tests; passed 3 files and 20 tests, workspace typecheck, focused ESLint/Prettier, exact residual scope, diff hygiene, and secret scan across 2876 text files.
   - Corrected dependency ancestry evidence to state only integration/interface heads are ancestors while task heads are exact control identity bindings, committed implementation dafdd046b7048e67829b2f2a2496c8b830b23fec, reproduced all artifact/request digests, and released the writer lease before expiry.
+  - C00 rejected final 24ec3a4effc622f384915d892cbaad046e1ea5d1 because locked WNC-8 requires visible Open schedule copy while retaining canonical /app/student/calendar and because the raw-NUL dedupe tuple cannot be persisted through PostgreSQL text parameters or columns.
+  - Verified containing authorization fff9a0a79f2db87ffca97451f8295080b9736549, its sole acquisition parent ca8eb4ab9957b6616664cfd5e944a73608596020, exact clean local/tracking/remote rejected head 24ec3a4effc622f384915d892cbaad046e1ea5d1, immutable task/context/package/source digests, true F05/F07 integration-interface ancestry, fresh claim 096ffffc-1637-4602-a9a8-3084e03a50e1, sole unexpired STUDENT_NOTIFICATIONS lease 471de353-37c6-4e38-a6da-d2db92c4b207, and zero effect locks.
+  - Recomputed the 2814-byte canonical recursively key-sorted READY preimage and matched digest 67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b.
+  - Claimed only the three-file copy/dedupe/persistence correction checkpoint; no product, test, request, migration, registration, steward, provider, send, or external-effect work was performed or verified in this phase.
 remaining_steps:
-  - C00 review or integrate the superseding ready-for-review final; migration and central registration remain unapplied.
-next_action: REVIEW_OR_INTEGRATE the superseding P23 final after exact remote verification.
+  - Commit, normally push, and remote-verify this exact three-runtime-file correction claim.
+  - C00 must reconcile the exact pushed claim head before P23 changes product, tests, requests, or any other file.
+  - Only after explicit reconciliation may P23 restore locked Open schedule copy and replace raw-NUL persistence with a PostgreSQL-safe exact tuple strategy plus direct database-boundary tests.
+next_action: Stop after pushing and remote-verifying this exact three-file copy/dedupe/persistence correction claim; wait for C00 reconciliation.
 requirements:
-  OTV2-NOTIFY-203: implementation_verified_residual_corrected
-  OTV2-NOTIFY-237: implementation_verified_residual_corrected
+  OTV2-NOTIFY-203: copy_dedupe_persistence_correction_claimed
+  OTV2-NOTIFY-237: copy_dedupe_persistence_correction_claimed
 acceptance_cases:
-  OTV2-NOTIFY-203-AC01: task_owned_residual_corrected_assertions_passed
-  OTV2-NOTIFY-237-CATEGORY-LIFETIME: task_owned_corrected_assertions_passed
-  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: task_owned_residual_corrected_assertions_passed
+  OTV2-NOTIFY-203-AC01: rejected_requires_locked_copy_correction
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: prior_corrections_pass
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: rejected_requires_postgresql_safe_dedupe
 changed_paths:
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx

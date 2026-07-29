@@ -1,52 +1,54 @@
-# P23 Superseding Residual-Corrected Ready-for-Review Handoff
+# P23 Atomic Copy/Dedupe/Persistence Correction-Claim Handoff
 
 ## Exact identity
 
 - Branch: `codex/v21-p23-student-notifications`
-- Reconciled residual claim:
-  `433cc88b34d99099ca75f64876713406c6e43053`
-- Reconciliation control:
-  `3df02f221b14c937dd1b721013b5067245fb4493`
-- Reconciliation acquisition parent:
-  `4ca740bd8c2bbfcae7755038d88bdc616dd3444a`
-- Residual-corrected implementation:
+- Exact rejected final and claim parent:
+  `24ec3a4effc622f384915d892cbaad046e1ea5d1`
+- Prior implementation remains:
   `dafdd046b7048e67829b2f2a2496c8b830b23fec`
-- Claim: `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4`
-- Released lease: `f7b63d5e-489c-40aa-a793-9a7210f91bca`
-- Artifact digest:
-  `d6a527d064c3289db0acb9f8482645e012bd0384990379b27644c55758a31dcc`
-- Unchanged request aggregate:
-  `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`
+- Containing authorization:
+  `fff9a0a79f2db87ffca97451f8295080b9736549`
+- Sole acquisition parent:
+  `ca8eb4ab9957b6616664cfd5e944a73608596020`
+- Claim: `096ffffc-1637-4602-a9a8-3084e03a50e1`
+- Writer: `codex-p23-worker-096ffffc`
+- STUDENT_NOTIFICATIONS lease:
+  `471de353-37c6-4e38-a6da-d2db92c4b207`
+- Lease issued: `2026-07-29T09:18:31Z`
+- Lease expiry: `2026-07-29T10:18:31Z`
+- Canonical READY digest:
+  `67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b`
 
-## Residual-corrected result
+The recursively key-sorted READY JSON preimage is 2,814 UTF-8 bytes and
+independently hashes to the recorded digest. Local, tracking, and fetched remote
+P23 heads were clean and exact before this checkpoint. Immutable packet/source
+digests and the true F05/F07 integration-interface ancestry match. Effect locks
+are empty; authority is none and effects remain `0 / 0 / 0`.
 
-Class change and cancellation actions now use canonical
-`/app/student/calendar`. Notification actions accept only the exact canonical
-static Student routes or the five approved class/library/question/support
-patterns with one opaque safe identifier; arbitrary, nested, query, fragment,
-traversal, provider, and malformed paths fail closed.
+## Rejection record
 
-The controlled notification tabs now implement ArrowLeft/ArrowRight wrapping,
-Home/End selection, default prevention, filter selection, and direct DOM focus
-through the actual button refs. Keyboard focus remains on the selected tab
-through the controlled rerender. Dependency evidence now truthfully distinguishes
-exact task-head control bindings from the integration/interface heads that are
-actual ancestors.
+C00 rejected final `24ec3a4effc622f384915d892cbaad046e1ea5d1`
+despite matching scope/digests, 20 prior focused tests, typecheck, and the
+correct route/tab/ancestry behavior:
 
-All prior concurrency, retention, privacy, sound, timezone, idempotency,
-authorization, copy, and accessibility corrections remain intact. The two
-structured requests are unchanged and unapplied. No migration, registration,
-provider/send, or external effect occurred.
+- locked WNC-8 requires visible **Open schedule** copy while the action route
+  remains canonical `/app/student/calendar`; the rejected final says
+  **Open calendar**;
+- the exact dedupe tuple currently contains raw NUL separators and passes that
+  string to PostgreSQL text parameters/columns, which cannot persist NUL;
+- prior in-memory tests do not exercise that PostgreSQL boundary.
 
-## Verification
+This handoff records the rejection and fresh claim only. It does not implement
+or authorize any product, test, request, migration, or registration correction.
+No product tests were run or claimed in this phase.
 
-- 3 focused files / 20 deterministic tests passed.
-- Workspace TypeScript typecheck passed.
-- Focused ESLint and Prettier passed.
-- Exact residual owned-path scope and `git diff --check` passed.
-- Secret scan passed across 2876 repository text files.
-- Exact 13-artifact digest and unchanged two-request aggregate reproduced.
-- Sole writer lease released at `2026-07-29T08:54:00Z`, before expiry.
+## Atomic scope and stop
 
-Next action: C00 should review or integrate the superseding final after exact
-remote-head, sole-parent, scope, digest, and effects verification.
+This checkpoint changes exactly P23 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. Product, tests, structured requests, migrations,
+registrations, stewards, providers, sends, and external effects remain
+byte-identical and untouched.
+
+C00 must reconcile the exact pushed claim head before P23 changes any other
+file. Stop after normal push and remote verification.
