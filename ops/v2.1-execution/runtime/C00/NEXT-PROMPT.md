@@ -231,3 +231,11 @@ for P08 on `codex/v21-p08-family-signup` with claim `798ccc6e...` and digest
 `49431959f58f284bdc13ca931acf09f980fc483a`, must first change only its three
 task-local runtime files, and must stop for C00 reconciliation before product
 work. All entries bind exact acquisition `de271a6cab5fc74e8c77b5defc302094fe9a22fc`.
+
+The three claims are verified and consumed under exact acquisition
+`629577e2ea6da2fdeca7754a6f314b6b254e952e`. Resume P08 at `a22ab6d8`,
+P10 at `42602096`, and P33 at `e7a2760c` for full task-owned implementation,
+required interface checkpoints for P08/P33, focused and repository-relevant
+verification, refreshed runtime proof, and lease release. No provider effects,
+shared-path edits, migrations, manifest/lockfile changes, or fake fallbacks are
+authorized.

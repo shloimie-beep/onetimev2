@@ -499,3 +499,11 @@ provider changes. The freed capacity is allocated to P08 Family signup, P10
 Admin directory, and P33 runtime operations. Their claim-only starts are based
 on exact integrated dependency head `49431959` and exact control parent
 `de271a6c`; no product work begins before their atomic claims are reconciled.
+
+P08 claim `a22ab6d8`, P10 claim `42602096`, and P33 claim `e7a2760c` are
+exact: every branch has sole parent `49431959`, changes only the three
+task-local runtime files, binds the containing `eb3b0e1d` authorization and
+canonical ready digest, and records zero effects. C00 consumed all three under
+exact acquisition `629577e2`. The workers may now implement concurrently
+inside the disjoint FAMILY_SIGNUP, ADMIN_DIRECTORY, and OPERATIONS_RUNTIME
+scopes. Provider effects remain prohibited.
