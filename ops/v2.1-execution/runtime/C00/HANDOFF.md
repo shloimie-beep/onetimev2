@@ -1079,3 +1079,33 @@ through `2026-07-29T08:21:29Z`. Its first push may change exactly P23
 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
 reconciliation. No correction implementation, steward application, migration,
 registration, provider action, send, or external effect is authorized yet.
+
+P23 correction claim `b341ce5209909771647c2ca02167e077468fd597` is
+independently reconciled as the sole child of rejected final `39b05094` with
+exactly the three P23 runtime files and exact authorization/acquisition/claim/
+lease/ready bindings. C00 consumed the ready entry. P23 may now correct only
+the enumerated notification semantics within its normalized owned roots plus
+its existing structured requests and runtime memory. It must preserve zero
+effects, apply no migration/registration/steward request, publish a superseding
+final, release lease `489df25a`, and stop for independent re-audit.
+
+P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` is rejected from
+admission despite valid ancestry, exact seventeen-path scope, 8 passing focused
+tests, and passing typecheck. Independent source review and direct probes
+confirmed missing navigation-time authorization and neutral stale resolution;
+fixture provider readiness can be relabeled production; required quick actions
+and PS-025.3 operational groups are absent; inherited primary routes are
+noncanonical; content metadata is not searched; provider URLs/private title
+text can appear in results; Recent Activity is lifetime totals; sign-out/cache
+clearing is incomplete; and keyboard association plus visible timezone/a11y
+evidence is insufficient. The final is not queued for integration.
+
+C00 issued only a P11 correction atomic-claim authorization from exact rejected
+head `51bd416b`. Ready digest is
+`48210c4c569564fcf829a5ee5fbd3fcf9b4b989377ad0ca8f898fc66d32f1aba`,
+claim is `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`, and the sole
+ADMIN_OPERATIONS_UI lease is `39ce3c68-6685-4981-bc09-f1cd3dd24c55`
+through `2026-07-29T08:37:36Z`. Its first push may change exactly P11
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
+reconciliation. No P11 correction implementation, steward application,
+registration, provider action, or external effect is authorized yet.

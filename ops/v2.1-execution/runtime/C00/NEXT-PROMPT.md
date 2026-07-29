@@ -818,3 +818,42 @@ eight categories, and zero effects. Update any migration request needed for
 the concurrency invariant but do not apply it. Re-run direct race/order/privacy
 probes, focused tests, typecheck, lint/format, scope/digest verification, release
 the lease, and publish a superseding final for independent re-audit.
+
+P23 atomic correction claim
+`b341ce5209909771647c2ca02167e077468fd597` is reconciled. Resume it
+under unchanged claim `29e8b1d9-8769-479d-8a7a-df26137f185a` and lease
+`489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`. Implement the complete bounded P23
+correction already enumerated above, add direct order/race/privacy/retention/
+sound/timezone/idempotency/a11y proof, update but do not apply any needed
+structured migration/registration request, publish a superseding final, release
+the lease, and stop with effects `0/0/0`.
+
+P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
+admission and must not be integrated. Resume that exact head only for an atomic
+correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
+ADMIN_OPERATIONS_UI lease `39ce3c68-6685-4981-bc09-f1cd3dd24c55`,
+ready parent `a6a9c53b670c1345187f846eaf1f53133f4c7e67`, and ready digest
+`48210c4c569564fcf829a5ee5fbd3fcf9b4b989377ad0ca8f898fc66d32f1aba`.
+The first push changes exactly the three P11 runtime-memory files, binds the
+fresh authorization/claim/lease and rejected source head, pushes normally,
+remote-verifies, and stops for C00 reconciliation. Do not edit product code in
+that push.
+
+After C00 reconciliation only, correct every confirmed P11 blocker within its
+owned roots plus structured steward requests: a server resolver that rechecks
+current Admin/session/scope and target authorization immediately before
+navigation with neutral missing/archived/revoked results; exact
+runtime/verification-environment filtering without relabeling provider rows;
+the locked quick actions and truthful PS-025.3 operational groups; canonical
+primary destinations; approved content metadata matching; redaction/rejection
+of provider URLs, secrets, and sensitive title content; actually time-bounded
+Recent Activity; sign-out/role-revocation/bfcache clearing; accessible active-
+descendant/focus behavior; and visible unambiguous Jerusalem zone labels.
+Strengthen the registration request for the exact resolver, route, cache,
+session-version, and partner-composition duties but do not apply it. Preserve
+POST-body-only private search, `no-store`, same-origin/CSRF requirements, real
+data only, all eight kinds, exact Admin equality, safe same-origin destinations,
+honest empty/error/pagination behavior, and zero effects. Re-run focused
+positive/negative tests, direct leakage/TOCTOU/environment probes, typecheck,
+lint/format, scope/digest verification, release the lease, and publish a
+superseding final for independent re-audit.

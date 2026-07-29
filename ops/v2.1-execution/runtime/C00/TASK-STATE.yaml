@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-500005fb
-claim_time: '2026-07-29T07:21:29Z'
-claim_id: 500005fb-42b2-4721-9048-0f73f7825508
-lease_expires_at: '2026-07-29T07:36:29Z'
-last_heartbeat_at: '2026-07-29T07:23:33Z'
-controller_authorization_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
+claimed_by: codex-c00-orchestrator-faa1b3c2
+claim_time: '2026-07-29T07:37:36Z'
+claim_id: faa1b3c2-3e70-4efb-b437-183c0d54dcc8
+lease_expires_at: '2026-07-29T07:52:36Z'
+last_heartbeat_at: '2026-07-29T07:40:26Z'
+controller_authorization_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
 ready_entry_payload_digest: null
-state_based_on_head_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
+state_based_on_head_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -261,11 +261,14 @@ completed_steps:
 - recorded Shloimie Dratler's candidate-pending seven-day bounded production source grant as immutable approval evidence and a non-effect-usable source authority record
 - rejected P23 final 39b05094 after an independent exact-source audit confirmed canonical-route, cancellation ordering, concurrent-version, retention, private-copy validation, sound-consumer, copy, timestamp, idempotency, and accessibility defects
 - authorized only a fresh three-runtime-file P23 correction claim from exact rejected final 39b05094 under claim 29e8b1d9 and STUDENT_NOTIFICATIONS lease 489df25a before any correction implementation
+- independently reconciled P23 correction claim b341ce52 as an exact three-runtime-file child of rejected final 39b05094, consumed its ready entry, and authorized only the bounded semantic correction with zero effects
+- rejected P11 final 51bd416b after an independent exact-source audit confirmed missing navigation-time authorization, cross-environment provider relabeling, incomplete dashboard operations and quick actions, noncanonical navigation, missing content metadata matching, sensitive result leakage, lifetime recent-activity totals, cache-after-signout gaps, and accessibility defects
+- authorized only a fresh three-runtime-file P11 correction claim from exact rejected final 51bd416b under claim b66b8fdf and ADMIN_OPERATIONS_UI lease 39ce3c68 before any correction implementation
 remaining_steps:
-- reconcile the exact P23 correction claim, then authorize and independently re-audit only the bounded semantic correction
-- complete the exact-source admission audit of P11 final 51bd416b and authorize a bounded correction if any semantic blocker is confirmed
+- receive and independently re-audit the bounded P23 semantic correction
+- reconcile the exact P11 correction claim, then authorize and independently re-audit only the bounded semantic correction
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P23 may publish only a three-runtime-file correction claim from exact rejected final 39b05094 under ready digest 2f57bb42, claim 29e8b1d9, and lease 489df25a, then stop for C00 reconciliation. Continue the read-only exact-source P11 audit. No product correction or external effect is authorized before the P23 atomic claim is reconciled.
+next_action: P23 may implement only its bounded semantic correction from reconciled claim b341ce52. P11 may publish only a three-runtime-file correction claim from exact rejected final 51bd416b under ready digest 48210c4c, claim b66b8fdf, and lease 39ce3c68, then stop for C00 reconciliation. No external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -273,7 +276,7 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
+  current_control_parent_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
@@ -700,10 +703,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: ddac4239157937242efdb9d88a8507d8e13d28c1b47096b1b759557b96976f3e
-    control_lease: c5484c8a2ffba10605771a97460d7acbef56900165c83820578d3c60fa55b6d1
-    task_registry: edb6b0fb3efbc547230f880779a732118b272fbaaa1780b372392e0657f465f6
-    ready_queue: a2b1d6db2d665196850d646e49565e37ebd06b6530ec0e35141ed1fef39c4ccb
+    control_state: 331c7b45245b3b6232ec0432817533ee04051fb466604eb093724cf09cb0b000
+    control_lease: b7ea7d479e4bf2dffd27fc1408ef773664e233b546eb56c765b1119a75b93d5f
+    task_registry: a325ac394ee073918ead1885d94df1146733b0c90be0d00ba478aa5937030017
+    ready_queue: 60745e55780f825e402e671b01be284e03cc0f2171cc064d9cd2b25ffe95315d
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -827,6 +830,9 @@ verification:
   - source grant approval-evidence digest 8c95a959, immutable grant digest 94a39fe0, canonical status-entry digest c6ef687c, exact GHL location pBSnOK2nkdxp6gf9Rg3o, matrix digest 88a9fbd0, candidate-binding pending state, and zero-effect usability: passed
   - P23 rejected final 39b05094 ancestry, exact eighteen-path scope, 13 focused tests, typecheck, direct canonical-route, cancellation-first, concurrent-version, indefinite-retention, runtime-private-copy, locked-copy, sound-consumer, timestamp, mark-one, and accessibility probes: failed semantic admission and bounded correction claim authorized
   - canonical P23 correction ready-entry digest 2f57bb42 against exact acquisition 78626d9b, rejected head 39b05094, fresh claim 29e8b1d9, one disjoint STUDENT_NOTIFICATIONS lease, and zero effect locks: passed
+  - P23 correction claim b341ce52 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, and zero effects: passed
+  - P11 rejected final 51bd416b ancestry, exact seventeen-path scope, 8 focused tests, typecheck, and direct navigation-reauthorization, provider-environment, operations-data, canonical-navigation, content-metadata, sensitive-result, recent-window, cache-after-signout, timezone-label, and accessibility probes: failed semantic admission and bounded correction claim authorized
+  - canonical P11 correction ready-entry digest 48210c4c against exact acquisition a6a9c53b, rejected head 51bd416b, fresh claim b66b8fdf, one disjoint ADMIN_OPERATIONS_UI lease, and zero effect locks: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
