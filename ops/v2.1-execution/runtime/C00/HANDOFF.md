@@ -489,3 +489,13 @@ reproduces the fresh canonical ready digest, and records zero effects. C00
 reconciled all three under exact acquisition `5b0356cc`. Only the previously
 recorded bounded cross-audit corrections, negative tests, verification, and
 final metadata are authorized; provider effects remain prohibited.
+
+Corrected finals P17 `78af7160`, P29 `aa7b3638`, and P30 `772d4783`
+have now passed independent semantic review, ancestry/scope/digest checks,
+focused suites of 21, 58, and 12 tests, lease release, and zero-effect
+verification. C00 admitted all three and assigned their nine immutable steward
+requests without applying migrations, shared registrations, configuration, or
+provider changes. The freed capacity is allocated to P08 Family signup, P10
+Admin directory, and P33 runtime operations. Their claim-only starts are based
+on exact integrated dependency head `49431959` and exact control parent
+`de271a6c`; no product work begins before their atomic claims are reconciled.

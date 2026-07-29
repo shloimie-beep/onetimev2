@@ -221,3 +221,13 @@ repair implementation already below its claim. Each worker is limited to the
 recorded audit repair, negative regression coverage, full checks, refreshed
 material digests/runtime proofs, lease release, and a new ready_for_review
 final. Keep all external/provider effect counts at zero.
+
+P17, P29, and P30 corrected finals are admitted. Dispatch claim-only starts
+for P08 on `codex/v21-p08-family-signup` with claim `798ccc6e...` and digest
+`d52ad4ce...`, P10 on `codex/v21-p10-admin-directory` with claim
+`f7e5889d...` and digest `91d515fb...`, and P33 on
+`codex/v21-p33-runtime-operations` with claim `e0ba9363...` and digest
+`05f3889c...`. Each new branch must have sole parent exact integration head
+`49431959f58f284bdc13ca931acf09f980fc483a`, must first change only its three
+task-local runtime files, and must stop for C00 reconciliation before product
+work. All entries bind exact acquisition `de271a6cab5fc74e8c77b5defc302094fe9a22fc`.
