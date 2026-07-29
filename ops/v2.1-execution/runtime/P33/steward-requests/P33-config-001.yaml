@@ -1,0 +1,53 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P33-config-001
+task_id: P33
+kind: configuration
+interface_contract:
+  checkpoint_path: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
+  interface_implementation_head_sha: 7765a3758a3e3aa7d311119b5d86da1e943b68d7
+  semantic_contract_version: 3.0.0
+  contract_digest: a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43
+requirement_ids:
+  - OTV2-OPS-166
+  - OTV2-OPS-167
+  - OTV2-OPS-171
+  - OTV2-OPS-172
+acceptance_case_ids:
+  - OTV2-OPS-166-AC01
+  - OTV2-OPS-167-AC01
+  - OTV2-OPS-171-AC01
+  - OTV2-OPS-172-AC01
+rationale: >-
+  Exact candidate/runtime identity and truthful provider, database, migration,
+  queue, and worker observations require centrally supplied configuration and
+  adapters. P33 has no shared configuration, manifest, migration, or secret
+  authority.
+desired_semantic_change: >-
+  Supply immutable build and deployment identity to web and worker, create
+  read-only observation adapters, and reject startup when any mandatory identity
+  field is missing, unknown, or inconsistent with the exact environment-to-tier
+  mapping.
+proposed_symbols_routes_keys_or_dependencies:
+  - Provide candidate ID, release, repository SHA, application-source SHA, web/worker artifact digests, configuration digest, migration inventory digest, provider registry digest, public asset digest, specification digest, and acceptance-contract digest.
+  - Provide runtime tier and verification environment as separate required values; production_read_only never enables mutation.
+  - Supply read-only database availability/storage/connection/lock probes and exact forward-only migration inventory/readback.
+  - Supply the exact required runtime IDs/roles/artifact digests, queue IDs/classes, worker types, all seven provider expectations, maximum observation age, and migration-required policy in the candidate contract.
+  - Every observation carries a qualified evidence flag and UTC observation time; missing, duplicate, extra, malformed, stale, or unqualified evidence fails readiness.
+  - Build timestamp and migration schema version are immutable candidate/runtime identity fields, and queue adapters supply exact lease, fencing, retry, and content-progress evidence.
+  - Active lease evidence must use the exact five-minute expiry, and retry_count must equal scheduled plus exhausted retry evidence.
+  - Supply queue depth, age, leases, retry, acceptance-unknown, dead-letter, throughput, and duplicate-effect-risk observations.
+  - Supply explicit ready, degraded, unavailable, or not_configured state for Resend, GHL, Stripe, Zoom, Vimeo, Drive, and Telegram plus safe account reference and credential-expiry age.
+  - Supply a heartbeat store or metrics transport that cannot accept arbitrary private payload fields.
+compatibility_assumptions:
+  - Digests are lowercase SHA-256 and repository/application source identities are lowercase 40-character Git SHAs.
+  - Observation credentials are read-only and secret-managed; credential values never enter application diagnostics.
+  - No missing provider is inferred ready and no synthetic successful fallback is permitted.
+verification_performed:
+  - exact environment-tier and candidate-runtime validation assertions
+  - migration, queue, worker, provider, and database threshold assertions
+conflicts_or_risks:
+  - Mutable tags or branch names are not artifact identity.
+  - Applied migration files must never be edited to repair drift.
+  - Provider probes must not create contacts, payments, meetings, media, files, messages, or other effects.
+contains_secret_or_private_data: false

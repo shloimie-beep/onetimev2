@@ -1,0 +1,47 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P33-deploy-001
+task_id: P33
+kind: deployment
+interface_contract:
+  checkpoint_path: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
+  interface_implementation_head_sha: 7765a3758a3e3aa7d311119b5d86da1e943b68d7
+  semantic_contract_version: 3.0.0
+  contract_digest: a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43
+requirement_ids:
+  - OTV2-OPS-166
+  - OTV2-OPS-167
+  - OTV2-OPS-171
+  - OTV2-OPS-172
+  - OTV2-OPS-173
+acceptance_case_ids:
+  - OTV2-OPS-166-AC01
+  - OTV2-OPS-167-AC01
+  - OTV2-OPS-171-AC01
+  - OTV2-OPS-172-AC01
+  - OTV2-OPS-173-AC01
+rationale: >-
+  P33 defines deployable observations and alerts but has no deployment,
+  monitoring-provider, secret, or production effect authority.
+desired_semantic_change: >-
+  Deploy candidate-bound web and worker identity, protected diagnostics,
+  read-only probes, dashboards, and safe alert routing. Gate promotion on exact
+  web/worker agreement, migration readback, and a clean diagnostic leakage scan.
+proposed_symbols_routes_keys_or_dependencies:
+  - Route alerts only to ot_secure_operations and the protected Admin Operations surface.
+  - Preserve safe category/code/count/time/environment context; discard excerpts and raw exception/provider response material.
+  - Alert Sev1 on candidate/runtime mismatch, migration drift, duplicate-effect risk, or protected-material leakage.
+  - Alert on locked database, queue, heartbeat, provider-unavailability, and credential-expiry thresholds.
+  - Require read-only synthetic checks in isolated staging first; any production observation remains production_read_only and nonmutating.
+  - Promotion and rollback tooling must compare immutable digests, not branch names, mutable tags, or deployment labels.
+compatibility_assumptions:
+  - The runtime semantic contract is 3.0.0 with digest a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43.
+  - P33 performs no deployment or provider effect and creates no monitoring resource.
+  - Backup/restore and canary-budget scripts remain explicitly outside P33 scope.
+verification_performed:
+  - protected route returns private no-store and safe errors
+  - leakage findings emit Sev1 alerts without protected excerpts
+conflicts_or_risks:
+  - Do not send alert payloads to general chat, email, analytics, or public status pages.
+  - Never treat diagnostics availability as proof that a provider operation is safe to retry.
+contains_secret_or_private_data: false
