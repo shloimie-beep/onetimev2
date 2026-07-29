@@ -730,11 +730,11 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 04bea2d848174e3b5cd05be3cecc672d75eb65089fe86712e0043d86c4ab3e45
-    control_lease: 14c3d95414731bdcbf6ff28fc6ac7db5b76f6abf1e500963445a444866ca402b
-    task_registry: ee1027a21243ac48159ef203f0aaa47b8b8af0971623c107280bc5367e3ec501
-    ready_queue: 692305dd62c01a7875905b3ae2e58d79b050400b61aa1541d01edd2efa7e78b6
-    merge_queue: 92b36626d7e1a43ed4f11bc798bf1dc9c52568c3c8eaaf7224be77aa98e95267
+    control_state: 1884e215cfc5c511b69c6f60b337e5b730fbbb43be4c703103e677388772a2ed
+    control_lease: 24bb078f62df77f1901fd3cd62b65839d9d30fd7c1525ac8a7ae4afd8329decf
+    task_registry: c31102d8975817cfacb1986bed7a600b02f471b64cf1c509ca4a85250743c4a8
+    ready_queue: 3e3ce54feef7ef3f701374414ce4b597cc800d9dfa12db184a20d5648d321e78
+    merge_queue: 5e2fd2abe20f6fc98e77ece9b36d75a742fb83595ebe63a4016c91bee97433fc
     steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50
@@ -879,6 +879,8 @@ verification:
   - P23 final 32f3a464 exact 19-path scope, 14-artifact digest 14ab3136, unchanged request aggregate f984e5ee, 22 focused tests, typecheck, locked-copy/PostgreSQL-boundary proof, released lease, and independent semantic re-audit: passed and ready for admission
   - canonical I36 P23 integration ready digest 732033d0 and P23 full merge digest 841bb07e against acquisition a0356387 and exact target cecc1c0d: passed
   - P23 migration e6f899ad and registration 20d08ffa requests assigned but unapplied; I36 source merge withheld pending atomic claim reconciliation and target-CAS rebind: passed
+  - I36 P23 claim f75b0922 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/merge bindings, clean remote state, no source merge, and zero effects: passed
+  - consumed only the I36 ready entry, preserved P11 ready digest aeea25dd, and rebound P23 merge to exact claim target f75b0922 with canonical digest 7abbd657: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

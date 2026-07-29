@@ -1267,3 +1267,13 @@ three-runtime-file claim from integration head `cecc1c0d` under claim
 reconciles that claim and rebinds merge `ceed4d92-af5a-413f-b9b3-034293e37caf`.
 P11's separate correction claim remains authorized and undisturbed. No
 provider, send, steward-application, or external effect is authorized.
+
+I36 published the exact claim-only checkpoint at
+`f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e`: sole parent `cecc1c0d`,
+exactly its three runtime files, clean remote, no source merge, and effects
+`0/0/0`. C00 consumed only the I36 ready entry, preserved P11's ready entry,
+and rebound P23 merge `ceed4d92-af5a-413f-b9b3-034293e37caf` to exact target
+`f75b0922` with canonical digest `7abbd657`. I36 may now ancestry-merge only
+P23 final `32f3a464`, run its 22 focused tests and workspace typecheck, publish
+a metadata-only release checkpoint, release lease `5f617e0e`, and stop. Do not
+apply the P23 steward requests or perform provider/external effects.

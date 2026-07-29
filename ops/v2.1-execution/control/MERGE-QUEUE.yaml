@@ -10,7 +10,7 @@ items:
   source_branch: codex/v21-p23-student-notifications
   source_head_sha: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
   target_branch: codex/v21-integration
-  expected_target_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+  expected_target_head_sha: f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e
   source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
   required_merge_base_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
   preserve_source_ancestry: true
@@ -41,7 +41,7 @@ items:
     lease_id: 5f617e0e-7f87-4eba-9dd0-1361227d272a
     holder_task_id: I36
     holder_claim_id: 4f275da3-6bac-4149-8f0d-42206f5d238e
-    state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+    state_based_on_control_head_sha: 90c5406f047cbcf06b86f9aa4395ffc5044a7a2c
     lease_issued_at: '2026-07-29T09:46:42Z'
     lease_expires_at: '2026-07-29T10:46:42Z'
     phase_scope: P23_full_integration_atomic_claim_only
@@ -51,9 +51,9 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+  state_based_on_control_head_sha: 90c5406f047cbcf06b86f9aa4395ffc5044a7a2c
 item_payload_digests:
-  ceed4d92-af5a-413f-b9b3-034293e37caf: 841bb07ed93e0ac07d83d68d0af55c2fc952d1d6040763c73d142eb474b0260a
+  ceed4d92-af5a-413f-b9b3-034293e37caf: 7abbd657a3e4089ff5478f77fab356517c5fd090cb496a6ee53ea2cba5fae197
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

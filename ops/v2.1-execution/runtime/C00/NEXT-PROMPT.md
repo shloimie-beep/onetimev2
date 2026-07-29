@@ -988,6 +988,16 @@ Change exactly I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
 push normally, remote-verify, and stop for C00 reconciliation. Do not merge
 P23 or apply its migration/registration requests in this first push.
 
+I36 claim `f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e` is reconciled.
+Resume that exact head under unchanged claim and lease. Verify merge payload
+digest `7abbd657a3e4089ff5478f77fab356517c5fd090cb496a6ee53ea2cba5fae197`,
+then ancestry-merge only P23 source
+`32f3a4649632c5768b46430c13b4cb2a3546cfc3` with exact parents and the
+19 queued paths. Preserve source ancestry, run the four focused files /
+22 tests and workspace typecheck, then publish the I36 metadata-only release
+checkpoint and release the lease. Leave P23 migration and registration
+requests unapplied; perform no provider/send/external effect.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
