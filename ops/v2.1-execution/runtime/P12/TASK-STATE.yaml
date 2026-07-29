@@ -32,35 +32,35 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: ready_for_review
-phase: complete
+status: claimed
+phase: correction
 claim_mode: resume_existing_branch
-claimed_by: codex-p12-worker-eedf369a
-claim_time: '2026-07-29T04:05:54Z'
-claim_id: eedf369a-f247-481b-bca6-7e48abdf1f26
+claimed_by: codex-p12-worker-86e406be
+claim_time: '2026-07-29T04:30:11Z'
+claim_id: 86e406be-cec6-493e-a2a8-4d0744168ed9
 writer_slot_leases:
   - slot: PARENT_HOUSEHOLD_UI
-    lease_id: 3f2cd863-1f04-40fa-875b-87c14469a454
-    lease_issued_at: '2026-07-29T04:00:52Z'
-    lease_expires_at: '2026-07-29T05:00:52Z'
-    state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
-    phase_scope: hard_three_seat_and_lifecycle_idempotency_correction_claim_only
-    lease_released_at: '2026-07-29T04:19:12Z'
-    state: released
-lease_expires_at: '2026-07-29T05:00:52Z'
-lease_released_at: '2026-07-29T04:19:12Z'
-last_heartbeat_at: '2026-07-29T04:19:12Z'
-controller_authorization_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
-ready_entry_state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
-ready_entry_payload_digest: a9df3b69b8177c1e0e589109de5aff4260bdb99471f12ff7de0a915166824e8b
-state_based_on_head_sha: 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907
+    lease_id: 79c5cf83-4438-4c68-ba4f-8e18b87de1f4
+    lease_issued_at: '2026-07-29T04:24:36Z'
+    lease_expires_at: '2026-07-29T05:24:36Z'
+    state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
+    phase_scope: interface_digest_separator_metadata_correction_claim_only
+    state: active
+lease_expires_at: '2026-07-29T05:24:36Z'
+last_heartbeat_at: '2026-07-29T04:30:11Z'
+controller_authorization_sha: 5d2877fa0eb5071572c2c08bbe5f0169e27b12ba
+ready_entry_state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
+ready_entry_payload_digest: 8bb0d6d8bcc996fe9a50ebafec45046d3a65bad9cf85f193d90c083fc6b1eb30
+state_based_on_head_sha: 2faa49871ae34fa39e6387f264580e246244075b
 last_implementation_commit_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
 active_interface:
-  status: interface_ready
+  status: correction_required
   interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
   interface_checkpoint_sha: 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907
   semantic_contract_version: 1.0.1
   interface_checkpoint_digest: 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373
+  digest_status: invalid_literal_backslash_n_separator
+  expected_lf_digest: ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
 completed_steps:
   - Verified repository identity, exact containing control authorization ab393d7eb3b7f55b910ba110949c05c40b7383e6, sole acquisition parent 3c4130ae4d015471ce21e7d70a39d98dde113318, and exact authorized integration start f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635.
   - Verified the P12 task branch was absent locally and remotely before branch creation.
@@ -85,19 +85,22 @@ completed_steps:
   - Pushed and remote-verified exact corrected interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907.
   - Re-passed 3 focused files and 14 tests, workspace typecheck, all P12-focused ESLint and Prettier, exact 16-path scope, diff hygiene, and repository-wide secret scan across 2750 text files.
   - Released PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454 with no external effect attempted.
+  - Reproduced the published 7ac6f511 digest only with literal backslash-n separator bytes, proved the documented LF/no-final-newline preimage hashes to ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26, and reported the interface metadata defect without modifying the branch.
+  - Verified exact metadata-correction controller 5d2877fa0eb5071572c2c08bbe5f0169e27b12ba, sole parent/acquisition 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8, expected existing head 2faa49871ae34fa39e6387f264580e246244075b, claim 86e406be-cec6-493e-a2a8-4d0744168ed9, sole PARENT_HOUSEHOLD_UI lease 79c5cf83-4438-4c68-ba4f-8e18b87de1f4, and zero effect locks.
+  - Consumed the fresh metadata-correction authorization only in P12 TASK-STATE, HANDOFF, and NEXT-PROMPT; no interface, product, export, steward, migration, shared, or effect file was changed.
 remaining_steps:
-  - I36 must independently review and integrate corrected implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907.
-  - I36 must disposition registration request P12-registration-001 without weakening the corrected 1.0.1 contract.
-  - C00 may authorize P13 only after exact corrected P12 interface integration.
-next_action: I36 should review and integrate corrected implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907, reproduce semantic digest 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373, and disposition steward digest 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733.
+  - C00 must reconcile this exact three-file atomic metadata-correction claim.
+  - Only after reconciliation, correct INTERFACE-CHECKPOINT and runtime references from invalid 7ac6f511 to LF-derived ec615147 without changing product/export/steward artifacts.
+  - Reproduce all exact digests, publish ready_for_review, and release the fresh lease with zero effects.
+next_action: Stop after pushing and remote-verifying this exact three-file atomic metadata-correction claim; wait for C00 reconciliation before modifying INTERFACE-CHECKPOINT or any product/export/steward file.
 requirements:
-  OTV2-PARENT-031: ready_for_review
-  OTV2-PARENT-032: ready_for_review
-  OTV2-PARENT-033: ready_for_review
-  OTV2-PARENT-034: ready_for_review
-  OTV2-PARENT-035: ready_for_review
-  OTV2-PARENT-036: ready_for_review
-  OTV2-PARENT-040: ready_for_review
+  OTV2-PARENT-031: metadata_correction_claimed
+  OTV2-PARENT-032: metadata_correction_claimed
+  OTV2-PARENT-033: metadata_correction_claimed
+  OTV2-PARENT-034: metadata_correction_claimed
+  OTV2-PARENT-035: metadata_correction_claimed
+  OTV2-PARENT-036: metadata_correction_claimed
+  OTV2-PARENT-040: metadata_correction_claimed
 acceptance_cases:
   OTV2-PARENT-031-AC01: task_owned_assertions_passed
   OTV2-PARENT-032-AC01: task_owned_assertions_passed
@@ -163,6 +166,10 @@ verification:
       result: passed; exact interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907
     - command: final focused Vitest, workspace typecheck, all P12-focused ESLint and Prettier, exact scope, diff, and secret verification
       result: passed; 3 files/14 tests, 16 authorized paths, and secret scan across 2750 text files
+    - command: semantic digest separator reproduction
+      result: invalid published digest 7ac6f511 uses literal backslash-n bytes; exact documented LF preimage is 515 UTF-8 bytes with no final LF and hashes to ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
+    - command: metadata-correction controller/parent/head/claim/lease/effect verification
+      result: passed; exact controller 5d2877fa, parent 76c1c2d9, head 2faa4987, claim 86e406be, sole fresh lease 79c5cf83, and zero effects
   known_baseline_failures: []
 external_effects:
   authority: none
