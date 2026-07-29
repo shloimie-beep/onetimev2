@@ -24,45 +24,39 @@ dependency_heads:
   P13: a9d641e6da6a08c805f34d3f827816fcd8c6138a
   P25: 0979e151f80900cea75edecabe8967ce382d168d
   P26: 5e33807200a24ec53be889234dbaafdda9717dcb
-status: ready
-phase: release
-claimed_by: codex-i36-worker-d17f9dc5
-claim_time: '2026-07-29T05:56:20Z'
-claim_id: d17f9dc5-0f97-44ea-bb44-600c6c3635a3
-lease_id: 6077f8e5-c498-405e-9cd8-754340775f53
-lease_issued_at: '2026-07-29T05:46:11Z'
-lease_expires_at: '2026-07-29T06:46:11Z'
-lease_released_at: '2026-07-29T06:10:29Z'
-last_heartbeat_at: '2026-07-29T06:10:29Z'
-controller_authorization_sha: 44670793103e9f54476b76a038f962004dfed30c
-reconciled_state_based_on_control_head_sha: d4c8eada7e6d5d85b193ffc06b2124ac901bfd6f
-ready_entry_state_based_on_control_head_sha: d7df4df6954fcb3cdd06704461f86894285b09f6
-ready_entry_payload_digest: 080fac5c73a526228fc7a8b0c957389362942b7e094decedf1454066bff56862
+status: claimed
+phase: integration
+claimed_by: codex-i36-worker-4f275da3
+claim_time: '2026-07-29T09:46:42Z'
+claim_id: 4f275da3-6bac-4149-8f0d-42206f5d238e
+lease_id: 5f617e0e-7f87-4eba-9dd0-1361227d272a
+lease_issued_at: '2026-07-29T09:46:42Z'
+lease_expires_at: '2026-07-29T10:46:42Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T09:46:42Z'
+controller_authorization_sha: a5656cd0a327ee9af3485ab64025221cecf6ed0e
+reconciled_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+ready_entry_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+ready_entry_payload_digest: 732033d08cdaf7ed841579fe63545e9150fb9ffd8abe3204b74e09e780ba25f7
 claim_mode: resume_existing
-expected_existing_head_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
-lease_phase_scope: P13_P25_P26_full_atomic_claim_only
+expected_existing_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+lease_phase_scope: P23_full_integration_atomic_claim_only
 queued_merge_ids:
-  P13: bd4f6b09-a471-4673-b783-3235ad31adda
-  P25: 106dafb7-915d-4b6e-97b7-d7d97bf945cb
-  P26: 34c0cb63-ec36-46c0-ac0e-ae8b3a85fe26
+  P23: ceed4d92-af5a-413f-b9b3-034293e37caf
 queued_merge_item_payload_digests:
-  P13: fee466d093216e2121a08ef8395f7bc70b1c3887d451da952cc831285a5c5238
-  P25: 0f10a07accdbfa2a80b2dc5fe47037c23895ae9f881f2c9c63228a4240d46ec2
-  P26: ae0c21d8ddf513f8e7f61e077c1306781cdf7bad628a1f11a2632d4b020d69f7
+  P23: 841bb07ed93e0ac07d83d68d0af55c2fc952d1d6040763c73d142eb474b0260a
 queued_source_heads:
-  P13: a9d641e6da6a08c805f34d3f827816fcd8c6138a
-  P25: 0979e151f80900cea75edecabe8967ce382d168d
-  P26: 5e33807200a24ec53be889234dbaafdda9717dcb
-queued_expected_target_head_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
+  P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+queued_expected_target_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
 prior_merge_result_head_sha: 522fe505eca226ee7053e38bb67be5af78af79d6
 prior_release_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-merge_authorization_state_based_on_control_head_sha: 44670793103e9f54476b76a038f962004dfed30c
-lease_origin_state_based_on_control_head_sha: d4c8eada7e6d5d85b193ffc06b2124ac901bfd6f
-source_delta_base_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+merge_authorization_state_based_on_control_head_sha: a5656cd0a327ee9af3485ab64025221cecf6ed0e
+lease_origin_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
 merge_result_head_sha: 5016b50914c693b6ba123d29c82189263aa8781c
 merge_parent_target_head_sha: 2b5049e248dd48b9203daa2f55e2b24379af7d7b
 merge_parent_source_head_sha: 5e33807200a24ec53be889234dbaafdda9717dcb
-state_based_on_head_sha: 5016b50914c693b6ba123d29c82189263aa8781c
+state_based_on_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
 last_implementation_commit_sha: 5016b50914c693b6ba123d29c82189263aa8781c
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.

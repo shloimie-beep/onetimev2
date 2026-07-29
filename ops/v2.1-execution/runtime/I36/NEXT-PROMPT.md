@@ -1,25 +1,27 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: STOP
+MODE: START_OR_RESUME
 
-I36 completed the exact ordered P13/P25/P26 full-source wave and released claim
-d17f9dc5-0f97-44ea-bb44-600c6c3635a3 and RELEASE_INTEGRATOR lease
-6077f8e5-c498-405e-9cd8-754340775f53.
+Resume I36 only after C00 reconciles the exact pushed P23 atomic claim head.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Clean claim head: 4e17ad727b6f31f10985113fc24f187369a9e544
-Control: 44670793103e9f54476b76a038f962004dfed30c
-Acquisition: d4c8eada7e6d5d85b193ffc06b2124ac901bfd6f
+Expected pre-claim target: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+Containing authorization: a5656cd0a327ee9af3485ab64025221cecf6ed0e
+State-based acquisition: a035638772b356916d5c59e962212a24ad668890
+READY I36 digest: 732033d08cdaf7ed841579fe63545e9150fb9ffd8abe3204b74e09e780ba25f7
 
-Ordered merge heads:
+Claim: 4f275da3-6bac-4149-8f0d-42206f5d238e
+RELEASE_INTEGRATOR lease: 5f617e0e-7f87-4eba-9dd0-1361227d272a
+Lease expires: 2026-07-29T10:46:42Z
+Phase scope: P23_full_integration_atomic_claim_only
 
-- P13: 585d6fb268207c21c91873908e2b44e089583966
-- P25: 2b5049e248dd48b9203daa2f55e2b24379af7d7b
-- P26: 5016b50914c693b6ba123d29c82189263aa8781c
+P23 merge id: ceed4d92-af5a-413f-b9b3-034293e37caf
+P23 source: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+P23 merge digest: 841bb07ed93e0ac07d83d68d0af55c2fc952d1d6040763c73d142eb474b0260a
 
-Derive the final metadata release head with `git rev-parse HEAD` and reconcile
-it in C00. Do not resume I36, apply any P13 steward request, modify a migration
-or shared registration, perform provider work, or cause an external effect
-without new explicit authorization. Effects remain `0/0/0`.
+The current checkpoint is atomic-claim-only. Do not merge P23, edit product or
+tests, touch steward requests, apply migration or registration changes, perform
+provider work, or cause an external effect until a subsequent explicit resume.
+Effects remain `0/0/0`.

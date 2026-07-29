@@ -1,53 +1,43 @@
-# I36 P13/P25/P26 Ordered Full-Wave Release
+# I36 P23 Full-Integration Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Clean claim head: `4e17ad727b6f31f10985113fc24f187369a9e544`
-- Reconciled control / acquisition:
-  `44670793103e9f54476b76a038f962004dfed30c` /
-  `d4c8eada7e6d5d85b193ffc06b2124ac901bfd6f`
-- Claim / RELEASE_INTEGRATOR lease:
-  `d17f9dc5-0f97-44ea-bb44-600c6c3635a3` /
-  `6077f8e5-c498-405e-9cd8-754340775f53`
-- Lease released: `2026-07-29T06:10:29Z`
-- Final metadata release head: derive with `git rev-parse HEAD`; C00 records
-  the observed pushed remote head.
+- Exact existing target: `cecc1c0dc6ff57562e5d89dd731289d860086bf7`
+- Containing authorization: `a5656cd0a327ee9af3485ab64025221cecf6ed0e`
+- State-based acquisition: `a035638772b356916d5c59e962212a24ad668890`
+- READY I36 digest:
+  `732033d08cdaf7ed841579fe63545e9150fb9ffd8abe3204b74e09e780ba25f7`
+- P23 merge digest:
+  `841bb07ed93e0ac07d83d68d0af55c2fc952d1d6040763c73d142eb474b0260a`
+- Claim: `4f275da3-6bac-4149-8f0d-42206f5d238e`
+- RELEASE_INTEGRATOR lease: `5f617e0e-7f87-4eba-9dd0-1361227d272a`
+- Lease window: `2026-07-29T09:46:42Z` through
+  `2026-07-29T10:46:42Z`
+- Phase scope: `P23_full_integration_atomic_claim_only`
+- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
+  pushed remote head.
 
-## Ordered merge record
+## Authority verification
 
-1. P13 source `a9d641e6da6a08c805f34d3f827816fcd8c6138a`
-   merged at `585d6fb268207c21c91873908e2b44e089583966`, with
-   parents `4e17ad727b6f31f10985113fc24f187369a9e544` and the source.
-2. P25 source `0979e151f80900cea75edecabe8967ce382d168d`
-   merged after P13 at `2b5049e248dd48b9203daa2f55e2b24379af7d7b`,
-   with parents `585d6fb268207c21c91873908e2b44e089583966` and
-   the source.
-3. P26 source `5e33807200a24ec53be889234dbaafdda9717dcb`
-   merged after P25 at `5016b50914c693b6ba123d29c82189263aa8781c`,
-   with parents `2b5049e248dd48b9203daa2f55e2b24379af7d7b` and
-   the source.
+The fetched control branch exactly matched the containing authorization. Its
+sole parent exactly matched the state-based acquisition. The local, tracking,
+and remote integration target all exactly matched the authorized existing head.
+The canonical READY I36 and P23 merge-item payload digests were independently
+recomputed and matched the authorized values above.
 
-All rebound queue digests, exact 19/15/20-path scopes, required merge bases,
-task and state/handoff digests, and recorded artifact/steward aggregates were
-verified before merge.
+## Preserved state
 
-## Verification
-
-- P13 focused suite: 4 files, 11 tests passed.
-- P25 focused suite: 3 files, 13 tests passed.
-- P26 focused suite: 4 files, 11 tests passed.
-- Cumulative workspace typecheck passed.
-- Focused ESLint and Prettier passed.
-- Cumulative diff hygiene and repository secret scan passed.
-
-No P13 steward request, migration, shared registration, provider action, or
-external effect was attempted.
+This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md` in the I36 runtime directory. P23 was not merged. No product,
+test, steward-request, migration, registration, provider, or external-effect
+action was performed.
 
 ## Next action
 
-C00 should reconcile the exact pushed metadata release head and the three merge
-heads above. I36 must stop after reporting this checkpoint.
+C00 should reconcile the exact pushed atomic claim head. I36 must stop after
+reporting that checkpoint; P23 integration requires a subsequent explicit
+resume.
 
 ## Effects
 
