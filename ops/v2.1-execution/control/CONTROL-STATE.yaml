@@ -15,13 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 174bc6656fbc2a1c0526e7bdec0e361dfd1e7c35
+controller_authorization_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
 next_action: >-
-  F02 correction claim 1ab8243f is reconciled under claim 937b224d and shared MIGRATION_AUTHORITY /
-  SCHEMA_CONTRACT lease 08ae9549. F02 may now update only MIGRATION-ALLOCATIONS-PROPOSAL.yaml and its runtime
-  triplet: set checksum_sha256 to the exact native normalized-LF values, record explicit pg_mem_checksum_sha256
-  values, preserve SQL 2235 through 2238 byte-for-byte, format all four metadata files, re-run YAML/Prettier,
-  canonical Git-byte hash, disposable 69-migration first-apply/verify, static, scope, secret, package, and zero-effect
-  gates, release the lease, push, and stop for re-audit. No SQL edit, ordinal allocation, registration, provider
-  inspection, deployment, send, or external effect is authorized.
+  F02 correction caf4e2be passed checksum, scope, immutable-SQL, YAML, package, migration, and zero-effect gates but
+  failed canonical LF Git-byte Prettier on its four metadata paths. F02 may atomically claim exact head caf4e2be
+  under claim 7acb5991 and shared MIGRATION_AUTHORITY / SCHEMA_CONTRACT lease bf42793b by changing only its runtime
+  triplet, then stop for C00 reconciliation. It must preserve all checksum semantics and SQL bytes. No formatting
+  implementation, SQL edit, ordinal allocation, registration, provider inspection, deployment, send, or external
+  effect is authorized before claim reconciliation.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
