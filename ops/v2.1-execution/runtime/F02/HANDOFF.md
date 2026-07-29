@@ -1,55 +1,44 @@
-# F02 Lease A Atomic-Claim Handoff
+# F02 Migration Lease A Handoff
 
-## Identity
+## Released result
 
-- Branch: `codex/v21-f02-schema-state-migrations`
-- Atomic claim parent: `e4673ff1c2e621e26ac93034be245b280c4da4fa`
-- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
-- Authorized integration head: `26cbebdf828ba9ff485961adb4f90c460c2dbaf9`
-- Containing control authorization: `7f6f3508e188dfa1334b39e3ff00904feab47a0b`
-- Sole acquisition parent: `296b7002922504b10aa88f5bf6e8c9163ed10ec7`
-- Canonical READY digest: `c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501`
+- Atomic claim head: `0708a09e7d979a10cfe3c0875cebeecca64a2847`
+- Implementation commit: `7132cd81ea260558777859cd4c7485a357e8f5fb`
+- Containing control: `fa1330ff11955fe03ac9c1dfba8d29407cac11a8`
+- Sole control acquisition: `3143e8d0c93bfff3925edcd61500345bd92c621d`
 - Claim: `dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54`
-- Shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease: `59450be9-031a-4db8-aec1-9a584ba04f2f`
-- Lease interval: `2026-07-29T17:36:43Z` through `2026-07-29T18:51:43Z`
+- Shared lease: `59450be9-031a-4db8-aec1-9a584ba04f2f`
+- Released: `2026-07-29T18:44:30Z`, before expiry `2026-07-29T18:51:43Z`
+- External effects: attempted `0`, succeeded `0`, reconciled `0`
 
-## Atomic-claim state
+Lease A allocated only:
 
-This checkpoint claims only the F02 runtime triplet for
-`migration_lease_A_2235_2238`. It does not open requester bodies, edit
-`MIGRATION-ALLOCATIONS-PROPOSAL.yaml`, or author migration SQL.
+- `2235_v21_household_identity.sql` — `abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3`
+- `2236_v21_job_foundation.sql` — `4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd`
+- `2237_v21_calendar_recurrence.sql` — `6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea`
+- `2238_v21_provider_core.sql` — `58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367`
 
-The entry-bound package, task, context, control, F02/I36 state-handoff,
-allocation-proposal, and interface-checkpoint digests all match. The four
-opaque plan bindings resolve at their exact task heads, Git blobs, request IDs,
-and recorded raw or canonical-entry digests:
+The allocation proposal advances the next ordinal to `2239`. Ordinal `2231`
+remains forbidden. No applied migration, registration, package/barrel,
+provider, deployment, send, or other task path changed.
 
-- F04: `F04-migration-001`, blob `96be444f…`, digest `b42fe840…`
-- F05: `F05-MIGRATION-001`, blob `4707ff36…`, digest `450d1e4a…`
-- P15: `P15-MIGRATION-001`, blob `b4569eb4…`, digest `076e781f…`
-- F06: `F06-migration-001`, blob `d155c2a0…`, digest `06a329a0…`
+## Verification
 
-No requester content was displayed or semantically inspected during claim
-validation.
+The four immutable requests were read in exact F04, F05, P15, F06 order and
+matched their admitted task heads, Git blobs, IDs, and raw or canonical
+digests. A disposable pg-mem first application completed the full
+69-migration inventory through `2238` with harness-only registrations for
+missing built-ins `btrim`, `length`, and `cardinality`.
 
-## Ordinal and lock state
-
-Migration control reports `next_available_ordinal: 2235`; ordinal `2231`
-remains forbidden. Migration `2234_canonical_state_machines.sql` retains
-checksum `d1352c5e…`. Neither the exact F02 head nor the authorized integration
-head contains a `2235`, `2236`, `2237`, or `2238` migration filename.
-
-All 14 provider locks are unclaimed, READY contains no effect-lock lease, and
-external effects remain attempted `0`, succeeded `0`, reconciled `0`.
+The subsequent replay reached a known pg-mem planner/AST limitation on the
+pre-existing `CREATE TABLE IF NOT EXISTS onetime.schema_migrations` statement;
+the failure did not originate in migrations `2235` through `2238`. Independent
+audit must reproduce the clean first apply and assess replay using an isolated
+native PostgreSQL harness if one is safely available.
 
 ## Exact next action
 
-Stop after this atomic claim. C00 must reconcile the exact remote claim head
-before F02 reads the four requester bodies, edits the allocation proposal, or
-authors any SQL.
-
-## Security and scope
-
-No provider, credential, secret, customer data, persistent/shared database,
-deployment, send, or external effect was accessed. Only `TASK-STATE.yaml`,
-`HANDOFF.md`, and `NEXT-PROMPT.md` changed.
+Stop. Independent audit and C00 must verify the final remote head, exact
+eight-path delta, checksums, request semantics, disposable database result,
+static gates, released lease, and effects `0/0/0`. I36 integration requires a
+fresh C00 admission and atomic claim reconciliation.
