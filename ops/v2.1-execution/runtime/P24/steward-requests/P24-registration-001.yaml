@@ -1,0 +1,56 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P24-registration-001
+task_id: P24
+kind: registration
+requirement_ids:
+  - OTV2-TICKETS-147
+  - OTV2-TICKETS-148
+  - OTV2-TICKETS-149
+  - OTV2-TICKETS-150
+  - OTV2-TICKETS-151
+  - OTV2-TICKETS-152
+  - OTV2-TICKETS-186
+acceptance_case_ids:
+  - OTV2-TICKETS-147-AC01
+  - OTV2-TICKETS-148-AC01
+  - OTV2-TICKETS-149-AC01
+  - OTV2-TICKETS-150-AC01
+  - OTV2-TICKETS-151-AC01
+  - OTV2-TICKETS-152-AC01
+  - OTV2-TICKETS-186-AC01
+rationale: >-
+  P24 owns isolated contract, domain, repository, server, Admin UI, and Student
+  UI roots but not governed root barrels, authenticated composers, route
+  registries, worker registration, or provider configuration.
+desired_semantic_change: >-
+  Re-export and mount the additive P24 support modules only after the migration
+  is integrated. Derive actor, role, household, Student identity, and Admin
+  capability from the authenticated F03/F04 seams; register distinct Student
+  technical-support and Rabbi-question routes; register Admin list, assignment,
+  lifecycle, reply, audit, and adult-conversation-link commands; persist
+  Telegram output only through F05 local intents. Do not register a live sender.
+proposed_symbols_routes_keys_or_dependencies:
+  - re-export packages/contracts/src/support/v21.ts from the governed support contract barrel
+  - re-export packages/domain/src/support/v21-index.ts and packages/db/src/support/v21-index.ts from governed barrels
+  - register createAuthenticatedSupportFacade behind authenticated One Time session middleware
+  - mount AdminSupportWorkspace in the governed Admin support route
+  - mount StudentSupportCenter at /app/student/support and exact ticket routes
+  - retain the existing adult /app/support entry while adapting it to the v2.1 facade
+  - create a fresh browser idempotency key for each new logical submission and retain it across retry
+  - wire local notification intents to the governed F05 outbox only after migration integration
+  - do not add Telegram credentials, destination configuration, provider readback, sender registration, or live effects
+compatibility_assumptions:
+  - F03 and F04 supply authenticated exact role and household/Student scope.
+  - F05 supplies local command and outbox persistence.
+  - F07 supplies accessible role shells and Student navigation.
+verification_performed:
+  - focused seven-case lifecycle and authorization suite
+  - Admin and Student static-render UI assertions
+  - workspace typecheck and focused lint/format
+conflicts_or_risks:
+  - Route handlers must ignore browser-supplied actor, household, Student, and Admin-capability fields.
+  - The Rabbi operator must not gain technical-ticket access and a support operator must not gain private-question access.
+  - Parent household authority must not expose Student technical or Rabbi conversations.
+  - Sender/provider registration remains prohibited until exact external authority and an effect lock exist.
+contains_secret_or_private_data: false
