@@ -922,3 +922,13 @@ C00 authorized only a new-branch atomic claim on
 `3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709`.
 Its first push must contain only P13 `TASK-STATE.yaml`, `HANDOFF.md`, and
 `NEXT-PROMPT.md`, then stop for C00 reconciliation before product work.
+
+P13 atomic claim `645c41feff7ffa02b09647697764bf726a3380e9` is now
+independently reconciled: sole parent exact release `44fd5363`, exactly three
+P13 runtime files, containing authorization `86c4e9a6`, acquisition
+`f98ee8e7`, exact claim/lease/ready/P12/F07 bindings, clean remote state, and
+zero effects. P13 may implement only its locked Parent summary progress,
+schedule, and updates scope plus its task-local runtime and structured steward
+requests. It must not edit parent/support, migrations, central composers or
+registries, apply steward requests, perform provider work, or cause any
+external effect.

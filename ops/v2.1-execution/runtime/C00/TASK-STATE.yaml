@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-5181338c
-claim_time: '2026-07-29T05:11:30Z'
-claim_id: 5181338c-a0ac-414d-92cf-27727eb84a3c
-lease_expires_at: '2026-07-29T05:21:00Z'
-last_heartbeat_at: '2026-07-29T05:21:00Z'
-controller_authorization_sha: f98ee8e79018e5875e9c2be3d5961954b3c5ce04
+claimed_by: codex-c00-orchestrator-3a5f4d27
+claim_time: '2026-07-29T05:28:32Z'
+claim_id: 3a5f4d27-d9c6-43c2-987a-70b265bed42e
+lease_expires_at: '2026-07-29T05:30:00Z'
+last_heartbeat_at: '2026-07-29T05:30:00Z'
+controller_authorization_sha: b25e390ecae267d3bbf5f4f7ec33d49577d43568
 ready_entry_payload_digest: null
-state_based_on_head_sha: f98ee8e79018e5875e9c2be3d5961954b3c5ce04
+state_based_on_head_sha: b25e390ecae267d3bbf5f4f7ec33d49577d43568
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -235,8 +235,10 @@ completed_steps:
 - independently verified P25 claim 3b322e3b and P26 claim abb053f6 each have sole parent d075dc18, exactly three task-local runtime paths, exact authorization/acquisition/claim/lease/ready/dependency bindings, clean remote state, and zero effects
 - consumed P25 and P26 ready entries and authorized only their bounded owned-path implementations under unchanged disjoint leases with no provider, steward, migration, central-registration, or external-effect authority
 - authorized newly dependency-valid P13 from exact released integration head 44fd5363 only for atomic new-branch claim 183a8dcb under PARENT_SUMMARY_UI lease cef8335b and canonical ready digest 3bcc2c70
+- independently verified P13 atomic claim 645c41fe has sole parent 44fd5363, exactly three P13 runtime files, exact authorization/acquisition/claim/lease/ready/P12/F07 interface bindings, clean remote state, and zero effects
+- consumed the P13 ready entry and authorized only its locked Parent summary implementation under the unchanged PARENT_SUMMARY_UI lease with no product work outside owned paths, steward action, provider action, or external effect
 remaining_steps: []
-next_action: P13 publishes only its exact new-branch three-runtime-file atomic claim from released integration head 44fd5363; P25 and P26 resume only their bounded billing implementations from reconciled atomic claim heads; all steward actions and external effects remain unauthorized.
+next_action: P13 resumes only its locked Parent summary implementation from reconciled claim 645c41fe; P25 and P26 continue only their bounded billing implementations; all steward actions and external effects remain unauthorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -244,12 +246,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: f98ee8e79018e5875e9c2be3d5961954b3c5ce04
+  current_control_parent_sha: b25e390ecae267d3bbf5f4f7ec33d49577d43568
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 5181338c-a0ac-414d-92cf-27727eb84a3c
-      observed_head: f98ee8e79018e5875e9c2be3d5961954b3c5ce04
+      claim_id: 3a5f4d27-d9c6-43c2-987a-70b265bed42e
+      observed_head: b25e390ecae267d3bbf5f4f7ec33d49577d43568
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -429,10 +431,10 @@ orchestration:
     P13:
       branch: codex/v21-p13-parent-summary
       claim_id: 183a8dcb-d283-4e3e-b49b-790ca35e5f70
-      observed_head: null
+      observed_head: 645c41feff7ffa02b09647697764bf726a3380e9
       authorized_start_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
       lease_expires_at: '2026-07-29T06:11:30Z'
-      scheduling_state: atomic_claim_authorized
+      scheduling_state: claim_reconciled_bounded_implementation_authorized
     P22:
       branch: codex/v21-p22-learning-engagement
       claim_id: null
@@ -640,10 +642,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 61951c79fcd49442b123d17f7d1ce283d77f4f6a94b897f378281a11131fcb94
-    control_lease: 4bb8a3d119d1eed1665e14eb3d61eff562434aa6453713613f54b912c07b49bd
-    task_registry: b5e94ec7033286087898ce105946faaf4e75c1d9dbff636cc9b65757974a00b3
-    ready_queue: eab243d0143ebd30e3146a9b444bc90132ee08840c22d7c9766eab068c34dc53
+    control_state: ed58266c7edf4730aa21ea0b2c695e0924cbb541f4664524334d292068a40a5f
+    control_lease: e2860db3071cc43644d78fbfd31f405279244ddd115a843cc0fdb323ad0a02fd
+    task_registry: 4ce227c4af347d5680aedc36deb5ebb70f77e9c6c400df8aec6cafc01eb80ba5
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 0114ee435005854047e6c28da262176ecc334bd1b6302f478cba04bb11263d74
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -741,6 +743,8 @@ verification:
   - P25 claim 3b322e3b and P26 claim abb053f6 sole-parent ancestry, exact three-runtime-path scopes, authorization/acquisition/claim/lease/ready/dependency bindings, clean remote refs, and zero effects: passed
   - canonical P13 ready-entry digest 3bcc2c70 against renewal parent f98ee8e7, exact integration start 44fd5363, integrated P12/F07 interface bindings, sole PARENT_SUMMARY_UI lease, absent branch, and zero effects: passed
   - completed merge queue clearance, P12/P22/P34 integration evidence, P25/P26 claim consumption, released C00 lease, and control raw SHA-256 bindings: passed
+  - P13 claim 645c41fe sole-parent ancestry, exact three-runtime-path scope, authorization/acquisition/claim/lease/ready/P12/F07 interface bindings, clean remote ref, and zero effects: passed
+  - P13 ready-entry consumption, released C00 lease, registry transition, empty ready queue, and control raw SHA-256 bindings: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
