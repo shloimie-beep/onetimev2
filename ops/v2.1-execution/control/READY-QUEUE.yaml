@@ -2,81 +2,8 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready:
-- task_id: F02
-  status: resume_ready
-  phase: migration_lease_A_canonical_format_correction
-  branch: codex/v21-f02-schema-state-migrations
-  claim_mode: resume_existing
-  state_based_on_control_head_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
-  authorized_start_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
-  expected_existing_head: caf4e2be5776c9f33c5d07ff6eef79ab411f9477
-  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
-  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
-  dependency_heads_and_digests:
-    C00:
-      required_state: operational
-      observed_state: operational
-      observed_control_head_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
-      control_state_digest: 4e338aa5372b202a1be9d0ea11064e0a7a83067006d5edaee0aee8d1d1fc3513
-    I36:
-      required_state: P18_collision_correction_released
-      observed_state: P18_collision_correction_released
-      observed_integration_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
-      state_handoff_digest: ca4b1d99813dddff0f81d551683dbd57d98c8d55c73514bb42c7bd88b0d5b475
-    F02:
-      required_state: lease_A_metadata_correct_formatting_required
-      observed_state: lease_A_metadata_correct_formatting_required
-      observed_task_head_sha: caf4e2be5776c9f33c5d07ff6eef79ab411f9477
-      state_handoff_digest: ea26d3c652e6d901ab0776bbb893bb43e51d74759638f11c4f35500e90016791
-      triplet_digest: 44366ebc9f2f12928b77a8ac6e033af79555f5251ea2e29dad02289213b26998
-      eight_path_manifest_digest: 553436dd4de2f4ed9c6e0be9001435a656da0dc089aae224c74e00212934df54
-  correction_constraints:
-    authorized_claim_paths:
-    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
-    - ops/v2.1-execution/runtime/F02/HANDOFF.md
-    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
-    authorized_implementation_paths:
-    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
-    - ops/v2.1-execution/runtime/F02/HANDOFF.md
-    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
-    required_action: Format canonical LF Git content for all four metadata paths with repository Prettier after claim reconciliation; retain exact native and pg-mem checksum pairs and semantic content.
-    protected_sql_paths:
-    - packages/db/migrations/2235_v21_household_identity.sql
-    - packages/db/migrations/2236_v21_job_foundation.sql
-    - packages/db/migrations/2237_v21_calendar_recurrence.sql
-    - packages/db/migrations/2238_v21_provider_core.sql
-    forbidden_actions: No checksum semantic change; no SQL or applied-migration edit; no ordinal allocation; no request, package, barrel, registration, provider, deployment, send, or external effect.
-  writer_slot_leases:
-  - slot: MIGRATION_AUTHORITY
-    lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
-    holder_task_id: F02
-    holder_claim_id: 7acb5991-7704-4a6f-b590-020e47824876
-    state_based_on_control_head_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
-    lease_issued_at: '2026-07-29T19:47:22Z'
-    lease_expires_at: '2026-07-29T21:02:22Z'
-    phase_scope: F02_lease_A_canonical_format_correction_atomic_claim_only
-  - slot: SCHEMA_CONTRACT
-    lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
-    holder_task_id: F02
-    holder_claim_id: 7acb5991-7704-4a6f-b590-020e47824876
-    state_based_on_control_head_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
-    lease_issued_at: '2026-07-29T19:47:22Z'
-    lease_expires_at: '2026-07-29T21:02:22Z'
-    phase_scope: F02_lease_A_canonical_format_correction_atomic_claim_only
-  effect_lock_leases: []
-  claim_id: 7acb5991-7704-4a6f-b590-020e47824876
-  lease_issued_at: '2026-07-29T19:47:22Z'
-  lease_expires_at: '2026-07-29T21:02:22Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: XHIGH
-entry_payload_digests:
-  F02: 40b3587f43321e1682abe17477310cedb20ea4c5d44cb353ee2a0480a440c21c
+ready: []
+entry_payload_digests: {}
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

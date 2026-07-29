@@ -15,12 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: da6645bf7da80b4f5bc2dc8ab13ff940ad5ac662
+controller_authorization_sha: c9b0f526907d62f782ef3d44a752a9467d03e986
 next_action: >-
-  F02 correction caf4e2be passed checksum, scope, immutable-SQL, YAML, package, migration, and zero-effect gates but
-  failed canonical LF Git-byte Prettier on its four metadata paths. F02 may atomically claim exact head caf4e2be
-  under claim 7acb5991 and shared MIGRATION_AUTHORITY / SCHEMA_CONTRACT lease bf42793b by changing only its runtime
-  triplet, then stop for C00 reconciliation. It must preserve all checksum semantics and SQL bytes. No formatting
-  implementation, SQL edit, ordinal allocation, registration, provider inspection, deployment, send, or external
-  effect is authorized before claim reconciliation.
+  F02 canonical-format claim e669c0e8 is reconciled under claim 7acb5991 and shared MIGRATION_AUTHORITY /
+  SCHEMA_CONTRACT lease bf42793b. F02 may now apply repository Prettier with forced LF output only to
+  MIGRATION-ALLOCATIONS-PROPOSAL.yaml and its runtime triplet, preserving checksum semantics and SQL bytes. It must
+  validate formatting from a fresh canonical LF Git archive, YAML, exact four-path scope, protected SQL/checksum
+  hashes, package Git bytes, secret scan, diff hygiene, lease release, and effects 0/0/0, then push and stop for
+  independent re-audit. No SQL edit, ordinal allocation, registration, provider inspection, deployment, send, or
+  external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
