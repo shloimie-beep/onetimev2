@@ -1,26 +1,49 @@
-import type {
-  FamilySignupCommand,
-  FamilySignupOutboxIntent,
-  FamilySignupResult,
-  FamilySignupScope,
+import {
+  FAMILY_SIGNUP_OPERATION,
+  type FamilySignupCommand,
+  type FamilySignupOutboxIntent,
+  type FamilySignupReceipt,
+  type FamilySignupRequestBinding,
+  type FamilySignupResult,
+  type FamilySignupScope,
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
 import {
+  assertFamilySignupEnvelope,
+  canonicalizeFamilySignupRequest,
   planFamilySignup,
-  type ExistingFamilyIdentity,
+  type CanonicalFamilySignupRequest,
+  type ExistingFamilyLocalState,
   type FamilySignupGhlEvidence,
   type FamilySignupRecoveryRecord,
 } from '../../../../../../../packages/domain/src/signup/family/index.ts';
 
 export interface FamilySignupTransaction {
-  findRequest(idempotencyKey: string): Promise<FamilySignupRecoveryRecord | null>;
-  findIdentity(normalizedEmail: string): Promise<ExistingFamilyIdentity | null>;
-  readGhlEvidence(normalizedEmailHash: string): Promise<FamilySignupGhlEvidence>;
-  commit(input: {
+  /**
+   * Locks the globally unique key and returns any prior receipt, including a
+   * receipt from another scope so the service can reject cross-scope replay.
+   */
+  findRequest(input: {
     scope: FamilySignupScope;
-    command: Omit<FamilySignupCommand, 'password'>;
-    password_hash: string | null;
-    result: FamilySignupResult;
+    operation: typeof FAMILY_SIGNUP_OPERATION;
+    idempotency_key: string;
+  }): Promise<FamilySignupRecoveryRecord | null>;
+  readLocalState(input: {
+    scope: FamilySignupScope;
+    operation: typeof FAMILY_SIGNUP_OPERATION;
+    normalized_email: string;
+  }): Promise<ExistingFamilyLocalState>;
+  readGhlEvidence(input: {
+    scope: FamilySignupScope;
+    operation: typeof FAMILY_SIGNUP_OPERATION;
+    normalized_email_hash: string;
+  }): Promise<FamilySignupGhlEvidence>;
+  commit(input: {
+    request_binding: FamilySignupRequestBinding;
+    request: CanonicalFamilySignupRequest;
+    password_hash: string;
+    receipt: FamilySignupReceipt;
     outbox_intents: readonly FamilySignupOutboxIntent[];
+    session_creation_required: boolean;
     ghl_identity_state: 'unlinked' | 'linked' | 'identity_review';
     ghl_contact_ref_hash: string | null;
   }): Promise<void>;
@@ -33,13 +56,22 @@ export interface FamilySignupRepository {
 export interface FamilySignupServiceDependencies {
   repository: FamilySignupRepository;
   hashPassword(password: string): Promise<string>;
-  normalizeEmail(email: string): string;
+  /**
+   * Returns a keyed, server-only deterministic SHA-256 fingerprint. It is used
+   * only in the semantic request digest and is never authentication material.
+   */
+  fingerprintPasswordForIdempotency(password: string): Promise<string>;
   allocateIds(): {
     adult_id: string;
     human_account_id: string;
     household_id: string;
   };
 }
+
+const EMPTY_LOCAL_STATE: ExistingFamilyLocalState = {
+  identity: null,
+  household: null,
+};
 
 export function createFamilySignupService(dependencies: FamilySignupServiceDependencies) {
   return {
@@ -48,37 +80,92 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
       command: FamilySignupCommand;
       now: Date;
     }): Promise<FamilySignupResult> {
-      const normalizedEmail = dependencies.normalizeEmail(input.command.email);
-      const normalizedEmailHash = await sha256(normalizedEmail);
-      const ids = dependencies.allocateIds();
+      assertFamilySignupEnvelope(input.scope, input.command);
+      const passwordFingerprint = await dependencies.fingerprintPasswordForIdempotency(
+        input.command.password,
+      );
+      const canonical = canonicalizeFamilySignupRequest(
+        input.scope,
+        input.command,
+        passwordFingerprint,
+      );
+
       return dependencies.repository.transaction(async (tx) => {
-        const [existingRequest, existingIdentity, ghlEvidence] = await Promise.all([
-          tx.findRequest(input.command.idempotency_key),
-          tx.findIdentity(normalizedEmail),
-          tx.readGhlEvidence(normalizedEmailHash),
-        ]);
+        const existingRequest = await tx.findRequest({
+          scope: input.scope,
+          operation: FAMILY_SIGNUP_OPERATION,
+          idempotency_key: input.command.idempotency_key,
+        });
+        if (existingRequest) {
+          return planFamilySignup({
+            scope: input.scope,
+            request_binding: canonical.request_binding,
+            command: input.command,
+            normalized_email: canonical.request.normalized_email,
+            now: input.now,
+            proposed_adult_id: '',
+            proposed_human_account_id: '',
+            proposed_household_id: '',
+            existing_local_state: EMPTY_LOCAL_STATE,
+            existing_request: existingRequest,
+            ghl_evidence: null,
+          }).result;
+        }
+
+        const existingLocalState = await tx.readLocalState({
+          scope: input.scope,
+          operation: FAMILY_SIGNUP_OPERATION,
+          normalized_email: canonical.request.normalized_email,
+        });
+        if (existingLocalState.identity !== null || existingLocalState.household !== null) {
+          return planFamilySignup({
+            scope: input.scope,
+            request_binding: canonical.request_binding,
+            command: input.command,
+            normalized_email: canonical.request.normalized_email,
+            now: input.now,
+            proposed_adult_id: '',
+            proposed_human_account_id: '',
+            proposed_household_id: '',
+            existing_local_state: existingLocalState,
+            existing_request: null,
+            ghl_evidence: null,
+          }).result;
+        }
+
+        const normalizedEmailHash = await sha256(canonical.request.normalized_email);
+        const ghlEvidence = await tx.readGhlEvidence({
+          scope: input.scope,
+          operation: FAMILY_SIGNUP_OPERATION,
+          normalized_email_hash: normalizedEmailHash,
+        });
+        const ids = dependencies.allocateIds();
         const plan = planFamilySignup({
+          scope: input.scope,
+          request_binding: canonical.request_binding,
           command: input.command,
+          normalized_email: canonical.request.normalized_email,
           now: input.now,
           proposed_adult_id: ids.adult_id,
           proposed_human_account_id: ids.human_account_id,
           proposed_household_id: ids.household_id,
-          existing_identity: existingIdentity,
-          existing_request: existingRequest,
+          existing_local_state: existingLocalState,
+          existing_request: null,
           ghl_evidence: ghlEvidence,
         });
-        if (!plan.local_write_required) return plan.result;
-        const passwordHash = plan.credential_write_required
-          ? await dependencies.hashPassword(input.command.password)
-          : null;
-        const { password: _password, ...safeCommand } = input.command;
-        void _password;
-        await tx.commit({
-          scope: input.scope,
-          command: safeCommand,
-          password_hash: passwordHash,
+        const passwordHash = await dependencies.hashPassword(input.command.password);
+        const receipt: FamilySignupReceipt = {
+          request_binding: canonical.request_binding,
           result: plan.result,
           outbox_intents: plan.outbox_intents,
+        };
+        await tx.commit({
+          request_binding: canonical.request_binding,
+          request: canonical.request,
+          password_hash: passwordHash,
+          receipt,
+          outbox_intents: plan.outbox_intents,
+          session_creation_required: plan.session_write_required,
           ghl_identity_state: plan.ghl_identity_state,
           ghl_contact_ref_hash: plan.ghl_contact_ref_hash,
         });

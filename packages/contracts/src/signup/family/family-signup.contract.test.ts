@@ -2,9 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   FAMILY_FREE_EXPIRY,
   FAMILY_SIGNUP_CLASSIFICATIONS,
+  FAMILY_SIGNUP_CONTRACT_VERSION,
   FAMILY_SIGNUP_COPY,
   FAMILY_SIGNUP_FIELDS,
   FAMILY_SIGNUP_FORBIDDEN_FIELDS,
+  FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH,
+  FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH,
+  FAMILY_SIGNUP_OPERATION,
   FAMILY_SIGNUP_SECURITY_INVARIANTS,
 } from './index.ts';
 
@@ -22,6 +26,10 @@ describe('P08 family signup contract', () => {
   });
 
   it('keeps the Family form cardless and local-first', () => {
+    expect(FAMILY_SIGNUP_CONTRACT_VERSION).toBe('1.1.0');
+    expect(FAMILY_SIGNUP_OPERATION).toBe('public_family_signup');
+    expect(FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH).toBe(43);
+    expect(FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH).toBe(128);
     expect(FAMILY_SIGNUP_FIELDS).toEqual([
       'classification',
       'first_name',
@@ -39,6 +47,12 @@ describe('P08 family signup contract', () => {
       provider_failure_rolls_back_local_signup: false,
       one_normalized_email_one_adult: true,
       duplicate_response_is_generic: true,
+      existing_local_account_signup_writes: 0,
+      existing_local_household_signup_writes: 0,
+      idempotency_key_is_high_entropy_server_required: true,
+      canonical_request_digest_is_server_computed: true,
+      request_receipt_and_outbox_are_scope_operation_bound: true,
+      idempotency_key_is_not_authentication: true,
     });
   });
 });

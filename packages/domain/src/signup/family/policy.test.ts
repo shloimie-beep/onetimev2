@@ -1,12 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import type { FamilySignupCommand } from '../../../../contracts/src/signup/family/index.ts';
-import { planFamilySignup, type PlanFamilySignupInput } from './policy.ts';
+import type {
+  FamilySignupCommand,
+  FamilySignupScope,
+} from '../../../../contracts/src/signup/family/index.ts';
+import {
+  canonicalizeFamilySignupRequest,
+  planFamilySignup,
+  type PlanFamilySignupInput,
+} from './policy.ts';
 
 const h = (value: string) => value.repeat(64);
+const scope: FamilySignupScope = {
+  product: 'one_time_mishnayos',
+  runtime_tier: 'isolated_staging',
+  verification_environment_id: 'ci',
+};
+const idempotencyKey = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg';
 const command = (): FamilySignupCommand => ({
   classification: 'family',
-  idempotency_key: 'signup_request_1',
-  canonical_request_hash: h('a'),
+  idempotency_key: idempotencyKey,
   first_name: 'Ari',
   last_name: 'Levi',
   email: ' Ari@Example.com ',
@@ -15,23 +27,29 @@ const command = (): FamilySignupCommand => ({
   terms_accepted: true,
   privacy_accepted: true,
 });
-const input = (now: string): PlanFamilySignupInput => ({
-  command: command(),
-  now: new Date(now),
-  proposed_adult_id: 'adult_1',
-  proposed_human_account_id: 'account_1',
-  proposed_household_id: 'household_1',
-  existing_identity: null,
-  existing_request: null,
-  ghl_evidence: {
-    verified_contact_ref_hash: null,
-    verified_contact_email_hash: null,
-    exact_email_match_ref_hashes: [],
-    marketing_suppressed: true,
-    service_suppressed: false,
-    suppression_evidence_digest: h('b'),
-  },
-});
+const input = (now: string, signupCommand = command()): PlanFamilySignupInput => {
+  const canonical = canonicalizeFamilySignupRequest(scope, signupCommand, h('a'));
+  return {
+    scope,
+    request_binding: canonical.request_binding,
+    command: signupCommand,
+    normalized_email: canonical.request.normalized_email,
+    now: new Date(now),
+    proposed_adult_id: 'adult_1',
+    proposed_human_account_id: 'account_1',
+    proposed_household_id: 'household_1',
+    existing_local_state: { identity: null, household: null },
+    existing_request: null,
+    ghl_evidence: {
+      verified_contact_ref_hash: null,
+      verified_contact_email_hash: null,
+      exact_email_match_ref_hashes: [],
+      marketing_suppressed: true,
+      service_suppressed: false,
+      suppression_evidence_digest: h('b'),
+    },
+  };
+};
 
 describe('P08 family signup policy', () => {
   it('grants cardless free access only before the fixed expiry', () => {
@@ -44,7 +62,7 @@ describe('P08 family signup policy', () => {
       normalized_email: 'ari@example.com',
     });
     expect(before.result.next_action).toBe('signed_in');
-    expect(before.result.setup_email_required).toBe(false);
+    expect(before.session_write_required).toBe(true);
 
     for (const instant of ['2026-09-13T16:24:00.000Z', '2026-09-13T16:24:01.000Z']) {
       const after = planFamilySignup(input(instant));
@@ -57,75 +75,111 @@ describe('P08 family signup policy', () => {
     }
   });
 
-  it('returns a generic safe path for an existing active Family account', () => {
-    const duplicate = input('2026-09-13T00:00:00.000Z');
-    duplicate.existing_identity = {
-      adult_id: 'adult_existing',
-      human_account_id: 'account_existing',
-      normalized_email: 'ari@example.com',
-      active_family_household_id: 'household_existing',
-    };
-    const plan = planFamilySignup(duplicate);
-    expect(plan.result).toMatchObject({
-      disposition: 'existing_account',
-      next_action: 'sign_in_or_reset',
-      projection: null,
-    });
-    expect(plan.local_write_required).toBe(false);
-    expect(plan.outbox_intents).toEqual([]);
+  it('returns the same generic zero-write result for every local HumanAccount state', () => {
+    for (const humanAccountState of ['invited', 'active', 'disabled', 'archived'] as const) {
+      const duplicate = input('2026-09-13T00:00:00.000Z');
+      duplicate.existing_local_state.identity = {
+        adult_id: `adult_${humanAccountState}`,
+        human_account_id: `account_${humanAccountState}`,
+        normalized_email: 'ari@example.com',
+        human_account_state: humanAccountState,
+      };
+      const plan = planFamilySignup(duplicate);
+      expect(plan.result).toEqual({
+        disposition: 'existing_account',
+        projection: null,
+        next_action: 'sign_in_or_reset',
+        setup_email_required: false,
+        provider_effects_completed_inline: 0,
+        outbox_intent_ids: [],
+        safe_message: 'Sign in or reset your password to continue.',
+      });
+      expect(plan).toMatchObject({
+        local_write_required: false,
+        credential_write_required: false,
+        session_write_required: false,
+      });
+      expect(plan.outbox_intents).toEqual([]);
+    }
   });
 
-  it('links an existing adult without creating another identity and matches GHL by email', () => {
+  it('rejects duplicate active, expired, archived, and inactive Family households', () => {
+    for (const lifecycleState of ['active', 'expired', 'archived', 'inactive'] as const) {
+      const duplicate = input('2026-09-13T00:00:00.000Z');
+      duplicate.existing_local_state.household = {
+        household_id: `household_${lifecycleState}`,
+        lifecycle_state: lifecycleState,
+      };
+      const plan = planFamilySignup(duplicate);
+      expect(plan.result).toMatchObject({
+        disposition: 'existing_account',
+        projection: null,
+        next_action: 'sign_in_or_reset',
+      });
+      expect(plan.local_write_required).toBe(false);
+      expect(plan.session_write_required).toBe(false);
+    }
+  });
+
+  it('allows a GHL-only match to create fresh local identity and access', () => {
     const linked = input('2026-09-13T00:00:00.000Z');
-    linked.existing_identity = {
-      adult_id: 'adult_existing',
-      human_account_id: 'account_existing',
-      normalized_email: 'ari@example.com',
-      active_family_household_id: null,
-    };
-    linked.ghl_evidence.exact_email_match_ref_hashes = [h('c')];
+    linked.ghl_evidence!.exact_email_match_ref_hashes = [h('c')];
     const plan = planFamilySignup(linked);
     expect(plan.result.projection).toMatchObject({
-      adult_id: 'adult_existing',
-      human_account_id: 'account_existing',
+      adult_id: 'adult_1',
+      human_account_id: 'account_1',
     });
-    expect(plan.credential_write_required).toBe(false);
+    expect(plan.credential_write_required).toBe(true);
     expect(plan.ghl_identity_state).toBe('linked');
-    expect(plan.ghl_contact_ref_hash).toBe(h('c'));
+    expect(plan.outbox_intents[0]?.request_binding).toEqual(linked.request_binding);
   });
 
-  it('keeps local access while quarantining ambiguous GHL matches', () => {
-    const ambiguous = input('2026-09-13T00:00:00.000Z');
-    ambiguous.ghl_evidence.exact_email_match_ref_hashes = [h('c'), h('d')];
-    const plan = planFamilySignup(ambiguous);
-    expect(plan.result.projection?.access_state).toBe('free');
-    expect(plan.ghl_identity_state).toBe('identity_review');
-    expect(plan.ghl_sync_quarantined).toBe(true);
-  });
-
-  it('recovers the same request and rejects a changed replay key payload', () => {
+  it('recovers only an exact scope, operation, key, and semantic digest binding', () => {
     const first = input('2026-09-13T00:00:00.000Z');
     const applied = planFamilySignup(first);
     const retry = input('2026-09-13T00:00:00.000Z');
     retry.existing_request = {
-      idempotency_key: retry.command.idempotency_key,
-      canonical_request_hash: retry.command.canonical_request_hash,
-      result: applied.result,
-      outbox_intents: applied.outbox_intents,
+      receipt: {
+        request_binding: first.request_binding,
+        result: applied.result,
+        outbox_intents: applied.outbox_intents,
+      },
     };
     expect(planFamilySignup(retry).result.disposition).toBe('recovered');
-    retry.command.canonical_request_hash = h('e');
-    expect(() => planFamilySignup(retry)).toThrow('idempotency_conflict');
+
+    const changedName = input('2026-09-13T00:00:00.000Z', {
+      ...command(),
+      first_name: 'Aharon',
+    });
+    changedName.existing_request = retry.existing_request;
+    expect(() => planFamilySignup(changedName)).toThrow('idempotency_conflict');
+
+    const crossScope = input('2026-09-13T00:00:00.000Z');
+    crossScope.scope = {
+      product: 'one_time_mishnayos',
+      runtime_tier: 'production',
+      verification_environment_id: 'production_read_only',
+    };
+    crossScope.request_binding = canonicalizeFamilySignupRequest(
+      crossScope.scope,
+      crossScope.command,
+      h('a'),
+    ).request_binding;
+    crossScope.existing_request = retry.existing_request;
+    expect(() => planFamilySignup(crossScope)).toThrow('idempotency_conflict');
   });
 
-  it('rejects missing, unsupported, and hybrid direct API classifications before a write', () => {
-    for (const classification of [undefined, 'hybrid', ['family', 'school']]) {
-      const invalid = input('2026-09-13T00:00:00.000Z');
-      Object.assign(invalid.command, { classification });
-      expect(() => planFamilySignup(invalid)).toThrow('invalid_family_signup');
-    }
-    const hybrid = input('2026-09-13T00:00:00.000Z');
-    Object.assign(hybrid.command, { school_name: 'Hybrid School' });
-    expect(() => planFamilySignup(hybrid)).toThrow('invalid_family_signup');
+  it('fails closed on short keys, caller hashes, and hybrid classifications', () => {
+    const shortKey = command();
+    shortKey.idempotency_key = 'short';
+    expect(() => input('2026-09-13T00:00:00.000Z', shortKey)).toThrow('invalid_family_signup');
+
+    const spoofed = command() as FamilySignupCommand & { canonical_request_hash: string };
+    spoofed.canonical_request_hash = h('f');
+    expect(() => input('2026-09-13T00:00:00.000Z', spoofed)).toThrow('invalid_family_signup');
+
+    const hybrid = command();
+    Object.assign(hybrid, { school_name: 'Hybrid School' });
+    expect(() => input('2026-09-13T00:00:00.000Z', hybrid)).toThrow('invalid_family_signup');
   });
 });

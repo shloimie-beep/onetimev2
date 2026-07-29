@@ -1,6 +1,9 @@
 import type { RuntimeTier, VerificationEnvironmentId } from '../../state/index.ts';
 
-export const FAMILY_SIGNUP_CONTRACT_VERSION = '1.0.0' as const;
+export const FAMILY_SIGNUP_CONTRACT_VERSION = '1.1.0' as const;
+export const FAMILY_SIGNUP_OPERATION = 'public_family_signup' as const;
+export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH = 43 as const;
+export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH = 128 as const;
 export const FAMILY_SIGNUP_CLASSIFICATIONS = ['family', 'school'] as const;
 export type FamilySignupClassification = (typeof FAMILY_SIGNUP_CLASSIFICATIONS)[number];
 
@@ -44,7 +47,6 @@ export const FAMILY_SIGNUP_FORBIDDEN_FIELDS = [
 export interface FamilySignupCommand {
   classification: 'family';
   idempotency_key: string;
-  canonical_request_hash: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -57,7 +59,6 @@ export interface FamilySignupCommand {
 export interface SchoolInquiryCommand {
   classification: 'school';
   idempotency_key: string;
-  canonical_request_hash: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -78,6 +79,13 @@ export interface FamilySignupScope {
   verification_environment_id: VerificationEnvironmentId;
 }
 
+export interface FamilySignupRequestBinding {
+  scope: FamilySignupScope;
+  operation: typeof FAMILY_SIGNUP_OPERATION;
+  idempotency_key: string;
+  canonical_request_digest: string;
+}
+
 export interface FamilySignupLocalProjection {
   adult_id: string;
   human_account_id: string;
@@ -96,6 +104,7 @@ export interface FamilySignupLocalProjection {
 export interface FamilySignupOutboxIntent {
   intent_id: string;
   kind: 'ghl_adult_and_household_sync';
+  request_binding: FamilySignupRequestBinding;
   adult_id: string;
   household_id: string;
   normalized_email_hash: string;
@@ -113,6 +122,12 @@ export interface FamilySignupResult {
   safe_message: string;
 }
 
+export interface FamilySignupReceipt {
+  request_binding: FamilySignupRequestBinding;
+  result: FamilySignupResult;
+  outbox_intents: readonly FamilySignupOutboxIntent[];
+}
+
 export const FAMILY_SIGNUP_SECURITY_INVARIANTS = {
   local_commit_precedes_provider_effects: true,
   provider_failure_rolls_back_local_signup: false,
@@ -122,4 +137,10 @@ export const FAMILY_SIGNUP_SECURITY_INVARIANTS = {
   signup_form_card_fields: 0,
   setup_email_required_for_fresh_signup: false,
   duplicate_response_is_generic: true,
+  existing_local_account_signup_writes: 0,
+  existing_local_household_signup_writes: 0,
+  idempotency_key_is_high_entropy_server_required: true,
+  canonical_request_digest_is_server_computed: true,
+  request_receipt_and_outbox_are_scope_operation_bound: true,
+  idempotency_key_is_not_authentication: true,
 } as const;
