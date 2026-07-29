@@ -751,6 +751,51 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
+- request_id: P13-client-route-001
+  request_digest: 8ec9bd96e810db78517f385bbbbb05788a4b24eaaff72f3e654a10b3dd4bd0c5
+  requesting_task_id: P13
+  kind: client_route_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P13-contract-barrel-001
+  request_digest: c0f7b1f72509a0e76c93fe66e847f82ce531239881876aad85010db947b51763
+  requesting_task_id: P13
+  kind: barrel_export
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P13-server-registration-001
+  request_digest: a651f04b4f51a5f7f9390cebe4f80a89c9cc53adc7bfba3192ef2bc7cef4c067
+  requesting_task_id: P13
+  kind: server_feature_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null

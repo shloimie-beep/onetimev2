@@ -656,3 +656,26 @@ migrations, central composers/registries, steward application, providers, and
 effects are excluded. Run focused positive and negative tests plus typecheck,
 refresh exact artifact/state/handoff/steward digests, release the lease,
 publish ready_for_review, remote-verify, and stop with effects `0/0/0`.
+
+P13 `a9d641e6da6a08c805f34d3f827816fcd8c6138a`, P25
+`0979e151f80900cea75edecabe8967ce382d168d`, and P26
+`5e33807200a24ec53be889234dbaafdda9717dcb` are admitted and queued for
+ordered full-source integration. Do not apply P13's three assigned steward
+requests in this wave.
+
+For I36, publish only atomic integration claim
+`d17f9dc5-0f97-44ea-bb44-600c6c3635a3` from exact target
+`44fd536381e7af8885f31247d6bf91dd6266b195`, binding acquisition
+`d7df4df6954fcb3cdd06704461f86894285b09f6`, RELEASE_INTEGRATOR lease
+`6077f8e5-c498-405e-9cd8-754340775f53`, and ready digest
+`080fac5c73a526228fc7a8b0c957389362942b7e094decedf1454066bff56862`.
+Change only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, push,
+remote-verify, and stop for C00 reconciliation before merging.
+
+The queued order and initial canonical merge digests are P13
+`bd4f6b09-a471-4673-b783-3235ad31adda` / `3c35d48d`, P25
+`106dafb7-915d-4b6e-97b7-d7d97bf945cb` / `677c7638`, then P26
+`34c0cb63-ec36-46c0-ac0e-ae8b3a85fe26` / `1692243e`. No source merge,
+steward application, migration, central registration, provider action, or
+external effect is authorized until the atomic claim is reconciled and all
+three optimistic target heads are rebound.

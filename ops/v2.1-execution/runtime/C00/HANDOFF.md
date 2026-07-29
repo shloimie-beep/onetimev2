@@ -932,3 +932,26 @@ schedule, and updates scope plus its task-local runtime and structured steward
 requests. It must not edit parent/support, migrations, central composers or
 registries, apply steward requests, perform provider work, or cause any
 external effect.
+
+P13 final `a9d641e6`, P25 final `0979e151`, and P26 final `5e338072`
+are independently admitted ready_for_review. Their exact implementation heads
+are `0380409b`, `48994c58`, and `9096c2d6`; exact artifact digests are
+`de06556f`, `c20cf0c6`, and `a2208bbd`. Independent replay passed 11, 13,
+and 11 focused tests plus workspace typecheck for every source. Exact
+19/15/20-path scopes, final-parent chains, lease releases, clean remote refs,
+and effects `0/0/0` pass. P13's three immutable steward requests reproduce
+aggregate `a1679520` and are assigned to I36 without application.
+
+C00 queued an ordered full-source wave P13, P25, then P26 from exact
+integration target `44fd5363`. Merge ids/digests are:
+
+1. P13 `bd4f6b09-a471-4673-b783-3235ad31adda` / `3c35d48d`;
+2. P25 `106dafb7-915d-4b6e-97b7-d7d97bf945cb` / `677c7638`;
+3. P26 `34c0cb63-ec36-46c0-ac0e-ae8b3a85fe26` / `1692243e`.
+
+I36 claim `d17f9dc5-0f97-44ea-bb44-600c6c3635a3` and
+RELEASE_INTEGRATOR lease `6077f8e5-c498-405e-9cd8-754340775f53` are
+authorized only for a three-runtime-file atomic claim before target-CAS
+reconciliation. Canonical ready digest is `080fac5c`. No source merge,
+steward application, migration, registration, provider action, or external
+effect is authorized in that first phase.
