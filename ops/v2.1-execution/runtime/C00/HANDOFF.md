@@ -1620,3 +1620,19 @@ preserve the six SQL drafts and proposal dirty and byte-unchanged, push
 normally, and stop for C00 reconciliation. Semantic corrections, checksum
 regeneration, other paths, registration, providers, deployment, sends, and
 external effects remain unauthorized until that reconciliation.
+
+## F02 Lease B renewal-claim reconciliation
+
+F02 renewal claim `9daa5251acf9b6d2c4c932d9864d894ded2bdd2d`
+passed independent reconciliation: sole parent `6a5e359c`, exact runtime
+triplet commit, renewed claim/lease/control/READY bindings, remote proposal
+blob still `8fd29dda`, migrations 2239-2244 still absent remotely, seven local
+draft paths preserved byte-for-byte, and effects `0/0/0`.
+
+Under claim `2002fc61-531d-4b4c-b0c0-c65b3468b8c5` and shared lease
+`4d52c050-fd00-4240-a029-48d4f27f6820` through
+`2026-07-30T00:39:23Z`, F02 may now correct only those seven draft paths
+against the bound semantic blockers, then finalize its runtime triplet within
+the same ten-path ceiling. SQL must stabilize before checksum regeneration.
+All native/disposable 75/75, focused semantic, repository, package, secret,
+scope, formatting, lease-release, and zero-effect gates must be rerun.

@@ -15,12 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+controller_authorization_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
 next_action: >-
-  F02 must atomically renew from unchanged remote head 6a5e359c under claim 2002fc61 and shared
-  MIGRATION_AUTHORITY / SCHEMA_CONTRACT lease 4d52c050. It must correct only its runtime triplet to renewed
-  renewal_requested authority, preserve the six SQL drafts and proposal dirty and byte-unchanged, stage and commit
-  only the triplet, push normally, and stop for C00 reconciliation. No semantic correction, checksum regeneration,
-  other path, registration, provider inspection, deployment, send, or external effect is authorized before that
-  reconciliation.
+  F02 renewal claim 9daa5251 is reconciled under claim 2002fc61 and shared MIGRATION_AUTHORITY / SCHEMA_CONTRACT
+  lease 4d52c050. F02 may now correct only the seven preserved draft paths against the seven bound semantic blockers,
+  then finalize its runtime triplet within the same ten-path ceiling. It must stabilize SQL before regenerating
+  native and pg-mem checksums; rerun native and disposable 75/75 migration proof, focused semantic probes,
+  typecheck, lint, build, format, package, YAML, secret, diff, scope, and effects gates; release both slots; push;
+  and stop for independent audit. No other path, registration, provider inspection, deployment, send, or external
+  effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

@@ -1374,3 +1374,17 @@ normally, remote-verify, and stop for C00 reconciliation. Do not perform
 semantic corrections, regenerate checksums, edit another path, apply
 registration, inspect providers, deploy, send, or perform an external effect
 in that first renewal push.
+
+F02 renewal claim `9daa5251acf9b6d2c4c932d9864d894ded2bdd2d`
+is reconciled under unchanged claim
+`2002fc61-531d-4b4c-b0c0-c65b3468b8c5` and shared
+MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease
+`4d52c050-fd00-4240-a029-48d4f27f6820`. Correct only the six preserved
+SQL drafts and proposal against the seven bound semantic blockers, then
+finalize the runtime triplet within the ten-path ceiling. Stabilize SQL before
+regenerating native/pg-mem checksums. Rerun native and disposable 75/75
+migration proof, focused semantic probes, typecheck, lint, build, format,
+package, YAML, secret, diff, scope, lease-release, and zero-effect gates.
+Push the final normally and stop for independent audit. Do not edit another
+path, apply registration, inspect providers, deploy, send, or perform an
+external effect.

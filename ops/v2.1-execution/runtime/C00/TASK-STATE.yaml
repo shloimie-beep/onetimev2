@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-702e663e
-claim_time: '2026-07-29T22:38:35Z'
-claim_id: 702e663e-83d3-4321-89bb-2dd6f17fce64
-lease_expires_at: '2026-07-29T22:53:35Z'
-last_heartbeat_at: '2026-07-29T22:42:00Z'
-controller_authorization_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+claimed_by: codex-c00-orchestrator-2b5764ce
+claim_time: '2026-07-29T22:49:16Z'
+claim_id: 2b5764ce-89ec-4a54-843d-0320d6624b8a
+lease_expires_at: '2026-07-29T23:04:16Z'
+last_heartbeat_at: '2026-07-29T22:51:00Z'
+controller_authorization_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
 ready_entry_payload_digest: null
-state_based_on_head_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+state_based_on_head_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -292,12 +292,13 @@ completed_steps:
 - independently verified and reconciled F02 atomic Lease B claim 6a5e359c as the sole child of e156003b with exactly its runtime triplet changed, unchanged allocation proposal and migration tree, exact authorization/claim/lease/READY bindings, and zero effects
 - stopped F02 Lease B before release after independent semantic audit rejected the mechanically passing draft; remote head stayed 6a5e359c, dirty scope stayed exactly ten paths, protected migrations stayed byte-identical, and effects stayed zero
 - issued only an atomic runtime-triplet renewal for the preserved dirty F02 draft under READY digest 635c8923, claim 2002fc61, and shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 4d52c050
+- independently reconciled F02 renewal claim 9daa5251 as an exact runtime-triplet child of 6a5e359c with remote proposal and migrations unchanged, all seven local draft paths byte-preserved, renewed authority exact, and effects zero
 remaining_steps:
 - independently audit and integrate F02's exact six-migration Lease B release after it finishes the authorized ten-path implementation
 - integrate and independently audit the remaining governed migration leases before consolidated registrations and candidate freeze
 - resolve all remaining non-ancestral review heads and assigned steward duties before candidate freeze
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: F02 must consume READY digest 635c8923 from exact remote head 6a5e359c by correcting and committing only its runtime triplet under renewed claim 2002fc61 and shared lease 4d52c050, while preserving the six SQL drafts and proposal dirty and byte-unchanged; push and stop for C00 reconciliation. No semantic correction, checksum regeneration, registration, provider action, deployment, send, or external effect is yet authorized.
+next_action: F02 renewal claim 9daa5251 is reconciled under claim 2002fc61 and shared lease 4d52c050. It may correct only the seven preserved draft paths against the bound semantic blockers, finalize the runtime triplet within the ten-path ceiling, stabilize SQL before regenerating checksums, rerun all native/disposable 75/75, focused, repository, package, secret, scope, and zero-effect gates, release both slots, push, and stop for independent audit. No registration, provider action, deployment, send, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -305,12 +306,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+  current_control_parent_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 702e663e-83d3-4321-89bb-2dd6f17fce64
-      observed_head: cc71835caf5f73a9642adf135efd25d21528f83f
+      claim_id: 2b5764ce-89ec-4a54-843d-0320d6624b8a
+      observed_head: 35704c887c45309eb03506d4f654afd2bfbed84c
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -329,10 +330,10 @@ orchestration:
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
-      observed_head: 6a5e359c0a7dae56542741126974a571af5da5a9
+      observed_head: 9daa5251acf9b6d2c4c932d9864d894ded2bdd2d
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: '2026-07-30T00:39:23Z'
-      scheduling_state: Lease_B_semantic_correction_atomic_renewal_authorized
+      scheduling_state: Lease_B_semantic_correction_claimed_implementation_authorized
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -767,10 +768,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 0e890cfde86585dd343428905855ce916a5e068d3220b2be82e8f44be708e779
-    control_lease: d2e3347121951cf18c5f05997e281eb3c118b267996e298d42ebfb3b0a854861
-    task_registry: 7e8f0128b7e46a1578554875ab64e12f7c08ed3cf3aaf00151ce14623d87eb65
-    ready_queue: bf70d0a3823428611dfd68679b16b1202b46d8c020d8bf82ef220f21cf4cadfc
+    control_state: cda0f0117773ec7917c0206deabecd29ddf3b7ce520d2c27631ed03591a5b52a
+    control_lease: 94c824e6ec663c8e10551cf71c2f3d5d3fda421a8c63655257466c2cb8d1b5f0
+    task_registry: 27529e4cf3a45f65e318d9b2b63e34721dc5125e90d8712b62b4867bf37c7ca3
+    ready_queue: 84f7e3ca967d5c383fae8b671082b3d90d167efa80ab690012dedb888c1a6707
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 1264d4293cfdac277b19fcf0e7c546ed80d6f68045f95158f7e04f5b1994e814
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -964,6 +965,7 @@ verification:
   - F02 Lease B request inventory and admission: passed exact live producer finals and request blobs/digests for P16/P32/P10/P23/P24/P27, integration ancestry, collision absence across remote refs, canonical READY digest fe2adafd, fresh claim/slot leases, and zero effects
   - F02 Lease B atomic claim 6a5e359c: passed sole-parent ancestry, exact runtime-triplet delta, unchanged proposal blob and migration tree, exact claim/authorization/READY/writer-lease bindings, clean remote state, and zero effects; consumed and reconciled
   - F02 Lease B first-draft stop and renewal: passed unchanged remote 6a5e359c, exact ten-path dirty scope, byte-identical 2234-2238, independent semantic FAIL preserved as correction gates, canonical renewal READY digest 635c8923, fresh claim/lease, and zero effects
+  - F02 Lease B renewal claim 9daa5251: passed sole-parent ancestry, exact runtime-triplet commit, unchanged remote proposal and migration tree, seven local draft paths byte-preserved, exact renewed bindings, and zero effects; consumed and reconciled
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
