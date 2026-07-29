@@ -1360,3 +1360,17 @@ Release both writer slots before expiry, publish the final, and stop for
 independent C00 audit. Do not edit any applied migration, allocate 2231 or
 another ordinal, apply registration, inspect providers, deploy, send, or
 perform an external effect.
+
+F02 stopped its first Lease B draft safely after independent semantic audit
+rejected release. Resume only from unchanged remote head
+`6a5e359c0a7dae56542741126974a571af5da5a9` under READY digest
+`635c8923ed3aa11f3dbcf11b1195a22235ce150e43284de265b48f1b0f7da8bd`,
+claim `2002fc61-531d-4b4c-b0c0-c65b3468b8c5`, and shared
+MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease
+`4d52c050-fd00-4240-a029-48d4f27f6820`. Correct and commit only the
+F02 runtime triplet to renewed renewal_requested authority while preserving
+the six SQL drafts and allocation proposal dirty and byte-unchanged. Push
+normally, remote-verify, and stop for C00 reconciliation. Do not perform
+semantic corrections, regenerate checksums, edit another path, apply
+registration, inspect providers, deploy, send, or perform an external effect
+in that first renewal push.

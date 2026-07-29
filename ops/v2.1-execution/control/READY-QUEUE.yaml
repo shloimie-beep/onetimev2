@@ -2,8 +2,195 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: F02
+  status: resume_ready
+  phase: migration_lease_B_semantic_correction_renewal
+  branch: codex/v21-f02-schema-state-migrations
+  claim_mode: resume_existing_preserve_authorized_dirty_draft
+  state_based_on_control_head_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+  authorized_start_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  expected_existing_head: 6a5e359c0a7dae56542741126974a571af5da5a9
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+      control_state_digest: 60e4b994a940c8715f86a480f23d07e6d58a16b7310ba5a7d7f2ab3bc277dd47
+      task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
+      task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
+    I36:
+      required_state: F02_lease_A_released
+      observed_state: F02_lease_A_released
+      observed_integration_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+      state_handoff_digest: cb9ce39120af13998e5a6d5afa0125ebf2bc29366f4d37947640921973014520
+    F02:
+      required_state: lease_B_renewal_requested_dirty_draft_preserved
+      observed_state: lease_B_renewal_requested_dirty_draft_preserved
+      observed_task_head_sha: 6a5e359c0a7dae56542741126974a571af5da5a9
+      state_handoff_digest: db982e216e452fa149e409f4241ec8d0dd09c600cc29c95cb82e3c0f2f16f40e
+      allocation_proposal_raw_digest: 77f4299af5f13a0555d784c248874c9336c7bcb911adb527be96fdb426af0485
+      interface_checkpoint_raw_digest: e33a8fba87202c0c78598d4a48ab39f5254a87e4955b198d8c0404b9e107efa0
+      interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+    P16:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+      request_id: P16-MIGRATION-001
+      request_digest: 8f4ba232e503cbf3ac33a634186cc91e8dd15a2f810e26ded5a7bf65c151b5ff
+      request_digest_kind: canonical_entry_sha256
+      request_git_blob: 6ef91c603ff84230c4ee8ca51d69140a877788c2
+      request_blob_raw_sha256: 628fe0cb860057b6dde8b5e214edfe00400ca8f701459993e099e6f923fd34cb
+    P32:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+      request_id: P32-migration-001
+      request_digest: 6bebda045801b0778fb4d4972bfb079cb44546d6ec27c34f99d2a268d6d2c2a4
+      request_digest_kind: canonical_entry_sha256
+      request_git_blob: 9e00c1fa17c03e1042c402ac27b921c6f45f8cd0
+      request_blob_raw_sha256: 69a49bc29d1bf94a5cf3769b8cb0ce7f911a43f3411c1f85659c332142317c72
+    P10:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+      request_id: P10-MIGRATION-001
+      request_digest: 33dbeedf5fd09e13215129f7d2baa9140e03e6b0372fdabab4d3c032ba6f2dcd
+      request_digest_kind: canonical_entry_sha256
+      request_git_blob: 6470da05b25a4afc1436fcde646d08da88caf457
+      request_blob_raw_sha256: 0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea
+    P23:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+      request_id: P23-migration-001
+      request_digest: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
+      request_digest_kind: raw_sha256
+      request_git_blob: 556e148cec152894cb0af533390d8efcd3ada2b2
+      request_blob_raw_sha256: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
+    P24:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: 501c7a8b32864e4218a5325b8a755bb0a37a8ce6
+      request_id: P24-migration-001
+      request_digest: 71065002e827d8b51c6bafc808568eb6940e2527a0ec0c30bd648d49d8bf93f3
+      request_digest_kind: raw_sha256
+      request_git_blob: 55c72098589a19e69bf2f689e6b8dfc45a26f13e
+      request_blob_raw_sha256: 71065002e827d8b51c6bafc808568eb6940e2527a0ec0c30bd648d49d8bf93f3
+    P27:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: e1933d640657835cde17ee23381399f5539fe3cd
+      request_id: P27-migration-001
+      request_digest: 19f6c2a3f64906f1b95b9228717f5bcf2ca7559a5098c09a10ebf4f5bc2aecc2
+      request_digest_kind: canonical_entry_sha256
+      request_git_blob: 49e5e74326b34832eb19f72b92c2f64deb36d79b
+      request_blob_raw_sha256: a1d8d5bb025ed060673b2d3467a4be61d382e4a27ca4b410982210ace5be9474
+  migration_lease_plan:
+    prior_allocation:
+      ordinal: 2238
+      file: packages/db/migrations/2238_v21_provider_core.sql
+      checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
+    next_available_ordinal: 2239
+    never_allocate:
+    - 2231
+    allocations:
+    - ordinal: 2239
+      request_id: P16-MIGRATION-001
+      file: packages/db/migrations/2239_v21_classroom_core.sql
+    - ordinal: 2240
+      request_id: P32-migration-001
+      file: packages/db/migrations/2240_v21_privacy_data_rights.sql
+    - ordinal: 2241
+      request_id: P10-MIGRATION-001
+      file: packages/db/migrations/2241_v21_admin_directory.sql
+    - ordinal: 2242
+      request_id: P23-migration-001
+      file: packages/db/migrations/2242_v21_student_notifications.sql
+    - ordinal: 2243
+      request_id: P24-migration-001
+      file: packages/db/migrations/2243_v21_support.sql
+    - ordinal: 2244
+      request_id: P27-migration-001
+      file: packages/db/migrations/2244_v21_ghl_identity.sql
+    required_order:
+    - P16-MIGRATION-001
+    - P32-migration-001
+    - P10-MIGRATION-001
+    - P23-migration-001
+    - P24-migration-001
+    - P27-migration-001
+    authorized_paths:
+    - packages/db/migrations/2239_v21_classroom_core.sql
+    - packages/db/migrations/2240_v21_privacy_data_rights.sql
+    - packages/db/migrations/2241_v21_admin_directory.sql
+    - packages/db/migrations/2242_v21_student_notifications.sql
+    - packages/db/migrations/2243_v21_support.sql
+    - packages/db/migrations/2244_v21_ghl_identity.sql
+    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+    forbidden_actions: >-
+      No applied-migration edit, 2231 allocation, other ordinal or path, registration, provider inspection,
+      deployment, send, persistent/shared database use, or external effect.
+  renewal_context:
+    prior_claim_id: e2a7b9ff-ce58-495e-b164-84d9299250d0
+    prior_lease_id: cad3d0dd-59a2-44dd-87fb-6597978daaaf
+    stopped_at: '2026-07-29T22:33:50Z'
+    remote_head_unchanged: true
+    dirty_draft_path_count: 10
+    protected_migrations_2234_2238_byte_identical: true
+    preliminary_mechanical_gates:
+      pg_mem_full_chain: 75_of_75
+      pglite_full_chain: 75_of_75
+      typecheck: PASS
+      lint: PASS
+      build: PASS
+      secret_scan: PASS
+      package_lock: 200_of_200
+    semantic_blockers:
+    - P27 classification vocabulary and complimentary compatibility
+    - P16 occurrence schedule columns, evidence-preserving state reconciliation, and exact create-capable canonical backfill
+    - P24 exact kind/category, author identity, structured redacted intent, and false invariants
+    - P32 scoped lifecycle enums and lowercase digest enforcement
+    - P10 complete composite scope, exact credential validation, and append-only audit
+    - P23 exact semantic dedupe tuple
+    - final checksum regeneration after SQL stabilization
+    atomic_renewal_rule: >-
+      First update and commit only the F02 runtime triplet with renewed authority and renewal_requested state,
+      preserving the six SQL files and proposal as dirty authorized draft; push and stop for C00 reconciliation.
+  writer_slot_leases:
+  - slot: MIGRATION_AUTHORITY
+    lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
+    holder_task_id: F02
+    holder_claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
+    state_based_on_control_head_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+    lease_issued_at: '2026-07-29T22:39:23Z'
+    lease_expires_at: '2026-07-30T00:39:23Z'
+    phase_scope: F02_lease_B_semantic_correction_renewal_atomic_claim_only
+  - slot: SCHEMA_CONTRACT
+    lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
+    holder_task_id: F02
+    holder_claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
+    state_based_on_control_head_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+    lease_issued_at: '2026-07-29T22:39:23Z'
+    lease_expires_at: '2026-07-30T00:39:23Z'
+    phase_scope: F02_lease_B_semantic_correction_renewal_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
+  lease_issued_at: '2026-07-29T22:39:23Z'
+  lease_expires_at: '2026-07-30T00:39:23Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  F02: 635c8923ed3aa11f3dbcf11b1195a22235ce150e43284de265b48f1b0f7da8bd
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

@@ -1598,3 +1598,25 @@ database, run focused request-semantic and repository gates, release both
 writer slots before expiry, push normally, and stop for independent audit.
 No applied-migration rewrite, other ordinal/path, registration, provider
 inspection, deployment, send, or external effect is authorized.
+
+## F02 Lease B semantic-correction renewal
+
+The first bounded draft passed two fresh 75/75 migration runs and broad
+mechanical gates, but independent semantic audit rejected release. F02 stopped
+at `2026-07-29T22:33:50Z` without commit or push. Remote head remains
+`6a5e359c0a7dae56542741126974a571af5da5a9`; the dirty worktree is exactly
+the six SQL files, allocation proposal, and runtime triplet; migrations
+2234-2238 remain byte-identical; effects remain `0/0/0`.
+
+C00 issued READY digest
+`635c8923ed3aa11f3dbcf11b1195a22235ce150e43284de265b48f1b0f7da8bd`,
+claim `2002fc61-531d-4b4c-b0c0-c65b3468b8c5`, and shared
+MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease
+`4d52c050-fd00-4240-a029-48d4f27f6820` through
+`2026-07-30T00:39:23Z`.
+
+The first renewal push must correct and commit only the F02 runtime triplet,
+preserve the six SQL drafts and proposal dirty and byte-unchanged, push
+normally, and stop for C00 reconciliation. Semantic corrections, checksum
+regeneration, other paths, registration, providers, deployment, sends, and
+external effects remain unauthorized until that reconciliation.
