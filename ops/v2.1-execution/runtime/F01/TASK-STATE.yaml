@@ -9,21 +9,39 @@ start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
   C00:
     required_state: operational
-    observed_control_head_sha: 0343ae1bf5ee754d28f165f5e522f131ce6d421c
-    control_state_digest: 70b008dd8bc46f9bcfdd95217ff08fc9b2ad3e949008b5f9e7f0ed29566b9a88
+    observed_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
+    control_state_digest: 388fd210d8324496824666d88155207af84b6160e3c04e23077da346a94590b8
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
-status: interface_ready
-phase: interface_ready
-claimed_by: codex-f01-worker-4aafff01
-claim_time: '2026-07-28T15:19:34Z'
-claim_id: c18310c8-3975-4816-badd-1fa9079edc33
-lease_expires_at: '2026-07-28T16:09:35Z'
-last_heartbeat_at: '2026-07-28T15:29:28Z'
-controller_authorization_sha: e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce
-ready_entry_payload_digest: 02778740dc1c287edf20b08699ab1d83d4b1dd131026737c4a75759d90c30af2
-state_based_on_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
-last_implementation_commit_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
+  I36_STEWARD_RESULTS:
+    required_state: rejected
+    observed_integration_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    client_result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+    config_result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+    state_handoff_digest: ccc2777c2b873cd7f67bf86cd3349a28d6630bf2a896cf4acb229158f08de7aa
+  F03_STEWARD_RESULT:
+    required_state: applied
+    observed_state: applied
+    observed_task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    evaluated_target_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    applied_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_record_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_digest: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+    state_handoff_digest: 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
+status: ready_for_review
+phase: review
+claimed_by: codex-f01-ack-a0810342
+claim_time: '2026-07-28T19:16:30Z'
+claim_id: a0810342-31c8-42c7-b758-ce0c4e9f1779
+lease_expires_at: '2026-07-28T20:05:27Z'
+last_heartbeat_at: '2026-07-28T19:19:00Z'
+lease_released_at: '2026-07-28T19:19:00Z'
+controller_authorization_sha: 44202fc53db9781c91e4015d6af004bac4ab037b
+ready_entry_parent_control_sha: fe5219b4533fc7d7075f209f262e579906cf1e34
+ready_entry_payload_digest: a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac
+state_based_on_head_sha: 684fb81ab7f6c5cece30ab49ae8c6ad869fecb75
+last_implementation_commit_sha: a7bc348b98e79f57618c911c440d3d8713a63d5f
 completed_steps:
   - verified repository identity and isolated clone
   - fetched and verified containing control head e7bd7e0ab5062f8fccd78db2a4b38de03e3080ce
@@ -34,28 +52,44 @@ completed_steps:
   - implemented and integrated versioned server feature-router, client route/root, and worker runner seams
   - implemented the schema-valid central-file steward request contract
   - published the exact interface_ready contract for F02, F07, P31, and P35
-remaining_steps:
-  - implement retired-surface closure and remaining assigned behavior
-  - complete task-owned verification and publish ready_for_review
-next_action: Unmount the explicitly retired server, client, worker, and configuration surfaces from current composition, then verify direct access fails closed.
+  - removed retired server routes, public event routes, portal actions, navigation, worker modes, and environment flags from current composition
+  - normalized legacy owner and rabbi sessions to the current public admin role and rejected retired account roles
+  - removed the routine email-challenge endpoints and login-page controls from the owned server surface
+  - verified the owned retirement delta with full typecheck and production client build
+  - verified and atomically adopted the C00-issued F01 resume claim and renewed six-slot lease
+  - proved 29 retired direct routes and emitted assets fail closed with 404
+  - removed routine email-challenge delivery from the owned worker loop
+  - removed retired event and HighLevel event-sync environment keys and forced their compatibility values unavailable
+  - published three schema-valid structured steward requests for remaining out-of-scope closure
+  - atomically adopted the no-writer-slot F01 steward-acknowledgment resume claim
+  - independently recomputed and acknowledged the exact I36 rejected results for the client and config requests
+  - atomically adopted the C00-issued final F03 steward-result acknowledgment resume claim
+  - independently recomputed the exact F03 applied steward-result payload and state/handoff digests
+  - verified the F01 request digest, evaluated target, applied/result commit ancestry, F03 final task head, and zero-effect summary
+  - reran the exact F03 database steward proof and observed direct owner password login as public admin with zero email-challenge and trusted-device artifacts
+  - acknowledged the exact applied F03 result for F01-retired-auth-001
+  - reran F01 typecheck, steward-request schema/privacy checks, owned retired-auth surface absence scan, YAML, formatting, and diff validation
+  - released the no-writer-slot metadata acknowledgment lease and published ready_for_review
+remaining_steps: []
+next_action: C00 should record the exact F01 acknowledgment, clear the final steward gate, and admit the existing F01 implementation for dependency-ordered integration review.
 requirements:
-  OTV2-FOUNDATION-001: in_progress
-  OTV2-FOUNDATION-003: in_progress
-  OTV2-FOUNDATION-004: in_progress
-  OTV2-FOUNDATION-005: in_progress
-  OTV2-FOUNDATION-006: in_progress
-  OTV2-FOUNDATION-208: in_progress
-  OTV2-FOUNDATION-215: in_progress
-  OTV2-FOUNDATION-216: in_progress
+  OTV2-FOUNDATION-001: implementation_ready
+  OTV2-FOUNDATION-003: implementation_ready
+  OTV2-FOUNDATION-004: implementation_ready
+  OTV2-FOUNDATION-005: implementation_ready
+  OTV2-FOUNDATION-006: implementation_ready
+  OTV2-FOUNDATION-208: implementation_ready
+  OTV2-FOUNDATION-215: implementation_ready
+  OTV2-FOUNDATION-216: implementation_ready
 acceptance_cases:
-  OTV2-FOUNDATION-001-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-003-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-004-AC01: pending_candidate_verification
-  OTV2-FOUNDATION-005-AC01: implementation_pending
-  OTV2-FOUNDATION-006-AC01: implementation_pending
-  OTV2-FOUNDATION-208-AC01: implementation_pending
-  OTV2-FOUNDATION-215-AC01: implementation_pending
-  OTV2-FOUNDATION-216-AC01: pending_candidate_verification
+  OTV2-FOUNDATION-001-AC01: implementation_ready
+  OTV2-FOUNDATION-003-AC01: implementation_ready
+  OTV2-FOUNDATION-004-AC01: implementation_ready
+  OTV2-FOUNDATION-005-AC01: implementation_ready
+  OTV2-FOUNDATION-006-AC01: implementation_ready
+  OTV2-FOUNDATION-208-AC01: implementation_ready
+  OTV2-FOUNDATION-215-AC01: implementation_ready
+  OTV2-FOUNDATION-216-AC01: implementation_ready
 changed_paths:
   - ops/v2.1-execution/runtime/F01/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F01/HANDOFF.md
@@ -63,16 +97,54 @@ changed_paths:
   - ops/v2.1-execution/runtime/F01/INTERFACE-CHECKPOINT.yaml
   - apps/web/src/server/features/registry/index.ts
   - apps/web/src/server/app.ts
+  - apps/web/src/client/app/crm-entry.tsx
+  - apps/web/src/client/app/live-entry.tsx
   - apps/web/src/client/app/router/index.ts
   - apps/web/src/client/app/router/registry.ts
   - apps/web/src/client/app/router/portal-roots.tsx
   - apps/web/src/client/app/portal-entry.tsx
+  - apps/web/src/client/features/portals/PortalFeatures.tsx
   - apps/worker/src/runners/registry/index.ts
   - apps/worker/src/main/index.ts
   - packages/config/src/index.ts
   - ops/v2.1-execution/runtime/F01/steward-requests/schema/steward-request.schema.json
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: F01-retired-auth-001
+    path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-001.yaml
+    digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+    status: applied
+    assigned_steward: F03
+    target_checkpoint: F03_ready_for_review
+    result_task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    result_record_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    evaluated_target_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    applied_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_digest: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+    result_state_handoff_digest: 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
+    acknowledged_by_task: true
+  - request_id: F01-retired-client-002
+    path: ops/v2.1-execution/runtime/F01/steward-requests/retired-surface-002.yaml
+    digest: c0175c98589e6f37b917f32a49cc22caee7456b322a7592a930959044f65886d
+    status: rejected
+    assigned_steward: I36
+    target_checkpoint: I36_next_steward_checkpoint
+    result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+    acknowledged_by_task: true
+    rejection_reason: Full application required scope expansion because named HTML paths were absent while retired Tisha assets remained outside the exact request path list; partial application would not satisfy the request.
+  - request_id: F01-config-retirement-003
+    path: ops/v2.1-execution/runtime/F01/steward-requests/config-003.yaml
+    digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
+    status: rejected
+    assigned_steward: I36
+    target_checkpoint: I36_next_steward_checkpoint
+    result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
+    evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+    acknowledged_by_task: true
+    rejection_reason: The request assumed F01's unmerged protectedPayloadEncryptionKey compatibility state, which was absent from the authorized integration target; applying it would synthesize unqueued implementation.
 verification:
   commands_run:
     - repository remote is https://github.com/shloimie-beep/onetimev2.git
@@ -84,6 +156,25 @@ verification:
     - focused F01 server/client/worker registry smoke: passed positive, rejection, and duplicate cases
     - steward-request.schema.json JSON parse: passed
     - interface contract digest 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+    - npm run typecheck after retired-surface closure: passed
+    - npm run build:client after retired-surface closure: passed
+    - F01 direct-access absence harness: 29 retired routes and assets returned 404; login HTML contained no challenge or trusted-device controls
+    - retired event configuration smoke: supplied legacy event/provider keys were ignored and runtime compatibility values remained unavailable
+    - three steward request YAML documents validated against the F01 steward-request schema
+    - F01 acknowledgment ready-entry canonical digest independently matched f37b4e169ea1f2c9f378a44f2e2dd4a1d39f7e0133a64d30b36fd28fd87d4bda
+    - I36 result-record head 1976033cfdae1beb249642f0e28f6824b0fcbb8b and evaluated target ancestry verified
+    - F01-retired-client-002 rejected-result canonical digest independently matched a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
+    - F01-config-retirement-003 rejected-result canonical digest independently matched a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
+    - F01 final acknowledgment ready-entry canonical digest independently matched a9330ed49068aa18760b0e635fc19ee8aaf4dd6d2deffdccd38cdc637eb234ac
+    - F03 result task head independently matched 7c638131a0cab757657e95c4d2229a1573e4cde1
+    - F03 state/handoff raw-concatenation digest independently matched 42351118693e46c2bcd26dd3f1000a077155bd6536606b9f49e2458e4a9992da
+    - F01-retired-auth-001 applied-result canonical digest independently matched f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+    - F01-retired-auth-001 request digest independently matched b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+    - F03 applied commit 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e is an ancestor of its final result task head
+    - exact F03 pg-mem steward proof passed with public admin login and zero challenge/trusted-device artifacts
+    - npm run typecheck at the F01 acknowledgment head passed
+    - three F01 steward requests satisfy the committed schema required fields and privacy invariant
+    - F01-owned current composition contains no email-challenge, trusted-device, six-digit, or one-time-code strings
   known_baseline_failures:
     - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
@@ -92,4 +183,6 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - apps/web/vite.app.config.ts still emits the retired experience-preview client entry and apps/web/src/client/public.ts retains dormant email-challenge code; both paths are outside F01 ownership. The owned server denies the emitted preview asset and no longer renders challenge controls.
+  - out-of-scope domain modules still consume compatibility properties named mfaSecretEncryptionKey and Buffer/demo feature properties from AppConfig. The environment schema and runtime flags are removed or forced unavailable, but deleting the compatibility properties requires coordinated consumer migration.

@@ -6,7 +6,6 @@ import {
   createDisabledOt109VimeoPort,
   contentFactoryStorageFromEnv,
   DeterministicFakeHighLevelAdapter,
-  runAuthEmailChallengeDeliveryOutboxBatch,
   runHighLevelProjectionBatch,
   runLifecycleDeliveryOutboxBatch,
   runOt109PublisherWorkerOnce,
@@ -89,12 +88,6 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       limit: config.batchSize,
       leaseMs: config.claimLeaseMs,
     });
-    const authEmail = await runAuthEmailChallengeDeliveryOutboxBatch({
-      pool,
-      config: config.appConfig,
-      limit: config.batchSize,
-      leaseMs: config.claimLeaseMs,
-    });
     const highLevel = await runHighLevelProjectionBatch({
       pool,
       config: config.appConfig,
@@ -127,7 +120,6 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       ...delivery,
       support,
       lifecycle,
-      authEmail,
       highLevel,
       learningDelivery,
       contentFactory,
@@ -226,12 +218,6 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             },
           });
           await runLifecycleDeliveryOutboxBatch({
-            pool,
-            config: config.appConfig,
-            limit: config.batchSize,
-            leaseMs: config.claimLeaseMs,
-          });
-          await runAuthEmailChallengeDeliveryOutboxBatch({
             pool,
             config: config.appConfig,
             limit: config.batchSize,
@@ -355,13 +341,20 @@ async function runDurableContentFactoryWorkerOnce(input: {
   if (input.source.CONTENT_FACTORY_WORKER_ENABLED !== 'true') {
     return { enabled: false as const, provider_calls_performed: false as const };
   }
+  if (input.source.CONTENT_FACTORY_PROCESSING_MODE !== 'vimeo') {
+    return {
+      enabled: false as const,
+      provider_calls_performed: false as const,
+      safe_error_code: 'retired_processing_mode',
+    };
+  }
   try {
     const result = await runContentFactoryWorkerOnce({
       pool: input.pool,
       config: input.config,
       storage: contentFactoryStorageFromEnv(input.source),
       workerIdentity: input.workerInstanceKey,
-      mode: input.source.CONTENT_FACTORY_PROCESSING_MODE === 'vimeo' ? 'vimeo' : 'synthetic',
+      mode: 'vimeo',
     });
     return { enabled: true as const, provider_calls_performed: false as const, result };
   } catch (error) {
@@ -404,8 +397,6 @@ if (process.argv.includes('--once')) {
       `support_delivered=${summary.support.delivered}`,
       `lifecycle_sink_delivered=${summary.lifecycle.sink_delivered}`,
       `lifecycle_expired=${summary.lifecycle.expired}`,
-      `auth_email_sink_delivered=${summary.authEmail.sink_delivered}`,
-      `auth_email_expired=${summary.authEmail.expired}`,
       `highlevel_adapter_calls=${summary.highLevel.adapterCalls}`,
       `learning_delivery_enabled=${summary.learningDelivery.enabled}`,
       `content_factory_enabled=${summary.contentFactory.enabled}`,
