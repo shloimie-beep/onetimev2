@@ -2,9 +2,12 @@ import { createHash } from 'node:crypto';
 import {
   APPROVED_SCHOOL_CONFIGURATION_FIELDS,
   APPROVED_SCHOOL_EXPERIENCE,
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
   SCHOOL_INQUIRY_COPY,
   SCHOOL_INQUIRY_FIELDS,
   SCHOOL_INQUIRY_OPERATION,
+  SCHOOL_INQUIRY_REQUIRED_FIELDS,
   type ApprovedSchoolConfiguration,
   type ApprovedSchoolConfigurationCommand,
   type ApprovedSchoolRecord,
@@ -75,18 +78,31 @@ export function canonicalizeSchoolInquiry(
 } {
   assertScope(scope);
   const actualFields = Object.keys(command).sort();
-  const expectedFields = [...SCHOOL_INQUIRY_FIELDS].sort();
+  const allowedFields = new Set<string>(SCHOOL_INQUIRY_FIELDS);
+  const requiredFieldsPresent = SCHOOL_INQUIRY_REQUIRED_FIELDS.every((field) =>
+    Object.prototype.hasOwnProperty.call(command, field),
+  );
   if (
-    actualFields.length !== expectedFields.length ||
-    actualFields.some((field, index) => field !== expectedFields[index]) ||
+    !requiredFieldsPresent ||
+    actualFields.some((field) => !allowedFields.has(field)) ||
+    typeof command.school_name !== 'string' ||
+    typeof command.contact_first_name !== 'string' ||
+    typeof command.contact_last_name !== 'string' ||
+    typeof command.email !== 'string' ||
     !command.school_name.trim() ||
     !command.contact_first_name.trim() ||
     !command.contact_last_name.trim() ||
     command.school_name.trim().length > 180 ||
     command.contact_first_name.trim().length > 100 ||
     command.contact_last_name.trim().length > 100 ||
-    (command.phone !== null && (!command.phone.trim() || command.phone.trim().length > 40)) ||
-    (command.note !== null && command.note.trim().length > 1000)
+    (command.phone !== undefined &&
+      command.phone !== null &&
+      (typeof command.phone !== 'string' ||
+        !command.phone.trim() ||
+        command.phone.trim().length > 40)) ||
+    (command.note !== undefined &&
+      command.note !== null &&
+      (typeof command.note !== 'string' || command.note.trim().length > 1000))
   ) {
     throw new SchoolSignupError('invalid_school_inquiry');
   }
@@ -127,9 +143,7 @@ export function planSchoolInquiry(input: PlanSchoolInquiryInput): SchoolInquiryP
   }
   assertInquiryBinding(input.scope, input.request_binding, input.canonical_request);
   if (input.existing_receipt) {
-    if (!sameBinding(input.existing_receipt.request_binding, input.request_binding)) {
-      throw new SchoolSignupError('school_inquiry_conflict');
-    }
+    assertExistingReceipt(input.existing_receipt, input.request_binding, input.canonical_request);
     return {
       result: inquiryResult('deduplicated', input.existing_receipt.acknowledgment.intent_id),
       receipt: input.existing_receipt,
@@ -163,7 +177,10 @@ export function planSchoolInquiry(input: PlanSchoolInquiryInput): SchoolInquiryP
     kind: 'school_inquiry_acknowledgment',
     request_binding: input.request_binding,
     normalized_email_hash: digest(input.canonical_request.normalized_email),
-    copy: SCHOOL_INQUIRY_COPY.success,
+    notification: {
+      ...SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
+      content_digest: SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+    },
     delivery_state: 'pending',
     local_commit_required: true,
   };
@@ -305,10 +322,48 @@ function sameScope(left: SchoolSignupScope, right: SchoolSignupScope) {
   );
 }
 
-function normalizeOptional(value: string | null) {
-  if (value === null) return null;
+function normalizeOptional(value: string | null | undefined) {
+  if (value === null || value === undefined) return null;
   const normalized = value.trim();
   return normalized || null;
+}
+
+function assertExistingReceipt(
+  receipt: SchoolInquiryReceipt,
+  binding: SchoolInquiryRequestBinding,
+  request: CanonicalSchoolInquiry,
+) {
+  const expectedNotification = {
+    ...SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
+    content_digest: SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+  };
+  if (
+    !sameBinding(receipt.request_binding, binding) ||
+    receipt.lead.normalized_email !== request.normalized_email ||
+    receipt.lead.school_name !== request.school_name ||
+    receipt.lead.contact_first_name !== request.contact_first_name ||
+    receipt.lead.contact_last_name !== request.contact_last_name ||
+    receipt.lead.phone !== request.phone ||
+    receipt.lead.note !== request.note ||
+    receipt.lead.adult_contact_kind !== 'adult' ||
+    receipt.lead.sales_state !== 'pending_manual_follow_up' ||
+    receipt.lead.product_account_created ||
+    receipt.lead.parent_login_created ||
+    receipt.lead.passwordless_claim_created ||
+    receipt.lead.household_created ||
+    receipt.lead.student_accounts_created !== 0 ||
+    receipt.lead.subscription_created ||
+    receipt.lead.product_access_granted ||
+    receipt.acknowledgment.intent_id !== `${receipt.lead.lead_id}:acknowledgment` ||
+    receipt.acknowledgment.kind !== 'school_inquiry_acknowledgment' ||
+    !sameBinding(receipt.acknowledgment.request_binding, binding) ||
+    receipt.acknowledgment.normalized_email_hash !== digest(request.normalized_email) ||
+    JSON.stringify(receipt.acknowledgment.notification) !== JSON.stringify(expectedNotification) ||
+    receipt.acknowledgment.delivery_state !== 'pending' ||
+    !receipt.acknowledgment.local_commit_required
+  ) {
+    throw new SchoolSignupError('school_inquiry_conflict');
+  }
 }
 
 function digest(value: string) {

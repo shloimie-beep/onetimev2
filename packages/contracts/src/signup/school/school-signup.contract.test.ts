@@ -1,17 +1,27 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
   APPROVED_SCHOOL_CONFIGURATION_FIELDS,
   APPROVED_SCHOOL_EXPERIENCE,
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
   SCHOOL_INQUIRY_COPY,
   SCHOOL_INQUIRY_FIELDS,
   SCHOOL_INQUIRY_FORBIDDEN_FIELDS,
   SCHOOL_INQUIRY_OPTIONAL_FIELDS,
   SCHOOL_INQUIRY_REQUIRED_FIELDS,
   SCHOOL_SECURITY_INVARIANTS,
+  type SchoolInquiryCommand,
 } from './index.ts';
 
 describe('P09 School signup contract', () => {
   it('publishes exactly the approved public form fields and copy', () => {
+    const fourRequiredFields = {
+      school_name: 'Yeshiva One',
+      contact_first_name: 'Ari',
+      contact_last_name: 'Levi',
+      email: 'ari@example.com',
+    } satisfies SchoolInquiryCommand;
     expect(SCHOOL_INQUIRY_REQUIRED_FIELDS).toEqual([
       'school_name',
       'contact_first_name',
@@ -27,9 +37,40 @@ describe('P09 School signup contract', () => {
       cta: 'Send school inquiry',
       success: 'Thanks—we received your school inquiry. We’ll be in touch shortly.',
     });
+    expect(Object.keys(fourRequiredFields).sort()).toEqual(
+      [...SCHOOL_INQUIRY_REQUIRED_FIELDS].sort(),
+    );
     expect(SCHOOL_INQUIRY_FORBIDDEN_FIELDS).toEqual(
       expect.arrayContaining(['password', 'student', 'subscription', 'access', 'role', 'portal']),
     );
+  });
+
+  it('binds acknowledgment delivery to the approved catalog template and digest', () => {
+    expect(SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE).toEqual({
+      workflow_id: 'OT-01',
+      template_id: 'OT-01.school_acknowledgment',
+      template_version: '2.1.0',
+      sender_key: 'office',
+      subject: 'We received your One Time school inquiry',
+      body: [
+        'Hi {{contact.first_name}},',
+        '',
+        'Thank you for your interest in One Time Mishnayos for your school.',
+        '',
+        'We received your information. Shloimie will contact you to discuss pricing, Student seats, and setup.',
+        '',
+        'No account or paid subscription has been created yet.',
+        '',
+        'One Time Mishnayos',
+        'info@onetimeonetime.com',
+      ].join('\n'),
+    });
+    expect(
+      createHash('sha256')
+        .update(JSON.stringify(SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE), 'utf8')
+        .digest('hex'),
+    ).toBe(SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST);
+    expect(SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE.body).not.toBe(SCHOOL_INQUIRY_COPY.success);
   });
 
   it('defines ordinary Parent/Student reuse and no School-only capability', () => {

@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   APPROVED_SCHOOL_CONFIGURATION_OPERATION,
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
   SCHOOL_INQUIRY_OPERATION,
   type ApprovedSchoolConfigurationCommand,
   type ApprovedSchoolRecord,
@@ -24,8 +26,6 @@ const command = (): SchoolInquiryCommand => ({
   contact_first_name: 'Ari',
   contact_last_name: 'Levi',
   email: ' Ari@Example.com ',
-  phone: null,
-  note: null,
 });
 
 describe('P09 School signup service', () => {
@@ -33,8 +33,9 @@ describe('P09 School signup service', () => {
     const commits: SchoolInquiryReceipt[] = [];
     const service = createSchoolSignupService({
       repository: repositoryFor({
-        commitInquiry: async ({ receipt }) => {
+        createInquiryOrReadExisting: async ({ receipt }) => {
           commits.push(receipt);
+          return { disposition: 'created', receipt };
         },
       }),
       allocateLeadId: () => 'school-lead-1',
@@ -59,11 +60,17 @@ describe('P09 School signup service', () => {
       },
       lead: {
         adult_contact_kind: 'adult',
+        phone: null,
+        note: null,
         sales_state: 'pending_manual_follow_up',
         product_access_granted: false,
       },
       acknowledgment: {
         kind: 'school_inquiry_acknowledgment',
+        notification: {
+          ...SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
+          content_digest: SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+        },
         delivery_state: 'pending',
       },
     });
@@ -76,9 +83,10 @@ describe('P09 School signup service', () => {
     const service = createSchoolSignupService({
       repository: repositoryFor({
         findInquiry: async () => stored,
-        commitInquiry: async ({ receipt }) => {
+        createInquiryOrReadExisting: async ({ receipt }) => {
           writes += 1;
           stored = receipt;
+          return { disposition: 'created', receipt };
         },
       }),
       allocateLeadId: () => {
@@ -96,6 +104,42 @@ describe('P09 School signup service', () => {
       }),
     ).resolves.toMatchObject({ disposition: 'deduplicated' });
     expect({ allocations, writes }).toEqual({ allocations: 1, writes: 1 });
+  });
+
+  it('recovers the normalized-email uniqueness race with one lead and acknowledgment', async () => {
+    let stored: SchoolInquiryReceipt | null = null;
+    let persisted = 0;
+    let allocations = 0;
+    const repository = repositoryFor({
+      findInquiry: async () => null,
+      createInquiryOrReadExisting: async ({ receipt }) => {
+        await Promise.resolve();
+        if (stored) return { disposition: 'existing', receipt: stored };
+        stored = receipt;
+        persisted += 1;
+        return { disposition: 'created', receipt };
+      },
+    });
+    const service = createSchoolSignupService({
+      repository,
+      allocateLeadId: () => {
+        allocations += 1;
+        return `school-lead-${allocations}`;
+      },
+    });
+
+    const results = await Promise.all([
+      service.submitInquiry({ scope, command: command() }),
+      service.submitInquiry({
+        scope,
+        command: { ...command(), email: 'ari@example.com' },
+      }),
+    ]);
+
+    expect(results.map((result) => result.disposition).sort()).toEqual(['created', 'deduplicated']);
+    expect(persisted).toBe(1);
+    expect(stored).not.toBeNull();
+    expect(new Set(results.map((result) => result.acknowledgment_intent_id)).size).toBe(1);
   });
 
   it('persists explicit approved-school terms only after an exact Admin approval match', async () => {
@@ -164,7 +208,10 @@ function repositoryFor(overrides: Partial<SchoolSignupTransaction>): SchoolSignu
     transaction: async (run) =>
       run({
         findInquiry: async () => null,
-        commitInquiry: async () => undefined,
+        createInquiryOrReadExisting: async ({ receipt }) => ({
+          disposition: 'created',
+          receipt,
+        }),
         readApprovedSchoolForUpdate: async () => null,
         commitApprovedSchoolConfiguration: async () => undefined,
         ...overrides,

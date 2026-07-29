@@ -6,6 +6,10 @@ import type {
   SchoolSignupScope,
 } from '../../../../contracts/src/signup/school/index.ts';
 import {
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+  SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
+} from '../../../../contracts/src/signup/school/index.ts';
+import {
   canonicalizeSchoolInquiry,
   planApprovedSchoolConfiguration,
   planSchoolInquiry,
@@ -50,6 +54,10 @@ describe('P09 School inquiry and approved-school policy', () => {
     });
     expect(plan.receipt.acknowledgment).toMatchObject({
       kind: 'school_inquiry_acknowledgment',
+      notification: {
+        ...SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
+        content_digest: SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
+      },
       delivery_state: 'pending',
       local_commit_required: true,
     });
@@ -61,6 +69,67 @@ describe('P09 School inquiry and approved-school policy', () => {
       access_grants_created: 0,
       nurture_workflow_intent_ids: [],
     });
+  });
+
+  it('accepts exactly four required fields and canonicalizes absent optionals to null', () => {
+    const minimum: SchoolInquiryCommand = {
+      school_name: 'Yeshiva One',
+      contact_first_name: 'Ari',
+      contact_last_name: 'Levi',
+      email: 'ari@example.com',
+    };
+    expect(canonicalizeSchoolInquiry(scope, minimum).request).toEqual({
+      school_name: 'Yeshiva One',
+      contact_first_name: 'Ari',
+      contact_last_name: 'Levi',
+      normalized_email: 'ari@example.com',
+      phone: null,
+      note: null,
+    });
+    for (const required of ['school_name', 'contact_first_name', 'contact_last_name', 'email']) {
+      const missing = { ...minimum } as Record<string, unknown>;
+      delete missing[required];
+      expect(() =>
+        canonicalizeSchoolInquiry(scope, missing as unknown as SchoolInquiryCommand),
+      ).toThrow('invalid_school_inquiry');
+    }
+    expect(() =>
+      canonicalizeSchoolInquiry(scope, {
+        ...minimum,
+        unexpected: 'rejected',
+      } as unknown as SchoolInquiryCommand),
+    ).toThrow('invalid_school_inquiry');
+  });
+
+  it('rejects replay when the durable acknowledgment template binding drifts', () => {
+    const canonical = canonicalizeSchoolInquiry(scope, command());
+    const created = planSchoolInquiry({
+      scope,
+      command: command(),
+      request_binding: canonical.request_binding,
+      canonical_request: canonical.request,
+      proposed_lead_id: 'school-lead-1',
+      existing_receipt: null,
+    });
+    expect(() =>
+      planSchoolInquiry({
+        scope,
+        command: command(),
+        request_binding: canonical.request_binding,
+        canonical_request: canonical.request,
+        proposed_lead_id: 'unused',
+        existing_receipt: {
+          ...created.receipt,
+          acknowledgment: {
+            ...created.receipt.acknowledgment,
+            notification: {
+              ...created.receipt.acknowledgment.notification,
+              template_version: 'stale',
+            } as unknown as typeof created.receipt.acknowledgment.notification,
+          },
+        },
+      }),
+    ).toThrow('school_inquiry_conflict');
   });
 
   it('deduplicates an exact normalized-email retry and rejects changed or extra fields', () => {

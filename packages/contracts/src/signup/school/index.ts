@@ -1,6 +1,6 @@
 import type { RuntimeTier, VerificationEnvironmentId } from '../../state/index.ts';
 
-export const SCHOOL_SIGNUP_CONTRACT_VERSION = '1.0.0' as const;
+export const SCHOOL_SIGNUP_CONTRACT_VERSION = '2.0.0' as const;
 export const SCHOOL_INQUIRY_OPERATION = 'public_school_inquiry' as const;
 export const APPROVED_SCHOOL_CONFIGURATION_OPERATION =
   'admin_approved_school_configuration' as const;
@@ -20,6 +20,27 @@ export const SCHOOL_INQUIRY_COPY = {
   cta: 'Send school inquiry',
   success: 'Thanks—we received your school inquiry. We’ll be in touch shortly.',
 } as const;
+export const SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE = {
+  workflow_id: 'OT-01',
+  template_id: 'OT-01.school_acknowledgment',
+  template_version: '2.1.0',
+  sender_key: 'office',
+  subject: 'We received your One Time school inquiry',
+  body: [
+    'Hi {{contact.first_name}},',
+    '',
+    'Thank you for your interest in One Time Mishnayos for your school.',
+    '',
+    'We received your information. Shloimie will contact you to discuss pricing, Student seats, and setup.',
+    '',
+    'No account or paid subscription has been created yet.',
+    '',
+    'One Time Mishnayos',
+    'info@onetimeonetime.com',
+  ].join('\n'),
+} as const;
+export const SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST =
+  'ee97274c3fbe2bae470da87aa15b7049fddc2677dc794dc5e94a42e78b7de4fb' as const;
 export const SCHOOL_INQUIRY_FORBIDDEN_FIELDS = [
   'password',
   'password_confirmation',
@@ -47,8 +68,8 @@ export interface SchoolInquiryCommand {
   contact_first_name: string;
   contact_last_name: string;
   email: string;
-  phone: string | null;
-  note: string | null;
+  phone?: string | null;
+  note?: string | null;
 }
 
 export interface SchoolInquiryRequestBinding {
@@ -82,7 +103,15 @@ export interface SchoolInquiryAcknowledgmentIntent {
   kind: 'school_inquiry_acknowledgment';
   request_binding: SchoolInquiryRequestBinding;
   normalized_email_hash: string;
-  copy: typeof SCHOOL_INQUIRY_COPY.success;
+  notification: {
+    workflow_id: typeof SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE.workflow_id;
+    template_id: typeof SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE.template_id;
+    template_version: typeof SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE.template_version;
+    sender_key: typeof SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE.sender_key;
+    subject: typeof SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE.subject;
+    body: typeof SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE.body;
+    content_digest: typeof SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST;
+  };
   delivery_state: 'pending';
   local_commit_required: true;
 }

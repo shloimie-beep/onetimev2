@@ -24,11 +24,19 @@ export interface SchoolSignupTransaction {
     operation: typeof SCHOOL_INQUIRY_OPERATION;
     normalized_email: string;
   }): Promise<SchoolInquiryReceipt | null>;
-  commitInquiry(input: {
+  /**
+   * Atomically creates the exact scope/operation/normalized-email key or
+   * returns the receipt that won the unique-key race. Implementations must not
+   * overwrite the winning receipt.
+   */
+  createInquiryOrReadExisting(input: {
     request_binding: SchoolInquiryRequestBinding;
     request: CanonicalSchoolInquiry;
     receipt: SchoolInquiryReceipt;
-  }): Promise<void>;
+  }): Promise<
+    | { disposition: 'created'; receipt: SchoolInquiryReceipt }
+    | { disposition: 'existing'; receipt: SchoolInquiryReceipt }
+  >;
   readApprovedSchoolForUpdate(input: {
     scope: SchoolSignupScope;
     operation: typeof APPROVED_SCHOOL_CONFIGURATION_OPERATION;
@@ -69,14 +77,24 @@ export function createSchoolSignupService(dependencies: {
           proposed_lead_id: existingReceipt ? '' : dependencies.allocateLeadId(),
           existing_receipt: existingReceipt,
         });
-        if (plan.local_write_required) {
-          await transaction.commitInquiry({
-            request_binding: canonical.request_binding,
-            request: canonical.request,
-            receipt: plan.receipt,
-          });
-        }
-        return plan.result;
+        if (!plan.local_write_required) return plan.result;
+        const persisted = await transaction.createInquiryOrReadExisting({
+          request_binding: canonical.request_binding,
+          request: canonical.request,
+          receipt: plan.receipt,
+        });
+        const validated = planSchoolInquiry({
+          scope: input.scope,
+          command: input.command,
+          request_binding: canonical.request_binding,
+          canonical_request: canonical.request,
+          proposed_lead_id: '',
+          existing_receipt: persisted.receipt,
+        });
+        return {
+          ...validated.result,
+          disposition: persisted.disposition === 'created' ? 'created' : 'deduplicated',
+        };
       });
     },
 
