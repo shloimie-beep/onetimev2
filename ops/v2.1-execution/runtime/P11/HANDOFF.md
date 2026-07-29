@@ -1,64 +1,77 @@
-# P11 Retained-Credential Correction Atomic Claim
+# P11 Superseding Retained-Credential Binding Final Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p11-admin-operations`
-- Exact rejected final: `17538da1ff15066c3e242567970062db4589577b`
-- Rejected implementation:
-  `17924328cdc820e3cc9a8928f0685b868df4df74`
+- Rejected final:
+  `17538da1ff15066c3e242567970062db4589577b`
+- Atomic claim:
+  `bd40e5f0547eb9ad629c47fb4ab294982765978f`
+- Superseding implementation:
+  `89064e8319813ff37879413cbc7a9692bc063f52`
 - Containing authorization:
   `54df8a79e1d2beb0e2ea7289dcbd13617ed90197`
-- State-based acquisition:
+- Sole acquisition parent:
   `930b5ab55c1f7e40b1143a757417bee1ca9ae49e`
+- Reconciled control:
+  `320cb1c53dee8d4e0b6300fa832060fc2ac37349`
+- Reconciliation parent:
+  `024e8860153b53ca44740bc7e8e7a063291687c0`
 - READY digest:
   `daa56dabb6b8f3d28f7a4d23ce252143d51f8b8b08fbad35802ac9fedef34dcb`
 - Claim: `95a4b423-1906-4b24-846b-c4f9d3c1c32a`
 - Writer: `codex-p11-worker-95a4b423`
 - ADMIN_OPERATIONS_UI lease:
   `c9c69acd-9df5-4411-9cbd-887f33f237f1`
-- Lease window: `2026-07-29T10:44:39Z` through
-  `2026-07-29T11:44:39Z`
-- Phase scope:
-  `P11_atomic_claim_retained_credential_binding_correction_only`
-- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
-  pushed remote head.
+- Lease released: `2026-07-29T11:09:17Z`, before its
+  `2026-07-29T11:44:39Z` expiry.
 
-## Bound rejection
+## Superseding correction
 
-I36 independently reproduced all prior mechanical evidence but rejected the
-exact final. `AdminSearchPage`, initial request, and recent-query state have no
-credential-version binding. The component accepts them whenever authorization
-state is `admin`, initializes its observed version to that new credential, and
-clears mismatches only after render.
+Every retained private Admin search result page, initial or last request, and
+recent-query snapshot now carries the exact Admin credential version that
+produced it. The component accepts retained inputs only when every supplied
+snapshot matches the current exact Admin credential version.
 
-The exact read-only probe rendered both a retained private result and retained
-recent query for an Admin credential version while the page contract carried
-no credential version. The correction must bind retained search/request/recent
-state and dashboard snapshots to the exact credential/session version and fail
-closed synchronously when absent or non-current.
+Private query, loading/error, request, result, selection, pagination, and
+recent-query state fail closed synchronously before initialization or render
+when authorization is not Admin, any retained snapshot is absent from the
+current credential version, or the Admin credential rotates while the state
+remains Admin. The existing invalidation path then clears private state and
+drops in-flight completions.
 
-## Preserved evidence
+The correction is limited to the shared private-completion helper, Admin global
+search component, and its focused test. All earlier revoked-render,
+generation/authorization completion guards, server-resolved navigation,
+injective IDs, Bearer filtering, provider provenance, 24-hour window,
+Asia/Jerusalem labels, privacy, and accessibility behavior remains covered.
 
-- Prior implementation artifact digest:
-  `3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986`
-- Unchanged request digest:
+## Exact digests
+
+- Implementation artifact digest:
+  `d9c91d976d336a8283ddffd2a761d3720454893f75dd4292c14b82c6b1bf4419`
+  over 14 exact implementation/test Git blobs.
+- Unchanged P11-registration-001 payload digest:
   `68a99cc059304f66570f2296a5872bfa379062ae854401c54c196ec12b56fa42`.
-- Unchanged aggregate:
+- Unchanged request aggregate:
   `2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e`.
-- F05 and F07 dependency heads and digests remain exact as recorded in
-  `TASK-STATE.yaml`.
 
-## Atomic checkpoint scope
+## Verification
 
-This checkpoint changes only P11 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. No product, test, structured request, steward, registration,
-provider, or effect file was edited.
+- Four focused files and 21 direct positive/negative tests passed.
+- Workspace typecheck passed.
+- Focused ESLint and Prettier passed.
+- Exact three-path implementation/test scope and diff hygiene passed.
+- The structured request remained byte-for-byte unchanged and unapplied.
+- Artifact and request digests reproduced from immutable implementation blobs.
 
-## Next action
+## Independent review
 
-C00 must reconcile the exact pushed atomic claim head. P11 must stop after
-reporting it and may correct product/tests only under a subsequent explicit
-authorization.
+C00/I36 must independently re-audit exact implementation
+`89064e8319813ff37879413cbc7a9692bc063f52`, reproduce the digests, and verify
+the rotated-Admin first-render, same-state credential-version invalidation, and
+mixed retained-snapshot fail-closed proofs while preserving every prior P11
+boundary.
 
 ## External effects
 

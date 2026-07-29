@@ -29,8 +29,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: retained_credential_binding_correction
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing
 claimed_by: codex-p11-worker-95a4b423
 claim_time: '2026-07-29T10:44:39Z'
@@ -42,16 +42,16 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T11:44:39Z'
     state_based_on_control_head_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
     phase_scope: P11_atomic_claim_retained_credential_binding_correction_only
-    lease_released_at: null
-    state: active
+    lease_released_at: '2026-07-29T11:09:17Z'
+    state: released
 lease_expires_at: '2026-07-29T11:44:39Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T10:44:39Z'
+lease_released_at: '2026-07-29T11:09:17Z'
+last_heartbeat_at: '2026-07-29T11:09:17Z'
 controller_authorization_sha: 54df8a79e1d2beb0e2ea7289dcbd13617ed90197
 controller_authorization_parent_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
-claim_reconciled_control_sha: null
-claim_reconciled_control_parent_sha: null
-atomic_claim_head_sha: null
+claim_reconciled_control_sha: 320cb1c53dee8d4e0b6300fa832060fc2ac37349
+claim_reconciled_control_parent_sha: 024e8860153b53ca44740bc7e8e7a063291687c0
+atomic_claim_head_sha: bd40e5f0547eb9ad629c47fb4ab294982765978f
 prior_authorization_race_claim_reconciled_control_sha: dcb7fba1231d635af45a8a346f134559f2de08e9
 prior_authorization_race_claim_reconciled_control_parent_sha: 637d1c389977da17a8c1ae52aa7862ff4aff9f0d
 prior_authorization_race_atomic_claim_head_sha: 77c168d0a4a27b81ba1f7cddaa8d31821a8654f6
@@ -90,9 +90,9 @@ retained_credential_rejection:
     Bind every retained private result, request, recent-query, and dashboard
     snapshot source to the exact credential/session version and synchronously
     fail closed before render whenever that binding is absent or non-current.
-state_based_on_head_sha: 17538da1ff15066c3e242567970062db4589577b
-last_implementation_commit_sha: 17924328cdc820e3cc9a8928f0685b868df4df74
-implementation_artifact_digest: 3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986
+state_based_on_head_sha: 89064e8319813ff37879413cbc7a9692bc063f52
+last_implementation_commit_sha: 89064e8319813ff37879413cbc7a9692bc063f52
+implementation_artifact_digest: d9c91d976d336a8283ddffd2a761d3720454893f75dd4292c14b82c6b1bf4419
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
   the 14 implementation and focused-test artifacts, sorted lexicographically
@@ -184,20 +184,52 @@ completed_steps:
   - Claimed only the three P11 runtime-memory files for the retained-credential
     correction; no product, test, request, steward, provider, or effect file
     was edited.
+  - Verified exact C00 reconciliation
+    320cb1c53dee8d4e0b6300fa832060fc2ac37349 with sole parent
+    024e8860153b53ca44740bc7e8e7a063291687c0, exact atomic claim
+    bd40e5f0547eb9ad629c47fb4ab294982765978f, unchanged claim and lease,
+    correction-only scope, and zero effect authority.
+  - Bound every retained Admin search result page, initial/last request, and
+    recent-query snapshot to the exact Admin credential version that produced
+    it; absent, mixed-version, rotated, signed-out, and revoked bindings fail
+    closed before private state initialization or render.
+  - Kept query, loading/error, pagination, and result rendering synchronously
+    hidden across same-state Admin credential rotation, then cleared all
+    private search state and invalidated in-flight completions.
+  - Added direct rotated-Admin first-render, exact same-state
+    credential-version invalidation, and mixed retained-snapshot fail-closed
+    tests while preserving the prior authorization, completion-generation,
+    identity, transport, provenance, privacy, navigation, timezone, and
+    accessibility proofs.
+  - Passed four focused files and 21 direct positive/negative tests, workspace
+    typecheck, focused ESLint and Prettier, exact three-path implementation/test
+    scope, and diff hygiene.
+  - Reproduced all 14 implementation Git-blob digests, superseding artifact
+    digest d9c91d976d336a8283ddffd2a761d3720454893f75dd4292c14b82c6b1bf4419,
+    unchanged request payload digest
+    68a99cc059304f66570f2296a5872bfa379062ae854401c54c196ec12b56fa42,
+    and unchanged request aggregate digest
+    2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e.
+  - Released claim 95a4b423-1906-4b24-846b-c4f9d3c1c32a and
+    ADMIN_OPERATIONS_UI lease c9c69acd-9df5-4411-9cbd-887f33f237f1
+    before expiry with no steward, provider, or external effect attempted.
 remaining_steps:
-  - Commit and normally push this exact three-file P11 atomic correction claim.
-  - Report the exact pushed claim head to C00 and stop for reconciliation.
-  - After fresh explicit authorization, correct only the retained-credential
-    binding blocker while preserving every prior P11 boundary.
-next_action: C00 must reconcile the exact pushed P11 retained-credential atomic claim head before product or test correction begins.
+  - I36 must independently re-audit and integrate exact superseding
+    implementation head 89064e8319813ff37879413cbc7a9692bc063f52.
+  - I36 must reproduce the superseding implementation and unchanged request
+    digests and verify direct rotated-Admin first-render and same-state
+    credential-version fail-closed behavior.
+  - Candidate-bound persistent-staging and production-operator-canary evidence
+    remains with the assigned verification and release lanes.
+next_action: I36 should independently re-audit exact implementation head 89064e8319813ff37879413cbc7a9692bc063f52, reproduce artifact digest d9c91d976d336a8283ddffd2a761d3720454893f75dd4292c14b82c6b1bf4419 and request aggregate 2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e, and integrate only after exact retained-snapshot credential binding, rotated-Admin first-render, and same-state credential-version invalidation pass independently.
 requirements:
-  OTV2-ADMIN-021: correction_pending
-  OTV2-ADMIN-029: correction_pending
-  OTV2-ADMIN-205: correction_pending
+  OTV2-ADMIN-021: implementation_verified
+  OTV2-ADMIN-029: implementation_verified
+  OTV2-ADMIN-205: implementation_verified
 acceptance_cases:
-  OTV2-ADMIN-021-AC01: correction_pending
-  OTV2-ADMIN-029-AC01: correction_pending
-  OTV2-ADMIN-205-AC01: correction_pending
+  OTV2-ADMIN-021-AC01: task_owned_assertions_passed
+  OTV2-ADMIN-029-AC01: task_owned_assertions_passed
+  OTV2-ADMIN-205-AC01: task_owned_assertions_passed
 changed_paths:
   - apps/web/src/client/app/admin/adminPrivateCompletion.ts
   - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
@@ -299,6 +331,18 @@ verification:
       result: passed; exact control 54df8a79, acquisition 930b5ab5, rejected head 17538da1, F05/F07 bindings, sole live lease, and zero effect locks
     - command: atomic correction-claim scope verification
       result: passed; only P11 TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md changed, with no product, test, request, steward, provider, or effect work
+    - command: exact C00 retained-credential claim reconciliation and zero-effect verification
+      result: passed; reconciled control 320cb1c5 authorizes only the retained search-state correction from exact claim bd40e5f0
+    - command: npx vitest run <four P11 focused test files>
+      result: passed; 4 files and 21 direct positive/negative tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over the three bounded TypeScript and TSX files
+      result: passed
+    - command: exact retained-credential correction scope audit and git diff --check
+      result: passed; exactly three bounded implementation/test paths and unchanged structured request
+    - command: exact superseding Git-blob artifact and request digest reproduction
+      result: passed; 14-artifact digest d9c91d97 and unchanged request aggregate 2327a180
   known_baseline_failures: []
 external_effects:
   authority: none
