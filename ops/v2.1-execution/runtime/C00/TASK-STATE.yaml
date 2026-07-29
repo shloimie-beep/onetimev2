@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-1caf5944
-claim_time: '2026-07-29T06:38:36Z'
-claim_id: 1caf5944-0352-43cc-8f0a-49006701b0c7
-lease_expires_at: '2026-07-29T06:53:36Z'
-last_heartbeat_at: '2026-07-29T06:40:14Z'
-controller_authorization_sha: 98cde826b118f2b8162e29a7761bf9d0f9fcf285
+claimed_by: codex-c00-orchestrator-272f3e6f
+claim_time: '2026-07-29T07:13:45Z'
+claim_id: 272f3e6f-19fa-49cf-becd-bd43748fb438
+lease_expires_at: '2026-07-29T07:28:45Z'
+last_heartbeat_at: '2026-07-29T07:17:25Z'
+controller_authorization_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
 ready_entry_payload_digest: null
-state_based_on_head_sha: 98cde826b118f2b8162e29a7761bf9d0f9fcf285
+state_based_on_head_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -258,8 +258,11 @@ completed_steps:
 - independently verified P11 corrected claim c0fe1ec4 has sole parent 396bf74d, exactly three P11 runtime files, fresh authorization/claim/lease/ready bindings, the corrected 64-character F05 digest, clean remote state, and zero effects
 - independently verified P23 atomic claim 05ef6060 has sole parent cecc1c0d, exactly three P23 runtime files, fresh authorization/claim/lease/ready/F05/F07 bindings, clean remote state, and zero effects
 - consumed both corrected READY entries and authorized only bounded P11 admin-operations and P23 student-notifications implementation under their disjoint leases with no provider, send, steward-application, migration, registration, or external-effect authority
-remaining_steps: []
-next_action: P11 and P23 implement only their locked disjoint admin-operations and student-notifications scopes from reconciled heads c0fe1ec4 and 05ef6060, publish ready_for_review with focused tests/typecheck and released leases, and perform no external effect.
+- recorded Shloimie Dratler's candidate-pending seven-day bounded production source grant as immutable approval evidence and a non-effect-usable source authority record
+remaining_steps:
+- complete exact-source admission audits of P23 final 39b05094 and P11 final 51bd416b and authorize bounded corrections for any semantic blockers
+- derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
+next_action: Complete exact-source admission audits of P23 final 39b05094 and P11 final 51bd416b; correct any semantic blocker before integration. Preserve the active external source grant for exact derived effect authority after the candidate, dependency, identity, fixture, budget, lock, and fencing gates pass.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -267,7 +270,7 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 98cde826b118f2b8162e29a7761bf9d0f9fcf285
+  current_control_parent_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
@@ -694,14 +697,14 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 1b5a3373aa16f98d293b90331e4d1e6ba4ba3efffc947481c55c048ca193914e
-    control_lease: 02b83a72909ba1f8c3ecb216ec397067e9337c1d53960ce59fe91c5f2998694e
+    control_state: a4e931789c4a04125218491c8aeafe2d12e57e70740f5851ae1c34ddd8c3be48
+    control_lease: cc1079e843c89e8b1d9af3ed4931b209a59c3f4e37a890dfad3ff836f39a9a99
     task_registry: 8e4858355c8c6dfadf5b6c3db4e1a2c61b903cce4a44304dd441b4246e255628
     ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
-    authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
+    authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70
     current_candidate: d363b5688183208265274bc5521676505338df544965c36e76ec1205ea9bf724
     blockers: e3f82402bf15371558d1777351746bb39010d276deef7241c0a0b3329252a3b6
@@ -818,10 +821,11 @@ verification:
   - P11 c0fe1ec4 corrected-claim sole-parent ancestry, exact three-file scope, fresh bindings, corrected F05 digest, clean remote state, and zero effects: passed
   - P23 05ef6060 atomic-claim sole-parent ancestry, exact three-file scope, fresh bindings, corrected dependencies, clean remote state, and zero effects: passed
   - corrected ready-entry consumption, bounded P11/P23 implementation authorization, released C00 lease, registry transitions, and control raw SHA-256 bindings: passed
+  - source grant approval-evidence digest 8c95a959, immutable grant digest 94a39fe0, canonical status-entry digest c6ef687c, exact GHL location pBSnOK2nkdxp6gf9Rg3o, matrix digest 88a9fbd0, candidate-binding pending state, and zero-effect usability: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
-  authority: none
+  authority: source_grant_active_candidate_and_exact_effect_bindings_pending
   attempted: 0
   succeeded: 0
   reconciled: 0

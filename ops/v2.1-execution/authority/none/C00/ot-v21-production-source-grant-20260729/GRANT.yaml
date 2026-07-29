@@ -1,0 +1,88 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+authority_id: ot-v21-production-source-grant-20260729
+authority_kind: external_source_grant
+task_id: C00
+candidate_digest: not_applicable_pending_candidate_freeze
+candidate_binding_status: pending
+canonical_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/GRANT.yaml
+approval_evidence_path: ops/v2.1-execution/authority/none/C00/ot-v21-production-source-grant-20260729/APPROVAL.md
+grant_status_at_issue: active
+approved_by: Shloimie Dratler
+approval_evidence_digest: 8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2
+scope:
+  execution: OT-V21-PRODUCTION
+  effect_classes:
+  - read-only provider inspection and reconciliation
+  - create, update, configure, publish, and activate required canonical assets
+  - bounded production canaries
+  - production deployment and required One Time DNS changes
+  - release-defined consent-gated transactional and lifecycle communications after successful release
+  providers_and_infrastructure:
+  - GHL
+  - Resend
+  - Zoom
+  - Google Drive
+  - Vimeo
+  - Telegram
+  - OpenAI
+  - GHL-managed Stripe billing
+  - S3 and KMS
+  - backups
+  - isolated restore verification
+  - alerts
+  - deployment infrastructure
+  deferred_exact_binding:
+  - task_id
+  - canonical_candidate_digest
+  - exact provider account, location, domain, folder, bot, project, or asset identity
+  - exact operator fixture and destination identities
+  - exact operation, budget, cleanup, rollback, and stop conditions
+fencing_token: not_applicable_source_grant_only
+lock: not_applicable_source_grant_only
+provider_account_location_or_asset_id:
+  ghl_location_id: pBSnOK2nkdxp6gf9Rg3o
+  all_other_identities: pending_canonical_registry_and_live_readback
+allowed_operation: derive exact task-, candidate-, and provider-bound authority records after their gates pass
+effect_authority_usable: false
+effect_authority_rule: This source grant cannot reserve or perform an effect. Every effect requires a separately
+  derived exact authority record, current authority-status binding, exclusive provider lock, and fresh fencing token.
+maximum_effect_count: not_applicable_source_grant_only
+maximum_effect_value: not_applicable_source_grant_only
+effect_budget_source:
+  path: ops/v2.1-execution/EXTERNAL-AUTHORITY-MATRIX.yaml
+  raw_sha256: 88a9fbd0363c1f50e22ed8d962245a03799a0093e5d21ff9cd3aebb81eac527c
+approved_fixture_ids: []
+operator_identity: pending_exact_operator_binding
+approved_at: '2026-07-29T07:13:45Z'
+recorded_at: '2026-07-29T07:13:45Z'
+expires_at: '2026-08-05T07:13:45Z'
+expires_on_release_completion: true
+cleanup_and_reconciliation:
+- use only operator-controlled canary identities and destinations
+- reconcile every external effect by canonical-provider readback
+- rollback or clean up only exact canary-created assets identified by immutable IDs
+- preserve immutable effect evidence and record ambiguous outcomes as attempted_unknown
+stop_conditions:
+- grant revoked by Shloimie Dratler
+- release completed
+- seven-day expiry reached
+- candidate or dependency gate is not satisfied
+- provider identity is guessed, ambiguous, or not confirmed by canonical registry and live readback
+- exact operator fixture, card, device, destination, or account is unavailable
+- exclusive provider lock, fresh fencing token, effect budget, rollback, cleanup, or readback gate is absent
+- Student contact creation in GHL would occur
+- broad campaign send, historical audience enrollment, WhatsApp send or activation, customer deletion,
+  provider-account deletion, broad rewrite, unrelated-data mutation, or direct One Time Stripe mutation would occur
+- bounded canary would exceed one operator-controlled GHL/Stripe checkout, USD 67 total, or one required refund
+post_release_scope:
+  allowed: normal consent-gated transactional and lifecycle communications defined by the specification
+  separately_approved_required:
+  - mass newsletters
+  - reactivation blasts
+  - marketing campaigns to an existing audience
+credential_handling:
+- use existing configured connectors, browser sessions, environment secrets, Railway secrets, and approved secret stores
+- do not display, commit, copy, relocate, or request an already available credential
+contains_secret: false
+immutable: true

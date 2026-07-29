@@ -1040,3 +1040,20 @@ lifecycle, safe action routing, and optional foreground sound but may not send
 anything. Neither may edit a migration, central composer/registration, root
 barrel, package manifest, apply a steward request, call a provider, or cause
 an external effect.
+
+Shloimie Dratler's full bounded OT-V21-PRODUCTION authority statement is now
+preserved under immutable source authority
+`ot-v21-production-source-grant-20260729`. Approval evidence raw SHA-256 is
+`8c95a959f79aba0ac34fa0fcb6cb463cceac9aeb2bb52da1603d39db3e2c33c2`;
+grant raw SHA-256 is
+`94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1`.
+The exact authorized GHL location is `pBSnOK2nkdxp6gf9Rg3o`; all other provider,
+operator-fixture, asset, and destination identities remain pending canonical
+registry plus live readback. The source grant expires at release completion or
+`2026-08-05T07:13:45Z`, whichever comes first. It is deliberately marked
+`effect_authority_usable: false`: after the candidate and dependencies are
+ready, C00 may derive exact task/candidate/provider/operation/budget authority
+records without asking again, but each live effect still requires current
+status, the correct exclusive provider lock, a fresh fencing token, immutable
+reservation, budget protection, readback, reconciliation, and rollback
+evidence. No provider lock was acquired and effects remain `0/0/0`.

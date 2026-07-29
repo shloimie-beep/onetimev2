@@ -776,3 +776,19 @@ request digests, release their leases, push `ready_for_review`, remote-verify,
 and stop with effects `0/0/0`. Migrations, central composers/registrations,
 root barrels, package files, steward application, providers, and effects are
 excluded.
+
+Preserve source authority `ot-v21-production-source-grant-20260729` and its
+grant digest
+`94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1`.
+It expires at release completion or `2026-08-05T07:13:45Z`, whichever occurs
+first. It is candidate-pending and cannot itself reserve or perform an effect.
+When an effect-bearing verification, operator, or release task is dependency-
+ready and the candidate is frozen, derive a separate exact task-, candidate-,
+provider-, identity-, fixture-, operation-, budget-, cleanup-, and stop-bound
+authority record from this source. Confirm identities by canonical registry
+and live readback; the exact GHL location is `pBSnOK2nkdxp6gf9Rg3o`. Acquire
+the exclusive provider lock and fresh fencing token immediately before each
+live effect, push the immutable reservation, recheck current control authority
+and lock state, then require provider readback, reconciliation, and rollback
+evidence. Never use guessed identities or expose an existing credential. The
+grant does not lift any matrix budget or prohibition.

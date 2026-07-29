@@ -1,7 +1,25 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
-authorities: {}
+authorities:
+  ot-v21-production-source-grant-20260729:
+    schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    authority_id: ot-v21-production-source-grant-20260729
+    authority_kind: external_source_grant
+    grant_digest: 94a39fe03e74bfc133206cbc3b0fecb632114a7ea877ea753b429530d4ce3ad1
+    status: active
+    expires_at: '2026-08-05T07:13:45Z'
+    expires_on_release_completion: true
+    latest_revocation_path: null
+    latest_revocation_digest: null
+    provider_lock: not_applicable_source_grant_only
+    provider_lock_lease_id: null
+    fencing_token: not_applicable_source_grant_only
+    effect_authority_usable: false
+    candidate_binding_status: pending
+    checked_at: '2026-07-29T07:13:45Z'
+    state_based_on_control_head_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

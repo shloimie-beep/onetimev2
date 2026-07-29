@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: P11 and P23 implement only their locked disjoint admin-operations and student-notifications scopes from reconciled heads c0fe1ec4 and 05ef6060, publish ready_for_review with focused tests/typecheck and released leases, and perform no external effect.
-authority_note: Only C00 updates this global control state.
+controller_authorization_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
+next_action: Complete exact-source admission audits of P23 final 39b05094 and P11 final 51bd416b; correct any semantic blocker before integration. Preserve the active external source grant for exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound derivation after all applicable gates pass.
+authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
