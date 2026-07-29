@@ -1,0 +1,171 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P10
+task_packet_digest: fe7abc1af5110c1007c34927fe9909bc3643998dd10615c195046f30423f7e28
+task_context_digest: a27b3c710d277153d8273f82d5d8e745d620fdd5ecacc619f6f7b9a5772bab17
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p10-admin-directory
+start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+dependency_heads:
+  F03:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+    task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+    task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+  F04:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+    task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+    task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: ready_for_review
+phase: complete
+claim_mode: resume_existing_branch
+claimed_by: codex-p10-worker-cd15a4ba
+claim_time: '2026-07-29T02:20:00Z'
+claim_id: cd15a4ba-db91-44ff-b522-f111fbcd9a0d
+writer_slot_leases:
+  - slot: ADMIN_DIRECTORY
+    lease_id: f7660370-d954-4ee3-8513-4069bef54025
+    lease_issued_at: '2026-07-29T02:12:48Z'
+    lease_expires_at: '2026-07-29T03:12:48Z'
+lease_expires_at: '2026-07-29T03:12:48Z'
+lease_released_at: '2026-07-29T02:38:56Z'
+last_heartbeat_at: '2026-07-29T02:38:56Z'
+controller_authorization_sha: 04ebe46bc1cff1223bdade3379457cf774c0dce1
+reconciled_containing_controller_sha: 802b522f2a5ff0613bdba6cb754cb2eeb340537f
+latest_observed_control_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
+continuation_control_parent_sha: 81f10c6535db733cc0505b43f37fe5a3e7887934
+ready_entry_state_based_on_control_head_sha: 765ad933964ce0019895c2133ff10a491b7938a2
+ready_entry_payload_digest: e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b
+state_based_on_head_sha: da5576d3f675b90a5db812d293801f9f5fa17d38
+claim_checkpoint_parent_sha: 551d483e9678336655546eef6002a7a7daf9d4da
+last_implementation_commit_sha: da5576d3f675b90a5db812d293801f9f5fa17d38
+implementation_artifact_digest: 07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 10 non-runtime P10 artifacts, with LF separators and no final newline.
+steward_request_digest: 0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea
+completed_steps:
+  - Verified reconciled containing controller 802b522f2a5ff0613bdba6cb754cb2eeb340537f, its sole parent/acquisition 81f10c6535db733cc0505b43f37fe5a3e7887934, exact claim head 6ec92d288e4ed511449e5061d21a2dfb49c1abae, bounded correction authorization, live ADMIN_DIRECTORY lease, and zero effect authority.
+  - Verified later control-only orchestration lease commit 9184bcfdb7e983a4f03733624d2d5f98455c7ea3 has sole parent 802b522f2a5ff0613bdba6cb754cb2eeb340537f and leaves the exact P10 claim, lease, and correction scope unchanged.
+  - Bound current service-account acceptance to the exact locked household owner, active AdultIdentity, and active Parent HumanAccount; unrelated, mismatched, inactive, non-Parent, stale-policy, and cross-scope evidence is denied.
+  - Made Student restore consume the exact current locked revoked enrollment, preserve its enrollment identity, increment its version monotonically, and reject mismatched Student, household, enrollment, state, acceptance, scope, or version evidence.
+  - Replaced ownership-transfer caller subsets with one scope-bound exhaustive locked inventory of outgoing/replacement sessions, billing sessions, grants, setup/reset tokens, and effect authority; persistence now requires atomic exact revocation/readback for every item.
+  - Added direct negative probes for unrelated-adult acceptance, mismatched/forged enrollment restore, caller ownership subsets, and incomplete ownership-effect readback with transaction rollback; focused suite passes 20/20.
+  - Passed full workspace typecheck and lint, focused Prettier, diff hygiene, repository-wide secret scan, and exact digest reproduction; released ADMIN_DIRECTORY lease f7660370-d954-4ee3-8513-4069bef54025 with no external effect attempted.
+  - Verified containing controller 04ebe46bc1cff1223bdade3379457cf774c0dce1, its sole parent/acquisition 765ad933964ce0019895c2133ff10a491b7938a2, exact rejected final 551d483e9678336655546eef6002a7a7daf9d4da, and unchanged implementation and steward artifacts.
+  - Recomputed and matched canonical P10 correction-ready digest e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b.
+  - Verified correction claim cd15a4ba-db91-44ff-b522-f111fbcd9a0d, active ADMIN_DIRECTORY lease f7660370-d954-4ee3-8513-4069bef54025, empty effect-lock list, and zero external effects.
+  - Consumed the audited correction claim only in the three P10 runtime-memory files; no product, contract, test, steward-request, migration, configuration, or shared file was changed.
+  - Verified continuation controller f84e9d3da1e131cab0714bd24441b08133b7c1a6, its sole parent 34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4, exact reconciled claim head, unchanged claim/lease, and zero effect authority.
+  - Corrected Student credential policy validation to the exact F03 current argon2id-v1 structure and replaced caller-selected revocation subsets with exhaustive scope-bound revoke-all unit-of-work readback.
+  - Enforced locked current service-account acceptance, global username uniqueness, Student enrollment/credential/profile atomicity, household access/capacity, final-Admin/owner/disabled-account denial, exact Family/School seat policy, and complete adult/Student/household session and grant revocation.
+  - Added URL-backed directory search, kind/status filters, archived visibility, sorting, pagination, safe matching-empty state, and explicit consequence confirmation before lifecycle, ownership-transfer, and credential-reset actions.
+  - Added denial, rollback, concurrent replay, stale-version, capacity, acceptance, username-race, hash-policy, scope, and exact revocation tests; focused suite passes 18/18.
+  - Refreshed the exact ten-artifact implementation digest and immutable steward-request digest, then released the task-local writer lease with no external effect attempted.
+  - Fetched containing correction controller b0aeb1d1ba9ed25b27b7b519b9f06ba6bbbe7dfc and verified its sole parent/acquisition c743420931244135bcd61578ea1f322851b325a8.
+  - Recomputed and matched canonical P10 correction-ready digest 526ce8d0d61a88d2def1cf58d9d8d8e8375e03760e7c00db3dec5fab70168467.
+  - Verified resume_existing_branch head 92212a7b6873a9b6da5e7173b4fd1af88ef47293, correction claim 0f061200-ff84-449d-aaa7-b0ebd7cd9c02, active ADMIN_DIRECTORY lease c3ee876e-793d-4c19-9a4c-40de4f27e758, and zero effect locks.
+  - Consumed the correction claim only in the three P10 runtime-memory files; no product, contract, test, steward-request, migration, configuration, or shared file was changed.
+  - Verified the reconciled continuation control d8639ce20ce92a0f49ce8d69b57b09b355d09246, sole parent 629577e2ea6da2fdeca7754a6f314b6b254e952e, exact claim head, task/ready digests, dependency interfaces, and active ADMIN_DIRECTORY lease.
+  - Implemented exact runtime Admin authorization, product/runtime/environment isolation, adult and household lifecycle, Admin/Parent membership creation, Student lifecycle, protected Student credential reset, and F04 verified sole-ownership transfer.
+  - Implemented an idempotent transaction service that checks replay before executing row-locked mutation reads and commits aggregate writes, audit, credential/transfer records, and receipt atomically.
+  - Implemented the accessible F07 Admin directory workspace with adult, household, Student, ownership-transfer, credential-reset, lifecycle, empty, and error controls.
+  - Passed full workspace typecheck and lint, 12 focused assertions, focused Prettier, diff hygiene, repository-wide secret scan, and provider-effect inventory.
+  - Pushed exact implementation head 3abb4bb96929400838f0270586c5c459c8c6f9ed and derived its 10-artifact and steward-request Git-blob digests.
+remaining_steps:
+  - I36 must independently review and integrate exact corrected implementation head da5576d3f675b90a5db812d293801f9f5fa17d38.
+  - I36 must disposition the refreshed P10 migration and registration steward requests, including the current-enrollment and exhaustive ownership-effect repository ports, without weakening the bounded correction.
+  - Candidate-bound persistent-staging and production-operator-canary evidence remains with the assigned verification and release lanes.
+next_action: I36 should review and integrate corrected implementation head da5576d3f675b90a5db812d293801f9f5fa17d38, verify artifact digest 07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873, and disposition steward digest 0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea.
+requirements:
+  OTV2-ADMIN-022: implementation_ready
+  OTV2-ADMIN-023: implementation_ready
+  OTV2-ADMIN-024: implementation_ready
+  OTV2-ADMIN-025: implementation_ready
+  OTV2-ADMIN-026: implementation_ready
+  OTV2-ADMIN-027: implementation_ready
+  OTV2-ADMIN-028: implementation_ready
+  OTV2-ADMIN-030: implementation_ready
+acceptance_cases:
+  OTV2-ADMIN-022-AC01: implementation_ready
+  OTV2-ADMIN-023-AC01: implementation_ready
+  OTV2-ADMIN-024-AC01: implementation_ready
+  OTV2-ADMIN-025-AC01: implementation_ready
+  OTV2-ADMIN-026-AC01: implementation_ready
+  OTV2-ADMIN-027-AC01: implementation_ready
+  OTV2-ADMIN-028-AC01: implementation_ready
+  OTV2-ADMIN-030-AC01: implementation_ready
+changed_paths:
+  - apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx
+  - apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.tsx
+  - apps/web/src/client/app/admin/directory/index.ts
+  - apps/web/src/server/features/admin/directory/index.ts
+  - apps/web/src/server/features/admin/directory/service.test.ts
+  - apps/web/src/server/features/admin/directory/service.ts
+  - ops/v2.1-execution/runtime/P10/HANDOFF.md
+  - ops/v2.1-execution/runtime/P10/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P10/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P10/TASK-STATE.yaml
+  - packages/contracts/src/admin/directory/index.ts
+  - packages/domain/src/admin-directory/admin-directory.test.ts
+  - packages/domain/src/admin-directory/index.ts
+  - packages/domain/src/contact-operations/index.ts
+migrations: []
+steward_requests:
+  - P10-MIGRATION-001
+  - P10-REGISTRATION-001
+verification:
+  commands_run:
+    - npm run typecheck -- --pretty false (passed after bounded correction).
+    - npm run lint -- --quiet (passed after bounded correction).
+    - npx vitest run packages/domain/src/admin-directory/admin-directory.test.ts apps/web/src/server/features/admin/directory/service.test.ts apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx (passed; 3 files, 20 tests).
+    - Direct unrelated-adult acceptance, mismatched/forged enrollment restore, caller ownership-subset, and incomplete ownership-readback rollback probes (passed).
+    - Focused Prettier check and git diff --check (passed).
+    - npm run secret:scan (passed across 2719 repository text files).
+    - Exact prior-digest reproduction plus refreshed ten-artifact implementation and steward-request Git-blob digest derivation (passed).
+    - Exact reconciled controller, acquisition, claim head, bounded scope, active writer lease, later non-semantic control advance, and zero effect authority verification (passed).
+    - npm run typecheck -- --pretty false (passed).
+    - npm run lint -- --quiet (passed).
+    - npx vitest run packages/domain/src/admin-directory/admin-directory.test.ts apps/web/src/server/features/admin/directory/service.test.ts apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx (passed; 3 files, 18 tests).
+    - Focused Prettier write/check and git diff --check (passed).
+    - npm run secret:scan (passed across 2719 repository text files).
+    - Exact ten-artifact implementation and steward-request Git-blob digest derivation (passed).
+    - Exact correction controller, sole-parent/acquisition, ready-entry digest, expected existing remote head, claim, active writer lease, and zero effect-lock verification (passed).
+    - Correction checkpoint scope inspection (passed; exactly the three P10 runtime-memory files and no product work).
+    - Exact reconciled control, sole-parent/acquisition, claim head, task/ready digests, F03/F04/F07 interfaces, and active lease verification (passed).
+    - npm run typecheck (passed).
+    - npm run lint -- --quiet (passed).
+    - npx vitest run packages/domain/src/admin-directory/admin-directory.test.ts apps/web/src/server/features/admin/directory/service.test.ts apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx (passed, 12 tests).
+    - Focused Prettier write/check and git diff --check (passed).
+    - npm run secret:scan (passed across 2719 repository text files).
+    - Exact 10-artifact implementation and steward-request Git-blob digest derivation (passed).
+  known_baseline_failures:
+    - npm run brand:check reports a pre-existing raw UI color in scripts/ops/validate-ot-launch-governance.ts; no P10 changed path contains that file or adds raw color.
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - Shared migration, database adapter, root barrels, central route composition, and legacy route replacement are captured in STEWARD-REQUESTS.yaml and were not edited by P10.
