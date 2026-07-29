@@ -11,6 +11,16 @@ import {
 const HASH = 'a'.repeat(64);
 
 describe('Postgres embedded classroom repository', () => {
+  it('inserts a launch grant only into the collision-free v2.1 table', async () => {
+    const query = vi.fn().mockResolvedValue({
+      rows: [{ inserted: true }],
+      rowCount: 1,
+    });
+    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    await expect(repository.insertLaunchGrant(grant())).resolves.toBe('inserted');
+    expectLaunchGrantV21Sql(query.mock.calls[0]?.[0]);
+  });
+
   it('loads a launch grant only by exact environment scope and digest', async () => {
     const query = vi.fn().mockResolvedValue({ rows: [], rowCount: 0 });
     const repository = createPostgresEmbeddedClassroomRepository(pool(query));
@@ -26,6 +36,7 @@ describe('Postgres embedded classroom repository', () => {
       'ci',
       HASH,
     ]);
+    expectLaunchGrantV21Sql(query.mock.calls[0]?.[0]);
     expect(String(query.mock.calls[0]?.[0])).not.toContain(HASH);
   });
 
@@ -55,6 +66,7 @@ describe('Postgres embedded classroom repository', () => {
       expect.stringContaining('ON CONFLICT DO NOTHING'),
       'COMMIT',
     ]);
+    expectLaunchGrantV21Sql(query.mock.calls[1]?.[0]);
   });
 
   it('rolls back a stale grant so no overlapping session can commit', async () => {
@@ -114,8 +126,14 @@ describe('Postgres embedded classroom repository', () => {
       expect.stringContaining('used_at IS NULL'),
       'COMMIT',
     ]);
+    expectLaunchGrantV21Sql(query.mock.calls[2]?.[0]);
   });
 });
+
+function expectLaunchGrantV21Sql(sql: unknown): void {
+  expect(String(sql)).toContain('onetime.classroom_launch_grants_v21');
+  expect(String(sql)).not.toMatch(/onetime\.classroom_launch_grants(?!_v21)/);
+}
 
 function pool(query: ReturnType<typeof vi.fn>) {
   const client: EmbeddedClassroomSqlClient = { query, release: vi.fn() };

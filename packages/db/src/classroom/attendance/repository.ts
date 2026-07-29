@@ -35,7 +35,7 @@ export function createPostgresEmbeddedClassroomRepository(
     async insertLaunchGrant(grant) {
       const inserted = await poolQuery(
         pool,
-        `INSERT INTO onetime.classroom_launch_grants
+        `INSERT INTO onetime.classroom_launch_grants_v21
            (grant_id, grant_key_digest, product, runtime_tier, verification_environment_id,
             student_id, household_id, authenticated_session_id, occurrence_id, registrant_id,
             issued_at, expires_at, used_at, revoked_at, student_version, enrollment_version,
@@ -45,12 +45,12 @@ export function createPostgresEmbeddedClassroomRepository(
                  NULL,NULL,$13,$14,$15,$16,$17,$18,$19)
          ON CONFLICT (product, runtime_tier, verification_environment_id, grant_key_digest)
          DO UPDATE SET grant_key_digest = EXCLUDED.grant_key_digest
-           WHERE classroom_launch_grants.student_id = EXCLUDED.student_id
-             AND classroom_launch_grants.household_id = EXCLUDED.household_id
-             AND classroom_launch_grants.authenticated_session_id = EXCLUDED.authenticated_session_id
-             AND classroom_launch_grants.occurrence_id = EXCLUDED.occurrence_id
-             AND classroom_launch_grants.registrant_id = EXCLUDED.registrant_id
-             AND classroom_launch_grants.expires_at = EXCLUDED.expires_at
+           WHERE classroom_launch_grants_v21.student_id = EXCLUDED.student_id
+             AND classroom_launch_grants_v21.household_id = EXCLUDED.household_id
+             AND classroom_launch_grants_v21.authenticated_session_id = EXCLUDED.authenticated_session_id
+             AND classroom_launch_grants_v21.occurrence_id = EXCLUDED.occurrence_id
+             AND classroom_launch_grants_v21.registrant_id = EXCLUDED.registrant_id
+             AND classroom_launch_grants_v21.expires_at = EXCLUDED.expires_at
          RETURNING (xmax = 0) AS inserted`,
         grantValues(grant),
       );
@@ -63,7 +63,7 @@ export function createPostgresEmbeddedClassroomRepository(
       const result = await poolQuery(
         pool,
         `SELECT *
-           FROM onetime.classroom_launch_grants
+           FROM onetime.classroom_launch_grants_v21
           WHERE product = $1
             AND runtime_tier = $2
             AND verification_environment_id = $3
@@ -93,7 +93,7 @@ export function createPostgresEmbeddedClassroomRepository(
       try {
         return await withTransaction(pool, async (client) => {
           const consumed = await client.query(
-            `UPDATE onetime.classroom_launch_grants
+            `UPDATE onetime.classroom_launch_grants_v21
                 SET used_at = $2::timestamptz,
                     version = $3
               WHERE grant_id = $1
@@ -175,7 +175,7 @@ export function createPostgresEmbeddedClassroomRepository(
           );
           if (updated.rowCount !== 1) throw STALE;
           await client.query(
-            `UPDATE onetime.classroom_launch_grants
+            `UPDATE onetime.classroom_launch_grants_v21
                 SET revoked_at = $4::timestamptz,
                     version = version + 1
               WHERE product = $1

@@ -1,50 +1,78 @@
-# P18 Handoff
+# P18 Collision-Correction Handoff
 
-## Atomic claim identity
+## Identity
 
 - Branch: `codex/v21-p18-embedded-classroom`
-- Claim checkpoint parent: `0a384577dec2ea58cbeaf22a247f7c05f6333c27`
-- Claim checkpoint head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
-- Remote control authorization: `9215514029009674d47f327475d6a53e8dd476ef`
-- Sole acquisition parent: `0d3da54f911d446f86601b21700e26d1cfc57da5`
-- Canonical READY digest: `80b85a7bf27c621d6fe57ebca391d0cee372ee0ab1af4520822eead5504c04e3`
-- Claim ID: `61b4324b-03b7-4d7a-a658-6c3a3091fb80`
+- Correction parent: `d315c47ff9e616ef7909c6edce85a226c5e4fbec`
+- Final correction head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
+- Claim: `61b4324b-03b7-4d7a-a658-6c3a3091fb80`
 - EMBEDDED_CLASSROOM lease: `65bbf2a3-564f-407d-aa21-ba572f5fd1fe`
-- Lease interval: `2026-07-29T16:32:13Z` through `2026-07-29T17:47:13Z`
+- Lease released: `2026-07-29T16:56:37Z`
+- Claim reconciliation: `8241e5527b7cfbdf12cdeb0c3916fb259a6a7054`
+- Exact-request reauthorization: `01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc`
+- Reauthorization sole parent: `2c8b4872938d6f0db50ef7f1dba89a0d660a4975`
+- Correction manifest: `533b480bb3f7f71c2798a765d63abb3cd1d2200b4be6c5f4b85687ca72b88d51`
 
-## Checkpoint state
+## Corrected behavior
 
-This checkpoint claims only the P18 runtime triplet for the authorized
-`launch_grant_table_collision_correction`. It does not implement the
-correction. No repository, schema-contract, test, migration, or steward-request
-artifact changed, and `P18-migration-002` was not created.
+Every launch-grant repository statement now uses only
+`onetime.classroom_launch_grants_v21`: insert, exact-scope load,
+bootstrap-consume, and Admin-reset revocation. The focused database regression
+invokes all four operations, requires the `_v21` table in each SQL statement,
+and rejects the unversioned legacy-table spelling.
 
-The control evidence was re-verified before claiming: exact remote refs and
-sole-parent authority, recursively canonical READY payload, entry-bound package
-and task digests, the protected applied-migration collision, the rejected
-request digest, the current repository/schema use of
-`onetime.classroom_launch_grants`, and the absence of the required
-`onetime.classroom_launch_grants_v21` table binding.
+The schema contract is version `1.0.1` and binds `launch_grants` to the same
+collision-free table. No other runtime persistence contract changed.
+
+## Immutable replacement request
+
+`P18-migration-002` requests a forward-only, F02-owned migration for the
+collision-free v2.1 launch-grant table and the previously requested session and
+attendance structures. It does not allocate a migration ordinal, contain SQL,
+or claim any migration was written, applied, or executed.
+
+- Raw SHA-256: `d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed`
+- Canonical queue SHA-256: `e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d`
+- Exact bytes: `4616`, UTF-8 LF with trailing LF
+
+C00 independently inspected and reauthorized this exact preimage. The earlier
+unreproducible `3f8df8d4…` / `435d1d7a…` pair is superseded and is not claimed.
+
+## Correction artifact digests
+
+- Repository: `fff7c15fe9144c00da6a8515b5f319ba88df241f4558de2a89239b990676135b`
+- Repository regression: `b2bcc9fd7e8106b0c0450efd47bc6d6cc3427c3ae3bc5d8e6b66ba7746119ef3`
+- Schema contract: `f2437b9533afc0d8b7453fb4ac8e8c02ff3eee91aff910c768e5ec10ada5de71`
+
+The correction manifest is SHA-256 of recursively key-sorted compact JSON
+mapping the four non-runtime correction paths to these exact raw digests.
 
 ## Protected evidence
 
-- `packages/db/migrations/2002_ot88_zoom_learner_classroom.sql`
-  - Git blob: `7ee99d1174e557eb0978e4258fc511da1b4ab445`
-  - raw SHA-256: `a74bb923746d6d0a6e7deaeb23e80d60a3fb3fa5107864e5536befc4d97ba72f`
-- `ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-001.yaml`
-  - raw SHA-256: `acb6ed1d81e05e338875ada7309629d418dafa4b06ee555037e40988b7b7ff1a`
-  - canonical queue digest: `de071ac6050df478768e588a6d6986dc2fec4cf0dd06377ab3b17dc92990de0e`
+- Applied migration `packages/db/migrations/2002_ot88_zoom_learner_classroom.sql`
+  remains Git blob `7ee99d1174e557eb0978e4258fc511da1b4ab445`.
+- Rejected `P18-migration-001.yaml` remains Git blob
+  `5975b103568459c48771330f0f287b25e7b5199b`.
 
-Both protected artifacts remain byte-for-byte unchanged.
+Neither protected artifact was edited, and the correction performs no create,
+alter, rename, backfill, read, or write against the legacy table.
+
+## Verification
+
+- Focused Vitest: four files, 18 assertions, passed.
+- Full TypeScript typecheck: passed.
+- Focused ESLint and Prettier: passed.
+- Repository secret scan: 2,669 text files, passed.
+- Exact seven-path inventory, raw/canonical digests, YAML parsing,
+  protected-blob checks, and `git diff --check`: passed.
 
 ## Exact next action
 
-Stop at this claim checkpoint. C00 must reconcile the exact remote claim head.
-P18 must receive an explicit resume before editing the three authorized
-repository/schema/test files or creating `P18-migration-002`. The protected
-legacy migration and rejected `P18-migration-001` must never be edited.
+C00 audits and integrates this exact remote `ready_for_review` head. F02 then
+independently adjudicates `P18-migration-002`; P18 must not allocate an ordinal
+or write migration SQL.
 
 ## External effects
 
-Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. All
-provider/effect locks were unclaimed, and no provider or live effect occurred.
+Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider,
+deployment, send, or live effect occurred.
