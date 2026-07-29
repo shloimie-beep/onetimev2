@@ -1,11 +1,15 @@
-# P24 Support Atomic Claim
+# P24 Support Ready for Review
 
 ## Identity
 
 - Branch: `codex/v21-p24-support`
 - Authorized start: `408b21afa4b9ac6f100b3ce33ea87984d18d4bf7`
-- Current atomic-claim commit: derive with `git rev-parse HEAD`; C00 must record
-  and reconcile the exact observed remote head
+- Reconciled atomic claim:
+  `2a3b36c98b9a8698536149d668f0c58552c7eea4`
+- Implementation commit:
+  `81bb28c76744b52b52f9262c7e31e91954dc6472`
+- Final metadata commit: derive with `git rev-parse HEAD`; C00 records the exact
+  observed remote head
 - Task packet digest:
   `a0b763435e1c23e670b5894e56037735b4bfb74bfae247ebfa70145d86b89383`
 - Task context digest:
@@ -17,13 +21,12 @@
 - Package lock digest:
   `3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a`
 - Claim: `ff79d0ab-10d4-481b-ae90-48bb8bd9631a`
-- SUPPORT lease: `4d0115d1-571f-4ca7-8b04-3fc79b43bcdf`, issued
-  `2026-07-29T12:23:30Z`, expiring `2026-07-29T13:38:30Z`, phase scope
-  `P24_atomic_claim_only`
-- Containing control authorization:
-  `6d0278d46789b6d746c58effa6c5f182ff4a7741`
-- Sole acquisition/READY parent:
-  `8bb4680887b2ea320f914cf046184655601fade9`
+- SUPPORT lease: `4d0115d1-571f-4ca7-8b04-3fc79b43bcdf`, released
+  `2026-07-29T13:12:33Z` before its `2026-07-29T13:38:30Z` expiry
+- Reconciliation control authorization:
+  `cb0a1de49ebc1d1113aae26798508e178346287c`
+- Sole reconciliation acquisition parent:
+  `4c9b217531ce76b52971707913d1e28c65958d76`
 - READY payload digest:
   `57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75`
 
@@ -52,30 +55,59 @@
 The exact task/context dependency digests are recorded in `TASK-STATE.yaml`.
 Every named interface source is an ancestor of the authorized start.
 
-## Completed scope
+## Completed behavior
 
-Validated the exact P24 first-run authorization, branch absence, unexpired
-claim and SUPPORT lease, authorized integration start, package/task/context
-identities, READY payload, dependency bindings, and zero effect-lock leases.
-This checkpoint contains only task-local durable claim memory.
+- Adult and Student technical support uses the exact five-state local lifecycle.
+- Student Torah/class questions are a separate private conversation kind routed
+  only to an authorized Rabbi operator.
+- Conversation reads are exact-requester or queue-capability authorized; Parent
+  household authority never exposes a Student conversation.
+- Adult technical support may link one GHL conversation idempotently. Student
+  support and Rabbi questions cannot link a GHL identity or conversation.
+- Admin operations cover list, assignment, status, in-app reply, and immutable
+  audit history with optimistic versions and stable idempotency.
+- Telegram integration is represented only by local, bounded, redacted intents
+  under the `OT` namespace. The intent omits private bodies and Student
+  identities, and explicitly records that Telegram is not source of truth.
+- Accessible isolated Admin and Student workspaces expose the operational and
+  separate technical/question flows.
 
 ## Exact next action
 
-C00 must reconcile the exact pushed P24 atomic-claim head. Stop until a new
-exact control authorization identifies that head and explicitly permits resume.
+An independent auditor must fetch the exact P24 remote head, reproduce the
+artifact/request digests, inspect authorization/privacy/idempotency/redaction
+negatives, and report review findings without applying the two steward requests.
 
-## Changed files
+## Coverage and verification
 
-Only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` under the P24 runtime
-directory are added. No product, test, request, registration, steward,
-migration, or provider file changed.
+All seven requirements and all seven exact acceptance cases are
+`implementation_ready`. Focused Vitest passed 3 files and 10 tests; workspace
+typecheck, focused ESLint, focused Prettier, `git diff --check`, and exact scope
+audits passed.
+
+The implementation commit contains 15 source/test artifacts. Its canonical
+raw-Git-blob digest is
+`e87246e9ab1ca1601fc0626af978b02a5d76f8fcd163e9fadab165bf0f35e877`.
+
+## Steward requests
+
+- `P24-migration-001`:
+  `71065002e827d8b51c6bafc808568eb6940e2527a0ec0c30bd648d49d8bf93f3`
+- `P24-registration-001`:
+  `7fe2d310c429c37ddc7efa24c7b3b9d9509bf9ee59f2707f5d94e7fdfa0002f7`
+- Aggregate:
+  `27e11a78bcdb2b0a3913b1192012368fadf29a3bc7647c8166cb9a95047f63fa`
+
+No migration, composer, route registry, root barrel, dependency, lockfile,
+provider configuration, or global control path changed.
 
 ## External effects
 
 Authority is `none`; no effect lock was claimed; attempted 0, succeeded 0,
-reconciled 0. No Telegram or other provider state was inspected.
+reconciled 0. No Telegram or other provider state was inspected or mutated.
 
 ## Blockers and recovery
 
-Implementation is intentionally paused pending C00 reconciliation of this exact
-atomic claim.
+No implementation blocker. Migration and registration remain unapplied,
+immutable structured steward requests for their exact owners. Candidate-bound
+provider evidence remains downstream.
