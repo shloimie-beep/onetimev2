@@ -6,6 +6,7 @@ import {
   type AdminDashboardSnapshot,
   type AdminOperationsActor,
   type AdminOperationsReadRepository,
+  type AdminOperationsScope,
   type AdminSearchPage,
   type AdminSearchRequest,
   type AdminSearchResult,
@@ -131,6 +132,28 @@ describe('P11 authorized Admin operations domain', () => {
         request: { kind: 'student', targetId: 'student-one', selectedCredentialVersion: 3 },
       }),
     ).resolves.toMatchObject({ state: 'unavailable', reason: 'missing_or_unauthorized' });
+  });
+
+  it('denies provider-sandbox provenance when persistent-staging readiness is requested', async () => {
+    const persistentScope: AdminOperationsScope = {
+      ...scope,
+      verificationEnvironmentId: 'persistent_staging',
+    };
+    const persistentActor: AdminOperationsActor = { ...actor, ...persistentScope };
+    const snapshot = rescopeDashboard(dashboardFixture(), persistentScope);
+    snapshot.providerHealth = [
+      {
+        ...snapshot.providerHealth[0]!,
+        sourceEnvironment: 'staging',
+        observedVerificationEnvironmentId: 'provider_sandbox',
+      },
+    ];
+    await expect(
+      readAuthorizedAdminDashboard({
+        actor: persistentActor,
+        repository: new MemoryOperationsRepository(snapshot),
+      }),
+    ).rejects.toThrow(/different runtime environment/u);
   });
 
   it('denies non-Admin, cross-environment, synthetic, unsafe-route, and malformed-query reads', async () => {
@@ -379,6 +402,22 @@ function searchPageFixture(
     analyticsAllowed: false,
     results,
     nextCursor: null,
+  };
+}
+
+function rescopeDashboard(
+  snapshot: AdminDashboardSnapshot,
+  nextScope: AdminOperationsScope,
+): AdminDashboardSnapshot {
+  return {
+    ...snapshot,
+    nowAndNext: snapshot.nowAndNext.map((value) => ({ ...value, ...nextScope })),
+    needsAttention: { ...snapshot.needsAttention, ...nextScope },
+    contentPipeline: { ...snapshot.contentPipeline, ...nextScope },
+    peopleAndLearning: { ...snapshot.peopleAndLearning, ...nextScope },
+    recentActivity: { ...snapshot.recentActivity, ...nextScope },
+    providerHealth: snapshot.providerHealth.map((value) => ({ ...value, ...nextScope })),
+    operations: { ...snapshot.operations, ...nextScope },
   };
 }
 

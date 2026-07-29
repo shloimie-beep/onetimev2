@@ -90,12 +90,19 @@ describe('P11 Admin operations PostgreSQL service', () => {
         });
       }
       if (sql.includes('DISTINCT ON (provider)')) {
-        expect(params).toEqual(['account-one', 'one-time', 'test']);
+        throw new Error('Provider query must bind exact persisted provenance.');
+      }
+      if (sql.includes('DISTINCT ON (readiness.provider)')) {
+        expect(params).toEqual(['account-one', 'one-time', 'test', 'isolated_staging', 'ci']);
+        expect(sql).toContain("to_jsonb(readiness)->>'runtime_tier' = $4");
+        expect(sql).toContain("to_jsonb(readiness)->>'verification_environment_id' = $5");
         return Promise.resolve({
           rows: [
             {
               provider: 'zoom',
               environment: 'test',
+              runtime_tier: 'isolated_staging',
+              verification_environment_id: 'ci',
               readiness_state: 'canary_verified',
               observed_at: new Date('2026-07-29T06:43:00.000Z'),
             },

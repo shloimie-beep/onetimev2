@@ -129,12 +129,25 @@ export class PostgresAdminOperationsRepository implements AdminOperationsReadRep
           [...params, windowStartedAt.toISOString(), observedNow.toISOString()],
         ),
         this.pool.query(
-          `SELECT DISTINCT ON (provider)
-                provider, environment, readiness_state, observed_at
-           FROM onetime.provider_readiness_snapshots
-          WHERE account_key = $1 AND product_key = $2 AND environment = $3
-          ORDER BY provider, observed_at DESC`,
-          [...params, providerEnvironment(scope.verificationEnvironmentId)],
+          `SELECT DISTINCT ON (readiness.provider)
+                readiness.provider, readiness.environment, readiness.readiness_state,
+                readiness.observed_at,
+                to_jsonb(readiness)->>'runtime_tier' AS runtime_tier,
+                to_jsonb(readiness)->>'verification_environment_id'
+                  AS verification_environment_id
+           FROM onetime.provider_readiness_snapshots AS readiness
+          WHERE readiness.account_key = $1
+            AND readiness.product_key = $2
+            AND readiness.environment = $3
+            AND to_jsonb(readiness)->>'runtime_tier' = $4
+            AND to_jsonb(readiness)->>'verification_environment_id' = $5
+          ORDER BY readiness.provider, readiness.observed_at DESC`,
+          [
+            ...params,
+            providerEnvironment(scope.verificationEnvironmentId),
+            scope.runtimeTier,
+            scope.verificationEnvironmentId,
+          ],
         ),
         this.pool.query(
           `SELECT
@@ -230,8 +243,10 @@ export class PostgresAdminOperationsRepository implements AdminOperationsReadRep
         state: providerState(row.readiness_state),
         observedAt: iso(row.observed_at),
         sourceEnvironment: providerSourceEnvironment(row.environment),
-        observedRuntimeTier: scope.runtimeTier,
-        observedVerificationEnvironmentId: scope.verificationEnvironmentId,
+        observedRuntimeTier: providerRuntimeTier(row.runtime_tier),
+        observedVerificationEnvironmentId: providerVerificationEnvironment(
+          row.verification_environment_id,
+        ),
       })),
       operationalViews: ADMIN_OPERATIONAL_VIEWS,
       quickActions: ADMIN_QUICK_ACTIONS,
@@ -560,6 +575,29 @@ function providerSourceEnvironment(value: unknown): AdminProviderHealth['sourceE
     return environment;
   }
   throw new Error('Persistent provider environment is invalid.');
+}
+
+function providerRuntimeTier(value: unknown): AdminProviderHealth['observedRuntimeTier'] {
+  const runtimeTier = String(value);
+  if (runtimeTier === 'isolated_staging' || runtimeTier === 'production') return runtimeTier;
+  throw new Error('Persistent provider runtime tier provenance is invalid.');
+}
+
+function providerVerificationEnvironment(
+  value: unknown,
+): AdminProviderHealth['observedVerificationEnvironmentId'] {
+  const environment = String(value);
+  if (
+    environment === 'ci' ||
+    environment === 'provider_sandbox' ||
+    environment === 'persistent_staging' ||
+    environment === 'production_read_only' ||
+    environment === 'production_operator_canary' ||
+    environment === 'production_broad'
+  ) {
+    return environment;
+  }
+  throw new Error('Persistent provider verification-environment provenance is invalid.');
 }
 
 function encodeCursor(offset: number): string {

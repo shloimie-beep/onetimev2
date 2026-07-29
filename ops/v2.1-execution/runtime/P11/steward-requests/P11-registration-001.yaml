@@ -30,6 +30,7 @@ proposed_symbols_routes_keys_or_dependencies:
   - Preserve the canonical static links for Communications, Tickets, Billing & Access, Integrations, Operations, Audit, and Live Console. Do not synthesize data for an unavailable partner route.
   - Partner-owned quick-action routes must preserve the locked canonical paths, reauthorize at route entry, open real persistent forms/workspaces, and show unavailable when a partner route is not registered; they must not be replaced by legacy or demo routes.
   - Compose PS-025.3 release/source, web/worker, database/migration, queue, provider, backup/restore, and redacted-failure readbacks from exact environment-scoped operational evidence; retain explicit unavailable states when partner evidence is absent.
+  - Before provider readiness is integrated, the steward-owned provider persistence schema and writer must store exact runtime_tier and verification_environment_id provenance on every readiness row. P11 reads those persisted values via fail-closed JSON row projection and filters both exact fields; rows without the fields or from provider_sandbox versus persistent_staging remain unavailable rather than being relabeled.
 compatibility_assumptions:
   - F03 supplies the current server-validated Admin principal and denies stale, Parent, Student, household-bound, and cross-environment sessions.
   - F03 supplies a current credential/session version and sign-out/role-revocation invalidation event; P11 does not mint, refresh, or revoke sessions.
@@ -37,6 +38,7 @@ compatibility_assumptions:
   - F07 shell and design tokens are reused without modification.
   - Partner-owned utility routes are registered by their owners/I36 and may remain unavailable until integration without triggering a P11 fictional fallback.
   - Provider-readiness source environment is preserved and filtered to the configured runtime and verification environment; integration must not relabel fixture/test/staging readiness as production or live.
+  - Existing coarse-environment provider rows do not satisfy exact runtime-tier or verification-environment evidence and therefore remain filtered out until the steward-owned persistence update has written explicit provenance.
 verification_performed:
   - P11 focused domain, PostgreSQL service, dashboard, and global-search tests.
   - Workspace TypeScript typecheck.

@@ -8,6 +8,7 @@ import type {
 import {
   AdminGlobalSearch,
   buildAdminSearchRequest,
+  clearAdminPrivateSearchState,
   postPrivateAdminNavigationResolution,
   postPrivateAdminSearch,
   shouldClearAdminPrivateState,
@@ -114,5 +115,50 @@ describe('P11 private Admin global search', () => {
     expect(shouldClearAdminPrivateState(7, { state: 'admin', credentialVersion: 7 }, true)).toBe(
       true,
     );
+    const setters = {
+      setQuery: vi.fn(),
+      setPage: vi.fn(),
+      setLastRequest: vi.fn(),
+      setActiveIndex: vi.fn(),
+      setState: vi.fn(),
+      clearRecentQueries: vi.fn(),
+    };
+    clearAdminPrivateSearchState(setters);
+    expect(setters.setQuery).toHaveBeenCalledWith('');
+    expect(setters.setPage).toHaveBeenCalledWith(null);
+    expect(setters.setLastRequest).toHaveBeenCalledWith(null);
+    expect(setters.setActiveIndex).toHaveBeenCalledWith(0);
+    expect(setters.setState).toHaveBeenCalledWith('idle');
+    expect(setters.clearRecentQueries).toHaveBeenCalledOnce();
+  });
+
+  it('uses one unique combobox-controlled listbox across grouped results', () => {
+    const ticket: AdminSearchResult = {
+      ...result,
+      kind: 'ticket',
+      targetId: 'ticket-one',
+      label: 'Ticket ticket-one',
+      distinguishingMetadata: 'support',
+      destination: { route: '/app/tickets/:ticketId', targetId: 'ticket-one' },
+    };
+    const groupedPage: AdminSearchPage = { ...page, results: [result, ticket] };
+    const html = renderToStaticMarkup(
+      <AdminGlobalSearch
+        initialPage={groupedPage}
+        recentQueries={[]}
+        authorization={{ state: 'admin', credentialVersion: 7 }}
+        onSearch={() => Promise.resolve(groupedPage)}
+        onResolveOpen={() =>
+          Promise.resolve({ state: 'open', href: '/app/students/student-one', cache: 'no-store' })
+        }
+        onClearRecentQueries={() => undefined}
+        onNavigate={() => undefined}
+      />,
+    );
+    expect(html.match(/id="admin-search-results"/gu)).toHaveLength(1);
+    expect(html.match(/role="listbox"/gu)).toHaveLength(1);
+    expect(html.match(/aria-controls="admin-search-results"/gu)).toHaveLength(1);
+    expect(html).toContain('role="group"');
+    expect(html).toContain('aria-activedescendant="admin-search-option-student-student-one"');
   });
 });

@@ -79,6 +79,22 @@ export function shouldClearAdminPrivateState(
   );
 }
 
+export function clearAdminPrivateSearchState(ports: {
+  setQuery: (value: string) => void;
+  setPage: (value: AdminSearchPage | null) => void;
+  setLastRequest: (value: AdminSearchRequest | null) => void;
+  setActiveIndex: (value: number) => void;
+  setState: (value: 'idle' | 'loading' | 'error') => void;
+  clearRecentQueries: () => void;
+}) {
+  ports.setQuery('');
+  ports.setPage(null);
+  ports.setLastRequest(null);
+  ports.setActiveIndex(0);
+  ports.setState('idle');
+  ports.clearRecentQueries();
+}
+
 export function AdminGlobalSearch(props: {
   initialPage?: AdminSearchPage | null;
   initialRequest?: AdminSearchRequest | null;
@@ -114,10 +130,14 @@ export function AdminGlobalSearch(props: {
   ];
 
   const clearPrivateState = () => {
-    setPage(null);
-    setLastRequest(null);
-    setActiveIndex(0);
-    props.onClearRecentQueries();
+    clearAdminPrivateSearchState({
+      setQuery,
+      setPage,
+      setLastRequest,
+      setActiveIndex,
+      setState,
+      clearRecentQueries: props.onClearRecentQueries,
+    });
   };
   useEffect(() => {
     if (shouldClearAdminPrivateState(observedCredentialVersion, props.authorization)) {
@@ -269,32 +289,34 @@ export function AdminGlobalSearch(props: {
         </V21StatePanel>
       ) : page ? (
         <section aria-live="polite" aria-label="Authorized search results">
-          {[...grouped.entries()].map(([kind, results]) => (
-            <section key={kind} aria-labelledby={`search-${kind}-heading`}>
-              <h2 id={`search-${kind}-heading`}>{searchKindLabel(kind)}</h2>
-              <ul id="admin-search-results" role="listbox">
-                {results.map((result) => {
-                  const index = page.results.indexOf(result);
-                  return (
-                    <li key={`${result.kind}:${result.targetId}`}>
-                      <button
-                        id={resultOptionId(result)}
-                        type="button"
-                        role="option"
-                        aria-selected={index === activeIndex}
-                        onFocus={() => setActiveIndex(index)}
-                        onClick={() => void resolveAndOpen(result)}
-                      >
-                        <strong dir="auto">{result.label}</strong>{' '}
-                        <span dir="auto">{result.distinguishingMetadata}</span>{' '}
-                        <span>{result.status}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ))}
+          <div id="admin-search-results" role="listbox" aria-label="Authorized search results">
+            {[...grouped.entries()].map(([kind, results]) => (
+              <section key={kind} role="group" aria-labelledby={`search-${kind}-heading`}>
+                <h2 id={`search-${kind}-heading`}>{searchKindLabel(kind)}</h2>
+                <ul role="presentation">
+                  {results.map((result) => {
+                    const index = page.results.indexOf(result);
+                    return (
+                      <li key={`${result.kind}:${result.targetId}`} role="presentation">
+                        <button
+                          id={resultOptionId(result)}
+                          type="button"
+                          role="option"
+                          aria-selected={index === activeIndex}
+                          onFocus={() => setActiveIndex(index)}
+                          onClick={() => void resolveAndOpen(result)}
+                        >
+                          <strong dir="auto">{result.label}</strong>{' '}
+                          <span dir="auto">{result.distinguishingMetadata}</span>{' '}
+                          <span>{result.status}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            ))}
+          </div>
           {page.nextCursor && lastRequest ? (
             <button type="button" onClick={() => void runSearch(page.nextCursor)}>
               Next page
