@@ -15,12 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49
+controller_authorization_sha: fcab6fad97dc2510e3338b34ad69c44a8944e45c
 next_action: >-
-  P18 correction b9ad9474 is independently audited and ready for micro-integration. I36 may atomically claim only
-  exact integration head f947c01f under claim 31d2abc1 and RELEASE_INTEGRATOR lease b39bd286, record the one queued
-  P18 correction item 2f2547a1 with exact seven-path scope and canonical digest 636a9bf0, then stop before fetching
-  or merging P18 for C00 reconciliation. The old request and migration remain protected; the replacement request
-  remains unapplied until integration and separate F02 allocation authority. No migration ordinal, SQL, registration,
-  provider inspection, deployment, send, or external effect is authorized.
+  I36 claim 965b6766 is reconciled under unchanged claim 31d2abc1 and RELEASE_INTEGRATOR lease b39bd286. I36 may
+  now fetch and merge only exact P18 correction head b9ad9474 as queue item 2f2547a1 onto claimed head 965b6766,
+  preserving source ancestry and the exact seven-path scope. It must recompute all source/digest/protected-blob
+  bindings, run focused P18 tests plus typecheck/lint/format/secret/diff/YAML/package checks, update only its runtime
+  triplet, release the lease, push, and stop for C00 audit. The replacement request remains unapplied; no migration
+  ordinal, SQL, registration, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
