@@ -1,10 +1,9 @@
 MODEL: GPT-5.6-SOL
 REASONING: HIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: REVIEW_OR_INTEGRATE
 
-Reconcile One Time v2.1 task P23 from its exact pushed atomic claim before any
-implementation begins.
+Review One Time v2.1 task P23 from its exact ready-for-review final.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p23-student-notifications
@@ -12,33 +11,34 @@ Authoritative control ref: origin/codex/v21-control
 Task state: ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P23/HANDOFF.md
 
-The branch was created from exact authorized start
-`cecc1c0dc6ff57562e5d89dd731289d860086bf7` under containing controller
-`9f1609933ceeaa315115a49d8612276002e33330`, acquisition
-`2dc1ffa0f4c3a2de22cfd8660571a355cda0b928`, claim
-`68340416-7e06-4986-a125-59d81b500a0b`, STUDENT_NOTIFICATIONS lease
-`45041adc-a69f-4065-a179-b94473967c94`, and ready-entry digest
-`b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f`.
+The exact authorized start is
+`cecc1c0dc6ff57562e5d89dd731289d860086bf7`. Atomic claim
+`05ef606022d260d11d56d31985a051d7b9013010` was reconciled at C00 control
+`8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84`. The exact implementation
+and immutable-request checkpoint is
+`c1dc94bedac647dab9e1136bd0971cb3d6c57456`.
 
-Exact dependency bindings are F05 task
-`9174d845e1c04916e2f1884cfadfaef624ac6862`, integration
-`9782a4164662b8059a557c0969de9c35f54d0cf7`, interface source
-`0656380bcfc50cc464dcea7588448dc724049599`, implementation
-`1ade14c52e42e59bb8fd1d1de776b91406c45f15`, checkpoint digest
-`fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329`,
-and corrected task packet digest
-`807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3`;
-F07 task `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`, integration
-`91349fc1fa9a474ae31cf408ae0364aa10520385`, interface source
-`47a2bb6b76225951e0599683499a95f4dc9881be`, implementation
-`a90baae8cf69d6823af6d741161fe0e9e7441321`, and checkpoint digest
-`366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188`.
+Reproduce the 13-artifact raw Git-blob aggregate
+`804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580`.
+Reproduce immutable request digests
+`ef08dd14bca405a89b180d1d3dcedd5b97f75d8eec76584fbc2c890c5ca23aa3`
+for `P23-migration-001` and
+`2b3336ee8ac935344d9bd1d561cb35a1013ee9fb40766e23ebfd19b8a9ac9131`
+for `P23-registration-001`, with aggregate
+`144e8ebba8926bb2bb3bc8c64f5923829cda17e3cf1f0816fdbe685e0afc7511`.
 
-Verify the exact remote atomic claim head and reconcile it into released C00
-control state. Resume P23 only after C00 records that exact head and issues
-explicit fresh continuation authority. This phase changed only the three P23
-runtime-memory files. External authority is `none`; effects attempted `0`,
-succeeded `0`, reconciled `0`.
+Independently verify exact WNC-8 copy and category lifetimes, 30-day expired
+visibility, source-version dedupe and cancellation supersession, idempotent
+read state, Student-scoped internal action reauthorization, private/provider
+copy denial, and default-off foreground-only sound paired with a visual notice.
+Focused verification is 3 files and 13 tests plus workspace typecheck.
 
-Do not begin product, source, provider/send, steward, migration, registration,
-shared, or external-effect work before reconciliation.
+Claim `68340416-7e06-4986-a125-59d81b500a0b` and
+STUDENT_NOTIFICATIONS lease `45041adc-a69f-4065-a179-b94473967c94` were
+released at `2026-07-29T06:58:11Z`, before expiry. External authority is
+`none`; effects attempted `0`, succeeded `0`, reconciled `0`.
+
+The migration and registration requests are proposals only. Do not apply them,
+edit a migration, central composer/registration, root barrel, package file, or
+provider. Do not send a notification or cause any external effect. Resume P23
+only under new exact C00 authority.

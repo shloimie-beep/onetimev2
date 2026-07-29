@@ -28,8 +28,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: implementation_atomic_claim
+status: ready_for_review
+phase: complete
 claim_mode: create_new_branch
 claimed_by: codex-p23-worker-68340416
 claim_time: '2026-07-29T06:34:40Z'
@@ -41,16 +41,49 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T07:26:07Z'
     state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
     phase_scope: P23_atomic_claim_only
-    lease_released_at: null
-    state: active
+    reconciled_resume_scope: P23_student_notifications_implementation
+    reconciled_resume_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
+    lease_released_at: '2026-07-29T06:58:11Z'
+    state: released
 lease_expires_at: '2026-07-29T07:26:07Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T06:34:40Z'
+lease_released_at: '2026-07-29T06:58:11Z'
+last_heartbeat_at: '2026-07-29T06:58:11Z'
 controller_authorization_sha: 9f1609933ceeaa315115a49d8612276002e33330
+claim_reconciled_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
+claim_reconciled_control_parent_sha: 98cde826b118f2b8162e29a7761bf9d0f9fcf285
+atomic_claim_head_sha: 05ef606022d260d11d56d31985a051d7b9013010
 ready_entry_state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
 ready_entry_payload_digest: b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f
-state_based_on_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-last_implementation_commit_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+phase_scope: P23_student_notifications_implementation_only
+state_based_on_head_sha: c1dc94bedac647dab9e1136bd0971cb3d6c57456
+last_implementation_commit_sha: c1dc94bedac647dab9e1136bd0971cb3d6c57456
+implementation_artifact_digest: 804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580
+implementation_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
+  the 13 implementation and focused-test artifacts, sorted lexicographically
+  by path, with LF separators and no final newline.
+implementation_artifacts:
+  apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx: 4266e83c3484aad5c3ce965c5971a041fbb5d97f8247fd4fe095b4700f068706
+  apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx: 364477afccb7a01a5f7f166f078f62105b25f93710cc8879a423a16127eece52
+  apps/web/src/client/app/student/notifications/index.ts: bd190808c2bf4e801226b6fb5d8595dc9a262f714c750d92e4b14d042d83139f
+  apps/web/src/server/features/notifications/student/index.ts: 5a2cfb38692f7d14d6000b9c2686e4c49c78979de038a0dc5d93cbb9fbb5f0f2
+  apps/web/src/server/features/notifications/student/service.test.ts: bb04aadfacb0eee54e801a421171b8b886e724757e9327f436e1cbd8cd71c4f8
+  apps/web/src/server/features/notifications/student/service.ts: 4f1612434d43088c1c510696644ee8fa24e6a55a82d802500e25432a48f080cb
+  packages/contracts/src/notifications/student/index.ts: 5ed7c35b903d2d5545ccbcd804e14268c56f4aac41ef89fe62c6bc4020660cfc
+  packages/db/src/notifications/student/index.ts: b3aeb5580165804053e5816109274280e9b371ccee09b5ecff09410b283cfb1f
+  packages/db/src/notifications/student/repository.ts: bd7f1cf06fdd0c491683cfea8a2c030c357f5bbe70071eb76f4c429f2d3eb2c3
+  packages/domain/src/notifications/student/errors.ts: 9b252d9132c7037e129aed9331b699c4db3046d2ad9ac0ebb57034876df61b4f
+  packages/domain/src/notifications/student/index.ts: 09505f87c9b6233859a64c2f200326142601f434a7376f4be5c06c2b41324291
+  packages/domain/src/notifications/student/lifecycle.test.ts: fad918e8b1b2ab336981d3f561328f65327bdfe91339224fb9acfeb02b67e9bc
+  packages/domain/src/notifications/student/lifecycle.ts: 743466402d54e927ee40749b398058705afe000a7038b01c52905cace3f6e235
+steward_request_payload_digests:
+  P23-migration-001: ef08dd14bca405a89b180d1d3dcedd5b97f75d8eec76584fbc2c890c5ca23aa3
+  P23-registration-001: 2b3336ee8ac935344d9bd1d561cb35a1013ee9fb40766e23ebfd19b8a9ac9131
+steward_request_aggregate_digest: 144e8ebba8926bb2bb3bc8c64f5923829cda17e3cf1f0816fdbe685e0afc7511
+steward_request_digest_algorithm: >-
+  Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
+  SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
+  and no final newline.
 completed_steps:
   - Verified exact containing controller 9f1609933ceeaa315115a49d8612276002e33330, its sole acquisition parent 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928, and exact authorized integration start cecc1c0dc6ff57562e5d89dd731289d860086bf7.
   - Verified the P23 task branch was absent locally and remotely before branch creation.
@@ -59,24 +92,55 @@ completed_steps:
   - Verified exact F05 and F07 interface-ready integration bindings and ancestry in the authorized start, including corrected F05 task packet digest 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3.
   - Claimed the sole STUDENT_NOTIFICATIONS writer lease with zero effect locks and created the isolated branch from the exact authorized start.
   - Seeded only the three P23 runtime-memory files; no product, source, provider, send, steward, migration, registration, or external-effect work has started.
+  - Published and C00 reconciled exact three-file atomic claim 05ef606022d260d11d56d31985a051d7b9013010 at control 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84.
+  - Implemented all eight locked Student notification categories with exact copy integration, category-defined active lifetimes, 30-day expired visibility, and archive removal.
+  - Implemented stable source-version dedupe, newer-version and cancellation supersession, idempotent mark-one and mark-all-read behavior, and unread counting without duplicate increments.
+  - Implemented safe internal-only action routes with recipient ownership and authorization rechecks at open time, neutral stale-action denial, and provider/private-copy rejection.
+  - Implemented persisted default-off sound preference and a pure foreground cue gate requiring a newly created unread visual notice plus browser interaction.
+  - Added a parameterized PostgreSQL repository with transactional dedupe and Student-scoped lifecycle/read/preference operations; no runtime schema creation or migration was added.
+  - Added an accessible controlled Student notification center with Unread, Read, and All filters, polite unread status, exact unavailable labeling, and optional sound control.
+  - Added two immutable structured steward requests for the forward-only schema migration and governed central registration; neither request was applied.
+  - Committed the exact 13 implementation/test artifacts and two steward requests at c1dc94bedac647dab9e1136bd0971cb3d6c57456.
+  - Reproduced all 13 raw Git-blob hashes, implementation aggregate 804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580, and both request payload and aggregate digests.
+  - Passed 3 focused files and 13 positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact owned-path and diff hygiene checks, and secret scan across 2876 text files.
+  - Released claim 68340416-7e06-4986-a125-59d81b500a0b and STUDENT_NOTIFICATIONS lease 45041adc-a69f-4065-a179-b94473967c94 before expiry with no external effect attempted.
 remaining_steps:
-  - Push and remote-verify the exact three-file atomic claim.
-  - C00 must reconcile the exact pushed atomic claim head into released control state.
-  - P23 may begin implementation only after exact C00 reconciliation and explicit fresh continuation authority.
-next_action: Push and remote-verify this three-file atomic claim, report its exact head to C00, and stop; do not begin product work before C00 reconciliation.
+  - Commit and normally push this exact three-runtime-file final metadata checkpoint.
+  - C00 and I36 must independently verify the implementation, artifact/request digests, owned-path scope, and zero-effect boundary before integration.
+  - F02 and I36 may disposition the immutable migration and registration requests under their own authority; P23 must not apply them.
+next_action: C00 and I36 should review exact implementation head c1dc94bedac647dab9e1136bd0971cb3d6c57456, reproduce artifact digest 804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580 and request aggregate 144e8ebba8926bb2bb3bc8c64f5923829cda17e3cf1f0816fdbe685e0afc7511, and integrate only after focused invariants pass.
 requirements:
-  OTV2-NOTIFY-203: claimed_not_started
-  OTV2-NOTIFY-237: claimed_not_started
+  OTV2-NOTIFY-203: implementation_verified
+  OTV2-NOTIFY-237: implementation_verified
 acceptance_cases:
-  OTV2-NOTIFY-203-AC01: not_run
-  OTV2-NOTIFY-237-CATEGORY-LIFETIME: not_run
-  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: not_run
+  OTV2-NOTIFY-203-AC01: task_owned_assertions_passed
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: task_owned_assertions_passed
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
+  - apps/web/src/client/app/student/notifications/index.ts
+  - apps/web/src/server/features/notifications/student/index.ts
+  - apps/web/src/server/features/notifications/student/service.test.ts
+  - apps/web/src/server/features/notifications/student/service.ts
   - ops/v2.1-execution/runtime/P23/HANDOFF.md
   - ops/v2.1-execution/runtime/P23/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-migration-001.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-registration-001.yaml
+  - packages/contracts/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/repository.ts
+  - packages/domain/src/notifications/student/errors.ts
+  - packages/domain/src/notifications/student/index.ts
+  - packages/domain/src/notifications/student/lifecycle.test.ts
+  - packages/domain/src/notifications/student/lifecycle.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - id: P23-migration-001
+    sha256: ef08dd14bca405a89b180d1d3dcedd5b97f75d8eec76584fbc2c890c5ca23aa3
+  - id: P23-registration-001
+    sha256: 2b3336ee8ac935344d9bd1d561cb35a1013ee9fb40766e23ebfd19b8a9ac9131
 verification:
   commands_run:
     - command: exact controller, acquisition, start, registry, ready-entry, claim, lease, dependency, effect-lock, and branch-absence verification
@@ -87,7 +151,24 @@ verification:
       result: passed; task, integration, interface source, and interface implementation heads are exact ancestors
     - command: git worktree add -b codex/v21-p23-student-notifications <isolated-worktree> cecc1c0dc6ff57562e5d89dd731289d860086bf7
       result: passed; branch created from exact authorized start
-  known_baseline_failures: []
+    - command: exact C00 reconciliation and resumed-head verification
+      result: passed; control 8172f8cd, sole parent 98cde826, and atomic claim head 05ef6060
+    - command: npx vitest run packages/domain/src/notifications/student/lifecycle.test.ts apps/web/src/server/features/notifications/student/service.test.ts apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+      result: passed; 3 files and 13 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over all P23 source, test, runtime, and request paths
+      result: passed
+    - command: exact raw Git-blob artifact and steward-request digest reproduction
+      result: passed; 13 artifacts, two immutable requests, artifact digest 804943c4, request aggregate 144e8ebb
+    - command: exact start-to-implementation changed-path audit and git diff --check
+      result: passed; only normalized P23 roots, P23 runtime memory, and structured steward requests
+    - command: npm run secret:scan
+      result: passed across 2876 repository text files
+    - command: npm run brand:check before visible UI work
+      result: inherited out-of-scope baseline failure at scripts/ops/validate-ot-launch-governance.ts; P23 adds no raw colors, styles, or brand primitives
+  known_baseline_failures:
+    - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
   authority: none
   attempted: 0
