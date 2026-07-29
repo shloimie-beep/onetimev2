@@ -1550,3 +1550,28 @@ Next, C00 must prepare the exact six-request Lease B inventory for ordinals
 digest, filename, and collision boundary before a fresh F02 claim and writer
 leases are issued. No Lease B SQL edit, registration, provider action,
 deployment, send, or external effect is yet authorized.
+
+## F02 Lease B atomic-claim admission
+
+Read-only inventory passed for exact producer finals P16 `72fca16b`, P32
+`f4ae1c03`, P10 `5fccc345`, P23 `32f3a464`, P24 `501c7a8b`, and P27
+`e1933d64`; all six are ancestors of integration release `1798f31b`. The
+authoritative steward queue assigns their exact migration requests to F02.
+The admission binds both each central request digest and its immutable request
+Git blob/raw digest, including the older P16/P10 request-local I36 labels that
+were explicitly superseded by central F02 assignment.
+
+No remote ref contains any proposed Lease B filename. Control still records
+2239 as next, 2238 as prior, and 2231 as never allocatable. C00 published
+canonical READY digest
+`fe2adafd933c848fa9e4b2efb4809f9edc733e42c8f43b71f30ec5b5b9a8df6b`
+for ordinals 2239 through 2244, claim
+`e2a7b9ff-ce58-495e-b164-84d9299250d0`, and shared
+MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease
+`cad3d0dd-59a2-44dd-87fb-6597978daaaf` through
+`2026-07-29T22:40:57Z`.
+
+F02 may now change only its runtime triplet at exact branch head `e156003b`,
+push normally, and stop. It may not read requester content, edit the proposal,
+write SQL, apply registration, inspect providers, deploy, send, or perform any
+external effect until C00 reconciles that atomic claim.

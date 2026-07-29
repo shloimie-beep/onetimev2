@@ -864,6 +864,25 @@ integration heads, add direct tests, refresh digests, publish a superseding
 final, release the lease, and stop. Apply no request/migration/registration and
 perform no provider/send/external effect.
 
+F02 Lease B atomic claim is authorized from exact branch head
+`e156003b243221f97f938a0aca16164c1dd86d2d` under canonical READY digest
+`fe2adafd933c848fa9e4b2efb4809f9edc733e42c8f43b71f30ec5b5b9a8df6b`,
+claim `e2a7b9ff-ce58-495e-b164-84d9299250d0`, and shared
+MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease
+`cad3d0dd-59a2-44dd-87fb-6597978daaaf`. The six exact planned allocations
+are 2239 P16 classroom core, 2240 P32 privacy data rights, 2241 P10 admin
+directory, 2242 P23 Student notifications, 2243 P24 support, and 2244 P27 GHL
+identity.
+
+The first push must change exactly F02 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`, bind the containing control/acquisition, READY, claim, lease,
+integration release, producer heads, request Git blobs/digests, ordinals,
+filenames, collision proof, and zero effects, then stop for C00
+reconciliation. Do not read requester content, edit
+`MIGRATION-ALLOCATIONS-PROPOSAL.yaml`, write migration SQL, apply a
+registration, inspect a provider, deploy, send, or perform an external effect
+in that atomic push.
+
 F02 Lease A is independently audited and reconciled at exact integration
 release `1798f31b5f698c80ee2babbd6414e9934745a178`, with exact merge
 `8d1405b4f6f5014364620bac0a2b5729c60aa2ac`, F02 source
