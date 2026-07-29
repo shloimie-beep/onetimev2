@@ -17,7 +17,7 @@ dependency_heads:
     interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
     interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
     interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
-    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3e
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
     task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
   F07:
     required_state: interface_ready_integrated
@@ -30,25 +30,25 @@ dependency_heads:
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
 status: claimed
-phase: implementation
-claim_mode: create_new_branch
-claimed_by: codex-p11-worker-2a221efd
-claim_time: '2026-07-29T06:24:15Z'
-claim_id: 2a221efd-b827-4961-a293-0abb77998260
+phase: metadata_correction
+claim_mode: resume_existing
+claimed_by: codex-p11-worker-31da6bdb
+claim_time: '2026-07-29T06:33:40Z'
+claim_id: 31da6bdb-f7ce-46f1-96a4-a6a78853d9eb
 writer_slot_leases:
   - slot: ADMIN_OPERATIONS_UI
-    lease_id: f5a27f61-8ec3-47ad-97c3-fea751a67d18
-    lease_issued_at: '2026-07-29T06:16:35Z'
-    lease_expires_at: '2026-07-29T07:16:35Z'
-    state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
-    phase_scope: P11_atomic_claim_only
+    lease_id: 0e828d7b-9ee3-4cd0-919d-da27022ba243
+    lease_issued_at: '2026-07-29T06:26:07Z'
+    lease_expires_at: '2026-07-29T07:26:07Z'
+    state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
+    phase_scope: P11_atomic_claim_metadata_correction_only
     state: active
-lease_expires_at: '2026-07-29T07:16:35Z'
-last_heartbeat_at: '2026-07-29T06:24:15Z'
-controller_authorization_sha: 6ff71b774f9b125c8f20df4ad2e159610782b476
-ready_entry_state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
-ready_entry_payload_digest: ac1a4f87bb7ddb4b17e674b7bd05506931012e25aa76fd44b6c1719a820ddece
-state_based_on_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+lease_expires_at: '2026-07-29T07:26:07Z'
+last_heartbeat_at: '2026-07-29T06:33:40Z'
+controller_authorization_sha: 9f1609933ceeaa315115a49d8612276002e33330
+ready_entry_state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
+ready_entry_payload_digest: 1f887010e21ae02c218a043d8d1892307bbff7da16bf9b1b2f6f7ae1d049efb3
+state_based_on_head_sha: 396bf74d855f294c744cf3eaa7d30c3f0e26e60a
 last_implementation_commit_sha: null
 completed_steps:
   - Verified exact released controller 6ff71b774f9b125c8f20df4ad2e159610782b476 and its sole acquisition parent 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56.
@@ -57,10 +57,12 @@ completed_steps:
   - Verified exact F05 and F07 interface-ready source, implementation, and integration-proof ancestry in the authorized start.
   - Claimed the sole ADMIN_OPERATIONS_UI writer lease with zero effect locks and created the isolated branch from the exact authorized start.
   - Seeded only the three P11 runtime-memory files; no product, migration, central composer or registration, steward, provider, or effect work has started.
+  - Verified fresh containing controller 9f1609933ceeaa315115a49d8612276002e33330, its sole acquisition parent 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928, exact existing remote head 396bf74d855f294c744cf3eaa7d30c3f0e26e60a, correction claim 31da6bdb-f7ce-46f1-96a4-a6a78853d9eb, active ADMIN_OPERATIONS_UI lease 0e828d7b-9ee3-4cd0-919d-da27022ba243, and zero effect locks.
+  - Corrected only the malformed 65-character F05 task-packet digest to exact 64-character digest 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3 and rebound the three P11 runtime-memory files to the fresh metadata-only authority.
 remaining_steps:
-  - C00 must reconcile the exact pushed atomic claim head into released control state.
+  - C00 must reconcile the exact pushed corrected atomic claim head into released control state.
   - P11 may begin implementation only after exact C00 reconciliation and fresh resume authority.
-next_action: Push and remote-verify this three-file atomic claim, report its exact head to C00, and stop.
+next_action: Push and remote-verify this three-file corrected atomic claim, report its exact head to C00, and stop.
 requirements:
   OTV2-ADMIN-021: pending
   OTV2-ADMIN-029: pending
@@ -85,6 +87,8 @@ verification:
       result: passed; source, implementation, and integration-proof heads are ancestors of the settled start
     - command: git worktree add -b codex/v21-p11-admin-operations <isolated-worktree> cecc1c0dc6ff57562e5d89dd731289d860086bf7
       result: passed; branch created from exact authorized start
+    - command: fresh metadata-correction controller, parent, expected-head, digest, claim, lease, and effect-lock verification
+      result: passed; exact corrected authority, existing P11 head, sole fresh writer lease, and zero effect locks
   known_baseline_failures: []
 external_effects:
   authority: none
