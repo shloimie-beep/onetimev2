@@ -998,6 +998,14 @@ then ancestry-merge only P23 source
 checkpoint and release the lease. Leave P23 migration and registration
 requests unapplied; perform no provider/send/external effect.
 
+P23 integration is complete at I36 release
+`088b40476bd5ceeb0af901b6f78a4cb8c556671b`; do not repeat it and do not
+apply its assigned migration/registration requests outside their steward
+checkpoints. Continue P11's already authorized atomic claim-only phase from
+rejected final `899ef6a7` under ready digest `aeea25dd`, then reconcile that
+claim before allowing any product correction. No provider or external effect
+is authorized.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,

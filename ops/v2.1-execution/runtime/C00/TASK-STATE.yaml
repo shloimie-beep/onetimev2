@@ -730,11 +730,11 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 1884e215cfc5c511b69c6f60b337e5b730fbbb43be4c703103e677388772a2ed
-    control_lease: 24bb078f62df77f1901fd3cd62b65839d9d30fd7c1525ac8a7ae4afd8329decf
-    task_registry: c31102d8975817cfacb1986bed7a600b02f471b64cf1c509ca4a85250743c4a8
+    control_state: c86c7470f7a23b43d1a80c5fc2e7e141233d7dfdcfaf535996da3ec214902148
+    control_lease: 3ae233c721d53717c86f620f6dac2d0d1293a6290003111d043b3038385dadc6
+    task_registry: 72c30a50c761e60ac7d2de5edb42983daa18f1d6c74a39c2f5f9996e565f9aa5
     ready_queue: 3e3ce54feef7ef3f701374414ce4b597cc800d9dfa12db184a20d5648d321e78
-    merge_queue: 5e2fd2abe20f6fc98e77ece9b36d75a742fb83595ebe63a4016c91bee97433fc
+    merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50
@@ -881,6 +881,9 @@ verification:
   - P23 migration e6f899ad and registration 20d08ffa requests assigned but unapplied; I36 source merge withheld pending atomic claim reconciliation and target-CAS rebind: passed
   - I36 P23 claim f75b0922 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/merge bindings, clean remote state, no source merge, and zero effects: passed
   - consumed only the I36 ready entry, preserved P11 ready digest aeea25dd, and rebound P23 merge to exact claim target f75b0922 with canonical digest 7abbd657: passed
+  - P23 merge 3d31cb5f exact parents f75b0922/32f3a464, preserved source ancestry, exact 19-path first-parent scope, 4 focused files/22 tests, workspace typecheck, and zero effects: passed
+  - I36 metadata-only release 088b4047 sole parent 3d31cb5f, exact three-runtime-file scope, released lease before expiry, clean remote state, unapplied P23 steward requests, and zero effects: passed
+  - cleared completed P23 merge queue item, preserved P11 ready entry, updated I36/P23 integration evidence, and recorded control raw SHA-256 bindings: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

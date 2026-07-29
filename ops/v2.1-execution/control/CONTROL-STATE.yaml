@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 90c5406f047cbcf06b86f9aa4395ffc5044a7a2c
-next_action: I36 atomic claim f75b0922 is reconciled and the P23 merge target is rebound to that exact head. I36 may now ancestry-merge only P23 final 32f3a464 under merge ceed4d92, verify exact 19-path scope, run 22 focused tests and workspace typecheck, then publish a metadata-only release checkpoint. P23 steward requests remain unapplied. P11's separate atomic correction claim remains authorized. No provider action or external effect is authorized.
+controller_authorization_sha: 5403824a210ff8d54c38602b37044e276ea6a307
+next_action: P23 is integrated at exact release head 088b4047; its migration and registration requests remain assigned but unapplied. P11 may publish only its exact three-runtime-file correction claim from rejected final 899ef6a7 under ready digest aeea25dd, then stop for reconciliation. No provider action or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

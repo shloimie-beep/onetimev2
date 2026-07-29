@@ -1277,3 +1277,13 @@ and rebound P23 merge `ceed4d92-af5a-413f-b9b3-034293e37caf` to exact target
 P23 final `32f3a464`, run its 22 focused tests and workspace typecheck, publish
 a metadata-only release checkpoint, release lease `5f617e0e`, and stop. Do not
 apply the P23 steward requests or perform provider/external effects.
+
+P23 is integrated. Merge `3d31cb5f460a0b103d5d0433d7bdb8228b68fa02`
+has exact parents I36 claim `f75b0922` and P23 final `32f3a464`, preserves
+source ancestry, and introduces exactly the queued 19 paths. The four focused
+files / 22 tests and workspace typecheck passed. Final I36 release
+`088b40476bd5ceeb0af901b6f78a4cb8c556671b` is the exact three-runtime-file
+child; lease `5f617e0e` was released before expiry. P23 migration and
+registration requests remain assigned but unapplied, the merge queue is
+cleared, and effects remain `0/0/0`. P11's isolated atomic correction claim is
+the active next action.
