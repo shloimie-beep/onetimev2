@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   OPERATIONS_PROVIDER_KEYS,
+  QUEUE_ACTIVE_LEASE_MAX_AGE_MS,
   OperationsIdentityError,
   assertCandidateIdentity,
   assertRuntimeIdentity,
@@ -260,6 +261,34 @@ describe('P33 corrected health evidence', () => {
     );
   });
 
+  it('rejects retry_count 9 without matching scheduled or exhausted evidence', () => {
+    const input = healthyInput();
+    input.queues[0]!.depth = 10;
+    input.queues[0]!.retry_count = 9;
+    const snapshot = buildOperationsHealthSnapshot(input);
+    expect(snapshot.evidence_ready).toBe(false);
+    expect(snapshot.issues).toContainEqual(
+      expect.objectContaining({ code: 'queue_observation_inconsistent', severity: 'sev1' }),
+    );
+  });
+
+  it('rejects an active lease aged 600000ms even with valid fencing', () => {
+    expect(QUEUE_ACTIVE_LEASE_MAX_AGE_MS).toBe(5 * 60_000);
+    const input = healthyInput();
+    input.queues[0]!.active_lease_count = 1;
+    input.queues[0]!.oldest_lease_age_ms = 600_000;
+    input.queues[0]!.fencing_token_high_watermark = 1;
+    const snapshot = buildOperationsHealthSnapshot(input);
+    expect(snapshot.evidence_ready).toBe(false);
+    expect(snapshot.issues).toContainEqual(
+      expect.objectContaining({
+        code: 'queue_active_lease_stale',
+        severity: 'sev1',
+        safe_context: expect.objectContaining({ observed: 600_000 }),
+      }),
+    );
+  });
+
   it('rejects stalled content progress using exact progress evidence', () => {
     const input = healthyInput();
     const queue = input.queues.find(
@@ -376,12 +405,29 @@ describe('P33 strict operational leakage prevention', () => {
     });
   });
 
-  it.each(['first_name', 'last_name', 'date_of_birth', 'postal_code', 'ip_address'])(
-    'blocks common PII key %s',
-    (key) => {
-      expect(scanOperationalLeakage({ [key]: 'private-value' }).finding_counts).toHaveProperty(
-        'pii_field',
-      );
-    },
-  );
+  it('blocks the reproduced street_address PII key and redacts its value', () => {
+    const payload = { street_address: 'private-value' };
+    expect(scanOperationalLeakage(payload)).toMatchObject({
+      passed: false,
+      finding_counts: { pii_field: 1 },
+    });
+    expect(redactOperationalData(payload)).toEqual({ street_address: '[redacted]' });
+  });
+
+  it.each([
+    'first_name',
+    'last_name',
+    'date_of_birth',
+    'address_line_1',
+    'street_line_2',
+    'mailing_address',
+    'shipping_address_line_1',
+    'billing-address',
+    'postal_code',
+    'ip_address',
+  ])('blocks common PII key %s', (key) => {
+    expect(scanOperationalLeakage({ [key]: 'private-value' }).finding_counts).toHaveProperty(
+      'pii_field',
+    );
+  });
 });

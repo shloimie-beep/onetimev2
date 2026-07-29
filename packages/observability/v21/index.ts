@@ -32,6 +32,7 @@ export {
   type WorkerHealthObservation,
 } from './contracts.ts';
 export {
+  QUEUE_ACTIVE_LEASE_MAX_AGE_MS,
   QUEUE_AGE_THRESHOLDS_MS,
   buildOperationsHealthSnapshot,
   computeMigrationInventoryDigest,

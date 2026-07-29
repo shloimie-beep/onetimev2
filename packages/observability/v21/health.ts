@@ -23,6 +23,8 @@ const DAY = 24 * 60 * MINUTE;
 const SHA256 = /^[a-f0-9]{64}$/;
 const MIGRATION_NAME = /^[0-9]{3,6}_[a-z0-9][a-z0-9_-]*\.sql$/;
 
+export const QUEUE_ACTIVE_LEASE_MAX_AGE_MS = 5 * MINUTE;
+
 export const QUEUE_AGE_THRESHOLDS_MS: Readonly<
   Record<QueueClass, { warning: number; critical: number }>
 > = {
@@ -272,6 +274,15 @@ function evaluateQueueHealth(
         : (queue.oldest_ready_age_ms ?? 0);
     if (queue.duplicate_effect_risk) {
       issues.push(queueIssue(queue.queue, 'queue_duplicate_effect_risk', 'sev1', null));
+    }
+    if (
+      queue.active_lease_count > 0 &&
+      queue.oldest_lease_age_ms !== null &&
+      queue.oldest_lease_age_ms >= QUEUE_ACTIVE_LEASE_MAX_AGE_MS
+    ) {
+      issues.push(
+        queueIssue(queue.queue, 'queue_active_lease_stale', 'sev1', queue.oldest_lease_age_ms),
+      );
     }
     if (age > threshold.critical) {
       issues.push(queueIssue(queue.queue, 'queue_age_critical', 'sev2', age));
@@ -591,6 +602,7 @@ function validateQueueConsistency(
   if (
     !leaseShapeValid ||
     queue.unfenced_active_lease_count !== 0 ||
+    queue.retry_count !== queue.retry_scheduled_count + queue.retry_exhausted_count ||
     queue.retry_scheduled_count > queue.depth ||
     queue.retry_exhausted_count > queue.dead_letter_count
   ) {

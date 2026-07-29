@@ -5,7 +5,7 @@ const REDACTED = '[redacted]';
 const SENSITIVE_KEY =
   /(?:^|[_-])(?:password|passwd|secret(?:[_-](?:key|hash))?|access[_-]?token|refresh[_-]?token|id[_-]?token|token|cookie|authorization|proxy[_-]?authorization|credential(?![_-](?:expires|expiry|age))|credentials|api[_-]?key|private[_-]?key|card[_-]?number|cvv|setup[_-]?link|reset[_-]?link)(?:$|[_-])/i;
 const PII_KEY =
-  /^(?:(?:email|phone)(?:_address|_number)?|first[_-]?name|middle[_-]?name|last[_-]?name|full[_-]?name|display[_-]?name|date[_-]?of[_-]?birth|dob|ssn|national[_-]?id|passport[_-]?number|address|street|city|postal[_-]?code|zip[_-]?code|ip[_-]?address|user[_-]?agent|(?:recipient|adult|parent|student|child|user|contact)_(?:email|phone|name|address)|student[_-]?(?:text|question)|child[_-]?(?:text|question))$/i;
+  /^(?:(?:email|phone)(?:_address|_number)?|first[_-]?name|middle[_-]?name|last[_-]?name|full[_-]?name|display[_-]?name|date[_-]?of[_-]?birth|dob|ssn|national[_-]?id|passport[_-]?number|address|street|(?:street|mailing|billing|shipping|home|residential|physical|postal)[_-]?address(?:[_-]?(?:line)?[_-]?[12])?|address[_-]?(?:line(?:[_-]?[12])?|[12])|street[_-]?line(?:[_-]?[12])?|city|postal[_-]?code|zip[_-]?code|ip[_-]?address|user[_-]?agent|(?:recipient|adult|parent|student|child|user|contact)[_-](?:email|phone|name|address)|student[_-]?(?:text|question)|child[_-]?(?:text|question))$/i;
 const SAFE_DIGEST_KEY =
   /^(?:repository_sha|application_source_sha|artifact_digest|configuration_digest|migration_inventory_digest|provider_registry_digest|public_asset_digest|specification_digest|acceptance_contract_digest|sha256)$/i;
 const SAFE_OPERATIONAL_KEY = /^(?:fencing_token_high_watermark|credential_expires_in_ms)$/i;
