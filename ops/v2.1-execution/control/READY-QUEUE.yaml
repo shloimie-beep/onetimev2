@@ -2,69 +2,8 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready:
-- task_id: P12
-  status: ready
-  phase: correction
-  branch: codex/v21-p12-parent-household
-  claim_mode: resume_existing_branch
-  state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
-  authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-  expected_existing_head: 2faa49871ae34fa39e6387f264580e246244075b
-  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
-  task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
-  dependency_heads_and_digests:
-    F03:
-      required_state: interface_ready_integrated
-      observed_state: interface_ready_integrated
-      observed_task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
-      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
-      interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
-      interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
-      interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
-      task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
-      task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
-    F04:
-      required_state: interface_ready_integrated
-      observed_state: interface_ready_integrated
-      observed_task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
-      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
-      interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
-      interface_implementation_head_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
-      interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
-      task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
-      task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
-    F07:
-      required_state: interface_ready_integrated
-      observed_state: interface_ready_integrated
-      observed_task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
-      observed_integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
-      interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
-      interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
-      interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-      task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
-      task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-  writer_slot_leases:
-  - slot: PARENT_HOUSEHOLD_UI
-    lease_id: 79c5cf83-4438-4c68-ba4f-8e18b87de1f4
-    holder_task_id: P12
-    holder_claim_id: 86e406be-cec6-493e-a2a8-4d0744168ed9
-    state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
-    lease_issued_at: '2026-07-29T04:24:36Z'
-    lease_expires_at: '2026-07-29T05:24:36Z'
-    phase_scope: interface_digest_separator_metadata_correction_claim_only
-  effect_lock_leases: []
-  claim_id: 86e406be-cec6-493e-a2a8-4d0744168ed9
-  lease_issued_at: '2026-07-29T04:24:36Z'
-  lease_expires_at: '2026-07-29T05:24:36Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/P12-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: HIGH
-entry_payload_digests:
-  P12: 8bb0d6d8bcc996fe9a50ebafec45046d3a65bad9cf85f193d90c083fc6b1eb30
+ready: []
+entry_payload_digests: {}
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

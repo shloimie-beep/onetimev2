@@ -852,3 +852,12 @@ Because the prior lease was released, C00 issued only fresh atomic metadata
 claim `86e406be-cec6-493e-a2a8-4d0744168ed9` from exact final `2faa4987`
 under lease `79c5cf83-4438-4c68-ba4f-8e18b87de1f4`. P12 must change only its
 three runtime files and stop for reconciliation before correcting metadata.
+
+P12 metadata-correction claim `b8d43694` is independently reconciled: its sole
+parent is exact held final `2faa4987`; its delta is exactly P12 `TASK-STATE`,
+`HANDOFF`, and `NEXT-PROMPT`; it binds containing authorization `5d2877fa`,
+acquisition `76c1c2d9`, claim `86e406be`, lease `79c5cf83`, canonical ready
+digest `8bb0d6d8`, a clean remote ref, and zero effects. P12 may now replace the
+invalid literal-backslash-n digest `7ac6f511` with documented-LF digest
+`ec615147` only in its interface and runtime metadata. Product, export,
+steward, migration, shared, and effect artifacts must remain byte-identical.

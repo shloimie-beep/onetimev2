@@ -557,3 +557,14 @@ resumes it, replace the incorrect literal-backslash-n semantic digest
 with the correct LF-separated digest
 `ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26`
 everywhere in P12 metadata; product and export blobs must remain unchanged.
+
+P12 claim `b8d43694b93b5f932c35d065e633c887761f67a1` is reconciled.
+Replace the invalid literal-backslash-n semantic digest
+`7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373`
+with documented UTF-8/LF/no-final-newline digest
+`ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26`
+only in P12 `INTERFACE-CHECKPOINT.yaml` and runtime references. Reproduce the
+unchanged export hashes and semantic preimage, verify exact scope and clean
+remote state, publish `ready_for_review`, release lease
+`79c5cf83-4438-4c68-ba4f-8e18b87de1f4`, and keep effects at `0/0/0`. Do not
+change product, contract, test, steward, migration, shared, or effect files.
