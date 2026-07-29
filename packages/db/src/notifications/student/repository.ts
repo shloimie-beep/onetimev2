@@ -52,11 +52,11 @@ export function createPostgresStudentNotificationRepository(
       try {
         await client.query('BEGIN');
         await client.query(`SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, [
-          [
+          `v1:${JSON.stringify([
             input.notification.recipientStudentId,
             input.notification.sourceFamily,
             input.notification.sourceEntityId,
-          ].join('\u0000'),
+          ])}`,
         ]);
         const existing = await client.query<NotificationRow>(
           `${SELECT_COLUMNS}

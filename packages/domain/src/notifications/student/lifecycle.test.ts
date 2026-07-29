@@ -134,11 +134,11 @@ describe('P23 Student notification lifecycle', () => {
     });
     expect(rendered[4]?.body).toBe('Status: Answered.');
     expect(rendered[1]?.action).toMatchObject({
-      label: 'Open calendar',
+      label: 'Open schedule',
       route: '/app/student/calendar',
     });
     expect(rendered[2]?.action).toMatchObject({
-      label: 'Open calendar',
+      label: 'Open schedule',
       route: '/app/student/calendar',
     });
     expect(rendered.every((notification) => !notification.action?.route.includes('://'))).toBe(
@@ -189,12 +189,7 @@ describe('P23 Student notification lifecycle', () => {
     const next = buildStudentNotification(reminder({ sourceVersion: 5 })).notification;
     expect(retry).toMatchObject({ id: first.id, dedupeKey: first.dedupeKey });
     expect(next.id).not.toBe(first.id);
-    expect(first.dedupeKey.split('\u0000')).toEqual([
-      'class_reminder',
-      'occurrence_one',
-      'student_one',
-      '4',
-    ]);
+    expect(first.dedupeKey).toBe('v1:["class_reminder","occurrence_one","student_one",4]');
   });
 
   it('keeps expired notices under All for 30 days and denies stale actions', () => {

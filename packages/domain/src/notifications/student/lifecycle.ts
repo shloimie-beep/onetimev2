@@ -89,12 +89,12 @@ export function studentNotificationDedupeKey(input: {
   recipientStudentId: string;
   sourceVersion: number;
 }) {
-  return [
+  return `v1:${JSON.stringify([
     input.eventType,
     input.sourceEntityId,
     input.recipientStudentId,
-    String(input.sourceVersion),
-  ].join('\u0000');
+    input.sourceVersion,
+  ])}`;
 }
 
 export function projectStudentNotification(input: {
@@ -227,7 +227,7 @@ function renderEvent(event: StudentNotificationEvent): {
           `Your class is now ${approvedText(event.studentLocalTime, 'studentLocalTime')}.`,
           event.adminMessage,
         ),
-        action: action('open_schedule', 'Open calendar', '/app/student/calendar'),
+        action: action('open_schedule', 'Open schedule', '/app/student/calendar'),
       };
     case 'class_canceled':
       return {
@@ -236,7 +236,7 @@ function renderEvent(event: StudentNotificationEvent): {
           `The class scheduled for ${approvedText(event.studentLocalTime, 'studentLocalTime')} was canceled.`,
           event.adminMessage,
         ),
-        action: action('open_schedule', 'Open calendar', '/app/student/calendar'),
+        action: action('open_schedule', 'Open schedule', '/app/student/calendar'),
       };
     case 'recording_available':
       return {
