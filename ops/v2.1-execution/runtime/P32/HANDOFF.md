@@ -18,16 +18,16 @@ Interface contract `1.0.0` is published for P18 at digest `76d0858798dbb7a14c936
 
 ## Remaining work
 
-Re-run the exact final verification suite, release the worker lease in metadata, and publish `ready_for_review`. I36/F02/infrastructure stewards must later apply the three structured requests; P32 did not edit shared hotspots.
+P32-owned implementation is complete. F02 must adjudicate `P32-migration-001`; I36 must adjudicate `P32-registration-001`; the infrastructure/security steward must adjudicate `P32-config-001`. Candidate-bound staging and operator-canary proof remains for verification waves.
 
 ## Exact next action
 
-Run final typecheck, focused 21-test suite, focused lint/format, and diff checks; then publish the terminal checkpoint without changing the interface artifacts.
+C00/I36 should validate and integrate the exact P32 interface checkpoint, adjudicate the three steward requests, and authorize P18 from the resulting integration head.
 
 ## Coverage
 
-- Requirements: all five assigned requirements are implementation-verified.
-- Acceptance cases: all eight assigned cases have task-owned assertions; no candidate-bound production proof is claimed.
+- Requirements: all five are implementation-ready.
+- Acceptance cases: all eight have task-owned positive, negative, isolation, transition, replay, redaction, retention, and restore assertions; candidate-bound environment proof is intentionally not claimed.
 
 ## Changed files and migrations
 
@@ -35,7 +35,7 @@ All implementation paths remain within the seven owned P32 globs plus P32 runtim
 
 ## Verification
 
-`npm run typecheck`, 21 focused Vitest assertions across domain/database/server/worker/UI, focused ESLint, focused Prettier, and `git diff --check` pass.
+Final re-run passed `npm run typecheck`, 21 focused Vitest assertions across domain/database/server/worker/UI, focused ESLint, focused Prettier, interface artifact/digest recomputation, and `git diff --check`.
 
 ## External effects
 
@@ -47,4 +47,4 @@ No secrets, real identities, child data, private questions/support bodies, media
 
 ## Blockers, deviations, and recovery
 
-No blocker or deviation. Pending migration, central registration, and independent Object-Lock infrastructure are explicit steward requests, not hidden completion claims.
+No blocker or deviation. The writer-slot lease was released at `2026-07-28T20:43:29Z`. Pending migration, central registration, and independent Object-Lock infrastructure are explicit steward requests, not hidden completion claims.
