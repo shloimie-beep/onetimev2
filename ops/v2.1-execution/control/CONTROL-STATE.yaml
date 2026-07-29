@@ -15,12 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 862c81d83140f4b41fb5459371e90b2c6595fd3c
+controller_authorization_sha: 18b0d8eafac9417901a72149e4eff48cba13a24d
 next_action: >-
-  I36 claim eceef5f7 is reconciled under unchanged claim 9059c2e9 and RELEASE_INTEGRATOR lease 7015ba41. I36 may now
-  merge only queued P17, then P21, then corrected P24 with exact source parents, fixed bases, 18/21/20-path
-  allowlists, canonical queue digests, and all recorded merge-after ancestry; run proportionate verification,
-  update only the three I36 runtime files, release the lease, and stop for C00 audit. All migration, registration,
-  Zoom/config, reminder, and other steward requests remain assigned and unapplied; no provider inspection, steward
-  application, or external effect is authorized.
+  Wave C part 2 is independently audited and released at integration head b06321b8; its merge queue is cleared. I36
+  may atomically claim only Wave D from that exact head under claim 60998dcd and RELEASE_INTEGRATOR lease de1ad066,
+  recording the exact queued P28, P18, and P20 items and then stopping for C00 reconciliation before any source
+  merge. All fixed bases, 3/23/17-path allowlists, digests, merge-after ancestry, and virtual merge order are
+  verified. P17 reminder routing assigned to P28 and every migration, registration, config, dependency, and
+  projection request remain unapplied; no provider inspection, steward application, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
