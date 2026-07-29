@@ -586,3 +586,20 @@ remote-verify, and stop. Do not merge P12, P22, or P34 until C00 reconciles the
 exact claim and rebinds all three optimistic target heads. No steward, provider,
 deployment, registration, migration, legal-approval, or external effect action
 is authorized.
+
+I36 claim `c4ee7d967ad5ff85f538307ad196c63d35fb5ad2` is reconciled.
+Merge only in this exact order from that claim head:
+
+1. P12 full source `4bc6f15c8beffb28dc845d976a62b9c4915a11dc`,
+   rebound digest `c0120296472ce4fc9c8bea2acb2439aeea617934052ebb4f1180cf28f7b8e71d`;
+2. P22 full source `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`,
+   rebound digest `ed0b0a3850c23ea2fe4adef71280b7f5963218d3c749517091c2a17569de313c`;
+3. P34 full mechanism source `17f41c6b78bf6bedf1beb0803f855b2d4f01294a`,
+   rebound digest `e7fd5a401435b52edce651b56e973ffb5abb6fc2c335d96ec187d9d355d37f3a`.
+
+Verify every source base, exact 16/14/15 path allowlist, source ancestry,
+task/state/artifact digests, focused suites, workspace typecheck, formatting,
+secret scan, and cumulative diff hygiene. Publish exact merge heads plus a
+metadata-only release checkpoint, release lease
+`08ea5a46-06b1-466e-a6f2-b1947f4ed402`, and keep effects at zero. Do not
+apply steward requests or treat P34 real R44/legal gates as passed.

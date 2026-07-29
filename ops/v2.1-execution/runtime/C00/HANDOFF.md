@@ -877,3 +877,12 @@ path sets are pairwise disjoint and merge-tree clean. I36 claim
 `08ea5a46-06b1-466e-a6f2-b1947f4ed402` are authorized only for an atomic
 three-runtime-file claim before target-CAS reconciliation. No steward request
 or external effect is authorized; P34 real R44 and legal gates remain unpassed.
+
+I36 atomic claim `c4ee7d96` is independently reconciled: sole parent
+`d075dc18`, exactly three I36 runtime files, containing authorization
+`c9e0551d`, acquisition `9d34bfde`, exact claim/lease/ready bindings, clean
+remote state, no queued source admission, and zero effects. C00 consumed the
+ready entry and rebound P12, P22, and P34 merge targets to exact `c4ee7d96`.
+Canonical rebound digests are `c0120296`, `ed0b0a38`, and `e7fd5a40`.
+I36 may now execute only that order, preserve each source ancestry, perform no
+steward action, and release its lease after cumulative verification.

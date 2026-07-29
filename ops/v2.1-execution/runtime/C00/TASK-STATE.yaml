@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-e93d04eb
-claim_time: '2026-07-29T04:43:32Z'
-claim_id: e93d04eb-40aa-4cd3-a003-6f3ee4684122
-lease_expires_at: '2026-07-29T04:46:49Z'
-last_heartbeat_at: '2026-07-29T04:46:49Z'
-controller_authorization_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+claimed_by: codex-c00-orchestrator-70753fe8
+claim_time: '2026-07-29T04:54:50Z'
+claim_id: 70753fe8-b3f2-4176-9427-a4bdf7b90f72
+lease_expires_at: '2026-07-29T04:56:26Z'
+last_heartbeat_at: '2026-07-29T04:56:26Z'
+controller_authorization_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
 ready_entry_payload_digest: null
-state_based_on_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+state_based_on_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -226,8 +226,10 @@ completed_steps:
 - consumed the P12 ready entry and authorized only replacement of invalid literal-backslash-n digest 7ac6f511 by documented-LF digest ec615147 in P12 metadata, with every product, export, steward, migration, shared, and effect artifact frozen
 - independently admitted P12 corrected final 4bc6f15c after exact claim-relative four-metadata-file and start-relative sixteen-path scope, 515-byte LF digest ec615147, interface-file e28e0b9c, state-handoff 9bbd2384, unchanged export/steward blobs, released lease, clean remote state, and zero effects
 - queued one ordered full-source integration wave for P12 final 4bc6f15c, P22 final 4d1b6dfc, and P34 mechanism final 17f41c6b from exact integration target d075dc18 with pairwise-disjoint scopes, canonical queue digests, one fresh I36 claim/lease, no steward action, and zero effect authority
+- independently verified I36 atomic claim c4ee7d96 with sole parent d075dc18, exactly three I36 runtime files, containing authorization c9e0551d, acquisition 9d34bfde, exact claim/lease/ready bindings, clean remote state, no queued source admission, and zero effects
+- consumed the I36 ready entry and rebound all three ordered full-merge target CAS fields to exact claim head c4ee7d96 with canonical digests c0120296, ed0b0a38, and e7fd5a40
 remaining_steps: []
-next_action: I36 publishes only a fresh atomic integration claim from exact target d075dc18 for the ordered P12, P22, and P34 full-source wave, then stops for C00 target-CAS reconciliation; all steward requests and external effects remain unauthorized.
+next_action: I36 executes only the rebound ordered full-source merges P12 4bc6f15c, P22 4d1b6dfc, and P34 17f41c6b from exact claim target c4ee7d96, verifies the cumulative release, publishes metadata, releases its lease, and keeps all steward actions and effects at zero.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -235,12 +237,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+  current_control_parent_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: e93d04eb-40aa-4cd3-a003-6f3ee4684122
-      observed_head: 9d34bfde201251ac87766ae5d182421517bb1e73
+      claim_id: 70753fe8-b3f2-4176-9427-a4bdf7b90f72
+      observed_head: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -252,10 +254,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: 2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa
-      observed_head: d075dc1839660205845e7da039a182bbe44778d2
+      observed_head: c4ee7d967ad5ff85f538307ad196c63d35fb5ad2
       authorized_start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
       lease_expires_at: '2026-07-29T05:43:32Z'
-      scheduling_state: P12_P22_P34_full_wave_atomic_claim_authorized
+      scheduling_state: claim_reconciled_ordered_P12_P22_P34_full_wave_authorized
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -608,11 +610,11 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 2808e67ea353c415b2d8774e6bfb934b124f66d7124ed04bb04ff21f0ea4d282
-    control_lease: 920241f7e1d04fc4421f8cea6ed619af95a389c3aa9adbbadcec518ff65dbe9c
-    task_registry: dd367be8cc8d59d4873869ad192bf062df5877b0f78e2536c2433acc8f294d25
-    ready_queue: 6b7623e0a5cb2ecc6b77a5fa2a93359624963c9f92e6644f0f8870c65223684d
-    merge_queue: e8f8da8808755b4a533e3e834165551f6d39e0effbb7cbc2ea1a5fc68e1fa00c
+    control_state: 45986570782b8b10b2af6a0f6d31a159d56e63236bab2189b6798f449f1647d5
+    control_lease: 9398cc702350fb58313efb12009fe2ee88f4ab1345d195eab98549623af53d64
+    task_registry: 1b194cfd4dc661390f163aa9c7d89d0e6495135775f88fc10b1f14afc929cdea
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    merge_queue: 27e1b69e884c7d7afa05a76ae87a1634f6655b28e00585d2f1e1c462aae4dbad
     steward_queue: 0114ee435005854047e6c28da262176ecc334bd1b6302f478cba04bb11263d74
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
@@ -701,6 +703,8 @@ verification:
   - P12 b8d43694 atomic metadata-correction claim ancestry, exact three-file scope, authorization/acquisition/claim/lease/ready bindings, clean remote state, and zero effects: passed
   - P12 final 4bc6f15c exact four-file metadata correction, sixteen-path full scope, semantic/interface/state-handoff/export/steward digests, released lease, clean remote state, and zero effects: passed
   - canonical I36 ready digest f7c20f23 and P12/P22/P34 ordered full-merge digests 6378386e/e8deb9d5/a696ae1a against acquisition 9d34bfde and exact target d075dc18: passed
+  - I36 c4ee7d96 atomic claim ancestry, exact three-file scope, authorization/acquisition/claim/lease/ready bindings, clean remote state, no source admission, and zero effects: passed
+  - rebound P12/P22/P34 ordered full-merge digests c0120296/ed0b0a38/e7fd5a40 against acquisition 7e0c7e41 and exact claim target c4ee7d96: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -10,7 +10,7 @@ items:
   source_branch: codex/v21-p12-parent-household
   source_head_sha: 4bc6f15c8beffb28dc845d976a62b9c4915a11dc
   target_branch: codex/v21-integration
-  expected_target_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+  expected_target_head_sha: c4ee7d967ad5ff85f538307ad196c63d35fb5ad2
   source_delta_base_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
   required_merge_base_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
   preserve_source_ancestry: true
@@ -38,7 +38,7 @@ items:
     lease_id: 08ea5a46-06b1-466e-a6f2-b1947f4ed402
     holder_task_id: I36
     holder_claim_id: 2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa
-    state_based_on_control_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+    state_based_on_control_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
     lease_issued_at: '2026-07-29T04:43:32Z'
     lease_expires_at: '2026-07-29T05:43:32Z'
     phase_scope: P12_P22_P34_full_atomic_claim_only
@@ -48,7 +48,7 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+  state_based_on_control_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
   merge_id: d4f99b0a-4661-48d8-8ab4-e01ac2883e7e
@@ -57,7 +57,7 @@ items:
   source_branch: codex/v21-p22-learning-engagement
   source_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
   target_branch: codex/v21-integration
-  expected_target_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+  expected_target_head_sha: c4ee7d967ad5ff85f538307ad196c63d35fb5ad2
   source_delta_base_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
   required_merge_base_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
   preserve_source_ancestry: true
@@ -84,7 +84,7 @@ items:
     lease_id: 08ea5a46-06b1-466e-a6f2-b1947f4ed402
     holder_task_id: I36
     holder_claim_id: 2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa
-    state_based_on_control_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+    state_based_on_control_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
     lease_issued_at: '2026-07-29T04:43:32Z'
     lease_expires_at: '2026-07-29T05:43:32Z'
     phase_scope: P12_P22_P34_full_atomic_claim_only
@@ -94,7 +94,7 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+  state_based_on_control_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
   merge_id: 1abfd737-0318-4b9c-b22c-1fe09a0b78c1
@@ -103,7 +103,7 @@ items:
   source_branch: codex/v21-p34-operations-recovery
   source_head_sha: 17f41c6b78bf6bedf1beb0803f855b2d4f01294a
   target_branch: codex/v21-integration
-  expected_target_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+  expected_target_head_sha: c4ee7d967ad5ff85f538307ad196c63d35fb5ad2
   source_delta_base_head_sha: d075dc1839660205845e7da039a182bbe44778d2
   required_merge_base_sha: d075dc1839660205845e7da039a182bbe44778d2
   preserve_source_ancestry: true
@@ -131,7 +131,7 @@ items:
     lease_id: 08ea5a46-06b1-466e-a6f2-b1947f4ed402
     holder_task_id: I36
     holder_claim_id: 2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa
-    state_based_on_control_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+    state_based_on_control_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
     lease_issued_at: '2026-07-29T04:43:32Z'
     lease_expires_at: '2026-07-29T05:43:32Z'
     phase_scope: P12_P22_P34_full_atomic_claim_only
@@ -141,11 +141,11 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+  state_based_on_control_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
 item_payload_digests:
-  fd7d1fae-a4fd-4569-96c5-cefee3cd1063: 6378386e299d08cd400e0f89142d9ce2d6c132a2e3f7ae5fabfb31dfe4cb7c7c
-  d4f99b0a-4661-48d8-8ab4-e01ac2883e7e: e8deb9d53a0c159110064ca26e1f6e18847cb3917ed7eca82077e3ad8aff7439
-  1abfd737-0318-4b9c-b22c-1fe09a0b78c1: a696ae1a73c50d28b275883c813599c93b21c486858ef66539b7fa71a9ab2827
+  fd7d1fae-a4fd-4569-96c5-cefee3cd1063: c0120296472ce4fc9c8bea2acb2439aeea617934052ebb4f1180cf28f7b8e71d
+  d4f99b0a-4661-48d8-8ab4-e01ac2883e7e: ed0b0a3850c23ea2fe4adef71280b7f5963218d3c749517091c2a17569de313c
+  1abfd737-0318-4b9c-b22c-1fe09a0b78c1: e7fd5a401435b52edce651b56e973ffb5abb6fc2c335d96ec187d9d355d37f3a
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: I36 publishes only a fresh atomic integration claim from exact target d075dc18 for the ordered P12, P22, and P34 full-source wave, then stops for C00 target-CAS reconciliation; all steward requests and external effects remain unauthorized.
+next_action: I36 executes only the rebound ordered full-source merges P12 4bc6f15c, P22 4d1b6dfc, and P34 17f41c6b from exact claim target c4ee7d96, verifies the cumulative release, publishes metadata, releases its lease, and keeps all steward actions and effects at zero.
 authority_note: Only C00 updates this global control state.
