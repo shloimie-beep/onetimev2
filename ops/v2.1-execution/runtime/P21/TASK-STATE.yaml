@@ -39,15 +39,15 @@ dependency_heads:
     interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
     task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
     task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
-status: ready_for_review
-phase: complete
+status: claimed
+phase: provider_operation_occurrence_audience_correction_claim
 claim_mode: resume_existing
-claimed_by: codex-p21-worker-f7ed5c86
-claim_time: '2026-07-29T11:11:54Z'
-claim_id: f7ed5c86-2b2a-4e58-930a-b602ac9f1657
-expected_existing_head: 24f82a7484f2889349f7768d29ec7f2545cfa45a
-rejected_final_head_sha: 24f82a7484f2889349f7768d29ec7f2545cfa45a
-superseding_correction_claim_head_sha: 355d7b126fe2db7b2e8061f86585d724866998a6
+claimed_by: codex-p21-worker-eba3bd79
+claim_time: '2026-07-29T12:08:50Z'
+claim_id: eba3bd79-7a63-46fe-89eb-edace22f1a1e
+expected_existing_head: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
+rejected_final_head_sha: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
+prior_correction_claim_head_sha: 355d7b126fe2db7b2e8061f86585d724866998a6
 writer_slot_leases:
   - slot: CONTENT_PUBLICATION
     lease_id: 31423c6c-74ef-43cc-b3a8-75b425568619
@@ -69,18 +69,27 @@ writer_slot_leases:
     phase_scope: P21_atomic_claim_publication_safety_correction_only
     lease_released_at: '2026-07-29T11:53:30Z'
     state: released
+  - slot: CONTENT_PUBLICATION
+    lease_id: d4c8a72c-7beb-40e9-93d4-73d4f3c62668
+    holder_task_id: P21
+    holder_claim_id: eba3bd79-7a63-46fe-89eb-edace22f1a1e
+    lease_issued_at: '2026-07-29T12:03:14Z'
+    lease_expires_at: '2026-07-29T13:18:14Z'
+    state_based_on_control_head_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+    phase_scope: P21_atomic_claim_provider_operation_occurrence_audience_correction_only
+    state: active
 effect_lock_leases: []
-lease_expires_at: '2026-07-29T12:26:54Z'
-lease_released_at: '2026-07-29T11:53:30Z'
-last_heartbeat_at: '2026-07-29T11:53:30Z'
-controller_authorization_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
-controller_authorization_parent_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
-claim_reconciled_control_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
-claim_reconciled_control_parent_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
-latest_observed_control_sha: 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3
-ready_entry_state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
-ready_entry_payload_digest: 571dff5375ca1cfd20d305f1924eaab1d6d7b05bd8588799f519467972c28ff3
-state_based_on_head_sha: a272161866af85f3b93dbfa60d6c940601553b3b
+lease_expires_at: '2026-07-29T13:18:14Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T12:08:50Z'
+controller_authorization_sha: aff7a46e8efc1a9756b5b0ef543916eb51f3c906
+controller_authorization_parent_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+claim_reconciled_control_sha: null
+claim_reconciled_control_parent_sha: null
+latest_observed_control_sha: aff7a46e8efc1a9756b5b0ef543916eb51f3c906
+ready_entry_state_based_on_control_head_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+ready_entry_payload_digest: f0875254206ba39499fe3d21ad147ec252551aa4e25dcfb0f3f4c162fd237528
+state_based_on_head_sha: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
 last_implementation_commit_sha: a272161866af85f3b93dbfa60d6c940601553b3b
 implementation_artifact_digest: 3b25a254872b8dba3400c38092eedcb4ca43108f080222c8fd33a2b6087acbee
 implementation_artifact_digest_algorithm: >-
@@ -113,23 +122,15 @@ steward_request_digest_algorithm: >-
   SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
   and no final newline.
 completed_steps:
-  - Verified exact remote correction claim 355d7b126fe2db7b2e8061f86585d724866998a6, C00 reconciliation and authorization 3fd19332799a28a7efd7cde00712ba8ca091bf14 with sole state-based acquisition parent e6a6729bc109816124ef2e7beef5e42aa398b147, active claim f7ed5c86-2b2a-4e58-930a-b602ac9f1657, and CONTENT_PUBLICATION lease 2ea04691-d951-4c3b-90cf-e1909f42be7c.
-  - Reverified the live control registry still records the exact P21 claim head, claim, writer, and lease; the authorization is an ancestor of current control head 7761608fef1c7eb7f6bd77ec87127f0bb4eb45d3.
-  - Added fail-closed approval against preexisting immutable content-version, participant-snapshot, participant-review, redaction-review, and named Admin-attestation evidence.
-  - Removed the direct web-process provider mutation port and dispatch path; publication completion now accepts only one stable, fenced F05/F06 ProviderOperation readback with exact canonical request identity, private and available Vimeo state, exact content-version correlation, one canonical asset, durable One Time readback, and ambiguity denial.
-  - Atomically materialized versioned Student assignments, library projections, and protected Student/adult recording notices with Student-only playback actions.
-  - Bound five-minute playback grants to exact current content/publication/grant, assignment, Student, session, enrollment, access, service-account-consent, privacy, and revocation versions and states without recording-participation or member-recognition watch gates.
-  - Changed unpublish to published-to-approved with immediate durable playback-grant-generation invalidation and retained archive as a separate transition.
-  - Added exact idempotent governed occurrence/product relations and conflicting-governance denial.
-  - Strengthened but did not apply P21-registration-001 for forward-only F02 migration and I36/F05/F06 registration work.
-  - Passed 5 focused files and 13 deterministic positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact scope and diff hygiene, provider-mutation/reference scan, and secret scan across 2898 repository text files.
-  - Reproduced all 17 artifact hashes and aggregate 3b25a254872b8dba3400c38092eedcb4ca43108f080222c8fd33a2b6087acbee plus request payload 3118761ab1ae1bd75101ae9dafe435018e3292584f5c938b574e1a3231f69387 and aggregate c961e50261a7d30044a0f51205017dfdbc2d669e5fcd6f5eb6a7b9244f3b43ca.
-  - Released claim f7ed5c86-2b2a-4e58-930a-b602ac9f1657 and CONTENT_PUBLICATION lease 2ea04691-d951-4c3b-90cf-e1909f42be7c before expiry with zero external effects.
+  - Verified local and remote P21 are exactly rejected final 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af with a clean worktree.
+  - Verified exact C00 authorization aff7a46e8efc1a9756b5b0ef543916eb51f3c906 and its sole state-based acquisition parent d633726e427e659adf55d71d009919ae4f6b4dde.
+  - Verified canonical READY payload digest f0875254206ba39499fe3d21ad147ec252551aa4e25dcfb0f3f4c162fd237528, claim eba3bd79-7a63-46fe-89eb-edace22f1a1e, active CONTENT_PUBLICATION lease d4c8a72c-7beb-40e9-93d4-73d4f3c62668 through 2026-07-29T13:18:14Z, and zero effect locks.
+  - Bound this atomic claim only in the three P21 runtime-memory files; no product, test, request, steward, migration, provider, send, or effect action was attempted.
 remaining_steps:
-  - C00 must independently audit and admit the exact superseding remote final.
-  - F02/I36 may later evaluate P21-registration-001 under their own authority; P21 did not apply it.
-  - Candidate-bound provider-sandbox or production-canary evidence remains gated on a later immutable candidate and exact external-effect authority.
-next_action: Push and remote-verify the superseding ready-for-review final, then report its exact head to C00 for independent audit.
+  - C00 must independently reconcile this exact atomic claim head before any product or test correction begins.
+  - After reconciliation only, implement the bounded ProviderOperation completion, governed occurrence lookup, current audience eligibility, and direct residual tests authorized by C00.
+  - Preserve passing behavior, use local ports/mocks only, release the lease, and publish a superseding ready-for-review final with zero effects.
+next_action: Push and remote-verify this exact three-runtime-file atomic claim, report the exact head to C00, and stop for reconciliation.
 requirements:
   OTV2-CONTENT-087: source_implemented_candidate_provider_evidence_pending
   OTV2-CONTENT-088: source_implemented_candidate_evidence_pending
@@ -150,49 +151,19 @@ acceptance_cases:
   OTV2-CONTENT-194-AC01: source_covered_candidate_evidence_pending
   OTV2-CONTENT-195-AC01: source_covered_candidate_evidence_pending
 changed_paths:
-  - apps/web/src/client/app/admin/content/publication/index.ts
-  - apps/web/src/client/app/admin/content/publication/model.test.ts
-  - apps/web/src/client/app/admin/content/publication/model.ts
-  - apps/web/src/client/app/student/library/index.ts
-  - apps/web/src/client/app/student/library/model.test.ts
-  - apps/web/src/client/app/student/library/model.ts
-  - apps/web/src/server/features/content/publication/index.ts
-  - apps/web/src/server/features/content/publication/service.test.ts
-  - apps/web/src/server/features/content/publication/service.ts
   - ops/v2.1-execution/runtime/P21/HANDOFF.md
   - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-001.yaml
-  - packages/contracts/src/content/publication/index.ts
-  - packages/db/src/content/publication/index.ts
-  - packages/db/src/content/publication/repository.test.ts
-  - packages/db/src/content/publication/repository.ts
-  - packages/domain/src/content/publication/errors.ts
-  - packages/domain/src/content/publication/index.ts
-  - packages/domain/src/content/publication/lifecycle.ts
-  - packages/domain/src/content/publication/publication.test.ts
 migrations: []
 steward_requests:
   - id: P21-registration-001
     sha256: 3118761ab1ae1bd75101ae9dafe435018e3292584f5c938b574e1a3231f69387
 verification:
   commands_run:
-    - command: exact claim-head, authorization-parent, live-registry, lease, branch, and zero-effect verification
+    - command: exact rejected local/remote head, control authorization and sole parent, canonical READY, claim, lease, zero-effect-lock, and clean-worktree verification
       result: passed
-    - command: npm exec -- vitest run <five P21 focused files> --environment node
-      result: passed; 5 files and 13 deterministic positive/negative tests
-    - command: npm run typecheck
-      result: passed
-    - command: focused ESLint and Prettier over all changed P21 TypeScript and YAML artifacts
-      result: passed
-    - command: exact normalized-root scope audit and git diff --check
-      result: passed; no migration, shared registration, or unrelated path
-    - command: direct web-provider-mutation and client provider-reference scan
-      result: passed; only the deliberate unsafe-URL negative test fixture matched
-    - command: npm run secret:scan
-      result: passed across 2898 repository text files
-    - command: exact Git-blob artifact and steward-request digest reproduction
-      result: passed; 17-artifact aggregate 3b25a254 and request aggregate c961e502
+    - command: exact normalized scope and git diff --check
+      result: passed; exactly the three P21 runtime-memory files
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -200,6 +171,7 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - Candidate-bound provider and end-to-end registration evidence is not authorized in this phase.
+  - Product and test correction is prohibited until C00 reconciles this atomic claim.
+  - The rejected final requires the bounded pending-outbox ProviderOperation, governed occurrence lookup, and current audience eligibility corrections recorded by C00.
 out_of_scope_findings:
-  - Forward-only schema migration and central server, worker, and authenticated-client composition remain in P21-registration-001 and were not applied.
+  - No product, test, request, steward, migration, registration, provider, send, or external-effect action is permitted in this atomic-claim push.
