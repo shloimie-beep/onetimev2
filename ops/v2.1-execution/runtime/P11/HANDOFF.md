@@ -1,100 +1,56 @@
-# P11 Corrected Admin Operations Final Handoff
+# P11 Residual Correction Atomic Claim Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p11-admin-operations`
-- Original rejected final:
-  `51bd416bbf3b53a2eb985c41617673135bcfc7a7`
-- Preserved partial correction checkpoint:
-  `e807e26e5882c3b8ad8e06221db9f28b743369b7`
-- Renewal atomic claim:
-  `b8c7643938e75bb2ea28b3ebd909f56b577d8b37`
-- Corrected implementation head:
+- Rejected final:
+  `81486a86a85a3d6ffee64eb58c66119686af049e`
+- Corrected implementation ancestor:
   `9c1386015a427e48f70be9f6191cb0f3b161922c`
-- Containing renewal authorization:
-  `863131dbb63004f6e5a547b0d10bb8262d0bbc37`
-- Sole authorization acquisition parent:
-  `daa4555baa113fb0a2224bd8505e5e599ad0e476`
-- Reconciled control:
-  `a95a1406200b139b4acd501c7b96821e6f74070a`
-- Reconciliation acquisition parent:
-  `6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4`
+- Containing authorization:
+  `d12899a74e9f3b9e0fc47bbf836784cbc8c05180`
+- Sole acquisition parent:
+  `f8154c67106ab032873fd923efa9979465f11fff`
 - READY digest:
-  `727c1f24163de62242f481b3df804b7b68cc157a0be9c34894c4cb1db2799efd`
-- Claim: `d6567fe9-bfd3-45c6-88c5-ff6cbdff225a`
+  `6f30eeea172d702e606c181329dc3b6e899a58ec0016ec2d6b84da7b0f5e9822`
+- Claim: `6efc5db3-43b4-4dad-ae3f-59031adddbd5`
+- Writer: `codex-p11-worker-6efc5db3`
 - ADMIN_OPERATIONS_UI lease:
-  `fd135a96-bfc0-4ee7-b59a-94873b5e3100`
-- Lease released: `2026-07-29T08:51:21Z`, before its
-  `2026-07-29T09:29:47Z` expiry.
-- Final metadata head: derive with `git rev-parse HEAD`; C00 records the exact
-  observed remote head.
+  `84e7a42a-d2a5-4c88-ba45-57b34ecc6de9`
+- Lease issued: `2026-07-29T09:09:26Z`
+- Lease expiry: `2026-07-29T10:09:26Z`
+- Phase scope:
+  `P11_atomic_claim_provider_privacy_accessibility_correction_only`
 
-## Corrected behavior
+## Residual blockers bound for correction
 
-P11 now performs a fresh server-side resolution immediately before opening a
-search result or occurrence. The resolver revalidates the current exact Admin
-credential version and selected target in the account/product scope, treats
-missing, archived, revoked, and stale targets as one neutral unavailable
-outcome, and constructs only allowlisted same-origin canonical routes.
+Exact-source re-audit rejected final
+`81486a86a85a3d6ffee64eb58c66119686af049e` despite valid ancestry, exact
+scope, matching artifact/request digests, 12 focused tests, and passing
+typecheck. Three blockers remain:
 
-Provider readiness is filtered to the configured source environment, preserves
-that source label, and cannot label non-production evidence as live. The
-dashboard uses canonical primary routes, supplies all locked quick actions, and
-shows release/source, web/worker agreement, database/migrations, queue depth and
-oldest/dead-letter state, provider detail, backup/restore, and redacted failures
-from persistent readback or explicit unavailable states. Required Resend,
-GHL/Stripe, Zoom, Vimeo, Drive/direct-upload, and Telegram groups are visible
-without invented health.
+- persistent provider rows are filtered only by coarse environment and then
+  stamped with the requested runtime tier and verification-environment
+  identity;
+- authorization invalidation clears results but retains the private query in
+  the input; and
+- grouped results repeat `id="admin-search-results"` across multiple
+  listboxes.
 
-Search still uses private POST-body-only, same-origin, no-store transport,
-opaque pagination, all eight required kinds, and exact Admin/product/runtime/
-environment authorization. Approved content metadata is searchable. Adult
-email/phone values and private ticket titles are not displayed, and provider
-URLs or secret-like text are rejected.
+These findings are recorded only to bind a later reconciled correction phase.
+No residual correction or product test was performed in this atomic claim.
 
-Recent Activity declares and enforces a 24-hour window. Search state is cleared
-on sign-out, role revocation, credential-version rotation, or bfcache restore;
-the dashboard suppresses retained snapshots after revocation. Search exposes a
-real combobox/listbox active-descendant relationship and keyboard activation.
-All operational times visibly say `Israel time (Asia/Jerusalem)`.
+## Atomic checkpoint scope and stop
 
-## Structured registration request
+This checkpoint changes only:
 
-`P11-registration-001` now records the exact resolver route, current-session
-and target reauthorization, same-origin/CSRF/no-store handling, neutral stale
-outcomes, client resolver-only navigation, session/cache/bfcache invalidation,
-canonical partner quick actions, and PS-025.3 partner evidence duties. It was
-not applied.
+- `ops/v2.1-execution/runtime/P11/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/P11/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P11/NEXT-PROMPT.md`
 
-## Exact digests
-
-- Corrected implementation artifact digest:
-  `0108eb515a62e5f138d835b5ce541115567bd09fbefb22e76ad550305cf5c63a`
-  over 13 exact implementation/test Git blobs.
-- P11-registration-001 payload digest:
-  `3fca985ba210b85bcb7790d8708966e33a02eb8ab860ccb3aeba3b2a4f3dd564`.
-- Steward-request aggregate digest:
-  `c19e66ca57deade97974c288e59896d793edbaee8dabe041ba0de0a4e180feb2`.
-
-## Verification
-
-- Four focused files and 12 direct positive/negative tests passed.
-- Workspace typecheck passed.
-- Focused ESLint and Prettier passed.
-- Exact normalized correction scope and diff hygiene passed.
-- Secret scan passed across 2875 repository text files.
-- Corrected artifact and request digests reproduced from immutable Git blobs.
-
-## Review and stop
-
-I36 must review and integrate exact corrected implementation head
-`9c1386015a427e48f70be9f6191cb0f3b161922c`, independently reproduce all
-digests, and disposition `P11-registration-001` without weakening the corrected
-authorization, privacy, environment, cache, canonical-route, real-data, or
-accessibility boundaries.
-
-Candidate-bound persistent-staging and production-operator-canary evidence
-remains downstream. P11 stops after final metadata push and remote verification.
+C00 must reconcile the immutable remote claim before P11 edits or tests
+product/request code. No registration, steward, provider, migration, send, or
+external effect is authorized.
 
 ## External effects
 
