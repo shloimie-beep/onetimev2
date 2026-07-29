@@ -38,8 +38,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: implementation
+status: ready_for_review
+phase: complete
 claimed_by: codex-p10-worker-f7e5889d
 claim_time: '2026-07-29T00:49:45Z'
 claim_id: f7e5889d-4db4-4818-a47f-5f26927597ae
@@ -49,51 +49,74 @@ writer_slot_leases:
     lease_issued_at: '2026-07-29T00:38:10Z'
     lease_expires_at: '2026-07-29T01:38:10Z'
 lease_expires_at: '2026-07-29T01:38:10Z'
-last_heartbeat_at: '2026-07-29T00:49:45Z'
-controller_authorization_sha: eb3b0e1deecbffe05177a07df0d8e52d648d109c
-ready_entry_state_based_on_control_head_sha: de271a6cab5fc74e8c77b5defc302094fe9a22fc
+lease_released_at: '2026-07-29T01:13:26Z'
+last_heartbeat_at: '2026-07-29T01:13:26Z'
+controller_authorization_sha: d8639ce20ce92a0f49ce8d69b57b09b355d09246
+state_based_on_control_head_sha: 629577e2ea6da2fdeca7754a6f314b6b254e952e
 ready_entry_payload_digest: 91d515fb029f45f7263b8aec6ee6ef39bac2066ab160428b5c253c94ff137587
-state_based_on_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-last_implementation_commit_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+state_based_on_head_sha: 3abb4bb96929400838f0270586c5c459c8c6f9ed
+last_implementation_commit_sha: 3abb4bb96929400838f0270586c5c459c8c6f9ed
+implementation_artifact_digest: 600eb180ae6aa873702ef0018353f89a3d647bf2ee1381d54bc78e1a824975a8
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 10 non-runtime P10 artifacts, with LF separators and no final newline.
+steward_request_digest: 37c19321fb6ceea660839bd1b117ec03ae834aa783d9b352e7ce4931f5d693f2
 completed_steps:
-  - Fetched corrected controller eb3b0e1deecbffe05177a07df0d8e52d648d109c and verified its exact sole parent de271a6cab5fc74e8c77b5defc302094fe9a22fc.
-  - Parsed the exact P10 create_new_branch ready entry and recomputed canonical payload digest 91d515fb029f45f7263b8aec6ee6ef39bac2066ab160428b5c253c94ff137587.
-  - Verified absent local/remote branch, authorized integration start, immutable package/task/context digests, F03/F04/F07 dependency bindings, claim, active ADMIN_DIRECTORY lease, and zero effect locks.
-  - Created the isolated P10 branch from exact authorized start 49431959f58f284bdc13ca931acf09f980fc483a and seeded only the three task-local runtime claim files.
+  - Verified the reconciled continuation control d8639ce20ce92a0f49ce8d69b57b09b355d09246, sole parent 629577e2ea6da2fdeca7754a6f314b6b254e952e, exact claim head, task/ready digests, dependency interfaces, and active ADMIN_DIRECTORY lease.
+  - Implemented exact runtime Admin authorization, product/runtime/environment isolation, adult and household lifecycle, Admin/Parent membership creation, Student lifecycle, protected Student credential reset, and F04 verified sole-ownership transfer.
+  - Implemented an idempotent transaction service that checks replay before executing row-locked mutation reads and commits aggregate writes, audit, credential/transfer records, and receipt atomically.
+  - Implemented the accessible F07 Admin directory workspace with adult, household, Student, ownership-transfer, credential-reset, lifecycle, empty, and error controls.
+  - Passed full workspace typecheck and lint, 12 focused assertions, focused Prettier, diff hygiene, repository-wide secret scan, and provider-effect inventory.
+  - Pushed exact implementation head 3abb4bb96929400838f0270586c5c459c8c6f9ed and derived its 10-artifact and steward-request Git-blob digests.
 remaining_steps:
-  - Push and report this exact three-file atomic claim checkpoint, then stop for C00 reconciliation.
-  - Begin dependency-interface inspection or product implementation only after C00 explicitly reconciles this claim and authorizes continuation.
-next_action: Push this three-file atomic claim with sole parent 49431959f58f284bdc13ca931acf09f980fc483a, report the pushed head to C00, and stop without product work.
+  - I36 must review and integrate the exact P10 implementation head.
+  - I36 must disposition P10-MIGRATION-001 and P10-REGISTRATION-001 without semantic weakening.
+  - Candidate-bound persistent-staging and production-operator-canary evidence remains with the assigned verification and release lanes.
+next_action: I36 should review and integrate implementation head 3abb4bb96929400838f0270586c5c459c8c6f9ed, verify artifact digest 600eb180ae6aa873702ef0018353f89a3d647bf2ee1381d54bc78e1a824975a8, and disposition the two P10 steward requests.
 requirements:
-  OTV2-ADMIN-022: pending
-  OTV2-ADMIN-023: pending
-  OTV2-ADMIN-024: pending
-  OTV2-ADMIN-025: pending
-  OTV2-ADMIN-026: pending
-  OTV2-ADMIN-027: pending
-  OTV2-ADMIN-028: pending
-  OTV2-ADMIN-030: pending
+  OTV2-ADMIN-022: implementation_ready
+  OTV2-ADMIN-023: implementation_ready
+  OTV2-ADMIN-024: implementation_ready
+  OTV2-ADMIN-025: implementation_ready
+  OTV2-ADMIN-026: implementation_ready
+  OTV2-ADMIN-027: implementation_ready
+  OTV2-ADMIN-028: implementation_ready
+  OTV2-ADMIN-030: implementation_ready
 acceptance_cases:
-  OTV2-ADMIN-022-AC01: pending
-  OTV2-ADMIN-023-AC01: pending
-  OTV2-ADMIN-024-AC01: pending
-  OTV2-ADMIN-025-AC01: pending
-  OTV2-ADMIN-026-AC01: pending
-  OTV2-ADMIN-027-AC01: pending
-  OTV2-ADMIN-028-AC01: pending
-  OTV2-ADMIN-030-AC01: pending
+  OTV2-ADMIN-022-AC01: implementation_ready
+  OTV2-ADMIN-023-AC01: implementation_ready
+  OTV2-ADMIN-024-AC01: implementation_ready
+  OTV2-ADMIN-025-AC01: implementation_ready
+  OTV2-ADMIN-026-AC01: implementation_ready
+  OTV2-ADMIN-027-AC01: implementation_ready
+  OTV2-ADMIN-028-AC01: implementation_ready
+  OTV2-ADMIN-030-AC01: implementation_ready
 changed_paths:
-  - ops/v2.1-execution/runtime/P10/TASK-STATE.yaml
+  - apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx
+  - apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.tsx
+  - apps/web/src/client/app/admin/directory/index.ts
+  - apps/web/src/server/features/admin/directory/index.ts
+  - apps/web/src/server/features/admin/directory/service.test.ts
+  - apps/web/src/server/features/admin/directory/service.ts
   - ops/v2.1-execution/runtime/P10/HANDOFF.md
   - ops/v2.1-execution/runtime/P10/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P10/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P10/TASK-STATE.yaml
+  - packages/contracts/src/admin/directory/index.ts
+  - packages/domain/src/admin-directory/admin-directory.test.ts
+  - packages/domain/src/admin-directory/index.ts
+  - packages/domain/src/contact-operations/index.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - P10-MIGRATION-001
+  - P10-REGISTRATION-001
 verification:
   commands_run:
-    - Exact corrected control/sole-parent, registry, branch absence, authorized start, dependencies, claim, lease, and zero effect-lock verification (passed).
-    - Canonical sorted-JSON SHA-256 recomputation of the parsed P10 ready entry (passed).
-    - Exact Git-blob package, task packet, and task context digest verification (passed).
-    - Exact three-file atomic claim path and sole-parent verification (pending commit).
+    - Exact reconciled control, sole-parent/acquisition, claim head, task/ready digests, F03/F04/F07 interfaces, and active lease verification (passed).
+    - npm run typecheck (passed).
+    - npm run lint -- --quiet (passed).
+    - npx vitest run packages/domain/src/admin-directory/admin-directory.test.ts apps/web/src/server/features/admin/directory/service.test.ts apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx (passed, 12 tests).
+    - Focused Prettier write/check and git diff --check (passed).
+    - npm run secret:scan (passed across 2719 repository text files).
+    - Exact 10-artifact implementation and steward-request Git-blob digest derivation (passed).
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -101,4 +124,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Shared migration, database adapter, root barrels, central route composition, and legacy route replacement are captured in STEWARD-REQUESTS.yaml and were not edited by P10.
