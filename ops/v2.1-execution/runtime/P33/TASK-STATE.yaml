@@ -28,8 +28,8 @@ dependency_heads:
     interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
     task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
     task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: complete
 claim_mode: create_new_branch
 claimed_by: codex-p33-worker-e0ba9363
 claim_time: '2026-07-29T00:50:25Z'
@@ -40,7 +40,8 @@ writer_slot_leases:
     lease_issued_at: '2026-07-29T00:38:10Z'
     lease_expires_at: '2026-07-29T01:38:10Z'
 lease_expires_at: '2026-07-29T01:38:10Z'
-last_heartbeat_at: '2026-07-29T01:14:00Z'
+lease_released_at: '2026-07-29T01:17:00Z'
+last_heartbeat_at: '2026-07-29T01:17:00Z'
 controller_authorization_sha: eb3b0e1deecbffe05177a07df0d8e52d648d109c
 ready_entry_state_based_on_control_head_sha: de271a6cab5fc74e8c77b5defc302094fe9a22fc
 ready_entry_payload_digest: 05f3889c9a8341075e3fb49d25093149c2dfaf14f9470900ab69dda1fd70fc4e
@@ -60,32 +61,49 @@ completed_steps:
   - Implemented and verified the exact v2.1 runtime identity, health, redaction, protected diagnostics, worker heartbeat, and operator script interfaces.
   - Published the exact semantic interface checkpoint for P34, then republished it after response-wide redaction hardening with contract digest 9ac5c08ab8b0585747630093c077bcc48f93f9748320362610ab1ccc3786bbf7.
   - Added 10 focused assertions, the operator runbook, and structured registration, configuration, and deployment steward requests.
+  - Passed full workspace secret scan, lint, and typecheck plus 10 focused assertions, task-artifact formatting, and diff hygiene.
+  - Released the task-local OPERATIONS_RUNTIME lease with no external effect attempted.
 remaining_steps:
-  - Run final verification, release the writer lease in metadata, and publish ready_for_review.
-next_action: Push and report the exact interface metadata head for P34, then complete task-owned verification and final runtime metadata.
+  - I36 must independently audit and integrate the exact P33 interface checkpoint before C00 authorizes P34.
+  - I36 must disposition P33-registration-001, P33-config-001, and P33-deploy-001 without weakening the protected operations boundary.
+next_action: Review and integrate P33 interface digest 9ac5c08ab8b0585747630093c077bcc48f93f9748320362610ab1ccc3786bbf7 from implementation head 1a5a9c1d230e2852d21767509c4c42c908988221, then disposition the three structured steward requests.
 requirements:
-  OTV2-OPS-166: claim_recorded
-  OTV2-OPS-167: interface_implemented
-  OTV2-OPS-171: interface_implemented
-  OTV2-OPS-172: interface_implemented
-  OTV2-OPS-173: interface_implemented
+  OTV2-OPS-166: implementation_ready
+  OTV2-OPS-167: implementation_ready
+  OTV2-OPS-171: implementation_ready
+  OTV2-OPS-172: implementation_ready
+  OTV2-OPS-173: implementation_ready
 acceptance_cases:
-  OTV2-OPS-166-AC01: not_run
-  OTV2-OPS-167-AC01: not_run
-  OTV2-OPS-171-AC01: not_run
-  OTV2-OPS-172-AC01: not_run
-  OTV2-OPS-173-AC01: not_run
+  OTV2-OPS-166-AC01: task_owned_assertions_passed
+  OTV2-OPS-167-AC01: task_owned_assertions_passed
+  OTV2-OPS-171-AC01: task_owned_assertions_passed
+  OTV2-OPS-172-AC01: task_owned_assertions_passed
+  OTV2-OPS-173-AC01: task_owned_assertions_passed
 changed_paths:
-  - ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
+  - apps/web/src/server/operations/index.ts
+  - apps/web/src/server/operations/router.test.ts
+  - apps/web/src/server/operations/router.ts
+  - apps/worker/src/operations/heartbeat.test.ts
+  - apps/worker/src/operations/heartbeat.ts
+  - apps/worker/src/operations/index.ts
+  - ops/runbooks/v2.1/runtime/operations-runtime.md
   - ops/v2.1-execution/runtime/P33/HANDOFF.md
-  - ops/v2.1-execution/runtime/P33/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
-  - packages/observability/v21/**
-  - apps/web/src/server/operations/**
-  - apps/worker/src/operations/**
-  - scripts/operations/v21/health/**
-  - scripts/operations/v21/monitoring/**
-  - scripts/operations/v21/runtime/**
+  - ops/v2.1-execution/runtime/P33/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P33/steward-requests/P33-config-001.yaml
+  - ops/v2.1-execution/runtime/P33/steward-requests/P33-deploy-001.yaml
+  - ops/v2.1-execution/runtime/P33/steward-requests/P33-registration-001.yaml
+  - ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
+  - packages/observability/v21/contracts.ts
+  - packages/observability/v21/health.ts
+  - packages/observability/v21/index.ts
+  - packages/observability/v21/operations.test.ts
+  - packages/observability/v21/redaction.ts
+  - packages/observability/v21/runtime-identity.ts
+  - packages/observability/v21/test-fixtures.ts
+  - scripts/operations/v21/health/evaluate-health.ts
+  - scripts/operations/v21/monitoring/scan-operational-payloads.ts
+  - scripts/operations/v21/runtime/inspect-runtime-identity.ts
 migrations: []
 steward_requests:
   - P33-registration-001
@@ -109,6 +127,18 @@ verification:
       result: passed
     - command: focused ESLint, Prettier, and git diff checks
       result: passed
+    - command: npm run secret:scan
+      result: passed across 2729 repository text files
+    - command: npm run lint -- --quiet
+      result: passed
+    - command: npm run typecheck
+      result: passed
+    - command: npx vitest run packages/observability/v21/operations.test.ts apps/worker/src/operations/heartbeat.test.ts apps/web/src/server/operations/router.test.ts
+      result: passed; 3 files and 10 tests
+    - command: npx prettier --check over all P33 product, runbook, script, steward, and runtime artifacts
+      result: passed
+    - command: git diff --check
+      result: passed
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -116,4 +146,7 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Central web/worker registration and root barrel changes are captured in P33-registration-001.
+  - Candidate identity, read-only observation adapters, and heartbeat transport configuration are captured in P33-config-001.
+  - Monitoring resource, alert route, and deployment work is captured in P33-deploy-001.
