@@ -1,0 +1,95 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P11
+task_packet_digest: 3439d8b6974be681521959310f0b5bae2b1668aad1f984c0202cd74b6f4fc70c
+task_context_digest: c6191a634c381331ca0b24f53811675f334a60e91c8f7ee125ae6eb9f89c906b
+prompt_digest: d3d2c40c7fbaa5117d0093b08a225701dba00439985db0868dc9e20939909e09
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p11-admin-operations
+start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+dependency_heads:
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3e
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    observed_integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: claimed
+phase: implementation
+claim_mode: create_new_branch
+claimed_by: codex-p11-worker-2a221efd
+claim_time: '2026-07-29T06:24:15Z'
+claim_id: 2a221efd-b827-4961-a293-0abb77998260
+writer_slot_leases:
+  - slot: ADMIN_OPERATIONS_UI
+    lease_id: f5a27f61-8ec3-47ad-97c3-fea751a67d18
+    lease_issued_at: '2026-07-29T06:16:35Z'
+    lease_expires_at: '2026-07-29T07:16:35Z'
+    state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+    phase_scope: P11_atomic_claim_only
+    state: active
+lease_expires_at: '2026-07-29T07:16:35Z'
+last_heartbeat_at: '2026-07-29T06:24:15Z'
+controller_authorization_sha: 6ff71b774f9b125c8f20df4ad2e159610782b476
+ready_entry_state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+ready_entry_payload_digest: ac1a4f87bb7ddb4b17e674b7bd05506931012e25aa76fd44b6c1719a820ddece
+state_based_on_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+last_implementation_commit_sha: null
+completed_steps:
+  - Verified exact released controller 6ff71b774f9b125c8f20df4ad2e159610782b476 and its sole acquisition parent 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56.
+  - Verified exact settled integration start cecc1c0dc6ff57562e5d89dd731289d860086bf7 and absent local and remote P11 branch before branch creation.
+  - Recomputed and matched package, P11 task, context, and prompt Git-blob digests and matched canonical READY digest ac1a4f87bb7ddb4b17e674b7bd05506931012e25aa76fd44b6c1719a820ddece.
+  - Verified exact F05 and F07 interface-ready source, implementation, and integration-proof ancestry in the authorized start.
+  - Claimed the sole ADMIN_OPERATIONS_UI writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P11 runtime-memory files; no product, migration, central composer or registration, steward, provider, or effect work has started.
+remaining_steps:
+  - C00 must reconcile the exact pushed atomic claim head into released control state.
+  - P11 may begin implementation only after exact C00 reconciliation and fresh resume authority.
+next_action: Push and remote-verify this three-file atomic claim, report its exact head to C00, and stop.
+requirements:
+  OTV2-ADMIN-021: pending
+  OTV2-ADMIN-029: pending
+  OTV2-ADMIN-205: pending
+acceptance_cases:
+  OTV2-ADMIN-021-AC01: pending
+  OTV2-ADMIN-029-AC01: pending
+  OTV2-ADMIN-205-AC01: pending
+changed_paths:
+  - ops/v2.1-execution/runtime/P11/HANDOFF.md
+  - ops/v2.1-execution/runtime/P11/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P11/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact controller, acquisition, settled start, registry, READY, claim, lease, effect-lock, and branch-absence verification
+      result: passed; exact released authority, sole writer lease, and zero effect locks
+    - command: package, task, context, and prompt Git-blob SHA-256 verification
+      result: passed; all four exact digests match
+    - command: exact F05 and F07 interface ancestry verification
+      result: passed; source, implementation, and integration-proof heads are ancestors of the settled start
+    - command: git worktree add -b codex/v21-p11-admin-operations <isolated-worktree> cecc1c0dc6ff57562e5d89dd731289d860086bf7
+      result: passed; branch created from exact authorized start
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
