@@ -6,7 +6,7 @@ task_context_digest: 5dd28dbffec92036402b291b484dd537317d4c003406f979aecd71edcd7
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
 branch: codex/v21-p30-campaign-workflows
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-expected_existing_head_sha: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
+expected_existing_head_sha: f6d074e964cebefe032042b9627d7c7b47304bdd
 dependency_heads:
   P28:
     required_state: interface_ready_integrated
@@ -25,51 +25,56 @@ dependency_heads:
 status: claimed
 phase: correction
 claim_mode: resume_existing_branch
-claimed_by: codex-p30-worker-cea57710
-claim_time: '2026-07-28T23:56:03Z'
-claim_id: cea57710-2506-4983-a821-4e23733d0766
+claimed_by: codex-p30-worker-87608f7e
+claim_time: '2026-07-29T00:21:00Z'
+claim_id: 87608f7e-3d2b-448b-8376-da025b05d1b7
 writer_slot_leases:
   - slot: GHL_CAMPAIGNS
-    lease_id: 0bc6fecd-2a7c-4c34-8c11-598c03634ab1
-    lease_issued_at: '2026-07-28T23:51:24Z'
-    lease_expires_at: '2026-07-29T00:51:24Z'
-lease_expires_at: '2026-07-29T00:51:24Z'
-last_heartbeat_at: '2026-07-28T23:56:03Z'
-controller_authorization_sha: 89ac83c2e816e9726f1ae2d2193e34e3269fb36c
-ready_entry_state_based_on_control_head_sha: 32c9ef6a0738f0a4fa038f1212ff7019e19992f1
-ready_entry_payload_digest: f7d3413b150bcf942e2a27354bc340c4296ce48b1543df287a6def3b034a611b
+    lease_id: a77f21df-1741-46ea-a8c7-f13f6aa9e5f0
+    lease_issued_at: '2026-07-29T00:13:59Z'
+    lease_expires_at: '2026-07-29T01:13:59Z'
+lease_expires_at: '2026-07-29T01:13:59Z'
+last_heartbeat_at: '2026-07-29T00:21:00Z'
+controller_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
+ready_entry_payload_digest: 380e1f3ddfa39b986befe6aa58506783f7e295c4aa5e421a6b69821226a51553
 prior_claim_checkpoint_sha: c42eb2b971093c603f2334548bfeadad78a368b1
 prior_implementation_commit_sha: b329dd1ba36756977d4c935cea93be6559253e49
 prior_ready_for_review_head_sha: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
-state_based_on_head_sha: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
-last_implementation_commit_sha: b329dd1ba36756977d4c935cea93be6559253e49
+superseded_correction_claim_sha: 2f2aa5c9d2395ce771bbcd4afb9df19e308c3918
+superseded_claim_id: cea57710-2506-4983-a821-4e23733d0766
+observed_repair_implementation_head_sha: f6d074e964cebefe032042b9627d7c7b47304bdd
+state_based_on_head_sha: f6d074e964cebefe032042b9627d7c7b47304bdd
+last_implementation_commit_sha: f6d074e964cebefe032042b9627d7c7b47304bdd
 correction_findings:
-  - OT-15 launch approval validates only canonical step 1 while steps 2 and 3 lack canonical copy/content approval.
-  - OT-16 accepts a caller-supplied operation ID without proving equality to its deterministic operation-ID helper.
+  - The original OT-15 launch validated only canonical step 1; observed repair head f6d074e9 fails closed until all three canonical exact-content approvals exist.
+  - The original OT-16 planner trusted a caller-supplied operation ID; observed repair head f6d074e9 recomputes and rejects every adult, expiry, or checkpoint mismatch.
+  - The original OT-16 worker could reuse initial eligibility at dispatch; observed repair head f6d074e9 refreshes paid, decline, and custom-School eligibility after reservation and immediately before provider access.
 completed_steps:
-  - Fetched exact correction controller commit 89ac83c2e816e9726f1ae2d2193e34e3269fb36c.
-  - Verified its P30 resume_existing_branch entry is based on control parent 32c9ef6a and authorizes start 49431959 with expected existing head 337baba3.
-  - Recomputed and matched canonical correction ready-entry digest f7d3413b150bcf942e2a27354bc340c4296ce48b1543df287a6def3b034a611b.
+  - Fetched exact repaired containing controller commit 0c911664217efe3dbb89b93b6fe29eb9eda2fec3.
+  - Verified that commit has sole parent e54ea923a743caf760ef47638a2c8d8a875faf34.
+  - Verified its P30 resume_existing_branch entry is based on exact control parent e54ea923 and adopts exact observed repair implementation head f6d074e9.
+  - Recomputed and matched canonical corrected ready-entry digest 380e1f3ddfa39b986befe6aa58506783f7e295c4aa5e421a6b69821226a51553.
   - Verified exact task, context, source-package, package-lock, P28, and P31 entry bindings.
-  - Verified local and remote P30 heads equal exact expected head 337baba3d9b2d271205f6f2cb9bfd8adeabbb549.
-  - Verified the authorized integration start remains an ancestor and the prior final head has sole parent b329dd1b.
-  - Claimed the sole GHL_CAMPAIGNS correction lease with no effect locks and zero external effects.
-  - Recorded the two bounded correction findings without changing product code.
+  - Verified local and remote P30 heads equal exact expected existing head f6d074e964cebefe032042b9627d7c7b47304bdd.
+  - Verified the authorized integration start remains an ancestor of the observed repair implementation head.
+  - Claimed the sole GHL_CAMPAIGNS corrected-binding lease with no effect locks and zero external effects.
+  - Preserved product files unchanged and recorded only this three-file atomic claim checkpoint.
 remaining_steps:
-  - Push and report this exact three-file atomic correction claim checkpoint.
-  - Await C00 reconciliation of the atomic claim before reading or changing product implementation.
-next_action: Push and report the atomic correction claim, then stop until C00 consumes it; no product repair is authorized before that reconciliation.
+  - Push and report this exact three-file corrected-binding atomic claim checkpoint.
+  - Await C00 reconciliation and an explicit resume before any further product or finalization work.
+next_action: Push and report the corrected-binding atomic claim, then stop; no product work is authorized until C00 reconciles and explicitly resumes P30.
 requirements:
-  OTV2-GHL-134: correction_claimed
-  OTV2-GHL-135: correction_claimed
-  OTV2-GHL-225: correction_claimed
+  OTV2-GHL-134: corrected_binding_claimed
+  OTV2-GHL-135: corrected_binding_claimed
+  OTV2-GHL-225: corrected_binding_claimed
 acceptance_cases:
-  OTV2-GHL-134-AC01: correction_not_run
-  OTV2-GHL-135-AC01: correction_not_run
-  OTV2-GHL-225-SCHEDULE: correction_not_run
-  OTV2-GHL-225-PAID-EXIT: correction_not_run
-  OTV2-GHL-225-SCHOOL-EXIT: correction_not_run
-  OTV2-GHL-225-SUPPRESSION: correction_not_run
+  OTV2-GHL-134-AC01: not_rerun_under_corrected_binding_claim
+  OTV2-GHL-135-AC01: not_rerun_under_corrected_binding_claim
+  OTV2-GHL-225-SCHEDULE: not_rerun_under_corrected_binding_claim
+  OTV2-GHL-225-PAID-EXIT: not_rerun_under_corrected_binding_claim
+  OTV2-GHL-225-SCHOOL-EXIT: not_rerun_under_corrected_binding_claim
+  OTV2-GHL-225-SUPPRESSION: not_rerun_under_corrected_binding_claim
 changed_paths:
   - ops/v2.1-execution/runtime/P30/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P30/HANDOFF.md
@@ -77,17 +82,21 @@ changed_paths:
 migrations: []
 steward_requests:
   - request_id: P30-registry-registration-001
-    sha256: 308be4a67c6bc73317111b54e34edb9022ac6a709144f96783918c66557fbb54
+    sha256: 8c6b582f4265cf9f5cd0f51c302ea239c40d1c5ca3bfc27805c15bd699e52644
+  - request_id: P30-copy-registration-001
+    sha256: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
 verification:
   commands_run:
-    - command: exact control, local/remote branch, expected-head, and resume-mode verification
-      result: passed; controller 89ac83c2, expected/local/remote head 337baba3, and resume_existing_branch
-    - command: canonical correction ready-entry digest recomputation
-      result: passed; f7d3413b150bcf942e2a27354bc340c4296ce48b1543df287a6def3b034a611b
-    - command: correction dependency, claim, writer-lease, and effect-lock verification
-      result: passed; exact P28/P31, claim cea57710, sole GHL_CAMPAIGNS lease, and zero effect locks
-    - command: exact ancestry verification
-      result: passed; start 49431959 is an ancestor and expected head 337baba3 has sole parent b329dd1b
+    - command: exact containing control commit and sole-parent verification
+      result: passed; controller 0c911664 has sole parent e54ea923
+    - command: canonical corrected ready-entry digest recomputation
+      result: passed; 380e1f3ddfa39b986befe6aa58506783f7e295c4aa5e421a6b69821226a51553
+    - command: corrected claim, dependency, writer-lease, and effect-lock verification
+      result: passed; exact P28/P31, claim 87608f7e, sole GHL_CAMPAIGNS lease a77f21df, and zero effect locks
+    - command: exact local and remote expected-head verification
+      result: passed; local and remote equal f6d074e964cebefe032042b9627d7c7b47304bdd
+    - command: atomic checkpoint scope verification
+      result: passed; only the three P30 runtime memory files changed and no product file changed
   known_baseline_failures: []
 external_effects:
   authority: none
