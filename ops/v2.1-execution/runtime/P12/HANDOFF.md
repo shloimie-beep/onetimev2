@@ -6,7 +6,7 @@
 - Prior final: `7c06fe62e8555aeafa917e855e34f9cc07e3ce3b`
 - Atomic correction claim: `e1cfcd590e8e359c6616cac523337c183f2bc43f`
 - Corrected implementation head:
-  `98cad0904b08afbe19e82e1263c6907e93d78481`
+  `d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2`
 - Corrected interface checkpoint: derive with `git rev-parse HEAD`; C00 records
   the observed remote head.
 - Containing correction controller:

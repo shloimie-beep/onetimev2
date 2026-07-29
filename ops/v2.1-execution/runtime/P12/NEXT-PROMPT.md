@@ -16,7 +16,7 @@ Handoff: ops/v2.1-execution/runtime/P12/HANDOFF.md
 Interface checkpoint: ops/v2.1-execution/runtime/P12/INTERFACE-CHECKPOINT.yaml
 
 The exact corrected implementation head is
-`98cad0904b08afbe19e82e1263c6907e93d78481`. Corrected semantic interface
+`d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2`. Corrected semantic interface
 `1.0.1` has canonical digest
 `7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373`
 and contract export digest
