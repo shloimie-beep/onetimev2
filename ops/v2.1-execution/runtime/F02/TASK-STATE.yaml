@@ -10,8 +10,8 @@ dependency_heads:
   C00:
     required_state: operational
     observed_state: operational
-    observed_control_head_sha: fa1330ff11955fe03ac9c1dfba8d29407cac11a8
-    control_state_digest: 2de82c35fed004e2aaddc36ff6e92248dd467e50253a2c33c4981cd68794d98a
+    observed_control_head_sha: 02c58c4258a16f431953dc1e5e5a40a194c7d0d2
+    control_state_digest: 4e338aa5372b202a1be9d0ea11064e0a7a83067006d5edaee0aee8d1d1fc3513
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
   F01:
@@ -69,7 +69,21 @@ migration_lease_A_control:
   requester_content_read: true
   allocation_proposal_read_or_edited: true
   sql_authored: true
-status: claimed
+metadata_correction_control:
+  authorized_paths:
+    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  protected_sql_git_blobs:
+    packages/db/migrations/2235_v21_household_identity.sql: 70047dd5c2aabed9bbdb12730c2a25d49d51fef3
+    packages/db/migrations/2236_v21_job_foundation.sql: 8540bfdaa3886f36ee8261c0095fca1a45c94024
+    packages/db/migrations/2237_v21_calendar_recurrence.sql: d1cff8b132f278498a59bda1bee1bb74e6ee83b5
+    packages/db/migrations/2238_v21_provider_core.sql: 3f48e64956cc3b7683e4c6c45df08d4c60375b03
+  checksum_sha256_kind: normalized_lf_sql_bytes
+  pg_mem_checksum_sha256_kind: repository_runner_sql_after_postgres_only_block_stripping
+  audit_status: PASS
+status: ready_for_review
 phase: migration_lease_A_checksum_metadata_correction
 claimed_by: codex-f02-lease-a-correction-937b224d
 claim_time: '2026-07-29T19:23:30Z'
@@ -77,24 +91,24 @@ claim_id: 937b224d-ee11-4936-82d7-719f177d31da
 writer_slot_lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
 lease_issued_at: '2026-07-29T19:08:53Z'
 lease_expires_at: '2026-07-29T20:23:53Z'
-last_heartbeat_at: '2026-07-29T19:23:30Z'
-lease_released_at: null
-controller_authorization_sha: c1e744b0f31ce430ef1dc4c98f82844f97fddae4
-ready_entry_parent_control_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
-state_based_on_control_head_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
+last_heartbeat_at: '2026-07-29T19:30:25Z'
+lease_released_at: '2026-07-29T19:30:25Z'
+controller_authorization_sha: 02c58c4258a16f431953dc1e5e5a40a194c7d0d2
+ready_entry_parent_control_sha: 174bc6656fbc2a1c0526e7bdec0e361dfd1e7c35
+state_based_on_control_head_sha: 174bc6656fbc2a1c0526e7bdec0e361dfd1e7c35
 ready_entry_payload_digest: fb3f35593548c28c591dbeef4eb5c4997f9858abc1734668cb98ad867d17ae42
 writer_slot_leases:
   MIGRATION_AUTHORITY:
     lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
     lease_issued_at: '2026-07-29T19:08:53Z'
     lease_expires_at: '2026-07-29T20:23:53Z'
-    released_at: null
+    released_at: '2026-07-29T19:30:25Z'
   SCHEMA_CONTRACT:
     lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
     lease_issued_at: '2026-07-29T19:08:53Z'
     lease_expires_at: '2026-07-29T20:23:53Z'
-    released_at: null
-state_based_on_head_sha: e8dcbd750ce41424102b4d2ead4b786ff3c9c764
+    released_at: '2026-07-29T19:30:25Z'
+state_based_on_head_sha: 1ab8243fc4380104ae2431783f31792197f9ed77
 last_implementation_commit_sha: 7132cd81ea260558777859cd4c7485a357e8f5fb
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -130,10 +144,15 @@ completed_steps:
   - Verified the exact eight-path ceiling, immutable checksums, zero provider/effect locks, and external effects 0/0/0.
   - Independently verified correction control c1e744b0, sole acquisition 21f0ae2f, READY digest fb3f3559, exact e8dcbd75 head, protected SQL bytes, native and pg-mem checksum pairs, four correction paths, new claim and lease, and effects 0/0/0.
   - Claimed only the F02 runtime triplet for the checksum-metadata and formatting correction; the allocation proposal and SQL were not edited.
+  - C00 reconciled correction claim 1ab8243f at containing control 02c58c42 with sole acquisition parent 174bc665.
+  - Corrected only the allocation proposal and runtime triplet to distinguish production/native normalized-LF checksums from repository-runner pg-mem checksums.
+  - Preserved all four protected migration Git blobs byte-for-byte and retained next available ordinal 2239.
+  - Passed YAML, repository Prettier, native/pg-mem derivation, protected SQL blob, 200/200 Git-byte package, secret, exact four-path, diff, disposable 69-migration apply/verify, and zero-effect gates.
+  - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-29T19:30:25Z before lease expiry.
 remaining_steps:
-  - C00 must reconcile this exact atomic correction claim before the allocation proposal may be corrected.
-  - After reconciliation, update only the proposal and runtime triplet with native and explicit pg-mem checksums, then format those four files and re-run the bounded evidence gates.
-next_action: Stop after publishing the correction atomic claim. Await C00 reconciliation; do not edit the proposal or any SQL.
+  - An independent auditor and C00 must verify the exact final remote head, four-path scope, checksum pairs, protected SQL blobs, released lease, and audit evidence.
+  - I36 may integrate only the exact admitted F02 head under fresh bounded authorization.
+next_action: Stop after publishing the metadata-correction release. Do not edit SQL, allocate ordinal 2239, apply registrations, inspect providers, deploy, send, integrate, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -164,16 +183,20 @@ migrations:
     sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
   - ordinal: 2235
     file: packages/db/migrations/2235_v21_household_identity.sql
-    sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
+    checksum_sha256: 442231550a3aed2360772a9fbc4aebe96edf0510ee175e0b8c7d1097d94f7c1e
+    pg_mem_checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
   - ordinal: 2236
     file: packages/db/migrations/2236_v21_job_foundation.sql
-    sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+    checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+    pg_mem_checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
   - ordinal: 2237
     file: packages/db/migrations/2237_v21_calendar_recurrence.sql
-    sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
+    checksum_sha256: 7b58a07ff8bb949260715bd630d02c34cb1f7188a7d0a9a9f52380d7a82eca86
+    pg_mem_checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
   - ordinal: 2238
     file: packages/db/migrations/2238_v21_provider_core.sql
-    sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
+    checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
+    pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
 steward_requests: []
 verification:
   commands_run:
@@ -199,6 +222,12 @@ verification:
     - containing control/sole parent, exact F02/integration heads, canonical READY digest, all entry-bound digests, four plan refs/blobs/digests, ordinal control, collision absence, shared lease, zero effect locks, and exact triplet-only claim scope passed
     - full 69-migration first apply passed in disposable pg-mem with harness-only btrim, length, and cardinality registrations
     - migration allocation proposal YAML, raw checksums, exact path scope, and diff hygiene passed
+    - correction containing control 02c58c42, sole acquisition 174bc665, exact claim head 1ab8243f, claim, shared lease, and zero effects matched
+    - native normalized-LF checksums, repository-runner pg-mem checksums, and protected SQL Git blobs matched all four control-authorized pairs
+    - corrected proposal and runtime evidence parsed as YAML and passed repository Prettier
+    - locked execution package passed 200/200 using Git bytes
+    - secret scan, exact four-path claim-to-final delta, and git diff --check passed
+    - fresh disposable pg-mem first apply and verification passed 69/69 with zero pending migrations
   known_baseline_failures:
     - pg-mem replay of the pre-existing schema_migrations CREATE TABLE IF NOT EXISTS statement hits a known planner/AST coverage limitation after a clean complete first apply; no failure originated in migrations 2235-2238
 external_effects:

@@ -3,11 +3,13 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
-  claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
-  containing_control_head_sha: fa1330ff11955fe03ac9c1dfba8d29407cac11a8
-  ready_entry_parent_control_sha: 3143e8d0c93bfff3925edcd61500345bd92c621d
-  lease_expires_at: '2026-07-29T18:51:43Z'
+  lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
+  claim_id: 937b224d-ee11-4936-82d7-719f177d31da
+  containing_control_head_sha: 02c58c4258a16f431953dc1e5e5a40a194c7d0d2
+  ready_entry_parent_control_sha: 174bc6656fbc2a1c0526e7bdec0e361dfd1e7c35
+  lease_expires_at: '2026-07-29T20:23:53Z'
+  released_at: '2026-07-29T19:30:25Z'
+  audit_status: PASS
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
   first_new_ordinal: 2234
@@ -31,7 +33,8 @@ allocations:
     purpose: Normalized adult identities, human accounts and roles, households, Student profiles, sessions, ownership transfers, attestations, action tokens, billing portal sessions, provider reassociation intents, and append-only account audit.
     replaces_applied_migration: false
     destructive: false
-    checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
+    checksum_sha256: 442231550a3aed2360772a9fbc4aebe96edf0510ee175e0b8c7d1097d94f7c1e
+    pg_mem_checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
   - ordinal: 2236
     file: packages/db/migrations/2236_v21_job_foundation.sql
     owner_task_id: F05
@@ -41,6 +44,7 @@ allocations:
     replaces_applied_migration: false
     destructive: false
     checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+    pg_mem_checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
   - ordinal: 2237
     file: packages/db/migrations/2237_v21_calendar_recurrence.sql
     owner_task_id: P15
@@ -49,7 +53,8 @@ allocations:
     purpose: Recurring calendar series windows, weekdays, duration, lifecycle and optimistic versioning with safe legacy backfill, rescheduled occurrences, and draft-series occurrence fencing.
     replaces_applied_migration: false
     destructive: false
-    checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
+    checksum_sha256: 7b58a07ff8bb949260715bd630d02c34cb1f7188a7d0a9a9f52380d7a82eca86
+    pg_mem_checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
   - ordinal: 2238
     file: packages/db/migrations/2238_v21_provider_core.sql
     owner_task_id: F06
@@ -58,5 +63,6 @@ allocations:
     purpose: Provider operation bindings, adult GHL identity quarantine, household provider mappings, append-only readback evidence, and provider reconciliation indexing over the existing outbox state machine.
     replaces_applied_migration: false
     destructive: false
-    checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
+    checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
+    pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
 next_available_ordinal: 2239
