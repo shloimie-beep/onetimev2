@@ -622,3 +622,27 @@ and `NEXT-PROMPT.md`, then stop for C00 reconciliation before any product or
 provider work. No effect lock, migration, central registry, composer, route,
 worker registration, steward application, Stripe mutation, or external action
 is authorized.
+
+The P12/P22/P34 ordered wave is complete at final integration release
+`44fd536381e7af8885f31247d6bf91dd6266b195`; the merge queue is empty.
+Do not re-merge those sources. P34 real R44, provider, backup/restore,
+canary, legal-artifact, and approval gates remain explicitly unpassed.
+
+P25 claim `3b322e3bf9f6206ea24e1cbea3451445f7e9ae1d` and P26 claim
+`abb053f65ef7bb238e163bb36f576980d8fa0d61` are reconciled. Resume each
+only for its locked owned-path billing implementation under its existing
+writer lease. Preserve exact dependency bindings, add focused negative tests,
+publish complete runtime/artifact digests, release the lease, and stop at
+ready_for_review with external effects `0/0/0`. Do not apply migrations,
+registrations, steward requests, shared composer changes, Stripe mutations,
+provider actions, or any other external effect.
+
+For P13, create branch `codex/v21-p13-parent-summary` from exact released
+integration head `44fd536381e7af8885f31247d6bf91dd6266b195` and publish only
+atomic claim `183a8dcb-d283-4e3e-b49b-790ca35e5f70`, binding acquisition
+`f98ee8e79018e5875e9c2be3d5961954b3c5ce04`, PARENT_SUMMARY_UI lease
+`cef8335b-8c6f-4111-9bc7-1f877c9cae15`, and ready digest
+`3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709`.
+Change only P13 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, push,
+remote-verify, and stop for C00 reconciliation before product work. No effect
+lock or external action is authorized.

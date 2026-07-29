@@ -896,3 +896,29 @@ Both bindings use the actual integrated F04 implementation `81c0ee64` declared
 by interface source `4cc95c29`; the later registry implementation `8ba3f6c8`
 is not an ancestor of the authorized start. Each worker must change only its
 three task-local runtime files, push, and stop. Effect locks are empty.
+
+The ordered release wave is complete at exact integration head
+`44fd536381e7af8885f31247d6bf91dd6266b195`. Merge `fbdab647` admits P12,
+merge `f57f809f` admits P22, and merge `50fafc9a` admits P34; each exact
+parent pair, source ancestry, 16/14/15-path scope, focused verification,
+workspace typecheck, release metadata, and zero-effect boundary passed.
+The merge queue is empty. P34 remains mechanism-only: real R44 and legal
+approval gates are still explicitly unpassed.
+
+P25 atomic claim `3b322e3bf9f6206ea24e1cbea3451445f7e9ae1d` and P26 atomic
+claim `abb053f65ef7bb238e163bb36f576980d8fa0d61` are independently
+reconciled. Each has sole parent `d075dc18`, exactly three task-local runtime
+files, its exact authorization/acquisition/claim/lease/ready/dependency
+bindings, a clean remote ref, and zero effects. P25 and P26 may now implement
+only their locked owned-path billing scopes under the unchanged disjoint
+leases. No provider mutation, steward application, migration, central
+registration, shared composer edit, or external effect is authorized.
+
+P13 is newly dependency-valid from exact released integration head `44fd5363`.
+C00 authorized only a new-branch atomic claim on
+`codex/v21-p13-parent-summary`, claim
+`183a8dcb-d283-4e3e-b49b-790ca35e5f70`, PARENT_SUMMARY_UI lease
+`cef8335b-8c6f-4111-9bc7-1f877c9cae15`, and canonical ready digest
+`3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709`.
+Its first push must contain only P13 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`, then stop for C00 reconciliation before product work.

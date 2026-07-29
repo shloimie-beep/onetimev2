@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: I36 continues only the rebound P12/P22/P34 full-source wave; P25 and P26 publish only their exact new-branch three-runtime-file atomic claims from settled start d075dc18 and stop for C00 reconciliation; all steward actions and external effects remain unauthorized.
+next_action: P13 publishes only its exact new-branch three-runtime-file atomic claim from released integration head 44fd5363; P25 and P26 resume only their bounded billing implementations from reconciled atomic claim heads; all steward actions and external effects remain unauthorized.
 authority_note: Only C00 updates this global control state.
