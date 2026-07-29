@@ -1,96 +1,52 @@
-# P33 Corrected Runtime Operations Handoff
+# P33 Atomic Correction Claim Handoff
 
 ## Identity
 
-- Correction claim head: `a956c9dd1c9d072a54e640fc004684f2e037c033`
-- Correction reconciliation control:
-  `f84e9d3da1e131cab0714bd24441b08133b7c1a6`
-- Implementation head: `5531d6907353fd4d3935469a3574bd63c17cfc23`
-- Interface/steward metadata head:
-  `5540fe42d0c81ae30deaf0c258c56b756be65e67`
-- Final head: derive with `git rev-parse HEAD`; C00 records the observed remote
-  head.
-- Contract version: `2.0.0`
-- Contract digest:
-  `cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95`
+- Exact parent/rejected final:
+  `38e8305e29f75714d8b3cc9c8198d1f0a47f5b4b`
+- Containing controller:
+  `802b522f2a5ff0613bdba6cb754cb2eeb340537f`
+- Controller sole parent/acquisition:
+  `81f10c6535db733cc0505b43f37fe5a3e7887934`
+- Ready digest:
+  `e8689215109abe08d4a54c5856ca89b5b457b7651e9e067ebc52267df38cc3a7`
+- Claim: `c37c6dea-d395-4a57-8068-f519dad03c89`
 - OPERATIONS_RUNTIME lease:
-  `76b4bb8b-af8b-4fcf-9ed7-4054ed8fe57a`, released task-locally at
-  `2026-07-29T02:10:00Z`
+  `646edca2-163d-467a-8cff-79d5efb29966`
+- Lease expiry: `2026-07-29T03:22:38Z`
+- This checkpoint head: derive with `git rev-parse HEAD`; C00 records the
+  observed pushed remote head.
 
-## Corrected behavior
+## Claim verification
 
-The candidate now declares exact runtime ID/role/artifact, queue ID/class,
-worker type, all seven provider expectations, maximum observation age, and
-migration-required policy. Health is ready only when each inventory is
-nonempty, unique, exact, structurally valid, finite/nonnegative, qualified,
-fresh, and complete. Missing, duplicate, extra, malformed, stale, or
-unqualified required evidence is Sev1. A required unavailable provider without
-an outage age is Sev1.
+The containing controller was fetched and has the exact sole parent/acquisition
+above. The recursively key-sorted ready entry recomputes to the exact ready
+digest. Local and remote P33 both equaled the expected existing head and the
+worktree was clean.
 
-Every runtime is compared to its exact candidate runtime expectation. Missing
-and extra runtimes fail; scheduled, webhook, migration, web, and worker
-artifacts never self-compare.
+The exact claim, sole writer lease, and claim-only phase scope match the ready
+entry. The lease is unexpired. Effect locks are empty and external-effect
+authority is none.
 
-Migration evidence requires valid positive ordinals, canonical names, lowercase
-SHA-256 values, uniqueness, qualified fresh readback, and a deterministic
-inventory digest equal to the exact candidate digest.
+## Preserved pending correction lineage
 
-Diagnostics use explicit response allowlists and safe identifier syntax.
-Credential-shaped keys, Basic/Bearer/JWT values, secret hashes, signed URLs,
-query tokens, PII, raw provider/database URLs, and secret-bearing context/error
-text are blocked. Runtime identity, health, and alerts scan the source plus the
-exact serialized final body. Any finding returns only the fixed safe 503 body.
+The rejected lineage is preserved without modification:
 
-The router now requires `authorizeAdmin` to return a typed, current,
-server-session-derived exact Admin principal. Anonymous, Parent, Student, stale
-Admin, and client-asserted roles receive concealed 404 responses and invoke no
-observers.
+- implementation `5531d6907353fd4d3935469a3574bd63c17cfc23`
+- interface metadata `5540fe42d0c81ae30deaf0c258c56b756be65e67`
+- rejected final `38e8305e29f75714d8b3cc9c8198d1f0a47f5b4b`
+- semantic version `2.0.0`
+- digest `cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95`
 
-Worker heartbeat accepts health input, validates it, and derives state and
-readiness codes from the resulting snapshot. Callers cannot assert ready.
-
-## Exact exports
-
-- `apps/web/src/server/operations/index.ts`
-  `6f47a8ca18fcb8d3280e4010cdb83dd7eaedb7414dcd222877f4b6fc27899b98`
-- `apps/web/src/server/operations/router.ts`
-  `eea412fe898f1706de0f1665c712d5064dbb244f8d8d305036554524891d4981`
-- `packages/observability/v21/contracts.ts`
-  `bae76246d3e12a9d9f3e8bf6bb9eef66c46433033066725632106357cda25600`
-- `packages/observability/v21/health.ts`
-  `2a24cae7211d7715fec34287c17c01ceb7a7f2e60d593ae8474a79d567bd7582`
-- `packages/observability/v21/index.ts`
-  `af7ddcd77655a7d1dfb4f6660e080939dfecf5ba221820ef17775e15baa5c959`
-- `packages/observability/v21/redaction.ts`
-  `ca7c71f08a24188a923d94ddabd601df87a0dab239e4923f0b87a1f0c30f23ad`
-- `packages/observability/v21/runtime-identity.ts`
-  `d7ea7b54fbb56ddb2c73358b68aad8297cdc882aa40642745d1a703239737aed`
-
-The earlier `d643626a` and `9ac5c08a` contracts are superseded.
-
-## Steward requests
-
-All requests pin exact implementation `5531d690`, semantic version `2.0.0`, and
-contract digest `cc9fa1dc`:
-
-- registration:
-  `147708b8e8837547379644bf2f246255ecf557eb090d38e2ee2571aa3df4cf84`
-- configuration:
-  `bc302e61e51f8ce464d416bef5f4ed67dc7aecf17bcbfc6d85b6ca9d3153f0ee`
-- deployment:
-  `f962b490cccdab80b04ef9d4499c9e2c801cdcd1be64464577f8864c65856830`
-
-## Verification and effects
-
-- Full secret scan: passed across 2,730 repository text files.
-- Full workspace lint and typecheck: passed.
-- Focused correction suite: 4 files, 40 tests, passed.
-- P33 formatting and diff hygiene: passed.
-- Effects authority none; attempted/succeeded/reconciled `0/0/0`.
+This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md` in this P33 runtime directory. No product, contract, test,
+runbook, script, interface, or steward file changed.
 
 ## Next action
 
-I36 must independently verify implementation `5531d690`, metadata `5540fe42`,
-all seven export hashes, and canonical digest `cc9fa1dc`, then integrate the
-interface before C00 authorizes P34. It must separately disposition the three
-exact-interface-pinned steward requests.
+Push and report this exact atomic claim, then stop. Product repair may begin
+only after C00 consumes the exact pushed claim head and explicitly resumes P33.
+
+## Effects
+
+Authority none; attempted/succeeded/reconciled `0/0/0`.
