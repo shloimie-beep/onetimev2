@@ -1405,3 +1405,13 @@ claim `5be2d721-aff2-494a-bb22-ad324334b376`, RELEASE_INTEGRATOR lease
 `2026-07-29T12:42:09Z`. I36 must push only its three runtime files and stop
 for C00 reconciliation before merging P11 or applying its registration
 request.
+
+I36 claim `ce3bf023ce2f9cfab4413ac3af711885caeb95ad` is reconciled:
+sole parent `088b4047`, exactly the three I36 runtime files, exact
+authorization/acquisition/claim/lease/READY/merge bindings, clean remote
+state, no source merge, and effects `0/0/0`. The P11 merge target is rebound
+to that exact claim head under canonical item digest `02c2f9db`. I36 may now
+ancestry-merge only P11 final `15660c11` with the exact queued 18-path scope,
+run the 4 focused files / 21 tests and workspace typecheck, publish a
+metadata-only release checkpoint, release the lease, and stop. The P11
+registration request remains unapplied.

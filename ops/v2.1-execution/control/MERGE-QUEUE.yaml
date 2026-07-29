@@ -10,7 +10,7 @@ items:
   source_branch: codex/v21-p11-admin-operations
   source_head_sha: 15660c1115d9d8066651573100acd8acaaac574e
   target_branch: codex/v21-integration
-  expected_target_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+  expected_target_head_sha: ce3bf023ce2f9cfab4413ac3af711885caeb95ad
   source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
   required_merge_base_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
   preserve_source_ancestry: true
@@ -40,7 +40,7 @@ items:
     lease_id: 33a465ad-1fa2-4600-9259-044f6bc767a2
     holder_task_id: I36
     holder_claim_id: 5be2d721-aff2-494a-bb22-ad324334b376
-    state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+    state_based_on_control_head_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
     lease_issued_at: '2026-07-29T11:27:09Z'
     lease_expires_at: '2026-07-29T12:42:09Z'
     phase_scope: P11_full_integration_atomic_claim_only
@@ -50,9 +50,9 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+  state_based_on_control_head_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
 item_payload_digests:
-  c5fe9e7d-f54a-46e6-8754-a90f433c991e: 3b77561b59bf5b8aeb849b8be533d91898e0d3bf5a3c5d5e272a792b8144a862
+  c5fe9e7d-f54a-46e6-8754-a90f433c991e: 02c2f9db6892d5c3df3f315ec5583287ba71c5a5f492ba42755f627abb61f964
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

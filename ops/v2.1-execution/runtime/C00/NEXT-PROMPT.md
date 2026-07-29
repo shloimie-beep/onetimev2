@@ -1174,3 +1174,15 @@ Change exactly I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
 push normally, remote-verify, and stop for C00 reconciliation. Do not merge
 P11 or apply `P11-registration-001` in this first push. No provider action,
 send, or external effect is authorized.
+
+I36 claim `ce3bf023ce2f9cfab4413ac3af711885caeb95ad` is reconciled.
+Resume that exact head under unchanged claim
+`5be2d721-aff2-494a-bb22-ad324334b376` and RELEASE_INTEGRATOR lease
+`33a465ad-1fa2-4600-9259-044f6bc767a2`. Verify rebound P11 merge-item
+digest `02c2f9db6892d5c3df3f315ec5583287ba71c5a5f492ba42755f627abb61f964`,
+then ancestry-merge only source
+`15660c1115d9d8066651573100acd8acaaac574e` with the exact queued
+parents and 18 paths. Preserve source ancestry; run the 4 focused files /
+21 tests and workspace typecheck; publish the I36 metadata-only release
+checkpoint and release the lease. Leave `P11-registration-001` unapplied and
+perform no provider/send/external effect.
