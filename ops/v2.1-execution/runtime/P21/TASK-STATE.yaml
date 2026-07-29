@@ -39,12 +39,14 @@ dependency_heads:
     interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
     task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
     task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
-status: ready_for_review
-phase: complete
-claim_mode: create_new_branch
-claimed_by: codex-p21-worker-3a93eeca
-claim_time: '2026-07-29T10:31:08Z'
-claim_id: 3a93eeca-5035-4328-b685-e580f2b32ce6
+status: claimed
+phase: publication_safety_correction_claim
+claim_mode: resume_existing
+claimed_by: codex-p21-worker-f7ed5c86
+claim_time: '2026-07-29T11:11:54Z'
+claim_id: f7ed5c86-2b2a-4e58-930a-b602ac9f1657
+expected_existing_head: 24f82a7484f2889349f7768d29ec7f2545cfa45a
+rejected_final_head_sha: 24f82a7484f2889349f7768d29ec7f2545cfa45a
 writer_slot_leases:
   - slot: CONTENT_PUBLICATION
     lease_id: 31423c6c-74ef-43cc-b3a8-75b425568619
@@ -56,18 +58,27 @@ writer_slot_leases:
     phase_scope: P21_atomic_claim_only
     lease_released_at: '2026-07-29T10:56:12Z'
     state: released
+  - slot: CONTENT_PUBLICATION
+    lease_id: 2ea04691-d951-4c3b-90cf-e1909f42be7c
+    holder_task_id: P21
+    holder_claim_id: f7ed5c86-2b2a-4e58-930a-b602ac9f1657
+    lease_issued_at: '2026-07-29T11:11:54Z'
+    lease_expires_at: '2026-07-29T12:26:54Z'
+    state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+    phase_scope: P21_atomic_claim_publication_safety_correction_only
+    state: active
 effect_lock_leases: []
-lease_expires_at: '2026-07-29T11:23:53Z'
-lease_released_at: '2026-07-29T10:56:12Z'
-last_heartbeat_at: '2026-07-29T10:56:12Z'
-controller_authorization_sha: 4c029e8d6e4ea3a2a4e4942affb61a39e5508129
-controller_authorization_parent_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
-claim_reconciled_control_sha: a790540f36ae5334391547584b2af823c0048ea8
-claim_reconciled_control_parent_sha: c284998cc927cb4a48516c9d1ba34c325d28a04b
-latest_observed_control_sha: 54df8a79e1d2beb0e2ea7289dcbd13617ed90197
-ready_entry_state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
-ready_entry_payload_digest: d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2
-state_based_on_head_sha: 9898edeb102b5bfce18985d327090275484b7eae
+lease_expires_at: '2026-07-29T12:26:54Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T11:11:54Z'
+controller_authorization_sha: 9d2b0015dd8fe3420e6391e460fccb78fd8911fa
+controller_authorization_parent_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+claim_reconciled_control_sha: null
+claim_reconciled_control_parent_sha: null
+latest_observed_control_sha: 9d2b0015dd8fe3420e6391e460fccb78fd8911fa
+ready_entry_state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+ready_entry_payload_digest: 571dff5375ca1cfd20d305f1924eaab1d6d7b05bd8588799f519467972c28ff3
+state_based_on_head_sha: 24f82a7484f2889349f7768d29ec7f2545cfa45a
 last_implementation_commit_sha: 9898edeb102b5bfce18985d327090275484b7eae
 implementation_artifact_digest: 1f497465cc614f92cbed3188c9041a2d55874bb7108a2bd5373618a4471a8b58
 implementation_artifact_digest_algorithm: >-
@@ -100,6 +111,13 @@ steward_request_digest_algorithm: >-
   SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
   and no final newline.
 completed_steps:
+  - Verified exact rejected remote head 24f82a7484f2889349f7768d29ec7f2545cfa45a,
+    containing controller authorization 9d2b0015dd8fe3420e6391e460fccb78fd8911fa
+    with sole acquisition parent b0dc03dc140dd05ab8ae65530cd672c8c10126e5,
+    canonical READY digest 571dff5375ca1cfd20d305f1924eaab1d6d7b05bd8588799f519467972c28ff3,
+    correction claim f7ed5c86-2b2a-4e58-930a-b602ac9f1657, active
+    CONTENT_PUBLICATION lease 2ea04691-d951-4c3b-90cf-e1909f42be7c, and zero
+    effect-lock leases.
   - Verified exact containing controller 4c029e8d6e4ea3a2a4e4942affb61a39e5508129 and its sole acquisition parent d99fde51092abdee97f42f28e8bdee8a08c5e22c.
   - Recomputed and matched the canonical P21 READY digest d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2.
   - Recomputed and matched the package, source, task, context, and prompt digests.
@@ -118,10 +136,15 @@ completed_steps:
   - Passed five focused files and 11 deterministic positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact normalized scope, diff hygiene, raw-provider-reference scan, and secret scan across 2898 repository text files.
   - Released claim 3a93eeca-5035-4328-b685-e580f2b32ce6 and CONTENT_PUBLICATION lease 31423c6c-74ef-43cc-b3a8-75b425568619 before expiry with zero external effects.
 remaining_steps:
-  - C00 should independently audit the superseding ready-for-review head, exact implementation ancestry, normalized scope, artifact/request digests, verification, and zero-effect record.
-  - I36/F02 may separately evaluate and apply P21-registration-001 under their own authority; P21 did not apply it.
-  - Candidate-bound provider-sandbox or production-canary evidence remains gated on a later immutable candidate and exact external-effect authority.
-next_action: Push and remote-verify the final ready-for-review metadata commit, report its exact head to C00, and stop for independent audit.
+  - C00 must independently reconcile this exact atomic claim head before any
+    product, test, or steward-request correction begins.
+  - After reconciliation only, implement the bounded publication-safety
+    corrections recorded by C00, strengthen but do not apply
+    P21-registration-001, refresh verification and digests, release the lease,
+    and publish a superseding ready-for-review final.
+  - Candidate-bound provider-sandbox or production-canary evidence remains
+    gated on a later immutable candidate and exact external-effect authority.
+next_action: Push and remote-verify this exact three-runtime-file atomic claim, report its exact head to C00, and stop for reconciliation.
 requirements:
   OTV2-CONTENT-087: source_implemented_candidate_provider_evidence_pending
   OTV2-CONTENT-088: source_implemented_candidate_evidence_pending
@@ -197,6 +220,10 @@ external_effects:
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+blockers:
+  - Product correction is prohibited until C00 reconciles this atomic claim.
+  - The rejected final requires the bounded immutable-evidence, provider-operation,
+    assignment/notice, playback-authorization, unpublish, and occurrence-relation
+    corrections recorded by C00.
 out_of_scope_findings:
   - Forward-only schema migration and central server, worker, and authenticated-client composition are captured in P21-registration-001 and were not applied.
