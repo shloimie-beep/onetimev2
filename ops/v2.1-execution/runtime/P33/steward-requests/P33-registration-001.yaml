@@ -5,9 +5,9 @@ task_id: P33
 kind: registration
 interface_contract:
   checkpoint_path: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
-  interface_implementation_head_sha: 5531d6907353fd4d3935469a3574bd63c17cfc23
-  semantic_contract_version: 2.0.0
-  contract_digest: cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95
+  interface_implementation_head_sha: 399aedd5b8dda99806ed5f659a4c729bd37035ef
+  semantic_contract_version: 3.0.0
+  contract_digest: 0e890eab8aece10e8b80785ecc0c11899415d8a2089338048f8568333bbb95cc
 requirement_ids:
   - OTV2-OPS-166
   - OTV2-OPS-171

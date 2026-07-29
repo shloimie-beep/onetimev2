@@ -1,16 +1,16 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: P33
-interface_implementation_head_sha: 5531d6907353fd4d3935469a3574bd63c17cfc23
+interface_implementation_head_sha: 399aedd5b8dda99806ed5f659a4c729bd37035ef
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 058bb36226c82ae8717fd85d17adee2926cf834da581b1d5a3ea2871aec30940
-contract_digest: cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95
+contract_digest: 0e890eab8aece10e8b80785ecc0c11899415d8a2089338048f8568333bbb95cc
 contract_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
   followed by exact path=<artifact SHA-256> lines sorted lexicographically by
   path, with LF separators and no final newline.
 contract_schema_version: 1
-semantic_contract_version: 2.0.0
+semantic_contract_version: 3.0.0
 state: interface_ready
 exports:
   - path: apps/web/src/server/operations/index.ts
@@ -26,7 +26,7 @@ exports:
       - OperationsAdminAuthorization
       - OperationsAdminPrincipal
       - OperationsDiagnosticsPorts
-    sha256: eea412fe898f1706de0f1665c712d5064dbb244f8d8d305036554524891d4981
+    sha256: 54d4678dfd3f6f88e800c3ba0fa04b9b407823a7c25f14a47f8d20c02c784d0a
   - path: packages/observability/v21/contracts.ts
     symbols:
       - OPERATIONS_CONTRACT_VERSION
@@ -59,7 +59,7 @@ exports:
       - OperationsHealthInput
       - OperationsHealthSnapshot
       - OperationsAlert
-    sha256: bae76246d3e12a9d9f3e8bf6bb9eef66c46433033066725632106357cda25600
+    sha256: 32080d86eb449bc3a8c116b74207751ed3708ec35ec6e793f08f260f8a274aad
   - path: packages/observability/v21/health.ts
     symbols:
       - QUEUE_AGE_THRESHOLDS_MS
@@ -67,7 +67,7 @@ exports:
       - computeMigrationInventoryDigest
       - evaluateMigrationHealth
       - evaluateOperationsAlerts
-    sha256: 2a24cae7211d7715fec34287c17c01ceb7a7f2e60d593ae8474a79d567bd7582
+    sha256: 4157a406bd39224a26eea97eb9d047743b142625ecae54352f3e67ad4b03fa3e
   - path: packages/observability/v21/index.ts
     symbols:
       - all public v2.1 operations contract, health, runtime identity, and redaction exports
@@ -78,7 +78,7 @@ exports:
       - LeakageScanResult
       - redactOperationalData
       - scanOperationalLeakage
-    sha256: ca7c71f08a24188a923d94ddabd601df87a0dab239e4923f0b87a1f0c30f23ad
+    sha256: 4318b4e2979ac6632cd066975735dd8dd7f2e832e87d502ccbbaf0ea1c6123b7
   - path: packages/observability/v21/runtime-identity.ts
     symbols:
       - OperationsIdentityError
@@ -87,7 +87,7 @@ exports:
       - assertRuntimeMatchesCandidate
       - evaluateRuntimeAgreement
       - isSafeOperationsIdentifier
-    sha256: d7ea7b54fbb56ddb2c73358b68aad8297cdc882aa40642745d1a703239737aed
+    sha256: 47c8f63189b75922fe4a55de1f3dda1c50faa5f9a7946f14885358cb5de6344a
 compatibility_invariants:
   - Runtime tier and verification environment are mandatory, separate, and fail closed when unknown or mismatched.
   - Candidate configuration declares exact runtime, queue, worker, and seven-provider inventories; missing, duplicate, extra, malformed, stale, or unqualified evidence is Sev1 and never ready.
@@ -99,6 +99,10 @@ compatibility_invariants:
   - Runtime identity, health, and alert endpoints redact and scan their exact serialized final bodies; any source or final-body finding emits only a fixed safe 503 body.
   - Operations HTTP diagnostics require a typed, current, server-session-derived exact Admin principal; anonymous, Parent, Student, stale, and client-asserted roles are concealed without invoking observers.
   - Worker heartbeat readiness is derived only from the validated health snapshot and cannot be asserted by a caller.
+  - Candidate and runtime identity include the exact canonical build timestamp and migration schema version.
+  - Heartbeat freshness is measured against the actual publication clock; a stale or future caller-generated health snapshot cannot publish.
+  - Queue readiness requires exact lease cardinality/age, fencing, retry, and content-progress evidence; inconsistent or stalled queues are non-ready.
+  - Every alert carries runtime tier and verification environment, and leakage monitoring covers secret/PII keys plus raw links for all seven providers.
   - Central route registration, configuration, deployment, dependency, package, migration, and shared composer changes remain gated by P33 steward requests.
 downstream_tasks:
   - P34

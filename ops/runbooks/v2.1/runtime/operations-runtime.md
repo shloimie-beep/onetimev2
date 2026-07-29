@@ -8,10 +8,11 @@ production write.
 
 ## Startup identity gate
 
-Every declared process must publish schema `2.0.0` identity containing its exact
+Every declared process must publish schema `3.0.0` identity containing its exact
 candidate `runtime_id`, role, repository SHA, immutable application-source SHA,
 role-specific artifact digest, configuration digest, migration-inventory digest,
-provider-registry digest, release, runtime tier, and verification environment.
+provider-registry digest, release, canonical build timestamp, migration schema
+version, runtime tier, and verification environment.
 The candidate declares the complete runtime, queue, worker, and provider
 inventory plus the maximum evidence age. Missing, duplicate, extra, malformed,
 stale, or unqualified observations fail readiness.
@@ -75,10 +76,16 @@ Queue age warning/critical thresholds are:
 Acceptance-unknown work remains quarantined. Dead letters and expired leases
 warn. Any credible duplicate external-effect risk is Sev1. Never retry an
 acceptance-unknown provider operation until canonical non-acceptance is proven.
+Queue evidence also includes exact active-lease count and oldest age, unfenced
+lease count, fencing-token high watermark, scheduled/exhausted retries, and
+content last-progress time/age. Missing fencing for an active lease, any
+unfenced lease, inconsistent retry state, contradictory content progress, or a
+stalled content queue fails readiness.
 
 Worker heartbeat is normal through 60 seconds, warning after 120 seconds, and
-critical after 300 seconds. A source/configuration mismatch is immediately
-Sev1.
+critical after 300 seconds. Publication also compares health generation time to
+the actual publication clock and rejects stale or future caller-generated
+snapshots. A source/configuration mismatch is immediately Sev1.
 
 Provider status is explicit for Resend, GHL, Stripe, Zoom, Vimeo, Drive, and
 Telegram. `not_configured` is truthful and must not be replaced by a fake ready
@@ -94,7 +101,9 @@ private text, and raw Zoom/Vimeo/Drive URLs are prohibited.
 
 Credential-shaped keys, Basic/Bearer/JWT values, secret hashes, signed query
 URLs, and secret-bearing `safe_context` or error text are leakage findings in
-addition to the protected material above. Any finding is Sev1:
+addition to the protected material above. Raw links for Resend, GHL, Stripe,
+Zoom, Vimeo, Drive, and Telegram and common name/address/birth/identifier PII
+keys are covered. Any finding is Sev1:
 
 1. Stop distribution of the affected diagnostic and restrict access to the
    secure operations channel.
