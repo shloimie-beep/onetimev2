@@ -45,36 +45,45 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
-claim_mode: create_new_branch
-claimed_by: codex-p24-worker-ff79d0ab
-claim_time: '2026-07-29T12:23:30Z'
-claim_id: ff79d0ab-10d4-481b-ae90-48bb8bd9631a
+status: claimed
+phase: review_digest_requester_projection_correction
+claim_mode: resume_existing
+claimed_by: codex-p24-worker-30f62864
+claim_time: '2026-07-29T13:21:47Z'
+claim_id: 30f62864-3c37-4610-8a83-09dff3d63213
 writer_slot_leases:
   - slot: SUPPORT
-    lease_id: 4d0115d1-571f-4ca7-8b04-3fc79b43bcdf
-    lease_issued_at: '2026-07-29T12:23:30Z'
-    lease_expires_at: '2026-07-29T13:38:30Z'
-    state_based_on_control_head_sha: 8bb4680887b2ea320f914cf046184655601fade9
-    phase_scope: P24_atomic_claim_only
-    lease_released_at: '2026-07-29T13:12:33Z'
-    state: released
+    lease_id: b7c91222-fb97-4719-a14d-1428a7f11a01
+    lease_issued_at: '2026-07-29T13:21:47Z'
+    lease_expires_at: '2026-07-29T14:36:47Z'
+    state_based_on_control_head_sha: d7475995baa425229077fadd522082855997ed48
+    phase_scope: P24_atomic_claim_review_digest_requester_projection_correction_only
+    lease_released_at: null
+    state: active
 effect_lock_leases: []
-lease_expires_at: '2026-07-29T13:38:30Z'
-lease_released_at: '2026-07-29T13:12:33Z'
-last_heartbeat_at: '2026-07-29T13:12:33Z'
-controller_authorization_sha: 6d0278d46789b6d746c58effa6c5f182ff4a7741
-controller_authorization_parent_sha: 8bb4680887b2ea320f914cf046184655601fade9
-reconciliation_control_sha: cb0a1de49ebc1d1113aae26798508e178346287c
-reconciliation_control_parent_sha: 4c9b217531ce76b52971707913d1e28c65958d76
-reconciled_atomic_claim_head_sha: 2a3b36c98b9a8698536149d668f0c58552c7eea4
-reconciled_phase_scope: P24_normalized_support_roots_and_structured_requests
-ready_entry_state_based_on_control_head_sha: 8bb4680887b2ea320f914cf046184655601fade9
-ready_entry_payload_digest: 57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75
-ready_entry_state: consumed
-state_based_on_head_sha: 81bb28c76744b52b52f9262c7e31e91954dc6472
+lease_expires_at: '2026-07-29T14:36:47Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T13:21:47Z'
+controller_authorization_sha: a4fda5d21837c7140083ce70619e301f26db2590
+ready_entry_state_based_on_control_head_sha: d7475995baa425229077fadd522082855997ed48
+ready_entry_payload_digest: 70989507326113265e2e4cb81b00f51ce1d4db92f007bd9aab28ffdaadea97f1
+ready_entry_state: active
+expected_existing_head_sha: 78e6c88647356268424e16a29edbe60d36fe7703
+state_based_on_head_sha: 78e6c88647356268424e16a29edbe60d36fe7703
 last_implementation_commit_sha: 81bb28c76744b52b52f9262c7e31e91954dc6472
+prior_claim_id: ff79d0ab-10d4-481b-ae90-48bb8bd9631a
+prior_final_head_sha: 78e6c88647356268424e16a29edbe60d36fe7703
+correction_requirements:
+  P24-CORRECTION-001:
+    status: recorded_pending_reconciliation
+    requirement: Canonical source aggregation uses sorted <path>=<raw Git blob SHA-256> lines with LF separators and no final LF; no literal path= prefix is part of a line.
+    implementation_head_sha: 81bb28c76744b52b52f9262c7e31e91954dc6472
+    canonical_source_digest: 249f6b304e4273c0f565387fc5924cf4d19ea9d37e95b2a048a7531b41514e12
+    superseded_erroneous_digest: e87246e9ab1ca1601fc0626af978b02a5d76f8fcd163e9fadab165bf0f35e877
+  P24-CORRECTION-002:
+    status: implementation_pending_after_reconciliation
+    requirement: Create and idempotent create replay return only SupportRequesterView; replay after an adult GHL link must never expose raw ghlConversationId.
+    direct_regression_required: true
 completed_steps:
   - Verified exact remote control authorization 6d0278d46789b6d746c58effa6c5f182ff4a7741 with sole acquisition parent 8bb4680887b2ea320f914cf046184655601fade9.
   - Recomputed the exact P24 READY payload digest and verified the task, context, package, branch, claim, lease, start, and zero-effect-lock bindings.
@@ -85,11 +94,13 @@ completed_steps:
   - Added accessible isolated Admin and Student support workspaces and immutable migration/registration requests without editing governed routes, composers, barrels, migrations, config, or provider registration.
   - Passed all seven requirement/case assertions plus direct role, privacy, product-isolation, stale-version, idempotency, GHL, and redaction negatives.
   - Released the SUPPORT lease before expiry with zero effect locks and zero external effects.
+  - Reproduced the 15 exact implementation blob hashes and identified that the prior aggregate incorrectly prepended literal path= to every otherwise canonical line.
+  - Verified latest valid control a4fda5d21837c7140083ce70619e301f26db2590, READY acquisition d7475995baa425229077fadd522082855997ed48 in its ancestry, exact expected head, canonical READY digest, fresh correction claim and SUPPORT lease, and zero effect locks.
 remaining_steps:
-  - Independent audit of the exact pushed P24 ready_for_review head.
-  - Steward review and later application of the two immutable requests by their exact owners.
-  - Candidate-bound persistent-staging and operator-canary evidence remains downstream.
-next_action: Independently audit the exact remote P24 head, its 15-artifact digest, two request digests, seven implementation-ready cases, authorization/privacy invariants, and zero-effect record.
+  - Push and remote-verify this exact three-file correction atomic claim.
+  - Stop for C00 reconciliation of the exact pushed claim head.
+  - After reconciliation only, implement the requester-projection correction and direct replay-after-link regression, then rerun bounded verification and publish a corrected ready_for_review final.
+next_action: C00 must reconcile the exact pushed P24 correction atomic-claim head before any product or test edit.
 requirements:
   OTV2-TICKETS-147: implementation_ready
   OTV2-TICKETS-148: implementation_ready
@@ -109,8 +120,9 @@ acceptance_cases:
 artifacts:
   implementation_head_sha: 81bb28c76744b52b52f9262c7e31e91954dc6472
   source_file_count: 15
-  source_digest: e87246e9ab1ca1601fc0626af978b02a5d76f8fcd163e9fadab165bf0f35e877
-  digest_algorithm: SHA-256 over sorted UTF-8 path=<raw Git-blob SHA-256> lines with LF separators and no final newline
+  source_digest: 249f6b304e4273c0f565387fc5924cf4d19ea9d37e95b2a048a7531b41514e12
+  superseded_erroneous_source_digest: e87246e9ab1ca1601fc0626af978b02a5d76f8fcd163e9fadab165bf0f35e877
+  digest_algorithm: SHA-256 over sorted UTF-8 <path>=<raw Git-blob SHA-256> lines with LF separators and no final newline; path is the repository path and there is no literal path= prefix
   steward_request_count: 2
   steward_request_aggregate_digest: 27e11a78bcdb2b0a3913b1192012368fadf29a3bc7647c8166cb9a95047f63fa
 current_checkpoint_changed_paths:
@@ -160,7 +172,9 @@ verification:
     - command: exact normalized-owned-scope plus structured-request audit and git diff --check
       result: passed
     - command: exact raw Git-blob artifact and request digest reproduction
-      result: passed; 15 artifacts, two requests, artifact digest e87246e9, request aggregate 27e11a78
+      result: corrected; 15 artifacts yield canonical digest 249f6b30, while the superseded e87246e9 value used an erroneous extra literal path= prefix
+    - command: exact correction control, READY entry, expected head, claim, SUPPORT lease, dependency, and effect-lock verification
+      result: passed; control a4fda5d2, acquisition basis d7475995 in ancestry, canonical READY digest 70989507, expected head 78e6c886, and zero effect locks
   known_baseline_failures: []
 external_effects:
   authority: none

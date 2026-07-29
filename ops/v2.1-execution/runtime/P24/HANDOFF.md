@@ -1,4 +1,4 @@
-# P24 Support Ready for Review
+# P24 Support Correction Atomic Claim
 
 ## Identity
 
@@ -8,8 +8,10 @@
   `2a3b36c98b9a8698536149d668f0c58552c7eea4`
 - Implementation commit:
   `81bb28c76744b52b52f9262c7e31e91954dc6472`
-- Final metadata commit: derive with `git rev-parse HEAD`; C00 records the exact
-  observed remote head
+- Prior ready-for-review head:
+  `78e6c88647356268424e16a29edbe60d36fe7703`
+- Current correction atomic-claim commit: derive with `git rev-parse HEAD`; C00
+  must record and reconcile the exact observed remote head
 - Task packet digest:
   `a0b763435e1c23e670b5894e56037735b4bfb74bfae247ebfa70145d86b89383`
 - Task context digest:
@@ -20,15 +22,16 @@
   `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
 - Package lock digest:
   `3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a`
-- Claim: `ff79d0ab-10d4-481b-ae90-48bb8bd9631a`
-- SUPPORT lease: `4d0115d1-571f-4ca7-8b04-3fc79b43bcdf`, released
-  `2026-07-29T13:12:33Z` before its `2026-07-29T13:38:30Z` expiry
-- Reconciliation control authorization:
-  `cb0a1de49ebc1d1113aae26798508e178346287c`
-- Sole reconciliation acquisition parent:
-  `4c9b217531ce76b52971707913d1e28c65958d76`
+- Correction claim: `30f62864-3c37-4610-8a83-09dff3d63213`
+- SUPPORT lease: `b7c91222-fb97-4719-a14d-1428a7f11a01`, issued
+  `2026-07-29T13:21:47Z`, expiring `2026-07-29T14:36:47Z`, scope
+  `P24_atomic_claim_review_digest_requester_projection_correction_only`
+- Latest valid containing control:
+  `a4fda5d21837c7140083ce70619e301f26db2590`
+- READY acquisition/state basis:
+  `d7475995baa425229077fadd522082855997ed48`
 - READY payload digest:
-  `57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75`
+  `70989507326113265e2e4cb81b00f51ce1d4db92f007bd9aab28ffdaadea97f1`
 
 ## Dependency bindings
 
@@ -55,39 +58,31 @@
 The exact task/context dependency digests are recorded in `TASK-STATE.yaml`.
 Every named interface source is an ancestor of the authorized start.
 
-## Completed behavior
+## Bounded corrections
 
-- Adult and Student technical support uses the exact five-state local lifecycle.
-- Student Torah/class questions are a separate private conversation kind routed
-  only to an authorized Rabbi operator.
-- Conversation reads are exact-requester or queue-capability authorized; Parent
-  household authority never exposes a Student conversation.
-- Adult technical support may link one GHL conversation idempotently. Student
-  support and Rabbi questions cannot link a GHL identity or conversation.
-- Admin operations cover list, assignment, status, in-app reply, and immutable
-  audit history with optimistic versions and stable idempotency.
-- Telegram integration is represented only by local, bounded, redacted intents
-  under the `OT` namespace. The intent omits private bodies and Student
-  identities, and explicitly records that Telegram is not source of truth.
-- Accessible isolated Admin and Student workspaces expose the operational and
-  separate technical/question flows.
+1. Replace the superseded aggregate
+   `e87246e9ab1ca1601fc0626af978b02a5d76f8fcd163e9fadab165bf0f35e877`
+   with canonical digest
+   `249f6b304e4273c0f565387fc5924cf4d19ea9d37e95b2a048a7531b41514e12`.
+   The preimage is the 15 raw Git-blob SHA-256 values rendered as sorted
+   `<path>=<digest>` lines, LF-separated with no final LF. There is no extra
+   literal `path=` prefix.
+2. Make both first create and idempotent create replay return only
+   `SupportRequesterView`. Add a direct regression that creates adult support,
+   links a GHL conversation, replays the original create command, and proves the
+   response never contains raw `ghlConversationId`.
+
+No product or test implementation is included in this atomic claim.
 
 ## Exact next action
 
-An independent auditor must fetch the exact P24 remote head, reproduce the
-artifact/request digests, inspect authorization/privacy/idempotency/redaction
-negatives, and report review findings without applying the two steward requests.
+C00 must reconcile the exact pushed correction claim head. Stop until that
+reconciliation explicitly authorizes the two bounded corrections.
 
 ## Coverage and verification
 
-All seven requirements and all seven exact acceptance cases are
-`implementation_ready`. Focused Vitest passed 3 files and 10 tests; workspace
-typecheck, focused ESLint, focused Prettier, `git diff --check`, and exact scope
-audits passed.
-
-The implementation commit contains 15 source/test artifacts. Its canonical
-raw-Git-blob digest is
-`e87246e9ab1ca1601fc0626af978b02a5d76f8fcd163e9fadab165bf0f35e877`.
+Prior verification remains evidence only pending correction. This atomic claim
+changes exactly `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
 
 ## Steward requests
 
@@ -108,6 +103,5 @@ reconciled 0. No Telegram or other provider state was inspected or mutated.
 
 ## Blockers and recovery
 
-No implementation blocker. Migration and registration remain unapplied,
-immutable structured steward requests for their exact owners. Candidate-bound
-provider evidence remains downstream.
+Correction implementation is intentionally paused pending C00 reconciliation.
+Existing steward requests remain byte-identical and unapplied.
