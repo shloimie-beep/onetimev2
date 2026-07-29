@@ -212,3 +212,12 @@ control parent `e54ea923a743caf760ef47638a2c8d8a875faf34`. Claims are
 `308031d1-15e8-4ff5-aca0-6560e9a8c93d`, and
 `87608f7e-3d2b-448b-8376-da025b05d1b7`; ready digests are `81174a93...`,
 `634d4c80...`, and `380e1f3d...`. Reconcile before any product continuation.
+
+All corrected claims are reconciled under exact C00 acquisition
+`5b0356cc30baf4062e50664f9749ebcf97f9d7f4`. Resume P17 at `a72f1a0b`,
+P29 at `56fcfcee`, and P30 at `8e9583a9`. P29 must restore only its named
+preserved repair stash. P30 must verify and finalize the controller-adopted
+repair implementation already below its claim. Each worker is limited to the
+recorded audit repair, negative regression coverage, full checks, refreshed
+material digests/runtime proofs, lease release, and a new ready_for_review
+final. Keep all external/provider effect counts at zero.

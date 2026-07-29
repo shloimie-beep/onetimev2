@@ -480,3 +480,12 @@ bindings are invalidated. From actual acquisition `e54ea923...`, C00 reissued
 fresh claim-only resume entries for exact observed heads P17 `0e6119a4`, P29
 `d5c779ca`, and P30 `f6d074e9`. No product work may resume until all three new
 atomic claims are reconciled.
+
+The corrected atomic claims are now exact and consumed. P17 head `a72f1a0b`
+has sole parent `0e6119a4`; P29 head `56fcfcee` has sole parent `d5c779ca`;
+P30 head `8e9583a9` has sole parent `f6d074e9`. Each checkpoint changes exactly
+its three task-local runtime files, binds containing controller `0c911664`,
+reproduces the fresh canonical ready digest, and records zero effects. C00
+reconciled all three under exact acquisition `5b0356cc`. Only the previously
+recorded bounded cross-audit corrections, negative tests, verification, and
+final metadata are authorized; provider effects remain prohibited.

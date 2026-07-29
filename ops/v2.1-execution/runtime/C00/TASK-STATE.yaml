@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-6844adf8
-claim_time: '2026-07-29T00:13:34Z'
-claim_id: 6844adf8-26ee-466e-9e36-6e2a9d089093
-lease_expires_at: '2026-07-29T00:19:00Z'
-last_heartbeat_at: '2026-07-29T00:19:00Z'
-controller_authorization_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
+claimed_by: codex-c00-orchestrator-f456343c
+claim_time: '2026-07-29T00:24:24Z'
+claim_id: f456343c-333b-4ed2-b199-9c27da0e0de1
+lease_expires_at: '2026-07-29T00:27:00Z'
+last_heartbeat_at: '2026-07-29T00:27:00Z'
+controller_authorization_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
 ready_entry_payload_digest: null
-state_based_on_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
+state_based_on_head_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -144,8 +144,10 @@ completed_steps:
 - detected that the prior P17/P29/P30 resume entries used correct short control prefixes but incorrect full parent-SHA suffixes; paused every worker before additional authorized work and invalidated those claim bindings
 - observed exact current remote heads P17 0e6119a4, P29 d5c779ca, and P30 f6d074e9, with no external effects, then issued fresh resume-existing claims bound to actual acquisition commit e54ea923
 - corrected C00, P17, P29, and P30 registry/runtime projections to exact Git object identities and required new atomic claims before any further product work
+- independently verified corrected P17 claim a72f1a0b, P29 claim 56fcfcee, and P30 claim 8e9583a9 with exact sole parents, exactly three task-local runtime paths each, fresh authorization and ready-digest bindings, and zero effects
+- consumed all three corrected ready entries under exact acquisition head 5b0356cc and restored only their bounded cross-audit correction authority
 remaining_steps: []
-next_action: P17, P29, and P30 publish corrected-binding atomic claims; no product work is authorized until reconciliation.
+next_action: P17, P29, and P30 complete only their bounded cross-audit corrections, negative regression coverage, full verification, refreshed runtime proofs, and lease release; no provider effects are authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -153,12 +155,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
+  current_control_parent_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 6844adf8-26ee-466e-9e36-6e2a9d089093
-      observed_head: e54ea923a743caf760ef47638a2c8d8a875faf34
+      claim_id: f456343c-333b-4ed2-b199-9c27da0e0de1
+      observed_head: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -296,48 +298,48 @@ orchestration:
     P17:
       branch: codex/v21-p17-zoom-preparation
       claim_id: ad77a398-b287-4a51-b7cc-25dd147f33de
-      observed_head: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
+      observed_head: a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T01:13:59Z'
-      scheduling_state: ready_correction_atomic_claim_pending
+      scheduling_state: claimed_correction_implementation_authorized
     P29:
       branch: codex/v21-p29-core-workflows
       claim_id: 308031d1-15e8-4ff5-aca0-6560e9a8c93d
-      observed_head: d5c779caa1859ef308fa009e6558076cf2031771
+      observed_head: 56fcfceed0c6dcf5ff6107ee1987c1047dbb404a
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T01:13:59Z'
-      scheduling_state: ready_correction_atomic_claim_pending
+      scheduling_state: claimed_correction_implementation_authorized
     P30:
       branch: codex/v21-p30-campaign-workflows
       claim_id: 87608f7e-3d2b-448b-8376-da025b05d1b7
-      observed_head: f6d074e964cebefe032042b9627d7c7b47304bdd
+      observed_head: 8e9583a9b47b486930e79e3586c36bf882dba375
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T01:13:59Z'
-      scheduling_state: ready_correction_atomic_claim_pending
+      scheduling_state: claimed_correction_implementation_authorized
   active_native_subagents:
   - task_id: P17
     agent: /root/f03_worker
     branch: codex/v21-p17-zoom-preparation
-    observed_head: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
+    observed_head: a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368
     claim_id: ad77a398-b287-4a51-b7cc-25dd147f33de
     lease_expires_at: '2026-07-29T01:13:59Z'
-    status: ready
+    status: claimed
     phase: correction
   - task_id: P29
     agent: /root/f05_worker
     branch: codex/v21-p29-core-workflows
-    observed_head: d5c779caa1859ef308fa009e6558076cf2031771
+    observed_head: 56fcfceed0c6dcf5ff6107ee1987c1047dbb404a
     claim_id: 308031d1-15e8-4ff5-aca0-6560e9a8c93d
     lease_expires_at: '2026-07-29T01:13:59Z'
-    status: ready
+    status: claimed
     phase: correction
   - task_id: P30
     agent: /root/i36_worker2
     branch: codex/v21-p30-campaign-workflows
-    observed_head: f6d074e964cebefe032042b9627d7c7b47304bdd
+    observed_head: 8e9583a9b47b486930e79e3586c36bf882dba375
     claim_id: 87608f7e-3d2b-448b-8376-da025b05d1b7
     lease_expires_at: '2026-07-29T01:13:59Z'
-    status: ready
+    status: claimed
     phase: correction
   unresolved_blockers: []
 requirements: {}
@@ -453,10 +455,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: a36c9a4f9c22235b31dbc99b02b195181cc3042fc458d61f8fc871707bca7c73
-    control_lease: c640395da146f4868fb935128d4e9d9a2995e9517fb7e75ae93cc9f871e79cd1
-    task_registry: d61a307cc44f20dd9584ea203a1b491e8f2d1051f809e673a845c9ffe79102a5
-    ready_queue: 873830f55630b07cb81517e653aa2e98820ebcac0c854fa72431f0d90a17a410
+    control_state: 2fba0e35c733f6413030ce7a5267274eb9a1eb622bb70f88663703c2f9db7459
+    control_lease: 91cf2450d30e9a0c88fc60383dffb1459bf1ae50d7818d18fa48e16d261de87a
+    task_registry: d32715002a1c989b75408dc1aa1a5e2922191d8f32756b2ccfd2d6968bcb136b
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 367563ad60f3674c5a6116e12593341c6be5bda8363072be6e6250f253ce9d93
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
