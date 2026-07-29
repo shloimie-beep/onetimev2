@@ -38,30 +38,35 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
+status: claimed
+phase: correction
 claim_mode: resume_existing_branch
-claimed_by: codex-p10-worker-0f061200
-claim_time: '2026-07-29T01:45:03Z'
-claim_id: 0f061200-ff84-449d-aaa7-b0ebd7cd9c02
+claimed_by: codex-p10-worker-cd15a4ba
+claim_time: '2026-07-29T02:20:00Z'
+claim_id: cd15a4ba-db91-44ff-b522-f111fbcd9a0d
 writer_slot_leases:
   - slot: ADMIN_DIRECTORY
-    lease_id: c3ee876e-793d-4c19-9a4c-40de4f27e758
-    lease_issued_at: '2026-07-29T01:39:10Z'
-    lease_expires_at: '2026-07-29T02:39:10Z'
-lease_expires_at: '2026-07-29T02:39:10Z'
-lease_released_at: '2026-07-29T02:06:44Z'
-last_heartbeat_at: '2026-07-29T02:06:44Z'
-controller_authorization_sha: f84e9d3da1e131cab0714bd24441b08133b7c1a6
-continuation_control_parent_sha: 34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4
-ready_entry_state_based_on_control_head_sha: c743420931244135bcd61578ea1f322851b325a8
-ready_entry_payload_digest: 526ce8d0d61a88d2def1cf58d9d8d8e8375e03760e7c00db3dec5fab70168467
-state_based_on_head_sha: bedada77101d6cb161969a046552726049663abe
+    lease_id: f7660370-d954-4ee3-8513-4069bef54025
+    lease_issued_at: '2026-07-29T02:12:48Z'
+    lease_expires_at: '2026-07-29T03:12:48Z'
+lease_expires_at: '2026-07-29T03:12:48Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T02:20:00Z'
+controller_authorization_sha: 04ebe46bc1cff1223bdade3379457cf774c0dce1
+continuation_control_parent_sha: 765ad933964ce0019895c2133ff10a491b7938a2
+ready_entry_state_based_on_control_head_sha: 765ad933964ce0019895c2133ff10a491b7938a2
+ready_entry_payload_digest: e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b
+state_based_on_head_sha: 551d483e9678336655546eef6002a7a7daf9d4da
+claim_checkpoint_parent_sha: 551d483e9678336655546eef6002a7a7daf9d4da
 last_implementation_commit_sha: bedada77101d6cb161969a046552726049663abe
 implementation_artifact_digest: 8750cace376894caaa28f0a9d98566ac5744faf606af071bf5d651dbba3d31d4
 implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 10 non-runtime P10 artifacts, with LF separators and no final newline.
 steward_request_digest: a4306c04f912e446472ab2e6c2cbe18dc3a7e733c3cb13eed6ec20188683a934
 completed_steps:
+  - Verified containing controller 04ebe46bc1cff1223bdade3379457cf774c0dce1, its sole parent/acquisition 765ad933964ce0019895c2133ff10a491b7938a2, exact rejected final 551d483e9678336655546eef6002a7a7daf9d4da, and unchanged implementation and steward artifacts.
+  - Recomputed and matched canonical P10 correction-ready digest e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b.
+  - Verified correction claim cd15a4ba-db91-44ff-b522-f111fbcd9a0d, active ADMIN_DIRECTORY lease f7660370-d954-4ee3-8513-4069bef54025, empty effect-lock list, and zero external effects.
+  - Consumed the audited correction claim only in the three P10 runtime-memory files; no product, contract, test, steward-request, migration, configuration, or shared file was changed.
   - Verified continuation controller f84e9d3da1e131cab0714bd24441b08133b7c1a6, its sole parent 34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4, exact reconciled claim head, unchanged claim/lease, and zero effect authority.
   - Corrected Student credential policy validation to the exact F03 current argon2id-v1 structure and replaced caller-selected revocation subsets with exhaustive scope-bound revoke-all unit-of-work readback.
   - Enforced locked current service-account acceptance, global username uniqueness, Student enrollment/credential/profile atomicity, household access/capacity, final-Admin/owner/disabled-account denial, exact Family/School seat policy, and complete adult/Student/household session and grant revocation.
@@ -79,10 +84,9 @@ completed_steps:
   - Passed full workspace typecheck and lint, 12 focused assertions, focused Prettier, diff hygiene, repository-wide secret scan, and provider-effect inventory.
   - Pushed exact implementation head 3abb4bb96929400838f0270586c5c459c8c6f9ed and derived its 10-artifact and steward-request Git-blob digests.
 remaining_steps:
-  - I36 must independently review and integrate exact corrected implementation head bedada77101d6cb161969a046552726049663abe.
-  - I36 must disposition the refreshed P10 migration and registration steward requests without weakening the locked inventory, atomicity, revocation, policy, or UI confirmation contracts.
-  - Candidate-bound persistent-staging and production-operator-canary evidence remains with the assigned verification and release lanes.
-next_action: I36 should review and integrate corrected implementation head bedada77101d6cb161969a046552726049663abe, verify artifact digest 8750cace376894caaa28f0a9d98566ac5744faf606af071bf5d651dbba3d31d4, and disposition the steward digest a4306c04f912e446472ab2e6c2cbe18dc3a7e733c3cb13eed6ec20188683a934.
+  - Push the atomic three-runtime-file claim checkpoint with exact parent 551d483e9678336655546eef6002a7a7daf9d4da.
+  - Stop for C00 reconciliation before any product, contract, test, steward-request, migration, configuration, or shared-file edit.
+next_action: Push only TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md as the audited correction claim checkpoint, report exact head, parent, paths, clean worktree, and zero-effect evidence, then stop for C00 reconciliation.
 requirements:
   OTV2-ADMIN-022: implementation_ready
   OTV2-ADMIN-023: implementation_ready

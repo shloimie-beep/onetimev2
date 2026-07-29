@@ -3,7 +3,7 @@ REASONING: HIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task P10 from its corrected ready-for-review final.
+Resume One Time v2.1 task P10 from its atomic audited correction claim.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p10-admin-directory
@@ -13,18 +13,22 @@ Task context: ops/v2.1-execution/contexts/P10-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P10/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P10/HANDOFF.md
 
-Fetch remote refs and verify the exact final, task state, handoff, corrected
-implementation artifact digest, and steward-request digest before review.
+Fetch remote refs and verify the exact claim checkpoint, its sole parent, task
+state, and handoff before doing anything else.
 
-The corrected implementation head is
-`bedada77101d6cb161969a046552726049663abe`; its exact ten-artifact digest is
-`8750cace376894caaa28f0a9d98566ac5744faf606af071bf5d651dbba3d31d4`.
-The refreshed steward-request digest is
-`a4306c04f912e446472ab2e6c2cbe18dc3a7e733c3cb13eed6ec20188683a934`.
+The containing controller is
+`04ebe46bc1cff1223bdade3379457cf774c0dce1`; its sole parent/acquisition is
+`765ad933964ce0019895c2133ff10a491b7938a2`. The canonical ready-entry digest
+is `e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b`.
+The exact checkpoint parent/rejected final is
+`551d483e9678336655546eef6002a7a7daf9d4da`.
 
-I36 must review and integrate that exact corrected implementation, then
-disposition P10-MIGRATION-001 and P10-REGISTRATION-001 without weakening the
-locked inventory, atomicity, exhaustive revocation, F03 credential policy,
-service-account acceptance, seat, ownership/Admin, or UI confirmation
-contracts. Do not resume P10 implementation without a new exact C00
-authorization.
+The claim is `cd15a4ba-db91-44ff-b522-f111fbcd9a0d`; its ADMIN_DIRECTORY lease
+is `f7660370-d954-4ee3-8513-4069bef54025`, issued
+`2026-07-29T02:12:48Z` and expiring `2026-07-29T03:12:48Z`. Effect locks are
+empty, and external effects remain attempted `0`, succeeded `0`, reconciled
+`0`.
+
+This is a claim-only checkpoint. Stop for C00 reconciliation. Do not edit any
+product, contract, test, steward-request, migration, configuration, or shared
+file, and do not resume implementation without a new exact C00 authorization.
