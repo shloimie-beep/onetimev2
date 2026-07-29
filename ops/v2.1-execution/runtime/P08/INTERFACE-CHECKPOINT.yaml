@@ -1,0 +1,70 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P08
+interface_implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
+contract_digest: 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact <path>=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 2.0.0
+state: interface_ready
+supersedes_checkpoint_sha: ca06599ffbe62d7c617235f9e54f5ded57e4b6c7
+supersedes_contract_digest: 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
+exports:
+  - path: packages/contracts/src/signup/family/index.ts
+    symbols:
+      - FAMILY_SIGNUP_CONTRACT_VERSION
+      - FAMILY_SIGNUP_OPERATION
+      - FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH
+      - FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH
+      - FAMILY_SIGNUP_CLASSIFICATIONS
+      - FamilySignupClassification
+      - FAMILY_FREE_EXPIRY
+      - FAMILY_SIGNUP_COPY
+      - FAMILY_SIGNUP_FIELDS
+      - FAMILY_SIGNUP_TIMEZONE_FIELD
+      - FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS
+      - FAMILY_SIGNUP_FORBIDDEN_FIELDS
+      - FamilySignupCommand
+      - FamilySignupAccessBranch
+      - FamilySignupDisposition
+      - FamilySignupScope
+      - FamilySignupRequestBinding
+      - FamilySignupLocalProjection
+      - FamilySignupAdultConsentChoices
+      - FamilySignupOutboxIntent
+      - FamilySignupResult
+      - FamilySignupReceipt
+      - FAMILY_SIGNUP_SECURITY_INVARIANTS
+    sha256: 502bb09dcf4e95ffba49951ca92ff6ae591be2ded7034493269349b73e8965ef
+compatibility_invariants:
+  - Public intake classifications are exactly family and school and are mutually exclusive.
+  - This P08 export preserves only the family|school branch seam; School command and form details are P09-owned and are not exported here.
+  - The Family form contains adult identity, exact password confirmation, editable searchable IANA timezone, required legal acceptance, and separate optional general-marketing and Parent-newsletter choices; it never contains card, Student, guardian, recording, recognition, reminder, phone, or country fields.
+  - Browser timezone is suggestion-only, remains editable, and the server rejects non-IANA identifiers and raw offsets.
+  - Optional adult consent checkboxes are separate and never preselected or inferred; their exact booleans are canonicalized, persisted, and carried by the quarantinable outbox.
+  - The fixed expiry is exactly 2026-09-13T19:24:00+03:00, represented canonically as 2026-09-13T16:24:00.000Z.
+  - Before expiry, Family signup creates immediate cardless free access with no setup-email dependency; at or after expiry it persists inactive access and offers hosted Checkout only when GHL identity state is not identity_review.
+  - At or after expiry, identity_review yields inactive_identity_review with checkout_required false, a visible identity-review next action, and quarantined GHL sync/workflow and paid billing pending Admin resolution.
+  - Any existing local HumanAccount identity or Family household lifecycle returns the same generic sign-in-or-reset result with zero household, access, credential, outbox, or session writes; creating another household for an existing account is a separate authenticated operation.
+  - A GHL-only CRM match does not count as local account existence and may create a fresh local signup while reusing the verified adult CRM contact.
+  - Public signup requires a 43-128 character high-entropy idempotency key, but the key is never authentication or authorization material.
+  - The server canonicalizes semantic name, normalized email, validated IANA timezone, legal acceptance, exact optional consent choices, and keyed password fingerprint and computes the canonical request digest; password confirmation is verified but never persisted and caller-supplied request hashes are rejected.
+  - Request locking, local identity and household reads, GHL evidence, recovery receipts, commits, and outbox intents bind to the exact validated scope and public_family_signup operation.
+  - Recovery succeeds only for an exact scope, operation, key, and canonical request digest match; changed fields and cross-scope replay fail closed without returning prior projection identifiers or email.
+  - Local identity, account, household, credential, access, idempotency, and outbox state commit before any provider effect.
+  - Provider failure never rolls back a committed signup; recovery reuses the stable idempotency key and durable outbox.
+  - Fresh signup grants no rolling trial, completes no provider effect inline, and never creates Student GHL contacts.
+downstream_tasks:
+  - P09
+verification_commands:
+  - npm run typecheck
+  - npx vitest run packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - npx eslint packages/contracts/src/signup/family/index.ts packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - canonical contract digest recomputation
+contains_product_completion_claim: false
+contains_external_effect: false
