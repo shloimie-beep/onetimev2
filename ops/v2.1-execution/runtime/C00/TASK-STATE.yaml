@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-92a91d86
-claim_time: '2026-07-29T12:02:30Z'
-claim_id: 92a91d86-1f77-4372-bac5-e8f8c6b22795
-lease_expires_at: '2026-07-29T12:17:30Z'
-last_heartbeat_at: '2026-07-29T12:06:33Z'
-controller_authorization_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+claimed_by: codex-c00-orchestrator-dc1875a5
+claim_time: '2026-07-29T12:13:30Z'
+claim_id: dc1875a5-6690-4242-9bd0-d45a6d09b39a
+lease_expires_at: '2026-07-29T12:28:30Z'
+last_heartbeat_at: '2026-07-29T12:15:35Z'
+controller_authorization_sha: 6209cee92ae59c12b431dcf399e50be4392d538c
 ready_entry_payload_digest: null
-state_based_on_head_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+state_based_on_head_sha: 6209cee92ae59c12b431dcf399e50be4392d538c
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -279,12 +279,12 @@ completed_steps:
 - independently reconciled P23 copy/dedupe-persistence correction claim 102c75c2 as an exact three-runtime-file child of rejected final 24ec3a4e with zero effects
 - rejected P11 superseding final 899ef6a7 after exact-source re-audit confirmed revoked initial private render and unguarded in-flight completions, option-ID collisions for valid dotted/colon target IDs, and a Bearer-space redaction gap
 - authorized only a fresh three-runtime-file P11 authorization-race/ID/secret correction claim from exact rejected final 899ef6a7 under claim d76c097a and ADMIN_OPERATIONS_UI lease 84cd0230
+- independently verified I36's exact P09 ancestry merge 38307b26 and metadata-only release 408b21af, including exact parents, 14-path scope, source ancestry, 4 files/16 tests, typecheck, released lease, unapplied requests, and zero effects
+- independently verified and reconciled P21 atomic residual-correction claim cc7e7439 as the exact sole child of rejected final 29d3b94b with only three runtime files, exact authorization/claim/lease/READY bindings, clean remote state, and zero effects
 remaining_steps:
-- independently verify I36's P09 ancestry merge and metadata-only release
-- reconcile P21's exact residual-correction claim before allowing any further product edit
-- independently re-audit the bounded P09 and P21 correction finals when published
+- independently re-audit P21's bounded residual-correction final when published
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: I36 claim e952671b is reconciled and may ancestry-merge only P09 final 33a21a45 under rebound item digest 16559951, then verify and release. P21 final 29d3b94b is rejected; P21 may publish only an exact three-runtime-file claim under READY f0875254, claim eba3bd79, and lease d4c8a72c, then stop for reconciliation. No provider action, send, steward application, or external effect is authorized.
+next_action: P09 integration is complete at release 408b21af and must not be repeated. P21 claim cc7e7439 is reconciled; under unchanged claim eba3bd79 and CONTENT_PUBLICATION lease d4c8a72c, P21 may implement only durable original-outbox completion, repository-backed governed occurrence lookup, transactionally current audience eligibility, and direct residual tests, then release and publish a superseding final. No provider action, send, steward application, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -292,12 +292,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: d633726e427e659adf55d71d009919ae4f6b4dde
+  current_control_parent_sha: 6209cee92ae59c12b431dcf399e50be4392d538c
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 92a91d86-1f77-4372-bac5-e8f8c6b22795
-      observed_head: d633726e427e659adf55d71d009919ae4f6b4dde
+      claim_id: dc1875a5-6690-4242-9bd0-d45a6d09b39a
+      observed_head: 6209cee92ae59c12b431dcf399e50be4392d538c
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -308,11 +308,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: 26d3ae42-c9c9-4913-9534-1d4c71b55f13
-      observed_head: e952671b1b214be51a01ef7f4abcaef6a50ce9da
+      claim_id: null
+      observed_head: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
       authorized_start_sha: eeac03afdd7a5db493885ef507b7c09478b0454a
-      lease_expires_at: '2026-07-29T13:06:14Z'
-      scheduling_state: claimed_P09_full_integration_authorized
+      lease_expires_at: null
+      scheduling_state: ready_release
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -731,11 +731,11 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 3dedfb351c1c9a2f6b4c9aa60a159d748edf4366ae07958963e13135085c6b03
-    control_lease: 68b7ae6eeb6d306d0871da8030dd0e21834a50caea4a225de3b7dbc79f68432d
-    task_registry: 2a7ffd13437f2fa980da8bb349ad5d0b8b38701e63112f34fad269316e44b4fd
-    ready_queue: 7903a4b8f6f4221d29a3d86442259b6e6b835e3bcad54fe6bc139fdb47a18855
-    merge_queue: 978d05a4096430b4edee2eb60b7b7861375d03821eade4fc62091fa7576eab4c
+    control_state: 564768ce7cc9fe702f6bd4aa73ce4904e0f2db1b727f97864c444709ab9a2f89
+    control_lease: a7f24eb7bf6cd72e9ae44d50c1baf9fd70ceb9aa4cb3d3c760a78e9c67f4d9b3
+    task_registry: efad3215550e7df62e7d3737c14b24c8f9c3d92a6a8b2266a9f3dc24e08887aa
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: b0be4201c92d44ff3968ef8fa97e1d34b6d7521660181ff48598d23af18b51f0
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50
@@ -915,6 +915,9 @@ verification:
   - P21 final 29d3b94b exact ancestry and 21-path scope, 17-artifact digest 3b25a254, request aggregate c961e502, 5 files/13 tests, typecheck, released lease, and zero effects: mechanical replay passed
   - P21 exact-source semantic re-audit: rejected because the original publish outbox has no completion transition and remains pending, occurrence attachment accepts caller-asserted IDs without canonical governed occurrence/product lookup, and active assignments/notices are materialized from version numbers without current Student/enrollment/access/consent/privacy/revocation eligibility
   - canonical P21 residual-correction READY digest f0875254 against acquisition d633726e, rejected head 29d3b94b, fresh claim eba3bd79, sole CONTENT_PUBLICATION lease d4c8a72c, and zero effect locks: passed
+  - I36 P09 merge 38307b26 exact parents e952671b and 33a21a45, source ancestry, exact 14-path first-parent scope, 4 files/16 tests, workspace typecheck, focused lint/format/diff/secret checks, metadata-only release 408b21af, released lease, unapplied P09/P11 requests, and zero effects: passed
+  - P21 residual-correction claim cc7e7439 sole-parent ancestry from rejected final 29d3b94b, exact three-runtime-file scope, authorization/acquisition/claim/lease/READY bindings, clean remote state, no product/request/provider change, and zero effects: passed and reconciled
+  - consumed the P21 READY entry, cleared the completed P09 merge item, and authorized only the bounded local P21 residual correction under its unchanged claim and lease: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

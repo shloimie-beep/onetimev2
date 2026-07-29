@@ -913,6 +913,33 @@ approval, readback, grant, unpublish/archive, denial, search, resume, privacy,
 and zero-effect behavior. Strengthen but do not apply the request; use local
 ports/mocks only and perform no live provider or external effect.
 
+P09 integration is complete at I36 release
+`408b21afa4b9ac6f100b3ce33ea87984d18d4bf7`; do not replay merge
+`38307b26f243597df79ef18c928c9a3e935cd5fc` or apply the assigned P09/P11
+requests outside their exact steward checkpoints.
+
+P21 claim `cc7e7439ba3567969cb12e3e4b7f0c01af276f93` is reconciled.
+Resume that exact head under unchanged claim
+`eba3bd79-7a63-46fe-89eb-edace22f1a1e` and CONTENT_PUBLICATION lease
+`d4c8a72c-7beb-40e9-93d4-73d4f3c62668`. Implement only:
+
+- durable exact completion/closure of the original ProviderOperation and
+  pending outbox bound to the canonical publish request;
+- repository-backed lookup of the canonical governed
+  occurrence/product/version/series relation before idempotent attachment;
+- transactionally current Student, enrollment, access, service-account
+  consent, privacy, and revocation eligibility before any active assignment,
+  library projection, Student notice, or adult notice; and
+- direct pending-outbox, invented-occurrence, and inactive/revoked-audience
+  regressions.
+
+Preserve all earlier passing approval, readback, playback-grant, unpublish,
+archive, denial, search, resume, privacy, and concurrency behavior. Use local
+ports/mocks only, strengthen but do not apply the registration request, run
+focused tests/typecheck/lint/format/scope/digest checks, release the lease,
+publish a superseding final, and stop for independent re-audit with effects
+`0/0/0`. Perform no provider/send/external effect.
+
 P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
 reconciled. Resume it under unchanged claim
 `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease

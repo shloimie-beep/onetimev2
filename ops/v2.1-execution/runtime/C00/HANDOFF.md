@@ -1457,3 +1457,25 @@ current Student/enrollment/access/consent/privacy/revocation eligibility.
 C00 authorized only an exact three-runtime-file claim from that final: READY
 `f0875254`, claim `eba3bd79`, CONTENT_PUBLICATION lease `d4c8a72c` through
 `2026-07-29T13:18:14Z`. Product correction must wait for reconciliation.
+
+P09 integration completed at exact merge
+`38307b26f243597df79ef18c928c9a3e935cd5fc` and metadata release
+`408b21afa4b9ac6f100b3ce33ea87984d18d4bf7`: exact parents
+`e952671b`/`33a21a45`, preserved source ancestry, exact 14-path first-parent
+scope, 4 files / 16 tests, workspace typecheck, focused hygiene checks,
+released I36 lease, unapplied P09/P11 steward requests, and effects `0/0/0`.
+The completed merge item is cleared and must not be replayed.
+
+P21 atomic residual-correction claim
+`cc7e7439ba3567969cb12e3e4b7f0c01af276f93` is reconciled: sole parent
+rejected final `29d3b94b`, exactly the three P21 runtime files, exact
+authorization/acquisition/claim/lease/READY bindings, no product, request,
+provider, or effect change, and effects `0/0/0`. C00 consumed the READY entry.
+Under unchanged claim `eba3bd79-7a63-46fe-89eb-edace22f1a1e` and
+CONTENT_PUBLICATION lease `d4c8a72c-7beb-40e9-93d4-73d4f3c62668`
+through `2026-07-29T13:18:14Z`, P21 may implement only durable closure of the
+original ProviderOperation/outbox, repository-backed governed occurrence
+lookup, transactionally current audience eligibility, and the direct residual
+tests. It must preserve prior passing behavior, release the lease, publish a
+superseding final, and stop for independent audit. No live provider, send,
+steward application, or external effect is authorized.
