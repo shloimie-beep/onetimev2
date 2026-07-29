@@ -1,33 +1,28 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: STOP
+MODE: START_OR_RESUME
 
-I36 completed the exact P18 correction micro-integration. C00 must audit and
-reconcile the exact pushed release head and its sole parent; do not resume I36
-from this checkpoint.
+Resume I36 only after C00 reconciles the exact pushed F02 Lease A
+micro-integration atomic claim head.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Atomic claim target: 965b6766f5c93dd55af6aa9c21cc0387312594aa
-Reconciled authorizing control: 6983b76faa9ac75b3370cbeca82893bbf1dc3f08
-Sole acquisition parent: fcab6fad97dc2510e3338b34ad69c44a8944e45c
-READY I36 digest: a4f8bb88b14a039a87c8f71365639b084b677bce82174bd03e80c7f27f5269c8
+Expected pre-claim target: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+Authorizing control: 87546c3c7044f00020bea746e66babeeacfdad59
+Sole acquisition parent: 40e9030116d7f2a4012526841c147e74704b4209
+READY I36 digest: abea17f9e9fc4a77f1a9dd8fc88252d5fd58596deab1d5b474227019103ec8eb
 
-Claim: 31d2abc1-bdee-4297-b5d7-b89719cd9dc6
-RELEASE_INTEGRATOR lease: b39bd286-c061-45cf-bcbe-cb38eb9b4032
-Lease released: 2026-07-29T17:25:23Z
-Phase scope: P18_collision_correction_micro_integration_atomic_claim_only
+Claim: a66df456-06ec-4c28-80fe-1ef48c0004f7
+RELEASE_INTEGRATOR lease: 6e20c91b-828c-4008-993d-a58f2c1ff43b
+Lease expires: 2026-07-29T21:31:15Z
+Phase scope: F02_lease_A_micro_integration_atomic_claim_only
 
-P18 correction merge:
-b7be954952298ed1817cbffc4363608410da33a7
+F02: 5c3d9201-e10b-46cb-9cdf-64b5ee8afef6 /
+e156003b243221f97f938a0aca16164c1dd86d2d /
+f3d55402a133e7149e7970b6c6a4079baaeaa2e3f6128cdf7ce5138f84b2a36a
 
-The exact seven-path correction is integrated with source ancestry preserved.
-Verification passed for canonical source/item manifests and digests, request
-and protected-blob bindings, exact parents/scope, 18 focused tests, typecheck,
-focused lint/formatting, raw package validation, YAML parsing, diff hygiene,
-and secret scanning.
-
-Do not apply `P18-migration-002` or any migration/registration request, inspect
-providers, perform a send, deploy, or cause an external effect. Effects remain
-`0/0/0`.
+This checkpoint is atomic-claim-only. Do not fetch or merge F02 source, write
+or apply a migration or registration, inspect providers, perform a send,
+deploy, or cause an external effect until C00 reconciles the exact claim head
+and explicitly resumes I36. Effects remain `0/0/0`.

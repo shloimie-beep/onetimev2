@@ -1,62 +1,61 @@
-# I36 P18 Correction Micro-Integration Release
+# I36 F02 Lease A Micro-Integration Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Atomic claim target:
-  `965b6766f5c93dd55af6aa9c21cc0387312594aa`
-- Reconciled authorizing control:
-  `6983b76faa9ac75b3370cbeca82893bbf1dc3f08`
+- Exact existing target:
+  `26cbebdf828ba9ff485961adb4f90c460c2dbaf9`
+- Authorizing control:
+  `87546c3c7044f00020bea746e66babeeacfdad59`
 - Sole acquisition parent:
-  `fcab6fad97dc2510e3338b34ad69c44a8944e45c`
+  `40e9030116d7f2a4012526841c147e74704b4209`
 - READY I36 digest:
-  `a4f8bb88b14a039a87c8f71365639b084b677bce82174bd03e80c7f27f5269c8`
-- Claim: `31d2abc1-bdee-4297-b5d7-b89719cd9dc6`
-- RELEASE_INTEGRATOR lease: `b39bd286-c061-45cf-bcbe-cb38eb9b4032`
-- Lease window: `2026-07-29T17:06:49Z` through
-  `2026-07-29T18:21:49Z`
-- Lease released: `2026-07-29T17:25:23Z`
-- Phase scope: `P18_collision_correction_micro_integration_atomic_claim_only`
-- Release head: derive with `git rev-parse HEAD`; C00 records and audits the
-  observed pushed head and its sole parent.
+  `abea17f9e9fc4a77f1a9dd8fc88252d5fd58596deab1d5b474227019103ec8eb`
+- Claim: `a66df456-06ec-4c28-80fe-1ef48c0004f7`
+- RELEASE_INTEGRATOR lease: `6e20c91b-828c-4008-993d-a58f2c1ff43b`
+- Lease window: `2026-07-29T20:16:15Z` through
+  `2026-07-29T21:31:15Z`
+- Phase scope: `F02_lease_A_micro_integration_atomic_claim_only`
+- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
+  pushed head, its sole parent, and the I36 triplet digests.
 
-## Merge result
+## Queue
 
-P18 correction merged at
-`b7be954952298ed1817cbffc4363608410da33a7` from parents
-`965b6766f5c93dd55af6aa9c21cc0387312594aa` and
-`b9ad947405de53c138561fd47b9d5c65a25f6b8b`.
+F02 merge `5c3d9201-e10b-46cb-9cdf-64b5ee8afef6`, source
+`e156003b243221f97f938a0aca16164c1dd86d2d`, fixed source-delta and merge
+base `e4673ff1c2e621e26ac93034be245b280c4da4fa`, eight unique declared paths,
+source manifest
+`641cc6885e14dde048e52989cc029bc0ed5b5c101cf09361fae291d024d9280e`,
+and payload
+`f3d55402a133e7149e7970b6c6a4079baaeaa2e3f6128cdf7ce5138f84b2a36a`.
 
-The merge preserves source ancestry and changes exactly the queued seven-path
-scope. Its required merge base is
-`0a384577dec2ea58cbeaf22a247f7c05f6333c27`.
+The item binds native and pg-mem checksums for migrations 2235 through 2238.
+Every merge-after prerequisite is an ancestor of the exact target.
 
 ## Verification
 
-The canonical queue item, exact source inventory and manifest, four-path
-correction manifest, P18 task and state/handoff bindings, replacement-request
-raw and canonical digests, 4,616-byte request framing, protected legacy blobs,
-lease, merge-after ancestry, YAML syntax, and 0/0/0 effect admission passed.
+The remote control and integration refs matched exactly. The canonical READY
+entry and F02 merge item recomputed to their sibling-map digests. The
+raw-Git-blob execution-package validator passed with 200 locked files, all 46
+tasks/contexts/prompts, 16 source-spec files, 243 requirements, 265 cases, 107
+decisions, and 35 implementation tasks. Package, source-package, task,
+context, control-state, and prior I36 state/handoff bindings passed.
 
-The focused P18 suite passed 18 assertions across four files. Repository
-typecheck, focused ESLint and exact-path CRLF-aware Prettier, the raw-Git-blob
-package validator with all structure/coverage counts, YAML parsing, secret scan
-across 3,032 repository text files, diff hygiene, exact merge parents, source
-ancestry, and seven-path scope passed.
+The exact F02 branch ref was verified by `ls-remote` without fetching source.
+The fixed base, eight-path declaration, source manifest, four checksum pairs,
+merge-after prerequisites, claim, unexpired sole lease, zero effect locks, and
+0/0/0 effects passed.
 
-## Scope and effects
-
-`P18-migration-002` remains committed but unapplied. Neither protected legacy
-artifact changed. No migration, registration, provider inspection, send,
-deployment, or external effect occurred.
-
-This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md` beyond the seven queued P18 paths.
+This checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. No F02 source was fetched or merged. No migration,
+registration, request, provider inspection, send, deployment, or external
+effect was performed.
 
 ## Next action
 
-C00 must audit and reconcile the exact pushed release head and its sole parent.
-I36 must stop after reporting it.
+C00 must reconcile the exact pushed atomic claim head and its sole parent. I36
+must stop after reporting the claim and I36 triplet digests. F02 source
+admission and merge require a subsequent explicit resume.
 
 ## Effects
 
