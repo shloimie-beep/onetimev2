@@ -1131,3 +1131,28 @@ claim is `d6567fe9-bfd3-45c6-88c5-ff6cbdff225a`, and lease is
 `fd135a96-bfc0-4ee7-b59a-94873b5e3100` through
 `2026-07-29T09:29:47Z`. No correction continuation is authorized until C00
 reconciles the new runtime-only renewal claim; effects remain zero.
+
+P11 renewal claim `b8c7643938e75bb2ea28b3ebd909f56b577d8b37` is now
+independently reconciled as the exact three-runtime-file child of preserved
+partial checkpoint `e807e26e`; the six partial correction files are unchanged.
+P11 may resume only the previously enumerated bounded correction, complete all
+tests/request/digests/final metadata, release lease `fd135a96`, and stop for
+re-audit with zero effects.
+
+P23 superseding final `87da1f244ea8e19838c2695678089d1bcbe9687a`
+remains rejected. The previous concurrency/retention/privacy/sound/timezone/
+idempotency fixes pass, along with 18 focused tests and typecheck, but exact-
+source re-audit confirmed three residual blockers: class change/cancellation
+emit nonexistent `/app/student/schedule` instead of canonical
+`/app/student/calendar`; route validation accepts arbitrary
+`/app/student/*`; and inactive Read/All tabs have `tabIndex=-1` without
+Arrow/Home/End handling. P23 state also falsely claims F05/F07 task heads are
+ancestors even though only their interface/integration heads are ancestors.
+
+C00 authorized only a fresh three-runtime-file P23 residual correction claim
+from exact rejected final `87da1f24`. Ready digest is
+`976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204`,
+claim is `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4`, and lease is
+`f7b63d5e-489c-40aa-a793-9a7210f91bca` through
+`2026-07-29T09:37:54Z`. No residual product/evidence correction is authorized
+until C00 reconciles that runtime-only claim; effects remain zero.

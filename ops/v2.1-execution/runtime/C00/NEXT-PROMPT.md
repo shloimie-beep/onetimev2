@@ -841,6 +841,29 @@ Preserve the six partial correction files unchanged and do not run or claim
 tests in this first renewal phase. No provider, registration, steward, or
 external effect is authorized.
 
+P11 renewal claim `b8c7643938e75bb2ea28b3ebd909f56b577d8b37` is
+reconciled. Resume the preserved bounded correction under unchanged claim
+`d6567fe9-bfd3-45c6-88c5-ff6cbdff225a` and lease
+`fd135a96-bfc0-4ee7-b59a-94873b5e3100`. Complete the remaining code/tests,
+strengthen but do not apply the registration request, validate all exact probes
+and digests, publish a superseding final, release the lease, and stop with zero
+effects.
+
+P23 final `87da1f244ea8e19838c2695678089d1bcbe9687a` must not be
+integrated. First resume it only for a three-runtime-file claim under claim
+`f7e3fb0e-a8d4-416b-8c79-786a696e2dc4`, STUDENT_NOTIFICATIONS lease
+`f7b63d5e-489c-40aa-a793-9a7210f91bca`, ready parent
+`6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4`, and ready digest
+`976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204`.
+Change exactly the three P23 runtime files, bind the fresh identities/rejected
+head, push, verify, and stop for C00 reconciliation. Only after reconciliation
+may P23 replace schedule routes with canonical calendar, use a strict canonical
+Student-route allowlist, add full Arrow/Home/End tab keyboard behavior with
+focus movement, correct dependency ancestry evidence to the true interface/
+integration heads, add direct tests, refresh digests, publish a superseding
+final, release the lease, and stop. Apply no request/migration/registration and
+perform no provider/send/external effect.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,

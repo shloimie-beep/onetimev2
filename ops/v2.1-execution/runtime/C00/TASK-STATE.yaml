@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-3c1214f7
-claim_time: '2026-07-29T08:29:47Z'
-claim_id: 3c1214f7-cd2a-43ef-878b-e00134fb867f
-lease_expires_at: '2026-07-29T08:44:47Z'
-last_heartbeat_at: '2026-07-29T08:31:38Z'
-controller_authorization_sha: daa4555baa113fb0a2224bd8505e5e599ad0e476
+claimed_by: codex-c00-orchestrator-fe9e6c42
+claim_time: '2026-07-29T08:36:42Z'
+claim_id: fe9e6c42-35c0-4347-9596-51ce80eca679
+lease_expires_at: '2026-07-29T08:51:42Z'
+last_heartbeat_at: '2026-07-29T08:39:13Z'
+controller_authorization_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
 ready_entry_payload_digest: null
-state_based_on_head_sha: daa4555baa113fb0a2224bd8505e5e599ad0e476
+state_based_on_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -267,11 +267,15 @@ completed_steps:
 - independently reconciled P11 correction claim 2fa5c8da as an exact three-runtime-file child of rejected final 51bd416b, consumed its ready entry, and authorized only the bounded semantic correction with zero effects
 - verified P11 renewal_requested checkpoint e807e26e preserved exactly six bounded owned correction files plus three runtime files before lease expiry with a clean remote branch and zero effects
 - issued a fresh atomic-claim-only P11 correction renewal from exact checkpoint e807e26e under claim d6567fe9 and ADMIN_OPERATIONS_UI lease fd135a96
+- independently reconciled P11 renewal claim b8c76439 as an exact three-runtime-file child of partial checkpoint e807e26e with the six partial correction files unchanged and zero effects
+- rejected P23 superseding final 87da1f24 after exact-source re-audit confirmed nonexistent schedule routes, fail-open arbitrary Student routes, unreachable inactive keyboard tabs, and false dependency-task-head ancestry claims
+- authorized only a fresh three-runtime-file P23 residual route/accessibility/evidence correction claim from exact rejected final 87da1f24 under claim f7e3fb0e and STUDENT_NOTIFICATIONS lease f7b63d5e
 remaining_steps:
 - receive and independently re-audit the bounded P23 semantic correction
-- reconcile the exact P11 renewal claim, then resume and independently re-audit the bounded semantic correction
+- receive and independently re-audit the bounded P11 semantic correction
+- reconcile the exact P23 residual correction claim, then authorize and independently re-audit only the bounded route, accessibility, and evidence correction
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P11 may publish only a three-runtime-file renewal claim from exact partial checkpoint e807e26e under ready digest 727c1f24, claim d6567fe9, and lease fd135a96, then stop for C00 reconciliation. P23 corrected final 87da1f24 remains held for exact-source re-audit. No external effect is authorized.
+next_action: P11 may resume only its bounded correction from reconciled renewal claim b8c76439. P23 may publish only a three-runtime-file residual-correction claim from rejected final 87da1f24 under ready digest 976b5c80, claim f7e3fb0e, and lease f7b63d5e, then stop for C00 reconciliation. No external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -279,7 +283,7 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: daa4555baa113fb0a2224bd8505e5e599ad0e476
+  current_control_parent_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
@@ -706,10 +710,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 7443443d5d372ec9534224c8bab80e9da135b7cf97d96affd8e004e2357e068f
-    control_lease: 3723c3e62d2eafd15bf878bb1a02b1d01f46a6b575fb22e264f1d72d499a0b48
-    task_registry: fa4ee7dfda3fede8a434db55d59acca6359a619a05eead79e35f732d008ee70d
-    ready_queue: cb5fc0a61280fae7b7f5683894a4cd7972e003c570b206a7e71a663bfe717f8b
+    control_state: 0d759120761d7b783165b1e52cc662fa4f2796bb8bf31b23822cbad8022e34cf
+    control_lease: ab4bdfda9ca4b720b9081a65079d3b9cfc658b5552cd83322d87cfea7e501aed
+    task_registry: b1cce35d63e391210b9fdc5274d75e3bb4345ba2523789d6204ab64c1a03c050
+    ready_queue: 832a740eef9b68d30a4052fa454255e2c4fd86a6f3bd25717c15f76e299e09ca
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -839,6 +843,9 @@ verification:
   - P11 correction claim 2fa5c8da sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, and zero effects: passed
   - P11 renewal_requested e807e26e sole-parent ancestry, exact six bounded correction plus three runtime path scope, preserved partial work, pre-expiry checkpoint, clean remote state, and zero effects: passed
   - canonical P11 renewal ready-entry digest 727c1f24 against exact acquisition daa4555b, checkpoint e807e26e, fresh claim d6567fe9, one ADMIN_OPERATIONS_UI lease, and zero effect locks: passed
+  - P11 renewal claim b8c76439 sole-parent ancestry, exact three-runtime-file scope, preserved partial-work tree, fresh authorization/acquisition/claim/lease/ready bindings, clean remote state, and zero effects: passed
+  - P23 corrected final 87da1f24 exact ancestry/scope/digests, 18 focused tests, typecheck, route and keyboard probes: rejected for schedule-vs-calendar, arbitrary Student-route acceptance, inaccessible inactive tabs, and false dependency-task-head ancestry evidence
+  - canonical P23 residual correction ready-entry digest 976b5c80 against exact acquisition 6b3bb061, rejected head 87da1f24, fresh claim f7e3fb0e, one STUDENT_NOTIFICATIONS lease, and zero effect locks: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
