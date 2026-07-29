@@ -1156,3 +1156,12 @@ claim is `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4`, and lease is
 `f7b63d5e-489c-40aa-a793-9a7210f91bca` through
 `2026-07-29T09:37:54Z`. No residual product/evidence correction is authorized
 until C00 reconciles that runtime-only claim; effects remain zero.
+
+P23 residual correction claim
+`433cc88b34d99099ca75f64876713406c6e43053` is now independently
+reconciled as the exact three-runtime-file child of rejected final `87da1f24`.
+P23 may correct only the canonical calendar/strict route allowlist, complete
+Arrow/Home/End tab keyboard focus, and truthful dependency ancestry evidence;
+add direct tests, refresh exact digests, release lease `f7b63d5e`, publish a
+superseding final, and stop for re-audit. No request application, provider, send,
+or external effect is authorized.

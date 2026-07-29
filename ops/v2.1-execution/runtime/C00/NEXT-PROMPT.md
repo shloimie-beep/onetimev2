@@ -864,6 +864,17 @@ integration heads, add direct tests, refresh digests, publish a superseding
 final, release the lease, and stop. Apply no request/migration/registration and
 perform no provider/send/external effect.
 
+P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
+reconciled. Resume it under unchanged claim
+`f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease
+`f7b63d5e-489c-40aa-a793-9a7210f91bca`. Change only the canonical route
+allowlist/calendar actions, full tab keyboard/focus behavior, direct tests, and
+truthful dependency ancestry evidence within P23-owned/runtime paths. Preserve
+all already-passing notification fixes. Re-run focused tests/typecheck,
+lint/format/scope/digests, publish a superseding final, release the lease, and
+stop with effects `0/0/0`. Apply no migration/registration/steward request and
+perform no provider/send action.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
