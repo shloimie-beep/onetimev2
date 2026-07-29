@@ -36,8 +36,8 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: claimed
-phase: implementation
+status: ready_for_review
+phase: complete
 claimed_by: codex-p08-worker-798ccc6e
 claim_time: '2026-07-29T00:49:22Z'
 claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
@@ -45,15 +45,17 @@ writer_slot: FAMILY_SIGNUP
 writer_slot_lease_id: 9df7ac46-a1d0-41c0-8fc9-90549d16fdf3
 lease_issued_at: '2026-07-29T00:38:10Z'
 lease_expires_at: '2026-07-29T01:38:10Z'
-last_heartbeat_at: '2026-07-29T00:49:22Z'
-lease_released_at: null
-controller_authorization_sha: eb3b0e1deecbffe05177a07df0d8e52d648d109c
+last_heartbeat_at: '2026-07-29T01:07:03Z'
+lease_released_at: '2026-07-29T01:07:03Z'
+claim_authorization_sha: eb3b0e1deecbffe05177a07df0d8e52d648d109c
+controller_authorization_sha: d8639ce20ce92a0f49ce8d69b57b09b355d09246
+reconciliation_acquisition_parent_sha: 629577e2ea6da2fdeca7754a6f314b6b254e952e
 ready_entry_state_based_on_control_head_sha: de271a6cab5fc74e8c77b5defc302094fe9a22fc
 ready_entry_payload_digest: d52ad4ce1ce07b895fd4680c469faa631bfc15f9010d19abcd961bf7c1bc213b
 claim_mode: create_new_branch
 expected_existing_head_sha: null
-state_based_on_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-last_implementation_commit_sha: null
+state_based_on_head_sha: 7e20798c1161da0594cea363d1047335c9ae4fbe
+last_implementation_commit_sha: 7e20798c1161da0594cea363d1047335c9ae4fbe
 interface_checkpoint:
   required: true
   unlocks:
@@ -68,47 +70,77 @@ completed_steps:
   - Seeded this atomic claim checkpoint in the three P08 runtime files only.
   - Published the stable family-signup contract at 0c386529ea7e9487a457e51cc5be9500a6c29b52.
   - Corrected the interface metadata to the independently reproduced repository-canonical digest f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c without changing the export artifact.
-remaining_steps:
-  - Notify C00/I36 of the exact pushed interface checkpoint so P09 can be queued after integration.
-  - Implement the domain, server, and client Family signup behavior and complete task-owned verification.
-next_action: Push the exact interface checkpoint, report its head and digest, then continue the authorized P08 implementation.
+  - Implemented exact Family/School public classification and rejected missing, unsupported, array, and hybrid payloads before any write.
+  - Implemented fixed-expiry Family form copy and server policy at 2026-09-13T16:24:00.000Z with immediate cardless free access only before the boundary.
+  - Implemented normalized adult dedupe, existing-account generic sign-in/reset handling, and existing GHL link/email matching with ambiguity quarantine.
+  - Implemented stable-idempotency interrupted recovery without duplicate adult, account, household, credential, outbox, or provider effect.
+  - Implemented one local transaction boundary for identity, credential, household, access, request, and durable GHL outbox persistence.
+  - Published structured migration and registration requests without editing migrations, routes, barrels, composers, or shared registries.
+  - Passed 13 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, and git diff checks.
+  - Re-ran the full unit suite with 566 of 567 passing; the sole failure is the inherited sender-registry count assertion outside P08 ownership.
+  - Released the FAMILY_SIGNUP lease with zero external effects.
+remaining_steps: []
+next_action: C00/I36 should verify the exact pushed final head, integrate the corrected interface checkpoint for P09, and route the two steward requests before P08 integration.
 requirements:
-  OTV2-SIGNUP-176: pending
-  OTV2-SIGNUP-177: pending
-  OTV2-SIGNUP-179: pending
-  OTV2-SIGNUP-213: pending
-  OTV2-SIGNUP-228: pending
+  OTV2-SIGNUP-176: implementation_verified
+  OTV2-SIGNUP-177: implementation_verified
+  OTV2-SIGNUP-179: implementation_verified
+  OTV2-SIGNUP-213: implementation_verified
+  OTV2-SIGNUP-228: implementation_verified
 acceptance_cases:
-  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: pending
-  OTV2-SIGNUP-177-AC01: pending
-  OTV2-SIGNUP-179-AC01: pending
-  OTV2-SIGNUP-213-AC01: pending
-  OTV2-SIGNUP-228-BEFORE-EXPIRY: pending
-  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: pending
+  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed
+  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed
+  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/public/signup/model.test.ts
+  - apps/web/src/client/public/signup/model.ts
+  - apps/web/src/server/features/signup/family/service.test.ts
+  - apps/web/src/server/features/signup/family/service.ts
   - packages/contracts/src/signup/family/index.ts
   - packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - packages/domain/src/signup/family/index.ts
+  - packages/domain/src/signup/family/policy.test.ts
+  - packages/domain/src/signup/family/policy.ts
   - ops/v2.1-execution/runtime/P08/INTERFACE-CHECKPOINT.yaml
   - ops/v2.1-execution/runtime/P08/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P08/HANDOFF.md
   - ops/v2.1-execution/runtime/P08/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P08/steward-requests/P08-migration-001.yaml
+  - ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-001.yaml
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: P08-migration-001
+    sha256: 5691d8d054c4e36724f6f12b0a5d62d1d5d6691b0b405824d81484d71b8df1c3
+  - request_id: P08-registration-001
+    sha256: 8db3dbbd36b0de487659877b6e4e256721e2029221f9c5eb35ff9037541939e0
 verification:
   commands_run:
-    - command: fetch corrected control and inspect commit topology
-      result: passed; eb3b0e1d has sole parent de271a6c
-    - command: verify P08 ready entry and canonical payload digest
-      result: passed; d52ad4ce1ce07b895fd4680c469faa631bfc15f9010d19abcd961bf7c1bc213b
-    - command: verify exact authorized start and new branch topology
-      result: passed; branch begins at 49431959f58f284bdc13ca931acf09f980fc483a
-    - command: verify task/context/package/dependency/claim/lease/effect-lock bindings
+    - command: focused P08 Vitest over contract, domain, server, and client
+      result: passed; 4 files and 13 assertions
+    - command: targeted ESLint over all P08 TypeScript artifacts
       result: passed
-  known_baseline_failures: []
+    - command: npm run typecheck
+      result: passed
+    - command: focused Prettier over all P08 implementation and steward-request files
+      result: passed
+    - command: npm run secret:scan
+      result: passed; 2720 repository text files scanned
+    - command: canonical interface digest recomputation
+      result: passed; f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c
+    - command: npm run unit
+      result: 566 passed, 1 inherited out-of-scope registry-count assertion failed
+    - command: git diff --check
+      result: passed
+  known_baseline_failures:
+    - tests/unit/highlevel/sender-registry-v1-1.test.ts expects 19 automation assets but the integrated registry contains 22.
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - P08 does not own the sender-registry test or integrated registry count; its full-suite failure remains for the registry steward.
