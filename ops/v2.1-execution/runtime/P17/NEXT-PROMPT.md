@@ -3,7 +3,8 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task P17 from its remote atomic-claim checkpoint.
+Review One Time v2.1 task P17 from its exact remote ready-for-review
+checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p17-zoom-preparation
@@ -12,19 +13,25 @@ Task packet: ops/v2.1-execution/tasks/P17.yaml
 Task context: ops/v2.1-execution/contexts/P17-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P17/HANDOFF.md
+Acceptance matrix: ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+Steward requests: ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
 
-Fetch remote refs and resume the exact branch head. The first-run atomic claim
-uses containing control `c242c76e889c1e70330911217b7bb34a04dbf26b`,
-ready-entry parent `7145e4d43f18238c086805f57c0b1af8c97c2dd4`, authorized
-start `49431959f58f284bdc13ca931acf09f980fc483a`, claim
-`863e3375-64af-4763-8efd-80d424da2ed9`, ready digest
-`7c6eda01af12a1cc7ea9b9df71588580ce1e289dcdcf74efb33db07afebb69b0`,
-and ZOOM_PREPARATION lease `2718de31-a532-45fe-819a-be67a2112cfc`. The
-lease was issued at `2026-07-28T23:29:13Z` and expires at
-`2026-07-29T00:29:13Z`; no effect lock or external authority exists.
+Fetch remote refs and resume the exact branch head. The immutable atomic claim
+is `25614df1bb41f655ec1458f893a5a044c8729b31`, the implementation head is
+`fda8317ee46da875b486b7e27f5f59fcdcbd890e`, and C00's continuation
+authorization is `53a429970083fb780afa64adaa7a32d3e39f6602`. The canonical
+13-file implementation digest is
+`65b034b1f4328e313cd66d7b1760e7d8df5d11eb02098677cecb6dcc35b037ca`.
 
-Do not implement until C00 reconciles the claim and explicitly authorizes
-continuation. After that authorization, follow `TASK-STATE.yaml:next_action`,
-inspect only the named F05/F06/P16 export artifacts and P17-owned paths, and
-perform no live Zoom mutation without a separate explicit provider effect lock
-and authority record.
+Independently recompute the implementation and named artifact digests, verify
+the ten requirement/acceptance rows and exact F05/F06/P16 bindings, inspect the
+four canonical steward requests, and confirm the final branch was published by
+normal non-force ancestry. The ZOOM_PREPARATION lease
+`2718de31-a532-45fe-819a-be67a2112cfc` was released in task-local metadata at
+`2026-07-28T23:58:47Z`.
+
+No external-effect authority exists. Do not call Zoom, access credentials,
+create meetings/registrants, deliver reminders, issue live bootstrap material,
+deploy, or run provider canaries. F02, I36, and P28 must disposition the exact
+structured requests in their shared owner paths before any separately
+authorized provider verification.

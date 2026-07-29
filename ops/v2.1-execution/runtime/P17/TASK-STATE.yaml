@@ -38,65 +38,105 @@ dependency_heads:
     interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
     task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
     task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
-status: claimed
-phase: contract
+status: ready_for_review
+phase: review
 claimed_by: codex-p17-worker-863e3375
 claim_time: '2026-07-28T23:35:40Z'
 claim_id: 863e3375-64af-4763-8efd-80d424da2ed9
+claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
 writer_slot_leases:
   - slot: ZOOM_PREPARATION
     lease_id: 2718de31-a532-45fe-819a-be67a2112cfc
     lease_issued_at: '2026-07-28T23:29:13Z'
     lease_expires_at: '2026-07-29T00:29:13Z'
+    released_at: '2026-07-28T23:58:47Z'
 lease_expires_at: '2026-07-29T00:29:13Z'
-last_heartbeat_at: '2026-07-28T23:35:40Z'
+lease_released_at: '2026-07-28T23:58:47Z'
+last_heartbeat_at: '2026-07-28T23:58:47Z'
 controller_authorization_sha: c242c76e889c1e70330911217b7bb34a04dbf26b
+continuation_authorization_sha: 53a429970083fb780afa64adaa7a32d3e39f6602
 ready_entry_state_based_on_control_head_sha: 7145e4d43f18238c086805f57c0b1af8c97c2dd4
 ready_entry_payload_digest: 7c6eda01af12a1cc7ea9b9df71588580ce1e289dcdcf74efb33db07afebb69b0
-state_based_on_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-last_implementation_commit_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+state_based_on_head_sha: fda8317ee46da875b486b7e27f5f59fcdcbd890e
+last_implementation_commit_sha: fda8317ee46da875b486b7e27f5f59fcdcbd890e
+implementation_artifact_digest: 65b034b1f4328e313cd66d7b1760e7d8df5d11eb02098677cecb6dcc35b037ca
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 13 non-runtime P17 artifacts, with LF separators and no final newline.
+contract_artifact_digest: 1408feedc82fd0009d996d2699a04289093db191196f4c4a2ae659e3a32d8ae9
+schema_contract_artifact_digest: 908048ef2f7ad13277a00f63f452390480bdc9b065163fda3381f17bd645ed3e
+steward_request_digest: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
+acceptance_matrix_digest: 01ef787bb90e502ec53823d475f66d5401f5ceb224325bc0c45f6fc0839febff
 completed_steps:
-  - Fetched origin and verified exact containing control c242c76e889c1e70330911217b7bb34a04dbf26b with sole parent 7145e4d43f18238c086805f57c0b1af8c97c2dd4.
-  - Parsed the exact P17 ready entry and recomputed canonical payload digest 7c6eda01af12a1cc7ea9b9df71588580ce1e289dcdcf74efb33db07afebb69b0.
-  - Verified create_new_branch mode, absent local/remote branch, exact authorized integration start, F05/F06/P16 dependency bindings, claim, active ZOOM_PREPARATION lease, and zero effect locks.
-  - Created the isolated P17 branch from exact authorized start 49431959f58f284bdc13ca931acf09f980fc483a and seeded only the three task-local runtime claim files.
+  - Verified and published the exact atomic claim checkpoint from the authorized integration start, then resumed only after C00 reconciled it at continuation control 53a429970083fb780afa64adaa7a32d3e39f6602.
+  - Inspected only the named F05 job, F06 provider-core, and P16 classroom-core interfaces and preserved their exact integrated bindings.
+  - Implemented the versioned Zoom preparation contract, exact locked meeting settings, roster snapshot and preview confirmation, stable provider-operation planning, canonical readback validation, and acceptance-unknown quarantine.
+  - Implemented one meeting per occurrence, one registrant per included Student, protected authenticated launch state, 60-second single-use grants, 30-second heartbeats, 90-second device leases, same-lineage reconnect, second-device denial, and disposable-canary isolation.
+  - Implemented transactional task-local persistence, a seven-table migration contract, web orchestration, worker reconciliation, safe household reminder intents, and four canonical structured steward requests.
+  - Passed full workspace typecheck, 16 focused assertions, focused lint, focused formatting, diff hygiene, and a repository-wide secret scan.
+  - Published the immutable implementation checkpoint fda8317ee46da875b486b7e27f5f59fcdcbd890e by normal non-force update and released the ZOOM_PREPARATION task-local lease in terminal metadata.
 remaining_steps:
-  - Push and report this exact three-file atomic claim checkpoint, then stop for C00 reconciliation.
-  - After explicit continuation, inspect only named dependency artifacts and P17-owned paths before implementing Zoom preparation.
-  - Implement and verify the ten assigned requirements and acceptance cases without unauthorized external effects, then finish ready_for_review.
-next_action: Push this three-file atomic claim from sole parent 49431959f58f284bdc13ca931acf09f980fc483a, report the pushed claim head for C00 reconciliation, and stop without implementing product code.
+  - I36 must review and register the P17 server/worker seam and disposition the Zoom configuration/dependency request.
+  - F02 must allocate and apply the P17 migration from the exact schema contract.
+  - P28 must disposition the safe Parent reminder-routing request.
+  - Provider sandbox or production canaries remain prohibited until separate explicit Zoom effect authority and effect locks exist.
+next_action: C00/I36 should review implementation head fda8317ee46da875b486b7e27f5f59fcdcbd890e and canonical digest 65b034b1f4328e313cd66d7b1760e7d8df5d11eb02098677cecb6dcc35b037ca, then disposition the four structured steward requests without performing provider effects.
 requirements:
-  OTV2-CLASSROOM-068: pending
-  OTV2-CLASSROOM-069: pending
-  OTV2-CLASSROOM-070: pending
-  OTV2-CLASSROOM-071: pending
-  OTV2-CLASSROOM-072: pending
-  OTV2-CLASSROOM-074: pending
-  OTV2-CLASSROOM-076: pending
-  OTV2-CLASSROOM-077: pending
-  OTV2-CLASSROOM-079: pending
-  OTV2-CLASSROOM-188: pending
+  OTV2-CLASSROOM-068: implementation_ready
+  OTV2-CLASSROOM-069: implementation_ready
+  OTV2-CLASSROOM-070: implementation_ready
+  OTV2-CLASSROOM-071: implementation_ready
+  OTV2-CLASSROOM-072: implementation_ready
+  OTV2-CLASSROOM-074: implementation_ready
+  OTV2-CLASSROOM-076: implementation_ready
+  OTV2-CLASSROOM-077: implementation_ready
+  OTV2-CLASSROOM-079: implementation_ready
+  OTV2-CLASSROOM-188: implementation_ready
 acceptance_cases:
-  OTV2-CLASSROOM-068-AC01: pending
-  OTV2-CLASSROOM-069-AC01: pending
-  OTV2-CLASSROOM-070-AC01: pending
-  OTV2-CLASSROOM-071-AC01: pending
-  OTV2-CLASSROOM-072-AC01: pending
-  OTV2-CLASSROOM-074-AC01: pending
-  OTV2-CLASSROOM-076-AC01: pending
-  OTV2-CLASSROOM-077-AC01: pending
-  OTV2-CLASSROOM-079-AC01: pending
-  OTV2-CLASSROOM-188-AC01: pending
+  OTV2-CLASSROOM-068-AC01: implementation_ready
+  OTV2-CLASSROOM-069-AC01: implementation_ready
+  OTV2-CLASSROOM-070-AC01: implementation_ready
+  OTV2-CLASSROOM-071-AC01: implementation_ready
+  OTV2-CLASSROOM-072-AC01: implementation_ready
+  OTV2-CLASSROOM-074-AC01: implementation_ready
+  OTV2-CLASSROOM-076-AC01: implementation_ready
+  OTV2-CLASSROOM-077-AC01: implementation_ready
+  OTV2-CLASSROOM-079-AC01: implementation_ready
+  OTV2-CLASSROOM-188-AC01: implementation_ready
 changed_paths:
-  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - apps/web/src/server/features/classroom/zoom-preparation/index.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.ts
+  - apps/worker/src/runners/zoom-preparation/index.ts
+  - apps/worker/src/runners/zoom-preparation/runner.test.ts
+  - apps/worker/src/runners/zoom-preparation/runner.ts
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
   - ops/v2.1-execution/runtime/P17/HANDOFF.md
   - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - packages/contracts/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/repository.test.ts
+  - packages/db/src/classroom/zoom-preparation/repository.ts
+  - packages/db/src/classroom/zoom-preparation/schema-contract.ts
+  - packages/domain/src/classroom/zoom-preparation/index.ts
+  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - P17-MIGRATION-001
+  - P17-SERVER-WORKER-REGISTRATION-001
+  - P17-ZOOM-CONFIG-DEPENDENCY-001
+  - P17-REMINDER-ROUTING-001
 verification:
   commands_run:
-    - exact remote control, ready entry, canonical digest, registry, branch absence, start, dependencies, claim, writer lease, and zero effect-lock verification (passed)
-    - exact three-file atomic claim path and sole-parent verification (pending commit)
+    - Exact remote continuation control, claim checkpoint, branch head, dependency ancestry, claim, lease, and zero effect-lock verification (passed).
+    - npm run typecheck (passed).
+    - Focused Vitest over the domain acceptance, database, server service, and worker runner suites (passed, 16 tests across four files).
+    - Focused ESLint over all P17 TypeScript artifacts (passed).
+    - Focused Prettier check over all P17 artifacts (passed).
+    - npm run secret:scan (passed, 2723 repository text files).
+    - git diff --check (passed).
+    - Exact 13-artifact implementation Git-blob digest and four named artifact digest recomputation (passed).
+    - Normal non-force remote update of the immutable implementation checkpoint (passed).
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -104,4 +144,6 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Shared migrations, root barrels, central server/worker registration, manifests, lockfiles, provider configuration/secrets, and communication composition are captured in STEWARD-REQUESTS.yaml and were not edited by P17.
+  - No live Zoom/provider request, credential access, account mutation, registrant creation, reminder delivery, bootstrap issuance, deployment, or canary was performed.
