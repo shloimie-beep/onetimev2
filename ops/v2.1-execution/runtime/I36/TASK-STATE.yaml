@@ -25,18 +25,19 @@ dependency_heads:
   P25: 0979e151f80900cea75edecabe8967ce382d168d
   P26: 5e33807200a24ec53be889234dbaafdda9717dcb
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
-status: claimed
-phase: integration
+  P11: 15660c1115d9d8066651573100acd8acaaac574e
+status: ready
+phase: release
 claimed_by: codex-i36-worker-5be2d721
 claim_time: '2026-07-29T11:27:09Z'
 claim_id: 5be2d721-aff2-494a-bb22-ad324334b376
 lease_id: 33a465ad-1fa2-4600-9259-044f6bc767a2
 lease_issued_at: '2026-07-29T11:27:09Z'
 lease_expires_at: '2026-07-29T12:42:09Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T11:27:09Z'
-controller_authorization_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
-reconciled_state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+lease_released_at: '2026-07-29T11:45:40Z'
+last_heartbeat_at: '2026-07-29T11:45:40Z'
+controller_authorization_sha: 5fffad0a8fed3c7901233d0ca84a1251491924c9
+reconciled_state_based_on_control_head_sha: 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681
 ready_entry_state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
 ready_entry_payload_digest: a5b4fec66b1f2bcd67e278ba8b7d58d710d4d87bf1072706902e379001e20eb7
 claim_mode: resume_existing
@@ -45,20 +46,20 @@ lease_phase_scope: P11_full_integration_atomic_claim_only
 queued_merge_ids:
   P11: c5fe9e7d-f54a-46e6-8754-a90f433c991e
 queued_merge_item_payload_digests:
-  P11: 3b77561b59bf5b8aeb849b8be533d91898e0d3bf5a3c5d5e272a792b8144a862
+  P11: 02c2f9db6892d5c3df3f315ec5583287ba71c5a5f492ba42755f627abb61f964
 queued_source_heads:
   P11: 15660c1115d9d8066651573100acd8acaaac574e
-queued_expected_target_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+queued_expected_target_head_sha: ce3bf023ce2f9cfab4413ac3af711885caeb95ad
 prior_merge_result_head_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
 prior_release_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
-merge_authorization_state_based_on_control_head_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
+merge_authorization_state_based_on_control_head_sha: 5fffad0a8fed3c7901233d0ca84a1251491924c9
 lease_origin_state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
 source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-merge_result_head_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
-merge_parent_target_head_sha: f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e
-merge_parent_source_head_sha: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
-state_based_on_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
-last_implementation_commit_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
+merge_result_head_sha: 00b027578fad21177d99204c59b4f90136070d80
+merge_parent_target_head_sha: ce3bf023ce2f9cfab4413ac3af711885caeb95ad
+merge_parent_source_head_sha: 15660c1115d9d8066651573100acd8acaaac574e
+state_based_on_head_sha: 00b027578fad21177d99204c59b4f90136070d80
+last_implementation_commit_sha: 00b027578fad21177d99204c59b4f90136070d80
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -420,12 +421,34 @@ completed_steps:
     P11 was not fetched or merged, its structured request was not applied, and
     no product, test, request, steward, provider, send, or effect action was
     performed.
+  - Verified C00 reconciliation at exact control
+    5fffad0a8fed3c7901233d0ca84a1251491924c9 with sole state-based
+    parent 0cd3c1e0dd424fb8bcb72717ca57c90c030a3681, exact target
+    ce3bf023ce2f9cfab4413ac3af711885caeb95ad, unchanged claim and lease,
+    and canonical rebound P11 item digest
+    02c2f9db6892d5c3df3f315ec5583287ba71c5a5f492ba42755f627abb61f964.
+  - Verified exact P11 source 15660c1115d9d8066651573100acd8acaaac574e,
+    required source and merge base
+    cecc1c0dc6ff57562e5d89dd731289d860086bf7, exact eighteen-path
+    allowlist, preserved source ancestry requirement, and 0/0/0 effects.
+  - Merged exact P11 source 15660c1115d9d8066651573100acd8acaaac574e
+    with source ancestry preserved at two-parent merge
+    00b027578fad21177d99204c59b4f90136070d80.
+  - Passed all four focused P11 domain/server/dashboard/search files with 21
+    tests, workspace typecheck, focused ESLint, CRLF-aware Prettier, exact
+    first-parent scope and diff hygiene, and the repository secret scan across
+    2895 text files.
+  - Left P11-registration-001 assigned but unapplied and performed no steward,
+    provider, registration, send, or external effect.
+  - Released claim 5be2d721-aff2-494a-bb22-ad324334b376 and
+    RELEASE_INTEGRATOR lease 33a465ad-1fa2-4600-9259-044f6bc767a2 at
+    2026-07-29T11:45:40Z, before expiry, with effects remaining 0/0/0.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 atomic integration claim.
-  - Report the exact pushed claim head and parent to C00, then stop.
-  - Merge P11 only after C00 reconciles the exact pushed claim head and issues
-    subsequent explicit authorization.
-next_action: C00 must reconcile the exact pushed I36 P11 atomic integration claim head before I36 fetches or merges P11 or applies P11-registration-001.
+  - Commit and normally push this exact three-file I36 metadata-only release checkpoint.
+  - Report exact P11 merge and release heads to C00, then stop.
+  - Retain P11-registration-001 for a later explicitly authorized shared
+    registration checkpoint; do not apply it in this release.
+next_action: C00 should reconcile exact P11 merge 00b027578fad21177d99204c59b4f90136070d80 and the exact pushed I36 metadata-only release head, then stop.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -769,6 +792,24 @@ changed_paths:
   - scripts/operations/v21/health/evaluate-health.ts
   - scripts/operations/v21/monitoring/scan-operational-payloads.ts
   - scripts/operations/v21/runtime/inspect-runtime-identity.ts
+  - apps/web/src/client/app/admin/adminPrivateCompletion.ts
+  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
+  - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.tsx
+  - apps/web/src/client/app/admin/dashboard/index.ts
+  - apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx
+  - apps/web/src/client/app/admin/search/AdminGlobalSearch.tsx
+  - apps/web/src/client/app/admin/search/index.ts
+  - apps/web/src/server/features/admin/operations/index.ts
+  - apps/web/src/server/features/admin/operations/repository.ts
+  - apps/web/src/server/features/admin/operations/service.test.ts
+  - apps/web/src/server/features/admin/operations/service.ts
+  - ops/v2.1-execution/runtime/P11/HANDOFF.md
+  - ops/v2.1-execution/runtime/P11/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P11/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P11/steward-requests/P11-registration-001.yaml
+  - packages/contracts/src/admin/operations/index.ts
+  - packages/domain/src/admin-search/admin-search.test.ts
+  - packages/domain/src/admin-search/index.ts
 migrations:
   - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -1172,6 +1213,20 @@ verification:
       result: passed after P23 full merge
     - command: P23 post-merge ancestry, parent, scope, steward, migration, registration, provider, and effect checks
       result: passed; source is an ancestor, exact two-parent merge, no steward or central mutation action, no provider/send action, and 0/0/0 effects
+    - command: fetched reconciled control/integration and canonical rebound P11 merge-item verification
+      result: passed; exact control 5fffad0a, acquisition 0cd3c1e0, target ce3bf023, live claim/lease, item c5fe9e7d, and canonical digest 02c2f9db
+    - command: P11 source merge-base, eighteen-path allowlist, and zero-effect verification
+      result: passed; exact source 15660c11, base cecc1c0d, exact queued source scope, and 0/0/0 effects
+    - command: git merge --no-ff 15660c1115d9d8066651573100acd8acaaac574e
+      result: passed; exact parents ce3bf023ce2f9cfab4413ac3af711885caeb95ad and 15660c1115d9d8066651573100acd8acaaac574e at merge commit 00b027578fad21177d99204c59b4f90136070d80
+    - command: npx vitest run packages/domain/src/admin-search/admin-search.test.ts apps/web/src/server/features/admin/operations/service.test.ts apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx apps/web/src/client/app/admin/search/AdminGlobalSearch.test.tsx
+      result: passed; 4 files and 21 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed after P11 full merge
+    - command: focused P11 ESLint, CRLF-aware Prettier, diff hygiene, and repository secret scan
+      result: passed; exact eighteen source paths formatted, clean first-parent diff, and 2895 text files scanned
+    - command: P11 post-merge ancestry, parent, scope, registration, provider, and effect checks
+      result: passed; source is an ancestor, exact two-parent merge and eighteen-path delta, P11-registration-001 unapplied, no provider/send action, and 0/0/0 effects
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.

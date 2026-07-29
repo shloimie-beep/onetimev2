@@ -1,47 +1,55 @@
-# I36 P11 Full-Integration Atomic Claim
+# I36 P11 Full-Integration Release
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Exact existing target: `088b40476bd5ceeb0af901b6f78a4cb8c556671b`
-- Containing authorization: `3fd19332799a28a7efd7cde00712ba8ca091bf14`
-- Sole state-based acquisition parent:
-  `e6a6729bc109816124ef2e7beef5e42aa398b147`
-- READY I36 digest:
-  `a5b4fec66b1f2bcd67e278ba8b7d58d710d4d87bf1072706902e379001e20eb7`
-- P11 merge item: `c5fe9e7d-f54a-46e6-8754-a90f433c991e`
+- Reconciled claim target:
+  `ce3bf023ce2f9cfab4413ac3af711885caeb95ad`
+- Containing merge authorization:
+  `5fffad0a8fed3c7901233d0ca84a1251491924c9`
+- State-based authorization parent:
+  `0cd3c1e0dd424fb8bcb72717ca57c90c030a3681`
 - P11 source: `15660c1115d9d8066651573100acd8acaaac574e`
-- P11 merge digest:
-  `3b77561b59bf5b8aeb849b8be533d91898e0d3bf5a3c5d5e272a792b8144a862`
+- P11 merge head: `00b027578fad21177d99204c59b4f90136070d80`
+- P11 rebound merge digest:
+  `02c2f9db6892d5c3df3f315ec5583287ba71c5a5f492ba42755f627abb61f964`
 - Claim: `5be2d721-aff2-494a-bb22-ad324334b376`
 - RELEASE_INTEGRATOR lease: `33a465ad-1fa2-4600-9259-044f6bc767a2`
-- Lease window: `2026-07-29T11:27:09Z` through
-  `2026-07-29T12:42:09Z`
-- Phase scope: `P11_full_integration_atomic_claim_only`
-- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
-  pushed remote head.
+- Lease released: `2026-07-29T11:45:40Z`, before its
+  `2026-07-29T12:42:09Z` expiry.
+- Final metadata release head: derive with `git rev-parse HEAD`; C00 records the
+  observed pushed remote head.
 
-## Authority verification
+## Merge record
 
-The fetched integration and control refs exactly matched the authorized target
-and containing control commit. The control commit has the exact sole
-state-based acquisition parent. The committed READY entry and queued P11 item
-bind the exact claim, lease, target, source identity, phase scope, and payload
-digests above. The remote P11 branch advertises the exact queued source head.
+P11 was ancestry-merged with exact first parent
+`ce3bf023ce2f9cfab4413ac3af711885caeb95ad` and exact second parent
+`15660c1115d9d8066651573100acd8acaaac574e` at
+`00b027578fad21177d99204c59b4f90136070d80`. The source and required merge
+base were both `cecc1c0dc6ff57562e5d89dd731289d860086bf7`. The first-parent
+delta is exactly the 18 authorized queue paths, and the exact P11 source is an
+ancestor of the merge result.
 
-## Preserved state
+## Verification
 
-This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md` in the I36 runtime directory. P11 was not fetched or merged.
-No product, test, structured request, steward, registration, provider, send, or
-external-effect action was performed. `P11-registration-001` remains
-unapplied.
+- Exact P11 focused suite: 4 files and 21 tests passed.
+- Workspace TypeScript typecheck passed.
+- Focused ESLint, CRLF-aware Prettier, and diff hygiene passed.
+- Repository secret scan passed across 2895 text files.
+- Merge parents, source ancestry, required base, canonical rebound queue
+  digest, and exact 18-path scope passed.
+- This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+  `NEXT-PROMPT.md`.
+
+`P11-registration-001` was admitted only as an immutable source artifact. It
+remains assigned to a later shared registration checkpoint and was not
+applied. No steward, registration, provider, send, or external effect was
+performed.
 
 ## Next action
 
-C00 must reconcile the exact pushed atomic claim head. I36 must stop after
-reporting that checkpoint; P11 integration requires a subsequent explicit
-resume.
+C00 should reconcile the exact pushed metadata release head and P11 merge head
+above. I36 must stop after reporting this checkpoint.
 
 ## Effects
 
