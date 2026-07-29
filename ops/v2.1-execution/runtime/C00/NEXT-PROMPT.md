@@ -875,6 +875,34 @@ lint/format/scope/digests, publish a superseding final, release the lease, and
 stop with effects `0/0/0`. Apply no migration/registration/steward request and
 perform no provider/send action.
 
+P11 final `81486a86a85a3d6ffee64eb58c66119686af049e` must not be
+integrated. First resume it only for a three-runtime-file claim under claim
+`6efc5db3-43b4-4dad-ae3f-59031adddbd5`, ADMIN_OPERATIONS_UI lease
+`84e7a42a-d2a5-4c88-ba45-57b34ecc6de9`, ready parent
+`f8154c67106ab032873fd923efa9979465f11fff`, and ready digest
+`6f30eeea172d702e606c181329dc3b6e899a58ec0016ec2d6b84da7b0f5e9822`.
+Change exactly the three P11 runtime files, bind the fresh identities and
+rejected head, push normally, remote-verify, and stop for C00 reconciliation.
+Do not edit product code in that first push.
+
+Only after reconciliation may P11 correct the confirmed residuals inside its
+existing owned roots: persist and filter exact provider runtime-tier and
+verification-environment provenance instead of relabeling coarse environment
+rows; clear the private query text together with every result/cursor/recent
+value on sign-out, role revocation, credential-version change, and bfcache
+restore; and expose one unique combobox-owned listbox identity or unique
+grouped identities with valid ARIA relationships. Add direct provider-sandbox
+versus persistent-staging, query-clearing, and duplicate-id/ARIA tests. Preserve
+all already-passing P11 corrections, exact privacy and authorization checks,
+no-store behavior, canonical destinations, and zero effects. Re-run focused
+tests, typecheck, lint/format/scope/digests, release the lease, publish a
+superseding final, and stop for independent re-audit. Do not apply the
+registration request or perform provider/external actions.
+
+P23 final `24ec3a4effc622f384915d892cbaad046e1ea5d1` remains read-only
+pending its independent exact-source semantic verdict. Do not queue or
+integrate it before PASS.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,

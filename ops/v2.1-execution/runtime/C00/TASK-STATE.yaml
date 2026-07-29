@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-0834afae
-claim_time: '2026-07-29T08:45:08Z'
-claim_id: 0834afae-99f3-4a14-8715-c042bd0a818f
-lease_expires_at: '2026-07-29T09:00:08Z'
-last_heartbeat_at: '2026-07-29T08:46:25Z'
-controller_authorization_sha: 4ca740bd8c2bbfcae7755038d88bdc616dd3444a
+claimed_by: codex-c00-orchestrator-80360914
+claim_time: '2026-07-29T09:09:26Z'
+claim_id: 80360914-ff61-4f6f-80f2-239dda0f183e
+lease_expires_at: '2026-07-29T09:24:26Z'
+last_heartbeat_at: '2026-07-29T09:13:54Z'
+controller_authorization_sha: f8154c67106ab032873fd923efa9979465f11fff
 ready_entry_payload_digest: null
-state_based_on_head_sha: 4ca740bd8c2bbfcae7755038d88bdc616dd3444a
+state_based_on_head_sha: f8154c67106ab032873fd923efa9979465f11fff
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -271,12 +271,13 @@ completed_steps:
 - rejected P23 superseding final 87da1f24 after exact-source re-audit confirmed nonexistent schedule routes, fail-open arbitrary Student routes, unreachable inactive keyboard tabs, and false dependency-task-head ancestry claims
 - authorized only a fresh three-runtime-file P23 residual route/accessibility/evidence correction claim from exact rejected final 87da1f24 under claim f7e3fb0e and STUDENT_NOTIFICATIONS lease f7b63d5e
 - independently reconciled P23 residual correction claim 433cc88b as an exact three-runtime-file child of rejected final 87da1f24 with zero effects
+- rejected P11 superseding final 81486a86 after exact-source re-audit confirmed provider-readiness relabeling across verification environments, private query retention after authorization invalidation, and duplicate grouped-listbox identifiers
+- authorized only a fresh three-runtime-file P11 provider/privacy/accessibility correction claim from exact rejected final 81486a86 under claim 6efc5db3 and ADMIN_OPERATIONS_UI lease 84e7a42a
 remaining_steps:
-- receive and independently re-audit the bounded P23 semantic correction
-- receive and independently re-audit the bounded P11 semantic correction
-- receive and independently re-audit the bounded P23 route, accessibility, and evidence correction
+- reconcile the exact P11 provider/privacy/accessibility correction claim, then authorize and independently re-audit only that bounded correction
+- complete the read-only exact-source re-audit of P23 superseding final 24ec3a4e
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P11 and P23 may implement only their bounded corrections from reconciled claims b8c76439 and 433cc88b under disjoint leases, publish superseding ready_for_review finals with exact probes and effects 0/0/0, then stop for re-audit. No external effect is authorized.
+next_action: P11 may publish only its three-runtime-file correction claim from exact rejected final 81486a86 under ready digest 6f30eeea, claim 6efc5db3, and lease 84e7a42a, then stop for reconciliation. P23 remains under read-only audit. No product correction or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -284,12 +285,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 4ca740bd8c2bbfcae7755038d88bdc616dd3444a
+  current_control_parent_sha: f8154c67106ab032873fd923efa9979465f11fff
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 1caf5944-0352-43cc-8f0a-49006701b0c7
-      observed_head: 98cde826b118f2b8162e29a7761bf9d0f9fcf285
+      claim_id: 80360914-ff61-4f6f-80f2-239dda0f183e
+      observed_head: f8154c67106ab032873fd923efa9979465f11fff
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -468,11 +469,11 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_44fd5363
     P11:
       branch: codex/v21-p11-admin-operations
-      claim_id: 31da6bdb-f7ce-46f1-96a4-a6a78853d9eb
-      observed_head: c0fe1ec4fc16cc626e5b827f12e977851ede2bf1
+      claim_id: 6efc5db3-43b4-4dad-ae3f-59031adddbd5
+      observed_head: 81486a86a85a3d6ffee64eb58c66119686af049e
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      lease_expires_at: '2026-07-29T07:26:07Z'
-      scheduling_state: corrected_claim_reconciled_implementation_authorized
+      lease_expires_at: '2026-07-29T10:09:26Z'
+      scheduling_state: atomic_provider_privacy_accessibility_correction_claim_authorized
     P13:
       branch: codex/v21-p13-parent-summary
       claim_id: null
@@ -489,11 +490,11 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_44fd5363
     P23:
       branch: codex/v21-p23-student-notifications
-      claim_id: 68340416-7e06-4986-a125-59d81b500a0b
-      observed_head: 05ef606022d260d11d56d31985a051d7b9013010
+      claim_id: null
+      observed_head: 24ec3a4effc622f384915d892cbaad046e1ea5d1
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      lease_expires_at: '2026-07-29T07:26:07Z'
-      scheduling_state: atomic_claim_reconciled_implementation_authorized
+      lease_expires_at: null
+      scheduling_state: superseding_final_read_only_semantic_reaudit_in_progress
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: null
@@ -523,8 +524,7 @@ orchestration:
       lease_expires_at: null
       scheduling_state: ready_for_review_full_integrated_at_cecc1c0d
   active_native_subagents:
-  - f03_worker
-  - f05_worker
+  - i36_worker2
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -711,10 +711,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 875db1f44bde4762f6589b668952d1843172959a0087fbd1f688ba5a6dfc37b4
-    control_lease: b1098313098bb998321c0ac090ea1226f7429913fc7e19cd0285b0832128d359
-    task_registry: 4f76a7f41ae196d8638cc9f0f8e81d6e21b957ce375fe35d85383117de90f370
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 37c428f827f40235d743085df236ae2c4d4fee2d58875e9cbabaff33cc30c06b
+    control_lease: 1b061f3dfd0966f7451e593de23695cab79852f5d16d136ef5d1d3559f418e8b
+    task_registry: 3f31caadc2ef213f9b53f0a0e74647b9e1b4456e0f1804b9425fc6b3aa6096eb
+    ready_queue: 6bef8fecdd762e0326e4a810380a814fc3dcb184aec87a5bc5ec581a1dd9c34b
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -848,6 +848,9 @@ verification:
   - P23 corrected final 87da1f24 exact ancestry/scope/digests, 18 focused tests, typecheck, route and keyboard probes: rejected for schedule-vs-calendar, arbitrary Student-route acceptance, inaccessible inactive tabs, and false dependency-task-head ancestry evidence
   - canonical P23 residual correction ready-entry digest 976b5c80 against exact acquisition 6b3bb061, rejected head 87da1f24, fresh claim f7e3fb0e, one STUDENT_NOTIFICATIONS lease, and zero effect locks: passed
   - P23 residual correction claim 433cc88b sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, and zero effects: passed
+  - P11 superseding final 81486a86 exact ancestry, seventeen-path scope, artifact/request digests, 12 focused tests, typecheck, and prior blocker corrections: rejected for provider provenance relabeling, retained private query text after authorization invalidation, and duplicate grouped-listbox identifiers
+  - canonical P11 provider/privacy/accessibility correction ready-entry digest 6f30eeea against acquisition f8154c67, rejected head 81486a86, fresh claim 6efc5db3, sole ADMIN_OPERATIONS_UI lease 84e7a42a, and zero effect locks: passed
+  - P23 final 24ec3a4e exact 18-path scope, 13-artifact digest d6a527d0, two-request aggregate f984e5ee, 20 focused tests, typecheck, strict route/calendar correction, keyboard handling, truthful dependency ancestry, and zero effects: mechanical replay passed; independent semantic verdict pending
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

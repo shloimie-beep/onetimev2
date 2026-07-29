@@ -1165,3 +1165,28 @@ Arrow/Home/End tab keyboard focus, and truthful dependency ancestry evidence;
 add direct tests, refresh exact digests, release lease `f7b63d5e`, publish a
 superseding final, and stop for re-audit. No request application, provider, send,
 or external effect is authorized.
+
+P11 superseding final `81486a86a85a3d6ffee64eb58c66119686af049e`
+remains rejected from admission despite valid ancestry, exact seventeen-path
+scope, matching artifact/request digests, 12 focused tests, and workspace
+typecheck. Exact-source re-audit confirmed three residual blockers: persistent
+provider rows are filtered only by coarse environment and then stamped with the
+requested runtime tier and verification-environment identity; authorization
+invalidation clears results but retains the private query in the input; and
+grouped results repeat `id="admin-search-results"` across multiple listboxes.
+No provider or external effect occurred.
+
+C00 authorized only a fresh runtime-memory claim from exact rejected P11 final
+`81486a86`. Ready digest is
+`6f30eeea172d702e606c181329dc3b6e899a58ec0016ec2d6b84da7b0f5e9822`,
+claim is `6efc5db3-43b4-4dad-ae3f-59031adddbd5`, and the sole
+ADMIN_OPERATIONS_UI lease is `84e7a42a-d2a5-4c88-ba45-57b34ecc6de9`
+through `2026-07-29T10:09:26Z`. Its first push may change exactly P11
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
+reconciliation. Product edits, steward application, registration, provider
+actions, and external effects are not authorized in that first phase.
+
+P23 final `24ec3a4e` passed C00 mechanical replay (20 tests, typecheck, exact
+18 paths, artifact `d6a527d0`, request aggregate `f984e5ee`, truthful
+integration/interface ancestry) and is undergoing the required independent
+semantic re-audit. It is not admitted or queued yet.

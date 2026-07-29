@@ -517,31 +517,34 @@ tasks:
     transitioned_at: '2026-07-29T03:20:30Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P10/status_proof
 - task_id: P11
-  status: claimed
-  active_phase: correction
+  status: ready
+  active_phase: provider_privacy_accessibility_correction
   branch: codex/v21-p11-admin-operations
   phase_branches:
     implementation: codex/v21-p11-admin-operations
     metadata_correction: codex/v21-p11-admin-operations
     correction: codex/v21-p11-admin-operations
+    review: codex/v21-p11-admin-operations
+    provider_privacy_accessibility_correction: codex/v21-p11-admin-operations
   phase_heads:
-    implementation: f482ebb76a1278eb6adbc6895b08c26ef111e452
+    implementation: 9c1386015a427e48f70be9f6191cb0f3b161922c
     metadata_correction: c0fe1ec4fc16cc626e5b827f12e977851ede2bf1
-    correction: b8c7643938e75bb2ea28b3ebd909f56b577d8b37
+    correction: 9c1386015a427e48f70be9f6191cb0f3b161922c
+    review: 81486a86a85a3d6ffee64eb58c66119686af049e
   authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-  last_known_remote_head: e807e26e5882c3b8ad8e06221db9f28b743369b7
-  active_claim_id: d6567fe9-bfd3-45c6-88c5-ff6cbdff225a
-  active_writer_id: codex-p11-worker-d6567fe9
-  lease_expires_at: '2026-07-29T09:29:47Z'
-  last_heartbeat_at: '2026-07-29T08:34:56Z'
-  controller_authorization_sha: 863131dbb63004f6e5a547b0d10bb8262d0bbc37
-  ready_entry_payload_digest: 727c1f24163de62242f481b3df804b7b68cc157a0be9c34894c4cb1db2799efd
+  last_known_remote_head: 81486a86a85a3d6ffee64eb58c66119686af049e
+  active_claim_id: 6efc5db3-43b4-4dad-ae3f-59031adddbd5
+  active_writer_id: null
+  lease_expires_at: '2026-07-29T10:09:26Z'
+  last_heartbeat_at: null
+  controller_authorization_sha: f8154c67106ab032873fd923efa9979465f11fff
+  ready_entry_payload_digest: 6f30eeea172d702e606c181329dc3b6e899a58ec0016ec2d6b84da7b0f5e9822
   interface_checkpoint_sha: null
-  implementation_head_sha: f482ebb76a1278eb6adbc6895b08c26ef111e452
+  implementation_head_sha: 9c1386015a427e48f70be9f6191cb0f3b161922c
   status_proof:
-    state: claimed
-    producer_task_id: P11
-    producer_head_sha: b8c7643938e75bb2ea28b3ebd909f56b577d8b37
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: f8154c67106ab032873fd923efa9979465f11fff
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -555,8 +558,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
-    transitioned_at: '2026-07-29T08:36:42Z'
+    state_based_on_control_head_sha: f8154c67106ab032873fd923efa9979465f11fff
+    transitioned_at: '2026-07-29T09:09:26Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P11/status_proof
 - task_id: P12
   status: ready_for_review
