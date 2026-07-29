@@ -6,6 +6,7 @@
 - Start SHA: `01cdb992660a1fbc20b204b829d28062fd044679`
 - Renewal base SHA before this handoff metadata commit: `45649e52ea792f2ead63415555776497747cacad`
 - Last committed implementation SHA: `46b5c39aceb6006376903750cfc268b35bbaccdd`
+- Interface metadata SHA: `418ffcc5cbf78643b40b89dbc5da64ea04806f6e`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head
 - Task packet digest: `a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e`
 - Context digest: `1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0`
@@ -15,6 +16,10 @@
 - Containing control authorization: `6be24ff7ebe3bd8188aa4d100eb9160c62a414a8`
 - Ready-entry parent: `c9b4a8085f87fb958ad8688ac345f642bb23f94b`
 - Ready payload digest: `baa5c566c8d30882b022723ff7cd0d3ab22eb6a9b0d3f4f64c940dcdec8853ac`
+- Implementation artifact digest: `1fb4658cf45b75fb99b009dad04e5d127d35ffd5c9816bf41a544dd0514e58b4`
+- Interface contract digest: `95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`
+- Interface state/handoff digest: `afd57cbd0cc837caf6b6b007a61269f676f99ee1ea2d7d4edd7f2da65d31714e`
+- Steward-request digest: `628fe0cb860057b6dde8b5e214edfe00400ca8f701459993e099e6f923fd34cb`
 
 ## Completed behavior
 
@@ -30,15 +35,16 @@ The P17/P18/P19 interface is published at implementation head
 
 ## Remaining work
 
-Publish terminal task-local metadata and release the lease. I36 must integrate
-the exact interface checkpoint and disposition the migration and central
-registration steward requests.
+I36 must integrate the exact interface checkpoint and disposition the migration
+and central registration steward requests. Candidate-bound environment proof
+remains with verification/release lanes.
 
 ## Exact next action
 
-Publish the terminal ready_for_review checkpoint from implementation head
-`46b5c39aceb6006376903750cfc268b35bbaccdd`, then integrate contract digest
-`95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`.
+Integrate contract digest
+`95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`
+from implementation head `46b5c39aceb6006376903750cfc268b35bbaccdd`,
+then disposition `P16-MIGRATION-001` and `P16-REGISTRATION-001`.
 
 ## Coverage
 
