@@ -974,3 +974,27 @@ then P26 `5e338072` with `34c0cb63-ec36-46c0-ac0e-ae8b3a85fe26` /
 release, and release lease `6077f8e5-c498-405e-9cd8-754340775f53`.
 P13's three steward requests remain assigned but unapplied; migrations,
 registrations, provider actions, and all external effects remain unauthorized.
+
+The ordered wave is independently reconciled at metadata-only release
+`cecc1c0dc6ff57562e5d89dd731289d860086bf7`. Exact two-parent merge heads
+are P13 `585d6fb268207c21c91873908e2b44e089583966`, P25
+`2b5049e248dd48b9203daa2f55e2b24379af7d7b`, and P26
+`5016b50914c693b6ba123d29c82189263aa8781c`. Exact 19/15/20-path scopes,
+source ancestry, 35 focused tests, workspace typecheck, metadata-only final
+scope, clean remote state, released I36 lease, and effects `0/0/0` pass.
+The merge queue is empty. P13's steward requests remain unapplied.
+
+Independent frontier audits confirm P09, P11, P21, P23, and P24 are
+dependency-valid at `cecc1c0d`, with absent branches, pairwise-disjoint writer
+slots and owned paths, and no effect authority. C00 authorized only P11 and
+P23 for atomic new-branch claims. P11 uses branch
+`codex/v21-p11-admin-operations`, claim
+`2a221efd-b827-4961-a293-0abb77998260`, ADMIN_OPERATIONS_UI lease
+`f5a27f61-8ec3-47ad-97c3-fea751a67d18`, and canonical ready digest
+`ac1a4f87`. P23 uses branch `codex/v21-p23-student-notifications`, claim
+`88e6e954-c36e-41eb-9bc8-bb8a1f6bfeee`, STUDENT_NOTIFICATIONS lease
+`c6b519b7-a443-47b0-9cad-3de2458a3450`, and canonical ready digest
+`8fd1383b`. Both first pushes must contain only their task-local runtime three
+files and stop for C00 reconciliation. Effect locks are empty; migrations,
+central registrations, steward applications, providers, and all external
+effects remain unauthorized.

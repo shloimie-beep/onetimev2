@@ -700,3 +700,25 @@ publish exact merge heads and one metadata-only release, release
 Do not apply P13's client-route, contract-barrel, or server-registration
 requests; do not apply any migration or shared registration; and do not
 perform provider work or any external effect.
+
+The P13/P25/P26 wave is complete at exact settled integration release
+`cecc1c0dc6ff57562e5d89dd731289d860086bf7`; do not re-merge it. P13
+steward requests remain assigned but unapplied.
+
+P11 and P23 may now publish atomic new-branch claims only:
+
+- P11: create `codex/v21-p11-admin-operations` from exact `cecc1c0d`, bind
+  claim `2a221efd-b827-4961-a293-0abb77998260`, ADMIN_OPERATIONS_UI lease
+  `f5a27f61-8ec3-47ad-97c3-fea751a67d18`, and ready digest
+  `ac1a4f87bb7ddb4b17e674b7bd05506931012e25aa76fd44b6c1719a820ddece`.
+- P23: create `codex/v21-p23-student-notifications` from exact `cecc1c0d`,
+  bind claim `88e6e954-c36e-41eb-9bc8-bb8a1f6bfeee`,
+  STUDENT_NOTIFICATIONS lease `c6b519b7-a443-47b0-9cad-3de2458a3450`,
+  and ready digest
+  `8fd1383b67e06757ddec35fa3a512c3e080464c168fa4ace659ca8c977e0197c`.
+
+Each must change only its own `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`, push, remote-verify, and stop for C00 reconciliation before
+product work. No effect lock is granted. Do not edit migrations, central
+composers or registrations, apply steward requests, call providers, send
+notifications, or cause any external effect. P09, P21, and P24 remain planned.

@@ -2,8 +2,110 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: P11
+  status: ready
+  phase: implementation
+  branch: codex/v21-p11-admin-operations
+  claim_mode: create_new_branch
+  state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+  authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+  expected_existing_head: null
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 3439d8b6974be681521959310f0b5bae2b1668aad1f984c0202cd74b6f4fc70c
+  task_context_digest: c6191a634c381331ca0b24f53811675f334a60e91c8f7ee125ae6eb9f89c906b
+  dependency_heads_and_digests:
+    F05:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+      interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+      interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+      interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+      task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3e
+      task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+    F07:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+      observed_integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+      interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+      interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+      interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+      task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+      task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+  writer_slot_leases:
+  - slot: ADMIN_OPERATIONS_UI
+    lease_id: f5a27f61-8ec3-47ad-97c3-fea751a67d18
+    holder_task_id: P11
+    holder_claim_id: 2a221efd-b827-4961-a293-0abb77998260
+    state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+    lease_issued_at: '2026-07-29T06:16:35Z'
+    lease_expires_at: '2026-07-29T07:16:35Z'
+    phase_scope: P11_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: 2a221efd-b827-4961-a293-0abb77998260
+  lease_issued_at: '2026-07-29T06:16:35Z'
+  lease_expires_at: '2026-07-29T07:16:35Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P11-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+- task_id: P23
+  status: ready
+  phase: implementation
+  branch: codex/v21-p23-student-notifications
+  claim_mode: create_new_branch
+  state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+  authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+  expected_existing_head: null
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 754b2b82d85adcd012c48d1d30468f90cda6b447509f5f414533a48d410f852f
+  task_context_digest: b437bcccecf28816b3ae5d0a31716baa6f55d1549e16fa7b6baa8fc117bda836
+  dependency_heads_and_digests:
+    F05:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+      interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+      interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+      interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+      task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3e
+      task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+    F07:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+      observed_integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+      interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+      interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+      interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+      task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+      task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+  writer_slot_leases:
+  - slot: STUDENT_NOTIFICATIONS
+    lease_id: c6b519b7-a443-47b0-9cad-3de2458a3450
+    holder_task_id: P23
+    holder_claim_id: 88e6e954-c36e-41eb-9bc8-bb8a1f6bfeee
+    state_based_on_control_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+    lease_issued_at: '2026-07-29T06:16:35Z'
+    lease_expires_at: '2026-07-29T07:16:35Z'
+    phase_scope: P23_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: 88e6e954-c36e-41eb-9bc8-bb8a1f6bfeee
+  lease_issued_at: '2026-07-29T06:16:35Z'
+  lease_expires_at: '2026-07-29T07:16:35Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P23-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+entry_payload_digests:
+  P11: ac1a4f87bb7ddb4b17e674b7bd05506931012e25aa76fd44b6c1719a820ddece
+  P23: 8fd1383b67e06757ddec35fa3a512c3e080464c168fa4ace659ca8c977e0197c
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
