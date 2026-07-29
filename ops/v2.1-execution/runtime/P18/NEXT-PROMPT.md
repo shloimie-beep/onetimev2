@@ -3,7 +3,7 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Audit One Time v2.1 task P18 from its terminal remote checkpoint.
+Reconcile the atomic P18 launch-grant table-collision claim checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p18-embedded-classroom
@@ -13,17 +13,23 @@ Task context: ops/v2.1-execution/contexts/P18-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P18/HANDOFF.md
 
-Fetch remote refs and verify the final remote P18 branch head recorded by C00.
-Read task state and handoff. Confirm terminal `ready_for_review`, released
-lease, exact atomic claim `9b37f4a0a123299b0b278ffeaa7b83c763155e3b`,
-implementation head `7163c2a2fda6d4f8105895ceb62f97db1f8ee56a`,
-implementation manifest digest
-`b4048000148bb93a9e3debbe4ed933dcc1732f2bbf0f8e0f20dc19530b56f4ba`,
-and contract artifact digest
-`de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c`.
+Fetch remote refs and verify that the P18 branch is a sole-parent child of
+`0a384577dec2ea58cbeaf22a247f7c05f6333c27` and changes exactly:
 
-P18-owned implementation and verification are complete. Do not restart work or
-reacquire the released lease. The exact next action belongs to C00/I36:
-validate and integrate the ready-for-review head, then adjudicate
-`P18-migration-001` and `P18-registration-001`. Do not edit
-control/integration state or perform provider/live effects.
+- `ops/v2.1-execution/runtime/P18/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/P18/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md`
+
+Confirm control authorization
+`9215514029009674d47f327475d6a53e8dd476ef`, acquisition parent
+`0d3da54f911d446f86601b21700e26d1cfc57da5`, READY digest
+`80b85a7bf27c621d6fe57ebca391d0cee372ee0ab1af4520822eead5504c04e3`,
+claim `61b4324b-03b7-4d7a-a658-6c3a3091fb80`, and lease
+`65bbf2a3-564f-407d-aa21-ba572f5fd1fe`.
+
+This is an atomic-claim-only checkpoint. Stop before editing repository,
+schema-contract, test, migration, or steward-request artifacts. Do not create
+`P18-migration-002`; do not edit the protected legacy migration or rejected
+`P18-migration-001`; do not perform provider/live effects. C00 must reconcile
+the exact claim head and issue an explicit resume before correction
+implementation begins.

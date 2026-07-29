@@ -28,20 +28,21 @@ dependency_heads:
     interface_source_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
     interface_implementation_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
     interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
-status: ready_for_review
-phase: complete
-claimed_by: codex-p18-worker-415e950e
-claim_time: '2026-07-28T22:05:45Z'
-claim_id: 415e950e-cfbb-4635-9f1a-3ffd6af825ac
-writer_slot_lease_id: d44e1690-90e5-44b6-b17f-2faa92dfb220
-lease_issued_at: '2026-07-28T21:55:38Z'
-lease_expires_at: '2026-07-28T22:55:38Z'
-last_heartbeat_at: '2026-07-28T22:23:56Z'
-lease_released_at: '2026-07-28T22:23:56Z'
-controller_authorization_sha: e847dd790ae2f99ae526b0edcbd41897474c8f18
-state_based_on_control_head_sha: 3cfe14a6e1171d002f7173c13776dc682fddd6a8
-ready_entry_payload_digest: 5bd82837c0f7aa83ac813092c767f1dec82f2671f7ea6562e53313c4325586f5
-state_based_on_head_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
+status: claimed
+phase: launch_grant_table_collision_correction
+claimed_by: codex-p18-collision-correction-61b4324b
+claim_time: '2026-07-29T16:40:12Z'
+claim_id: 61b4324b-03b7-4d7a-a658-6c3a3091fb80
+writer_slot_lease_id: 65bbf2a3-564f-407d-aa21-ba572f5fd1fe
+lease_issued_at: '2026-07-29T16:32:13Z'
+lease_expires_at: '2026-07-29T17:47:13Z'
+last_heartbeat_at: '2026-07-29T16:40:12Z'
+lease_released_at: null
+controller_authorization_sha: 9215514029009674d47f327475d6a53e8dd476ef
+acquisition_parent_control_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
+state_based_on_control_head_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
+ready_entry_payload_digest: 80b85a7bf27c621d6fe57ebca391d0cee372ee0ab1af4520822eead5504c04e3
+state_based_on_head_sha: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
 last_implementation_commit_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
 implementation_manifest_digest: b4048000148bb93a9e3debbe4ed933dcc1732f2bbf0f8e0f20dc19530b56f4ba
 contract_artifact_digest: de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c
@@ -61,11 +62,15 @@ completed_steps:
   - Published immutable migration and central-registration steward requests.
   - Passed full typecheck, 17 focused assertions, focused lint/format, exact source-scope, digest, and diff checks.
   - Released the EMBEDDED_CLASSROOM lease in task-local terminal metadata.
+  - Re-fetched and verified the exact remote control authorization, sole acquisition parent, expected existing P18 head, canonical READY payload, and live sole-writer lease.
+  - Re-verified every entry-bound digest, the applied-table collision, both protected legacy blobs, and zero provider/live effect locks.
+  - Claimed only the P18 runtime triplet for the authorized launch-grant table collision correction; no repository, schema, test, migration, or steward-request correction was edited.
 remaining_steps:
-  - C00/I36 must validate and integrate this exact ready_for_review head.
-  - F02 and I36 must adjudicate the migration and registration steward requests.
-  - Candidate-bound provider sandbox and production-operator proof remains for verification waves.
-next_action: C00 and I36 validate and integrate this exact ready_for_review checkpoint, then adjudicate P18-migration-001 and P18-registration-001.
+  - C00 must reconcile the exact atomic claim head before P18 resumes correction implementation.
+  - After explicit resume, replace every launch-grant repository SQL reference with onetime.classroom_launch_grants_v21 and add the collision-rejection assertions.
+  - After explicit resume, advance the schema contract to version 1.0.1 and create only P18-migration-002 with the authorized exact digests.
+  - Preserve the protected legacy migration and rejected P18-migration-001 byte-for-byte.
+next_action: Stop after publishing this atomic claim checkpoint. C00 must reconcile its exact remote head before P18 edits any repository, schema, test, migration, or steward-request correction artifact.
 requirements:
   OTV2-CLASSROOM-073: implementation_verified
   OTV2-CLASSROOM-075: implementation_verified
@@ -103,6 +108,10 @@ changed_paths:
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-001.yaml
   - ops/v2.1-execution/runtime/P18/steward-requests/P18-registration-001.yaml
+atomic_claim_changed_paths:
+  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P18/HANDOFF.md
+  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
 migrations: []
 steward_requests:
   - request_id: P18-migration-001
