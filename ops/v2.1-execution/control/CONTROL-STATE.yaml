@@ -15,12 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
+controller_authorization_sha: d8a031e92ad3b02c8b3f62af2063737a20253af0
 next_action: >-
-  Wave B part 1 is independently audited and released at integration head 255d35b2; the F06, F07, and P16 merge
-  queue is cleared. I36 may atomically claim only the queued P35 item from that exact integration head under claim
-  5f6577ac and RELEASE_INTEGRATOR lease 11eac672, then stop for C00 reconciliation before any source merge. P35's
-  exact source head, fixed base, 20-path tail, queue digest, and F01 ancestry are verified.
-  Its three steward requests remain assigned and unapplied. No provider inspection, Telegram action, steward
-  application, external effect, or source merge is authorized before claim reconciliation.
+  I36 claim 550106c6 is reconciled under unchanged claim 5f6577ac and RELEASE_INTEGRATOR lease 11eac672. I36 may now
+  merge only queued P35 with exact source parent a85aecc2, fixed base eefca064, exact 20-path allowlist, queue
+  digest 6c0c9014, and F01 full-head ancestry; run proportionate verification, update only the three I36 runtime files,
+  release the lease, and stop for C00 audit. P35's three steward requests remain assigned and unapplied. No provider
+  inspection, Telegram action, steward application, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
