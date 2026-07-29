@@ -15,12 +15,24 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 5b265e47ee4c23d8937752981f246f837f0d95a6
+controller_authorization_sha: 2c8b4872938d6f0db50ef7f1dba89a0d660a4975
 next_action: >-
   P18 claim d315c47f is reconciled under unchanged claim 61b4324b and EMBEDDED_CLASSROOM lease 65bbf2a3. P18 may
   now edit only repository.ts, repository.test.ts, schema-contract.ts, and add P18-migration-002.yaml, followed by
-  its three runtime records. The exact required hashes, _v21 table, version 1.0.1, regression, protected legacy
-  blobs, and seven-path ceiling remain binding. It must run focused tests/typecheck/lint/format/secret/diff/digest
-  checks, release the lease, push, and stop for C00 audit. No migration ordinal, SQL, registration, provider
-  inspection, deployment, send, or external effect is authorized.
+  its three runtime records. C00 independently inspected the exact replacement-request preimage and reauthorizes
+  raw digest d1151073 and canonical digest e1423a8a; the unreproducible earlier 3f8df8d4/435d1d7a pair is superseded
+  and must not be claimed. The _v21 table, version 1.0.1, regression, protected legacy blobs, repo/schema hashes, and
+  seven-path ceiling remain binding. P18 must run focused tests/typecheck/lint/format/secret/diff/digest checks,
+  release the lease, push, and stop for C00 audit. No migration ordinal, SQL, registration, provider inspection,
+  deployment, send, or external effect is authorized.
+active_correction_reauthorization:
+  task_id: P18
+  claim_id: 61b4324b-03b7-4d7a-a658-6c3a3091fb80
+  request_id: P18-migration-002
+  exact_byte_length: 4616
+  exact_raw_digest: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
+  exact_canonical_queue_digest: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
+  superseded_unreproducible_raw_digest: 3f8df8d4509dc1371ba95ead749681a8c8705dca21c8196d26e8b42907968a2c
+  superseded_unreproducible_canonical_queue_digest: 435d1d7a814566158d4ef18147ec8e6517ab6effa242ec12736fd0ac7a93424d
+  authority_scope: Exact replacement-request preimage only; every other correction constraint remains unchanged.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
