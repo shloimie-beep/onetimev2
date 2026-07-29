@@ -25,39 +25,39 @@ dependency_heads:
   P25: 0979e151f80900cea75edecabe8967ce382d168d
   P26: 5e33807200a24ec53be889234dbaafdda9717dcb
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
-status: ready
-phase: release
-claimed_by: codex-i36-worker-4f275da3
-claim_time: '2026-07-29T09:46:42Z'
-claim_id: 4f275da3-6bac-4149-8f0d-42206f5d238e
-lease_id: 5f617e0e-7f87-4eba-9dd0-1361227d272a
-lease_issued_at: '2026-07-29T09:46:42Z'
-lease_expires_at: '2026-07-29T10:46:42Z'
-lease_released_at: '2026-07-29T10:07:21Z'
-last_heartbeat_at: '2026-07-29T10:07:21Z'
-controller_authorization_sha: 4017049c4caa6b252c60d75cfc111367fd58e63f
-reconciled_state_based_on_control_head_sha: 90c5406f047cbcf06b86f9aa4395ffc5044a7a2c
-ready_entry_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
-ready_entry_payload_digest: 732033d08cdaf7ed841579fe63545e9150fb9ffd8abe3204b74e09e780ba25f7
+status: claimed
+phase: integration
+claimed_by: codex-i36-worker-5be2d721
+claim_time: '2026-07-29T11:27:09Z'
+claim_id: 5be2d721-aff2-494a-bb22-ad324334b376
+lease_id: 33a465ad-1fa2-4600-9259-044f6bc767a2
+lease_issued_at: '2026-07-29T11:27:09Z'
+lease_expires_at: '2026-07-29T12:42:09Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T11:27:09Z'
+controller_authorization_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
+reconciled_state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+ready_entry_state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+ready_entry_payload_digest: a5b4fec66b1f2bcd67e278ba8b7d58d710d4d87bf1072706902e379001e20eb7
 claim_mode: resume_existing
-expected_existing_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-lease_phase_scope: P23_full_integration_atomic_claim_only
+expected_existing_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+lease_phase_scope: P11_full_integration_atomic_claim_only
 queued_merge_ids:
-  P23: ceed4d92-af5a-413f-b9b3-034293e37caf
+  P11: c5fe9e7d-f54a-46e6-8754-a90f433c991e
 queued_merge_item_payload_digests:
-  P23: 7abbd657a3e4089ff5478f77fab356517c5fd090cb496a6ee53ea2cba5fae197
+  P11: 3b77561b59bf5b8aeb849b8be533d91898e0d3bf5a3c5d5e272a792b8144a862
 queued_source_heads:
-  P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
-queued_expected_target_head_sha: f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e
-prior_merge_result_head_sha: 522fe505eca226ee7053e38bb67be5af78af79d6
-prior_release_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-merge_authorization_state_based_on_control_head_sha: 4017049c4caa6b252c60d75cfc111367fd58e63f
-lease_origin_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+  P11: 15660c1115d9d8066651573100acd8acaaac574e
+queued_expected_target_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+prior_merge_result_head_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
+prior_release_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+merge_authorization_state_based_on_control_head_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
+lease_origin_state_based_on_control_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
 source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
 merge_result_head_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
 merge_parent_target_head_sha: f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e
 merge_parent_source_head_sha: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
-state_based_on_head_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
+state_based_on_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
 last_implementation_commit_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
@@ -408,35 +408,30 @@ completed_steps:
   - Released claim 4f275da3-6bac-4149-8f0d-42206f5d238e and RELEASE_INTEGRATOR
     lease 5f617e0e-7f87-4eba-9dd0-1361227d272a at 2026-07-29T10:07:21Z
     with external effects remaining 0/0/0.
+  - Verified exact existing integration head
+    088b40476bd5ceeb0af901b6f78a4cb8c556671b, containing control
+    authorization 3fd19332799a28a7efd7cde00712ba8ca091bf14, its sole
+    state-based parent e6a6729bc109816124ef2e7beef5e42aa398b147, canonical
+    READY digest a5b4fec66b1f2bcd67e278ba8b7d58d710d4d87bf1072706902e379001e20eb7,
+    exact P11 queue item c5fe9e7d-f54a-46e6-8754-a90f433c991e and digest
+    3b77561b59bf5b8aeb849b8be533d91898e0d3bf5a3c5d5e272a792b8144a862,
+    sole live RELEASE_INTEGRATOR lease, and zero effect locks.
+  - Claimed only the three I36 runtime-memory files for P11 full integration;
+    P11 was not fetched or merged, its structured request was not applied, and
+    no product, test, request, steward, provider, send, or effect action was
+    performed.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 metadata-only release checkpoint.
-  - Report the exact P23 merge head and release head to C00, then stop.
-next_action: Reconcile the exact pushed P23 release head in C00, then stop.
+  - Commit and normally push this exact three-file I36 atomic integration claim.
+  - Report the exact pushed claim head and parent to C00, then stop.
+  - Merge P11 only after C00 reconciles the exact pushed claim head and issues
+    subsequent explicit authorization.
+next_action: C00 must reconcile the exact pushed I36 P11 atomic integration claim head before I36 fetches or merges P11 or applies P11-registration-001.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
-  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
-  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
-  - apps/web/src/client/app/student/notifications/index.ts
-  - apps/web/src/server/features/notifications/student/index.ts
-  - apps/web/src/server/features/notifications/student/service.test.ts
-  - apps/web/src/server/features/notifications/student/service.ts
-  - ops/v2.1-execution/runtime/P23/HANDOFF.md
-  - ops/v2.1-execution/runtime/P23/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P23/steward-requests/P23-migration-001.yaml
-  - ops/v2.1-execution/runtime/P23/steward-requests/P23-registration-001.yaml
-  - packages/contracts/src/notifications/student/index.ts
-  - packages/db/src/notifications/student/index.ts
-  - packages/db/src/notifications/student/repository.test.ts
-  - packages/db/src/notifications/student/repository.ts
-  - packages/domain/src/notifications/student/errors.ts
-  - packages/domain/src/notifications/student/index.ts
-  - packages/domain/src/notifications/student/lifecycle.test.ts
-  - packages/domain/src/notifications/student/lifecycle.ts
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts
