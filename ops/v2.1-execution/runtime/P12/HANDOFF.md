@@ -1,56 +1,72 @@
-# P12 Correction Claim Handoff
+# P12 Corrected Interface Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p12-parent-household`
-- Exact prior final: `7c06fe62e8555aeafa917e855e34f9cc07e3ce3b`
-- Atomic correction claim commit: derive with `git rev-parse HEAD`; C00 records
+- Prior final: `7c06fe62e8555aeafa917e855e34f9cc07e3ce3b`
+- Atomic correction claim: `e1cfcd590e8e359c6616cac523337c183f2bc43f`
+- Corrected implementation head:
+  `98cad0904b08afbe19e82e1263c6907e93d78481`
+- Corrected interface checkpoint: derive with `git rev-parse HEAD`; C00 records
   the observed remote head.
 - Containing correction controller:
   `71df400bd85cdca40b4eb0e01fc749f362e3d0e8`
 - Ready-entry parent/acquisition:
   `36451ec88e05bb64be0b27b8bc148166b6fe9837`
-- Claim mode: `resume_existing_branch`
+- Reconciled control head:
+  `ddef233830979fd2a0e2d3a146bdd389b23a9c84`
 - Correction claim: `eedf369a-f247-481b-bca6-7e48abdf1f26`
 - Writer: `codex-p12-worker-776c6b8b`
 - PARENT_HOUSEHOLD_UI lease:
   `3f2cd863-1f04-40fa-875b-87c14469a454`
 - Lease issued: `2026-07-29T04:00:52Z`
 - Lease expiry: `2026-07-29T05:00:52Z`
-- Phase scope: `hard_three_seat_and_lifecycle_idempotency_correction_claim_only`
 - Ready-entry digest:
   `a9df3b69b8177c1e0e589109de5aff4260bdb99471f12ff7de0a915166824e8b`
-- Task packet digest:
-  `37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd`
-- Context digest:
-  `1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73`
 
-## Atomic claim scope
+## Corrected interface
 
-This checkpoint consumes the fresh correction authorization in exactly
-`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`. It preserves the prior
-implementation head `4299c6b828a23fdf79bdc976ab5630df3591ed00`, interface
-checkpoint `f265d163d6007e91fb2a332ebff6f173da81700e`, semantic digest
-`6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7`,
-and registration-request digest
-`501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`
-without modification.
+- Semantic contract: `1.0.1`
+- Canonical semantic digest:
+  `7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373`
+- Contract export digest:
+  `bf96c9d7e9ff331cac1babe179a67f2ac26a63a556198186a5ccf9569d57be8d`
+- Registration request digest remains:
+  `501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`
+- Downstream consumer: P13, only after I36 integrates this exact corrected
+  interface.
 
-No product, contract, interface, test, steward-request, migration, shared file,
-or external-effect work was performed.
+## Corrected behavior
+
+The effective Standard Family Student allowance is now clamped to the public
+hard maximum of three. An inflated repository value cannot create or restore a
+fourth active Student, and the Parent snapshot reports no capacity above three.
+
+Same-state archive and restore resubmits intentionally fail closed rather than
+returning a successful no-op. After scope, access, revision, and Student
+validation, the domain throws `parent_student_lifecycle_unchanged` before
+Student replacement, household revision increment, audit construction,
+enrollment/session effects, or repository commit. Direct service tests prove
+that `commitMutation` is never called for either same-state request.
+
+All original P12 scope, credential, enrollment, archive-history, and immediate
+handoff invariants remain unchanged.
 
 ## Exact next action
 
-Stop after pushing and remote-verifying this exact three-file claim. C00 must
-reconcile the atomic correction claim before P12 changes any product,
-contract, interface, or test file.
+Push and remote-verify this corrected interface checkpoint, complete final
+scope/secret/diff checks, release the fresh PARENT_HOUSEHOLD_UI lease, and
+publish the clean ready_for_review final. I36 must integrate the exact corrected
+interface before C00 authorizes P13.
 
-After reconciliation, the bounded correction must hard-cap active Student
-seats at three regardless of a larger record allowance and must prevent any
-duplicate persistence or audit emission when archive is resubmitted for an
-already archived Student or restore is resubmitted for an already active
-Student. Direct negative regression tests must prove both boundaries before
-the implementation/interface/final digests are refreshed.
+## Verification
+
+- Focused domain/server/client suite: 3 files and 14 tests passed.
+- Direct hard-cap and same-state no-commit regressions: passed.
+- Workspace typecheck: passed.
+- Focused ESLint and Prettier: passed.
+- Interface export, semantic, and steward digests: reproduced from committed
+  Git objects.
 
 ## External effects
 
@@ -64,6 +80,5 @@ or attempted.
 
 ## Blockers and recovery
 
-Product work is blocked only on C00 reconciliation of this atomic claim.
-Recovery base is exact prior final
-`7c06fe62e8555aeafa917e855e34f9cc07e3ce3b`.
+None. Recovery base is exact atomic correction claim
+`e1cfcd590e8e359c6616cac523337c183f2bc43f`.

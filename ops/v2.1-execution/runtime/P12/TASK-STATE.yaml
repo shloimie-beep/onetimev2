@@ -32,8 +32,8 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: claimed
-phase: correction
+status: interface_ready
+phase: interface
 claim_mode: resume_existing_branch
 claimed_by: codex-p12-worker-776c6b8b
 claim_time: '2026-07-29T04:05:54Z'
@@ -47,18 +47,18 @@ writer_slot_leases:
     phase_scope: hard_three_seat_and_lifecycle_idempotency_correction_claim_only
     state: active
 lease_expires_at: '2026-07-29T05:00:52Z'
-last_heartbeat_at: '2026-07-29T04:05:54Z'
+last_heartbeat_at: '2026-07-29T04:15:16Z'
 controller_authorization_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
 ready_entry_state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
 ready_entry_payload_digest: a9df3b69b8177c1e0e589109de5aff4260bdb99471f12ff7de0a915166824e8b
-state_based_on_head_sha: 7c06fe62e8555aeafa917e855e34f9cc07e3ce3b
-last_implementation_commit_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
+state_based_on_head_sha: 98cad0904b08afbe19e82e1263c6907e93d78481
+last_implementation_commit_sha: 98cad0904b08afbe19e82e1263c6907e93d78481
 active_interface:
   status: interface_ready
-  interface_implementation_head_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
-  interface_checkpoint_sha: f265d163d6007e91fb2a332ebff6f173da81700e
-  semantic_contract_version: 1.0.0
-  interface_checkpoint_digest: 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7
+  interface_implementation_head_sha: 98cad0904b08afbe19e82e1263c6907e93d78481
+  interface_checkpoint_sha: derive_from_git_and_record_in_control_registry
+  semantic_contract_version: 1.0.1
+  interface_checkpoint_digest: 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373
 completed_steps:
   - Verified repository identity, exact containing control authorization ab393d7eb3b7f55b910ba110949c05c40b7383e6, sole acquisition parent 3c4130ae4d015471ce21e7d70a39d98dde113318, and exact authorized integration start f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635.
   - Verified the P12 task branch was absent locally and remotely before branch creation.
@@ -74,19 +74,23 @@ completed_steps:
   - Passed repository-wide secret scan across 2750 text files, exact 16-path scope audit, final YAML/Prettier and diff hygiene checks, and released PARENT_HOUSEHOLD_UI lease 992f62c1-faba-4709-bae6-6c201cc776b2 with no external effect attempted.
   - Verified exact correction controller 71df400bd85cdca40b4eb0e01fc749f362e3d0e8, its sole parent 36451ec88e05bb64be0b27b8bc148166b6fe9837, existing remote head 7c06fe62e8555aeafa917e855e34f9cc07e3ce3b, correction claim eedf369a-f247-481b-bca6-7e48abdf1f26, sole PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454, and zero effect locks.
   - Consumed the correction authorization only in the three P12 runtime-memory files; no product, contract, interface, test, steward, migration, shared, or external-effect work was performed.
+  - Verified exact C00 reconciliation ddef233830979fd2a0e2d3a146bdd389b23a9c84 and resumed only the bounded hard-three-seat and lifecycle-idempotency correction.
+  - Hard-capped effective Standard Family Student allowance at three even for inflated repository records.
+  - Made same-state archive/restore resubmits fail closed with parent_student_lifecycle_unchanged before replacement, revision increment, audit construction, effects, or repository commit.
+  - Added direct domain and server negative probes; focused domain/server/client verification passes 3 files and 14 tests, workspace typecheck, focused ESLint, and focused Prettier.
+  - Published corrected semantic interface 1.0.1 with canonical digest 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373 for downstream P13 after I36 integration.
 remaining_steps:
-  - C00 must reconcile this exact atomic correction claim before any product or interface file changes.
-  - Under the reconciled authorization, hard-cap active Student seats at three and prevent duplicate lifecycle persistence/audit on already-archived or already-active requests, with direct negative regression tests.
-  - Refresh implementation/interface/final digests and verification, release the fresh lease, and return ready_for_review with zero effects.
-next_action: Stop after pushing this exact three-file correction claim and wait for C00 reconciliation; do not touch product or interface files before reconciliation.
+  - Push and remote-verify the corrected interface checkpoint.
+  - Complete final secret/scope/diff checks, release the fresh lease, and publish ready_for_review with zero effects.
+next_action: Push corrected interface 1.0.1, complete final hygiene and security checks, then release PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454 and publish the clean ready_for_review final.
 requirements:
-  OTV2-PARENT-031: correction_claimed
-  OTV2-PARENT-032: correction_claimed
-  OTV2-PARENT-033: correction_claimed
-  OTV2-PARENT-034: correction_claimed
-  OTV2-PARENT-035: correction_claimed
-  OTV2-PARENT-036: correction_claimed
-  OTV2-PARENT-040: correction_claimed
+  OTV2-PARENT-031: implementation_ready
+  OTV2-PARENT-032: implementation_ready
+  OTV2-PARENT-033: implementation_ready
+  OTV2-PARENT-034: implementation_ready
+  OTV2-PARENT-035: implementation_ready
+  OTV2-PARENT-036: implementation_ready
+  OTV2-PARENT-040: implementation_ready
 acceptance_cases:
   OTV2-PARENT-031-AC01: task_owned_assertions_passed
   OTV2-PARENT-032-AC01: task_owned_assertions_passed
@@ -140,6 +144,14 @@ verification:
       result: passed; exactly 16 authorized P12 paths and clean diff hygiene
     - command: correction controller/parent/existing-head/claim/lease/effect-lock verification
       result: passed; exact controller 71df400b, sole parent 36451ec8, existing head 7c06fe62, claim eedf369a, sole fresh PARENT_HOUSEHOLD_UI lease, and zero effect locks
+    - command: C00 correction reconciliation verification
+      result: passed; exact released control head ddef233830979fd2a0e2d3a146bdd389b23a9c84 admits claim e1cfcd590e8e359c6616cac523337c183f2bc43f
+    - command: npx vitest run packages/domain/src/portals/parent-household/parent-household.test.ts apps/web/src/server/features/portals/parent-household/service.test.ts apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+      result: passed; 3 files and 14 tests including direct hard-cap and same-state no-commit regressions
+    - command: npm run typecheck -- --pretty false
+      result: passed after bounded correction
+    - command: focused ESLint and Prettier over the four correction paths
+      result: passed
   known_baseline_failures: []
 external_effects:
   authority: none
