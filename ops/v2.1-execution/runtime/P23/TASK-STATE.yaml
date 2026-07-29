@@ -1,0 +1,97 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P23
+task_packet_digest: 754b2b82d85adcd012c48d1d30468f90cda6b447509f5f414533a48d410f852f
+task_context_digest: b437bcccecf28816b3ae5d0a31716baa6f55d1549e16fa7b6baa8fc117bda836
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p23-student-notifications
+start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+dependency_heads:
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: claimed
+phase: implementation_atomic_claim
+claim_mode: create_new_branch
+claimed_by: codex-p23-worker-68340416
+claim_time: '2026-07-29T06:34:40Z'
+claim_id: 68340416-7e06-4986-a125-59d81b500a0b
+writer_slot_leases:
+  - slot: STUDENT_NOTIFICATIONS
+    lease_id: 45041adc-a69f-4065-a179-b94473967c94
+    lease_issued_at: '2026-07-29T06:26:07Z'
+    lease_expires_at: '2026-07-29T07:26:07Z'
+    state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
+    phase_scope: P23_atomic_claim_only
+    lease_released_at: null
+    state: active
+lease_expires_at: '2026-07-29T07:26:07Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T06:34:40Z'
+controller_authorization_sha: 9f1609933ceeaa315115a49d8612276002e33330
+ready_entry_state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
+ready_entry_payload_digest: b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f
+state_based_on_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+last_implementation_commit_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+completed_steps:
+  - Verified exact containing controller 9f1609933ceeaa315115a49d8612276002e33330, its sole acquisition parent 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928, and exact authorized integration start cecc1c0dc6ff57562e5d89dd731289d860086bf7.
+  - Verified the P23 task branch was absent locally and remotely before branch creation.
+  - Recomputed and matched canonical ready-entry digest b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and exact package, source, task, and context digests.
+  - Verified exact F05 and F07 interface-ready integration bindings and ancestry in the authorized start, including corrected F05 task packet digest 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3.
+  - Claimed the sole STUDENT_NOTIFICATIONS writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P23 runtime-memory files; no product, source, provider, send, steward, migration, registration, or external-effect work has started.
+remaining_steps:
+  - Push and remote-verify the exact three-file atomic claim.
+  - C00 must reconcile the exact pushed atomic claim head into released control state.
+  - P23 may begin implementation only after exact C00 reconciliation and explicit fresh continuation authority.
+next_action: Push and remote-verify this three-file atomic claim, report its exact head to C00, and stop; do not begin product work before C00 reconciliation.
+requirements:
+  OTV2-NOTIFY-203: claimed_not_started
+  OTV2-NOTIFY-237: claimed_not_started
+acceptance_cases:
+  OTV2-NOTIFY-203-AC01: not_run
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: not_run
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: not_run
+changed_paths:
+  - ops/v2.1-execution/runtime/P23/HANDOFF.md
+  - ops/v2.1-execution/runtime/P23/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact controller, acquisition, start, registry, ready-entry, claim, lease, dependency, effect-lock, and branch-absence verification
+      result: passed; exact fresh authority, corrected F05 task digest, sole writer lease, and zero effect locks
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; all 200 locked blobs, all 15 source-package blobs, and entry-bound digests match
+    - command: exact F05 and F07 dependency binding and authorized-start ancestry verification
+      result: passed; task, integration, interface source, and interface implementation heads are exact ancestors
+    - command: git worktree add -b codex/v21-p23-student-notifications <isolated-worktree> cecc1c0dc6ff57562e5d89dd731289d860086bf7
+      result: passed; branch created from exact authorized start
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
