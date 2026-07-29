@@ -30,9 +30,12 @@ and the absent branch were verified before the atomic claim. The atomic claim
 changed only the three P12 runtime-memory files. Product and contract
 implementation have not started.
 
-Resume `TASK-STATE.yaml:next_action` only after C00 records the exact pushed
-claim head and issues the applicable continuation or resume authorization. Do
-not repeat a broad audit. Work only in:
+The implementation head is
+`4299c6b828a23fdf79bdc976ab5630df3591ed00`. Semantic interface `1.0.0`
+has canonical digest
+`6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7`
+and unlocks P13 only after I36 integration. Resume `TASK-STATE.yaml:next_action`
+without repeating a broad audit. Work only in:
 
 - `apps/web/src/client/app/parent/household/**`
 - `apps/web/src/server/features/portals/parent-household/**`
@@ -46,8 +49,7 @@ steward-owned path. Perform no external effect. Preserve Parent-only household
 isolation, the three-active-Student limit, archived history, disabled archived
 authentication, and non-display of existing passwords.
 
-Exact next action: after C00 records the claim, inspect only the F03/F04/F07
-dependency artifacts and P12-owned paths, implement the smallest coherent
-Parent household and Student-seat contract, publish the required interface
-checkpoint, pass focused verification, and finish `ready_for_review` with a
-clean normally pushed branch.
+Exact next action: verify the pushed interface head, complete final
+scope/secret/diff checks, release the PARENT_HOUSEHOLD_UI lease, and publish
+the clean ready_for_review final. Do not resume product work unless a reproduced
+P12-scoped finding is returned under a new C00 authorization.

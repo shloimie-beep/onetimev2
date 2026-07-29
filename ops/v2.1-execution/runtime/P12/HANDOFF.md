@@ -1,4 +1,4 @@
-# P12 Atomic Claim Handoff
+# P12 Interface Handoff
 
 ## Identity
 
@@ -27,6 +27,15 @@
 - Lease issue / expiry:
   `2026-07-29T03:20:30Z` / `2026-07-29T04:20:30Z`
 
+## Interface
+
+- Implementation: `4299c6b828a23fdf79bdc976ab5630df3591ed00`
+- Semantic contract: `1.0.0`
+- Canonical digest:
+  `6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7`
+- Registration request digest:
+  `501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`
+
 ## Completed behavior
 
 Verified the exact repository, containing control authorization and acquisition
@@ -35,7 +44,10 @@ digest, package/task/context/source digests, F03/F04/F07 dependency bindings
 and ancestry, sole writer lease, and zero effect locks. All 200 locked and 15
 source-package Git blobs matched. Created the isolated P12 branch from the exact
 start. This atomic checkpoint contains only the three P12 runtime files;
-product and contract implementation have not started.
+the P12 contract, domain aggregate, server transaction service, and client
+workspace. Parent scope is household-bound; create/restore is revision and
+seat-bound; lifecycle and credentials drive session/enrollment effects; and a
+new password appears only in the immediate handoff.
 
 ## Remaining work
 
@@ -46,15 +58,13 @@ Publish the required P12 interface checkpoint before downstream P13 starts.
 
 ## Exact next action
 
-After C00 records this atomic claim head and authorizes continuation, inspect
-only the F03/F04/F07 dependency artifacts and P12-owned paths, then implement
-the smallest coherent Parent household and Student-seat contract with zero
-external effects.
+Push the exact interface checkpoint, complete final scope/secret/diff checks,
+then release the lease and publish the clean ready_for_review final.
 
 ## Coverage
 
-- Requirements: seven assigned and claimed; implementation not started.
-- Acceptance cases: seven assigned; none run.
+- Requirements: seven implementation-ready.
+- Acceptance cases: seven task-owned assertion sets passed.
 
 ## Changed files and migrations
 
@@ -71,6 +81,8 @@ external effects.
 - All locked/source/package/task/context digests: passed.
 - F03/F04/F07 dependency ancestry and bindings: passed.
 - Claim, PARENT_HOUSEHOLD_UI lease, and zero effect locks: passed.
+- Focused domain/server/client verification: 3 files and 11 tests passed.
+- Workspace typecheck, focused ESLint, and focused Prettier: passed.
 
 ## External effects
 

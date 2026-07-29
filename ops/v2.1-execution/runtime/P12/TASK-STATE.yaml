@@ -32,8 +32,8 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: claimed
-phase: contract
+status: interface_ready
+phase: interface
 claimed_by: codex-p12-worker-776c6b8b
 claim_time: '2026-07-29T03:35:03Z'
 claim_id: 776c6b8b-8729-49ea-a9ca-f505fbaf320c
@@ -44,12 +44,18 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T04:20:30Z'
     state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
 lease_expires_at: '2026-07-29T04:20:30Z'
-last_heartbeat_at: '2026-07-29T03:35:03Z'
+last_heartbeat_at: '2026-07-29T03:53:30Z'
 controller_authorization_sha: ab393d7eb3b7f55b910ba110949c05c40b7383e6
 ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
 ready_entry_payload_digest: 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86
-state_based_on_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-last_implementation_commit_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+state_based_on_head_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
+last_implementation_commit_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
+active_interface:
+  status: interface_ready
+  interface_implementation_head_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
+  interface_checkpoint_sha: derive_from_git_and_record_in_control_registry
+  semantic_contract_version: 1.0.0
+  interface_checkpoint_digest: 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7
 completed_steps:
   - Verified repository identity, exact containing control authorization ab393d7eb3b7f55b910ba110949c05c40b7383e6, sole acquisition parent 3c4130ae4d015471ce21e7d70a39d98dde113318, and exact authorized integration start f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635.
   - Verified the P12 task branch was absent locally and remotely before branch creation.
@@ -58,34 +64,50 @@ completed_steps:
   - Verified exact F03, F04, and F07 interface-ready integration bindings and ancestry in the authorized start.
   - Claimed the sole PARENT_HOUSEHOLD_UI writer lease with zero effect locks and created the isolated branch from the exact authorized start.
   - Seeded only the three P12 runtime-memory files; no product or contract implementation has started.
+  - Implemented the isolated P12 contract, domain aggregate, server orchestration, and Parent client workspace with exact scope, seat, lifecycle, credential, enrollment, and audit invariants.
+  - Passed 3 focused files and 11 tests, workspace typecheck, focused ESLint, and focused Prettier.
+  - Published semantic interface 1.0.0 for P13 with canonical digest 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7.
 remaining_steps:
-  - Push and report this exact three-file atomic claim checkpoint.
-  - Await C00 reconciliation of the exact remote claim head.
-  - Inspect only named dependency artifacts and P12-owned paths.
-  - Implement and verify the Parent household and Student-seat contract, publish the required interface checkpoint, and finish ready_for_review.
-next_action: After C00 records this atomic claim head and authorizes continuation, inspect only the F03/F04/F07 dependency artifacts and P12-owned paths, then implement the smallest coherent Parent household and Student-seat contract with zero external effects.
+  - Push and report the exact P12 interface checkpoint.
+  - Complete final secret/scope/diff checks, release the lease, and publish ready_for_review.
+next_action: Push the interface checkpoint, complete final hygiene and security checks, then release the PARENT_HOUSEHOLD_UI lease and publish the clean ready_for_review final.
 requirements:
-  OTV2-PARENT-031: claimed_not_started
-  OTV2-PARENT-032: claimed_not_started
-  OTV2-PARENT-033: claimed_not_started
-  OTV2-PARENT-034: claimed_not_started
-  OTV2-PARENT-035: claimed_not_started
-  OTV2-PARENT-036: claimed_not_started
-  OTV2-PARENT-040: claimed_not_started
+  OTV2-PARENT-031: implementation_ready
+  OTV2-PARENT-032: implementation_ready
+  OTV2-PARENT-033: implementation_ready
+  OTV2-PARENT-034: implementation_ready
+  OTV2-PARENT-035: implementation_ready
+  OTV2-PARENT-036: implementation_ready
+  OTV2-PARENT-040: implementation_ready
 acceptance_cases:
-  OTV2-PARENT-031-AC01: not_run
-  OTV2-PARENT-032-AC01: not_run
-  OTV2-PARENT-033-AC01: not_run
-  OTV2-PARENT-034-AC01: not_run
-  OTV2-PARENT-035-AC01: not_run
-  OTV2-PARENT-036-AC01: not_run
-  OTV2-PARENT-040-AC01: not_run
+  OTV2-PARENT-031-AC01: task_owned_assertions_passed
+  OTV2-PARENT-032-AC01: task_owned_assertions_passed
+  OTV2-PARENT-033-AC01: task_owned_assertions_passed
+  OTV2-PARENT-034-AC01: task_owned_assertions_passed
+  OTV2-PARENT-035-AC01: task_owned_assertions_passed
+  OTV2-PARENT-036-AC01: task_owned_assertions_passed
+  OTV2-PARENT-040-AC01: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+  - apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.tsx
+  - apps/web/src/client/app/parent/household/index.ts
+  - apps/web/src/server/features/portals/parent-household/index.ts
+  - apps/web/src/server/features/portals/parent-household/service.test.ts
+  - apps/web/src/server/features/portals/parent-household/service.ts
   - ops/v2.1-execution/runtime/P12/HANDOFF.md
+  - ops/v2.1-execution/runtime/P12/INTERFACE-CHECKPOINT.yaml
   - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P12/steward-requests/P12-registration-001.yaml
+  - packages/contracts/src/portals/parent-household/index.ts
+  - packages/domain/src/portals/parent-household/aggregate.ts
+  - packages/domain/src/portals/parent-household/errors.ts
+  - packages/domain/src/portals/parent-household/index.ts
+  - packages/domain/src/portals/parent-household/parent-household.test.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - id: P12-registration-001
+    sha256: 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733
 verification:
   commands_run:
     - command: exact remote repository/control/integration/branch identity verification
