@@ -7,6 +7,7 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
 branch: codex/v21-p33-runtime-operations
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+expected_existing_head: 122608b516046f9c2b93b18256573232b9958137
 dependency_heads:
   F05:
     required_state: interface_ready_integrated
@@ -28,82 +29,61 @@ dependency_heads:
     interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
     task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
     task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
-status: ready_for_review
-phase: complete
-claim_mode: create_new_branch
-claimed_by: codex-p33-worker-e0ba9363
-claim_time: '2026-07-29T00:50:25Z'
-claim_id: e0ba9363-1e4e-41eb-b8fb-35043bd09881
+status: claimed
+phase: correction
+claim_mode: resume_existing_branch
+claimed_by: codex-p33-worker-9f112031
+claim_time: '2026-07-29T01:46:32Z'
+claim_id: 9f112031-01ef-4117-986d-27465a06d19e
 writer_slot_leases:
   - slot: OPERATIONS_RUNTIME
-    lease_id: c32b860e-8054-469c-a9cc-8ece0c5fe584
-    lease_issued_at: '2026-07-29T00:38:10Z'
-    lease_expires_at: '2026-07-29T01:38:10Z'
-lease_expires_at: '2026-07-29T01:38:10Z'
-lease_released_at: '2026-07-29T01:17:00Z'
-last_heartbeat_at: '2026-07-29T01:17:00Z'
-controller_authorization_sha: eb3b0e1deecbffe05177a07df0d8e52d648d109c
-ready_entry_state_based_on_control_head_sha: de271a6cab5fc74e8c77b5defc302094fe9a22fc
-ready_entry_payload_digest: 05f3889c9a8341075e3fb49d25093149c2dfaf14f9470900ab69dda1fd70fc4e
-state_based_on_head_sha: 1a5a9c1d230e2852d21767509c4c42c908988221
+    lease_id: 76b4bb8b-af8b-4fcf-9ed7-4054ed8fe57a
+    lease_issued_at: '2026-07-29T01:39:10Z'
+    lease_expires_at: '2026-07-29T02:39:10Z'
+    state_based_on_control_head_sha: c743420931244135bcd61578ea1f322851b325a8
+lease_expires_at: '2026-07-29T02:39:10Z'
+last_heartbeat_at: '2026-07-29T01:46:32Z'
+controller_authorization_sha: b0aeb1d1ba9ed25b27b7b519b9f06ba6bbbe7dfc
+ready_entry_state_based_on_control_head_sha: c743420931244135bcd61578ea1f322851b325a8
+ready_entry_payload_digest: 639b020e9df4dd07e1394aa40a3053d9e7d7cdd6471a7923ef57701d2c009ad6
+state_based_on_head_sha: 122608b516046f9c2b93b18256573232b9958137
 last_implementation_commit_sha: 1a5a9c1d230e2852d21767509c4c42c908988221
+pending_correction_interface:
+  status: pending_correction
+  interface_implementation_head_sha: 1a5a9c1d230e2852d21767509c4c42c908988221
+  interface_checkpoint_sha: 0e674da73f924011c6f2eeeea56009a281227a54
+  final_metadata_sha: 122608b516046f9c2b93b18256573232b9958137
+  semantic_contract_version: 1.0.0
+  interface_checkpoint_digest: 9ac5c08ab8b0585747630093c077bcc48f93f9748320362610ab1ccc3786bbf7
+  superseded_interface_checkpoint_digest: d643626af5b5ba4c6fbdd158b2e418c9f5f88123285b67595610a2e49b0b79b6
+  admission: rejected_pending_correction
 completed_steps:
-  - Fetched exact containing controller commit eb3b0e1deecbffe05177a07df0d8e52d648d109c.
-  - Verified that controller commit has sole parent de271a6cab5fc74e8c77b5defc302094fe9a22fc.
-  - Verified the exact create_new_branch entry authorizes start 49431959f58f284bdc13ca931acf09f980fc483a with no existing remote P33 branch.
-  - Recomputed and matched canonical ready-entry digest 05f3889c9a8341075e3fb49d25093149c2dfaf14f9470900ab69dda1fd70fc4e.
-  - Verified exact Git-blob package-lock, source-package, task-packet, and task-context digests.
-  - Verified all 200 locked execution-package Git blobs.
-  - Verified F05 and F06 interface source ancestry at the authorized start.
-  - Verified exact F05 and F06 interface checkpoint identities and all 19 exported artifact Git-blob digests.
-  - Claimed the sole OPERATIONS_RUNTIME lease with no effect locks and zero external-effect authority.
-  - Created only the three P33 runtime memory files; no product file was read for implementation or changed.
-  - Implemented and verified the exact v2.1 runtime identity, health, redaction, protected diagnostics, worker heartbeat, and operator script interfaces.
-  - Published the exact semantic interface checkpoint for P34, then republished it after response-wide redaction hardening with contract digest 9ac5c08ab8b0585747630093c077bcc48f93f9748320362610ab1ccc3786bbf7.
-  - Added 10 focused assertions, the operator runbook, and structured registration, configuration, and deployment steward requests.
-  - Passed full workspace secret scan, lint, and typecheck plus 10 focused assertions, task-artifact formatting, and diff hygiene.
-  - Released the task-local OPERATIONS_RUNTIME lease with no external effect attempted.
+  - Fetched exact containing controller commit b0aeb1d1ba9ed25b27b7b519b9f06ba6bbbe7dfc.
+  - Verified that the containing controller has sole parent c743420931244135bcd61578ea1f322851b325a8.
+  - Verified resume_existing_branch against exact local and remote P33 head 122608b516046f9c2b93b18256573232b9958137 with a clean worktree.
+  - Recomputed the canonical recursive-key-sorted ready-entry digest and matched 639b020e9df4dd07e1394aa40a3053d9e7d7cdd6471a7923ef57701d2c009ad6.
+  - Verified claim 9f112031-01ef-4117-986d-27465a06d19e, OPERATIONS_RUNTIME lease 76b4bb8b-af8b-4fcf-9ed7-4054ed8fe57a, expiry 2026-07-29T02:39:10Z, and zero effect locks.
+  - Preserved the 1a5a9c1d/0e674da7/9ac5c08a superseding interface lineage as pending correction; no product, contract, test, runbook, script, or steward-request file was changed.
 remaining_steps:
-  - I36 must independently audit and integrate the exact P33 interface checkpoint before C00 authorizes P34.
-  - I36 must disposition P33-registration-001, P33-config-001, and P33-deploy-001 without weakening the protected operations boundary.
-next_action: Review and integrate P33 interface digest 9ac5c08ab8b0585747630093c077bcc48f93f9748320362610ab1ccc3786bbf7 from implementation head 1a5a9c1d230e2852d21767509c4c42c908988221, then disposition the three structured steward requests.
+  - Push and report this exact three-file correction claim checkpoint.
+  - Stop before product repair; await C00 reconciliation of the exact remote correction-claim head and explicit resume.
+next_action: Push and report the correction claim-only checkpoint, then stop until C00 consumes its exact remote head and explicitly resumes P33.
 requirements:
-  OTV2-OPS-166: implementation_ready
-  OTV2-OPS-167: implementation_ready
-  OTV2-OPS-171: implementation_ready
-  OTV2-OPS-172: implementation_ready
-  OTV2-OPS-173: implementation_ready
+  OTV2-OPS-166: correction_claimed
+  OTV2-OPS-167: correction_claimed
+  OTV2-OPS-171: correction_claimed
+  OTV2-OPS-172: correction_claimed
+  OTV2-OPS-173: correction_claimed
 acceptance_cases:
-  OTV2-OPS-166-AC01: task_owned_assertions_passed
-  OTV2-OPS-167-AC01: task_owned_assertions_passed
-  OTV2-OPS-171-AC01: task_owned_assertions_passed
-  OTV2-OPS-172-AC01: task_owned_assertions_passed
-  OTV2-OPS-173-AC01: task_owned_assertions_passed
+  OTV2-OPS-166-AC01: pending_correction
+  OTV2-OPS-167-AC01: pending_correction
+  OTV2-OPS-171-AC01: pending_correction
+  OTV2-OPS-172-AC01: pending_correction
+  OTV2-OPS-173-AC01: pending_correction
 changed_paths:
-  - apps/web/src/server/operations/index.ts
-  - apps/web/src/server/operations/router.test.ts
-  - apps/web/src/server/operations/router.ts
-  - apps/worker/src/operations/heartbeat.test.ts
-  - apps/worker/src/operations/heartbeat.ts
-  - apps/worker/src/operations/index.ts
-  - ops/runbooks/v2.1/runtime/operations-runtime.md
-  - ops/v2.1-execution/runtime/P33/HANDOFF.md
-  - ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P33/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P33/steward-requests/P33-config-001.yaml
-  - ops/v2.1-execution/runtime/P33/steward-requests/P33-deploy-001.yaml
-  - ops/v2.1-execution/runtime/P33/steward-requests/P33-registration-001.yaml
   - ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
-  - packages/observability/v21/contracts.ts
-  - packages/observability/v21/health.ts
-  - packages/observability/v21/index.ts
-  - packages/observability/v21/operations.test.ts
-  - packages/observability/v21/redaction.ts
-  - packages/observability/v21/runtime-identity.ts
-  - packages/observability/v21/test-fixtures.ts
-  - scripts/operations/v21/health/evaluate-health.ts
-  - scripts/operations/v21/monitoring/scan-operational-payloads.ts
-  - scripts/operations/v21/runtime/inspect-runtime-identity.ts
+  - ops/v2.1-execution/runtime/P33/HANDOFF.md
+  - ops/v2.1-execution/runtime/P33/NEXT-PROMPT.md
 migrations: []
 steward_requests:
   - P33-registration-001
@@ -111,34 +91,14 @@ steward_requests:
   - P33-deploy-001
 verification:
   commands_run:
-    - command: exact containing controller and sole-parent verification
-      result: passed; controller eb3b0e1d has sole parent de271a6c
+    - command: containing controller and sole-parent verification
+      result: passed; b0aeb1d1 has sole parent c7434209
     - command: canonical P33 ready-entry digest recomputation
-      result: passed; 05f3889c9a8341075e3fb49d25093149c2dfaf14f9470900ab69dda1fd70fc4e
-    - command: exact branch absence, authorized-start, claim, writer-lease, and effect-lock verification
-      result: passed; no local or remote branch existed, start 49431959, claim e0ba9363, lease c32b860e, and zero effect locks
-    - command: locked execution-package Git-blob verification
-      result: passed; 200 of 200
-    - command: F05 and F06 dependency ancestry, checkpoint, and export verification
-      result: passed; both sources are integrated and all 19 exported Git blobs match
-    - command: atomic claim scope verification
-      result: passed; exactly the three P33 runtime memory files changed
-    - command: npm run typecheck
-      result: passed
-    - command: focused ESLint, Prettier, and git diff checks
-      result: passed
-    - command: npm run secret:scan
-      result: passed across 2729 repository text files
-    - command: npm run lint -- --quiet
-      result: passed
-    - command: npm run typecheck
-      result: passed
-    - command: npx vitest run packages/observability/v21/operations.test.ts apps/worker/src/operations/heartbeat.test.ts apps/web/src/server/operations/router.test.ts
-      result: passed; 3 files and 10 tests
-    - command: npx prettier --check over all P33 product, runbook, script, steward, and runtime artifacts
-      result: passed
-    - command: git diff --check
-      result: passed
+      result: passed; 639b020e9df4dd07e1394aa40a3053d9e7d7cdd6471a7923ef57701d2c009ad6
+    - command: exact existing local/remote head and clean-worktree verification
+      result: passed; both equal 122608b516046f9c2b93b18256573232b9958137 before this atomic claim
+    - command: correction claim, writer lease, and effect-lock verification
+      result: passed; claim 9f112031, lease 76b4bb8b expires 2026-07-29T02:39:10Z, zero effect locks
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -147,6 +107,4 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - Central web/worker registration and root barrel changes are captured in P33-registration-001.
-  - Candidate identity, read-only observation adapters, and heartbeat transport configuration are captured in P33-config-001.
-  - Monitoring resource, alert route, and deployment work is captured in P33-deploy-001.
+  - Existing P33 interface and steward-request defects are recorded for the correction phase; this claim-only checkpoint does not repair them.
