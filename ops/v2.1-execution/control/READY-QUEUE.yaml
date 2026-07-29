@@ -2,8 +2,68 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: I36
+  status: resume_ready
+  phase: P35_full_integration
+  branch: codex/v21-integration
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
+  authorized_start_sha: 255d35b2fb5e7db20d166bcf2b7c1a7eeba8f33d
+  expected_existing_head: 255d35b2fb5e7db20d166bcf2b7c1a7eeba8f33d
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
+  task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
+      control_state_digest: f7894ee4a7c8567fab481b265575e3f9f937de249886602a2c3e8c89cf95d6f8
+      task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
+      task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
+    F01:
+      required_state: full_head_ancestor
+      observed_state: full_head_ancestor
+      observed_task_head_sha: b5344992a43a735a9c66047fecd83f951651de27
+      observed_integration_head_sha: 255d35b2fb5e7db20d166bcf2b7c1a7eeba8f33d
+      interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+    I36:
+      required_state: prior_micro_batch_released
+      observed_state: prior_micro_batch_released
+      observed_integration_head_sha: 255d35b2fb5e7db20d166bcf2b7c1a7eeba8f33d
+      state_handoff_digest: 4c71811590524cec419728725973fea9df1238eef71a29b7a6b20f3ac7e398c0
+    P35:
+      required_state: ready_for_review
+      observed_state: ready_for_review
+      observed_task_head_sha: a85aecc22b013d583589a67cf0cc9dfad6745aba
+      full_source_head_sha: a85aecc22b013d583589a67cf0cc9dfad6745aba
+      source_delta_base_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+      implementation_head_sha: 6b92adbf893c45f4a767b8036ec41b52744cce4e
+      tail_inventory_digest: 7fa14f2f40c0949ab2fdbfb24ee1383bb1cb23c1d46669770825c308b09d8107
+      state_handoff_digest: e524a2756fecb4ab6816e972211d858a729872f349459b0863754f3a72d01475
+      task_packet_digest: 533cdac53bcc53fe0abccdd67e1f168b57a6cfbdf63c81d71c611ecb4b29d71f
+      task_context_digest: d8d040229639d32c6ec4c94b66ad999d7b0afb1e23abff0aa10ccea9b5d54c06
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 11eac672-8eda-4188-baed-82e0a2a9ef8b
+    holder_task_id: I36
+    holder_claim_id: 5f6577ac-9fcd-4558-8d8a-1318b5b002b5
+    state_based_on_control_head_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
+    lease_issued_at: '2026-07-29T14:23:14Z'
+    lease_expires_at: '2026-07-29T15:38:14Z'
+    phase_scope: P35_full_integration_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: 5f6577ac-9fcd-4558-8d8a-1318b5b002b5
+  lease_issued_at: '2026-07-29T14:23:14Z'
+  lease_expires_at: '2026-07-29T15:38:14Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  I36: 70c2781a19242cd1b6bcc0452dd755c3b1964dd9b68b4694d5fa5a606d8ee4d9
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
