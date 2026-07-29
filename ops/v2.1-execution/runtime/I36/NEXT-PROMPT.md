@@ -1,16 +1,20 @@
-# I36 Integration — Next Prompt
+# I36 P08 v2 Interface Atomic Claim — Next Prompt
 
-The P08 interface item was withdrawn before source admission. Claim
-`a2ae8e13-f123-4190-badc-58269ced4219` and RELEASE_INTEGRATOR lease
-`d2df925f-32a0-42e6-8ed5-fd018962f87d` are released with zero effects.
+Stop after publishing this metadata-only atomic claim.
 
-Before any further integration work:
+Before any P08 source admission or merge:
 
-1. fetch `origin/codex/v21-control` and `origin/codex/v21-integration`;
-2. require a new exact C00 ready/resume entry and unexpired lease;
-3. require its expected integration head to equal the exact pushed release
-   checkpoint;
-4. verify the canonical ready and merge-item payload digests;
-5. only then read a queued source for admission.
+1. fetch `origin/codex/v21-control`, `origin/codex/v21-integration`, and the P08
+   source branch;
+2. require C00 to have reconciled claim
+   `2b9e5c96-4e10-45a9-9f59-aa2d7110cdd3`;
+3. require the next expected integration head to equal this pushed
+   atomic-claim head;
+4. require the same still-valid lease or a newly issued exact
+   RELEASE_INTEGRATOR lease;
+5. verify the rebound ready and merge-item payload digests before reading the
+   source for admission.
 
-Do not merge P08 from the withdrawn item or reuse the released claim.
+Until then, do not merge or cherry-pick P08, inspect the source for admission,
+apply a steward request, edit product or shared registration paths, move a
+candidate, or perform a provider or external effect.
