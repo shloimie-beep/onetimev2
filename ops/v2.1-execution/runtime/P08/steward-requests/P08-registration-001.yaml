@@ -1,0 +1,47 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P08-registration-001
+task_id: P08
+kind: registration
+requirement_ids:
+  - OTV2-SIGNUP-176
+  - OTV2-SIGNUP-177
+  - OTV2-SIGNUP-179
+  - OTV2-SIGNUP-213
+  - OTV2-SIGNUP-228
+acceptance_case_ids:
+  - OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH
+  - OTV2-SIGNUP-177-AC01
+  - OTV2-SIGNUP-179-AC01
+  - OTV2-SIGNUP-213-AC01
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+rationale: >-
+  P08 cannot edit root barrels, public route composition, or central server
+  registries. Its direct-import contract, client model, domain policy, and server
+  service are complete without those shared changes.
+desired_semantic_change: >-
+  Export the stable P08 family-signup contract and domain policy, mount the
+  mutually exclusive Family and School public intake routes, and bind Family
+  submission to the local transaction service. The route must reject missing,
+  unsupported, or hybrid classification before any local or provider write.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/contracts/src/index.ts exports packages/contracts/src/signup/family/index.ts
+  - packages/domain/src/index.ts exports packages/domain/src/signup/family/index.ts
+  - public /signup offers exactly Family and School choices
+  - Family route accepts only the exact FAMILY_SIGNUP_FIELDS and never accepts card or Student fields
+  - School route accepts no password, card, household, or Student fields and creates an inquiry only
+  - server clock selects the fixed-expiry branch; client time is display-only
+  - registration injects F03 password hashing, F04 normalized identity lookup, and the P08 transaction repository
+compatibility_assumptions:
+  - Same-origin request security and generic public error handling use the integrated F03 seam.
+  - Hosted Checkout continuation is routed by its owning billing lane and is not executed by the signup form.
+  - GHL synchronization is outbox-only and uses the integrated F06 matching/reconciliation seam.
+verification_performed:
+  - focused P08 contract, domain, server, and client assertions
+  - repository TypeScript typecheck
+conflicts_or_risks:
+  - Do not infer Family when classification is missing.
+  - Do not expose account existence through route-specific duplicate messages.
+  - Do not perform inline provider or financial effects.
+contains_secret_or_private_data: false

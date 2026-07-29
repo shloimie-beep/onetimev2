@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P08-migration-001
+task_id: P08
+kind: migration
+requirement_ids:
+  - OTV2-SIGNUP-177
+  - OTV2-SIGNUP-179
+  - OTV2-SIGNUP-213
+  - OTV2-SIGNUP-228
+acceptance_case_ids:
+  - OTV2-SIGNUP-177-AC01
+  - OTV2-SIGNUP-179-AC01
+  - OTV2-SIGNUP-213-AC01
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+rationale: >-
+  P08 owns the family-signup contract, policy, and transaction-neutral service,
+  but only the migration steward may allocate a forward-only migration. The
+  service deliberately performs no schema creation.
+desired_semantic_change: >-
+  Add transactionally consistent Family signup persistence that binds one
+  normalized adult to one HumanAccount, one new Family household, credential
+  state when needed, fixed-expiry access state, stable request idempotency, and
+  a durable GHL sync outbox. Local rows and outbox must commit atomically; no
+  provider effect may execute inside the transaction.
+proposed_symbols_routes_keys_or_dependencies:
+  - unique scoped normalized adult email and one-to-one adult/HumanAccount identity
+  - unique scoped family-signup idempotency key plus canonical request hash
+  - household classification fixed to family with seat_limit 3 and active_seat_count 0
+  - access state free before 2026-09-13T16:24:00.000Z and inactive at or after it
+  - free expiry fixed to 2026-09-13T16:24:00.000Z with no rolling-trial column or derivation
+  - durable outbox intent unique by request and household, preserving adult suppression
+  - optional hashed verified GHL link and identity-review metadata; no raw provider identifiers
+compatibility_assumptions:
+  - Reuse the integrated F03 credential and F04 identity/household persistence seams.
+  - Reuse the F06 provider-link and durable job/outbox semantics.
+  - The migration composes with the F02 isolation mapping and never edits an applied migration.
+verification_performed:
+  - focused P08 contract, domain, server, and client assertions
+  - repository TypeScript typecheck
+conflicts_or_risks:
+  - Any existing duplicate normalized adults or request-key/hash disagreement must fail closed for steward review.
+  - Provider failure or identity ambiguity must not roll back or block a valid local signup.
+contains_secret_or_private_data: false
