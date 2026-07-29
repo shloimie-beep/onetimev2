@@ -1,49 +1,35 @@
-# P11 Correction Atomic Claim Handoff
+# P11 Correction Renewal Atomic Claim Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p11-admin-operations`
-- Authorized settled start:
-  `cecc1c0dc6ff57562e5d89dd731289d860086bf7`
-- Rejected final head:
-  `51bd416bbf3b53a2eb985c41617673135bcfc7a7`
-- Rejected implementation head:
-  `f482ebb76a1278eb6adbc6895b08c26ef111e452`
-- Containing correction authorization:
-  `331ffc12ba126aafa2c25fb48293a7fd0a8734e6`
+- Preserved partial correction checkpoint:
+  `e807e26e5882c3b8ad8e06221db9f28b743369b7`
+- Containing renewal authorization:
+  `863131dbb63004f6e5a547b0d10bb8262d0bbc37`
 - Sole acquisition parent:
-  `a6a9c53b670c1345187f846eaf1f53133f4c7e67`
-- Ready-entry digest:
-  `48210c4c569564fcf829a5ee5fbd3fcf9b4b989377ad0ca8f898fc66d32f1aba`
-- Claim: `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`
-- Writer: `codex-p11-worker-b66b8fdf`
+  `daa4555baa113fb0a2224bd8505e5e599ad0e476`
+- READY digest:
+  `727c1f24163de62242f481b3df804b7b68cc157a0be9c34894c4cb1db2799efd`
+- Fresh claim: `d6567fe9-bfd3-45c6-88c5-ff6cbdff225a`
+- Writer: `codex-p11-worker-d6567fe9`
 - ADMIN_OPERATIONS_UI lease:
-  `39ce3c68-6685-4981-bc09-f1cd3dd24c55`
-- Lease issued: `2026-07-29T07:37:36Z`
-- Lease expiry: `2026-07-29T08:37:36Z`
-- Claim phase: `P11_atomic_claim_correction_only`
+  `fd135a96-bfc0-4ee7-b59a-94873b5e3100`
+- Lease issued: `2026-07-29T08:29:47Z`
+- Lease expiry: `2026-07-29T09:29:47Z`
+- Phase scope: `P11_atomic_claim_renewal_only`
 
-## Rejection findings bound for correction
+## Preserved partial correction
 
-C00 rejected exact final head
-`51bd416bbf3b53a2eb985c41617673135bcfc7a7` from admission despite valid
-ancestry, exact seventeen-path scope, eight passing focused tests, and passing
-typecheck. Independent source review and direct probes found:
+Checkpoint `e807e26e5882c3b8ad8e06221db9f28b743369b7` preserves six bounded partial
+correction files in P11-owned contract, domain, server, dashboard, and search
+roots. They remain incomplete and unvalidated. This renewal claim does not
+modify them, resume correction, strengthen the registration request, or run or
+claim any test.
 
-- navigation-time authorization is missing and stale resolution is neutral;
-- fixture provider readiness is relabeled as production;
-- required quick actions and PS-025.3 operational groups are absent;
-- inherited primary routes are noncanonical;
-- content metadata is not searched;
-- provider URLs and private title text can appear in results;
-- Recent Activity reports lifetime totals;
-- sign-out and cache clearing are incomplete; and
-- keyboard association and visible timezone/accessibility evidence are
-  insufficient.
-
-The rejected final is not queued for integration. These findings are recorded
-only to bind the next correction phase; no correction has been implemented in
-this checkpoint.
+The original rejected final remains
+`51bd416bbf3b53a2eb985c41617673135bcfc7a7`; its implementation ancestor is
+`f482ebb76a1278eb6adbc6895b08c26ef111e452`.
 
 ## Atomic checkpoint scope and stop
 
@@ -53,24 +39,10 @@ This checkpoint changes only:
 - `ops/v2.1-execution/runtime/P11/HANDOFF.md`
 - `ops/v2.1-execution/runtime/P11/NEXT-PROMPT.md`
 
-No product, test, steward request, registration, provider, migration, or
-external-effect work was changed or invoked. C00 must reconcile the immutable
-remote checkpoint before P11 performs any correction work.
+C00 must reconcile the immutable remote renewal-claim checkpoint before P11
+resumes correction. No product, test, structured request, registration,
+provider, steward, migration, or effect work is authorized in this phase.
 
 ## External effects
 
 Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`.
-
-## Renewal requested
-
-C00 reconciled atomic claim
-`2fa5c8da116d42c9202c462ef9e061c254dd3958` at control
-`ef7a1fbea74ce2651344544acd26cfd7609f331b` with sole parent
-`d9ba80e75ba28fc1abe5f1910d7fd1034a49907a`. Bounded correction work began,
-but the existing lease could not safely cover implementation, direct tests,
-full validation, digests, and final publication.
-
-The checkpoint preserves partial contract/domain/server/client correction work.
-No registration was applied and no steward, provider, or external effect was
-invoked. Resume only after C00 issues and reconciles a fresh
-`ADMIN_OPERATIONS_UI` lease.
