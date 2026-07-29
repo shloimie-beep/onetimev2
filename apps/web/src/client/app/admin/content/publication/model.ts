@@ -26,7 +26,7 @@ export function buildAdminPublicationProjection(record: ContentPublicationRecord
     approved: record.approval !== null,
     published: record.state === 'published',
     allowedActions: [...ACTIONS[record.state]],
-    occurrenceCount: record.occurrenceIds.length,
+    occurrenceCount: record.occurrenceRelations.length,
     providerReferencePresent: record.opaqueProviderAssetRef !== null,
   };
 }

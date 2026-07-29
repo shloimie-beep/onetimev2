@@ -1,13 +1,17 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type {
+  ContentApprovalEvidence,
+  ContentPublicationMaterialization,
   ContentPublicationOutboxIntent,
   ContentPublicationPrincipal,
   ContentPublicationReceipt,
   ContentPublicationRecord,
   ContentPublicationRepository,
   ContentPublicationUnitOfWork,
-  StudentContentEntitlement,
+  StudentContentAssignment,
   StudentContentResume,
+  StudentPlaybackAuthorizationFacts,
+  VimeoProviderOperationReadback,
 } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
 import { ContentPublicationError } from '../../../../../../../packages/domain/src/content/publication/index.ts';
 import { createContentPublicationService, publicationRequestHash } from './service.ts';
@@ -19,6 +23,8 @@ const admin: ContentPublicationPrincipal = {
   productKey: 'one_time_mishnayos',
   householdId: 'admin_scope',
   studentId: null,
+  sessionId: 'admin_session_one',
+  sessionVersion: 1,
   accessState: 'active',
 };
 const student: ContentPublicationPrincipal = {
@@ -27,6 +33,8 @@ const student: ContentPublicationPrincipal = {
   productKey: 'one_time_mishnayos',
   householdId: 'household_one',
   studentId: 'student_one',
+  sessionId: 'student_session_one',
+  sessionVersion: 7,
   accessState: 'active',
 };
 const parent: ContentPublicationPrincipal = {
@@ -35,6 +43,8 @@ const parent: ContentPublicationPrincipal = {
   productKey: 'one_time_mishnayos',
   householdId: 'household_one',
   studentId: null,
+  sessionId: 'parent_session_one',
+  sessionVersion: 2,
   accessState: 'active',
 };
 
@@ -48,23 +58,20 @@ describe('P21 content publication service', () => {
     );
   });
 
-  it('persists idempotent approval, private publication, playback, resume, and revoke', async () => {
+  it('atomically applies a fenced worker readback and materializes protected Student access', async () => {
     const memory = new MemoryPublicationRepository();
     memory.records.set('content_one', draft());
-    memory.entitlements.set('student_one:content_one', entitlement());
-    const publishPrivate = vi.fn(async () => ({ opaqueProviderAssetRef: 'asset_private_01' }));
-    const revokePrivate = vi.fn(async () => undefined);
     const service = createContentPublicationService({
       repository: memory,
-      provider: { publishPrivate, revokePrivate },
-      createId: () => 'session_001',
+      createId: () => 'playback_session_001',
     });
 
     const approved = await service.approve({
       principal: admin,
       contentId: 'content_one',
       approvalId: 'approval_one',
-      policyVersion: 'content-publication-v1',
+      policyVersion: 'content-publication-v2',
+      evidence: approvalEvidence(),
       binding: command(1, 'approval.key', 'a'),
     });
     expect(approved).toMatchObject({ replay: false, record: { state: 'approved', version: 2 } });
@@ -73,62 +80,85 @@ describe('P21 content publication service', () => {
         principal: admin,
         contentId: 'content_one',
         approvalId: 'approval_one',
-        policyVersion: 'content-publication-v1',
+        policyVersion: 'content-publication-v2',
+        evidence: approvalEvidence(),
         binding: command(1, 'approval.key', 'a'),
       }),
     ).resolves.toMatchObject({ replay: true, record: { state: 'approved', version: 2 } });
-    await expect(
-      service.approve({
-        principal: admin,
-        contentId: 'content_one',
-        approvalId: 'approval_one',
-        policyVersion: 'content-publication-v1',
-        binding: command(1, 'approval.key', 'f'),
-      }),
-    ).rejects.toThrowError(/different request/i);
-    await expect(
-      service.approve({
-        principal: parent,
-        contentId: 'content_one',
-        approvalId: 'approval_one',
-        policyVersion: 'content-publication-v1',
-        binding: command(1, 'approval.key', 'a'),
-      }),
-    ).rejects.toThrowError(/Admin publication access is unavailable/i);
 
     await service.requestPublish({
       principal: admin,
       contentId: 'content_one',
       binding: command(2, 'publish.key', 'b'),
     });
+    const publishing = memory.records.get('content_one')!;
     expect(memory.intents).toEqual([
-      expect.objectContaining({ operation: 'publish_private', state: 'pending' }),
+      expect.objectContaining({
+        provider: 'vimeo',
+        providerOperationId: publishing.pendingProviderOperationId,
+        contentVersionId: 'content_version_one',
+        operation: 'publish_private',
+      }),
     ]);
 
-    await service.dispatchPrivatePublish({
-      principal: admin,
+    const completion = command(3, 'publish.complete.key', 'c');
+    const result = await service.applyPrivatePublicationReadback({
       contentId: 'content_one',
-      binding: command(3, 'publish.complete.key', 'c'),
+      readback: providerReadback(
+        publishing.pendingProviderOperationId!,
+        publishing.pendingProviderRequestHash!,
+      ),
+      audience: [audience()],
+      binding: completion,
     });
-    expect(publishPrivate).toHaveBeenCalledWith({
-      contentId: 'content_one',
+    expect(result).toMatchObject({ replay: false, record: { state: 'published', version: 4 } });
+    expect(memory.materializations).toHaveLength(1);
+    expect(memory.materializations[0]).toMatchObject({
+      contentVersionId: 'content_version_one',
       publicationGeneration: 1,
-      idempotencyKey: 'publish.complete.key',
-      requestHash: hash('c'),
-    });
-    expect(memory.records.get('content_one')).toMatchObject({
-      state: 'published',
-      version: 4,
-      opaqueProviderAssetRef: 'asset_private_01',
+      assignments: [
+        expect.objectContaining({
+          assignmentVersion: 1,
+          contentVersionId: 'content_version_one',
+          studentVersion: 5,
+          enrollmentVersion: 6,
+          accessVersion: 7,
+          serviceAccountConsentVersion: 8,
+          privacyVersion: 9,
+          revocationVersion: 10,
+        }),
+      ],
+      libraryProjections: [
+        expect.objectContaining({
+          internalRoute: '/app/student/library/content_one',
+          active: true,
+        }),
+      ],
+      notices: [
+        expect.objectContaining({
+          recipientKind: 'student',
+          actionLabel: 'Watch recording',
+          actionPath: '/app/student/library/content_one',
+        }),
+        expect.objectContaining({
+          recipientKind: 'adult',
+          actionLabel: 'Open household',
+          actionPath: '/app/parent',
+        }),
+      ],
     });
     await expect(
-      service.dispatchPrivatePublish({
-        principal: admin,
+      service.applyPrivatePublicationReadback({
         contentId: 'content_one',
-        binding: command(3, 'publish.complete.key', 'c'),
+        readback: providerReadback(
+          publishing.pendingProviderOperationId!,
+          publishing.pendingProviderRequestHash!,
+        ),
+        audience: [audience()],
+        binding: completion,
       }),
     ).resolves.toMatchObject({ replay: true, record: { state: 'published', version: 4 } });
-    expect(publishPrivate).toHaveBeenCalledTimes(1);
+    expect(memory.materializations).toHaveLength(1);
 
     const grant = await service.playback({
       principal: student,
@@ -136,7 +166,17 @@ describe('P21 content publication service', () => {
       now: new Date('2026-07-29T10:45:00.000Z'),
     });
     expect(grant).toMatchObject({
-      bootstrapPath: '/api/v1/student/library/content_one/playback',
+      contentVersionId: 'content_version_one',
+      publicationGeneration: 1,
+      playbackGrantGeneration: 1,
+      sessionId: 'student_session_one',
+      sessionVersion: 7,
+      assignmentVersion: 1,
+      accessVersion: 7,
+      enrollmentVersion: 6,
+      serviceAccountConsentVersion: 8,
+      privacyVersion: 9,
+      revocationVersion: 10,
       expiresAt: '2026-07-29T10:50:00.000Z',
     });
     expect(JSON.stringify(grant)).not.toMatch(/vimeo|asset_private|https?:/i);
@@ -157,20 +197,18 @@ describe('P21 content publication service', () => {
     await expect(service.library({ principal: student, query: 'Berachos 1:1' })).resolves.toEqual([
       expect.objectContaining({ contentId: 'content_one', resumePositionMs: 125_000 }),
     ]);
-    await expect(service.library({ principal: parent, query: '' })).rejects.toThrowError(
-      ContentPublicationError,
-    );
 
     await service.unpublish({
       principal: admin,
       contentId: 'content_one',
       binding: command(4, 'unpublish.key', 'e'),
     });
-    expect(memory.records.get('content_one')?.state).toBe('archived');
-    expect(memory.intents.map((intent) => intent.operation)).toEqual([
-      'publish_private',
-      'revoke_private',
-    ]);
+    expect(memory.records.get('content_one')).toMatchObject({
+      state: 'approved',
+      version: 5,
+      playbackGrantGeneration: 2,
+      archivedAt: null,
+    });
     await expect(
       service.playback({
         principal: student,
@@ -178,68 +216,90 @@ describe('P21 content publication service', () => {
         now: new Date('2026-07-29T10:50:00.000Z'),
       }),
     ).rejects.toThrowError(/unavailable/i);
-    await expect(
-      service.saveResume({
-        principal: student,
-        contentId: 'content_one',
-        positionMs: 125_000,
-        binding: command(4, 'resume.key', 'd'),
-      }),
-    ).rejects.toThrowError(/unavailable/i);
-    expect(revokePrivate).not.toHaveBeenCalled();
+
+    await service.archive({
+      principal: admin,
+      contentId: 'content_one',
+      binding: command(5, 'archive.key', 'f'),
+    });
+    expect(memory.records.get('content_one')).toMatchObject({
+      state: 'archived',
+      version: 6,
+      playbackGrantGeneration: 3,
+    });
+    expect(memory.intents.map((intent) => intent.operation)).toEqual([
+      'publish_private',
+      'revoke_private',
+    ]);
   });
 
-  it('fails closed for stale versions, sibling entitlements, and unsafe provider output', async () => {
+  it('fails closed for stale approval evidence, ambiguous readback, and assignment versions', async () => {
     const memory = new MemoryPublicationRepository();
-    memory.records.set('content_one', {
-      ...draft(),
-      version: 4,
-      state: 'publishing',
-      approval: {
-        approvalId: 'approval_one',
-        approvedByAdminId: 'admin_one',
-        approvedAt: '2026-07-29T10:40:00.000Z',
-        policyVersion: 'content-publication-v1',
-      },
-      publicationGeneration: 1,
-    });
-    memory.entitlements.set(
-      'student_one:content_one',
-      entitlement({ studentId: 'student_sibling' }),
-    );
+    memory.records.set('content_one', draft());
     const service = createContentPublicationService({
       repository: memory,
-      provider: {
-        publishPrivate: async () => ({
-          opaqueProviderAssetRef: 'https://player.invalid/private',
-        }),
-        revokePrivate: async () => undefined,
-      },
-      createId: () => 'session_001',
+      createId: () => 'playback_session_001',
     });
 
     await expect(
-      service.dispatchPrivatePublish({
+      service.approve({
         principal: admin,
         contentId: 'content_one',
-        binding: command(4, 'publish.complete.key', 'c'),
+        approvalId: 'approval_one',
+        policyVersion: 'content-publication-v2',
+        evidence: { ...approvalEvidence(), contentVersionDigest: hash('9') },
+        binding: command(1, 'bad.approval.key', '9'),
       }),
-    ).rejects.toThrowError(/opaque and non-routable/i);
+    ).rejects.toThrowError(/evidence is incomplete/i);
+    await service.approve({
+      principal: admin,
+      contentId: 'content_one',
+      approvalId: 'approval_one',
+      policyVersion: 'content-publication-v2',
+      evidence: approvalEvidence(),
+      binding: command(1, 'approval.key', 'a'),
+    });
+    await service.requestPublish({
+      principal: admin,
+      contentId: 'content_one',
+      binding: command(2, 'publish.key', 'b'),
+    });
+    const publishing = memory.records.get('content_one')!;
+    const completion = command(3, 'publish.complete.key', 'c');
+    await expect(
+      service.applyPrivatePublicationReadback({
+        contentId: 'content_one',
+        readback: {
+          ...providerReadback(
+            publishing.pendingProviderOperationId!,
+            publishing.pendingProviderRequestHash!,
+          ),
+          matchingCanonicalAssetCount: 2 as unknown as 1,
+        },
+        audience: [audience()],
+        binding: completion,
+      }),
+    ).rejects.toThrowError(/incomplete or ambiguous/i);
+    expect(memory.records.get('content_one')).toMatchObject({ state: 'publishing', version: 3 });
+    expect(memory.materializations).toHaveLength(0);
+
+    await service.applyPrivatePublicationReadback({
+      contentId: 'content_one',
+      readback: providerReadback(
+        publishing.pendingProviderOperationId!,
+        publishing.pendingProviderRequestHash!,
+      ),
+      audience: [audience()],
+      binding: completion,
+    });
+    memory.playbackFacts.get('student_one:content_one')!.assignmentVersion = 2;
     await expect(
       service.playback({
         principal: student,
         contentId: 'content_one',
         now: new Date('2026-07-29T10:45:00.000Z'),
       }),
-    ).rejects.toThrowError(ContentPublicationError);
-    await expect(
-      service.attachOccurrence({
-        principal: admin,
-        contentId: 'content_one',
-        occurrenceId: 'occurrence_two',
-        binding: command(3, 'attach.key', 'f'),
-      }),
-    ).rejects.toThrowError(/version changed/i);
+    ).rejects.toThrowError(/unavailable/i);
   });
 });
 
@@ -255,6 +315,15 @@ function command(expectedVersion: number, idempotencyKey: string, digit: string)
 function draft(): ContentPublicationRecord {
   return {
     contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    contentVersionDigest: hash('1'),
+    participantSetVersion: 'participant_set_v1',
+    participantSnapshotSetDigest: hash('2'),
+    participantReviewState: 'complete',
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount: 2,
+    completedRedactionCount: 2,
+    redactionReviewDigest: hash('3'),
     version: 1,
     state: 'needs_review',
     title: 'Berachos Review',
@@ -266,23 +335,90 @@ function draft(): ContentPublicationRecord {
     durationMs: 3_600_000,
     approval: null,
     publicationGeneration: 0,
+    playbackGrantGeneration: 1,
+    pendingProviderOperationId: null,
+    pendingProviderRequestHash: null,
     opaqueProviderAssetRef: null,
+    providerReadbackDigest: null,
     publishedAt: null,
     archivedAt: null,
-    occurrenceIds: ['occurrence_one'],
+    occurrenceRelations: [
+      {
+        relationId: 'relation_occurrence_one',
+        occurrenceId: 'occurrence_one',
+        occurrenceVersion: 1,
+        canonicalSeriesId: 'canonical_series_one',
+        productKey: 'one_time_mishnayos',
+        governedByAdminId: 'admin_one',
+        attachedAt: '2026-07-27T16:00:00.000Z',
+      },
+    ],
   };
 }
 
-function entitlement(
-  overrides: Partial<StudentContentEntitlement> = {},
-): StudentContentEntitlement {
+function approvalEvidence(): ContentApprovalEvidence {
   return {
-    contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    contentVersionDigest: hash('1'),
+    participantSnapshotSetDigest: hash('2'),
+    participantSetVersion: 'participant_set_v1',
+    participantReviewState: 'complete',
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount: 2,
+    completedRedactionCount: 2,
+    redactionReviewDigest: hash('3'),
+    adminAttestation: {
+      attestationId: 'attestation_one',
+      attestedByAdminId: 'admin_one',
+      attestedAt: '2026-07-29T10:39:00.000Z',
+      inspectedMediaAndMemberVisibleArtifacts: true,
+      requiredRedactionsComplete: true,
+    },
+  };
+}
+
+function audience() {
+  return {
     studentId: 'student_one',
     householdId: 'household_one',
+    adultRecipientId: 'adult_one',
     occurrenceId: 'occurrence_one',
-    active: true,
-    ...overrides,
+    studentVersion: 5,
+    enrollmentVersion: 6,
+    accessVersion: 7,
+    serviceAccountConsentVersion: 8,
+    privacyVersion: 9,
+    revocationVersion: 10,
+  };
+}
+
+function providerReadback(
+  providerOperationId: string,
+  canonicalRequestHash: string,
+): VimeoProviderOperationReadback {
+  return {
+    providerOperationId,
+    operation: 'publish_private',
+    contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    publicationGeneration: 1,
+    canonicalRequestHash,
+    state: 'complete',
+    fence: {
+      workerId: 'content_worker_one',
+      leaseGeneration: 3,
+      leaseExpiresAt: '2026-07-29T10:48:00.000Z',
+      observedAt: '2026-07-29T10:43:00.000Z',
+    },
+    opaqueProviderAssetRef: 'asset_private_01',
+    vimeoPrivacy: 'private',
+    vimeoAvailability: 'available',
+    matchingCanonicalAssetCount: 1,
+    exactContentVersionCorrelation: true,
+    providerAcceptanceDigest: hash('d'),
+    providerReadbackDigest: hash('e'),
+    oneTimePublicationReadback: 'applied',
+    oneTimeReadbackDigest: hash('f'),
   };
 }
 
@@ -290,7 +426,9 @@ class MemoryPublicationRepository
   implements ContentPublicationRepository, ContentPublicationUnitOfWork
 {
   readonly records = new Map<string, ContentPublicationRecord>();
-  readonly entitlements = new Map<string, StudentContentEntitlement>();
+  readonly assignments = new Map<string, StudentContentAssignment>();
+  readonly playbackFacts = new Map<string, StudentPlaybackAuthorizationFacts>();
+  readonly materializations: ContentPublicationMaterialization[] = [];
   readonly resumes = new Map<string, StudentContentResume>();
   readonly receipts = new Map<string, ContentPublicationReceipt>();
   readonly intents: ContentPublicationOutboxIntent[] = [];
@@ -322,12 +460,47 @@ class MemoryPublicationRepository
     this.intents.push(intent);
   }
 
+  async savePublicationMaterialization(materialization: ContentPublicationMaterialization) {
+    this.materializations.push(materialization);
+    for (const assignment of materialization.assignments) {
+      const key = `${assignment.studentId}:${assignment.contentId}`;
+      this.assignments.set(key, assignment);
+      this.playbackFacts.set(key, {
+        assignmentId: assignment.assignmentId,
+        assignmentVersion: assignment.assignmentVersion,
+        studentId: assignment.studentId,
+        householdId: assignment.householdId,
+        sessionId: 'student_session_one',
+        sessionVersion: 7,
+        sessionActive: true,
+        studentVersion: assignment.studentVersion,
+        studentActive: true,
+        enrollmentVersion: assignment.enrollmentVersion,
+        enrollmentActive: true,
+        accessVersion: assignment.accessVersion,
+        accessState: 'active',
+        serviceAccountConsentVersion: assignment.serviceAccountConsentVersion,
+        serviceAccountAccepted: true,
+        privacyVersion: assignment.privacyVersion,
+        revocationVersion: assignment.revocationVersion,
+        studentRevoked: false,
+        accountRevoked: false,
+        contentRevoked: false,
+        privacyReviewState: 'clear',
+      });
+    }
+  }
+
   async listPublishedContent() {
     return [...this.records.values()].filter((record) => record.state === 'published');
   }
 
-  async getEntitlement(studentId: string, contentId: string) {
-    return this.entitlements.get(`${studentId}:${contentId}`) ?? null;
+  async getAssignment(studentId: string, contentId: string) {
+    return this.assignments.get(`${studentId}:${contentId}`) ?? null;
+  }
+
+  async getPlaybackFacts(studentId: string, contentId: string) {
+    return this.playbackFacts.get(`${studentId}:${contentId}`) ?? null;
   }
 
   async getResume(studentId: string, contentId: string) {

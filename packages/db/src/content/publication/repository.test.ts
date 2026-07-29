@@ -55,6 +55,15 @@ describe('P21 PostgreSQL publication repository', () => {
         unit.saveContent(
           {
             contentId: 'content_one',
+            contentVersionId: 'content_version_one',
+            contentVersionDigest: '1'.repeat(64),
+            participantSetVersion: 'participant_set_v1',
+            participantSnapshotSetDigest: '2'.repeat(64),
+            participantReviewState: 'complete',
+            unresolvedParticipantCount: 0,
+            requiredRedactionCount: 1,
+            completedRedactionCount: 1,
+            redactionReviewDigest: '3'.repeat(64),
             version: 5,
             state: 'published',
             title: 'Berachos Review',
@@ -69,12 +78,44 @@ describe('P21 PostgreSQL publication repository', () => {
               approvedByAdminId: 'admin_one',
               approvedAt: '2026-07-29T10:40:00.000Z',
               policyVersion: 'content-publication-v1',
+              evidence: {
+                contentVersionId: 'content_version_one',
+                contentVersionDigest: '1'.repeat(64),
+                participantSnapshotSetDigest: '2'.repeat(64),
+                participantSetVersion: 'participant_set_v1',
+                participantReviewState: 'complete',
+                unresolvedParticipantCount: 0,
+                requiredRedactionCount: 1,
+                completedRedactionCount: 1,
+                redactionReviewDigest: '3'.repeat(64),
+                adminAttestation: {
+                  attestationId: 'attestation_one',
+                  attestedByAdminId: 'admin_one',
+                  attestedAt: '2026-07-29T10:39:00.000Z',
+                  inspectedMediaAndMemberVisibleArtifacts: true,
+                  requiredRedactionsComplete: true,
+                },
+              },
             },
             publicationGeneration: 1,
+            playbackGrantGeneration: 1,
+            pendingProviderOperationId: null,
+            pendingProviderRequestHash: null,
             opaqueProviderAssetRef: 'asset_private_01',
+            providerReadbackDigest: '4'.repeat(64),
             publishedAt: '2026-07-29T10:42:00.000Z',
             archivedAt: null,
-            occurrenceIds: ['occurrence_one'],
+            occurrenceRelations: [
+              {
+                relationId: 'relation_one',
+                occurrenceId: 'occurrence_one',
+                occurrenceVersion: 1,
+                canonicalSeriesId: 'series_one',
+                productKey: 'one_time_mishnayos',
+                governedByAdminId: 'admin_one',
+                attachedAt: '2026-07-27T16:00:00.000Z',
+              },
+            ],
           },
           4,
         ),
@@ -83,6 +124,99 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(client.queries.at(-1)?.text).toBe('ROLLBACK');
     expect(client.queries.some((query) => query.text === 'COMMIT')).toBe(false);
     expect(client.released).toBe(true);
+  });
+
+  it('writes versioned assignments, library projections, and protected notices in one transaction', async () => {
+    const client = new CapturingClient();
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await repository.inTransaction((unit) =>
+      unit.savePublicationMaterialization({
+        contentId: 'content_one',
+        contentVersionId: 'content_version_one',
+        publicationGeneration: 1,
+        assignments: [
+          {
+            assignmentId: 'assignment_one',
+            assignmentVersion: 1,
+            contentId: 'content_one',
+            contentVersionId: 'content_version_one',
+            publicationGeneration: 1,
+            studentId: 'student_one',
+            householdId: 'household_one',
+            occurrenceId: 'occurrence_one',
+            studentVersion: 5,
+            enrollmentVersion: 6,
+            accessVersion: 7,
+            serviceAccountConsentVersion: 8,
+            privacyVersion: 9,
+            revocationVersion: 10,
+            active: true,
+            revokedAt: null,
+          },
+        ],
+        libraryProjections: [
+          {
+            projectionId: 'projection_one',
+            assignmentId: 'assignment_one',
+            assignmentVersion: 1,
+            contentId: 'content_one',
+            contentVersionId: 'content_version_one',
+            publicationGeneration: 1,
+            studentId: 'student_one',
+            householdId: 'household_one',
+            internalRoute: '/app/student/library/content_one',
+            active: true,
+            createdAt: '2026-07-29T10:44:00.000Z',
+          },
+        ],
+        notices: [
+          {
+            noticeId: 'notice_student_one',
+            recipientKind: 'student',
+            recipientId: 'student_one',
+            studentId: 'student_one',
+            householdId: 'household_one',
+            category: 'recording_available',
+            contentId: 'content_one',
+            contentVersionId: 'content_version_one',
+            sourceVersion: 4,
+            title: 'New recording available',
+            body: 'Berachos Review is ready in your library.',
+            actionLabel: 'Watch recording',
+            actionPath: '/app/student/library/content_one',
+            deliveryState: 'pending',
+            createdAt: '2026-07-29T10:44:00.000Z',
+          },
+          {
+            noticeId: 'notice_adult_one',
+            recipientKind: 'adult',
+            recipientId: 'adult_one',
+            studentId: 'student_one',
+            householdId: 'household_one',
+            category: 'recording_available',
+            contentId: 'content_one',
+            contentVersionId: 'content_version_one',
+            sourceVersion: 4,
+            title: 'New recording available',
+            body: 'A recording is available for the household.',
+            actionLabel: 'Open household',
+            actionPath: '/app/parent',
+            deliveryState: 'pending',
+            createdAt: '2026-07-29T10:44:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    const sql = client.queries.map((query) => query.text).join('\n');
+    expect(sql).toContain('onetime.student_content_assignments');
+    expect(sql).toContain('onetime.student_library_projections');
+    expect(sql.match(/onetime\.protected_recording_notices/g)).toHaveLength(2);
+    expect(client.queries[0]?.text).toBe('BEGIN');
+    expect(client.queries.at(-1)?.text).toBe('COMMIT');
   });
 });
 

@@ -1,10 +1,12 @@
 import type {
   ContentPublicationOutboxIntent,
+  ContentPublicationMaterialization,
   ContentPublicationReceipt,
   ContentPublicationRecord,
   ContentPublicationRepository,
   ContentPublicationUnitOfWork,
-  StudentContentEntitlement,
+  StudentContentAssignment,
+  StudentPlaybackAuthorizationFacts,
   StudentContentResume,
 } from '../../../../contracts/src/content/publication/index.ts';
 
@@ -28,8 +30,12 @@ interface ReceiptRow extends Record<string, unknown> {
   receipt_json: ContentPublicationReceipt;
 }
 
-interface EntitlementRow extends Record<string, unknown> {
-  entitlement_json: StudentContentEntitlement;
+interface AssignmentRow extends Record<string, unknown> {
+  assignment_json: StudentContentAssignment;
+}
+
+interface PlaybackFactsRow extends Record<string, unknown> {
+  facts_json: StudentPlaybackAuthorizationFacts;
 }
 
 interface ResumeRow extends Record<string, unknown> {
@@ -126,13 +132,17 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
     async saveOutboxIntent(intent: ContentPublicationOutboxIntent) {
       const result = await client.query(
         `INSERT INTO onetime.content_publication_outbox (
-           intent_id, content_id, publication_generation, operation,
-           idempotency_key, request_hash, state, intent_json, created_at
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::timestamptz)
+           intent_id, provider_operation_id, provider, content_id, content_version_id,
+           publication_generation, operation, idempotency_key, request_hash, state,
+           intent_json, created_at
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb, $12::timestamptz)
          ON CONFLICT (intent_id) DO NOTHING`,
         [
           intent.intentId,
+          intent.providerOperationId,
+          intent.provider,
           intent.contentId,
+          intent.contentVersionId,
           intent.publicationGeneration,
           intent.operation,
           intent.idempotencyKey,
@@ -145,6 +155,76 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       requireOne(result.rowCount, 'content_publication_outbox_conflict');
     },
 
+    async savePublicationMaterialization(materialization: ContentPublicationMaterialization) {
+      for (const assignment of materialization.assignments) {
+        const result = await client.query(
+          `INSERT INTO onetime.student_content_assignments (
+             assignment_id, student_id, household_id, content_id, content_version_id,
+             publication_generation, assignment_version, active, assignment_json
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+           ON CONFLICT (assignment_id) DO NOTHING`,
+          [
+            assignment.assignmentId,
+            assignment.studentId,
+            assignment.householdId,
+            assignment.contentId,
+            assignment.contentVersionId,
+            assignment.publicationGeneration,
+            assignment.assignmentVersion,
+            assignment.active,
+            JSON.stringify(assignment),
+          ],
+        );
+        requireOne(result.rowCount, 'student_content_assignment_conflict');
+      }
+      for (const projection of materialization.libraryProjections) {
+        const result = await client.query(
+          `INSERT INTO onetime.student_library_projections (
+             projection_id, assignment_id, student_id, household_id, content_id,
+             content_version_id, publication_generation, active, projection_json, created_at
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10::timestamptz)
+           ON CONFLICT (projection_id) DO NOTHING`,
+          [
+            projection.projectionId,
+            projection.assignmentId,
+            projection.studentId,
+            projection.householdId,
+            projection.contentId,
+            projection.contentVersionId,
+            projection.publicationGeneration,
+            projection.active,
+            JSON.stringify(projection),
+            projection.createdAt,
+          ],
+        );
+        requireOne(result.rowCount, 'student_library_projection_conflict');
+      }
+      for (const notice of materialization.notices) {
+        const result = await client.query(
+          `INSERT INTO onetime.protected_recording_notices (
+             notice_id, recipient_kind, recipient_id, student_id, household_id,
+             content_id, content_version_id, source_version, delivery_state,
+             notice_json, created_at
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::timestamptz)
+           ON CONFLICT (notice_id) DO NOTHING`,
+          [
+            notice.noticeId,
+            notice.recipientKind,
+            notice.recipientId,
+            notice.studentId,
+            notice.householdId,
+            notice.contentId,
+            notice.contentVersionId,
+            notice.sourceVersion,
+            notice.deliveryState,
+            JSON.stringify(notice),
+            notice.createdAt,
+          ],
+        );
+        requireOne(result.rowCount, 'protected_recording_notice_conflict');
+      }
+    },
+
     async listPublishedContent() {
       const result = await client.query<ContentRow>(
         `SELECT record_json
@@ -155,16 +235,29 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       return result.rows.map((row) => row.record_json);
     },
 
-    async getEntitlement(studentId, contentId) {
-      const result = await client.query<EntitlementRow>(
-        `SELECT entitlement_json
-           FROM onetime.student_content_entitlements
+    async getAssignment(studentId, contentId) {
+      const result = await client.query<AssignmentRow>(
+        `SELECT assignment_json
+           FROM onetime.student_content_assignments
+          WHERE student_id = $1
+            AND content_id = $2
+            AND active = TRUE
+          LIMIT 1`,
+        [studentId, contentId],
+      );
+      return result.rows[0]?.assignment_json ?? null;
+    },
+
+    async getPlaybackFacts(studentId, contentId) {
+      const result = await client.query<PlaybackFactsRow>(
+        `SELECT facts_json
+           FROM onetime.student_content_playback_facts
           WHERE student_id = $1
             AND content_id = $2
           LIMIT 1`,
         [studentId, contentId],
       );
-      return result.rows[0]?.entitlement_json ?? null;
+      return result.rows[0]?.facts_json ?? null;
     },
 
     async getResume(studentId, contentId) {

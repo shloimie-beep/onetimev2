@@ -10,34 +10,49 @@ requested_owners:
   server_registration: I36
   client_registration: I36
   worker_registration: I36
-summary: Register the isolated P21 publication service and add forward-only persistence for publication, idempotency, outbox, entitlement, and per-Student resume records.
+summary: Register the isolated P21 publication service and add forward-only persistence for immutable approval evidence, fenced provider operations, versioned Student publication projections, protected notices, exact playback authorization facts, and per-Student resume records.
 requested_changes:
   - owner: F02
     target: new forward-only migration
     requirements:
-      - Create onetime.content_publications with content_id primary key, optimistic version, lifecycle state, occurred_at, JSON record, and updated_at.
+      - Create onetime.content_publications with content_id primary key, immutable content_version_id and digest, participant-set version, optimistic aggregate version, lifecycle state, publication and playback-grant generations, pending provider-operation identity and canonical request hash, occurred_at, JSON record, and updated_at.
+      - Persist immutable Admin approval evidence for the exact content version, participant snapshot-set digest and version, completed participant review, zero unresolved participants, exact required/completed redaction counts and review digest, and the named Admin attestation. Reject rather than default or infer any missing evidence.
       - Create onetime.content_publication_receipts with unique operation plus idempotency_key, exact request_hash, content_id, JSON receipt, and committed_at.
-      - Create onetime.content_publication_outbox with intent_id primary key, content_id plus publication_generation, operation, idempotency_key, request_hash, pending state, JSON intent, and created_at.
-      - Create onetime.student_content_entitlements keyed by student_id plus content_id, household and occurrence bindings, active state, and JSON projection.
+      - Create onetime.content_publication_outbox with intent_id primary key, one provider_operation_id, provider, content_id plus content_version_id and publication_generation, operation, idempotency_key, request_hash, pending state, JSON intent, and created_at.
+      - Create or extend the F05-owned ProviderOperation persistence so one stable publish/revoke operation identity carries the current lease fence, canonical request hash, exact content-version correlation, provider acceptance digest, canonical Vimeo readback, ambiguity count/state, and One Time readback digest through retries and reconciliation.
+      - Create onetime.content_occurrence_relations keyed by stable relation_id and unique governed content-version/product/occurrence binding, including occurrence version, canonical series, governing Admin, and attached_at; reject conflicting re-use while permitting exact idempotent replay.
+      - Create onetime.student_content_assignments with stable assignment_id, assignment_version, immutable content version and publication generation, exact Student, household, governed occurrence, Student/enrollment/access/service-account-consent/privacy/revocation versions, active/revoked state, and JSON projection.
+      - Create onetime.student_library_projections with stable projection_id, exact assignment id/version, content version and publication generation, Student/household scope, protected internal route, active state, JSON projection, and created_at.
+      - Create onetime.protected_recording_notices with stable notice_id, Student/adult recipient kind and protected recipient identity, Student/household scope, content version and source version, category, pending delivery state, protected internal action only, JSON payload, and created_at. Adult notices must not contain or lead to a Parent playback route.
+      - Provide onetime.student_content_playback_facts as a transactionally current protected relation or read model that returns the exact assignment id/version, Student/session/enrollment/access/service-account-consent/privacy/revocation versions and current active/accepted/clear/revoked states without recording-participation or member-recognition watch gates.
       - Create onetime.student_content_resume keyed by student_id plus content_id with household_id, publication_version, bounded position_ms, optimistic version, JSON projection, and updated_at.
-      - Add foreign keys and indexes required for content, Student, household, occurrence, published-date search, and pending outbox scans without weakening tenant or product scope.
+      - Make publication completion update the publication record and insert assignments, library projections, Student/adult notices, and the exact idempotency receipt in one database transaction; no partially visible publication is permitted.
+      - Make unpublish published-to-approved increment and durably persist playback_grant_generation in the same transaction so every older bootstrap/grant fails immediately. Keep archive as a separate approved-or-other-eligible-to-archived transition.
+      - Add foreign keys, uniqueness constraints, row protections, and indexes required for content versions, ProviderOperation, Student, session, household, enrollment, access, consent, privacy/revocation, occurrence/product, published-date search, pending outbox scans, and protected notice delivery without weakening tenant or product scope.
   - owner: I36
     target: authenticated server and worker composition
     requirements:
-      - Register Admin approval, publish-request, occurrence-attach, and unpublish commands with CSRF and authenticated Admin enforcement.
-      - Register Student library search, playback-bootstrap, and resume endpoints with server-derived Student and household scope, no-store private responses, and neutral denials.
-      - Dispatch pending publish_private and revoke_private intents only through F05 fenced jobs and F06 exact provider bindings.
+      - Register Admin approval, publish-request, governed occurrence-attach, unpublish, and separate archive commands with CSRF, authenticated Admin enforcement, exact optimistic versions, canonical request hashes, and idempotency receipts.
+      - Require approval callers to submit the already-persisted immutable content-version, participant-snapshot, redaction-review, and Admin-attestation evidence; fail closed on any mismatch or incomplete review.
+      - Register Student library search, playback-bootstrap, and resume endpoints with server-derived Student, session, household, and product scope, no-store private responses, and neutral denials.
+      - Dispatch pending publish_private and revoke_private intents only through F05 fenced jobs and F06 exact provider bindings. The web process must never call Vimeo or another provider mutation adapter directly.
+      - Preserve one ProviderOperation id and canonical request hash through retries. Before applying completion, reconcile canonical Vimeo private plus available state, exactly one correlated content-version asset, the current F05 fence, and the durable One Time readback; ambiguous, stale, missing, duplicate, or non-private results remain unpublished.
+      - Apply a completed worker readback through an internal authenticated composition path that atomically persists publication, versioned Student assignments/library projections, protected Student/adult notices, and the completion receipt.
+      - Derive every playback authorization from exact current content version/publication/grant generation, assignment id/version, Student version, session id/version, enrollment version/state, access version/state, service-account consent version/state, privacy version/state, and revocation version/state. Do not use recording-participation or member-recognition choices as watch gates.
+      - Revalidate all exact grant bindings and current playback_grant_generation on bootstrap issue, renewal, and media request; unpublish invalidates older grants immediately.
       - Keep all provider asset references server-only and return only the P21 five-minute same-origin playback bootstrap.
   - owner: I36
     target: authenticated client composition
     requirements:
       - Compose the isolated Admin publication and Student library modules into existing authenticated shells without adding a Parent playback route.
+      - Deliver Student recording-available actions only to protected Student library routes. Adult notices may open the protected household shell but must not expose provider references or a Parent playback path.
 forbidden:
   - editing or applying any migration from P21
   - direct web-process provider mutation
   - raw Vimeo URL, bearer, provider asset reference, or child-private data in client payloads, logs, handoffs, or evidence
   - Parent or sibling playback
   - runtime schema creation
+  - recording-participation or member-recognition choices used as playback authorization gates
 external_effects:
   authority: none
   attempted: 0

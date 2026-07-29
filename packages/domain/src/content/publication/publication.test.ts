@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type {
+  ContentApprovalEvidence,
   ContentPublicationPrincipal,
   ContentPublicationRecord,
-  StudentContentEntitlement,
+  StudentContentAssignment,
+  StudentPlaybackAuthorizationFacts,
+  VimeoProviderOperationReadback,
 } from '../../../../contracts/src/content/publication/index.ts';
 import { ContentPublicationError } from './errors.ts';
 import {
   approveContent,
+  archiveContent,
   attachOccurrence,
   authorizeStudentPlayback,
   recordPrivatePublication,
@@ -23,6 +27,8 @@ const admin: ContentPublicationPrincipal = {
   productKey: 'one_time_mishnayos',
   householdId: 'admin_scope',
   studentId: null,
+  sessionId: null,
+  sessionVersion: null,
   accessState: 'active',
 };
 const student: ContentPublicationPrincipal = {
@@ -31,6 +37,8 @@ const student: ContentPublicationPrincipal = {
   productKey: 'one_time_mishnayos',
   householdId: 'household_one',
   studentId: 'student_one',
+  sessionId: 'student_session_one',
+  sessionVersion: 7,
   accessState: 'active',
 };
 const parent: ContentPublicationPrincipal = {
@@ -39,206 +47,254 @@ const parent: ContentPublicationPrincipal = {
   productKey: 'one_time_mishnayos',
   householdId: 'household_one',
   studentId: null,
+  sessionId: 'parent_session_one',
+  sessionVersion: 3,
   accessState: 'active',
 };
 
-function content(overrides: Partial<ContentPublicationRecord> = {}): ContentPublicationRecord {
-  return {
-    contentId: 'content_one',
-    version: 4,
-    state: 'needs_review',
-    title: 'Berachos Review',
-    englishTranscriptText: 'The class discusses the first Mishnah and evening Shema.',
-    classTopic: 'Berachos',
-    mishnahReferences: ['Berachos 1:1'],
-    occurredAt: '2026-07-27T16:00:00.000Z',
-    updatedAt: '2026-07-27T16:00:00.000Z',
-    durationMs: 3_600_000,
-    approval: null,
-    publicationGeneration: 0,
-    opaqueProviderAssetRef: null,
-    publishedAt: null,
-    archivedAt: null,
-    occurrenceIds: ['occurrence_one'],
-    ...overrides,
-  };
-}
-
-function binding(expectedVersion: number, digit = 'a') {
-  return {
-    idempotencyKey: `p21.operation.${expectedVersion}`,
-    requestHash: hash(digit),
-    expectedVersion,
-    occurredAt: '2026-07-29T10:40:00.000Z',
-  };
-}
-
-function entitlement(
-  overrides: Partial<StudentContentEntitlement> = {},
-): StudentContentEntitlement {
-  return {
-    contentId: 'content_one',
-    studentId: 'student_one',
-    householdId: 'household_one',
-    occurrenceId: 'occurrence_one',
-    active: true,
-    ...overrides,
-  };
-}
-
 describe('P21 publication lifecycle', () => {
-  it('requires Admin approval and creates bounded private publish/revoke intents', () => {
+  it('fails closed until immutable version, participant, redaction, and Admin evidence agree', () => {
     const draft = content();
     const attached = attachOccurrence({
       principal: admin,
       record: draft,
-      occurrenceId: 'occurrence_two',
+      relation: relation('occurrence_two', 2),
       binding: binding(4),
     });
-    expect(attached.occurrenceIds).toEqual(['occurrence_one', 'occurrence_two']);
+    expect(attached.occurrenceRelations).toHaveLength(2);
     expect(
       attachOccurrence({
         principal: admin,
         record: attached,
-        occurrenceId: 'occurrence_two',
+        relation: relation('occurrence_two', 2),
         binding: binding(5),
       }),
     ).toBe(attached);
     expect(() =>
-      requestPrivatePublication({ principal: admin, record: draft, binding: binding(4) }),
-    ).toThrowError(/approval is required/i);
+      attachOccurrence({
+        principal: admin,
+        record: attached,
+        relation: relation('occurrence_two', 3),
+        binding: binding(5),
+      }),
+    ).toThrow(/different governance/i);
 
-    const approved = approveContent({
-      principal: admin,
-      record: draft,
-      approvalId: 'approval_one',
-      policyVersion: 'content-publication-v1',
-      binding: binding(4),
+    for (const invalid of [
+      { ...approvalEvidence(), contentVersionDigest: hash('f') },
+      { ...approvalEvidence(), participantSnapshotSetDigest: hash('f') },
+      { ...approvalEvidence(), participantReviewState: 'complete', unresolvedParticipantCount: 1 },
+      { ...approvalEvidence(), completedRedactionCount: 1 },
+      { ...approvalEvidence(), redactionReviewDigest: hash('f') },
+      {
+        ...approvalEvidence(),
+        adminAttestation: {
+          ...approvalEvidence().adminAttestation,
+          attestedByAdminId: 'admin_other',
+        },
+      },
+    ]) {
+      expect(() =>
+        approveContent({
+          principal: admin,
+          record: draft,
+          approvalId: 'approval_one',
+          policyVersion: 'content-publication-v1',
+          evidence: invalid as ContentApprovalEvidence,
+          binding: binding(4),
+        }),
+      ).toThrow(/evidence is incomplete/i);
+    }
+    expect(
+      approveContent({
+        principal: admin,
+        record: draft,
+        approvalId: 'approval_one',
+        policyVersion: 'content-publication-v1',
+        evidence: approvalEvidence(),
+        binding: binding(4),
+      }).approval,
+    ).toMatchObject({
+      approvedByAdminId: 'admin_one',
+      evidence: { participantReviewState: 'complete', unresolvedParticipantCount: 0 },
     });
+  });
+
+  it('publishes only from one fenced canonical readback and atomically plans assignments and notices', () => {
+    const approved = approvedContent();
     const requested = requestPrivatePublication({
       principal: admin,
       record: approved,
       binding: binding(5, 'b'),
     });
-    expect(requested.record).toMatchObject({
-      state: 'publishing',
-      publicationGeneration: 1,
-      opaqueProviderAssetRef: null,
-    });
     expect(requested.intent).toMatchObject({
+      provider: 'vimeo',
+      providerOperationId: requested.record.pendingProviderOperationId,
+      contentVersionId: 'content_version_one',
       operation: 'publish_private',
-      publicationGeneration: 1,
-      state: 'pending',
     });
-
+    const readback = providerReadback(
+      requested.record.pendingProviderOperationId!,
+      requested.record.publicationGeneration,
+      hash('b'),
+    );
     const published = recordPrivatePublication({
-      principal: admin,
       record: requested.record,
-      publicationGeneration: 1,
-      opaqueProviderAssetRef: 'asset_private_01',
+      readback,
+      audience: [audience()],
       binding: binding(6, 'c'),
     });
-    expect(published).toMatchObject({
+    expect(published.record).toMatchObject({
       state: 'published',
       opaqueProviderAssetRef: 'asset_private_01',
+      providerReadbackDigest: hash('e'),
+      pendingProviderOperationId: null,
     });
-    expect(() =>
-      recordPrivatePublication({
-        principal: admin,
-        record: requested.record,
-        publicationGeneration: 1,
-        opaqueProviderAssetRef: 'https://player.invalid/private',
-        binding: binding(6, 'c'),
+    expect(published.materialization.assignments).toEqual([
+      expect.objectContaining({
+        contentVersionId: 'content_version_one',
+        studentVersion: 5,
+        enrollmentVersion: 6,
+        accessVersion: 7,
+        serviceAccountConsentVersion: 8,
+        privacyVersion: 9,
+        revocationVersion: 10,
       }),
-    ).toThrowError(/opaque and non-routable/i);
+    ]);
+    expect(published.materialization.libraryProjections[0]?.internalRoute).toBe(
+      '/app/student/library/content_one',
+    );
+    expect(published.materialization.notices).toEqual([
+      expect.objectContaining({
+        recipientKind: 'student',
+        actionPath: '/app/student/library/content_one',
+      }),
+      expect.objectContaining({
+        recipientKind: 'adult',
+        actionLabel: 'Open household',
+        actionPath: '/app/parent',
+      }),
+    ]);
+    expect(JSON.stringify(published.materialization)).not.toMatch(/vimeo|asset_private|https?:/i);
 
-    const revoked = unpublishContent({
+    for (const invalid of [
+      { ...readback, matchingCanonicalAssetCount: 2 },
+      { ...readback, vimeoPrivacy: 'unlisted' },
+      { ...readback, vimeoAvailability: 'processing' },
+      {
+        ...readback,
+        fence: { ...readback.fence, leaseExpiresAt: readback.fence.observedAt },
+      },
+    ]) {
+      expect(() =>
+        recordPrivatePublication({
+          record: requested.record,
+          readback: invalid as VimeoProviderOperationReadback,
+          audience: [audience()],
+          binding: binding(6, 'c'),
+        }),
+      ).toThrow(ContentPublicationError);
+    }
+
+    const unpublished = unpublishContent({
       principal: admin,
-      record: published,
+      record: published.record,
       binding: binding(7, 'd'),
     });
-    expect(revoked.record.state).toBe('archived');
-    expect(revoked.intent.operation).toBe('revoke_private');
+    expect(unpublished.record).toMatchObject({
+      state: 'approved',
+      playbackGrantGeneration: 2,
+      publishedAt: null,
+      archivedAt: null,
+    });
+    expect(unpublished.intent.operation).toBe('revoke_private');
+    const archived = archiveContent({
+      principal: admin,
+      record: unpublished.record,
+      binding: binding(8, 'e'),
+    });
+    expect(archived.record).toMatchObject({ state: 'archived', archivedAt: expect.any(String) });
   });
 
-  it('grants only an entitled active Student a renewable five-minute internal bootstrap', () => {
-    const published = content({
-      state: 'published',
-      opaqueProviderAssetRef: 'asset_private_01',
-      approval: {
-        approvalId: 'approval_one',
-        approvedByAdminId: 'admin_one',
-        approvedAt: '2026-07-29T10:40:00.000Z',
-        policyVersion: 'content-publication-v1',
-      },
-      publicationGeneration: 1,
-      publishedAt: '2026-07-29T10:42:00.000Z',
-    });
+  it('binds a five-minute grant to exact current session, Student, assignment, and access facts', () => {
+    const published = publishedContent();
+    const exactAssignment = assignment();
+    const exactFacts = facts();
     const grant = authorizeStudentPlayback({
       principal: student,
       record: published,
-      entitlement: entitlement(),
+      assignment: exactAssignment,
+      facts: exactFacts,
       now: new Date('2026-07-29T10:45:00.000Z'),
-      playbackSessionId: 'session_one',
+      playbackSessionId: 'playback_session_one',
     });
-    expect(grant).toEqual({
-      contentId: 'content_one',
-      publicationVersion: 4,
-      playbackSessionId: 'session_one',
-      bootstrapPath: '/api/v1/student/library/content_one/playback',
-      issuedAt: '2026-07-29T10:45:00.000Z',
+    expect(grant).toMatchObject({
+      contentVersionId: 'content_version_one',
+      playbackGrantGeneration: 1,
+      studentId: 'student_one',
+      studentVersion: 5,
+      sessionId: 'student_session_one',
+      sessionVersion: 7,
+      assignmentVersion: 1,
+      accessVersion: 7,
       expiresAt: '2026-07-29T10:50:00.000Z',
-      renewable: true,
     });
-    expect(JSON.stringify(grant)).not.toMatch(/vimeo|https?:|asset_private/i);
-
+    expect(JSON.stringify(grant)).not.toMatch(/vimeo|asset_private|https?:/i);
     for (const denial of [
-      { principal: parent, entitlement: entitlement() },
-      { principal: student, entitlement: entitlement({ studentId: 'student_sibling' }) },
-      { principal: student, entitlement: entitlement({ householdId: 'household_other' }) },
-      { principal: student, entitlement: entitlement({ active: false }) },
-      { principal: student, entitlement: entitlement({ occurrenceId: 'occurrence_other' }) },
-      { principal: student, entitlement: null },
-      { principal: { ...student, accessState: 'inactive' as const }, entitlement: entitlement() },
+      { principal: parent, assignment: exactAssignment, facts: exactFacts },
+      {
+        principal: student,
+        assignment: { ...exactAssignment, assignmentVersion: 2 },
+        facts: exactFacts,
+      },
+      {
+        principal: { ...student, sessionVersion: 8 },
+        assignment: exactAssignment,
+        facts: exactFacts,
+      },
+      {
+        principal: student,
+        assignment: exactAssignment,
+        facts: { ...exactFacts, enrollmentActive: false },
+      },
+      {
+        principal: student,
+        assignment: exactAssignment,
+        facts: { ...exactFacts, serviceAccountAccepted: false },
+      },
+      {
+        principal: student,
+        assignment: exactAssignment,
+        facts: { ...exactFacts, privacyReviewState: 'hold' as const },
+      },
+      {
+        principal: student,
+        assignment: exactAssignment,
+        facts: { ...exactFacts, studentRevoked: true },
+      },
     ]) {
       expect(() =>
         authorizeStudentPlayback({
           principal: denial.principal,
           record: published,
-          entitlement: denial.entitlement,
+          assignment: denial.assignment,
+          facts: denial.facts,
           now: new Date('2026-07-29T10:45:00.000Z'),
-          playbackSessionId: 'session_one',
+          playbackSessionId: 'playback_session_one',
         }),
-      ).toThrowError(ContentPublicationError);
+      ).toThrow(ContentPublicationError);
     }
-    expect(() =>
-      authorizeStudentPlayback({
-        principal: student,
-        record: { ...published, state: 'archived' },
-        entitlement: entitlement(),
-        now: new Date('2026-07-29T10:45:00.000Z'),
-        playbackSessionId: 'session_one',
-      }),
-    ).toThrowError(/unavailable/i);
+    // Recording-participation and member-recognition choices are deliberately not playback facts.
+    expect(Object.keys(exactFacts)).not.toContain('recordingParticipationAccepted');
+    expect(Object.keys(exactFacts)).not.toContain('memberRecognitionAccepted');
   });
 
-  it('searches only authorized published content and isolates resume by Student and version', () => {
-    const published = content({
-      state: 'published',
-      opaqueProviderAssetRef: 'asset_private_01',
-      approval: {
-        approvalId: 'approval_one',
-        approvedByAdminId: 'admin_one',
-        approvedAt: '2026-07-29T10:40:00.000Z',
-        policyVersion: 'content-publication-v1',
-      },
-      publicationGeneration: 1,
-      publishedAt: '2026-07-29T10:42:00.000Z',
-    });
+  it('preserves authorized search and Student/version-isolated resume behavior', () => {
+    const published = publishedContent();
     const saved = saveStudentResume({
       principal: student,
       record: published,
-      entitlement: entitlement(),
+      assignment: assignment(),
+      facts: facts(),
       existing: null,
       positionMs: 125_000,
       occurredAt: '2026-07-29T10:46:00.000Z',
@@ -250,17 +306,16 @@ describe('P21 publication lifecycle', () => {
       'Berachos',
       'Berachos 1:1',
     ]) {
-      const results = searchStudentLibrary({
-        principal: student,
-        query,
-        published: [published, { ...published, contentId: 'content_other', title: 'Other lesson' }],
-        entitlements: new Map([
-          ['content_one', entitlement()],
-          ['content_other', entitlement({ contentId: 'content_other', active: false })],
-        ]),
-        resumes: new Map([['content_one', saved]]),
-      });
-      expect(results).toEqual([
+      expect(
+        searchStudentLibrary({
+          principal: student,
+          query,
+          published: [published],
+          assignments: new Map([['content_one', assignment()]]),
+          facts: new Map([['content_one', facts()]]),
+          resumes: new Map([['content_one', saved]]),
+        }),
+      ).toEqual([
         expect.objectContaining({
           contentId: 'content_one',
           resumePositionMs: 125_000,
@@ -268,36 +323,218 @@ describe('P21 publication lifecycle', () => {
         }),
       ]);
     }
-    expect(
-      searchStudentLibrary({
-        principal: student,
-        query: 'berachos 1:1',
-        published: [published],
-        entitlements: new Map([['content_one', entitlement()]]),
-        resumes: new Map([
-          ['content_one', { ...saved, studentId: 'student_sibling', positionMs: 999_000 }],
-        ]),
-      })[0]?.resumePositionMs,
-    ).toBe(0);
     expect(() =>
       saveStudentResume({
         principal: student,
         record: published,
-        entitlement: entitlement(),
+        assignment: assignment(),
+        facts: facts(),
         existing: { ...saved, studentId: 'student_sibling' },
         positionMs: 1,
         occurredAt: '2026-07-29T10:47:00.000Z',
       }),
-    ).toThrowError(/another Student scope/i);
-    expect(() =>
-      saveStudentResume({
-        principal: student,
-        record: published,
-        entitlement: entitlement(),
-        existing: saved,
-        positionMs: published.durationMs + 1,
-        occurredAt: '2026-07-29T10:47:00.000Z',
-      }),
-    ).toThrowError(/outside the published media duration/i);
+    ).toThrow(/another Student scope/i);
   });
 });
+
+function content(overrides: Partial<ContentPublicationRecord> = {}): ContentPublicationRecord {
+  return {
+    contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    contentVersionDigest: hash('1'),
+    participantSetVersion: 'participant_set_v1',
+    participantSnapshotSetDigest: hash('2'),
+    participantReviewState: 'complete',
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount: 2,
+    completedRedactionCount: 2,
+    redactionReviewDigest: hash('3'),
+    version: 4,
+    state: 'needs_review',
+    title: 'Berachos Review',
+    englishTranscriptText: 'The class discusses the first Mishnah and evening Shema.',
+    classTopic: 'Berachos',
+    mishnahReferences: ['Berachos 1:1'],
+    occurredAt: '2026-07-27T16:00:00.000Z',
+    updatedAt: '2026-07-27T16:00:00.000Z',
+    durationMs: 3_600_000,
+    approval: null,
+    publicationGeneration: 0,
+    playbackGrantGeneration: 1,
+    pendingProviderOperationId: null,
+    pendingProviderRequestHash: null,
+    opaqueProviderAssetRef: null,
+    providerReadbackDigest: null,
+    publishedAt: null,
+    archivedAt: null,
+    occurrenceRelations: [
+      {
+        ...relation('occurrence_one', 1),
+        governedByAdminId: 'admin_one',
+        attachedAt: '2026-07-27T16:00:00.000Z',
+      },
+    ],
+    ...overrides,
+  };
+}
+
+function approvalEvidence(): ContentApprovalEvidence {
+  return {
+    contentVersionId: 'content_version_one',
+    contentVersionDigest: hash('1'),
+    participantSnapshotSetDigest: hash('2'),
+    participantSetVersion: 'participant_set_v1',
+    participantReviewState: 'complete',
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount: 2,
+    completedRedactionCount: 2,
+    redactionReviewDigest: hash('3'),
+    adminAttestation: {
+      attestationId: 'attestation_one',
+      attestedByAdminId: 'admin_one',
+      attestedAt: '2026-07-29T10:39:00.000Z',
+      inspectedMediaAndMemberVisibleArtifacts: true,
+      requiredRedactionsComplete: true,
+    },
+  };
+}
+
+function approvedContent() {
+  return content({
+    version: 5,
+    state: 'approved',
+    approval: {
+      approvalId: 'approval_one',
+      approvedByAdminId: 'admin_one',
+      approvedAt: '2026-07-29T10:40:00.000Z',
+      policyVersion: 'content-publication-v1',
+      evidence: approvalEvidence(),
+    },
+  });
+}
+
+function publishedContent() {
+  return content({
+    version: 7,
+    state: 'published',
+    approval: approvedContent().approval,
+    publicationGeneration: 1,
+    pendingProviderOperationId: null,
+    pendingProviderRequestHash: null,
+    opaqueProviderAssetRef: 'asset_private_01',
+    providerReadbackDigest: hash('e'),
+    publishedAt: '2026-07-29T10:42:00.000Z',
+  });
+}
+
+function relation(occurrenceId: string, occurrenceVersion: number) {
+  return {
+    relationId: `relation_${occurrenceId}`,
+    occurrenceId,
+    occurrenceVersion,
+    canonicalSeriesId: 'canonical_series_one',
+    productKey: 'one_time_mishnayos' as const,
+  };
+}
+
+function binding(expectedVersion: number, digit = 'a') {
+  return {
+    idempotencyKey: `p21.operation.${expectedVersion}.${digit}`,
+    requestHash: hash(digit),
+    expectedVersion,
+    occurredAt: '2026-07-29T10:44:00.000Z',
+  };
+}
+
+function providerReadback(
+  providerOperationId: string,
+  publicationGeneration: number,
+  canonicalRequestHash: string,
+): VimeoProviderOperationReadback {
+  return {
+    providerOperationId,
+    operation: 'publish_private',
+    contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    publicationGeneration,
+    canonicalRequestHash,
+    state: 'complete',
+    fence: {
+      workerId: 'content_worker_one',
+      leaseGeneration: 3,
+      leaseExpiresAt: '2026-07-29T10:48:00.000Z',
+      observedAt: '2026-07-29T10:43:00.000Z',
+    },
+    opaqueProviderAssetRef: 'asset_private_01',
+    vimeoPrivacy: 'private',
+    vimeoAvailability: 'available',
+    matchingCanonicalAssetCount: 1,
+    exactContentVersionCorrelation: true,
+    providerAcceptanceDigest: hash('d'),
+    providerReadbackDigest: hash('e'),
+    oneTimePublicationReadback: 'applied',
+    oneTimeReadbackDigest: hash('f'),
+  };
+}
+
+function audience() {
+  return {
+    studentId: 'student_one',
+    householdId: 'household_one',
+    adultRecipientId: 'adult_one',
+    occurrenceId: 'occurrence_one',
+    studentVersion: 5,
+    enrollmentVersion: 6,
+    accessVersion: 7,
+    serviceAccountConsentVersion: 8,
+    privacyVersion: 9,
+    revocationVersion: 10,
+  };
+}
+
+function assignment(): StudentContentAssignment {
+  return {
+    assignmentId: 'assignment_one',
+    assignmentVersion: 1,
+    contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    publicationGeneration: 1,
+    studentId: 'student_one',
+    householdId: 'household_one',
+    occurrenceId: 'occurrence_one',
+    studentVersion: 5,
+    enrollmentVersion: 6,
+    accessVersion: 7,
+    serviceAccountConsentVersion: 8,
+    privacyVersion: 9,
+    revocationVersion: 10,
+    active: true,
+    revokedAt: null,
+  };
+}
+
+function facts(): StudentPlaybackAuthorizationFacts {
+  return {
+    assignmentId: 'assignment_one',
+    assignmentVersion: 1,
+    studentId: 'student_one',
+    householdId: 'household_one',
+    sessionId: 'student_session_one',
+    sessionVersion: 7,
+    sessionActive: true,
+    studentVersion: 5,
+    studentActive: true,
+    enrollmentVersion: 6,
+    enrollmentActive: true,
+    accessVersion: 7,
+    accessState: 'active',
+    serviceAccountConsentVersion: 8,
+    serviceAccountAccepted: true,
+    privacyVersion: 9,
+    revocationVersion: 10,
+    studentRevoked: false,
+    accountRevoked: false,
+    contentRevoked: false,
+    privacyReviewState: 'clear',
+  };
+}
