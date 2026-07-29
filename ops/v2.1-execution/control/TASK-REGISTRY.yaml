@@ -1089,25 +1089,26 @@ tasks:
     transitioned_at: null
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P24/status_proof
 - task_id: P25
-  status: planned
-  active_phase: planned
-  branch: null
-  phase_branches: {}
+  status: ready
+  active_phase: implementation
+  branch: codex/v21-p25-billing-commercial
+  phase_branches:
+    implementation: codex/v21-p25-billing-commercial
   phase_heads: {}
-  authorized_start_sha: null
+  authorized_start_sha: d075dc1839660205845e7da039a182bbe44778d2
   last_known_remote_head: null
-  active_claim_id: null
+  active_claim_id: a4dcccb9-2058-44df-a72d-4b3e6f51bdd9
   active_writer_id: null
-  lease_expires_at: null
+  lease_expires_at: '2026-07-29T06:02:55Z'
   last_heartbeat_at: null
-  controller_authorization_sha: null
-  ready_entry_payload_digest: null
+  controller_authorization_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+  ready_entry_payload_digest: 30aec96a3b09178b89f322ba285b6216c2851039f9eab971edad7e248ce4fb87
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: planned
-    producer_task_id: null
-    producer_head_sha: null
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -1120,30 +1121,31 @@ tasks:
       blocked: 0
       stale: 0
       waived: 0
-    external_effects_reconciled: null
-    state_based_on_control_head_sha: null
-    transitioned_at: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+    transitioned_at: '2026-07-29T05:02:55Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P25/status_proof
 - task_id: P26
-  status: planned
-  active_phase: planned
-  branch: null
-  phase_branches: {}
+  status: ready
+  active_phase: implementation
+  branch: codex/v21-p26-billing-access
+  phase_branches:
+    implementation: codex/v21-p26-billing-access
   phase_heads: {}
-  authorized_start_sha: null
+  authorized_start_sha: d075dc1839660205845e7da039a182bbe44778d2
   last_known_remote_head: null
-  active_claim_id: null
+  active_claim_id: 1c659f83-31c3-4404-9488-c26ad4826922
   active_writer_id: null
-  lease_expires_at: null
+  lease_expires_at: '2026-07-29T06:02:55Z'
   last_heartbeat_at: null
-  controller_authorization_sha: null
-  ready_entry_payload_digest: null
+  controller_authorization_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+  ready_entry_payload_digest: ec58cc73ed98e8137cc652ad838f2300f0e498db536d21c39ad7837d82ca2ddb
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: planned
-    producer_task_id: null
-    producer_head_sha: null
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -1156,9 +1158,9 @@ tasks:
       blocked: 0
       stale: 0
       waived: 0
-    external_effects_reconciled: null
-    state_based_on_control_head_sha: null
-    transitioned_at: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+    transitioned_at: '2026-07-29T05:02:55Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P26/status_proof
 - task_id: P27
   status: ready_for_review

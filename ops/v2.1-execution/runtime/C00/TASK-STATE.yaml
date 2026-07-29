@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-70753fe8
-claim_time: '2026-07-29T04:54:50Z'
-claim_id: 70753fe8-b3f2-4176-9427-a4bdf7b90f72
-lease_expires_at: '2026-07-29T04:56:26Z'
-last_heartbeat_at: '2026-07-29T04:56:26Z'
-controller_authorization_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
+claimed_by: codex-c00-orchestrator-fe30c61c
+claim_time: '2026-07-29T05:02:55Z'
+claim_id: fe30c61c-1adc-48bd-89bd-0c6bf78bdf9b
+lease_expires_at: '2026-07-29T05:05:54Z'
+last_heartbeat_at: '2026-07-29T05:05:54Z'
+controller_authorization_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
 ready_entry_payload_digest: null
-state_based_on_head_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
+state_based_on_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -228,8 +228,10 @@ completed_steps:
 - queued one ordered full-source integration wave for P12 final 4bc6f15c, P22 final 4d1b6dfc, and P34 mechanism final 17f41c6b from exact integration target d075dc18 with pairwise-disjoint scopes, canonical queue digests, one fresh I36 claim/lease, no steward action, and zero effect authority
 - independently verified I36 atomic claim c4ee7d96 with sole parent d075dc18, exactly three I36 runtime files, containing authorization c9e0551d, acquisition 9d34bfde, exact claim/lease/ready bindings, clean remote state, no queued source admission, and zero effects
 - consumed the I36 ready entry and rebound all three ordered full-merge target CAS fields to exact claim head c4ee7d96 with canonical digests c0120296, ed0b0a38, and e7fd5a40
+- authorized dependency-valid P25 commercial billing and P26 billing access only for new-branch atomic claims from exact settled integration start d075dc18 under disjoint BILLING_COMMERCIAL and BILLING_ACCESS writer leases and zero effect authority
+- corrected both billing ready bindings to the F04 interface checkpoint's actual integrated implementation 81c0ee64 rather than the later non-integrated hardening head
 remaining_steps: []
-next_action: I36 executes only the rebound ordered full-source merges P12 4bc6f15c, P22 4d1b6dfc, and P34 17f41c6b from exact claim target c4ee7d96, verifies the cumulative release, publishes metadata, releases its lease, and keeps all steward actions and effects at zero.
+next_action: I36 continues only the rebound P12/P22/P34 full-source wave; P25 and P26 publish only their exact new-branch three-runtime-file atomic claims from settled start d075dc18 and stop for C00 reconciliation; all steward actions and external effects remain unauthorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -237,12 +239,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
+  current_control_parent_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 70753fe8-b3f2-4176-9427-a4bdf7b90f72
-      observed_head: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
+      claim_id: fe30c61c-1adc-48bd-89bd-0c6bf78bdf9b
+      observed_head: 9e04eda2275f3b6a92066670d878a3e1c62361ca
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -440,6 +442,20 @@ orchestration:
       authorized_start_sha: d075dc1839660205845e7da039a182bbe44778d2
       lease_expires_at: null
       scheduling_state: ready_for_review_mechanisms_admitted_real_gates_deferred_full_merge_queued
+    P25:
+      branch: codex/v21-p25-billing-commercial
+      claim_id: a4dcccb9-2058-44df-a72d-4b3e6f51bdd9
+      observed_head: null
+      authorized_start_sha: d075dc1839660205845e7da039a182bbe44778d2
+      lease_expires_at: '2026-07-29T06:02:55Z'
+      scheduling_state: atomic_claim_authorized
+    P26:
+      branch: codex/v21-p26-billing-access
+      claim_id: 1c659f83-31c3-4404-9488-c26ad4826922
+      observed_head: null
+      authorized_start_sha: d075dc1839660205845e7da039a182bbe44778d2
+      lease_expires_at: '2026-07-29T06:02:55Z'
+      scheduling_state: atomic_claim_authorized
   active_native_subagents:
   - f03_worker
   unresolved_blockers: []
@@ -610,10 +626,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 45986570782b8b10b2af6a0f6d31a159d56e63236bab2189b6798f449f1647d5
-    control_lease: 9398cc702350fb58313efb12009fe2ee88f4ab1345d195eab98549623af53d64
-    task_registry: 1b194cfd4dc661390f163aa9c7d89d0e6495135775f88fc10b1f14afc929cdea
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 731a606c9a058c980f6c3e0fae4138a1db3f26378b76f0f6b76bac1161c0999d
+    control_lease: 071f4611558cccbed6350de89aa66fcacdfa24a0d72091368c8a7b2057910df3
+    task_registry: afe0d83c8c028c9f90541635077803a39ca56849dd4ce09f9d39d3d4aecd95ab
+    ready_queue: a2e45df086e1d7774abb7bfc8281ab7b12d30caeafbc916920e1281bd96b86ff
     merge_queue: 27e1b69e884c7d7afa05a76ae87a1634f6655b28e00585d2f1e1c462aae4dbad
     steward_queue: 0114ee435005854047e6c28da262176ecc334bd1b6302f478cba04bb11263d74
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -705,6 +721,8 @@ verification:
   - canonical I36 ready digest f7c20f23 and P12/P22/P34 ordered full-merge digests 6378386e/e8deb9d5/a696ae1a against acquisition 9d34bfde and exact target d075dc18: passed
   - I36 c4ee7d96 atomic claim ancestry, exact three-file scope, authorization/acquisition/claim/lease/ready bindings, clean remote state, no source admission, and zero effects: passed
   - rebound P12/P22/P34 ordered full-merge digests c0120296/ed0b0a38/e7fd5a40 against acquisition 7e0c7e41 and exact claim target c4ee7d96: passed
+  - canonical P25 and P26 ready-entry digests 30aec96a and ec58cc73 against acquisition 9e04eda2, exact settled start d075dc18, integrated dependency ancestry, disjoint leases, absent branches, and zero effects: passed
+  - F04 dependency interface source 4cc95c29 exact declared implementation 81c0ee64 ancestry in d075dc18, with non-integrated later registry implementation excluded: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

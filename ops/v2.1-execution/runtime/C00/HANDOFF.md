@@ -886,3 +886,13 @@ ready entry and rebound P12, P22, and P34 merge targets to exact `c4ee7d96`.
 Canonical rebound digests are `c0120296`, `ed0b0a38`, and `e7fd5a40`.
 I36 may now execute only that order, preserve each source ancestry, perform no
 steward action, and release its lease after cumulative verification.
+
+P25 and P26 are dependency-valid from settled integration start `d075dc18` and
+have no existing branches. C00 issued only new-branch atomic claims
+`a4dcccb9-2058-44df-a72d-4b3e6f51bdd9` and
+`1c659f83-31c3-4404-9488-c26ad4826922` under disjoint BILLING_COMMERCIAL and
+BILLING_ACCESS leases. Canonical ready digests are `30aec96a` and `ec58cc73`.
+Both bindings use the actual integrated F04 implementation `81c0ee64` declared
+by interface source `4cc95c29`; the later registry implementation `8ba3f6c8`
+is not an ancestor of the authorized start. Each worker must change only its
+three task-local runtime files, push, and stop. Effect locks are empty.

@@ -603,3 +603,22 @@ secret scan, and cumulative diff hygiene. Publish exact merge heads plus a
 metadata-only release checkpoint, release lease
 `08ea5a46-06b1-466e-a6f2-b1947f4ed402`, and keep effects at zero. Do not
 apply steward requests or treat P34 real R44/legal gates as passed.
+
+P25 and P26 may publish atomic claims only from exact settled start
+`d075dc1839660205845e7da039a182bbe44778d2`.
+
+P25 uses branch `codex/v21-p25-billing-commercial`, claim
+`a4dcccb9-2058-44df-a72d-4b3e6f51bdd9`, BILLING_COMMERCIAL lease
+`bf5b157c-d452-44a8-991f-bea035e1fd82`, and ready digest
+`30aec96a3b09178b89f322ba285b6216c2851039f9eab971edad7e248ce4fb87`.
+
+P26 uses branch `codex/v21-p26-billing-access`, claim
+`1c659f83-31c3-4404-9488-c26ad4826922`, BILLING_ACCESS lease
+`1bcd6b13-bf89-4000-a653-35a8afdcb9c3`, and ready digest
+`ec58cc73ed98e8137cc652ad838f2300f0e498db536d21c39ad7837d82ca2ddb`.
+
+Each first push must contain exactly task-local `TASK-STATE.yaml`, `HANDOFF.md`,
+and `NEXT-PROMPT.md`, then stop for C00 reconciliation before any product or
+provider work. No effect lock, migration, central registry, composer, route,
+worker registration, steward application, Stripe mutation, or external action
+is authorized.
