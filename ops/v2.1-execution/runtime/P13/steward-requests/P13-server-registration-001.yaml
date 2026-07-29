@@ -1,0 +1,29 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P13-server-registration-001
+task_id: P13
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-PARENT-037
+  - OTV2-PARENT-039
+  - OTV2-PARENT-185
+acceptance_case_ids:
+  - OTV2-PARENT-037-AC01
+  - OTV2-PARENT-039-AC01
+  - OTV2-PARENT-185-AC01
+rationale: P13 owns an isolated Parent-summary service but not the central authenticated server composer.
+desired_semantic_change: Register the P13 Parent-summary overview service behind a server-authenticated Parent principal and exact adult-owned household scope.
+proposed_symbols_routes_keys_or_dependencies:
+  - Register createParentSummaryService from apps/web/src/server/features/portals/parent-summary/index.ts in the canonical Parent portal server feature.
+  - Construct ParentSummaryPrincipal only from the authenticated Parent session; never accept adult_id or household_id from request input.
+compatibility_assumptions:
+  - P12 supplies the integrated authenticated Parent household boundary.
+  - F03 session identity supplies adult_id, household_id, session_id, and the exact Parent role.
+verification_performed:
+  - Focused P13 server positive, wrong-role, cross-household, invalid-reference, empty, and missing-summary tests.
+  - Workspace TypeScript typecheck.
+  - Focused ESLint and Prettier checks.
+conflicts_or_risks:
+  - Registration must not expose Student class, join, recording, learning-library, private-question, or Rabbi-answer data.
+  - Cross-household and wrong-owner records must fail closed before rendering.
+contains_secret_or_private_data: false

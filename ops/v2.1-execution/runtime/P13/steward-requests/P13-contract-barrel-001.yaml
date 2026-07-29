@@ -1,0 +1,26 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P13-contract-barrel-001
+task_id: P13
+kind: barrel_export
+requirement_ids:
+  - OTV2-PARENT-037
+  - OTV2-PARENT-039
+  - OTV2-PARENT-185
+acceptance_case_ids:
+  - OTV2-PARENT-037-AC01
+  - OTV2-PARENT-039-AC01
+  - OTV2-PARENT-185-AC01
+rationale: P13 owns packages/contracts/src/portals/parent-summary but not the steward-owned root contract barrels.
+desired_semantic_change: Re-export the P13 Parent-summary contract from the canonical portals contract barrel without changing its semantics.
+proposed_symbols_routes_keys_or_dependencies:
+  - Re-export packages/contracts/src/portals/parent-summary/index.ts from the canonical portals contract barrel.
+compatibility_assumptions:
+  - The P13 contract is additive and does not modify P12 Parent-household types.
+verification_performed:
+  - Workspace TypeScript typecheck.
+  - Focused P13 service and client tests.
+  - Focused ESLint and Prettier checks.
+conflicts_or_risks:
+  - Do not export repository-only owner scope or add Student learner/private-question fields to the public snapshot.
+contains_secret_or_private_data: false
