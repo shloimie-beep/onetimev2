@@ -1043,6 +1043,24 @@ leases, publish ready-for-review finals, and stop for independent audit. Do not
 apply migration/registration/config requests or inspect/mutate live GHL,
 Vimeo, Drive, S3, or any external provider.
 
+P11 final `17538da1ff15066c3e242567970062db4589577b` must not be
+integrated. Resume it only for an atomic three-runtime-file claim under claim
+`95a4b423-1906-4b24-846b-c4f9d3c1c32a`, ADMIN_OPERATIONS_UI lease
+`c9c69acd-9df5-4411-9cbd-887f33f237f1`, acquisition
+`930b5ab55c1f7e40b1143a757417bee1ca9ae49e`, and READY digest
+`daa56dabb6b8f3d28f7a4d23ce252143d51f8b8b08fbad35802ac9fedef34dcb`.
+Change exactly P11 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+bind the rejected head and fresh identities, push normally, remote-verify, and
+stop for C00 reconciliation.
+
+After reconciliation only, bind every retained private page, request, and
+recent-query snapshot to the credential version that produced it and
+synchronously fail closed unless that version equals the current Admin
+credential. Add rotated-Admin SSR/first-render and same-state credential-change
+tests while preserving the passing revoked render, generation guards, injective
+IDs, Bearer filtering, authorization, privacy, a11y, window, timezone, and
+navigation behavior. No provider/external effect is authorized.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,

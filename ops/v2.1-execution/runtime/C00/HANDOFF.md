@@ -1321,3 +1321,18 @@ School inquiry and approved-school invariants with local tests. P21 may now
 implement its source-owned publication/protected-library lifecycle using local
 ports and mocks. Neither may inspect or mutate live GHL/Vimeo/Drive/S3,
 apply steward requests, send, or perform an external effect.
+
+P11 final `17538da1ff15066c3e242567970062db4589577b` passed exact
+lineage/scope/digest replay, 4 files / 18 tests, typecheck, lease release, and
+all earlier adversarial probes, but is rejected on one residual privacy defect:
+retained `AdminSearchPage`, initial request, and recent-query inputs have no
+credential-version binding. When authorization is still `admin` but the
+credential rotates, retained private data is accepted and rendered
+synchronously while mismatch clearing is deferred to an effect. C00 authorized
+only a fresh three-runtime-file claim from that rejected final: READY
+`daa56dabb6b8f3d28f7a4d23ce252143d51f8b8b08fbad35802ac9fedef34dcb`,
+claim `95a4b423-1906-4b24-846b-c4f9d3c1c32a`, ADMIN_OPERATIONS_UI lease
+`c9c69acd-9df5-4411-9cbd-887f33f237f1` through
+`2026-07-29T11:44:39Z`. The first push changes only P11's three runtime files
+and stops for reconciliation. Product/test/request/provider/effect work remains
+unauthorized in that phase.

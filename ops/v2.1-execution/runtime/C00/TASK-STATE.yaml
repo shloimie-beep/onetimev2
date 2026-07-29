@@ -730,10 +730,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 06cfc82ff9c0e8f4078c75d94e580f4f08a936f7723900bb5e94c68f7aa02e18
-    control_lease: 041dd724562583d5a4b06699497ffc72d2ecd2327b5157c8fff792548d82c6a7
-    task_registry: c34448f765b6d0869517280cee1403246409be361efafb54fd13ce2e87eff368
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 8745d1694399ca67b7417879ef00620989fba6237a600d7b87889b9db6683ba7
+    control_lease: b5d86d8169031b75334cb1813b1bd373746f65e91592b0cd9f04bcc65e496a63
+    task_registry: 540ac1e1e23dd8c466dd5d370503a79dd84f9a6b22e4f5da9029d8755375547c
+    ready_queue: f0d56be3d3ae90d00932409493296846b2a7b13fff3e6a455161fe1a5352984d
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -890,6 +890,9 @@ verification:
   - canonical P21/P09 atomic-claim READY digests d2b127c6/d40ec2fe against acquisition d99fde51, exact start 088b4047, fresh claims and disjoint CONTENT_PUBLICATION/SCHOOL_INQUIRY leases: passed
   - P09 64e56268 and P21 6a065ef4 atomic new-branch claims, exact authorized-start parent, exact three-runtime-file scopes, authorization/acquisition/claim/lease/ready/dependency bindings, clean remote state, and zero effects: passed
   - consumed P09/P21 ready entries and authorized only source-owned local implementation/tests with no live provider/effect authority: passed
+  - P11 final 17538da1 exact 18-path scope, linear implementation/final ancestry, artifact 3529decc, unchanged request aggregate 2327a180, 4 focused files/18 tests, typecheck, released lease, and zero effects: mechanical replay passed
+  - P11 exact-source semantic re-audit: rejected because retained AdminSearchPage/initialRequest/recentQueries have no credential-version binding and render synchronously under a rotated Admin credential before deferred clearing
+  - canonical P11 retained-credential correction READY digest daa56dab against acquisition 930b5ab5, rejected head 17538da1, fresh claim 95a4b423, sole ADMIN_OPERATIONS_UI lease c9c69acd, and zero effect locks: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
