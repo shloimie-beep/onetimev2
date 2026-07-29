@@ -861,3 +861,19 @@ digest `8bb0d6d8`, a clean remote ref, and zero effects. P12 may now replace the
 invalid literal-backslash-n digest `7ac6f511` with documented-LF digest
 `ec615147` only in its interface and runtime metadata. Product, export,
 steward, migration, shared, and effect artifacts must remain byte-identical.
+
+P12 corrected final `4bc6f15c` is independently admitted. The correction from
+claim `b8d43694` changes exactly `INTERFACE-CHECKPOINT` plus the three P12
+runtime files; the full source range from `f1cecb53` remains exactly sixteen
+allowed paths. The documented 515-byte LF/no-final-newline preimage hashes to
+`ec615147`; the interface file hashes to `e28e0b9c`; state plus handoff hashes
+to `9bbd2384`; all four exports and steward request remain byte-identical. The
+fresh lease is released, the remote ref is clean, and effects are zero.
+
+C00 queued ordered full merges P12 `4bc6f15c`, P22 `4d1b6dfc`, then P34
+`17f41c6b` against exact integration target `d075dc18`. Their 16, 14, and 15
+path sets are pairwise disjoint and merge-tree clean. I36 claim
+`2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa` and RELEASE_INTEGRATOR lease
+`08ea5a46-06b1-466e-a6f2-b1947f4ed402` are authorized only for an atomic
+three-runtime-file claim before target-CAS reconciliation. No steward request
+or external effect is authorized; P34 real R44 and legal gates remain unpassed.

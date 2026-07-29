@@ -568,3 +568,21 @@ unchanged export hashes and semantic preimage, verify exact scope and clean
 remote state, publish `ready_for_review`, release lease
 `79c5cf83-4438-4c68-ba4f-8e18b87de1f4`, and keep effects at `0/0/0`. Do not
 change product, contract, test, steward, migration, shared, or effect files.
+
+P12 final `4bc6f15c8beffb28dc845d976a62b9c4915a11dc` is admitted with corrected
+interface checkpoint `e5f59e707f9b3a12c9b64b30aaa23e638c2d816f`, semantic digest
+`ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26`,
+and state/handoff digest
+`9bbd2384e49b61ad5e1e345693de7ff08ddc29ceca87afa866e6db899bc4b0bb`.
+
+For I36, publish only atomic claim
+`2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa` from exact integration head
+`d075dc1839660205845e7da039a182bbe44778d2`, binding acquisition
+`9d34bfde201251ac87766ae5d182421517bb1e73`, RELEASE_INTEGRATOR lease
+`08ea5a46-06b1-466e-a6f2-b1947f4ed402`, and ready digest
+`f7c20f2301d048a0674eb7af6eac965ce759a195e3d1309b40b1fa9242d754ec`.
+Change only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, push,
+remote-verify, and stop. Do not merge P12, P22, or P34 until C00 reconciles the
+exact claim and rebinds all three optimistic target heads. No steward, provider,
+deployment, registration, migration, legal-approval, or external effect action
+is authorized.
