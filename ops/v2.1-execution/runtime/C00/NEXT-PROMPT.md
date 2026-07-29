@@ -864,6 +864,32 @@ integration heads, add direct tests, refresh digests, publish a superseding
 final, release the lease, and stop. Apply no request/migration/registration and
 perform no provider/send/external effect.
 
+F02 Lease A is independently audited and reconciled at exact integration
+release `1798f31b5f698c80ee2babbd6414e9934745a178`, with exact merge
+`8d1405b4f6f5014364620bac0a2b5729c60aa2ac`, F02 source
+`e156003b243221f97f938a0aca16164c1dd86d2d`, protected migrations 2235
+through 2238, fresh 69/69 migration proof, cleared merge queue, four applied
+migration steward results, and effects `0/0/0`. The next ordinal is 2239.
+
+Prepare a read-only exact inventory for F02 Lease B:
+
+- 2239 P16 `2239_v21_classroom_core.sql`
+- 2240 P32 `2240_v21_privacy_data_rights.sql`
+- 2241 P10 `2241_v21_admin_directory.sql`
+- 2242 P23 `2242_v21_student_notifications.sql`
+- 2243 P24 `2243_v21_support.sql`
+- 2244 P27 `2244_v21_ghl_identity.sql`
+
+Verify each immutable request ID, raw request digest, exact producer head and
+Git blob, requesting-task metadata, filename/purpose binding, dependency and
+integration ancestry, absence of ordinal/filename collisions, next ordinal
+2239, and never-allocate 2231. Only after those checks pass, acquire a fresh
+serialized C00 lease and publish an atomic-claim-only F02 READY entry with a
+fresh task claim and exact MIGRATION_AUTHORITY/SCHEMA_FOUNDATION writer
+leases. The first F02 push must change only its runtime triplet and stop for
+C00 reconciliation. No SQL edit, registration, provider inspection,
+deployment, send, or external effect is authorized before that reconciliation.
+
 P11 integration is complete at release
 `eeac03afdd7a5db493885ef507b7c09478b0454a`; do not repeat it and do
 not apply `P11-registration-001` outside its steward checkpoint.

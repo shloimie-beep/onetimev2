@@ -1511,3 +1511,42 @@ plus immutable structured steward requests. It must use local ports/mocks,
 release its lease, publish a ready-for-review final, and stop for independent
 audit. Live Telegram/provider inspection, sends, steward application, and
 external effects remain unauthorized.
+
+## F02 Lease A release reconciliation
+
+Independent audit passed for exact integration release
+`1798f31b5f698c80ee2babbd6414e9934745a178`, whose sole parent is merge
+`8d1405b4f6f5014364620bac0a2b5729c60aa2ac`. The merge parents are exact
+I36 claim `1badb3430d171182da2e43314e286b594c2df538` followed by exact F02
+source `e156003b243221f97f938a0aca16164c1dd86d2d`. The claim-to-release
+delta is exactly the queued eight F02 paths plus the I36 runtime triplet.
+
+The independent replay matched canonical merge digest `f3d55402`, source
+inventory `cdfcda1a`, NUL-delimited manifest `641cc688`, all four protected
+SQL blobs and native/pg-mem checksum pairs, raw-Git metadata formatting,
+package/YAML/secret/diff gates, and a fresh 69/69 migration application with
+zero pending or ledger issues. I36 released lease `6e20c91b` before expiry.
+Effects remain `0/0/0`.
+
+C00 cleared completed merge item `5c3d9201`, mirrored allocations 2235
+through 2238 without semantic change, advanced the next ordinal to 2239, and
+recorded the four migration requests as applied at merge `8d1405b4` with
+result record `1798f31b`. Their canonical sorted-JSON steward-result digests
+are:
+
+- `F04-migration-001`: `c1dd9100472b84412cbb2ae88368e9de3b3090bbfb8a4d318e52e4848acafd6d`
+- `F05-MIGRATION-001`: `334fbc00c1ac54f476d1d25d6085fdc21fac726b2fce6606dd81dc864c61fec2`
+- `P15-MIGRATION-001`: `67ac4844c9285d71395dbca20570fbe39e79b632c723fff375f57dea5b8a1b26`
+- `F06-migration-001`: `df388d510f2be02a6d4f56e69845a0bc57f9dd6e0013e1ee7885b973c4985b0d`
+
+Each result object binds schema/execution/request identity and digest,
+requesting task, kind/status/steward/checkpoint, exact producer source,
+evaluated target `1badb343`, applied merge `8d1405b4`, release result
+`1798f31b`, acknowledgment, and `0/0/0` effects; keys are recursively sorted
+and serialized as compact UTF-8 JSON before SHA-256.
+
+Next, C00 must prepare the exact six-request Lease B inventory for ordinals
+2239 through 2244 and verify every producer head, immutable request blob,
+digest, filename, and collision boundary before a fresh F02 claim and writer
+leases are issued. No Lease B SQL edit, registration, provider action,
+deployment, send, or external effect is yet authorized.

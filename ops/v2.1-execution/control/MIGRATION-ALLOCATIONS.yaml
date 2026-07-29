@@ -3,8 +3,8 @@ execution_id: OT-V21-PRODUCTION
 semantic_owner: F02
 mechanical_control_writer: C00
 proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-reviewed_latest: 2233_zoom_class_occurrence_resources.sql
-next_available_ordinal: 2235
+reviewed_latest: 2238_v21_provider_core.sql
+next_available_ordinal: 2239
 never_allocate:
 - 2231
 allocations:
@@ -17,6 +17,58 @@ allocations:
   checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
   supersedes_interface_digest: bcbb098b674de3f6b8bacb7c04052664dcecf72d597af6876e13c7eb6ca4943e
   supersedes_checksum_sha256: ddc740a201c40ba6fe1f37e9b6e1dfe58f55901bf0686823670fc8b6452b3d5e
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2235
+  file: packages/db/migrations/2235_v21_household_identity.sql
+  task_id: F04
+  request_id: F04-migration-001
+  purpose: Normalized adult identities, human accounts and roles, households, Student profiles, sessions, ownership transfers, attestations, action tokens, billing portal sessions, provider reassociation intents, and append-only account audit.
+  interface_digest: b42fe840f07e8069a01e178f8a14c793ef50297428955b104f0c9e5bb88edc93
+  status: allocated
+  checksum_sha256: 442231550a3aed2360772a9fbc4aebe96edf0510ee175e0b8c7d1097d94f7c1e
+  pg_mem_checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
+  integrated_merge_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  integration_release_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2236
+  file: packages/db/migrations/2236_v21_job_foundation.sql
+  task_id: F05
+  request_id: F05-MIGRATION-001
+  purpose: Durable command idempotency and provider job outbox foundations with scoped uniqueness, monotonic counters, leasing, quarantine, compensation, and due-work indexes.
+  interface_digest: 450d1e4a3ddedd04971f1f52a70e3fec5fbaefe526f9580c4682bc6fb4062a1d
+  status: allocated
+  checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+  pg_mem_checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+  integrated_merge_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  integration_release_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2237
+  file: packages/db/migrations/2237_v21_calendar_recurrence.sql
+  task_id: P15
+  request_id: P15-MIGRATION-001
+  purpose: Recurring calendar series windows, weekdays, duration, lifecycle and optimistic versioning with safe legacy backfill, rescheduled occurrences, and draft-series occurrence fencing.
+  interface_digest: 076e781f52302ae1447855c464c4001b028d610a188388b339a917d4fc477fdf
+  status: allocated
+  checksum_sha256: 7b58a07ff8bb949260715bd630d02c34cb1f7188a7d0a9a9f52380d7a82eca86
+  pg_mem_checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
+  integrated_merge_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  integration_release_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2238
+  file: packages/db/migrations/2238_v21_provider_core.sql
+  task_id: F06
+  request_id: F06-migration-001
+  purpose: Provider operation bindings, adult GHL identity quarantine, household provider mappings, append-only readback evidence, and provider reconciliation indexing over the existing outbox state machine.
+  interface_digest: 06a329a0d1f08cdfd73f3f907a6aa9118fddf209a288e596a812ee0899b3861f
+  status: allocated
+  checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
+  pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
+  integrated_merge_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  integration_release_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
   replaces_applied_migration: false
   destructive: false
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00

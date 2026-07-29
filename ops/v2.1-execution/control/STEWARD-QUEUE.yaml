@@ -95,16 +95,16 @@ items:
   request_digest: b42fe840f07e8069a01e178f8a14c793ef50297428955b104f0c9e5bb88edc93
   requesting_task_id: F04
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_next_migration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  acknowledgment_state_handoff_digest: f9db3e59bc32735a612d7cb5ccd9aa9960645783da2625218ddcc4ed22a35baa
+  applied_commit_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  result_record_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  evaluated_target_head_sha: 1badb3430d171182da2e43314e286b594c2df538
+  result_digest: c1dd9100472b84412cbb2ae88368e9de3b3090bbfb8a4d318e52e4848acafd6d
   rejection_reason: null
 - request_id: F04-registration-001
   request_digest: 531258cbac8709280216c74044463037c0e0fb29d9eb73964ae0a7faaedcd8cd
@@ -125,16 +125,16 @@ items:
   request_digest: 450d1e4a3ddedd04971f1f52a70e3fec5fbaefe526f9580c4682bc6fb4062a1d
   requesting_task_id: F05
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_next_migration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  acknowledgment_state_handoff_digest: f9db3e59bc32735a612d7cb5ccd9aa9960645783da2625218ddcc4ed22a35baa
+  applied_commit_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  result_record_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  evaluated_target_head_sha: 1badb3430d171182da2e43314e286b594c2df538
+  result_digest: 334fbc00c1ac54f476d1d25d6085fdc21fac726b2fce6606dd81dc864c61fec2
   rejection_reason: null
 - request_id: F05-REGISTRATION-001
   request_digest: d98642f32d5bea921d9ffce4eeb550c8c8e57f92e607b8a41c35de84f6e963e1
@@ -155,16 +155,16 @@ items:
   request_digest: 076e781f52302ae1447855c464c4001b028d610a188388b339a917d4fc477fdf
   requesting_task_id: P15
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_next_migration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  acknowledgment_state_handoff_digest: f9db3e59bc32735a612d7cb5ccd9aa9960645783da2625218ddcc4ed22a35baa
+  applied_commit_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  result_record_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  evaluated_target_head_sha: 1badb3430d171182da2e43314e286b594c2df538
+  result_digest: 67ac4844c9285d71395dbca20570fbe39e79b632c723fff375f57dea5b8a1b26
   rejection_reason: null
 - request_id: P15-REGISTRATION-001
   request_digest: 03252417bf53b4f011c86a7356c57abecc8bbd82067a2e1be73c7436a063ce97
@@ -185,16 +185,16 @@ items:
   request_digest: 06a329a0d1f08cdfd73f3f907a6aa9118fddf209a288e596a812ee0899b3861f
   requesting_task_id: F06
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_next_migration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  acknowledgment_state_handoff_digest: f9db3e59bc32735a612d7cb5ccd9aa9960645783da2625218ddcc4ed22a35baa
+  applied_commit_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+  result_record_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  evaluated_target_head_sha: 1badb3430d171182da2e43314e286b594c2df538
+  result_digest: df388d510f2be02a6d4f56e69845a0bc57f9dd6e0013e1ee7885b973c4985b0d
   rejection_reason: null
 - request_id: F06-registration-001
   request_digest: 7bd2a55a939cfafdac24457782b6bc1f0ee37e84003165ef33d76d4a8082cb2c
