@@ -87,8 +87,8 @@ tasks:
     transitioned_at: '2026-07-29T13:48:24Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F01/status_proof
 - task_id: F02
-  status: claimed
-  active_phase: migration_lease_A_2235_2238
+  status: ready
+  active_phase: migration_lease_A_checksum_metadata_correction
   branch: codex/v21-f02-schema-state-migrations
   phase_branches:
     contract: codex/v21-f02-schema-state-migrations
@@ -96,28 +96,29 @@ tasks:
     interface_ready: codex/v21-f02-schema-state-migrations
     implementation_hardening: codex/v21-f02-schema-state-migrations
     migration_lease_A_2235_2238: codex/v21-f02-schema-state-migrations
+    migration_lease_A_checksum_metadata_correction: codex/v21-f02-schema-state-migrations
     verification: codex/v21-f02-schema-state-migrations
   phase_heads:
     contract: bec1f1834adbde6d6b2cd55acb31541fb9dc134a
     implementation: 0e1f9a18677e13556222241cd21b1f24383668b6
     interface_ready: 147934114cb267f86943b1fcff1bbcd6b60cdfaf
     implementation_hardening: 191dac288ea1721bdc0252bd012060ca974d2242
-    migration_lease_A_2235_2238: 0708a09e7d979a10cfe3c0875cebeecca64a2847
+    migration_lease_A_2235_2238: e8dcbd750ce41424102b4d2ead4b786ff3c9c764
     verification: e4673ff1c2e621e26ac93034be245b280c4da4fa
   authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-  last_known_remote_head: 0708a09e7d979a10cfe3c0875cebeecca64a2847
-  active_claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
-  active_writer_id: codex-f02-lease-a-dc6ba41d
-  lease_expires_at: '2026-07-29T18:51:43Z'
-  last_heartbeat_at: '2026-07-29T17:45:27Z'
-  controller_authorization_sha: 3143e8d015ea3662a2268098249138762b39d555
-  ready_entry_payload_digest: c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501
+  last_known_remote_head: e8dcbd750ce41424102b4d2ead4b786ff3c9c764
+  active_claim_id: 937b224d-ee11-4936-82d7-719f177d31da
+  active_writer_id: null
+  lease_expires_at: '2026-07-29T20:23:53Z'
+  last_heartbeat_at: '2026-07-29T19:08:53Z'
+  controller_authorization_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
+  ready_entry_payload_digest: fb3f35593548c28c591dbeef4eb5c4997f9858abc1734668cb98ad867d17ae42
   interface_checkpoint_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
   implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
   status_proof:
-    state: claimed
-    producer_task_id: F02
-    producer_head_sha: 0708a09e7d979a10cfe3c0875cebeecca64a2847
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
     canonical_candidate_digest: null
     interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
     integration_or_evidence_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
@@ -131,8 +132,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 3143e8d015ea3662a2268098249138762b39d555
-    transitioned_at: '2026-07-29T17:50:12Z'
+    state_based_on_control_head_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
+    transitioned_at: '2026-07-29T19:12:42Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F02/status_proof
 - task_id: F03
   status: ready_for_review
