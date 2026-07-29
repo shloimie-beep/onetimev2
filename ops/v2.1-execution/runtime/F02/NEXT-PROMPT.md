@@ -3,25 +3,22 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Reconcile the F02 Migration Lease B semantic-renewal atomic claim.
+Audit the exact F02 Migration Lease B semantic-correction release.
 
-Repository: shloimie-beep/onetimev2
-Branch: codex/v21-f02-schema-state-migrations
-Parent before renewal claim: 6a5e359c0a7dae56542741126974a571af5da5a9
-Containing control: 4c15cb1af043727ac9eed01dd7996f6a6a6c0997
-Sole authorization parent: cc71835caf5f73a9642adf135efd25d21528f83f
-READY digest: 635c8923ed3aa11f3dbcf11b1195a22235ce150e43284de265b48f1b0f7da8bd
-Renewal claim: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
-Shared lease: 4d52c050-fd00-4240-a029-48d4f27f6820
-Lease expiry: 2026-07-30T00:39:23Z
+Require claim parent `9daa5251acf9b6d2c4c932d9864d894ded2bdd2d`,
+containing control `87179bc537935cd316414764ff7ed86c67e0e4e1`, sole
+authorization parent `35704c887c45309eb03506d4f654afd2bfbed84c`, renewal claim
+`2002fc61-531d-4b4c-b0c0-c65b3468b8c5`, and shared lease
+`4d52c050-fd00-4240-a029-48d4f27f6820`.
 
-Require the renewal claim commit to have the sole parent above and change
-exactly the F02 runtime triplet. Confirm the six untracked SQL drafts and dirty
-allocation proposal were preserved byte-identical and no semantic correction,
-checksum regeneration, other path, registration, provider inspection,
-deployment, send, integration, or external effect occurred.
+Require an exact ten-path delta containing only migrations 2239 through 2244,
+the allocation proposal, and the F02 runtime triplet. Confirm all six
+normalized-LF/native and repository-runner pg-mem checksum pairs, exact next
+ordinal 2245, forbidden ordinal 2231, and byte-identical protected migrations
+2234 through 2238.
 
-Verify the exact new claim and shared lease, control/READY identities, explicit
-semantic blocker list, removal of premature completion assertions, and effects
-`0/0/0`. Stop for C00 reconciliation. Do not resume semantic SQL or proposal
-work before C00 reconciles this exact renewal claim head.
+Rerun complete disposable PGlite and pg-mem 75/75 migration proofs, seeded
+legacy reconciliation, focused native invariants, typecheck, lint, build,
+YAML, raw Git-blob Prettier, 200/200 package Git-byte, secret, scope, diff, and
+zero-effect gates. Confirm both slots were released before expiry. Stop for C00
+admission; do not integrate or perform external effects.

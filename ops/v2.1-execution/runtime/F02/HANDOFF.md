@@ -1,26 +1,29 @@
-# F02 Migration Lease B Semantic Renewal Atomic Claim
+# F02 Migration Lease B Semantic-Correction Release
 
-- Claim parent: `6a5e359c0a7dae56542741126974a571af5da5a9`
-- Containing control: `4c15cb1af043727ac9eed01dd7996f6a6a6c0997`
-- Sole control authorization parent: `cc71835caf5f73a9642adf135efd25d21528f83f`
-- READY digest: `635c8923ed3aa11f3dbcf11b1195a22235ce150e43284de265b48f1b0f7da8bd`
+- Claim parent: `9daa5251acf9b6d2c4c932d9864d894ded2bdd2d`
+- Containing control: `87179bc537935cd316414764ff7ed86c67e0e4e1`
+- Sole control authorization parent: `35704c887c45309eb03506d4f654afd2bfbed84c`
 - Renewal claim: `2002fc61-531d-4b4c-b0c0-c65b3468b8c5`
 - Shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease: `4d52c050-fd00-4240-a029-48d4f27f6820`
-- Lease expiry: `2026-07-30T00:39:23Z`
+- Released: `2026-07-29T23:33:32Z`, before expiry `2026-07-30T00:39:23Z`
 - Effects: `0/0/0`
 
-The first implementation attempt stopped without commit or push after a semantic
-audit found material blockers: P27 classification/complimentary compatibility;
-P16 occurrence schedule columns, evidence-preserving state reconciliation, and
-exact create-capable canonical backfill; P24 exact kind/category, author
-identity, structured redacted intent, and false invariants; P32 scoped lifecycle
-enums and lowercase digest enforcement; P10 complete composite scope, exact
-credential validation, and append-only audit; P23 exact semantic dedupe; and
-final checksum regeneration after SQL stabilization.
+The exact six forward-only migrations 2239 through 2244 now implement the
+bound P16, P32, P10, P23, P24, and P27 contracts. The semantic correction
+preserves legacy classroom evidence, adds exact scoped privacy and directory
+constraints, enforces notification and support privacy invariants, and derives
+GHL identity scope from authoritative adult/household bindings.
 
-This commit claims only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
-The six untracked SQL drafts and dirty allocation proposal remain byte-identical
-to the stopped draft. No semantic correction or checksum regeneration occurred.
+Disposable PGlite PostgreSQL and repository-runner pg-mem both passed all
+75 migrations. Seeded native legacy reconciliation passed 5/5, the combined
+native contract suite passed 19/19, and the pg-mem focused suite passed 5/5.
+All six native/pg-mem checksum pairs match the allocation proposal; next
+available ordinal is 2245 and ordinal 2231 remains forbidden.
 
-Stop for C00 reconciliation. Do not edit SQL or the proposal, register, inspect
-providers, deploy, send, integrate, or perform external effects beforehand.
+Typecheck, lint, production build, YAML, Prettier, secret scan, diff hygiene,
+exact ten-path scope, protected 2234-2238 blobs, and the 200/200 locked package
+Git-byte gate passed. No provider, deployment, send, integration, or external
+effect was attempted.
+
+Stop for independent and C00 audit. I36 integration requires a fresh bounded
+admission, atomic claim reconciliation, and exact merge item.

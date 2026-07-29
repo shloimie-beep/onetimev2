@@ -3,12 +3,12 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
-  claim_id: 937b224d-ee11-4936-82d7-719f177d31da
-  containing_control_head_sha: 02c58c4258a16f431953dc1e5e5a40a194c7d0d2
-  ready_entry_parent_control_sha: 174bc6656fbc2a1c0526e7bdec0e361dfd1e7c35
-  lease_expires_at: '2026-07-29T20:23:53Z'
-  released_at: '2026-07-29T19:30:25Z'
+  lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
+  claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
+  containing_control_head_sha: 87179bc537935cd316414764ff7ed86c67e0e4e1
+  ready_entry_parent_control_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
+  lease_expires_at: '2026-07-30T00:39:23Z'
+  released_at: '2026-07-29T23:33:32Z'
   audit_status: PASS
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
@@ -65,4 +65,64 @@ allocations:
     destructive: false
     checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
     pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
-next_available_ordinal: 2239
+  - ordinal: 2239
+    file: packages/db/migrations/2239_v21_classroom_core.sql
+    owner_task_id: P16
+    request_id: P16-MIGRATION-001
+    state: allocated
+    purpose: Canonical classroom series, occurrence lifecycle reconciliation, scoped series enrollments, immutable command idempotency, and Jerusalem recurrence backfill.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 64ed34d588d2cb073e622f480d03189197ae87eecf74153cd4b3f4d8be6484a2
+    pg_mem_checksum_sha256: d4e1d9db366764ebe0b5490bc8d7b9ccad32781353139f634540372f2c34421c
+  - ordinal: 2240
+    file: packages/db/migrations/2240_v21_privacy_data_rights.sql
+    owner_task_id: P32
+    request_id: P32-migration-001
+    state: allocated
+    purpose: Append-only privacy consent and recording evidence, versioned data-rights workflows, one-use export grants, retention work, and purge receipts.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 1b1627bfbef7c4500d7be7e50d217efdecd97af9f1148b7e6a769cc6ed4f6831
+    pg_mem_checksum_sha256: 57ad695347870bd33dddc0da65accb396f6beaa9fe7ccd53b192f34585618d84
+  - ordinal: 2241
+    file: packages/db/migrations/2241_v21_admin_directory.sql
+    owner_task_id: P10
+    request_id: P10-MIGRATION-001
+    state: allocated
+    purpose: Scoped admin directory identity, credential, service-acceptance, canonical enrollment, revocation, ownership-transfer, receipt, and audit evidence.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: a318572247530b1dbbda75a0ba2b0f58b66e8a88156f1ee57874c79216c1d649
+    pg_mem_checksum_sha256: 7bf7590399cf72f454a07d88745db082d9f76278ca5ddb6c8ea59a66de0404f3
+  - ordinal: 2242
+    file: packages/db/migrations/2242_v21_student_notifications.sql
+    owner_task_id: P23
+    request_id: P23-migration-001
+    state: allocated
+    purpose: Student notification center records, exact source/version deduplication, current-source precedence, lifecycle timestamps, and sound preferences.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+    pg_mem_checksum_sha256: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+  - ordinal: 2243
+    file: packages/db/migrations/2243_v21_support.sql
+    owner_task_id: P24
+    request_id: P24-migration-001
+    state: allocated
+    purpose: Scoped support tickets, messages, append-only audit, idempotency, requester privacy, and redacted Telegram notification intents.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: eea46ad8e68e38089de142613850997b6dcd32825a52a849c8aff6089607d6aa
+    pg_mem_checksum_sha256: 84093ce3212256fe0f2631ec56f1c4d0b7d0fa4ab48b120be06b76a841f0cbeb
+  - ordinal: 2244
+    file: packages/db/migrations/2244_v21_ghl_identity.sql
+    owner_task_id: P27
+    request_id: P27-migration-001
+    state: allocated
+    purpose: Transactional GHL identity sync operations, adult-only household projections, protected provider-reference hashes, retry state, and identity-review quarantine.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: afee7e1471f1c6c1b84c6570bb32d39cc8f6a1e576c4e5d7064753ef57939418
+    pg_mem_checksum_sha256: 464bbe61224cd3ab343aa21e5ed88956684171c082703272be0e973cc866bb73
+next_available_ordinal: 2245
