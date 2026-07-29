@@ -15,13 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 0d6b35ed4247aa857cc540efeefbceebe421a687
+controller_authorization_sha: d2fa9c5d8c1995b4895962361a9c374bd772fa40
 next_action: >-
-  F02 may atomically claim only exact branch head e156003b under claim e2a7b9ff and shared MIGRATION_AUTHORITY /
-  SCHEMA_CONTRACT lease cad3d0dd for Lease B ordinals 2239 through 2244. It must verify exact integration release
-  1798f31b, the six producer refs/request blobs/digests, prior 2238 allocation, absence of 2231 and 2239-2244
-  collisions, ten-path ceiling, and zero effects; then update only its runtime triplet, push, and stop before
-  reading requester content, editing its allocation proposal, or writing SQL for C00 reconciliation. No migration
-  implementation, registration, provider inspection, deployment, send, or external effect is authorized before
-  that reconciliation.
+  F02 claim 6a5e359c is reconciled under unchanged claim e2a7b9ff and shared MIGRATION_AUTHORITY /
+  SCHEMA_CONTRACT lease cad3d0dd. F02 may now read only the six bound requests in order P16, P32, P10, P23, P24,
+  P27; update its allocation proposal; and author exact migrations 2239 through 2244 within the authorized ten
+  paths. It must validate request semantics, native normalized-LF and pg-mem checksums, all 75 migrations in a
+  fresh disposable database, focused constraints, and repository typecheck, lint, format, build, package, YAML,
+  secret, diff, scope, and effects gates; release both writer slots; push; and stop for independent C00 audit. No other migration or
+  applied-migration edit, registration, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

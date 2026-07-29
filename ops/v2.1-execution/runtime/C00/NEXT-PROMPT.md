@@ -1345,3 +1345,18 @@ parents and 18 paths. Preserve source ancestry; run the 4 focused files /
 21 tests and workspace typecheck; publish the I36 metadata-only release
 checkpoint and release the lease. Leave `P11-registration-001` unapplied and
 perform no provider/send/external effect.
+
+F02 Lease B atomic claim
+`6a5e359c0a7dae56542741126974a571af5da5a9` is reconciled.
+Resume it under unchanged claim `e2a7b9ff-ce58-495e-b164-84d9299250d0`
+and shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease
+`cad3d0dd-59a2-44dd-87fb-6597978daaaf`. Read only the six bound
+requests in order P16/P32/P10/P23/P24/P27; update the allocation proposal;
+author exact migrations 2239 through 2244 within the ten authorized paths;
+derive native normalized-LF and pg-mem checksums; and prove all 75 migrations
+in a fresh disposable database plus focused semantics, typecheck, lint,
+format, build, package, YAML, secret, diff, scope, and zero-effect gates.
+Release both writer slots before expiry, publish the final, and stop for
+independent C00 audit. Do not edit any applied migration, allocate 2231 or
+another ordinal, apply registration, inspect providers, deploy, send, or
+perform an external effect.

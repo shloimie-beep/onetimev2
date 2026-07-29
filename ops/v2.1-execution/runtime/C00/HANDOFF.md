@@ -1575,3 +1575,26 @@ F02 may now change only its runtime triplet at exact branch head `e156003b`,
 push normally, and stop. It may not read requester content, edit the proposal,
 write SQL, apply registration, inspect providers, deploy, send, or perform any
 external effect until C00 reconciles that atomic claim.
+
+## F02 Lease B claim reconciliation
+
+F02 atomic claim `6a5e359c0a7dae56542741126974a571af5da5a9`
+passed independent reconciliation: its sole parent is exact prior F02 release
+`e156003b243221f97f938a0aca16164c1dd86d2d`, its delta is exactly the
+three F02 runtime files, allocation proposal blob `8fd29dda` and migration
+tree `cbb3f10d` are unchanged, all claim/control/READY/writer-lease bindings
+match, and effects remain `0/0/0`.
+
+C00 consumed READY digest
+`fe2adafd933c848fa9e4b2efb4809f9edc733e42c8f43b71f30ec5b5b9a8df6b`
+under acquisition `d2fa9c5d8c1995b4895962361a9c374bd772fa40`.
+F02 may now read only the six bound request bodies in required order P16, P32,
+P10, P23, P24, P27; update its proposal; and author exact ordinals 2239
+through 2244 within the authorized ten paths.
+
+Before release it must derive native normalized-LF and repository-runner
+pg-mem checksums, apply and verify all 75 migrations in a fresh disposable
+database, run focused request-semantic and repository gates, release both
+writer slots before expiry, push normally, and stop for independent audit.
+No applied-migration rewrite, other ordinal/path, registration, provider
+inspection, deployment, send, or external effect is authorized.
