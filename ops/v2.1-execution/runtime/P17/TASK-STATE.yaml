@@ -39,12 +39,13 @@ dependency_heads:
     interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
     task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
     task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
-status: claimed
-phase: correction
-correction_work_status: pending_c00_reconciliation
+status: ready_for_review
+phase: review
+correction_work_status: completed
 claimed_by: codex-p17-correction-worker-ad77a398
 claim_time: '2026-07-29T00:20:40Z'
 claim_id: ad77a398-b287-4a51-b7cc-25dd147f33de
+correction_claim_checkpoint_sha: a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368
 previous_claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
 previous_final_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
 writer_slot_leases:
@@ -52,28 +53,41 @@ writer_slot_leases:
     lease_id: b7211f31-df73-40fa-8281-5765ca37d3b9
     lease_issued_at: '2026-07-29T00:13:59Z'
     lease_expires_at: '2026-07-29T01:13:59Z'
+    released_at: '2026-07-29T00:39:05Z'
 lease_expires_at: '2026-07-29T01:13:59Z'
-last_heartbeat_at: '2026-07-29T00:20:40Z'
+lease_released_at: '2026-07-29T00:39:05Z'
+last_heartbeat_at: '2026-07-29T00:39:05Z'
 controller_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+continuation_authorization_sha: 268ab601b89573238befe70de7995908925575cc
+continuation_acquisition_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
 ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
 ready_entry_payload_digest: 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf
-state_based_on_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
-last_implementation_commit_sha: fda8317ee46da875b486b7e27f5f59fcdcbd890e
-implementation_artifact_digest: 65b034b1f4328e313cd66d7b1760e7d8df5d11eb02098677cecb6dcc35b037ca
-implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 13 non-runtime P17 artifacts, with LF separators and no final newline.
+state_based_on_head_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
+last_implementation_commit_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
+implementation_artifact_digest: 6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0
+implementation_artifact_digest_algorithm: SHA-256 over exact correction implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the canonical 13 non-runtime P17 product artifacts, with LF separators and no final newline.
+correction_checkpoint_digest: 43c8795f9f53557abf5a5c1f7e3d1431eae674b2a48055f2448a03c959272d5d
+correction_checkpoint_digest_algorithm: SHA-256 over the seven exact Git blobs changed by correction implementation commit 3560b053a535b2889ea95e1d05ab58bb82b219cc as lexicographically sorted UTF-8 path=sha256 lines, with LF separators and no final newline.
+correction_product_digest: 969e0807db933ecf9a1ec7849b6fd5d95a45164e7bd1ce66cfac0532669febd7
 contract_artifact_digest: 1408feedc82fd0009d996d2699a04289093db191196f4c4a2ae659e3a32d8ae9
 schema_contract_artifact_digest: 908048ef2f7ad13277a00f63f452390480bdc9b065163fda3381f17bd645ed3e
 steward_request_digest: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
-acceptance_matrix_digest: 01ef787bb90e502ec53823d475f66d5401f5ceb224325bc0c45f6fc0839febff
+acceptance_matrix_digest: b3fafe36b3e3aabe9c6a592dcef201629d94847b231d6a9184afa7c861a908a2
 completed_steps:
-  - Fetched exact containing control 0c911664217efe3dbb89b93b6fe29eb9eda2fec3 and verified its sole parent e54ea923a743caf760ef47638a2c8d8a875faf34.
-  - Recomputed canonical ready-entry digest 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf from the parsed P17 resume_existing_branch entry.
-  - Verified exact state-based control binding, authorized integration start, existing local/remote head, F05/F06/P16 bindings, fresh correction claim, active ZOOM_PREPARATION lease, and zero effect locks.
-  - Seeded this correction atomic claim by changing only the three task-local P17 runtime files from exact expected head 0e6119a491795737e3d7aa079fc3aefa1b5071c2; no product repair was performed.
+  - Verified repaired containing control 0c911664217efe3dbb89b93b6fe29eb9eda2fec3 with exact sole parent e54ea923a743caf760ef47638a2c8d8a875faf34 and recomputed ready-entry digest 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf.
+  - Published and stopped at correction claim checkpoint a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368, then resumed only after C00 reconciliation at continuation control 268ab601b89573238befe70de7995908925575cc.
+  - Corrected exact enrollment identity binding, confirmed occurrence-version binding, and stable per-occurrence meeting and per-occurrence/Student registrant identities.
+  - Corrected join, grant, live-session acquire/reconnect, and runtime Admin revoke scope bindings with cross-bound negative tests.
+  - Enforced an exact unique worker operation set, exact readback counts/types/aggregates, duplicate-result rejection, meeting-first short-circuit, and durable safe quarantine for invalid or missing accepted readbacks.
+  - Required exact reconciled registry evidence and canonical-set exclusion for disposable-canary cleanup.
+  - Recomputed prepare/confirm request hashes from canonical command bodies before receipt/replay handling.
+  - Passed full workspace typecheck, 21 focused tests across four files, focused ESLint and Prettier, repository-wide secret scan over 2723 files, and diff hygiene.
+  - Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released the task-local lease in terminal metadata.
 remaining_steps:
-  - Push and report this exact three-file correction claim checkpoint, then stop for C00 reconciliation.
-  - Begin correction investigation or product repair only after C00 explicitly reconciles this new claim and authorizes continuation.
-next_action: Push this three-file correction claim with sole parent 0e6119a491795737e3d7aa079fc3aefa1b5071c2, report the pushed head to C00, and stop without repairing product code.
+  - C00/I36 must independently review the corrected implementation and refreshed artifact digests.
+  - F02, I36, and P28 must disposition the four existing structured steward requests.
+  - Provider sandbox or production canaries remain prohibited until separate explicit Zoom effect authority and effect locks exist.
+next_action: C00/I36 should review correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc and canonical product digest 6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0, then disposition the four structured requests without provider effects.
 requirements:
   OTV2-CLASSROOM-068: implementation_ready
   OTV2-CLASSROOM-069: implementation_ready
@@ -97,9 +111,16 @@ acceptance_cases:
   OTV2-CLASSROOM-079-AC01: implementation_ready
   OTV2-CLASSROOM-188-AC01: implementation_ready
 changed_paths:
-  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.ts
+  - apps/worker/src/runners/zoom-preparation/runner.test.ts
+  - apps/worker/src/runners/zoom-preparation/runner.ts
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
   - ops/v2.1-execution/runtime/P17/HANDOFF.md
   - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - packages/domain/src/classroom/zoom-preparation/index.ts
+  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
 migrations: []
 steward_requests:
   - P17-MIGRATION-001
@@ -108,9 +129,15 @@ steward_requests:
   - P17-REMINDER-ROUTING-001
 verification:
   commands_run:
-    - Exact control, ready-state parent binding, resume-existing mode, authorized start, expected local/remote head, dependencies, claim, lease, registry, and zero effect-lock verification (passed).
-    - Canonical sorted-JSON SHA-256 recomputation of the parsed P17 ready entry (passed).
-    - Exact three-file correction claim path and sole-parent verification (pending commit).
+    - Exact repaired control/parent, canonical ready digest, claim checkpoint, dependency ancestry, correction lease, and zero effect-lock verification (passed).
+    - npm run typecheck (passed).
+    - Focused Vitest over domain acceptance, database, server service, and worker runner suites (passed, 21 tests across four files).
+    - Focused ESLint over all six corrected TypeScript artifacts (passed).
+    - Focused Prettier over all corrected artifacts and acceptance evidence (passed).
+    - npm run secret:scan (passed, 2723 repository text files).
+    - git diff --check (passed).
+    - Exact canonical 13-product-artifact, seven-file correction checkpoint, six-file correction product, and named artifact digest recomputation (passed).
+    - Normal non-force remote update of immutable correction implementation checkpoint (passed).
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -119,4 +146,5 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - No product, steward-request, acceptance-matrix, migration, shared runtime, provider, manifest, or lockfile path was changed for this correction claim.
+  - No contract, database, migration, steward-request, shared runtime, provider configuration, manifest, lockfile, or communication-composer path changed during correction.
+  - No Zoom/provider request, credential access, account mutation, meeting/registrant creation, reminder delivery, bootstrap issuance, deployment, or canary was performed.

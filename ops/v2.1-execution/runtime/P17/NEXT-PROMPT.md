@@ -3,8 +3,8 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task P17 from its remote correction atomic-claim
-checkpoint.
+Review corrected One Time v2.1 task P17 from its exact remote
+ready-for-review checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p17-zoom-preparation
@@ -13,20 +13,25 @@ Task packet: ops/v2.1-execution/tasks/P17.yaml
 Task context: ops/v2.1-execution/contexts/P17-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P17/HANDOFF.md
+Acceptance matrix: ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+Steward requests: ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
 
-Fetch remote refs and resume the exact branch head. This correction claim uses
-containing control `0c911664217efe3dbb89b93b6fe29eb9eda2fec3`,
-ready-state parent binding `e54ea923a743caf760ef47638a2c8d8a875faf34`,
-authorized start `49431959f58f284bdc13ca931acf09f980fc483a`, expected
-pre-claim head `0e6119a491795737e3d7aa079fc3aefa1b5071c2`, correction claim
-`ad77a398-b287-4a51-b7cc-25dd147f33de`, ready digest
-`81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf`,
-and ZOOM_PREPARATION lease `b7211f31-df73-40fa-8281-5765ca37d3b9`. The lease
-was issued at `2026-07-29T00:13:59Z` and expires at
-`2026-07-29T01:13:59Z`; no provider effect lock or external authority exists.
+Fetch remote refs and resume the exact branch head. The correction claim is
+`a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368`, correction implementation head is
+`3560b053a535b2889ea95e1d05ab58bb82b219cc`, and reconciled continuation
+authorization is `268ab601b89573238befe70de7995908925575cc`. The canonical
+13-product-file digest is
+`6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0`.
 
-Do not inspect or repair product code until C00 reconciles this exact correction
-claim and explicitly authorizes continuation. After that authorization, follow
-`TASK-STATE.yaml:next_action` and remain within the P17-owned paths. Do not
-perform live Zoom/provider effects without a separate explicit effect lock and
-authority record.
+Independently recompute the canonical, correction-checkpoint, correction-product,
+contract, schema, steward-request, and acceptance-matrix digests. Review all
+twelve recorded semantic corrections and their negative tests, verify exact
+scope and normal non-force ancestry, and confirm the task-local
+ZOOM_PREPARATION lease `b7211f31-df73-40fa-8281-5765ca37d3b9` was released at
+`2026-07-29T00:39:05Z`.
+
+No provider effect authority exists. Do not call Zoom, access credentials,
+create meetings or registrants, deliver reminders, issue live bootstrap
+material, deploy, or run provider canaries. F02, I36, and P28 must disposition
+the four existing structured steward requests before any separately authorized
+provider verification.
