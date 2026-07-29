@@ -1,26 +1,32 @@
-# I36 P33 Interface Release — Next Prompt
+MODEL: GPT-5.6-SOL
+REASONING: HIGH
+SERVICE TIER: PRIORITY
+MODE: START_OR_RESUME
 
-Stop after publishing this metadata-only release checkpoint.
+Resume I36 only after C00 has consumed the exact P12/P22/P34 full-wave atomic
+claim head.
 
-C00 must reconcile:
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Expected pre-claim head: d075dc1839660205845e7da039a182bbe44778d2
+Task packet: ops/v2.1-execution/tasks/I36.yaml
+Task context: ops/v2.1-execution/contexts/I36-CONTEXT.md
+Task state: ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+Handoff: ops/v2.1-execution/runtime/I36/HANDOFF.md
 
-- P33 source `295c125ec6ed3ea41382e5ea44db6f6be1b98933`;
-- two-parent merge result `770696f88860d62f2cd7f9d30717b451ebdd77f7`;
-- the pushed I36 metadata-only release head;
-- released claim `d824f937-9896-4110-8b0b-567929ede386`;
-- released RELEASE_INTEGRATOR lease
-  `7ceb45bf-dcaf-441b-bed4-08c6ba798055`;
-- zero steward, config, deploy, registration, and provider actions;
-- zero external effects.
+Authority binds containing control
+c9e0551de2dc6dab48eef5eafd8c2173b7d9a345, acquisition
+9d34bfde201251ac87766ae5d182421517bb1e73, ready digest
+f7c20f2301d048a0674eb7af6eac965ce759a195e3d1309b40b1fa9242d754ec,
+claim 2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa, and RELEASE_INTEGRATOR lease
+08ea5a46-06b1-466e-a6f2-b1947f4ed402 expiring 2026-07-29T05:43:32Z.
 
-Before any further integration:
+Before any admission work, fetch remote control/integration refs and verify C00
+consumed the exact pushed claim head, local and remote equal it, the lease
+remains valid, and no foreign writer or path collision exists. Then read the
+exact rebound authorization before fetching or reading queued source content.
 
-1. fetch the exact remote control and integration heads;
-2. require a new C00-issued authorization whose expected target equals the
-   pushed I36 release head;
-3. require a new exact claim and unexpired RELEASE_INTEGRATOR lease;
-4. recompute all rebound queue digests and independently verify source scope;
-5. publish an atomic claim before reading a newly queued source for admission.
-
-Do not reuse the released claim or lease. Do not apply any merged P33 steward
-request without a new exact C00 authorization.
+Do not merge P12, P22, or P34, adjudicate/apply a steward request, create or
+modify a migration, perform provider/deployment/registration/legal-approval
+work, or cause an external effect without the explicit post-reconciliation
+authorization. External-effect authority is none.

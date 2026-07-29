@@ -18,26 +18,26 @@ dependency_heads:
   P08: e15a7af6cde557ff7f0fbbd55c12244780ca2321
   P10: 5fccc34507ae9c5dbc609e234ab559576ab3a445
   P33: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
-status: ready
+status: claimed
 phase: integration
-claimed_by: codex-i36-worker-d824f937
-claim_time: '2026-07-29T03:33:43Z'
-claim_id: d824f937-9896-4110-8b0b-567929ede386
-lease_id: 7ceb45bf-dcaf-441b-bed4-08c6ba798055
-lease_issued_at: '2026-07-29T03:20:30Z'
-lease_expires_at: '2026-07-29T04:20:30Z'
-lease_released_at: '2026-07-29T03:45:38Z'
-last_heartbeat_at: '2026-07-29T03:45:38Z'
-controller_authorization_sha: 9a8f5265e5ba8457fb1427abebda83d1d91499af
-ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
-ready_entry_payload_digest: f61a8a4de3d00cced245d480068a55a84f88e537b51952bd8777997df9e88962
+claimed_by: codex-i36-worker-2fd3ab04
+claim_time: '2026-07-29T04:50:08Z'
+claim_id: 2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa
+lease_id: 08ea5a46-06b1-466e-a6f2-b1947f4ed402
+lease_issued_at: '2026-07-29T04:43:32Z'
+lease_expires_at: '2026-07-29T05:43:32Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T04:50:08Z'
+controller_authorization_sha: c9e0551de2dc6dab48eef5eafd8c2173b7d9a345
+ready_entry_state_based_on_control_head_sha: 9d34bfde201251ac87766ae5d182421517bb1e73
+ready_entry_payload_digest: f7c20f2301d048a0674eb7af6eac965ce759a195e3d1309b40b1fa9242d754ec
 claim_mode: resume_existing
-expected_existing_head_sha: 76ab4719aba2016c1fb93a9301b0db56f062b3d8
-lease_phase_scope: P33_interface_atomic_claim_only
-queued_merge_id: 0798f93b-9b95-4fbb-aebc-cd98a6414f66
-queued_merge_item_payload_digest: b4a71eb8ac8f8f2460abf2ec4405abb251f1efce3f002bf29422d6c00af804c5
-queued_source_head_sha: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
-queued_expected_target_head_sha: 76ab4719aba2016c1fb93a9301b0db56f062b3d8
+expected_existing_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+lease_phase_scope: P12_P22_P34_full_atomic_claim_only
+queued_merge_id: null
+queued_merge_item_payload_digest: null
+queued_source_head_sha: null
+queued_expected_target_head_sha: d075dc1839660205845e7da039a182bbe44778d2
 prior_merge_result_head_sha: 522fe505eca226ee7053e38bb67be5af78af79d6
 prior_release_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
 merge_authorization_state_based_on_control_head_sha: bd4519976ba6b354cb7c4a087b4d144cc5ed59ab
@@ -46,7 +46,7 @@ source_delta_base_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
 merge_result_head_sha: 770696f88860d62f2cd7f9d30717b451ebdd77f7
 merge_parent_target_head_sha: 76ab4719aba2016c1fb93a9301b0db56f062b3d8
 merge_parent_source_head_sha: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
-state_based_on_head_sha: 770696f88860d62f2cd7f9d30717b451ebdd77f7
+state_based_on_head_sha: d075dc1839660205845e7da039a182bbe44778d2
 last_implementation_commit_sha: 770696f88860d62f2cd7f9d30717b451ebdd77f7
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
@@ -314,12 +314,19 @@ completed_steps:
   - Passed all four focused P33 observability/web/worker files with 68 tests, workspace typecheck with plain diagnostics, committed-blob Prettier verification, and git diff hygiene.
   - Applied no P33 steward, config, deploy, or registration request and performed no provider or external effect.
   - Released claim d824f937-9896-4110-8b0b-567929ede386 and RELEASE_INTEGRATOR lease 7ceb45bf-dcaf-441b-bed4-08c6ba798055 with zero external effects.
+  - Verified release-wave authorization at exact containing control c9e0551de2dc6dab48eef5eafd8c2173b7d9a345 with sole acquisition parent 9d34bfde201251ac87766ae5d182421517bb1e73.
+  - Verified exact existing local/remote integration head d075dc1839660205845e7da039a182bbe44778d2 and canonical I36 ready digest f7c20f2301d048a0674eb7af6eac965ce759a195e3d1309b40b1fa9242d754ec.
+  - Bound atomic claim 2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa and sole RELEASE_INTEGRATOR lease 08ea5a46-06b1-466e-a6f2-b1947f4ed402 without fetching or reading queued P12/P22/P34 source content.
 remaining_steps:
-  - Push and report the P33 merge plus exact three-file I36 release checkpoint to C00.
-  - Stop for C00 reconciliation before any further integration or steward action.
-next_action: Push and report the P33-interface merge and metadata-only release checkpoint, then stop for C00 reconciliation.
+  - Push and report this exact three-file atomic I36 release-wave claim to C00.
+  - Stop for C00 reconciliation before reading queued source content or performing any merge, steward, migration, provider, deployment, registration, legal-approval, or external-effect action.
+next_action: Push and report the P12/P22/P34 full-wave atomic claim checkpoint, then stop for C00 reconciliation.
 requirements: {}
 acceptance_cases: {}
+current_checkpoint_changed_paths:
+  - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/I36/HANDOFF.md
+  - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts

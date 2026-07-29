@@ -1,55 +1,47 @@
-# I36 P33 Interface Merge and Release
+# I36 P12/P22/P34 Full-Wave Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Reconciled claim target:
-  `76ab4719aba2016c1fb93a9301b0db56f062b3d8`
-- P33 merge result:
-  `770696f88860d62f2cd7f9d30717b451ebdd77f7`
-- Exact merge parents:
-  `76ab4719aba2016c1fb93a9301b0db56f062b3d8` and
-  `295c125ec6ed3ea41382e5ea44db6f6be1b98933`
-- Containing merge authorization:
-  `9a8f5265e5ba8457fb1427abebda83d1d91499af`
-- Sole authorization parent / acquisition:
-  `bd4519976ba6b354cb7c4a087b4d144cc5ed59ab`
-- Claim: `d824f937-9896-4110-8b0b-567929ede386`
+- Exact existing head/parent:
+  `d075dc1839660205845e7da039a182bbe44778d2`
+- Containing authorization:
+  `c9e0551de2dc6dab48eef5eafd8c2173b7d9a345`
+- Sole authorization parent/acquisition:
+  `9d34bfde201251ac87766ae5d182421517bb1e73`
+- Ready digest:
+  `f7c20f2301d048a0674eb7af6eac965ce759a195e3d1309b40b1fa9242d754ec`
+- Claim: `2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa`
 - RELEASE_INTEGRATOR lease:
-  `7ceb45bf-dcaf-441b-bed4-08c6ba798055`
-- Lease issued: `2026-07-29T03:20:30Z`
-- Lease released: `2026-07-29T03:45:38Z`
-- P33 merge id: `0798f93b-9b95-4fbb-aebc-cd98a6414f66`
-- Rebound canonical merge digest:
-  `b4a71eb8ac8f8f2460abf2ec4405abb251f1efce3f002bf29422d6c00af804c5`
-- P33 source:
-  `295c125ec6ed3ea41382e5ea44db6f6be1b98933`
-- Required source and merge base:
-  `49431959f58f284bdc13ca931acf09f980fc483a`
-- External effects: attempted 0; succeeded 0; reconciled 0
+  `08ea5a46-06b1-466e-a6f2-b1947f4ed402`
+- Lease issued / expiry:
+  `2026-07-29T04:43:32Z` / `2026-07-29T05:43:32Z`
+- Phase scope: `P12_P22_P34_full_atomic_claim_only`
+- This checkpoint head: derive with `git rev-parse HEAD`; C00 records the
+  observed pushed remote head.
 
-## Result
+## Claim verification
 
-I36 admitted exactly the queued twenty-five-path P33 delta and created the
-required two-parent merge. The P33 source is an ancestor of the merge result,
-and its first-parent delta is exactly the authorized path list.
+The fetched control head has the exact sole acquisition parent above. The
+READY identity binds the exact existing integration head, branch, resume claim,
+sole RELEASE_INTEGRATOR lease, phase scope, ready digest, and zero effect locks.
+Local and remote integration heads matched the expected existing head before
+this checkpoint.
 
-Verification passed:
+## Preserved integration state
 
-- focused P33 observability, web, and worker suites: 4 files, 68 tests;
-- workspace TypeScript typecheck with plain diagnostics;
-- committed-blob Prettier verification for all twenty-five source paths;
-- Git diff hygiene, exact parent order, source ancestry, and path scope.
+No queued P12, P22, or P34 source content was fetched or read for admission, and
+no source was merged. No steward request, migration, provider, deployment,
+registration, legal approval, or external effect was attempted. This checkpoint
+changes only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` under the I36
+runtime directory.
 
-The merged P33 steward-request artifacts were not applied. I36 performed no
-steward, config, deploy, registration, provider, or external-effect action.
+## Next action
 
-This release checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md` under the I36 runtime directory. Its exact final head is
-reported after commit and remote readback.
+Push and report this atomic claim, then stop. Source admission and integration
+may begin only after C00 consumes the exact pushed claim head and explicitly
+resumes I36.
 
-## Exact next action
+## Effects
 
-Push and report the merge head, metadata-only release head, exact parents,
-twenty-five-path scope, checks, and remote readback. Then stop for C00
-reconciliation.
+Authority none; attempted/succeeded/reconciled `0/0/0`.
