@@ -551,3 +551,26 @@ existing-local-account proof, inactive-household duplicate prevention, and
 scope-bound server-issued strong-idempotency semantics, with changed-payload,
 cross-scope, spoofed-hash, weak-key, and local-account-state negative tests.
 The withdrawn interface remains inadmissible and P09 remains locked.
+
+P10 final `92212a7b` is rejected. Direct probes show that its credential-reset
+guard rejects the actual F03 `argon2id-v1$v=19$...` hash, an archived Student
+can be restored into an archived household, and an archived adult can turn a
+disabled HumanAccount active. The correction must bind credential validation
+to the exact F03 policy, require active access/current service-account consent
+and canonical enrollment for Student create/restore, make complete affected
+session/grant revocation enforceable in the transaction, and fail closed on
+disabled/final-Admin/household-owner lifecycle cases.
+
+P33 superseding final `122608b5` and interface `0e674da7`/`9ac5c08a` are also
+rejected. Empty queue/worker inventories and missing provider evidence can be
+reported ready; leakage scanning misses credential-shaped keys and does not
+scan final serialized endpoint responses; migration truth is not bound to the
+candidate digest; non-web artifact checks compare runtime values to themselves;
+worker readiness is caller asserted; exact Admin authorization is deferred; and
+the deploy request still pins the superseded `d643626a` digest.
+
+C00 issued only claim-stage corrections from exact finals: P10 claim
+`0f061200` with digest `526ce8d0`, and P33 claim `9f112031` with digest
+`639b020e`, both based on acquisition `c7434209`, each under a fresh disjoint
+one-hour writer lease and zero external-effect authority. Each worker must
+publish exactly its three runtime files and stop before product repair.

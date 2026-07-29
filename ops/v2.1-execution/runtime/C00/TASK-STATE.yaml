@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-4ac2db68
-claim_time: '2026-07-29T01:30:44Z'
-claim_id: 4ac2db68-f7b5-47ee-8d1a-6cfb8a2a3532
-lease_expires_at: '2026-07-29T01:36:00Z'
-last_heartbeat_at: '2026-07-29T01:36:00Z'
-controller_authorization_sha: 382ea5193b1de8fc8cd2844dde362106a8a0f57f
+claimed_by: codex-c00-orchestrator-a5d186ff
+claim_time: '2026-07-29T01:39:10Z'
+claim_id: a5d186ff-622b-4dd1-995e-90666f99b80f
+lease_expires_at: '2026-07-29T01:46:00Z'
+last_heartbeat_at: '2026-07-29T01:46:00Z'
+controller_authorization_sha: c743420931244135bcd61578ea1f322851b325a8
 ready_entry_payload_digest: null
-state_based_on_head_sha: 382ea5193b1de8fc8cd2844dde362106a8a0f57f
+state_based_on_head_sha: c743420931244135bcd61578ea1f322851b325a8
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -162,8 +162,11 @@ completed_steps:
 - independently verified I36 withdrawal/release head 87e3ba67 with sole parent 2e309398, exact three-file runtime-only scope, released claim and lease, no P08 source admission, and zero effects
 - independently verified P08 correction claim 53e1ef74 with sole parent 59b43a60, exact three-file runtime-only scope, canonical ready digest 898063c0, containing authorization 5cc06e9a, live FAMILY_SIGNUP lease, and zero effects
 - consumed the P08 correction ready entry under exact acquisition 382ea519 and authorized only the bounded existing-account, inactive-household, and scope-bound strong-idempotency repairs with negative regression coverage
+- rejected P10 final 92212a7b after reproducing that its credential reset rejects the exact F03 Argon2id policy hash, restores a Student into an archived household without access or consent proof, and reactivates a disabled HumanAccount; its contracts also fail to make complete session revocation and lifecycle guards enforceable
+- rejected P33 superseding final 122608b5 after reproducing fail-open empty/stale health evidence, bypassable response leakage controls, unbound migration truth, tautological non-web artifact agreement, caller-asserted worker readiness, unproven Admin-only registration, and a deploy request pinned to its superseded interface digest
+- issued P10 correction claim 0f061200 and P33 correction claim 9f112031 from their exact rejected finals under fresh disjoint ADMIN_DIRECTORY and OPERATIONS_RUNTIME leases, with ready digests 526ce8d0 and 639b020e and zero effect authority
 remaining_steps: []
-next_action: P08 resumes from exact correction claim 53e1ef74 for only the bounded semantic repairs while C00 completes independent P10 and superseding P33 admission review.
+next_action: P10 and P33 publish only their exact three-file atomic correction claims and stop for C00 reconciliation while P08 continues its bounded correction.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -171,12 +174,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 382ea5193b1de8fc8cd2844dde362106a8a0f57f
+  current_control_parent_sha: c743420931244135bcd61578ea1f322851b325a8
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 4ac2db68-f7b5-47ee-8d1a-6cfb8a2a3532
-      observed_head: 382ea5193b1de8fc8cd2844dde362106a8a0f57f
+      claim_id: a5d186ff-622b-4dd1-995e-90666f99b80f
+      observed_head: c743420931244135bcd61578ea1f322851b325a8
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -341,18 +344,18 @@ orchestration:
       scheduling_state: correction_claim_reconciled_implementation_authorized
     P10:
       branch: codex/v21-p10-admin-directory
-      claim_id: f7e5889d-4db4-4818-a47f-5f26927597ae
+      claim_id: 0f061200-ff84-449d-aaa7-b0ebd7cd9c02
       observed_head: 92212a7b6873a9b6da5e7173b4fd1af88ef47293
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: null
-      scheduling_state: ready_for_review_pending_admission
+      lease_expires_at: '2026-07-29T02:39:10Z'
+      scheduling_state: correction_claim_authorized_from_rejected_final
     P33:
       branch: codex/v21-p33-runtime-operations
-      claim_id: e0ba9363-1e4e-41eb-b8fb-35043bd09881
+      claim_id: 9f112031-01ef-4117-986d-27465a06d19e
       observed_head: 122608b516046f9c2b93b18256573232b9958137
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: null
-      scheduling_state: ready_for_review_superseding_interface_pending_admission
+      lease_expires_at: '2026-07-29T02:39:10Z'
+      scheduling_state: correction_claim_authorized_from_rejected_final
   active_native_subagents: []
   unresolved_blockers: []
 requirements: {}
@@ -522,10 +525,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 593141edfafb210a60840c402b67106815875261595c4dbcb25330b273b7cc38
-    control_lease: b045f24432d4a68c47a1e3e1cb3148e1af2912df5e7d68fd9f5fe4824089f0dc
-    task_registry: 0111298e52f52566e983ceedca4d315bee11be28234a1ec01a272625f6dafc31
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: c2a4d19e1d7fef8ff83cf48573313894db9d2384a8db9c07e52207019883f044
+    control_lease: a2443bd1df628bd8f6a0e4e01b5e3e2512b953fb6dff57dfe8f90eb2f43e9e9c
+    task_registry: 2866f6d688e2529b091bf90fab62bbe1b4e95801d8e4e1cf5b2d84134eb3e2d7
+    ready_queue: 323cd161d1e9658a502acb1608742e6b2686528056aab289810fef2800de150c
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: e4205fe1518700587b91dacd55ddb78190ce03944ad25a762941f6c67d4586ba
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8

@@ -271,3 +271,16 @@ regression coverage. Recompute any changed interface/artifact/state digests,
 release the FAMILY_SIGNUP lease, publish a new ready_for_review final, and keep
 external effects at zero. P09 stays locked. Continue independent admission
 review of P10 final `92212a7b` and P33 superseding final `122608b5`.
+
+P10 `92212a7b` and P33 `122608b5` are rejected pending bounded corrections.
+Dispatch claim-only P10 resume `0f061200-ff84-449d-aaa7-b0ebd7cd9c02`
+with ADMIN_DIRECTORY lease `c3ee876e-793d-4c19-9a4c-40de4f27e758`,
+ready digest `526ce8d0d61a88d2def1cf58d9d8d8e8375e03760e7c00db3dec5fab70168467`;
+and P33 resume `9f112031-01ef-4117-986d-27465a06d19e` with
+OPERATIONS_RUNTIME lease `76b4bb8b-af8b-4fcf-9ed7-4054ed8fe57a`,
+ready digest `639b020e9df4dd07e1394aa40a3053d9e7d7cdd6471a7923ef57701d2c009ad6`.
+Both entries are based on exact acquisition
+`c743420931244135bcd61578ea1f322851b325a8`, expire at
+`2026-07-29T02:39:10Z`, and authorize only three task-local runtime files for
+the atomic claim. Reconcile both exact heads before any product correction.
+P08 continues independently from its already reconciled correction claim.
