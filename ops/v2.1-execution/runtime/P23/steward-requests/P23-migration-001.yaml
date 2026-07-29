@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P23-migration-001
+task_id: P23
+kind: migration
+requirement_ids:
+  - OTV2-NOTIFY-203
+  - OTV2-NOTIFY-237
+acceptance_case_ids:
+  - OTV2-NOTIFY-203-AC01
+  - OTV2-NOTIFY-237-CATEGORY-LIFETIME
+  - OTV2-NOTIFY-237-DEDUPE-READ-SOUND
+rationale: >-
+  P23 owns the parameterized Student-notification repository contract but only
+  F02 may allocate and write a forward-only migration. P23 does not create or
+  alter schema at runtime.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and add the normalized
+  onetime.student_notifications and onetime.student_notification_preferences
+  tables required by the P23 repository, with Student scope, exact source-version
+  dedupe, lifecycle timestamps, and default-off sound preference.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.student_notifications with primary key notification_id and unique dedupe_key
+  - required recipient_student_id, scope_json, category, event_type, source_entity_id, source_version, exact rendered title/body, safe action_json, and created_at
+  - nullable expires_at, retain_until, read_at, expired_at, archived_at, and superseded_at lifecycle timestamps
+  - index recipient_student_id plus created_at for the normal notification center
+  - index recipient_student_id plus source_entity_id plus event_type plus source_version for source-version ordering
+  - onetime.student_notification_preferences keyed by recipient_student_id with sound_enabled NOT NULL DEFAULT FALSE and updated_at
+compatibility_assumptions:
+  - F04 supplies canonical Student and household identity.
+  - F05 supplies PostgreSQL transaction and idempotency conventions.
+  - F07 supplies the authenticated Student portal boundary.
+verification_performed:
+  - 13 focused P23 domain, service, and static-render tests
+  - workspace TypeScript typecheck
+  - parameterized repository SQL review
+  - focused ESLint and Prettier checks
+conflicts_or_risks:
+  - The unique dedupe key must cover exactly event type, source entity, recipient Student, and source version.
+  - Lifecycle indexes and updates must remain Student-scoped and must not expose child data across accounts or households.
+  - Sound preference must default off when a row is absent.
+contains_secret_or_private_data: false

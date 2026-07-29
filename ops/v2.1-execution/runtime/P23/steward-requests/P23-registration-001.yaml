@@ -1,0 +1,42 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P23-registration-001
+task_id: P23
+kind: registration
+requirement_ids:
+  - OTV2-NOTIFY-203
+  - OTV2-NOTIFY-237
+acceptance_case_ids:
+  - OTV2-NOTIFY-203-AC01
+  - OTV2-NOTIFY-237-CATEGORY-LIFETIME
+  - OTV2-NOTIFY-237-DEDUPE-READ-SOUND
+rationale: >-
+  P23 owns isolated contract, domain, repository, server, and Student UI roots
+  but not root barrels, the authenticated server composer, or the Student route
+  registry.
+desired_semantic_change: >-
+  Re-export the additive P23 roots and mount the notification center and
+  Student-authenticated notification service. Derive recipient, household, and
+  authorization from the authenticated session and integrated F04/F07 seams;
+  never accept scope from browser input and never register a provider sender.
+proposed_symbols_routes_keys_or_dependencies:
+  - re-export packages/contracts/src/notifications/student/index.ts from the governed notifications contract barrel
+  - re-export packages/domain/src/notifications/student/index.ts and packages/db/src/notifications/student/index.ts from governed barrels
+  - register createStudentNotificationService in the authenticated server composer with per-action authorization rechecks
+  - register StudentNotificationCenter at the canonical Student notifications route and expose its unread badge through the F07 shell
+  - wire only internal source events to service.deliver after their own authorization and source-version checks
+  - do not register background push, PWA notifications, Student email, provider delivery, or pre-interaction audio
+compatibility_assumptions:
+  - F04 supplies authenticated Student and household scope.
+  - F05 supplies the governed PostgreSQL repository runtime.
+  - F07 supplies the Student portal shell, safe internal navigation, and browser interaction boundary.
+verification_performed:
+  - 13 focused P23 domain, service, and static-render tests
+  - workspace TypeScript typecheck
+  - focused ESLint and Prettier checks
+  - exact owned-path and provider-absence review
+conflicts_or_risks:
+  - Direct action routes must reauthorize at open time and return the neutral unavailable state after expiry or revocation.
+  - Notification copy must never include private question/support bodies, provider URLs, Student credentials, or secrets.
+  - Registration must not convert local in-app delivery into a provider send or external effect.
+contains_secret_or_private_data: false
