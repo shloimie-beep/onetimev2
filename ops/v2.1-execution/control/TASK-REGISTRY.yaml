@@ -835,7 +835,7 @@ tasks:
     transitioned_at: '2026-07-29T15:51:20Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P17/status_proof
 - task_id: P18
-  status: ready
+  status: claimed
   active_phase: launch_grant_table_collision_correction
   branch: codex/v21-p18-embedded-classroom
   phase_branches:
@@ -846,21 +846,22 @@ tasks:
   phase_heads:
     contract: 9b37f4a0a123299b0b278ffeaa7b83c763155e3b
     implementation: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
+    launch_grant_table_collision_correction: d315c47ff9e616ef7909c6edce85a226c5e4fbec
     review: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
   authorized_start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
-  last_known_remote_head: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
+  last_known_remote_head: d315c47ff9e616ef7909c6edce85a226c5e4fbec
   active_claim_id: 61b4324b-03b7-4d7a-a658-6c3a3091fb80
-  active_writer_id: null
+  active_writer_id: codex-p18-collision-correction-61b4324b
   lease_expires_at: '2026-07-29T17:47:13Z'
-  last_heartbeat_at: '2026-07-29T16:32:13Z'
-  controller_authorization_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
+  last_heartbeat_at: '2026-07-29T16:40:12Z'
+  controller_authorization_sha: 5b265e47ee4c23d8937752981f246f837f0d95a6
   ready_entry_payload_digest: 80b85a7bf27c621d6fe57ebca391d0cee372ee0ab1af4520822eead5504c04e3
   interface_checkpoint_sha: null
   implementation_head_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
+    state: claimed
+    producer_task_id: P18
+    producer_head_sha: d315c47ff9e616ef7909c6edce85a226c5e4fbec
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
@@ -874,8 +875,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
-    transitioned_at: '2026-07-29T16:34:59Z'
+    state_based_on_control_head_sha: 5b265e47ee4c23d8937752981f246f837f0d95a6
+    transitioned_at: '2026-07-29T16:42:06Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P18/status_proof
 - task_id: P19
   status: ready_for_review
