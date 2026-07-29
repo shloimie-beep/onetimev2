@@ -1,10 +1,10 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: P33
-interface_implementation_head_sha: 863cf2be646270f67b095f4b01a0feee69ba38b2
+interface_implementation_head_sha: 1a5a9c1d230e2852d21767509c4c42c908988221
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 058bb36226c82ae8717fd85d17adee2926cf834da581b1d5a3ea2871aec30940
-contract_digest: d643626af5b5ba4c6fbdd158b2e418c9f5f88123285b67595610a2e49b0b79b6
+contract_digest: 9ac5c08ab8b0585747630093c077bcc48f93f9748320362610ab1ccc3786bbf7
 contract_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
   followed by exact path=<artifact SHA-256> lines sorted lexicographically by
@@ -22,7 +22,7 @@ exports:
     symbols:
       - createOperationsDiagnosticsRouter
       - OperationsDiagnosticsPorts
-    sha256: cd7754acdfe9b151d5ac02bfad3ff0d186e719607e637c712a8f07c20b98676e
+    sha256: 003622c80fbb66b7dcb30f3bbea85be56666d6d4ae926cd32b6e177461ee9423
   - path: packages/observability/v21/contracts.ts
     symbols:
       - OPERATIONS_CONTRACT_VERSION
