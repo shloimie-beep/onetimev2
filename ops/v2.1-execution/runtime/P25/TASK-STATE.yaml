@@ -1,0 +1,128 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P25
+task_packet_digest: a07dc5c293b60094776cf26f09548bf77a78cc19c66a3b484d78aa195d698f23
+task_context_digest: 89a326cfdd46f483f4722ebc5396c8aa4b844e2652af399e04a5455c9ce58cb9
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p25-billing-commercial
+start_sha: d075dc1839660205845e7da039a182bbe44778d2
+dependency_heads:
+  F04:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+    task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+    task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3e
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F06:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+    task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+    task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: claimed
+phase: implementation
+claim_mode: create_new_branch
+claimed_by: codex-p25-worker-a4dcccb9
+claim_time: '2026-07-29T05:09:24Z'
+claim_id: a4dcccb9-2058-44df-a72d-4b3e6f51bdd9
+writer_slot_leases:
+  - slot: BILLING_COMMERCIAL
+    lease_id: bf5b157c-d452-44a8-991f-bea035e1fd82
+    lease_issued_at: '2026-07-29T05:02:55Z'
+    lease_expires_at: '2026-07-29T06:02:55Z'
+    state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+    phase_scope: P25_atomic_claim_only
+    state: active
+lease_expires_at: '2026-07-29T06:02:55Z'
+last_heartbeat_at: '2026-07-29T05:09:24Z'
+controller_authorization_sha: 2b29ce6ce75de10765f6f6c64d059e858c548281
+ready_entry_state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+ready_entry_payload_digest: 30aec96a3b09178b89f322ba285b6216c2851039f9eab971edad7e248ce4fb87
+state_based_on_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+last_implementation_commit_sha: null
+completed_steps:
+  - Verified exact released controller 2b29ce6ce75de10765f6f6c64d059e858c548281 and its sole acquisition parent 9e04eda2275f3b6a92066670d878a3e1c62361ca.
+  - Verified exact authorized start d075dc1839660205845e7da039a182bbe44778d2, absent local and remote P25 branch, package/task/context digests, and ready-entry digest 30aec96a3b09178b89f322ba285b6216c2851039f9eab971edad7e248ce4fb87.
+  - Verified exact F04, F05, F06, and F07 interface-ready integration bindings, including F04 implementation 81c0ee64072386db41aa5a40243c693762ab493a.
+  - Claimed the sole BILLING_COMMERCIAL writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P25 runtime-memory files; no product, source, provider, steward, or effect work has started.
+remaining_steps:
+  - C00 must reconcile the exact pushed atomic claim head into released control state.
+  - P25 may begin implementation only after exact C00 reconciliation and fresh resume authority.
+next_action: Push and remote-verify this three-file atomic claim, report its exact head to C00, and stop.
+requirements:
+  OTV2-BILLING-101: pending
+  OTV2-BILLING-102: pending
+  OTV2-BILLING-103: pending
+  OTV2-BILLING-104: pending
+  OTV2-BILLING-105: pending
+  OTV2-BILLING-106: pending
+  OTV2-BILLING-107: pending
+  OTV2-BILLING-108: pending
+  OTV2-BILLING-109: pending
+  OTV2-BILLING-110: pending
+  OTV2-BILLING-224: pending
+  OTV2-PARENT-038: pending
+acceptance_cases:
+  OTV2-BILLING-101-AC01: pending
+  OTV2-BILLING-102-AC01: pending
+  OTV2-BILLING-103-AC01: pending
+  OTV2-BILLING-104-AC01: pending
+  OTV2-BILLING-105-AC01: pending
+  OTV2-BILLING-106-AC01: pending
+  OTV2-BILLING-107-AC01: pending
+  OTV2-BILLING-108-AC01: pending
+  OTV2-BILLING-109-AC01: pending
+  OTV2-BILLING-110-AC01: pending
+  OTV2-BILLING-224-STANDARD: pending
+  OTV2-BILLING-224-IMMEDIATE-EXCEPTION: pending
+  OTV2-PARENT-038-AC01: pending
+changed_paths:
+  - ops/v2.1-execution/runtime/P25/HANDOFF.md
+  - ops/v2.1-execution/runtime/P25/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P25/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact controller, acquisition, start, registry, ready-entry, claim, lease, dependency, and branch-absence verification
+      result: passed; exact released authority, corrected F04 implementation binding, sole writer lease, and zero effect locks
+    - command: git worktree add -b codex/v21-p25-billing-commercial <isolated-worktree> d075dc1839660205845e7da039a182bbe44778d2
+      result: passed; branch created from exact authorized start
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
