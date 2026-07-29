@@ -16,5 +16,12 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: d7475995baa425229077fadd522082855997ed48
-next_action: I36 remains authorized only to publish the three-file atomic claim for the ordered F01, F04, and F05 integration wave and must stop before merging for C00 reconciliation. P24 final 78e6c886 is rejected pending one bounded correction: use the declared sorted path equals raw-blob-SHA256 preimage whose current exact result is 249f6b30, and make create/replay return only the requester projection so an idempotent replay after an adult GHL link can never disclose the raw conversation identity; add the direct regression, recompute all exact digests, release SUPPORT lease b7c91222, and stop for independent reaudit. No provider inspection, live Telegram action, steward application, or external effect is authorized.
+next_action: >-
+  I36 remains authorized only to publish the three-file atomic claim for the ordered F01, F04, and F05
+  integration wave and must stop before merging for C00 reconciliation. P24 final 78e6c886 is rejected pending
+  one bounded correction: use the declared sorted path equals raw-blob-SHA256 preimage whose current exact result
+  is 249f6b30, and make create/replay return only the requester projection so an idempotent replay after an adult
+  GHL link can never disclose the raw conversation identity; add the direct regression, recompute all exact
+  digests, release SUPPORT lease b7c91222, and stop for independent reaudit. No provider inspection, live
+  Telegram action, steward application, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
