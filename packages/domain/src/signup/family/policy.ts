@@ -5,6 +5,7 @@ import {
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH,
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH,
   FAMILY_SIGNUP_OPERATION,
+  type FamilySignupAdultConsentChoices,
   type FamilySignupCommand,
   type FamilySignupLocalProjection,
   type FamilySignupOutboxIntent,
@@ -76,6 +77,8 @@ export interface CanonicalFamilySignupRequest {
   timezone: string;
   terms_accepted: true;
   privacy_accepted: true;
+  general_marketing_consent: boolean;
+  parent_newsletter_consent: boolean;
 }
 
 export interface PlanFamilySignupInput {
@@ -123,6 +126,8 @@ export function assertFamilySignupEnvelope(
     new Set(command.idempotency_key).size < 16 ||
     command.terms_accepted !== true ||
     command.privacy_accepted !== true ||
+    typeof command.general_marketing_consent !== 'boolean' ||
+    typeof command.parent_newsletter_consent !== 'boolean' ||
     !command.first_name.trim() ||
     !command.last_name.trim() ||
     !command.timezone.trim()
@@ -130,6 +135,12 @@ export function assertFamilySignupEnvelope(
     throw new FamilySignupError('invalid_family_signup');
   }
   normalizeAdultEmail(command.email);
+  if (command.password !== command.password_confirmation) {
+    throw new FamilySignupError('invalid_password');
+  }
+  if (!isIanaTimeZone(command.timezone.trim())) {
+    throw new FamilySignupError('invalid_family_signup');
+  }
 }
 
 export function assertFamilySignupPassword(command: FamilySignupCommand): void {
@@ -163,6 +174,8 @@ export function canonicalizeFamilySignupRequest(
     timezone: command.timezone.trim(),
     terms_accepted: true,
     privacy_accepted: true,
+    general_marketing_consent: command.general_marketing_consent,
+    parent_newsletter_consent: command.parent_newsletter_consent,
   };
   return {
     request_binding: {
@@ -219,17 +232,27 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     suppression_evidence_digest: input.ghl_evidence.suppression_evidence_digest,
   });
   const beforeExpiry = input.now.getTime() < Date.parse(FAMILY_FREE_EXPIRY);
+  const identityReviewBlocksCheckout = !beforeExpiry && link.state === 'identity_review';
+  const consentChoices: FamilySignupAdultConsentChoices = {
+    general_marketing: input.command.general_marketing_consent,
+    parent_newsletter: input.command.parent_newsletter_consent,
+  };
   const projection: FamilySignupLocalProjection = {
     adult_id: input.proposed_adult_id,
     human_account_id: input.proposed_human_account_id,
     household_id: input.proposed_household_id,
     normalized_email: input.normalized_email,
-    access_branch: beforeExpiry ? 'immediate_free' : 'inactive_checkout',
+    access_branch: beforeExpiry
+      ? 'immediate_free'
+      : identityReviewBlocksCheckout
+        ? 'inactive_identity_review'
+        : 'inactive_checkout',
     access_state: beforeExpiry ? 'free' : 'inactive',
     seat_limit: 3,
     active_seat_count: 0,
     free_access_expires_at: beforeExpiry ? FAMILY_FREE_EXPIRY : null,
-    checkout_required: !beforeExpiry,
+    checkout_required: !beforeExpiry && !identityReviewBlocksCheckout,
+    checkout_blocked_by_identity_review: identityReviewBlocksCheckout,
     rolling_trial_granted: false,
     card_collected: false,
   };
@@ -240,6 +263,8 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     adult_id: projection.adult_id,
     household_id: projection.household_id,
     normalized_email_hash: normalizedEmailHash,
+    adult_consent_choices: consentChoices,
+    dispatch_state: link.state === 'identity_review' ? 'identity_review' : 'ready',
     preserve_adult_suppression: true,
     local_commit_required: true,
   };
@@ -247,13 +272,19 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     result: {
       disposition: 'created',
       projection,
-      next_action: beforeExpiry ? 'signed_in' : 'checkout',
+      next_action: beforeExpiry
+        ? 'signed_in'
+        : identityReviewBlocksCheckout
+          ? 'identity_review'
+          : 'checkout',
       setup_email_required: false,
       provider_effects_completed_inline: 0,
       outbox_intent_ids: [outbox.intent_id],
       safe_message: beforeExpiry
         ? 'Your family account is ready.'
-        : 'Your account is ready. Continue to checkout.',
+        : identityReviewBlocksCheckout
+          ? 'Your inactive account is ready. Checkout will be available after account review.'
+          : 'Your account is ready. Continue to checkout.',
     },
     outbox_intents: [outbox],
     local_write_required: true,
@@ -327,4 +358,14 @@ function noWritePlan(
 
 function digest(value: string): string {
   return createHash('sha256').update(value, 'utf8').digest('hex');
+}
+
+function isIanaTimeZone(value: string): boolean {
+  if (/^(?:[+-]\d{2}:?\d{2}|(?:GMT|UTC)[+-].*)$/iu.test(value)) return false;
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: value }).format(new Date(0));
+    return true;
+  } catch {
+    return false;
+  }
 }

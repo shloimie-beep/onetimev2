@@ -3,6 +3,8 @@ import {
   FAMILY_SIGNUP_COPY,
   FAMILY_SIGNUP_FIELDS,
   FAMILY_SIGNUP_FORBIDDEN_FIELDS,
+  FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS,
+  FAMILY_SIGNUP_TIMEZONE_FIELD,
   type FamilySignupClassification,
 } from '../../../../../../packages/contracts/src/signup/family/index.ts';
 
@@ -17,28 +19,10 @@ export function familySignupFormModel(now: Date) {
     classification: 'family' as const,
     fields: FAMILY_SIGNUP_FIELDS,
     forbidden_fields: FAMILY_SIGNUP_FORBIDDEN_FIELDS,
+    timezone_field: FAMILY_SIGNUP_TIMEZONE_FIELD,
+    optional_consent_fields: FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS,
     ...FAMILY_SIGNUP_COPY[beforeExpiry ? 'before_expiry' : 'at_or_after_expiry'],
     card_fields: 0 as const,
-    student_fields: 0 as const,
-  };
-}
-
-export function schoolInquiryFormModel() {
-  return {
-    classification: 'school' as const,
-    fields: [
-      'classification',
-      'first_name',
-      'last_name',
-      'email',
-      'school_name',
-      'timezone',
-      'terms_accepted',
-      'privacy_accepted',
-    ] as const,
-    password_fields: 0 as const,
-    card_fields: 0 as const,
-    household_fields: 0 as const,
     student_fields: 0 as const,
   };
 }

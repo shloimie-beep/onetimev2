@@ -8,8 +8,10 @@ import {
   FAMILY_SIGNUP_FORBIDDEN_FIELDS,
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH,
   FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH,
+  FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS,
   FAMILY_SIGNUP_OPERATION,
   FAMILY_SIGNUP_SECURITY_INVARIANTS,
+  FAMILY_SIGNUP_TIMEZONE_FIELD,
 } from './index.ts';
 
 describe('P08 family signup contract', () => {
@@ -26,7 +28,7 @@ describe('P08 family signup contract', () => {
   });
 
   it('keeps the Family form cardless and local-first', () => {
-    expect(FAMILY_SIGNUP_CONTRACT_VERSION).toBe('1.1.0');
+    expect(FAMILY_SIGNUP_CONTRACT_VERSION).toBe('2.0.0');
     expect(FAMILY_SIGNUP_OPERATION).toBe('public_family_signup');
     expect(FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH).toBe(43);
     expect(FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH).toBe(128);
@@ -36,9 +38,36 @@ describe('P08 family signup contract', () => {
       'last_name',
       'email',
       'password',
+      'password_confirmation',
       'timezone',
       'terms_accepted',
       'privacy_accepted',
+      'general_marketing_consent',
+      'parent_newsletter_consent',
+    ]);
+    expect(FAMILY_SIGNUP_TIMEZONE_FIELD).toMatchObject({
+      control: 'combobox',
+      value_kind: 'iana_time_zone_identifier',
+      searchable: true,
+      editable: true,
+      browser_prefill: 'suggestion_only',
+      raw_offset_only: false,
+    });
+    expect(FAMILY_SIGNUP_OPTIONAL_CONSENT_FIELDS).toEqual([
+      {
+        name: 'general_marketing_consent',
+        scope: 'general_marketing',
+        label: 'General marketing',
+        required: false,
+        default_checked: false,
+      },
+      {
+        name: 'parent_newsletter_consent',
+        scope: 'parent_newsletter',
+        label: 'Parent newsletter',
+        required: false,
+        default_checked: false,
+      },
     ]);
     expect(FAMILY_SIGNUP_FORBIDDEN_FIELDS).toContain('card');
     expect(FAMILY_SIGNUP_FORBIDDEN_FIELDS).toContain('students');
@@ -53,6 +82,12 @@ describe('P08 family signup contract', () => {
       canonical_request_digest_is_server_computed: true,
       request_receipt_and_outbox_are_scope_operation_bound: true,
       idempotency_key_is_not_authentication: true,
+      password_confirmation_must_match_exactly: true,
+      timezone_must_be_iana: true,
+      browser_timezone_is_editable_suggestion_only: true,
+      optional_adult_consents_are_separate: true,
+      optional_adult_consents_are_never_inferred: true,
+      identity_review_blocks_post_expiry_checkout: true,
     });
   });
 });

@@ -26,9 +26,12 @@ const command = (): FamilySignupCommand => ({
   last_name: 'Levi',
   email: 'ari@example.com',
   password: 'correct horse battery staple',
+  password_confirmation: 'correct horse battery staple',
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
+  general_marketing_consent: false,
+  parent_newsletter_consent: true,
 });
 const ghlEvidence = () => ({
   verified_contact_ref_hash: null,
@@ -92,6 +95,11 @@ describe('P08 family signup service', () => {
     expect(calls[2]?.value).toMatchObject({ scope, operation: FAMILY_SIGNUP_OPERATION });
     expect(calls[3]?.value).toMatchObject({
       password_hash: 'argon2id-safe-hash',
+      request: {
+        timezone: 'Asia/Jerusalem',
+        general_marketing_consent: false,
+        parent_newsletter_consent: true,
+      },
       request_binding: {
         scope,
         operation: FAMILY_SIGNUP_OPERATION,
@@ -110,11 +118,17 @@ describe('P08 family signup service', () => {
             scope,
             operation: FAMILY_SIGNUP_OPERATION,
           },
+          adult_consent_choices: {
+            general_marketing: false,
+            parent_newsletter: true,
+          },
+          dispatch_state: 'ready',
           local_commit_required: true,
         },
       ],
     });
     expect(JSON.stringify(calls[3]?.value)).not.toContain('correct horse');
+    expect(JSON.stringify(calls[3]?.value)).not.toContain('password_confirmation');
     expect(result.provider_effects_completed_inline).toBe(0);
   });
 
@@ -209,6 +223,7 @@ describe('P08 family signup service', () => {
         active_seat_count: 0,
         free_access_expires_at: null,
         checkout_required: true,
+        checkout_blocked_by_identity_review: false,
         rolling_trial_granted: false,
         card_collected: false,
       },
@@ -244,8 +259,17 @@ describe('P08 family signup service', () => {
     const changedRequests: Array<{ scope: FamilySignupScope; command: FamilySignupCommand }> = [
       { scope, command: { ...original, email: 'other@example.com' } },
       { scope, command: { ...original, first_name: 'Aharon' } },
-      { scope, command: { ...original, timezone: 'UTC' } },
-      { scope, command: { ...original, password: 'different secure password phrase' } },
+      { scope, command: { ...original, timezone: 'Europe/London' } },
+      {
+        scope,
+        command: {
+          ...original,
+          password: 'different secure password phrase',
+          password_confirmation: 'different secure password phrase',
+        },
+      },
+      { scope, command: { ...original, general_marketing_consent: true } },
+      { scope, command: { ...original, parent_newsletter_consent: false } },
       {
         scope: {
           product: 'one_time_mishnayos',
@@ -268,7 +292,48 @@ describe('P08 family signup service', () => {
     }
   });
 
-  it('rejects weak keys and spoofed caller hashes before repository access', async () => {
+  it('commits an inactive account but blocks post-expiry Checkout during identity review', async () => {
+    const commits: unknown[] = [];
+    const service = createFamilySignupService({
+      repository: repositoryFor({
+        readGhlEvidence: async () => ({
+          ...ghlEvidence(),
+          exact_email_match_ref_hashes: [h('c'), h('d')],
+        }),
+        commit: async (value) => {
+          commits.push(value);
+        },
+      }),
+      hashPassword: async () => 'argon2id-safe-hash',
+      fingerprintPasswordForIdempotency: async () => h('a'),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+    const result = await service.submit({
+      scope,
+      command: command(),
+      now: new Date('2026-09-13T16:24:00.000Z'),
+    });
+    expect(result).toMatchObject({
+      next_action: 'identity_review',
+      projection: {
+        access_branch: 'inactive_identity_review',
+        access_state: 'inactive',
+        checkout_required: false,
+        checkout_blocked_by_identity_review: true,
+      },
+    });
+    expect(commits).toHaveLength(1);
+    expect(commits[0]).toMatchObject({
+      ghl_identity_state: 'identity_review',
+      outbox_intents: [{ dispatch_state: 'identity_review' }],
+    });
+  });
+
+  it('rejects invalid IANA zones, confirmation, consent, keys, and hashes before access', async () => {
     let externalCalls = 0;
     const service = createFamilySignupService({
       repository: {
@@ -300,6 +365,22 @@ describe('P08 family signup service', () => {
     await expect(service.submit({ scope, command: weakKey, now: new Date() })).rejects.toThrow(
       'invalid_family_signup',
     );
+    for (const invalid of [
+      { ...command(), timezone: 'not a timezone' },
+      { ...command(), timezone: '+02:00' },
+      { ...command(), password_confirmation: 'different secure password' },
+    ]) {
+      await expect(service.submit({ scope, command: invalid, now: new Date() })).rejects.toThrow();
+    }
+    const missingConsent = command() as Partial<FamilySignupCommand>;
+    delete missingConsent.general_marketing_consent;
+    await expect(
+      service.submit({
+        scope,
+        command: missingConsent as FamilySignupCommand,
+        now: new Date(),
+      }),
+    ).rejects.toThrow('invalid_family_signup');
     const spoofed = command() as FamilySignupCommand & { canonical_request_hash: string };
     spoofed.canonical_request_hash = h('f');
     await expect(service.submit({ scope, command: spoofed, now: new Date() })).rejects.toThrow(

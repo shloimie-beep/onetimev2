@@ -23,9 +23,12 @@ const command = (): FamilySignupCommand => ({
   last_name: 'Levi',
   email: ' Ari@Example.com ',
   password: 'correct horse battery staple',
+  password_confirmation: 'correct horse battery staple',
   timezone: 'Asia/Jerusalem',
   terms_accepted: true,
   privacy_accepted: true,
+  general_marketing_consent: false,
+  parent_newsletter_consent: true,
 });
 const input = (now: string, signupCommand = command()): PlanFamilySignupInput => {
   const canonical = canonicalizeFamilySignupRequest(scope, signupCommand, h('a'));
@@ -57,6 +60,7 @@ describe('P08 family signup policy', () => {
     expect(before.result.projection).toMatchObject({
       access_state: 'free',
       checkout_required: false,
+      checkout_blocked_by_identity_review: false,
       card_collected: false,
       rolling_trial_granted: false,
       normalized_email: 'ari@example.com',
@@ -69,6 +73,7 @@ describe('P08 family signup policy', () => {
       expect(after.result.projection).toMatchObject({
         access_state: 'inactive',
         checkout_required: true,
+        checkout_blocked_by_identity_review: false,
         free_access_expires_at: null,
       });
       expect(after.result.next_action).toBe('checkout');
@@ -132,6 +137,42 @@ describe('P08 family signup policy', () => {
     expect(plan.credential_write_required).toBe(true);
     expect(plan.ghl_identity_state).toBe('linked');
     expect(plan.outbox_intents[0]?.request_binding).toEqual(linked.request_binding);
+    expect(plan.outbox_intents[0]?.adult_consent_choices).toEqual({
+      general_marketing: false,
+      parent_newsletter: true,
+    });
+  });
+
+  it('quarantines GHL ambiguity and blocks only post-expiry Checkout', () => {
+    const before = input('2026-09-13T16:23:59.000Z');
+    before.ghl_evidence!.exact_email_match_ref_hashes = [h('c'), h('d')];
+    const free = planFamilySignup(before);
+    expect(free.result.next_action).toBe('signed_in');
+    expect(free.result.projection).toMatchObject({
+      access_state: 'free',
+      checkout_required: false,
+      checkout_blocked_by_identity_review: false,
+    });
+    expect(free.outbox_intents[0]?.dispatch_state).toBe('identity_review');
+
+    const boundary = input('2026-09-13T16:24:00.000Z');
+    boundary.ghl_evidence!.exact_email_match_ref_hashes = [h('c'), h('d')];
+    const blocked = planFamilySignup(boundary);
+    expect(blocked.result.next_action).toBe('identity_review');
+    expect(blocked.result.projection).toMatchObject({
+      access_branch: 'inactive_identity_review',
+      access_state: 'inactive',
+      checkout_required: false,
+      checkout_blocked_by_identity_review: true,
+    });
+    expect(blocked.ghl_sync_quarantined).toBe(true);
+    expect(blocked.outbox_intents[0]).toMatchObject({
+      dispatch_state: 'identity_review',
+      adult_consent_choices: {
+        general_marketing: false,
+        parent_newsletter: true,
+      },
+    });
   });
 
   it('recovers only an exact scope, operation, key, and semantic digest binding', () => {
@@ -153,6 +194,12 @@ describe('P08 family signup policy', () => {
     });
     changedName.existing_request = retry.existing_request;
     expect(() => planFamilySignup(changedName)).toThrow('idempotency_conflict');
+    const changedConsent = input('2026-09-13T00:00:00.000Z', {
+      ...command(),
+      general_marketing_consent: true,
+    });
+    changedConsent.existing_request = retry.existing_request;
+    expect(() => planFamilySignup(changedConsent)).toThrow('idempotency_conflict');
 
     const crossScope = input('2026-09-13T00:00:00.000Z');
     crossScope.scope = {
@@ -169,7 +216,24 @@ describe('P08 family signup policy', () => {
     expect(() => planFamilySignup(crossScope)).toThrow('idempotency_conflict');
   });
 
-  it('fails closed on short keys, caller hashes, and hybrid classifications', () => {
+  it('fails closed on invalid IANA zones, confirmation, consent, keys, and extra fields', () => {
+    for (const timezone of ['not a timezone', '+02:00', 'GMT+03:00']) {
+      expect(() => input('2026-09-13T00:00:00.000Z', { ...command(), timezone })).toThrow(
+        'invalid_family_signup',
+      );
+    }
+    expect(() =>
+      input('2026-09-13T00:00:00.000Z', {
+        ...command(),
+        password_confirmation: 'different secure password',
+      }),
+    ).toThrow('invalid_password');
+    const missingConsent = command() as Partial<FamilySignupCommand>;
+    delete missingConsent.parent_newsletter_consent;
+    expect(() => input('2026-09-13T00:00:00.000Z', missingConsent as FamilySignupCommand)).toThrow(
+      'invalid_family_signup',
+    );
+
     const shortKey = command();
     shortKey.idempotency_key = 'short';
     expect(() => input('2026-09-13T00:00:00.000Z', shortKey)).toThrow('invalid_family_signup');
@@ -181,8 +245,8 @@ describe('P08 family signup policy', () => {
     spoofed.canonical_request_hash = h('f');
     expect(() => input('2026-09-13T00:00:00.000Z', spoofed)).toThrow('invalid_family_signup');
 
-    const hybrid = command();
-    Object.assign(hybrid, { school_name: 'Hybrid School' });
-    expect(() => input('2026-09-13T00:00:00.000Z', hybrid)).toThrow('invalid_family_signup');
+    const extra = command();
+    Object.assign(extra, { unexpected_branch_payload: 'not-family' });
+    expect(() => input('2026-09-13T00:00:00.000Z', extra)).toThrow('invalid_family_signup');
   });
 });
