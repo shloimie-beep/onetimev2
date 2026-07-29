@@ -1,35 +1,37 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: REVIEW_OR_INTEGRATE
+MODE: START_OR_RESUME
 
-Review and integrate the exact pushed P33 corrected final head; do not resume
-P33 product work without a new C00-issued lease.
+Resume P33 only after C00 has consumed the exact atomic follow-up claim head.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p33-runtime-operations
 Task state: ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P33/HANDOFF.md
-Interface: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
 
-Verify the exact pushed branch head and its linear ancestry from reconciled
-claim head 0ecfd73c6f5e1a352d995269efbf1cf1a731ddf4. The corrected implementation
-is 399aedd5b8dda99806ed5f659a4c729bd37035ef and the interface metadata commit
-is f05cc7fb3dd71a8d5a27212764f40873b8662b75. Recompute semantic contract
-3.0.0 digest 0e890eab8aece10e8b80785ecc0c11899415d8a2089338048f8568333bbb95cc,
-all seven export hashes, all three steward-request hashes, the exact changed
-path scope, state/handoff binding, and zero external effects.
+Follow-up correction claim authority binds containing controller
+107fdea29e5ba852d3c41740d964bf25d8a1ed46, acquisition
+7b1aae190d4bf6eb9b36fc2521345ac976c49ff8, exact parent/rejected final
+160299371e203f84a5af3f87bfd5c8e8115a5063, ready digest
+06ddf0377b93d940b8f0e1a2e44cb4cb29a43232387f1d86ba99b2497344122c,
+claim a3a5253b-019d-4600-aa04-1da9ff1eccea, and OPERATIONS_RUNTIME lease
+12ddddaa-2196-47ca-b63a-a20d9b3ad124 expiring 2026-07-29T03:52:01Z.
 
-Audit the bounded corrections for immutable build timestamp and migration
-schema identity, publication-clock heartbeat freshness, exact queue lease /
-fencing / retry / content-progress evidence, alert runtime/environment
-identity, and leakage coverage for secrets, common PII, and all seven provider
-links. Confirm the 60 focused tests plus secret scan, full quiet lint,
-typecheck, formatting, and diff checks.
+Before repair, verify C00 consumed the exact remote claim head, local and remote
+equal it, and the lease remains valid. The 399aedd5/f05cc7fb/16029937 lineage
+is rejected pending correction.
 
-The OPERATIONS_RUNTIME lease 646edca2-163d-467a-8cff-79d5efb29966 was released
-at 2026-07-29T02:48:08Z before its 2026-07-29T03:22:38Z expiry. External-effect
-authority is none and effects are 0/0/0. I36 must integrate the exact final
-head before C00 authorizes P34. Do not apply steward requests or edit shared
+Repair exactly these reproduced defects:
+
+1. `scanOperationalLeakage({street_address:'private-value'})` currently passes.
+2. Queue depth `10` / `retry_count` `9` without scheduled/exhausted retry
+   evidence currently remains healthy.
+3. Active lease age `600000ms` with fencing-token high-watermark `1` currently
+   remains healthy.
+
+Add direct negative regressions, update the semantic interface and steward
+metadata if their committed artifacts change, run full verification, update
+the three runtime files, release the lease, commit, and push. Do not edit shared
 composers, manifests, lockfiles, migrations, provider registries,
-backup/restore, or canary-budget surfaces as part of this review.
+backup/restore, or canary-budget surfaces. External-effect authority is none.
