@@ -1479,3 +1479,22 @@ lookup, transactionally current audience eligibility, and the direct residual
 tests. It must preserve prior passing behavior, release the lease, publish a
 superseding final, and stop for independent audit. No live provider, send,
 steward application, or external effect is authorized.
+
+The dependency frontier independently confirms P24 is the only never-started
+launch-critical implementation lane whose required F03/F04/F05/F07 interface
+sources are all ancestors of current integration release `408b21af`. Its
+`SUPPORT` writer slot is disjoint from P21, no P24 remote branch exists, and
+its task declares `external_authority: none`. C00 authorized only atomic branch
+creation at `codex/v21-p24-support`: READY
+`57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75`,
+claim `ff79d0ab-10d4-481b-ae90-48bb8bd9631a`, SUPPORT lease
+`4d0115d1-571f-4ca7-8b04-3fc79b43bcdf` through
+`2026-07-29T13:38:30Z`, and start `408b21af`. The first push must contain
+exactly P24 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then stop
+for C00 reconciliation. Product, request, Telegram/provider, send, steward,
+and external-effect work is not authorized in that first push.
+
+The read-only integration inventory also records 16 ready-for-review producer
+heads that are not yet full integration ancestors and 55 assigned steward
+duties. The current integration release is clean and candidate-free, but it is
+not integration-complete or candidate-freeze-ready.

@@ -940,6 +940,29 @@ focused tests/typecheck/lint/format/scope/digest checks, release the lease,
 publish a superseding final, and stop for independent re-audit with effects
 `0/0/0`. Perform no provider/send/external effect.
 
+Create P24 only from exact integration release
+`408b21afa4b9ac6f100b3ce33ea87984d18d4bf7` on branch
+`codex/v21-p24-support`, under claim
+`ff79d0ab-10d4-481b-ae90-48bb8bd9631a`, SUPPORT lease
+`4d0115d1-571f-4ca7-8b04-3fc79b43bcdf`, acquisition
+`8bb4680887b2ea320f914cf046184655601fade9`, and READY digest
+`57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75`.
+Verify the exact F03/F04/F05/F07 dependency bindings, create and push exactly:
+
+- `ops/v2.1-execution/runtime/P24/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/P24/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P24/NEXT-PROMPT.md`
+
+Then remote-verify and stop for C00 reconciliation. Do not edit product/test/
+request files, inspect or mutate Telegram or another provider, send anything,
+apply steward work, claim an effect lock, or perform an external effect in the
+atomic-claim push.
+
+Before candidate freeze, reconcile and disposition the independently
+inventoried 16 ready-for-review producer heads that are not yet full integration
+ancestors and the 55 assigned steward duties. Do not treat the current
+queue-empty, candidate-free integration release as integration-complete.
+
 P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
 reconciled. Resume it under unchanged claim
 `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease

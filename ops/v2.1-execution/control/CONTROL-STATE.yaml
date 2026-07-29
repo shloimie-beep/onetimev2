@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 6209cee92ae59c12b431dcf399e50be4392d538c
-next_action: P09 integration is complete at release 408b21af and must not be repeated; its migration/registration and P11 registration requests remain assigned but unapplied. P21 atomic residual-correction claim cc7e7439 is reconciled under unchanged claim eba3bd79 and CONTENT_PUBLICATION lease d4c8a72c; P21 may implement only the bounded durable original-outbox completion, repository-backed governed occurrence lookup, transactionally current audience eligibility, and direct residual tests, then release its lease and publish a superseding final for independent audit. No live provider action, send, steward application, or external effect is authorized.
+controller_authorization_sha: 8bb4680887b2ea320f914cf046184655601fade9
+next_action: P21 continues only its reconciled bounded local residual correction under claim eba3bd79 and CONTENT_PUBLICATION lease d4c8a72c. Independently, P24 is authorized only to create codex/v21-p24-support from exact integration release 408b21af and publish a three-runtime-file atomic claim under READY digest 57d6b0bb, claim ff79d0ab, and SUPPORT lease 4d0115d1, then stop for C00 reconciliation before product work. No live Telegram/provider action, send, steward application, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
