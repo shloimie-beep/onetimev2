@@ -1,23 +1,24 @@
-# I36 F06/F07/P16 Full-Integration Atomic Claim
+# I36 F06/F07/P16 Full-Integration Release
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Exact existing target:
-  `09a248c90918afc3bd171e9f4990efc28b17ca5e`
+- Atomic claim target:
+  `fd791eea49d0a77c3e0f95c3bead0ea522b9f829`
 - Authorizing transaction:
-  `f9c40f4fab7193baa120380dfcf082d14dec5429`
+  `9586d9eea5fd1c17918237c453b6ff933b2a4fe8`
 - Sole acquisition parent:
-  `62d535edb54710ac4f9cb035c2affb4a0845a95d`
+  `a6b48636d225609222bf96f90cf8a76da023380c`
 - READY I36 digest:
   `9c6a4746e100cd0f1d9a057e1096836c0cd517138871c5b3050cd92f2b4bf56e`
 - Claim: `b1773fcc-0219-4d5e-a80c-e388b4ac7f3b`
 - RELEASE_INTEGRATOR lease: `b2a36214-721d-4224-a50d-8c21b20f4e11`
 - Lease window: `2026-07-29T13:54:38Z` through
   `2026-07-29T15:09:38Z`
+- Lease released: `2026-07-29T14:17:00Z`
 - Phase scope: `F06_F07_P16_full_integration_atomic_claim_only`
-- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
-  pushed remote head.
+- Release head: derive with `git rev-parse HEAD`; C00 records the observed
+  pushed remote head and its sole parent.
 
 ## Ordered queue
 
@@ -31,7 +32,23 @@
    `72fca16b3a9cd82c666e293f8bfd7d84c30722a1`, payload
    `a35518d9e4eee8dad70d9b343349b131a227b3295568b10047538c3bc79b1bd0`.
 
-## Authority verification
+## Merge results
+
+1. F06 merged at `a9b8404451246246fdcd2ffdde99ee72bb096d2f`
+   from parents `fd791eea49d0a77c3e0f95c3bead0ea522b9f829` and
+   `ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57`.
+2. F07 merged at `64c70e49737d94d2f327f2bff0215791bdf69dc7`
+   from parents `a9b8404451246246fdcd2ffdde99ee72bb096d2f` and
+   `2c451d7b1f59eece1ae8df505d4eeec19f42e1ef`.
+3. P16 merged at `66c8a987ea227dce08612bfe0ac81e758e028b42`
+   from parents `64c70e49737d94d2f327f2bff0215791bdf69dc7` and
+   `72fca16b3a9cd82c666e293f8bfd7d84c30722a1`.
+
+Each first-parent delta is exactly that task's `HANDOFF.md`, `NEXT-PROMPT.md`,
+and `TASK-STATE.yaml`. The complete atomic-claim delta is exactly those nine
+admitted runtime paths.
+
+## Verification
 
 The fetched integration and control refs matched the exact target and
 authorization. Canonical READY and all three merge-item payloads recomputed
@@ -41,14 +58,21 @@ and P15 full head `c96b8c55c07e5283e762537934a6bf948833700e`
 are already ancestors; queued order satisfies F06 before F07 and F07 before
 P16.
 
-This checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. No source was merged, no steward request was applied, and no
-product, provider, send, or external effect was performed.
+All 200 locked blobs and 15 source-package blobs passed. Full lint and build
+passed, as did 31 focused F06/F07/P16 tests, exact-path formatting, diff
+hygiene, the repository secret scan, merge-parent checks, and scope checks.
+The full unit, integration, and repository-wide formatting commands retain
+baseline failures only in paths unchanged by this nine-file metadata wave; the
+details are recorded in `TASK-STATE.yaml`.
+
+This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. No steward request was applied, no product or test code was
+edited, and no product, provider, send, or external effect was performed.
 
 ## Next action
 
-C00 must reconcile the exact pushed atomic claim head. I36 must stop after
-reporting it; ordered F06/F07/P16 merges require a subsequent explicit resume.
+C00 must reconcile the exact pushed release head and its sole parent. I36 must
+stop after reporting it.
 
 ## Effects
 

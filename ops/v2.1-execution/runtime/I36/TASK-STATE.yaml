@@ -27,23 +27,23 @@ dependency_heads:
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
   P11: 15660c1115d9d8066651573100acd8acaaac574e
   P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-status: claimed
-phase: integration
+status: ready
+phase: release
 claimed_by: codex-i36-worker-b1773fcc
 claim_time: '2026-07-29T13:54:38Z'
 claim_id: b1773fcc-0219-4d5e-a80c-e388b4ac7f3b
 lease_id: b2a36214-721d-4224-a50d-8c21b20f4e11
 lease_issued_at: '2026-07-29T13:54:38Z'
 lease_expires_at: '2026-07-29T15:09:38Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T13:54:38Z'
-controller_authorization_sha: f9c40f4fab7193baa120380dfcf082d14dec5429
-latest_valid_observed_control_head_sha: f9c40f4fab7193baa120380dfcf082d14dec5429
-reconciled_state_based_on_control_head_sha: 62d535edb54710ac4f9cb035c2affb4a0845a95d
+lease_released_at: '2026-07-29T14:17:00Z'
+last_heartbeat_at: '2026-07-29T14:17:00Z'
+controller_authorization_sha: 9586d9eea5fd1c17918237c453b6ff933b2a4fe8
+latest_valid_observed_control_head_sha: 9586d9eea5fd1c17918237c453b6ff933b2a4fe8
+reconciled_state_based_on_control_head_sha: a6b48636d225609222bf96f90cf8a76da023380c
 ready_entry_state_based_on_control_head_sha: 62d535edb54710ac4f9cb035c2affb4a0845a95d
 ready_entry_payload_digest: 9c6a4746e100cd0f1d9a057e1096836c0cd517138871c5b3050cd92f2b4bf56e
 claim_mode: resume_existing
-expected_existing_head_sha: 09a248c90918afc3bd171e9f4990efc28b17ca5e
+expected_existing_head_sha: fd791eea49d0a77c3e0f95c3bead0ea522b9f829
 lease_phase_scope: F06_F07_P16_full_integration_atomic_claim_only
 queued_merge_ids:
   F06: c18d0378-5a3f-466e-a218-f464dee63316
@@ -65,22 +65,22 @@ queued_merge_order:
   - F06
   - F07
   - P16
-queued_expected_target_head_sha: 09a248c90918afc3bd171e9f4990efc28b17ca5e
+queued_expected_target_head_sha: fd791eea49d0a77c3e0f95c3bead0ea522b9f829
 prior_merge_result_head_sha: eb05db1f487a85ef66287d38641d1abf7ef3c0b7
 prior_release_head_sha: 09a248c90918afc3bd171e9f4990efc28b17ca5e
-merge_authorization_state_based_on_control_head_sha: f9c40f4fab7193baa120380dfcf082d14dec5429
+merge_authorization_state_based_on_control_head_sha: 9586d9eea5fd1c17918237c453b6ff933b2a4fe8
 lease_origin_state_based_on_control_head_sha: 62d535edb54710ac4f9cb035c2affb4a0845a95d
 source_delta_base_head_sha: null
 merge_result_heads:
-  F01: f8b5a1530152a4fd02ad05f6b2582d3d61a7901c
-  F04: 375fabcd884c28302ed20762b1891560ea031a21
-  F05: eb05db1f487a85ef66287d38641d1abf7ef3c0b7
-merge_result_head_sha: eb05db1f487a85ef66287d38641d1abf7ef3c0b7
-merge_parent_target_head_sha: 375fabcd884c28302ed20762b1891560ea031a21
-merge_parent_source_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
-postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: 09a248c90918afc3bd171e9f4990efc28b17ca5e
-last_implementation_commit_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
+  F06: a9b8404451246246fdcd2ffdde99ee72bb096d2f
+  F07: 64c70e49737d94d2f327f2bff0215791bdf69dc7
+  P16: 66c8a987ea227dce08612bfe0ac81e758e028b42
+merge_result_head_sha: 66c8a987ea227dce08612bfe0ac81e758e028b42
+merge_parent_target_head_sha: 64c70e49737d94d2f327f2bff0215791bdf69dc7
+merge_parent_source_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
+state_based_on_head_sha: 66c8a987ea227dce08612bfe0ac81e758e028b42
+last_implementation_commit_sha: 66c8a987ea227dce08612bfe0ac81e758e028b42
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -570,12 +570,38 @@ completed_steps:
     F06/F07/P16 wave under claim b1773fcc-0219-4d5e-a80c-e388b4ac7f3b
     and lease b2a36214-721d-4224-a50d-8c21b20f4e11; no source was merged and
     no steward, product, provider, send, or external effect occurred.
+  - Verified C00 reconciliation at exact control head
+    9586d9eea5fd1c17918237c453b6ff933b2a4fe8 with sole acquisition parent
+    a6b48636d225609222bf96f90cf8a76da023380c and exact atomic-claim target
+    fd791eea49d0a77c3e0f95c3bead0ea522b9f829.
+  - Recomputed and matched the canonical F06/F07/P16 merge-item payload
+    digests and reverified exact remote sources, required bases, three-path
+    runtime tails, task/state-handoff bindings, prerequisite ancestry, queue
+    order, and zero effects.
+  - Merged F06 source ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    with exact parents fd791eea49d0a77c3e0f95c3bead0ea522b9f829 and
+    ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57 at
+    a9b8404451246246fdcd2ffdde99ee72bb096d2f.
+  - Merged F07 source 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    with exact parents a9b8404451246246fdcd2ffdde99ee72bb096d2f and
+    2c451d7b1f59eece1ae8df505d4eeec19f42e1ef at
+    64c70e49737d94d2f327f2bff0215791bdf69dc7.
+  - Merged P16 source 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+    with exact parents 64c70e49737d94d2f327f2bff0215791bdf69dc7 and
+    72fca16b3a9cd82c666e293f8bfd7d84c30722a1 at
+    66c8a987ea227dce08612bfe0ac81e758e028b42.
+  - Passed locked-package verification, full lint and build, all 31 focused
+    F06/F07/P16 tests, exact-wave formatting and diff checks, secret scan,
+    merge-parent verification, and exact nine-path scope verification.
+  - Confirmed full-suite failures are unchanged baseline failures outside
+    the nine admitted runtime paths; no product repair was attempted.
+  - Released sole lease b2a36214-721d-4224-a50d-8c21b20f4e11 at
+    2026-07-29T14:17:00Z with authority none and external effects 0/0/0.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 Wave-B atomic claim.
-  - Report the exact pushed claim head and sole parent to C00, then stop.
-  - Merge F06/F07/P16 only after C00 reconciles this exact claim head and
-    explicitly resumes I36.
-next_action: C00 must reconcile the exact pushed I36 F06/F07/P16 atomic claim head before I36 merges queued source or applies any steward request.
+  - Commit and normally push this exact three-file I36 Wave-B release checkpoint.
+  - Report the exact pushed release head and sole parent to C00, then stop.
+  - C00 must reconcile the pushed release head before any later I36 work.
+next_action: C00 must reconcile the exact pushed I36 F06/F07/P16 release head; I36 must stop without steward, provider, send, or external-effect work.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -1410,9 +1436,41 @@ verification:
       result: passed; exact READY 9c6a4746 and items f4a8f020/94aa0664/a35518d9
     - command: source base, tail allowlist, task/state-handoff, order, P15 ancestry, lease, and effect-lock verification
       result: passed; exact three-path tails, required bases, F06-to-F07-to-P16 order, P15 c96b8c55 ancestor, live sole lease, and zero effect locks
+    - command: fetched reconciled Wave-B control and integration authorization
+      result: passed; exact control 9586d9ee, sole acquisition parent a6b48636, atomic-claim target fd791eea, unchanged claim, and live sole lease
+    - command: canonical rebound F06/F07/P16 merge-item payload recomputation
+      result: passed; exact digests f4a8f020, 94aa0664, and a35518d9
+    - command: ordered git merge --no-ff for F06, F07, and P16
+      result: passed; exact merge heads a9b84044, 64c70e49, and 66c8a987 with two-parent ancestry preserved
+    - command: raw Git blob package lock verification
+      result: passed; all 200 locked blobs and all 15 source-package blobs matched
+    - command: npm run lint
+      result: passed
+    - command: npm run build
+      result: passed; clean, client, pages, and typecheck stages completed
+    - command: focused F06/F07/P16 Vitest suite
+      result: passed; 6 files and 31 tests
+    - command: exact nine-path Prettier check and git diff --check
+      result: passed; all admitted runtime tails formatted and diff-clean
+    - command: npm run secret:scan
+      result: passed across 2912 repository text files
+    - command: exact merge-parent, ancestry, first-parent scope, and overall claim-delta checks
+      result: passed; F06/F07/P16 each changed only its task runtime triplet and the claim delta is exactly nine paths
+    - command: npm run test
+      result: baseline failure; unit stage had 78 files pass, 8 fail, 556 tests pass, and 11 fail only in unchanged paths
+    - command: npm run integration
+      result: baseline failure; 49 files passed, 23 failed, 318 tests passed, and 66 failed only in unchanged paths
+    - command: npm run format
+      result: baseline failure; repository-wide check reported 2442 pre-existing files while the exact nine-path wave check passed
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
+    - Full unit-suite failures remain in unchanged HighLevel, configuration,
+      retired portal/class-helper, and Tisha test expectations.
+    - Full integration-suite failures remain in unchanged auth, portal,
+      test-lab, demo, social, WhatsApp, HighLevel, and configuration expectations.
+    - Repository-wide formatting remains a pre-existing baseline; all exact
+      nine admitted Wave-B paths pass the CRLF-aware Prettier check.
 external_effects:
   authority: none
   attempted: 0
