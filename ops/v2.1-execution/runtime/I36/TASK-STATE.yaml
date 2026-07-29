@@ -27,19 +27,19 @@ dependency_heads:
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
   P11: 15660c1115d9d8066651573100acd8acaaac574e
   P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-status: claimed
-phase: integration
+status: ready
+phase: release
 claimed_by: codex-i36-release-integrator-9059c2e9
 claim_time: '2026-07-29T15:14:08Z'
 claim_id: 9059c2e9-a57d-412f-ac96-8d921365a3fb
 lease_id: 7015ba41-a825-4a18-9b0b-0a026682730d
 lease_issued_at: '2026-07-29T15:14:08Z'
 lease_expires_at: '2026-07-29T16:29:08Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T15:21:28Z'
-controller_authorization_sha: e70c5c1d3d9b96f7a2a1c0635fed22494e4dfab6
-latest_valid_observed_control_head_sha: e70c5c1d3d9b96f7a2a1c0635fed22494e4dfab6
-reconciled_state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
+lease_released_at: '2026-07-29T15:38:52Z'
+last_heartbeat_at: '2026-07-29T15:38:52Z'
+controller_authorization_sha: 1b0df4cdf073b1caed7c4eddacfdcfe9919d84d2
+latest_valid_observed_control_head_sha: 1b0df4cdf073b1caed7c4eddacfdcfe9919d84d2
+reconciled_state_based_on_control_head_sha: 862c81d83140f4b41fb5459371e90b2c6595fd3c
 ready_authorization_control_head_sha: e70c5c1d3d9b96f7a2a1c0635fed22494e4dfab6
 ready_entry_state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
 ready_entry_payload_digest: 5be9619627c178bf4fd685c2378889abaeec53e4cbba715cdfd4b1b80936410b
@@ -69,9 +69,9 @@ queued_merge_order:
 queued_expected_target_head_sha: 9f4c70189a742d54c5822e4a91f4895a4002334c
 prior_merge_result_head_sha: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
 prior_release_head_sha: 9f4c70189a742d54c5822e4a91f4895a4002334c
-merge_authorization_state_based_on_control_head_sha: e70c5c1d3d9b96f7a2a1c0635fed22494e4dfab6
+merge_authorization_state_based_on_control_head_sha: 1b0df4cdf073b1caed7c4eddacfdcfe9919d84d2
 lease_origin_state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
-source_delta_base_head_sha: null
+source_delta_base_head_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
 merge_result_heads:
   F06: a9b8404451246246fdcd2ffdde99ee72bb096d2f
   F07: 64c70e49737d94d2f327f2bff0215791bdf69dc7
@@ -80,12 +80,15 @@ merge_result_heads:
   P19: ddaf57fe28542b5c29085cd0e49f867eacf7eceb
   P27: adef153c0f5b2f691a2a2250fbf9b09240511cf6
   P32: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
-merge_result_head_sha: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
-merge_parent_target_head_sha: adef153c0f5b2f691a2a2250fbf9b09240511cf6
-merge_parent_source_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  P17: c23dd73be235d2b48637003722b061e4b132c09f
+  P21: 33190a506cd40551ada7aa18e7af0c7457c835ba
+  P24: 5da986554cc70e39bc2006e936058ba86be62024
+merge_result_head_sha: 5da986554cc70e39bc2006e936058ba86be62024
+merge_parent_target_head_sha: 33190a506cd40551ada7aa18e7af0c7457c835ba
+merge_parent_source_head_sha: 501c7a8b32864e4218a5325b8a755bb0a37a8ce6
 prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: 9f4c70189a742d54c5822e4a91f4895a4002334c
-last_implementation_commit_sha: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
+state_based_on_head_sha: 5da986554cc70e39bc2006e936058ba86be62024
+last_implementation_commit_sha: 5da986554cc70e39bc2006e936058ba86be62024
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -716,13 +719,43 @@ completed_steps:
     7015ba41-a825-4a18-9b0b-0a026682730d; no queued source, steward request,
     provider action, send, or external effect was fetched, read, merged, or
     applied.
+  - Verified C00 reconciliation at exact control head
+    1b0df4cdf073b1caed7c4eddacfdcfe9919d84d2 with sole acquisition parent
+    862c81d83140f4b41fb5459371e90b2c6595fd3c and exact claim target
+    eceef5f71495ba2053b0072a3604a785e424633a.
+  - Reverified the unchanged claim, live sole lease, consumed READY queue,
+    canonical item digests, exact sources and merge bases, every merge-after
+    prerequisite, exact 18/21/20-path source scopes, admitted tail inventories,
+    task/context/state-handoff and implementation artifact digests, steward
+    request blobs, YAML syntax, and 0/0/0 effects.
+  - Merged P17 source 78af71603713b6fc73fe755995bdf56193eb199a
+    with exact parents eceef5f71495ba2053b0072a3604a785e424633a and
+    78af71603713b6fc73fe755995bdf56193eb199a at
+    c23dd73be235d2b48637003722b061e4b132c09f.
+  - Merged P21 source cecdad0989e861254987970cfa3d222319369f52
+    with exact parents c23dd73be235d2b48637003722b061e4b132c09f and
+    cecdad0989e861254987970cfa3d222319369f52 at
+    33190a506cd40551ada7aa18e7af0c7457c835ba.
+  - Merged corrected P24 source
+    501c7a8b32864e4218a5325b8a755bb0a37a8ce6 with exact parents
+    33190a506cd40551ada7aa18e7af0c7457c835ba and
+    501c7a8b32864e4218a5325b8a755bb0a37a8ce6 at
+    5da986554cc70e39bc2006e936058ba86be62024.
+  - Passed 46 focused P17/P21/P24 assertions across 12 files, repository
+    typecheck, full lint and build, exact 59-path CRLF-aware Prettier and diff
+    checks, the raw-Git-blob package validator with 200 locked files and all
+    package structure/coverage counts, seven YAML parses, and the secret scan
+    across 2991 repository text files.
+  - Left all P17, P21, and P24 steward requests committed but unapplied; no
+    migration, registration, Zoom/config/reminder action, provider inspection,
+    send, deployment, or external effect occurred.
+  - Released sole lease 7015ba41-a825-4a18-9b0b-0a026682730d at
+    2026-07-29T15:38:52Z with authority none and effects 0/0/0.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 Wave C part 2 atomic claim.
-  - Report the exact pushed claim head, sole parent, and I36 state/handoff
-    digests to C00, then stop.
-  - Merge P17/P21/P24 only after C00 reconciles this exact claim head and
-    explicitly resumes I36.
-next_action: C00 must reconcile the exact pushed I36 Wave C part 2 atomic claim head before I36 fetches, reads, or merges queued source or applies any steward request.
+  - Commit and normally push this exact three-file I36 Wave C part 2 release.
+  - Report the exact pushed release head, sole parent, merge heads, and I36
+    state/handoff digests to C00, then stop.
+next_action: C00 must audit and reconcile the exact pushed I36 Wave C part 2 release head and its sole parent; I36 must stop after reporting it.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -1098,6 +1131,65 @@ changed_paths:
   - packages/domain/src/signup/school/index.ts
   - packages/domain/src/signup/school/policy.test.ts
   - packages/domain/src/signup/school/policy.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/index.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.ts
+  - apps/worker/src/runners/zoom-preparation/index.ts
+  - apps/worker/src/runners/zoom-preparation/runner.test.ts
+  - apps/worker/src/runners/zoom-preparation/runner.ts
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/HANDOFF.md
+  - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - packages/contracts/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/repository.test.ts
+  - packages/db/src/classroom/zoom-preparation/repository.ts
+  - packages/db/src/classroom/zoom-preparation/schema-contract.ts
+  - packages/domain/src/classroom/zoom-preparation/index.ts
+  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
+  - apps/web/src/client/app/admin/content/publication/index.ts
+  - apps/web/src/client/app/admin/content/publication/model.test.ts
+  - apps/web/src/client/app/admin/content/publication/model.ts
+  - apps/web/src/client/app/student/library/index.ts
+  - apps/web/src/client/app/student/library/model.test.ts
+  - apps/web/src/client/app/student/library/model.ts
+  - apps/web/src/server/features/content/publication/index.ts
+  - apps/web/src/server/features/content/publication/service.test.ts
+  - apps/web/src/server/features/content/publication/service.ts
+  - ops/v2.1-execution/runtime/P21/HANDOFF.md
+  - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-001.yaml
+  - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+  - packages/contracts/src/content/publication/index.ts
+  - packages/db/src/content/publication/index.ts
+  - packages/db/src/content/publication/repository.test.ts
+  - packages/db/src/content/publication/repository.ts
+  - packages/domain/src/content/publication/errors.ts
+  - packages/domain/src/content/publication/index.ts
+  - packages/domain/src/content/publication/lifecycle.ts
+  - packages/domain/src/content/publication/publication.test.ts
+  - apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx
+  - apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx
+  - apps/web/src/client/app/admin/support/index.ts
+  - apps/web/src/client/app/student/support/StudentSupportCenter.test.tsx
+  - apps/web/src/client/app/student/support/StudentSupportCenter.tsx
+  - apps/web/src/client/app/student/support/index.ts
+  - apps/web/src/server/features/support/v21-index.ts
+  - apps/web/src/server/features/support/v21-service.ts
+  - ops/v2.1-execution/runtime/P24/HANDOFF.md
+  - ops/v2.1-execution/runtime/P24/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P24/steward-requests/P24-migration-001.yaml
+  - ops/v2.1-execution/runtime/P24/steward-requests/P24-registration-001.yaml
+  - ops/v2.1-execution/runtime/P24/TASK-STATE.yaml
+  - packages/contracts/src/support/v21.ts
+  - packages/db/src/support/v21-index.ts
+  - packages/db/src/support/v21-repository.ts
+  - packages/domain/src/support/v21-errors.ts
+  - packages/domain/src/support/v21-index.ts
+  - packages/domain/src/support/v21-lifecycle.test.ts
+  - packages/domain/src/support/v21-lifecycle.ts
 migrations:
   - packages/db/migrations/2234_canonical_state_machines.sql
 steward_requests: []
@@ -1647,6 +1739,28 @@ verification:
       result: passed; 200/200 locked blobs, 15/15 source-package blobs, and three task states
     - command: npm run secret:scan
       result: passed across 2932 repository text files
+    - command: fetched reconciled Wave C part 2 control, integration, and P17/P21/corrected-P24 source refs
+      result: passed; exact control 1b0df4cd, acquisition 862c81d8, claim eceef5f7, and exact sources
+    - command: canonical item, source-base, scope, task/context/state-handoff, artifact, steward, merge-after, lease, order, YAML, and effect admission
+      result: passed; exact 18/21/20 paths, all declared digests and prerequisites, unchanged claim/lease, and 0/0/0 effects
+    - command: ordered git merge --no-ff for P17, P21, and corrected P24
+      result: passed; exact merge heads c23dd73b, 33190a50, and 5da98655 with two-parent ancestry preserved
+    - command: focused P17/P21/P24 Vitest suite
+      result: passed; 12 files and 46 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: npm run lint
+      result: passed
+    - command: npm run build
+      result: passed; clean, client, pages, and typecheck stages completed
+    - command: exact 59-path Prettier --check --end-of-line auto and git diff --check
+      result: passed
+    - command: raw-Git-blob execution-package validator and merged YAML parsing
+      result: passed; 200 locked files, 46 tasks/contexts/prompts, 16 source-spec files, 243 requirements, 265 cases, 107 decisions, 35 implementation tasks, and seven YAML files
+    - command: npm run secret:scan
+      result: passed across 2991 repository text files
+    - command: exact merge-parent, ancestry, first-parent scope, complete 59-path claim delta, steward, provider, deployment, send, and effect checks
+      result: passed; all three sources are ancestors, each merge has exact parents and source scope, every request remains unapplied, no external action occurred, and effects are 0/0/0
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
@@ -1655,7 +1769,7 @@ verification:
     - Full integration-suite failures remain in unchanged auth, portal,
       test-lab, demo, social, WhatsApp, HighLevel, and configuration expectations.
     - Repository-wide formatting remains a pre-existing baseline; all exact
-      nine admitted Wave-B paths pass the CRLF-aware Prettier check.
+      59 admitted Wave C part 2 paths pass the CRLF-aware Prettier check.
 external_effects:
   authority: none
   attempted: 0
