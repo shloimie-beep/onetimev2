@@ -1,0 +1,46 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P10
+requests:
+  - request_id: P10-MIGRATION-001
+    kind: migration
+    requested_steward: I36
+    status: proposed
+    source_contract:
+      path: packages/contracts/src/admin/directory/index.ts
+      version: 2.1.0
+    exact_targets:
+      - packages/db/migrations/<allocated>_v21_admin_directory.sql
+      - packages/db/src/admin/directory/**
+    required_changes:
+      - Materialize the F04 AdultIdentity, HumanAccount, Household, and StudentProfile aggregates plus the P10 AdminStudentRecord, StudentCredentialReset, AdminDirectoryReceipt, and AdminDirectoryAuditEvent persistence contracts.
+      - Scope every record, lookup, uniqueness constraint, and foreign key by product, runtime tier, and verification environment; reject any cross-scope batch before writes.
+      - Enforce one normalized adult email identity, one HumanAccount per adult, exact assignable memberships admin and parent, multiple owned households per adult, unique local Student username, seat capacity, optimistic versions, and immutable Student identity, credential, and history references.
+      - Store only protected versioned Argon2id Student credentials, never an email or HighLevel identity for a Student, and never a recoverable or displayable password.
+      - Make command receipt, aggregate writes, audit event, credential/session revocation records, and ownership-transfer result one transaction with unique scope plus idempotency key and immutable canonical request hash.
+      - Reconcile any pre-v2.1 rabbi or owner labels through F03 compatibility normalization without retaining either as an assignable runtime role; teacher remains profile data only.
+    validation:
+      - Apply the full migration inventory in a disposable PostgreSQL-compatible database.
+      - Prove rollback on injected write failure, stale-version denial, same-key replay, different-hash conflict, cross-environment isolation, Student username uniqueness, household seat enforcement, and persistence after a fresh authenticated session.
+    external_effects_authorized: false
+  - request_id: P10-REGISTRATION-001
+    kind: registration
+    requested_steward: I36
+    status: proposed
+    exact_targets:
+      - packages/contracts/src/index.ts
+      - packages/domain/src/index.ts
+      - packages/db/src/index.ts
+      - apps/web/src/server central authenticated route composer
+      - apps/web/src/client central Admin route composer
+    required_changes:
+      - Re-export the P10 directory contract and domain roots without semantic changes, resolving legacy AdminDirectory symbol collisions in favor of the v2.1 contract.
+      - Implement AdminDirectoryRepository with a real transaction and register AdminDirectoryService behind authenticated same-origin, CSRF-protected Admin-only routes.
+      - Construct AdminDirectoryActor exclusively from the F03 server-validated principal and configured product/runtime/environment; ignore client-supplied role, household, Student, account, runtime, and environment values.
+      - Route create/edit/archive/restore, credential reset, and verified sole-ownership transfer through the P10 domain operations before committing their durable batches.
+      - Replace the legacy admin-directory composer and UI path with AdminDirectoryWorkspace; do not expose owner or rabbi as assignable roles and do not attach Parent identities to learner records.
+      - Revoke affected sessions on adult email/lifecycle changes, Student credential/lifecycle changes, membership additions, and ownership transfer exactly as produced by F03/F04.
+      - Keep Student data out of HighLevel and all provider effects; a later authorized provider projection may consume adult-only durable intents after commit.
+    validation:
+      - Run typecheck, direct-route and forged-principal denial tests, CSRF tests, transaction/replay tests, refresh/re-login persistence tests, keyboard/accessibility checks, and route inventory proving the legacy role/Student-email surface is unreachable.
+    external_effects_authorized: false
