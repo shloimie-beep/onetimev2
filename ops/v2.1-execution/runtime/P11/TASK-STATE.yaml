@@ -29,8 +29,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: authorization_race_id_secret_correction_claim
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing
 claimed_by: codex-p11-worker-d76c097a
 claim_time: '2026-07-29T10:15:17Z'
@@ -42,11 +42,18 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T10:40:29Z'
     state_based_on_control_head_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
     phase_scope: P11_atomic_claim_authorization_race_id_secret_correction_only
-    state: active
+    reconciled_resume_scope: P11_authorization_race_id_secret_correction
+    reconciled_resume_control_sha: dcb7fba1231d635af45a8a346f134559f2de08e9
+    lease_released_at: '2026-07-29T10:28:04Z'
+    state: released
 lease_expires_at: '2026-07-29T10:40:29Z'
-last_heartbeat_at: '2026-07-29T10:15:17Z'
+lease_released_at: '2026-07-29T10:28:04Z'
+last_heartbeat_at: '2026-07-29T10:28:04Z'
 controller_authorization_sha: 46a7bfeb51401d2b1df03f0eb58fa800751ba1e1
 controller_authorization_parent_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
+claim_reconciled_control_sha: dcb7fba1231d635af45a8a346f134559f2de08e9
+claim_reconciled_control_parent_sha: 637d1c389977da17a8c1ae52aa7862ff4aff9f0d
+atomic_claim_head_sha: 77c168d0a4a27b81ba1f7cddaa8d31821a8654f6
 prior_claim_reconciled_control_sha: ef7a1fbea74ce2651344544acd26cfd7609f331b
 prior_claim_reconciled_control_parent_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
 prior_atomic_claim_head_sha: 2fa5c8da116d42c9202c462ef9e061c254dd3958
@@ -63,14 +70,15 @@ rejected_implementation_head_sha: f482ebb76a1278eb6adbc6895b08c26ef111e452
 partial_correction_checkpoint_sha: e807e26e5882c3b8ad8e06221db9f28b743369b7
 rejected_residual_head_sha: 81486a86a85a3d6ffee64eb58c66119686af049e
 rejected_authorization_race_id_secret_head_sha: 899ef6a7fad4f0946378721a0af7d7ed66c25c81
-state_based_on_head_sha: 899ef6a7fad4f0946378721a0af7d7ed66c25c81
-last_implementation_commit_sha: f27f16a77fde21d283d594a7987ccd600bc1b367
-implementation_artifact_digest: 497dcc8690ee8dec109f6c48d5216cb3ea074089881bbc48fc57fa54e816776f
+state_based_on_head_sha: 17924328cdc820e3cc9a8928f0685b868df4df74
+last_implementation_commit_sha: 17924328cdc820e3cc9a8928f0685b868df4df74
+implementation_artifact_digest: 3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
-  the 13 implementation and focused-test artifacts, sorted lexicographically
+  the 14 implementation and focused-test artifacts, sorted lexicographically
   by path, with LF separators and no final newline.
 implementation_artifact_paths:
+  - apps/web/src/client/app/admin/adminPrivateCompletion.ts
   - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
   - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.tsx
   - apps/web/src/client/app/admin/dashboard/index.ts
@@ -135,21 +143,29 @@ completed_steps:
   - Released claim 6efc5db3-43b4-4dad-ae3f-59031adddbd5 and ADMIN_OPERATIONS_UI lease 84e7a42a-d2a5-4c88-ba45-57b34ecc6de9 before expiry with no provider or external effect attempted.
   - Recorded rejection of exact final 899ef6a7fad4f0946378721a0af7d7ed66c25c81 for revoked-render and stale-completion races, option-ID collisions, and Bearer-space leakage without changing or testing any product, test, or structured-request file.
   - Verified current control head 7345a2c518fceefe7162e37de243774f534d1fca preserves containing authorization 46a7bfeb51401d2b1df03f0eb58fa800751ba1e1, sole acquisition parent 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b, exact READY digest aeea25ddac610fb96f090609a9c17e3b67400aeff8209772b0b99e3efa85c456, exact F05/F07 dependency identities, exact rejected branch head, fresh claim d76c097a-d2df-4e8c-ae99-659deba00c64, active ADMIN_OPERATIONS_UI lease 84cd0230-d35a-4149-845c-9cd4bcfb6ff5, and zero effect locks.
+  - Verified C00 reconciliation dcb7fba1231d635af45a8a346f134559f2de08e9 with sole parent 637d1c389977da17a8c1ae52aa7862ff4aff9f0d, exact atomic claim 77c168d0a4a27b81ba1f7cddaa8d31821a8654f6, unchanged claim and lease, bounded correction scope, and zero effect authority.
+  - Made the first revoked dashboard/search render synchronously omit snapshots, results, recent queries, request state, and caller-provided private messages.
+  - Guarded every search and search/occurrence resolver completion with a monotonic generation plus exact current-Admin credential version before state updates or navigation.
+  - Replaced lossy option-ID sanitizing with deterministic fixed-width code-point encoding so dotted and colon target IDs remain distinct, DOM-safe, and uniquely addressable.
+  - Rejected whitespace-separated Bearer credentials in every protected search and operational-status value checked by the domain boundary.
+  - Passed four focused files and 18 direct positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact seven-path scope, and diff hygiene.
+  - Reproduced all 14 implementation Git-blob digests, superseding artifact digest 3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986, unchanged request payload digest 68a99cc059304f66570f2296a5872bfa379062ae854401c54c196ec12b56fa42, and unchanged request aggregate digest 2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e.
+  - Released claim d76c097a-d2df-4e8c-ae99-659deba00c64 and ADMIN_OPERATIONS_UI lease 84cd0230-d35a-4149-845c-9cd4bcfb6ff5 before expiry with no steward, provider, or external effect attempted.
 remaining_steps:
-  - C00 must reconcile this exact atomic claim before any product, test, or structured-request correction resumes.
-  - After reconciliation, prevent revoked dashboard/search rendering and stale asynchronous completions from restoring private state.
-  - Derive collision-free option identities across entity kinds and repeated safe identifiers, with valid active-descendant relationships.
-  - Reject and redact Bearer credentials containing the standard separating space, add direct race/identity/secret-leakage tests, and rerun bounded validation.
-next_action: Push and remote-verify this exact three-runtime-file authorization/race/identity/secret correction claim, report its immutable head to C00, and stop without editing or testing product/request code.
+  - I36 must independently re-audit and integrate exact superseding implementation head 17924328cdc820e3cc9a8928f0685b868df4df74.
+  - I36 must reproduce the superseding implementation and unchanged request digests without weakening any earlier P11 boundary.
+  - Candidate-bound persistent-staging and production-operator-canary evidence remains with the assigned verification and release lanes.
+next_action: I36 should independently re-audit exact implementation head 17924328cdc820e3cc9a8928f0685b868df4df74, reproduce artifact digest 3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986 and request aggregate 2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e, and integrate only after revoked-first-render, stale-completion, injective option identity, and Bearer-whitespace proofs pass independently.
 requirements:
-  OTV2-ADMIN-021: correction_required
-  OTV2-ADMIN-029: correction_required
-  OTV2-ADMIN-205: correction_required
+  OTV2-ADMIN-021: implementation_verified
+  OTV2-ADMIN-029: implementation_verified
+  OTV2-ADMIN-205: implementation_verified
 acceptance_cases:
-  OTV2-ADMIN-021-AC01: correction_required
-  OTV2-ADMIN-029-AC01: correction_required
-  OTV2-ADMIN-205-AC01: correction_required
+  OTV2-ADMIN-021-AC01: task_owned_assertions_passed
+  OTV2-ADMIN-029-AC01: task_owned_assertions_passed
+  OTV2-ADMIN-205-AC01: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/app/admin/adminPrivateCompletion.ts
   - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
   - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.tsx
   - apps/web/src/client/app/admin/dashboard/index.ts
@@ -231,6 +247,18 @@ verification:
       result: passed; 13-artifact digest 497dcc86 and request aggregate 2327a180
     - command: current control, unchanged P11 authorization/acquisition/READY/dependencies, rejected-head, claim, lease, zero-effect, and exact three-path verification
       result: passed; exact atomic claim is live and no product, test, request, registration, steward, provider, or effect work changed or tested
+    - command: exact C00 authorization/race/identity/secret claim reconciliation and zero-effect verification
+      result: passed; reconciled control dcb7fba1 authorizes only the four bounded corrections from exact claim 77c168d0
+    - command: npx vitest run <four P11 focused test files>
+      result: passed; 4 files and 18 direct positive/negative tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over the seven bounded TypeScript and TSX files
+      result: passed
+    - command: exact correction scope audit and git diff --check
+      result: passed; exactly seven bounded implementation/test paths and unchanged structured request
+    - command: exact superseding Git-blob artifact and request digest reproduction
+      result: passed; 14-artifact digest 3529decc and unchanged request aggregate 2327a180
   known_baseline_failures: []
 external_effects:
   authority: none
