@@ -4,58 +4,120 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: 6754c434-bf7a-44ad-97e2-ea367ff38e1d
+  merge_id: 8bd435bd-d5d6-4e40-b142-7cdeee817637
   kind: full
-  task_id: P35
-  source_branch: codex/v21-p35-domain-transition-archive
-  source_head_sha: a85aecc22b013d583589a67cf0cc9dfad6745aba
+  task_id: P19
+  source_branch: codex/v21-p19-content-ingest
+  source_head_sha: 306c26cfcb84672eb5e593d1bee847a0f3e01243
   target_branch: codex/v21-integration
-  expected_target_head_sha: 255d35b2fb5e7db20d166bcf2b7c1a7eeba8f33d
-  source_delta_base_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
-  required_merge_base_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+  expected_target_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
+  source_delta_base_head_sha: e420eb833feee26efd431afd93457a7e0bc4d228
+  required_merge_base_sha: e420eb833feee26efd431afd93457a7e0bc4d228
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: a85aecc22b013d583589a67cf0cc9dfad6745aba
+  required_postmerge_ancestor_sha: 306c26cfcb84672eb5e593d1bee847a0f3e01243
   merge_after_heads:
-    F01: b5344992a43a735a9c66047fecd83f951651de27
+    F05: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    F06: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    P16: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
   allowed_paths:
-  - apps/web/src/client/public/domain-transition/index.ts
-  - apps/web/src/client/public/domain-transition/links.ts
-  - apps/web/src/server/features/domain-transition/ended-event.ts
-  - apps/web/src/server/features/domain-transition/index.ts
-  - apps/web/src/server/features/domain-transition/legacy-adult.ts
-  - apps/web/src/server/features/domain-transition/policy.ts
-  - apps/web/src/server/features/domain-transition/router.ts
-  - ops/archive/tisha-bav-template/README.md
-  - ops/archive/tisha-bav-template/manifest.yaml
-  - ops/archive/tisha-bav-template/template.yaml
-  - ops/runbooks/v2.1/domain-cutover/CUTOVER.md
-  - ops/runbooks/v2.1/domain-cutover/DOMAIN-MATRIX.yaml
-  - ops/runbooks/v2.1/domain-cutover/ROLLBACK.md
-  - ops/v2.1-execution/runtime/P35/HANDOFF.md
-  - ops/v2.1-execution/runtime/P35/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P35/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P35/steward-requests/P35-config-deploy-001.yaml
-  - ops/v2.1-execution/runtime/P35/steward-requests/P35-reregistration-integration-001.yaml
-  - ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
-  - scripts/v21-migration/verify-domain-transition.ts
+  - ops/v2.1-execution/runtime/P19/HANDOFF.md
+  - ops/v2.1-execution/runtime/P19/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P19/TASK-STATE.yaml
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 11eac672-8eda-4188-baed-82e0a2a9ef8b
+    lease_id: b726b1c2-f572-474b-bf16-b9ca2959b2f8
     holder_task_id: I36
-    holder_claim_id: 5f6577ac-9fcd-4558-8d8a-1318b5b002b5
-    state_based_on_control_head_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
-    lease_issued_at: '2026-07-29T14:23:14Z'
-    lease_expires_at: '2026-07-29T15:38:14Z'
-    phase_scope: P35_full_integration_atomic_claim_only
-  task_packet_digest: 533cdac53bcc53fe0abccdd67e1f168b57a6cfbdf63c81d71c611ecb4b29d71f
-  state_handoff_digest: e524a2756fecb4ab6816e972211d858a729872f349459b0863754f3a72d01475
+    holder_claim_id: eeb23846-ea26-4d4e-9a96-54678160a0d2
+    state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+    lease_issued_at: '2026-07-29T14:53:08Z'
+    lease_expires_at: '2026-07-29T16:08:08Z'
+    phase_scope: P19_P27_P32_full_integration_atomic_claim_only
+  task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
+  state_handoff_digest: b7f3337c3a089c4f3359c61e23c6c938944f8423e89fe3314dba865573db0d0b
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 1813faba23ac5df2f6f6d7bbb03e35bfc20cd4f1
+  state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 09ce44f1-2b87-4f9f-8812-cb61539e1736
+  kind: full
+  task_id: P27
+  source_branch: codex/v21-p27-ghl-identity
+  source_head_sha: e1933d640657835cde17ee23381399f5539fe3cd
+  target_branch: codex/v21-integration
+  expected_target_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
+  source_delta_base_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+  required_merge_base_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: e1933d640657835cde17ee23381399f5539fe3cd
+  merge_after_heads:
+    F04: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    F06: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+  allowed_paths:
+  - ops/v2.1-execution/runtime/P27/HANDOFF.md
+  - ops/v2.1-execution/runtime/P27/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P27/TASK-STATE.yaml
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: b726b1c2-f572-474b-bf16-b9ca2959b2f8
+    holder_task_id: I36
+    holder_claim_id: eeb23846-ea26-4d4e-9a96-54678160a0d2
+    state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+    lease_issued_at: '2026-07-29T14:53:08Z'
+    lease_expires_at: '2026-07-29T16:08:08Z'
+    phase_scope: P19_P27_P32_full_integration_atomic_claim_only
+  task_packet_digest: 77c5a4de58a57dffea3f9cbe4aa7646ac75bc1f0462afebfff2c0279dc527a74
+  state_handoff_digest: 1a1f3184a89b2dda00114adb7135e57dfaa301efe21acc352c1511e64cda0c23
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: ebaf848d-ad8d-4c56-8d16-9c02809af62d
+  kind: full
+  task_id: P32
+  source_branch: codex/v21-p32-privacy-data-rights
+  source_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  target_branch: codex/v21-integration
+  expected_target_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
+  source_delta_base_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
+  required_merge_base_sha: 6a33944a75e717041b2f951134459769b8fc2617
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  merge_after_heads:
+    F02: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    F03: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    F04: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    F05: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    F07: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+  allowed_paths:
+  - ops/v2.1-execution/runtime/P32/HANDOFF.md
+  - ops/v2.1-execution/runtime/P32/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: b726b1c2-f572-474b-bf16-b9ca2959b2f8
+    holder_task_id: I36
+    holder_claim_id: eeb23846-ea26-4d4e-9a96-54678160a0d2
+    state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+    lease_issued_at: '2026-07-29T14:53:08Z'
+    lease_expires_at: '2026-07-29T16:08:08Z'
+    phase_scope: P19_P27_P32_full_integration_atomic_claim_only
+  task_packet_digest: a34f7c16bda5c68fc269cce7fbbb0eb574de64f4a9db66e272c3b99ff8a639f6
+  state_handoff_digest: ff20f1e2f7b1df10f4bdc10c33c1bd945f6d0cc685aa36d5d9b235b08b550f14
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
 item_payload_digests:
-  6754c434-bf7a-44ad-97e2-ea367ff38e1d: 6c0c90143d90e79835a4e7c9b7464a3678084fb87d8a41e122c335ca32e12dd5
+  8bd435bd-d5d6-4e40-b142-7cdeee817637: b7848cda8ffc3f29da777716f1c82a2941d6474480e4e14acfb3b66af37ce4a5
+  09ce44f1-2b87-4f9f-8812-cb61539e1736: ce5ef0bc0cbe673c9de46212c37f50958aab1f321c70f34455617d4620e670ab
+  ebaf848d-ad8d-4c56-8d16-9c02809af62d: 60456d1fd7256dbd8d4d54029171d81573c01bf55e7d636df29bfe2bc84dbf5b
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
