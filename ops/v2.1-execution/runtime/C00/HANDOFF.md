@@ -1057,3 +1057,25 @@ records without asking again, but each live effect still requires current
 status, the correct exclusive provider lock, a fresh fencing token, immutable
 reservation, budget protection, readback, reconciliation, and rollback
 evidence. No provider lock was acquired and effects remain `0/0/0`.
+
+P23 final `39b050949a0874a1ea397c6c3f3420eb4fa19ccc` is rejected from
+admission despite valid ancestry, exact eighteen-path scope, 13 passing focused
+tests, and passing typecheck. Independent source review and direct probes
+confirmed launch blockers: generated routes omit canonical `/app` prefixes and
+the validator rejects canonical routes; cancellation-first followed by a stale
+reminder leaves both active; concurrent different versions can both remain
+active; superseded indefinite notices never reach archive; unvalidated runtime
+status text can leak private copy; the UI has no audible-cue consumer; locked
+Rabbi Eli copy is mutable; timestamps are raw ISO; mark-one performs repeat
+writes; and accessibility proof is incomplete. The final is not queued for
+integration.
+
+C00 issued only a correction atomic-claim authorization from exact rejected
+head `39b05094`. P23 ready digest is
+`2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97`,
+claim is `29e8b1d9-8769-479d-8a7a-df26137f185a`, and the sole
+STUDENT_NOTIFICATIONS lease is `489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`
+through `2026-07-29T08:21:29Z`. Its first push may change exactly P23
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
+reconciliation. No correction implementation, steward application, migration,
+registration, provider action, send, or external effect is authorized yet.

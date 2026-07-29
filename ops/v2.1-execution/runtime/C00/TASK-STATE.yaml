@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-272f3e6f
-claim_time: '2026-07-29T07:13:45Z'
-claim_id: 272f3e6f-19fa-49cf-becd-bd43748fb438
-lease_expires_at: '2026-07-29T07:28:45Z'
-last_heartbeat_at: '2026-07-29T07:17:25Z'
-controller_authorization_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
+claimed_by: codex-c00-orchestrator-500005fb
+claim_time: '2026-07-29T07:21:29Z'
+claim_id: 500005fb-42b2-4721-9048-0f73f7825508
+lease_expires_at: '2026-07-29T07:36:29Z'
+last_heartbeat_at: '2026-07-29T07:23:33Z'
+controller_authorization_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
 ready_entry_payload_digest: null
-state_based_on_head_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
+state_based_on_head_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -259,10 +259,13 @@ completed_steps:
 - independently verified P23 atomic claim 05ef6060 has sole parent cecc1c0d, exactly three P23 runtime files, fresh authorization/claim/lease/ready/F05/F07 bindings, clean remote state, and zero effects
 - consumed both corrected READY entries and authorized only bounded P11 admin-operations and P23 student-notifications implementation under their disjoint leases with no provider, send, steward-application, migration, registration, or external-effect authority
 - recorded Shloimie Dratler's candidate-pending seven-day bounded production source grant as immutable approval evidence and a non-effect-usable source authority record
+- rejected P23 final 39b05094 after an independent exact-source audit confirmed canonical-route, cancellation ordering, concurrent-version, retention, private-copy validation, sound-consumer, copy, timestamp, idempotency, and accessibility defects
+- authorized only a fresh three-runtime-file P23 correction claim from exact rejected final 39b05094 under claim 29e8b1d9 and STUDENT_NOTIFICATIONS lease 489df25a before any correction implementation
 remaining_steps:
-- complete exact-source admission audits of P23 final 39b05094 and P11 final 51bd416b and authorize bounded corrections for any semantic blockers
+- reconcile the exact P23 correction claim, then authorize and independently re-audit only the bounded semantic correction
+- complete the exact-source admission audit of P11 final 51bd416b and authorize a bounded correction if any semantic blocker is confirmed
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: Complete exact-source admission audits of P23 final 39b05094 and P11 final 51bd416b; correct any semantic blocker before integration. Preserve the active external source grant for exact derived effect authority after the candidate, dependency, identity, fixture, budget, lock, and fencing gates pass.
+next_action: P23 may publish only a three-runtime-file correction claim from exact rejected final 39b05094 under ready digest 2f57bb42, claim 29e8b1d9, and lease 489df25a, then stop for C00 reconciliation. Continue the read-only exact-source P11 audit. No product correction or external effect is authorized before the P23 atomic claim is reconciled.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -270,7 +273,7 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
+  current_control_parent_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
@@ -697,10 +700,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: a4e931789c4a04125218491c8aeafe2d12e57e70740f5851ae1c34ddd8c3be48
-    control_lease: cc1079e843c89e8b1d9af3ed4931b209a59c3f4e37a890dfad3ff836f39a9a99
-    task_registry: 8e4858355c8c6dfadf5b6c3db4e1a2c61b903cce4a44304dd441b4246e255628
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: ddac4239157937242efdb9d88a8507d8e13d28c1b47096b1b759557b96976f3e
+    control_lease: c5484c8a2ffba10605771a97460d7acbef56900165c83820578d3c60fa55b6d1
+    task_registry: edb6b0fb3efbc547230f880779a732118b272fbaaa1780b372392e0657f465f6
+    ready_queue: a2b1d6db2d665196850d646e49565e37ebd06b6530ec0e35141ed1fef39c4ccb
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -822,6 +825,8 @@ verification:
   - P23 05ef6060 atomic-claim sole-parent ancestry, exact three-file scope, fresh bindings, corrected dependencies, clean remote state, and zero effects: passed
   - corrected ready-entry consumption, bounded P11/P23 implementation authorization, released C00 lease, registry transitions, and control raw SHA-256 bindings: passed
   - source grant approval-evidence digest 8c95a959, immutable grant digest 94a39fe0, canonical status-entry digest c6ef687c, exact GHL location pBSnOK2nkdxp6gf9Rg3o, matrix digest 88a9fbd0, candidate-binding pending state, and zero-effect usability: passed
+  - P23 rejected final 39b05094 ancestry, exact eighteen-path scope, 13 focused tests, typecheck, direct canonical-route, cancellation-first, concurrent-version, indefinite-retention, runtime-private-copy, locked-copy, sound-consumer, timestamp, mark-one, and accessibility probes: failed semantic admission and bounded correction claim authorized
+  - canonical P23 correction ready-entry digest 2f57bb42 against exact acquisition 78626d9b, rejected head 39b05094, fresh claim 29e8b1d9, one disjoint STUDENT_NOTIFICATIONS lease, and zero effect locks: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

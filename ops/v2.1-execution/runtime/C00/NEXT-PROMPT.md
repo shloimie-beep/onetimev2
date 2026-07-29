@@ -792,3 +792,29 @@ live effect, push the immutable reservation, recheck current control authority
 and lock state, then require provider readback, reconciliation, and rollback
 evidence. Never use guessed identities or expose an existing credential. The
 grant does not lift any matrix budget or prohibition.
+
+P23 final `39b050949a0874a1ea397c6c3f3420eb4fa19ccc` failed semantic
+admission and must not be integrated. Resume that exact head only for an atomic
+correction claim under claim `29e8b1d9-8769-479d-8a7a-df26137f185a`,
+STUDENT_NOTIFICATIONS lease `489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`,
+ready parent `78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1`, and ready digest
+`2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97`.
+The first push changes exactly the three P23 runtime-memory files, binds this
+fresh authorization/claim/lease and rejected source head, pushes normally,
+remote-verifies, and stops for C00 reconciliation. Do not edit product code in
+that push.
+
+After C00 reconciliation only, correct every confirmed blocker within P23's
+existing owned roots: canonical `/app/student/...` routes; cross-event
+cancellation supersession; transactionally serialized different-version
+delivery including cancellation-first and empty-row races; a 30-day retention
+deadline for every superseded/expired notice; runtime allowlisting of every
+student-safe status; immutable Rabbi Eli reminder copy; an actual opt-in
+foreground sound consumer paired with the visual notice; Student/household
+timezone timestamps with an unambiguous zone; write-idempotent mark-one; and
+keyboard/focus/description/accessibility tests. Preserve current-authorization
+checks, provider/private-copy rejection, default-off sound, exact dedupe, all
+eight categories, and zero effects. Update any migration request needed for
+the concurrency invariant but do not apply it. Re-run direct race/order/privacy
+probes, focused tests, typecheck, lint/format, scope/digest verification, release
+the lease, and publish a superseding final for independent re-audit.
