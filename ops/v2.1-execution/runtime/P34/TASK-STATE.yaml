@@ -11,8 +11,13 @@ dependency_heads:
   P33: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
 dependency_integration_heads:
   P33: d075dc1839660205845e7da039a182bbe44778d2
-status: claimed
-phase: implementation_atomic_claim
+dependency_interface:
+  P33:
+    interface_implementation_head_sha: 7765a3758a3e3aa7d311119b5d86da1e943b68d7
+    semantic_contract_version: 3.0.0
+    interface_checkpoint_digest: a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43
+status: ready_for_review
+phase: complete
 claim_mode: create_new_branch
 claimed_by: codex-p34-worker-d1959518
 claim_time: '2026-07-29T03:57:10Z'
@@ -21,44 +26,87 @@ writer_slot: OPERATIONS_RECOVERY
 lease_id: b8e703f5-43a2-4a7d-9f25-9af6f32be4f0
 lease_issued_at: '2026-07-29T03:50:27Z'
 lease_expires_at: '2026-07-29T04:50:27Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T03:57:10Z'
+lease_released_at: '2026-07-29T04:23:29Z'
+last_heartbeat_at: '2026-07-29T04:23:29Z'
 controller_authorization_sha: aedf1fcb4de2d127e47407e7fb097da1274a8570
+claim_reconciled_by_control_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
+claim_reconciled_by_control_parent_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
 ready_entry_state_based_on_control_head_sha: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
 ready_entry_payload_digest: 5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f
-state_based_on_head_sha: d075dc1839660205845e7da039a182bbe44778d2
-last_implementation_commit_sha: d075dc1839660205845e7da039a182bbe44778d2
+state_based_on_head_sha: 2077ca42ecc4222ab94d063dfd642e843d5ab48c
+last_implementation_commit_sha: 2077ca42ecc4222ab94d063dfd642e843d5ab48c
 completed_steps:
-  - Verified fetched control head aedf1fcb4de2d127e47407e7fb097da1274a8570 and its sole READY-entry parent b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9.
-  - Verified P34 registry status ready, create-new-branch mode, exact authorized start d075dc1839660205845e7da039a182bbe44778d2, and absence of local and remote P34 branches.
-  - Recomputed canonical READY digest 5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f and verified the exact claim, live OPERATIONS_RECOVERY lease, dependency binding, and zero effect locks.
-  - Read the P34 start-or-resume and claim-and-lease protocols and created the local task branch from the exact authorized start.
-  - Seeded the atomic branch-creation claim in exactly the three P34 runtime files without inspecting or editing product, runbook, or script scope.
+  - Verified the exact reconciled P34 claim, authorized start, live sole-writer lease, locked task/context/package digests, and zero external-effect authority.
+  - Recomputed the complete locked source manifest and P33 semantic interface digest from Git objects before implementation.
+  - Added normalized environment and credential-boundary mapping with fail-closed mismatch rejection.
+  - Added backup and isolated-restore evidence schemas and validators for identity, encryption, checksums, freshness, premutation timing, retention, architecture, RPO, RTO, deletion proof, effect disabling, and authorized cleanup.
+  - Added a non-executable deterministic containment, application rollback, roll-forward, and destructive-recovery gate planner.
+  - Added exhaustive production-operator-canary accounting for every locked effect key with exact budgets, mandatory zero rows, and attempted/succeeded/reconciled invariants.
+  - Added a non-fabricatable external legal-policy validator for the exact five files, exact manifest, stable external identity, hashes, named approvals, reviewer credential or firm, review scope, supersession, and production render readback.
+  - Added mechanism-only runbooks and focused positive and negative verification for future, placeholder, post-mutation checksum, omitted-effect, zero-budget, unreconciled, environment, legal, restore, and rollback behavior.
+  - Passed focused verification, repository typecheck, ESLint, Prettier, secret scanning, and diff hygiene; released the OPERATIONS_RECOVERY lease before expiry.
 remaining_steps:
-  - Push this exact three-file branch-creation claim atomically and report the remote head to C00.
-  - Stop until C00 reconciles the claim before inspecting or implementing P34 product, runbook, or script scope.
-next_action: Push and report the P34 atomic branch-creation claim, then stop for C00 reconciliation.
-requirements: {}
-acceptance_cases: {}
+  - I36 must audit and integrate the exact pushed P34 final head.
+  - R44 must later supply real candidate-bound backup, restore-drill, rollback, canary, reconciliation, and external legal-approval evidence; every such gate remains unpassed here.
+next_action: Review and integrate this mechanism-only P34 final; do not run a canary, backup, restore, rollback, provider effect, deployment, or legal approval from this branch.
+requirements:
+  OTV2-OPS-168: implementation_ready_real_backup_evidence_deferred
+  OTV2-OPS-169: implementation_ready_real_restore_evidence_deferred
+  OTV2-OPS-170: implementation_ready_real_rollback_proof_deferred
+  OTV2-OPS-218: implementation_ready_external_execution_deferred
+  OTV2-OPS-219: implementation_ready_real_canary_reconciliation_deferred
+  OTV2-OPS-241: implementation_ready_external_legal_artifacts_deferred
+acceptance_cases:
+  OTV2-OPS-168-AC01: mechanism_assertions_passed_r44_evidence_not_passed
+  OTV2-OPS-169-AC01: mechanism_assertions_passed_r44_evidence_not_passed
+  OTV2-OPS-170-AC01: mechanism_assertions_passed_r44_evidence_not_passed
+  OTV2-OPS-218-AC01: mechanism_assertions_passed_external_execution_not_authorized
+  OTV2-OPS-219-AC01: accounting_assertions_passed_r44_canary_not_run
+  OTV2-OPS-241-ENVIRONMENT-MAPPING: task_owned_assertions_passed
+  OTV2-OPS-241-LEGAL-ARTIFACT-GATE: validator_assertions_passed_external_approvals_absent_gate_open
 changed_paths:
-  - ops/v2.1-execution/runtime/P34/TASK-STATE.yaml
+  - ops/runbooks/v2.1/backup-restore/README.md
+  - ops/runbooks/v2.1/canary/README.md
+  - ops/runbooks/v2.1/rollback/README.md
   - ops/v2.1-execution/runtime/P34/HANDOFF.md
   - ops/v2.1-execution/runtime/P34/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P34/TASK-STATE.yaml
+  - scripts/operations/v21/backup-restore/environment.ts
+  - scripts/operations/v21/backup-restore/evidence.ts
+  - scripts/operations/v21/backup-restore/index.ts
+  - scripts/operations/v21/backup-restore/legal-gate.ts
+  - scripts/operations/v21/backup-restore/rollback.ts
+  - scripts/operations/v21/backup-restore/validation.ts
+  - scripts/operations/v21/backup-restore/verify-mechanisms.ts
+  - scripts/operations/v21/canary-budget/index.ts
+  - scripts/operations/v21/canary-budget/verify-budget.ts
 migrations: []
 steward_requests: []
 verification:
   commands_run:
-    - command: fetch and verify exact remote control and integration refs
-      result: passed; control aedf1fcb and authorized start d075dc18 exact
-    - command: canonical P34 READY-entry digest recomputation
-      result: passed; 5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f
-    - command: P34 registry, remote-branch absence, claim, lease, dependency, and effect-lock verification
-      result: passed; create-new-branch claim is unconsumed, one live OPERATIONS_RECOVERY lease, and zero effect locks
+    - command: locked package, task/context, source manifest, reconciled claim, lease, and P33 interface verification
+      result: passed
+    - command: npx tsx scripts/operations/v21/backup-restore/verify-mechanisms.ts
+      result: passed
+    - command: npx tsx scripts/operations/v21/canary-budget/verify-budget.ts
+      result: passed
+    - command: npx eslint scripts/operations/v21/backup-restore scripts/operations/v21/canary-budget
+      result: passed
+    - command: npm run typecheck
+      result: passed
+    - command: npm run secret:scan
+      result: passed; 2774 repository text files
+    - command: focused Prettier check and git diff --check
+      result: passed
   known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
+deferred_gates:
+  R44_backup_restore_rollback: not_passed_no_real_evidence
+  R44_operator_canary: not_passed_not_run
+  external_legal_policy_bundle: not_passed_artifacts_and_named_approvals_absent
 blockers: []
 out_of_scope_findings: []

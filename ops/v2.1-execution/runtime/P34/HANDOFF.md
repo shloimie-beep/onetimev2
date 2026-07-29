@@ -1,75 +1,79 @@
-# P34 Atomic Branch-Creation Claim
+# P34 Phase A Final Handoff
 
 ## Identity
 
-- Branch: `codex/v21-p34-operations-recovery`
-- Exact authorized start:
-  `d075dc1839660205845e7da039a182bbe44778d2`
-- Containing controller authorization:
-  `aedf1fcb4de2d127e47407e7fb097da1274a8570`
-- Sole READY-entry parent:
-  `b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9`
-- Claim: `d1959518-2cbc-49a8-9d39-ddd38a06564e`
-- Writer: `codex-p34-worker-d1959518`
-- OPERATIONS_RECOVERY lease:
+- Reconciled atomic claim:
+  `8499fdb5425f699f14ef8294b0945cd6dd2c1638`
+- Reconciliation control:
+  `71df400bd85cdca40b4eb0e01fc749f362e3d0e8`
+- Claim:
+  `d1959518-2cbc-49a8-9d39-ddd38a06564e`
+- Released OPERATIONS_RECOVERY lease:
   `b8e703f5-43a2-4a7d-9f25-9af6f32be4f0`
-- Lease issued: `2026-07-29T03:50:27Z`
-- Lease expires: `2026-07-29T04:50:27Z`
-- Canonical READY digest:
-  `5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f`
-- Task packet digest:
-  `d17be80574cbdfdd1bc9ce5e5f836591cd14da96d29b013a65cb0b0bc53ac0cf`
-- Context digest:
-  `3048a5a74e141e6fd688eb38845209bb0ecfbec3489c83c1ee729fc519e93c22`
-- Source package digest:
-  `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- External effects: attempted 0; succeeded 0; reconciled 0
+- Lease release / expiry:
+  `2026-07-29T04:23:29Z` / `2026-07-29T04:50:27Z`
+- Implementation:
+  `2077ca42ecc4222ab94d063dfd642e843d5ab48c`
+- P33 interface contract:
+  `3.0.0` / `a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43`
+- Final handoff commit: derive with `git rev-parse HEAD`; C00/I36 records the
+  exact observed pushed remote head.
 
-## Completed behavior
+## Implemented behavior
 
-Verified the exact fetched P34 registry and READY entry, recomputed its
-canonical payload digest, confirmed the live sole writer lease and zero effect
-locks, and confirmed the registered remote branch did not exist. Created the
-local branch from the exact authorized start.
+P34 now provides pure, provider-independent validators and runbooks for:
 
-This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md` under the P34 runtime directory. No product, runbook, script,
-steward, provider, or external-effect work was inspected or performed.
+- normalized `verification_environment_id` / `runtime_tier` mapping and strict
+  isolated-versus-live credential boundaries;
+- encrypted backup identity, checksum, 35-day retention, evaluation freshness,
+  and completed pre-mutation inspection within 30 minutes;
+- isolated restore-drill integrity, no-session and deletion proof,
+  provider-effect disabling, architecture freshness, 15-minute RPO, 30-minute
+  RTO, and authorized cleanup;
+- deterministic containment, compatible web/worker/config rollback,
+  forward-only roll-forward, and fully gated destructive recovery, with every
+  decision explicitly non-executable;
+- exhaustive canary accounting for every exact budget key, including mandatory
+  zero rows and attempted/succeeded/reconciled invariants;
+- the exact five-file external legal bundle, exact manifest identity, stable
+  external file IDs, immutable hashes, named product-owner and qualified legal
+  approvals, reviewer credential or firm, review scope, supersession state, and
+  production-render readback.
 
-## Remaining work
+Placeholder, future-dated, malformed, mismatched, stale, missing, unknown,
+duplicate, over-budget, zero-budget, or unreconciled evidence fails closed.
+Direct regressions cover checksum inspection after mutation, future backup
+evidence, placeholder backup identity, and omitted canary effect classes.
 
-P34 implementation has not started. C00 must first reconcile this atomic
-branch-creation claim and authorize resume from its exact pushed head.
+## Explicit deferred gates
 
-## Exact next action
+This is Phase A mechanism evidence only. No production backup or restore drill
+was run. No application rollback, deployment, provider operation, canary,
+message, charge, refund, deletion, cleanup, or legal approval was attempted.
 
-Push and report the exact claim head and sole parent, verify remote readback,
-then stop for C00 reconciliation.
-
-## Coverage
-
-- Requirements: not started
-- Acceptance cases: not started
-
-## Changed files and migrations
-
-Exactly the three P34 runtime files change. No migration or steward request was
-created.
+R44 must later provide real candidate-bound backup/restore/rollback evidence and
+real operator-canary accounting. The five legal-policy files and exact manifest
+must be supplied and approved externally by a named product owner and identified
+qualified legal reviewer. Those approvals are absent. The legal gate is open,
+and every real R44 acceptance gate is explicitly not passed.
 
 ## Verification
 
-Control, registry, READY digest, authorized start, remote-branch absence,
-claim, lease, dependency, effect-lock, and scope checks passed.
+Both focused executable harnesses pass. Focused ESLint, repository typecheck,
+focused Prettier, the repository secret scan, and diff hygiene pass. The secret
+scan covered 2774 repository text files. No baseline failure was observed.
 
-## External effects
+## Exact delta and next action
 
-Authority: none. Attempted 0; succeeded 0; reconciled 0.
+The final delta from the reconciled atomic claim contains fifteen paths: five
+backup/restore validator files, one export, one focused harness, the canary
+ledger and harness, three runbooks, and the three P34 runtime handoff artifacts.
+No migration, provider registry, deployment configuration, product runtime,
+legal text, approval artifact, evidence proof, or steward request changed.
 
-## Security, privacy, and data handling
+I36 must audit and integrate the exact pushed final. P34 must not resume without
+a new C00-issued lease for a reproduced P34-scoped finding.
 
-No secrets, provider payloads, personal data, or live-system output were read
-or recorded.
+## Effects
 
-## Blockers, deviations, and recovery
-
-No blocker or deviation. Stop after the atomic branch-creation push.
+Authority none; attempted/succeeded/reconciled `0/0/0`.
