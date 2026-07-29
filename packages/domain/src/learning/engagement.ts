@@ -12,6 +12,7 @@ import type {
   LearningLeaderboard,
   LearningQuestion,
   LearningScope,
+  PublishedClassQuestion,
   QuestionState,
   RecognitionConsent,
   ReviewCompletion,
@@ -202,6 +203,32 @@ export function questionsVisibleTo(
     );
   }
   return scoped.filter((question) => actor.classIds.includes(question.classId));
+}
+
+export function publishedQuestionsVisibleTo(
+  actor: LearningActor,
+  questions: readonly LearningQuestion[],
+  classId: string,
+): readonly PublishedClassQuestion[] {
+  if ((actor.role !== 'student' && actor.role !== 'admin') || !actor.classIds.includes(classId)) {
+    denied('Published questions require assignment to the requested class.');
+  }
+  return questions
+    .filter(
+      (question) =>
+        sameScope(actor, question) &&
+        question.classId === classId &&
+        question.state === 'published',
+    )
+    .map((question) => ({
+      questionId: question.id,
+      classId: question.classId,
+      question: question.body,
+      answer: question.answer,
+      publishedAt:
+        [...question.transitions].reverse().find((transition) => transition.to === 'published')
+          ?.occurredAt ?? question.updatedAt,
+    }));
 }
 
 export function mergeAttendance(
@@ -407,6 +434,7 @@ export function buildLeaderboard(input: {
       sameScope(input.actor, question) &&
       question.classId === input.classId &&
       question.recognitionEligible &&
+      (question.state === 'approved_for_class' || question.state === 'published') &&
       question.recognitionOccurredAt &&
       inWindow(question.recognitionOccurredAt, windowStarts, windowEnds)
     ) {
@@ -546,9 +574,14 @@ function audienceMatches(actor: LearningActor, audience: AnnouncementAudience) {
   return actor.role === 'parent' && actor.householdIds.includes(audience.householdId);
 }
 
-function requireAdmin(actor: LearningActor, record: LearningScope) {
-  if (actor.role !== 'admin' || !sameScope(actor, record))
-    denied('Admin learning authority required.');
+function requireAdmin(actor: LearningActor, record: LearningScope & { classId: string }) {
+  if (
+    actor.role !== 'admin' ||
+    !sameScope(actor, record) ||
+    !actor.classIds.includes(record.classId)
+  ) {
+    denied('Admin learning authority requires assignment to this class.');
+  }
 }
 
 function assertSameStudent(current: AttendanceRecord, segment: AttendanceSegment) {

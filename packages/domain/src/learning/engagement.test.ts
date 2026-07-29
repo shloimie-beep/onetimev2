@@ -18,6 +18,7 @@ import {
   correctQuestionRecognition,
   createAnnouncement,
   mergeAttendance,
+  publishedQuestionsVisibleTo,
   questionsVisibleTo,
   submitQuestion,
   transitionQuestion,
@@ -29,6 +30,12 @@ const admin: LearningActor = {
   principalId: 'admin-rabbi',
   role: 'admin',
   classIds: ['class-a', 'class-b'],
+};
+const classAAdmin: LearningActor = {
+  ...scope,
+  principalId: 'admin-class-a',
+  role: 'admin',
+  classIds: ['class-a'],
 };
 const student: LearningActor = {
   ...scope,
@@ -45,6 +52,14 @@ const peer: LearningActor = {
   studentId: 'student-2',
   householdId: 'household-2',
   classIds: ['class-a'],
+};
+const classBStudent: LearningActor = {
+  ...scope,
+  principalId: 'student-login-3',
+  role: 'student',
+  studentId: 'student-3',
+  householdId: 'household-3',
+  classIds: ['class-b'],
 };
 const parent: LearningActor = {
   ...scope,
@@ -108,6 +123,76 @@ describe('P22 private question lifecycle', () => {
       'approved_for_class',
       'published',
     ]);
+  });
+
+  it('denies direct Admin question mutation outside assigned classes', () => {
+    const classBQuestion = submitQuestion({
+      actor: classBStudent,
+      id: 'question-class-b',
+      classId: 'class-b',
+      body: 'A question in the other class',
+      occurredAt: '2026-07-01T10:00:00.000Z',
+    }).question;
+    expect(() =>
+      transitionQuestion(classBQuestion, {
+        actor: classAAdmin,
+        questionId: classBQuestion.id,
+        to: 'answered_private',
+        answer: 'This Admin must not be allowed to answer.',
+        expectedVersion: classBQuestion.version,
+        idempotencyKey: 'cross-class-answer',
+        requestHash: 'hash-cross-class-answer',
+        occurredAt: '2026-07-02T10:00:00.000Z',
+      }),
+    ).toThrow(/assignment to this class/);
+  });
+
+  it('projects only sanitized published questions to assigned class members', () => {
+    const publishedA = move(
+      move(
+        move(submitted('published-a'), 'answered_private', 'answer-a'),
+        'approved_for_class',
+        'approve-a',
+      ),
+      'published',
+      'publish-a',
+    );
+    const classBSubmitted = submitQuestion({
+      actor: classBStudent,
+      id: 'published-b',
+      classId: 'class-b',
+      body: 'A separate class question',
+      occurredAt: '2026-07-01T10:00:00.000Z',
+    }).question;
+    const publishedB = move(
+      move(
+        move(classBSubmitted, 'answered_private', 'answer-b'),
+        'approved_for_class',
+        'approve-b',
+      ),
+      'published',
+      'publish-b',
+    );
+    const projection = publishedQuestionsVisibleTo(student, [publishedA, publishedB], 'class-a');
+    expect(projection).toEqual([
+      {
+        questionId: 'published-a',
+        classId: 'class-a',
+        question: 'Why does the Mishnah use this wording?',
+        answer: 'The wording teaches a separate case.',
+        publishedAt: publishedA.updatedAt,
+      },
+    ]);
+    expect(Object.keys(projection[0] ?? {})).toEqual([
+      'questionId',
+      'classId',
+      'question',
+      'answer',
+      'publishedAt',
+    ]);
+    expect(() => publishedQuestionsVisibleTo(student, [publishedB], 'class-b')).toThrow(
+      /assignment to the requested class/,
+    );
   });
 
   it('OTV2-LEARNING-238 deduplicates recognition and correction recalculates stably', () => {
@@ -230,6 +315,18 @@ describe('P22 progress, badges, and attendance', () => {
         { ...corrected, studentId: 'student-2', householdId: 'household-2' },
       ]),
     ).toEqual([corrected]);
+    expect(() =>
+      correctAttendance(
+        classAAdmin,
+        { ...corrected, classId: 'class-b' },
+        {
+          minutes: 30,
+          present: true,
+          reason: 'Attempted cross-class correction.',
+          occurredAt: '2026-07-03T10:00:00.000Z',
+        },
+      ),
+    ).toThrow(/assignment to this class/);
   });
 
   it('OTV2-LEARNING-094/196 applies fixed thresholds and unique published review items only', () => {
@@ -358,6 +455,33 @@ describe('P22 announcements and recognition-safe leaderboard', () => {
     expect(off.combinedScore).toBeNull();
     expect(off.categories.currentAttendanceStreak[0]?.displayName).toBe('You');
     expect(alias).toMatch(/^Anonymous Student • [A-F0-9]{6}$/);
+    expect(
+      off.categories.approvedQuestionCount.find((entry) => entry.studentId === 'student-1')?.value,
+    ).toBe(0);
+    expect(
+      calculateBadges({
+        studentId: 'student-1',
+        scheduledOccurrenceIds: [],
+        attendance: [],
+        questions: [question],
+        reviews: [],
+      }).map((badge) => badge.key),
+    ).toContain('curious_learner:1');
+
+    const approved = move(question, 'approved_for_class', 'approve-leaderboard');
+    const approvedBoard = buildLeaderboard({ ...base, questions: [approved] });
+    expect(
+      approvedBoard.categories.approvedQuestionCount.find(
+        (entry) => entry.studentId === 'student-1',
+      )?.value,
+    ).toBe(1);
+    const published = move(approved, 'published', 'publish-leaderboard');
+    const publishedBoard = buildLeaderboard({ ...base, questions: [published] });
+    expect(
+      publishedBoard.categories.approvedQuestionCount.find(
+        (entry) => entry.studentId === 'student-1',
+      )?.value,
+    ).toBe(1);
 
     const optedIn = buildLeaderboard({
       ...base,

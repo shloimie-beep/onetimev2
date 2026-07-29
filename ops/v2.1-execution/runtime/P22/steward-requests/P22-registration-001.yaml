@@ -43,6 +43,7 @@ proposed_symbols_routes_keys_or_dependencies:
   - export packages/db/src/learning/repository.ts and schema-contract.ts
   - register createLearningEngagementService using a server-only alias HMAC secret
   - mount Student question, update, badge, attendance-summary, and authenticated class-board routes
+  - mount the sanitized published-class-question projection only for authenticated Admins and Students assigned to that class
   - mount Admin question moderation, announcement, attendance correction, and full-name board routes
   - do not mount Parent private-question or public leaderboard routes
 compatibility_assumptions:
@@ -55,6 +56,7 @@ verification_performed:
   - focused ESLint, Prettier, diff, and secret checks
 conflicts_or_risks:
   - Never log private question/answer text or the alias HMAC secret.
+  - Never return learner, household, recognition, or moderation metadata from the published-class-question projection.
   - Do not introduce Student peer chat, GHL contact creation, points, currency, or redeemable rewards.
   - Do not expose a route that can render a board without authenticated class scope.
 contains_secret_or_private_data: false

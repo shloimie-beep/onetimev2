@@ -50,6 +50,14 @@ export type LearningQuestion = LearningScope & {
   transitions: readonly QuestionTransitionAudit[];
 };
 
+export type PublishedClassQuestion = {
+  questionId: string;
+  classId: string;
+  question: string;
+  answer: string | null;
+  publishedAt: string;
+};
+
 export type SubmitQuestionCommand = {
   actor: LearningActor;
   id: string;

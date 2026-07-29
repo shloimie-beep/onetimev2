@@ -19,6 +19,7 @@ import {
   correctQuestionRecognition,
   createAnnouncement,
   mergeAttendance,
+  publishedQuestionsVisibleTo,
   questionsVisibleTo,
   submitQuestion,
   transitionQuestion,
@@ -50,6 +51,13 @@ export function createLearningEngagementService(input: {
     },
     async questions(actor: LearningActor) {
       return questionsVisibleTo(actor, await input.repository.listQuestions(actor));
+    },
+    async publishedClassQuestions(actor: LearningActor, classId: string) {
+      return publishedQuestionsVisibleTo(
+        actor,
+        await input.repository.listQuestions(actor),
+        classId,
+      );
     },
     async recordAttendance(actor: LearningActor, segment: AttendanceSegment) {
       requireAdminScope(actor, segment);
@@ -176,13 +184,17 @@ async function requireQuestion(
   return question;
 }
 
-function requireAdminScope(actor: LearningActor, target: LearningScope) {
+function requireAdminScope(actor: LearningActor, target: LearningScope & { classId: string }) {
   if (
     actor.role !== 'admin' ||
     actor.accountKey !== target.accountKey ||
-    actor.productKey !== target.productKey
+    actor.productKey !== target.productKey ||
+    !actor.classIds.includes(target.classId)
   ) {
-    throw new LearningError(LEARNING_ERROR_CODES.accessDenied, 'Admin learning scope is required.');
+    throw new LearningError(
+      LEARNING_ERROR_CODES.accessDenied,
+      'Admin learning scope and class assignment are required.',
+    );
   }
 }
 
