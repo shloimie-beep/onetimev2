@@ -7,7 +7,7 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: d7df4df6954fcb3cdd06704461f86894285b09f6
+  C00: 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
   P16: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
@@ -27,51 +27,41 @@ dependency_heads:
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
   P11: 15660c1115d9d8066651573100acd8acaaac574e
   P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-status: ready
-phase: release
-claimed_by: codex-i36-release-integrator-60998dcd
-claim_time: '2026-07-29T15:51:20Z'
-claim_id: 60998dcd-f3e9-45a8-a03a-9c1f4589b0ae
-lease_id: de1ad066-2cc3-45bd-aa48-6d2d985e219c
-lease_issued_at: '2026-07-29T15:51:20Z'
-lease_expires_at: '2026-07-29T17:06:20Z'
-lease_released_at: '2026-07-29T16:13:39Z'
-last_heartbeat_at: '2026-07-29T16:13:39Z'
-controller_authorization_sha: 416891f99c3b4690b9db210f131d3d42b6ab5890
-latest_valid_observed_control_head_sha: 416891f99c3b4690b9db210f131d3d42b6ab5890
-reconciled_state_based_on_control_head_sha: 2917d04147df723ffdc0d7fc290613f4dcaed914
-ready_authorization_control_head_sha: f148cf704fb149e281d833cd5037cb0be1525b47
-ready_entry_state_based_on_control_head_sha: 18b0d8eafac9417901a72149e4eff48cba13a24d
-ready_entry_payload_digest: a7e35893457ba55bb957959b47a475a30232181fb525f951d898a9bc3771af28
+status: claimed
+phase: integration
+claimed_by: codex-i36-release-integrator-31d2abc1
+claim_time: '2026-07-29T17:06:49Z'
+claim_id: 31d2abc1-bdee-4297-b5d7-b89719cd9dc6
+lease_id: b39bd286-c061-45cf-bcbe-cb38eb9b4032
+lease_issued_at: '2026-07-29T17:06:49Z'
+lease_expires_at: '2026-07-29T18:21:49Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T17:14:20Z'
+controller_authorization_sha: 3d11ce7b7a892e36602f107f439276795ec47b41
+latest_valid_observed_control_head_sha: 3d11ce7b7a892e36602f107f439276795ec47b41
+reconciled_state_based_on_control_head_sha: 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49
+ready_authorization_control_head_sha: 3d11ce7b7a892e36602f107f439276795ec47b41
+ready_entry_state_based_on_control_head_sha: 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49
+ready_entry_payload_digest: a4f8bb88b14a039a87c8f71365639b084b677bce82174bd03e80c7f27f5269c8
 claim_mode: resume_existing
-expected_existing_head_sha: b06321b8e4b393fe546bb5251df5115d9b4a0dd3
-lease_phase_scope: P28_P18_P20_full_integration_atomic_claim_only
+expected_existing_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
+lease_phase_scope: P18_collision_correction_micro_integration_atomic_claim_only
 queued_merge_ids:
-  P28: be7c79b0-3861-41bd-bef7-9c9189f0c397
-  P18: 904ca7b0-a13b-498d-ad66-d7b452015724
-  P20: 11727ded-ed12-4f92-a9eb-735a215da2bd
+  P18: 2f2547a1-3526-4aa7-a902-8382f36038d5
 queued_merge_item_payload_digests:
-  P28: c455cd775a2950bc233586f2ff19751ae57938a4e3b5038ab765881794182c37
-  P18: 544ad42415b78e9125edfb21c03d1651fd0d953f61d4bf0f7f5806dde4fa4c19
-  P20: e870b85b765ee2dbe1408ddab83655f08827e5a57ffd0c4aaccde67d50101043
+  P18: 636a9bf0ed1db29127cc785c21e1cf7bc2421db73d8764a747b4bd6c04cf4352
 queued_source_heads:
-  P28: f891f16eb13593d0eb3bbe53c076513d12b07c23
-  P18: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
-  P20: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+  P18: b9ad947405de53c138561fd47b9d5c65a25f6b8b
 queued_source_delta_base_head_shas:
-  P28: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
-  P18: 9ba92b070eedfa3756eff4f78fd328de72507a96
-  P20: ebf88c8e422a6ad40202fc2b0249810d312edc30
+  P18: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
 queued_merge_order:
-  - P28
   - P18
-  - P20
-queued_expected_target_head_sha: b06321b8e4b393fe546bb5251df5115d9b4a0dd3
-prior_merge_result_head_sha: 5da986554cc70e39bc2006e936058ba86be62024
-prior_release_head_sha: b06321b8e4b393fe546bb5251df5115d9b4a0dd3
-merge_authorization_state_based_on_control_head_sha: 416891f99c3b4690b9db210f131d3d42b6ab5890
-lease_origin_state_based_on_control_head_sha: 18b0d8eafac9417901a72149e4eff48cba13a24d
-source_delta_base_head_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
+queued_expected_target_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
+prior_merge_result_head_sha: a0a050a4cc43e46cdcb11670cd85ec3607699f3e
+prior_release_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
+merge_authorization_state_based_on_control_head_sha: 3d11ce7b7a892e36602f107f439276795ec47b41
+lease_origin_state_based_on_control_head_sha: 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49
+source_delta_base_head_sha: null
 merge_result_heads:
   F06: a9b8404451246246fdcd2ffdde99ee72bb096d2f
   F07: 64c70e49737d94d2f327f2bff0215791bdf69dc7
@@ -90,7 +80,7 @@ merge_result_head_sha: a0a050a4cc43e46cdcb11670cd85ec3607699f3e
 merge_parent_target_head_sha: 968dc03b57be63f24bdd27122c9ade394812c9ac
 merge_parent_source_head_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
 prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: a0a050a4cc43e46cdcb11670cd85ec3607699f3e
+state_based_on_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
 last_implementation_commit_sha: a0a050a4cc43e46cdcb11670cd85ec3607699f3e
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
@@ -808,11 +798,35 @@ completed_steps:
     provider inspection, send, deployment, or external effect occurred.
   - Released sole lease de1ad066-2cc3-45bd-aa48-6d2d985e219c at
     2026-07-29T16:13:39Z with authority none and effects 0/0/0.
+  - Verified the exact P18 correction micro-integration authorization at
+    control head 3d11ce7b7a892e36602f107f439276795ec47b41 with sole
+    acquisition parent 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49 and exact
+    existing integration head f947c01f6047f129b18dcf7a13e992eef10a9fe3.
+  - Recomputed and matched canonical READY digest
+    a4f8bb88b14a039a87c8f71365639b084b677bce82174bd03e80c7f27f5269c8
+    and P18 correction merge-item digest
+    636a9bf0ed1db29127cc785c21e1cf7bc2421db73d8764a747b4bd6c04cf4352.
+  - Passed the raw-Git-blob execution-package validator for all 200 locked
+    files, 46 tasks/contexts/prompts, 16 source-spec files, 243 requirements,
+    265 cases, 107 decisions, and 35 implementation tasks; verified the
+    package, source-package, task, context, control-state, and prior I36
+    state-handoff bindings.
+  - Verified the exact P18 correction ref
+    b9ad947405de53c138561fd47b9d5c65a25f6b8b by ls-remote only, fixed
+    base 0a384577dec2ea58cbeaf22a247f7c05f6333c27, seven unique declared
+    paths, merge-after ancestry, live sole lease, zero effect locks, and
+    0/0/0 effects.
+  - Claimed only the three I36 runtime-memory files under claim
+    31d2abc1-bdee-4297-b5d7-b89719cd9dc6 and RELEASE_INTEGRATOR lease
+    b39bd286-c061-45cf-bcbe-cb38eb9b4032; no P18 source was fetched, read,
+    or merged and no steward request, provider action, send, deployment, or
+    external effect was applied or performed.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 Wave D release.
-  - Report the exact pushed release head, sole parent, merge heads, and I36
-    state/handoff digests to C00, then stop.
-next_action: C00 must audit and reconcile the exact pushed I36 Wave D release head and its sole parent; I36 must stop after reporting it.
+  - Commit and normally push this exact three-file I36 P18 correction
+    micro-integration atomic claim.
+  - Report the exact pushed claim head, sole parent, and I36 triplet digests
+    to C00, then stop without fetching, reading, or merging P18 source.
+next_action: C00 must audit and reconcile the exact pushed I36 P18 correction micro-integration atomic claim head and its sole parent before source admission; I36 must stop after reporting it.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -1888,6 +1902,14 @@ verification:
       result: passed across 3031 repository text files
     - command: exact merge-parent, ancestry, first-parent scope, complete 43-path queued delta, steward, provider, deployment, send, and effect checks
       result: passed; all three sources are ancestors, each merge has exact parents and source scope, every request remains unapplied, no external action occurred, and effects are 0/0/0
+    - command: fetched P18 correction control and exact integration ref
+      result: passed; exact control 3d11ce7b, sole acquisition parent 7359ed26, and integration f947c01f
+    - command: canonical P18 correction READY and merge-item recomputation
+      result: passed; exact digests a4f8bb88 and 636a9bf0
+    - command: raw-Git-blob execution-package validator and package/source-package/task/context/control-state/prior-I36 binding verification
+      result: passed; 200 locked files, 46 tasks/contexts/prompts, 16 source-spec files, 243 requirements, 265 cases, 107 decisions, 35 implementation tasks, and prior I36 state-handoff 821fe96b
+    - command: P18 ls-remote, fixed-base, seven-path declaration, merge-after, lease, and effect checks
+      result: passed; exact remote ref b9ad9474 without source fetch/read, base 0a384577, all prerequisites are ancestors, live sole lease, zero effect locks, and 0/0/0 effects
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
