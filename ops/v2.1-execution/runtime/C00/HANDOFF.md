@@ -829,3 +829,26 @@ worktree, and zero effects. P22 may now correct only assigned-class
 authorization for Admin question/attendance mutations, a sanitized
 class-scoped published-question projection, and approved/published-only
 leaderboard counting while preserving first-answer Curious recognition.
+
+P22 corrected final `4d1b6dfc` is independently admitted. Its linear correction
+ends at implementation `459e9187`; the exact nine-path delta, canonical
+full-artifact digest `2552e3b9`, class fences, sanitized projection,
+first-approval rolling basis, 11 focused tests, typecheck, released lease,
+clean worktree, and zero effects pass.
+
+P34 mechanism-only final `17f41c6b` is independently admitted. Its exact
+fifteen-path delta and focused harnesses prove fail-closed backup/checksum
+timing, non-placeholder identities, normalized environment mapping,
+non-executable rollback decisions, exhaustive locked canary ledger rows, and
+the external five-artifact legal gate. Typecheck and scope pass. Real R44
+backup, restore, rollback, canary, provider, and legal-approval evidence remain
+explicitly absent and unpassed; no external effect occurred.
+
+P12 final `2faa4987` remains held despite correct product behavior. Independent
+reconstruction proved its published `7ac6f511` interface digest used literal
+backslash-n bytes, contradicting the checkpoint's required LF separators. The
+correct semantic 1.0.1 digest is `ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26`.
+Because the prior lease was released, C00 issued only fresh atomic metadata
+claim `86e406be-cec6-493e-a2a8-4d0744168ed9` from exact final `2faa4987`
+under lease `79c5cf83-4438-4c68-ba4f-8e18b87de1f4`. P12 must change only its
+three runtime files and stop for reconciliation before correcting metadata.

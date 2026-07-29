@@ -538,3 +538,22 @@ counting limited to approved_for_class/published states. Preserve Curious
 recognition on first answer/approval. Add direct negative tests, refresh exact
 artifacts and digests, publish ready_for_review, release lease
 `9fd6a3b7-decc-454a-9a2e-953aaaebfe63`, and keep effects at zero.
+
+P22 corrected final `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`
+and P34 mechanism-only final `17f41c6b78bf6bedf1beb0803f855b2d4f01294a`
+are independently admitted ready_for_review. P34's real R44 and external legal
+gates remain explicitly unpassed. Do not resume either task without fresh C00
+authority, and perform no external effect.
+
+For P12, publish only atomic metadata-correction claim
+`86e406be-cec6-493e-a2a8-4d0744168ed9` from exact held final
+`2faa49871ae34fa39e6387f264580e246244075b`, binding acquisition
+`76c1c2d9363bb20c9abd2e005ca0651fca73ceb8`, PARENT_HOUSEHOLD_UI lease
+`79c5cf83-4438-4c68-ba4f-8e18b87de1f4`, and ready digest
+`8bb0d6d8bcc996fe9a50ebafec45046d3a65bad9cf85f193d90c083fc6b1eb30`.
+Change only P12's three runtime files and stop for reconciliation. After C00
+resumes it, replace the incorrect literal-backslash-n semantic digest
+`7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373`
+with the correct LF-separated digest
+`ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26`
+everywhere in P12 metadata; product and export blobs must remain unchanged.
