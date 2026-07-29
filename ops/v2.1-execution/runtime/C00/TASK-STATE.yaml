@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-565c6760
-claim_time: '2026-07-29T09:40:29Z'
-claim_id: 565c6760-c6f4-4dc5-9fae-0a463337f6bb
-lease_expires_at: '2026-07-29T09:55:29Z'
-last_heartbeat_at: '2026-07-29T09:44:01Z'
-controller_authorization_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
+claimed_by: codex-c00-orchestrator-127fe593
+claim_time: '2026-07-29T11:25:59Z'
+claim_id: 127fe593-41b8-497b-92a0-da3c01073727
+lease_expires_at: '2026-07-29T11:40:59Z'
+last_heartbeat_at: '2026-07-29T11:32:01Z'
+controller_authorization_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
 ready_entry_payload_digest: null
-state_based_on_head_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
+state_based_on_head_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -280,10 +280,10 @@ completed_steps:
 - rejected P11 superseding final 899ef6a7 after exact-source re-audit confirmed revoked initial private render and unguarded in-flight completions, option-ID collisions for valid dotted/colon target IDs, and a Bearer-space redaction gap
 - authorized only a fresh three-runtime-file P11 authorization-race/ID/secret correction claim from exact rejected final 899ef6a7 under claim d76c097a and ADMIN_OPERATIONS_UI lease 84cd0230
 remaining_steps:
-- reconcile the exact P11 authorization-race/ID/secret correction claim, then authorize and independently re-audit only that bounded correction
-- complete the read-only exact-source re-audit of P23 superseding final 32f3a464
+- reconcile the exact I36 P11-integration claim, then authorize only the queued ancestry-preserving P11 merge
+- independently re-audit the bounded P09 and P21 correction finals when published
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P11 may publish only its three-runtime-file correction claim from exact rejected final 899ef6a7 under ready digest aeea25dd, claim d76c097a, and lease 84cd0230, then stop for reconciliation. P23 remains under read-only audit. No product correction, provider action, or external effect is authorized.
+next_action: P09 claim 86d5f5ff and P21 claim 355d7b12 are reconciled and may implement only their exact bounded corrections under unchanged claims and leases. P11 final 15660c11 is admitted; I36 may publish only its three-runtime-file integration claim from exact 088b4047 under ready digest a5b4fec6, claim 5be2d721, and lease 33a465ad, then stop for reconciliation. No steward application, provider action, send, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -291,12 +291,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
+  current_control_parent_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 565c6760-c6f4-4dc5-9fae-0a463337f6bb
-      observed_head: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
+      claim_id: 127fe593-41b8-497b-92a0-da3c01073727
+      observed_head: e6a6729bc109816124ef2e7beef5e42aa398b147
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -307,11 +307,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: null
-      observed_head: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      authorized_start_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
-      lease_expires_at: null
-      scheduling_state: ready_release_P13_P25_P26_integrated_at_cecc1c0d
+      claim_id: 5be2d721-aff2-494a-bb22-ad324334b376
+      observed_head: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+      authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+      lease_expires_at: '2026-07-29T12:42:09Z'
+      scheduling_state: ready_P11_full_integration_atomic_claim_only
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -730,12 +730,12 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: ec30db222fad228e1b8534474c231dbc364207a4f32bcfb3d336352ecce686bd
-    control_lease: bba4bdcff043305f10388d9a003cf689db5f6774b69a97865f15ea9db6d07a1d
-    task_registry: dcdf2a8f41739ad2ba1b026c3912c1e09ab9261c87de05e4982c0f9962eefcf9
-    ready_queue: a3df9067e05dcd7a1fb8ee18255c0d2396612a2b51f5d0433f3f62548abf8df8
-    merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
-    steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
+    control_state: 9d1c8d7fc8db5d6779d204980fd30f563e481aa6e82d049a46dfc1946ceff552
+    control_lease: a3c49df1897fd0ec963e9bcc26c82cf7f0d095838fd9c517a47c09bd45906679
+    task_registry: 522beb98d65bb7c32d56d7cdfc4f2b978a5ed2a0a02e278522ee5b06bcf511c8
+    ready_queue: 67af63b3c50a0cd908a6becca537475bf8acc0a90f977d6fa6f0bc358d836db2
+    merge_queue: 1b1b2982c127212083cb3b057a34f1913376b60c81d5fa2b6bd3ded91df2fcd1
+    steward_queue: 7bae1223c670087461ca493454d8127af113cb1f22251ff3ae581a3d9455d1d2
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70
@@ -898,6 +898,10 @@ verification:
   - P09 final a81e5e98 exact ancestry/scope/digests, 4 files/12 tests, typecheck, released lease, and zero effects: rejected because concurrent normalized-email commands can duplicate leads/intents, absent optional phone/note keys fail, and the acknowledgment intent uses UI copy instead of the approved notification template binding
   - P21 final 24f82a74 exact ancestry/scope/digests, 5 files/11 tests, typecheck/lint/format, released lease, and zero effects: rejected for missing privacy/redaction approval evidence, fenced provider/readback lifecycle, assignments/notices, exact playback/grant/revocation projections, approved-state unpublish, and governed occurrence attachment
   - canonical P09/P21 correction READY digests 505e6823/571dff53 against acquisition b0dc03dc, exact rejected heads, disjoint SCHOOL_INQUIRY/CONTENT_PUBLICATION leases, and zero effect locks: passed
+  - P09 correction claim 86d5f5ff and P21 correction claim 355d7b12 exact sole-parent ancestry, exact three-runtime-file scopes, authorization/acquisition/claim/lease/READY bindings, clean remote state, and zero effects: passed
+  - P11 final 15660c11 exact ancestry, 18-path scope, artifact d9c91d97, unchanged request aggregate 2327a180, state/handoff 07ce1d18, 4 files/21 tests, typecheck, released lease, exact retained-credential gating, and zero effects: passed and admitted
+  - canonical I36 P11 integration READY digest a5b4fec6 and P11 full merge digest 3b77561b against acquisition e6a6729b and exact target 088b4047: passed
+  - P11 registration request 68a99cc0 assigned to I36's next shared-registration checkpoint but left unapplied; provider locks and effects remain zero: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

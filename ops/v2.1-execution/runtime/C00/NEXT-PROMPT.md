@@ -1153,3 +1153,24 @@ and validate/persist a governed occurrence/product relation. Preserve all
 passing denial, five-minute TTL, search, resume, optimistic-write, and URL
 redaction behavior. Strengthen but do not apply the steward request. Use local
 ports/mocks only and perform no live provider or external effect.
+
+P09 correction claim `86d5f5ffd046505c4df336ea40dd83c6559d3255`
+and P21 correction claim
+`355d7b126fe2db7b2e8061f86585d724866998a6` are reconciled. Resume
+each under its unchanged claim and lease, implement only the exact bounded
+correction enumerated above inside task-owned roots plus direct tests and
+immutable structured requests, publish a superseding final, release the lease,
+and stop for independent audit. Apply no steward request and perform no live
+provider, send, or external effect.
+
+P11 final `15660c1115d9d8066651573100acd8acaaac574e` has passed
+independent exact-source audit and is admitted. Resume I36 only from exact
+integration head `088b40476bd5ceeb0af901b6f78a4cb8c556671b` under
+claim `5be2d721-aff2-494a-bb22-ad324334b376`, RELEASE_INTEGRATOR lease
+`33a465ad-1fa2-4600-9259-044f6bc767a2`, acquisition
+`e6a6729bc109816124ef2e7beef5e42aa398b147`, and READY digest
+`a5b4fec66b1f2bcd67e278ba8b7d58d710d4d87bf1072706902e379001e20eb7`.
+Change exactly I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+push normally, remote-verify, and stop for C00 reconciliation. Do not merge
+P11 or apply `P11-registration-001` in this first push. No provider action,
+send, or external effect is authorized.

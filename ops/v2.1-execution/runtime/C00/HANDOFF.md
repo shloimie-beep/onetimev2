@@ -1378,3 +1378,30 @@ authorized only a fresh three-runtime-file claim: READY `571dff53`, claim
 `2026-07-29T12:26:54Z`. Preserve the verified positive denials/search/resume
 behavior. Product correction, steward application, live provider work, and
 external effects remain unauthorized until claim reconciliation.
+
+P09 correction claim `86d5f5ffd046505c4df336ea40dd83c6559d3255`
+and P21 correction claim
+`355d7b126fe2db7b2e8061f86585d724866998a6` are exact sole-parent
+three-runtime-file checkpoints under their existing claims and leases. C00
+reconciled and consumed both READY entries. P09 and P21 may now implement only
+their enumerated bounded corrections with local ports/mocks, publish
+superseding finals, release their leases, and stop for independent audit. No
+steward request, live provider, send, or external effect is authorized.
+
+P11 superseding final `15660c1115d9d8066651573100acd8acaaac574e`
+passed exact 18-path lineage and scope, artifact digest `d9c91d97`, unchanged
+registration-request aggregate `2327a180`, state/handoff digest `07ce1d18`,
+4 focused files / 21 tests, workspace typecheck, merge-tree simulation, lease
+release, and the direct retained-credential first-render/version-change
+probes. It is admitted for an ancestry-preserving full merge. Request
+`P11-registration-001` digest `68a99cc0` is assigned to I36's next shared
+registration checkpoint but remains unapplied.
+
+I36 is authorized only for an atomic three-runtime-file claim from exact
+integration head `088b40476bd5ceeb0af901b6f78a4cb8c556671b`: READY
+digest `a5b4fec66b1f2bcd67e278ba8b7d58d710d4d87bf1072706902e379001e20eb7`,
+claim `5be2d721-aff2-494a-bb22-ad324334b376`, RELEASE_INTEGRATOR lease
+`33a465ad-1fa2-4600-9259-044f6bc767a2` through
+`2026-07-29T12:42:09Z`. I36 must push only its three runtime files and stop
+for C00 reconciliation before merging P11 or applying its registration
+request.
