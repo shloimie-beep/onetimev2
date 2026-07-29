@@ -64,7 +64,7 @@ export function createSupportLifecycleService(input: {
             'The idempotency key was already used for a different support request.',
           );
         }
-        return required(await input.repository.load(replay.ticketId));
+        return requesterProjection(required(await input.repository.load(replay.ticketId)));
       }
 
       const at = instant(now());
@@ -104,7 +104,7 @@ export function createSupportLifecycleService(input: {
         ticketId,
       });
       await input.notificationIntents.record(notificationIntent(ticket, 'ticket_created'));
-      return ticket;
+      return requesterProjection(ticket);
     },
 
     async read(principal: SupportPrincipal, ticketId: string): Promise<SupportRequesterView> {

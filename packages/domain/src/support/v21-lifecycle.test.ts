@@ -130,7 +130,10 @@ describe('P24 support lifecycle', () => {
 
   it('OTV2-TICKETS-150 permits exactly one idempotent adult GHL conversation link', async () => {
     const { service } = harness();
-    const created = await service.create(parent, technical());
+    const originalCreate = technical();
+    const created = await service.create(parent, originalCreate);
+    expect(created).toMatchObject({ ghlConversationLinked: false });
+    expect(created).not.toHaveProperty('ghlConversationId');
     const linked = await service.linkAdultGhlConversation({
       principal: supportAdmin,
       ticketId: created.ticketId,
@@ -156,12 +159,23 @@ describe('P24 support lifecycle', () => {
     const requesterView = await service.read(parent, created.ticketId);
     expect(requesterView).toMatchObject({ ghlConversationLinked: true });
     expect(requesterView).not.toHaveProperty('ghlConversationId');
+    const createReplayAfterLink = await service.create(parent, originalCreate);
+    expect(createReplayAfterLink).toMatchObject({
+      ticketId: created.ticketId,
+      version: linked.version,
+      ghlConversationLinked: true,
+    });
+    expect(createReplayAfterLink).not.toHaveProperty('ghlConversationId');
   });
 
   it('OTV2-TICKETS-151 never creates or links a Student GHL identity or conversation', async () => {
     const { service } = harness();
     const created = await service.create(student, technical());
-    expect(created).toMatchObject({ requesterRole: 'student', ghlConversationId: null });
+    expect(created).toMatchObject({
+      requesterRole: 'student',
+      ghlConversationLinked: false,
+    });
+    expect(created).not.toHaveProperty('ghlConversationId');
     await expect(
       service.linkAdultGhlConversation({
         principal: supportAdmin,
