@@ -1109,3 +1109,12 @@ through `2026-07-29T08:37:36Z`. Its first push may change exactly P11
 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
 reconciliation. No P11 correction implementation, steward application,
 registration, provider action, or external effect is authorized yet.
+
+P11 correction claim `2fa5c8da116d42c9202c462ef9e061c254dd3958` is
+independently reconciled as the sole child of rejected final `51bd416b` with
+exactly the three P11 runtime files and exact authorization/acquisition/claim/
+lease/ready bindings. C00 consumed the ready entry. P11 may now correct only
+the enumerated admin-operations semantics within its normalized owned roots
+plus its structured registration request and runtime memory. It must preserve
+zero effects, apply no registration/steward request, publish a superseding
+final, release lease `39ce3c68`, and stop for independent re-audit.

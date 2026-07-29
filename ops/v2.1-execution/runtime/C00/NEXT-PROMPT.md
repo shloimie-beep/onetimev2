@@ -857,3 +857,12 @@ honest empty/error/pagination behavior, and zero effects. Re-run focused
 positive/negative tests, direct leakage/TOCTOU/environment probes, typecheck,
 lint/format, scope/digest verification, release the lease, and publish a
 superseding final for independent re-audit.
+
+P11 atomic correction claim
+`2fa5c8da116d42c9202c462ef9e061c254dd3958` is reconciled. Resume it
+under unchanged claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81` and lease
+`39ce3c68-6685-4981-bc09-f1cd3dd24c55`. Implement the complete bounded P11
+correction already enumerated above, add direct TOCTOU/environment/leakage/
+cache/time-window/timezone/keyboard/a11y proof, strengthen but do not apply the
+structured registration request, publish a superseding final, release the
+lease, and stop with effects `0/0/0`.

@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-faa1b3c2
-claim_time: '2026-07-29T07:37:36Z'
-claim_id: faa1b3c2-3e70-4efb-b437-183c0d54dcc8
-lease_expires_at: '2026-07-29T07:52:36Z'
-last_heartbeat_at: '2026-07-29T07:40:26Z'
-controller_authorization_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
+claimed_by: codex-c00-orchestrator-853fd18a
+claim_time: '2026-07-29T08:02:46Z'
+claim_id: 853fd18a-daac-4246-bc02-14e3788bd22a
+lease_expires_at: '2026-07-29T08:17:46Z'
+last_heartbeat_at: '2026-07-29T08:07:16Z'
+controller_authorization_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
 ready_entry_payload_digest: null
-state_based_on_head_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
+state_based_on_head_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -264,11 +264,12 @@ completed_steps:
 - independently reconciled P23 correction claim b341ce52 as an exact three-runtime-file child of rejected final 39b05094, consumed its ready entry, and authorized only the bounded semantic correction with zero effects
 - rejected P11 final 51bd416b after an independent exact-source audit confirmed missing navigation-time authorization, cross-environment provider relabeling, incomplete dashboard operations and quick actions, noncanonical navigation, missing content metadata matching, sensitive result leakage, lifetime recent-activity totals, cache-after-signout gaps, and accessibility defects
 - authorized only a fresh three-runtime-file P11 correction claim from exact rejected final 51bd416b under claim b66b8fdf and ADMIN_OPERATIONS_UI lease 39ce3c68 before any correction implementation
+- independently reconciled P11 correction claim 2fa5c8da as an exact three-runtime-file child of rejected final 51bd416b, consumed its ready entry, and authorized only the bounded semantic correction with zero effects
 remaining_steps:
 - receive and independently re-audit the bounded P23 semantic correction
-- reconcile the exact P11 correction claim, then authorize and independently re-audit only the bounded semantic correction
+- receive and independently re-audit the bounded P11 semantic correction
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P23 may implement only its bounded semantic correction from reconciled claim b341ce52. P11 may publish only a three-runtime-file correction claim from exact rejected final 51bd416b under ready digest 48210c4c, claim b66b8fdf, and lease 39ce3c68, then stop for C00 reconciliation. No external effect is authorized.
+next_action: P11 and P23 may implement only their enumerated bounded semantic corrections from reconciled claims 2fa5c8da and b341ce52 under disjoint leases. Publish superseding ready_for_review finals with expanded direct probes and effects 0/0/0. No external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -276,7 +277,7 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
+  current_control_parent_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
@@ -703,10 +704,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 331c7b45245b3b6232ec0432817533ee04051fb466604eb093724cf09cb0b000
-    control_lease: b7ea7d479e4bf2dffd27fc1408ef773664e233b546eb56c765b1119a75b93d5f
-    task_registry: a325ac394ee073918ead1885d94df1146733b0c90be0d00ba478aa5937030017
-    ready_queue: 60745e55780f825e402e671b01be284e03cc0f2171cc064d9cd2b25ffe95315d
+    control_state: a9b8d5cf7d8615ebba1416c84adf4621f92a0346d6c5544158c020bff9843fcc
+    control_lease: d50ae9b5cbc77c0dac524cd4cc0ef52766501fc144dd53d8277cc94d59225157
+    task_registry: 05016424e234f9220806678ec1ac66b418a3489cde796827e507b5f134f0e62e
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -833,6 +834,7 @@ verification:
   - P23 correction claim b341ce52 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, and zero effects: passed
   - P11 rejected final 51bd416b ancestry, exact seventeen-path scope, 8 focused tests, typecheck, and direct navigation-reauthorization, provider-environment, operations-data, canonical-navigation, content-metadata, sensitive-result, recent-window, cache-after-signout, timezone-label, and accessibility probes: failed semantic admission and bounded correction claim authorized
   - canonical P11 correction ready-entry digest 48210c4c against exact acquisition a6a9c53b, rejected head 51bd416b, fresh claim b66b8fdf, one disjoint ADMIN_OPERATIONS_UI lease, and zero effect locks: passed
+  - P11 correction claim 2fa5c8da sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, and zero effects: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
