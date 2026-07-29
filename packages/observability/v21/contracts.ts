@@ -1,4 +1,4 @@
-export const OPERATIONS_CONTRACT_VERSION = '1.0.0' as const;
+export const OPERATIONS_CONTRACT_VERSION = '2.0.0' as const;
 
 export const RUNTIME_TIERS = ['isolated_staging', 'production'] as const;
 export type RuntimeTier = (typeof RUNTIME_TIERS)[number];
@@ -31,8 +31,60 @@ export const OPERATIONS_SERVICE_ROLES = [
 ] as const;
 export type OperationsServiceRole = (typeof OPERATIONS_SERVICE_ROLES)[number];
 
+export const OPERATIONS_PROVIDER_KEYS = [
+  'resend',
+  'ghl',
+  'stripe',
+  'zoom',
+  'vimeo',
+  'drive',
+  'telegram',
+] as const;
+export type OperationsProviderKey = (typeof OPERATIONS_PROVIDER_KEYS)[number];
+
+export const QUEUE_CLASSES = [
+  'security_delivery',
+  'classroom_access',
+  'billing_access',
+  'parent_reminder',
+  'adult_crm_projection',
+  'content_processing',
+  'approved_marketing',
+] as const;
+export type QueueClass = (typeof QUEUE_CLASSES)[number];
+
+export interface RuntimeExpectation {
+  runtime_id: string;
+  service_role: OperationsServiceRole;
+  artifact_digest: string;
+}
+
+export interface QueueExpectation {
+  queue: string;
+  queue_class: QueueClass;
+}
+
+export interface WorkerExpectation {
+  worker_type: string;
+}
+
+export interface ProviderExpectation {
+  provider: OperationsProviderKey;
+  required: boolean;
+}
+
+export interface OperationsInventoryContract {
+  runtime_expectations: readonly RuntimeExpectation[];
+  required_queues: readonly QueueExpectation[];
+  required_workers: readonly WorkerExpectation[];
+  providers: readonly ProviderExpectation[];
+  maximum_observation_age_ms: number;
+  migration_inventory_required: boolean;
+}
+
 export interface RuntimeIdentity {
   schema_version: typeof OPERATIONS_CONTRACT_VERSION;
+  runtime_id: string;
   service_role: OperationsServiceRole;
   release: string;
   repository_sha: string;
@@ -51,8 +103,6 @@ export interface CandidateIdentity {
   repository_sha: string;
   application_source_sha: string;
   release: string;
-  web_artifact_digest: string;
-  worker_artifact_digest: string;
   configuration_digest: string;
   migration_inventory_digest: string;
   provider_registry_digest: string;
@@ -61,18 +111,8 @@ export interface CandidateIdentity {
   acceptance_contract_digest: string;
   runtime_tier: RuntimeTier;
   verification_environment_id: VerificationEnvironmentId;
+  operations_inventory: OperationsInventoryContract;
 }
-
-export const OPERATIONS_PROVIDER_KEYS = [
-  'resend',
-  'ghl',
-  'stripe',
-  'zoom',
-  'vimeo',
-  'drive',
-  'telegram',
-] as const;
-export type OperationsProviderKey = (typeof OPERATIONS_PROVIDER_KEYS)[number];
 
 export type OperationsSeverity = 'ok' | 'warning' | 'sev2' | 'sev1';
 
@@ -85,30 +125,24 @@ export interface OperationsIssue {
   safe_context: Readonly<Record<string, string | number | boolean | null>>;
 }
 
+export interface ObservationEvidence {
+  observed_at: string;
+  evidence_qualified: boolean;
+}
+
 export interface MigrationLedgerEntry {
   ordinal: number;
   name: string;
   sha256: string;
 }
 
-export interface MigrationHealthObservation {
+export interface MigrationHealthObservation extends ObservationEvidence {
   expected: readonly MigrationLedgerEntry[];
   applied: readonly MigrationLedgerEntry[];
   read_only_verification_passed: boolean;
 }
 
-export const QUEUE_CLASSES = [
-  'security_delivery',
-  'classroom_access',
-  'billing_access',
-  'parent_reminder',
-  'adult_crm_projection',
-  'content_processing',
-  'approved_marketing',
-] as const;
-export type QueueClass = (typeof QUEUE_CLASSES)[number];
-
-export interface QueueHealthObservation {
+export interface QueueHealthObservation extends ObservationEvidence {
   queue: string;
   queue_class: QueueClass;
   depth: number;
@@ -122,14 +156,14 @@ export interface QueueHealthObservation {
   duplicate_effect_risk: boolean;
 }
 
-export interface WorkerHealthObservation {
+export interface WorkerHealthObservation extends ObservationEvidence {
   worker_type: string;
   heartbeat_age_ms: number;
   source_agrees_with_candidate: boolean;
   configuration_agrees_with_candidate: boolean;
 }
 
-export interface ProviderHealthObservation {
+export interface ProviderHealthObservation extends ObservationEvidence {
   provider: OperationsProviderKey;
   required: boolean;
   state: 'ready' | 'degraded' | 'unavailable' | 'not_configured';
@@ -138,7 +172,7 @@ export interface ProviderHealthObservation {
   safe_account_ref: string | null;
 }
 
-export interface DatabaseHealthObservation {
+export interface DatabaseHealthObservation extends ObservationEvidence {
   available: boolean;
   consecutive_failed_minute_probes: number;
   latency_ms: number | null;
@@ -169,6 +203,7 @@ export interface OperationsHealthSnapshot {
   verification_environment_id: VerificationEnvironmentId;
   runtime_agreement: boolean;
   migration_drift: boolean;
+  evidence_ready: boolean;
   database: DatabaseHealthObservation;
   queues: readonly QueueHealthObservation[];
   workers: readonly WorkerHealthObservation[];

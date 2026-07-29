@@ -1,15 +1,18 @@
 import {
-  assertCandidateIdentity,
-  assertRuntimeIdentity,
+  assertRuntimeMatchesCandidate,
+  buildOperationsHealthSnapshot,
+  isSafeOperationsIdentifier,
   OperationsIdentityError,
-  type CandidateIdentity,
+  type OperationsHealthInput,
+  type OperationsHealthSnapshot,
   type RuntimeIdentity,
 } from '../../../../packages/observability/v21/index.ts';
 
 export interface OperationsHeartbeat {
-  schema_version: '1.0.0';
+  schema_version: '2.0.0';
   worker_type: string;
   heartbeat_at: string;
+  health_observed_at: string;
   state: 'ready' | 'degraded';
   readiness_codes: readonly string[];
   candidate_id: string;
@@ -29,79 +32,74 @@ export interface OperationsHeartbeatPublisher {
 }
 
 export async function publishOperationsHeartbeat(input: {
-  candidate: CandidateIdentity;
-  runtime: RuntimeIdentity;
+  health_input: OperationsHealthInput;
+  runtime_id: string;
   worker_type: string;
-  state: OperationsHeartbeat['state'];
-  readiness_codes?: readonly string[];
   publisher: OperationsHeartbeatPublisher;
   now?: () => Date;
 }): Promise<OperationsHeartbeat> {
-  assertCandidateIdentity(input.candidate);
-  assertRuntimeIdentity(input.runtime);
-  if (input.runtime.service_role !== 'worker') {
+  const snapshot = buildOperationsHealthSnapshot(input.health_input);
+  const runtime = exactWorkerRuntime(input.health_input, input.runtime_id);
+  assertRuntimeMatchesCandidate(runtime, input.health_input.candidate);
+  if (runtime.service_role !== 'worker') {
     throw new OperationsIdentityError(
       'heartbeat_role_invalid',
       'Only a worker runtime can publish a worker heartbeat.',
     );
   }
-  assertWorkerCandidateAgreement(input.runtime, input.candidate);
+  if (
+    !isSafeOperationsIdentifier(input.worker_type) ||
+    !input.health_input.candidate.operations_inventory.required_workers.some(
+      (entry) => entry.worker_type === input.worker_type,
+    ) ||
+    !snapshot.workers.some((worker) => worker.worker_type === input.worker_type)
+  ) {
+    throw new OperationsIdentityError(
+      'heartbeat_worker_type_invalid',
+      'Worker heartbeat type is not in the exact validated health inventory.',
+    );
+  }
+  const readinessCodes = deriveReadinessCodes(snapshot);
   const heartbeat: OperationsHeartbeat = {
-    schema_version: '1.0.0',
-    worker_type: safeWorkerType(input.worker_type),
+    schema_version: '2.0.0',
+    worker_type: input.worker_type,
     heartbeat_at: (input.now?.() ?? new Date()).toISOString(),
-    state: input.state,
-    readiness_codes: (input.readiness_codes ?? []).map(safeReadinessCode),
-    candidate_id: input.candidate.candidate_id,
-    release: input.runtime.release,
-    repository_sha: input.runtime.repository_sha,
-    application_source_sha: input.runtime.application_source_sha,
-    artifact_digest: input.runtime.artifact_digest,
-    configuration_digest: input.runtime.configuration_digest,
-    migration_inventory_digest: input.runtime.migration_inventory_digest,
-    provider_registry_digest: input.runtime.provider_registry_digest,
-    runtime_tier: input.runtime.runtime_tier,
-    verification_environment_id: input.runtime.verification_environment_id,
+    health_observed_at: snapshot.generated_at,
+    state: snapshot.status === 'ok' && snapshot.evidence_ready ? 'ready' : 'degraded',
+    readiness_codes: readinessCodes,
+    candidate_id: input.health_input.candidate.candidate_id,
+    release: runtime.release,
+    repository_sha: runtime.repository_sha,
+    application_source_sha: runtime.application_source_sha,
+    artifact_digest: runtime.artifact_digest,
+    configuration_digest: runtime.configuration_digest,
+    migration_inventory_digest: runtime.migration_inventory_digest,
+    provider_registry_digest: runtime.provider_registry_digest,
+    runtime_tier: runtime.runtime_tier,
+    verification_environment_id: runtime.verification_environment_id,
   };
   await input.publisher.publish(heartbeat);
   return heartbeat;
 }
 
-function assertWorkerCandidateAgreement(
-  runtime: RuntimeIdentity,
-  candidate: CandidateIdentity,
-): void {
-  const agrees =
-    runtime.repository_sha === candidate.repository_sha &&
-    runtime.application_source_sha === candidate.application_source_sha &&
-    runtime.release === candidate.release &&
-    runtime.artifact_digest === candidate.worker_artifact_digest &&
-    runtime.configuration_digest === candidate.configuration_digest &&
-    runtime.migration_inventory_digest === candidate.migration_inventory_digest &&
-    runtime.provider_registry_digest === candidate.provider_registry_digest &&
-    runtime.runtime_tier === candidate.runtime_tier &&
-    runtime.verification_environment_id === candidate.verification_environment_id;
-  if (!agrees) {
+function exactWorkerRuntime(
+  healthInput: OperationsHealthInput,
+  runtimeId: string,
+): RuntimeIdentity {
+  if (!isSafeOperationsIdentifier(runtimeId)) {
+    throw new OperationsIdentityError('heartbeat_runtime_id_invalid', 'Runtime ID is invalid.');
+  }
+  const matches = healthInput.runtimes.filter((runtime) => runtime.runtime_id === runtimeId);
+  if (matches.length !== 1) {
     throw new OperationsIdentityError(
-      'worker_candidate_mismatch',
-      'Worker runtime does not match the exact candidate.',
+      'heartbeat_runtime_cardinality_invalid',
+      'Heartbeat runtime must occur exactly once.',
     );
   }
+  return matches[0]!;
 }
 
-function safeWorkerType(value: string): string {
-  if (!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(value)) {
-    throw new OperationsIdentityError('worker_type_invalid', 'Worker type is invalid.');
-  }
-  return value;
-}
-
-function safeReadinessCode(value: string): string {
-  if (!/^[a-z0-9][a-z0-9_.:-]{0,119}$/.test(value)) {
-    throw new OperationsIdentityError(
-      'readiness_code_invalid',
-      'Worker readiness code is invalid.',
-    );
-  }
-  return value;
+function deriveReadinessCodes(snapshot: OperationsHealthSnapshot): readonly string[] {
+  if (snapshot.status === 'ok' && snapshot.evidence_ready) return ['operations.ready'];
+  return [...new Set(snapshot.issues.map((issue) => issue.code))].sort();
 }

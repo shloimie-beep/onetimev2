@@ -6,7 +6,11 @@ import {
   healthyInput,
   runtimeIdentities,
 } from '../../../../../packages/observability/v21/test-fixtures.ts';
-import { createOperationsDiagnosticsRouter } from './router.ts';
+import {
+  createOperationsDiagnosticsRouter,
+  type OperationsAdminAuthorization,
+  type OperationsDiagnosticsPorts,
+} from './router.ts';
 
 let server: Server | null = null;
 
@@ -15,56 +19,157 @@ afterEach(async () => {
   server = null;
 });
 
-describe('P33 protected operations diagnostics', () => {
-  it('conceals the route from an unauthorized request', async () => {
+describe('P33 exact Admin operations authorization', () => {
+  it.each([
+    ['anonymous', { authorized: false }],
+    [
+      'Parent',
+      {
+        authorized: true,
+        principal: { ...adminPrincipal(), role: 'parent' },
+      },
+    ],
+    [
+      'Student',
+      {
+        authorized: true,
+        principal: { ...adminPrincipal(), role: 'student' },
+      },
+    ],
+    [
+      'forged role',
+      {
+        authorized: true,
+        principal: { ...adminPrincipal(), source: 'client_assertion' },
+      },
+    ],
+    [
+      'stale Admin',
+      {
+        authorized: true,
+        principal: { ...adminPrincipal(), current: false },
+      },
+    ],
+  ])('conceals the route from %s without invoking observers', async (_name, authorization) => {
     const readRuntimes = vi.fn(async () => runtimeIdentities());
+    const readHealthObservations = vi.fn(async () => observations());
     const response = await request(
       createOperationsDiagnosticsRouter({
-        authorize: () => false,
-        candidate: candidateIdentity(),
+        ...basePorts(),
+        authorizeAdmin: async () => authorization as OperationsAdminAuthorization,
         readRuntimes,
-        readHealthObservations: async () => observations(),
+        readHealthObservations,
       }),
       '/runtime-identity',
     );
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({
       success: false,
-      code: 'NOT_FOUND',
+      code: 'not_found',
       message: 'Resource was not found.',
     });
     expect(response.headers.get('cache-control')).toBe('private, no-store');
     expect(readRuntimes).not.toHaveBeenCalled();
+    expect(readHealthObservations).not.toHaveBeenCalled();
   });
 
-  it('reports protected payload leakage as Sev1 without returning the material', async () => {
+  it('allows only a current server-session Admin principal', async () => {
+    const response = await request(
+      createOperationsDiagnosticsRouter(basePorts()),
+      '/runtime-identity',
+    );
+    expect(response.status).toBe(200);
+    expect((await response.json()).agreement.ok).toBe(true);
+  });
+});
+
+describe('P33 protected diagnostics readiness and exact-body leakage gate', () => {
+  it('returns 503 when a required observation is missing', async () => {
+    const input = healthyInput();
     const response = await request(
       createOperationsDiagnosticsRouter({
-        authorize: () => true,
-        candidate: candidateIdentity(),
-        readRuntimes: async () => runtimeIdentities(),
+        ...basePorts(),
         readHealthObservations: async () => ({
           ...observations(),
-          providers: observations().providers.map((provider, index) =>
-            index === 0
-              ? { ...provider, safe_account_ref: 'private-parent@example.test' }
-              : provider,
-          ),
+          queues: input.queues.slice(1),
         }),
-        readDiagnosticPayloads: async () => [
-          { authorization: 'Bearer secret-value-not-for-output' },
-        ],
-        now: () => new Date('2026-07-29T01:00:00.000Z'),
       }),
       '/health',
     );
-    const body = JSON.stringify(await response.json());
+    const body = await response.json();
     expect(response.status).toBe(503);
-    expect(body).toContain('operational_leakage_secret_field');
-    expect(body).not.toContain('secret-value-not-for-output');
-    expect(body).not.toContain('private-parent@example.test');
+    expect(body.status).toBe('sev1');
+    expect(body.evidence_ready).toBe(false);
+    expect(JSON.stringify(body)).toContain('queue_observation_missing');
+  });
+
+  it.each([
+    [
+      '/runtime-identity',
+      'private-runtime@example.test',
+      (ports: OperationsDiagnosticsPorts) => ({
+        ...ports,
+        candidate: { ...ports.candidate, candidate_id: 'private-runtime@example.test' },
+      }),
+    ],
+    [
+      '/health',
+      'private-health-literal',
+      (ports: OperationsDiagnosticsPorts) => ({
+        ...ports,
+        readDiagnosticPayloads: async () => [{ authorization: 'Basic private-health-literal' }],
+      }),
+    ],
+    [
+      '/alerts',
+      'private-alert-literal',
+      (ports: OperationsDiagnosticsPorts) => ({
+        ...ports,
+        readDiagnosticPayloads: async () => [
+          {
+            safe_context: {
+              message: 'token=private-alert-literal',
+            },
+          },
+        ],
+      }),
+    ],
+  ])('emits only a fixed safe 503 for injection on %s', async (path, literal, inject) => {
+    const response = await request(createOperationsDiagnosticsRouter(inject(basePorts())), path);
+    const body = await response.json();
+    const serialized = JSON.stringify(body);
+    expect(response.status).toBe(503);
+    expect(body).toEqual({
+      schema_version: '2.0.0',
+      success: false,
+      code: 'ops_diagnostic_safety_block',
+      message: 'Operational response was blocked.',
+    });
+    expect(serialized).not.toContain(literal);
   });
 });
+
+function basePorts(): OperationsDiagnosticsPorts {
+  return {
+    authorizeAdmin: async () => ({ authorized: true, principal: adminPrincipal() }),
+    candidate: candidateIdentity(),
+    readRuntimes: async () => runtimeIdentities(),
+    readHealthObservations: async () => observations(),
+    now: () => new Date(healthyInput().generated_at),
+  };
+}
+
+function adminPrincipal() {
+  return {
+    source: 'server_session' as const,
+    role: 'admin' as const,
+    current: true as const,
+    principal_id: 'admin-shloimie',
+    account_key: 'one-time',
+    product_key: 'mishnayos',
+    session_id: 'session-current',
+  };
+}
 
 function observations() {
   const { database, migrations, queues, workers, providers } = healthyInput();

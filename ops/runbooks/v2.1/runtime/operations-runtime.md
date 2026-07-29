@@ -8,10 +8,13 @@ production write.
 
 ## Startup identity gate
 
-Every web and worker process must publish schema `1.0.0` identity containing the
-repository SHA, immutable application-source SHA, role-specific artifact digest,
-configuration digest, migration-inventory digest, provider-registry digest,
-release, runtime tier, and verification environment.
+Every declared process must publish schema `2.0.0` identity containing its exact
+candidate `runtime_id`, role, repository SHA, immutable application-source SHA,
+role-specific artifact digest, configuration digest, migration-inventory digest,
+provider-registry digest, release, runtime tier, and verification environment.
+The candidate declares the complete runtime, queue, worker, and provider
+inventory plus the maximum evidence age. Missing, duplicate, extra, malformed,
+stale, or unqualified observations fail readiness.
 
 The only valid environment mappings are:
 
@@ -31,8 +34,9 @@ is Sev1. `production_read_only` never authorizes mutation.
 
 ## Protected diagnostics
 
-Mount `createOperationsDiagnosticsRouter` only below an Admin/Ops authorization
-boundary:
+Mount `createOperationsDiagnosticsRouter` only with `authorizeAdmin` backed by
+the current server session. It must return the typed exact Admin principal;
+anonymous, Parent, Student, stale, or client-asserted roles remain concealed:
 
 - `GET /runtime-identity` reports candidate, web, worker, and agreement.
 - `GET /health` reports database, migration, queue, worker, provider, and
@@ -40,15 +44,21 @@ boundary:
 - `GET /alerts` emits safe alerts to `ot_secure_operations` and
   `admin_operations`.
 
-Responses are private, no-store, noindex, and contain no raw exception. Do not
-expose these routes publicly or use diagnostics as an authorization source.
+Responses are private, no-store, noindex, and contain no raw exception. Each
+response is built from an explicit allowlist and the exact serialized body is
+scanned. Any unsafe source or final-body finding yields only the fixed safe 503
+envelope. Do not expose these routes publicly or use diagnostics as an
+authorization source.
 
 ## Health interpretation
 
-Migration history is an immutable forward-only inventory. An unknown or
-duplicate applied ordinal, a missing expected migration, name/checksum drift, or
-failed read-only readback is Sev1. Do not edit an applied migration; stop traffic
-and reconcile the exact release and inventory.
+Migration history is a nonempty immutable forward-only inventory when required
+by the candidate. Its canonical digest must equal the candidate
+`migration_inventory_digest`. Negative/duplicate ordinals, invalid names or
+SHA-256 values, an unknown applied ordinal, a missing expected migration,
+name/checksum drift, stale/unqualified evidence, or failed read-only readback is
+Sev1. Do not edit an applied migration; stop traffic and reconcile the exact
+release and inventory.
 
 Queue age warning/critical thresholds are:
 
@@ -82,7 +92,9 @@ release, tier, and verification environment. Secrets, authorization/cookies,
 bearer/JWT material, card data, database URLs, names, email, phone, Student
 private text, and raw Zoom/Vimeo/Drive URLs are prohibited.
 
-Any leakage finding is Sev1:
+Credential-shaped keys, Basic/Bearer/JWT values, secret hashes, signed query
+URLs, and secret-bearing `safe_context` or error text are leakage findings in
+addition to the protected material above. Any finding is Sev1:
 
 1. Stop distribution of the affected diagnostic and restrict access to the
    secure operations channel.

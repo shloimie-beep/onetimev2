@@ -1,16 +1,20 @@
 import {
   ENVIRONMENT_RUNTIME_TIERS,
   OPERATIONS_CONTRACT_VERSION,
+  OPERATIONS_PROVIDER_KEYS,
   OPERATIONS_SERVICE_ROLES,
+  QUEUE_CLASSES,
   RUNTIME_TIERS,
   VERIFICATION_ENVIRONMENTS,
   type CandidateIdentity,
   type OperationsIssue,
+  type RuntimeExpectation,
   type RuntimeIdentity,
 } from './contracts.ts';
 
 const SHA256 = /^[a-f0-9]{64}$/;
 const GIT_SHA = /^[a-f0-9]{40}$/;
+const SAFE_IDENTIFIER = /^[a-z0-9][a-z0-9._:-]{0,159}$/;
 
 export class OperationsIdentityError extends Error {
   constructor(
@@ -22,10 +26,15 @@ export class OperationsIdentityError extends Error {
   }
 }
 
+export function isSafeOperationsIdentifier(value: string): boolean {
+  return SAFE_IDENTIFIER.test(value);
+}
+
 export function assertRuntimeIdentity(identity: RuntimeIdentity): void {
   if (identity.schema_version !== OPERATIONS_CONTRACT_VERSION) {
     throw new OperationsIdentityError('runtime_schema_unknown', 'Unknown runtime schema version.');
   }
+  assertSafeIdentifier(identity.runtime_id, 'runtime_id_invalid');
   if (!OPERATIONS_SERVICE_ROLES.includes(identity.service_role)) {
     throw new OperationsIdentityError('runtime_service_role_unknown', 'Unknown service role.');
   }
@@ -54,9 +63,7 @@ export function assertRuntimeIdentity(identity: RuntimeIdentity): void {
   })) {
     assertSha256(value, `${name}_invalid`);
   }
-  if (!identity.release.trim() || identity.release.length > 120) {
-    throw new OperationsIdentityError('release_invalid', 'Release identity is absent or invalid.');
-  }
+  assertRelease(identity.release, 'release_invalid');
 }
 
 export function assertCandidateIdentity(candidate: CandidateIdentity): void {
@@ -66,17 +73,11 @@ export function assertCandidateIdentity(candidate: CandidateIdentity): void {
       'Unknown candidate schema version.',
     );
   }
-  if (!candidate.candidate_id.trim() || candidate.candidate_id.length > 160) {
-    throw new OperationsIdentityError('candidate_id_invalid', 'Candidate ID is absent or invalid.');
-  }
+  assertSafeIdentifier(candidate.candidate_id, 'candidate_id_invalid');
   assertGitSha(candidate.repository_sha, 'candidate_repository_sha_invalid');
   assertGitSha(candidate.application_source_sha, 'candidate_application_source_sha_invalid');
-  if (!candidate.release.trim() || candidate.release.length > 120) {
-    throw new OperationsIdentityError('candidate_release_invalid', 'Candidate release is invalid.');
-  }
+  assertRelease(candidate.release, 'candidate_release_invalid');
   for (const [name, value] of Object.entries({
-    web_artifact_digest: candidate.web_artifact_digest,
-    worker_artifact_digest: candidate.worker_artifact_digest,
     configuration_digest: candidate.configuration_digest,
     migration_inventory_digest: candidate.migration_inventory_digest,
     provider_registry_digest: candidate.provider_registry_digest,
@@ -96,96 +97,250 @@ export function assertCandidateIdentity(candidate: CandidateIdentity): void {
       'Candidate runtime tier and verification environment do not match.',
     );
   }
+  assertOperationsInventory(candidate);
 }
 
 export function evaluateRuntimeAgreement(input: {
   candidate: CandidateIdentity;
   runtimes: readonly RuntimeIdentity[];
 }): { ok: boolean; issues: OperationsIssue[] } {
-  const issues: OperationsIssue[] = [];
   try {
     assertCandidateIdentity(input.candidate);
   } catch (error) {
-    issues.push(identityIssue(error));
-    return { ok: false, issues };
+    return { ok: false, issues: [identityIssue(error, 'candidate')] };
   }
 
-  const web = input.runtimes.filter((runtime) => runtime.service_role === 'web');
-  const worker = input.runtimes.filter((runtime) => runtime.service_role === 'worker');
-  if (web.length !== 1 || worker.length !== 1) {
-    issues.push({
-      code: 'web_worker_identity_cardinality',
-      category: 'runtime_identity',
-      severity: 'sev1',
-      summary: 'Exactly one web and one worker runtime identity are required.',
-      safe_context: { web_count: web.length, worker_count: worker.length },
-    });
-  }
+  const issues: OperationsIssue[] = [];
+  const expectations = new Map(
+    input.candidate.operations_inventory.runtime_expectations.map((entry) => [
+      entry.runtime_id,
+      entry,
+    ]),
+  );
+  const observed = new Set<string>();
 
   for (const runtime of input.runtimes) {
     try {
       assertRuntimeIdentity(runtime);
     } catch (error) {
-      issues.push(identityIssue(error, runtime.service_role));
+      issues.push(identityIssue(error, safeIdentifierOrFallback(runtime.runtime_id)));
       continue;
     }
-    const expectedArtifact =
-      runtime.service_role === 'web'
-        ? input.candidate.web_artifact_digest
-        : runtime.service_role === 'worker'
-          ? input.candidate.worker_artifact_digest
-          : runtime.artifact_digest;
-    const mismatches = [
-      runtime.repository_sha !== input.candidate.repository_sha && 'repository_sha',
-      runtime.application_source_sha !== input.candidate.application_source_sha &&
-        'application_source_sha',
-      runtime.release !== input.candidate.release && 'release',
-      runtime.artifact_digest !== expectedArtifact && 'artifact_digest',
-      runtime.configuration_digest !== input.candidate.configuration_digest &&
-        'configuration_digest',
-      runtime.migration_inventory_digest !== input.candidate.migration_inventory_digest &&
-        'migration_inventory_digest',
-      runtime.provider_registry_digest !== input.candidate.provider_registry_digest &&
-        'provider_registry_digest',
-      runtime.runtime_tier !== input.candidate.runtime_tier && 'runtime_tier',
-      runtime.verification_environment_id !== input.candidate.verification_environment_id &&
-        'verification_environment_id',
-    ].filter((value): value is string => Boolean(value));
-    if (mismatches.length > 0) {
+    if (observed.has(runtime.runtime_id)) {
+      issues.push(runtimeIssue('runtime_identity_duplicate', runtime.runtime_id));
+      continue;
+    }
+    observed.add(runtime.runtime_id);
+    const expected = expectations.get(runtime.runtime_id);
+    if (!expected) {
+      issues.push(runtimeIssue('runtime_identity_extra', runtime.runtime_id));
+      continue;
+    }
+    const mismatchCount = runtimeMismatchCount(runtime, expected, input.candidate);
+    if (mismatchCount > 0) {
       issues.push({
         code: 'runtime_candidate_mismatch',
         category: 'runtime_identity',
         severity: 'sev1',
-        summary: 'Runtime identity does not match the exact candidate.',
-        safe_context: {
-          service_role: runtime.service_role,
-          mismatch_count: mismatches.length,
-          mismatch_fields: mismatches.join(','),
-        },
+        summary: 'Runtime identity does not match the exact candidate expectation.',
+        safe_context: { runtime_id: runtime.runtime_id, mismatch_count: mismatchCount },
       });
+    }
+  }
+  for (const expected of expectations.values()) {
+    if (!observed.has(expected.runtime_id)) {
+      issues.push(runtimeIssue('runtime_identity_missing', expected.runtime_id));
     }
   }
   return { ok: issues.length === 0, issues };
 }
 
-function identityIssue(error: unknown, serviceRole?: string): OperationsIssue {
+export function assertRuntimeMatchesCandidate(
+  runtime: RuntimeIdentity,
+  candidate: CandidateIdentity,
+): void {
+  assertCandidateIdentity(candidate);
+  assertRuntimeIdentity(runtime);
+  const expected = candidate.operations_inventory.runtime_expectations.find(
+    (entry) => entry.runtime_id === runtime.runtime_id,
+  );
+  if (!expected || runtimeMismatchCount(runtime, expected, candidate) > 0) {
+    throw new OperationsIdentityError(
+      'runtime_candidate_mismatch',
+      'Runtime does not match the exact candidate expectation.',
+    );
+  }
+}
+
+function assertOperationsInventory(candidate: CandidateIdentity): void {
+  const inventory = candidate.operations_inventory;
+  if (!inventory || typeof inventory !== 'object') {
+    throw new OperationsIdentityError(
+      'operations_inventory_missing',
+      'Operations inventory is required.',
+    );
+  }
+  assertPositiveInteger(inventory.maximum_observation_age_ms, 'maximum_observation_age_invalid');
+  if (inventory.maximum_observation_age_ms > 15 * 60_000) {
+    throw new OperationsIdentityError(
+      'maximum_observation_age_invalid',
+      'Maximum observation age exceeds the allowed bound.',
+    );
+  }
+  if (typeof inventory.migration_inventory_required !== 'boolean') {
+    throw new OperationsIdentityError(
+      'migration_inventory_policy_invalid',
+      'Migration inventory policy is invalid.',
+    );
+  }
+
+  assertNonemptyUnique(
+    inventory.runtime_expectations,
+    (entry) => entry.runtime_id,
+    'runtime_expectations',
+  );
+  let webCount = 0;
+  let workerCount = 0;
+  for (const entry of inventory.runtime_expectations) {
+    assertSafeIdentifier(entry.runtime_id, 'runtime_expectation_id_invalid');
+    if (!OPERATIONS_SERVICE_ROLES.includes(entry.service_role)) {
+      throw new OperationsIdentityError(
+        'runtime_expectation_role_invalid',
+        'Runtime expectation role is invalid.',
+      );
+    }
+    if (entry.service_role === 'web') webCount += 1;
+    if (entry.service_role === 'worker') workerCount += 1;
+    assertSha256(entry.artifact_digest, 'runtime_expectation_artifact_invalid');
+  }
+  if (webCount < 1 || workerCount < 1) {
+    throw new OperationsIdentityError(
+      'runtime_expectation_required_roles_missing',
+      'At least one web and one worker runtime expectation are required.',
+    );
+  }
+
+  assertNonemptyUnique(inventory.required_queues, (entry) => entry.queue, 'required_queues');
+  for (const entry of inventory.required_queues) {
+    assertSafeIdentifier(entry.queue, 'queue_expectation_id_invalid');
+    if (!QUEUE_CLASSES.includes(entry.queue_class)) {
+      throw new OperationsIdentityError(
+        'queue_expectation_class_invalid',
+        'Queue expectation class is invalid.',
+      );
+    }
+  }
+
+  assertNonemptyUnique(
+    inventory.required_workers,
+    (entry) => entry.worker_type,
+    'required_workers',
+  );
+  for (const entry of inventory.required_workers) {
+    assertSafeIdentifier(entry.worker_type, 'worker_expectation_id_invalid');
+  }
+
+  assertNonemptyUnique(inventory.providers, (entry) => entry.provider, 'providers');
+  const configuredProviders = [...inventory.providers.map((entry) => entry.provider)].sort();
+  const exactProviders = [...OPERATIONS_PROVIDER_KEYS].sort();
+  if (configuredProviders.join(',') !== exactProviders.join(',')) {
+    throw new OperationsIdentityError(
+      'provider_inventory_incomplete',
+      'Provider inventory must enumerate the exact supported providers.',
+    );
+  }
+  for (const entry of inventory.providers) {
+    if (!OPERATIONS_PROVIDER_KEYS.includes(entry.provider) || typeof entry.required !== 'boolean') {
+      throw new OperationsIdentityError(
+        'provider_expectation_invalid',
+        'Provider expectation is invalid.',
+      );
+    }
+  }
+}
+
+function runtimeMismatchCount(
+  runtime: RuntimeIdentity,
+  expected: RuntimeExpectation,
+  candidate: CandidateIdentity,
+): number {
+  return [
+    runtime.service_role !== expected.service_role,
+    runtime.artifact_digest !== expected.artifact_digest,
+    runtime.repository_sha !== candidate.repository_sha,
+    runtime.application_source_sha !== candidate.application_source_sha,
+    runtime.release !== candidate.release,
+    runtime.configuration_digest !== candidate.configuration_digest,
+    runtime.migration_inventory_digest !== candidate.migration_inventory_digest,
+    runtime.provider_registry_digest !== candidate.provider_registry_digest,
+    runtime.runtime_tier !== candidate.runtime_tier,
+    runtime.verification_environment_id !== candidate.verification_environment_id,
+  ].filter(Boolean).length;
+}
+
+function identityIssue(error: unknown, runtimeId: string): OperationsIssue {
   return {
     code: error instanceof OperationsIdentityError ? error.code : 'runtime_identity_invalid',
     category: 'runtime_identity',
     severity: 'sev1',
-    summary: 'Runtime identity is missing, unknown, or invalid.',
-    safe_context: { service_role: serviceRole ?? 'candidate' },
+    summary: 'Runtime or candidate identity is missing, unknown, or invalid.',
+    safe_context: { runtime_id: runtimeId },
   };
 }
 
+function runtimeIssue(code: string, runtimeId: string): OperationsIssue {
+  return {
+    code,
+    category: 'runtime_identity',
+    severity: 'sev1',
+    summary: 'Runtime inventory does not match the exact candidate.',
+    safe_context: { runtime_id: runtimeId },
+  };
+}
+
+function assertNonemptyUnique<T>(
+  entries: readonly T[],
+  key: (entry: T) => string,
+  name: string,
+): void {
+  if (!Array.isArray(entries) || entries.length === 0) {
+    throw new OperationsIdentityError(`${name}_empty`, `${name} must be nonempty.`);
+  }
+  if (new Set(entries.map(key)).size !== entries.length) {
+    throw new OperationsIdentityError(`${name}_duplicate`, `${name} contains duplicates.`);
+  }
+}
+
+function assertSafeIdentifier(value: string, code: string): void {
+  if (typeof value !== 'string' || !isSafeOperationsIdentifier(value)) {
+    throw new OperationsIdentityError(code, 'Expected a safe operations identifier.');
+  }
+}
+
+function safeIdentifierOrFallback(value: unknown): string {
+  return typeof value === 'string' && isSafeOperationsIdentifier(value) ? value : 'invalid';
+}
+
+function assertPositiveInteger(value: number, code: string): void {
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw new OperationsIdentityError(code, 'Expected a positive integer.');
+  }
+}
+
+function assertRelease(value: string, code: string): void {
+  if (typeof value !== 'string' || !isSafeOperationsIdentifier(value) || value.length > 120) {
+    throw new OperationsIdentityError(code, 'Release identity is absent or invalid.');
+  }
+}
+
 function assertGitSha(value: string, code: string): void {
-  if (!GIT_SHA.test(value)) {
+  if (typeof value !== 'string' || !GIT_SHA.test(value)) {
     throw new OperationsIdentityError(code, 'Expected a lowercase 40-character Git SHA.');
   }
 }
 
 function assertSha256(value: string, code: string): void {
-  if (!SHA256.test(value)) {
+  if (typeof value !== 'string' || !SHA256.test(value)) {
     throw new OperationsIdentityError(code, 'Expected a lowercase SHA-256 digest.');
   }
 }
