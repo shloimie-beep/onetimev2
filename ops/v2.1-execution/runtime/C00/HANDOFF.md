@@ -574,3 +574,17 @@ C00 issued only claim-stage corrections from exact finals: P10 claim
 `639b020e`, both based on acquisition `c7434209`, each under a fresh disjoint
 one-hour writer lease and zero external-effect authority. Each worker must
 publish exactly its three runtime files and stop before product repair.
+
+The claim checkpoints are exact and reconciled. P10 `0b34fdf6` has sole
+parent `92212a7b`; P33 `a956c9dd` has sole parent `122608b5`. Each changes
+only its three task-local runtime files, reproduces its canonical ready digest,
+binds containing controller `b0aeb1d1`, preserves the rejected implementation
+lineage, and records zero effects. C00 consumed both under acquisition
+`34d3cea8`.
+
+P10 may now repair only the audited Admin-directory invariants and negative
+coverage. P33 may now repair only the audited health, leakage, migration,
+runtime-agreement, worker-readiness, exact Admin-authorization, and active
+steward-digest defects. Both must refresh all changed material digests and
+publish new ready_for_review finals with released leases. No prior interface is
+admitted or queued.

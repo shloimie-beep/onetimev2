@@ -284,3 +284,12 @@ Both entries are based on exact acquisition
 `2026-07-29T02:39:10Z`, and authorize only three task-local runtime files for
 the atomic claim. Reconcile both exact heads before any product correction.
 P08 continues independently from its already reconciled correction claim.
+
+P10 claim head `0b34fdf6b43cc3cdd7b003234a89f119b7e4a5c7` and P33 claim
+head `a956c9dd1c9d072a54e640fc004684f2e037c033` are independently verified
+and reconciled under acquisition
+`34d3cea8cf05d2de7b2d9c74eb0fc04f61274df4`. Resume both from those exact
+heads under their unchanged leases for only the recorded audit repairs and
+negative regression tests. Refresh every changed artifact/interface/state and
+steward-request digest, release each lease, and publish new ready_for_review
+finals. Keep effects at zero; do not integrate either prior rejected interface.
