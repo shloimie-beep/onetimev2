@@ -22,16 +22,16 @@ The interface contract is stable at implementation head `a90baae8cf69d6823af6d74
 
 ## Remaining work
 
-Notify C00/I36 of the interface checkpoint, then complete focused responsive/accessibility verification and final ready_for_review checkpoint.
+C00/I36 must validate and merge the published interface checkpoint before authorizing downstream consumers. Any future worker needs a C00-issued resume lease and should address review/integration feedback only.
 
 ## Exact next action
 
-Notify C00/I36 of the pushed F07 interface checkpoint, then complete final task-owned verification and ready_for_review persistence.
+Await C00/I36 interface integration; after a new C00-issued lease, address only review or integration feedback.
 
 ## Coverage
 
-- Requirements: all nine assigned requirements are in progress through the shared foundation contract.
-- Acceptance cases: all nine assigned cases are in progress; candidate-bound browser evidence remains downstream.
+- Requirements: all nine assigned requirements are implemented through the shared foundation contract.
+- Acceptance cases: all nine assigned cases are implementation-ready; candidate-bound browser evidence is intentionally deferred to the allowed verification lanes.
 
 ## Changed files and migrations
 
@@ -44,6 +44,10 @@ Added the versioned F07 package exports and scoped v2.1 style contract plus F07 
 - `npm run typecheck`: passed after `npm ci` in the isolated clone.
 - `npx vitest run packages/brand-system/src/v21.contract.test.tsx`: passed (3 tests).
 - Focused F07 CSS governance smoke passed; `npm run brand:check` now reports only the pre-existing out-of-scope raw color in `scripts/ops/validate-ot-launch-governance.ts`.
+
+## Final task status
+
+`ready_for_review`. Interface metadata head: `47a2bb6b76225951e0599683499a95f4dc9881be`; implementation head: `a90baae8cf69d6823af6d741161fe0e9e7441321`.
 
 ## External effects
 
