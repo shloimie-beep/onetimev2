@@ -15,12 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 62d535edb54710ac4f9cb035c2affb4a0845a95d
+controller_authorization_sha: a6b48636d225609222bf96f90cf8a76da023380c
 next_action: >-
-  I36 may atomically claim only the first Wave B micro-batch from integration head 09a248c9 under claim b1773fcc
-  and RELEASE_INTEGRATOR lease b2a36214, recording exact F06, F07, and P16 merge items and then stopping for C00
-  reconciliation before any merge. F06, F07, and P16 source tails are three runtime files each; all exact source
-  heads, fixed merge bases, digests, and merge-after dependencies including full P15 head c96b8c55 are verified.
-  P35 remains outside this micro-batch and is not yet authorized. No provider inspection, Telegram action, steward
-  application, external effect, or source merge is authorized before claim reconciliation.
+  I36 claim fd791eea is reconciled under unchanged claim b1773fcc and RELEASE_INTEGRATOR lease b2a36214. I36 may now
+  merge only queued F06, then F07, then P16 with exact source parents, fixed bases, three-file allowlists, digests,
+  and merge-after ancestry including P15 c96b8c55; run proportionate verification, update only the three I36
+  runtime files, release the lease, and stop for C00 audit. P35 remains outside this micro-batch and is not yet
+  authorized. No provider inspection, Telegram action, steward application, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
