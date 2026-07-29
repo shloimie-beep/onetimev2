@@ -1,0 +1,95 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P13
+task_packet_digest: e672311fe628d4a425ccbdc22d1b5e886a23c9cb3370577004d2f937b9930599
+task_context_digest: 9c29ccf2ceefdb375c5ac16de99486de0fbed06f30aa150e1c48dd021894bf6c
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p13-parent-summary
+start_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
+dependency_heads:
+  P12: 4bc6f15c8beffb28dc845d976a62b9c4915a11dc
+  F07: 47a2bb6b76225951e0599683499a95f4dc9881be
+dependency_interface_bindings:
+  P12:
+    required_state: interface_ready_integrated
+    observed_integration_head_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
+    interface_source_head_sha: e5f59e707f9b3a12c9b64b30aaa23e638c2d816f
+    interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
+    interface_checkpoint_digest: ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
+    task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
+    task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
+  F07:
+    required_state: interface_ready_integrated
+    observed_integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: claimed
+phase: implementation
+claim_mode: create_new_branch
+claimed_by: codex-p13-worker-183a8dcb
+claim_time: '2026-07-29T05:26:21Z'
+claim_id: 183a8dcb-d283-4e3e-b49b-790ca35e5f70
+writer_slot: PARENT_SUMMARY_UI
+lease_id: cef8335b-8c6f-4111-9bc7-1f877c9cae15
+lease_issued_at: '2026-07-29T05:11:30Z'
+lease_expires_at: '2026-07-29T06:11:30Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T05:26:21Z'
+controller_authorization_sha: 86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8
+ready_entry_state_based_on_control_head_sha: f98ee8e79018e5875e9c2be3d5961954b3c5ce04
+ready_entry_payload_digest: 3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709
+phase_scope: P13_atomic_claim_only
+state_based_on_head_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
+last_implementation_commit_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
+completed_steps:
+  - Verified exact released control head 86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8,
+    state-based acquisition/renewal f98ee8e79018e5875e9c2be3d5961954b3c5ce04, and integration start
+    44fd536381e7af8885f31247d6bf91dd6266b195.
+  - Verified the registered local and remote P13 branch was absent before creation.
+  - Recomputed canonical ready-entry digest 3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709.
+  - Reproduced the exact P13 task and context digests.
+  - Verified the P12 and F07 interface checkpoint bindings, every exported artifact
+    SHA-256, both contract digests, implementation-to-interface ancestry, and
+    interface-to-authorized-integration ancestry.
+  - Created codex/v21-p13-parent-summary from the exact authorized integration start.
+  - Seeded this atomic claim in exactly the three P13 runtime files without product,
+    source, steward, provider, or external-effect work.
+remaining_steps:
+  - Commit and normally publish this exact three-file atomic claim.
+  - Report the exact pushed remote head to C00 and stop for reconciliation.
+next_action: Report the exact pushed P13 atomic-claim head to C00, then stop until explicitly resumed.
+requirements:
+  OTV2-PARENT-037: not_started
+  OTV2-PARENT-039: not_started
+  OTV2-PARENT-185: not_started
+acceptance_cases:
+  OTV2-PARENT-037-AC01: not_started
+  OTV2-PARENT-039-AC01: not_started
+  OTV2-PARENT-185-AC01: not_started
+changed_paths:
+  - ops/v2.1-execution/runtime/P13/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P13/HANDOFF.md
+  - ops/v2.1-execution/runtime/P13/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: git fetch, rev-parse, and branch absence checks
+      result: passed; exact released control, integration start, and absent local/remote P13 branch
+    - command: canonical P13 ready-entry payload digest recomputation
+      result: passed; 3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709
+    - command: raw Git blob P13 task and context SHA-256 reproduction
+      result: passed; exact recorded digests matched
+    - command: P12/F07 interface binding, artifact, contract, and ancestry verification
+      result: passed; 4 P12 and 5 F07 exports matched, both contracts reproduced, and both interfaces are integrated
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
