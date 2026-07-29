@@ -3,7 +3,7 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task F02 from its remote checkpoint.
+Reconcile the atomic F02 Migration Lease A claim checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-f02-schema-state-migrations
@@ -13,23 +13,22 @@ Task context: ops/v2.1-execution/contexts/F02-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/F02/HANDOFF.md
 
-Fetch remote refs. Derive the containing control commit from
-`origin/codex/v21-control`, read this task's exact registry and ready/resume
-entry from that remote ref, verify its expected branch head, canonical entry
-payload digest, the `ready` or `resume_ready` lease/claim appropriate to the
-registered claim mode, package/task/context/dependency digests, and reject a
-live foreign lease or non-fast-forward collision. Then check out the exact
-task branch, read task state and handoff before named work, and resume the
-recorded `next_action`. If digests match, do not restart completed work or
-globally re-audit the repository. Continue until `ready_for_review` or a
-permitted stop condition. Update state/handoff/this next prompt, checkpoint,
-commit, and push before returning.
+Fetch remote refs and verify the F02 branch is a sole-parent child of
+`e4673ff1c2e621e26ac93034be245b280c4da4fa` changing exactly:
 
-Exact next action: review and integrate the superseding F02 interface
-checkpoint whose implementation head is
-`191dac288ea1721bdc0252bd012060ca974d2242` and contract digest is
-`c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`.
-Refresh the control-plane migration allocation mirror to migration checksum
-`d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`.
-F02 is `ready_for_review`; do not resume implementation without a new exact
-C00 resume lease against the final remote head.
+- `ops/v2.1-execution/runtime/F02/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/F02/HANDOFF.md`
+- `ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md`
+
+Confirm containing control `7f6f3508e188dfa1334b39e3ff00904feab47a0b`,
+sole acquisition parent `296b7002922504b10aa88f5bf6e8c9163ed10ec7`,
+authorized integration `26cbebdf828ba9ff485961adb4f90c460c2dbaf9`,
+READY digest `c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501`,
+claim `dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54`, and shared lease
+`59450be9-031a-4db8-aec1-9a584ba04f2f`.
+
+This is an atomic-claim-only checkpoint. Confirm `next_available_ordinal: 2235`,
+zero `2235-2238` filename collisions, four exact opaque plan bindings, and
+effects `0/0/0`. Stop before reading requester content, editing
+`MIGRATION-ALLOCATIONS-PROPOSAL.yaml`, or authoring SQL. C00 must reconcile the
+exact claim head before any Lease A implementation begins.

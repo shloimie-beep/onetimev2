@@ -10,8 +10,8 @@ dependency_heads:
   C00:
     required_state: operational
     observed_state: operational
-    observed_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
-    control_state_digest: 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215
+    observed_control_head_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+    control_state_digest: 9ee314e12f90cefeaf9c12da5970cdb8c030347fdbc982c6eae692d7d1f62a17
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
   F01:
@@ -23,27 +23,78 @@ dependency_heads:
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
     task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
     task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
-status: ready_for_review
-phase: review
-claimed_by: codex-f02-worker-8d0e0d73
-claim_time: '2026-07-28T17:27:11Z'
-claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
-lease_expires_at: '2026-07-28T18:27:11Z'
-last_heartbeat_at: '2026-07-28T17:35:30Z'
-lease_released_at: '2026-07-28T17:35:30Z'
-controller_authorization_sha: d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
-ready_entry_parent_control_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
-ready_entry_payload_digest: b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d
+  I36:
+    required_state: P18_collision_correction_released
+    observed_state: P18_collision_correction_released
+    observed_integration_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+    state_handoff_digest: ca4b1d99813dddff0f81d551683dbd57d98c8d55c73514bb42c7bd88b0d5b475
+migration_lease_A_plan_bindings:
+  F04:
+    observed_task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    request_id: F04-migration-001
+    request_git_blob: 96be444f01974484a6ee2680bb1a4b12761c9085
+    request_digest: b42fe840f07e8069a01e178f8a14c793ef50297428955b104f0c9e5bb88edc93
+    digest_kind: raw_sha256
+  F05:
+    observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    request_id: F05-MIGRATION-001
+    request_git_blob: 4707ff364d0b727875adf36ea885f8a9ec2bb9d9
+    request_digest: 450d1e4a3ddedd04971f1f52a70e3fec5fbaefe526f9580c4682bc6fb4062a1d
+    digest_kind: raw_sha256
+  P15:
+    observed_task_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
+    request_id: P15-MIGRATION-001
+    request_git_blob: b4569eb4d3a7b03b573a634741d944d3751f3635
+    request_digest: 076e781f52302ae1447855c464c4001b028d610a188388b339a917d4fc477fdf
+    digest_kind: canonical_entry_sha256
+  F06:
+    observed_task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    request_id: F06-migration-001
+    request_git_blob: d155c2a04cac7e972c8c9515e0353142bcad3c96
+    request_digest: 06a329a0d1f08cdfd73f3f907a6aa9118fddf209a288e596a812ee0899b3861f
+    digest_kind: canonical_entry_sha256
+migration_lease_A_control:
+  authorized_integration_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+  prior_allocation_ordinal: 2234
+  prior_allocation_checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+  next_available_ordinal: 2235
+  never_allocate:
+    - 2231
+  planned_ordinals:
+    - 2235
+    - 2236
+    - 2237
+    - 2238
+  collision_count: 0
+  requester_content_read: false
+  allocation_proposal_read_or_edited: false
+  sql_authored: false
+status: claimed
+phase: migration_lease_A_2235_2238
+claimed_by: codex-f02-lease-a-dc6ba41d
+claim_time: '2026-07-29T17:45:27Z'
+claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
+writer_slot_lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
+lease_issued_at: '2026-07-29T17:36:43Z'
+lease_expires_at: '2026-07-29T18:51:43Z'
+last_heartbeat_at: '2026-07-29T17:45:27Z'
+lease_released_at: null
+controller_authorization_sha: 7f6f3508e188dfa1334b39e3ff00904feab47a0b
+ready_entry_parent_control_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+state_based_on_control_head_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+ready_entry_payload_digest: c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
-    lease_expires_at: '2026-07-28T18:27:11Z'
-    released_at: '2026-07-28T17:35:30Z'
+    lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
+    lease_issued_at: '2026-07-29T17:36:43Z'
+    lease_expires_at: '2026-07-29T18:51:43Z'
+    released_at: null
   SCHEMA_CONTRACT:
-    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
-    lease_expires_at: '2026-07-28T18:27:11Z'
-    released_at: '2026-07-28T17:35:30Z'
-state_based_on_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
+    lease_issued_at: '2026-07-29T17:36:43Z'
+    lease_expires_at: '2026-07-29T18:51:43Z'
+    released_at: null
+state_based_on_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
 last_implementation_commit_sha: 191dac288ea1721bdc0252bd012060ca974d2242
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -66,8 +117,17 @@ completed_steps:
   - ran migration 2234 in disposable PGlite PostgreSQL and proved concurrent stale-version exclusion, exact replay/conflict, reconciliation quarantine, committed-history fencing, monotonic counters, and append-only audit
   - hardened billing reconciliation so conclusive outcomes clear unknown_effect while unresolved dead-letter work retains quarantine
   - superseded the interface checkpoint and migration allocation checksum after committed-history fencing hardening
-remaining_steps: []
-next_action: C00/I36 should review and integrate the superseding interface checkpoint, refresh the approved migration allocation mirror to its exact digest/checksum, and then authorize downstream work.
+  - Verified exact containing control 7f6f3508e188dfa1334b39e3ff00904feab47a0b and sole acquisition parent 296b7002922504b10aa88f5bf6e8c9163ed10ec7.
+  - Independently recomputed canonical Lease A READY digest c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501.
+  - Verified exact F02 and integration heads, all entry-bound package/task/context/control/interface/state-handoff digests, and the four opaque plan references, Git blobs, and bound request digests.
+  - Verified migration control next_available_ordinal 2235, exact prior 2234 checksum, never-allocate 2231, and zero 2235-2238 filename collisions at both authorized heads.
+  - Verified the sole shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease, zero effect locks, and external effects 0/0/0.
+  - Claimed only the F02 runtime triplet; requester content, the allocation proposal, and SQL were not read or edited.
+remaining_steps:
+  - C00 must reconcile the exact atomic Lease A claim head before F02 opens requester content or edits allocation/SQL artifacts.
+  - After explicit resume, F02 may read the four bound requests in required order and update the allocation proposal.
+  - After explicit resume and request validation, F02 may author only the four authorized forward-only migration files for ordinals 2235-2238.
+next_action: Stop after publishing this atomic claim checkpoint. C00 must reconcile its exact remote head before F02 reads requester content, edits MIGRATION-ALLOCATIONS-PROPOSAL.yaml, or authors SQL.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -83,6 +143,10 @@ changed_paths:
   - packages/domain/src/state/index.ts
   - packages/domain/src/state/transition-guard.ts
   - packages/db/migrations/2234_canonical_state_machines.sql
+atomic_claim_changed_paths:
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
 migrations:
   - ordinal: 2234
     file: packages/db/migrations/2234_canonical_state_machines.sql
@@ -109,6 +173,7 @@ verification:
     - new TypeScript and YAML artifacts passed Prettier
     - migration 2234 passed disposable PGlite PostgreSQL proof for concurrent writes, replay/conflict, content recovery, acceptance-unknown reconciliation, committed-history fencing, monotonic counters, and append-only events
     - focused domain proof passed conclusive reconciliation unknown-flag clearing and dead-letter quarantine retention
+    - containing control/sole parent, exact F02/integration heads, canonical READY digest, all entry-bound digests, four plan refs/blobs/digests, ordinal control, collision absence, shared lease, zero effect locks, and exact triplet-only claim scope passed
   known_baseline_failures: []
 external_effects:
   authority: none
