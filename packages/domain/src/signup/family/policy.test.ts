@@ -173,6 +173,9 @@ describe('P08 family signup policy', () => {
     const shortKey = command();
     shortKey.idempotency_key = 'short';
     expect(() => input('2026-09-13T00:00:00.000Z', shortKey)).toThrow('invalid_family_signup');
+    const weakKey = command();
+    weakKey.idempotency_key = 'A'.repeat(43);
+    expect(() => input('2026-09-13T00:00:00.000Z', weakKey)).toThrow('invalid_family_signup');
 
     const spoofed = command() as FamilySignupCommand & { canonical_request_hash: string };
     spoofed.canonical_request_hash = h('f');

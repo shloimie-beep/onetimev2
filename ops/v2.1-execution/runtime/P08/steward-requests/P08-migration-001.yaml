@@ -20,17 +20,24 @@ rationale: >-
   service deliberately performs no schema creation.
 desired_semantic_change: >-
   Add transactionally consistent Family signup persistence that binds one
-  normalized adult to one HumanAccount, one new Family household, credential
-  state when needed, fixed-expiry access state, stable request idempotency, and
-  a durable GHL sync outbox. Local rows and outbox must commit atomically; no
+  normalized adult to one HumanAccount and permits a new local Family signup
+  only when no local HumanAccount identity and no Family household lifecycle
+  exists. Lock a globally collision-detecting, high-entropy request key and bind
+  the request, local-state reads, GHL evidence, recovery receipt, commit, and
+  durable outbox to the exact product/runtime/verification scope plus the
+  public_family_signup operation. Persist only the server-computed semantic
+  request digest. Local rows, receipt, and outbox must commit atomically; no
   provider effect may execute inside the transaction.
 proposed_symbols_routes_keys_or_dependencies:
   - unique scoped normalized adult email and one-to-one adult/HumanAccount identity
-  - unique scoped family-signup idempotency key plus canonical request hash
+  - globally collision-detecting 43-128 character family-signup idempotency key, exact scope, and public_family_signup operation
+  - server-computed canonical request digest covering canonical name, normalized email, timezone, legal acceptance, and keyed password fingerprint; no caller hash column
+  - immutable recovery receipt bound to exact scope, operation, key, and canonical request digest
+  - transactional local-state read covering invited, active, disabled, and archived HumanAccounts and active, expired, archived, and inactive Family households
   - household classification fixed to family with seat_limit 3 and active_seat_count 0
   - access state free before 2026-09-13T16:24:00.000Z and inactive at or after it
   - free expiry fixed to 2026-09-13T16:24:00.000Z with no rolling-trial column or derivation
-  - durable outbox intent unique by request and household, preserving adult suppression
+  - durable outbox intent unique by exact request binding and household, preserving adult suppression
   - optional hashed verified GHL link and identity-review metadata; no raw provider identifiers
 compatibility_assumptions:
   - Reuse the integrated F03 credential and F04 identity/household persistence seams.
@@ -40,6 +47,8 @@ verification_performed:
   - focused P08 contract, domain, server, and client assertions
   - repository TypeScript typecheck
 conflicts_or_risks:
-  - Any existing duplicate normalized adults or request-key/hash disagreement must fail closed for steward review.
+  - Any local HumanAccount identity or Family household lifecycle must return the generic sign-in-or-reset result with zero household, access, credential, receipt, outbox, or session writes.
+  - Cross-scope key collision or any scope, operation, key, or semantic-digest disagreement must fail closed without returning a prior projection identifier or email.
+  - Creating a new household for an existing HumanAccount is a separate authenticated operation and must not be implemented as public-signup recovery.
   - Provider failure or identity ambiguity must not roll back or block a valid local signup.
 contains_secret_or_private_data: false

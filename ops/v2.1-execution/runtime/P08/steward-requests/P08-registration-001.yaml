@@ -24,7 +24,10 @@ desired_semantic_change: >-
   Export the stable P08 family-signup contract and domain policy, mount the
   mutually exclusive Family and School public intake routes, and bind Family
   submission to the local transaction service. The route must reject missing,
-  unsupported, or hybrid classification before any local or provider write.
+  unsupported, or hybrid classification, weak/short keys, caller-supplied
+  request hashes, and invalid scope before any repository or provider access.
+  Any existing local HumanAccount identity or Family household lifecycle must
+  return the same generic sign-in-or-reset projection with no write.
 proposed_symbols_routes_keys_or_dependencies:
   - packages/contracts/src/index.ts exports packages/contracts/src/signup/family/index.ts
   - packages/domain/src/index.ts exports packages/domain/src/signup/family/index.ts
@@ -32,7 +35,13 @@ proposed_symbols_routes_keys_or_dependencies:
   - Family route accepts only the exact FAMILY_SIGNUP_FIELDS and never accepts card or Student fields
   - School route accepts no password, card, household, or Student fields and creates an inquiry only
   - server clock selects the fixed-expiry branch; client time is display-only
-  - registration injects F03 password hashing, F04 normalized identity lookup, and the P08 transaction repository
+  - registration generates or requires a cryptographically random 43-128 character idempotency key and never treats it as authentication
+  - registration injects a server-secret keyed deterministic password fingerprint for canonical request digesting; the fingerprint is not a credential
+  - repository request locking detects global key collisions and returns the stored exact scope/operation receipt so cross-scope replay fails closed
+  - F04 lookup returns any local HumanAccount state plus any active, expired, archived, or inactive Family household under the same transaction lock
+  - all identity, GHL evidence, recovery, receipt, commit, and outbox operations receive the exact validated scope and public_family_signup operation
+  - GHL-only CRM matches remain eligible for fresh local creation; local-account matches never reuse public signup to create another household
+  - registration injects F03 password hashing, F04 normalized identity and household lookup, and the P08 transaction repository
 compatibility_assumptions:
   - Same-origin request security and generic public error handling use the integrated F03 seam.
   - Hosted Checkout continuation is routed by its owning billing lane and is not executed by the signup form.
@@ -43,5 +52,7 @@ verification_performed:
 conflicts_or_risks:
   - Do not infer Family when classification is missing.
   - Do not expose account existence through route-specific duplicate messages.
+  - Do not return a prior receipt projection, identifier, or email on an idempotency conflict.
+  - Do not create another household for an existing local account from the public signup route; that requires a separate authenticated action.
   - Do not perform inline provider or financial effects.
 contains_secret_or_private_data: false

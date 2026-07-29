@@ -295,6 +295,11 @@ describe('P08 family signup service', () => {
     await expect(service.submit({ scope, command: shortKey, now: new Date() })).rejects.toThrow(
       'invalid_family_signup',
     );
+    const weakKey = command();
+    weakKey.idempotency_key = 'A'.repeat(43);
+    await expect(service.submit({ scope, command: weakKey, now: new Date() })).rejects.toThrow(
+      'invalid_family_signup',
+    );
     const spoofed = command() as FamilySignupCommand & { canonical_request_hash: string };
     spoofed.canonical_request_hash = h('f');
     await expect(service.submit({ scope, command: spoofed, now: new Date() })).rejects.toThrow(
