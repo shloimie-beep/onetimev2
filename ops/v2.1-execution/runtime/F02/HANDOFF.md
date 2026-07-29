@@ -1,22 +1,25 @@
-# F02 Lease A Canonical-Format Release
+# F02 Migration Lease B Atomic Claim
 
-- Claim parent: `e669c0e85d0bdf2bc72f2f8a9ff3646c0a6a1df6`
-- Containing control: `974985a321b71ad05d491b8c981ece5e38bed52c`
-- Sole control acquisition: `c9b0f526907d62f782ef3d44a752a9467d03e986`
-- Claim: `7acb5991-7704-4a6f-b590-020e47824876`
-- Shared lease: `bf42793b-2731-43aa-8e88-c246c87d70bb`
-- Released: `2026-07-29T20:01:43Z`, before expiry `2026-07-29T21:02:22Z`
+- Claim parent: `e156003b243221f97f938a0aca16164c1dd86d2d`
+- Containing control: `7d8b9ea0b2a297e445a2efa3a3934695a33445cf`
+- Sole control acquisition: `0d6b35ed4247aa857cc540efeefbceebe421a687`
+- Authorized integration: `1798f31b5f698c80ee2babbd6414e9934745a178`
+- READY digest: `fe2adafd933c848fa9e4b2efb4809f9edc733e42c8f43b71f30ec5b5b9a8df6b`
+- Claim: `e2a7b9ff-ce58-495e-b164-84d9299250d0`
+- Shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease: `cad3d0dd-59a2-44dd-87fb-6597978daaaf`
+- Lease expiry: `2026-07-29T22:40:57Z`
 - Effects: `0/0/0`
 
-Only `MIGRATION-ALLOCATIONS-PROPOSAL.yaml` and the F02 runtime triplet changed.
-Repository Prettier was applied with forced LF output. The native and pg-mem
-checksum pairs remain exact, SQL 2235 through 2238 remains byte-identical, and
-the next available ordinal remains 2239 with ordinal 2231 forbidden.
+This checkpoint claims only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. Requester content was not read. The allocation proposal,
+migrations, product code, control files, registrations, providers, and all
+other paths remain unchanged.
 
-Canonical raw Git-blob Prettier API, YAML, four-path scope, protected SQL and
-checksum derivation, 200/200 package Git-byte validation, secret scan, diff
-hygiene, lease release, and effects `0/0/0` passed. Windows `git archive`
-converts these text blobs to CRLF, so it is not a canonical-LF oracle.
+The opaque Lease B plan binds ordinals `2239` through `2244` to P16, P32, P10,
+P23, P24, and P27 respectively. All producer refs, request Git blobs, raw
+digests, recorded request digests, filenames, next ordinal `2239`, forbidden
+ordinal `2231`, and collision checks passed.
 
-Stop for independent and C00 audit. I36 integration requires a fresh bounded
-admission, atomic claim reconciliation, and exact merge item.
+Stop for C00 reconciliation. No request-body read, proposal edit, SQL
+authoring, registration, provider access, deployment, send, or external effect
+is authorized before reconciliation.
