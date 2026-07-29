@@ -39,8 +39,8 @@ dependency_heads:
     interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
     task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
     task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
-status: claimed
-phase: implementation_claim
+status: ready_for_review
+phase: complete
 claim_mode: create_new_branch
 claimed_by: codex-p21-worker-3a93eeca
 claim_time: '2026-07-29T10:31:08Z'
@@ -54,16 +54,51 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T11:23:53Z'
     state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
     phase_scope: P21_atomic_claim_only
-    state: active
+    lease_released_at: '2026-07-29T10:56:12Z'
+    state: released
 effect_lock_leases: []
 lease_expires_at: '2026-07-29T11:23:53Z'
-last_heartbeat_at: '2026-07-29T10:31:08Z'
+lease_released_at: '2026-07-29T10:56:12Z'
+last_heartbeat_at: '2026-07-29T10:56:12Z'
 controller_authorization_sha: 4c029e8d6e4ea3a2a4e4942affb61a39e5508129
 controller_authorization_parent_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+claim_reconciled_control_sha: a790540f36ae5334391547584b2af823c0048ea8
+claim_reconciled_control_parent_sha: c284998cc927cb4a48516c9d1ba34c325d28a04b
+latest_observed_control_sha: 54df8a79e1d2beb0e2ea7289dcbd13617ed90197
 ready_entry_state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
 ready_entry_payload_digest: d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2
-state_based_on_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
-last_implementation_commit_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+state_based_on_head_sha: 9898edeb102b5bfce18985d327090275484b7eae
+last_implementation_commit_sha: 9898edeb102b5bfce18985d327090275484b7eae
+implementation_artifact_digest: 1f497465cc614f92cbed3188c9041a2d55874bb7108a2bd5373618a4471a8b58
+implementation_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
+  the 17 implementation and focused-test artifacts, sorted lexicographically
+  by path, with LF separators and no final newline.
+implementation_artifacts:
+  apps/web/src/client/app/admin/content/publication/index.ts: 7353ec24b51d6c3fa360f5f6b8249eeed311398faf23934fcfc13a0fcf8c8c65
+  apps/web/src/client/app/admin/content/publication/model.test.ts: cabaddacd13ebbb344615124ce2324a08798ad00b2e50c0f8dff33d5a477d580
+  apps/web/src/client/app/admin/content/publication/model.ts: 79e1bd4831e2eec9227d9ba14acfdd68e243af8eb36ee386ee069546f8f1f7c7
+  apps/web/src/client/app/student/library/index.ts: 7353ec24b51d6c3fa360f5f6b8249eeed311398faf23934fcfc13a0fcf8c8c65
+  apps/web/src/client/app/student/library/model.test.ts: b42da1c2e73dd0b5556865bd69b23d1e67624ec46c19c6058e913251da893bc5
+  apps/web/src/client/app/student/library/model.ts: 7ab8ca4b162901f0e574dc21fa4e863f6cb40985a396048c32a5b236761bbcdf
+  apps/web/src/server/features/content/publication/index.ts: 7588197e75f35d02cc0a931bbc54e35c1cd6af25801ca7e308acd46e99186319
+  apps/web/src/server/features/content/publication/service.test.ts: 3ca6ea443d451d85103dc2c9cc5fe36b8add036cd1d79bec36c7cd55cdd101b4
+  apps/web/src/server/features/content/publication/service.ts: 116d56ac346d4b805b24930abfe34c231f810a2984c795b38f12013c73313014
+  packages/contracts/src/content/publication/index.ts: 5417ea3bb57703cbd53e4d02e06df95b5f8caf76544bcde4bd0ca795ae27557c
+  packages/db/src/content/publication/index.ts: d277f9cdfec1cd27f56ad9e5daa92960cd62832b444d4ba7b8be4f6aeb59586d
+  packages/db/src/content/publication/repository.test.ts: aa7e7062083567888bfd0178621086211ff69302ff47d1c74a1df727c6d8a5d7
+  packages/db/src/content/publication/repository.ts: 67cfcce63612ad8c0300e2a68505060e26002fe774f8933de1f24b6efb1e985a
+  packages/domain/src/content/publication/errors.ts: e1e1b519cab270c796e8151dad3cdbfa359d6ad16c07a2b1d075d695e2417f26
+  packages/domain/src/content/publication/index.ts: da0b89838b013ee40d05f5a9e56cdd5bb78a45d2d4b43de083cce75e9fc6d13a
+  packages/domain/src/content/publication/lifecycle.ts: b638271c572751bfbac5189091c2eecc3311a099a5cf5afc64edd6ad520aa58e
+  packages/domain/src/content/publication/publication.test.ts: 7dbee25d8fc933300c476bec57de2cd63a6b4d4260d86c2d753e3afa4b41bcb3
+steward_request_payload_digests:
+  P21-registration-001: 36ee2283b5847844cc2ad84c4d8ec06403012f43133fa32a97328d9e58df5861
+steward_request_aggregate_digest: 5546e47c0ea26f374889ad8a608d75c2afbcd6a348a0d27902d5ebb10cfdb274
+steward_request_digest_algorithm: >-
+  Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
+  SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
+  and no final newline.
 completed_steps:
   - Verified exact containing controller 4c029e8d6e4ea3a2a4e4942affb61a39e5508129 and its sole acquisition parent d99fde51092abdee97f42f28e8bdee8a08c5e22c.
   - Recomputed and matched the canonical P21 READY digest d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2.
@@ -71,35 +106,67 @@ completed_steps:
   - Verified the exact F05, F06, and P14 interface source, implementation, and integration-proof heads are ancestors of authorized start 088b40476bd5ceeb0af901b6f78a4cb8c556671b.
   - Verified the remote P21 branch was absent, consumed the sole CONTENT_PUBLICATION writer lease, and confirmed zero effect locks.
   - Created the isolated local branch from the exact authorized start and seeded only the three P21 runtime-memory files.
+  - Published atomic claim 6a065ef4f8a23bce3c7ef6d6caa70a342114f12e and verified C00 reconciliation a790540f36ae5334391547584b2af823c0048ea8 with sole parent c284998cc927cb4a48516c9d1ba34c325d28a04b.
+  - Implemented approval-gated lifecycle transitions, occurrence attachment, optimistic concurrency, canonical request hashing, exact idempotency receipts, and durable private publish/revoke outbox intents.
+  - Implemented a provider port with no concrete live adapter; direct dispatch validates current Admin authority and exact replay before the injected provider port can run.
+  - Implemented five-minute renewable same-origin playback grants that require a current active/grace Student, exact Student/household/content/occurrence entitlement, and currently published state.
+  - Implemented neutral Parent, sibling, cross-household, inactive, revoked, stale-version, unsafe-provider-reference, and idempotency-conflict denials without exposing the opaque provider asset reference.
+  - Implemented authorized library search over title, English transcript, date, class/topic, and structured Mishnah reference plus Student- and publication-version-scoped resume state.
+  - Implemented parameterized transactional PostgreSQL persistence for publications, receipts, outbox intents, entitlements, and resume records without runtime schema creation.
+  - Added safe isolated Admin and Student client models and immutable steward request P21-registration-001 for the forward-only migration and governed route/worker/client registration; the request was not applied.
+  - Published exact implementation commit 9898edeb102b5bfce18985d327090275484b7eae and reproduced all 17 artifact hashes, aggregate 1f497465cc614f92cbed3188c9041a2d55874bb7108a2bd5373618a4471a8b58, request payload 36ee2283b5847844cc2ad84c4d8ec06403012f43133fa32a97328d9e58df5861, and request aggregate 5546e47c0ea26f374889ad8a608d75c2afbcd6a348a0d27902d5ebb10cfdb274.
+  - Passed five focused files and 11 deterministic positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact normalized scope, diff hygiene, raw-provider-reference scan, and secret scan across 2898 repository text files.
+  - Released claim 3a93eeca-5035-4328-b685-e580f2b32ce6 and CONTENT_PUBLICATION lease 31423c6c-74ef-43cc-b3a8-75b425568619 before expiry with zero external effects.
 remaining_steps:
-  - C00 must reconcile this exact atomic claim before any product, test, structured-request, steward, provider, or effect work starts.
-  - After reconciliation, implement the P21 requirements within its normalized owned roots and verify the assigned acceptance cases without live external effects.
-next_action: Push and remote-verify this exact three-runtime-file atomic claim, report its immutable head to C00, and stop without editing or testing product/request code.
+  - C00 should independently audit the superseding ready-for-review head, exact implementation ancestry, normalized scope, artifact/request digests, verification, and zero-effect record.
+  - I36/F02 may separately evaluate and apply P21-registration-001 under their own authority; P21 did not apply it.
+  - Candidate-bound provider-sandbox or production-canary evidence remains gated on a later immutable candidate and exact external-effect authority.
+next_action: Push and remote-verify the final ready-for-review metadata commit, report its exact head to C00, and stop for independent audit.
 requirements:
-  OTV2-CONTENT-087: not_started
-  OTV2-CONTENT-088: not_started
-  OTV2-CONTENT-089: not_started
-  OTV2-CONTENT-090: not_started
-  OTV2-CONTENT-091: not_started
-  OTV2-CONTENT-092: not_started
-  OTV2-CONTENT-194: not_started
-  OTV2-CONTENT-195: not_started
+  OTV2-CONTENT-087: source_implemented_candidate_provider_evidence_pending
+  OTV2-CONTENT-088: source_implemented_candidate_evidence_pending
+  OTV2-CONTENT-089: source_implemented_candidate_evidence_pending
+  OTV2-CONTENT-090: source_implemented_candidate_evidence_pending
+  OTV2-CONTENT-091: source_implemented_candidate_provider_evidence_pending
+  OTV2-CONTENT-092: source_implemented_registration_and_candidate_evidence_pending
+  OTV2-CONTENT-194: source_implemented_candidate_evidence_pending
+  OTV2-CONTENT-195: source_implemented_candidate_evidence_pending
 acceptance_cases:
-  OTV2-CONTENT-087-AC01: not_started
-  OTV2-CONTENT-088-AC01: not_started
-  OTV2-CONTENT-089-STUDENT: not_started
-  OTV2-CONTENT-089-PARENT-DENY: not_started
-  OTV2-CONTENT-090-AC01: not_started
-  OTV2-CONTENT-091-AC01: not_started
-  OTV2-CONTENT-092-AC01: not_started
-  OTV2-CONTENT-194-AC01: not_started
-  OTV2-CONTENT-195-AC01: not_started
+  OTV2-CONTENT-087-AC01: source_covered_provider_evidence_pending
+  OTV2-CONTENT-088-AC01: source_covered_candidate_evidence_pending
+  OTV2-CONTENT-089-STUDENT: source_covered_candidate_evidence_pending
+  OTV2-CONTENT-089-PARENT-DENY: source_covered_candidate_evidence_pending
+  OTV2-CONTENT-090-AC01: source_covered_candidate_evidence_pending
+  OTV2-CONTENT-091-AC01: source_covered_provider_evidence_pending
+  OTV2-CONTENT-092-AC01: source_covered_registration_and_candidate_evidence_pending
+  OTV2-CONTENT-194-AC01: source_covered_candidate_evidence_pending
+  OTV2-CONTENT-195-AC01: source_covered_candidate_evidence_pending
 changed_paths:
+  - apps/web/src/client/app/admin/content/publication/index.ts
+  - apps/web/src/client/app/admin/content/publication/model.test.ts
+  - apps/web/src/client/app/admin/content/publication/model.ts
+  - apps/web/src/client/app/student/library/index.ts
+  - apps/web/src/client/app/student/library/model.test.ts
+  - apps/web/src/client/app/student/library/model.ts
+  - apps/web/src/server/features/content/publication/index.ts
+  - apps/web/src/server/features/content/publication/service.test.ts
+  - apps/web/src/server/features/content/publication/service.ts
   - ops/v2.1-execution/runtime/P21/HANDOFF.md
   - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-001.yaml
+  - packages/contracts/src/content/publication/index.ts
+  - packages/db/src/content/publication/index.ts
+  - packages/db/src/content/publication/repository.test.ts
+  - packages/db/src/content/publication/repository.ts
+  - packages/domain/src/content/publication/errors.ts
+  - packages/domain/src/content/publication/index.ts
+  - packages/domain/src/content/publication/lifecycle.ts
+  - packages/domain/src/content/publication/publication.test.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - id: P21-registration-001
+    sha256: 36ee2283b5847844cc2ad84c4d8ec06403012f43133fa32a97328d9e58df5861
 verification:
   commands_run:
     - command: exact controller, sole acquisition parent, registry, READY, claim, lease, zero-effect-lock, and branch-absence verification
@@ -110,6 +177,20 @@ verification:
       result: passed
     - command: git worktree add -b codex/v21-p21-content-publication <isolated-worktree> 088b40476bd5ceeb0af901b6f78a4cb8c556671b
       result: passed; branch created from exact authorized start
+    - command: npm exec -- vitest run <five P21 focused test files> --environment node
+      result: passed; 5 files and 11 deterministic positive/negative tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over all P21 TypeScript, Markdown, and YAML artifacts
+      result: passed
+    - command: exact normalized-root scope audit and git diff --check
+      result: passed; exactly 17 implementation/test artifacts, one immutable structured steward request, and three P21 runtime-memory files
+    - command: raw provider URL/bearer scan over all P21 artifacts
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2898 repository text files
+    - command: exact Git-blob artifact and steward-request digest reproduction
+      result: passed; 17-artifact aggregate 1f497465 and request aggregate 5546e47c
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -117,4 +198,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Forward-only schema migration and central server, worker, and authenticated-client composition are captured in P21-registration-001 and were not applied.
