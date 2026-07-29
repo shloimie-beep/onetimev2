@@ -24,19 +24,34 @@ export const CORE_WORKFLOW_KEYS = [
 
 export type CoreWorkflowKey = (typeof CORE_WORKFLOW_KEYS)[number];
 
-export const CORE_WORKFLOW_REQUIREMENTS = {
-  'OT-01': '123-AC01',
-  'OT-02A': '124-AC01',
-  'OT-02B': '125-AC01',
-  'OT-03': '126-AC01',
-  'OT-04': '127-AC01',
-  'OT-05': '128-AC01',
-  'OT-06': '129-AC01',
-  'OT-07': '130-AC01',
-  'OT-08': '131-AC01',
-  'OT-09': '132-AC01',
-  'OT-10': '133-AC01',
-  'OT-13': '136-AC01',
+export const CORE_WORKFLOW_REQUIREMENT_IDS = {
+  'OT-01': 'OTV2-GHL-123',
+  'OT-02A': 'OTV2-GHL-124',
+  'OT-02B': 'OTV2-GHL-125',
+  'OT-03': 'OTV2-GHL-126',
+  'OT-04': 'OTV2-GHL-127',
+  'OT-05': 'OTV2-GHL-128',
+  'OT-06': 'OTV2-GHL-129',
+  'OT-07': 'OTV2-GHL-130',
+  'OT-08': 'OTV2-GHL-131',
+  'OT-09': 'OTV2-GHL-132',
+  'OT-10': 'OTV2-GHL-133',
+  'OT-13': 'OTV2-GHL-136',
+} as const satisfies Record<CoreWorkflowKey, string>;
+
+export const CORE_WORKFLOW_ACCEPTANCE_CASE_IDS = {
+  'OT-01': 'OTV2-GHL-123-AC01',
+  'OT-02A': 'OTV2-GHL-124-AC01',
+  'OT-02B': 'OTV2-GHL-125-AC01',
+  'OT-03': 'OTV2-GHL-126-AC01',
+  'OT-04': 'OTV2-GHL-127-AC01',
+  'OT-05': 'OTV2-GHL-128-AC01',
+  'OT-06': 'OTV2-GHL-129-AC01',
+  'OT-07': 'OTV2-GHL-130-AC01',
+  'OT-08': 'OTV2-GHL-131-AC01',
+  'OT-09': 'OTV2-GHL-132-AC01',
+  'OT-10': 'OTV2-GHL-133-AC01',
+  'OT-13': 'OTV2-GHL-136-AC01',
 } as const satisfies Record<CoreWorkflowKey, string>;
 
 export type CoreWorkflowMessageClass =
@@ -62,6 +77,7 @@ export interface CoreWorkflowDefinition extends Omit<
 > {
   workflow_key: CoreWorkflowKey;
   requirement_id: string;
+  acceptance_case_id: string;
   message_class: CoreWorkflowMessageClass;
   desired_initial_state: 'SAVED_REOPENED' | 'DRAFT_WAITING_EXTERNAL';
   waits: readonly string[];
@@ -69,6 +85,10 @@ export interface CoreWorkflowDefinition extends Omit<
   approved_copy_ids: readonly string[];
   requires_signed_billing_projection: boolean;
   requires_local_commit_readback: boolean;
+  requires_approved_audience: true;
+  requires_approved_copy: true;
+  requires_admin_approval: boolean;
+  requires_provider_readback: boolean;
   provider_financial_mutation: false;
   provider_access_mutation: false;
   ghl_student_contact_calls: 0;
@@ -83,14 +103,34 @@ export type CoreWorkflowTriggerEvidence = {
   episode_key: string;
   local_commit_readback: boolean;
   signed_billing_projection: boolean;
+};
+
+export interface CoreWorkflowApprovalSnapshot {
+  approval_id: string;
+  source: 'trusted_approval_store';
+  approved_by_admin_id: string;
+  approved_at: string;
   approved_audience: boolean;
   approved_copy: boolean;
-};
+  approved_content_digest: string;
+  approved_audience_digest: string;
+  admin_approved: boolean;
+  provider_readback_verified: boolean;
+  evidence_digest: string;
+}
+
+export interface CoreWorkflowApprovalLookup {
+  workflow_key: CoreWorkflowKey;
+  adult_id: string;
+  household_id: string;
+  source_event_id: string;
+}
 
 export interface PlanCoreWorkflowInput {
   workflow_key: CoreWorkflowKey;
   subject: CommunicationSubject;
   evidence: CoreWorkflowTriggerEvidence;
+  approval: CoreWorkflowApprovalSnapshot;
   suppression: CommunicationSuppressionSnapshot;
   reminder_preference: 'email' | 'whatsapp' | 'both' | 'none';
   marketing_permission: boolean;
@@ -110,6 +150,8 @@ export interface CoreWorkflowPlan {
   message_class: CoreWorkflowMessageClass;
   content_digest: string;
   audience_digest: string;
+  approval_id: string;
+  approval_evidence_digest: string;
   email:
     | { disposition: 'send'; provider: 'GHL'; suppression_recheck_required: true }
     | {
@@ -179,6 +221,7 @@ export interface CoreWorkflowReadbackComparison {
   provider_workflow_ref_hash: string;
   provider_read_at: string;
   provider_effects: 0;
+  approval_id: string;
 }
 
 export interface CoreWorkflowReservation {
@@ -189,6 +232,8 @@ export interface CoreWorkflowReservation {
   suppression_snapshot_id: string;
   content_digest: string;
   audience_digest: string;
+  approval_id: string;
+  approval_evidence_digest: string;
 }
 
 export interface CoreWorkflowRepository {
@@ -206,6 +251,10 @@ export interface CoreWorkflowSuppressionPort {
   readCurrent(adult_id: string): Promise<CommunicationSuppressionSnapshot>;
 }
 
+export interface CoreWorkflowApprovalReadPort {
+  readApproved(input: CoreWorkflowApprovalLookup): Promise<CoreWorkflowApprovalSnapshot | null>;
+}
+
 export interface CoreWorkflowProviderPort {
   readWorkflow(workflow_key: CoreWorkflowKey): Promise<CoreWorkflowProviderReadback>;
   sendAdultEmail(input: {
@@ -217,6 +266,7 @@ export interface CoreWorkflowProviderPort {
     message_class: CoreWorkflowMessageClass;
     content_digest: string;
     audience_digest: string;
+    approval_id: string;
   }): Promise<{ safe_provider_ref_hash: string }>;
 }
 

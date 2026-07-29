@@ -1,6 +1,7 @@
 import type { CommunicationPurpose } from '../../../../../contracts/src/communications/foundation/index.ts';
 import {
-  CORE_WORKFLOW_REQUIREMENTS,
+  CORE_WORKFLOW_ACCEPTANCE_CASE_IDS,
+  CORE_WORKFLOW_REQUIREMENT_IDS,
   REQUIRED_CORE_APPROVAL_GATES,
   type CoreWorkflowDefinition,
   type CoreWorkflowKey,
@@ -24,13 +25,16 @@ type DefinitionInput = {
   initial?: CoreWorkflowDefinition['desired_initial_state'];
   billingProjection?: boolean;
   localReadback?: boolean;
+  adminApproval?: boolean;
+  providerReadback?: boolean;
 };
 
 function define(input: DefinitionInput): CoreWorkflowDefinition {
   return {
     workflow_key: input.key,
     canonical_name: input.name,
-    requirement_id: CORE_WORKFLOW_REQUIREMENTS[input.key],
+    requirement_id: CORE_WORKFLOW_REQUIREMENT_IDS[input.key],
+    acceptance_case_id: CORE_WORKFLOW_ACCEPTANCE_CASE_IDS[input.key],
     purpose: input.purpose,
     subject: 'adult_only',
     sender_key: input.sender,
@@ -47,6 +51,10 @@ function define(input: DefinitionInput): CoreWorkflowDefinition {
     approved_copy_ids: input.copyIds ?? [],
     requires_signed_billing_projection: input.billingProjection ?? false,
     requires_local_commit_readback: input.localReadback ?? true,
+    requires_approved_audience: true,
+    requires_approved_copy: true,
+    requires_admin_approval: input.adminApproval ?? false,
+    requires_provider_readback: input.providerReadback ?? false,
     requires_send_time_suppression_recheck: true,
     email_required: true,
     whatsapp_state: 'dormant',
@@ -72,6 +80,7 @@ export const CORE_WORKFLOW_DEFINITIONS = [
     steps: [
       'match_or_create_adult_contact_without_student_contact',
       'upsert_one_household_keyed_opportunity',
+      'project_one_time_family_signup_lifecycle',
       'branch_school_inquiry_to_shloimie_acknowledgement_and_stop',
       'branch_family_before_cutover_to_immediate_free_access_without_card',
       'branch_family_at_or_after_cutover_to_inactive_household_and_hosted_checkout',
@@ -265,6 +274,8 @@ export const CORE_WORKFLOW_DEFINITIONS = [
     messageClass: 'recording_available',
     trigger: 'One Time marks a protected recording available for an entitled household',
     initial: 'DRAFT_WAITING_EXTERNAL',
+    adminApproval: true,
+    providerReadback: true,
     steps: [
       'send_parent_message_with_eligible_student_names_and_parent_login',
       'create_student_in_app_protected_library_notice',

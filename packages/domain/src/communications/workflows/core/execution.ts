@@ -4,6 +4,7 @@ import { CORE_WORKFLOW_BY_KEY, CORE_WORKFLOW_DEFINITIONS } from './definitions.t
 import {
   CORE_WORKFLOW_KEYS,
   REQUIRED_CORE_APPROVAL_GATES,
+  type CoreWorkflowApprovalSnapshot,
   type CoreWorkflowDefinition,
   type CoreWorkflowDriftCode,
   type CoreWorkflowPlan,
@@ -88,6 +89,9 @@ export function validateCoreWorkflowDefinitions(
     if (!workflow.requires_send_time_suppression_recheck) {
       throw new Error(`suppression_recheck_required:${workflow.workflow_key}`);
     }
+    if (!workflow.requires_approved_audience || !workflow.requires_approved_copy) {
+      throw new Error(`audience_and_copy_approval_required:${workflow.workflow_key}`);
+    }
     for (const gate of REQUIRED_CORE_APPROVAL_GATES) {
       if (!workflow.approval_gates.includes(gate)) {
         throw new Error(`approval_gate_missing:${workflow.workflow_key}:${gate}`);
@@ -105,12 +109,49 @@ export function validateCoreWorkflowDefinitions(
   if (!invitation.ordered_steps.some((step) => step.includes('without_security_token'))) {
     throw new Error('ot07_resend_security_boundary_required');
   }
+  const recording = CORE_WORKFLOW_BY_KEY['OT-10'];
+  if (!recording.requires_admin_approval || !recording.requires_provider_readback) {
+    throw new Error('ot10_admin_approval_and_provider_readback_required');
+  }
   for (const key of BILLING_WORKFLOWS) {
     if (
       !CORE_WORKFLOW_BY_KEY[key as keyof typeof CORE_WORKFLOW_BY_KEY]
         .requires_signed_billing_projection
     ) {
       throw new Error(`signed_billing_projection_required:${key}`);
+    }
+  }
+}
+
+export function assertCoreWorkflowApproval(
+  definition: CoreWorkflowDefinition,
+  approval: CoreWorkflowApprovalSnapshot | null | undefined,
+): asserts approval is CoreWorkflowApprovalSnapshot {
+  if (!approval || approval.source !== 'trusted_approval_store') {
+    throw new Error('trusted_approval_snapshot_required');
+  }
+  if (!approval.approval_id || !approval.approved_by_admin_id || !approval.approved_at) {
+    throw new Error('trusted_approval_identity_required');
+  }
+  if (definition.requires_approved_audience && !approval.approved_audience) {
+    throw new Error('approved_audience_required');
+  }
+  if (definition.requires_approved_copy && !approval.approved_copy) {
+    throw new Error('approved_copy_required');
+  }
+  if (definition.requires_admin_approval && !approval.admin_approved) {
+    throw new Error('admin_approval_required');
+  }
+  if (definition.requires_provider_readback && !approval.provider_readback_verified) {
+    throw new Error('provider_readback_required');
+  }
+  for (const value of [
+    approval.approved_content_digest,
+    approval.approved_audience_digest,
+    approval.evidence_digest,
+  ]) {
+    if (!/^[a-f0-9]{64}$/.test(value)) {
+      throw new Error('trusted_approval_digest_required');
     }
   }
 }
@@ -128,20 +169,18 @@ export function planCoreWorkflowEvent(input: PlanCoreWorkflowInput): CoreWorkflo
   if (definition.requires_signed_billing_projection && !input.evidence.signed_billing_projection) {
     throw new Error('signed_billing_projection_required');
   }
-  if (
-    input.workflow_key === 'OT-02A' &&
-    (!input.evidence.approved_audience || !input.evidence.approved_copy)
-  ) {
-    throw new Error('migration_audience_and_copy_approval_required');
-  }
-  if (
-    input.workflow_key === 'OT-02B' &&
-    (!input.evidence.approved_audience || !input.marketing_permission)
-  ) {
+  assertCoreWorkflowApproval(definition, input.approval);
+  if (input.workflow_key === 'OT-02B' && !input.marketing_permission) {
     throw new Error('explicit_opt_in_and_admin_start_required');
   }
   if (!input.content_digest || !input.audience_digest) {
     throw new Error('content_and_audience_digests_required');
+  }
+  if (input.content_digest !== input.approval.approved_content_digest) {
+    throw new Error('approved_content_digest_mismatch');
+  }
+  if (input.audience_digest !== input.approval.approved_audience_digest) {
+    throw new Error('approved_audience_digest_mismatch');
   }
 
   const reason = suppressionReason(definition, input, input.suppression);
@@ -171,6 +210,8 @@ export function planCoreWorkflowEvent(input: PlanCoreWorkflowInput): CoreWorkflo
     message_class: definition.message_class,
     content_digest: input.content_digest,
     audience_digest: input.audience_digest,
+    approval_id: input.approval.approval_id,
+    approval_evidence_digest: input.approval.evidence_digest,
     email: reason
       ? { disposition: 'suppressed', reason, suppression_recheck_required: true }
       : { disposition: 'send', provider: 'GHL', suppression_recheck_required: true },
@@ -198,8 +239,9 @@ export function recheckCoreWorkflowSuppression(
 export function compareCoreWorkflowReadback(
   definition: CoreWorkflowDefinition,
   readback: CoreWorkflowProviderReadback,
-  expected: { content_digest: string; audience_digest: string },
+  approval: CoreWorkflowApprovalSnapshot,
 ): CoreWorkflowReadbackComparison {
+  assertCoreWorkflowApproval(definition, approval);
   const drift: CoreWorkflowDriftCode[] = [];
   if (readback.canonical_name !== definition.canonical_name) drift.push('canonical_name');
   if (readback.state !== definition.desired_initial_state) drift.push('state');
@@ -212,8 +254,10 @@ export function compareCoreWorkflowReadback(
   if (readback.sender_key !== definition.sender_key) drift.push('sender');
   if (readback.subject !== 'adult_only') drift.push('subject');
   if (readback.message_class !== definition.message_class) drift.push('message_class');
-  if (readback.content_digest !== expected.content_digest) drift.push('content_digest');
-  if (readback.audience_digest !== expected.audience_digest) drift.push('audience_digest');
+  if (readback.content_digest !== approval.approved_content_digest) drift.push('content_digest');
+  if (readback.audience_digest !== approval.approved_audience_digest) {
+    drift.push('audience_digest');
+  }
   if (!readback.requires_send_time_suppression_recheck) drift.push('suppression_recheck');
   return {
     workflow_key: definition.workflow_key,
@@ -223,5 +267,6 @@ export function compareCoreWorkflowReadback(
     provider_workflow_ref_hash: readback.provider_workflow_ref_hash,
     provider_read_at: readback.provider_read_at,
     provider_effects: 0,
+    approval_id: approval.approval_id,
   };
 }

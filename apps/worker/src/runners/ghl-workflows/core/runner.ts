@@ -1,8 +1,11 @@
 import {
   CORE_WORKFLOW_BY_KEY,
+  assertCoreWorkflowApproval,
   compareCoreWorkflowReadback,
   planCoreWorkflowEvent,
   recheckCoreWorkflowSuppression,
+  type CoreWorkflowApprovalLookup,
+  type CoreWorkflowApprovalReadPort,
   type CoreWorkflowPlan,
   type CoreWorkflowProviderPort,
   type CoreWorkflowReadbackComparison,
@@ -36,14 +39,33 @@ export type RunCoreWorkflowResult =
     };
 
 export async function runCoreWorkflow(input: {
-  plan_input: PlanCoreWorkflowInput;
+  plan_input: Omit<PlanCoreWorkflowInput, 'approval'>;
+  approval: CoreWorkflowApprovalReadPort;
   repository: CoreWorkflowRepository;
   suppression: CoreWorkflowSuppressionPort;
   provider: CoreWorkflowProviderPort;
 }): Promise<RunCoreWorkflowResult> {
+  if (input.plan_input.subject.kind === 'student') {
+    return {
+      state: 'student_prohibited',
+      reason: 'student_contact_prohibited',
+      email_provider_calls: 0,
+      whatsapp_provider_calls: 0,
+      student_provider_calls: 0,
+    };
+  }
+
   let plan: CoreWorkflowPlan;
+  let planInput: PlanCoreWorkflowInput;
   try {
-    plan = planCoreWorkflowEvent(input.plan_input);
+    const approval = await input.approval.readApproved({
+      workflow_key: input.plan_input.workflow_key,
+      adult_id: input.plan_input.subject.adult_id,
+      household_id: input.plan_input.evidence.household_id,
+      source_event_id: input.plan_input.evidence.source_event_id,
+    });
+    planInput = { ...input.plan_input, approval: approval! };
+    plan = planCoreWorkflowEvent(planInput);
   } catch (error) {
     const reason = error instanceof Error ? error.message : 'invalid_evidence';
     return {
@@ -63,6 +85,8 @@ export async function runCoreWorkflow(input: {
     suppression_snapshot_id: input.plan_input.suppression.snapshot_id,
     content_digest: plan.content_digest,
     audience_digest: plan.audience_digest,
+    approval_id: plan.approval_id,
+    approval_evidence_digest: plan.approval_evidence_digest,
   });
   if (!reserved) {
     return {
@@ -76,7 +100,7 @@ export async function runCoreWorkflow(input: {
   }
 
   const currentSuppression = await input.suppression.readCurrent(plan.adult_id);
-  const email = recheckCoreWorkflowSuppression(input.plan_input, currentSuppression);
+  const email = recheckCoreWorkflowSuppression(planInput, currentSuppression);
   if (email.disposition === 'suppressed') {
     await input.repository.completeDelivery({
       operation_id: plan.operation_id,
@@ -104,6 +128,7 @@ export async function runCoreWorkflow(input: {
       message_class: plan.message_class,
       content_digest: plan.content_digest,
       audience_digest: plan.audience_digest,
+      approval_id: plan.approval_id,
     });
     await input.repository.completeDelivery({
       operation_id: plan.operation_id,
@@ -136,18 +161,16 @@ export async function runCoreWorkflow(input: {
 }
 
 export async function readAndPersistCoreWorkflow(input: {
-  workflow_key: PlanCoreWorkflowInput['workflow_key'];
-  content_digest: string;
-  audience_digest: string;
+  approval_lookup: CoreWorkflowApprovalLookup;
+  approval: CoreWorkflowApprovalReadPort;
   repository: CoreWorkflowRepository;
   provider: CoreWorkflowProviderPort;
 }): Promise<CoreWorkflowReadbackComparison> {
-  const definition = CORE_WORKFLOW_BY_KEY[input.workflow_key];
-  const providerReadback = await input.provider.readWorkflow(input.workflow_key);
-  const comparison = compareCoreWorkflowReadback(definition, providerReadback, {
-    content_digest: input.content_digest,
-    audience_digest: input.audience_digest,
-  });
+  const definition = CORE_WORKFLOW_BY_KEY[input.approval_lookup.workflow_key];
+  const approval = await input.approval.readApproved(input.approval_lookup);
+  assertCoreWorkflowApproval(definition, approval);
+  const providerReadback = await input.provider.readWorkflow(input.approval_lookup.workflow_key);
+  const comparison = compareCoreWorkflowReadback(definition, providerReadback, approval);
   await input.repository.persistReadback(comparison);
   return comparison;
 }

@@ -35,14 +35,16 @@ desired_semantic_change: >-
   Bind the registered runner to the existing HighLevel location/provider client
   through secret-managed configuration and explicit environment-tier isolation.
   Enable only readback by default. Delivery requires a separately enabled durable
-  job route, exact adult and household evidence, approved copy and audience where
-  applicable, a fresh suppression snapshot, and signed billing projection for
-  OT-04, OT-05, OT-06, and OT-13. Leave workflow publication, enrollment, provider
-  canary, Student contact, WhatsApp, direct access mutation, and financial mutation
-  disabled.
+  job route, exact adult and household evidence, a trusted approval-store snapshot,
+  approved copy and audience, exact match to independently approved content and
+  audience digests, a fresh suppression snapshot, and signed billing projection for
+  OT-04, OT-05, OT-06, and OT-13. Require both Admin approval and provider readback
+  for OT-10. Leave workflow publication, enrollment, provider canary, Student
+  contact, WhatsApp, direct access mutation, and financial mutation disabled.
 proposed_symbols_routes_keys_or_dependencies:
   - P29 core workflow readback binding
   - P29 adult-email delivery binding behind durable job authorization
+  - trusted CoreWorkflowApprovalReadPort binding
   - environment-tier and verification-environment isolation
   - HighLevel location identifier supplied only by existing secret-managed configuration
   - zero WhatsApp provider binding

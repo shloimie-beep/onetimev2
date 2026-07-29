@@ -19,9 +19,13 @@ invariants:
   stripe_remains_financial_truth: true
   one_time_remains_access_truth: true
   protected_zoom_or_vimeo_bearer_urls_prohibited: true
+  trusted_approval_store_required: true
+  approved_content_digest_match_required: true
+  approved_audience_digest_match_required: true
 workflows:
   - workflow_key: OT-01
-    requirement_id: 123-AC01
+    requirement_id: OTV2-GHL-123
+    acceptance_case_id: OTV2-GHL-123-AC01
     canonical_name: OT-01 New Lead Intake
     desired_initial_state: DRAFT_WAITING_EXTERNAL
     sender_key: brand
@@ -31,6 +35,7 @@ workflows:
     ordered_steps:
       - match_or_create_adult_contact_without_student_contact
       - upsert_one_household_keyed_opportunity
+      - project_one_time_family_signup_lifecycle
       - branch_school_inquiry_to_shloimie_acknowledgement_and_stop
       - branch_family_before_cutover_to_immediate_free_access_without_card
       - branch_family_at_or_after_cutover_to_inactive_household_and_hosted_checkout
@@ -45,11 +50,16 @@ workflows:
       - ambiguous_adult_match_quarantined
       - suppression_or_invalid_address
     idempotency_scope: adult_household_signup_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids: []
   - workflow_key: OT-02A
-    requirement_id: 124-AC01
+    requirement_id: OTV2-GHL-124
+    acceptance_case_id: OTV2-GHL-124-AC01
     canonical_name: OT-02A Existing Subscriber Migration 2026 v1
     desired_initial_state: SAVED_REOPENED
     sender_key: rabbi_campaign
@@ -72,12 +82,17 @@ workflows:
       - decline
       - campaign_complete
     idempotency_scope: adult_approved_migration_campaign
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids:
       - ghl.legacy_member_migration.step_1.v1
   - workflow_key: OT-02B
-    requirement_id: 125-AC01
+    requirement_id: OTV2-GHL-125
+    acceptance_case_id: OTV2-GHL-125-AC01
     canonical_name: OT-02B New Lead Nurture v1
     desired_initial_state: SAVED_REOPENED
     sender_key: rabbi_campaign
@@ -103,11 +118,16 @@ workflows:
       - hard_bounce
       - campaign_complete
     idempotency_scope: adult_explicit_opt_in_nurture_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids: []
   - workflow_key: OT-03
-    requirement_id: 126-AC01
+    requirement_id: OTV2-GHL-126
+    acceptance_case_id: OTV2-GHL-126-AC01
     canonical_name: OT-03 Checkout Started / Abandoned
     desired_initial_state: SAVED_REOPENED
     sender_key: rabbi_campaign
@@ -129,11 +149,16 @@ workflows:
       - newer_checkout_episode
       - follow_up_complete
     idempotency_scope: household_checkout_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids: []
   - workflow_key: OT-04
-    requirement_id: 127-AC01
+    requirement_id: OTV2-GHL-127
+    acceptance_case_id: OTV2-GHL-127-AC01
     canonical_name: OT-04 Payment Active
     desired_initial_state: SAVED_REOPENED
     sender_key: brand
@@ -153,11 +178,16 @@ workflows:
       - projection_no_longer_active
       - suppression
     idempotency_scope: household_billing_activation_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: true
     requires_local_commit_readback: true
     approved_copy_ids: []
   - workflow_key: OT-05
-    requirement_id: 128-AC01
+    requirement_id: OTV2-GHL-128
+    acceptance_case_id: OTV2-GHL-128-AC01
     canonical_name: OT-05 Payment Failed / Grace
     desired_initial_state: SAVED_REOPENED
     sender_key: office
@@ -181,11 +211,16 @@ workflows:
       - suppression
       - newer_billing_episode
     idempotency_scope: household_payment_failure_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: true
     requires_local_commit_readback: true
     approved_copy_ids: []
   - workflow_key: OT-06
-    requirement_id: 129-AC01
+    requirement_id: OTV2-GHL-129
+    acceptance_case_id: OTV2-GHL-129-AC01
     canonical_name: OT-06 Subscription Canceled
     desired_initial_state: SAVED_REOPENED
     sender_key: office
@@ -204,11 +239,16 @@ workflows:
       - final_notice_sent
       - suppression
     idempotency_scope: household_cancel_at_period_end_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: true
     requires_local_commit_readback: true
     approved_copy_ids: []
   - workflow_key: OT-07
-    requirement_id: 130-AC01
+    requirement_id: OTV2-GHL-130
+    acceptance_case_id: OTV2-GHL-130-AC01
     canonical_name: OT-07 Parent Portal Invitation
     desired_initial_state: DRAFT_WAITING_EXTERNAL
     sender_key: brand
@@ -225,11 +265,16 @@ workflows:
       - invitation_revoked
       - suppression
     idempotency_scope: adult_parent_invitation_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids: []
   - workflow_key: OT-08
-    requirement_id: 131-AC01
+    requirement_id: OTV2-GHL-131
+    acceptance_case_id: OTV2-GHL-131-AC01
     canonical_name: OT-08 Parent Portal Activated
     desired_initial_state: DRAFT_WAITING_EXTERNAL
     sender_key: brand
@@ -244,12 +289,17 @@ workflows:
       - activation_message_sent
       - suppression
     idempotency_scope: adult_first_parent_setup
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids:
       - ghl.parent_portal_activated.v1
   - workflow_key: OT-09
-    requirement_id: 132-AC01
+    requirement_id: OTV2-GHL-132
+    acceptance_case_id: OTV2-GHL-132-AC01
     canonical_name: OT-09 Parent Class Reminder
     desired_initial_state: DRAFT_WAITING_EXTERNAL
     sender_key: brand
@@ -272,12 +322,17 @@ workflows:
       - schedule_replaced
       - suppression
     idempotency_scope: adult_household_class_occurrence
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids:
       - ghl.parent_class_reminder.v1
   - workflow_key: OT-10
-    requirement_id: 133-AC01
+    requirement_id: OTV2-GHL-133
+    acceptance_case_id: OTV2-GHL-133-AC01
     canonical_name: OT-10 New Recording Available
     desired_initial_state: DRAFT_WAITING_EXTERNAL
     sender_key: brand
@@ -295,12 +350,17 @@ workflows:
       - publication_reversed
       - suppression
     idempotency_scope: adult_household_published_content
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: true
+    requires_provider_readback: true
     requires_signed_billing_projection: false
     requires_local_commit_readback: true
     approved_copy_ids:
       - ghl.parent_recording_available.v1
   - workflow_key: OT-13
-    requirement_id: 136-AC01
+    requirement_id: OTV2-GHL-136
+    acceptance_case_id: OTV2-GHL-136-AC01
     canonical_name: OT-13 Refund / Chargeback
     desired_initial_state: SAVED_REOPENED
     sender_key: office
@@ -319,6 +379,10 @@ workflows:
       - projection_superseded
       - suppression
     idempotency_scope: household_refund_or_chargeback_episode
+    requires_approved_audience: true
+    requires_approved_copy: true
+    requires_admin_approval: false
+    requires_provider_readback: false
     requires_signed_billing_projection: true
     requires_local_commit_readback: true
     approved_copy_ids: []
