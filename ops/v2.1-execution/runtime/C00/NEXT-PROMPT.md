@@ -978,6 +978,16 @@ P23 final `32f3a4649632c5768b46430c13b4cb2a3546cfc3` remains read-only
 pending its independent exact-source semantic verdict. Do not queue or
 integrate it before PASS.
 
+P23 final `32f3a4649632c5768b46430c13b4cb2a3546cfc3` has now passed that
+semantic verdict and is admitted. Resume I36 only from exact integration head
+`cecc1c0dc6ff57562e5d89dd731289d860086bf7` under claim
+`4f275da3-6bac-4149-8f0d-42206f5d238e`, RELEASE_INTEGRATOR lease
+`5f617e0e-7f87-4eba-9dd0-1361227d272a`, and ready digest
+`732033d08cdaf7ed841579fe63545e9150fb9ffd8abe3204b74e09e780ba25f7`.
+Change exactly I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+push normally, remote-verify, and stop for C00 reconciliation. Do not merge
+P23 or apply its migration/registration requests in this first push.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,

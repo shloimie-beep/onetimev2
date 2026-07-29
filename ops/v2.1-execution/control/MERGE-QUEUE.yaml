@@ -1,8 +1,59 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: ceed4d92-af5a-413f-b9b3-034293e37caf
+  kind: full
+  task_id: P23
+  source_branch: codex/v21-p23-student-notifications
+  source_head_sha: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+  target_branch: codex/v21-integration
+  expected_target_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+  source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+  required_merge_base_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+  merge_after_heads: {}
+  allowed_paths:
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
+  - apps/web/src/client/app/student/notifications/index.ts
+  - apps/web/src/server/features/notifications/student/index.ts
+  - apps/web/src/server/features/notifications/student/service.test.ts
+  - apps/web/src/server/features/notifications/student/service.ts
+  - ops/v2.1-execution/runtime/P23/HANDOFF.md
+  - ops/v2.1-execution/runtime/P23/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-migration-001.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-registration-001.yaml
+  - packages/contracts/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/repository.test.ts
+  - packages/db/src/notifications/student/repository.ts
+  - packages/domain/src/notifications/student/errors.ts
+  - packages/domain/src/notifications/student/index.ts
+  - packages/domain/src/notifications/student/lifecycle.test.ts
+  - packages/domain/src/notifications/student/lifecycle.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 5f617e0e-7f87-4eba-9dd0-1361227d272a
+    holder_task_id: I36
+    holder_claim_id: 4f275da3-6bac-4149-8f0d-42206f5d238e
+    state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+    lease_issued_at: '2026-07-29T09:46:42Z'
+    lease_expires_at: '2026-07-29T10:46:42Z'
+    phase_scope: P23_full_integration_atomic_claim_only
+  task_packet_digest: 754b2b82d85adcd012c48d1d30468f90cda6b447509f5f414533a48d410f852f
+  state_handoff_digest: 312568d9b53568f7445a532a57f6e1c8c79f285fe0bf38016a90861f3aaece1a
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+item_payload_digests:
+  ceed4d92-af5a-413f-b9b3-034293e37caf: 841bb07ed93e0ac07d83d68d0af55c2fc952d1d6040763c73d142eb474b0260a
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

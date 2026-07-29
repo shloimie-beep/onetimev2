@@ -1256,3 +1256,14 @@ P23 final `32f3a464` passed C00 mechanical replay with exact 19-path scope,
 22 focused tests, typecheck, artifact `14ab3136`, unchanged request aggregate
 `f984e5ee`, locked copy, and NUL-free PostgreSQL-boundary proof. It remains
 unadmitted until the independent semantic re-audit returns.
+
+P23 final `32f3a4649632c5768b46430c13b4cb2a3546cfc3` also passed the
+independent exact-source semantic audit and is admitted for a serialized full
+integration. Its migration and registration requests are assigned to F02 and
+I36 but remain unapplied. I36 ready digest `732033d0` authorizes only an exact
+three-runtime-file claim from integration head `cecc1c0d` under claim
+`4f275da3-6bac-4149-8f0d-42206f5d238e` and RELEASE_INTEGRATOR lease
+`5f617e0e-7f87-4eba-9dd0-1361227d272a`. Do not merge source until C00
+reconciles that claim and rebinds merge `ceed4d92-af5a-413f-b9b3-034293e37caf`.
+P11's separate correction claim remains authorized and undisturbed. No
+provider, send, steward-application, or external effect is authorized.

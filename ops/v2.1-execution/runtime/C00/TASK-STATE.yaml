@@ -716,14 +716,26 @@ steward_requests:
   status: assigned
   assigned_steward: I36
   target_checkpoint: I36_next_shared_registration_checkpoint
+- request_id: P23-migration-001
+  request_digest: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
+  requesting_task_id: P23
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+- request_id: P23-registration-001
+  request_digest: 20d08ffa80042c0f894eba99fcc932409f90bb9c511c1e49705fd026bff1d261
+  requesting_task_id: P23
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 046fda3d83b12855712f58869dabe49c0c99de02cd3ee41480e95d6a4163401e
-    control_lease: 9105e8cbd8ecfc0ba3849440ab537d66af1ac30338d544c72295706cf634eac8
-    task_registry: c05a03af412a2a2a4895834076387205dacd151d85ab5bd5b7407884967d1c0d
-    ready_queue: 3e3ce54feef7ef3f701374414ce4b597cc800d9dfa12db184a20d5648d321e78
-    merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
-    steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
+    control_state: 04bea2d848174e3b5cd05be3cecc672d75eb65089fe86712e0043d86c4ab3e45
+    control_lease: 14c3d95414731bdcbf6ff28fc6ac7db5b76f6abf1e500963445a444866ca402b
+    task_registry: ee1027a21243ac48159ef203f0aaa47b8b8af0971623c107280bc5367e3ec501
+    ready_queue: 692305dd62c01a7875905b3ae2e58d79b050400b61aa1541d01edd2efa7e78b6
+    merge_queue: 92b36626d7e1a43ed4f11bc798bf1dc9c52568c3c8eaaf7224be77aa98e95267
+    steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70
@@ -865,6 +877,8 @@ verification:
   - P11 final 899ef6a7 exact 17-path scope, artifact/request digests, 14 focused tests, typecheck, and provider/query/listbox fixes: rejected for revoked-first-render and stale-completion races, dotted/colon option-ID collision, and Bearer-space secret leakage
   - canonical P11 authorization-race/ID/secret correction ready-entry digest aeea25dd against acquisition 6cd1efc5, rejected head 899ef6a7, fresh claim d76c097a, sole ADMIN_OPERATIONS_UI lease 84cd0230, and zero effect locks: passed
   - P23 final 32f3a464 exact 19-path scope, 14-artifact digest 14ab3136, unchanged request aggregate f984e5ee, 22 focused tests, typecheck, locked-copy/PostgreSQL-boundary proof, released lease, and independent semantic re-audit: passed and ready for admission
+  - canonical I36 P23 integration ready digest 732033d0 and P23 full merge digest 841bb07e against acquisition a0356387 and exact target cecc1c0d: passed
+  - P23 migration e6f899ad and registration 20d08ffa requests assigned but unapplied; I36 source merge withheld pending atomic claim reconciliation and target-CAS rebind: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
