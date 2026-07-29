@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-1db9b704
-claim_time: '2026-07-29T00:52:47Z'
-claim_id: 1db9b704-91b1-4934-a233-b11279bc75d4
-lease_expires_at: '2026-07-29T00:54:30Z'
-last_heartbeat_at: '2026-07-29T00:54:30Z'
-controller_authorization_sha: 629577e2ea6da2fdeca7754a6f314b6b254e952e
+claimed_by: codex-c00-orchestrator-29fec961
+claim_time: '2026-07-29T01:05:19Z'
+claim_id: 29fec961-dd91-40dc-b272-66693202ddc8
+lease_expires_at: '2026-07-29T01:12:00Z'
+last_heartbeat_at: '2026-07-29T01:12:00Z'
+controller_authorization_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
 ready_entry_payload_digest: null
-state_based_on_head_sha: 629577e2ea6da2fdeca7754a6f314b6b254e952e
+state_based_on_head_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -152,8 +152,11 @@ completed_steps:
 - admitted the corrected P17, P29, and P30 finals, assigned their nine immutable steward requests without applying them, and authorized dependency-valid P08 family signup, P10 Admin directory, and P33 runtime operations from integration head 49431959
 - independently verified P08 claim a22ab6d8, P10 claim 42602096, and P33 claim e7a2760c with exact sole parent 49431959, exactly three task-local runtime paths each, dependency/lease/digest bindings, and zero effects
 - consumed all three ready entries under exact acquisition head 629577e2 and authorized only their disjoint task-owned implementation scopes
+- independently verified corrected P08 interface b7601c00, immutable export hash 52d75f16, canonical contract digest f54e4381, exact six-path delta, two focused assertions, lineage, and zero effects
+- independently verified P33 interface 8c8dee4e, seven export hashes, canonical contract digest d643626a, exact sixteen-path delta, typecheck, focused lint/format checks, lineage, and zero effects
+- queued only P08 interface for serialized I36 claim a2ae8e13 from exact integration target 49431959; P33 remains next because optimistic target CAS values cannot be precomputed across two ordered merges
 remaining_steps: []
-next_action: P08, P10, and P33 implement independently under reconciled disjoint writer leases; no provider effects are authorized.
+next_action: I36 atomically claims P08 interface from 49431959, C00 reconciles and rebinds its target CAS, then I36 merges it before P33 is queued from the resulting exact target.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -161,12 +164,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 629577e2ea6da2fdeca7754a6f314b6b254e952e
+  current_control_parent_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 1db9b704-91b1-4934-a233-b11279bc75d4
-      observed_head: 629577e2ea6da2fdeca7754a6f314b6b254e952e
+      claim_id: 29fec961-dd91-40dc-b272-66693202ddc8
+      observed_head: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -177,11 +180,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: 9b1ad11d-f16c-40e7-aec9-e07172c90034
+      claim_id: a2ae8e13-f123-4190-badc-58269ced4219
       observed_head: 49431959f58f284bdc13ca931acf09f980fc483a
-      authorized_start_sha: ebf88c8e422a6ad40202fc2b0249810d312edc30
-      lease_expires_at: null
-      scheduling_state: ready_P28_interface_integrated
+      authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+      lease_expires_at: '2026-07-29T02:08:19Z'
+      scheduling_state: ready_for_P08_interface_atomic_claim_only
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -325,10 +328,10 @@ orchestration:
     P08:
       branch: codex/v21-p08-family-signup
       claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
-      observed_head: a22ab6d8df8841700cc8d336fdb1739290c01dc6
+      observed_head: 59b43a601225d6f86a929621c89402d06ada39e4
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T01:38:10Z'
-      scheduling_state: claimed_implementation_authorized
+      lease_expires_at: null
+      scheduling_state: ready_for_review_pending_final_admission_interface_queued
     P10:
       branch: codex/v21-p10-admin-directory
       claim_id: f7e5889d-4db4-4818-a47f-5f26927597ae
@@ -339,10 +342,10 @@ orchestration:
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: e0ba9363-1e4e-41eb-b8fb-35043bd09881
-      observed_head: e7a2760c95de6abd04d0cdfe58e006efb8890ba0
+      observed_head: 8c8dee4e1c8ab95ddab31d10cf17741a6cce6966
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T01:38:10Z'
-      scheduling_state: claimed_implementation_authorized
+      scheduling_state: claimed_implementation_active_interface_verified_pending_queue
   active_native_subagents:
   - task_id: P10
     agent: /root/f03_worker
@@ -352,22 +355,14 @@ orchestration:
     lease_expires_at: '2026-07-29T01:38:10Z'
     status: claimed
     phase: implementation
-  - task_id: P08
-    agent: /root/f05_worker
-    branch: codex/v21-p08-family-signup
-    observed_head: a22ab6d8df8841700cc8d336fdb1739290c01dc6
-    claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
-    lease_expires_at: '2026-07-29T01:38:10Z'
-    status: claimed
-    phase: contract
   - task_id: P33
     agent: /root/i36_worker2
     branch: codex/v21-p33-runtime-operations
-    observed_head: e7a2760c95de6abd04d0cdfe58e006efb8890ba0
+    observed_head: 8c8dee4e1c8ab95ddab31d10cf17741a6cce6966
     claim_id: e0ba9363-1e4e-41eb-b8fb-35043bd09881
     lease_expires_at: '2026-07-29T01:38:10Z'
     status: claimed
-    phase: contract
+    phase: implementation
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -536,11 +531,11 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 89ad32953d66f5a452423c5f4011660a27f8cef309a84d3c32aa3ef426ac480e
-    control_lease: 7d4e85be117eff4782187fbdd92b4f9658ce170dad705e7467d255d55ae8a084
-    task_registry: 78eac8ea4319af7ad6fa41beea2ee74208eeaf4d87795de029bcb398bf8053ac
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
-    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
+    control_state: 420213794c392a2865397e36f4a7e975250e30357a9854099d0923a585371b48
+    control_lease: bbc8443ce625bb46b692452e3f89c759e97a92f4811daa94ed3339a40cfe546d
+    task_registry: 88fffca79113feda6e4e1bcc97404508437b7b28a30590a51fce0c097976da5a
+    ready_queue: 4c039fc67f10b7a1ec4c990f647e80c3c184b1d16f2752130547094fc7cf37d0
+    merge_queue: 85acc4c50829a147e6e7df225fce3443a75a5c07d189800f913ba2410b55164a
     steward_queue: e4205fe1518700587b91dacd55ddb78190ce03944ad25a762941f6c67d4586ba
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9

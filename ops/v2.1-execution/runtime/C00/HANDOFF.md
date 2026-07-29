@@ -507,3 +507,15 @@ canonical ready digest, and records zero effects. C00 consumed all three under
 exact acquisition `629577e2`. The workers may now implement concurrently
 inside the disjoint FAMILY_SIGNUP, ADMIN_DIRECTORY, and OPERATIONS_RUNTIME
 scopes. Provider effects remain prohibited.
+
+P08's corrected interface checkpoint `b7601c00` is independently verified:
+implementation `0c386529`, export blob `52d75f16`, canonical contract
+`f54e4381`, exact six-path source delta from `49431959`, focused contract
+verification, and zero effects. P33's interface checkpoint `8c8dee4e` is also
+independently verified from implementation `863cf2be`: all seven export hashes,
+canonical contract `d643626a`, exact sixteen-path owned delta, typecheck,
+lint/format hygiene, and zero effects. Because the second optimistic target
+cannot be known before the first ancestry-preserving merge, C00 queued P08
+first under I36 claim `a2ae8e13`; P33 remains the next serialized interface.
+P08 has separately published final `59b43a60` and awaits final semantic
+admission while its interface proceeds.

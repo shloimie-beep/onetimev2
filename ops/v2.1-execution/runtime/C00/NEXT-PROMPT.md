@@ -239,3 +239,13 @@ required interface checkpoints for P08/P33, focused and repository-relevant
 verification, refreshed runtime proof, and lease release. No provider effects,
 shared-path edits, migrations, manifest/lockfile changes, or fake fallbacks are
 authorized.
+
+P08 interface `b7601c002d2c37d0ef7760c328015f9a8d590893` and P33
+interface `8c8dee4e1c8ab95ddab31d10cf17741a6cce6966` have passed independent
+lineage, scope, artifact-hash, canonical-digest, verification, and zero-effect
+checks. Dispatch I36 resume claim `a2ae8e13-f123-4190-badc-58269ced4219`
+from exact integration head `49431959f58f284bdc13ca931acf09f980fc483a`
+for a claim-only checkpoint, reconcile it, rebind the P08 merge target CAS,
+and integrate P08. Then queue P33 against the exact resulting integration
+head. In parallel, audit P08 final `59b43a601225d6f86a929621c89402d06ada39e4`
+and continue monitoring P10/P33. No provider effects are authorized.
