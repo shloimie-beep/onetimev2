@@ -1,0 +1,31 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P13-client-route-001
+task_id: P13
+kind: client_route_registration
+requirement_ids:
+  - OTV2-PARENT-037
+  - OTV2-PARENT-039
+  - OTV2-PARENT-185
+acceptance_case_ids:
+  - OTV2-PARENT-037-AC01
+  - OTV2-PARENT-039-AC01
+  - OTV2-PARENT-185-AC01
+rationale: P13 owns isolated progress, schedule, and updates workspaces but not the Parent app shell or central route registry; P24 owns the support workspace.
+desired_semantic_change: Register the P13 Parent-only summary workspaces and connect their support entry to the P24-owned Parent support route without editing that workspace.
+proposed_symbols_routes_keys_or_dependencies:
+  - Register ParentSchedule at the canonical Parent schedule route.
+  - Register ParentProgressSummary at the canonical Parent progress route.
+  - Register ParentUpdates at the canonical Parent updates route.
+  - Resolve /app/parent/support through the P24-owned support workspace while preserving the P13 link label and description.
+compatibility_assumptions:
+  - F07 shell and tokens remain unchanged and provide the canonical Parent navigation container.
+  - P24 owns and will register the support workspace; P13 supplies only the typed link target.
+verification_performed:
+  - Focused static-render tests for schedule, progress, updates, support, empty states, and forbidden learner surfaces.
+  - Workspace TypeScript typecheck.
+  - Focused ESLint and Prettier checks.
+conflicts_or_risks:
+  - Parent routes must never resolve to Student Join Class, recordings, learning library, private questions, or Rabbi answers.
+  - The support link must not authorize P13 to edit apps/web/src/client/app/parent/support.
+contains_secret_or_private_data: false
