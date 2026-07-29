@@ -2,8 +2,135 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: F02
+  status: resume_ready
+  phase: migration_lease_A_2235_2238
+  branch: codex/v21-f02-schema-state-migrations
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+  authorized_start_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+  expected_existing_head: e4673ff1c2e621e26ac93034be245b280c4da4fa
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+      control_state_digest: 9ee314e12f90cefeaf9c12da5970cdb8c030347fdbc982c6eae692d7d1f62a17
+      task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
+      task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
+    I36:
+      required_state: P18_collision_correction_released
+      observed_state: P18_collision_correction_released
+      observed_integration_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+      state_handoff_digest: ca4b1d99813dddff0f81d551683dbd57d98c8d55c73514bb42c7bd88b0d5b475
+    F02:
+      required_state: ready_for_review
+      observed_state: ready_for_review
+      observed_task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+      state_handoff_digest: b848936b7fbbfc4aa088e2062d82a4f472dcfa4cd8b3b8518e9e832362f5e2bd
+      allocation_proposal_raw_digest: d0e4d2ac7b406d2f5b9488f2d657cf082abc552a8639720878decb49380d1843
+      interface_checkpoint_raw_digest: b26a98bff2d9a9e4d31bc15cc1ace81305473f9f9440e9b3132ecda0e6b698cc
+      interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+    F04:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+      request_id: F04-migration-001
+      request_digest: b42fe840f07e8069a01e178f8a14c793ef50297428955b104f0c9e5bb88edc93
+      request_git_blob: 96be444f01974484a6ee2680bb1a4b12761c9085
+    F05:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+      request_id: F05-MIGRATION-001
+      request_digest: 450d1e4a3ddedd04971f1f52a70e3fec5fbaefe526f9580c4682bc6fb4062a1d
+      request_git_blob: 4707ff364d0b727875adf36ea885f8a9ec2bb9d9
+    P15:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
+      request_id: P15-MIGRATION-001
+      request_digest: 076e781f52302ae1447855c464c4001b028d610a188388b339a917d4fc477fdf
+      request_git_blob: b4569eb4d3a7b03b573a634741d944d3751f3635
+    F06:
+      required_state: source_integrated_request_assigned
+      observed_state: source_integrated_request_assigned
+      observed_task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+      request_id: F06-migration-001
+      request_digest: 06a329a0d1f08cdfd73f3f907a6aa9118fddf209a288e596a812ee0899b3861f
+      request_git_blob: d155c2a04cac7e972c8c9515e0353142bcad3c96
+  migration_lease_plan:
+    prior_allocation:
+      ordinal: 2234
+      file: packages/db/migrations/2234_canonical_state_machines.sql
+      checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+    next_available_ordinal: 2235
+    never_allocate:
+    - 2231
+    allocations:
+    - ordinal: 2235
+      request_id: F04-migration-001
+      file: packages/db/migrations/2235_v21_household_identity.sql
+      purpose: Canonical adult, human-account, role-membership, household, Student, session, transfer, action-token, billing-portal, provider-reassociation, and audit persistence.
+    - ordinal: 2236
+      request_id: F05-MIGRATION-001
+      file: packages/db/migrations/2236_v21_job_foundation.sql
+      purpose: Job command idempotency and transactional job outbox persistence.
+    - ordinal: 2237
+      request_id: P15-MIGRATION-001
+      file: packages/db/migrations/2237_v21_calendar_recurrence.sql
+      purpose: Forward-only canonical recurrence extensions for class series and occurrences.
+    - ordinal: 2238
+      request_id: F06-migration-001
+      file: packages/db/migrations/2238_v21_provider_core.sql
+      purpose: Provider operation binding, GHL identity link, household provider mapping, readback ledger, and job-outbox extension.
+    required_order:
+    - F04-migration-001
+    - F05-MIGRATION-001
+    - P15-MIGRATION-001
+    - F06-migration-001
+    authorized_paths:
+    - packages/db/migrations/2235_v21_household_identity.sql
+    - packages/db/migrations/2236_v21_job_foundation.sql
+    - packages/db/migrations/2237_v21_calendar_recurrence.sql
+    - packages/db/migrations/2238_v21_provider_core.sql
+    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+    forbidden_actions: No edit to any applied migration; no 2231 allocation; no package, barrel, product, provider, deployment, registration, control, or other task path; no persistent/shared database; no external effect.
+  writer_slot_leases:
+  - slot: MIGRATION_AUTHORITY
+    lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
+    holder_task_id: F02
+    holder_claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
+    state_based_on_control_head_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+    lease_issued_at: '2026-07-29T17:36:43Z'
+    lease_expires_at: '2026-07-29T18:51:43Z'
+    phase_scope: F02_migration_lease_A_2235_2238_atomic_claim_only
+  - slot: SCHEMA_CONTRACT
+    lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
+    holder_task_id: F02
+    holder_claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
+    state_based_on_control_head_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+    lease_issued_at: '2026-07-29T17:36:43Z'
+    lease_expires_at: '2026-07-29T18:51:43Z'
+    phase_scope: F02_migration_lease_A_2235_2238_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
+  lease_issued_at: '2026-07-29T17:36:43Z'
+  lease_expires_at: '2026-07-29T18:51:43Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  F02: c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
