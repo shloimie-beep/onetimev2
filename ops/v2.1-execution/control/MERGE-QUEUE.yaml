@@ -1,8 +1,54 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 2f2547a1-3526-4aa7-a902-8382f36038d5
+  kind: correction
+  task_id: P18
+  source_branch: codex/v21-p18-embedded-classroom
+  source_head_sha: b9ad947405de53c138561fd47b9d5c65a25f6b8b
+  target_branch: codex/v21-integration
+  expected_target_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
+  source_delta_base_head_sha: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
+  required_merge_base_sha: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: b9ad947405de53c138561fd47b9d5c65a25f6b8b
+  merge_after_heads:
+    P18: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
+    Wave_D_release: f947c01f6047f129b18dcf7a13e992eef10a9fe3
+  allowed_paths:
+  - ops/v2.1-execution/runtime/P18/HANDOFF.md
+  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-002.yaml
+  - packages/db/src/classroom/attendance/repository.test.ts
+  - packages/db/src/classroom/attendance/repository.ts
+  - packages/db/src/classroom/attendance/schema-contract.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: b39bd286-c061-45cf-bcbe-cb38eb9b4032
+    holder_task_id: I36
+    holder_claim_id: 31d2abc1-bdee-4297-b5d7-b89719cd9dc6
+    state_based_on_control_head_sha: 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49
+    lease_issued_at: '2026-07-29T17:06:49Z'
+    lease_expires_at: '2026-07-29T18:21:49Z'
+    phase_scope: P18_collision_correction_micro_integration_atomic_claim_only
+  task_packet_digest: e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bbaa1b2
+  state_handoff_digest: 6efd5605dc86250639227cfe1c214908874cc1f0b2075d033172686289fec2c7
+  source_path_inventory_digest: 6a5a663e246dd6ac76101ba3144c3615611744cbd9492e03f2c5fbc59b5f8c62
+  source_manifest_digest: 6d9f8d8d115c8fb0dea332e74d090351f3c4d7d59308bf4c87b5e1821c67d80d
+  correction_manifest_digest: 533b480bb3f7f71c2798a765d63abb3cd1d2200b4be6c5f4b85687ca72b88d51
+  replacement_request_raw_digest: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
+  replacement_request_canonical_digest: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 7359ed26bd1990b4c4cd3a0d9d864e51694f5c49
+item_payload_digests:
+  2f2547a1-3526-4aa7-a902-8382f36038d5: 636a9bf0ed1db29127cc785c21e1cf7bc2421db73d8764a747b4bd6c04cf4352
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
