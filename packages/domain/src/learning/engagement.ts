@@ -430,13 +430,14 @@ export function buildLeaderboard(input: {
   }
   const approvedQuestionCount = new Map<string, number>();
   for (const question of input.questions) {
+    const leaderboardQualifiedAt = firstLeaderboardQualificationAt(question);
     if (
       sameScope(input.actor, question) &&
       question.classId === input.classId &&
       question.recognitionEligible &&
       (question.state === 'approved_for_class' || question.state === 'published') &&
-      question.recognitionOccurredAt &&
-      inWindow(question.recognitionOccurredAt, windowStarts, windowEnds)
+      leaderboardQualifiedAt &&
+      inWindow(leaderboardQualifiedAt, windowStarts, windowEnds)
     ) {
       approvedQuestionCount.set(
         question.studentId,
@@ -520,6 +521,12 @@ function rank(
     previousRank = entryRank;
     return { rank: entryRank, studentId: learner.studentId, displayName: name(learner), value };
   });
+}
+
+function firstLeaderboardQualificationAt(question: LearningQuestion) {
+  return question.transitions.find(
+    (transition) => transition.to === 'approved_for_class' || transition.to === 'published',
+  )?.occurredAt;
 }
 
 function awards(

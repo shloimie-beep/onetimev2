@@ -468,20 +468,36 @@ describe('P22 announcements and recognition-safe leaderboard', () => {
       }).map((badge) => badge.key),
     ).toContain('curious_learner:1');
 
-    const approved = move(question, 'approved_for_class', 'approve-leaderboard');
+    const approved = move(
+      { ...question, recognitionOccurredAt: '2026-05-01T10:00:00.000Z' },
+      'approved_for_class',
+      'approve-leaderboard',
+    );
     const approvedBoard = buildLeaderboard({ ...base, questions: [approved] });
     expect(
       approvedBoard.categories.approvedQuestionCount.find(
         (entry) => entry.studentId === 'student-1',
       )?.value,
     ).toBe(1);
-    const published = move(approved, 'published', 'publish-leaderboard');
-    const publishedBoard = buildLeaderboard({ ...base, questions: [published] });
+    const published = transitionQuestion(approved, {
+      actor: admin,
+      questionId: approved.id,
+      to: 'published',
+      expectedVersion: approved.version,
+      idempotencyKey: 'publish-leaderboard',
+      requestHash: 'hash-publish-leaderboard',
+      occurredAt: '2026-08-10T10:00:00.000Z',
+    }).question;
+    const publishedBoard = buildLeaderboard({
+      ...base,
+      questions: [published],
+      asOf: '2026-08-20T10:00:00.000Z',
+    });
     expect(
       publishedBoard.categories.approvedQuestionCount.find(
         (entry) => entry.studentId === 'student-1',
       )?.value,
-    ).toBe(1);
+    ).toBe(0);
 
     const optedIn = buildLeaderboard({
       ...base,
