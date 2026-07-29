@@ -645,3 +645,19 @@ also omits the required build timestamp and migration/schema version, and
 alerts omit mandatory runtime tier and verification-environment identity. C00
 authorized only atomic claim `c37c6dea` from exact final `38e8305e` under a
 fresh OPERATIONS_RUNTIME lease; no product edit may occur before reconciliation.
+
+P33 claim `0ecfd73c` is now reconciled exactly under acquisition `9184bcfd`:
+sole parent `38e8305e`, only the three P33 runtime files, containing
+authorization `802b522f`, ready digest `e8689215`, live OPERATIONS_RUNTIME
+lease, clean worktree, and zero effects. P33 may implement only the recorded
+runtime-identity, actual-time heartbeat, queue-evidence, alert-identity, and
+complete leakage-scanning corrections.
+
+P08 final `e15a7af6` is independently admitted. Its exact fifteen-path source
+delta and thirteen-path follow-up scope, v2.0.0 export digest `32a4a8be`,
+steward hashes, state/handoff binding, 17 focused tests, released lease, clean
+worktree, and zero effects all pass. The exact interface merge
+`6fc2b7ae-b59a-4344-9399-669a5d79212b` is queued against integration target
+`87e3ba67`, and I36 may publish only atomic claim `2b9e5c96` before another C00
+reconciliation. P08 migration and registration requests are assigned to F02
+and I36 respectively.

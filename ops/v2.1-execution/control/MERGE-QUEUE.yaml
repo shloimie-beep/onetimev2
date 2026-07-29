@@ -1,8 +1,55 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 6fc2b7ae-b59a-4344-9399-669a5d79212b
+  kind: interface
+  task_id: P08
+  source_branch: codex/v21-p08-family-signup
+  source_head_sha: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 87e3ba67c6433d249a29be9eac99f780ffc99683
+  source_delta_base_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+  required_merge_base_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+  merge_after_heads: {}
+  allowed_paths:
+  - apps/web/src/client/public/signup/model.test.ts
+  - apps/web/src/client/public/signup/model.ts
+  - apps/web/src/server/features/signup/family/service.test.ts
+  - apps/web/src/server/features/signup/family/service.ts
+  - ops/v2.1-execution/runtime/P08/HANDOFF.md
+  - ops/v2.1-execution/runtime/P08/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P08/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P08/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P08/steward-requests/P08-migration-001.yaml
+  - ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-001.yaml
+  - packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - packages/contracts/src/signup/family/index.ts
+  - packages/domain/src/signup/family/index.ts
+  - packages/domain/src/signup/family/policy.test.ts
+  - packages/domain/src/signup/family/policy.ts
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 1975bc3e-446f-473a-9872-92dd927fdc48
+    holder_task_id: I36
+    holder_claim_id: 2b9e5c96-4e10-45a9-9f59-aa2d7110cdd3
+    state_based_on_control_head_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
+    lease_issued_at: '2026-07-29T02:32:11Z'
+    lease_expires_at: '2026-07-29T03:32:11Z'
+    phase_scope: P08_v2_interface_atomic_claim_only
+  task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
+  state_handoff_digest: cdd979dded29a21c84ec77443a5fdc5f979aea0d258fa7f090d2bf5c7aace906
+  external_effect_summary:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
+item_payload_digests:
+  6fc2b7ae-b59a-4344-9399-669a5d79212b: 20642826a27d6e76d282420ad154ef53c398a33f6fb040a938dc2cc3e8298494
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

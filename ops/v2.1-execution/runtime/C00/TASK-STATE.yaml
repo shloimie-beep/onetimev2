@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-e05edf3e
-claim_time: '2026-07-29T02:22:38Z'
-claim_id: e05edf3e-f48c-4d78-8c4a-1a82613d1b3d
-lease_expires_at: '2026-07-29T02:26:33Z'
-last_heartbeat_at: '2026-07-29T02:26:33Z'
-controller_authorization_sha: 81f10c6535db733cc0505b43f37fe5a3e7887934
+claimed_by: codex-c00-orchestrator-06005de2
+claim_time: '2026-07-29T02:32:11Z'
+claim_id: 06005de2-4017-473d-82ab-72da706b65e1
+lease_expires_at: '2026-07-29T02:36:50Z'
+last_heartbeat_at: '2026-07-29T02:36:50Z'
+controller_authorization_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
 ready_entry_payload_digest: null
-state_based_on_head_sha: 81f10c6535db733cc0505b43f37fe5a3e7887934
+state_based_on_head_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -186,8 +186,12 @@ completed_steps:
 - reproduced P33 ready heartbeat from a day-old health snapshot, provider-link leakage for Stripe, GHL, and Telegram, common first/last-name and address leakage, an ok stalled-content queue, and an ok ten-minute lease/ninth-retry observation
 - found P33 runtime cards omit required build timestamp and migration/schema version, while alerts omit mandatory runtime tier and verification environment identity
 - issued P33 follow-up correction claim c37c6dea from exact rejected final 38e8305e under fresh OPERATIONS_RUNTIME lease, canonical ready digest e8689215, and zero effect authority
+- independently verified P33 follow-up claim 0ecfd73c with sole parent 38e8305e, exact three P33 runtime paths, containing authorization 802b522f, exact acquisition 81f10c65, canonical ready digest e8689215, live lease, clean worktree, and zero effects
+- consumed P33 claim under exact acquisition 9184bcfd and authorized only exact runtime identity, actual-time heartbeat freshness, queue evidence, alert identity, and complete leakage scanning
+- independently verified P08 corrected final e15a7af6 ancestry, exact fifteen-path source delta and thirteen-path follow-up scope, v2.0.0 export/steward/state-handoff digests, 17 focused tests, released lease, clean worktree, and zero effects
+- admitted P08 v2.0.0 interface 32a4a8be for integration, queued exact migration and registration steward requests, and issued I36 integration claim 2b9e5c96 against target 87e3ba67
 remaining_steps: []
-next_action: P08 continues its reconciled correction; P10 resumes only the reconciled bounded implementation from 6ec92d28; P33 publishes only atomic claim c37c6dea from 38e8305e and stops for reconciliation.
+next_action: P33 resumes only its reconciled bounded correction from 0ecfd73c; I36 publishes only atomic claim 2b9e5c96 for the exact P08 interface merge and stops for reconciliation; P10 continues its bounded correction.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -195,12 +199,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 81f10c6535db733cc0505b43f37fe5a3e7887934
+  current_control_parent_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: e05edf3e-f48c-4d78-8c4a-1a82613d1b3d
-      observed_head: 81f10c6535db733cc0505b43f37fe5a3e7887934
+      claim_id: 06005de2-4017-473d-82ab-72da706b65e1
+      observed_head: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -211,11 +215,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: null
+      claim_id: 2b9e5c96-4e10-45a9-9f59-aa2d7110cdd3
       observed_head: 87e3ba67c6433d249a29be9eac99f780ffc99683
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: null
-      scheduling_state: ready_waiting_after_withdrawal_release
+      lease_expires_at: '2026-07-29T03:32:11Z'
+      scheduling_state: P08_v2_interface_merge_claim_authorized_not_reconciled
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -358,11 +362,11 @@ orchestration:
       scheduling_state: ready_for_review_admitted
     P08:
       branch: codex/v21-p08-family-signup
-      claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
-      observed_head: c58b4a65dfbdab52f7be7dddf41875194c4b632c
+      claim_id: null
+      observed_head: e15a7af6cde557ff7f0fbbd55c12244780ca2321
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T03:07:09Z'
-      scheduling_state: replacement_follow_up_claim_reconciled_implementation_authorized
+      lease_expires_at: null
+      scheduling_state: ready_for_review_v2_interface_queued
     P10:
       branch: codex/v21-p10-admin-directory
       claim_id: cd15a4ba-db91-44ff-b522-f111fbcd9a0d
@@ -373,10 +377,10 @@ orchestration:
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: c37c6dea-d395-4a57-8068-f519dad03c89
-      observed_head: 38e8305e29f75714d8b3cc9c8198d1f0a47f5b4b
+      observed_head: 0ecfd73c6f5e1a352d995269efbf1cf1a731ddf4
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T03:22:38Z'
-      scheduling_state: identity_heartbeat_queue_alert_leakage_claim_authorized_not_reconciled
+      scheduling_state: identity_heartbeat_queue_alert_leakage_claim_reconciled_implementation_authorized
   active_native_subagents: []
   unresolved_blockers: []
 requirements: {}
@@ -546,12 +550,12 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: a2de555c54c7197160d41dde241658427a1fcab11a7997982fcf60a1d7d51981
-    control_lease: d085e4a7d155991e84e8020e5a82a01529bbf926e3097134e6ebcf69f0030123
-    task_registry: 49332957a2c97cbc482d355adcf758e9f5c3bbe444e5e47fb615e4dd2d88dcd3
-    ready_queue: abdbec1984403542d7bb316cb31d70cc9831a708563190add1ef73f577f9379f
-    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
-    steward_queue: e4205fe1518700587b91dacd55ddb78190ce03944ad25a762941f6c67d4586ba
+    control_state: 1faa5b932c1479e81f39b16505a2f7b94085238b308b614da59a060ecc0312a5
+    control_lease: 7a8ad35884c8198788b980d56f41455b69ef66bcadb1c8aa025a7504c11804d0
+    task_registry: 8c6d24ac5fbd22ecd050b0f060ae1cbe0b117b4f27c9519e035ddbe029a5615d
+    ready_queue: df2b0cbdd4b73d8232a1fd9cbf52be1ba88fb373e8249885e7a2946c34ba819e
+    merge_queue: 8e992a3d613a50a60a5f74f203e609ef272455f6869266ed9a263484831c503d
+    steward_queue: cb0225c4d21cf47e5367c42a06dc7455a6f638abbb79dae9a2833e54407c950a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9
     migration_allocations: ecaaaa762a08d75dc18f8943ac3fda643df604f7e6ee69c4e79c13462c312d70
@@ -579,6 +583,11 @@ verification:
   - P33 day-old ready-heartbeat, stalled-content, inconsistent lease/retry, provider-link, and common-PII direct probes: reproduced semantic defects
   - P33 exact OPS-003, OPS-030 through OPS-044, OPS-080, and OTV2-OPS-166/171/172/173 comparison: failed admission and bounded claim-only correction authorized
   - corrected P33 follow-up ready-entry canonical payload digest e8689215109abe08d4a54c5856ca89b5b457b7651e9e067ebc52267df38cc3a7: passed
+  - P33 follow-up claim 0ecfd73c sole-parent ancestry, exact three-runtime-path scope, authorization/acquisition/digest/lease bindings, clean worktree, and zero effects: passed
+  - P08 corrected final exact source and correction scopes, released lease, clean worktree, and zero effects: passed
+  - P08 focused contract, domain, server, and client verification: 4 files and 17 tests passed
+  - P08 export hash 502bb09d, canonical v2.0.0 digest 32a4a8be, migration request d77c51fb, registration request 5958df28, and state-handoff digest cdd979dd: passed
+  - canonical I36 ready-entry digest db8a42f5 and P08 merge-item digest 20642826 against target 87e3ba67 and source base 49431959: passed
   - autonomous addendum package binding and remote/native-agent reconciliation: passed
   - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   - F01 interface checkpoint schema, export hashes, canonical digest, merge base, and allowed-path admission: passed

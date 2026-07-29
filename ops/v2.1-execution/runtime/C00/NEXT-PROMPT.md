@@ -348,3 +348,17 @@ correct immutable runtime identity build/migration fields; actual-time
 heartbeat freshness; queue lease/fencing/retry/content-progress evidence;
 runtime-tier/environment-bound alerts; and complete secret, PII, and all-seven
 provider-link leakage scanning with exact negative tests.
+
+P33 claim `0ecfd73c6f5e1a352d995269efbf1cf1a731ddf4` is reconciled.
+Implement only the bounded correction already recorded, then republish exact
+interface/steward digests, negative tests, released lease, and zero effects.
+
+For I36, publish only atomic integration claim
+`2b9e5c96-4e10-45a9-9f59-aa2d7110cdd3` from exact target
+`87e3ba67c6433d249a29be9eac99f780ffc99683`, binding acquisition
+`9184bcfdb7e983a4f03733624d2d5f98455c7ea3`, RELEASE_INTEGRATOR lease
+`1975bc3e-446f-473a-9872-92dd927fdc48`, ready digest
+`db8a42f5a7261e815384ac014c694b73400e7e309b6f0865519def5a5d483b78`,
+and P08 merge item `6fc2b7ae-b59a-4344-9399-669a5d79212b` digest
+`20642826a27d6e76d282420ad154ef53c398a33f6fb040a938dc2cc3e8298494`.
+Stop for C00 reconciliation before merging P08.
