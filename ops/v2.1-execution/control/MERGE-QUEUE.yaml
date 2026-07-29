@@ -4,52 +4,54 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: 6fc2b7ae-b59a-4344-9399-669a5d79212b
-  kind: interface
-  task_id: P08
-  source_branch: codex/v21-p08-family-signup
-  source_head_sha: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+  merge_id: bbe563fe-d993-494b-b735-daa68bc48473
+  kind: full
+  task_id: P10
+  source_branch: codex/v21-p10-admin-directory
+  source_head_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
   target_branch: codex/v21-integration
-  expected_target_head_sha: 931b6fe7b160a1b77e316b2212ad46f02d5698fc
+  expected_target_head_sha: 1b338e66d10a31db790377be38eed3d1e325fb55
   source_delta_base_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
   required_merge_base_sha: 49431959f58f284bdc13ca931acf09f980fc483a
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: e15a7af6cde557ff7f0fbbd55c12244780ca2321
-  merge_after_heads: {}
+  required_postmerge_ancestor_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+  merge_after_heads:
+    F03: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    F04: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    F07: 91349fc1fa9a474ae31cf408ae0364aa10520385
   allowed_paths:
-  - apps/web/src/client/public/signup/model.test.ts
-  - apps/web/src/client/public/signup/model.ts
-  - apps/web/src/server/features/signup/family/service.test.ts
-  - apps/web/src/server/features/signup/family/service.ts
-  - ops/v2.1-execution/runtime/P08/HANDOFF.md
-  - ops/v2.1-execution/runtime/P08/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P08/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P08/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P08/steward-requests/P08-migration-001.yaml
-  - ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-001.yaml
-  - packages/contracts/src/signup/family/family-signup.contract.test.ts
-  - packages/contracts/src/signup/family/index.ts
-  - packages/domain/src/signup/family/index.ts
-  - packages/domain/src/signup/family/policy.test.ts
-  - packages/domain/src/signup/family/policy.ts
+  - apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx
+  - apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.tsx
+  - apps/web/src/client/app/admin/directory/index.ts
+  - apps/web/src/server/features/admin/directory/index.ts
+  - apps/web/src/server/features/admin/directory/service.test.ts
+  - apps/web/src/server/features/admin/directory/service.ts
+  - ops/v2.1-execution/runtime/P10/HANDOFF.md
+  - ops/v2.1-execution/runtime/P10/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P10/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P10/TASK-STATE.yaml
+  - packages/contracts/src/admin/directory/index.ts
+  - packages/domain/src/admin-directory/admin-directory.test.ts
+  - packages/domain/src/admin-directory/index.ts
+  - packages/domain/src/contact-operations/index.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 1975bc3e-446f-473a-9872-92dd927fdc48
+    lease_id: 8f1bf970-a69c-463d-98d2-a97f3591fd10
     holder_task_id: I36
-    holder_claim_id: 2b9e5c96-4e10-45a9-9f59-aa2d7110cdd3
-    state_based_on_control_head_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
-    lease_issued_at: '2026-07-29T02:32:11Z'
-    lease_expires_at: '2026-07-29T03:32:11Z'
-    phase_scope: P08_v2_interface_atomic_claim_only
-  task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
-  state_handoff_digest: cdd979dded29a21c84ec77443a5fdc5f979aea0d258fa7f090d2bf5c7aace906
+    holder_claim_id: ba9b0d15-c3c4-4f68-89b9-f96eb9626e8d
+    state_based_on_control_head_sha: acc5e60168f359e5957f2d6326a036d20a1009b3
+    lease_issued_at: '2026-07-29T02:57:00Z'
+    lease_expires_at: '2026-07-29T03:57:00Z'
+    phase_scope: P10_full_atomic_claim_only
+  task_packet_digest: fe7abc1af5110c1007c34927fe9909bc3643998dd10615c195046f30423f7e28
+  state_handoff_digest: e0f91f5c173197df8bacd9553ea866358a3ef7448a617dbce32037a8d6f51866
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 4d4ae9e7a047aa14cb04e95c0b9e0fd9e431565a
+  state_based_on_control_head_sha: acc5e60168f359e5957f2d6326a036d20a1009b3
 item_payload_digests:
-  6fc2b7ae-b59a-4344-9399-669a5d79212b: 683cb0421dd30d87b36f2c36aa857088bd6b9c661714459cde7fff7cd29c64cf
+  bbe563fe-d993-494b-b735-daa68bc48473: 43af759e22481f5734579ac411996e30ce0a36c7f9b8476b771ccefe50c3f94e
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

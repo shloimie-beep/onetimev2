@@ -389,3 +389,28 @@ digest `06ddf0377b93d940b8f0e1a2e44cb4cb29a43232387f1d86ba99b2497344122c`.
 Stop for C00 reconciliation before product edits. After reconciliation, close
 only those three evidence gaps with exact negative tests and republish all
 affected digests.
+
+P08 is integrated at final I36 release
+`1b338e66d10a31db790377be38eed3d1e325fb55`. Exact merge
+`c389287c20e4813106cc9af67f01fd2a91a48f3b` has parents
+`931b6fe7b160a1b77e316b2212ad46f02d5698fc` and
+`e15a7af6cde557ff7f0fbbd55c12244780ca2321`; all ancestry, exact-scope,
+17-test, typecheck, release, and zero-effect checks pass.
+
+For I36, publish only atomic integration claim
+`ba9b0d15-c3c4-4f68-89b9-f96eb9626e8d` from exact target
+`1b338e66d10a31db790377be38eed3d1e325fb55`, binding acquisition
+`acc5e60168f359e5957f2d6326a036d20a1009b3`, RELEASE_INTEGRATOR lease
+`8f1bf970-a69c-463d-98d2-a97f3591fd10`, ready digest
+`6a90c2c77969f931fd1b7de5c5a02ba6ddbb9cb5fc1e779e77828dfe15a30214`,
+and P10 full merge `bbe563fe-d993-494b-b735-daa68bc48473` digest
+`43af759e22481f5734579ac411996e30ce0a36c7f9b8476b771ccefe50c3f94e`.
+Change only the three I36 runtime files, publish the claim, and stop for C00
+reconciliation before merging P10.
+
+P33 claim `02cc575a60c0b28e17a2202e6b0e64c144c3c499` is reconciled.
+Implement only the exact `street_address` leakage coverage, unmatched
+`retry_count: 9` evidence rejection, and ten-minute active-lease rejection.
+Add direct negative regression tests, refresh affected interface, steward,
+state, and handoff digests, release the OPERATIONS_RUNTIME lease, publish the
+superseding final, and keep all external-effect counters at zero.

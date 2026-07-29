@@ -690,3 +690,25 @@ final `16029937` under a fresh OPERATIONS_RUNTIME lease and canonical ready
 digest `06ddf037`; no product edit may occur before reconciliation. The next
 bounded correction must add exact negative tests and close only these
 street-address, retry-consistency, and active-lease-age gaps.
+
+P08 is now integrated. Merge `c389287c` has exact parents I36 claim
+`931b6fe7` and admitted source `e15a7af6`; the source is an ancestor, its
+delta is exactly the fifteen queued paths, and the final metadata-only release
+is `1b338e66`. Independent verification reran 17 focused tests and typecheck,
+confirmed the released RELEASE_INTEGRATOR lease, and recorded zero effects.
+
+P10 full merge `bbe563fe-d993-494b-b735-daa68bc48473` is queued from exact
+integration target `1b338e66` and admitted source `5fccc345`, with source base
+and required merge base `49431959`, fourteen allowed paths, state/handoff
+digest `e0f91f5c`, and canonical merge digest `43af759e`. I36 is authorized
+only to publish atomic claim `ba9b0d15-c3c4-4f68-89b9-f96eb9626e8d`
+under RELEASE_INTEGRATOR lease `8f1bf970-a69c-463d-98d2-a97f3591fd10`
+and ready digest `6a90c2c7`; it must stop before merging P10.
+
+P33 follow-up claim `02cc575a` is independently reconciled: sole parent
+`16029937`, exactly the three P33 runtime files, containing authorization
+`107fdea2`, acquisition `7b1aae19`, exact claim/lease/ready bindings, clean
+worktree, and zero effects. P33 may now correct only exact `street_address`
+PII coverage, unmatched `retry_count: 9` evidence, and the ten-minute active
+lease age gate, add direct negative tests, refresh affected digests and
+runtime handoff state, release its lease, and keep effects at zero.
