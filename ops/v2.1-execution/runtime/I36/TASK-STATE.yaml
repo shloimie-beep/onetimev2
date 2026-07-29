@@ -27,19 +27,19 @@ dependency_heads:
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
   P11: 15660c1115d9d8066651573100acd8acaaac574e
   P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-status: claimed
-phase: integration
+status: ready
+phase: release
 claimed_by: codex-i36-release-integrator-eeb23846
 claim_time: '2026-07-29T14:53:08Z'
 claim_id: eeb23846-ea26-4d4e-9a96-54678160a0d2
 lease_id: b726b1c2-f572-474b-bf16-b9ca2959b2f8
 lease_issued_at: '2026-07-29T14:53:08Z'
 lease_expires_at: '2026-07-29T16:08:08Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T15:00:32Z'
-controller_authorization_sha: 6be130a490df6654e9a840a0dcf112b095bc97de
-latest_valid_observed_control_head_sha: 6be130a490df6654e9a840a0dcf112b095bc97de
-reconciled_state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+lease_released_at: '2026-07-29T15:08:52Z'
+last_heartbeat_at: '2026-07-29T15:08:52Z'
+controller_authorization_sha: ea4293c319875866eab6cc33d1134f3162ca484a
+latest_valid_observed_control_head_sha: ea4293c319875866eab6cc33d1134f3162ca484a
+reconciled_state_based_on_control_head_sha: 1722b4b97f4ed27aa7c7ba89d0c153928a0882e6
 ready_authorization_control_head_sha: 6be130a490df6654e9a840a0dcf112b095bc97de
 ready_entry_state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
 ready_entry_payload_digest: 276719a894ddcedafbe28c85e98ede89f7e47d0e93601dc4478f6b45e93dd1c1
@@ -69,20 +69,23 @@ queued_merge_order:
 queued_expected_target_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
 prior_merge_result_head_sha: 3655909a3ccbfb2d9b319c45c3a6ad945dffbafb
 prior_release_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
-merge_authorization_state_based_on_control_head_sha: 6be130a490df6654e9a840a0dcf112b095bc97de
+merge_authorization_state_based_on_control_head_sha: ea4293c319875866eab6cc33d1134f3162ca484a
 lease_origin_state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
-source_delta_base_head_sha: null
+source_delta_base_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
 merge_result_heads:
   F06: a9b8404451246246fdcd2ffdde99ee72bb096d2f
   F07: 64c70e49737d94d2f327f2bff0215791bdf69dc7
   P16: 66c8a987ea227dce08612bfe0ac81e758e028b42
   P35: 3655909a3ccbfb2d9b319c45c3a6ad945dffbafb
-merge_result_head_sha: 3655909a3ccbfb2d9b319c45c3a6ad945dffbafb
-merge_parent_target_head_sha: 550106c61716b5e11825610ea4e5b1ce7e93b930
-merge_parent_source_head_sha: a85aecc22b013d583589a67cf0cc9dfad6745aba
+  P19: ddaf57fe28542b5c29085cd0e49f867eacf7eceb
+  P27: adef153c0f5b2f691a2a2250fbf9b09240511cf6
+  P32: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
+merge_result_head_sha: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
+merge_parent_target_head_sha: adef153c0f5b2f691a2a2250fbf9b09240511cf6
+merge_parent_source_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
 prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
-last_implementation_commit_sha: 3655909a3ccbfb2d9b319c45c3a6ad945dffbafb
+state_based_on_head_sha: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
+last_implementation_commit_sha: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -667,13 +670,38 @@ completed_steps:
     b726b1c2-f572-474b-bf16-b9ca2959b2f8; no queued source, steward request,
     provider action, send, or external effect was fetched, read, merged, or
     applied.
+  - Verified C00 reconciliation at exact control head
+    ea4293c319875866eab6cc33d1134f3162ca484a with sole acquisition parent
+    1722b4b97f4ed27aa7c7ba89d0c153928a0882e6 and exact claim target
+    853c79e71fb6b49459f1593c00f90a36cb33614c.
+  - Reverified the unchanged claim, live sole lease, canonical item digests,
+    exact source refs and merge bases, every merge-after prerequisite, exact
+    three-path source tails, task/state-handoff bindings, and 0/0/0 effects.
+  - Merged P19 source 306c26cfcb84672eb5e593d1bee847a0f3e01243
+    with exact parents 853c79e71fb6b49459f1593c00f90a36cb33614c and
+    306c26cfcb84672eb5e593d1bee847a0f3e01243 at
+    ddaf57fe28542b5c29085cd0e49f867eacf7eceb.
+  - Merged P27 source e1933d640657835cde17ee23381399f5539fe3cd
+    with exact parents ddaf57fe28542b5c29085cd0e49f867eacf7eceb and
+    e1933d640657835cde17ee23381399f5539fe3cd at
+    adef153c0f5b2f691a2a2250fbf9b09240511cf6.
+  - Merged P32 source f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+    with exact parents adef153c0f5b2f691a2a2250fbf9b09240511cf6 and
+    f4ae1c03c60917a23a825d46a4d0ec63ff4fc125 at
+    1661f31ec7a0b44c72333b1dfb4225f2474a2f2e.
+  - Passed 52 focused P19/P27/P32 assertions across 12 files, repository
+    typecheck, full lint and build, exact nine-path Prettier and diff checks,
+    200/200 locked and 15/15 source-package blobs, three YAML parses, and the
+    secret scan across 2932 repository text files.
+  - Confirmed no P17/P21/P24 path, steward request application, provider
+    inspection, send, or external effect occurred.
+  - Released sole lease b726b1c2-f572-474b-bf16-b9ca2959b2f8 at
+    2026-07-29T15:08:52Z with authority none and effects 0/0/0.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 Wave C part 1 atomic claim.
-  - Report the exact pushed claim head, sole parent, and I36 state/handoff
-    digests to C00, then stop.
-  - Merge P19/P27/P32 only after C00 reconciles this exact claim head and
-    explicitly resumes I36.
-next_action: C00 must reconcile the exact pushed I36 Wave C part 1 atomic claim head before I36 fetches, reads, or merges any queued source or applies any steward request.
+  - Commit and normally push this exact three-file I36 Wave C part 1 release.
+  - Report the exact pushed release head and sole parent to C00, then stop.
+  - C00 must audit and reconcile the pushed release head before later I36 work.
+next_action: C00 must audit the exact pushed Wave C part 1 release head; I36 must stop without touching P17/P21/P24, applying steward requests, inspecting providers, sending, or performing external effects.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -1570,6 +1598,26 @@ verification:
       result: passed; 200/200 locked blobs, 15/15 source blobs, all declared bindings, and prior I36 digest d5e00576
     - command: P19/P27/P32 ls-remote, base, merge-after, triplet-tail, lease, order, and effect checks
       result: passed; exact remote refs without fetching source content, every prerequisite is an ancestor, live sole lease, and 0/0/0 effects
+    - command: fetched reconciled Wave C control, integration, and P19/P27/P32 source refs
+      result: passed; exact control ea4293c3, acquisition 1722b4b9, claim 853c79e7, and exact sources
+    - command: canonical item, source-base, scope, task/state-handoff, merge-after, lease, order, and effect admission
+      result: passed; exact three-path tails, all prerequisites, unchanged claim/lease, and 0/0/0 effects
+    - command: ordered git merge --no-ff for P19, P27, and P32
+      result: passed; exact merge heads ddaf57fe, adef153c, and 1661f31e with two-parent ancestry preserved
+    - command: focused P19/P27/P32 Vitest suite
+      result: passed; 12 files and 52 tests
+    - command: npm run typecheck
+      result: passed
+    - command: npm run lint
+      result: passed
+    - command: npm run build
+      result: passed; clean, client, pages, and typecheck stages completed
+    - command: exact nine-path Prettier check and git diff --check
+      result: passed
+    - command: raw Git blob lock verification and YAML parsing
+      result: passed; 200/200 locked blobs, 15/15 source-package blobs, and three task states
+    - command: npm run secret:scan
+      result: passed across 2932 repository text files
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
