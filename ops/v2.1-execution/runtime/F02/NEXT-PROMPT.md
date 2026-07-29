@@ -3,28 +3,16 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Audit the exact F02 Migration Lease A release.
+Reconcile the F02 Lease A metadata-correction atomic claim.
 
-Repository: shloimie-beep/onetimev2
-Branch: codex/v21-f02-schema-state-migrations
-Atomic claim head: 0708a09e7d979a10cfe3c0875cebeecca64a2847
-Implementation commit: 7132cd81ea260558777859cd4c7485a357e8f5fb
-Containing control: fa1330ff11955fe03ac9c1dfba8d29407cac11a8
-Claim: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
-Shared lease: 59450be9-031a-4db8-aec1-9a584ba04f2f
+Verify containing control `c1e744b0f31ce430ef1dc4c98f82844f97fddae4`,
+sole acquisition `21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0`, parent
+`e8dcbd750ce41424102b4d2ead4b786ff3c9c764`, READY digest
+`fb3f35593548c28c591dbeef4eb5c4997f9858abc1734668cb98ad867d17ae42`,
+claim `937b224d-ee11-4936-82d7-719f177d31da`, and shared lease
+`08ae9549-daf0-42fc-8938-7c5e5b28030f`.
 
-Require the atomic-claim-to-final delta to contain exactly four migrations
-2235 through 2238, MIGRATION-ALLOCATIONS-PROPOSAL.yaml, TASK-STATE.yaml,
-HANDOFF.md, and NEXT-PROMPT.md. Recompute all four checksums, verify the bound
-F04/F05/P15/F06 request semantics and next ordinal 2239, and reject any edit to
-an applied migration, ordinal 2231, registration, package/barrel, provider,
-deployment, send, or unrelated path.
-
-Reproduce the complete first migration apply in a fresh disposable database.
-Treat the documented pg-mem replay limitation on the pre-existing
-schema_migrations IF-NOT-EXISTS statement as a harness limitation only if no
-failure originates in 2235-2238; prefer an isolated native PostgreSQL replay
-when safely available. Run focused tests, typecheck, lint, formatting, build,
-YAML/package validation, secret scan, ancestry/path/diff checks, released-lease
-readback, and effects 0/0/0. Stop for C00 admission; do not integrate or perform
-external effects without a fresh bounded authorization.
+Require the claim commit to change only the F02 runtime triplet. Confirm the
+proposal and SQL 2235 through 2238 are byte-identical, provider/effect locks
+are absent, and effects remain `0/0/0`. Stop for C00; no correction
+implementation is authorized before reconciliation.

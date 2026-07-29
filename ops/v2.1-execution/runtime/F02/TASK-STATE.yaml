@@ -69,32 +69,32 @@ migration_lease_A_control:
   requester_content_read: true
   allocation_proposal_read_or_edited: true
   sql_authored: true
-status: ready_for_review
-phase: migration_lease_A_2235_2238
-claimed_by: codex-f02-lease-a-dc6ba41d
-claim_time: '2026-07-29T17:45:27Z'
-claim_id: dc6ba41d-f01a-43f5-b8d7-e43c6b8a7e54
-writer_slot_lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
-lease_issued_at: '2026-07-29T17:36:43Z'
-lease_expires_at: '2026-07-29T18:51:43Z'
-last_heartbeat_at: '2026-07-29T18:44:30Z'
-lease_released_at: '2026-07-29T18:44:30Z'
-controller_authorization_sha: fa1330ff11955fe03ac9c1dfba8d29407cac11a8
-ready_entry_parent_control_sha: 3143e8d0c93bfff3925edcd61500345bd92c621d
-state_based_on_control_head_sha: 3143e8d0c93bfff3925edcd61500345bd92c621d
-ready_entry_payload_digest: c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501
+status: claimed
+phase: migration_lease_A_checksum_metadata_correction
+claimed_by: codex-f02-lease-a-correction-937b224d
+claim_time: '2026-07-29T19:23:30Z'
+claim_id: 937b224d-ee11-4936-82d7-719f177d31da
+writer_slot_lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
+lease_issued_at: '2026-07-29T19:08:53Z'
+lease_expires_at: '2026-07-29T20:23:53Z'
+last_heartbeat_at: '2026-07-29T19:23:30Z'
+lease_released_at: null
+controller_authorization_sha: c1e744b0f31ce430ef1dc4c98f82844f97fddae4
+ready_entry_parent_control_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
+state_based_on_control_head_sha: 21f0ae2f2b79d0ba179d6e4cb7dd7f0b39a26ff0
+ready_entry_payload_digest: fb3f35593548c28c591dbeef4eb5c4997f9858abc1734668cb98ad867d17ae42
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
-    lease_issued_at: '2026-07-29T17:36:43Z'
-    lease_expires_at: '2026-07-29T18:51:43Z'
-    released_at: '2026-07-29T18:44:30Z'
+    lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
+    lease_issued_at: '2026-07-29T19:08:53Z'
+    lease_expires_at: '2026-07-29T20:23:53Z'
+    released_at: null
   SCHEMA_CONTRACT:
-    lease_id: 59450be9-031a-4db8-aec1-9a584ba04f2f
-    lease_issued_at: '2026-07-29T17:36:43Z'
-    lease_expires_at: '2026-07-29T18:51:43Z'
-    released_at: '2026-07-29T18:44:30Z'
-state_based_on_head_sha: 0708a09e7d979a10cfe3c0875cebeecca64a2847
+    lease_id: 08ae9549-daf0-42fc-8938-7c5e5b28030f
+    lease_issued_at: '2026-07-29T19:08:53Z'
+    lease_expires_at: '2026-07-29T20:23:53Z'
+    released_at: null
+state_based_on_head_sha: e8dcbd750ce41424102b4d2ead4b786ff3c9c764
 last_implementation_commit_sha: 7132cd81ea260558777859cd4c7485a357e8f5fb
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -128,10 +128,12 @@ completed_steps:
   - Allocated exact ordinals 2235 through 2238, authored only the four authorized forward-only SQL files, and advanced the proposal next ordinal to 2239.
   - Applied the complete 69-migration inventory through 2238 in a disposable pg-mem database after harness-only built-in registrations.
   - Verified the exact eight-path ceiling, immutable checksums, zero provider/effect locks, and external effects 0/0/0.
+  - Independently verified correction control c1e744b0, sole acquisition 21f0ae2f, READY digest fb3f3559, exact e8dcbd75 head, protected SQL bytes, native and pg-mem checksum pairs, four correction paths, new claim and lease, and effects 0/0/0.
+  - Claimed only the F02 runtime triplet for the checksum-metadata and formatting correction; the allocation proposal and SQL were not edited.
 remaining_steps:
-  - An independent auditor and C00 must verify the exact final head, checksums, disposable migration proof, and eight-path scope.
-  - I36 may integrate the exact audited F02 head only after a fresh bounded C00 admission and atomic claim reconciliation.
-next_action: Stop after publishing Lease A. Await independent and C00 audit; do not allocate ordinal 2239 or perform registration, provider, deployment, send, or external effects.
+  - C00 must reconcile this exact atomic correction claim before the allocation proposal may be corrected.
+  - After reconciliation, update only the proposal and runtime triplet with native and explicit pg-mem checksums, then format those four files and re-run the bounded evidence gates.
+next_action: Stop after publishing the correction atomic claim. Await C00 reconciliation; do not edit the proposal or any SQL.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
