@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: I36 merges only admitted P33 interface 295c125e from reconciled target 76ab4719; P12 implements only the Parent household contract lane from claim bd0c8122; P22 implements only learning engagement from claim 4acf752d; all effects remain unauthorized.
+next_action: P34 publishes only its atomic new-branch claim from exact integrated P33 head d075dc18, then stops for reconciliation; P12 and P22 continue only their authorized owned scopes under live leases; all effects remain unauthorized.
 authority_note: Only C00 updates this global control state.

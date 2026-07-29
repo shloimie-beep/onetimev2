@@ -480,3 +480,19 @@ Implement only the locked P22 learning-engagement scope, keep every change
 inside P22-owned paths plus structured steward requests, run focused tests and
 typecheck, release lease `93a7fddb`, publish ready_for_review, and keep
 effects at zero.
+
+P33 is integrated at final I36 release
+`d075dc1839660205845e7da039a182bbe44778d2`. Exact merge
+`770696f88860d62f2cd7f9d30717b451ebdd77f7` has parents
+`76ab4719aba2016c1fb93a9301b0db56f062b3d8` and
+`295c125ec6ed3ea41382e5ea44db6f6be1b98933`; ancestry, exact twenty-five
+paths, 68 focused tests, typecheck, lease release, and zero effects pass.
+
+For P34, create branch `codex/v21-p34-operations-recovery` from exact
+integrated head `d075dc1839660205845e7da039a182bbe44778d2` and publish only
+atomic claim `d1959518-2cbc-49a8-9d39-ddd38a06564e`, binding acquisition
+`b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9`, OPERATIONS_RECOVERY lease
+`b8e703f5-43a2-4a7d-9f25-9af6f32be4f0`, and ready digest
+`5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f`.
+Change only P34's three runtime memory files and stop for C00 reconciliation
+before any product implementation. No external effect is authorized.

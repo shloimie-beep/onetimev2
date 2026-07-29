@@ -1,67 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items:
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  merge_id: 0798f93b-9b95-4fbb-aebc-cd98a6414f66
-  kind: interface
-  task_id: P33
-  source_branch: codex/v21-p33-runtime-operations
-  source_head_sha: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
-  target_branch: codex/v21-integration
-  expected_target_head_sha: 76ab4719aba2016c1fb93a9301b0db56f062b3d8
-  source_delta_base_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  required_merge_base_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
-  merge_after_heads:
-    F05: 9782a4164662b8059a557c0969de9c35f54d0cf7
-    F06: d35166838267711a514cf73822cd2ca49a3f3ded
-  allowed_paths:
-  - apps/web/src/server/operations/index.ts
-  - apps/web/src/server/operations/router.test.ts
-  - apps/web/src/server/operations/router.ts
-  - apps/worker/src/operations/heartbeat.test.ts
-  - apps/worker/src/operations/heartbeat.ts
-  - apps/worker/src/operations/index.ts
-  - ops/runbooks/v2.1/runtime/operations-runtime.md
-  - ops/v2.1-execution/runtime/P33/HANDOFF.md
-  - ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P33/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P33/steward-requests/P33-config-001.yaml
-  - ops/v2.1-execution/runtime/P33/steward-requests/P33-deploy-001.yaml
-  - ops/v2.1-execution/runtime/P33/steward-requests/P33-registration-001.yaml
-  - packages/observability/v21/contracts.ts
-  - packages/observability/v21/health.ts
-  - packages/observability/v21/index.ts
-  - packages/observability/v21/operations.test.ts
-  - packages/observability/v21/redaction.ts
-  - packages/observability/v21/runtime-identity.ts
-  - packages/observability/v21/steward-consistency.test.ts
-  - packages/observability/v21/test-fixtures.ts
-  - scripts/operations/v21/health/evaluate-health.ts
-  - scripts/operations/v21/monitoring/scan-operational-payloads.ts
-  - scripts/operations/v21/runtime/inspect-runtime-identity.ts
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 7ceb45bf-dcaf-441b-bed4-08c6ba798055
-    holder_task_id: I36
-    holder_claim_id: d824f937-9896-4110-8b0b-567929ede386
-    state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
-    lease_issued_at: '2026-07-29T03:20:30Z'
-    lease_expires_at: '2026-07-29T04:20:30Z'
-    phase_scope: P33_interface_atomic_claim_only
-  task_packet_digest: 058bb36226c82ae8717fd85d17adee2926cf834da581b1d5a3ea2871aec30940
-  state_handoff_digest: 65d5bdac85a25c3f0c582d8e59d284d9143d328e6087128039742450763234d1
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-  state_based_on_control_head_sha: bd4519976ba6b354cb7c4a087b4d144cc5ed59ab
-item_payload_digests:
-  0798f93b-9b95-4fbb-aebc-cd98a6414f66: b4a71eb8ac8f8f2460abf2ec4405abb251f1efce3f002bf29422d6c00af804c5
+items: []
+item_payload_digests: {}
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

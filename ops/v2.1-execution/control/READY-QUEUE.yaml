@@ -2,8 +2,48 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: P34
+  status: ready
+  phase: implementation
+  branch: codex/v21-p34-operations-recovery
+  claim_mode: create_new_branch
+  state_based_on_control_head_sha: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
+  authorized_start_sha: d075dc1839660205845e7da039a182bbe44778d2
+  expected_existing_head: null
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: d17be80574cbdfdd1bc9ce5e5f836591cd14da96d29b013a65cb0b0bc53ac0cf
+  task_context_digest: 3048a5a74e141e6fd688eb38845209bb0ecfbec3489c83c1ee729fc519e93c22
+  dependency_heads_and_digests:
+    P33:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
+      observed_integration_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+      interface_source_head_sha: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
+      interface_implementation_head_sha: 7765a3758a3e3aa7d311119b5d86da1e943b68d7
+      interface_checkpoint_digest: a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43
+      task_packet_digest: 058bb36226c82ae8717fd85d17adee2926cf834da581b1d5a3ea2871aec30940
+      task_context_digest: d4b9d742af9a9760016782776bd822cf8c203e6cc49b9b1e9d7a31dcc7a19e4c
+  writer_slot_leases:
+  - slot: OPERATIONS_RECOVERY
+    lease_id: b8e703f5-43a2-4a7d-9f25-9af6f32be4f0
+    holder_task_id: P34
+    holder_claim_id: d1959518-2cbc-49a8-9d39-ddd38a06564e
+    state_based_on_control_head_sha: b35a24ab56ca6a6b5dcc805a7498f80c99ad4da9
+    lease_issued_at: '2026-07-29T03:50:27Z'
+    lease_expires_at: '2026-07-29T04:50:27Z'
+  effect_lock_leases: []
+  claim_id: d1959518-2cbc-49a8-9d39-ddd38a06564e
+  lease_issued_at: '2026-07-29T03:50:27Z'
+  lease_expires_at: '2026-07-29T04:50:27Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P34-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  P34: 5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

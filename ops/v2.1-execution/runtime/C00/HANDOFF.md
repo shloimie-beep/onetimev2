@@ -774,3 +774,19 @@ from claim `4acf752d`. Both must remain within their owned paths plus
 structured steward requests, may not edit migrations or central composers,
 must publish exact verification and runtime memory, release their leases, and
 must keep all external-effect counters at zero.
+
+P33 is now integrated. Merge `770696f8` has exact parents I36 claim
+`76ab4719` and admitted source `295c125e`; source ancestry and the exact
+twenty-five-path source scope pass. Independent verification reran all 68
+focused tests and typecheck. Final I36 metadata-only release `d075dc18`
+records the released RELEASE_INTEGRATOR lease, no steward/config/deploy/
+registration action, and zero effects.
+
+P34 is dependency-valid only because that P33 interface is now present at
+exact integration head `d075dc18`. C00 authorized branch
+`codex/v21-p34-operations-recovery` only to publish atomic claim
+`d1959518-2cbc-49a8-9d39-ddd38a06564e` under OPERATIONS_RECOVERY lease
+`b8e703f5-43a2-4a7d-9f25-9af6f32be4f0`, canonical ready digest
+`5660172d6c2561383232dce4daab58a4cf82f79e519fd245a010d48e68a10e6f`,
+and zero effect authority. The first push must change only the three P34
+runtime memory files and stop for C00 reconciliation before product work.
