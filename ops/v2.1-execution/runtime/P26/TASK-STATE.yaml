@@ -1,0 +1,131 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P26
+task_packet_digest: 434c882a79d7931479310acc1d77a257213a704726ddf4b38db0cc3c1b31e5c2
+task_context_digest: 8446bca73c9134afd103cb74cce8a94c3ce09aeaebda8a7b673c2587cb518cc6
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p26-billing-access
+start_sha: d075dc1839660205845e7da039a182bbe44778d2
+dependency_heads:
+  F03:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+    task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+    task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+  F04:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+    task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+    task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F06:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+    task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+    task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+status: claimed
+phase: implementation_atomic_claim
+claim_mode: create_new_branch
+claimed_by: codex-p26-worker-1c659f83
+claim_time: '2026-07-29T05:11:05Z'
+claim_id: 1c659f83-31c3-4404-9488-c26ad4826922
+writer_slot_leases:
+  - slot: BILLING_ACCESS
+    lease_id: 1bcd6b13-bf89-4000-a653-35a8afdcb9c3
+    lease_issued_at: '2026-07-29T05:02:55Z'
+    lease_expires_at: '2026-07-29T06:02:55Z'
+    state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+lease_expires_at: '2026-07-29T06:02:55Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T05:11:05Z'
+controller_authorization_sha: 2b29ce6ce75de10765f6f6c64d059e858c548281
+ready_entry_state_based_on_control_head_sha: 9e04eda2275f3b6a92066670d878a3e1c62361ca
+ready_entry_payload_digest: ec58cc73ed98e8137cc652ad838f2300f0e498db536d21c39ad7837d82ca2ddb
+state_based_on_head_sha: d075dc1839660205845e7da039a182bbe44778d2
+last_implementation_commit_sha: d075dc1839660205845e7da039a182bbe44778d2
+completed_steps:
+  - Verified exact containing control authorization 2b29ce6ce75de10765f6f6c64d059e858c548281, sole acquisition parent 9e04eda2275f3b6a92066670d878a3e1c62361ca, and authorized integration start d075dc1839660205845e7da039a182bbe44778d2.
+  - Verified the P26 task branch was absent locally and remotely before branch creation.
+  - Recomputed and matched canonical ready-entry digest ec58cc73ed98e8137cc652ad838f2300f0e498db536d21c39ad7837d82ca2ddb.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and exact package/task/context digests.
+  - Verified exact F03/F04/F05/F06 interface-ready integration bindings and ancestry in the authorized start, including F04 implementation 81c0ee64072386db41aa5a40243c693762ab493a.
+  - Claimed the sole BILLING_ACCESS writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P26 runtime-memory files; product, source, provider, steward, and effect work has not started.
+remaining_steps:
+  - Push and report this exact three-file atomic claim checkpoint.
+  - Await C00 reconciliation of the exact remote claim head.
+  - Resume only under explicit C00 continuation authorization.
+  - Implement and verify P26 within its owned paths and finish ready_for_review.
+next_action: Stop after the normal push and exact remote verification; resume product work only after C00 reconciles this atomic claim head and explicitly authorizes continuation.
+requirements:
+  OTV2-BILLING-111: claimed_not_started
+  OTV2-BILLING-112: claimed_not_started
+  OTV2-BILLING-113: claimed_not_started
+  OTV2-BILLING-114: claimed_not_started
+  OTV2-BILLING-115: claimed_not_started
+  OTV2-BILLING-116: claimed_not_started
+  OTV2-BILLING-201: claimed_not_started
+  OTV2-BILLING-242: claimed_not_started
+  OTV2-PARENT-236: claimed_not_started
+acceptance_cases:
+  OTV2-BILLING-111-AC01: not_run
+  OTV2-BILLING-112-AC01: not_run
+  OTV2-BILLING-113-AC01: not_run
+  OTV2-BILLING-114-AC01: not_run
+  OTV2-BILLING-115-AC01: not_run
+  OTV2-BILLING-116-AC01: not_run
+  OTV2-BILLING-201-INACTIVE-ROUTE-AUTHORIZATION: not_run
+  OTV2-BILLING-242-EVENT-PRECEDENCE-GRACE: not_run
+  OTV2-PARENT-236-INACTIVE-ALLOWLIST: not_run
+  OTV2-PARENT-236-VERIFIED-RECOVERY: not_run
+changed_paths:
+  - ops/v2.1-execution/runtime/P26/HANDOFF.md
+  - ops/v2.1-execution/runtime/P26/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P26/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact remote repository/control/acquisition/start/branch identity verification
+      result: passed; control 2b29ce6c, acquisition 9e04eda2, start d075dc18, and absent P26 branch
+    - command: canonical P26 ready-entry digest recomputation
+      result: passed; ec58cc73ed98e8137cc652ad838f2300f0e498db536d21c39ad7837d82ca2ddb
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; all 200 locked blobs, all 15 source-package blobs, and entry-bound digests match
+    - command: dependency ancestry and exact binding verification
+      result: passed; F03/F04/F05/F06 source, implementation, and integration heads are ancestors of the authorized start
+    - command: claim/writer/effect-lock verification
+      result: passed; exact claim, sole BILLING_ACCESS lease, and zero effect locks
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
