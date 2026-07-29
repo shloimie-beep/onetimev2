@@ -1,20 +1,23 @@
-# P29 Corrected-Binding Atomic Claim — Next Prompt
+# P29 Corrected Core Workflows — Review Prompt
 
-Stop after publishing the corrected-binding atomic correction claim checkpoint.
+Review the exact pushed `codex/v21-p29-core-workflows` final head against
+implementation commit `cad2c6f2a8aeb875dcf5122ae1ebe9ca012bf507` and reconciled
+authorization `268ab601b89573238befe70de7995908925575cc`.
 
-Before any product repair:
+Confirm:
 
-1. fetch `origin/codex/v21-control`;
-2. require C00 to have reconciled P29 correction claim
-   `308031d1-15e8-4ff5-aca0-6560e9a8c93d`;
-3. require the expected P29 branch head to equal the exact pushed atomic
-   correction claim head;
-4. require the same unexpired `GHL_CORE_WORKFLOWS` lease or a newly authorized
-   replacement lease;
-5. verify the new ready/resume entry and recompute its canonical payload digest.
+1. all 12 workflows, including OT-02B, fail closed on independently trusted
+   audience and copy approval;
+2. actual content and audience digests exactly match the trusted approved
+   digests before reservation or delivery;
+3. requirement IDs and acceptance-case IDs are exact and separate;
+4. OT-01 explicitly projects the `one_time_family_signup` lifecycle;
+5. OT-10 requires Admin approval and provider-readback evidence before planning,
+   reservation, delivery, and provider readback;
+6. the fragment and all three steward-request SHA-256 digests match
+   `TASK-STATE.yaml`;
+7. external effects remain zero and no migration exists.
 
-Until those checks pass, do not edit product code, the P29 fragment, tests,
-steward requests, migrations, interfaces, registries, composers, or provider
-state. Do not restore named stash
-`P29 product repair pending C00 reconciliation claim 308031d1`.
-External-effect authority remains none.
+Route the three steward requests through their owning lanes. Treat the known
+sender-registry count assertion as an inherited registry-steward finding, not a
+P29-owned failure.

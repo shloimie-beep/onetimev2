@@ -21,17 +21,19 @@ dependency_heads:
     interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
     interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
     interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-status: claimed
-phase: correction
+status: ready_for_review
+phase: correction_complete
 claimed_by: codex-p29-worker-308031d1
 claim_time: '2026-07-29T00:20:46Z'
 claim_id: 308031d1-15e8-4ff5-aca0-6560e9a8c93d
 writer_slot_lease_id: 8f82be8b-7a99-4edb-a079-d485b402729a
 lease_issued_at: '2026-07-29T00:13:59Z'
 lease_expires_at: '2026-07-29T01:13:59Z'
-last_heartbeat_at: '2026-07-29T00:20:46Z'
-lease_released_at: null
-controller_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+last_heartbeat_at: '2026-07-29T00:31:30Z'
+lease_released_at: '2026-07-29T00:31:30Z'
+claim_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+controller_authorization_sha: 268ab601b89573238befe70de7995908925575cc
+reconciliation_acquisition_parent_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
 ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
 ready_entry_payload_digest: 634d4c807f31e08fd411457021d1bec960d70764cbe88b3c8339111a283455c2
 claim_mode: resume_existing_branch
@@ -40,69 +42,94 @@ correction_parent_head_sha: d5c779caa1859ef308fa009e6558076cf2031771
 prior_claim_id: 22467835-84ad-4d38-8187-a3b64d88d132
 prior_claim_checkpoint_sha: d5c779caa1859ef308fa009e6558076cf2031771
 prior_ready_for_review_head_sha: 15dc7c87948c3df9dc6c77be89c79b706860448f
-state_based_on_head_sha: d5c779caa1859ef308fa009e6558076cf2031771
-last_implementation_commit_sha: 0a42c8701d75d2a15e59c5e7a2f4a3e5d7fb0d18
-workflow_fragment_sha256: 182e5da30fa41db34b8609d019c21a7f04a34c88752678869fb2bf43f43e4434
+state_based_on_head_sha: cad2c6f2a8aeb875dcf5122ae1ebe9ca012bf507
+last_implementation_commit_sha: cad2c6f2a8aeb875dcf5122ae1ebe9ca012bf507
+workflow_fragment_sha256: 72f8fdbc09638d028da91960da0841eb9c14d7ae51d5861f8788b7111a479dec
 completed_steps:
-  - Preserved the completed product repair in named stash "P29 product repair pending C00 reconciliation claim 308031d1" without publishing product changes.
-  - Fetched control authorization 0c911664217efe3dbb89b93b6fe29eb9eda2fec3 and verified sole parent e54ea923a743caf760ef47638a2c8d8a875faf34.
-  - Verified resume_existing_branch against exact local and remote head d5c779caa1859ef308fa009e6558076cf2031771.
-  - Matched the controller-supplied canonical P29 correction ready-entry digest 634d4c807f31e08fd411457021d1bec960d70764cbe88b3c8339111a283455c2.
-  - Verified exact task, context, package, source-package, dependency, claim, GHL_CORE_WORKFLOWS lease, and zero effect-lock bindings.
-  - Seeded this corrected-binding atomic claim checkpoint in task-local runtime metadata only.
-remaining_steps:
-  - Push and report this exact corrected-binding atomic claim checkpoint.
-  - Await C00 reconciliation before restoring the named product-repair stash or modifying any product, fragment, test, or steward-request file.
-next_action: Push this three-file corrected-binding atomic claim checkpoint, report its exact head and named stash identity, and stop until C00 explicitly reconciles claim 308031d1-15e8-4ff5-aca0-6560e9a8c93d.
+  - Verified reconciled control authorization 268ab601b89573238befe70de7995908925575cc with sole parent/acquisition 5b0356cc30baf4062e50664f9749ebcf97f9d7f4.
+  - Restored only the named P29 bounded-repair stash onto exact atomic claim head 56fcfceed0c6dcf5ff6107ee1987c1047dbb404a.
+  - Enforced trusted audience and copy approval for all 12 workflows, including OT-02B, before reservation or delivery.
+  - Compared actual content and audience digests against independently read trusted approved digests and failed closed on mismatch.
+  - Replaced truncated traceability labels with exact requirement IDs and separate exact acceptance-case IDs across TypeScript, YAML, and tests.
+  - Added the explicit OT-01 one_time_family_signup lifecycle projection.
+  - Required OT-10 Admin approval and provider-readback evidence before planning, reservation, delivery, or provider readback.
+  - Updated all three P29 steward requests with corrected contracts and refreshed their SHA-256 digests.
+  - Passed 58 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, YAML validation, and exact-label validation.
+  - Re-ran the full unit suite with 566 of 567 passing; the sole failure is the inherited sender-registry count assertion outside P29 ownership.
+  - Released the GHL_CORE_WORKFLOWS writer lease with zero external effects.
+remaining_steps: []
+next_action: C00/I36 should verify the exact pushed final head, review the bounded correction, and route the three steward requests to their owners before integration.
 requirements:
-  OTV2-GHL-123: implementation_verified_pending_traceability_correction
-  OTV2-GHL-124: implementation_verified_pending_traceability_correction
-  OTV2-GHL-125: implementation_verified_pending_traceability_correction
-  OTV2-GHL-126: implementation_verified_pending_traceability_correction
-  OTV2-GHL-127: implementation_verified_pending_traceability_correction
-  OTV2-GHL-128: implementation_verified_pending_traceability_correction
-  OTV2-GHL-129: implementation_verified_pending_traceability_correction
-  OTV2-GHL-130: implementation_verified_pending_traceability_correction
-  OTV2-GHL-131: implementation_verified_pending_traceability_correction
-  OTV2-GHL-132: implementation_verified_pending_traceability_correction
-  OTV2-GHL-133: implementation_verified_pending_traceability_correction
-  OTV2-GHL-136: implementation_verified_pending_traceability_correction
+  OTV2-GHL-123: implementation_verified
+  OTV2-GHL-124: implementation_verified
+  OTV2-GHL-125: implementation_verified
+  OTV2-GHL-126: implementation_verified
+  OTV2-GHL-127: implementation_verified
+  OTV2-GHL-128: implementation_verified
+  OTV2-GHL-129: implementation_verified
+  OTV2-GHL-130: implementation_verified
+  OTV2-GHL-131: implementation_verified
+  OTV2-GHL-132: implementation_verified
+  OTV2-GHL-133: implementation_verified
+  OTV2-GHL-136: implementation_verified
 acceptance_cases:
-  OTV2-GHL-123-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-124-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-125-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-126-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-127-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-128-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-129-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-130-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-131-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-132-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-133-AC01: task_owned_assertions_passed_pending_traceability_correction
-  OTV2-GHL-136-AC01: task_owned_assertions_passed_pending_traceability_correction
+  OTV2-GHL-123-AC01: task_owned_assertions_passed
+  OTV2-GHL-124-AC01: task_owned_assertions_passed
+  OTV2-GHL-125-AC01: task_owned_assertions_passed
+  OTV2-GHL-126-AC01: task_owned_assertions_passed
+  OTV2-GHL-127-AC01: task_owned_assertions_passed
+  OTV2-GHL-128-AC01: task_owned_assertions_passed
+  OTV2-GHL-129-AC01: task_owned_assertions_passed
+  OTV2-GHL-130-AC01: task_owned_assertions_passed
+  OTV2-GHL-131-AC01: task_owned_assertions_passed
+  OTV2-GHL-132-AC01: task_owned_assertions_passed
+  OTV2-GHL-133-AC01: task_owned_assertions_passed
+  OTV2-GHL-136-AC01: task_owned_assertions_passed
 changed_paths:
+  - apps/worker/src/runners/ghl-workflows/core/runner.test.ts
+  - apps/worker/src/runners/ghl-workflows/core/runner.ts
+  - integrations/highlevel/v21/workflow-fragments/P29-core-lifecycle.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-config-001.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registration-001.yaml
+  - ops/v2.1-execution/runtime/P29/steward-requests/P29-registry-projection-001.yaml
+  - packages/domain/src/communications/workflows/core/core-workflows.test.ts
+  - packages/domain/src/communications/workflows/core/definitions.ts
+  - packages/domain/src/communications/workflows/core/execution.ts
+  - packages/domain/src/communications/workflows/core/index.ts
+  - packages/domain/src/communications/workflows/core/types.ts
   - ops/v2.1-execution/runtime/P29/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P29/HANDOFF.md
   - ops/v2.1-execution/runtime/P29/NEXT-PROMPT.md
 migrations: []
 steward_requests:
   - request_id: P29-config-001
-    sha256: 523a5bd10c2ecc4b0d8668b287eda58071ccd202ecf2a5567c2aa604d38932b7
+    sha256: 10eb53f6f54fd3d8a7e32ea48452205c1b7c55a98f67f8e81ec434b83e50da0e
   - request_id: P29-registration-001
-    sha256: baf20e3d4376980393411d3d85282ece8591070e63a9c5f53cacfe7b7a09d10d
+    sha256: cf2b8dc9a552dd296ab9f1236b7c84c56a895f6a9d4a14fac3fc7c53c15efd82
   - request_id: P29-registry-projection-001
-    sha256: a7bfb4bb94d0bbf0271c956d86a4052eb399a3c9b5ec7594a044268b54890004
+    sha256: e42a3ef91712ae0852c4dfe516c260ba7112eeec2737668087af3d15816c5919
 verification:
   commands_run:
-    - command: preserve repair in named stash and verify exact P29 branch
-      result: passed; local/remote P29 head d5c779ca and stash contains the 11 repaired product/test/fragment/steward-request paths
-    - command: fetch and inspect corrected control authorization
-      result: passed; control 0c911664 has sole parent e54ea923
-    - command: canonical correction ready-entry digest binding
-      result: passed; controller supplied 634d4c807f31e08fd411457021d1bec960d70764cbe88b3c8339111a283455c2
-    - command: correction claim, sole writer lease, dependency, start, expected-head, and zero effect-lock verification
+    - command: npx vitest run packages/domain/src/communications/workflows/core/core-workflows.test.ts apps/worker/src/runners/ghl-workflows/core/runner.test.ts
+      result: passed; 2 files and 58 assertions
+    - command: npx eslint on all P29 TypeScript implementation and test files
       result: passed
-  known_baseline_failures: []
+    - command: npm run typecheck
+      result: passed
+    - command: npx prettier --check on all P29 implementation, fragment, and steward-request files
+      result: passed
+    - command: npm run secret:scan
+      result: passed; 2720 repository text files scanned
+    - command: P29 YAML and exact traceability validation
+      result: passed; 12 workflows with exact requirement/acceptance IDs and approval flags
+    - command: npm run unit
+      result: 566 passed, 1 inherited out-of-scope registry-count assertion failed
+    - command: isolated Tisha BAv public-copy unit test after one parallel-load timeout
+      result: passed; 1 of 1
+    - command: git diff --check
+      result: passed
+  known_baseline_failures:
+    - tests/unit/highlevel/sender-registry-v1-1.test.ts expects 19 automation assets but the integrated P28 registry contains 22.
 external_effects:
   authority: none
   attempted: 0
@@ -110,4 +137,4 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - The completed product repair is intentionally preserved but not restored until C00 reconciles this corrected-binding atomic claim and explicitly resumes P29.
+  - P29 does not own the sender-registry test or integrated P28 registry count; the corresponding full-suite failure remains for the registry steward.
