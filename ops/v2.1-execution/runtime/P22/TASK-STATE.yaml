@@ -1,0 +1,118 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P22
+task_packet_digest: dd6bab06cbc8c26a46acf457d2824baad33a6710d8fb2ac45c9587d814551c84
+task_context_digest: b47e2ff16b99fa3f485c34c1ed95fe5aa1cf0cb7a129f75190674a14a9cb2cbc
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p22-learning-engagement
+start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+dependency_heads:
+  F02:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_source_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+    task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+    task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  F05:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: claimed
+phase: implementation
+claim_mode: create_new_branch
+claimed_by: codex-p22-worker-eba236e0
+claim_time: '2026-07-29T03:33:51Z'
+claim_id: eba236e0-164c-4b7d-a71e-20646f4ec5ab
+writer_slot_leases:
+  - slot: LEARNING_ENGAGEMENT
+    lease_id: 93a7fddb-d025-475d-8d09-f9c9e7661515
+    lease_issued_at: '2026-07-29T03:20:30Z'
+    lease_expires_at: '2026-07-29T04:20:30Z'
+    state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+lease_expires_at: '2026-07-29T04:20:30Z'
+last_heartbeat_at: '2026-07-29T03:33:51Z'
+controller_authorization_sha: ab393d7eb3b7f55b910ba110949c05c40b7383e6
+ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+ready_entry_payload_digest: 983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471
+state_based_on_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+last_implementation_commit_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+completed_steps:
+  - Fetched containing control ab393d7eb3b7f55b910ba110949c05c40b7383e6 and verified its sole parent/acquisition 3c4130ae4d015471ce21e7d70a39d98dde113318.
+  - Verified exact authorized start f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635, exact locked packet/context/package/source digests, and all F02/F05/F07 integrated interface bindings.
+  - Verified remote branch codex/v21-p22-learning-engagement was absent and created the local branch at the exact authorized start.
+  - Bound claim eba236e0-164c-4b7d-a71e-20646f4ec5ab, sole LEARNING_ENGAGEMENT lease 93a7fddb-d025-475d-8d09-f9c9e7661515, ready digest 983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471, and zero effect locks.
+remaining_steps:
+  - Push and report this exact three-file atomic new-branch claim.
+  - Stop before product work and await C00 reconciliation of the exact remote claim head.
+next_action: Push and report the atomic claim checkpoint, then stop until C00 consumes its exact remote head and explicitly resumes P22.
+requirements:
+  OTV2-LEARNING-093: claimed
+  OTV2-LEARNING-094: claimed
+  OTV2-LEARNING-095: claimed
+  OTV2-LEARNING-096: claimed
+  OTV2-LEARNING-097: claimed
+  OTV2-LEARNING-098: claimed
+  OTV2-LEARNING-099: claimed
+  OTV2-LEARNING-100: claimed
+  OTV2-LEARNING-196: claimed
+  OTV2-LEARNING-197: claimed
+  OTV2-LEARNING-238: claimed
+acceptance_cases:
+  OTV2-LEARNING-093-AC01: pending_implementation
+  OTV2-LEARNING-094-AC01: pending_implementation
+  OTV2-LEARNING-095-AC01: pending_implementation
+  OTV2-LEARNING-096-AC01: pending_implementation
+  OTV2-LEARNING-097-AC01: pending_implementation
+  OTV2-LEARNING-098-AC01: pending_implementation
+  OTV2-LEARNING-099-AC01: pending_implementation
+  OTV2-LEARNING-100-AC01: pending_implementation
+  OTV2-LEARNING-196-AC01: pending_implementation
+  OTV2-LEARNING-197-AC01: pending_implementation
+  OTV2-LEARNING-238-QUESTION-DEDUPE: pending_implementation
+  OTV2-LEARNING-238-RECOGNITION-CONSENT: pending_implementation
+changed_paths:
+  - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P22/HANDOFF.md
+  - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: containing control and sole-parent/acquisition verification
+      result: passed; ab393d7e has sole parent 3c4130ae
+    - command: exact authorized start and local/remote branch-absence verification
+      result: passed; local branch created at f1cecb53 and remote branch absent
+    - command: ready entry claim, digest, dependency, writer lease, and effect-lock verification
+      result: passed; claim eba236e0, digest 983929b1, lease 93a7fddb expires 2026-07-29T04:20:30Z, and zero effect locks
+    - command: exact claim-only changed-path verification
+      result: passed; only the three P22 runtime handoff files
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings:
+  - Product implementation is intentionally deferred until C00 reconciles the exact pushed claim head.
