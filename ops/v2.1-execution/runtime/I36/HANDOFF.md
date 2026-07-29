@@ -1,37 +1,55 @@
-# I36 P08 v2 Interface Atomic Claim
+# I36 P08 v2 Interface Merge and Release
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Exact target head: `87e3ba67c6433d249a29be9eac99f780ffc99683`
-- Containing controller authorization:
-  `047186d86034a4f6eb5e9d72837971c2edfe3005`
-- Sole controller parent / acquisition:
-  `9184bcfdb7e983a4f03733624d2d5f98455c7ea3`
+- Reconciled claim target:
+  `931b6fe7b160a1b77e316b2212ad46f02d5698fc`
+- P08 merge result:
+  `c389287c20e4813106cc9af67f01fd2a91a48f3b`
+- Exact merge parents:
+  `931b6fe7b160a1b77e316b2212ad46f02d5698fc` and
+  `e15a7af6cde557ff7f0fbbd55c12244780ca2321`
+- Containing merge authorization:
+  `3cdb7851dc5009c99ab732f27b8add82d423117b`
+- Sole authorization parent / acquisition:
+  `4d4ae9e7a047aa14cb04e95c0b9e0fd9e431565a`
 - Claim: `2b9e5c96-4e10-45a9-9f59-aa2d7110cdd3`
 - RELEASE_INTEGRATOR lease:
   `1975bc3e-446f-473a-9872-92dd927fdc48`
 - Lease issued: `2026-07-29T02:32:11Z`
-- Lease expires: `2026-07-29T03:32:11Z`
-- Ready digest:
-  `db8a42f5a7261e815384ac014c694b73400e7e309b6f0865519def5a5d483b78`
+- Lease released: `2026-07-29T02:52:51Z`
 - P08 merge id: `6fc2b7ae-b59a-4344-9399-669a5d79212b`
-- P08 merge digest:
-  `20642826a27d6e76d282420ad154ef53c398a33f6fb040a938dc2cc3e8298494`
-- Queued P08 source head:
+- Rebound canonical merge digest:
+  `683cb0421dd30d87b36f2c36aa857088bd6b9c661714459cde7fff7cd29c64cf`
+- P08 source:
   `e15a7af6cde557ff7f0fbbd55c12244780ca2321`
+- Required source and merge base:
+  `49431959f58f284bdc13ca931acf09f980fc483a`
 - External effects: attempted 0; succeeded 0; reconciled 0
 
-## This checkpoint
+## Result
 
-This checkpoint consumes only the atomic I36 claim. Exactly
-`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` change.
+I36 admitted exactly the queued fifteen-path P08 delta and created the required
+two-parent merge. The P08 source is an ancestor of the merge result, and its
+first-parent delta is exactly the authorized path list.
 
-I36 did not read the P08 source for admission, merge or cherry-pick a P08
-commit, apply a steward request, edit product or shared registration paths,
-move a candidate, or perform a provider or external effect.
+Verification passed:
+
+- focused P08 contract, domain, server, and client suites: 4 files, 17 tests;
+- workspace TypeScript typecheck;
+- committed-blob Prettier verification for all fifteen source paths;
+- Git diff hygiene, exact parent order, source ancestry, and path scope.
+
+No P08 or P10 steward request was applied. No P10 source was integrated. No
+product or shared path changed beyond the exact P08 merge, and no provider or
+external effect was attempted.
+
+This release checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md` under the I36 runtime directory. Its exact final head is
+reported after commit and remote readback.
 
 ## Exact next action
 
-Push and report this atomic-claim head and its exact parent. Then stop until C00
-reconciles the claim and issues an exact authorization for source admission.
+Push and report the merge head, metadata-only release head, exact parents,
+tests, scope, and remote readback. Then stop for C00 reconciliation.
