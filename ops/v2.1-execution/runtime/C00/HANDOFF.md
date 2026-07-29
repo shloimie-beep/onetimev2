@@ -1498,3 +1498,16 @@ The read-only integration inventory also records 16 ready-for-review producer
 heads that are not yet full integration ancestors and 55 assigned steward
 duties. The current integration release is clean and candidate-free, but it is
 not integration-complete or candidate-freeze-ready.
+
+P24 atomic claim `2a3b36c98b9a8698536149d668f0c58552c7eea4` is
+reconciled: sole parent/start `408b21af`, exactly its three runtime files,
+exact F03/F04/F05/F07 dependency and task/context/package/control/READY/
+claim/SUPPORT-lease bindings, clean remote state, and effects `0/0/0`. C00
+consumed its READY entry. Under unchanged claim
+`ff79d0ab-10d4-481b-ae90-48bb8bd9631a` and SUPPORT lease
+`4d0115d1-571f-4ca7-8b04-3fc79b43bcdf` through
+`2026-07-29T13:38:30Z`, P24 may implement only its normalized support roots
+plus immutable structured steward requests. It must use local ports/mocks,
+release its lease, publish a ready-for-review final, and stop for independent
+audit. Live Telegram/provider inspection, sends, steward application, and
+external effects remain unauthorized.

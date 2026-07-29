@@ -963,6 +963,21 @@ inventoried 16 ready-for-review producer heads that are not yet full integration
 ancestors and the 55 assigned steward duties. Do not treat the current
 queue-empty, candidate-free integration release as integration-complete.
 
+P24 claim `2a3b36c98b9a8698536149d668f0c58552c7eea4` is reconciled.
+Resume that exact branch head under unchanged claim
+`ff79d0ab-10d4-481b-ae90-48bb8bd9631a` and SUPPORT lease
+`4d0115d1-571f-4ca7-8b04-3fc79b43bcdf`. Implement only P24's normalized
+support-owned roots plus immutable structured steward requests:
+role-appropriate adult/Student technical-support lifecycles, separate private
+Torah/class questions, exact authorized conversation access, Admin ticket
+operations, and redacted bounded Telegram notification intents through local
+ports/mocks. Preserve protected privacy and role separation. Run focused
+positive/negative tests, workspace typecheck, focused lint/format, exact
+scope/digest checks, release the lease, publish a ready-for-review final, and
+stop for independent re-audit. Do not inspect/mutate Telegram or any live
+provider, send, apply a steward request, claim an effect lock, or perform an
+external effect.
+
 P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
 reconciled. Resume it under unchanged claim
 `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease

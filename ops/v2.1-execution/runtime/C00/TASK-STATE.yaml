@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-4844d978
-claim_time: '2026-07-29T12:23:30Z'
-claim_id: 4844d978-9792-49a5-94be-efaa1003b124
-lease_expires_at: '2026-07-29T12:38:30Z'
-last_heartbeat_at: '2026-07-29T12:25:36Z'
-controller_authorization_sha: 8bb4680887b2ea320f914cf046184655601fade9
+claimed_by: codex-c00-orchestrator-2bd6c548
+claim_time: '2026-07-29T12:33:56Z'
+claim_id: 2bd6c548-ce07-44c5-bc3d-438c242d7b91
+lease_expires_at: '2026-07-29T12:48:56Z'
+last_heartbeat_at: '2026-07-29T12:39:32Z'
+controller_authorization_sha: 4c9b217531ce76b52971707913d1e28c65958d76
 ready_entry_payload_digest: null
-state_based_on_head_sha: 8bb4680887b2ea320f914cf046184655601fade9
+state_based_on_head_sha: 4c9b217531ce76b52971707913d1e28c65958d76
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -283,12 +283,13 @@ completed_steps:
 - independently verified and reconciled P21 atomic residual-correction claim cc7e7439 as the exact sole child of rejected final 29d3b94b with only three runtime files, exact authorization/claim/lease/READY bindings, clean remote state, and zero effects
 - verified P24 is the only never-started launch-critical implementation lane whose four required interface sources are ancestors of integration release 408b21af, with an absent remote branch, disjoint SUPPORT writer slot, and external_authority none
 - authorized only P24's exact three-runtime-file atomic new-branch claim from integration release 408b21af under canonical READY digest 57d6b0bb, claim ff79d0ab, and SUPPORT lease 4d0115d1
+- independently verified and reconciled P24 atomic claim 2a3b36c9 as the exact sole child of integration release 408b21af with only three P24 runtime files, exact dependency/control/claim/lease/READY bindings, clean remote state, and zero effects
 remaining_steps:
 - independently re-audit P21's bounded residual-correction final when published
-- reconcile P24's exact atomic branch claim before allowing support product work
+- independently audit P24's support ready-for-review final when published
 - resolve the independently inventoried 16 review heads that are not yet full integration ancestors and 55 assigned steward duties before candidate freeze
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P21 continues only its reconciled bounded local residual correction. P24 may first create codex/v21-p24-support from exact integration release 408b21af and push only its three runtime-memory files under READY 57d6b0bb, claim ff79d0ab, and SUPPORT lease 4d0115d1, then stop for C00 reconciliation. No provider action, Telegram send, steward application, or external effect is authorized.
+next_action: P21 continues only its reconciled bounded local residual correction. P24 claim 2a3b36c9 is reconciled; under unchanged claim ff79d0ab and SUPPORT lease 4d0115d1, P24 may implement only its normalized support roots plus immutable structured steward requests, then release and publish a ready-for-review final. No provider action, Telegram send, steward application, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -296,12 +297,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 8bb4680887b2ea320f914cf046184655601fade9
+  current_control_parent_sha: 4c9b217531ce76b52971707913d1e28c65958d76
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 4844d978-9792-49a5-94be-efaa1003b124
-      observed_head: 8bb4680887b2ea320f914cf046184655601fade9
+      claim_id: 2bd6c548-ce07-44c5-bc3d-438c242d7b91
+      observed_head: 4c9b217531ce76b52971707913d1e28c65958d76
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -509,10 +510,10 @@ orchestration:
     P24:
       branch: codex/v21-p24-support
       claim_id: ff79d0ab-10d4-481b-ae90-48bb8bd9631a
-      observed_head: null
+      observed_head: 2a3b36c98b9a8698536149d668f0c58552c7eea4
       authorized_start_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
       lease_expires_at: '2026-07-29T13:38:30Z'
-      scheduling_state: ready_atomic_claim_only
+      scheduling_state: claimed_implementation_authorized
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: null
@@ -742,10 +743,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 40dd4af3194b8f14ede5bec098f5a6281ff51e9530457d3a101cef87fc89cae5
-    control_lease: 00177fe1f922c44864dcb12bfbffec81371bcf19fd09fd491d31f0589a610375
-    task_registry: fdde6615f005c65a67de363b4dc6674249b3122e086446be4fb1611aadd61b7f
-    ready_queue: 77b0410ecc610b328379fbc8cb9e5077650c3642df35a0517dcde160f6f488db
+    control_state: e84d491f3ff6a9ee2f507e507eb55349069de3446aee15b500c566772b868199
+    control_lease: 21fbed39947aff3b5f8b1229b4542e2262d8878d4e5b8b46e7673755e6774937
+    task_registry: f2a171c4c0c0b11fc92fbef05899f70d60f55b414ebc295756e42978b49af822
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: b0be4201c92d44ff3968ef8fa97e1d34b6d7521660181ff48598d23af18b51f0
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -932,6 +933,8 @@ verification:
   - P24 dependency frontier: exact F03/F04/F05/F07 interface sources are ancestors of integration release 408b21af; registry states and checkpoint digests match, remote P24 branch is absent, SUPPORT is unclaimed, and external authority is none
   - canonical P24 new-branch READY digest 57d6b0bb against acquisition 8bb46808, exact integration start 408b21af, claim ff79d0ab, SUPPORT lease 4d0115d1, and zero effect locks: passed
   - read-only integration completeness inventory: 16 ready-for-review producer heads are not yet full integration ancestors and 55 steward duties remain assigned; candidate remains not_frozen and provider/effect counts remain zero
+  - P24 atomic claim 2a3b36c9 exact sole parent 408b21af, exact three-runtime-file delta, task/context/prompt/package identities, F03/F04/F05/F07 dependency bindings, containing control 6d0278d4 and acquisition 8bb46808, READY/claim/SUPPORT lease, clean remote state, and zero effects: passed and reconciled
+  - consumed the P24 READY entry and authorized only task-owned local support implementation plus immutable structured steward requests under the unchanged claim and lease: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
