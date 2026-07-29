@@ -3,39 +3,26 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Resume P33 correction only after C00 has consumed the exact pushed correction
-claim head and explicitly resumed the task.
+P33 correction is ready_for_review.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p33-runtime-operations
-Authoritative control ref: origin/codex/v21-control
-Task packet: ops/v2.1-execution/tasks/P33.yaml
-Task context: ops/v2.1-execution/contexts/P33-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P33/HANDOFF.md
+Interface: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
 
-Correction authorization uses containing controller
-b0aeb1d1ba9ed25b27b7b519b9f06ba6bbbe7dfc, sole parent/acquisition
-c743420931244135bcd61578ea1f322851b325a8, exact existing head
-122608b516046f9c2b93b18256573232b9958137, ready digest
-639b020e9df4dd07e1394aa40a3053d9e7d7cdd6471a7923ef57701d2c009ad6,
-claim 9f112031-01ef-4117-986d-27465a06d19e, and OPERATIONS_RUNTIME lease
-76b4bb8b-af8b-4fcf-9ed7-4054ed8fe57a expiring
-2026-07-29T02:39:10Z.
+Verify exact implementation head
+5531d6907353fd4d3935469a3574bd63c17cfc23, interface/steward metadata head
+5540fe42d0c81ae30deaf0c258c56b756be65e67, semantic version 2.0.0, and
+contract digest
+cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95.
 
-The preserved 1a5a9c1d/0e674da7 interface with digest 9ac5c08a is pending
-correction, not admitted. Before product work, verify C00 consumed the exact
-remote correction-claim head, local and remote P33 equal that head, and the
-lease remains valid.
+I36 must independently audit and integrate the corrected interface before C00
+authorizes P34, then disposition P33-registration-001, P33-config-001, and
+P33-deploy-001. The lease was released task-locally at
+2026-07-29T02:10:00Z.
 
-Then correct every C00 finding inside P33-owned roots: require truthful nonempty
-queue/worker/provider evidence; complete credential-key and final-response
-leakage scanning; bind migration inventory truth to the candidate; validate all
-runtime artifacts against candidate role expectations; derive worker readiness
-from observations; implement exact Admin authorization rather than defer it;
-and correct the deploy steward request digest. Republish the exact interface
-checkpoint if exported artifacts change.
-
-Do not begin any repair before reconciliation. Do not edit shared composers,
-manifests, lockfiles, migrations, provider registries, backup/restore, or
-canary-budget paths. External-effect authority is none.
+Do not resume P33 implementation without a new exact C00 authorization. No
+shared composer, manifest, lockfile, migration, provider registry,
+backup/restore, canary-budget, deployment, or external-effect change is
+authorized.
