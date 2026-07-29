@@ -1,0 +1,43 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P21-registration-001
+requesting_task_id: P21
+status: proposed
+immutable: true
+request_kind: migration_and_registration
+requested_owners:
+  migration: F02
+  server_registration: I36
+  client_registration: I36
+  worker_registration: I36
+summary: Register the isolated P21 publication service and add forward-only persistence for publication, idempotency, outbox, entitlement, and per-Student resume records.
+requested_changes:
+  - owner: F02
+    target: new forward-only migration
+    requirements:
+      - Create onetime.content_publications with content_id primary key, optimistic version, lifecycle state, occurred_at, JSON record, and updated_at.
+      - Create onetime.content_publication_receipts with unique operation plus idempotency_key, exact request_hash, content_id, JSON receipt, and committed_at.
+      - Create onetime.content_publication_outbox with intent_id primary key, content_id plus publication_generation, operation, idempotency_key, request_hash, pending state, JSON intent, and created_at.
+      - Create onetime.student_content_entitlements keyed by student_id plus content_id, household and occurrence bindings, active state, and JSON projection.
+      - Create onetime.student_content_resume keyed by student_id plus content_id with household_id, publication_version, bounded position_ms, optimistic version, JSON projection, and updated_at.
+      - Add foreign keys and indexes required for content, Student, household, occurrence, published-date search, and pending outbox scans without weakening tenant or product scope.
+  - owner: I36
+    target: authenticated server and worker composition
+    requirements:
+      - Register Admin approval, publish-request, occurrence-attach, and unpublish commands with CSRF and authenticated Admin enforcement.
+      - Register Student library search, playback-bootstrap, and resume endpoints with server-derived Student and household scope, no-store private responses, and neutral denials.
+      - Dispatch pending publish_private and revoke_private intents only through F05 fenced jobs and F06 exact provider bindings.
+      - Keep all provider asset references server-only and return only the P21 five-minute same-origin playback bootstrap.
+  - owner: I36
+    target: authenticated client composition
+    requirements:
+      - Compose the isolated Admin publication and Student library modules into existing authenticated shells without adding a Parent playback route.
+forbidden:
+  - editing or applying any migration from P21
+  - direct web-process provider mutation
+  - raw Vimeo URL, bearer, provider asset reference, or child-private data in client payloads, logs, handoffs, or evidence
+  - Parent or sibling playback
+  - runtime schema creation
+external_effects:
+  authority: none
+  attempted: 0

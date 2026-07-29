@@ -1,0 +1,226 @@
+import type {
+  ContentPublicationOutboxIntent,
+  ContentPublicationReceipt,
+  ContentPublicationRecord,
+  ContentPublicationRepository,
+  ContentPublicationUnitOfWork,
+  StudentContentEntitlement,
+  StudentContentResume,
+} from '../../../../contracts/src/content/publication/index.ts';
+
+export interface ContentPublicationSqlClient {
+  query<Row extends Record<string, unknown> = Record<string, unknown>>(
+    text: string,
+    values?: readonly unknown[],
+  ): Promise<{ rows: Row[]; rowCount?: number | null }>;
+  release(): void;
+}
+
+export interface ContentPublicationSqlPool {
+  connect(): Promise<ContentPublicationSqlClient>;
+}
+
+interface ContentRow extends Record<string, unknown> {
+  record_json: ContentPublicationRecord;
+}
+
+interface ReceiptRow extends Record<string, unknown> {
+  receipt_json: ContentPublicationReceipt;
+}
+
+interface EntitlementRow extends Record<string, unknown> {
+  entitlement_json: StudentContentEntitlement;
+}
+
+interface ResumeRow extends Record<string, unknown> {
+  resume_json: StudentContentResume;
+}
+
+export function createPostgresContentPublicationRepository(
+  pool: ContentPublicationSqlPool,
+): ContentPublicationRepository {
+  return {
+    async inTransaction<T>(work: (unit: ContentPublicationUnitOfWork) => Promise<T>) {
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const result = await work(createUnit(client));
+        await client.query('COMMIT');
+        return result;
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
+  };
+}
+
+function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnitOfWork {
+  return {
+    async getContent(contentId) {
+      const result = await client.query<ContentRow>(
+        `SELECT record_json
+           FROM onetime.content_publications
+          WHERE content_id = $1
+          LIMIT 1
+          FOR UPDATE`,
+        [contentId],
+      );
+      return result.rows[0]?.record_json ?? null;
+    },
+
+    async saveContent(record, expectedVersion) {
+      const result = await client.query(
+        `UPDATE onetime.content_publications
+            SET version = $2,
+                state = $3,
+                record_json = $4::jsonb,
+                updated_at = $5::timestamptz
+          WHERE content_id = $1
+            AND version = $6`,
+        [
+          record.contentId,
+          record.version,
+          record.state,
+          JSON.stringify(record),
+          record.updatedAt,
+          expectedVersion,
+        ],
+      );
+      requireOne(result.rowCount, 'content_publication_optimistic_conflict');
+    },
+
+    async findReceipt(operation, idempotencyKey) {
+      const result = await client.query<ReceiptRow>(
+        `SELECT receipt_json
+           FROM onetime.content_publication_receipts
+          WHERE operation = $1
+            AND idempotency_key = $2
+          LIMIT 1
+          FOR UPDATE`,
+        [operation, idempotencyKey],
+      );
+      return result.rows[0]?.receipt_json ?? null;
+    },
+
+    async saveReceipt(receipt) {
+      const result = await client.query(
+        `INSERT INTO onetime.content_publication_receipts (
+           operation, idempotency_key, request_hash, content_id, receipt_json, committed_at
+         ) VALUES ($1, $2, $3, $4, $5::jsonb, $6::timestamptz)
+         ON CONFLICT (operation, idempotency_key) DO NOTHING`,
+        [
+          receipt.operation,
+          receipt.idempotencyKey,
+          receipt.requestHash,
+          receipt.contentId,
+          JSON.stringify(receipt),
+          receipt.committedAt,
+        ],
+      );
+      requireOne(result.rowCount, 'content_publication_receipt_conflict');
+    },
+
+    async saveOutboxIntent(intent: ContentPublicationOutboxIntent) {
+      const result = await client.query(
+        `INSERT INTO onetime.content_publication_outbox (
+           intent_id, content_id, publication_generation, operation,
+           idempotency_key, request_hash, state, intent_json, created_at
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::timestamptz)
+         ON CONFLICT (intent_id) DO NOTHING`,
+        [
+          intent.intentId,
+          intent.contentId,
+          intent.publicationGeneration,
+          intent.operation,
+          intent.idempotencyKey,
+          intent.requestHash,
+          intent.state,
+          JSON.stringify(intent),
+          intent.createdAt,
+        ],
+      );
+      requireOne(result.rowCount, 'content_publication_outbox_conflict');
+    },
+
+    async listPublishedContent() {
+      const result = await client.query<ContentRow>(
+        `SELECT record_json
+           FROM onetime.content_publications
+          WHERE state = 'published'
+          ORDER BY occurred_at DESC, content_id ASC`,
+      );
+      return result.rows.map((row) => row.record_json);
+    },
+
+    async getEntitlement(studentId, contentId) {
+      const result = await client.query<EntitlementRow>(
+        `SELECT entitlement_json
+           FROM onetime.student_content_entitlements
+          WHERE student_id = $1
+            AND content_id = $2
+          LIMIT 1`,
+        [studentId, contentId],
+      );
+      return result.rows[0]?.entitlement_json ?? null;
+    },
+
+    async getResume(studentId, contentId) {
+      const result = await client.query<ResumeRow>(
+        `SELECT resume_json
+           FROM onetime.student_content_resume
+          WHERE student_id = $1
+            AND content_id = $2
+          LIMIT 1
+          FOR UPDATE`,
+        [studentId, contentId],
+      );
+      return result.rows[0]?.resume_json ?? null;
+    },
+
+    async saveResume(resume, expectedVersion) {
+      const values = [
+        resume.studentId,
+        resume.householdId,
+        resume.contentId,
+        resume.publicationVersion,
+        resume.positionMs,
+        resume.version,
+        JSON.stringify(resume),
+        resume.updatedAt,
+      ] as const;
+      if (expectedVersion === null) {
+        const result = await client.query(
+          `INSERT INTO onetime.student_content_resume (
+             student_id, household_id, content_id, publication_version,
+             position_ms, version, resume_json, updated_at
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::timestamptz)
+           ON CONFLICT (student_id, content_id) DO NOTHING`,
+          values,
+        );
+        requireOne(result.rowCount, 'student_content_resume_conflict');
+        return;
+      }
+      const result = await client.query(
+        `UPDATE onetime.student_content_resume
+            SET household_id = $2,
+                publication_version = $4,
+                position_ms = $5,
+                version = $6,
+                resume_json = $7::jsonb,
+                updated_at = $8::timestamptz
+          WHERE student_id = $1
+            AND content_id = $3
+            AND version = $9`,
+        [...values, expectedVersion],
+      );
+      requireOne(result.rowCount, 'student_content_resume_conflict');
+    },
+  };
+}
+
+function requireOne(rowCount: number | null | undefined, code: string) {
+  if (rowCount !== 1) throw new Error(code);
+}
