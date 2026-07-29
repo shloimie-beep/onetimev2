@@ -15,12 +15,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 296b7002922504b10aa88f5bf6e8c9163ed10ec7
+controller_authorization_sha: 3143e8d015ea3662a2268098249138762b39d555
 next_action: >-
-  F02 may atomically claim only exact branch head e4673ff1 under claim dc6ba41d and shared MIGRATION_AUTHORITY /
-  SCHEMA_CONTRACT lease 59450be9 for Lease A ordinals 2235 through 2238. It must verify the exact integrated release,
-  four requester refs/digests, prior 2234 allocation, absence of 2231 and 2235-2238 collisions, eight-path ceiling,
-  and zero effects; then update only its runtime triplet, push, and stop before reading requester content, editing
-  its allocation proposal, or writing SQL for C00 reconciliation. No migration implementation, registration,
-  provider inspection, deployment, send, or external effect is authorized before that reconciliation.
+  F02 claim 0708a09e is reconciled under unchanged claim dc6ba41d and shared MIGRATION_AUTHORITY / SCHEMA_CONTRACT
+  lease 59450be9. F02 may now read only the four bound Lease A requests in required order, update its allocation
+  proposal, author exact forward-only migrations 2235 through 2238, and finish its runtime triplet within the
+  eight-path ceiling recorded in the admitted READY entry. It must validate all request semantics and digests,
+  checksums, disposable PostgreSQL application and rollback/replay behavior, tests, typecheck, lint, formatting,
+  build, secret scan, diff hygiene, zero effects, then release the lease, push, and stop for independent and C00
+  audit. No other migration, applied-migration edit, registration, provider inspection, deployment, send, or
+  external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
