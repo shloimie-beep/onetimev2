@@ -1094,27 +1094,30 @@ tasks:
     transitioned_at: '2026-07-29T10:11:59Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P23/status_proof
 - task_id: P24
-  status: claimed
-  active_phase: implementation
+  status: ready
+  active_phase: review_digest_requester_projection_correction
   branch: codex/v21-p24-support
   phase_branches:
     implementation: codex/v21-p24-support
+    review: codex/v21-p24-support
+    review_digest_requester_projection_correction: codex/v21-p24-support
   phase_heads:
-    implementation: 2a3b36c98b9a8698536149d668f0c58552c7eea4
+    implementation: 81bb28c76744b52b52f9262c7e31e91954dc6472
+    review: 78e6c88647356268424e16a29edbe60d36fe7703
   authorized_start_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
-  last_known_remote_head: 2a3b36c98b9a8698536149d668f0c58552c7eea4
-  active_claim_id: ff79d0ab-10d4-481b-ae90-48bb8bd9631a
-  active_writer_id: codex-p24-worker-ff79d0ab
-  lease_expires_at: '2026-07-29T13:38:30Z'
-  last_heartbeat_at: '2026-07-29T12:23:30Z'
-  controller_authorization_sha: 4c9b217531ce76b52971707913d1e28c65958d76
-  ready_entry_payload_digest: 57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75
+  last_known_remote_head: 78e6c88647356268424e16a29edbe60d36fe7703
+  active_claim_id: 30f62864-3c37-4610-8a83-09dff3d63213
+  active_writer_id: null
+  lease_expires_at: '2026-07-29T14:36:47Z'
+  last_heartbeat_at: '2026-07-29T13:21:47Z'
+  controller_authorization_sha: d7475995baa425229077fadd522082855997ed48
+  ready_entry_payload_digest: 70989507326113265e2e4cb81b00f51ce1d4db92f007bd9aab28ffdaadea97f1
   interface_checkpoint_sha: null
-  implementation_head_sha: null
+  implementation_head_sha: 81bb28c76744b52b52f9262c7e31e91954dc6472
   status_proof:
-    state: claimed
-    producer_task_id: P24
-    producer_head_sha: 2a3b36c98b9a8698536149d668f0c58552c7eea4
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: d7475995baa425229077fadd522082855997ed48
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -1128,8 +1131,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 4c9b217531ce76b52971707913d1e28c65958d76
-    transitioned_at: '2026-07-29T12:39:32Z'
+    state_based_on_control_head_sha: d7475995baa425229077fadd522082855997ed48
+    transitioned_at: '2026-07-29T13:21:47Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P24/status_proof
 - task_id: P25
   status: ready_for_review
