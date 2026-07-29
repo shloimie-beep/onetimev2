@@ -886,6 +886,36 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
+- request_id: P24-migration-001
+  request_digest: 71065002e827d8b51c6bafc808568eb6940e2527a0ec0c30bd648d49d8bf93f3
+  requesting_task_id: P24
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P24-registration-001
+  request_digest: 7fe2d310c429c37ddc7efa24c7b3b9d9509bf9ee59f2707f5d94e7fdfa0002f7
+  requesting_task_id: P24
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null
