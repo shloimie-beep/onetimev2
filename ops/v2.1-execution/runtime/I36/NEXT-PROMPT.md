@@ -1,19 +1,26 @@
-# I36 P10 Full Atomic Claim — Next Prompt
+# I36 P10 Full Release — Next Prompt
 
-Stop after publishing this metadata-only atomic claim.
+Stop after publishing this metadata-only release checkpoint.
 
-Before any P10 source admission or merge:
+C00 must reconcile:
+
+- P10 source `5fccc34507ae9c5dbc609e234ab559576ab3a445`;
+- two-parent merge result `522fe505eca226ee7053e38bb67be5af78af79d6`;
+- the pushed I36 metadata-only release head;
+- released claim `ba9b0d15-c3c4-4f68-89b9-f96eb9626e8d`;
+- released RELEASE_INTEGRATOR lease
+  `8f1bf970-a69c-463d-98d2-a97f3591fd10`;
+- zero steward, migration, registration, and provider actions;
+- zero external effects.
+
+Before any further integration:
 
 1. fetch the exact remote control and integration heads;
-2. require C00 to have reconciled claim
-   `ba9b0d15-c3c4-4f68-89b9-f96eb9626e8d`;
-3. require the next expected integration target to equal this pushed
-   atomic-claim head;
-4. require the same still-valid lease or a newly issued exact
-   RELEASE_INTEGRATOR lease;
-5. recompute the rebound ready and merge-item payload digests before reading
-   the source for admission.
+2. require a new C00-issued authorization whose expected target equals the
+   pushed I36 release head;
+3. require a new exact claim and unexpired RELEASE_INTEGRATOR lease;
+4. recompute all rebound queue digests and independently verify source scope;
+5. publish an atomic claim before reading a newly queued source for admission.
 
-Until then, do not read, merge, or cherry-pick the P10 source, apply a P08 or
-P10 steward request, edit product or shared paths, or perform a provider or
-external effect.
+Do not reuse the released claim or lease. Do not apply the merged P10 steward
+request without a new exact C00 authorization.
