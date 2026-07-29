@@ -30,21 +30,34 @@ dependency_heads:
     interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
 status: ready_for_review
 phase: complete
-claimed_by: codex-p18-worker-415e950e
-claim_time: '2026-07-28T22:05:45Z'
-claim_id: 415e950e-cfbb-4635-9f1a-3ffd6af825ac
-writer_slot_lease_id: d44e1690-90e5-44b6-b17f-2faa92dfb220
-lease_issued_at: '2026-07-28T21:55:38Z'
-lease_expires_at: '2026-07-28T22:55:38Z'
-last_heartbeat_at: '2026-07-28T22:23:56Z'
-lease_released_at: '2026-07-28T22:23:56Z'
-controller_authorization_sha: e847dd790ae2f99ae526b0edcbd41897474c8f18
-state_based_on_control_head_sha: 3cfe14a6e1171d002f7173c13776dc682fddd6a8
-ready_entry_payload_digest: 5bd82837c0f7aa83ac813092c767f1dec82f2671f7ea6562e53313c4325586f5
-state_based_on_head_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
+completed_correction_phase: launch_grant_table_collision_correction
+claimed_by: codex-p18-collision-correction-61b4324b
+claim_time: '2026-07-29T16:40:12Z'
+claim_id: 61b4324b-03b7-4d7a-a658-6c3a3091fb80
+writer_slot_lease_id: 65bbf2a3-564f-407d-aa21-ba572f5fd1fe
+lease_issued_at: '2026-07-29T16:32:13Z'
+lease_expires_at: '2026-07-29T17:47:13Z'
+last_heartbeat_at: '2026-07-29T16:56:37Z'
+lease_released_at: '2026-07-29T16:56:37Z'
+controller_authorization_sha: 01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc
+acquisition_parent_control_sha: 2c8b4872938d6f0db50ef7f1dba89a0d660a4975
+state_based_on_control_head_sha: 2c8b4872938d6f0db50ef7f1dba89a0d660a4975
+ready_entry_payload_digest: 80b85a7bf27c621d6fe57ebca391d0cee372ee0ab1af4520822eead5504c04e3
+reconciled_claim_head_sha: d315c47ff9e616ef7909c6edce85a226c5e4fbec
+reconciled_claim_control_sha: 8241e5527b7cfbdf12cdeb0c3916fb259a6a7054
+request_reauthorization_sha: 01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc
+state_based_on_head_sha: d315c47ff9e616ef7909c6edce85a226c5e4fbec
 last_implementation_commit_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
 implementation_manifest_digest: b4048000148bb93a9e3debbe4ed933dcc1732f2bbf0f8e0f20dc19530b56f4ba
 contract_artifact_digest: de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c
+correction_manifest_digest: 533b480bb3f7f71c2798a765d63abb3cd1d2200b4be6c5f4b85687ca72b88d51
+correction_artifact_digests:
+  repository_raw_sha256: fff7c15fe9144c00da6a8515b5f319ba88df241f4558de2a89239b990676135b
+  repository_test_raw_sha256: b2bcc9fd7e8106b0c0450efd47bc6d6cc3427c3ae3bc5d8e6b66ba7746119ef3
+  schema_contract_raw_sha256: f2437b9533afc0d8b7453fb4ac8e8c02ff3eee91aff910c768e5ec10ada5de71
+  schema_contract_version: 1.0.1
+  migration_request_raw_sha256: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
+  migration_request_canonical_queue_sha256: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
 completed_steps:
   - Verified repository identity, exact containing control authority e847dd790ae2f99ae526b0edcbd41897474c8f18, and exact authorized integration start.
   - Verified the ready/registry branch, canonical ready digest, claim, sole live EMBEDDED_CLASSROOM lease, and zero effect locks.
@@ -61,11 +74,23 @@ completed_steps:
   - Published immutable migration and central-registration steward requests.
   - Passed full typecheck, 17 focused assertions, focused lint/format, exact source-scope, digest, and diff checks.
   - Released the EMBEDDED_CLASSROOM lease in task-local terminal metadata.
+  - Re-fetched and verified the exact remote control authorization, sole acquisition parent, expected existing P18 head, canonical READY payload, and live sole-writer lease.
+  - Re-verified every entry-bound digest, the applied-table collision, both protected legacy blobs, and zero provider/live effect locks.
+  - Claimed only the P18 runtime triplet for the authorized launch-grant table collision correction; no repository, schema, test, migration, or steward-request correction was edited.
+  - C00 reconciled the exact atomic claim head under the unchanged claim and EMBEDDED_CLASSROOM lease.
+  - Replaced every launch-grant insert, load, bootstrap-consume, and reset SQL reference with onetime.classroom_launch_grants_v21.
+  - Added an explicit regression proving all four launch-grant SQL operations use only the collision-free v2.1 table and reject the protected legacy table.
+  - Advanced the embedded-classroom schema contract to version 1.0.1 and the collision-free launch-grant table binding.
+  - Published immutable P18-migration-002 without allocating an ordinal, writing migration SQL, or claiming a migration was applied or executed.
+  - Obtained bounded C00 reauthorization for the exact inspected 4616-byte P18-migration-002 preimage; the unreproducible prior request digest pair is superseded.
+  - Preserved the applied legacy migration and rejected P18-migration-001 at their exact protected Git blobs.
+  - Passed four focused files with 18 assertions, full typecheck, focused ESLint and Prettier, repository-wide secret scan, and exact path/digest/YAML/blob checks.
+  - Released the EMBEDDED_CLASSROOM lease in task-local terminal metadata after correction verification.
 remaining_steps:
-  - C00/I36 must validate and integrate this exact ready_for_review head.
-  - F02 and I36 must adjudicate the migration and registration steward requests.
-  - Candidate-bound provider sandbox and production-operator proof remains for verification waves.
-next_action: C00 and I36 validate and integrate this exact ready_for_review checkpoint, then adjudicate P18-migration-001 and P18-registration-001.
+  - C00 must audit and integrate the exact remote correction head.
+  - F02 must independently adjudicate P18-migration-002 and, if approved, allocate and write a forward-only migration.
+  - Candidate-bound provider-sandbox and production-operator proof remains for verification waves.
+next_action: C00 audits and integrates this exact ready_for_review correction head, then F02 independently adjudicates P18-migration-002. P18 must not allocate or write migration SQL.
 requirements:
   OTV2-CLASSROOM-073: implementation_verified
   OTV2-CLASSROOM-075: implementation_verified
@@ -103,10 +128,27 @@ changed_paths:
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-001.yaml
   - ops/v2.1-execution/runtime/P18/steward-requests/P18-registration-001.yaml
+atomic_claim_changed_paths:
+  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P18/HANDOFF.md
+  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
+correction_changed_paths:
+  - packages/db/src/classroom/attendance/repository.ts
+  - packages/db/src/classroom/attendance/repository.test.ts
+  - packages/db/src/classroom/attendance/schema-contract.ts
+  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-002.yaml
+  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P18/HANDOFF.md
+  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
 migrations: []
 steward_requests:
   - request_id: P18-migration-001
     sha256: acb6ed1d81e05e338875ada7309629d418dafa4b06ee555037e40988b7b7ff1a
+    disposition: rejected_immutable_legacy_table_collision
+  - request_id: P18-migration-002
+    sha256: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
+    canonical_queue_sha256: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
+    disposition: pending_F02_adjudication
   - request_id: P18-registration-001
     sha256: 1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0
 verification:
@@ -121,6 +163,12 @@ verification:
     - Exact 23-path normalized-owned-scope inventory passed.
     - Implementation manifest, contract artifact, and steward-request digests passed.
     - git diff --check and clean-tree source verification passed.
+    - C00 claim reconciliation 8241e5527b7cfbdf12cdeb0c3916fb259a6a7054 and bounded exact-request reauthorization 01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc passed.
+    - Focused Vitest passed 4 files and 18 assertions after the collision correction.
+    - npm run typecheck passed after the collision correction.
+    - Focused ESLint and Prettier passed all four correction source/request artifacts.
+    - npm run secret:scan passed across 2669 repository text files.
+    - Exact seven-path diff, correction manifest, repository/schema/request digests, YAML parsing, protected-blob preservation, and git diff --check passed.
   known_baseline_failures: []
 external_effects:
   authority: none

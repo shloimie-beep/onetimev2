@@ -1,102 +1,78 @@
-# P18 Handoff
+# P18 Collision-Correction Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p18-embedded-classroom`
-- Start SHA: `9ba92b070eedfa3756eff4f78fd328de72507a96`
-- Atomic claim SHA: `9b37f4a0a123299b0b278ffeaa7b83c763155e3b`
-- Implementation SHA: `7163c2a2fda6d4f8105895ceb62f97db1f8ee56a`
-- Final ready-for-review head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
-- Task packet digest: `e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bbaa1b2`
-- Context digest: `2385ac5d0555d75318577964ad92b850c55e8bc770127454e65afe776648142d`
-- Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Implementation manifest digest: `b4048000148bb93a9e3debbe4ed933dcc1732f2bbf0f8e0f20dc19530b56f4ba`
-- Contract artifact digest: `de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c`
-- Claim ID: `415e950e-cfbb-4635-9f1a-3ffd6af825ac`
-- EMBEDDED_CLASSROOM lease: `d44e1690-90e5-44b6-b17f-2faa92dfb220`
-- Lease released: `2026-07-28T22:23:56Z`
+- Correction parent: `d315c47ff9e616ef7909c6edce85a226c5e4fbec`
+- Final correction head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
+- Claim: `61b4324b-03b7-4d7a-a658-6c3a3091fb80`
+- EMBEDDED_CLASSROOM lease: `65bbf2a3-564f-407d-aa21-ba572f5fd1fe`
+- Lease released: `2026-07-29T16:56:37Z`
+- Claim reconciliation: `8241e5527b7cfbdf12cdeb0c3916fb259a6a7054`
+- Exact-request reauthorization: `01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc`
+- Reauthorization sole parent: `2c8b4872938d6f0db50ef7f1dba89a0d660a4975`
+- Correction manifest: `533b480bb3f7f71c2798a765d63abb3cd1d2200b4be6c5f4b85687ca72b88d51`
 
-## Completed behavior
+## Corrected behavior
 
-P18 implements the embedded classroom authorization boundary with exact
-Student, household, authenticated session, occurrence, environment, access,
-enrollment, registrant, revocation, and current P32 consent checks. A live
-occurrence stays joinable after scheduled start until its authoritative close;
-a ready occurrence opens only at its ten-minute boundary.
+Every launch-grant repository statement now uses only
+`onetime.classroom_launch_grants_v21`: insert, exact-scope load,
+bootstrap-consume, and Admin-reset revocation. The focused database regression
+invokes all four operations, requires the `_v21` table in each SQL statement,
+and rejects the unversioned legacy-table spelling.
 
-Launch grants are digest-only, Student/session/occurrence/version-bound,
-single-use, and valid for exactly 60 seconds. Redemption atomically consumes
-the grant and acquires or renews the local session before a minimal ephemeral
-Meeting SDK bootstrap is signed. Responses are no-store/no-referrer and reject
-raw URLs. Authorization, consent, closed-occurrence, expired/replayed grant, and
-second-device denials invoke no SDK/provider port.
+The schema contract is version `1.0.1` and binds `launch_grants` to the same
+collision-free table. No other runtime persistence contract changed.
 
-One concurrent live session is enforced per Student. Same app-session/device
-lineage reconnects, heartbeats every 30 seconds, and holds a 90-second lease.
-Expiry permits a newly authorized acquisition. Admin reset is audited and
-atomically revokes the active session plus every unused Student launch grant.
+## Immutable replacement request
 
-Attendance keeps append-only provider, embedded-client, and Admin-correction
-events. It merges reconnect overlaps without double counting, gives verified
-provider intervals precedence, records provider/client mismatch, caps
-percentage at 100%, and applies corrections only through later audit evidence.
-The Student view model provides honest camera guidance, recording disclosure
-and persistent indicator, safe denial copy, and exact heartbeat timing.
+`P18-migration-002` requests a forward-only, F02-owned migration for the
+collision-free v2.1 launch-grant table and the previously requested session and
+attendance structures. It does not allocate a migration ordinal, contain SQL,
+or claim any migration was written, applied, or executed.
 
-## Remaining work
+- Raw SHA-256: `d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed`
+- Canonical queue SHA-256: `e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d`
+- Exact bytes: `4616`, UTF-8 LF with trailing LF
 
-P18-owned implementation and branch verification are complete. F02 must
-adjudicate `P18-migration-001`; I36 must adjudicate
-`P18-registration-001` and integrate this exact head. Provider-sandbox and
-production-operator proof remains candidate-bound for verification lanes.
+C00 independently inspected and reauthorized this exact preimage. The earlier
+unreproducible `3f8df8d4…` / `435d1d7a…` pair is superseded and is not claimed.
 
-## Exact next action
+## Correction artifact digests
 
-C00/I36 validate and integrate this `ready_for_review` checkpoint, then
-adjudicate the two structured steward requests.
+- Repository: `fff7c15fe9144c00da6a8515b5f319ba88df241f4558de2a89239b990676135b`
+- Repository regression: `b2bcc9fd7e8106b0c0450efd47bc6d6cc3427c3ae3bc5d8e6b66ba7746119ef3`
+- Schema contract: `f2437b9533afc0d8b7453fb4ac8e8c02ff3eee91aff910c768e5ec10ada5de71`
 
-## Coverage
+The correction manifest is SHA-256 of recursively key-sorted compact JSON
+mapping the four non-runtime correction paths to these exact raw digests.
 
-- Requirements: all five implementation-verified.
-- Acceptance cases: all six have task-owned timing, authorization, consent, isolation, concurrency, reconnect, reset, attendance, persistence, and UI assertions; candidate-bound provider proof is not claimed.
+## Protected evidence
 
-## Changed files and migrations
+- Applied migration `packages/db/migrations/2002_ot88_zoom_learner_classroom.sql`
+  remains Git blob `7ee99d1174e557eb0978e4258fc511da1b4ab445`.
+- Rejected `P18-migration-001.yaml` remains Git blob
+  `5975b103568459c48771330f0f287b25e7b5199b`.
 
-Twenty implementation/request artifacts were added inside the five P18-owned
-roots and P18-local steward requests, plus the three P18 runtime files. No
-migration, root barrel, central server/client composer, control/integration
-state, package manifest, lockfile, or provider registry was edited. Migrations:
-none.
-
-## Steward requests
-
-- `P18-migration-001`: SHA-256 `acb6ed1d81e05e338875ada7309629d418dafa4b06ee555037e40988b7b7ff1a`.
-- `P18-registration-001`: SHA-256 `1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0`.
+Neither protected artifact was edited, and the correction performs no create,
+alter, rename, backfill, read, or write against the legacy table.
 
 ## Verification
 
-- Locked manifest: 200/200; task/context/prompt/package/source digests passed.
-- F05/P16/P32: ancestry, three contract digests, and 27 artifacts passed.
+- Focused Vitest: four files, 18 assertions, passed.
 - Full TypeScript typecheck: passed.
-- Focused Vitest: 4 files, 17 assertions, all passed.
-- Focused ESLint: 18 TypeScript artifacts, passed.
-- Focused Prettier: 23 changed artifacts, passed.
-- Exact source scope: 23 paths, passed.
-- Implementation manifest, contract artifact, and request digests: verified.
-- Git diff and clean-source-tree checks: passed.
+- Focused ESLint and Prettier: passed.
+- Repository secret scan: 2,669 text files, passed.
+- Exact seven-path inventory, raw/canonical digests, YAML parsing,
+  protected-blob checks, and `git diff --check`: passed.
+
+## Exact next action
+
+C00 audits and integrates this exact remote `ready_for_review` head. F02 then
+independently adjudicates `P18-migration-002`; P18 must not allocate an ordinal
+or write migration SQL.
 
 ## External effects
 
-Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider or
-live effect occurred.
-
-## Security, privacy, and data handling
-
-No secrets, raw launch grants, SDK bearers, raw Zoom URLs, provider payloads,
-customer/child data, Student email aliases, private questions, participant
-display-name matching, or external identities were accessed or recorded.
-
-## Blockers, deviations, and recovery
-
-No P18-owned blocker or deviation. Shared migration and central registration
-work is explicitly routed to its stewards.
+Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider,
+deployment, send, or live effect occurred.
