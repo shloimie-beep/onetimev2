@@ -5,7 +5,7 @@ import type { ParentHouseholdSnapshot } from '../../../../../../../packages/cont
 import { ParentHouseholdWorkspace } from './ParentHouseholdWorkspace.tsx';
 
 const snapshot: ParentHouseholdSnapshot = {
-  contract_version: '1.0.0',
+  contract_version: '1.0.1',
   household_id: 'household-1',
   display_name: 'Our household',
   access_state: 'active',
