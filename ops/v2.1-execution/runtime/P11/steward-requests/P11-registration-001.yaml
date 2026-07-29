@@ -1,0 +1,39 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P11-registration-001
+task_id: P11
+kind: registration
+requirement_ids:
+  - OTV2-ADMIN-021
+  - OTV2-ADMIN-029
+  - OTV2-ADMIN-205
+acceptance_case_ids:
+  - OTV2-ADMIN-021-AC01
+  - OTV2-ADMIN-029-AC01
+  - OTV2-ADMIN-205-AC01
+rationale: P11 owns isolated Admin dashboard, search, operations service, contract, and domain modules but not the central client/server composers or root contract/domain barrels.
+desired_semantic_change: Register the real-data Admin operating dashboard and private authorized global search at their canonical routes, and re-export the P11 contract/domain roots without changing their semantics.
+proposed_symbols_routes_keys_or_dependencies:
+  - Export packages/contracts/src/admin/operations/index.ts from the steward-owned Admin contract barrel.
+  - Export packages/domain/src/admin-search/index.ts from the steward-owned domain barrel.
+  - Register AdminOperationsService from apps/web/src/server/features/admin/operations/index.ts behind a current server-validated Admin session.
+  - Register readDashboard at GET /api/v2.1/admin/dashboard with private no-store response headers and no fallback snapshot.
+  - Register search at POST /api/v2.1/admin/search with a small JSON body limit, same-origin/CSRF enforcement, private no-store response headers, and no request-body, query, result, or target logging or analytics.
+  - Construct AdminOperationsActor only from the validated F03 principal plus configured product, runtime tier, and verification environment; ignore all client-supplied role, scope, account, household, Student, runtime, and environment fields.
+  - Render apps/web/src/client/app/admin/dashboard/index.ts at /app/dashboard and apps/web/src/client/app/admin/search/index.ts at /app/search in the existing F07 Admin shell.
+  - Add canonical Admin header search navigation without placing terms in the URL, referrer, analytics, or route state; pagination remains opaque POST-body state.
+  - Preserve the canonical static links for Communications, Tickets, Billing & Access, Integrations, Operations, Audit, and Live Console. Do not synthesize data for an unavailable partner route.
+compatibility_assumptions:
+  - F03 supplies the current server-validated Admin principal and denies stale, Parent, Student, household-bound, and cross-environment sessions.
+  - F05/F06/P33 persistent operational tables remain the only dashboard and search sources; absent rows render truthful empty or unavailable states.
+  - F07 shell and design tokens are reused without modification.
+  - Partner-owned utility routes are registered by their owners/I36 and may remain unavailable until integration without triggering a P11 fictional fallback.
+verification_performed:
+  - P11 focused domain, PostgreSQL service, dashboard, and global-search tests.
+  - Workspace TypeScript typecheck.
+  - Focused ESLint, Prettier, diff, and secret checks.
+conflicts_or_risks:
+  - The route layer must never serialize or log private search terms in URLs, referrers, analytics, diagnostics, audit metadata, or error messages.
+  - Search must fail closed before returning any result when the actor, scope, result destination, source, or entity kind is invalid.
+  - Central registration must not expose a legacy Admin dashboard/search fallback, test lab, preview lane, or fictional record source.
+contains_secret_or_private_data: false
