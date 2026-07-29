@@ -743,3 +743,36 @@ under fresh claim `68340416-7e06-4986-a125-59d81b500a0b`, lease
 digest `b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f`.
 Use the corrected F05 digest, change exactly the three P23 runtime files,
 push, verify, and stop. Effects remain `0/0/0`.
+
+P11 corrected claim `c0fe1ec4fc16cc626e5b827f12e977851ede2bf1`
+and P23 atomic claim `05ef606022d260d11d56d31985a051d7b9013010`
+are reconciled. Resume each under its unchanged fresh claim and lease.
+
+For P11, implement only:
+
+- `apps/web/src/client/app/admin/dashboard/**`
+- `apps/web/src/client/app/admin/search/**`
+- `apps/web/src/server/features/admin/operations/**`
+- `packages/contracts/src/admin/operations/**`
+- `packages/domain/src/admin-search/**`
+- P11 runtime files and structured steward requests.
+
+Use real data and authorized search only; no fictional/demo fallback.
+
+For P23, implement only:
+
+- `apps/web/src/client/app/student/notifications/**`
+- `apps/web/src/server/features/notifications/student/**`
+- `packages/contracts/src/notifications/student/**`
+- `packages/db/src/notifications/student/**` excluding migrations/central index
+- `packages/domain/src/notifications/student/**`
+- P23 runtime files and structured steward requests.
+
+Implement exact lifecycle, unread/read behavior, safe action routing, optional
+foreground audible cue, and focused accessibility/dedupe tests. Do not send a
+notification or invoke a provider. Both tasks must run focused positive and
+negative tests plus typecheck, reproduce committed artifact/state/handoff/
+request digests, release their leases, push `ready_for_review`, remote-verify,
+and stop with effects `0/0/0`. Migrations, central composers/registrations,
+root barrels, package files, steward application, providers, and effects are
+excluded.

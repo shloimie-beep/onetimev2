@@ -1020,3 +1020,23 @@ P23 may create its branch from `cecc1c0d` under claim
 Both entries bind acquisition `2dc1ffa0`, the corrected immutable F05 digest,
 fresh one-hour leases, and zero effect locks. Both workers must stop again
 after exact three-runtime-file pushes.
+
+Corrected P11 claim `c0fe1ec4fc16cc626e5b827f12e977851ede2bf1`
+and P23 claim `05ef606022d260d11d56d31985a051d7b9013010` are independently
+reconciled. P11's sole parent is superseded narrow head `396bf74d`; P23's
+sole parent is settled integration release `cecc1c0d`. Each delta is exactly
+its three task-local runtime files, every fresh authorization/claim/lease/
+ready/dependency binding passes, remote refs are clean, and effects are zero.
+
+P11 may now implement only its normalized admin dashboard, admin search,
+admin operations server, admin operations contract, and admin-search domain
+roots plus P11 runtime and structured steward requests. P23 may implement only
+its normalized Student notification client/server/contract/db/domain roots
+plus P23 runtime and structured steward requests. Both must add focused
+positive/negative tests, run workspace typecheck, refresh exact digests,
+release their leases, publish `ready_for_review`, and stop. P11 must use real
+data with no fictional/demo fallback. P23 may implement local notification
+lifecycle, safe action routing, and optional foreground sound but may not send
+anything. Neither may edit a migration, central composer/registration, root
+barrel, package manifest, apply a steward request, call a provider, or cause
+an external effect.
