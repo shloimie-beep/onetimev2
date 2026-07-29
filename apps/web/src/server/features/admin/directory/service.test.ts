@@ -9,15 +9,19 @@ import type {
   AdminHouseholdRecord,
   AdminStudentRecord,
   CanonicalStudentEnrollment,
+  LockedOwnershipTransferEffectInventory,
+  OwnershipTransferEffectReadback,
   ServiceAccountAcceptanceEvidence,
   StudentCredentialReset,
 } from '../../../../../../../packages/contracts/src/admin/directory/index.ts';
 import type {
+  AdultSession,
   AdultIdentity,
   HouseholdOwnershipTransfer,
   HumanAccount,
   OwnershipTransferAcceptanceResult,
 } from '../../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
+import { completeVerifiedOwnershipTransfer } from '../../../../../../../packages/domain/src/admin-directory/index.ts';
 import { canonicalAdminDirectoryRequestHash } from '../../../../../../../packages/domain/src/contact-operations/index.ts';
 import { AdminDirectoryService } from './service.ts';
 
@@ -38,6 +42,42 @@ const actor = {
   },
 } as const;
 
+function session(sessionId: string, humanAccountId: string): AdultSession {
+  return {
+    ...scope,
+    sessionId,
+    humanAccountId,
+    activeRole: 'parent',
+    activeHouseholdId: 'household-one',
+    securityVersion: 1,
+    idleExpiresAt: '2026-07-29T02:00:00.000Z',
+    absoluteExpiresAt: '2026-07-29T09:00:00.000Z',
+    revokedAt: null,
+    revocationReason: null,
+    version: 1,
+    createdAt: occurredAt,
+    updatedAt: occurredAt,
+  };
+}
+
+function ownershipInventory(): LockedOwnershipTransferEffectInventory {
+  return {
+    ...scope,
+    inventoryId: 'inventory-one',
+    transferId: 'transfer-one',
+    householdId: 'household-one',
+    outgoingHumanAccountId: 'account-parent',
+    replacementHumanAccountId: 'account-replacement',
+    complete: true,
+    outgoingSessions: [session('session-outgoing', 'account-parent')],
+    replacementSessions: [session('session-replacement', 'account-replacement')],
+    billingSessionIds: ['billing-one'],
+    grantIds: ['grant-one'],
+    setupOrResetTokenIds: ['token-one'],
+    effectAuthorityIds: ['effect-authority-one'],
+  };
+}
+
 class MemoryDirectoryRepository implements AdminDirectoryRepository, AdminDirectoryUnitOfWork {
   adults = new Map<string, AdultIdentity>();
   accounts = new Map<string, HumanAccount>();
@@ -49,6 +89,10 @@ class MemoryDirectoryRepository implements AdminDirectoryRepository, AdminDirect
   receipts = new Map<string, AdminDirectoryReceipt>();
   audits: AdminDirectoryAuditEvent[] = [];
   ownershipTransfers: OwnershipTransferAcceptanceResult[] = [];
+  pendingOwnershipTransfers = new Map<string, HouseholdOwnershipTransfer>();
+  ownershipEffectInventory: LockedOwnershipTransferEffectInventory | null = null;
+  ownershipEffectReadbacks: OwnershipTransferEffectReadback[] = [];
+  omitOwnershipGrantReadback = false;
   revocations: ActiveAccessRevocationReadback[] = [];
   failAudit = false;
   private transactionTail = Promise.resolve();
@@ -119,6 +163,13 @@ class MemoryDirectoryRepository implements AdminDirectoryRepository, AdminDirect
     if (collision && collision.studentId !== value.studentId) throw new Error('username unique');
     this.students.set(value.studentId, value);
   }
+  async lockCurrentStudentEnrollment(_scope: AdminDirectoryScope, studentId: string) {
+    return (
+      [...this.enrollments.values()]
+        .filter((enrollmentValue) => enrollmentValue.studentId === studentId)
+        .sort((left, right) => right.version - left.version)[0] ?? null
+    );
+  }
   async saveStudentEnrollment(value: CanonicalStudentEnrollment) {
     this.enrollments.set(value.enrollmentId, value);
   }
@@ -146,9 +197,44 @@ class MemoryDirectoryRepository implements AdminDirectoryRepository, AdminDirect
   }
   async lockOwnershipTransfer(
     _scope: AdminDirectoryScope,
-    _transferId: string,
+    transferId: string,
   ): Promise<HouseholdOwnershipTransfer | null> {
-    return null;
+    return this.pendingOwnershipTransfers.get(transferId) ?? null;
+  }
+  async lockOwnershipTransferEffectInventory(
+    _scope: AdminDirectoryScope,
+    _binding: Parameters<AdminDirectoryUnitOfWork['lockOwnershipTransferEffectInventory']>[1],
+  ) {
+    if (!this.ownershipEffectInventory) throw new Error('missing ownership inventory');
+    return this.ownershipEffectInventory;
+  }
+  async revokeOwnershipTransferEffects(
+    _scope: AdminDirectoryScope,
+    inventory: LockedOwnershipTransferEffectInventory,
+  ): Promise<OwnershipTransferEffectReadback> {
+    const value: OwnershipTransferEffectReadback = {
+      ...scope,
+      inventoryId: inventory.inventoryId,
+      readbackId: 'ownership-readback-one',
+      transferId: inventory.transferId,
+      householdId: inventory.householdId,
+      outgoingHumanAccountId: inventory.outgoingHumanAccountId,
+      replacementHumanAccountId: inventory.replacementHumanAccountId,
+      complete: true,
+      outgoingSessionIdsRevoked: inventory.outgoingSessions.map(
+        (sessionValue) => sessionValue.sessionId,
+      ),
+      replacementSessionIdsRevoked: inventory.replacementSessions.map(
+        (sessionValue) => sessionValue.sessionId,
+      ),
+      billingSessionIdsRevoked: inventory.billingSessionIds,
+      grantIdsRevoked: this.omitOwnershipGrantReadback ? [] : inventory.grantIds,
+      setupOrResetTokenIdsInvalidated: inventory.setupOrResetTokenIds,
+      effectAuthorityIdsRevoked: inventory.effectAuthorityIds,
+      revokedAt: occurredAt,
+    };
+    this.ownershipEffectReadbacks.push(value);
+    return value;
   }
   async saveCredentialReset(
     value: StudentCredentialReset,
@@ -159,7 +245,13 @@ class MemoryDirectoryRepository implements AdminDirectoryRepository, AdminDirect
     }
     this.resets.set(value.resetId, value);
   }
-  async saveOwnershipTransfer(value: OwnershipTransferAcceptanceResult) {
+  async saveOwnershipTransfer(
+    value: OwnershipTransferAcceptanceResult,
+    effects: OwnershipTransferEffectReadback | null,
+  ) {
+    if (value.disposition === 'applied' && !effects) {
+      throw new Error('ownership transfer requires effect readback');
+    }
     this.ownershipTransfers.push(value);
   }
   async getReceipt(_scope: AdminDirectoryScope, idempotencyKey: string) {
@@ -185,6 +277,9 @@ class MemoryDirectoryRepository implements AdminDirectoryRepository, AdminDirect
       receipts: new Map(this.receipts),
       audits: [...this.audits],
       ownershipTransfers: [...this.ownershipTransfers],
+      pendingOwnershipTransfers: new Map(this.pendingOwnershipTransfers),
+      ownershipEffectInventory: this.ownershipEffectInventory,
+      ownershipEffectReadbacks: [...this.ownershipEffectReadbacks],
       revocations: [...this.revocations],
     };
   }
@@ -225,6 +320,86 @@ function adultCommand(repository: MemoryDirectoryRepository, mutationRuns: { cou
       };
     },
   };
+}
+
+function ownershipFixture(repository: MemoryDirectoryRepository) {
+  const transfer: HouseholdOwnershipTransfer = {
+    ...scope,
+    transferId: 'transfer-one',
+    householdId: 'household-one',
+    outgoingAdultId: 'adult-parent',
+    outgoingHumanAccountId: 'account-parent',
+    replacementNormalizedEmail: 'replacement@example.test',
+    replacementAdultId: null,
+    initiatedByAdminAccountId: 'account-admin',
+    state: 'pending',
+    expiresAt: '2026-08-01T01:00:00.000Z',
+    acceptedAt: null,
+    acceptedByAdultId: null,
+    acceptanceRequestHash: null,
+    requiredPolicies: {
+      policySetVersion: 'policies-v2',
+      serviceAccountVersion: 'service-v2',
+      recordingParticipationVersion: 'recording-v2',
+    },
+    version: 1,
+    createdAt: occurredAt,
+    updatedAt: occurredAt,
+  };
+  const household: AdminHouseholdRecord = {
+    ...scope,
+    householdId: 'household-one',
+    ownerAdultId: 'adult-parent',
+    ownerHumanAccountId: 'account-parent',
+    classification: 'family',
+    displayName: 'Household One',
+    seatLimit: 3,
+    activeSeatCount: 0,
+    state: 'active',
+    accessState: 'active',
+    schoolSeatAllowance: null,
+    version: 1,
+    createdAt: occurredAt,
+    updatedAt: occurredAt,
+  };
+  repository.pendingOwnershipTransfers.set(transfer.transferId, transfer);
+  repository.households.set(household.householdId, household);
+  repository.ownershipEffectInventory = ownershipInventory();
+  return completeVerifiedOwnershipTransfer({
+    actor,
+    adminAccount: {
+      ...scope,
+      humanAccountId: 'account-admin',
+      adultId: 'adult-admin',
+      memberships: ['admin'],
+      state: 'active',
+      securityVersion: 1,
+      version: 1,
+      createdAt: occurredAt,
+      updatedAt: occurredAt,
+    },
+    transfer,
+    household,
+    activeStudents: [],
+    replacementAdult: null,
+    replacementAccount: null,
+    proposedReplacementAdultId: 'adult-replacement',
+    proposedReplacementHumanAccountId: 'account-replacement',
+    replacementDisplayName: 'Replacement Parent',
+    acceptance: {
+      idempotencyKey: 'ownership-one',
+      canonicalRequestHash: 'a'.repeat(64),
+      expectedTransferVersion: 1,
+      expectedHouseholdVersion: 1,
+      expectedReplacementAccountVersion: null,
+      replacementNormalizedEmail: 'replacement@example.test',
+      acceptedPolicySetVersion: 'policies-v2',
+      dependentAttestations: [],
+      acceptedAt: occurredAt,
+    },
+    lockedEffectInventory: repository.ownershipEffectInventory,
+    now: new Date(occurredAt),
+  });
 }
 
 describe('P10 corrected durable Admin directory service', () => {
@@ -361,5 +536,244 @@ describe('P10 corrected durable Admin directory service', () => {
       }),
     ).rejects.toThrow(/canonical payload/u);
     expect(repository.receipts).toHaveLength(0);
+  });
+
+  it('rejects unrelated acceptance and forged restore enrollment before persistence', async () => {
+    const repository = new MemoryDirectoryRepository();
+    const owner: AdultIdentity = {
+      ...scope,
+      adultId: 'adult-parent',
+      normalizedEmail: 'parent@example.test',
+      displayName: 'Parent',
+      state: 'active',
+      version: 1,
+      createdAt: occurredAt,
+      updatedAt: occurredAt,
+    };
+    const ownerAccount: HumanAccount = {
+      ...scope,
+      humanAccountId: 'account-parent',
+      adultId: owner.adultId,
+      memberships: ['parent'],
+      state: 'active',
+      securityVersion: 1,
+      version: 1,
+      createdAt: occurredAt,
+      updatedAt: occurredAt,
+    };
+    const currentHousehold: AdminHouseholdRecord = {
+      ...scope,
+      householdId: 'household-one',
+      ownerAdultId: owner.adultId,
+      ownerHumanAccountId: ownerAccount.humanAccountId,
+      classification: 'family',
+      displayName: 'Household',
+      seatLimit: 3,
+      activeSeatCount: 0,
+      state: 'active',
+      accessState: 'active',
+      schoolSeatAllowance: null,
+      version: 2,
+      createdAt: occurredAt,
+      updatedAt: occurredAt,
+    };
+    const archivedStudent: AdminStudentRecord = {
+      ...scope,
+      studentId: 'student-one',
+      householdId: currentHousehold.householdId,
+      relationship: 'dependent',
+      selfAdultId: null,
+      state: 'archived',
+      credentialId: 'credential-one',
+      immutableHistoryReference: 'history-one',
+      displayName: 'Student',
+      username: 'student.one',
+      credentialVersion: 1,
+      credentialState: 'disabled',
+      version: 2,
+      createdAt: occurredAt,
+      updatedAt: occurredAt,
+    };
+    repository.adults.set(owner.adultId, owner);
+    repository.accounts.set(ownerAccount.humanAccountId, ownerAccount);
+    repository.households.set(currentHousehold.householdId, currentHousehold);
+    repository.students.set(archivedStudent.studentId, archivedStudent);
+    repository.enrollments.set('enrollment-one', {
+      ...scope,
+      enrollmentId: 'enrollment-one',
+      householdId: currentHousehold.householdId,
+      studentId: archivedStudent.studentId,
+      serviceAccountAcceptanceId: 'acceptance-old',
+      state: 'revoked',
+      version: 2,
+      updatedAt: occurredAt,
+    });
+    const unrelatedEvidence: ServiceAccountAcceptanceEvidence = {
+      ...scope,
+      acceptanceId: 'acceptance-new',
+      householdId: currentHousehold.householdId,
+      studentId: archivedStudent.studentId,
+      acceptedByAdultId: 'adult-unrelated',
+      acceptedServiceAccountVersion: 'service-account-v3',
+      canonicalRequestHash: 'b'.repeat(64),
+      immutableEvidenceReference: 'evidence-new',
+      acceptedAt: occurredAt,
+    };
+    const activeStudent = {
+      ...archivedStudent,
+      state: 'active' as const,
+      credentialState: 'active' as const,
+      credentialVersion: 2,
+      version: 3,
+    };
+    const restoredEnrollment: CanonicalStudentEnrollment = {
+      ...scope,
+      enrollmentId: 'enrollment-one',
+      householdId: currentHousehold.householdId,
+      studentId: activeStudent.studentId,
+      serviceAccountAcceptanceId: unrelatedEvidence.acceptanceId,
+      state: 'active',
+      version: 3,
+      updatedAt: occurredAt,
+    };
+    const canonicalPayload = { operation: 'student_transition', studentId: 'student-one' };
+    const baseMutation = {
+      resultRef: activeStudent.studentId,
+      resultVersion: activeStudent.version,
+      students: [activeStudent],
+      households: [
+        {
+          ...currentHousehold,
+          activeSeatCount: 1,
+          version: 3,
+        },
+      ],
+      serviceAccountAcceptances: [unrelatedEvidence],
+      enrollments: [restoredEnrollment],
+      credentialReset: {
+        ...scope,
+        resetId: 'reset-restore',
+        kind: 'reset' as const,
+        studentId: activeStudent.studentId,
+        credentialId: activeStudent.credentialId,
+        replacementCredentialHash: 'argon2id-v1$v=19$protected',
+        credentialVersion: 2,
+        revocationReadbackId: null,
+        discloseExistingPassword: false as const,
+        createdAt: occurredAt,
+      },
+      revokeAllAccess: [
+        {
+          subjectType: 'student' as const,
+          subjectId: activeStudent.studentId,
+          reason: 'student_credential_changed' as const,
+        },
+      ],
+    };
+    await expect(
+      new AdminDirectoryService(repository).commit({
+        actor,
+        identity: {
+          idempotencyKey: 'restore-unrelated',
+          requestHash: canonicalAdminDirectoryRequestHash(canonicalPayload),
+          expectedVersion: 2,
+          occurredAt,
+        },
+        operation: 'student_transition',
+        canonicalPayload,
+        mutate: async () => baseMutation,
+      }),
+    ).rejects.toThrow(/acceptance/u);
+    const ownerEvidence = { ...unrelatedEvidence, acceptedByAdultId: owner.adultId };
+    await expect(
+      new AdminDirectoryService(repository).commit({
+        actor,
+        identity: {
+          idempotencyKey: 'restore-forged-enrollment',
+          requestHash: canonicalAdminDirectoryRequestHash(canonicalPayload),
+          expectedVersion: 2,
+          occurredAt,
+        },
+        operation: 'student_transition',
+        canonicalPayload,
+        mutate: async () => ({
+          ...baseMutation,
+          serviceAccountAcceptances: [ownerEvidence],
+          enrollments: [
+            {
+              ...restoredEnrollment,
+              enrollmentId: 'enrollment-forged',
+              serviceAccountAcceptanceId: ownerEvidence.acceptanceId,
+            },
+          ],
+        }),
+      }),
+    ).rejects.toThrow(/exact locked revoked enrollment/u);
+    expect(repository.students.get(archivedStudent.studentId)).toEqual(archivedStudent);
+    expect(repository.ownershipTransfers).toHaveLength(0);
+    expect(repository.receipts).toHaveLength(0);
+  });
+
+  it('rejects caller ownership subsets and incomplete effect readback atomically', async () => {
+    const repository = new MemoryDirectoryRepository();
+    const result = ownershipFixture(repository);
+    if (result.disposition !== 'applied') throw new Error('expected applied transfer');
+    const canonicalPayload = { operation: 'ownership_transfer', transferId: 'transfer-one' };
+    const command = {
+      actor,
+      identity: {
+        idempotencyKey: 'ownership-commit-one',
+        requestHash: canonicalAdminDirectoryRequestHash(canonicalPayload),
+        expectedVersion: 1,
+        occurredAt,
+      },
+      operation: 'ownership_transfer' as const,
+      canonicalPayload,
+    };
+    await expect(
+      new AdminDirectoryService(repository).commit({
+        ...command,
+        mutate: async () => ({
+          resultRef: result.transfer.transferId,
+          resultVersion: result.transfer.version,
+          ownershipTransfer: {
+            ...result,
+            outgoingSessionIdsRevoked: [],
+          },
+        }),
+      }),
+    ).rejects.toThrow(/caller-supplied subset/u);
+    expect(repository.ownershipEffectReadbacks).toHaveLength(0);
+    expect(repository.ownershipTransfers).toHaveLength(0);
+    repository.omitOwnershipGrantReadback = true;
+    await expect(
+      new AdminDirectoryService(repository).commit({
+        ...command,
+        identity: { ...command.identity, idempotencyKey: 'ownership-commit-two' },
+        mutate: async () => ({
+          resultRef: result.transfer.transferId,
+          resultVersion: result.transfer.version,
+          ownershipTransfer: result,
+        }),
+      }),
+    ).rejects.toThrow(/complete exact atomic revocation readback/u);
+    expect(repository.ownershipEffectReadbacks).toHaveLength(0);
+    expect(repository.ownershipTransfers).toHaveLength(0);
+    expect(repository.receipts).toHaveLength(0);
+    repository.omitOwnershipGrantReadback = false;
+    await expect(
+      new AdminDirectoryService(repository).commit({
+        ...command,
+        identity: { ...command.identity, idempotencyKey: 'ownership-commit-three' },
+        mutate: async () => ({
+          resultRef: result.transfer.transferId,
+          resultVersion: result.transfer.version,
+          ownershipTransfer: result,
+        }),
+      }),
+    ).resolves.toMatchObject({ disposition: 'committed' });
+    expect(repository.ownershipEffectReadbacks).toHaveLength(1);
+    expect(repository.ownershipTransfers).toHaveLength(1);
+    expect(repository.receipts).toHaveLength(1);
   });
 });

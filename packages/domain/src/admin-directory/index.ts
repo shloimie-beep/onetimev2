@@ -7,6 +7,7 @@ import {
   type AdminStudentRecord,
   type AdultUpsertInput,
   type CanonicalStudentEnrollment,
+  type LockedOwnershipTransferEffectInventory,
   type RevokeAllActiveAccessCommand,
   type SchoolSeatAllowance,
   type ServiceAccountAcceptanceEvidence,
@@ -358,6 +359,7 @@ export function createStudent(input: {
     input.household.householdId,
     studentId,
     input.currentServiceAccountVersion,
+    input.household.ownerAdultId,
   );
   const occurredAt = validDate(input.occurredAt).toISOString();
   const credentialId = safeDirectoryIdentifier(input.credentialId, 'credential');
@@ -494,6 +496,7 @@ export function transitionStudent(input: {
       input.household.householdId,
       input.student.studentId,
       input.currentServiceAccountVersion,
+      input.household.ownerAdultId,
     );
     credentialReset = credentialWrite(
       input.actor,
@@ -503,13 +506,14 @@ export function transitionStudent(input: {
       occurredAt,
       null,
     );
-    enrollment = activeEnrollment(
-      input.actor,
-      input.student.studentId,
-      input.household.householdId,
-      input.serviceAccountAcceptance,
-      occurredAt,
-    );
+    assertRevokedEnrollment(input.actor, input.currentEnrollment, input.student, input.household);
+    enrollment = {
+      ...input.currentEnrollment,
+      serviceAccountAcceptanceId: input.serviceAccountAcceptance.acceptanceId,
+      state: 'active',
+      version: input.currentEnrollment.version + 1,
+      updatedAt: occurredAt,
+    };
   } else {
     assertEnrollment(input.actor, input.currentEnrollment, input.student);
     enrollment = {
@@ -591,8 +595,12 @@ export function planStudentCredentialReset(input: {
 }
 
 export function completeVerifiedOwnershipTransfer(
-  input: Parameters<typeof acceptHouseholdOwnershipTransfer>[0] & {
+  input: Omit<
+    Parameters<typeof acceptHouseholdOwnershipTransfer>[0],
+    'outgoingSessions' | 'replacementSessions' | 'billingSessionIds' | 'setupOrResetTokenIds'
+  > & {
     actor: AdminDirectoryActor;
+    lockedEffectInventory: LockedOwnershipTransferEffectInventory;
   },
 ): OwnershipTransferAcceptanceResult {
   assertRuntimeAdmin(input.actor, input.transfer);
@@ -600,7 +608,69 @@ export function completeVerifiedOwnershipTransfer(
   if (input.adminAccount.humanAccountId !== input.actor.principal.human_account_id) {
     fail('accessDenied', 'Transfer Admin must match the current authenticated principal.');
   }
-  return acceptHouseholdOwnershipTransfer(input);
+  const inventory = input.lockedEffectInventory;
+  assertScope(
+    input.actor,
+    inventory,
+    ...inventory.outgoingSessions,
+    ...inventory.replacementSessions,
+  );
+  const replacementHumanAccountId =
+    input.replacementAccount?.humanAccountId ??
+    safeDirectoryIdentifier(input.proposedReplacementHumanAccountId, 'human_account');
+  if (
+    inventory.complete !== true ||
+    inventory.transferId !== input.transfer.transferId ||
+    inventory.householdId !== input.household.householdId ||
+    inventory.outgoingHumanAccountId !== input.transfer.outgoingHumanAccountId ||
+    inventory.replacementHumanAccountId !== replacementHumanAccountId
+  ) {
+    fail('invalidState', 'Ownership transfer requires its exact complete locked effect inventory.');
+  }
+  safeDirectoryIdentifier(inventory.inventoryId, 'ownership_effect_inventory');
+  for (const session of inventory.outgoingSessions) {
+    if (
+      session.humanAccountId !== inventory.outgoingHumanAccountId ||
+      session.activeRole !== 'parent' ||
+      session.revokedAt !== null
+    ) {
+      fail('invalidState', 'Outgoing ownership session inventory is not exact and active.');
+    }
+  }
+  for (const session of inventory.replacementSessions) {
+    if (
+      session.humanAccountId !== inventory.replacementHumanAccountId ||
+      session.revokedAt !== null
+    ) {
+      fail('invalidState', 'Replacement ownership session inventory is not exact and active.');
+    }
+  }
+  assertUniqueInventoryIds(inventory);
+  const result = acceptHouseholdOwnershipTransfer({
+    adminAccount: input.adminAccount,
+    transfer: input.transfer,
+    household: input.household,
+    activeStudents: input.activeStudents,
+    replacementAdult: input.replacementAdult,
+    replacementAccount: input.replacementAccount,
+    proposedReplacementAdultId: input.proposedReplacementAdultId,
+    proposedReplacementHumanAccountId: input.proposedReplacementHumanAccountId,
+    replacementDisplayName: input.replacementDisplayName,
+    acceptance: input.acceptance,
+    outgoingSessions: inventory.outgoingSessions,
+    replacementSessions: inventory.replacementSessions,
+    billingSessionIds: inventory.billingSessionIds,
+    setupOrResetTokenIds: inventory.setupOrResetTokenIds,
+    now: input.now,
+  });
+  return result.disposition === 'applied'
+    ? {
+        ...result,
+        replacementSessionIdsRevoked: inventory.replacementSessions.map(
+          (session) => session.sessionId,
+        ),
+      }
+    : result;
 }
 
 function assertScope(first: AdminDirectoryScope, ...rest: readonly AdminDirectoryScope[]) {
@@ -695,14 +765,19 @@ function assertServiceAccountAcceptance(
   householdId: string,
   studentId: string,
   currentServiceAccountVersion: string,
+  authorizedAdultId: string,
 ) {
   assertScope(actor, evidence);
   if (
     evidence.householdId !== householdId ||
     evidence.studentId !== studentId ||
+    evidence.acceptedByAdultId !== authorizedAdultId ||
     evidence.acceptedServiceAccountVersion !== currentServiceAccountVersion
   ) {
-    fail('invalidState', 'Current exact service-account acceptance is required.');
+    fail(
+      'invalidState',
+      'Current exact service-account acceptance by the authorized household owner is required.',
+    );
   }
   for (const value of [
     evidence.acceptanceId,
@@ -748,9 +823,51 @@ function assertEnrollment(
   if (
     enrollment.studentId !== student.studentId ||
     enrollment.householdId !== student.householdId ||
-    enrollment.state !== 'active'
+    enrollment.state !== 'active' ||
+    !Number.isSafeInteger(enrollment.version) ||
+    enrollment.version < 1
   ) {
     fail('invalidState', 'Canonical active enrollment is required.');
+  }
+  safeDirectoryIdentifier(enrollment.enrollmentId, 'enrollment');
+  safeDirectoryIdentifier(enrollment.serviceAccountAcceptanceId, 'acceptance');
+}
+
+function assertRevokedEnrollment(
+  actor: AdminDirectoryActor,
+  enrollment: CanonicalStudentEnrollment,
+  student: AdminStudentRecord,
+  household: AdminHouseholdRecord,
+) {
+  assertScope(actor, enrollment);
+  if (
+    enrollment.studentId !== student.studentId ||
+    enrollment.householdId !== student.householdId ||
+    enrollment.householdId !== household.householdId ||
+    enrollment.state !== 'revoked' ||
+    !Number.isSafeInteger(enrollment.version) ||
+    enrollment.version < 2
+  ) {
+    fail('invalidState', 'Student restore requires the exact revoked canonical enrollment.');
+  }
+  safeDirectoryIdentifier(enrollment.enrollmentId, 'enrollment');
+  safeDirectoryIdentifier(enrollment.serviceAccountAcceptanceId, 'acceptance');
+}
+
+function assertUniqueInventoryIds(inventory: LockedOwnershipTransferEffectInventory) {
+  const groups = [
+    inventory.outgoingSessions.map((session) => session.sessionId),
+    inventory.replacementSessions.map((session) => session.sessionId),
+    inventory.billingSessionIds,
+    inventory.grantIds,
+    inventory.setupOrResetTokenIds,
+    inventory.effectAuthorityIds,
+  ];
+  for (const values of groups) {
+    if (uniqueIds(values).length !== values.length) {
+      fail('invalidState', 'Locked ownership effect inventory contains duplicate identifiers.');
+    }
+    for (const value of values) safeDirectoryIdentifier(value, 'ownership_effect');
   }
 }
 

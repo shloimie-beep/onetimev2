@@ -8,6 +8,8 @@ import type {
   AdminHouseholdRecord,
   AdminStudentRecord,
   CanonicalStudentEnrollment,
+  LockedOwnershipTransferEffectInventory,
+  OwnershipTransferEffectReadback,
   RevokeAllActiveAccessCommand,
   ServiceAccountAcceptanceEvidence,
   StudentCredentialReset,
@@ -108,6 +110,13 @@ export class AdminDirectoryService {
       }
       assertRequiredEffects(input.operation, mutation);
       await assertLockedInvariants(unit, input.actor, input.operation, mutation);
+      const ownershipEffects = mutation.ownershipTransfer
+        ? await revokeAndVerifyOwnershipTransferEffects(
+            unit,
+            input.actor,
+            mutation.ownershipTransfer,
+          )
+        : null;
 
       for (const adult of mutation.adults ?? []) await unit.saveAdult(adult);
       for (const account of mutation.accounts ?? []) await unit.saveAccount(account);
@@ -148,7 +157,9 @@ export class AdminDirectoryService {
         }
         await unit.saveCredentialReset(reset, revocation ?? null);
       }
-      if (mutation.ownershipTransfer) await unit.saveOwnershipTransfer(mutation.ownershipTransfer);
+      if (mutation.ownershipTransfer) {
+        await unit.saveOwnershipTransfer(mutation.ownershipTransfer, ownershipEffects);
+      }
 
       const receipt: AdminDirectoryReceipt = {
         product: input.actor.product,
@@ -222,6 +233,9 @@ async function assertLockedInvariants(
       );
       if (
         !evidence ||
+        evidence.householdId !== household?.householdId ||
+        evidence.studentId !== student.studentId ||
+        evidence.acceptedByAdultId !== household?.ownerAdultId ||
         evidence.acceptedServiceAccountVersion !==
           (await unit.lockCurrentServiceAccountVersion(scope))
       ) {
@@ -229,6 +243,46 @@ async function assertLockedInvariants(
           'admin_directory_invalid_state',
           'Locked current service-account acceptance is required.',
         );
+      }
+      const owner = await unit.lockAdult(scope, household.ownerAdultId);
+      const ownerAccount = await unit.lockAccount(scope, household.ownerHumanAccountId);
+      if (
+        !owner ||
+        !ownerAccount ||
+        owner.adultId !== household.ownerAdultId ||
+        owner.state !== 'active' ||
+        ownerAccount.humanAccountId !== household.ownerHumanAccountId ||
+        ownerAccount.adultId !== owner.adultId ||
+        ownerAccount.state !== 'active' ||
+        !ownerAccount.memberships.includes('parent')
+      ) {
+        throw new AdminDirectoryError(
+          'admin_directory_invalid_state',
+          'Service-account acceptance requires the current verified Parent household owner.',
+        );
+      }
+      if (operation === 'student_transition') {
+        const enrollment = mutation.enrollments?.find(
+          (value) => value.studentId === student.studentId && value.state === 'active',
+        );
+        const lockedEnrollment = await unit.lockCurrentStudentEnrollment(scope, student.studentId);
+        if (
+          currentStudent?.state !== 'archived' ||
+          !enrollment ||
+          !lockedEnrollment ||
+          lockedEnrollment.state !== 'revoked' ||
+          lockedEnrollment.studentId !== student.studentId ||
+          lockedEnrollment.householdId !== student.householdId ||
+          enrollment.enrollmentId !== lockedEnrollment.enrollmentId ||
+          enrollment.householdId !== lockedEnrollment.householdId ||
+          enrollment.serviceAccountAcceptanceId !== evidence.acceptanceId ||
+          enrollment.version !== lockedEnrollment.version + 1
+        ) {
+          throw new AdminDirectoryError(
+            'admin_directory_invalid_state',
+            'Student restore requires the exact locked revoked enrollment and next version.',
+          );
+        }
       }
     }
   }
@@ -278,6 +332,144 @@ async function assertLockedInvariants(
       }
     }
   }
+}
+
+async function revokeAndVerifyOwnershipTransferEffects(
+  unit: AdminDirectoryUnitOfWork,
+  scope: AdminDirectoryScope,
+  result: OwnershipTransferAcceptanceResult,
+): Promise<OwnershipTransferEffectReadback | null> {
+  if (result.disposition !== 'applied') return null;
+  const lockedTransfer = await unit.lockOwnershipTransfer(scope, result.transfer.transferId);
+  const lockedHousehold = await unit.lockHousehold(scope, result.household.householdId);
+  if (
+    !lockedTransfer ||
+    !lockedHousehold ||
+    lockedTransfer.state !== 'pending' ||
+    lockedTransfer.version + 1 !== result.transfer.version ||
+    lockedTransfer.householdId !== result.household.householdId ||
+    lockedTransfer.outgoingAdultId !== result.transfer.outgoingAdultId ||
+    lockedTransfer.outgoingHumanAccountId !== result.transfer.outgoingHumanAccountId ||
+    lockedHousehold.ownerAdultId !== lockedTransfer.outgoingAdultId ||
+    lockedHousehold.ownerHumanAccountId !== lockedTransfer.outgoingHumanAccountId ||
+    lockedHousehold.version + 1 !== result.household.version
+  ) {
+    throw new AdminDirectoryError(
+      'admin_directory_invalid_state',
+      'Ownership transfer does not match the exact locked pending transfer.',
+    );
+  }
+  assertSameScope(scope, lockedTransfer);
+  assertSameScope(scope, lockedHousehold);
+  const binding = {
+    transferId: result.transfer.transferId,
+    householdId: result.household.householdId,
+    outgoingHumanAccountId: result.transfer.outgoingHumanAccountId,
+    replacementHumanAccountId: result.replacementAccount.humanAccountId,
+  };
+  const inventory = await unit.lockOwnershipTransferEffectInventory(scope, binding);
+  assertOwnershipTransferInventory(scope, inventory, binding);
+  const expectedOutgoingSessions = inventory.outgoingSessions.map((session) => session.sessionId);
+  const expectedReplacementSessions = inventory.replacementSessions.map(
+    (session) => session.sessionId,
+  );
+  if (
+    !sameIds(result.outgoingSessionIdsRevoked, expectedOutgoingSessions) ||
+    !sameIds(result.replacementSessionIdsRevoked, expectedReplacementSessions) ||
+    !sameIds(result.billingSessionIdsRevoked, inventory.billingSessionIds) ||
+    !sameIds(result.setupOrResetTokenIdsInvalidated, inventory.setupOrResetTokenIds)
+  ) {
+    throw new AdminDirectoryError(
+      'admin_directory_invalid_state',
+      'Ownership transfer rejected a caller-supplied subset of the locked effect inventory.',
+    );
+  }
+  const readback = await unit.revokeOwnershipTransferEffects(scope, inventory);
+  assertSameScope(scope, readback);
+  if (
+    readback.complete !== true ||
+    readback.inventoryId !== inventory.inventoryId ||
+    readback.transferId !== binding.transferId ||
+    readback.householdId !== binding.householdId ||
+    readback.outgoingHumanAccountId !== binding.outgoingHumanAccountId ||
+    readback.replacementHumanAccountId !== binding.replacementHumanAccountId ||
+    !sameIds(readback.outgoingSessionIdsRevoked, expectedOutgoingSessions) ||
+    !sameIds(readback.replacementSessionIdsRevoked, expectedReplacementSessions) ||
+    !sameIds(readback.billingSessionIdsRevoked, inventory.billingSessionIds) ||
+    !sameIds(readback.grantIdsRevoked, inventory.grantIds) ||
+    !sameIds(readback.setupOrResetTokenIdsInvalidated, inventory.setupOrResetTokenIds) ||
+    !sameIds(readback.effectAuthorityIdsRevoked, inventory.effectAuthorityIds)
+  ) {
+    throw new AdminDirectoryError(
+      'admin_directory_invalid_state',
+      'Ownership transfer effects require complete exact atomic revocation readback.',
+    );
+  }
+  safeDirectoryIdentifier(readback.readbackId, 'ownership_effect_readback');
+  validIso(readback.revokedAt);
+  return readback;
+}
+
+function assertOwnershipTransferInventory(
+  scope: AdminDirectoryScope,
+  inventory: LockedOwnershipTransferEffectInventory,
+  binding: {
+    transferId: string;
+    householdId: string;
+    outgoingHumanAccountId: string;
+    replacementHumanAccountId: string;
+  },
+) {
+  assertSameScope(scope, inventory);
+  for (const session of [...inventory.outgoingSessions, ...inventory.replacementSessions]) {
+    assertSameScope(scope, session);
+  }
+  if (
+    inventory.complete !== true ||
+    inventory.transferId !== binding.transferId ||
+    inventory.householdId !== binding.householdId ||
+    inventory.outgoingHumanAccountId !== binding.outgoingHumanAccountId ||
+    inventory.replacementHumanAccountId !== binding.replacementHumanAccountId ||
+    inventory.outgoingSessions.some(
+      (session) =>
+        session.humanAccountId !== binding.outgoingHumanAccountId ||
+        session.activeRole !== 'parent' ||
+        session.revokedAt !== null,
+    ) ||
+    inventory.replacementSessions.some(
+      (session) =>
+        session.humanAccountId !== binding.replacementHumanAccountId || session.revokedAt !== null,
+    )
+  ) {
+    throw new AdminDirectoryError(
+      'admin_directory_invalid_state',
+      'Ownership transfer requires one scope-bound exhaustive locked inventory.',
+    );
+  }
+  safeDirectoryIdentifier(inventory.inventoryId, 'ownership_effect_inventory');
+  for (const values of [
+    inventory.outgoingSessions.map((session) => session.sessionId),
+    inventory.replacementSessions.map((session) => session.sessionId),
+    inventory.billingSessionIds,
+    inventory.grantIds,
+    inventory.setupOrResetTokenIds,
+    inventory.effectAuthorityIds,
+  ]) {
+    if (new Set(values).size !== values.length) {
+      throw new AdminDirectoryError(
+        'admin_directory_invalid_state',
+        'Ownership transfer locked inventory contains duplicate identifiers.',
+      );
+    }
+    for (const value of values) safeDirectoryIdentifier(value, 'ownership_effect');
+  }
+}
+
+function sameIds(actual: readonly string[], expected: readonly string[]) {
+  return (
+    actual.length === expected.length &&
+    [...actual].sort().every((value, index) => value === [...expected].sort()[index])
+  );
 }
 
 function assertRequiredEffects(

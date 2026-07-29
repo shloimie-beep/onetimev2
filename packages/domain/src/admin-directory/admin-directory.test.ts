@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type {
+  AdultSession,
   AdultIdentity,
   HouseholdOwnershipTransfer,
   HumanAccount,
@@ -9,6 +10,7 @@ import type {
   AdminHouseholdRecord,
   AdminStudentRecord,
   CanonicalStudentEnrollment,
+  LockedOwnershipTransferEffectInventory,
   ServiceAccountAcceptanceEvidence,
 } from '../../../contracts/src/admin/directory/index.ts';
 import { hashAuthPassword } from '../auth/index.ts';
@@ -149,6 +151,49 @@ function enrollment(
     state: 'active',
     version: 1,
     updatedAt: now,
+    ...overrides,
+  };
+}
+
+function session(
+  sessionId: string,
+  humanAccountId: string,
+  activeRole: AdultSession['activeRole'] = 'parent',
+): AdultSession {
+  return {
+    ...scope,
+    sessionId,
+    humanAccountId,
+    activeRole,
+    activeHouseholdId: 'household-one',
+    securityVersion: 1,
+    idleExpiresAt: '2026-07-29T02:00:00.000Z',
+    absoluteExpiresAt: '2026-07-29T09:00:00.000Z',
+    revokedAt: null,
+    revocationReason: null,
+    version: 1,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+function ownershipInventory(
+  overrides: Partial<LockedOwnershipTransferEffectInventory> = {},
+): LockedOwnershipTransferEffectInventory {
+  return {
+    ...scope,
+    inventoryId: 'inventory-one',
+    transferId: 'transfer-one',
+    householdId: 'household-one',
+    outgoingHumanAccountId: 'account-parent',
+    replacementHumanAccountId: 'account-replacement',
+    complete: true,
+    outgoingSessions: [session('session-outgoing', 'account-parent')],
+    replacementSessions: [session('session-replacement', 'account-replacement')],
+    billingSessionIds: ['billing-one'],
+    grantIds: ['grant-one'],
+    setupOrResetTokenIds: ['token-one'],
+    effectAuthorityIds: ['effect-authority-one'],
     ...overrides,
   };
 }
@@ -405,6 +450,15 @@ describe('P10 corrected Admin directory domain', () => {
         'stale-acceptance',
         { serviceAccountAcceptance: acceptance('student-one', 'service-account-v2') },
       ],
+      [
+        'unrelated-adult-acceptance',
+        {
+          serviceAccountAcceptance: {
+            ...acceptance(),
+            acceptedByAdultId: 'adult-unrelated',
+          },
+        },
+      ],
       ['fake-hash', { replacementCredentialHash: `$argon2id$${'a'.repeat(80)}` }],
       ['obsolete-hash', { replacementCredentialHash: 'scrypt:obsolete' }],
       ['malformed-hash', { replacementCredentialHash: 'argon2id-v1$v=19$m=1,t=1,p=1$x$y' }],
@@ -434,7 +488,7 @@ describe('P10 corrected Admin directory domain', () => {
     });
     expect(archived).toMatchObject({
       student: { state: 'archived', credentialState: 'disabled' },
-      enrollment: { state: 'revoked' },
+      enrollment: { enrollmentId: 'enrollment-one', state: 'revoked', version: 2 },
     });
     expect(archived.revokeAllAccess).toHaveLength(1);
     expect(() =>
@@ -453,6 +507,47 @@ describe('P10 corrected Admin directory domain', () => {
         occurredAt: now,
       }),
     ).toThrow(/service-account acceptance/u);
+    for (const currentEnrollment of [
+      { ...archived.enrollment, studentId: 'student-other' },
+      { ...archived.enrollment, householdId: 'household-other' },
+      { ...archived.enrollment, enrollmentId: 'enrollment-other', state: 'active' as const },
+    ]) {
+      expect(() =>
+        transitionStudent({
+          actor,
+          student: archived.student,
+          household: archived.household,
+          expectedStudentVersion: 2,
+          expectedHouseholdVersion: 2,
+          to: 'active',
+          lockedUsernameMatch: archived.student,
+          currentEnrollment,
+          replacementCredentialHash: hashAuthPassword('Student passphrase 456!'),
+          serviceAccountAcceptance: acceptance(),
+          currentServiceAccountVersion: 'service-account-v3',
+          occurredAt: now,
+        }),
+      ).toThrow(/exact revoked canonical enrollment/u);
+    }
+    expect(() =>
+      transitionStudent({
+        actor,
+        student: archived.student,
+        household: archived.household,
+        expectedStudentVersion: 2,
+        expectedHouseholdVersion: 2,
+        to: 'active',
+        lockedUsernameMatch: archived.student,
+        currentEnrollment: archived.enrollment,
+        replacementCredentialHash: hashAuthPassword('Student passphrase 456!'),
+        serviceAccountAcceptance: {
+          ...acceptance(),
+          acceptedByAdultId: 'adult-unrelated',
+        },
+        currentServiceAccountVersion: 'service-account-v3',
+        occurredAt: now,
+      }),
+    ).toThrow(/authorized household owner/u);
     const restored = transitionStudent({
       actor,
       student: archived.student,
@@ -469,7 +564,12 @@ describe('P10 corrected Admin directory domain', () => {
     });
     expect(restored).toMatchObject({
       student: { state: 'active', credentialState: 'active', credentialVersion: 2 },
-      enrollment: { state: 'active' },
+      enrollment: {
+        enrollmentId: 'enrollment-one',
+        state: 'active',
+        version: 3,
+        serviceAccountAcceptanceId: 'acceptance-student-one',
+      },
       credentialReset: { kind: 'reset' },
     });
   });
@@ -608,12 +708,45 @@ describe('P10 corrected Admin directory domain', () => {
           dependentAttestations: [],
           acceptedAt: now,
         },
-        outgoingSessions: [],
-        replacementSessions: [],
-        billingSessionIds: [],
-        setupOrResetTokenIds: [],
+        lockedEffectInventory: ownershipInventory(),
         now: new Date(now),
       }),
-    ).toMatchObject({ disposition: 'applied', parentMembershipAdded: true });
+    ).toMatchObject({
+      disposition: 'applied',
+      parentMembershipAdded: true,
+      outgoingSessionIdsRevoked: ['session-outgoing'],
+      replacementSessionIdsRevoked: ['session-replacement'],
+      billingSessionIdsRevoked: ['billing-one'],
+      setupOrResetTokenIdsInvalidated: ['token-one'],
+    });
+    expect(() =>
+      completeVerifiedOwnershipTransfer({
+        actor,
+        adminAccount: account('account-admin', 'adult-admin', ['admin']),
+        transfer,
+        household: household(),
+        activeStudents: [],
+        replacementAdult: null,
+        replacementAccount: null,
+        proposedReplacementAdultId: 'adult-replacement',
+        proposedReplacementHumanAccountId: 'account-replacement',
+        replacementDisplayName: 'Replacement Parent',
+        acceptance: {
+          idempotencyKey: 'ownership-one',
+          canonicalRequestHash: 'a'.repeat(64),
+          expectedTransferVersion: 1,
+          expectedHouseholdVersion: 1,
+          expectedReplacementAccountVersion: null,
+          replacementNormalizedEmail: 'replacement@example.test',
+          acceptedPolicySetVersion: 'policies-v2',
+          dependentAttestations: [],
+          acceptedAt: now,
+        },
+        lockedEffectInventory: ownershipInventory({
+          outgoingHumanAccountId: 'account-unrelated',
+        }),
+        now: new Date(now),
+      }),
+    ).toThrow(/exact complete locked effect inventory/u);
   });
 });

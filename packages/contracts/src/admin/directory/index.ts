@@ -1,4 +1,5 @@
 import type {
+  AdultSession,
   AdultIdentity,
   Household,
   HouseholdOwnershipTransfer,
@@ -102,6 +103,39 @@ export type StudentCredentialReset = AdminDirectoryScope & {
   createdAt: string;
 };
 
+export type OwnershipTransferEffectBinding = {
+  transferId: string;
+  householdId: string;
+  outgoingHumanAccountId: string;
+  replacementHumanAccountId: string;
+};
+
+export type LockedOwnershipTransferEffectInventory = AdminDirectoryScope &
+  OwnershipTransferEffectBinding & {
+    inventoryId: string;
+    complete: true;
+    outgoingSessions: readonly AdultSession[];
+    replacementSessions: readonly AdultSession[];
+    billingSessionIds: readonly string[];
+    grantIds: readonly string[];
+    setupOrResetTokenIds: readonly string[];
+    effectAuthorityIds: readonly string[];
+  };
+
+export type OwnershipTransferEffectReadback = AdminDirectoryScope &
+  OwnershipTransferEffectBinding & {
+    inventoryId: string;
+    readbackId: string;
+    complete: true;
+    outgoingSessionIdsRevoked: readonly string[];
+    replacementSessionIdsRevoked: readonly string[];
+    billingSessionIdsRevoked: readonly string[];
+    grantIdsRevoked: readonly string[];
+    setupOrResetTokenIdsInvalidated: readonly string[];
+    effectAuthorityIdsRevoked: readonly string[];
+    revokedAt: string;
+  };
+
 export type AdminDirectoryReceipt = AdminDirectoryScope & {
   idempotencyKey: string;
   requestHash: string;
@@ -166,6 +200,10 @@ export interface AdminDirectoryUnitOfWork {
   lockOwnedHouseholdIds(scope: AdminDirectoryScope, adultId: string): Promise<readonly string[]>;
   lockCurrentServiceAccountVersion(scope: AdminDirectoryScope): Promise<string>;
   saveStudent(student: AdminStudentRecord): Promise<void>;
+  lockCurrentStudentEnrollment(
+    scope: AdminDirectoryScope,
+    studentId: string,
+  ): Promise<CanonicalStudentEnrollment | null>;
   saveStudentEnrollment(enrollment: CanonicalStudentEnrollment): Promise<void>;
   saveServiceAccountAcceptance(evidence: ServiceAccountAcceptanceEvidence): Promise<void>;
   revokeAllActiveAccess(
@@ -176,11 +214,22 @@ export interface AdminDirectoryUnitOfWork {
     scope: AdminDirectoryScope,
     transferId: string,
   ): Promise<HouseholdOwnershipTransfer | null>;
+  lockOwnershipTransferEffectInventory(
+    scope: AdminDirectoryScope,
+    binding: OwnershipTransferEffectBinding,
+  ): Promise<LockedOwnershipTransferEffectInventory>;
+  revokeOwnershipTransferEffects(
+    scope: AdminDirectoryScope,
+    inventory: LockedOwnershipTransferEffectInventory,
+  ): Promise<OwnershipTransferEffectReadback>;
   saveCredentialReset(
     reset: StudentCredentialReset,
     revocation: ActiveAccessRevocationReadback | null,
   ): Promise<void>;
-  saveOwnershipTransfer(result: OwnershipTransferAcceptanceResult): Promise<void>;
+  saveOwnershipTransfer(
+    result: OwnershipTransferAcceptanceResult,
+    effects: OwnershipTransferEffectReadback | null,
+  ): Promise<void>;
   getReceipt(
     scope: AdminDirectoryScope,
     idempotencyKey: string,
