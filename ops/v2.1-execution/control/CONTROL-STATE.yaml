@@ -15,13 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+controller_authorization_sha: 1722b4b97f4ed27aa7c7ba89d0c153928a0882e6
 next_action: >-
-  P35 is independently audited and released at integration head fca55e6c; its merge queue is cleared. I36 may
-  atomically claim only the first Wave C micro-batch from that exact head under claim eeb23846 and
-  RELEASE_INTEGRATOR lease b726b1c2, recording the exact queued P19, P27, and P32 items and then stopping for C00
-  reconciliation before any source merge. All three fixed bases, runtime-triplet tails, digests, merge-after
-  ancestry, and virtual merge order are verified. P17, P21, and corrected P24 remain outside this micro-batch.
-  All steward requests remain assigned and unapplied; no provider inspection, steward application, or external
-  effect is authorized.
+  I36 claim 853c79e7 is reconciled under unchanged claim eeb23846 and RELEASE_INTEGRATOR lease b726b1c2. I36 may now
+  merge only queued P19, then P27, then P32 with exact source parents, fixed bases, runtime-triplet allowlists,
+  canonical queue digests, and all recorded merge-after ancestry; run proportionate verification, update only the
+  three I36 runtime files, release the lease, and stop for C00 audit. P17, P21, and corrected P24 remain outside this
+  micro-batch. All steward requests remain assigned and unapplied; no provider inspection, steward application,
+  or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
