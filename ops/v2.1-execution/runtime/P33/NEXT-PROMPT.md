@@ -1,37 +1,38 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: REVIEW_OR_INTEGRATE
 
-Resume P33 only after C00 has consumed the exact atomic follow-up claim head.
+Review and integrate the exact pushed P33 follow-up final; do not resume P33
+product work without a new C00-issued lease.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p33-runtime-operations
 Task state: ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P33/HANDOFF.md
+Interface: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
 
-Follow-up correction claim authority binds containing controller
-107fdea29e5ba852d3c41740d964bf25d8a1ed46, acquisition
-7b1aae190d4bf6eb9b36fc2521345ac976c49ff8, exact parent/rejected final
-160299371e203f84a5af3f87bfd5c8e8115a5063, ready digest
-06ddf0377b93d940b8f0e1a2e44cb4cb29a43232387f1d86ba99b2497344122c,
-claim a3a5253b-019d-4600-aa04-1da9ff1eccea, and OPERATIONS_RUNTIME lease
-12ddddaa-2196-47ca-b63a-a20d9b3ad124 expiring 2026-07-29T03:52:01Z.
+Verify the exact pushed branch head and linear ancestry from reconciled atomic
+claim 02cc575a60c0b28e17a2202e6b0e64c144c3c499. The implementation is
+7765a3758a3e3aa7d311119b5d86da1e943b68d7 and interface metadata commit is
+b1a437487c97ee29b11b3c785479d7b46f05650d. Recompute semantic contract 3.0.0
+digest a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43,
+all seven export hashes, all three steward-request hashes, the exact twelve-path
+scope, state/handoff binding, and zero external effects.
 
-Before repair, verify C00 consumed the exact remote claim head, local and remote
-equal it, and the lease remains valid. The 399aedd5/f05cc7fb/16029937 lineage
-is rejected pending correction.
+Reproduce the three bounded corrections:
 
-Repair exactly these reproduced defects:
+1. `scanOperationalLeakage({street_address:'private-value'})` fails with
+   `pii_field` and redacts the value; related common address-family keys are
+   covered without changing safe allowlists.
+2. Queue depth `10`, `retry_count` `9`, scheduled `0`, exhausted `0` is Sev1
+   inconsistent evidence and non-ready.
+3. Active lease age `600000ms` and fencing-token high-watermark `1` emits Sev1
+   `queue_active_lease_stale`; the exported expiry threshold is exactly
+   `300000ms`.
 
-1. `scanOperationalLeakage({street_address:'private-value'})` currently passes.
-2. Queue depth `10` / `retry_count` `9` without scheduled/exhausted retry
-   evidence currently remains healthy.
-3. Active lease age `600000ms` with fencing-token high-watermark `1` currently
-   remains healthy.
-
-Add direct negative regressions, update the semantic interface and steward
-metadata if their committed artifacts change, run full verification, update
-the three runtime files, release the lease, commit, and push. Do not edit shared
-composers, manifests, lockfiles, migrations, provider registries,
-backup/restore, or canary-budget surfaces. External-effect authority is none.
+Confirm the 68 focused tests, relevant typecheck, focused ESLint, secret scan,
+formatting, and diff checks. The lease was released at
+2026-07-29T03:11:44Z before its 2026-07-29T03:52:01Z expiry. External-effect
+authority is none and effects are 0/0/0. I36 must integrate the exact final
+before C00 authorizes P34.

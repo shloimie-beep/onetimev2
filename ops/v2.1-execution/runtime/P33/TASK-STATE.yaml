@@ -7,7 +7,7 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
 branch: codex/v21-p33-runtime-operations
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-expected_existing_head: 160299371e203f84a5af3f87bfd5c8e8115a5063
+expected_existing_head: 02cc575a60c0b28e17a2202e6b0e64c144c3c499
 dependency_heads:
   F05:
     required_state: interface_ready_integrated
@@ -25,8 +25,8 @@ dependency_heads:
     interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
     interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
     interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
-status: claimed
-phase: correction
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing_branch
 claimed_by: codex-p33-worker-a3a5253b
 claim_time: '2026-07-29T02:57:25Z'
@@ -36,73 +36,93 @@ writer_slot_leases:
     lease_id: 12ddddaa-2196-47ca-b63a-a20d9b3ad124
     lease_issued_at: '2026-07-29T02:52:01Z'
     lease_expires_at: '2026-07-29T03:52:01Z'
+    lease_released_at: '2026-07-29T03:11:44Z'
+    state: released
     state_based_on_control_head_sha: 7b1aae190d4bf6eb9b36fc2521345ac976c49ff8
-    phase_scope: exact_street_address_retry_and_lease_evidence_correction_claim_only
+    phase_scope: exact_street_address_retry_and_lease_evidence_correction
 lease_expires_at: '2026-07-29T03:52:01Z'
-last_heartbeat_at: '2026-07-29T02:57:25Z'
-controller_authorization_sha: 107fdea29e5ba852d3c41740d964bf25d8a1ed46
+lease_released_at: '2026-07-29T03:11:44Z'
+last_heartbeat_at: '2026-07-29T03:11:44Z'
+controller_authorization_sha: aa68f504a15baf1a0cfcb2edab5a1e9dd474da01
+controller_authorization_parent_sha: acc5e60168f359e5957f2d6326a036d20a1009b3
 ready_entry_state_based_on_control_head_sha: 7b1aae190d4bf6eb9b36fc2521345ac976c49ff8
 ready_entry_payload_digest: 06ddf0377b93d940b8f0e1a2e44cb4cb29a43232387f1d86ba99b2497344122c
-state_based_on_head_sha: 160299371e203f84a5af3f87bfd5c8e8115a5063
-last_implementation_commit_sha: 399aedd5b8dda99806ed5f659a4c729bd37035ef
-pending_correction_interface:
-  status: rejected_pending_correction
-  interface_implementation_head_sha: 399aedd5b8dda99806ed5f659a4c729bd37035ef
-  interface_checkpoint_sha: f05cc7fb3dd71a8d5a27212764f40873b8662b75
-  rejected_final_sha: 160299371e203f84a5af3f87bfd5c8e8115a5063
+state_based_on_head_sha: b1a437487c97ee29b11b3c785479d7b46f05650d
+last_implementation_commit_sha: 7765a3758a3e3aa7d311119b5d86da1e943b68d7
+active_interface:
+  status: interface_ready
+  interface_implementation_head_sha: 7765a3758a3e3aa7d311119b5d86da1e943b68d7
+  interface_checkpoint_sha: b1a437487c97ee29b11b3c785479d7b46f05650d
   semantic_contract_version: 3.0.0
-  interface_checkpoint_digest: 0e890eab8aece10e8b80785ecc0c11899415d8a2089338048f8568333bbb95cc
-reproduced_defects:
-  - scanOperationalLeakage({street_address:'private-value'}) passes instead of reporting and redacting common-address PII.
-  - Queue depth 10 with retry_count 9 and no scheduled/exhausted retry evidence remains healthy.
-  - An active lease aged 600000ms with fencing-token high-watermark 1 remains healthy instead of failing stale-lease health.
+  interface_checkpoint_digest: a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43
 completed_steps:
-  - Fetched containing control 107fdea29e5ba852d3c41740d964bf25d8a1ed46 and verified its sole parent/acquisition 7b1aae190d4bf6eb9b36fc2521345ac976c49ff8.
-  - Verified exact local and remote rejected P33 final 160299371e203f84a5af3f87bfd5c8e8115a5063 with a clean worktree.
-  - Verified the ready queue records payload digest 06ddf0377b93d940b8f0e1a2e44cb4cb29a43232387f1d86ba99b2497344122c, claim a3a5253b-019d-4600-aa04-1da9ff1eccea, sole OPERATIONS_RUNTIME lease 12ddddaa-2196-47ca-b63a-a20d9b3ad124, and zero effect locks.
-  - Bound the three exact reproduced defects and preserved rejected implementation/interface/final lineage without product, test, interface, steward, or runbook changes.
+  - Verified exact autonomous addendum control aa68f504a15baf1a0cfcb2edab5a1e9dd474da01, reconciled claim head 02cc575a60c0b28e17a2202e6b0e64c144c3c499, claim a3a5253b-019d-4600-aa04-1da9ff1eccea, sole writer lease, and zero effects.
+  - Expanded PII-key rejection/redaction to exact street_address plus common qualified address, address-line, and street-line families without changing safe digest or operational allowlists.
+  - Required retry_count to equal scheduled plus exhausted retry evidence; exact depth 10, retry_count 9, zero scheduled/exhausted evidence now fails readiness.
+  - Exported the exact five-minute active-lease maximum and made an active lease at or beyond expiry Sev1 even with valid fencing; exact age 600000ms/fence 1 now fails readiness.
+  - Added direct negative regressions for all three reproduced defects and published the corrected semantic 3.0.0 interface.
+  - Recomputed all export and steward hashes from committed Git objects, passed focused verification, and released the OPERATIONS_RUNTIME lease before expiry.
 remaining_steps:
-  - Push and report this exact three-file atomic follow-up claim.
-  - Stop before any repair and await C00 reconciliation of the exact remote claim head.
-next_action: Push and report this correction claim-only checkpoint, then stop until C00 consumes the exact remote head and explicitly resumes P33.
+  - I36 must audit and integrate the exact pushed P33 final head before C00 authorizes P34.
+next_action: Await I36 audit/integration of the exact pushed P33 final head; resume P33 only under a new C00-issued lease for a reproduced P33-scoped finding.
 requirements:
-  OTV2-OPS-166: correction_claimed
-  OTV2-OPS-167: correction_claimed
-  OTV2-OPS-171: correction_claimed
-  OTV2-OPS-172: correction_claimed
-  OTV2-OPS-173: correction_claimed
+  OTV2-OPS-166: correction_ready
+  OTV2-OPS-167: correction_ready
+  OTV2-OPS-171: correction_ready
+  OTV2-OPS-172: correction_ready
+  OTV2-OPS-173: correction_ready
 acceptance_cases:
-  OTV2-OPS-166-AC01: pending_correction
-  OTV2-OPS-167-AC01: pending_correction
-  OTV2-OPS-171-AC01: pending_correction
-  OTV2-OPS-172-AC01: pending_correction
-  OTV2-OPS-173-AC01: pending_correction
+  OTV2-OPS-166-AC01: task_owned_assertions_passed
+  OTV2-OPS-167-AC01: task_owned_assertions_passed
+  OTV2-OPS-171-AC01: task_owned_assertions_passed
+  OTV2-OPS-172-AC01: task_owned_assertions_passed
+  OTV2-OPS-173-AC01: task_owned_assertions_passed
 changed_paths:
-  - ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
+  - ops/runbooks/v2.1/runtime/operations-runtime.md
   - ops/v2.1-execution/runtime/P33/HANDOFF.md
+  - ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
   - ops/v2.1-execution/runtime/P33/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P33/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P33/steward-requests/P33-config-001.yaml
+  - ops/v2.1-execution/runtime/P33/steward-requests/P33-deploy-001.yaml
+  - ops/v2.1-execution/runtime/P33/steward-requests/P33-registration-001.yaml
+  - packages/observability/v21/health.ts
+  - packages/observability/v21/index.ts
+  - packages/observability/v21/operations.test.ts
+  - packages/observability/v21/redaction.ts
 migrations: []
 steward_requests:
-  - P33-registration-001
-  - P33-config-001
-  - P33-deploy-001
+  - id: P33-config-001
+    sha256: bc972db8b48aaf69b61a5b82511532dd8f0ad675ea1fdeb01a1671ecac35cbb6
+  - id: P33-deploy-001
+    sha256: eff1db60b8f8b6a9338d9a8b37b99c59acdda91069fae3aef9b176695f1d5fd1
+  - id: P33-registration-001
+    sha256: 2cf667797e2b09e6eab29dc42595757938b87108365d5531453d5199ab9e7ab3
 verification:
   commands_run:
-    - command: containing controller and sole-parent/acquisition verification
-      result: passed; 107fdea2 has sole parent 7b1aae19
-    - command: exact existing local/remote head and clean-worktree verification
-      result: passed; both equal 160299371e203f84a5af3f87bfd5c8e8115a5063
-    - command: ready queue digest, claim, writer lease, phase scope, and effect-lock verification
-      result: passed; digest 06ddf037, claim a3a5253b, lease 12ddddaa expires 2026-07-29T03:52:01Z, and zero effect locks
-    - command: exact claim-only changed-path verification
-      result: passed; only the three P33 runtime handoff files
-  known_baseline_failures:
-    - The three exact reproduced defects recorded above remain intentionally unfixed in this claim-only checkpoint.
+    - command: autonomous addendum control, exact branch head, claim, writer lease, and zero-effect verification
+      result: passed; control aa68f504, head 02cc575a, claim a3a5253b, and lease 12ddddaa
+    - command: committed export SHA-256 and canonical contract digest recomputation
+      result: passed; semantic 3.0.0 digest a0aa9fd8c8d4108a0f877966f8e8a0614be7e30feb9699ac48e6506df369ee43
+    - command: committed steward-request SHA-256 recomputation
+      result: passed; all three hashes match the recorded values
+    - command: npm run secret:scan
+      result: passed; 2730 repository text files
+    - command: focused ESLint over the four changed implementation/test artifacts
+      result: passed
+    - command: npm run typecheck
+      result: passed
+    - command: npx vitest run packages/observability/v21/operations.test.ts packages/observability/v21/steward-consistency.test.ts apps/worker/src/operations/heartbeat.test.ts apps/web/src/server/operations/router.test.ts
+      result: passed; 4 files and 68 tests
+    - command: focused Prettier check over all implementation, test, interface, steward, and runbook artifacts
+      result: passed
+    - command: git diff --check
+      result: passed
+  known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings:
-  - Product, test, interface, steward, and runbook repair is deferred until C00 reconciles the exact pushed claim head.
+out_of_scope_findings: []
