@@ -1,0 +1,60 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-migration-001
+task_id: P22
+kind: migration
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+  - OTV2-LEARNING-238-QUESTION-DEDUPE
+  - OTV2-LEARNING-238-RECOGNITION-CONSENT
+rationale: >-
+  P22 owns the scoped schema contract and parameterized repository, but only F02
+  may allocate and write the forward-only migration. P22 does not create or
+  alter schema.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and create the normalized tables in
+  P22-LEARNING-ENGAGEMENT-SCHEMA-001 for private questions and idempotent audit
+  history, scoped announcements/read state, reconnect-deduplicated attendance
+  with correction audit, unique Admin-published review completion, and
+  default-off recognition consent. Provide a scoped leaderboard learner
+  projection without public access or combined score.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.learning_questions with optimistic version and account/product/class/Student/household fences
+  - onetime.learning_announcements and onetime.learning_announcement_reads
+  - onetime.learning_attendance and unique onetime.learning_attendance_segments
+  - onetime.learning_review_completions unique by Student and published review item
+  - onetime.learning_recognition_consents defaulting absent/off with immutable change audit
+  - onetime.learning_leaderboard_learners as a scoped read projection, never a public view
+compatibility_assumptions:
+  - F02 supplies canonical state/idempotency conventions.
+  - F04 supplies canonical Student and household identity.
+  - P16/F05 supply class, occurrence, and enrollment references through integrated contracts.
+verification_performed:
+  - focused P22 domain tests
+  - npm run typecheck
+  - parameterized repository SQL and exact schema-contract review
+conflicts_or_risks:
+  - Parent queries must never return private question or answer bodies.
+  - Question recognition is unique by question and later publication cannot increment it.
+  - Consent changes names only; facts and ranks are immutable with respect to consent.
+  - No points, currency, reward catalog, public leaderboard, peer chat, or Student GHL contact.
+contains_secret_or_private_data: false
