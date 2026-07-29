@@ -871,6 +871,21 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
+- request_id: P21-registration-001
+  request_digest: fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3
+  requesting_task_id: P21
+  kind: migration_and_registration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint_then_C00_requeues_I36_registration
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null

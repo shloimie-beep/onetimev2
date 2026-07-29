@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 4c9b217531ce76b52971707913d1e28c65958d76
-next_action: P21 continues only its reconciled bounded local residual correction. P24 atomic claim 2a3b36c9 is reconciled under unchanged claim ff79d0ab and SUPPORT lease 4d0115d1; P24 may implement only its normalized support roots and immutable structured steward requests using local ports/mocks, then release its lease and publish a ready-for-review final for independent audit. No live Telegram/provider inspection, send, steward application, or external effect is authorized.
+controller_authorization_sha: 2b103162715c18a144cc26c329eed2e09a62b1d4
+next_action: P21 final cecdad09 is independently admitted with 15 of 15 focused tests, exact artifact digest 0ed47d3f, and zero effects; its combined migration and registration request is assigned first to F02 and must return through C00 before any I36 registration. I36 may atomically claim only the ordered F01, F04, and F05 full-integration wave from integration head 408b21af under RELEASE_INTEGRATOR lease 32382426, push exactly the three I36 runtime-memory files, and stop for C00 reconciliation before merging. P24 remains independently authorized only for bounded local implementation under its reconciled SUPPORT claim; no provider inspection, live Telegram action, steward application, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
