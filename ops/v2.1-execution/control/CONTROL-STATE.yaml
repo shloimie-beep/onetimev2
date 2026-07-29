@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: P08 resumes its reconciled exact-form correction from claim c58b4a65; P10 publishes only correction claim cd15a4ba from rejected final 551d483e for relationship-authorized consent, monotonic enrollment restore, and exhaustive ownership-transfer revocation; independently audit P33 final 38e8305e.
+next_action: P08 continues its reconciled exact-form correction; P10 resumes its reconciled relationship-authorized consent, monotonic enrollment, and exhaustive ownership-transfer correction from claim 6ec92d28; P33 publishes only correction claim c37c6dea from rejected final 38e8305e for exact runtime identity, fresh heartbeat, queue health, alert identity, and leakage coverage.
 authority_note: Only C00 updates this global control state.

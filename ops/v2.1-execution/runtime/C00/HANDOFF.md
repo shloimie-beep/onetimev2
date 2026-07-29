@@ -627,3 +627,21 @@ restore recreates version 1. Ownership transfer also lacks a mandatory,
 scope-bound exhaustive locked revocation/readback path. C00 authorized only
 atomic claim `cd15a4ba` from exact final `551d483e` under a fresh
 ADMIN_DIRECTORY lease; no product edit may occur before reconciliation.
+
+P10 claim `6ec92d28` is now reconciled exactly under acquisition `81f10c65`:
+sole parent `551d483e`, only the three P10 runtime files, containing
+authorization `04ebe46b`, ready digest `e7b8877b`, live ADMIN_DIRECTORY lease,
+clean worktree, and zero effects. P10 may implement only relationship-authorized
+service-account acceptance, identity-preserving monotonic enrollment restore,
+and exhaustive scope-bound locked ownership-transfer revocation/readback.
+
+P33 final `38e8305e` passes its exact twenty-one-path mechanical evidence,
+v2.0.0 interface/steward digests, 40 focused tests, released lease, and
+zero-effect checks, but remains semantically rejected. Direct probes publish a
+fresh ready heartbeat from a day-old health snapshot; accept Stripe, GHL, and
+Telegram provider links plus common name/address PII; and report stalled
+content plus inconsistent lease/retry evidence as healthy. Runtime identity
+also omits the required build timestamp and migration/schema version, and
+alerts omit mandatory runtime tier and verification-environment identity. C00
+authorized only atomic claim `c37c6dea` from exact final `38e8305e` under a
+fresh OPERATIONS_RUNTIME lease; no product edit may occur before reconciliation.

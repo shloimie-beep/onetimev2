@@ -331,3 +331,20 @@ ownership-transfer revocation.
 
 Independently audit P33 final
 `38e8305e29f75714d8b3cc9c8198d1f0a47f5b4b` before admission.
+
+P10 claim `6ec92d288e4ed511449e5061d21a2dfb49c1abae` is reconciled.
+Implement only the bounded consent, enrollment-restore, and ownership-transfer
+correction already recorded, then republish exact verification/digests with a
+released lease and zero effects.
+
+For P33, publish only atomic claim
+`c37c6dea-d395-4a57-8068-f519dad03c89` from exact rejected final
+`38e8305e29f75714d8b3cc9c8198d1f0a47f5b4b`, binding acquisition
+`81f10c6535db733cc0505b43f37fe5a3e7887934`, OPERATIONS_RUNTIME lease
+`646edca2-163d-467a-8cff-79d5efb29966`, and ready digest
+`e8689215109abe08d4a54c5856ca89b5b457b7651e9e067ebc52267df38cc3a7`.
+Stop for C00 reconciliation before product edits. After reconciliation,
+correct immutable runtime identity build/migration fields; actual-time
+heartbeat freshness; queue lease/fencing/retry/content-progress evidence;
+runtime-tier/environment-bound alerts; and complete secret, PII, and all-seven
+provider-link leakage scanning with exact negative tests.
