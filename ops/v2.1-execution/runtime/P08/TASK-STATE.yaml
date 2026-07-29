@@ -36,25 +36,26 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: ready_for_review
-phase: complete
-claimed_by: codex-p08-worker-798ccc6e
-claim_time: '2026-07-29T00:49:22Z'
-claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
+status: claimed
+phase: correction
+claimed_by: codex-p08-worker-e9148002
+claim_time: '2026-07-29T01:27:25Z'
+claim_id: e9148002-e9ff-4b7c-ab6e-63080c66bd00
 writer_slot: FAMILY_SIGNUP
-writer_slot_lease_id: 9df7ac46-a1d0-41c0-8fc9-90549d16fdf3
-lease_issued_at: '2026-07-29T00:38:10Z'
-lease_expires_at: '2026-07-29T01:38:10Z'
-last_heartbeat_at: '2026-07-29T01:07:03Z'
-lease_released_at: '2026-07-29T01:07:03Z'
-claim_authorization_sha: eb3b0e1deecbffe05177a07df0d8e52d648d109c
-controller_authorization_sha: d8639ce20ce92a0f49ce8d69b57b09b355d09246
-reconciliation_acquisition_parent_sha: 629577e2ea6da2fdeca7754a6f314b6b254e952e
-ready_entry_state_based_on_control_head_sha: de271a6cab5fc74e8c77b5defc302094fe9a22fc
-ready_entry_payload_digest: d52ad4ce1ce07b895fd4680c469faa631bfc15f9010d19abcd961bf7c1bc213b
-claim_mode: create_new_branch
-expected_existing_head_sha: null
-state_based_on_head_sha: 7e20798c1161da0594cea363d1047335c9ae4fbe
+writer_slot_lease_id: 23274fa2-66cc-4cfd-8d6c-ba659d70a323
+lease_issued_at: '2026-07-29T01:18:05Z'
+lease_expires_at: '2026-07-29T02:18:05Z'
+last_heartbeat_at: '2026-07-29T01:27:25Z'
+lease_released_at: null
+prior_claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
+prior_ready_for_review_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
+controller_authorization_sha: 5cc06e9a3692f1833be737b53d92595bc2bf3e95
+ready_entry_state_based_on_control_head_sha: f28533a2bc55672cedd86cd556d1ad396aa3db4c
+ready_entry_payload_digest: 898063c08637b54f42567e21db5acb5dfe1a25410068c7d9b3a1530ae8917ac5
+claim_mode: resume_existing_branch
+expected_existing_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
+correction_parent_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
+state_based_on_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
 last_implementation_commit_sha: 7e20798c1161da0594cea363d1047335c9ae4fbe
 interface_checkpoint:
   required: true
@@ -79,21 +80,24 @@ completed_steps:
   - Passed 13 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, and git diff checks.
   - Re-ran the full unit suite with 566 of 567 passing; the sole failure is the inherited sender-registry count assertion outside P08 ownership.
   - Released the FAMILY_SIGNUP lease with zero external effects.
-remaining_steps: []
-next_action: C00/I36 should verify the exact pushed final head, integrate the corrected interface checkpoint for P09, and route the two steward requests before P08 integration.
+  - Consumed the C00-issued bounded correction claim against exact existing head 59b43a601225d6f86a929621c89402d06ada39e4 without modifying any product, contract, test, steward-request, or interface-checkpoint file.
+remaining_steps:
+  - Push and report this exact three-file atomic correction claim checkpoint.
+  - Await C00 reconciliation before modifying any P08 product or contract path.
+next_action: Push the atomic correction claim checkpoint, report its exact head and parent, and stop until C00 explicitly reconciles claim e9148002-e9ff-4b7c-ab6e-63080c66bd00.
 requirements:
-  OTV2-SIGNUP-176: implementation_verified
-  OTV2-SIGNUP-177: implementation_verified
-  OTV2-SIGNUP-179: implementation_verified
-  OTV2-SIGNUP-213: implementation_verified
-  OTV2-SIGNUP-228: implementation_verified
+  OTV2-SIGNUP-176: implementation_verified_pending_correction
+  OTV2-SIGNUP-177: implementation_verified_pending_correction
+  OTV2-SIGNUP-179: implementation_verified_pending_correction
+  OTV2-SIGNUP-213: implementation_verified_pending_correction
+  OTV2-SIGNUP-228: implementation_verified_pending_correction
 acceptance_cases:
-  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed
-  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed
-  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed
-  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed
-  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed
-  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed
+  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed_pending_correction
+  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed_pending_correction
+  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed_pending_correction
+  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed_pending_correction
+  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed_pending_correction
+  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed_pending_correction
 changed_paths:
   - apps/web/src/client/public/signup/model.test.ts
   - apps/web/src/client/public/signup/model.ts
