@@ -3,33 +3,18 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Continue One Time v2.1 task F02 from its remote checkpoint.
+Audit the exact F02 Lease A canonical-format release.
 
-Repository: shloimie-beep/onetimev2
-Branch: codex/v21-f02-schema-state-migrations
-Authoritative control ref: origin/codex/v21-control
-Task packet: ops/v2.1-execution/tasks/F02.yaml
-Task context: ops/v2.1-execution/contexts/F02-CONTEXT.md
-Task state: ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/F02/HANDOFF.md
+Require sole parent `e669c0e85d0bdf2bc72f2f8a9ff3646c0a6a1df6`,
+containing control `974985a321b71ad05d491b8c981ece5e38bed52c`, sole
+acquisition `c9b0f526907d62f782ef3d44a752a9467d03e986`, claim
+`7acb5991-7704-4a6f-b590-020e47824876`, and shared lease
+`bf42793b-2731-43aa-8e88-c246c87d70bb`.
 
-Fetch remote refs. Derive the containing control commit from
-`origin/codex/v21-control`, read this task's exact registry and ready/resume
-entry from that remote ref, verify its expected branch head, canonical entry
-payload digest, the `ready` or `resume_ready` lease/claim appropriate to the
-registered claim mode, package/task/context/dependency digests, and reject a
-live foreign lease or non-fast-forward collision. Then check out the exact
-task branch, read task state and handoff before named work, and resume the
-recorded `next_action`. If digests match, do not restart completed work or
-globally re-audit the repository. Continue until `ready_for_review` or a
-permitted stop condition. Update state/handoff/this next prompt, checkpoint,
-commit, and push before returning.
-
-Exact next action: review and integrate the superseding F02 interface
-checkpoint whose implementation head is
-`191dac288ea1721bdc0252bd012060ca974d2242` and contract digest is
-`c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd`.
-Refresh the control-plane migration allocation mirror to migration checksum
-`d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22`.
-F02 is `ready_for_review`; do not resume implementation without a new exact
-C00 resume lease against the final remote head.
+Require an exact four-path delta containing only the proposal and F02 runtime
+triplet. Run repository Prettier through its API over the raw canonical Git
+blob bytes; do not use Windows `git archive`, which converts text to CRLF.
+Also run YAML parsing, package Git-byte validation, secret scan, and diff/scope gates.
+Confirm native and pg-mem checksum pairs are unchanged, SQL 2235 through 2238
+is byte-identical, both slots released before expiry, and effects remain
+`0/0/0`. Stop for C00 admission; do not integrate or perform external effects.

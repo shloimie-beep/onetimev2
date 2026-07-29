@@ -10,8 +10,8 @@ dependency_heads:
   C00:
     required_state: operational
     observed_state: operational
-    observed_control_head_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
-    control_state_digest: 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215
+    observed_control_head_sha: 02c58c4258a16f431953dc1e5e5a40a194c7d0d2
+    control_state_digest: 4e338aa5372b202a1be9d0ea11064e0a7a83067006d5edaee0aee8d1d1fc3513
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
   F01:
@@ -23,28 +23,93 @@ dependency_heads:
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
     task_packet_digest: 1b857371d8d55752dca73bf129870058095306a5e50d5539d7e37d0a74124bda
     task_context_digest: 5145b39c8f6ce31519ce9c23f188387a0abdfee141132deb4e4713974a1c3372
+  I36:
+    required_state: P18_collision_correction_released
+    observed_state: P18_collision_correction_released
+    observed_integration_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+    state_handoff_digest: ca4b1d99813dddff0f81d551683dbd57d98c8d55c73514bb42c7bd88b0d5b475
+migration_lease_A_plan_bindings:
+  F04:
+    observed_task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    request_id: F04-migration-001
+    request_git_blob: 96be444f01974484a6ee2680bb1a4b12761c9085
+    request_digest: b42fe840f07e8069a01e178f8a14c793ef50297428955b104f0c9e5bb88edc93
+    digest_kind: raw_sha256
+  F05:
+    observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    request_id: F05-MIGRATION-001
+    request_git_blob: 4707ff364d0b727875adf36ea885f8a9ec2bb9d9
+    request_digest: 450d1e4a3ddedd04971f1f52a70e3fec5fbaefe526f9580c4682bc6fb4062a1d
+    digest_kind: raw_sha256
+  P15:
+    observed_task_head_sha: c96b8c55c07e5283e762537934a6bf948833700e
+    request_id: P15-MIGRATION-001
+    request_git_blob: b4569eb4d3a7b03b573a634741d944d3751f3635
+    request_digest: 076e781f52302ae1447855c464c4001b028d610a188388b339a917d4fc477fdf
+    digest_kind: canonical_entry_sha256
+  F06:
+    observed_task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    request_id: F06-migration-001
+    request_git_blob: d155c2a04cac7e972c8c9515e0353142bcad3c96
+    request_digest: 06a329a0d1f08cdfd73f3f907a6aa9118fddf209a288e596a812ee0899b3861f
+    digest_kind: canonical_entry_sha256
+migration_lease_A_control:
+  authorized_integration_head_sha: 26cbebdf828ba9ff485961adb4f90c460c2dbaf9
+  prior_allocation_ordinal: 2234
+  prior_allocation_checksum_sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+  next_available_ordinal: 2235
+  never_allocate:
+    - 2231
+  planned_ordinals:
+    - 2235
+    - 2236
+    - 2237
+    - 2238
+  collision_count: 0
+  requester_content_read: true
+  allocation_proposal_read_or_edited: true
+  sql_authored: true
+metadata_correction_control:
+  authorized_paths:
+    - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  protected_sql_git_blobs:
+    packages/db/migrations/2235_v21_household_identity.sql: 70047dd5c2aabed9bbdb12730c2a25d49d51fef3
+    packages/db/migrations/2236_v21_job_foundation.sql: 8540bfdaa3886f36ee8261c0095fca1a45c94024
+    packages/db/migrations/2237_v21_calendar_recurrence.sql: d1cff8b132f278498a59bda1bee1bb74e6ee83b5
+    packages/db/migrations/2238_v21_provider_core.sql: 3f48e64956cc3b7683e4c6c45df08d4c60375b03
+  checksum_sha256_kind: normalized_lf_sql_bytes
+  pg_mem_checksum_sha256_kind: repository_runner_sql_after_postgres_only_block_stripping
+  audit_status: PASS
 status: ready_for_review
-phase: review
-claimed_by: codex-f02-worker-8d0e0d73
-claim_time: '2026-07-28T17:27:11Z'
-claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
-lease_expires_at: '2026-07-28T18:27:11Z'
-last_heartbeat_at: '2026-07-28T17:35:30Z'
-lease_released_at: '2026-07-28T17:35:30Z'
-controller_authorization_sha: d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
-ready_entry_parent_control_sha: 3eb407ef050175d7c21f55f67cf99626f1dd5afd
-ready_entry_payload_digest: b9e6120f3b41cc4174a291f83070a6bb18d54b3f47809a1dc8647b3c32a3927d
+phase: migration_lease_A_canonical_format_correction
+claimed_by: codex-f02-lease-a-format-7acb5991
+claim_time: '2026-07-29T19:50:00Z'
+claim_id: 7acb5991-7704-4a6f-b590-020e47824876
+writer_slot_lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
+lease_issued_at: '2026-07-29T19:47:22Z'
+lease_expires_at: '2026-07-29T21:02:22Z'
+last_heartbeat_at: '2026-07-29T20:01:43Z'
+lease_released_at: '2026-07-29T20:01:43Z'
+controller_authorization_sha: 974985a321b71ad05d491b8c981ece5e38bed52c
+ready_entry_parent_control_sha: c9b0f526907d62f782ef3d44a752a9467d03e986
+state_based_on_control_head_sha: c9b0f526907d62f782ef3d44a752a9467d03e986
+ready_entry_payload_digest: 40b3587f43321e1682abe17477310cedb20ea4c5d44cb353ee2a0480a440c21c
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
-    lease_expires_at: '2026-07-28T18:27:11Z'
-    released_at: '2026-07-28T17:35:30Z'
+    lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
+    lease_issued_at: '2026-07-29T19:47:22Z'
+    lease_expires_at: '2026-07-29T21:02:22Z'
+    released_at: '2026-07-29T20:01:43Z'
   SCHEMA_CONTRACT:
-    lease_id: a9b18c22-2f8c-4b8e-98f5-567145a852fa
-    lease_expires_at: '2026-07-28T18:27:11Z'
-    released_at: '2026-07-28T17:35:30Z'
-state_based_on_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
-last_implementation_commit_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    lease_id: bf42793b-2731-43aa-8e88-c246c87d70bb
+    lease_issued_at: '2026-07-29T19:47:22Z'
+    lease_expires_at: '2026-07-29T21:02:22Z'
+    released_at: '2026-07-29T20:01:43Z'
+state_based_on_head_sha: e669c0e85d0bdf2bc72f2f8a9ff3646c0a6a1df6
+last_implementation_commit_sha: 7132cd81ea260558777859cd4c7485a357e8f5fb
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
   - independently verified parent CONTROL-STATE.yaml digest 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215 at 3eb407ef050175d7c21f55f67cf99626f1dd5afd
@@ -66,8 +131,33 @@ completed_steps:
   - ran migration 2234 in disposable PGlite PostgreSQL and proved concurrent stale-version exclusion, exact replay/conflict, reconciliation quarantine, committed-history fencing, monotonic counters, and append-only audit
   - hardened billing reconciliation so conclusive outcomes clear unknown_effect while unresolved dead-letter work retains quarantine
   - superseded the interface checkpoint and migration allocation checksum after committed-history fencing hardening
-remaining_steps: []
-next_action: C00/I36 should review and integrate the superseding interface checkpoint, refresh the approved migration allocation mirror to its exact digest/checksum, and then authorize downstream work.
+  - Verified exact containing control 7f6f3508e188dfa1334b39e3ff00904feab47a0b and sole acquisition parent 296b7002922504b10aa88f5bf6e8c9163ed10ec7.
+  - Independently recomputed canonical Lease A READY digest c470a17f3ddd334bb5c4ffa66f51a2e67d773bf937a95d09c9b267476b18f501.
+  - Verified exact F02 and integration heads, all entry-bound package/task/context/control/interface/state-handoff digests, and the four opaque plan references, Git blobs, and bound request digests.
+  - Verified migration control next_available_ordinal 2235, exact prior 2234 checksum, never-allocate 2231, and zero 2235-2238 filename collisions at both authorized heads.
+  - Verified the sole shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease, zero effect locks, and external effects 0/0/0.
+  - Claimed only the F02 runtime triplet; requester content, the allocation proposal, and SQL were not read or edited.
+  - C00 reconciled atomic claim 0708a09e at containing control fa1330ff with sole acquisition parent 3143e8d0.
+  - Read and validated the four bound requests in exact F04, F05, P15, F06 order at their immutable heads, blobs, IDs, and raw or canonical digests.
+  - Allocated exact ordinals 2235 through 2238, authored only the four authorized forward-only SQL files, and advanced the proposal next ordinal to 2239.
+  - Applied the complete 69-migration inventory through 2238 in a disposable pg-mem database after harness-only built-in registrations.
+  - Verified the exact eight-path ceiling, immutable checksums, zero provider/effect locks, and external effects 0/0/0.
+  - Independently verified correction control c1e744b0, sole acquisition 21f0ae2f, READY digest fb3f3559, exact e8dcbd75 head, protected SQL bytes, native and pg-mem checksum pairs, four correction paths, new claim and lease, and effects 0/0/0.
+  - Claimed only the F02 runtime triplet for the checksum-metadata and formatting correction; the allocation proposal and SQL were not edited.
+  - C00 reconciled correction claim 1ab8243f at containing control 02c58c42 with sole acquisition parent 174bc665.
+  - Corrected only the allocation proposal and runtime triplet to distinguish production/native normalized-LF checksums from repository-runner pg-mem checksums.
+  - Preserved all four protected migration Git blobs byte-for-byte and retained next available ordinal 2239.
+  - Passed YAML, repository Prettier, native/pg-mem derivation, protected SQL blob, 200/200 Git-byte package, secret, exact four-path, diff, disposable 69-migration apply/verify, and zero-effect gates.
+  - Independently verified formatting-correction control 70fc5833, sole acquisition da6645bf, READY digest 40b3587f, exact caf4e2be head, protected SQL/checksum semantics, claim and lease, and effects 0/0/0.
+  - Claimed only the F02 runtime triplet for canonical LF formatting; the proposal and SQL were not edited.
+  - C00 reconciled canonical-format claim e669c0e8 at containing control 974985a3 with sole acquisition c9b0f526.
+  - Applied repository Prettier with forced LF output only to the proposal and runtime triplet, preserving checksum semantics and protected SQL bytes.
+  - Passed canonical raw Git-blob Prettier API, YAML, exact four-path scope, package Git-byte, secret, checksum, protected SQL, diff, lease-release, and effects 0/0/0 gates.
+  - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-29T20:01:43Z before lease expiry.
+remaining_steps:
+  - An independent auditor and C00 must admit the exact final head before I36 integration.
+  - I36 may integrate only the exact admitted eight-path Lease A result under a fresh bounded claim and merge item.
+next_action: Stop after publishing the canonical-format correction. Await independent and C00 audit; do not edit SQL, allocate ordinal 2239, register, inspect providers, deploy, send, integrate, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -83,10 +173,35 @@ changed_paths:
   - packages/domain/src/state/index.ts
   - packages/domain/src/state/transition-guard.ts
   - packages/db/migrations/2234_canonical_state_machines.sql
+lease_A_changed_paths:
+  - packages/db/migrations/2235_v21_household_identity.sql
+  - packages/db/migrations/2236_v21_job_foundation.sql
+  - packages/db/migrations/2237_v21_calendar_recurrence.sql
+  - packages/db/migrations/2238_v21_provider_core.sql
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
 migrations:
   - ordinal: 2234
     file: packages/db/migrations/2234_canonical_state_machines.sql
     sha256: d1352c5e46ae56ca549c9939ef739923109b4a0ab04f0d4df00c04dca71ccb22
+  - ordinal: 2235
+    file: packages/db/migrations/2235_v21_household_identity.sql
+    checksum_sha256: 442231550a3aed2360772a9fbc4aebe96edf0510ee175e0b8c7d1097d94f7c1e
+    pg_mem_checksum_sha256: abec96358e5b7b35d253ed8314625ad6a7829fd0230fd5a2763ccb29b8c496b3
+  - ordinal: 2236
+    file: packages/db/migrations/2236_v21_job_foundation.sql
+    checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+    pg_mem_checksum_sha256: 4a9b04d9b6b822448b7a188fa1afd0d4e84b522efd4b9f7e2a3e3c46015e7fdd
+  - ordinal: 2237
+    file: packages/db/migrations/2237_v21_calendar_recurrence.sql
+    checksum_sha256: 7b58a07ff8bb949260715bd630d02c34cb1f7188a7d0a9a9f52380d7a82eca86
+    pg_mem_checksum_sha256: 6ad635c575ded4d57949e2f2f95b8fef2048b19e7153a3e87bd4bb1b4f8179ea
+  - ordinal: 2238
+    file: packages/db/migrations/2238_v21_provider_core.sql
+    checksum_sha256: 78651746213caf2131310eac7305c61f94f9480cfcf5ff347ebc2a07bbc15f6e
+    pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
 steward_requests: []
 verification:
   commands_run:
@@ -109,7 +224,17 @@ verification:
     - new TypeScript and YAML artifacts passed Prettier
     - migration 2234 passed disposable PGlite PostgreSQL proof for concurrent writes, replay/conflict, content recovery, acceptance-unknown reconciliation, committed-history fencing, monotonic counters, and append-only events
     - focused domain proof passed conclusive reconciliation unknown-flag clearing and dead-letter quarantine retention
-  known_baseline_failures: []
+    - containing control/sole parent, exact F02/integration heads, canonical READY digest, all entry-bound digests, four plan refs/blobs/digests, ordinal control, collision absence, shared lease, zero effect locks, and exact triplet-only claim scope passed
+    - full 69-migration first apply passed in disposable pg-mem with harness-only btrim, length, and cardinality registrations
+    - migration allocation proposal YAML, raw checksums, exact path scope, and diff hygiene passed
+    - correction containing control 02c58c42, sole acquisition 174bc665, exact claim head 1ab8243f, claim, shared lease, and zero effects matched
+    - native normalized-LF checksums, repository-runner pg-mem checksums, and protected SQL Git blobs matched all four control-authorized pairs
+    - corrected proposal and runtime evidence parsed as YAML and passed repository Prettier
+    - locked execution package passed 200/200 using Git bytes
+    - secret scan, exact four-path claim-to-final delta, and git diff --check passed
+    - fresh disposable pg-mem first apply and verification passed 69/69 with zero pending migrations
+  known_baseline_failures:
+    - pg-mem replay of the pre-existing schema_migrations CREATE TABLE IF NOT EXISTS statement hits a known planner/AST coverage limitation after a clean complete first apply; no failure originated in migrations 2235-2238
 external_effects:
   authority: none
   attempted: 0
