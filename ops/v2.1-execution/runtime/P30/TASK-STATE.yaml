@@ -22,8 +22,8 @@ dependency_heads:
     interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
     interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
     interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-status: claimed
-phase: correction
+status: ready_for_review
+phase: review
 claim_mode: resume_existing_branch
 claimed_by: codex-p30-worker-87608f7e
 claim_time: '2026-07-29T00:21:00Z'
@@ -33,9 +33,13 @@ writer_slot_leases:
     lease_id: a77f21df-1741-46ea-a8c7-f13f6aa9e5f0
     lease_issued_at: '2026-07-29T00:13:59Z'
     lease_expires_at: '2026-07-29T01:13:59Z'
+    released_at: '2026-07-29T00:32:24Z'
 lease_expires_at: '2026-07-29T01:13:59Z'
-last_heartbeat_at: '2026-07-29T00:21:00Z'
+lease_released_at: '2026-07-29T00:32:24Z'
+last_heartbeat_at: '2026-07-29T00:32:24Z'
 controller_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+claim_consumed_control_head_sha: 268ab601b89573238befe70de7995908925575cc
+claim_consumed_control_parent_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
 ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
 ready_entry_payload_digest: 380e1f3ddfa39b986befe6aa58506783f7e295c4aa5e421a6b69821226a51553
 prior_claim_checkpoint_sha: c42eb2b971093c603f2334548bfeadad78a368b1
@@ -60,26 +64,59 @@ completed_steps:
   - Verified the authorized integration start remains an ancestor of the observed repair implementation head.
   - Claimed the sole GHL_CAMPAIGNS corrected-binding lease with no effect locks and zero external effects.
   - Preserved product files unchanged and recorded only this three-file atomic claim checkpoint.
-remaining_steps:
-  - Push and report this exact three-file corrected-binding atomic claim checkpoint.
-  - Await C00 reconciliation and an explicit resume before any further product or finalization work.
-next_action: Push and report the corrected-binding atomic claim, then stop; no product work is authorized until C00 reconciles and explicitly resumes P30.
+  - Published corrected-binding atomic claim 8e9583a9b47b486930e79e3586c36bf882dba375 with sole parent f6d074e964cebefe032042b9627d7c7b47304bdd.
+  - Verified C00 consumed that exact claim at reconciled control head 268ab601b89573238befe70de7995908925575cc with sole parent 5b0356cc30baf4062e50664f9749ebcf97f9d7f4.
+  - Independently audited repair implementation f6d074e9 and found no remaining P30 code gap.
+  - Verified OT-15 resolves all three configured steps through canonical catalog lookup, enforces exact workflow/provider/sender/audience/subject/approval/consent/token contracts, and applies exact digest-backed approval evidence per step.
+  - Verified missing, duplicate, unexpected, subject-drifted, and noncanonical OT-15 step approvals fail closed for launch and delivery.
+  - Verified the integrated P31 catalog contains only OT-15 step 1, the repair invents no step 2 or step 3 body, and P30-copy-registration-001 requests owner-reviewed canonical registration.
+  - Verified OT-16 recomputes SHA-256 operation identity from workflow, adult, expiry, and checkpoint and rejects adult, expiry, or checkpoint mismatch before persistence or provider access.
+  - Verified the OT-16 worker refreshes current paid, decline, and custom-School eligibility after durable reservation and immediately before provider dispatch, with transition-window no-send proofs.
+  - Passed 12 focused campaign/worker tests, full typecheck, full lint, focused formatting, YAML/TypeScript drift, secret scan, scope, ancestry, and artifact-digest checks.
+  - Ran the full unit suite; 566 of 567 tests passed and the sole inherited P28 registry-projection count mismatch remained unchanged.
+  - Released the sole GHL_CAMPAIGNS lease with no external-effect authority used.
+remaining_steps: []
+next_action: C00 and I36 should review and integrate this exact ready-for-review final, preserve OT-15 fail-closed launch until P30-copy-registration-001 is adjudicated, and separately adjudicate P30-registry-registration-001.
 requirements:
-  OTV2-GHL-134: corrected_binding_claimed
-  OTV2-GHL-135: corrected_binding_claimed
-  OTV2-GHL-225: corrected_binding_claimed
+  OTV2-GHL-134: implementation_ready
+  OTV2-GHL-135: implementation_ready_fail_closed_pending_copy_registration
+  OTV2-GHL-225: implementation_ready
 acceptance_cases:
-  OTV2-GHL-134-AC01: not_rerun_under_corrected_binding_claim
-  OTV2-GHL-135-AC01: not_rerun_under_corrected_binding_claim
-  OTV2-GHL-225-SCHEDULE: not_rerun_under_corrected_binding_claim
-  OTV2-GHL-225-PAID-EXIT: not_rerun_under_corrected_binding_claim
-  OTV2-GHL-225-SCHOOL-EXIT: not_rerun_under_corrected_binding_claim
-  OTV2-GHL-225-SUPPRESSION: not_rerun_under_corrected_binding_claim
+  OTV2-GHL-134-AC01: passed
+  OTV2-GHL-135-AC01: passed_fail_closed_until_all_three_canonical_exact_content_approvals
+  OTV2-GHL-225-SCHEDULE: passed
+  OTV2-GHL-225-PAID-EXIT: passed
+  OTV2-GHL-225-SCHOOL-EXIT: passed
+  OTV2-GHL-225-SUPPRESSION: passed
 changed_paths:
+  - apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts
+  - apps/worker/src/runners/ghl-workflows/campaigns/runner.ts
+  - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+  - ops/v2.1-execution/runtime/P30/steward-requests/P30-copy-registration-001.yaml
+  - ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml
+  - packages/domain/src/communications/workflows/campaigns/campaigns.test.ts
+  - packages/domain/src/communications/workflows/campaigns/definitions.ts
+  - packages/domain/src/communications/workflows/campaigns/index.ts
+  - packages/domain/src/communications/workflows/campaigns/planner.ts
   - ops/v2.1-execution/runtime/P30/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P30/HANDOFF.md
   - ops/v2.1-execution/runtime/P30/NEXT-PROMPT.md
 migrations: []
+artifact_digests:
+  - path: apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts
+    sha256: 71cc95dc241b164eedf60e4ba7080c1a7c866da13b2e92b2260f1f96b91edc76
+  - path: apps/worker/src/runners/ghl-workflows/campaigns/runner.ts
+    sha256: dc41a6112c975110f11e29fcac0d5a1d9ad365072d6a31c28889f76d565ab714
+  - path: integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+    sha256: 37cb0350e141ef1928bcb8d4f2c55dca355452e09b9dcf6824b77245f35088cb
+  - path: packages/domain/src/communications/workflows/campaigns/campaigns.test.ts
+    sha256: 6eece3a9378eb39f11c81930d57bf2b3986ff3c38fae6561ba559e4c4a2114b6
+  - path: packages/domain/src/communications/workflows/campaigns/definitions.ts
+    sha256: 762f12994d8be545ed4e77c76ee15606ce4b6e3894609b9054a39f93ba04f89e
+  - path: packages/domain/src/communications/workflows/campaigns/index.ts
+    sha256: 179df3213483b3a14a1c94012df5fc41ba1085058e213488e47ce7b1428e58e9
+  - path: packages/domain/src/communications/workflows/campaigns/planner.ts
+    sha256: 8543666bb77499c2bd91d27448ade0b394ce6b221c3c9fb216dc6d08c9df3bb1
 steward_requests:
   - request_id: P30-registry-registration-001
     sha256: 8c6b582f4265cf9f5cd0f51c302ea239c40d1c5ca3bfc27805c15bd699e52644
@@ -87,17 +124,37 @@ steward_requests:
     sha256: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
 verification:
   commands_run:
-    - command: exact containing control commit and sole-parent verification
-      result: passed; controller 0c911664 has sole parent e54ea923
-    - command: canonical corrected ready-entry digest recomputation
-      result: passed; 380e1f3ddfa39b986befe6aa58506783f7e295c4aa5e421a6b69821226a51553
-    - command: corrected claim, dependency, writer-lease, and effect-lock verification
-      result: passed; exact P28/P31, claim 87608f7e, sole GHL_CAMPAIGNS lease a77f21df, and zero effect locks
-    - command: exact local and remote expected-head verification
-      result: passed; local and remote equal f6d074e964cebefe032042b9627d7c7b47304bdd
-    - command: atomic checkpoint scope verification
-      result: passed; only the three P30 runtime memory files changed and no product file changed
-  known_baseline_failures: []
+    - command: exact reconciled control and claim consumption verification
+      result: passed; control 268ab601 has sole parent 5b0356cc and consumes exact claim head 8e9583a9
+    - command: independent repair implementation audit
+      result: passed; OT-15 exact three-step canonical approval fence, OT-16 deterministic identity, and post-reservation final eligibility refresh are complete
+    - command: npm exec -- vitest run packages/domain/src/communications/workflows/campaigns/campaigns.test.ts apps/worker/src/runners/ghl-workflows/campaigns/runner.test.ts
+      result: passed; 2 files and 12 tests
+    - command: npm run typecheck
+      result: passed
+    - command: npm run lint
+      result: passed
+    - command: focused npm exec -- prettier --check
+      result: passed for every P30 product, test, fragment, and steward-request path
+    - command: npm run secret:scan
+      result: passed across 2719 repository text files
+    - command: YAML-to-TypeScript structural drift proof
+      result: passed; 3 workflows and 15 contract keys per workflow
+    - command: OT-15 canonical catalog and structured-request proof
+      result: passed; step 1 integrated, steps 2 and 3 absent, and zero body fields supplied by P30-copy-registration-001
+    - command: npm run unit
+      result: 566 passed and 1 inherited baseline failed across 567 tests
+    - command: repair and claim topology plus exact path-scope verification
+      result: passed; implementation f6d074e9 has sole parent 2f2aa5c9 and 9 authorized paths, claim 8e9583a9 has sole parent f6d074e9
+    - command: SHA-256 artifact and steward-request recomputation
+      result: passed; all material digests match this task state
+  known_baseline_failures:
+    - command: npm run unit
+      failure: tests/unit/highlevel/sender-registry-v1-1.test.ts expects 19 automation assets while the integrated P28 registry source exposes 22
+      attribution: inherited P28 registry-projection drift covered by P28-registry-projection-001; the failing test and canonical registry data surfaces are unchanged from authorized start 49431959 through repair f6d074e9
+    - command: npm run format
+      failure: repository-wide Prettier baseline reports 2235 files outside the focused P30 paths
+      attribution: inherited repository-wide formatting debt; every P30 material path passes focused Prettier
 external_effects:
   authority: none
   attempted: 0
