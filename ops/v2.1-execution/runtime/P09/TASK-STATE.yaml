@@ -1,0 +1,169 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P09
+task_packet_digest: 191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8
+task_context_digest: a79a242f32c782ee37ffe345b419a443e5ce22dacec10b2390958456fc8cfece
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-p09-school-inquiry
+start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+claim_mode: resume_existing
+expected_existing_head: a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46
+rejected_final_head_sha: a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46
+correction_ready_control_sha: 9d2b0015dd8fe3420e6391e460fccb78fd8911fa
+correction_ready_control_parent_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+dependency_heads:
+  P08: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+dependency_bindings:
+  P08:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    observed_task_head_sha: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+    observed_integration_head_sha: 1b338e66d10a31db790377be38eed3d1e325fb55
+    interface_source_head_sha: 594570798a5af8145d7949ba10572e8b1e644f17
+    interface_implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
+    interface_checkpoint_digest: 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
+    task_packet_digest: f411403a6f3d7f1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
+    task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
+status: ready_for_review
+phase: complete
+claimed_by: codex-p09-correction-worker-555a5878
+claim_time: '2026-07-29T11:11:54Z'
+claim_id: 555a5878-9a7f-4486-a6e0-a959dc9ab1a1
+lease_slot: SCHOOL_INQUIRY
+lease_id: 8ca16a74-fa49-4c61-8aa8-b50416b50913
+lease_issued_at: '2026-07-29T11:11:54Z'
+lease_expires_at: '2026-07-29T12:26:54Z'
+lease_phase_scope: P09_atomic_claim_concurrency_optional_acknowledgment_correction_only
+reconciled_resume_scope: P09_concurrency_optional_acknowledgment_correction
+heartbeat_interval_minutes: 30
+lease_released_at: '2026-07-29T11:41:43Z'
+last_heartbeat_at: '2026-07-29T11:41:43Z'
+controller_authorization_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
+controller_authorization_parent_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+claim_reconciled_control_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
+claim_reconciled_control_parent_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+atomic_claim_head_sha: 86d5f5ffd046505c4df336ea40dd83c6559d3255
+ready_entry_state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+ready_entry_payload_digest: 505e68237f3d2d0401e4727b9a8111a330026f994344ca804d83a6692a09f766
+effect_lock_leases: []
+state_based_on_head_sha: a420dd5823c0f7a7dc553fd08991c0e4507b8c24
+last_implementation_commit_sha: a420dd5823c0f7a7dc553fd08991c0e4507b8c24
+implementation_artifact_digest: 1635950b5f6eb1a117912199bdc8b8d2bf36bd5c5397c3388bcbc1990c746a57
+implementation_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for the
+  nine implementation and focused-test artifacts, sorted lexicographically by
+  path, with LF separators and no final newline.
+implementation_artifacts:
+  apps/web/src/client/public/school/model.test.ts: 59b0530f6c5878f38ef560c3896439ab34f0705641124244517d80148021941c
+  apps/web/src/client/public/school/model.ts: 720189bcda43043b82d51f9c274d5a80c6a37b251f4e0a724e5bfe709ea7e945
+  apps/web/src/server/features/signup/school/service.test.ts: ccb201e62d30b9d4a2e1f9d2f2a6ae021e0a8c2c219e716ccc888d7806c5294e
+  apps/web/src/server/features/signup/school/service.ts: cdc23237106ad3113116d24c8968064126df0ddc6bb5f294cc51d779c70142a5
+  packages/contracts/src/signup/school/index.ts: 2a95b2d4c203df296c85726ac5a448d0029d30b384998ecc36f25bc20682c6d7
+  packages/contracts/src/signup/school/school-signup.contract.test.ts: 9f49d4ced661268eea3305c95888afb304cf791616a51588b6172a0aed0d3054
+  packages/domain/src/signup/school/index.ts: 608e81c0377adec75860ef9bfbe88bac9939eb4306a4e4c74fa04d775c5deefe
+  packages/domain/src/signup/school/policy.test.ts: 21e747b54f6b87d85fba97f20cb354c94677fb87060e3d442b55cd9e8dfd1779
+  packages/domain/src/signup/school/policy.ts: e14d4475c893b6e9dc02aa3774db586e78ab5e17732e7ff28829e4f09cdfdfe6
+steward_request_payload_digests:
+  P09-migration-001: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
+  P09-registration-001: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
+steward_request_aggregate_digest: 9229edbdabbeedc6ee7ad17eef595ff36e5f6b99f72b0ea73d23e05ab08ddb42
+steward_request_digest_algorithm: >-
+  Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
+  SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
+  and no final newline.
+correction_completed:
+  - Replaced the check-then-commit persistence seam with an atomic
+    create-or-return-winning-receipt port keyed by exact
+    product/runtime/environment/operation/normalized email.
+  - Recovered a concurrent uniqueness winner into exact deduplication and
+    rejected a winning receipt whose canonical request or protected invariants
+    differ.
+  - Made phone and note truly optional in the input contract while persisting
+    absent values as canonical null and continuing to reject extra fields.
+  - Replaced the acknowledgment intent's UI success-copy field with exact
+    OT-01 school-acknowledgment workflow/template/version/sender/subject/body
+    binding and immutable content digest
+    ee97274c3fbe2bae470da87aa15b7049fddc2677dc794dc5e94a42e78b7de4fb.
+  - Added direct four-required-field, optional-null, template-digest/drift, and
+    concurrent same-email one-lead/one-acknowledgment assertions.
+completed_steps:
+  - Verified and published atomic correction claim
+    86d5f5ffd046505c4df336ea40dd83c6559d3255 from exact rejected final
+    a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46.
+  - Verified C00 reconciliation/control
+    3fd19332799a28a7efd7cde00712ba8ca091bf14 with state-based acquisition
+    e6a6729bc109816124ef2e7beef5e42aa398b147.
+  - Implemented only the enumerated concurrency, optional-field, and approved
+    acknowledgment-template correction in six P09-owned source/test paths.
+  - Passed four focused files and 16 positive/negative assertions, workspace
+    typecheck, focused ESLint and Prettier, exact correction scope, diff
+    hygiene, and secret scan across 2891 repository text files.
+  - Published and remote-verified implementation commit
+    a420dd5823c0f7a7dc553fd08991c0e4507b8c24.
+  - Reproduced all nine implementation artifact hashes, aggregate
+    1635950b5f6eb1a117912199bdc8b8d2bf36bd5c5397c3388bcbc1990c746a57,
+    and unchanged request payload/aggregate digests.
+  - Released claim 555a5878-9a7f-4486-a6e0-a959dc9ab1a1 and SCHOOL_INQUIRY
+    lease 8ca16a74-fa49-4c61-8aa8-b50416b50913 before expiry with zero external
+    effects.
+remaining_steps:
+  - C00 must independently audit the superseding final remote head, exact
+    claim/implementation ancestry, six-file correction scope, digests,
+    validation evidence, lease release, and zero-effect record.
+  - I36/F02 may separately evaluate the unchanged structured requests only
+    after source admission; P09 did not edit or apply them.
+next_action: Push and remote-verify the final ready-for-review metadata commit, report its exact head to C00, and stop for independent audit.
+requirements:
+  OTV2-SIGNUP-178: correction_implemented_candidate_evidence_pending
+  OTV2-SIGNUP-229: correction_implemented_candidate_evidence_pending
+  OTV2-SCHOOL-200: correction_implemented_candidate_evidence_pending
+  OTV2-SCHOOL-214: correction_implemented_candidate_evidence_pending
+acceptance_cases:
+  OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS: correction_assertions_passed
+  OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY: correction_assertions_passed
+  OTV2-SCHOOL-200-AC01: prior_assertions_preserved
+  OTV2-SCHOOL-214-AC01: prior_assertions_preserved
+changed_paths:
+  - apps/web/src/server/features/signup/school/service.test.ts
+  - apps/web/src/server/features/signup/school/service.ts
+  - ops/v2.1-execution/runtime/P09/HANDOFF.md
+  - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
+  - packages/contracts/src/signup/school/index.ts
+  - packages/contracts/src/signup/school/school-signup.contract.test.ts
+  - packages/domain/src/signup/school/policy.test.ts
+  - packages/domain/src/signup/school/policy.ts
+migrations: []
+steward_requests:
+  - id: P09-migration-001
+    sha256: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
+    state: unchanged_unapplied
+  - id: P09-registration-001
+    sha256: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
+    state: unchanged_unapplied
+verification:
+  commands_run:
+    - command: exact correction control, sole parent, claim, lease, branch, and effect-lock verification
+      result: passed
+    - command: focused P09 Vitest
+      result: passed; 4 files and 16 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over all P09 TypeScript artifacts
+      result: passed
+    - command: exact six-source/test correction scope and git diff --check
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2891 repository text files
+    - command: exact Git-blob artifact and unchanged request digest reproduction
+      result: passed; nine-artifact aggregate 1635950b and request aggregate 9229edbd
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
