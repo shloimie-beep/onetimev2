@@ -32,8 +32,8 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: complete
 claimed_by: codex-p12-worker-776c6b8b
 claim_time: '2026-07-29T03:35:03Z'
 claim_id: 776c6b8b-8729-49ea-a9ca-f505fbaf320c
@@ -43,17 +43,20 @@ writer_slot_leases:
     lease_issued_at: '2026-07-29T03:20:30Z'
     lease_expires_at: '2026-07-29T04:20:30Z'
     state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+    lease_released_at: '2026-07-29T03:54:53Z'
+    state: released
 lease_expires_at: '2026-07-29T04:20:30Z'
-last_heartbeat_at: '2026-07-29T03:53:30Z'
+lease_released_at: '2026-07-29T03:54:53Z'
+last_heartbeat_at: '2026-07-29T03:54:53Z'
 controller_authorization_sha: ab393d7eb3b7f55b910ba110949c05c40b7383e6
 ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
 ready_entry_payload_digest: 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86
-state_based_on_head_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
+state_based_on_head_sha: f265d163d6007e91fb2a332ebff6f173da81700e
 last_implementation_commit_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
 active_interface:
   status: interface_ready
   interface_implementation_head_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
-  interface_checkpoint_sha: derive_from_git_and_record_in_control_registry
+  interface_checkpoint_sha: f265d163d6007e91fb2a332ebff6f173da81700e
   semantic_contract_version: 1.0.0
   interface_checkpoint_digest: 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7
 completed_steps:
@@ -67,18 +70,21 @@ completed_steps:
   - Implemented the isolated P12 contract, domain aggregate, server orchestration, and Parent client workspace with exact scope, seat, lifecycle, credential, enrollment, and audit invariants.
   - Passed 3 focused files and 11 tests, workspace typecheck, focused ESLint, and focused Prettier.
   - Published semantic interface 1.0.0 for P13 with canonical digest 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7.
+  - Pushed exact interface checkpoint f265d163d6007e91fb2a332ebff6f173da81700e.
+  - Passed repository-wide secret scan across 2750 text files, exact 16-path scope audit, final YAML/Prettier and diff hygiene checks, and released PARENT_HOUSEHOLD_UI lease 992f62c1-faba-4709-bae6-6c201cc776b2 with no external effect attempted.
 remaining_steps:
-  - Push and report the exact P12 interface checkpoint.
-  - Complete final secret/scope/diff checks, release the lease, and publish ready_for_review.
-next_action: Push the interface checkpoint, complete final hygiene and security checks, then release the PARENT_HOUSEHOLD_UI lease and publish the clean ready_for_review final.
+  - I36 must independently review and integrate exact P12 implementation head 4299c6b828a23fdf79bdc976ab5630df3591ed00 and interface checkpoint f265d163d6007e91fb2a332ebff6f173da81700e.
+  - I36 must disposition registration request P12-registration-001 without weakening the published interface.
+  - C00 must authorize P13 only after exact P12 interface integration.
+next_action: I36 should review and integrate implementation 4299c6b828a23fdf79bdc976ab5630df3591ed00, verify semantic digest 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7, and disposition steward digest 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733.
 requirements:
-  OTV2-PARENT-031: implementation_ready
-  OTV2-PARENT-032: implementation_ready
-  OTV2-PARENT-033: implementation_ready
-  OTV2-PARENT-034: implementation_ready
-  OTV2-PARENT-035: implementation_ready
-  OTV2-PARENT-036: implementation_ready
-  OTV2-PARENT-040: implementation_ready
+  OTV2-PARENT-031: ready_for_review
+  OTV2-PARENT-032: ready_for_review
+  OTV2-PARENT-033: ready_for_review
+  OTV2-PARENT-034: ready_for_review
+  OTV2-PARENT-035: ready_for_review
+  OTV2-PARENT-036: ready_for_review
+  OTV2-PARENT-040: ready_for_review
 acceptance_cases:
   OTV2-PARENT-031-AC01: task_owned_assertions_passed
   OTV2-PARENT-032-AC01: task_owned_assertions_passed
@@ -118,6 +124,18 @@ verification:
       result: passed; all 200 locked blobs, all 15 source-package blobs, and entry-bound digests match
     - command: dependency/claim/writer/effect-lock verification
       result: passed; exact F03/F04/F07 bindings, sole PARENT_HOUSEHOLD_UI lease, and zero effect locks
+    - command: npx vitest run packages/domain/src/portals/parent-household/parent-household.test.ts apps/web/src/server/features/portals/parent-household/service.test.ts apps/web/src/client/app/parent/household/ParentHouseholdWorkspace.test.tsx
+      result: passed; 3 files and 11 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: npx eslint apps/web/src/client/app/parent/household apps/web/src/server/features/portals/parent-household packages/contracts/src/portals/parent-household packages/domain/src/portals/parent-household
+      result: passed
+    - command: npx prettier --check on all 16 P12 changed paths
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2750 repository text files
+    - command: exact start-to-interface changed-path audit and git diff --check
+      result: passed; exactly 16 authorized P12 paths and clean diff hygiene
   known_baseline_failures: []
 external_effects:
   authority: none
