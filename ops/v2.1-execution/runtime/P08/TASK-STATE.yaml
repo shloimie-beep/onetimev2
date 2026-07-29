@@ -7,8 +7,8 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
 branch: codex/v21-p08-family-signup
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-status: claimed
-phase: follow_up_correction
+status: ready_for_review
+phase: follow_up_correction_complete
 claimed_by: codex-p08-worker-60986795
 claim_time: '2026-07-29T02:10:04Z'
 claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
@@ -16,54 +16,68 @@ writer_slot: FAMILY_SIGNUP
 writer_slot_lease_id: 4dce3bb7-4411-4643-a367-d7e43adaabb8
 lease_issued_at: '2026-07-29T02:07:09Z'
 lease_expires_at: '2026-07-29T03:07:09Z'
-last_heartbeat_at: '2026-07-29T02:10:04Z'
-lease_released_at: null
+last_heartbeat_at: '2026-07-29T02:26:07Z'
+lease_released_at: '2026-07-29T02:26:07Z'
 prior_claim_id: a456f914-02cb-4c08-9717-af9709f1948a
 prior_rejected_atomic_claim_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
 prior_ready_for_review_head_sha: 605c659afe488e32114bae57b3751c044301bdca
-controller_authorization_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
-containing_control_authorization_sha: 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101
-containing_control_parent_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
-ready_entry_state_based_on_control_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+controller_authorization_sha: 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101
+claim_acquisition_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+claim_reconciliation_sha: 04ebe46bc1cff1223bdade3379457cf774c0dce1
+reconciliation_acquisition_parent_sha: 765ad933964ce0019895c2133ff10a491b7938a2
 ready_entry_payload_digest: 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430
 claim_mode: resume_existing_branch
-expected_existing_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
-correction_parent_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
-state_based_on_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
-last_implementation_commit_sha: c903d1df6a0c3ee94a700fe62b4e1c0b3c3eeb72
+correction_parent_head_sha: c58b4a65dfbdab52f7be7dddf41875194c4b632c
+correction_implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
+correction_verification_head_sha: 67fb8b74c5109e06fa2829797fed1ffa0ce995d4
+state_based_on_head_sha: 67fb8b74c5109e06fa2829797fed1ffa0ce995d4
+last_implementation_commit_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
 interface_checkpoint:
   required: true
   unlocks:
     - P09
-  status: correction_required
-  prior_implementation_head_sha: c903d1df6a0c3ee94a700fe62b4e1c0b3c3eeb72
-  prior_metadata_head_sha: ca06599ffbe62d7c617235f9e54f5ded57e4b6c7
-  prior_contract_digest: 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
+  status: interface_ready
+  implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
+  metadata_head_sha: 594570798a5af8145d7949ba10572e8b1e644f17
+  semantic_contract_version: 2.0.0
+  contract_digest: 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
+  artifact_sha256: 502bb09dcf4e95ffba49951ca92ff6ae591be2ded7034493269349b73e8965ef
+  supersedes_checkpoint_sha: ca06599ffbe62d7c617235f9e54f5ded57e4b6c7
+  supersedes_contract_digest: 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
 completed_steps:
-  - Confirmed atomic claim 615e124dd49030e3af5e01d94518aea76b6a733e was rejected only because its recorded long-form acquisition SHA did not exist.
-  - Fetched corrected containing authorization 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101 and verified its exact acquisition parent ab5e5cc865be45ef0a71bcec7d71d7df1c787744.
-  - Verified the P08 resume_existing_branch entry, exact current head 615e124dd49030e3af5e01d94518aea76b6a733e, canonical ready digest, task/context/package digests, and unexpired FAMILY_SIGNUP lease.
-  - Verified replacement claim 60986795-c22a-4861-9e98-a93de2c1d22e and zero effect-lock leases.
-  - Seeded this superseding atomic follow-up correction claim in exactly the three P08 task-local runtime files.
+  - Consumed replacement claim 60986795-c22a-4861-9e98-a93de2c1d22e at exact head c58b4a65dfbdab52f7be7dddf41875194c4b632c.
+  - Verified C00 reconciliation 04ebe46bc1cff1223bdade3379457cf774c0dce1, its sole parent 765ad933964ce0019895c2133ff10a491b7938a2, the exact claim, unexpired FAMILY_SIGNUP lease, and zero effect locks.
+  - Published exact Family form fields including password confirmation and separate explicit general-marketing and Parent-newsletter booleans.
+  - Published editable/searchable IANA timezone combobox metadata with browser prefill as suggestion-only and enforced independent server-side IANA validation.
+  - Required exact password confirmation before repository access while excluding confirmation and raw password from canonical persistence and outbox data.
+  - Canonicalized and persisted the two independent optional adult consent choices and carried them in the durable quarantinable outbox without inferring or bundling consent.
+  - Removed P09-owned School command and form details while preserving the exact family|school classification seam.
+  - Added inactive_identity_review so ambiguous post-expiry signup commits inactive local state but blocks Checkout, GHL sync/workflow dispatch, and paid billing pending Admin resolution.
+  - Preserved local login and pre-expiry free access during identity review, with GHL work quarantined for later resolution.
+  - Added negative coverage for invalid IANA zones/raw offsets, password mismatch, missing consent choices, consent replay conflicts, and post-expiry identity-review Checkout denial.
+  - Published and pushed superseding interface checkpoint 594570798a5af8145d7949ba10572e8b1e644f17 at semantic contract version 2.0.0.
+  - Updated migration and registration steward requests without editing migrations, routes, barrels, composers, registries, manifests, lockfiles, or provider state.
+  - Passed 17 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, canonical digest recomputation, and git diff checks.
+  - Re-ran the full unit suite with 566 of 567 passing; the sole failure is the inherited sender-registry count assertion outside P08 ownership.
+  - Released the FAMILY_SIGNUP lease with zero external effects.
 remaining_steps:
-  - Push and report this exact three-file atomic claim checkpoint.
-  - Await C00 reconciliation before modifying product, contract, test, interface-checkpoint, or steward-request files.
-  - After reconciliation, implement only the authorized exact-form, consent, School-seam, and identity-review Checkout corrections.
-  - Republish the superseding interface and steward requests, verify, release the lease, and return to ready_for_review.
-next_action: Push the superseding atomic claim checkpoint, report its exact head and parent, and stop until C00 explicitly reconciles claim 60986795-c22a-4861-9e98-a93de2c1d22e.
+  - C00 reviews and admits the corrected task and semantic-version-2.0.0 interface checkpoint.
+  - The migration and registration stewards consume the two structured requests.
+  - P09 starts only after C00 integrates the superseding interface checkpoint.
+next_action: C00 should review the exact pushed ready-for-review head, reconcile lease release, and admit the superseding 2.0.0 Family interface if accepted.
 requirements:
-  OTV2-SIGNUP-176: implementation_verified_pending_follow_up_correction
-  OTV2-SIGNUP-177: implementation_verified_pending_follow_up_correction
-  OTV2-SIGNUP-179: implementation_verified_pending_follow_up_correction
-  OTV2-SIGNUP-213: implementation_verified_pending_follow_up_correction
-  OTV2-SIGNUP-228: implementation_verified_pending_follow_up_correction
+  OTV2-SIGNUP-176: implemented_and_verified
+  OTV2-SIGNUP-177: implemented_and_verified
+  OTV2-SIGNUP-179: implemented_and_verified
+  OTV2-SIGNUP-213: implemented_and_verified
+  OTV2-SIGNUP-228: implemented_and_verified
 acceptance_cases:
-  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed_pending_follow_up_correction
-  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed_pending_follow_up_correction
-  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed_pending_follow_up_correction
-  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed_pending_follow_up_correction
-  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed_pending_follow_up_correction
-  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed_pending_follow_up_correction
+  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed
+  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed
+  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed
 changed_paths:
   - apps/web/src/client/public/signup/model.test.ts
   - apps/web/src/client/public/signup/model.ts
@@ -83,22 +97,34 @@ changed_paths:
 migrations: []
 steward_requests:
   - request_id: P08-migration-001
-    sha256: df97bdacc1ca40b7ad438304f96f6d78dd160786daf0a29de838654dc7599d8e
+    sha256: d77c51fb84a06a3e8a3e8a0b9d28f64f1aea5223711afa23fef656e4c2617749
   - request_id: P08-registration-001
-    sha256: f23ed447b12d7728ebd57f5e13888cda54536927364fff8725c20ce95c8c98a0
+    sha256: 5958df286bf5a8213b4431709084b7fabe05ae8d6fdb1c2aa08d97db4f35409c
 verification:
   commands_run:
-    - command: exact local and remote branch head comparison
-      result: passed; both equal 615e124dd49030e3af5e01d94518aea76b6a733e
-    - command: corrected containing authorization and exact acquisition verification
-      result: passed; 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101 has sole parent ab5e5cc865be45ef0a71bcec7d71d7df1c787744
-    - command: canonical ready-entry and lease inspection
-      result: passed; exact claim, ready digest, unexpired lease, and zero effect locks
+    - command: focused P08 Vitest over contract, domain, server, and client
+      result: passed; 4 files and 17 assertions
+    - command: targeted ESLint over all P08 TypeScript artifacts
+      result: passed
+    - command: npm run typecheck
+      result: passed
+    - command: focused Prettier check over all changed P08 artifacts
+      result: passed
+    - command: npm run secret:scan
+      result: passed; 2720 repository text files scanned
+    - command: canonical interface digest recomputation
+      result: passed; 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
+    - command: npm run unit
+      result: 566 passed, 1 inherited out-of-scope registry-count assertion failed
+    - command: git diff --check
+      result: passed
+  known_baseline_failures:
+    - tests/unit/highlevel/sender-registry-v1-1.test.ts expects 19 automation assets but the integrated registry contains 22.
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers:
-  - C00 must reconcile the superseding atomic follow-up correction claim before any non-runtime-file correction work.
-out_of_scope_findings: []
+blockers: []
+out_of_scope_findings:
+  - P08 does not own the sender-registry test or integrated registry count; its full-suite failure remains for the registry steward.

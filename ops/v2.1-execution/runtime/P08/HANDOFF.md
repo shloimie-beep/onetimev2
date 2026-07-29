@@ -1,54 +1,89 @@
-# P08 Superseding Atomic Follow-up Correction Claim
+# P08 Exact Family Signup Correction — Ready for Review
 
-## Identity
+## Exact identity
 
 - Branch: `codex/v21-p08-family-signup`
-- Exact correction parent and expected existing head:
-  `615e124dd49030e3af5e01d94518aea76b6a733e`
-- Rejected metadata-only claim:
-  `615e124dd49030e3af5e01d94518aea76b6a733e`
-- Rejected follow-up claim: `a456f914-02cb-4c08-9717-af9709f1948a`
-- Replacement follow-up claim:
-  `60986795-c22a-4861-9e98-a93de2c1d22e`
-- Writer: `codex-p08-worker-60986795`
-- Containing control authorization:
-  `0233631c59c7d9c6845e35e6c4d35e6bd7b3a101`
-- Exact ready-entry acquisition:
-  `ab5e5cc865be45ef0a71bcec7d71d7df1c787744`
-- Canonical ready digest:
-  `2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430`
-- FAMILY_SIGNUP lease:
-  `4dce3bb7-4411-4643-a367-d7e43adaabb8`
-- Lease issued: `2026-07-29T02:07:09Z`
-- Lease expires: `2026-07-29T03:07:09Z`
+- Replacement claim: `60986795-c22a-4861-9e98-a93de2c1d22e`
+- Atomic claim head: `c58b4a65dfbdab52f7be7dddf41875194c4b632c`
+- C00 reconciliation: `04ebe46bc1cff1223bdade3379457cf774c0dce1`
+- Reconciliation sole parent: `765ad933964ce0019895c2133ff10a491b7938a2`
+- Correction implementation: `8ab2c55c56e93fa343e6e50dd70a36ef193bd73e`
+- Verification/steward request head:
+  `67fb8b74c5109e06fa2829797fed1ffa0ce995d4`
+- FAMILY_SIGNUP lease: `4dce3bb7-4411-4643-a367-d7e43adaabb8`
+- Lease released: `2026-07-29T02:26:07Z`
 - External effects: authority none; attempted 0; succeeded 0; reconciled 0
 
-## This checkpoint
+## Corrected behavior
 
-This commit supersedes the rejected metadata-only claim and consumes only the
-replacement P08 follow-up correction claim. It changes exactly
-`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
+The Family form and command now contain the exact UI-010.2 surface:
 
-No product, contract, test, interface checkpoint, steward request, migration,
-route, registration, provider, or external-effect change is included.
+- adult first and last name;
+- normalized email;
+- password and exact password confirmation;
+- editable/searchable IANA household timezone with browser detection used only
+  as a suggestion;
+- required Terms and privacy acceptance;
+- separate optional general-marketing and Parent-newsletter booleans, both
+  unchecked by default and never inferred.
 
-## Authorized later scope
+The server independently rejects non-IANA identifiers, raw offsets,
+confirmation mismatch, missing or non-boolean consent choices, and any extra
+payload field before repository access. Password confirmation is not persisted.
+The canonical request and durable outbox retain the two exact consent choices.
 
-After C00 reconciliation only:
+P09-owned School command and form details were removed. P08 preserves only the
+exact mutually exclusive `family | school` classification seam.
 
-- require server-side IANA timezone validation and editable/searchable IANA
-  timezone form metadata;
-- require exact Family password confirmation;
-- model separate optional general-marketing and Parent-newsletter booleans,
-  never infer consent, and bind them into canonical request and persistence;
-- remove P09-owned School command and form details while preserving the
-  `family | school` branch seam;
-- block post-expiry Checkout and GHL workflow when identity state is
-  `identity_review`, pending Admin resolution;
-- add negative tests and republish the superseding contract, interface digest,
-  and steward requests.
+An ambiguous GHL match still permits local authentication and pre-expiry free
+access. At or after expiry it now produces `inactive_identity_review`,
+`checkout_required: false`, and `next_action: identity_review`; GHL
+sync/workflow dispatch and GHL-hosted paid Checkout remain quarantined until
+Admin resolution.
 
-## Exact next action
+## Superseding interface
 
-Push and report this three-file atomic claim checkpoint. Then stop until C00
-reconciles claim `60986795-c22a-4861-9e98-a93de2c1d22e`.
+- Contract version: `2.0.0`
+- Contract implementation:
+  `8ab2c55c56e93fa343e6e50dd70a36ef193bd73e`
+- Metadata checkpoint:
+  `594570798a5af8145d7949ba10572e8b1e644f17`
+- Contract digest:
+  `32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43`
+- Export artifact SHA-256:
+  `502bb09dcf4e95ffba49951ca92ff6ae591be2ded7034493269349b73e8965ef`
+- Supersedes checkpoint:
+  `ca06599ffbe62d7c617235f9e54f5ded57e4b6c7`
+- Supersedes contract digest:
+  `922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c`
+
+P09 must consume only this superseding interface after C00 integration.
+
+## Verification
+
+- Focused P08 Vitest: 4 files, 17 assertions passed.
+- Targeted ESLint: passed.
+- Repository TypeScript typecheck: passed.
+- Focused Prettier and `git diff --check`: passed.
+- Secret scan: passed across 2720 repository text files.
+- Full unit suite: 566 passed, 1 inherited out-of-scope failure.
+
+The sole full-suite failure is
+`tests/unit/highlevel/sender-registry-v1-1.test.ts`, which expects 19 automation
+assets while the integrated registry contains 22. P08 owns neither file.
+
+## Steward requests
+
+- Migration request SHA-256:
+  `d77c51fb84a06a3e8a3e8a0b9d28f64f1aea5223711afa23fef656e4c2617749`
+- Registration request SHA-256:
+  `5958df286bf5a8213b4431709084b7fabe05ae8d6fdb1c2aa08d97db4f35409c`
+
+No migration, route, barrel, composer, shared registry, manifest, lockfile, or
+provider state was edited.
+
+## C00 action
+
+Review the exact pushed ready-for-review head, reconcile the lease release, and
+admit the corrected P08 implementation and semantic-version-2.0.0 interface if
+accepted.
