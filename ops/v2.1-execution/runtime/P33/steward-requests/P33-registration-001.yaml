@@ -1,0 +1,40 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P33-registration-001
+task_id: P33
+kind: registration
+requirement_ids:
+  - OTV2-OPS-166
+  - OTV2-OPS-171
+  - OTV2-OPS-172
+  - OTV2-OPS-173
+acceptance_case_ids:
+  - OTV2-OPS-166-AC01
+  - OTV2-OPS-171-AC01
+  - OTV2-OPS-172-AC01
+  - OTV2-OPS-173-AC01
+rationale: >-
+  P33 owns registration-neutral operations modules but cannot edit the central
+  web or worker composers or root package barrels.
+desired_semantic_change: >-
+  Mount the protected operations router behind the existing exact Admin/Ops
+  authorization boundary, register the worker heartbeat publisher in the
+  central worker lifecycle, and export the v2.1 observability root without
+  weakening any existing session, CSRF, rate-limit, or trace boundary.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/observability/v21/index.ts is directly importable; any root barrel export must preserve semantic contract version 1.0.0.
+  - apps/web central composer mounts createOperationsDiagnosticsRouter below an internal Admin/Ops-only path.
+  - authorization failure remains concealed as 404; diagnostics are never public readiness or authorization inputs.
+  - apps/worker central lifecycle calls publishOperationsHeartbeat only after exact startup identity validation.
+  - heartbeat persistence or transport must retain only safe identity hashes, state, readiness codes, time, tier, and verification environment.
+compatibility_assumptions:
+  - Web and worker use the same immutable application_source_sha and the role-specific candidate artifact digest.
+  - Existing session middleware supplies the Admin/Ops decision; request bodies and headers cannot assert the role.
+  - Central registration does not grant provider, database-mutation, retry, or deployment authority.
+verification_performed:
+  - npm run typecheck
+  - 19 focused runtime identity, health, leakage, protected-router, and heartbeat assertions
+conflicts_or_risks:
+  - Never mount the diagnostics router on a public health/readiness path.
+  - Never publish raw exceptions, headers, cookies, bearer material, provider URLs, or PII in a heartbeat.
+contains_secret_or_private_data: false

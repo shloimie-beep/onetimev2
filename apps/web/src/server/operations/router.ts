@@ -4,6 +4,7 @@ import {
   buildOperationsHealthSnapshot,
   evaluateOperationsAlerts,
   evaluateRuntimeAgreement,
+  redactOperationalData,
   scanOperationalLeakage,
   type CandidateIdentity,
   type OperationsHealthInput,
@@ -36,12 +37,14 @@ export function createOperationsDiagnosticsRouter(
     protectedOperation(ports, async (_request, response) => {
       const runtimes = await ports.readRuntimes();
       const agreement = evaluateRuntimeAgreement({ candidate: ports.candidate, runtimes });
-      response.status(agreement.ok ? 200 : 503).json({
-        schema_version: OPERATIONS_CONTRACT_VERSION,
-        candidate: ports.candidate,
-        runtimes,
-        agreement,
-      });
+      response.status(agreement.ok ? 200 : 503).json(
+        redactOperationalData({
+          schema_version: OPERATIONS_CONTRACT_VERSION,
+          candidate: ports.candidate,
+          runtimes,
+          agreement,
+        }),
+      );
     }),
   );
 
@@ -51,7 +54,7 @@ export function createOperationsDiagnosticsRouter(
       const snapshot = await readSnapshot(ports);
       response
         .status(snapshot.status === 'sev1' || snapshot.status === 'sev2' ? 503 : 200)
-        .json(snapshot);
+        .json(redactOperationalData(snapshot));
     }),
   );
 
@@ -59,11 +62,13 @@ export function createOperationsDiagnosticsRouter(
     '/alerts',
     protectedOperation(ports, async (_request, response) => {
       const snapshot = await readSnapshot(ports);
-      response.status(200).json({
-        schema_version: OPERATIONS_CONTRACT_VERSION,
-        generated_at: snapshot.generated_at,
-        alerts: evaluateOperationsAlerts(snapshot),
-      });
+      response.status(200).json(
+        redactOperationalData({
+          schema_version: OPERATIONS_CONTRACT_VERSION,
+          generated_at: snapshot.generated_at,
+          alerts: evaluateOperationsAlerts(snapshot),
+        }),
+      );
     }),
   );
 
@@ -76,9 +81,10 @@ async function readSnapshot(ports: OperationsDiagnosticsPorts) {
     ports.readHealthObservations(),
     ports.readDiagnosticPayloads?.() ?? Promise.resolve([]),
   ]);
-  const leakageIssues = diagnosticPayloads.flatMap(
-    (payload): readonly OperationsIssue[] => scanOperationalLeakage(payload).issues,
-  );
+  const leakageIssues = [
+    { candidate: ports.candidate, runtimes, observations },
+    ...diagnosticPayloads,
+  ].flatMap((payload): readonly OperationsIssue[] => scanOperationalLeakage(payload).issues);
   return buildOperationsHealthSnapshot({
     generated_at: (ports.now?.() ?? new Date()).toISOString(),
     candidate: ports.candidate,
