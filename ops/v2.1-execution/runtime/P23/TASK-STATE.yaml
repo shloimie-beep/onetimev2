@@ -28,35 +28,35 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
-claim_mode: create_new_branch
-claimed_by: codex-p23-worker-68340416
-claim_time: '2026-07-29T06:34:40Z'
-claim_id: 68340416-7e06-4986-a125-59d81b500a0b
+status: claimed
+phase: correction
+claim_mode: resume_existing_branch
+claimed_by: codex-p23-worker-29e8b1d9
+claim_time: '2026-07-29T07:29:53Z'
+claim_id: 29e8b1d9-8769-479d-8a7a-df26137f185a
 writer_slot_leases:
   - slot: STUDENT_NOTIFICATIONS
-    lease_id: 45041adc-a69f-4065-a179-b94473967c94
-    lease_issued_at: '2026-07-29T06:26:07Z'
-    lease_expires_at: '2026-07-29T07:26:07Z'
-    state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
-    phase_scope: P23_atomic_claim_only
-    reconciled_resume_scope: P23_student_notifications_implementation
-    reconciled_resume_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
-    lease_released_at: '2026-07-29T06:58:11Z'
-    state: released
-lease_expires_at: '2026-07-29T07:26:07Z'
-lease_released_at: '2026-07-29T06:58:11Z'
-last_heartbeat_at: '2026-07-29T06:58:11Z'
-controller_authorization_sha: 9f1609933ceeaa315115a49d8612276002e33330
-claim_reconciled_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
-claim_reconciled_control_parent_sha: 98cde826b118f2b8162e29a7761bf9d0f9fcf285
-atomic_claim_head_sha: 05ef606022d260d11d56d31985a051d7b9013010
-ready_entry_state_based_on_control_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
-ready_entry_payload_digest: b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f
-phase_scope: P23_student_notifications_implementation_only
-state_based_on_head_sha: c1dc94bedac647dab9e1136bd0971cb3d6c57456
+    lease_id: 489df25a-c3ed-4b34-8bb8-ddb6e8d88b99
+    lease_issued_at: '2026-07-29T07:21:29Z'
+    lease_expires_at: '2026-07-29T08:21:29Z'
+    state_based_on_control_head_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
+    phase_scope: P23_atomic_claim_correction_only
+    lease_released_at: null
+    state: active
+lease_expires_at: '2026-07-29T08:21:29Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T07:29:53Z'
+controller_authorization_sha: a96477209a5dc6e32b43460eb775bd99f5cba1fc
+ready_entry_state_based_on_control_head_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
+ready_entry_payload_digest: 2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97
+phase_scope: P23_atomic_claim_correction_only
+state_based_on_head_sha: 39b050949a0874a1ea397c6c3f3420eb4fa19ccc
 last_implementation_commit_sha: c1dc94bedac647dab9e1136bd0971cb3d6c57456
+prior_claim_id: 68340416-7e06-4986-a125-59d81b500a0b
+prior_atomic_claim_head_sha: 05ef606022d260d11d56d31985a051d7b9013010
+prior_claim_reconciled_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
+rejected_final_head_sha: 39b050949a0874a1ea397c6c3f3420eb4fa19ccc
+rejection_status: correction_required_before_admission
 implementation_artifact_digest: 804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
@@ -104,18 +104,22 @@ completed_steps:
   - Reproduced all 13 raw Git-blob hashes, implementation aggregate 804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580, and both request payload and aggregate digests.
   - Passed 3 focused files and 13 positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact owned-path and diff hygiene checks, and secret scan across 2876 text files.
   - Released claim 68340416-7e06-4986-a125-59d81b500a0b and STUDENT_NOTIFICATIONS lease 45041adc-a69f-4065-a179-b94473967c94 before expiry with no external effect attempted.
+  - C00 rejected final 39b050949a0874a1ea397c6c3f3420eb4fa19ccc from admission after independent direct probes found canonical-route, cancellation ordering, concurrent-version, indefinite-retention, runtime-private-copy, locked-copy, sound-consumer, timestamp, mark-one-idempotency, and accessibility defects.
+  - Verified fresh containing correction authorization a96477209a5dc6e32b43460eb775bd99f5cba1fc, sole acquisition parent 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1, exact rejected remote head 39b050949a0874a1ea397c6c3f3420eb4fa19ccc, fresh claim 29e8b1d9-8769-479d-8a7a-df26137f185a, sole STUDENT_NOTIFICATIONS lease 489df25a-c3ed-4b34-8bb8-ddb6e8d88b99, and zero effect locks.
+  - Recomputed the 2766-byte canonical recursively key-sorted READY preimage and matched digest 2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97.
+  - Claimed only the three-file correction checkpoint; no product, test, request, provider, send, migration, registration, steward, or external-effect work was performed.
 remaining_steps:
-  - Commit and normally push this exact three-runtime-file final metadata checkpoint.
-  - C00 and I36 must independently verify the implementation, artifact/request digests, owned-path scope, and zero-effect boundary before integration.
-  - F02 and I36 may disposition the immutable migration and registration requests under their own authority; P23 must not apply them.
-next_action: C00 and I36 should review exact implementation head c1dc94bedac647dab9e1136bd0971cb3d6c57456, reproduce artifact digest 804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580 and request aggregate 144e8ebba8926bb2bb3bc8c64f5923829cda17e3cf1f0816fdbe685e0afc7511, and integrate only after focused invariants pass.
+  - Commit, normally push, and remote-verify this exact three-runtime-file correction claim.
+  - C00 must reconcile the exact pushed correction-claim head before any product, test, or request change.
+  - Only after explicit reconciliation and bounded continuation authority may P23 correct the recorded semantic defects, add direct negative/accessibility tests, refresh exact digests, release the lease, and return ready_for_review.
+next_action: Stop after pushing and remote-verifying this exact three-file correction claim; wait for C00 reconciliation before modifying product, tests, requests, or any other file.
 requirements:
-  OTV2-NOTIFY-203: implementation_verified
-  OTV2-NOTIFY-237: implementation_verified
+  OTV2-NOTIFY-203: correction_claimed
+  OTV2-NOTIFY-237: correction_claimed
 acceptance_cases:
-  OTV2-NOTIFY-203-AC01: task_owned_assertions_passed
-  OTV2-NOTIFY-237-CATEGORY-LIFETIME: task_owned_assertions_passed
-  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: task_owned_assertions_passed
+  OTV2-NOTIFY-203-AC01: rejected_requires_correction
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: rejected_requires_correction
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: rejected_requires_correction
 changed_paths:
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
@@ -167,6 +171,10 @@ verification:
       result: passed across 2876 repository text files
     - command: npm run brand:check before visible UI work
       result: inherited out-of-scope baseline failure at scripts/ops/validate-ot-launch-governance.ts; P23 adds no raw colors, styles, or brand primitives
+    - command: fresh correction controller/acquisition/head/claim/lease/effect verification
+      result: passed; exact containing authorization a9647720, acquisition 78626d9b, rejected head 39b05094, fresh claim and sole writer lease, and zero effect locks
+    - command: canonical correction READY-entry digest recomputation
+      result: passed; exact 2766-byte preimage and digest 2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97
   known_baseline_failures:
     - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

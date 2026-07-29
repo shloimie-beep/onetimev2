@@ -1,88 +1,59 @@
-# P23 Ready-for-Review Handoff
+# P23 Atomic Correction-Claim Handoff
 
-## Identity
+## Exact identity
 
 - Branch: `codex/v21-p23-student-notifications`
-- Authorized start:
-  `cecc1c0dc6ff57562e5d89dd731289d860086bf7`
-- Atomic claim:
-  `05ef606022d260d11d56d31985a051d7b9013010`
-- C00 reconciliation:
-  `8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84`
-- Implementation and request checkpoint:
+- Exact rejected final and correction-claim parent:
+  `39b050949a0874a1ea397c6c3f3420eb4fa19ccc`
+- Prior implementation checkpoint:
   `c1dc94bedac647dab9e1136bd0971cb3d6c57456`
-- Final ready-for-review head: derive with `git rev-parse HEAD`; C00 records
-  the exact observed remote head.
-- Claim: `68340416-7e06-4986-a125-59d81b500a0b`
+- Containing correction authorization:
+  `a96477209a5dc6e32b43460eb775bd99f5cba1fc`
+- Sole acquisition parent:
+  `78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1`
+- Correction claim: `29e8b1d9-8769-479d-8a7a-df26137f185a`
+- Writer: `codex-p23-worker-29e8b1d9`
 - STUDENT_NOTIFICATIONS lease:
-  `45041adc-a69f-4065-a179-b94473967c94`
-- Lease released: `2026-07-29T06:58:11Z`, before
-  `2026-07-29T07:26:07Z`.
+  `489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`
+- Lease issued: `2026-07-29T07:21:29Z`
+- Lease expiry: `2026-07-29T08:21:29Z`
+- Canonical READY digest:
+  `2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97`
+- Atomic correction-claim head: derive with `git rev-parse HEAD`; C00 records
+  the exact observed remote head.
 
-## Implemented behavior
+The recursively key-sorted READY JSON preimage is 2766 UTF-8 bytes and
+independently hashes to the recorded digest.
 
-- All eight WNC-8 Student categories render the locked titles, bodies, action
-  labels, and category lifetimes.
-- The exact event type, source entity, recipient Student, and source version
-  tuple produces the stable dedupe key and notification identity. Exact retry
-  replays; a later version supersedes the prior action; cancellation
-  supersedes reminders and schedule changes.
-- Active notices support Unread, Read, and All. Mark-one and mark-all-read are
-  persistent and idempotent. Expired notices remain only under All for 30 days
-  with disabled actions and `No longer available`, then archive.
-- All actions are internal Student routes. The server rechecks recipient
-  ownership, current lifetime, supersession, and source authorization at open
-  time and returns the same neutral unavailable decision after revocation.
-- Private question/support bodies, provider URLs, markup, cross-Student scope,
-  unsafe routes, and announcement lifetimes over 90 days fail closed.
-- Sound preference is persisted and defaults off. The cue gate permits only a
-  newly created unread notice while the portal is foregrounded, browser
-  interaction permits audio, and the visual notice is already rendered.
-- The accessible controlled notification center exposes polite unread status,
-  filter state, read controls, disabled stale actions, and the explicit
-  default-off sound preference without background push or provider behavior.
+## Rejection record
 
-## Immutable digests
+C00 rejected final `39b050949a0874a1ea397c6c3f3420eb4fa19ccc`
+despite its valid ancestry, 18-path mechanical scope, 13 focused tests, and
+passing typecheck. Independent source review and direct probes identified:
 
-- Implementation head:
-  `c1dc94bedac647dab9e1136bd0971cb3d6c57456`
-- Thirteen-artifact raw Git-blob aggregate:
-  `804943c420d2a64e569620642c15d51ce239988bb5104cefbd6f317b51490580`
-- `P23-migration-001`:
-  `ef08dd14bca405a89b180d1d3dcedd5b97f75d8eec76584fbc2c890c5ca23aa3`
-- `P23-registration-001`:
-  `2b3336ee8ac935344d9bd1d561cb35a1013ee9fb40766e23ebfd19b8a9ac9131`
-- Steward-request aggregate:
-  `144e8ebba8926bb2bb3bc8c64f5923829cda17e3cf1f0816fdbe685e0afc7511`
+- generated and accepted routes do not use canonical `/app` prefixes;
+- cancellation-first followed by a stale reminder can leave both active;
+- concurrent different source versions can both remain active;
+- superseded indefinite notices do not reach archive;
+- runtime status text is not constrained against private-copy leakage;
+- no UI audible-cue consumer exists;
+- locked Rabbi Eli copy remains mutable;
+- the UI renders raw ISO timestamps;
+- mark-one can perform repeat writes;
+- accessibility proof is incomplete.
 
-The artifact aggregate is SHA-256 over sorted UTF-8
-`path=raw-Git-blob-SHA-256` lines joined by LF with no final newline. The
-request aggregate uses the same path/payload-digest construction.
+This handoff records the rejection only. It does not implement or authorize a
+correction.
 
-## Verification
+## Atomic scope and stop
 
-- Focused Vitest: 3 files and 13 tests passed.
-- Workspace TypeScript typecheck: passed.
-- Focused ESLint and Prettier: passed.
-- Exact owned-path audit and diff hygiene: passed.
-- Secret scan: passed across 2876 repository text files.
-- The prescribed pre-UI brand check reached only the inherited out-of-scope
-  raw-color failure in `scripts/ops/validate-ot-launch-governance.ts`; P23
-  adds no color, style, token, or brand primitive.
+This checkpoint changes exactly P23 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. Product, tests, immutable requests, migrations,
+registrations, stewards, providers, sends, and external effects remain
+byte-identical and untouched.
 
-## Steward boundary
-
-`P23-migration-001` asks F02 to allocate the forward-only schema migration.
-`P23-registration-001` asks I36 to export and mount the isolated roots. Neither
-request was applied. No migration, central composer, registration, root barrel,
-package file, provider, sender, or external effect was changed.
-
-## Exact next action
-
-C00 and I36 should independently verify the final remote head, exact
-implementation ancestry, 18-path scope, 13 artifact hashes, two immutable
-request hashes, focused checks, released lease, and zero effects before
-integration. P23 must not resume without new exact authority.
+C00 must reconcile the exact pushed correction-claim head before P23 changes
+any other file. Stop after normal push and remote verification.
 
 ## External effects
 
