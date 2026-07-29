@@ -998,3 +998,25 @@ P23 for atomic new-branch claims. P11 uses branch
 files and stop for C00 reconciliation. Effect locks are empty; migrations,
 central registrations, steward applications, providers, and all external
 effects remain unauthorized.
+
+The first P11/P23 READY entries are withdrawn because their F05 task-packet
+binding was a malformed 65-character value ending `ec3e`; the immutable F05
+packet SHA-256 is the 64-character
+`807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3`.
+P23 stopped before creating a branch. P11's notice raced its first push:
+remote head `396bf74d855f294c744cf3eaa7d30c3f0e26e60a` has sole parent
+`cecc1c0d`, exactly three P11 runtime files, the invalid dependency binding,
+and zero effects. That head is superseded, not admitted.
+
+C00 issued fresh corrected authority. P11 must resume exact `396bf74d` only
+to correct its three runtime files under claim
+`31da6bdb-f7ce-46f1-96a4-a6a78853d9eb`, ADMIN_OPERATIONS_UI lease
+`0e828d7b-9ee3-4cd0-919d-da27022ba243`, and canonical ready digest
+`1f887010e21ae02c218a043d8d1892307bbff7da16bf9b1b2f6f7ae1d049efb3`.
+P23 may create its branch from `cecc1c0d` under claim
+`68340416-7e06-4986-a125-59d81b500a0b`, STUDENT_NOTIFICATIONS lease
+`45041adc-a69f-4065-a179-b94473967c94`, and canonical digest
+`b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f`.
+Both entries bind acquisition `2dc1ffa0`, the corrected immutable F05 digest,
+fresh one-hour leases, and zero effect locks. Both workers must stop again
+after exact three-runtime-file pushes.

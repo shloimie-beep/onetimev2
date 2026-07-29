@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-0dfb84b1
-claim_time: '2026-07-29T06:13:11Z'
-claim_id: 0dfb84b1-8691-4773-afb9-610df9d0744f
-lease_expires_at: '2026-07-29T06:28:11Z'
-last_heartbeat_at: '2026-07-29T06:20:00Z'
-controller_authorization_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+claimed_by: codex-c00-orchestrator-032edeb9
+claim_time: '2026-07-29T06:26:07Z'
+claim_id: 032edeb9-cd47-493a-952c-3c0cd92b6a66
+lease_expires_at: '2026-07-29T06:41:07Z'
+last_heartbeat_at: '2026-07-29T06:29:15Z'
+controller_authorization_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
 ready_entry_payload_digest: null
-state_based_on_head_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+state_based_on_head_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -251,8 +251,12 @@ completed_steps:
 - cleared the completed merge queue and recorded P13, P25, and P26 integrated at exact release cecc1c0d without applying P13's assigned steward requests
 - independently audited planned P09, P11, P21, P23, and P24 as dependency-valid from cecc1c0d with absent branches, pairwise-disjoint writer slots and owned paths, and no effect authority
 - authorized only P11 admin operations and P23 student notifications for new-branch atomic claims from cecc1c0d under disjoint ADMIN_OPERATIONS_UI and STUDENT_NOTIFICATIONS leases; P09, P21, and P24 remain planned
+- rejected the first P11/P23 READY entries before product work because their F05 task-packet binding was malformed at 65 characters instead of the immutable 64-character SHA-256 ending ec3
+- verified P23 created no branch, file, commit, or effect under the invalid authorization
+- independently verified P11's already-raced remote head 396bf74d has sole parent cecc1c0d, exactly three P11 runtime files, the invalid embedded F05 digest, clean remote state, and zero effects; it is superseded rather than admitted
+- issued a fresh P11 resume-existing metadata-correction claim from exact 396bf74d and a fresh P23 new-branch claim from cecc1c0d, both with the corrected immutable F05 digest, fresh leases, canonical ready digests, and zero effect authority
 remaining_steps: []
-next_action: P11 and P23 publish only their exact three-runtime-file atomic new-branch claims from settled integration head cecc1c0d, then stop for C00 reconciliation; all provider actions, steward applications, migrations, registrations, and external effects remain unauthorized.
+next_action: P11 publishes only a three-runtime-file metadata correction from invalid narrow head 396bf74d while P23 publishes only its three-runtime-file atomic new-branch claim from cecc1c0d; both stop for C00 reconciliation and all effects remain unauthorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -260,12 +264,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+  current_control_parent_sha: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 0dfb84b1-8691-4773-afb9-610df9d0744f
-      observed_head: 7f8925e2fb60e80eb6eceb7f5baac8981ce4be56
+      claim_id: 032edeb9-cd47-493a-952c-3c0cd92b6a66
+      observed_head: 2dc1ffa0f4c3a2de22cfd8660571a355cda0b928
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -444,11 +448,11 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_44fd5363
     P11:
       branch: codex/v21-p11-admin-operations
-      claim_id: 2a221efd-b827-4961-a293-0abb77998260
-      observed_head: null
+      claim_id: 31da6bdb-f7ce-46f1-96a4-a6a78853d9eb
+      observed_head: 396bf74d855f294c744cf3eaa7d30c3f0e26e60a
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      lease_expires_at: '2026-07-29T07:16:35Z'
-      scheduling_state: atomic_new_branch_claim_authorized
+      lease_expires_at: '2026-07-29T07:26:07Z'
+      scheduling_state: invalid_atomic_claim_superseded_metadata_correction_authorized
     P13:
       branch: codex/v21-p13-parent-summary
       claim_id: null
@@ -465,10 +469,10 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_44fd5363
     P23:
       branch: codex/v21-p23-student-notifications
-      claim_id: 88e6e954-c36e-41eb-9bc8-bb8a1f6bfeee
+      claim_id: 68340416-7e06-4986-a125-59d81b500a0b
       observed_head: null
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      lease_expires_at: '2026-07-29T07:16:35Z'
+      lease_expires_at: '2026-07-29T07:26:07Z'
       scheduling_state: atomic_new_branch_claim_authorized
     P33:
       branch: codex/v21-p33-runtime-operations
@@ -687,10 +691,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: ab58c997540d9d020b9c98459e2846747bed0e386480514414d473b389e8436f
-    control_lease: bcae698044c2e94cce7ea11b8e466585d5738fad310cd9226110d9c5987d3ae3
-    task_registry: 6c1c7ea095171f0772f393aeaee9be23eebedc055da9455816601216bcae7858
-    ready_queue: 95938d92ff0c565f178dfda59475c7ca0b924ba79f5dcbed0ffd2b02a9c75d89
+    control_state: 327182d29ffb85dd0ef2baea5de1ec29f5333c1f55eae10d34ea28507705f30e
+    control_lease: 32baa2f82523ead7cc26360a7aa432f17d4128362bc5d7dfe1e781fafca2610f
+    task_registry: 9b541756e7bb6b939196b27e7abf285d75af6528faba526d80b03bd1b951bc91
+    ready_queue: 4b3ce594f2c10010b46414902474c14e75577878723fdb353b471867c61c8eba
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -804,6 +808,10 @@ verification:
   - dependency, branch-absence, packet/context/prompt, writer-scope, and zero-effect frontier audits for P09/P11/P21/P23/P24: passed
   - canonical P11 and P23 ready-entry digests ac1a4f87/8fd1383b against acquisition 7f8925e2 and exact start cecc1c0d: passed
   - completed merge queue clearance, P13/P25/P26 integration evidence, P11/P23 atomic authorization, released C00 lease, and control raw SHA-256 bindings: passed
+  - invalid 65-character F05 task-packet binding in first P11/P23 READY entries: detected and withdrawn before any product work
+  - P23 branch absence and P11 396bf74d sole-parent ancestry, exact three-runtime-file scope, malformed embedded binding, clean remote state, and zero effects: passed
+  - canonical corrected P11 resume and P23 new-branch ready digests 1f887010/b0598496 against acquisition 2dc1ffa0: passed
+  - fresh claim/lease supersession, corrected registry/READY bindings, released C00 lease, and control raw SHA-256 bindings: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

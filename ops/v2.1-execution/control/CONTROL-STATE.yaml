@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: P11 and P23 publish only their exact three-runtime-file atomic new-branch claims from settled integration head cecc1c0d, then stop for C00 reconciliation; all provider actions, steward applications, migrations, registrations, and external effects remain unauthorized.
+next_action: P11 publishes only a three-runtime-file metadata correction from invalid narrow head 396bf74d while P23 publishes only its three-runtime-file atomic new-branch claim from cecc1c0d; both stop for C00 reconciliation and all effects remain unauthorized.
 authority_note: Only C00 updates this global control state.

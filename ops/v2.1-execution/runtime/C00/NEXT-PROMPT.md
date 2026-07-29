@@ -722,3 +722,24 @@ Each must change only its own `TASK-STATE.yaml`, `HANDOFF.md`, and
 product work. No effect lock is granted. Do not edit migrations, central
 composers or registrations, apply steward requests, call providers, send
 notifications, or cause any external effect. P09, P21, and P24 remain planned.
+
+Withdraw the prior P11/P23 READY digests `ac1a4f87` and `8fd1383b`; their F05
+task-packet binding was malformed. The correct F05 digest ends `ec3`, not
+`ec3e`.
+
+For P11, resume exact existing head
+`396bf74d855f294c744cf3eaa7d30c3f0e26e60a` only for a metadata correction
+under claim `31da6bdb-f7ce-46f1-96a4-a6a78853d9eb`, lease
+`0e828d7b-9ee3-4cd0-919d-da27022ba243`, acquisition `2dc1ffa0`, and ready
+digest `1f887010e21ae02c218a043d8d1892307bbff7da16bf9b1b2f6f7ae1d049efb3`.
+Change exactly the three P11 runtime files, replace the malformed F05 digest
+with `807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3`,
+bind the fresh claim/lease/authorization, push, verify, and stop. No product
+work is authorized.
+
+For P23, create `codex/v21-p23-student-notifications` from exact `cecc1c0d`
+under fresh claim `68340416-7e06-4986-a125-59d81b500a0b`, lease
+`45041adc-a69f-4065-a179-b94473967c94`, acquisition `2dc1ffa0`, and ready
+digest `b0598496f6d52eb63e801cb0ac7741344256ff2dd1481916ab00c41e2b9b694f`.
+Use the corrected F05 digest, change exactly the three P23 runtime files,
+push, verify, and stop. Effects remain `0/0/0`.
