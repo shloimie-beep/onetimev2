@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-2114ad21
-claim_time: '2026-07-28T23:51:02Z'
-claim_id: 2114ad21-aab7-436a-b3f0-b932424687ac
-lease_expires_at: '2026-07-28T23:56:00Z'
-last_heartbeat_at: '2026-07-28T23:56:00Z'
-controller_authorization_sha: 32c9ef6a0738f0a4fa038f1212ff7019e19992f1
+claimed_by: codex-c00-orchestrator-3d8fe32b
+claim_time: '2026-07-28T23:58:06Z'
+claim_id: 3d8fe32b-09e1-4c90-b7f3-08812ee20106
+lease_expires_at: '2026-07-29T00:02:00Z'
+last_heartbeat_at: '2026-07-29T00:02:00Z'
+controller_authorization_sha: 9ebea9f2a7fc98447d880417f683f20cb964560f
 ready_entry_payload_digest: null
-state_based_on_head_sha: 32c9ef6a0738f0a4fa038f1212ff7019e19992f1
+state_based_on_head_sha: 9ebea9f2a7fc98447d880417f683f20cb964560f
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -136,8 +136,10 @@ completed_steps:
 - cross-audited P29 final 15dc7c87 and rejected admission because approval/digest gates fail open for most workflows, traceability IDs are malformed, OT-01 omits the signup projection, and OT-10 lacks explicit approval/readback enforcement
 - cross-audited P30 final 337baba3 and rejected admission because OT-15 step 2/3 copy is not canonical or approval-bound, OT-16 accepts noncanonical dedupe IDs, and paid/School eligibility is not refreshed before delivery
 - issued resume-existing correction claims for P29 and P30 from their exact observed final heads under fresh disjoint writer leases and zero effect authority
+- independently verified P29 correction claim d5c779ca and P30 correction claim 2f2aa5c9, each with exact expected parent, only three task-local runtime files, correct resume authorization and digest, and zero effects
+- consumed both correction ready entries and authorized only the bounded P29/P30 cross-audit repairs under their disjoint leases
 remaining_steps: []
-next_action: P29 and P30 publish correction atomic claims while P17 implements independently.
+next_action: P17 implements while P29 and P30 repair bounded cross-audit findings under disjoint leases.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -145,12 +147,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 32c9ef6a0738f0a4fa038f1212ff7019e19992f1
+  current_control_parent_sha: 9ebea9f2a7fc98447d880417f683f20cb964560f
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 2114ad21-aab7-436a-b3f0-b932424687ac
-      observed_head: 32c9ef6a0738f0a4fa038f1212ff7019e19992f1
+      claim_id: 3d8fe32b-09e1-4c90-b7f3-08812ee20106
+      observed_head: 9ebea9f2a7fc98447d880417f683f20cb964560f
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -295,17 +297,17 @@ orchestration:
     P29:
       branch: codex/v21-p29-core-workflows
       claim_id: 22467835-84ad-4d38-8187-a3b64d88d132
-      observed_head: 15dc7c87948c3df9dc6c77be89c79b706860448f
+      observed_head: d5c779caa1859ef308fa009e6558076cf2031771
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T00:51:24Z'
-      scheduling_state: ready_correction_atomic_claim_pending
+      scheduling_state: claimed_correction_implementation_authorized
     P30:
       branch: codex/v21-p30-campaign-workflows
       claim_id: cea57710-2506-4983-a821-4e23733d0766
-      observed_head: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
+      observed_head: 2f2aa5c9d2395ce771bbcd4afb9df19e308c3918
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T00:51:24Z'
-      scheduling_state: ready_correction_atomic_claim_pending
+      scheduling_state: claimed_correction_implementation_authorized
   active_native_subagents:
   - task_id: P17
     agent: /root/f03_worker
@@ -318,18 +320,18 @@ orchestration:
   - task_id: P29
     agent: /root/f05_worker
     branch: codex/v21-p29-core-workflows
-    observed_head: 15dc7c87948c3df9dc6c77be89c79b706860448f
+    observed_head: d5c779caa1859ef308fa009e6558076cf2031771
     claim_id: 22467835-84ad-4d38-8187-a3b64d88d132
     lease_expires_at: '2026-07-29T00:51:24Z'
-    status: ready
+    status: claimed
     phase: correction
   - task_id: P30
     agent: /root/i36_worker2
     branch: codex/v21-p30-campaign-workflows
-    observed_head: 337baba3d9b2d271205f6f2cb9bfd8adeabbb549
+    observed_head: 2f2aa5c9d2395ce771bbcd4afb9df19e308c3918
     claim_id: cea57710-2506-4983-a821-4e23733d0766
     lease_expires_at: '2026-07-29T00:51:24Z'
-    status: ready
+    status: claimed
     phase: correction
   unresolved_blockers: []
 requirements: {}
@@ -445,10 +447,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 7e5c340d83fd1062c59273f76c96cc7bfcb59a60b3dbc5fe2e18b2295d8490a4
-    control_lease: 17d0c8a567287343eca6c81cd1995b3e28258d863dd04bd26453bad8b4a9998b
-    task_registry: 90fc8a2925a6f8f76b643e40e5e6113be1d20288731835b2d8b8b5d14e771748
-    ready_queue: 758c5637841629c01d3b8c0ad192dc7c3d2f82742479a8a532298b09f4483787
+    control_state: f536dd22193fa9a47d0fd510a1104c88dc08e6edbf161a4d6ff69f40fe7b0027
+    control_lease: a7a2b09c7134200bc3a76010e7f5d97b6bb9e723b90b98d10167527026fcf617
+    task_registry: 695761db2d7c3b169b4e2b616c08f340aa701aba74e80bc338810d3af01566d3
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 367563ad60f3674c5a6116e12593341c6be5bda8363072be6e6250f253ce9d93
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8

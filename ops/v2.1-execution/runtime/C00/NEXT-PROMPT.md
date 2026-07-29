@@ -190,3 +190,9 @@ checkpoints from exact heads `15dc7c87` and `337baba3` using claims
 `cea57710-2506-4983-a821-4e23733d0766`, ready digests `4b5b332d...` and
 `f7d3413b...`. Each atomic checkpoint may modify only its three runtime files.
 Reconcile both claims, then resume the bounded audit findings while P17 runs.
+
+Both correction claims are verified and consumed. Resume P29 at `d5c779ca`
+and P30 at `2f2aa5c9` for only the recorded audit repairs, add negative
+regression coverage, rerun full verification, refresh all material digests and
+runtime proofs, release each task-local lease, and publish corrected
+ready_for_review finals. Continue P17 independently.

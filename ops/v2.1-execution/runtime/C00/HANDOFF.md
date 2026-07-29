@@ -458,3 +458,9 @@ accepts noncanonical OT-16 operation IDs, and does not refresh paid/School
 eligibility before send. No effects occurred. C00 issued resume-existing,
 claim-only correction authorizations under fresh disjoint leases; P17 continues
 independently.
+
+P29 correction claim `d5c779ca` and P30 correction claim `2f2aa5c9` are exact:
+each resumes its expected rejected-final head, changes only three task-local
+runtime files, binds the fresh controller authorization and ready digest, and
+records zero effects. C00 consumed both entries. The workers may now implement
+only the bounded audit repairs while P17 continues independently.
