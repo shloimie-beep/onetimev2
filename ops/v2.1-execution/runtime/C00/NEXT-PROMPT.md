@@ -261,3 +261,13 @@ three runtime files and zero effects. After reconciliation, correct existing
 local-account proof, inactive-household dedupe, and scope-bound strong
 idempotency with negative tests. Separately audit P10 `92212a7b` and P33
 `122608b5`; use only P33 superseding interface `0e674da7`/`9ac5c08a`.
+
+I36 release `87e3ba67c6433d249a29be9eac99f780ffc99683` and P08
+correction claim `53e1ef74fc988aab22d12d6716f30cb841130fde` are independently
+verified and reconciled under exact acquisition
+`382ea5193b1de8fc8cd2844dde362106a8a0f57f`. Resume P08 from that exact
+claim head for only the three recorded semantic repairs and their negative
+regression coverage. Recompute any changed interface/artifact/state digests,
+release the FAMILY_SIGNUP lease, publish a new ready_for_review final, and keep
+external effects at zero. P09 stays locked. Continue independent admission
+review of P10 final `92212a7b` and P33 superseding final `122608b5`.

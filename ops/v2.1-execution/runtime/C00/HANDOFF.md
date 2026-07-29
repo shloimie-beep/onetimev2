@@ -537,3 +537,17 @@ key; and request recovery is keyed only by a weak caller value without exact
 FamilySignupScope binding. C00 authorized claim-only correction
 `e9148002` from exact final `59b43a60`. P10 final `92212a7b` and superseding
 P33 final `122608b5` are observed but not yet admitted.
+
+I36 published exact withdrawal/release checkpoint `87e3ba67`: sole parent
+`2e309398`, only its three runtime files, released claim `a2ae8e13` and lease
+`d2df925f`, no P08 source admission, and zero effects. P08 then published exact
+correction claim checkpoint `53e1ef74`: sole parent `59b43a60`, only its three
+runtime files, ready digest `898063c0`, containing authorization `5cc06e9a`,
+and zero effects.
+
+C00 independently verified both checkpoints and consumed the P08 ready entry
+under acquisition `382ea519`. P08 may now correct only the recorded
+existing-local-account proof, inactive-household duplicate prevention, and
+scope-bound server-issued strong-idempotency semantics, with changed-payload,
+cross-scope, spoofed-hash, weak-key, and local-account-state negative tests.
+The withdrawn interface remains inadmissible and P09 remains locked.
