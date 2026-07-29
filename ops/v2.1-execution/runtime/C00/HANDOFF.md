@@ -1118,3 +1118,16 @@ the enumerated admin-operations semantics within its normalized owned roots
 plus its structured registration request and runtime memory. It must preserve
 zero effects, apply no registration/steward request, publish a superseding
 final, release lease `39ce3c68`, and stop for independent re-audit.
+
+P11 safely stopped before its prior lease cutoff and published
+`renewal_requested` checkpoint
+`e807e26e5882c3b8ad8e06221db9f28b743369b7`, the sole child of
+reconciled claim `2fa5c8da`. Its delta is exactly six bounded owned correction
+files plus the three P11 runtime files; tests, request strengthening, validation,
+digests, and final metadata remain explicitly incomplete. C00 issued only a
+fresh three-runtime-file renewal claim from that exact checkpoint. Ready digest
+is `727c1f24163de62242f481b3df804b7b68cc157a0be9c34894c4cb1db2799efd`,
+claim is `d6567fe9-bfd3-45c6-88c5-ff6cbdff225a`, and lease is
+`fd135a96-bfc0-4ee7-b59a-94873b5e3100` through
+`2026-07-29T09:29:47Z`. No correction continuation is authorized until C00
+reconciles the new runtime-only renewal claim; effects remain zero.

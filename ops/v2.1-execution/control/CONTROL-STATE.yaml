@@ -15,6 +15,6 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
-next_action: P11 and P23 may implement only their enumerated bounded semantic corrections from reconciled claims 2fa5c8da and b341ce52 under disjoint leases. Publish superseding ready_for_review finals with expanded direct probes and effects 0/0/0. No external effect is authorized.
+controller_authorization_sha: daa4555baa113fb0a2224bd8505e5e599ad0e476
+next_action: P11 may publish only a three-runtime-file renewal claim from exact partial checkpoint e807e26e under ready digest 727c1f24, claim d6567fe9, and lease fd135a96, then stop for C00 reconciliation. P23 corrected final 87da1f24 remains held for exact-source re-audit. No external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

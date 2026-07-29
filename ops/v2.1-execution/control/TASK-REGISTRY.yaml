@@ -517,8 +517,8 @@ tasks:
     transitioned_at: '2026-07-29T03:20:30Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P10/status_proof
 - task_id: P11
-  status: claimed
-  active_phase: correction
+  status: ready
+  active_phase: correction_renewal
   branch: codex/v21-p11-admin-operations
   phase_branches:
     implementation: codex/v21-p11-admin-operations
@@ -527,21 +527,21 @@ tasks:
   phase_heads:
     implementation: f482ebb76a1278eb6adbc6895b08c26ef111e452
     metadata_correction: c0fe1ec4fc16cc626e5b827f12e977851ede2bf1
-    correction: 2fa5c8da116d42c9202c462ef9e061c254dd3958
+    correction: e807e26e5882c3b8ad8e06221db9f28b743369b7
   authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-  last_known_remote_head: 51bd416bbf3b53a2eb985c41617673135bcfc7a7
-  active_claim_id: b66b8fdf-14d6-4f3b-8902-ebe8a16cba81
-  active_writer_id: codex-p11-worker-b66b8fdf
-  lease_expires_at: '2026-07-29T08:37:36Z'
-  last_heartbeat_at: '2026-07-29T07:55:22Z'
-  controller_authorization_sha: 331ffc12ba126aafa2c25fb48293a7fd0a8734e6
-  ready_entry_payload_digest: 48210c4c569564fcf829a5ee5fbd3fcf9b4b989377ad0ca8f898fc66d32f1aba
+  last_known_remote_head: e807e26e5882c3b8ad8e06221db9f28b743369b7
+  active_claim_id: d6567fe9-bfd3-45c6-88c5-ff6cbdff225a
+  active_writer_id: null
+  lease_expires_at: '2026-07-29T09:29:47Z'
+  last_heartbeat_at: null
+  controller_authorization_sha: daa4555baa113fb0a2224bd8505e5e599ad0e476
+  ready_entry_payload_digest: 727c1f24163de62242f481b3df804b7b68cc157a0be9c34894c4cb1db2799efd
   interface_checkpoint_sha: null
   implementation_head_sha: f482ebb76a1278eb6adbc6895b08c26ef111e452
   status_proof:
-    state: claimed
-    producer_task_id: P11
-    producer_head_sha: 2fa5c8da116d42c9202c462ef9e061c254dd3958
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: daa4555baa113fb0a2224bd8505e5e599ad0e476
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -555,8 +555,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
-    transitioned_at: '2026-07-29T08:02:46Z'
+    state_based_on_control_head_sha: daa4555baa113fb0a2224bd8505e5e599ad0e476
+    transitioned_at: '2026-07-29T08:29:47Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P11/status_proof
 - task_id: P12
   status: ready_for_review

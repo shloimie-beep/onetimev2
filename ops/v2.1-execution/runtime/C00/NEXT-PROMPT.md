@@ -828,6 +828,19 @@ sound/timezone/idempotency/a11y proof, update but do not apply any needed
 structured migration/registration request, publish a superseding final, release
 the lease, and stop with effects `0/0/0`.
 
+P11 partial correction checkpoint
+`e807e26e5882c3b8ad8e06221db9f28b743369b7` is preserved and not yet
+admitted. Resume it only for an atomic renewal claim under claim
+`d6567fe9-bfd3-45c6-88c5-ff6cbdff225a`, ADMIN_OPERATIONS_UI lease
+`fd135a96-bfc0-4ee7-b59a-94873b5e3100`, ready parent
+`daa4555baa113fb0a2224bd8505e5e599ad0e476`, and ready digest
+`727c1f24163de62242f481b3df804b7b68cc157a0be9c34894c4cb1db2799efd`.
+Change exactly the three P11 runtime-memory files, bind the fresh identities and
+checkpoint, push normally, remote-verify, and stop for C00 reconciliation.
+Preserve the six partial correction files unchanged and do not run or claim
+tests in this first renewal phase. No provider, registration, steward, or
+external effect is authorized.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
