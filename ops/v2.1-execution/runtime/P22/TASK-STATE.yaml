@@ -39,31 +39,31 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: review
-claim_mode: create_new_branch
-claimed_by: codex-p22-worker-eba236e0
-claim_time: '2026-07-29T03:33:51Z'
-claim_id: eba236e0-164c-4b7d-a71e-20646f4ec5ab
-claim_released_at: '2026-07-29T03:54:57Z'
+status: claimed
+phase: correction
+claim_mode: resume_existing_branch
+claimed_by: codex-p22-worker-e2ac53ae
+claim_time: '2026-07-29T04:05:39Z'
+claim_id: e2ac53ae-128f-4d0c-b9a2-e74d05858f29
 writer_slot_leases:
   - slot: LEARNING_ENGAGEMENT
-    lease_id: 93a7fddb-d025-475d-8d09-f9c9e7661515
-    lease_issued_at: '2026-07-29T03:20:30Z'
-    lease_expires_at: '2026-07-29T04:20:30Z'
-    state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
-    released_at: '2026-07-29T03:54:57Z'
-    release_reason: terminal_ready_for_review
-lease_expires_at: '2026-07-29T04:20:30Z'
-last_heartbeat_at: '2026-07-29T03:54:57Z'
-controller_authorization_sha: ab393d7eb3b7f55b910ba110949c05c40b7383e6
-resume_containing_control_sha: 9a8f5265e5ba8457fb1427abebda83d1d91499af
-ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
-ready_entry_payload_digest: 983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471
-state_based_on_head_sha: 374a2d0fbfb5e18e26d7187d0e0760e0e612bb10
+    lease_id: 9fd6a3b7-decc-454a-9a2e-953aaaebfe63
+    lease_issued_at: '2026-07-29T04:00:52Z'
+    lease_expires_at: '2026-07-29T05:00:52Z'
+    state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+    phase_scope: class_authorization_publication_and_leaderboard_correction_claim_only
+lease_expires_at: '2026-07-29T05:00:52Z'
+last_heartbeat_at: '2026-07-29T04:05:39Z'
+controller_authorization_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
+resume_containing_control_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
+ready_entry_state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+ready_entry_payload_digest: 40bb6fd8a17894f529f881d087427047427db54f573bc1cd5cfe36dc6000a2a0
+state_based_on_head_sha: cad7259304253eff531307fecfc9de298fac1a34
 last_implementation_commit_sha: 374a2d0fbfb5e18e26d7187d0e0760e0e612bb10
 implementation_artifact_digest: a9ecb2fe48a9da6e27a9527b31b5a8b566ef82117a891ab2e6c99f193111c174
 completed_steps:
+  - Fetched containing correction control 71df400bd85cdca40b4eb0e01fc749f362e3d0e8 and verified its sole parent/acquisition 36451ec88e05bb64be0b27b8bc148166b6fe9837.
+  - Verified exact existing local/remote P22 head cad7259304253eff531307fecfc9de298fac1a34, resume claim e2ac53ae-128f-4d0c-b9a2-e74d05858f29, ready digest 40bb6fd8a17894f529f881d087427047427db54f573bc1cd5cfe36dc6000a2a0, and sole LEARNING_ENGAGEMENT lease 9fd6a3b7-decc-454a-9a2e-953aaaebfe63.
   - Verified reconciled control 9a8f5265 records the exact 4acf752d claim head, claim, branch, and sole unexpired LEARNING_ENGAGEMENT lease.
   - Read the locked packet, context, prompt, cited source specifications, and F02/F05/F07 handoffs.
   - Implemented private Student question submission, Rabbi/Admin answer and moderation lifecycle, idempotent recognition, audited correction, and Parent/peer denial.
@@ -74,9 +74,9 @@ completed_steps:
   - Published migration and registration steward requests without changing migrations, central composers, barrels, manifests, or locks.
   - Passed seven focused assertions, full workspace typecheck, focused ESLint/Prettier, diff checks, and repository secret scan.
 remaining_steps:
-  - I36/F02 review and fulfill P22-migration-001 and P22-registration-001 before candidate integration.
-  - Candidate-bound staging and production evidence remains with downstream verification tasks.
-next_action: Review implementation commit 374a2d0f and fulfill the two structured steward requests without semantic weakening.
+  - Push and report this exact three-file atomic resume claim.
+  - Stop before product correction work and await C00 reconciliation of the exact remote claim head.
+next_action: Push and report the atomic correction-resume claim, then stop until C00 consumes its exact remote head and explicitly resumes P22.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -103,16 +103,6 @@ acceptance_cases:
   OTV2-LEARNING-238-QUESTION-DEDUPE: task_owned_assertions_passed
   OTV2-LEARNING-238-RECOGNITION-CONSENT: task_owned_assertions_passed
 changed_paths:
-  - apps/web/src/client/app/admin/learning/AdminLearningWorkspace.tsx
-  - apps/web/src/client/app/student/learning/StudentLearningOverview.tsx
-  - apps/web/src/server/features/learning/service.ts
-  - packages/contracts/src/learning/index.ts
-  - packages/db/src/learning/repository.ts
-  - packages/db/src/learning/schema-contract.ts
-  - packages/domain/src/learning/engagement.ts
-  - packages/domain/src/learning/engagement.test.ts
-  - ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-001.yaml
-  - ops/v2.1-execution/runtime/P22/steward-requests/P22-registration-001.yaml
   - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P22/HANDOFF.md
   - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
@@ -122,18 +112,14 @@ steward_requests:
   - P22-registration-001
 verification:
   commands_run:
-    - command: npx vitest run packages/domain/src/learning/engagement.test.ts
-      result: passed; seven focused positive/negative/authorization/isolation/deduplication/correction/consent assertions
-    - command: npm run typecheck
-      result: passed
-    - command: focused ESLint over all P22 TypeScript artifacts
-      result: passed
-    - command: focused Prettier over all P22 TypeScript/YAML artifacts
-      result: passed
-    - command: git diff --check
-      result: passed
-    - command: npm run secret:scan
-      result: passed across 2747 repository text files
+    - command: correction containing-control and sole-parent/acquisition verification
+      result: passed; 71df400b has sole parent 36451ec8
+    - command: exact existing local/remote head verification
+      result: passed; both equal cad7259304253eff531307fecfc9de298fac1a34 before resume claim
+    - command: correction ready entry claim, digest, writer lease, and effect-lock verification
+      result: passed; claim e2ac53ae, digest 40bb6fd8, lease 9fd6a3b7 expires 2026-07-29T05:00:52Z, and zero effect locks
+    - command: exact claim-only changed-path verification
+      result: passed; only the three P22 runtime handoff files
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -141,4 +127,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Product correction is intentionally deferred until C00 reconciles the exact pushed resume claim head.
