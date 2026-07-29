@@ -1,22 +1,25 @@
 # P23 Next Prompt
 
-STOP pending C00 reconciliation of the exact pushed P23
-copy/dedupe/persistence correction claim on
+REVIEW_OR_INTEGRATE the superseding P23 PostgreSQL-safe-dedupe final on
 `codex/v21-p23-student-notifications`.
 
-Verify its sole parent is rejected final
-`24ec3a4effc622f384915d892cbaad046e1ea5d1`, its delta contains exactly
-`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` under the P23 runtime,
-and it binds:
+Verify its final metadata has sole parent implementation
+`2961e4a457be6dd1381a98c81258d7a3fb648b69`, and that implementation has sole
+parent reconciled claim `102c75c257dda033750d38e95b84ab05b8781507`.
 
-- authorization `fff9a0a79f2db87ffca97451f8295080b9736549`;
-- sole acquisition parent `ca8eb4ab9957b6616664cfd5e944a73608596020`;
-- claim `096ffffc-1637-4602-a9a8-3084e03a50e1`;
-- lease `471de353-37c6-4e38-a6da-d2db92c4b207`;
-- READY digest
-  `67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b`;
+Confirm:
+
+- exact **Open schedule** copy with canonical `/app/student/calendar`;
+- NUL-free, injective, versioned exact-tuple dedupe persistence and advisory
+  serialization;
+- artifact digest
+  `14ab3136df7262cc2656f35402e193786985bb5266e7adddc4f34ba44abb8a36`;
+- unchanged request aggregate
+  `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`;
+- status `ready_for_review`;
+- released lease `471de353-37c6-4e38-a6da-d2db92c4b207`;
+- 4 focused files / 22 tests plus typecheck, lint, format, scope, diff, and
+  secret-scan evidence;
 - external effects `none / 0 / 0 / 0`.
 
-Do not correct locked copy, dedupe persistence, tests, requests, or any other
-file until C00 explicitly reconciles this claim and grants bounded
-continuation.
+Migration and central registration remain unapplied.

@@ -28,8 +28,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: copy_dedupe_persistence_correction
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing_branch
 claimed_by: codex-p23-worker-096ffffc
 claim_time: '2026-07-29T09:24:30Z'
@@ -41,28 +41,31 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T10:18:31Z'
     state_based_on_control_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
     phase_scope: P23_atomic_claim_copy_dedupe_persistence_correction_only
-    lease_released_at: null
-    state: active
+    lease_released_at: '2026-07-29T09:35:21Z'
+    state: released
 lease_expires_at: '2026-07-29T10:18:31Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T09:24:30Z'
+lease_released_at: '2026-07-29T09:35:21Z'
+last_heartbeat_at: '2026-07-29T09:35:21Z'
 controller_authorization_sha: fff9a0a79f2db87ffca97451f8295080b9736549
 authorization_acquisition_parent_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
+copy_dedupe_claim_reconciled_control_sha: edff40fd3e362f932917c402cd9dbeb49b4ac77c
+copy_dedupe_claim_reconciled_acquisition_parent_sha: af433361f49dc4842835cf340c06f904ff2919b0
+atomic_copy_dedupe_claim_head_sha: 102c75c257dda033750d38e95b84ab05b8781507
 ready_entry_state_based_on_control_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
 ready_entry_payload_digest: 67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b
 phase_scope: P23_atomic_claim_copy_dedupe_persistence_correction_only
-state_based_on_head_sha: 24ec3a4effc622f384915d892cbaad046e1ea5d1
-last_implementation_commit_sha: dafdd046b7048e67829b2f2a2496c8b830b23fec
+state_based_on_head_sha: 2961e4a457be6dd1381a98c81258d7a3fb648b69
+last_implementation_commit_sha: 2961e4a457be6dd1381a98c81258d7a3fb648b69
 prior_claim_id: f7e3fb0e-a8d4-416b-8c79-786a696e2dc4
 prior_atomic_claim_head_sha: 433cc88b34d99099ca75f64876713406c6e43053
 prior_claim_reconciled_control_sha: 3df02f221b14c937dd1b721013b5067245fb4493
 prior_rejected_final_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
 rejected_final_head_sha: 24ec3a4effc622f384915d892cbaad046e1ea5d1
 rejection_status: copy_dedupe_persistence_correction_required_before_admission
-implementation_artifact_digest: d6a527d064c3289db0acb9f8482645e012bd0384990379b27644c55758a31dcc
+implementation_artifact_digest: 14ab3136df7262cc2656f35402e193786985bb5266e7adddc4f34ba44abb8a36
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
-  the 13 implementation and focused-test artifacts, sorted lexicographically
+  the 14 implementation and focused-test artifacts, sorted lexicographically
   by path, with LF separators and no final newline.
 implementation_artifacts:
   apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx: 5eb34d0d68b4dc46ef94a7d99f083b29ca2ba9eb684018e94bfee4974f5ebd14
@@ -73,11 +76,12 @@ implementation_artifacts:
   apps/web/src/server/features/notifications/student/service.ts: dee31945fcff6352d58c413df32403cb1f4ee228b17897f2d1955e52042c7dfa
   packages/contracts/src/notifications/student/index.ts: 7259bdd5bb91400aeaf5e4298a9c0868686a4ff2334f90b84f2434e0e1215ee9
   packages/db/src/notifications/student/index.ts: b3aeb5580165804053e5816109274280e9b371ccee09b5ecff09410b283cfb1f
-  packages/db/src/notifications/student/repository.ts: 013313e1642f6c52f8666a06be1079ae7538bc876ab97460f8bdf2ca1d6e78fc
+  packages/db/src/notifications/student/repository.test.ts: 69bdf627dfacbe983d54ecb2e1b3ccfa9aef20f3bab622f9e0b4766544410d58
+  packages/db/src/notifications/student/repository.ts: 2e4a50a8654f00df2cff37f1043aad27d0690691be7e897e297699150c7412d3
   packages/domain/src/notifications/student/errors.ts: 9b252d9132c7037e129aed9331b699c4db3046d2ad9ac0ebb57034876df61b4f
   packages/domain/src/notifications/student/index.ts: 2de9351d8c6c9404dd294baf7f74f97c0c3af1c1489fc0e10daf4562cf125419
-  packages/domain/src/notifications/student/lifecycle.test.ts: c757098dcbb733186c40812e9a13af101734b22553e657ca5fea3088835c5896
-  packages/domain/src/notifications/student/lifecycle.ts: 8b5b3129046476ef51048affd165d4671b993a5164dc567a55cfc52aa3a876e6
+  packages/domain/src/notifications/student/lifecycle.test.ts: 338b323c09cd70b6dfa3bdcce5174f9a20521d68ba22af520a6648ab6a022565
+  packages/domain/src/notifications/student/lifecycle.ts: a9d748afb681f4a639d5851d274572d1351ce3ce096a8a6dab1cc2904c565f86
 steward_request_payload_digests:
   P23-migration-001: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
   P23-registration-001: 20d08ffa80042c0f894eba99fcc932409f90bb9c511c1e49705fd026bff1d261
@@ -127,18 +131,22 @@ completed_steps:
   - Verified containing authorization fff9a0a79f2db87ffca97451f8295080b9736549, its sole acquisition parent ca8eb4ab9957b6616664cfd5e944a73608596020, exact clean local/tracking/remote rejected head 24ec3a4effc622f384915d892cbaad046e1ea5d1, immutable task/context/package/source digests, true F05/F07 integration-interface ancestry, fresh claim 096ffffc-1637-4602-a9a8-3084e03a50e1, sole unexpired STUDENT_NOTIFICATIONS lease 471de353-37c6-4e38-a6da-d2db92c4b207, and zero effect locks.
   - Recomputed the 2814-byte canonical recursively key-sorted READY preimage and matched digest 67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b.
   - Claimed only the three-file copy/dedupe/persistence correction checkpoint; no product, test, request, migration, registration, steward, provider, send, or external-effect work was performed or verified in this phase.
+  - C00 reconciled copy/dedupe claim 102c75c257dda033750d38e95b84ab05b8781507 at control edff40fd3e362f932917c402cd9dbeb49b4ac77c with sole acquisition parent af433361f49dc4842835cf340c06f904ff2919b0.
+  - Restored exact locked Open schedule copy for class changed/canceled while preserving canonical /app/student/calendar routes.
+  - Replaced the raw-NUL dedupe representation with versioned canonical JSON over the exact event type, source entity, recipient Student, and numeric source version tuple; field/control characters are escaped, exact same-tuple retries remain stable, and representative delimiter/boundary-adversarial tuples remain distinct.
+  - Replaced the advisory-lock raw-NUL join because it also crosses a PostgreSQL text parameter, and added a repository-level regression inspecting actual advisory/insert query values for NUL-free persistence.
+  - Passed 4 focused files and 22 tests, workspace typecheck, focused ESLint/Prettier, exact correction scope, diff hygiene, and secret scan across 2877 text files.
+  - Confirmed the existing text-column migration request requires no change, committed implementation 2961e4a457be6dd1381a98c81258d7a3fb648b69, reproduced the 14-artifact and unchanged request digests, and released the writer lease before expiry.
 remaining_steps:
-  - Commit, normally push, and remote-verify this exact three-runtime-file correction claim.
-  - C00 must reconcile the exact pushed claim head before P23 changes product, tests, requests, or any other file.
-  - Only after explicit reconciliation may P23 restore locked Open schedule copy and replace raw-NUL persistence with a PostgreSQL-safe exact tuple strategy plus direct database-boundary tests.
-next_action: Stop after pushing and remote-verifying this exact three-file copy/dedupe/persistence correction claim; wait for C00 reconciliation.
+  - C00 review or integrate the superseding ready-for-review final; migration and central registration remain unapplied.
+next_action: REVIEW_OR_INTEGRATE the superseding P23 final after exact remote verification.
 requirements:
-  OTV2-NOTIFY-203: copy_dedupe_persistence_correction_claimed
-  OTV2-NOTIFY-237: copy_dedupe_persistence_correction_claimed
+  OTV2-NOTIFY-203: implementation_verified_copy_corrected
+  OTV2-NOTIFY-237: implementation_verified_postgresql_safe_dedupe
 acceptance_cases:
-  OTV2-NOTIFY-203-AC01: rejected_requires_locked_copy_correction
-  OTV2-NOTIFY-237-CATEGORY-LIFETIME: prior_corrections_pass
-  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: rejected_requires_postgresql_safe_dedupe
+  OTV2-NOTIFY-203-AC01: task_owned_locked_copy_assertions_passed
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: task_owned_corrected_assertions_passed
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: task_owned_postgresql_boundary_assertions_passed
 changed_paths:
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
@@ -153,6 +161,7 @@ changed_paths:
   - ops/v2.1-execution/runtime/P23/steward-requests/P23-registration-001.yaml
   - packages/contracts/src/notifications/student/index.ts
   - packages/db/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/repository.test.ts
   - packages/db/src/notifications/student/repository.ts
   - packages/domain/src/notifications/student/errors.ts
   - packages/domain/src/notifications/student/index.ts
@@ -176,14 +185,14 @@ verification:
       result: passed; branch created from exact authorized start
     - command: exact C00 reconciliation and resumed-head verification
       result: passed; control 8172f8cd, sole parent 98cde826, and atomic claim head 05ef6060
-    - command: npx vitest run packages/domain/src/notifications/student/lifecycle.test.ts apps/web/src/server/features/notifications/student/service.test.ts apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
-      result: passed; 3 files and 20 tests
+    - command: npx vitest run packages/domain/src/notifications/student/lifecycle.test.ts packages/db/src/notifications/student/repository.test.ts apps/web/src/server/features/notifications/student/service.test.ts apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+      result: passed; 4 files and 22 tests
     - command: npm run typecheck -- --pretty false
       result: passed
     - command: focused ESLint and Prettier over all P23 source, test, runtime, and request paths
       result: passed
     - command: exact raw Git-blob artifact and steward-request digest reproduction
-      result: passed; 13 artifacts, two unchanged requests, artifact digest d6a527d0, request aggregate f984e5ee
+      result: passed; 14 artifacts, two unchanged requests, artifact digest 14ab3136, request aggregate f984e5ee
     - command: exact start-to-implementation changed-path audit and git diff --check
       result: passed; only normalized P23 roots, P23 runtime memory, and structured steward requests
     - command: npm run secret:scan

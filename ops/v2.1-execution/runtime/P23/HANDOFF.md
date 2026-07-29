@@ -1,54 +1,56 @@
-# P23 Atomic Copy/Dedupe/Persistence Correction-Claim Handoff
+# P23 PostgreSQL-Safe Dedupe Ready-for-Review Handoff
 
 ## Exact identity
 
 - Branch: `codex/v21-p23-student-notifications`
-- Exact rejected final and claim parent:
-  `24ec3a4effc622f384915d892cbaad046e1ea5d1`
-- Prior implementation remains:
-  `dafdd046b7048e67829b2f2a2496c8b830b23fec`
-- Containing authorization:
-  `fff9a0a79f2db87ffca97451f8295080b9736549`
-- Sole acquisition parent:
-  `ca8eb4ab9957b6616664cfd5e944a73608596020`
+- Reconciled correction claim:
+  `102c75c257dda033750d38e95b84ab05b8781507`
+- Reconciliation control:
+  `edff40fd3e362f932917c402cd9dbeb49b4ac77c`
+- Reconciliation acquisition parent:
+  `af433361f49dc4842835cf340c06f904ff2919b0`
+- Corrected implementation:
+  `2961e4a457be6dd1381a98c81258d7a3fb648b69`
 - Claim: `096ffffc-1637-4602-a9a8-3084e03a50e1`
-- Writer: `codex-p23-worker-096ffffc`
-- STUDENT_NOTIFICATIONS lease:
-  `471de353-37c6-4e38-a6da-d2db92c4b207`
-- Lease issued: `2026-07-29T09:18:31Z`
-- Lease expiry: `2026-07-29T10:18:31Z`
-- Canonical READY digest:
-  `67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b`
+- Released lease: `471de353-37c6-4e38-a6da-d2db92c4b207`
+- Artifact digest:
+  `14ab3136df7262cc2656f35402e193786985bb5266e7adddc4f34ba44abb8a36`
+- Unchanged request aggregate:
+  `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`
 
-The recursively key-sorted READY JSON preimage is 2,814 UTF-8 bytes and
-independently hashes to the recorded digest. Local, tracking, and fetched remote
-P23 heads were clean and exact before this checkpoint. Immutable packet/source
-digests and the true F05/F07 integration-interface ancestry match. Effect locks
-are empty; authority is none and effects remain `0 / 0 / 0`.
+## Corrected result
 
-## Rejection record
+Class-change and cancellation actions again render exact locked
+**Open schedule** copy while retaining canonical `/app/student/calendar`.
 
-C00 rejected final `24ec3a4effc622f384915d892cbaad046e1ea5d1`
-despite matching scope/digests, 20 prior focused tests, typecheck, and the
-correct route/tab/ancestry behavior:
+The persisted dedupe key is now a versioned canonical JSON array in exact
+`event_type`, `source_entity_id`, `recipient_student_id`, `source_version`
+order. JSON escaping prevents literal NUL from crossing PostgreSQL text
+parameters or columns while retaining an injective representation of field
+boundaries and types. Same-tuple retries produce the same key; representative
+NUL, delimiter, quote, bracket, and field-boundary adversarial tuples remain
+distinct. The repository advisory-lock key uses the same NUL-free representation
+principle because it is also a PostgreSQL text parameter.
 
-- locked WNC-8 requires visible **Open schedule** copy while the action route
-  remains canonical `/app/student/calendar`; the rejected final says
-  **Open calendar**;
-- the exact dedupe tuple currently contains raw NUL separators and passes that
-  string to PostgreSQL text parameters/columns, which cannot persist NUL;
-- prior in-memory tests do not exercise that PostgreSQL boundary.
+A repository-level test captures the actual PostgreSQL query values and proves
+the advisory and insert boundaries contain no literal NUL. The existing
+`dedupe_key` text-column contract already supports the corrected representation,
+so no request or migration change was necessary.
 
-This handoff records the rejection and fresh claim only. It does not implement
-or authorize any product, test, request, migration, or registration correction.
-No product tests were run or claimed in this phase.
+Every earlier lifecycle, privacy, race, retention, sound, timezone,
+idempotency, canonical-route, tab-keyboard, and ancestry correction remains
+intact. No request, migration, registration, provider/send, or external effect
+was applied.
 
-## Atomic scope and stop
+## Verification
 
-This checkpoint changes exactly P23 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. Product, tests, structured requests, migrations,
-registrations, stewards, providers, sends, and external effects remain
-byte-identical and untouched.
+- 4 focused files / 22 deterministic tests passed.
+- Workspace TypeScript typecheck passed.
+- Focused ESLint and Prettier passed.
+- Exact correction scope and `git diff --check` passed.
+- Secret scan passed across 2877 repository text files.
+- Exact 14-artifact digest and unchanged two-request aggregate reproduced.
+- Sole writer lease released at `2026-07-29T09:35:21Z`, before expiry.
 
-C00 must reconcile the exact pushed claim head before P23 changes any other
-file. Stop after normal push and remote verification.
+Next action: C00 should review or integrate the superseding final after exact
+remote-head, sole-parent, scope, digest, and effects verification.
