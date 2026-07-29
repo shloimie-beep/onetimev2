@@ -32,8 +32,8 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing_branch
 claimed_by: codex-p12-worker-86e406be
 claim_time: '2026-07-29T04:30:11Z'
@@ -45,18 +45,20 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T05:24:36Z'
     state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
     phase_scope: interface_digest_separator_metadata_correction_claim_only
-    state: active
+    lease_released_at: '2026-07-29T04:39:16Z'
+    state: released
 lease_expires_at: '2026-07-29T05:24:36Z'
-last_heartbeat_at: '2026-07-29T04:37:09Z'
+lease_released_at: '2026-07-29T04:39:16Z'
+last_heartbeat_at: '2026-07-29T04:39:16Z'
 controller_authorization_sha: 5d2877fa0eb5071572c2c08bbe5f0169e27b12ba
 ready_entry_state_based_on_control_head_sha: 76c1c2d9363bb20c9abd2e005ca0651fca73ceb8
 ready_entry_payload_digest: 8bb0d6d8bcc996fe9a50ebafec45046d3a65bad9cf85f193d90c083fc6b1eb30
-state_based_on_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
+state_based_on_head_sha: e5f59e707f9b3a12c9b64b30aaa23e638c2d816f
 last_implementation_commit_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
 active_interface:
   status: interface_ready
   interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
-  interface_checkpoint_sha: derive_from_git_and_record_in_control_registry
+  interface_checkpoint_sha: e5f59e707f9b3a12c9b64b30aaa23e638c2d816f
   semantic_contract_version: 1.0.1
   interface_checkpoint_digest: ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
 completed_steps:
@@ -89,18 +91,22 @@ completed_steps:
   - Verified exact C00 reconciliation c8957e599763556d8eb6140e499783d52818d49f and resumed only the bounded interface-digest separator metadata correction.
   - Corrected the interface contract digest to ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26, independently reproduced from the exact 515-byte UTF-8/LF/no-final-newline preimage.
   - Reproduced the unchanged client, server, contract, domain export hashes and immutable steward-request digest from implementation head d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2; product, export, steward, migration, shared, and effect artifacts remain byte-identical.
+  - Pushed and remote-verified exact corrected interface metadata checkpoint e5f59e707f9b3a12c9b64b30aaa23e638c2d816f.
+  - Passed exact four-path claim-delta and sixteen-path start-delta audits, Prettier/YAML parse, diff hygiene, repository secret scan across 2750 text files, 515-byte LF digest reproduction, and clean remote verification.
+  - Released PARENT_HOUSEHOLD_UI lease 79c5cf83-4438-4c68-ba4f-8e18b87de1f4 with no external effect attempted.
 remaining_steps:
-  - Push and remote-verify the exact corrected interface metadata checkpoint.
-  - Complete final YAML/scope/diff/digest/clean-remote verification, release the fresh lease, and publish ready_for_review with zero effects.
-next_action: Push the corrected interface metadata checkpoint, complete final bounded verification, then release PARENT_HOUSEHOLD_UI lease 79c5cf83-4438-4c68-ba4f-8e18b87de1f4 and publish the clean ready_for_review final.
+  - I36 must independently review and integrate product implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and corrected interface metadata checkpoint e5f59e707f9b3a12c9b64b30aaa23e638c2d816f.
+  - I36 must reproduce the exact 515-byte LF/no-final-newline semantic digest and disposition P12-registration-001 without changing its immutable digest.
+  - C00 may authorize P13 only after exact corrected P12 interface integration.
+next_action: I36 should review and integrate implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and corrected interface checkpoint e5f59e707f9b3a12c9b64b30aaa23e638c2d816f, reproduce semantic digest ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26, and disposition steward digest 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733.
 requirements:
-  OTV2-PARENT-031: implementation_ready
-  OTV2-PARENT-032: implementation_ready
-  OTV2-PARENT-033: implementation_ready
-  OTV2-PARENT-034: implementation_ready
-  OTV2-PARENT-035: implementation_ready
-  OTV2-PARENT-036: implementation_ready
-  OTV2-PARENT-040: implementation_ready
+  OTV2-PARENT-031: ready_for_review
+  OTV2-PARENT-032: ready_for_review
+  OTV2-PARENT-033: ready_for_review
+  OTV2-PARENT-034: ready_for_review
+  OTV2-PARENT-035: ready_for_review
+  OTV2-PARENT-036: ready_for_review
+  OTV2-PARENT-040: ready_for_review
 acceptance_cases:
   OTV2-PARENT-031-AC01: task_owned_assertions_passed
   OTV2-PARENT-032-AC01: task_owned_assertions_passed
@@ -174,6 +180,8 @@ verification:
       result: passed; exact released control head c8957e599763556d8eb6140e499783d52818d49f admits claim b8d43694b93b5f932c35d065e633c887761f67a1
     - command: exact semantic preimage and immutable artifact recomputation
       result: passed; 515-byte LF/no-final-newline digest ec615147 and unchanged four export plus steward-request hashes
+    - command: final corrected metadata scope, YAML, diff, secret, and remote verification
+      result: passed; exact four-path claim delta, sixteen-path start delta, 2750-file secret scan, and local/tracking/ls-remote equality
   known_baseline_failures: []
 external_effects:
   authority: none
