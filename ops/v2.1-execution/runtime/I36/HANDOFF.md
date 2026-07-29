@@ -1,55 +1,55 @@
-# I36 P09 Full-Integration Release
+# I36 F01/F04/F05 Full-Integration Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Reconciled claim target:
-  `e952671b1b214be51a01ef7f4abcaef6a50ce9da`
-- Containing merge authorization:
-  `aff7a46e8efc1a9756b5b0ef543916eb51f3c906`
-- State-based authorization parent:
-  `d633726e427e659adf55d71d009919ae4f6b4dde`
-- P09 source: `33a21a45005271f1bbe09c8587df1e52fac1a95a`
-- P09 merge head: `38307b26f243597df79ef18c928c9a3e935cd5fc`
-- P09 rebound merge digest:
-  `16559951b731a12e2a530b35a232c685eb8f6509e380e66dc111ee4d2942f3a5`
-- Claim: `26d3ae42-c9c9-4913-9534-1d4c71b55f13`
-- RELEASE_INTEGRATOR lease: `495eba01-e9b3-4e71-9e53-4864c9d93bac`
-- Lease released: `2026-07-29T12:09:18Z`, before its
-  `2026-07-29T13:06:14Z` expiry.
-- Final metadata release head: derive with `git rev-parse HEAD`; C00 records the
-  observed pushed remote head.
+- Exact existing target:
+  `408b21afa4b9ac6f100b3ce33ea87984d18d4bf7`
+- Authorizing transaction:
+  `f4b48937dc37518e63954ccf985815ba964253a0`
+- Sole acquisition parent:
+  `2b103162715c18a144cc26c329eed2e09a62b1d4`
+- Latest valid observed control:
+  `a4fda5d21837c7140083ce70619e301f26db2590`
+- READY I36 digest:
+  `5103960074b68850afdd64c58960276a278de7b6fc76ed84d1bc81b781202a96`
+- Claim: `257056a3-d401-4f0f-bd90-e032d855ee3e`
+- RELEASE_INTEGRATOR lease: `32382426-de6d-46c0-afb7-1157ef2f6a2e`
+- Lease window: `2026-07-29T13:09:01Z` through
+  `2026-07-29T14:24:01Z`
+- Phase scope: `F01_F04_F05_full_integration_atomic_claim_only`
+- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
+  pushed remote head.
 
-## Merge record
+## Ordered queue
 
-P09 was ancestry-merged with exact first parent
-`e952671b1b214be51a01ef7f4abcaef6a50ce9da` and exact second parent
-`33a21a45005271f1bbe09c8587df1e52fac1a95a` at
-`38307b26f243597df79ef18c928c9a3e935cd5fc`. The source and required merge
-base were both `088b40476bd5ceeb0af901b6f78a4cb8c556671b`. The first-parent
-delta is exactly the 14 authorized queue paths, and the exact P09 source is an
-ancestor of the merge result.
+1. F01 merge `0b0b7015-4320-455c-959e-10e7b3cd8d0a`, source
+   `b5344992a43a735a9c66047fecd83f951651de27`, payload
+   `2e2a87aaa59df110135dbe20730f49b6ae055bdf69c2e182bca1b214e1341bd7`.
+2. F04 merge `53241de3-f38a-4328-b35a-a7c160a17039`, source
+   `54a0ac28b51d271aacab60003451dbcc66ffcac8`, payload
+   `f34bd7856a4b783a189e59f99096963c5f1afd6cd691637b85ec0e3707fc5d32`.
+3. F05 merge `e82068a8-509a-4bd9-8b5e-4bb4f1a7e494`, source
+   `9174d845e1c04916e2f1884cfadfaef624ac6862`, payload
+   `e38844ec983a49d7bf3b886f5d6d7eb513f2087176141ec380115146d871ecbd`.
 
-## Verification
+## Authority verification
 
-- Exact P09 focused suite: 4 files and 16 tests passed.
-- Workspace TypeScript typecheck passed.
-- Focused ESLint, CRLF-aware Prettier, and diff hygiene passed.
-- Repository secret scan passed across 2909 text files.
-- Merge parents, source ancestry, required base, canonical rebound queue
-  digest, and exact 14-path scope passed.
-- This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
-  `NEXT-PROMPT.md`.
+The fetched integration ref exactly matched the authorized target. The latest
+valid control ref preserves the READY entry and ordered merge queue first
+published by the authorizing transaction. The canonical READY and all three
+merge-item payload digests were independently recomputed and matched. The
+claim has the sole live `RELEASE_INTEGRATOR` lease and no effect lock.
 
-P09 migration and registration requests were admitted only as immutable source
-artifacts. They remain assigned to later steward checkpoints and were not
-applied. `P11-registration-001` also remains unapplied. No steward,
-registration, provider, send, or external effect was performed.
+This checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. No F01, F04, or F05 source was merged. No steward request,
+migration, registration, product, provider, send, or external effect was
+performed.
 
 ## Next action
 
-C00 should reconcile the exact pushed metadata release head and P09 merge head
-above. I36 must stop after reporting this checkpoint.
+C00 must reconcile the exact pushed atomic claim head. I36 must stop after
+reporting it; the ordered source merges require a subsequent explicit resume.
 
 ## Effects
 
