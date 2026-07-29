@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AdminNavigationResolution,
   AdminNavigationRequest,
@@ -16,6 +16,10 @@ import {
   V21AppShell,
   V21StatePanel,
 } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
+import {
+  captureAdminPrivateCompletion,
+  isAdminPrivateCompletionCurrent,
+} from '../adminPrivateCompletion.ts';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -108,18 +112,32 @@ export function AdminGlobalSearch(props: {
   onClearRecentQueries: () => void;
   onNavigate: (href: string) => void;
 }) {
+  const initiallyAuthorized = props.authorization.state === 'admin';
   const [query, setQuery] = useState('');
   const [selectedKinds, setSelectedKinds] =
     useState<readonly AdminSearchKind[]>(ADMIN_SEARCH_KINDS);
-  const [page, setPage] = useState<AdminSearchPage | null>(props.initialPage ?? null);
+  const [page, setPage] = useState<AdminSearchPage | null>(
+    initiallyAuthorized ? (props.initialPage ?? null) : null,
+  );
   const [lastRequest, setLastRequest] = useState<AdminSearchRequest | null>(
-    props.initialRequest ?? null,
+    initiallyAuthorized ? (props.initialRequest ?? null) : null,
   );
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [activeIndex, setActiveIndex] = useState(0);
   const [observedCredentialVersion, setObservedCredentialVersion] = useState(
     props.authorization.credentialVersion,
   );
+  const authorizationRef = useRef(props.authorization);
+  const authorizationIdentityRef = useRef(
+    `${props.authorization.state}:${props.authorization.credentialVersion}`,
+  );
+  const completionGenerationRef = useRef(0);
+  const authorizationIdentity = `${props.authorization.state}:${props.authorization.credentialVersion}`;
+  if (authorizationIdentityRef.current !== authorizationIdentity) {
+    authorizationIdentityRef.current = authorizationIdentity;
+    completionGenerationRef.current += 1;
+  }
+  authorizationRef.current = props.authorization;
   const grouped = useMemo(() => groupResults(page?.results ?? []), [page]);
   const navigation = [
     ...ADMIN_CANONICAL_PRIMARY_NAVIGATION.map((item) => ({
@@ -129,7 +147,8 @@ export function AdminGlobalSearch(props: {
     { id: 'search', label: 'Search', href: '/app/search', current: true },
   ];
 
-  const clearPrivateState = () => {
+  const clearPrivateState = (advanceGeneration = true) => {
+    if (advanceGeneration) completionGenerationRef.current += 1;
     clearAdminPrivateSearchState({
       setQuery,
       setPage,
@@ -141,7 +160,7 @@ export function AdminGlobalSearch(props: {
   };
   useEffect(() => {
     if (shouldClearAdminPrivateState(observedCredentialVersion, props.authorization)) {
-      clearPrivateState();
+      clearPrivateState(false);
       setObservedCredentialVersion(props.authorization.credentialVersion);
     }
   }, [props.authorization?.credentialVersion, props.authorization?.state]);
@@ -154,6 +173,14 @@ export function AdminGlobalSearch(props: {
   }, []);
 
   const runSearch = async (cursor: string | null = null) => {
+    const completion = captureAdminPrivateCompletion(
+      ++completionGenerationRef.current,
+      authorizationRef.current,
+    );
+    if (!completion) {
+      clearPrivateState();
+      return;
+    }
     setState('loading');
     try {
       const request =
@@ -161,11 +188,29 @@ export function AdminGlobalSearch(props: {
           ? { ...lastRequest, cursor }
           : buildAdminSearchRequest(query, selectedKinds, cursor);
       const result = await props.onSearch(request);
+      if (
+        !isAdminPrivateCompletionCurrent(
+          completion,
+          completionGenerationRef.current,
+          authorizationRef.current,
+        )
+      ) {
+        return;
+      }
       setPage(result);
       setLastRequest({ ...request, cursor: null });
       setActiveIndex(0);
       setState('idle');
     } catch {
+      if (
+        !isAdminPrivateCompletionCurrent(
+          completion,
+          completionGenerationRef.current,
+          authorizationRef.current,
+        )
+      ) {
+        return;
+      }
       setPage(null);
       setState('error');
     }
@@ -176,14 +221,42 @@ export function AdminGlobalSearch(props: {
     setActiveIndex((index) => (index + direction + length) % length);
   };
   const resolveAndOpen = async (result: AdminSearchResult) => {
-    if (props.authorization.state !== 'admin') {
+    const completion = captureAdminPrivateCompletion(
+      ++completionGenerationRef.current,
+      authorizationRef.current,
+    );
+    if (!completion) {
       clearPrivateState();
       return;
     }
-    const resolution = await props.onResolveOpen(result, props.authorization.credentialVersion);
+    const resolution = await props.onResolveOpen(result, completion.credentialVersion);
+    if (
+      !isAdminPrivateCompletionCurrent(
+        completion,
+        completionGenerationRef.current,
+        authorizationRef.current,
+      )
+    ) {
+      return;
+    }
     if (resolution.state === 'open') props.onNavigate(resolution.href);
     else clearPrivateState();
   };
+
+  if (props.authorization.state !== 'admin') {
+    return (
+      <V21AppShell
+        role="admin"
+        title="Global search"
+        navigation={navigation}
+        onNavigate={props.onNavigate}
+      >
+        <V21StatePanel kind="error" title="Search unavailable">
+          <p>Authorization no longer permits private Admin search.</p>
+        </V21StatePanel>
+      </V21AppShell>
+    );
+  }
 
   return (
     <V21AppShell
@@ -328,8 +401,11 @@ export function AdminGlobalSearch(props: {
   );
 }
 
-function resultOptionId(result: AdminSearchResult) {
-  return `admin-search-option-${result.kind}-${result.targetId.replaceAll(/[^A-Za-z0-9_-]/gu, '-')}`;
+export function resultOptionId(result: Pick<AdminSearchResult, 'kind' | 'targetId'>) {
+  const encodedTarget = Array.from(result.targetId, (character) =>
+    character.codePointAt(0)!.toString(16).padStart(6, '0'),
+  ).join('');
+  return `admin-search-option-${result.kind}-${encodedTarget}`;
 }
 
 function groupResults(results: readonly AdminSearchResult[]) {

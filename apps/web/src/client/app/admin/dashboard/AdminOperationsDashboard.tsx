@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type {
   AdminDashboardSnapshot,
   AdminNavigationResolution,
@@ -13,6 +13,11 @@ import {
   V21StatePanel,
 } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
 import { type V21StateKind } from '../../../../../../../packages/brand-system/src/v21.ts';
+import {
+  captureAdminPrivateCompletion,
+  isAdminPrivateCompletionCurrent,
+  type AdminPrivateCompletion,
+} from '../adminPrivateCompletion.ts';
 
 export function AdminOperationsDashboard(props: {
   snapshot: AdminDashboardSnapshot | null;
@@ -25,6 +30,25 @@ export function AdminOperationsDashboard(props: {
     credentialVersion: number,
   ) => Promise<AdminNavigationResolution>;
 }) {
+  const authorizationRef = useRef(props.authorization);
+  const authorizationIdentityRef = useRef(
+    `${props.authorization.state}:${props.authorization.credentialVersion}`,
+  );
+  const completionGenerationRef = useRef(0);
+  const authorizationIdentity = `${props.authorization.state}:${props.authorization.credentialVersion}`;
+  if (authorizationIdentityRef.current !== authorizationIdentity) {
+    authorizationIdentityRef.current = authorizationIdentity;
+    completionGenerationRef.current += 1;
+  }
+  authorizationRef.current = props.authorization;
+  const captureCompletion = () =>
+    captureAdminPrivateCompletion(++completionGenerationRef.current, authorizationRef.current);
+  const isCompletionCurrent = (completion: AdminPrivateCompletion) =>
+    isAdminPrivateCompletionCurrent(
+      completion,
+      completionGenerationRef.current,
+      authorizationRef.current,
+    );
   const navigation = [
     ...ADMIN_CANONICAL_PRIMARY_NAVIGATION.map((item) => ({
       ...item,
@@ -47,14 +71,17 @@ export function AdminOperationsDashboard(props: {
           title={props.state === 'loading' ? 'Loading operations' : 'Operations unavailable'}
         >
           <p>
-            {props.safeMessage ??
-              'Real operational data could not be loaded. No placeholder data is shown.'}
+            {props.authorization.state === 'admin'
+              ? (props.safeMessage ??
+                'Real operational data could not be loaded. No placeholder data is shown.')
+              : 'Authorization no longer permits private Admin operations.'}
           </p>
         </V21StatePanel>
       ) : (
         <DashboardSections
           snapshot={props.snapshot}
-          credentialVersion={props.authorization.credentialVersion}
+          captureCompletion={captureCompletion}
+          isCompletionCurrent={isCompletionCurrent}
           onNavigate={props.onNavigate}
           onResolveOccurrence={props.onResolveOccurrence}
         />
@@ -65,7 +92,8 @@ export function AdminOperationsDashboard(props: {
 
 function DashboardSections(props: {
   snapshot: AdminDashboardSnapshot;
-  credentialVersion: number;
+  captureCompletion: () => AdminPrivateCompletion | null;
+  isCompletionCurrent: (completion: AdminPrivateCompletion) => boolean;
   onNavigate: (href: string) => void;
   onResolveOccurrence: (
     occurrenceId: string,
@@ -74,8 +102,12 @@ function DashboardSections(props: {
 }) {
   const { snapshot } = props;
   const resolveAndOpenOccurrence = async (occurrenceId: string) => {
-    const resolution = await props.onResolveOccurrence(occurrenceId, props.credentialVersion);
-    if (resolution.state === 'open') props.onNavigate(resolution.href);
+    const completion = props.captureCompletion();
+    if (!completion) return;
+    const resolution = await props.onResolveOccurrence(occurrenceId, completion.credentialVersion);
+    if (props.isCompletionCurrent(completion) && resolution.state === 'open') {
+      props.onNavigate(resolution.href);
+    }
   };
   return (
     <>

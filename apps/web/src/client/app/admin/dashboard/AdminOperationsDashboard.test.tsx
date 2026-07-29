@@ -1,12 +1,17 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   ADMIN_OPERATIONAL_VIEWS,
   ADMIN_QUICK_ACTIONS,
   type AdminDashboardSnapshot,
 } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
 import { AdminOperationsDashboard } from './AdminOperationsDashboard.tsx';
+import {
+  captureAdminPrivateCompletion,
+  isAdminPrivateCompletionCurrent,
+  type AdminClientAuthorization,
+} from '../adminPrivateCompletion.ts';
 
 const scope = {
   product: 'one_time_mishnayos',
@@ -84,10 +89,11 @@ describe('P11 Admin operating dashboard', () => {
     expect(html).not.toContain('Active households');
   });
 
-  it('does not render a retained snapshot after role revocation', () => {
+  it('renders no retained private snapshot or message when initially revoked', () => {
     const html = renderToStaticMarkup(
       <AdminOperationsDashboard
         snapshot={snapshot()}
+        safeMessage="private retained failure detail"
         authorization={{ state: 'revoked', credentialVersion: 8 }}
         onNavigate={() => undefined}
         onResolveOccurrence={() =>
@@ -102,8 +108,35 @@ describe('P11 Admin operating dashboard', () => {
     expect(html).toContain('Operations unavailable');
     expect(html).not.toContain('Mishnayos Class');
     expect(html).not.toContain('Active households');
+    expect(html).not.toContain('private retained failure detail');
+  });
+
+  it('drops a stale occurrence resolver promise before navigation', async () => {
+    let authorization: AdminClientAuthorization = { state: 'admin', credentialVersion: 7 };
+    let generation = 1;
+    const completion = captureAdminPrivateCompletion(generation, authorization)!;
+    const resolution = deferred<{ href: string }>();
+    const navigate = vi.fn();
+    const apply = resolution.promise.then((value) => {
+      if (isAdminPrivateCompletionCurrent(completion, generation, authorization)) {
+        navigate(value.href);
+      }
+    });
+    generation += 1;
+    authorization = { state: 'revoked', credentialVersion: 8 };
+    resolution.resolve({ href: '/app/classroom/occurrences/occurrence-one' });
+    await apply;
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((next) => {
+    resolve = next;
+  });
+  return { promise, resolve };
+}
 
 function snapshot(): AdminDashboardSnapshot {
   return {

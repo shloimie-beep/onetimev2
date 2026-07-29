@@ -19,7 +19,7 @@ const SAFE_TARGET_ID = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/u;
 const SAFE_STATUS = /^[A-Za-z0-9][A-Za-z0-9 _./:-]{0,119}$/u;
 const SEARCH_KIND_SET = new Set<string>(ADMIN_SEARCH_KINDS);
 const PRIVATE_OR_PROVIDER_VALUE =
-  /(?:https?:\/\/|zoom\.us|vimeo\.com|(?:api|access|refresh|secret|token|bearer)[-_ ]?(?:key|token)?\s*[:=])/iu;
+  /(?:https?:\/\/|zoom\.us|vimeo\.com|\bbearer(?:\s+|[:=])|(?:api|access|refresh|secret|token|bearer)[-_ ]?(?:key|token)?\s*[:=])/iu;
 
 export class AdminOperationsError extends Error {
   constructor(

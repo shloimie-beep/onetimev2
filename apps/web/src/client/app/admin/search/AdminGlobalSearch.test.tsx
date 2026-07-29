@@ -11,8 +11,14 @@ import {
   clearAdminPrivateSearchState,
   postPrivateAdminNavigationResolution,
   postPrivateAdminSearch,
+  resultOptionId,
   shouldClearAdminPrivateState,
 } from './AdminGlobalSearch.tsx';
+import {
+  captureAdminPrivateCompletion,
+  isAdminPrivateCompletionCurrent,
+  type AdminClientAuthorization,
+} from '../adminPrivateCompletion.ts';
 
 const scope = {
   product: 'one_time_mishnayos',
@@ -59,7 +65,7 @@ describe('P11 private Admin global search', () => {
     expect(html).toContain('Clear recent searches');
     expect(html).toContain('role="combobox"');
     expect(html).toContain('aria-controls="admin-search-results"');
-    expect(html).toContain('aria-activedescendant="admin-search-option-student-student-one"');
+    expect(html).toContain(`aria-activedescendant="${resultOptionId(result)}"`);
     expect(html).toContain('role="option"');
     expect(html).not.toContain('?q=');
   });
@@ -159,6 +165,93 @@ describe('P11 private Admin global search', () => {
     expect(html.match(/role="listbox"/gu)).toHaveLength(1);
     expect(html.match(/aria-controls="admin-search-results"/gu)).toHaveLength(1);
     expect(html).toContain('role="group"');
-    expect(html).toContain('aria-activedescendant="admin-search-option-student-student-one"');
+    expect(html).toContain(`aria-activedescendant="${resultOptionId(result)}"`);
+  });
+
+  it('renders no private page, recent query, or request state when initially revoked', () => {
+    const html = renderToStaticMarkup(
+      <AdminGlobalSearch
+        initialPage={page}
+        initialRequest={buildAdminSearchRequest('Student One', ['student'])}
+        recentQueries={['Student One']}
+        authorization={{ state: 'revoked', credentialVersion: 8 }}
+        onSearch={() => Promise.resolve(page)}
+        onResolveOpen={() =>
+          Promise.resolve({ state: 'open', href: '/app/students/student-one', cache: 'no-store' })
+        }
+        onClearRecentQueries={() => undefined}
+        onNavigate={() => undefined}
+      />,
+    );
+    expect(html).toContain('Authorization no longer permits private Admin search');
+    expect(html).not.toContain('Student One');
+    expect(html).not.toContain('role="combobox"');
+    expect(html).not.toContain('admin-search-results');
+  });
+
+  it('drops stale search and resolver promises after generation or authorization changes', async () => {
+    let authorization: AdminClientAuthorization = { state: 'admin', credentialVersion: 7 };
+    let generation = 1;
+    const searchCompletion = captureAdminPrivateCompletion(generation, authorization)!;
+    const searchPromise = deferred<AdminSearchPage>();
+    const setPage = vi.fn();
+    const applySearch = searchPromise.promise.then((value) => {
+      if (isAdminPrivateCompletionCurrent(searchCompletion, generation, authorization)) {
+        setPage(value);
+      }
+    });
+
+    generation += 1;
+    const resolverCompletion = captureAdminPrivateCompletion(generation, authorization)!;
+    const resolverPromise = deferred<{ href: string }>();
+    const navigate = vi.fn();
+    const applyResolver = resolverPromise.promise.then((value) => {
+      if (isAdminPrivateCompletionCurrent(resolverCompletion, generation, authorization)) {
+        navigate(value.href);
+      }
+    });
+
+    generation += 1;
+    authorization = { state: 'revoked', credentialVersion: 8 };
+    searchPromise.resolve(page);
+    resolverPromise.resolve({ href: '/app/students/student-one' });
+    await Promise.all([applySearch, applyResolver]);
+    expect(setPage).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('uses injective DOM-safe option IDs for dotted and colon target IDs', () => {
+    const dotted = { ...result, targetId: 'student.one' };
+    const colon = { ...result, targetId: 'student:one' };
+    const dottedId = resultOptionId(dotted);
+    const colonId = resultOptionId(colon);
+    expect(dottedId).not.toBe(colonId);
+    expect(dottedId).toMatch(/^[A-Za-z0-9_-]+$/u);
+    expect(colonId).toMatch(/^[A-Za-z0-9_-]+$/u);
+
+    const html = renderToStaticMarkup(
+      <AdminGlobalSearch
+        initialPage={{ ...page, results: [dotted, colon] }}
+        recentQueries={[]}
+        authorization={{ state: 'admin', credentialVersion: 7 }}
+        onSearch={() => Promise.resolve(page)}
+        onResolveOpen={() =>
+          Promise.resolve({ state: 'open', href: '/app/students/student-one', cache: 'no-store' })
+        }
+        onClearRecentQueries={() => undefined}
+        onNavigate={() => undefined}
+      />,
+    );
+    expect(html.match(new RegExp(`id="${dottedId}"`, 'gu'))).toHaveLength(1);
+    expect(html.match(new RegExp(`id="${colonId}"`, 'gu'))).toHaveLength(1);
+    expect(html).toContain(`aria-activedescendant="${dottedId}"`);
   });
 });
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((next) => {
+    resolve = next;
+  });
+  return { promise, resolve };
+}

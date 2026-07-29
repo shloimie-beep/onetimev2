@@ -263,6 +263,21 @@ describe('P11 authorized Admin operations domain', () => {
         request: { query: 'content', kinds: ['content'], pageSize: 20, cursor: null },
       }),
     ).rejects.toThrow(/provider|secret/u);
+    await expect(
+      searchAuthorizedAdminOperations({
+        actor,
+        repository: new MemoryOperationsRepository(
+          dashboardFixture(),
+          searchPageFixture([
+            {
+              ...searchResult('ticket'),
+              distinguishingMetadata: 'Bearer private-token-value',
+            },
+          ]),
+        ),
+        request: { query: 'ticket', kinds: ['ticket'], pageSize: 20, cursor: null },
+      }),
+    ).rejects.toThrow(/provider|secret/u);
     for (const request of [
       { query: 'x', kinds: ['adult'], pageSize: 20, cursor: null },
       { query: 'valid', kinds: [], pageSize: 20, cursor: null },
