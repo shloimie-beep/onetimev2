@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CANONICAL_ZOOM_MEETING_SETTINGS,
   type ClassroomResource,
+  type StudentRegistrant,
   type ZoomPreparationRepository,
   type ZoomPreparationSaga,
   type ZoomPreparationUnitOfWork,
@@ -64,6 +65,10 @@ const operation: ProviderOperation = {
   effect_kind: 'mutation',
   household_id: null,
 };
+const fullBinding: ProviderRegistryBinding = {
+  ...binding,
+  allowed_operation_types: ['zoom.meeting.create_or_reuse', 'zoom.registrant.create_or_reuse'],
+};
 const saga: ZoomPreparationSaga = {
   ...scope,
   id: 'saga-1',
@@ -98,6 +103,34 @@ const resource: ClassroomResource = {
   createdAt: now,
   updatedAt: now,
 };
+const registrant: StudentRegistrant = {
+  ...scope,
+  id: 'registrant-1',
+  occurrenceId: saga.occurrenceId,
+  classroomResourceId: resource.id,
+  studentId: 'student-1',
+  householdId: 'household-1',
+  state: 'provisioning',
+  technicalAliasDigest: zoomPreparationSha256('alias'),
+  approvedClassroomName: 'Student One',
+  provisioningIdempotencyKey: 'registrant-1',
+  sourceStudentVersion: 1,
+  sourceEnrollmentVersion: 1,
+  sourceRosterVersion: 1,
+  version: 1,
+  createdAt: now,
+  updatedAt: now,
+};
+const registrantOperation: ProviderOperation = {
+  ...operation,
+  job_id: zoomPreparationSha256('registrant-operation'),
+  operation_type: 'zoom.registrant.create_or_reuse',
+  aggregate_ref: registrant.id,
+  idempotency_key: registrant.provisioningIdempotencyKey,
+  canonical_request_hash: zoomPreparationSha256('registrant-request'),
+  payload_ref: `zoom-preparation/${registrant.id}`,
+  payload_digest: zoomPreparationSha256('registrant-payload'),
+};
 const occurrence: ClassOccurrenceRecord = {
   ...scope,
   id: saga.occurrenceId,
@@ -116,6 +149,8 @@ const occurrence: ClassOccurrenceRecord = {
 
 class MemoryRepository implements ZoomPreparationRepository {
   savedSaga?: ZoomPreparationSaga;
+  savedResource?: ClassroomResource;
+  savedRegistrants: StudentRegistrant[] = [];
   async inTransaction<T>(run: (unit: ZoomPreparationUnitOfWork) => Promise<T>) {
     return run({
       getSaga: async () => null,
@@ -125,9 +160,13 @@ class MemoryRepository implements ZoomPreparationRepository {
       getRoster: async () => null,
       saveRoster: async () => undefined,
       getClassroomResource: async () => null,
-      saveClassroomResource: async () => undefined,
+      saveClassroomResource: async (value) => {
+        this.savedResource = value;
+      },
       listRegistrants: async () => [],
-      saveRegistrant: async () => undefined,
+      saveRegistrant: async (value) => {
+        this.savedRegistrants.push(value);
+      },
       saveProviderOperation: async () => undefined,
       saveLaunchGrant: async () => undefined,
       getLiveSession: async () => null,
@@ -136,6 +175,24 @@ class MemoryRepository implements ZoomPreparationRepository {
       saveReceipt: async () => undefined,
     });
   }
+}
+
+function canonicalReadback(dispatched: ProviderOperation, providerBinding = binding) {
+  return {
+    operation_id: dispatched.job_id,
+    provider: 'zoom' as const,
+    scope: dispatched.scope,
+    registry_binding_key: providerBinding.registry_binding_key,
+    provider_account_ref_hash: providerBinding.provider_account_ref_hash,
+    canonical_request_hash: dispatched.canonical_request_hash,
+    disposition: 'effect_exists' as const,
+    provider_resource_ref_hash: zoomPreparationSha256(`${dispatched.job_id}:resource`),
+    provider_acceptance_digest: zoomPreparationSha256(`${dispatched.job_id}:acceptance`),
+    reconciliation_digest: zoomPreparationSha256(`${dispatched.job_id}:reconciliation`),
+    safe_error_code: null,
+    completed_locally: true,
+    observed_at: now,
+  };
 }
 
 describe('P17 Zoom preparation worker', () => {
@@ -157,12 +214,15 @@ describe('P17 Zoom preparation worker', () => {
     const result = await runZoomPreparation({
       repository,
       provider,
-      binding,
-      saga,
+      binding: fullBinding,
+      saga: {
+        ...saga,
+        providerOperationIds: [operation.job_id, registrantOperation.job_id],
+      },
       occurrence,
       resource,
-      registrants: [],
-      operations: [operation],
+      registrants: [registrant],
+      operations: [operation, registrantOperation],
       occurredAt: now,
       timeoutMs: 1_000,
     });
@@ -173,5 +233,111 @@ describe('P17 Zoom preparation worker', () => {
       safeErrorCode: 'zoom_preparation_provider_acceptance_unknown',
     });
     expect(repository.savedSaga?.state).toBe('acceptance_unknown');
+    expect(result.registrants).toEqual([expect.objectContaining({ state: 'acceptance_unknown' })]);
+  });
+
+  it('rejects duplicate or inexact operation sets before dispatch', async () => {
+    let calls = 0;
+    const provider: ZoomPreparationProvider = {
+      reconcileOrDispatch: async () => {
+        calls += 1;
+        throw new Error('should not dispatch');
+      },
+    };
+    await expect(
+      runZoomPreparation({
+        repository: new MemoryRepository(),
+        provider,
+        binding,
+        saga: { ...saga, providerOperationIds: [operation.job_id, operation.job_id] },
+        occurrence,
+        resource,
+        registrants: [],
+        operations: [operation, operation],
+        occurredAt: now,
+        timeoutMs: 1_000,
+      }),
+    ).rejects.toThrow('invalid_worker_input');
+    expect(calls).toBe(0);
+  });
+
+  it('stops before registrants and persists safe failure when the meeting is rejected', async () => {
+    const repository = new MemoryRepository();
+    let calls = 0;
+    const provider: ZoomPreparationProvider = {
+      reconcileOrDispatch: async ({ operation: dispatched }) => {
+        calls += 1;
+        return {
+          operation: dispatched,
+          outcome: {
+            kind: 'permanently_rejected',
+            safe_error_code: 'zoom_meeting_rejected',
+          },
+        };
+      },
+    };
+    const result = await runZoomPreparation({
+      repository,
+      provider,
+      binding: fullBinding,
+      saga: {
+        ...saga,
+        providerOperationIds: [operation.job_id, registrantOperation.job_id],
+      },
+      occurrence,
+      resource,
+      registrants: [registrant],
+      operations: [operation, registrantOperation],
+      occurredAt: now,
+      timeoutMs: 1_000,
+    });
+    expect(calls).toBe(1);
+    expect(result).toMatchObject({
+      dispatched: 1,
+      saga: { state: 'failed' },
+      resource: { state: 'failed' },
+      registrants: [{ state: 'failed' }],
+    });
+    expect(repository.savedSaga?.state).toBe('failed');
+  });
+
+  it('persists readback quarantine instead of throwing after an accepted meeting', async () => {
+    const repository = new MemoryRepository();
+    const provider: ZoomPreparationProvider = {
+      reconcileOrDispatch: async ({ operation: dispatched }) => ({
+        operation: dispatched,
+        outcome: {
+          kind: 'accepted',
+          provider_acceptance_digest: zoomPreparationSha256(`${dispatched.job_id}:acceptance`),
+          completed_locally: true,
+        },
+        canonicalReadback: canonicalReadback(dispatched),
+      }),
+    };
+    const result = await runZoomPreparation({
+      repository,
+      provider,
+      binding,
+      saga,
+      occurrence,
+      resource,
+      registrants: [],
+      operations: [operation],
+      occurredAt: now,
+      timeoutMs: 1_000,
+    });
+    expect(result).toMatchObject({
+      dispatched: 1,
+      saga: {
+        state: 'acceptance_unknown',
+        safeErrorCode: 'zoom_preparation_invalid_readback',
+      },
+      resource: {
+        state: 'acceptance_unknown',
+        safeErrorCode: 'zoom_preparation_invalid_readback',
+      },
+    });
+    expect(repository.savedSaga?.state).toBe('acceptance_unknown');
+    expect(repository.savedResource?.state).toBe('acceptance_unknown');
   });
 });

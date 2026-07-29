@@ -11,9 +11,11 @@ import {
   ZoomPreparationError,
   buildPreparationPreview,
   buildRosterSnapshot,
+  confirmZoomPreparationRequestHash,
   confirmPreparation,
   createPreparationDraft,
   createProvisioningPlan,
+  prepareZoomPreviewRequestHash,
 } from '../../../../../../../packages/domain/src/classroom/zoom-preparation/index.ts';
 
 export class ZoomPreparationService {
@@ -25,6 +27,7 @@ export class ZoomPreparationService {
     replayed: boolean;
   }> {
     assertPrepareActor(command);
+    assertCanonicalRequestHash(command.requestHash, prepareZoomPreviewRequestHash(command));
     const draft = createPreparationDraft({
       scope: command.scope,
       occurrence: command.occurrence,
@@ -77,6 +80,10 @@ export class ZoomPreparationService {
     command: ConfirmZoomPreparationCommand,
     occurrence: ClassOccurrenceRecord,
   ): Promise<{ saga: ZoomPreparationSaga; replayed: boolean }> {
+    assertCanonicalRequestHash(
+      command.requestHash,
+      confirmZoomPreparationRequestHash(command, occurrence),
+    );
     return this.repository.inTransaction(async (unit) => {
       const receipt = await unit.getReceipt(command.actor, command.idempotencyKey);
       if (receipt) {
@@ -126,6 +133,15 @@ export class ZoomPreparationService {
       });
       return { saga: plan.saga, replayed: false };
     });
+  }
+}
+
+function assertCanonicalRequestHash(provided: string, canonical: string) {
+  if (provided !== canonical) {
+    throw new ZoomPreparationError(
+      ZOOM_PREPARATION_ERROR_CODES.conflict,
+      'Request hash does not match the canonical validated command.',
+    );
   }
 }
 

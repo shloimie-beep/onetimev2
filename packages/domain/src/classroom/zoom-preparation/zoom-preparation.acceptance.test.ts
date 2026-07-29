@@ -23,9 +23,11 @@ import {
   createPreparationDraft,
   createProvisioningPlan,
   deriveStudentJoinState,
+  finalizeProvisioning,
   heartbeatLiveStudentSession,
   issueLaunchGrant,
   planDisposableCanaryCleanup,
+  revokeLiveStudentSession,
   verifyMeetingReadback,
   verifyRegistrantReadbacks,
   zoomPreparationSha256,
@@ -103,24 +105,28 @@ function candidate(index: number, overrides: Partial<ZoomStudentPreparationInput
   } satisfies ZoomStudentPreparationInput;
 }
 
-function prepared(students = [candidate(1), candidate(2), candidate(3)]) {
+function prepared(
+  students = [candidate(1), candidate(2), candidate(3)],
+  sourceOccurrence = occurrence,
+  rosterVersion = 5,
+) {
   const draft = createPreparationDraft({
     scope,
-    occurrence,
-    rosterVersion: 5,
+    occurrence: sourceOccurrence,
+    rosterVersion,
     trigger: 'automatic_24h',
     occurredAt: generatedAt,
   });
   const roster = buildRosterSnapshot({
     scope,
-    occurrence,
-    rosterVersion: 5,
+    occurrence: sourceOccurrence,
+    rosterVersion,
     students,
     generatedAt,
   });
   const previewed = buildPreparationPreview({
     saga: draft,
-    occurrence,
+    occurrence: sourceOccurrence,
     roster,
     occurredAt: generatedAt,
   });
@@ -133,7 +139,7 @@ function prepared(students = [candidate(1), candidate(2), candidate(3)]) {
   });
   const plan = createProvisioningPlan({
     saga: confirmed,
-    occurrence,
+    occurrence: sourceOccurrence,
     roster,
     binding,
     occurredAt: generatedAt,
@@ -193,11 +199,41 @@ describe('P17 Zoom preparation acceptance', () => {
     });
     expect(data.previewed.saga.state).toBe('preview_ready');
     expect(data.confirmed.confirmedPreviewDigest).toBe(data.previewed.preview.digest);
+    expect(() =>
+      buildRosterSnapshot({
+        scope,
+        occurrence,
+        rosterVersion: 6,
+        students: [
+          candidate(1, {
+            enrollment: { ...candidate(1).enrollment, studentId: 'student-2' },
+          }),
+        ],
+        generatedAt,
+      }),
+    ).toThrow('exact Student and household');
+    expect(() =>
+      buildRosterSnapshot({
+        scope,
+        occurrence,
+        rosterVersion: 6,
+        students: [
+          candidate(1, {
+            enrollment: { ...candidate(1).enrollment, householdId: 'household-2' },
+          }),
+        ],
+        generatedAt,
+      }),
+    ).toThrow('exact Student and household');
   });
 
   it('OTV2-CLASSROOM-069-AC01 plans one stable app-owned meeting per occurrence', () => {
     const first = prepared();
-    const replay = prepared();
+    const replay = prepared(
+      undefined,
+      { ...occurrence, scheduleVersion: occurrence.scheduleVersion + 1, version: 5 },
+      6,
+    );
     expect(first.plan.resource).toMatchObject({
       occurrenceId: occurrence.id,
       purpose: 'normal_class',
@@ -210,6 +246,18 @@ describe('P17 Zoom preparation acceptance', () => {
         (operation) => operation.operation_type === 'zoom.meeting.create_or_reuse',
       ),
     ).toHaveLength(1);
+    expect(replay.plan.registrants.map((registrant) => registrant.id)).toEqual(
+      first.plan.registrants.map((registrant) => registrant.id),
+    );
+    expect(() =>
+      createProvisioningPlan({
+        saga: first.confirmed,
+        occurrence: { ...occurrence, version: occurrence.version + 1 },
+        roster: first.roster,
+        binding,
+        occurredAt: generatedAt,
+      }),
+    ).toThrow('exact confirmed occurrence');
   });
 
   it('OTV2-CLASSROOM-070-AC01 creates one distinct registrant per included Student', () => {
@@ -228,6 +276,8 @@ describe('P17 Zoom preparation acceptance', () => {
     const now = '2026-07-30T15:55:00.000Z';
     expect(
       deriveStudentJoinState({
+        scope,
+        studentId: 'student-1',
         occurrence: readyOccurrence,
         resource: data.resource,
         registrant: data.registrants[0]!,
@@ -241,6 +291,28 @@ describe('P17 Zoom preparation acceptance', () => {
       occurrenceId: occurrence.id,
       exposesRawZoomUrl: false,
     });
+    expect(
+      deriveStudentJoinState({
+        scope,
+        studentId: 'student-2',
+        occurrence: readyOccurrence,
+        resource: data.resource,
+        registrant: data.registrants[0]!,
+        currentStudentAuthorized: true,
+        now,
+      }),
+    ).toMatchObject({ available: false, safeCode: 'registrant_not_ready' });
+    expect(
+      deriveStudentJoinState({
+        scope,
+        studentId: 'student-1',
+        occurrence: readyOccurrence,
+        resource: { ...data.resource, occurrenceId: 'other-occurrence' },
+        registrant: data.registrants[0]!,
+        currentStudentAuthorized: true,
+        now,
+      }),
+    ).toMatchObject({ available: false, safeCode: 'preparation_pending' });
     const secret = 'opaque-single-use-secret';
     const grant = issueLaunchGrant({
       scope,
@@ -397,28 +469,161 @@ describe('P17 Zoom preparation acceptance', () => {
         occurredAt: '2026-07-30T15:55:00.000Z',
       }),
     ).toThrow('required');
+    expect(() =>
+      issueLaunchGrant({
+        scope,
+        studentId: 'student-1',
+        householdId: 'household-1',
+        studentSessionId: 'session-1',
+        deviceLineageId: 'tablet-1',
+        occurrence: { ...occurrence, id: 'other-occurrence', state: 'ready' },
+        registrant: data.registrants[0]!,
+        currentStudentAuthorized: true,
+        grantDigest: zoomPreparationSha256('secret'),
+        studentVersion: 3,
+        enrollmentVersion: 2,
+        serviceAccountConsentVersion: 2,
+        recordingParticipationConsentVersion: 3,
+        occurredAt: '2026-07-30T15:55:00.000Z',
+      }),
+    ).toThrow('required');
+    expect(() =>
+      acquireLiveStudentSession({
+        scope,
+        existing: { ...existing, studentId: 'student-2' },
+        studentId: 'student-1',
+        occurrenceId: occurrence.id,
+        studentSessionId: 'session-1',
+        deviceLineageId: 'tablet-1',
+        occurredAt: '2026-07-30T15:55:10.000Z',
+      }),
+    ).toThrow('cross-bound');
+    expect(() =>
+      revokeLiveStudentSession({
+        actor: { ...actor, role: 'parent' } as unknown as ClassroomAdminActor,
+        session: existing,
+        occurredAt: '2026-07-30T15:55:10.000Z',
+      }),
+    ).toThrow('Admin authority');
   });
 
   it('OTV2-CLASSROOM-079-AC01 isolates disposable canary cleanup from normal classroom', () => {
     const data = prepared();
+    const canonicalProviderResourceRefDigest = zoomPreparationSha256('canonical');
+    const canaryDigest = zoomPreparationSha256('old-canary');
+    const canonicalSet = [canonicalProviderResourceRefDigest];
+    const registryEvidence = {
+      registryBindingKey: binding.registry_binding_key,
+      purpose: 'disposable_canary' as const,
+      providerResourceRefDigest: canaryDigest,
+      canonicalResourceSetDigest: zoomPreparationSha256(JSON.stringify(canonicalSet)),
+      reconciliationDigest: zoomPreparationSha256('canary-registry-readback'),
+      observedAt: generatedAt,
+    };
     expect(
       planDisposableCanaryCleanup({
         purpose: 'disposable_canary',
-        providerResourceRefDigest: zoomPreparationSha256('old-canary'),
-        canonicalClassroomResourceIds: [data.plan.resource.id],
+        providerResourceRefDigest: canaryDigest,
+        canonicalProviderResourceRefDigests: canonicalSet,
+        registryEvidence,
       }),
     ).toMatchObject({
       cleanupAuthorized: true,
-      canonicalClassroomResourceIds: [data.plan.resource.id],
+      canonicalProviderResourceRefDigests: canonicalSet,
       blocksNormalClassroom: false,
     });
     expect(() =>
       planDisposableCanaryCleanup({
         purpose: 'normal_class',
-        providerResourceRefDigest: zoomPreparationSha256('canonical'),
-        canonicalClassroomResourceIds: [data.plan.resource.id],
+        providerResourceRefDigest: canonicalProviderResourceRefDigest,
+        canonicalProviderResourceRefDigests: canonicalSet,
+        registryEvidence: {
+          ...registryEvidence,
+          providerResourceRefDigest: canonicalProviderResourceRefDigest,
+        },
       }),
     ).toThrow('disposable canary');
+    expect(() =>
+      planDisposableCanaryCleanup({
+        purpose: 'disposable_canary',
+        providerResourceRefDigest: canonicalProviderResourceRefDigest,
+        canonicalProviderResourceRefDigests: canonicalSet,
+        registryEvidence: {
+          ...registryEvidence,
+          providerResourceRefDigest: canonicalProviderResourceRefDigest,
+        },
+      }),
+    ).toThrow('disposable canary');
+    expect(data.plan.resource.id).toBeTruthy();
+  });
+
+  it('rejects duplicate accepted provider results and readback extras/cross-types', () => {
+    const data = prepared();
+    const accepted = {
+      operation: data.plan.operations[0]!,
+      outcome: {
+        kind: 'accepted' as const,
+        provider_acceptance_digest: zoomPreparationSha256('accepted'),
+        completed_locally: true,
+      },
+    };
+    expect(() =>
+      finalizeProvisioning({
+        saga: data.plan.saga,
+        results: [accepted, accepted],
+        occurredAt: generatedAt,
+      }),
+    ).toThrow('unique');
+
+    const verified = providerVerified();
+    const meetingOperation = verified.plan.operations[0]!;
+    expect(() =>
+      verifyMeetingReadback({
+        resource: verified.plan.resource,
+        occurrence,
+        operation: { ...meetingOperation, operation_type: 'zoom.registrant.create_or_reuse' },
+        readback: {
+          operationId: meetingOperation.job_id,
+          providerMeetingRefDigest: zoomPreparationSha256('meeting'),
+          occurrenceId: occurrence.id,
+          startTime: occurrence.startsAt,
+          durationMinutes: 60,
+          timeZone: 'Asia/Jerusalem',
+          settings: CANONICAL_ZOOM_MEETING_SETTINGS,
+          observedAt: generatedAt,
+          reconciliationDigest: zoomPreparationSha256('meeting-readback'),
+        },
+      }),
+    ).toThrow('exact occurrence');
+    expect(() =>
+      verifyRegistrantReadbacks({
+        resource: verified.resource,
+        registrants: verified.plan.registrants,
+        operations: verified.plan.operations,
+        readbacks: [
+          ...verified.plan.registrants.map((registrant, index) => ({
+            operationId: verified.plan.operations[index + 1]!.job_id,
+            providerMeetingRefDigest: verified.resource.providerMeetingRefDigest!,
+            providerRegistrantRefDigest: zoomPreparationSha256(`extra-${index}`),
+            occurrenceId: occurrence.id,
+            studentId: registrant.studentId,
+            active: true as const,
+            observedAt: generatedAt,
+            reconciliationDigest: zoomPreparationSha256(`extra-readback-${index}`),
+          })),
+          {
+            operationId: zoomPreparationSha256('extra-operation'),
+            providerMeetingRefDigest: verified.resource.providerMeetingRefDigest!,
+            providerRegistrantRefDigest: zoomPreparationSha256('extra-registrant'),
+            occurrenceId: occurrence.id,
+            studentId: 'student-extra',
+            active: true,
+            observedAt: generatedAt,
+            reconciliationDigest: zoomPreparationSha256('extra-readback'),
+          },
+        ],
+      }),
+    ).toThrow('one distinct registrant');
   });
 
   it('OTV2-CLASSROOM-188-AC01 locks every participant and recording setting', () => {

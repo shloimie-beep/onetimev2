@@ -8,7 +8,7 @@ import type {
   ZoomPreparationSaga,
   ZoomPreparationUnitOfWork,
 } from '../../../../../../../packages/contracts/src/classroom/zoom-preparation/index.ts';
-import { zoomPreparationSha256 } from '../../../../../../../packages/domain/src/classroom/zoom-preparation/index.ts';
+import { prepareZoomPreviewRequestHash } from '../../../../../../../packages/domain/src/classroom/zoom-preparation/index.ts';
 import { ZoomPreparationService } from './service.ts';
 
 class MemoryRepository implements ZoomPreparationRepository {
@@ -45,7 +45,7 @@ class MemoryRepository implements ZoomPreparationRepository {
 function commandFixture(): PrepareZoomPreviewCommand {
   const scope = { accountKey: 'account-1', productKey: 'one-time' };
   const now = '2026-07-29T16:00:00.000Z';
-  return {
+  const command: PrepareZoomPreviewCommand = {
     actor: { role: 'scheduler', principalId: 'scheduler-1' },
     scope,
     occurrence: {
@@ -98,9 +98,10 @@ function commandFixture(): PrepareZoomPreviewCommand {
     trigger: 'automatic_24h',
     rosterVersion: 1,
     idempotencyKey: 'prepare-1',
-    requestHash: zoomPreparationSha256('request'),
+    requestHash: '',
     occurredAt: now,
   };
+  return { ...command, requestHash: prepareZoomPreviewRequestHash(command) };
 }
 
 describe('P17 Zoom preparation server service', () => {
@@ -122,5 +123,15 @@ describe('P17 Zoom preparation server service', () => {
     await expect(
       new ZoomPreparationService(new MemoryRepository()).preparePreview(command),
     ).rejects.toThrow('requires scoped Admin');
+  });
+
+  it('rejects a request hash not recomputed from the canonical command', async () => {
+    const command = commandFixture();
+    await expect(
+      new ZoomPreparationService(new MemoryRepository()).preparePreview({
+        ...command,
+        rosterVersion: command.rosterVersion + 1,
+      }),
+    ).rejects.toThrow('canonical validated command');
   });
 });

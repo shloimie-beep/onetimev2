@@ -21,3 +21,31 @@ The worker test additionally proves acceptance-unknown dispatch enters
 readback-only quarantine without blind retry. Persistence tests prove
 parameterized transactions, rollback, migration-only DDL, and the seven-table
 schema contract.
+
+## Correction proof
+
+The reconciled correction pass adds negative assertions for every recorded
+semantic finding:
+
+- roster entries reject enrollment Student or household identity drift;
+- provisioning binds the confirmed occurrence version while meeting,
+  registrant, and provider-operation identities remain stable across source
+  schedule/roster versions;
+- join state, launch grants, live-session acquire/reconnect, and Admin revoke
+  reject cross-occurrence, cross-Student, cross-household, cross-account, or
+  cross-product records;
+- worker inputs require one exact meeting operation plus one exact, unique
+  operation for every registrant;
+- meeting and registrant readbacks reject missing, duplicate, extra,
+  cross-type, or cross-aggregate evidence;
+- duplicate provider results are rejected, meeting failure or unknown stops
+  before registrant dispatch, and invalid/missing accepted readback is durably
+  quarantined with a safe code;
+- disposable-canary cleanup requires exact reconciled registry evidence,
+  verifies the canonical provider-resource set digest, and rejects canonical
+  targets; and
+- server request hashes are recomputed from the canonical command before
+  receipt/replay handling.
+
+The provider-free correction suite passes 21 tests across the four P17
+domain, database, server, and worker files.

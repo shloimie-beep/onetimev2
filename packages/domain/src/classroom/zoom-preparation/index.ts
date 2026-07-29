@@ -10,10 +10,12 @@ import {
   ZOOM_PREPARATION_ERROR_CODES,
   ZOOM_REMINDER_LEAD_MS,
   type ClassroomResource,
+  type ConfirmZoomPreparationCommand,
   type LaunchGrantRecord,
   type LiveStudentSession,
   type MeetingSdkBootstrap,
   type OccurrenceRosterSnapshot,
+  type PrepareZoomPreviewCommand,
   type StudentJoinState,
   type StudentRegistrant,
   type ZoomMeetingReadback,
@@ -48,6 +50,37 @@ export class ZoomPreparationError extends Error {
 
 export function zoomPreparationSha256(value: string | Uint8Array) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+export function prepareZoomPreviewRequestHash(command: PrepareZoomPreviewCommand) {
+  return zoomPreparationSha256(
+    canonicalJson({
+      actor: command.actor,
+      scope: command.scope,
+      occurrence: command.occurrence,
+      students: command.students,
+      trigger: command.trigger,
+      rosterVersion: command.rosterVersion,
+      occurredAt: command.occurredAt,
+    }),
+  );
+}
+
+export function confirmZoomPreparationRequestHash(
+  command: ConfirmZoomPreparationCommand,
+  occurrence: ClassOccurrenceRecord,
+) {
+  return zoomPreparationSha256(
+    canonicalJson({
+      actor: command.actor,
+      sagaId: command.sagaId,
+      expectedVersion: command.expectedVersion,
+      previewDigest: command.previewDigest,
+      occurredAt: command.occurredAt,
+      providerBinding: command.providerBinding,
+      occurrence,
+    }),
+  );
 }
 
 export function createPreparationDraft(input: {
@@ -104,6 +137,15 @@ export function buildRosterSnapshot(input: {
     seen.add(candidate.student.studentId);
     assertSameScope(input.scope, candidate.student);
     assertSameScope(input.scope, candidate.enrollment);
+    if (
+      candidate.enrollment.studentId !== candidate.student.studentId ||
+      candidate.enrollment.householdId !== candidate.student.householdId
+    ) {
+      fail(
+        'invalidRoster',
+        'Enrollment must bind the exact Student and household eligibility identity.',
+      );
+    }
     const safeReason = rosterReason(candidate, input.occurrence.seriesId);
     return {
       ...input.scope,
@@ -240,6 +282,7 @@ export function createProvisioningPlan(input: {
     !preview ||
     input.saga.confirmedPreviewDigest !== preview.digest ||
     input.occurrence.id !== input.saga.occurrenceId ||
+    input.occurrence.version !== preview.occurrenceVersion ||
     input.occurrence.scheduleVersion !== input.saga.scheduleVersion ||
     input.roster.id !== preview.rosterSnapshotId ||
     input.roster.digest !== preview.rosterDigest ||
@@ -252,7 +295,7 @@ export function createProvisioningPlan(input: {
   }
   assertZoomBinding(input.binding);
   const resourceId = zoomPreparationSha256(
-    `${input.saga.occurrenceId}:normal_class:${input.saga.scheduleVersion}:${input.saga.rosterVersion}`,
+    `${input.saga.accountKey}:${input.saga.productKey}:${input.saga.occurrenceId}:normal_class`,
   );
   const resource: ClassroomResource = {
     id: resourceId,
@@ -355,6 +398,8 @@ export function verifyMeetingReadback(input: {
   readback: ZoomMeetingReadback;
 }): ClassroomResource {
   if (
+    input.operation.operation_type !== 'zoom.meeting.create_or_reuse' ||
+    input.operation.aggregate_ref !== input.resource.id ||
     input.readback.operationId !== input.operation.job_id ||
     input.readback.occurrenceId !== input.resource.occurrenceId ||
     input.readback.startTime !== input.occurrence.startsAt ||
@@ -384,8 +429,25 @@ export function verifyRegistrantReadbacks(input: {
   if (!input.resource.providerMeetingRefDigest) {
     fail('invalidReadback', 'Registrant readback requires an active verified meeting.');
   }
+  const registrantOperations = input.operations.filter(
+    (operation) => operation.operation_type === 'zoom.registrant.create_or_reuse',
+  );
+  const registrantIds = new Set(input.registrants.map((registrant) => registrant.id));
+  const operationIds = new Set(registrantOperations.map((operation) => operation.job_id));
+  const operationAggregates = new Set(
+    registrantOperations.map((operation) => operation.aggregate_ref),
+  );
   const byStudent = new Map(input.readbacks.map((readback) => [readback.studentId, readback]));
-  if (byStudent.size !== input.registrants.length) {
+  const readbackOperationIds = new Set(input.readbacks.map((readback) => readback.operationId));
+  if (
+    input.readbacks.length !== input.registrants.length ||
+    byStudent.size !== input.registrants.length ||
+    readbackOperationIds.size !== input.readbacks.length ||
+    registrantOperations.length !== input.registrants.length ||
+    operationIds.size !== registrantOperations.length ||
+    operationAggregates.size !== registrantIds.size ||
+    [...operationAggregates].some((aggregate) => !registrantIds.has(aggregate))
+  ) {
     fail('invalidReadback', 'Every included Student requires one distinct registrant readback.');
   }
   return input.registrants.map((registrant) => {
@@ -396,6 +458,8 @@ export function verifyRegistrantReadbacks(input: {
     if (
       !readback ||
       !operation ||
+      operation.operation_type !== 'zoom.registrant.create_or_reuse' ||
+      operation.aggregate_ref !== registrant.id ||
       readback.operationId !== operation.job_id ||
       readback.occurrenceId !== registrant.occurrenceId ||
       readback.providerMeetingRefDigest !== input.resource.providerMeetingRefDigest ||
@@ -422,6 +486,15 @@ export function finalizeProvisioning(input: {
 }): ZoomPreparationSaga {
   if (input.saga.state !== 'provisioning') {
     fail('invalidState', 'Provider results apply only to a provisioning saga.');
+  }
+  const resultIds = input.results.map((result) => result.operation.job_id);
+  const distinctResultIds = new Set(resultIds);
+  const expectedIds = new Set(input.saga.providerOperationIds);
+  if (
+    distinctResultIds.size !== resultIds.length ||
+    resultIds.some((operationId) => !expectedIds.has(operationId))
+  ) {
+    fail('invalidState', 'Provider results must be unique and belong to the exact saga.');
   }
   const unknown = input.results
     .filter((result) => result.outcome.kind === 'acceptance_unknown')
@@ -464,16 +537,34 @@ export function finalizeProvisioning(input: {
 }
 
 export function deriveStudentJoinState(input: {
+  scope: ZoomPreparationScope;
+  studentId: string;
   occurrence: ClassOccurrenceRecord;
   resource: ClassroomResource | null;
   registrant: StudentRegistrant | null;
   currentStudentAuthorized: boolean;
   now: string;
 }): StudentJoinState {
+  const occurrenceBound =
+    input.occurrence.accountKey === input.scope.accountKey &&
+    input.occurrence.productKey === input.scope.productKey;
+  const resourceBound =
+    !!input.resource &&
+    input.resource.accountKey === input.scope.accountKey &&
+    input.resource.productKey === input.scope.productKey &&
+    input.resource.occurrenceId === input.occurrence.id;
+  const registrantBound =
+    !!input.registrant &&
+    input.registrant.accountKey === input.scope.accountKey &&
+    input.registrant.productKey === input.scope.productKey &&
+    input.registrant.occurrenceId === input.occurrence.id &&
+    input.registrant.studentId === input.studentId &&
+    !!input.resource &&
+    input.registrant.classroomResourceId === input.resource.id;
   let safeCode: StudentJoinState['safeCode'] = 'join_available';
-  if (!input.currentStudentAuthorized) safeCode = 'student_not_authorized';
-  else if (!input.resource || input.resource.state !== 'active') safeCode = 'preparation_pending';
-  else if (!input.registrant || input.registrant.state !== 'active')
+  if (!input.currentStudentAuthorized || !occurrenceBound) safeCode = 'student_not_authorized';
+  else if (!resourceBound || input.resource?.state !== 'active') safeCode = 'preparation_pending';
+  else if (!registrantBound || input.registrant?.state !== 'active')
     safeCode = 'registrant_not_ready';
   else if (
     !['ready', 'live'].includes(input.occurrence.state) ||
@@ -506,6 +597,8 @@ export function issueLaunchGrant(input: {
   recordingParticipationConsentVersion: number;
   occurredAt: string;
 }): LaunchGrantRecord {
+  assertSameScope(input.scope, input.occurrence);
+  assertSameScope(input.scope, input.registrant);
   if (
     !input.currentStudentAuthorized ||
     input.registrant.state !== 'active' ||
@@ -514,6 +607,7 @@ export function issueLaunchGrant(input: {
     Date.parse(input.occurredAt) > Date.parse(input.occurrence.joinClosesAt) ||
     input.registrant.studentId !== input.studentId ||
     input.registrant.householdId !== input.householdId ||
+    input.registrant.occurrenceId !== input.occurrence.id ||
     !SHA256.test(input.grantDigest)
   ) {
     fail(
@@ -589,6 +683,18 @@ export function acquireLiveStudentSession(input: {
 }): { disposition: 'acquired' | 'reconnected'; session: LiveStudentSession } {
   const now = Date.parse(input.occurredAt);
   if (
+    input.existing &&
+    (input.existing.accountKey !== input.scope.accountKey ||
+      input.existing.productKey !== input.scope.productKey ||
+      input.existing.studentId !== input.studentId ||
+      input.existing.occurrenceId !== input.occurrenceId)
+  ) {
+    fail(
+      'concurrentDeviceDenied',
+      'Existing live-session record is cross-bound to another scope, Student, or occurrence.',
+    );
+  }
+  if (
     input.existing?.state === 'active' &&
     Date.parse(input.existing.leaseExpiresAt) > now &&
     (input.existing.studentSessionId !== input.studentSessionId ||
@@ -645,7 +751,7 @@ export function revokeLiveStudentSession(input: {
   session: LiveStudentSession;
   occurredAt: string;
 }): LiveStudentSession {
-  assertSameScope(input.actor, input.session);
+  assertAdmin(input.actor, input.session);
   return {
     ...input.session,
     state: 'revoked',
@@ -658,15 +764,38 @@ export function revokeLiveStudentSession(input: {
 export function planDisposableCanaryCleanup(input: {
   purpose: 'disposable_canary' | 'normal_class';
   providerResourceRefDigest: string;
-  canonicalClassroomResourceIds: readonly string[];
+  canonicalProviderResourceRefDigests: readonly string[];
+  registryEvidence: {
+    registryBindingKey: string;
+    purpose: 'disposable_canary';
+    providerResourceRefDigest: string;
+    canonicalResourceSetDigest: string;
+    reconciliationDigest: string;
+    observedAt: string;
+  };
 }) {
-  if (input.purpose !== 'disposable_canary' || !SHA256.test(input.providerResourceRefDigest)) {
+  const canonicalDigests = [...input.canonicalProviderResourceRefDigests].sort();
+  if (
+    input.purpose !== 'disposable_canary' ||
+    !SHA256.test(input.providerResourceRefDigest) ||
+    input.registryEvidence.purpose !== 'disposable_canary' ||
+    input.registryEvidence.providerResourceRefDigest !== input.providerResourceRefDigest ||
+    !input.registryEvidence.registryBindingKey.trim() ||
+    !SHA256.test(input.registryEvidence.reconciliationDigest) ||
+    !Number.isFinite(Date.parse(input.registryEvidence.observedAt)) ||
+    canonicalDigests.some((digest) => !SHA256.test(digest)) ||
+    new Set(canonicalDigests).size !== canonicalDigests.length ||
+    input.registryEvidence.canonicalResourceSetDigest !==
+      zoomPreparationSha256(canonicalJson(canonicalDigests)) ||
+    canonicalDigests.includes(input.providerResourceRefDigest)
+  ) {
     fail('accessDenied', 'Cleanup may target only an exact disposable canary digest.');
   }
   return {
     cleanupAuthorized: true,
     targetDigest: input.providerResourceRefDigest,
-    canonicalClassroomResourceIds: input.canonicalClassroomResourceIds,
+    canonicalProviderResourceRefDigests: canonicalDigests,
+    registryEvidenceDigest: zoomPreparationSha256(canonicalJson(input.registryEvidence)),
     blocksNormalClassroom: false,
   } as const;
 }
