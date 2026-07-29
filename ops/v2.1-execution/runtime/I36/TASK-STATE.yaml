@@ -15,17 +15,18 @@ dependency_heads:
   P27: e706587bfe581f881fb072271b15b4123f9aabe6
   P28: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
   P32: 6a33944a75e717041b2f951134459769b8fc2617
-status: claimed
-phase: integration
+status: ready
+phase: integration_waiting
 claimed_by: codex-i36-worker-a2ae8e13
 claim_time: '2026-07-29T01:14:50Z'
 claim_id: a2ae8e13-f123-4190-badc-58269ced4219
 lease_id: d2df925f-32a0-42e6-8ed5-fd018962f87d
 lease_issued_at: '2026-07-29T01:08:19Z'
 lease_expires_at: '2026-07-29T02:08:19Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T01:14:50Z'
-controller_authorization_sha: 6dbbb849db7373fb5caaffff4ad5bf3e547e72b1
+lease_released_at: '2026-07-29T01:26:34Z'
+last_heartbeat_at: '2026-07-29T01:26:34Z'
+controller_authorization_sha: 5cc06e9a3692f1833be737b53d92595bc2bf3e95
+withdrawal_control_sha: 5cc06e9a3692f1833be737b53d92595bc2bf3e95
 ready_entry_state_based_on_control_head_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
 ready_entry_payload_digest: 8733b95aa3a627a63f1fa6ecf0e9d04f8a21af9b3323ef712a67181f99bfe20a
 claim_mode: resume_existing
@@ -273,10 +274,12 @@ completed_steps:
   - Verified containing control 6dbbb849db7373fb5caaffff4ad5bf3e547e72b1, ready-entry parent 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb, exact existing integration head 49431959f58f284bdc13ca931acf09f980fc483a, claim a2ae8e13-f123-4190-badc-58269ced4219, sole RELEASE_INTEGRATOR lease, canonical ready digest, and zero effect locks.
   - Recorded queued P08 interface item 668de637-6114-4519-8460-6608d825e0d5 and its optimistic target without reading, scope-admitting, or merging the source.
   - Seeded the P08-interface atomic claim checkpoint in the three I36 runtime files only.
+  - Observed control withdrawal of the P08 interface item before source admission and performed no source read, merge, cherry-pick, steward action, or shared-path edit.
+  - Released claim a2ae8e13-f123-4190-badc-58269ced4219 and RELEASE_INTEGRATOR lease d2df925f-32a0-42e6-8ed5-fd018962f87d with zero external effects.
 remaining_steps:
-  - Push and report this exact three-file atomic claim checkpoint to C00.
-  - Stop until C00 reconciles the claim and issues an exact target-CAS rebind before any source read or merge.
-next_action: Push the P08-interface atomic claim checkpoint, report its exact head and parent, and stop for C00 reconciliation and target-CAS rebind.
+  - Push and report this exact three-file withdrawal/release checkpoint to C00.
+  - Await a new exact C00 authorization before any integration, source admission, or steward work.
+next_action: Push and report the P08 interface withdrawal/release checkpoint, then stop until a new exact control authorization.
 requirements: {}
 acceptance_cases: {}
 changed_paths:

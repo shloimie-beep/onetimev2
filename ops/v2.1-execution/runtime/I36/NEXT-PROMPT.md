@@ -1,22 +1,16 @@
-# I36 P08 Interface Atomic Claim — Next Prompt
+# I36 Integration — Next Prompt
 
-Stop after publishing the atomic claim checkpoint.
+The P08 interface item was withdrawn before source admission. Claim
+`a2ae8e13-f123-4190-badc-58269ced4219` and RELEASE_INTEGRATOR lease
+`d2df925f-32a0-42e6-8ed5-fd018962f87d` are released with zero effects.
 
-Before reading or merging the P08 source:
+Before any further integration work:
 
 1. fetch `origin/codex/v21-control` and `origin/codex/v21-integration`;
-2. require C00 to have reconciled I36 claim
-   `a2ae8e13-f123-4190-badc-58269ced4219`;
-3. require the expected integration head to equal the exact pushed atomic claim
-   head;
-4. require an unexpired RELEASE_INTEGRATOR lease whose phase scope authorizes
-   P08 interface integration rather than claim-only work;
-5. require a rebound merge item whose expected target equals the atomic claim
-   head and verify its canonical payload digest;
-6. only then perform source ancestry, scope, state/handoff, export-blob,
-   canonical contract-digest, implementation-ancestry, and zero-effect
-   admission checks.
+2. require a new exact C00 ready/resume entry and unexpired lease;
+3. require its expected integration head to equal the exact pushed release
+   checkpoint;
+4. verify the canonical ready and merge-item payload digests;
+5. only then read a queued source for admission.
 
-Until those checks pass, do not read the queued source for admission, merge,
-apply a steward request, edit shared registrations, move a candidate, or
-perform any external effect.
+Do not merge P08 from the withdrawn item or reuse the released claim.
