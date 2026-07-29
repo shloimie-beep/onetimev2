@@ -425,3 +425,35 @@ paths, rerun the three focused P10 files with all 20 tests plus typecheck,
 then publish an I36 metadata-only release checkpoint, release lease
 `8f1bf970-a69c-463d-98d2-a97f3591fd10`, keep effects at zero, and stop for
 C00 reconciliation.
+
+P10 is integrated at final I36 release
+`f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635`. Exact merge
+`522fe505eca226ee7053e38bb67be5af78af79d6` has parents
+`6cb169c4addd745183c10be605a6b9a0f58a2964` and
+`5fccc34507ae9c5dbc609e234ab559576ab3a445`; ancestry, exact scope, 20
+tests, typecheck, release, and zero-effect checks pass.
+
+For I36, publish only atomic integration claim
+`d824f937-9896-4110-8b0b-567929ede386` from exact target
+`f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635`, binding acquisition
+`3c4130ae4d015471ce21e7d70a39d98dde113318`, RELEASE_INTEGRATOR lease
+`7ceb45bf-dcaf-441b-bed4-08c6ba798055`, ready digest
+`f61a8a4de3d00cced245d480068a55a84f88e537b51952bd8777997df9e88962`,
+and P33 interface merge `0798f93b-9b95-4fbb-aebc-cd98a6414f66` digest
+`482983af4c501283f291a154a2e3d07c38db63ca6a43a313e55bae03190f8f55`.
+Change only the three I36 runtime files, publish the claim, and stop for C00
+reconciliation before merging P33 or applying any steward request.
+
+For P12, create branch `codex/v21-p12-parent-household` from exact
+`f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635` and publish only atomic claim
+`776c6b8b-8729-49ea-a9ca-f505fbaf320c`, binding PARENT_HOUSEHOLD_UI lease
+`992f62c1-faba-4709-bae6-6c201cc776b2` and ready digest
+`9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86`.
+Change only the three P12 runtime files and stop before product work.
+
+For P22, create branch `codex/v21-p22-learning-engagement` from exact
+`f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635` and publish only atomic claim
+`eba236e0-164c-4b7d-a71e-20646f4ec5ab`, binding LEARNING_ENGAGEMENT lease
+`93a7fddb-d025-475d-8d09-f9c9e7661515` and ready digest
+`983929b18a1da521e9342e3398bdf5254ab821c1c38f688defbe3d75d7cb0471`.
+Change only the three P22 runtime files and stop before product work.

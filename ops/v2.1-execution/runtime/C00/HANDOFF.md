@@ -723,3 +723,34 @@ and zero effects. Under acquisition `f4304c06`, only P10 full merge
 `5fccc345`, require its ancestry and exact fourteen allowed paths, rerun the
 20 focused P10 tests and typecheck, publish a metadata-only release
 checkpoint, release the lease, keep effects at zero, and stop for C00.
+
+P10 is now integrated. Merge `522fe505` has exact parents I36 claim
+`6cb169c4` and admitted source `5fccc345`; the source is an ancestor, its
+delta is exactly the fourteen queued paths, and final I36 release is
+`f1cecb53`. Independent verification confirms 20 focused tests, typecheck,
+the released RELEASE_INTEGRATOR lease, clean scope, and zero effects.
+
+P33 corrected final `295c125e` is independently admitted. The exact linear
+follow-up is claim `02cc575a`, implementation `7765a375`, interface metadata
+`b1a43748`, and final `295c125e`. Its twelve-path correction and full
+twenty-five-path source delta, seven export hashes, semantic v3.0.0 digest
+`a0aa9fd8`, state/handoff binding `65d5bdac`, three steward hashes, 68
+focused tests, typecheck, exact street-address/retry/lease negative probes,
+released lease, clean worktree, and zero effects all pass. Configuration,
+deployment, and registration requests are assigned to I36 but remain
+unapplied.
+
+Under acquisition `3c4130ae`, P33 interface merge
+`0798f93b-9b95-4fbb-aebc-cd98a6414f66` is queued from exact integration
+target `f1cecb53` and source `295c125e`, with base `49431959`, twenty-five
+allowed paths, and canonical digest `482983af`. I36 may publish only atomic
+claim `d824f937-9896-4110-8b0b-567929ede386` under lease `7ceb45bf` and
+ready digest `f61a8a4d`, then stop before merging.
+
+P12 and P22 are dependency-valid and authorized only for new-branch atomic
+claims from exact post-P10 head `f1cecb53`. P12 uses branch
+`codex/v21-p12-parent-household`, claim `776c6b8b`, PARENT_HOUSEHOLD_UI
+lease `992f62c1`, and ready digest `9c85fefc`. P22 uses branch
+`codex/v21-p22-learning-engagement`, claim `eba236e0`, LEARNING_ENGAGEMENT
+lease `93a7fddb`, and ready digest `983929b1`. Both have zero effect
+authority and must stop before product work for C00 reconciliation.

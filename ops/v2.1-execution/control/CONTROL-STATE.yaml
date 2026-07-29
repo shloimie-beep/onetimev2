@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: I36 merges only the exact P10 full source 5fccc345 from reconciled claim 6cb169c4; P33 continues only its bounded street-address, retry-count, and active-lease evidence correction from claim 02cc575a.
+next_action: P10 is integrated at f1cecb53; I36 publishes only atomic claim d824f937 for the admitted P33 interface from target f1cecb53; P12 and P22 publish only their new-branch atomic claims from f1cecb53 and stop for reconciliation.
 authority_note: Only C00 updates this global control state.

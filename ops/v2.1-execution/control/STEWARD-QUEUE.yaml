@@ -706,6 +706,51 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
+- request_id: P33-config-001
+  request_digest: bc972db8b48aaf69b61a5b82511532dd8f0ad675ea1fdeb01a1671ecac35cbb6
+  requesting_task_id: P33
+  kind: configuration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_configuration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P33-deploy-001
+  request_digest: eff1db60b8f8b6a9338d9a8b37b99c59acdda91069fae3aef9b176695f1d5fd1
+  requesting_task_id: P33
+  kind: deployment
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_deployment_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P33-registration-001
+  request_digest: 2cf667797e2b09e6eab29dc42595757938b87108365d5531453d5199ab9e7ab3
+  requesting_task_id: P33
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 entry_schema:
   request_id: null
   request_digest: null
