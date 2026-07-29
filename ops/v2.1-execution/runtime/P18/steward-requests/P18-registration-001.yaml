@@ -1,0 +1,70 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P18-registration-001
+task_id: P18
+kind: registration
+requirement_ids:
+  - OTV2-CLASSROOM-073
+  - OTV2-CLASSROOM-075
+  - OTV2-CLASSROOM-078
+  - OTV2-CLASSROOM-187
+  - OTV2-CLASSROOM-232
+acceptance_case_ids:
+  - OTV2-CLASSROOM-073-AC01
+  - OTV2-CLASSROOM-075-AC01
+  - OTV2-CLASSROOM-078-AC01
+  - OTV2-CLASSROOM-187-AC01
+  - OTV2-CLASSROOM-232-TIMING
+  - OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
+rationale: >-
+  P18 cannot edit root barrels or central server/client composers. Its versioned
+  embedded-classroom modules remain directly importable until I36 reconciles
+  F03 authentication, P16 occurrence/enrollment, P32 consent, and the existing
+  protected Meeting SDK signer.
+desired_semantic_change: >-
+  Export the exact P18 roots, mount the constant authenticated Student classroom
+  route and same-origin CSRF-protected bootstrap/heartbeat endpoints, mount the
+  audited Admin reset endpoint, wire provider/client attendance intake to the
+  reconciler, and render the P18 Student view model.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/contracts/src/index.ts exports packages/contracts/src/classroom/embedded/index.ts
+  - packages/domain/src/index.ts exports packages/domain/src/classroom/embedded/index.ts
+  - packages/db/src/index.ts exports packages/db/src/classroom/attendance/index.ts
+  - >-
+    POST /api/classroom/embedded/bootstrap derives Student, household,
+    authenticated session, device lineage, occurrence, and environment scope
+    server-side; it hashes the body exchange secret immediately and passes only
+    grant_key_digest into createEmbeddedClassroomService.
+  - >-
+    POST /api/classroom/embedded/heartbeat requires the same Student/app-session/
+    device lineage and exact lease generation/version; the client sends every 30
+    seconds and the server persists a 90-second lease.
+  - >-
+    POST /api/admin/classroom/embedded/:studentId/reset requires current Admin
+    authorization and an audit reference; it revokes the local session and
+    outstanding launch grants before any later fresh launch.
+  - >-
+    The context resolver rechecks F03 Student session, P16 occurrence/enrollment,
+    effective access, exact registrant, and P32 current service-account and
+    recording-participation consent at grant issue and redemption.
+  - >-
+    The local Meeting SDK signer returns only the minimum 60-second ephemeral
+    bootstrap after the grant/session transaction commits. Set Cache-Control
+    no-store and Referrer-Policy no-referrer; never return or log a raw Zoom URL.
+  - >-
+    Verified Zoom attendance events correlate by exact occurrence/registrant
+    references and provider digests; embedded events remain provisional and
+    Admin corrections append audit evidence.
+compatibility_assumptions:
+  - The Student route is constant and authenticated; no grant, meeting, registrant, or Student identity appears in its URL.
+  - P16 joinClosesAt contains the audited Admin extension or canonical end-plus-15 boundary.
+  - Existing Zoom configuration and Meeting SDK credentials remain protected and are not exposed through P18 contracts.
+  - OBS remains the sole recording source; Zoom cloud/browser recording stays disabled.
+verification_performed:
+  - npm run typecheck
+  - 17 focused domain, server, database, and Student client assertions
+conflicts_or_risks:
+  - Do not add query-string identity/bearer fields, localStorage persistence, raw fallback links, shared family registrants, or display-name identity matching.
+  - Do not invoke the SDK signer/provider port after any authorization, consent, occurrence-window, or second-device denial.
+  - Do not claim provider sandbox or production-canary proof from branch tests.
+contains_secret_or_private_data: false
