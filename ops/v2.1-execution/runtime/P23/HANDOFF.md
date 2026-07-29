@@ -1,60 +1,39 @@
-# P23 Atomic Correction-Claim Handoff
+# P23 Superseding Ready-for-Review Handoff
 
 ## Exact identity
 
 - Branch: `codex/v21-p23-student-notifications`
-- Exact rejected final and correction-claim parent:
-  `39b050949a0874a1ea397c6c3f3420eb4fa19ccc`
-- Prior implementation checkpoint:
-  `c1dc94bedac647dab9e1136bd0971cb3d6c57456`
-- Containing correction authorization:
-  `a96477209a5dc6e32b43460eb775bd99f5cba1fc`
-- Sole acquisition parent:
-  `78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1`
-- Correction claim: `29e8b1d9-8769-479d-8a7a-df26137f185a`
-- Writer: `codex-p23-worker-29e8b1d9`
-- STUDENT_NOTIFICATIONS lease:
-  `489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`
-- Lease issued: `2026-07-29T07:21:29Z`
-- Lease expiry: `2026-07-29T08:21:29Z`
-- Canonical READY digest:
-  `2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97`
-- Atomic correction-claim head: derive with `git rev-parse HEAD`; C00 records
-  the exact observed remote head.
+- Reconciled atomic correction claim: `b341ce5209909771647c2ca02167e077468fd597`
+- Reconciliation control: `331ffc12ba126aafa2c25fb48293a7fd0a8734e6`
+- Sole acquisition parent: `a6a9c53b670c1345187f846eaf1f53133f4c7e67`
+- Corrected implementation: `8fdeaddb84a6c8e71271711fbd6b095046b6df21`
+- Claim: `29e8b1d9-8769-479d-8a7a-df26137f185a`
+- Released lease: `489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`
+- Artifact digest: `eb657253f3b531aa0c34b800a7c6a9643e4cfdacb75ca986193f21cdad1511f6`
+- Request aggregate digest: `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`
 
-The recursively key-sorted READY JSON preimage is 2766 UTF-8 bytes and
-independently hashes to the recorded digest.
+## Corrected result
 
-## Rejection record
+The bounded correction closes every recorded rejection defect: canonical
+`/app/student` routes, cancellation/source-family serialization and race
+precedence, 30-day retention for superseded indefinite notices, runtime
+student-safe status allowlisting, literal Rabbi Eli copy, idempotent mark-one,
+real opt-in visual-paired foreground audio, timezone-labeled timestamps, and
+keyboard/focus/accessible-description behavior. Exact same-version dedupe,
+all eight categories, authorization rechecks, provider/private-copy rejection,
+default-off sound, and zero fake data remain intact.
 
-C00 rejected final `39b050949a0874a1ea397c6c3f3420eb4fa19ccc`
-despite its valid ancestry, 18-path mechanical scope, 13 focused tests, and
-passing typecheck. Independent source review and direct probes identified:
+The migration and registration requests were refreshed but not applied.
+No migration, central registration, provider/send, or external effect occurred.
 
-- generated and accepted routes do not use canonical `/app` prefixes;
-- cancellation-first followed by a stale reminder can leave both active;
-- concurrent different source versions can both remain active;
-- superseded indefinite notices do not reach archive;
-- runtime status text is not constrained against private-copy leakage;
-- no UI audible-cue consumer exists;
-- locked Rabbi Eli copy remains mutable;
-- the UI renders raw ISO timestamps;
-- mark-one can perform repeat writes;
-- accessibility proof is incomplete.
+## Verification
 
-This handoff records the rejection only. It does not implement or authorize a
-correction.
+- 3 focused files / 18 deterministic tests passed.
+- Workspace TypeScript typecheck passed.
+- Focused ESLint, Prettier, and `git diff --check` passed.
+- Secret scan passed across 2876 repository text files.
+- Exact 13-artifact and two-request raw Git blob digests were reproduced.
+- Sole writer lease was released at `2026-07-29T08:13:00Z`, before expiry.
 
-## Atomic scope and stop
-
-This checkpoint changes exactly P23 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. Product, tests, immutable requests, migrations,
-registrations, stewards, providers, sends, and external effects remain
-byte-identical and untouched.
-
-C00 must reconcile the exact pushed correction-claim head before P23 changes
-any other file. Stop after normal push and remote verification.
-
-## External effects
-
-Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`.
+Next action: C00 should review or integrate the superseding final after exact
+remote-head and ancestry verification.

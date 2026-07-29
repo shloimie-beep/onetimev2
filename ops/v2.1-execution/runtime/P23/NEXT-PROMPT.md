@@ -1,37 +1,14 @@
-MODEL: GPT-5.6-SOL
-REASONING: HIGH
-SERVICE TIER: PRIORITY
-MODE: RECONCILE_THEN_RESUME
+# P23 Next Prompt
 
-Reconcile One Time v2.1 task P23 from its exact pushed atomic correction claim.
+REVIEW_OR_INTEGRATE the superseding P23 ready-for-review final on
+`codex/v21-p23-student-notifications`.
 
-Repository: shloimie-beep/onetimev2
-Branch: codex/v21-p23-student-notifications
-Authoritative control ref: origin/codex/v21-control
-Task state: ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/P23/HANDOFF.md
+Verify that its sole implementation lineage descends from reconciled correction
+claim `b341ce5209909771647c2ca02167e077468fd597`, that the corrected implementation
+is `8fdeaddb84a6c8e71271711fbd6b095046b6df21`, and that the final metadata records
+artifact digest `eb657253f3b531aa0c34b800a7c6a9643e4cfdacb75ca986193f21cdad1511f6`
+and request aggregate `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`.
 
-The atomic correction claim resumes exact rejected final
-`39b050949a0874a1ea397c6c3f3420eb4fa19ccc` under containing authorization
-`a96477209a5dc6e32b43460eb775bd99f5cba1fc`, sole acquisition parent
-`78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1`, claim
-`29e8b1d9-8769-479d-8a7a-df26137f185a`, STUDENT_NOTIFICATIONS lease
-`489df25a-c3ed-4b34-8bb8-ddb6e8d88b99` expiring
-`2026-07-29T08:21:29Z`, and canonical READY digest
-`2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97`.
-
-C00 rejected the prior final for canonical `/app` route defects,
-cancellation-first and concurrent-version ordering defects, missing archive
-progression for superseded indefinite notices, runtime private-copy validation,
-missing audible-cue consumption, mutable locked Rabbi Eli copy, raw timestamp
-presentation, non-idempotent mark-one persistence, and incomplete
-accessibility proof.
-
-Verify the exact remote correction-claim head has sole parent
-`39b050949a0874a1ea397c6c3f3420eb4fa19ccc` and changes only the three P23
-runtime files. Reconcile that exact head into C00 before issuing any bounded
-continuation authority.
-
-This phase performs no correction. Do not edit product, tests, immutable
-requests, migrations, registrations, stewards, providers, or send paths. Do
-not invoke an external effect. Authority is `none`; effects are `0/0/0`.
+Confirm status `ready_for_review`, released lease
+`489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`, and external effects
+`none / 0 / 0 / 0`. Migration and central registration remain unapplied.
