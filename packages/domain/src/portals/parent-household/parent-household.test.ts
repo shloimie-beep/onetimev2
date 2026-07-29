@@ -1,0 +1,186 @@
+import { describe, expect, it } from 'vitest';
+import type {
+  ParentHouseholdPrincipal,
+  ParentHouseholdRecord,
+} from '../../../../contracts/src/portals/parent-household/index.ts';
+import { ParentHouseholdError } from './errors.ts';
+import {
+  archiveParentStudent,
+  buildParentHouseholdSnapshot,
+  createParentStudent,
+  resetParentStudentCredential,
+  restoreParentStudent,
+  updateParentStudent,
+} from './aggregate.ts';
+
+const principal: ParentHouseholdPrincipal = {
+  role: 'parent',
+  adult_id: 'adult-1',
+  household_id: 'household-1',
+  session_id: 'session-parent-1',
+};
+
+function household(active = 0): ParentHouseholdRecord {
+  return {
+    household_id: 'household-1',
+    owner_adult_id: 'adult-1',
+    display_name: 'Our household',
+    access_state: 'active',
+    student_allowance: 3,
+    revision: 7,
+    students: Array.from({ length: active }, (_, index) => ({
+      student_id: `student-${index + 1}`,
+      household_id: 'household-1',
+      actual_name: `Student ${index + 1}`,
+      display_name: null,
+      username: `student.${index + 1}`,
+      relationship: 'dependent' as const,
+      state: 'active' as const,
+      credential_version: 2,
+      version: 3,
+    })),
+  };
+}
+
+describe('P12 Parent household aggregate', () => {
+  it('shows only the exact owned household and denies cross-household or wrong owner scope', () => {
+    expect(buildParentHouseholdSnapshot({ principal, household: household(1) })).toMatchObject({
+      active_student_count: 1,
+      available_student_seats: 2,
+      can_manage_students: true,
+    });
+    expect(() =>
+      buildParentHouseholdSnapshot({
+        principal,
+        household: { ...household(), household_id: 'household-2' },
+      }),
+    ).toThrowError(ParentHouseholdError);
+    expect(() =>
+      buildParentHouseholdSnapshot({
+        principal,
+        household: { ...household(), owner_adult_id: 'adult-2' },
+      }),
+    ).toThrowError(/unavailable/);
+  });
+
+  it('creates the third active Student with display-once credentials but rejects a fourth', () => {
+    const created = createParentStudent({
+      principal,
+      household: household(2),
+      expected_revision: 7,
+      student_id: 'student-3',
+      actual_name: 'שלמה Student',
+      display_name: 'Shlomo',
+      username: 'shlomo.student',
+      relationship: 'dependent',
+      new_password: 'a-secure-password',
+      password_confirmation: 'a-secure-password',
+    });
+    expect(created.result.snapshot.active_student_count).toBe(3);
+    expect(created.result.canonical_enrollment).toBe('enroll');
+    expect(created.result.credential_handoff).toMatchObject({
+      username: 'shlomo.student',
+      new_password: 'a-secure-password',
+      display_once: true,
+      emailed: false,
+    });
+    expect(JSON.stringify(created.next)).not.toContain('a-secure-password');
+    expect(() =>
+      createParentStudent({
+        principal,
+        household: household(3),
+        expected_revision: 7,
+        student_id: 'student-4',
+        actual_name: 'Fourth Student',
+        username: 'student.4',
+        relationship: 'dependent',
+        new_password: 'another-password',
+        password_confirmation: 'another-password',
+      }),
+    ).toThrowError(/all 3 active Student seats/);
+  });
+
+  it('fails stale revisions and inactive access before any mutation', () => {
+    expect(() =>
+      updateParentStudent({
+        principal,
+        household: household(1),
+        expected_revision: 6,
+        student_id: 'student-1',
+        actual_name: 'Changed',
+        username: 'student.1',
+      }),
+    ).toThrowError(/Refresh/);
+    expect(() =>
+      createParentStudent({
+        principal,
+        household: { ...household(), access_state: 'inactive' },
+        expected_revision: 7,
+        student_id: 'student-1',
+        actual_name: 'Student',
+        username: 'student.new',
+        relationship: 'self',
+        new_password: 'secure-password',
+        password_confirmation: 'secure-password',
+      }),
+    ).toThrowError(/inactive/);
+  });
+
+  it('archives idempotently, frees a seat, restores only with allowance, and revokes sessions', () => {
+    const archived = archiveParentStudent({
+      principal,
+      household: household(3),
+      expected_revision: 7,
+      student_id: 'student-1',
+    });
+    expect(archived.result).toMatchObject({
+      revoke_student_sessions: true,
+      canonical_enrollment: 'disable',
+      snapshot: { active_student_count: 2, available_student_seats: 1 },
+    });
+    const restored = restoreParentStudent({
+      principal,
+      household: archived.next,
+      expected_revision: 8,
+      student_id: 'student-1',
+    });
+    expect(restored.result).toMatchObject({
+      canonical_enrollment: 'enroll',
+      snapshot: { active_student_count: 3, available_student_seats: 0 },
+    });
+    expect(() =>
+      restoreParentStudent({
+        principal,
+        household: {
+          ...archived.next,
+          students: [
+            ...archived.next.students,
+            {
+              ...archived.next.students[1]!,
+              student_id: 'replacement-active',
+              username: 'replacement.active',
+            },
+          ],
+        },
+        expected_revision: 8,
+        student_id: 'student-1',
+      }),
+    ).toThrowError(/all 3 active Student seats/);
+  });
+
+  it('increments credential version, revokes sessions, and never exposes an old password', () => {
+    const reset = resetParentStudentCredential({
+      principal,
+      household: household(1),
+      expected_revision: 7,
+      student_id: 'student-1',
+      new_password: 'replacement-password',
+      password_confirmation: 'replacement-password',
+    });
+    expect(reset.next.students[0]!.credential_version).toBe(3);
+    expect(reset.result.revoke_student_sessions).toBe(true);
+    expect(reset.result.credential_handoff?.new_password).toBe('replacement-password');
+    expect(reset.result.credential_handoff).not.toHaveProperty('old_password');
+    expect(JSON.stringify(reset.next)).not.toMatch(/password/i);
+  });
+});
