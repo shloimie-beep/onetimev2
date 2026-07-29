@@ -1,0 +1,45 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P30-copy-registration-001
+task_id: P30
+kind: registration
+requirement_ids:
+  - OTV2-GHL-135
+acceptance_case_ids:
+  - OTV2-GHL-135-AC01
+rationale: >-
+  P30 cannot invent or register canonical campaign bodies in the P31-owned
+  shared copy catalog. The integrated catalog contains only OT-15 step 1.
+desired_semantic_change: >-
+  Through the canonical copy-owner review process, author, approve, and
+  register OT-15 step 2 and step 3 under the exact IDs and subjects below.
+  Each entry must use provider ghl, workflow OT-15, sender rabbi_campaign,
+  audience former_adult, current-consent and named-approval requirements,
+  no token-bearing content, and an immutable canonical content digest.
+  Preserve the normative day-4 and day-9 sequence intent without copying a
+  body from another message or accepting a caller-supplied digest as canonical.
+  Publish the resulting exact IDs, bodies, required variables, and digests
+  through the P31-owned catalog and approval contract. Until both entries are
+  integrated, P30 deliberately blocks OT-15 launch and delivery.
+proposed_symbols_routes_keys_or_dependencies:
+  - copy_id: ghl.former_member_reactivation.step_2.v1
+    subject: A separate Student portal for live class and recordings
+    timing: day 4 after approval launch when no exit applies
+  - copy_id: ghl.former_member_reactivation.step_3.v1
+    subject: Come back free until September 13
+    timing: day 9 after approval launch when no exit applies
+  - CANONICAL_COPY_CATALOG
+  - canonicalContentDigest
+  - evaluateCampaignApproval
+compatibility_assumptions:
+  - Existing OT-15 step 1 remains unchanged and canonical.
+  - All three steps use the same exact approved former-adult audience and Rabbi sender.
+  - Registration does not authorize provider configuration, seed delivery, activation, enrollment, or broad send.
+verification_performed:
+  - integrated P31 catalog lookup confirms step 2 and step 3 are absent
+  - missing step 2 or step 3 canonical registration blocks launch and delivery
+  - changed subjects and caller-supplied content digests cannot bypass the block
+conflicts_or_risks:
+  - Copy-owner review must resolve exact bodies and required variables; P30 intentionally supplies neither.
+  - Central registration must preserve approval and consent gates and fail closed on content drift.
+contains_secret_or_private_data: false

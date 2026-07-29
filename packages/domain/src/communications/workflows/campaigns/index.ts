@@ -24,4 +24,5 @@ export type {
   CampaignLaunchDecision,
   Ot16CheckpointPlan,
   Ot16ExitReason,
+  ReactivationStepApproval,
 } from './planner.ts';

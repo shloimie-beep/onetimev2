@@ -55,6 +55,7 @@ export const P30_CAMPAIGN_WORKFLOWS = [
     message_purpose: 'marketing',
     trigger: 'named approval launch for the exact former-member segment',
     ordered_steps: [
+      'validate all three canonical copy entries and exact content approvals',
       'send approved step 1 at approval launch',
       'wait 4 days and re-evaluate every exit and suppression condition',
       'send approved step 2',
@@ -86,10 +87,12 @@ export const P30_CAMPAIGN_WORKFLOWS = [
     message_purpose: 'marketing',
     trigger: '14, 7, 3, and 1 days before canonical free-period expiry and at expiry',
     ordered_steps: [
+      'recompute and validate deterministic adult, expiry, and checkpoint operation identity',
       'resolve the exact canonical expiry and $67 USD monthly Family price',
       'exclude verified paid access, explicit decline, and custom School terms',
       'read back the approved adult-only Family audience',
       'recheck suppression immediately before each checkpoint',
+      'refresh verified paid access, explicit decline, and custom School eligibility immediately before dispatch',
       'deliver the exact price, expiry, no-card, no-auto-charge, and Checkout CTA email',
       'record dormant WhatsApp as channel_skipped_not_configured with zero provider calls',
       'deduplicate by adult, expiry, and checkpoint',

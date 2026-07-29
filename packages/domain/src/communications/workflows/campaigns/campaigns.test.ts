@@ -17,6 +17,7 @@ import {
   planParentNewsletterDelivery,
   planParentNewsletterLaunch,
   type CampaignAudienceCandidate,
+  type ReactivationStepApproval,
 } from './index.ts';
 
 const h = (value: string) => value.repeat(64).slice(0, 64);
@@ -83,6 +84,36 @@ function approvalEvidence(
     unrelatedEffectObserved: false,
     ...overrides,
   };
+}
+
+function reactivationApproval(
+  stepIndex: 0 | 1 | 2,
+  overrides: Partial<ReactivationStepApproval> = {},
+): ReactivationStepApproval {
+  const step = FORMER_MEMBER_REACTIVATION_STEPS[stepIndex];
+  return {
+    copy_id: step.copy_id,
+    approved_subject: step.subject,
+    evidence: approvalEvidence(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY, {
+      approvedContentDigest:
+        stepIndex === 0
+          ? canonicalContentDigest(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY)
+          : h(`${stepIndex}`),
+    }),
+    ...overrides,
+  };
+}
+
+function operationId(
+  checkpointDays: (typeof OT16_CHECKPOINT_DAYS)[number],
+  adultId = 'adult-1',
+  expiry = expiryAt,
+): string {
+  return ot16OperationId({
+    adult_id: adultId,
+    expiry_at: expiry,
+    checkpoint_days: checkpointDays,
+  });
 }
 
 describe('P30 campaign workflows', () => {
@@ -156,13 +187,43 @@ describe('P30 campaign workflows', () => {
     expect(
       planFormerMemberReactivationLaunch({
         candidate: candidate(),
-        evidence: approvalEvidence(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY),
+        step_approvals: [reactivationApproval(0)],
       }),
-    ).toMatchObject({ state: 'ready', reasons: [] });
+    ).toMatchObject({
+      state: 'blocked',
+      reasons: expect.arrayContaining([
+        'missing exact content approval for ghl.former_member_reactivation.step_2.v1',
+        'canonical copy is not registered: ghl.former_member_reactivation.step_2.v1',
+        'missing exact content approval for ghl.former_member_reactivation.step_3.v1',
+        'canonical copy is not registered: ghl.former_member_reactivation.step_3.v1',
+      ]),
+    });
+    const forgedChangedApprovals = [
+      reactivationApproval(0),
+      reactivationApproval(1, { approved_subject: 'Changed day 4 subject' }),
+      reactivationApproval(2, {
+        evidence: approvalEvidence(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY, {
+          approvedContentDigest: h('changed-step-3'),
+        }),
+      }),
+    ];
+    expect(
+      planFormerMemberReactivationLaunch({
+        candidate: candidate(),
+        step_approvals: forgedChangedApprovals,
+      }),
+    ).toMatchObject({
+      state: 'blocked',
+      reasons: expect.arrayContaining([
+        'approved subject drift for ghl.former_member_reactivation.step_2.v1',
+        'canonical copy is not registered: ghl.former_member_reactivation.step_2.v1',
+        'canonical copy is not registered: ghl.former_member_reactivation.step_3.v1',
+      ]),
+    });
     expect(
       planFormerMemberReactivationLaunch({
         candidate: candidate({ active_parent: true }),
-        evidence: approvalEvidence(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY),
+        step_approvals: [reactivationApproval(0)],
       }),
     ).toMatchObject({
       state: 'blocked',
@@ -171,7 +232,7 @@ describe('P30 campaign workflows', () => {
     expect(
       planFormerMemberReactivationLaunch({
         candidate: candidate({ custom_school_terms: true }),
-        evidence: approvalEvidence(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY),
+        step_approvals: [reactivationApproval(0)],
       }),
     ).toMatchObject({
       state: 'blocked',
@@ -182,10 +243,14 @@ describe('P30 campaign workflows', () => {
         operation_id: h('r'),
         candidate: candidate(),
         suppression: suppression({ snapshot_id: 'send-time', email_dnd: true }),
+        step_approvals: [reactivationApproval(0)],
       }),
     ).toMatchObject({
-      state: 'suppressed',
-      reason: 'email_dnd',
+      state: 'excluded',
+      reasons: expect.arrayContaining([
+        'canonical copy is not registered: ghl.former_member_reactivation.step_2.v1',
+        'canonical copy is not registered: ghl.former_member_reactivation.step_3.v1',
+      ]),
       email_provider_calls_planned: 0,
       whatsapp_provider_calls: 0,
     });
@@ -200,13 +265,9 @@ describe('P30 campaign workflows', () => {
       '2026-09-13T16:24:00.000Z',
     ];
     for (const [index, checkpointDays] of OT16_CHECKPOINT_DAYS.entries()) {
-      const operationId = ot16OperationId({
-        adult_id: 'adult-1',
-        expiry_at: expiryAt,
-        checkpoint_days: checkpointDays,
-      });
+      const checkpointOperationId = operationId(checkpointDays);
       const plan = planOt16Checkpoint({
-        operation_id: operationId,
+        operation_id: checkpointOperationId,
         checkpoint_days: checkpointDays,
         expiry_at: expiryAt,
         candidate: candidate(),
@@ -214,7 +275,7 @@ describe('P30 campaign workflows', () => {
       });
       expect(plan).toMatchObject({
         state: 'deliver_email',
-        operation_id: operationId,
+        operation_id: checkpointOperationId,
         email_provider_calls_planned: 1,
         whatsapp_provider_calls: 0,
         whatsapp_disposition: 'channel_skipped_not_configured',
@@ -236,12 +297,12 @@ describe('P30 campaign workflows', () => {
       );
       expect(
         planOt16Checkpoint({
-          operation_id: operationId,
+          operation_id: checkpointOperationId,
           checkpoint_days: checkpointDays,
           expiry_at: expiryAt,
           candidate: candidate(),
           suppression: suppression(),
-          previously_reserved_operation_ids: new Set([operationId]),
+          previously_reserved_operation_ids: new Set([checkpointOperationId]),
         }),
       ).toEqual({
         state: 'duplicate',
@@ -249,11 +310,53 @@ describe('P30 campaign workflows', () => {
         whatsapp_provider_calls: 0,
       });
     }
+    expect(
+      planOt16Checkpoint({
+        operation_id: operationId(7),
+        checkpoint_days: 14,
+        expiry_at: expiryAt,
+        candidate: candidate(),
+        suppression: suppression(),
+      }),
+    ).toEqual({
+      state: 'invalid_operation_id',
+      reason: 'operation_id_mismatch',
+      email_provider_calls_planned: 0,
+      whatsapp_provider_calls: 0,
+    });
+    expect(
+      planOt16Checkpoint({
+        operation_id: operationId(14, 'adult-2'),
+        checkpoint_days: 14,
+        expiry_at: expiryAt,
+        candidate: candidate(),
+        suppression: suppression(),
+      }),
+    ).toEqual({
+      state: 'invalid_operation_id',
+      reason: 'operation_id_mismatch',
+      email_provider_calls_planned: 0,
+      whatsapp_provider_calls: 0,
+    });
+    expect(
+      planOt16Checkpoint({
+        operation_id: operationId(14),
+        checkpoint_days: 14,
+        expiry_at: '2026-09-13T19:24:01+03:00',
+        candidate: candidate(),
+        suppression: suppression(),
+      }),
+    ).toEqual({
+      state: 'invalid_operation_id',
+      reason: 'operation_id_mismatch',
+      email_provider_calls_planned: 0,
+      whatsapp_provider_calls: 0,
+    });
   });
 
   it('OTV2-GHL-225-PAID-EXIT exits after verified paid access before every later effect', () => {
     const plan = planOt16Checkpoint({
-      operation_id: h('c'),
+      operation_id: operationId(7),
       checkpoint_days: 7,
       expiry_at: expiryAt,
       candidate: candidate({ verified_paid_access: true }),
@@ -269,7 +372,7 @@ describe('P30 campaign workflows', () => {
 
   it('OTV2-GHL-225-SCHOOL-EXIT excludes custom School terms before Family conversion contact', () => {
     const plan = planOt16Checkpoint({
-      operation_id: h('d'),
+      operation_id: operationId(14),
       checkpoint_days: 14,
       expiry_at: expiryAt,
       candidate: candidate({ custom_school_terms: true }),
@@ -295,7 +398,7 @@ describe('P30 campaign workflows', () => {
     for (const override of suppressions) {
       expect(
         planOt16Checkpoint({
-          operation_id: h(JSON.stringify(override)),
+          operation_id: operationId(3),
           checkpoint_days: 3,
           expiry_at: expiryAt,
           candidate: candidate(),

@@ -16,6 +16,10 @@ export interface CampaignSuppressionReadPort {
   readCurrent(adult_id: string): Promise<CommunicationSuppressionSnapshot>;
 }
 
+export interface CampaignEligibilityReadPort {
+  readCurrent(adult_id: string): Promise<CampaignAudienceCandidate>;
+}
+
 export interface CampaignEmailPort {
   send(input: {
     operation_id: string;
@@ -38,11 +42,18 @@ export interface RunOt16CheckpointInput {
   expected_version: number;
   repository: CommunicationFoundationRepository;
   suppression: CampaignSuppressionReadPort;
+  eligibility: CampaignEligibilityReadPort;
   email: CampaignEmailPort;
 }
 
 export type RunOt16CheckpointResult =
   | { state: 'student_prohibited'; email_provider_calls: 0; whatsapp_provider_calls: 0 }
+  | {
+      state: 'invalid_operation_id';
+      reason: 'operation_id_mismatch';
+      email_provider_calls: 0;
+      whatsapp_provider_calls: 0;
+    }
   | {
       state: 'exited';
       reason: Ot16ExitReason;
@@ -62,8 +73,9 @@ export type RunOt16CheckpointResult =
 
 /**
  * Executes one already-approved OT-16 checkpoint. Provider access is fenced
- * behind an Adult-only plan, a fresh suppression read, and a durable operation
- * reservation. WhatsApp has no port by design while the channel is dormant.
+ * behind an Adult-only plan, deterministic identity, a fresh suppression
+ * read, a durable operation reservation, and a final current-eligibility read.
+ * WhatsApp has no port by design while the channel is dormant.
  */
 export async function runOt16Checkpoint(
   input: RunOt16CheckpointInput,
@@ -79,6 +91,14 @@ export async function runOt16Checkpoint(
   if (initialPlan.state === 'student_prohibited') {
     return {
       state: 'student_prohibited',
+      email_provider_calls: 0,
+      whatsapp_provider_calls: 0,
+    };
+  }
+  if (initialPlan.state === 'invalid_operation_id') {
+    return {
+      state: 'invalid_operation_id',
+      reason: initialPlan.reason,
       email_provider_calls: 0,
       whatsapp_provider_calls: 0,
     };
@@ -152,10 +172,65 @@ export async function runOt16Checkpoint(
     return { state: 'duplicate', email_provider_calls: 0, whatsapp_provider_calls: 0 };
   }
 
-  try {
-    const delivery = await input.email.send(emailPayload(sendTimePlan));
+  const currentCandidate = await input.eligibility.readCurrent(sendTimePlan.adult_id);
+  const dispatchPlan = planOt16Checkpoint({
+    operation_id: input.operation_id,
+    checkpoint_days: input.checkpoint_days,
+    expiry_at: input.expiry_at,
+    candidate: currentCandidate,
+    suppression: currentSuppression,
+  });
+  if (dispatchPlan.state !== 'deliver_email') {
+    const reason =
+      dispatchPlan.state === 'exited'
+        ? `send_time_${dispatchPlan.reason}`
+        : dispatchPlan.state === 'suppressed'
+          ? dispatchPlan.reason
+          : dispatchPlan.state === 'invalid_operation_id'
+            ? dispatchPlan.reason
+            : `send_time_${dispatchPlan.state}`;
     await input.repository.completeDecision({
-      operation_id: sendTimePlan.operation_id,
+      operation_id: input.operation_id,
+      expected_version: input.expected_version + 1,
+      status: 'skipped',
+      safe_provider_ref_hash: null,
+      safe_reason: reason,
+    });
+    if (dispatchPlan.state === 'exited') {
+      return {
+        state: 'exited',
+        reason: dispatchPlan.reason,
+        email_provider_calls: 0,
+        whatsapp_provider_calls: 0,
+      };
+    }
+    if (dispatchPlan.state === 'student_prohibited') {
+      return {
+        state: 'student_prohibited',
+        email_provider_calls: 0,
+        whatsapp_provider_calls: 0,
+      };
+    }
+    if (dispatchPlan.state === 'invalid_operation_id') {
+      return {
+        state: 'invalid_operation_id',
+        reason: dispatchPlan.reason,
+        email_provider_calls: 0,
+        whatsapp_provider_calls: 0,
+      };
+    }
+    return {
+      state: 'skipped',
+      reason,
+      email_provider_calls: 0,
+      whatsapp_provider_calls: 0,
+    };
+  }
+
+  try {
+    const delivery = await input.email.send(emailPayload(dispatchPlan));
+    await input.repository.completeDecision({
+      operation_id: dispatchPlan.operation_id,
       expected_version: input.expected_version + 1,
       status: 'email_sent',
       safe_provider_ref_hash: delivery.safe_provider_ref_hash,

@@ -8,10 +8,10 @@ import type {
 import { CommunicationFoundationError, planCommunicationChannels } from '../../foundation/index.ts';
 import type { CampaignApprovalInput } from '../../copy/approval.ts';
 import { canonicalContentDigest, evaluateCampaignApproval } from '../../copy/approval.ts';
-import { SENDER_IDENTITIES } from '../../copy/catalog.ts';
+import type { CanonicalCopyMessage } from '../../copy/catalog.ts';
+import { findCanonicalCopy, SENDER_IDENTITIES } from '../../copy/catalog.ts';
 import {
   buildOt16Notice,
-  FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY,
   FORMER_MEMBER_REACTIVATION_STEPS,
   type Ot16CheckpointDays,
   type Ot16Notice,
@@ -31,6 +31,12 @@ export interface CampaignAudienceCandidate {
 }
 
 export type CampaignApprovalEvidence = Omit<CampaignApprovalInput, 'message' | 'sender'>;
+
+export interface ReactivationStepApproval {
+  copy_id: string;
+  approved_subject: string;
+  evidence: CampaignApprovalEvidence;
+}
 
 export type CampaignLaunchDecision =
   | { state: 'blocked'; reasons: readonly string[]; content_digest: string }
@@ -95,22 +101,85 @@ export function planParentNewsletterLaunch(input: {
 
 export function planFormerMemberReactivationLaunch(input: {
   candidate: CampaignAudienceCandidate;
-  evidence: CampaignApprovalEvidence;
+  step_approvals: readonly ReactivationStepApproval[];
 }): CampaignLaunchDecision {
   const audienceReasons = reactivationAudienceReasons(input.candidate);
-  const approval = evaluateCampaignApproval({
-    ...input.evidence,
-    message: FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY,
-    sender: SENDER_IDENTITIES.rabbi_campaign,
-  });
-  const reasons = [...audienceReasons, ...approval.reasons];
+  const copyApproval = evaluateReactivationCopyApprovals(input.step_approvals);
+  const reasons = [...audienceReasons, ...copyApproval.reasons];
   if (reasons.length > 0) {
-    return { state: 'blocked', reasons, content_digest: approval.contentDigest };
+    return { state: 'blocked', reasons, content_digest: copyApproval.content_digest };
   }
   return {
     state: 'ready',
     reasons: [],
-    content_digest: compositeReactivationDigest(),
+    content_digest: copyApproval.content_digest,
+  };
+}
+
+function evaluateReactivationCopyApprovals(approvals: readonly ReactivationStepApproval[]): {
+  reasons: string[];
+  content_digest: string;
+} {
+  const reasons: string[] = [];
+  const canonicalMessages: CanonicalCopyMessage[] = [];
+  const expectedIds = new Set(FORMER_MEMBER_REACTIVATION_STEPS.map((step) => step.copy_id));
+
+  for (const approval of approvals) {
+    if (
+      !expectedIds.has(
+        approval.copy_id as (typeof FORMER_MEMBER_REACTIVATION_STEPS)[number]['copy_id'],
+      )
+    ) {
+      reasons.push(`unexpected OT-15 copy approval: ${approval.copy_id}`);
+    }
+  }
+
+  for (const step of FORMER_MEMBER_REACTIVATION_STEPS) {
+    const matchingApprovals = approvals.filter((approval) => approval.copy_id === step.copy_id);
+    if (matchingApprovals.length === 0) {
+      reasons.push(`missing exact content approval for ${step.copy_id}`);
+    } else if (matchingApprovals.length > 1) {
+      reasons.push(`duplicate content approval for ${step.copy_id}`);
+    }
+    const approval = matchingApprovals[0];
+    if (approval && approval.approved_subject !== step.subject) {
+      reasons.push(`approved subject drift for ${step.copy_id}`);
+    }
+
+    const message = findCanonicalCopy(step.copy_id);
+    if (!message) {
+      reasons.push(`canonical copy is not registered: ${step.copy_id}`);
+      continue;
+    }
+    canonicalMessages.push(message);
+    if (
+      message.workflowId !== 'OT-15' ||
+      message.provider !== 'ghl' ||
+      message.sender !== 'rabbi_campaign' ||
+      message.audience !== 'former_adult' ||
+      message.subject !== step.subject ||
+      !message.requiresApproval ||
+      !message.requiresCurrentConsent ||
+      message.tokenBearing
+    ) {
+      reasons.push(`canonical copy contract drift for ${step.copy_id}`);
+      continue;
+    }
+    if (!approval) continue;
+    const decision = evaluateCampaignApproval({
+      ...approval.evidence,
+      message,
+      sender: SENDER_IDENTITIES.rabbi_campaign,
+    });
+    reasons.push(...decision.reasons.map((reason) => `${step.copy_id}: ${reason}`));
+  }
+
+  return {
+    reasons,
+    content_digest:
+      canonicalMessages.length === FORMER_MEMBER_REACTIVATION_STEPS.length
+        ? compositeReactivationDigest(canonicalMessages)
+        : configuredReactivationDigest(),
   };
 }
 
@@ -129,7 +198,20 @@ export function planFormerMemberReactivationDelivery(input: {
   operation_id: string;
   candidate: CampaignAudienceCandidate;
   suppression: CommunicationSuppressionSnapshot;
+  step_approvals: readonly ReactivationStepApproval[];
 }): CampaignEmailPlan {
+  const launch = planFormerMemberReactivationLaunch({
+    candidate: input.candidate,
+    step_approvals: input.step_approvals,
+  });
+  if (launch.state !== 'ready') {
+    return {
+      state: 'excluded',
+      reasons: launch.reasons,
+      email_provider_calls_planned: 0,
+      whatsapp_provider_calls: 0,
+    };
+  }
   return planApprovedCampaignEmail({
     ...input,
     audience_reasons: reactivationAudienceReasons(input.candidate),
@@ -204,7 +286,7 @@ function adultOnlyReasons(subject: CommunicationSubject): string[] {
   return subject.kind === 'student' ? ['Student contact is forbidden'] : [];
 }
 
-function compositeReactivationDigest(): string {
+function configuredReactivationDigest(): string {
   const canonical = JSON.stringify(
     FORMER_MEMBER_REACTIVATION_STEPS.map((step) => ({
       copy_id: step.copy_id,
@@ -215,11 +297,27 @@ function compositeReactivationDigest(): string {
   return createHash('sha256').update(canonical, 'utf8').digest('hex');
 }
 
+function compositeReactivationDigest(messages: readonly CanonicalCopyMessage[]): string {
+  const canonical = JSON.stringify(
+    messages.map((message) => ({
+      copy_id: message.id,
+      content_digest: canonicalContentDigest(message),
+    })),
+  );
+  return createHash('sha256').update(canonical, 'utf8').digest('hex');
+}
+
 export type Ot16ExitReason = 'verified_paid_access' | 'explicit_decline' | 'custom_school_terms';
 
 export type Ot16CheckpointPlan =
   | {
       state: 'student_prohibited';
+      email_provider_calls_planned: 0;
+      whatsapp_provider_calls: 0;
+    }
+  | {
+      state: 'invalid_operation_id';
+      reason: 'operation_id_mismatch';
       email_provider_calls_planned: 0;
       whatsapp_provider_calls: 0;
     }
@@ -272,6 +370,19 @@ export function planOt16Checkpoint(input: {
   if (input.candidate.subject.kind === 'student') {
     return {
       state: 'student_prohibited',
+      email_provider_calls_planned: 0,
+      whatsapp_provider_calls: 0,
+    };
+  }
+  const expectedOperationId = ot16OperationId({
+    adult_id: input.candidate.subject.adult_id,
+    expiry_at: input.expiry_at,
+    checkpoint_days: input.checkpoint_days,
+  });
+  if (input.operation_id !== expectedOperationId) {
+    return {
+      state: 'invalid_operation_id',
+      reason: 'operation_id_mismatch',
       email_provider_calls_planned: 0,
       whatsapp_provider_calls: 0,
     };

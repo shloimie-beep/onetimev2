@@ -45,7 +45,7 @@ function snapshot(
   };
 }
 
-function ports() {
+function ports(currentCandidate: CampaignAudienceCandidate = candidate()) {
   const repository: CommunicationFoundationRepository = {
     saveReminderPreference: vi.fn(async () => true),
     persistDecision: vi.fn(async () => true),
@@ -56,10 +56,11 @@ function ports() {
     persistWebsiteLeadPlan: vi.fn(async () => true),
   };
   const suppression = { readCurrent: vi.fn(async () => snapshot()) };
+  const eligibility = { readCurrent: vi.fn(async () => currentCandidate) };
   const email = {
     send: vi.fn(async () => ({ safe_provider_ref_hash: h('b') })),
   };
-  return { repository, suppression, email };
+  return { repository, suppression, eligibility, email };
 }
 
 function input() {
@@ -80,8 +81,10 @@ function input() {
 
 describe('P30 OT-16 worker boundary', () => {
   it('delivers the exact GHL email after fresh suppression and records dormant WhatsApp truth', async () => {
-    const { repository, suppression, email } = ports();
-    expect(await runOt16Checkpoint({ ...input(), repository, suppression, email })).toEqual({
+    const { repository, suppression, eligibility, email } = ports();
+    expect(
+      await runOt16Checkpoint({ ...input(), repository, suppression, eligibility, email }),
+    ).toEqual({
       state: 'sent',
       email_provider_calls: 1,
       whatsapp_provider_calls: 0,
@@ -97,14 +100,23 @@ describe('P30 OT-16 worker boundary', () => {
     expect(repository.completeDecision).toHaveBeenCalledWith(
       expect.objectContaining({ safe_reason: 'channel_skipped_not_configured' }),
     );
+    expect(
+      vi.mocked(repository.reserveEmailDelivery).mock.invocationCallOrder[0] ??
+        Number.POSITIVE_INFINITY,
+    ).toBeLessThan(eligibility.readCurrent.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY);
+    expect(
+      eligibility.readCurrent.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    ).toBeLessThan(email.send.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY);
   });
 
   it('rechecks suppression immediately before reserve and provider access', async () => {
-    const { repository, suppression, email } = ports();
+    const { repository, suppression, eligibility, email } = ports();
     vi.mocked(suppression.readCurrent).mockResolvedValueOnce(
       snapshot({ snapshot_id: 'suppression-2', unsubscribed: true }),
     );
-    expect(await runOt16Checkpoint({ ...input(), repository, suppression, email })).toMatchObject({
+    expect(
+      await runOt16Checkpoint({ ...input(), repository, suppression, eligibility, email }),
+    ).toMatchObject({
       state: 'skipped',
       reason: 'unsubscribed',
       email_provider_calls: 0,
@@ -115,9 +127,11 @@ describe('P30 OT-16 worker boundary', () => {
   });
 
   it('deduplicates before the email provider effect', async () => {
-    const { repository, suppression, email } = ports();
+    const { repository, suppression, eligibility, email } = ports();
     vi.mocked(repository.reserveEmailDelivery).mockResolvedValueOnce(false);
-    expect(await runOt16Checkpoint({ ...input(), repository, suppression, email })).toMatchObject({
+    expect(
+      await runOt16Checkpoint({ ...input(), repository, suppression, eligibility, email }),
+    ).toMatchObject({
       state: 'duplicate',
       email_provider_calls: 0,
     });
@@ -134,21 +148,90 @@ describe('P30 OT-16 worker boundary', () => {
         },
       }),
       candidate({ verified_paid_access: true }),
+      candidate({ explicitly_declined: true }),
       candidate({ custom_school_terms: true }),
     ]) {
-      const { repository, suppression, email } = ports();
+      const { repository, suppression, eligibility, email } = ports();
       const result = await runOt16Checkpoint({
         ...input(),
         candidate: currentCandidate,
         repository,
         suppression,
+        eligibility,
         email,
       });
       expect(result.email_provider_calls).toBe(0);
       expect(result.whatsapp_provider_calls).toBe(0);
       expect(repository.persistDecision).not.toHaveBeenCalled();
       expect(suppression.readCurrent).not.toHaveBeenCalled();
+      expect(eligibility.readCurrent).not.toHaveBeenCalled();
       expect(email.send).not.toHaveBeenCalled();
     }
+  });
+
+  it('refreshes paid, decline, and School eligibility after reserve and immediately before dispatch', async () => {
+    for (const [currentCandidate, expectedReason] of [
+      [candidate({ verified_paid_access: true }), 'verified_paid_access'],
+      [candidate({ explicitly_declined: true }), 'explicit_decline'],
+      [candidate({ custom_school_terms: true }), 'custom_school_terms'],
+    ] as const) {
+      const { repository, suppression, eligibility, email } = ports(currentCandidate);
+      const result = await runOt16Checkpoint({
+        ...input(),
+        repository,
+        suppression,
+        eligibility,
+        email,
+      });
+      expect(result).toEqual({
+        state: 'exited',
+        reason: expectedReason,
+        email_provider_calls: 0,
+        whatsapp_provider_calls: 0,
+      });
+      expect(repository.reserveEmailDelivery).toHaveBeenCalledOnce();
+      expect(eligibility.readCurrent).toHaveBeenCalledWith('adult-1');
+      expect(
+        vi.mocked(repository.reserveEmailDelivery).mock.invocationCallOrder[0] ??
+          Number.POSITIVE_INFINITY,
+      ).toBeLessThan(
+        eligibility.readCurrent.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+      );
+      expect(repository.completeDecision).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'skipped',
+          safe_reason: `send_time_${expectedReason}`,
+        }),
+      );
+      expect(email.send).not.toHaveBeenCalled();
+    }
+  });
+
+  it('rejects a forged checkpoint operation ID before repository or provider access', async () => {
+    const { repository, suppression, eligibility, email } = ports();
+    const forgedInput = input();
+    forgedInput.operation_id = ot16OperationId({
+      adult_id: 'adult-1',
+      expiry_at: expiryAt,
+      checkpoint_days: 7,
+    });
+    expect(
+      await runOt16Checkpoint({
+        ...forgedInput,
+        repository,
+        suppression,
+        eligibility,
+        email,
+      }),
+    ).toEqual({
+      state: 'invalid_operation_id',
+      reason: 'operation_id_mismatch',
+      email_provider_calls: 0,
+      whatsapp_provider_calls: 0,
+    });
+    expect(repository.persistDecision).not.toHaveBeenCalled();
+    expect(suppression.readCurrent).not.toHaveBeenCalled();
+    expect(eligibility.readCurrent).not.toHaveBeenCalled();
+    expect(email.send).not.toHaveBeenCalled();
   });
 });
