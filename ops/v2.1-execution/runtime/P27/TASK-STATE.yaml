@@ -21,20 +21,21 @@ dependency_heads:
     interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
     interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
     interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: complete
 claimed_by: codex-p27-worker-83580db4
 claim_time: '2026-07-28T20:44:57Z'
 claim_id: 83580db4-4a47-44d0-8d6d-83969ae7ccf5
 writer_slot_lease_id: 62f708f5-43b5-4f50-8cc8-623c8f448a0a
 lease_issued_at: '2026-07-28T20:34:49Z'
 lease_expires_at: '2026-07-28T21:34:49Z'
-last_heartbeat_at: '2026-07-28T21:09:41Z'
+last_heartbeat_at: '2026-07-28T21:13:03Z'
+lease_released_at: '2026-07-28T21:13:03Z'
 controller_authorization_sha: 1b1ecf75213617df552831df6ca8b04478a60211
 continuation_authorization_sha: 538ee781fb805ac13b020a66dadf5573451d7af9
 state_based_on_control_head_sha: 538ee781fb805ac13b020a66dadf5573451d7af9
 ready_entry_payload_digest: cade386eb849cf7481bb51c7e8d443f5bb10ab8a2698c565b5856f139be23110
-state_based_on_head_sha: 7d5edd687016b827769cc931b3766b2ae566507c
+state_based_on_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
 last_implementation_commit_sha: 7d5edd687016b827769cc931b3766b2ae566507c
 interface_contract_digest: 788e150f7819431fecd8036701d1e78d6fe0a39b818795b318d54e70998d5ce6
 completed_steps:
@@ -48,9 +49,11 @@ completed_steps:
   - Published migration and registration steward requests without editing shared hotspots.
   - Passed 10 focused assertions, full typecheck, focused lint and format, and diff checks.
   - Published the exact semantic interface checkpoint for downstream P28 integration.
+  - Re-ran the final verification suite against the clean interface head and released the GHL_IDENTITY lease in task-local metadata.
 remaining_steps:
-  - Re-run final verification, release the GHL_IDENTITY lease in task metadata, and publish ready_for_review.
-next_action: Run the exact final verification suite, update durable runtime files to ready_for_review with the interface metadata head, and push a normal final checkpoint.
+  - I36 must validate and integrate the exact interface checkpoint.
+  - F02 and I36 must adjudicate the migration and registration steward requests.
+next_action: C00 and I36 validate this ready_for_review checkpoint, integrate exact interface head e706587bfe581f881fb072271b15b4123f9aabe6, and adjudicate the two structured steward requests.
 requirements:
   OTV2-GHL-117: implementation_verified
   OTV2-GHL-118: implementation_verified
