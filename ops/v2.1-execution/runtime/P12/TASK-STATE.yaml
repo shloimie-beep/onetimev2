@@ -1,0 +1,106 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P12
+task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
+task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p12-parent-household
+start_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+dependency_heads:
+  F03:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+  F04:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+  F07:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+status: claimed
+phase: contract
+claimed_by: codex-p12-worker-776c6b8b
+claim_time: '2026-07-29T03:35:03Z'
+claim_id: 776c6b8b-8729-49ea-a9ca-f505fbaf320c
+writer_slot_leases:
+  - slot: PARENT_HOUSEHOLD_UI
+    lease_id: 992f62c1-faba-4709-bae6-6c201cc776b2
+    lease_issued_at: '2026-07-29T03:20:30Z'
+    lease_expires_at: '2026-07-29T04:20:30Z'
+    state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+lease_expires_at: '2026-07-29T04:20:30Z'
+last_heartbeat_at: '2026-07-29T03:35:03Z'
+controller_authorization_sha: ab393d7eb3b7f55b910ba110949c05c40b7383e6
+ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
+ready_entry_payload_digest: 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86
+state_based_on_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+last_implementation_commit_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
+completed_steps:
+  - Verified repository identity, exact containing control authorization ab393d7eb3b7f55b910ba110949c05c40b7383e6, sole acquisition parent 3c4130ae4d015471ce21e7d70a39d98dde113318, and exact authorized integration start f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635.
+  - Verified the P12 task branch was absent locally and remotely before branch creation.
+  - Recomputed and matched canonical ready-entry digest 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86.
+  - Verified all 200 locked Git blobs, all 15 source-package Git blobs, and exact package/task/context digests.
+  - Verified exact F03, F04, and F07 interface-ready integration bindings and ancestry in the authorized start.
+  - Claimed the sole PARENT_HOUSEHOLD_UI writer lease with zero effect locks and created the isolated branch from the exact authorized start.
+  - Seeded only the three P12 runtime-memory files; no product or contract implementation has started.
+remaining_steps:
+  - Push and report this exact three-file atomic claim checkpoint.
+  - Await C00 reconciliation of the exact remote claim head.
+  - Inspect only named dependency artifacts and P12-owned paths.
+  - Implement and verify the Parent household and Student-seat contract, publish the required interface checkpoint, and finish ready_for_review.
+next_action: After C00 records this atomic claim head and authorizes continuation, inspect only the F03/F04/F07 dependency artifacts and P12-owned paths, then implement the smallest coherent Parent household and Student-seat contract with zero external effects.
+requirements:
+  OTV2-PARENT-031: claimed_not_started
+  OTV2-PARENT-032: claimed_not_started
+  OTV2-PARENT-033: claimed_not_started
+  OTV2-PARENT-034: claimed_not_started
+  OTV2-PARENT-035: claimed_not_started
+  OTV2-PARENT-036: claimed_not_started
+  OTV2-PARENT-040: claimed_not_started
+acceptance_cases:
+  OTV2-PARENT-031-AC01: not_run
+  OTV2-PARENT-032-AC01: not_run
+  OTV2-PARENT-033-AC01: not_run
+  OTV2-PARENT-034-AC01: not_run
+  OTV2-PARENT-035-AC01: not_run
+  OTV2-PARENT-036-AC01: not_run
+  OTV2-PARENT-040-AC01: not_run
+changed_paths:
+  - ops/v2.1-execution/runtime/P12/HANDOFF.md
+  - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - command: exact remote repository/control/integration/branch identity verification
+      result: passed; control ab393d7e, acquisition 3c4130ae, start f1cecb53, and absent P12 branch
+    - command: canonical P12 ready-entry digest recomputation
+      result: passed; 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86
+    - command: locked/source/package/task/context Git-blob SHA-256 verification
+      result: passed; all 200 locked blobs, all 15 source-package blobs, and entry-bound digests match
+    - command: dependency/claim/writer/effect-lock verification
+      result: passed; exact F03/F04/F07 bindings, sole PARENT_HOUSEHOLD_UI lease, and zero effect locks
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
