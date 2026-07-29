@@ -15,12 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: a56a0e0f8ad006337972bfa7b3942b692e2eef76
+controller_authorization_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
 next_action: >-
-  Wave D is independently audited and released at integration head f947c01f; its P28, P18, and P20 merge queue is
-  cleared and the I36 claim and lease are released. Migration allocation remains unopened because the immutable
-  P18-migration-001 request collides with the already-applied legacy onetime.classroom_launch_grants table. C00 is
-  preparing a bounded P18 correction that must publish a new collision-free immutable request before F02 may
-  allocate ordinal 2247 or any later ordinal. No task is presently ready or claimed; no migration, registration,
-  config, dependency, projection, provider inspection, deployment, send, or external effect is authorized.
+  P18 may resume exact head 0a384577 under claim 61b4324b and EMBEDDED_CLASSROOM lease 65bbf2a3 for only the seven
+  paths recorded in READY. It must move its v2.1 launch-grant repository and schema contract to the collision-free
+  onetime.classroom_launch_grants_v21 table, add the exact regression and immutable P18-migration-002 request,
+  preserve the old request and applied migration byte-for-byte, run the focused gates, release its lease, and stop
+  for C00 audit. P18-migration-001 is rejected for the applied legacy-table collision; no migration ordinal, SQL,
+  registration, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

@@ -380,17 +380,17 @@ items:
   request_digest: de071ac6050df478768e588a6d6986dc2fec4cf0dd06377ab3b17dc92990de0e
   requesting_task_id: P18
   kind: migration
-  status: assigned
+  status: rejected
   assigned_steward: F02
-  target_checkpoint: F02_next_migration_checkpoint
+  target_checkpoint: rejected_applied_legacy_table_collision
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
   applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
+  result_record_head_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
+  evaluated_target_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
   result_digest: null
-  rejection_reason: null
+  rejection_reason: The immutable request requires creating onetime.classroom_launch_grants, but applied migration 2002_ot88_zoom_learner_classroom.sql already owns that exact table with a materially different non-null schema. Recreating, mutating, renaming, backfilling, or writing the legacy table would exceed the request and weaken protected invariants. P18 must publish a new immutable request for onetime.classroom_launch_grants_v21.
 - request_id: P18-registration-001
   request_digest: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
   requesting_task_id: P18
