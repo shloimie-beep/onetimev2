@@ -25,7 +25,7 @@ F06-owned implementation is complete. F02 must adjudicate `F06-migration-001`; I
 
 ## Exact next action
 
-Run final verification, publish `ready_for_review`, then C00/I36 may validate and integrate the exact interface checkpoint.
+C00/I36 should validate and integrate the exact F06 interface checkpoint, adjudicate `F06-migration-001` and `F06-registration-001`, and authorize downstream tasks from the resulting integration head.
 
 ## Coverage
 
