@@ -32,10 +32,10 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: interface_ready
-phase: interface
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing_branch
-claimed_by: codex-p12-worker-776c6b8b
+claimed_by: codex-p12-worker-eedf369a
 claim_time: '2026-07-29T04:05:54Z'
 claim_id: eedf369a-f247-481b-bca6-7e48abdf1f26
 writer_slot_leases:
@@ -45,18 +45,20 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T05:00:52Z'
     state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
     phase_scope: hard_three_seat_and_lifecycle_idempotency_correction_claim_only
-    state: active
+    lease_released_at: '2026-07-29T04:19:12Z'
+    state: released
 lease_expires_at: '2026-07-29T05:00:52Z'
-last_heartbeat_at: '2026-07-29T04:15:16Z'
+lease_released_at: '2026-07-29T04:19:12Z'
+last_heartbeat_at: '2026-07-29T04:19:12Z'
 controller_authorization_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
 ready_entry_state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
 ready_entry_payload_digest: a9df3b69b8177c1e0e589109de5aff4260bdb99471f12ff7de0a915166824e8b
-state_based_on_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
+state_based_on_head_sha: 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907
 last_implementation_commit_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
 active_interface:
   status: interface_ready
   interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
-  interface_checkpoint_sha: derive_from_git_and_record_in_control_registry
+  interface_checkpoint_sha: 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907
   semantic_contract_version: 1.0.1
   interface_checkpoint_digest: 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373
 completed_steps:
@@ -80,18 +82,22 @@ completed_steps:
   - Added direct domain and server negative probes; focused domain/server/client verification passes 3 files and 14 tests, workspace typecheck, focused ESLint, and focused Prettier.
   - Published corrected semantic interface 1.0.1 with canonical digest 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373 for downstream P13 after I36 integration.
   - Aligned the client contract-version fixture to 1.0.1 after final typecheck identified the stale 1.0.0 literal; client test and workspace typecheck then passed.
+  - Pushed and remote-verified exact corrected interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907.
+  - Re-passed 3 focused files and 14 tests, workspace typecheck, all P12-focused ESLint and Prettier, exact 16-path scope, diff hygiene, and repository-wide secret scan across 2750 text files.
+  - Released PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454 with no external effect attempted.
 remaining_steps:
-  - Push and remote-verify the corrected interface checkpoint.
-  - Complete final secret/scope/diff checks, release the fresh lease, and publish ready_for_review with zero effects.
-next_action: Push corrected interface 1.0.1, complete final hygiene and security checks, then release PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454 and publish the clean ready_for_review final.
+  - I36 must independently review and integrate corrected implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907.
+  - I36 must disposition registration request P12-registration-001 without weakening the corrected 1.0.1 contract.
+  - C00 may authorize P13 only after exact corrected P12 interface integration.
+next_action: I36 should review and integrate corrected implementation d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2 and interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907, reproduce semantic digest 7ac6f5114de7f0344b2d8fa97891024c6e1304870057815914d0796c26acd373, and disposition steward digest 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733.
 requirements:
-  OTV2-PARENT-031: implementation_ready
-  OTV2-PARENT-032: implementation_ready
-  OTV2-PARENT-033: implementation_ready
-  OTV2-PARENT-034: implementation_ready
-  OTV2-PARENT-035: implementation_ready
-  OTV2-PARENT-036: implementation_ready
-  OTV2-PARENT-040: implementation_ready
+  OTV2-PARENT-031: ready_for_review
+  OTV2-PARENT-032: ready_for_review
+  OTV2-PARENT-033: ready_for_review
+  OTV2-PARENT-034: ready_for_review
+  OTV2-PARENT-035: ready_for_review
+  OTV2-PARENT-036: ready_for_review
+  OTV2-PARENT-040: ready_for_review
 acceptance_cases:
   OTV2-PARENT-031-AC01: task_owned_assertions_passed
   OTV2-PARENT-032-AC01: task_owned_assertions_passed
@@ -153,6 +159,10 @@ verification:
       result: passed after bounded correction
     - command: focused ESLint and Prettier over the four correction paths
       result: passed
+    - command: corrected interface push and exact local/tracking/ls-remote verification
+      result: passed; exact interface checkpoint 2062ed2a6cf0f8dbd44cc81bfe3078d9187f5907
+    - command: final focused Vitest, workspace typecheck, all P12-focused ESLint and Prettier, exact scope, diff, and secret verification
+      result: passed; 3 files/14 tests, 16 authorized paths, and secret scan across 2750 text files
   known_baseline_failures: []
 external_effects:
   authority: none
