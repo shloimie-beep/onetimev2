@@ -1,86 +1,56 @@
-# P12 Final Handoff
+# P12 Correction Claim Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p12-parent-household`
-- Authorized start: `f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635`
-- Atomic claim: `bd0c8122dcaccc077b9c4ef51983f9ed1321d467`
-- Implementation head: `4299c6b828a23fdf79bdc976ab5630df3591ed00`
-- Interface checkpoint: `f265d163d6007e91fb2a332ebff6f173da81700e`
-- Final handoff commit: derive with `git rev-parse HEAD`; C00 records the
-  observed remote head.
+- Exact prior final: `7c06fe62e8555aeafa917e855e34f9cc07e3ce3b`
+- Atomic correction claim commit: derive with `git rev-parse HEAD`; C00 records
+  the observed remote head.
+- Containing correction controller:
+  `71df400bd85cdca40b4eb0e01fc749f362e3d0e8`
+- Ready-entry parent/acquisition:
+  `36451ec88e05bb64be0b27b8bc148166b6fe9837`
+- Claim mode: `resume_existing_branch`
+- Correction claim: `eedf369a-f247-481b-bca6-7e48abdf1f26`
+- Writer: `codex-p12-worker-776c6b8b`
+- PARENT_HOUSEHOLD_UI lease:
+  `3f2cd863-1f04-40fa-875b-87c14469a454`
+- Lease issued: `2026-07-29T04:00:52Z`
+- Lease expiry: `2026-07-29T05:00:52Z`
+- Phase scope: `hard_three_seat_and_lifecycle_idempotency_correction_claim_only`
+- Ready-entry digest:
+  `a9df3b69b8177c1e0e589109de5aff4260bdb99471f12ff7de0a915166824e8b`
 - Task packet digest:
   `37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd`
 - Context digest:
   `1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73`
-- Source package digest:
-  `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim: `776c6b8b-8729-49ea-a9ca-f505fbaf320c`
-- Writer: `codex-p12-worker-776c6b8b`
-- Containing control authorization:
-  `ab393d7eb3b7f55b910ba110949c05c40b7383e6`
-- Ready-entry parent control:
-  `3c4130ae4d015471ce21e7d70a39d98dde113318`
-- Ready-entry digest:
-  `9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86`
-- PARENT_HOUSEHOLD_UI lease:
-  `992f62c1-faba-4709-bae6-6c201cc776b2`
-- Lease issued: `2026-07-29T03:20:30Z`
-- Lease expiry: `2026-07-29T04:20:30Z`
-- Lease released: `2026-07-29T03:54:53Z`
 
-## Published interface
+## Atomic claim scope
 
-- Semantic contract: `1.0.0`
-- Canonical semantic digest:
-  `6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7`
-- Registration request digest:
-  `501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`
-- Downstream consumer: P13, only after I36 integrates the exact interface.
+This checkpoint consumes the fresh correction authorization in exactly
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`. It preserves the prior
+implementation head `4299c6b828a23fdf79bdc976ab5630df3591ed00`, interface
+checkpoint `f265d163d6007e91fb2a332ebff6f173da81700e`, semantic digest
+`6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7`,
+and registration-request digest
+`501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`
+without modification.
 
-## Implemented behavior
-
-P12 provides the isolated Parent household overview and Student management
-contract, domain aggregate, server transaction service, and client workspace.
-All reads and mutations bind to the authenticated Parent's exact household.
-The standard allowance is three active Student seats. Creation and restoration
-are revision- and capacity-bound; archive disables authentication and canonical
-enrollment; restore preserves archived history while creating fresh credential
-and enrollment state. Credential reset revokes prior sessions, and plaintext
-credentials exist only in the immediate handoff result.
-
-The client presents exact self/dependent actual-name guidance without age
-fields, active-seat count and allowance, active and archived Students, safe
-mutation states, and one-time credential display. The implementation owns no
-central route or root barrel; registration remains the structured steward
-request.
+No product, contract, interface, test, steward-request, migration, shared file,
+or external-effect work was performed.
 
 ## Exact next action
 
-I36 should independently review and integrate implementation
-`4299c6b828a23fdf79bdc976ab5630df3591ed00` and interface checkpoint
-`f265d163d6007e91fb2a332ebff6f173da81700e`, reproduce semantic digest
-`6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7`,
-and disposition registration request digest
-`501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733`.
-C00 may authorize P13 only after exact interface integration.
+Stop after pushing and remote-verifying this exact three-file claim. C00 must
+reconcile the atomic correction claim before P12 changes any product,
+contract, interface, or test file.
 
-## Changed files and migrations
-
-- Exactly 16 start-to-final paths, all within the four P12-owned implementation
-  trees or P12-local runtime/steward metadata recorded in `TASK-STATE.yaml`.
-- Migrations: none.
-- Steward request: `P12-registration-001`.
-
-## Verification
-
-- Focused domain/server/client suite: 3 files and 11 tests passed.
-- Workspace typecheck: passed.
-- Focused ESLint and Prettier: passed.
-- Repository-wide secret scan: passed across 2750 text files.
-- Exact 16-path scope audit, YAML parse, and diff hygiene: passed.
-- Interface exports, canonical semantic digest, and immutable steward digest:
-  reproduced from committed Git objects.
+After reconciliation, the bounded correction must hard-cap active Student
+seats at three regardless of a larger record allowance and must prevent any
+duplicate persistence or audit emission when archive is resubmitted for an
+already archived Student or restore is resubmitted for an already active
+Student. Direct negative regression tests must prove both boundaries before
+the implementation/interface/final digests are refreshed.
 
 ## External effects
 
@@ -90,9 +60,10 @@ Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`.
 
 No provider payload, live account, customer or child record, secret,
 credential, message, deployment, enrollment mutation, or deletion was accessed
-or attempted. Existing passwords are never retrievable or displayed.
+or attempted.
 
-## Blockers, deviations, and recovery
+## Blockers and recovery
 
-None. Recovery base is exact authorized start
-`f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635`.
+Product work is blocked only on C00 reconciliation of this atomic claim.
+Recovery base is exact prior final
+`7c06fe62e8555aeafa917e855e34f9cc07e3ce3b`.

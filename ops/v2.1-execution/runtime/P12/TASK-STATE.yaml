@@ -32,26 +32,26 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: ready_for_review
-phase: complete
+status: claimed
+phase: correction
+claim_mode: resume_existing_branch
 claimed_by: codex-p12-worker-776c6b8b
-claim_time: '2026-07-29T03:35:03Z'
-claim_id: 776c6b8b-8729-49ea-a9ca-f505fbaf320c
+claim_time: '2026-07-29T04:05:54Z'
+claim_id: eedf369a-f247-481b-bca6-7e48abdf1f26
 writer_slot_leases:
   - slot: PARENT_HOUSEHOLD_UI
-    lease_id: 992f62c1-faba-4709-bae6-6c201cc776b2
-    lease_issued_at: '2026-07-29T03:20:30Z'
-    lease_expires_at: '2026-07-29T04:20:30Z'
-    state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
-    lease_released_at: '2026-07-29T03:54:53Z'
-    state: released
-lease_expires_at: '2026-07-29T04:20:30Z'
-lease_released_at: '2026-07-29T03:54:53Z'
-last_heartbeat_at: '2026-07-29T03:54:53Z'
-controller_authorization_sha: ab393d7eb3b7f55b910ba110949c05c40b7383e6
-ready_entry_state_based_on_control_head_sha: 3c4130ae4d015471ce21e7d70a39d98dde113318
-ready_entry_payload_digest: 9c85fefc71f18383c5bf674a35bce3c6026ebf6f844ed472376f77a866951c86
-state_based_on_head_sha: f265d163d6007e91fb2a332ebff6f173da81700e
+    lease_id: 3f2cd863-1f04-40fa-875b-87c14469a454
+    lease_issued_at: '2026-07-29T04:00:52Z'
+    lease_expires_at: '2026-07-29T05:00:52Z'
+    state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+    phase_scope: hard_three_seat_and_lifecycle_idempotency_correction_claim_only
+    state: active
+lease_expires_at: '2026-07-29T05:00:52Z'
+last_heartbeat_at: '2026-07-29T04:05:54Z'
+controller_authorization_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
+ready_entry_state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
+ready_entry_payload_digest: a9df3b69b8177c1e0e589109de5aff4260bdb99471f12ff7de0a915166824e8b
+state_based_on_head_sha: 7c06fe62e8555aeafa917e855e34f9cc07e3ce3b
 last_implementation_commit_sha: 4299c6b828a23fdf79bdc976ab5630df3591ed00
 active_interface:
   status: interface_ready
@@ -72,19 +72,21 @@ completed_steps:
   - Published semantic interface 1.0.0 for P13 with canonical digest 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7.
   - Pushed exact interface checkpoint f265d163d6007e91fb2a332ebff6f173da81700e.
   - Passed repository-wide secret scan across 2750 text files, exact 16-path scope audit, final YAML/Prettier and diff hygiene checks, and released PARENT_HOUSEHOLD_UI lease 992f62c1-faba-4709-bae6-6c201cc776b2 with no external effect attempted.
+  - Verified exact correction controller 71df400bd85cdca40b4eb0e01fc749f362e3d0e8, its sole parent 36451ec88e05bb64be0b27b8bc148166b6fe9837, existing remote head 7c06fe62e8555aeafa917e855e34f9cc07e3ce3b, correction claim eedf369a-f247-481b-bca6-7e48abdf1f26, sole PARENT_HOUSEHOLD_UI lease 3f2cd863-1f04-40fa-875b-87c14469a454, and zero effect locks.
+  - Consumed the correction authorization only in the three P12 runtime-memory files; no product, contract, interface, test, steward, migration, shared, or external-effect work was performed.
 remaining_steps:
-  - I36 must independently review and integrate exact P12 implementation head 4299c6b828a23fdf79bdc976ab5630df3591ed00 and interface checkpoint f265d163d6007e91fb2a332ebff6f173da81700e.
-  - I36 must disposition registration request P12-registration-001 without weakening the published interface.
-  - C00 must authorize P13 only after exact P12 interface integration.
-next_action: I36 should review and integrate implementation 4299c6b828a23fdf79bdc976ab5630df3591ed00, verify semantic digest 6ba2fd50d2cbc20d8b4b9e403f66ca40586786d8ea8621c7d43933537165dbe7, and disposition steward digest 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733.
+  - C00 must reconcile this exact atomic correction claim before any product or interface file changes.
+  - Under the reconciled authorization, hard-cap active Student seats at three and prevent duplicate lifecycle persistence/audit on already-archived or already-active requests, with direct negative regression tests.
+  - Refresh implementation/interface/final digests and verification, release the fresh lease, and return ready_for_review with zero effects.
+next_action: Stop after pushing this exact three-file correction claim and wait for C00 reconciliation; do not touch product or interface files before reconciliation.
 requirements:
-  OTV2-PARENT-031: ready_for_review
-  OTV2-PARENT-032: ready_for_review
-  OTV2-PARENT-033: ready_for_review
-  OTV2-PARENT-034: ready_for_review
-  OTV2-PARENT-035: ready_for_review
-  OTV2-PARENT-036: ready_for_review
-  OTV2-PARENT-040: ready_for_review
+  OTV2-PARENT-031: correction_claimed
+  OTV2-PARENT-032: correction_claimed
+  OTV2-PARENT-033: correction_claimed
+  OTV2-PARENT-034: correction_claimed
+  OTV2-PARENT-035: correction_claimed
+  OTV2-PARENT-036: correction_claimed
+  OTV2-PARENT-040: correction_claimed
 acceptance_cases:
   OTV2-PARENT-031-AC01: task_owned_assertions_passed
   OTV2-PARENT-032-AC01: task_owned_assertions_passed
@@ -136,6 +138,8 @@ verification:
       result: passed across 2750 repository text files
     - command: exact start-to-interface changed-path audit and git diff --check
       result: passed; exactly 16 authorized P12 paths and clean diff hygiene
+    - command: correction controller/parent/existing-head/claim/lease/effect-lock verification
+      result: passed; exact controller 71df400b, sole parent 36451ec8, existing head 7c06fe62, claim eedf369a, sole fresh PARENT_HOUSEHOLD_UI lease, and zero effect locks
   known_baseline_failures: []
 external_effects:
   authority: none
