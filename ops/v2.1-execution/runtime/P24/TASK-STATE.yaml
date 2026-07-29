@@ -1,0 +1,107 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P24
+task_packet_digest: a0b763435e1c23e670b5894e56037735b4bfb74bfae247ebfa70145d86b89383
+task_context_digest: dc0b18db7b0e5a8eac1d02f6bf0d482ea58ab2b8efecaf8d214e05006b2f2427
+prompt_digest: 1cf9d6f343ea49b8c7399864280f5bcdb24616199c2a6591bbb5f4f909fbee99
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+branch: codex/v21-p24-support
+start_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
+dependency_heads:
+  F03:
+    state: interface_ready_integrated
+    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
+    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+    task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+    task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+  F04:
+    state: interface_ready_integrated
+    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+    interface_implementation_head_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
+    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+    task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+    task_context_digest: ee9e067b17a1721a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+  F05:
+    state: interface_ready_integrated
+    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+    task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+    task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+  F07:
+    state: interface_ready_integrated
+    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
+    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
+    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
+    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
+    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
+    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+status: claimed
+phase: implementation
+claim_mode: create_new_branch
+claimed_by: codex-p24-worker-ff79d0ab
+claim_time: '2026-07-29T12:23:30Z'
+claim_id: ff79d0ab-10d4-481b-ae90-48bb8bd9631a
+writer_slot_leases:
+  - slot: SUPPORT
+    lease_id: 4d0115d1-571f-4ca7-8b04-3fc79b43bcdf
+    lease_issued_at: '2026-07-29T12:23:30Z'
+    lease_expires_at: '2026-07-29T13:38:30Z'
+    state_based_on_control_head_sha: 8bb4680887b2ea320f914cf046184655601fade9
+    phase_scope: P24_atomic_claim_only
+    lease_released_at: null
+    state: active
+effect_lock_leases: []
+lease_expires_at: '2026-07-29T13:38:30Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T12:23:30Z'
+controller_authorization_sha: 6d0278d46789b6d746c58effa6c5f182ff4a7741
+controller_authorization_parent_sha: 8bb4680887b2ea320f914cf046184655601fade9
+ready_entry_state_based_on_control_head_sha: 8bb4680887b2ea320f914cf046184655601fade9
+ready_entry_payload_digest: 57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75
+state_based_on_head_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
+last_implementation_commit_sha: null
+completed_steps:
+  - Verified exact remote control authorization 6d0278d46789b6d746c58effa6c5f182ff4a7741 with sole acquisition parent 8bb4680887b2ea320f914cf046184655601fade9.
+  - Recomputed the exact P24 READY payload digest and verified the task, context, package, branch, claim, lease, start, and zero-effect-lock bindings.
+  - Verified the exact F03, F04, F05, and F07 interface bindings from READY and proved every named interface source is an ancestor of the authorized start.
+  - Created codex/v21-p24-support only from 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7 without reading provider state or changing product, tests, requests, registrations, or steward files.
+remaining_steps:
+  - Publish and remote-verify this exact three-file atomic claim.
+  - Stop for C00 reconciliation of the exact pushed claim head.
+  - Resume only after a new exact control authorization reconciles that head.
+next_action: C00 must reconcile the exact pushed P24 atomic-claim head before any product, test, request, registration, steward, provider, or external-effect work.
+requirements: {}
+acceptance_cases: {}
+current_checkpoint_changed_paths:
+  - ops/v2.1-execution/runtime/P24/HANDOFF.md
+  - ops/v2.1-execution/runtime/P24/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P24/TASK-STATE.yaml
+changed_paths:
+  - ops/v2.1-execution/runtime/P24/HANDOFF.md
+  - ops/v2.1-execution/runtime/P24/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P24/TASK-STATE.yaml
+migrations: []
+steward_requests: []
+verification:
+  commands_run:
+    - exact remote control, sole acquisition parent, authorized integration start, branch absence, task registry, READY payload, claim, SUPPORT lease, and zero-effect-lock verification (passed)
+    - exact F03/F04/F05/F07 READY binding and authorized-start ancestry verification (passed)
+    - exact package, task, context, and prompt identity verification (passed)
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []
