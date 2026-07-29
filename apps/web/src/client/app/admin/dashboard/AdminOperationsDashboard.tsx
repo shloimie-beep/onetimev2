@@ -1,9 +1,13 @@
 import React from 'react';
 import type {
   AdminDashboardSnapshot,
+  AdminNavigationResolution,
   AdminOperationalView,
 } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
-import { ADMIN_CANONICAL_PRIMARY_NAVIGATION } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
+import {
+  ADMIN_CANONICAL_PRIMARY_NAVIGATION,
+  ADMIN_PROVIDER_STATUS_GROUPS,
+} from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
 import {
   V21AppShell,
   V21StatePanel,
@@ -14,8 +18,12 @@ export function AdminOperationsDashboard(props: {
   snapshot: AdminDashboardSnapshot | null;
   state?: V21StateKind;
   safeMessage?: string;
+  authorization: { state: 'admin' | 'signed_out' | 'revoked'; credentialVersion: number };
   onNavigate: (href: string) => void;
-  onOpenOccurrence: (occurrenceId: string) => void;
+  onResolveOccurrence: (
+    occurrenceId: string,
+    credentialVersion: number,
+  ) => Promise<AdminNavigationResolution>;
 }) {
   const navigation = [
     ...ADMIN_CANONICAL_PRIMARY_NAVIGATION.map((item) => ({
@@ -33,7 +41,7 @@ export function AdminOperationsDashboard(props: {
       onNavigate={props.onNavigate}
     >
       <p>Current One Time operations from authorized persistent records.</p>
-      {props.state || !props.snapshot ? (
+      {props.authorization.state !== 'admin' || props.state || !props.snapshot ? (
         <V21StatePanel
           kind={props.state ?? 'error'}
           title={props.state === 'loading' ? 'Loading operations' : 'Operations unavailable'}
@@ -46,8 +54,9 @@ export function AdminOperationsDashboard(props: {
       ) : (
         <DashboardSections
           snapshot={props.snapshot}
+          credentialVersion={props.authorization.credentialVersion}
           onNavigate={props.onNavigate}
-          onOpenOccurrence={props.onOpenOccurrence}
+          onResolveOccurrence={props.onResolveOccurrence}
         />
       )}
     </V21AppShell>
@@ -56,10 +65,18 @@ export function AdminOperationsDashboard(props: {
 
 function DashboardSections(props: {
   snapshot: AdminDashboardSnapshot;
+  credentialVersion: number;
   onNavigate: (href: string) => void;
-  onOpenOccurrence: (occurrenceId: string) => void;
+  onResolveOccurrence: (
+    occurrenceId: string,
+    credentialVersion: number,
+  ) => Promise<AdminNavigationResolution>;
 }) {
   const { snapshot } = props;
+  const resolveAndOpenOccurrence = async (occurrenceId: string) => {
+    const resolution = await props.onResolveOccurrence(occurrenceId, props.credentialVersion);
+    if (resolution.state === 'open') props.onNavigate(resolution.href);
+  };
   return (
     <>
       <p>
@@ -82,7 +99,7 @@ function DashboardSections(props: {
                 </span>{' '}
                 <button
                   type="button"
-                  onClick={() => props.onOpenOccurrence(occurrence.occurrenceId)}
+                  onClick={() => void resolveAndOpenOccurrence(occurrence.occurrenceId)}
                 >
                   Open Live Console
                 </button>
@@ -193,18 +210,26 @@ function DashboardSections(props: {
 
       <section aria-labelledby="provider-health-heading">
         <h2 id="provider-health-heading">Provider Health</h2>
-        {snapshot.providerHealth.length === 0 ? (
-          <p>No provider readiness snapshot is recorded.</p>
-        ) : (
-          <ul>
-            {snapshot.providerHealth.map((provider) => (
-              <li key={provider.provider}>
-                <strong>{provider.provider}</strong>: {provider.state}; observed{' '}
-                {formatTimestamp(provider.observedAt)}
+        <ul>
+          {ADMIN_PROVIDER_STATUS_GROUPS.map((group) => {
+            const providers = snapshot.providerHealth.filter((provider) =>
+              (group.providers as readonly string[]).includes(provider.provider),
+            );
+            return (
+              <li key={group.id}>
+                <strong>{group.label}</strong>:{' '}
+                {providers.length === 0
+                  ? 'Unavailable — no exact environment-scoped readiness snapshot'
+                  : providers
+                      .map(
+                        (provider) =>
+                          `${provider.state}, observed ${formatTimestamp(provider.observedAt)} from ${provider.sourceEnvironment}`,
+                      )
+                      .join('; ')}
               </li>
-            ))}
-          </ul>
-        )}
+            );
+          })}
+        </ul>
       </section>
 
       <section aria-labelledby="operational-views-heading">

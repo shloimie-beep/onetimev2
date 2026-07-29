@@ -90,18 +90,6 @@ export function normalizeAdminSearchRequest(input: AdminSearchRequest): AdminSea
   ) {
     fail('invalidQuery', 'Search requires 2-128 printable characters.');
   }
-  const generatedAt = Date.parse(snapshot.generatedAt);
-  const windowStart = Date.parse(snapshot.recentActivity.windowStartedAt);
-  const windowEnd = Date.parse(snapshot.recentActivity.windowEndedAt);
-  if (
-    Number.isNaN(windowStart) ||
-    Number.isNaN(windowEnd) ||
-    windowEnd !== generatedAt ||
-    windowStart >= windowEnd ||
-    windowEnd - windowStart > 24 * 60 * 60 * 1000
-  ) {
-    fail('unsafeResult', 'Recent Activity must declare a bounded window ending at generation.');
-  }
   if (!Number.isSafeInteger(input.pageSize) || input.pageSize < 1 || input.pageSize > 50) {
     fail('invalidQuery', 'Search page size must be between 1 and 50.');
   }
@@ -163,6 +151,18 @@ function assertDashboard(scope: AdminOperationsScope, snapshot: AdminDashboardSn
     Number.isNaN(Date.parse(snapshot.generatedAt))
   ) {
     fail('unsafeResult', 'Dashboard must be a timestamped, authorized persistent-store snapshot.');
+  }
+  const generatedAt = Date.parse(snapshot.generatedAt);
+  const windowStart = Date.parse(snapshot.recentActivity.windowStartedAt);
+  const windowEnd = Date.parse(snapshot.recentActivity.windowEndedAt);
+  if (
+    Number.isNaN(windowStart) ||
+    Number.isNaN(windowEnd) ||
+    windowEnd !== generatedAt ||
+    windowStart >= windowEnd ||
+    windowEnd - windowStart > 24 * 60 * 60 * 1000
+  ) {
+    fail('unsafeResult', 'Recent Activity must declare a bounded window ending at generation.');
   }
   const scoped = [
     ...snapshot.nowAndNext,
@@ -227,6 +227,30 @@ function assertDashboard(scope: AdminOperationsScope, snapshot: AdminDashboardSn
     ) {
       fail('crossScope', 'Provider readiness came from a different runtime environment.');
     }
+    if (provider.state === 'live' && provider.sourceEnvironment !== 'production') {
+      fail('unsafeResult', 'Non-production provider readiness cannot be relabeled live.');
+    }
+  }
+  const queue = snapshot.operations.queueHealth;
+  if (
+    queue.state === 'available' &&
+    (!Number.isSafeInteger(queue.depth) ||
+      (queue.depth ?? -1) < 0 ||
+      !Number.isSafeInteger(queue.deadLetterCount) ||
+      (queue.deadLetterCount ?? -1) < 0 ||
+      (queue.oldestAgeSeconds !== null &&
+        (!Number.isSafeInteger(queue.oldestAgeSeconds) || (queue.oldestAgeSeconds ?? -1) < 0)))
+  ) {
+    fail('unsafeResult', 'Queue status values must be bounded persistent counts.');
+  }
+  const failures = snapshot.operations.recentRedactedFailures;
+  if (
+    failures.state === 'available' &&
+    failures.failureCodes?.some(
+      (code) => !SAFE_STATUS.test(code) || PRIVATE_OR_PROVIDER_VALUE.test(code),
+    )
+  ) {
+    fail('unsafeResult', 'Recent failures must contain redacted safe codes only.');
   }
   for (const occurrence of snapshot.nowAndNext) {
     assertSafeTarget(occurrence.occurrenceId);

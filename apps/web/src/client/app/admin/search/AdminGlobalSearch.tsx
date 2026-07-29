@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type {
   AdminNavigationResolution,
+  AdminNavigationRequest,
   AdminSearchKind,
   AdminSearchPage,
   AdminSearchRequest,
@@ -45,13 +46,49 @@ export async function postPrivateAdminSearch(
   return (await response.json()) as AdminSearchPage;
 }
 
+export async function postPrivateAdminNavigationResolution(
+  fetcher: typeof fetch,
+  request: AdminNavigationRequest,
+): Promise<AdminNavigationResolution> {
+  const response = await fetcher('/api/v2.1/admin/operations/resolve', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-onetime-private-resolution': '1',
+    },
+    credentials: 'same-origin',
+    cache: 'no-store',
+    referrerPolicy: 'same-origin',
+    body: JSON.stringify(request),
+  });
+  if (!response.ok) {
+    return { state: 'unavailable', reason: 'missing_or_unauthorized', cache: 'no-store' };
+  }
+  return (await response.json()) as AdminNavigationResolution;
+}
+
+export function shouldClearAdminPrivateState(
+  observedCredentialVersion: number,
+  authorization: { state: 'admin' | 'signed_out' | 'revoked'; credentialVersion: number },
+  restoredFromBfcache = false,
+) {
+  return (
+    restoredFromBfcache ||
+    authorization.state !== 'admin' ||
+    authorization.credentialVersion !== observedCredentialVersion
+  );
+}
+
 export function AdminGlobalSearch(props: {
   initialPage?: AdminSearchPage | null;
   initialRequest?: AdminSearchRequest | null;
   recentQueries?: readonly string[];
   onSearch: (request: AdminSearchRequest) => Promise<AdminSearchPage>;
-  authorization?: { state: 'admin' | 'signed_out' | 'revoked'; credentialVersion: number };
-  onResolveOpen: (result: AdminSearchResult) => Promise<AdminNavigationResolution>;
+  authorization: { state: 'admin' | 'signed_out' | 'revoked'; credentialVersion: number };
+  onResolveOpen: (
+    result: AdminSearchResult,
+    credentialVersion: number,
+  ) => Promise<AdminNavigationResolution>;
   onClearRecentQueries: () => void;
   onNavigate: (href: string) => void;
 }) {
@@ -65,7 +102,7 @@ export function AdminGlobalSearch(props: {
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [activeIndex, setActiveIndex] = useState(0);
   const [observedCredentialVersion, setObservedCredentialVersion] = useState(
-    props.authorization?.credentialVersion ?? 0,
+    props.authorization.credentialVersion,
   );
   const grouped = useMemo(() => groupResults(page?.results ?? []), [page]);
   const navigation = [
@@ -83,12 +120,9 @@ export function AdminGlobalSearch(props: {
     props.onClearRecentQueries();
   };
   useEffect(() => {
-    if (
-      props.authorization?.state !== 'admin' ||
-      props.authorization.credentialVersion !== observedCredentialVersion
-    ) {
+    if (shouldClearAdminPrivateState(observedCredentialVersion, props.authorization)) {
       clearPrivateState();
-      setObservedCredentialVersion(props.authorization?.credentialVersion ?? 0);
+      setObservedCredentialVersion(props.authorization.credentialVersion);
     }
   }, [props.authorization?.credentialVersion, props.authorization?.state]);
   useEffect(() => {
@@ -122,7 +156,11 @@ export function AdminGlobalSearch(props: {
     setActiveIndex((index) => (index + direction + length) % length);
   };
   const resolveAndOpen = async (result: AdminSearchResult) => {
-    const resolution = await props.onResolveOpen(result);
+    if (props.authorization.state !== 'admin') {
+      clearPrivateState();
+      return;
+    }
+    const resolution = await props.onResolveOpen(result, props.authorization.credentialVersion);
     if (resolution.state === 'open') props.onNavigate(resolution.href);
     else clearPrivateState();
   };

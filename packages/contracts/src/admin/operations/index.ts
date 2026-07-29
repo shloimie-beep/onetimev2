@@ -1,7 +1,7 @@
 import type { AuthenticatedPrincipal } from '../../identity/auth/index.ts';
 import type { RuntimeTier, VerificationEnvironmentId } from '../../state/index.ts';
 
-export const ADMIN_OPERATIONS_CONTRACT_VERSION = '2.1.0' as const;
+export const ADMIN_OPERATIONS_CONTRACT_VERSION = '2.1.1' as const;
 export const ADMIN_SEARCH_TRANSPORT = {
   method: 'POST',
   path: '/api/v2.1/admin/search',
@@ -164,6 +164,19 @@ export const ADMIN_QUICK_ACTIONS = [
   { id: 'upload_recording', label: 'Upload recording', route: '/app/content/upload' },
   { id: 'create_announcement', label: 'Create announcement', route: '/app/communications' },
   { id: 'open_tickets', label: 'Open tickets', route: '/app/tickets' },
+] as const;
+
+export const ADMIN_PROVIDER_STATUS_GROUPS = [
+  { id: 'resend', label: 'Resend', providers: ['resend'] },
+  { id: 'ghl_stripe', label: 'GHL and Stripe', providers: ['ghl', 'stripe'] },
+  { id: 'zoom', label: 'Zoom', providers: ['zoom'] },
+  { id: 'vimeo', label: 'Vimeo', providers: ['vimeo'] },
+  {
+    id: 'drive_upload',
+    label: 'Drive and direct-upload staging',
+    providers: ['drive', 'direct_upload'],
+  },
+  { id: 'telegram', label: 'Telegram', providers: ['one_time_telegram'] },
 ] as const;
 
 export type AdminOperationalAvailability =

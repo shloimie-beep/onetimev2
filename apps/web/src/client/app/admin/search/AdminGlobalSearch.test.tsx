@@ -8,7 +8,9 @@ import type {
 import {
   AdminGlobalSearch,
   buildAdminSearchRequest,
+  postPrivateAdminNavigationResolution,
   postPrivateAdminSearch,
+  shouldClearAdminPrivateState,
 } from './AdminGlobalSearch.tsx';
 
 const scope = {
@@ -42,8 +44,11 @@ describe('P11 private Admin global search', () => {
       <AdminGlobalSearch
         initialPage={page}
         recentQueries={['Student One']}
+        authorization={{ state: 'admin', credentialVersion: 7 }}
         onSearch={() => Promise.resolve(page)}
-        onOpen={() => undefined}
+        onResolveOpen={() =>
+          Promise.resolve({ state: 'open', href: '/app/students/student-one', cache: 'no-store' })
+        }
         onClearRecentQueries={() => undefined}
         onNavigate={() => undefined}
       />,
@@ -51,6 +56,10 @@ describe('P11 private Admin global search', () => {
     expect(html).toContain('Students');
     expect(html).toContain('Student One');
     expect(html).toContain('Clear recent searches');
+    expect(html).toContain('role="combobox"');
+    expect(html).toContain('aria-controls="admin-search-results"');
+    expect(html).toContain('aria-activedescendant="admin-search-option-student-student-one"');
+    expect(html).toContain('role="option"');
     expect(html).not.toContain('?q=');
   });
 
@@ -72,5 +81,38 @@ describe('P11 private Admin global search', () => {
       credentials: 'same-origin',
     });
     expect(String(init?.body)).toContain('private student name');
+  });
+
+  it('resolves selected targets through a fresh private no-store POST and invalidates stale state', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          state: 'open',
+          href: '/app/students/student-one',
+          cache: 'no-store',
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+    await expect(
+      postPrivateAdminNavigationResolution(fetcher, {
+        kind: 'student',
+        targetId: 'student-one',
+        selectedCredentialVersion: 7,
+      }),
+    ).resolves.toMatchObject({ state: 'open', href: '/app/students/student-one' });
+    const [url, init] = fetcher.mock.calls[0] ?? [];
+    expect(url).toBe('/api/v2.1/admin/operations/resolve');
+    expect(init).toMatchObject({
+      method: 'POST',
+      cache: 'no-store',
+      credentials: 'same-origin',
+    });
+    expect(shouldClearAdminPrivateState(7, { state: 'admin', credentialVersion: 7 })).toBe(false);
+    expect(shouldClearAdminPrivateState(7, { state: 'revoked', credentialVersion: 7 })).toBe(true);
+    expect(shouldClearAdminPrivateState(7, { state: 'admin', credentialVersion: 8 })).toBe(true);
+    expect(shouldClearAdminPrivateState(7, { state: 'admin', credentialVersion: 7 }, true)).toBe(
+      true,
+    );
   });
 });

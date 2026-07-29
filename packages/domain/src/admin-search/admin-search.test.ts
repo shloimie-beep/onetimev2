@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ADMIN_OPERATIONAL_VIEWS,
+  ADMIN_QUICK_ACTIONS,
   ADMIN_SEARCH_KINDS,
   type AdminDashboardSnapshot,
   type AdminOperationsActor,
@@ -8,10 +9,12 @@ import {
   type AdminSearchPage,
   type AdminSearchRequest,
   type AdminSearchResult,
+  type AdminTargetAuthorization,
 } from '../../../contracts/src/admin/operations/index.ts';
 import {
   normalizeAdminSearchRequest,
   readAuthorizedAdminDashboard,
+  resolveAuthorizedAdminNavigation,
   searchAuthorizedAdminOperations,
 } from './index.ts';
 
@@ -35,6 +38,11 @@ class MemoryOperationsRepository implements AdminOperationsReadRepository {
   constructor(
     readonly dashboard: AdminDashboardSnapshot = dashboardFixture(),
     readonly page: AdminSearchPage = searchPageFixture(),
+    readonly target: AdminTargetAuthorization = {
+      state: 'authorized',
+      kind: 'student',
+      targetId: 'student-one',
+    },
   ) {}
 
   readDashboard() {
@@ -43,6 +51,10 @@ class MemoryOperationsRepository implements AdminOperationsReadRepository {
 
   search(_scope: typeof scope, _request: AdminSearchRequest) {
     return Promise.resolve(this.page);
+  }
+
+  resolveTarget() {
+    return Promise.resolve(this.target);
   }
 }
 
@@ -88,6 +100,37 @@ describe('P11 authorized Admin operations domain', () => {
       pageSize: 10,
       cursor: null,
     });
+  });
+
+  it('rechecks current credential version and selected target immediately before navigation', async () => {
+    const repository = new MemoryOperationsRepository();
+    await expect(
+      resolveAuthorizedAdminNavigation({
+        actor,
+        repository,
+        request: { kind: 'student', targetId: 'student-one', selectedCredentialVersion: 3 },
+      }),
+    ).resolves.toEqual({
+      state: 'open',
+      href: '/app/students/student-one',
+      cache: 'no-store',
+    });
+    await expect(
+      resolveAuthorizedAdminNavigation({
+        actor,
+        repository,
+        request: { kind: 'student', targetId: 'student-one', selectedCredentialVersion: 2 },
+      }),
+    ).resolves.toMatchObject({ state: 'unavailable', reason: 'missing_or_unauthorized' });
+    await expect(
+      resolveAuthorizedAdminNavigation({
+        actor,
+        repository: new MemoryOperationsRepository(dashboardFixture(), searchPageFixture(), {
+          state: 'archived',
+        }),
+        request: { kind: 'student', targetId: 'student-one', selectedCredentialVersion: 3 },
+      }),
+    ).resolves.toMatchObject({ state: 'unavailable', reason: 'missing_or_unauthorized' });
   });
 
   it('denies non-Admin, cross-environment, synthetic, unsafe-route, and malformed-query reads', async () => {
@@ -142,6 +185,61 @@ describe('P11 authorized Admin operations domain', () => {
         },
       }),
     ).rejects.toThrow(/route/u);
+    await expect(
+      readAuthorizedAdminDashboard({
+        actor,
+        repository: new MemoryOperationsRepository({
+          ...dashboardFixture(),
+          providerHealth: [
+            {
+              ...dashboardFixture().providerHealth[0]!,
+              sourceEnvironment: 'production',
+            },
+          ],
+        }),
+      }),
+    ).rejects.toThrow(/environment/u);
+    await expect(
+      readAuthorizedAdminDashboard({
+        actor,
+        repository: new MemoryOperationsRepository({
+          ...dashboardFixture(),
+          providerHealth: [
+            {
+              ...dashboardFixture().providerHealth[0]!,
+              state: 'live',
+            },
+          ],
+        }),
+      }),
+    ).rejects.toThrow(/relabeled live/u);
+    await expect(
+      readAuthorizedAdminDashboard({
+        actor,
+        repository: new MemoryOperationsRepository({
+          ...dashboardFixture(),
+          recentActivity: {
+            ...dashboardFixture().recentActivity,
+            windowStartedAt: '2026-07-01T00:00:00.000Z',
+          },
+        }),
+      }),
+    ).rejects.toThrow(/bounded window/u);
+    await expect(
+      searchAuthorizedAdminOperations({
+        actor,
+        repository: new MemoryOperationsRepository(
+          dashboardFixture(),
+          searchPageFixture([
+            {
+              ...searchResult('content'),
+              distinguishingMetadata: 'https://vimeo.com/private-target',
+            },
+          ]),
+        ),
+        request: { query: 'content', kinds: ['content'], pageSize: 20, cursor: null },
+      }),
+    ).rejects.toThrow(/provider|secret/u);
     for (const request of [
       { query: 'x', kinds: ['adult'], pageSize: 20, cursor: null },
       { query: 'valid', kinds: [], pageSize: 20, cursor: null },
@@ -206,6 +304,8 @@ function dashboardFixture(): AdminDashboardSnapshot {
     recentActivity: {
       ...scope,
       source: 'persistent_store',
+      windowStartedAt: '2026-07-28T06:45:00.000Z',
+      windowEndedAt: '2026-07-29T06:45:00.000Z',
       communications: 4,
       auditEvents: 9,
       lastActivityAt: '2026-07-29T06:44:00.000Z',
@@ -215,11 +315,57 @@ function dashboardFixture(): AdminDashboardSnapshot {
         ...scope,
         source: 'persistent_store',
         provider: 'zoom',
-        state: 'live',
+        state: 'canary_verified',
         observedAt: '2026-07-29T06:43:00.000Z',
+        sourceEnvironment: 'test',
+        observedRuntimeTier: 'isolated_staging',
+        observedVerificationEnvironmentId: 'ci',
       },
     ],
     operationalViews: ADMIN_OPERATIONAL_VIEWS,
+    quickActions: ADMIN_QUICK_ACTIONS,
+    operations: {
+      ...scope,
+      source: 'persistent_store',
+      releaseSource: {
+        state: 'unavailable',
+        observedAt: '2026-07-29T06:45:00.000Z',
+        reason: 'not_reported',
+      },
+      webWorkerAgreement: {
+        state: 'unavailable',
+        observedAt: '2026-07-29T06:45:00.000Z',
+        reason: 'not_reported',
+      },
+      databaseMigrations: {
+        state: 'unavailable',
+        observedAt: '2026-07-29T06:45:00.000Z',
+        reason: 'not_reported',
+      },
+      queueHealth: {
+        state: 'available',
+        observedAt: '2026-07-29T06:45:00.000Z',
+        summary: 'Persistent queue readback',
+        depth: 1,
+        oldestAgeSeconds: 60,
+        deadLetterCount: 0,
+      },
+      providerDetail: {
+        state: 'available',
+        observedAt: '2026-07-29T06:45:00.000Z',
+        summary: 'Scoped readiness readback',
+      },
+      backupRestore: {
+        state: 'unavailable',
+        observedAt: '2026-07-29T06:45:00.000Z',
+        reason: 'not_reported',
+      },
+      recentRedactedFailures: {
+        state: 'unavailable',
+        observedAt: '2026-07-29T06:45:00.000Z',
+        reason: 'not_reported',
+      },
+    },
   };
 }
 
