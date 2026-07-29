@@ -903,6 +903,42 @@ P23 final `24ec3a4effc622f384915d892cbaad046e1ea5d1` remains read-only
 pending its independent exact-source semantic verdict. Do not queue or
 integrate it before PASS.
 
+P11 residual claim `ce87a6c2808216214870d4b2343c82c0a36aaf36` is
+reconciled. Resume it under unchanged claim
+`6efc5db3-43b4-4dad-ae3f-59031adddbd5` and lease
+`84e7a42a-d2a5-4c88-ba45-57b34ecc6de9`. Change only exact provider
+runtime-tier/verification-environment persistence and filtering, private-query
+clearing across all authorization/bfcache invalidations, unique valid
+combobox/listbox ARIA relationships, and direct tests within P11-owned/runtime
+paths. Preserve all earlier passing corrections. Re-run focused tests,
+typecheck, lint/format/scope/digests, publish a superseding final, release the
+lease, and stop with effects `0/0/0`. Apply no registration/steward request and
+perform no provider action.
+
+P23 final `24ec3a4effc622f384915d892cbaad046e1ea5d1` must not be
+integrated. First resume it only for a three-runtime-file claim under claim
+`096ffffc-1637-4602-a9a8-3084e03a50e1`, STUDENT_NOTIFICATIONS lease
+`471de353-37c6-4e38-a6da-d2db92c4b207`, ready parent
+`ca8eb4ab9957b6616664cfd5e944a73608596020`, and ready digest
+`67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b`.
+Change exactly the three P23 runtime files, bind the fresh identities/rejected
+head, push normally, remote-verify, and stop for C00 reconciliation. Do not
+edit product, test, migration, registration, or request files in that push.
+
+Only after reconciliation may P23 restore the exact locked **Open schedule**
+visible action label for both `class_changed` and `class_canceled` while
+retaining canonical route `/app/student/calendar`, and replace the raw
+NUL-delimited persisted dedupe representation with an injective PostgreSQL-safe
+encoding of the exact event-type/source-entity/recipient/source-version tuple.
+Add exact-copy assertions and a PostgreSQL-boundary regression proving the
+persisted key contains no NUL while same-tuple retries remain stable and
+different tuples do not collide. Preserve every prior passing lifecycle,
+privacy, race, retention, sound, timezone, idempotency, route, tab, and ancestry
+correction. Re-run focused tests, typecheck, lint/format/scope/digests, release
+the lease, publish a superseding final, and stop for independent re-audit. Do
+not apply migration/registration/steward requests or perform provider/send
+actions.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,

@@ -1190,3 +1190,33 @@ P23 final `24ec3a4e` passed C00 mechanical replay (20 tests, typecheck, exact
 18 paths, artifact `d6a527d0`, request aggregate `f984e5ee`, truthful
 integration/interface ancestry) and is undergoing the required independent
 semantic re-audit. It is not admitted or queued yet.
+
+P11 atomic residual claim
+`ce87a6c2808216214870d4b2343c82c0a36aaf36` is independently
+reconciled as the exact three-runtime-file child of rejected final `81486a86`.
+P11 may now correct only exact provider runtime-tier/verification-environment
+provenance, complete private-query clearing during every authorization/bfcache
+invalidation, and unique valid combobox/listbox ARIA relationships. Add direct
+negative tests, preserve every earlier correction, release lease `84e7a42a`,
+publish a superseding final, and stop for re-audit. No registration, provider,
+or external effect is authorized.
+
+P23 final `24ec3a4effc622f384915d892cbaad046e1ea5d1` is rejected from
+admission despite exact identity, 18-path scope, matching artifact/request
+digests, 20 focused tests, workspace typecheck, and the corrected route/tab/
+ancestry behavior. WNC-8 requires visible **Open schedule** copy while keeping
+the canonical `/app/student/calendar` route; the final emits **Open calendar**.
+Its exact dedupe tuple uses raw NUL separators and passes that string to
+PostgreSQL text parameters/columns, which cannot persist NUL. The in-memory
+tests do not exercise that database boundary. No migration, registration,
+provider, send, or external effect occurred.
+
+C00 authorized only a fresh runtime-memory claim from exact rejected P23 final
+`24ec3a4e`. Ready digest is
+`67ad844e050bc27b56b0f4de8c7388e60ebac33a14e497e482c409e104020d4b`,
+claim is `096ffffc-1637-4602-a9a8-3084e03a50e1`, and the sole
+STUDENT_NOTIFICATIONS lease is `471de353-37c6-4e38-a6da-d2db92c4b207`
+through `2026-07-29T10:18:31Z`. Its first push may change exactly P23
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then must stop for C00
+reconciliation. Product/test/request edits and every external effect remain
+unauthorized in that first phase.

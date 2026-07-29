@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-80360914
-claim_time: '2026-07-29T09:09:26Z'
-claim_id: 80360914-ff61-4f6f-80f2-239dda0f183e
-lease_expires_at: '2026-07-29T09:24:26Z'
-last_heartbeat_at: '2026-07-29T09:13:54Z'
-controller_authorization_sha: f8154c67106ab032873fd923efa9979465f11fff
+claimed_by: codex-c00-orchestrator-f7367868
+claim_time: '2026-07-29T09:18:31Z'
+claim_id: f7367868-cc12-467e-b9f6-1d9b899c964a
+lease_expires_at: '2026-07-29T09:33:31Z'
+last_heartbeat_at: '2026-07-29T09:22:10Z'
+controller_authorization_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
 ready_entry_payload_digest: null
-state_based_on_head_sha: f8154c67106ab032873fd923efa9979465f11fff
+state_based_on_head_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -273,11 +273,14 @@ completed_steps:
 - independently reconciled P23 residual correction claim 433cc88b as an exact three-runtime-file child of rejected final 87da1f24 with zero effects
 - rejected P11 superseding final 81486a86 after exact-source re-audit confirmed provider-readiness relabeling across verification environments, private query retention after authorization invalidation, and duplicate grouped-listbox identifiers
 - authorized only a fresh three-runtime-file P11 provider/privacy/accessibility correction claim from exact rejected final 81486a86 under claim 6efc5db3 and ADMIN_OPERATIONS_UI lease 84e7a42a
+- independently reconciled P11 provider/privacy/accessibility correction claim ce87a6c2 as an exact three-runtime-file child of rejected final 81486a86 with zero effects
+- rejected P23 superseding final 24ec3a4e after exact-source re-audit confirmed locked Open-schedule copy was changed and the raw NUL-delimited dedupe key cannot be persisted by PostgreSQL
+- authorized only a fresh three-runtime-file P23 copy/dedupe-persistence correction claim from exact rejected final 24ec3a4e under claim 096ffffc and STUDENT_NOTIFICATIONS lease 471de353
 remaining_steps:
-- reconcile the exact P11 provider/privacy/accessibility correction claim, then authorize and independently re-audit only that bounded correction
-- complete the read-only exact-source re-audit of P23 superseding final 24ec3a4e
+- receive and independently re-audit the bounded P11 provider/privacy/accessibility correction
+- reconcile the exact P23 copy/dedupe-persistence correction claim, then authorize and independently re-audit only that bounded correction
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P11 may publish only its three-runtime-file correction claim from exact rejected final 81486a86 under ready digest 6f30eeea, claim 6efc5db3, and lease 84e7a42a, then stop for reconciliation. P23 remains under read-only audit. No product correction or external effect is authorized.
+next_action: P11 may implement only its three confirmed residual corrections from reconciled claim ce87a6c2. P23 may publish only a three-runtime-file correction claim from exact rejected final 24ec3a4e under ready digest 67ad844e, claim 096ffffc, and lease 471de353, then stop for reconciliation. No provider or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -285,12 +288,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: f8154c67106ab032873fd923efa9979465f11fff
+  current_control_parent_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 80360914-ff61-4f6f-80f2-239dda0f183e
-      observed_head: f8154c67106ab032873fd923efa9979465f11fff
+      claim_id: f7367868-cc12-467e-b9f6-1d9b899c964a
+      observed_head: ca8eb4ab9957b6616664cfd5e944a73608596020
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -470,10 +473,10 @@ orchestration:
     P11:
       branch: codex/v21-p11-admin-operations
       claim_id: 6efc5db3-43b4-4dad-ae3f-59031adddbd5
-      observed_head: 81486a86a85a3d6ffee64eb58c66119686af049e
+      observed_head: ce87a6c2808216214870d4b2343c82c0a36aaf36
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
       lease_expires_at: '2026-07-29T10:09:26Z'
-      scheduling_state: atomic_provider_privacy_accessibility_correction_claim_authorized
+      scheduling_state: provider_privacy_accessibility_claim_reconciled_correction_authorized
     P13:
       branch: codex/v21-p13-parent-summary
       claim_id: null
@@ -490,11 +493,11 @@ orchestration:
       scheduling_state: ready_for_review_corrected_final_integrated_at_44fd5363
     P23:
       branch: codex/v21-p23-student-notifications
-      claim_id: null
+      claim_id: 096ffffc-1637-4602-a9a8-3084e03a50e1
       observed_head: 24ec3a4effc622f384915d892cbaad046e1ea5d1
       authorized_start_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-      lease_expires_at: null
-      scheduling_state: superseding_final_read_only_semantic_reaudit_in_progress
+      lease_expires_at: '2026-07-29T10:18:31Z'
+      scheduling_state: atomic_copy_dedupe_persistence_correction_claim_authorized
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: null
@@ -524,7 +527,8 @@ orchestration:
       lease_expires_at: null
       scheduling_state: ready_for_review_full_integrated_at_cecc1c0d
   active_native_subagents:
-  - i36_worker2
+  - f03_worker
+  - f05_worker
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -711,10 +715,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 37c428f827f40235d743085df236ae2c4d4fee2d58875e9cbabaff33cc30c06b
-    control_lease: 1b061f3dfd0966f7451e593de23695cab79852f5d16d136ef5d1d3559f418e8b
-    task_registry: 3f31caadc2ef213f9b53f0a0e74647b9e1b4456e0f1804b9425fc6b3aa6096eb
-    ready_queue: 6bef8fecdd762e0326e4a810380a814fc3dcb184aec87a5bc5ec581a1dd9c34b
+    control_state: 9de43f1b8eb24d7fff8466536a62fbbb7a252dea43c6010da4fc759cc2bb98d1
+    control_lease: f391463ff687822b909f6317bb1f550a4250f842b0dd1b7b96d8849989b9d73b
+    task_registry: 291e9417af026f8ef6e90fa2c8261cf572dbc1b64e989bab717aa145d830a9fd
+    ready_queue: 4e12b318269812b960b47f276f577b3cfe14819e61b8f2297c428e187554f298
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 560ebf08b54b67da10aa794062a3ec85f46238f10b0710878b4974a6ec453375
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -851,6 +855,9 @@ verification:
   - P11 superseding final 81486a86 exact ancestry, seventeen-path scope, artifact/request digests, 12 focused tests, typecheck, and prior blocker corrections: rejected for provider provenance relabeling, retained private query text after authorization invalidation, and duplicate grouped-listbox identifiers
   - canonical P11 provider/privacy/accessibility correction ready-entry digest 6f30eeea against acquisition f8154c67, rejected head 81486a86, fresh claim 6efc5db3, sole ADMIN_OPERATIONS_UI lease 84e7a42a, and zero effect locks: passed
   - P23 final 24ec3a4e exact 18-path scope, 13-artifact digest d6a527d0, two-request aggregate f984e5ee, 20 focused tests, typecheck, strict route/calendar correction, keyboard handling, truthful dependency ancestry, and zero effects: mechanical replay passed; independent semantic verdict pending
+  - P11 residual claim ce87a6c2 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, and zero effects: passed
+  - P23 final 24ec3a4e exact-source semantic re-audit: rejected for noncanonical locked Open-schedule label and a raw NUL-delimited dedupe key incompatible with PostgreSQL character persistence
+  - canonical P23 copy/dedupe-persistence correction ready-entry digest 67ad844e against acquisition ca8eb4ab, rejected head 24ec3a4e, fresh claim 096ffffc, sole STUDENT_NOTIFICATIONS lease 471de353, and zero effect locks: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
