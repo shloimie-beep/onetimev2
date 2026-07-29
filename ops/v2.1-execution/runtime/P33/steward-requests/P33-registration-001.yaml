@@ -3,6 +3,11 @@ execution_id: OT-V21-PRODUCTION
 request_id: P33-registration-001
 task_id: P33
 kind: registration
+interface_contract:
+  checkpoint_path: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
+  interface_implementation_head_sha: 5531d6907353fd4d3935469a3574bd63c17cfc23
+  semantic_contract_version: 2.0.0
+  contract_digest: cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95
 requirement_ids:
   - OTV2-OPS-166
   - OTV2-OPS-171
@@ -17,14 +22,16 @@ rationale: >-
   P33 owns registration-neutral operations modules but cannot edit the central
   web or worker composers or root package barrels.
 desired_semantic_change: >-
-  Mount the protected operations router behind the existing exact Admin/Ops
-  authorization boundary, register the worker heartbeat publisher in the
-  central worker lifecycle, and export the v2.1 observability root without
-  weakening any existing session, CSRF, rate-limit, or trace boundary.
+  Mount the protected operations router with authorizeAdmin derived only from
+  the current server session and returning the typed exact Admin principal,
+  register the worker heartbeat publisher in the central worker lifecycle, and
+  export the v2.1 observability root without weakening any existing session,
+  CSRF, rate-limit, or trace boundary.
 proposed_symbols_routes_keys_or_dependencies:
   - packages/observability/v21/index.ts is directly importable; any root barrel export must preserve semantic contract version 1.0.0.
-  - apps/web central composer mounts createOperationsDiagnosticsRouter below an internal Admin/Ops-only path.
-  - authorization failure remains concealed as 404; diagnostics are never public readiness or authorization inputs.
+  - apps/web central composer mounts createOperationsDiagnosticsRouter below an internal Admin/Ops-only path and supplies authorizeAdmin from canonical server session readback.
+  - authorizeAdmin returns authorized only for source=server_session, role=admin, current=true, and exact safe principal/account/product/session IDs; request headers and bodies never assert any field.
+  - Anonymous, Parent, Student, stale Admin, and client-asserted role failures remain concealed as 404 and invoke no health observer.
   - apps/worker central lifecycle calls publishOperationsHeartbeat only after exact startup identity validation.
   - heartbeat persistence or transport must retain only safe identity hashes, state, readiness codes, time, tier, and verification environment.
 compatibility_assumptions:

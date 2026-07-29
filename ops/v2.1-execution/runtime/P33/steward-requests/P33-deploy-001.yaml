@@ -3,6 +3,11 @@ execution_id: OT-V21-PRODUCTION
 request_id: P33-deploy-001
 task_id: P33
 kind: deployment
+interface_contract:
+  checkpoint_path: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
+  interface_implementation_head_sha: 5531d6907353fd4d3935469a3574bd63c17cfc23
+  semantic_contract_version: 2.0.0
+  contract_digest: cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95
 requirement_ids:
   - OTV2-OPS-166
   - OTV2-OPS-167
@@ -30,7 +35,7 @@ proposed_symbols_routes_keys_or_dependencies:
   - Require read-only synthetic checks in isolated staging first; any production observation remains production_read_only and nonmutating.
   - Promotion and rollback tooling must compare immutable digests, not branch names, mutable tags, or deployment labels.
 compatibility_assumptions:
-  - The runtime semantic contract is 1.0.0 with digest d643626af5b5ba4c6fbdd158b2e418c9f5f88123285b67595610a2e49b0b79b6.
+  - The runtime semantic contract is 2.0.0 with digest cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95.
   - P33 performs no deployment or provider effect and creates no monitoring resource.
   - Backup/restore and canary-budget scripts remain explicitly outside P33 scope.
 verification_performed:

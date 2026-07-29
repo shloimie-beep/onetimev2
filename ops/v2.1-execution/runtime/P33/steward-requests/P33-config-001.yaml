@@ -3,6 +3,11 @@ execution_id: OT-V21-PRODUCTION
 request_id: P33-config-001
 task_id: P33
 kind: configuration
+interface_contract:
+  checkpoint_path: ops/v2.1-execution/runtime/P33/INTERFACE-CHECKPOINT.yaml
+  interface_implementation_head_sha: 5531d6907353fd4d3935469a3574bd63c17cfc23
+  semantic_contract_version: 2.0.0
+  contract_digest: cc9fa1dccc66731c91100b008cb9567a9821020559e040aa2ac38baa8bc93a95
 requirement_ids:
   - OTV2-OPS-166
   - OTV2-OPS-167
@@ -27,6 +32,8 @@ proposed_symbols_routes_keys_or_dependencies:
   - Provide candidate ID, release, repository SHA, application-source SHA, web/worker artifact digests, configuration digest, migration inventory digest, provider registry digest, public asset digest, specification digest, and acceptance-contract digest.
   - Provide runtime tier and verification environment as separate required values; production_read_only never enables mutation.
   - Supply read-only database availability/storage/connection/lock probes and exact forward-only migration inventory/readback.
+  - Supply the exact required runtime IDs/roles/artifact digests, queue IDs/classes, worker types, all seven provider expectations, maximum observation age, and migration-required policy in the candidate contract.
+  - Every observation carries a qualified evidence flag and UTC observation time; missing, duplicate, extra, malformed, stale, or unqualified evidence fails readiness.
   - Supply queue depth, age, leases, retry, acceptance-unknown, dead-letter, throughput, and duplicate-effect-risk observations.
   - Supply explicit ready, degraded, unavailable, or not_configured state for Resend, GHL, Stripe, Zoom, Vimeo, Drive, and Telegram plus safe account reference and credential-expiry age.
   - Supply a heartbeat store or metrics transport that cannot accept arbitrary private payload fields.
