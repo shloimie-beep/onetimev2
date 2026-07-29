@@ -1,84 +1,81 @@
-# P09 Atomic Claim Handoff
+# P09 School Inquiry and Approved-School Accounts — Ready for Review
 
-## Identity
+## Exact identity
 
 - Branch: `codex/v21-p09-school-inquiry`
-- Exact start SHA: `088b40476bd5ceeb0af901b6f78a4cb8c556671b`
-- Containing control authorization:
-  `4c029e8d6e4ea3a2a4e4942affb61a39e5508129`
-- State-based acquisition: `d99fde51092abdee97f42f28e8bdee8a08c5e22c`
+- Authorized start: `088b40476bd5ceeb0af901b6f78a4cb8c556671b`
+- Atomic claim: `64e5626832e3b849f61e1f020d12acb25d13e0e9`
+- Reconciled control: `a790540f36ae5334391547584b2af823c0048ea8`
+- Reconciliation parent: `c284998cc927cb4a48516c9d1ba34c325d28a04b`
+- Implementation: `248d51f4ac3cb7266efcd30e459fa17d5ccdd431`
 - Claim: `92d411ff-e9c0-431d-ab69-e7b71935e4e5`
 - SCHOOL_INQUIRY lease: `55f80667-a56c-4eeb-b04c-dcd40700466e`
-- Lease window: `2026-07-29T10:23:53Z` through
-  `2026-07-29T11:23:53Z`
-- READY digest:
-  `d40ec2fea20f686e5cf866e7f25c2693465ae2f1a7d6afe45f96de8a7b98e529`
-- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
-  pushed remote head.
-- Task packet digest:
-  `191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8`
-- Context digest:
-  `a79a242f32c782ee37ffe345b419a443e5ce22dacec10b2390958456fc8cfece`
-- Package-lock digest:
-  `3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a`
-- Source-package digest:
-  `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
+- Lease released: `2026-07-29T10:48:47Z`, before its
+  `2026-07-29T11:23:53Z` expiry.
 
-## Dependency binding
+## Implemented behavior
 
-P08 is exactly `interface_ready_integrated` at task head `e15a7af6`, observed
-integration head `1b338e66`, interface source `59457079`, interface
-implementation `8ab2c55c`, and interface-checkpoint digest `32a4a8be`.
-Its exact task/context digests are recorded in `TASK-STATE.yaml`.
+The public School contract and form model expose exactly school name, contact
+first name, contact last name, and email as required fields; phone and note are
+optional. The CTA is `Send school inquiry`, and the success copy is
+`Thanks—we received your school inquiry. We’ll be in touch shortly.`
 
-## Completed behavior
+Submission canonicalizes the adult email and persists one manual-sales adult
+lead plus one durable acknowledgment intent. An exact normalized-email retry
+returns the existing acknowledgment without allocating or writing another lead.
+A changed request under the same normalized email fails closed.
 
-The registered branch was absent locally and remotely and was created locally
-from the exact authorized start. This checkpoint seeds only P09
-`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` from the execution
-templates. No implementation, test, or steward-request file was edited.
+Every inquiry result explicitly records zero product accounts, households,
+Student accounts, subscriptions, access grants, and nurture intents. The local
+service has no GHL/provider port and completes zero inline provider effects.
 
-## Remaining work
+Approved-school configuration requires a current Admin, an exact approved
+record, matching scope, adult account manager, household, and optimistic
+configuration version. It manually sets seat allowance, price, currency,
+billing start, and terms while fixing the experience to ordinary Parent and
+Student accounts. It creates no School role, portal, bulk roster, or automated
+nurture.
 
-C00 must first reconcile the exact pushed atomic claim head and issue the next
-explicit P09 authorization. All assigned implementation and verification
-remain not started.
+## Structured requests
 
-## Exact next action
+- `P09-registration-001` requests only root exports, `/school` and submission
+  composition, an existing Admin configuration surface, and the absence of any
+  School portal/role/job.
+- `P09-migration-001` requests forward-only, environment-scoped inquiry,
+  acknowledgment, dedupe, and approved-school configuration persistence.
 
-Push this exact three-file claim checkpoint normally, report the remote head to
-C00, and stop.
+Neither request was applied. No route, composer, barrel, migration, registry,
+provider, or live configuration was changed.
 
-## Coverage
+## Exact digests
 
-- Requirements: 0/4 started.
-- Acceptance cases: 0/4 started.
-
-## Changed files and migrations
-
-- `ops/v2.1-execution/runtime/P09/TASK-STATE.yaml`
-- `ops/v2.1-execution/runtime/P09/HANDOFF.md`
-- `ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md`
-- Migrations: none.
-- Steward requests: none.
+- Nine-artifact implementation digest:
+  `15010bb505bbda47e798cd295600fec89af8727196dabce1741ca4fd3430a4bd`.
+- P09-migration-001:
+  `f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df`.
+- P09-registration-001:
+  `f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1`.
+- Request aggregate:
+  `9229edbdabbeedc6ee7ad17eef595ff36e5f6b99f72b0ea73d23e05ab08ddb42`.
 
 ## Verification
 
-- Exact control, state base, start, branch absence, claim, lease, and zero
-  effect locks passed.
-- Canonical READY digest recomputation passed.
-- Exact task/context and P08 dependency heads/digests passed.
+- Four focused files and 12 positive/negative assertions passed.
+- Workspace typecheck passed.
+- Focused ESLint and Prettier passed.
+- Exact nine-owned-file plus two-request scope and diff hygiene passed.
+- Secret scan passed across 2,891 repository text files.
+- Artifact and request digests reproduced from immutable Git blobs.
+
+## Independent audit
+
+I36 must independently reproduce the digests and prove all four assigned cases
+before integration. Provider-sandbox and production-operator-canary delivery
+and safely matched adult-lead evidence remain downstream and require their own
+exact authority; they are not claimed by this source implementation.
 
 ## External effects
 
-Authority none; attempted/succeeded/reconciled `0/0/0`.
-
-## Security, privacy, and data handling
-
-No live GHL inspection or mutation occurred. No provider credential, private
-data, send, enrollment, access grant, or external effect was used.
-
-## Blockers, deviations, and recovery
-
-No blocker or deviation. The stop after the atomic claim is deliberate and
-requires C00 reconciliation before implementation.
+Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`. No live GHL
+inspection or mutation, send, enrollment, provider action, steward application,
+registration, or migration occurred.

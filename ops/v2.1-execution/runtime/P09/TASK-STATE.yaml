@@ -23,8 +23,8 @@ dependency_bindings:
     interface_checkpoint_digest: 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
     task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
     task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
-status: claimed
-phase: implementation
+status: ready_for_review
+phase: complete
 claimed_by: codex-p09-worker-92d411ff
 claim_time: '2026-07-29T10:23:53Z'
 claim_id: 92d411ff-e9c0-431d-ab69-e7b71935e4e5
@@ -33,14 +33,42 @@ lease_id: 55f80667-a56c-4eeb-b04c-dcd40700466e
 lease_issued_at: '2026-07-29T10:23:53Z'
 lease_expires_at: '2026-07-29T11:23:53Z'
 lease_phase_scope: P09_atomic_claim_only
+reconciled_resume_scope: P09_source_manual_sales_approved_school_implementation
 heartbeat_interval_minutes: 30
-last_heartbeat_at: '2026-07-29T10:23:53Z'
+lease_released_at: '2026-07-29T10:48:47Z'
+last_heartbeat_at: '2026-07-29T10:48:47Z'
 controller_authorization_sha: 4c029e8d6e4ea3a2a4e4942affb61a39e5508129
+claim_reconciled_control_sha: a790540f36ae5334391547584b2af823c0048ea8
+claim_reconciled_control_parent_sha: c284998cc927cb4a48516c9d1ba34c325d28a04b
+atomic_claim_head_sha: 64e5626832e3b849f61e1f020d12acb25d13e0e9
 ready_entry_state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
 ready_entry_payload_digest: d40ec2fea20f686e5cf866e7f25c2693465ae2f1a7d6afe45f96de8a7b98e529
 effect_lock_leases: []
-state_based_on_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
-last_implementation_commit_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+state_based_on_head_sha: 248d51f4ac3cb7266efcd30e459fa17d5ccdd431
+last_implementation_commit_sha: 248d51f4ac3cb7266efcd30e459fa17d5ccdd431
+implementation_artifact_digest: 15010bb505bbda47e798cd295600fec89af8727196dabce1741ca4fd3430a4bd
+implementation_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for the
+  nine implementation and focused-test artifacts, sorted lexicographically by
+  path, with LF separators and no final newline.
+implementation_artifact_paths:
+  - apps/web/src/client/public/school/model.test.ts
+  - apps/web/src/client/public/school/model.ts
+  - apps/web/src/server/features/signup/school/service.test.ts
+  - apps/web/src/server/features/signup/school/service.ts
+  - packages/contracts/src/signup/school/index.ts
+  - packages/contracts/src/signup/school/school-signup.contract.test.ts
+  - packages/domain/src/signup/school/index.ts
+  - packages/domain/src/signup/school/policy.test.ts
+  - packages/domain/src/signup/school/policy.ts
+steward_request_payload_digests:
+  P09-migration-001: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
+  P09-registration-001: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
+steward_request_aggregate_digest: 9229edbdabbeedc6ee7ad17eef595ff36e5f6b99f72b0ea73d23e05ab08ddb42
+steward_request_digest_algorithm: >-
+  Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
+  SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
+  and no final newline.
 completed_steps:
   - Verified exact fetched control 4c029e8d6e4ea3a2a4e4942affb61a39e5508129
     and state-based acquisition d99fde51092abdee97f42f28e8bdee8a08c5e22c.
@@ -53,27 +81,73 @@ completed_steps:
     SCHOOL_INQUIRY lease, and zero effect-lock leases.
   - Created codex/v21-p09-school-inquiry from the exact authorized start and
     seeded only the three P09 runtime-memory files from the execution templates.
+  - Verified C00 reconciliation a790540f36ae5334391547584b2af823c0048ea8
+    with sole parent c284998cc927cb4a48516c9d1ba34c325d28a04b, exact claim
+    head 64e5626832e3b849f61e1f020d12acb25d13e0e9, unchanged claim and
+    SCHOOL_INQUIRY lease, bounded source/request scope, and zero effect authority.
+  - Implemented the exact public School inquiry field/copy contract, canonical
+    normalized-email binding, manual adult sales-lead state, one durable
+    acknowledgment intent, exact retry deduplication, and explicit zero
+    product-account, household, Student, subscription, access, and nurture results.
+  - Implemented an Admin-only, exact-approval/configuration-version plan for
+    manual seat allowance, pricing, billing start, and terms that persists only
+    the ordinary Parent/Student account model with no School role, portal, bulk
+    roster, or automated nurture.
+  - Implemented local transaction ports for inquiry receipt/acknowledgment and
+    approved-school configuration without any GHL/provider port or inline effect.
+  - Published immutable P09-registration-001 and P09-migration-001 requests for
+    steward-owned route/barrel/composer and forward-only persistence work; neither
+    request was applied.
+  - Passed four focused files and 12 positive/negative tests, workspace typecheck,
+    focused ESLint and Prettier, exact normalized scope, diff hygiene, and secret
+    scan across 2891 repository text files.
+  - Reproduced nine implementation Git-blob digests, artifact digest
+    15010bb505bbda47e798cd295600fec89af8727196dabce1741ca4fd3430a4bd,
+    both request payload digests, and request aggregate
+    9229edbdabbeedc6ee7ad17eef595ff36e5f6b99f72b0ea73d23e05ab08ddb42.
+  - Released claim 92d411ff-e9c0-431d-ab69-e7b71935e4e5 and SCHOOL_INQUIRY
+    lease 55f80667-a56c-4eeb-b04c-dcd40700466e before expiry with no GHL,
+    provider, steward, send, or external effect attempted.
 remaining_steps:
-  - Commit and atomically create the remote task branch with this exact
-    three-runtime-file claim checkpoint.
-  - Report the exact pushed claim head to C00 and stop for reconciliation.
-next_action: C00 must reconcile the exact pushed P09 atomic claim head before any implementation work begins.
+  - I36 must independently review and integrate exact implementation head
+    248d51f4ac3cb7266efcd30e459fa17d5ccdd431.
+  - Migration and registration stewards must independently disposition the two
+    immutable requests without adding a School role/portal/nurture or inline
+    provider work.
+  - Candidate-bound provider-sandbox and production-operator-canary acknowledgment
+    and safely matched adult-lead evidence remains with the assigned verification lanes.
+next_action: I36 should independently reproduce the implementation and request digests, prove all four assigned cases, and integrate only after confirming manual-sales-only inquiry, exact approved-school configuration, ordinary Parent/Student reuse, and fail-closed mismatch behavior.
 requirements:
-  OTV2-SIGNUP-178: not_started
-  OTV2-SIGNUP-229: not_started
-  OTV2-SCHOOL-200: not_started
-  OTV2-SCHOOL-214: not_started
+  OTV2-SIGNUP-178: implementation_verified
+  OTV2-SIGNUP-229: implementation_verified
+  OTV2-SCHOOL-200: implementation_verified
+  OTV2-SCHOOL-214: implementation_verified
 acceptance_cases:
-  OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS: not_started
-  OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY: not_started
-  OTV2-SCHOOL-200-AC01: not_started
-  OTV2-SCHOOL-214-AC01: not_started
+  OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS: task_owned_assertions_passed
+  OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY: task_owned_assertions_passed
+  OTV2-SCHOOL-200-AC01: task_owned_assertions_passed
+  OTV2-SCHOOL-214-AC01: task_owned_assertions_passed
 changed_paths:
+  - apps/web/src/client/public/school/model.test.ts
+  - apps/web/src/client/public/school/model.ts
+  - apps/web/src/server/features/signup/school/service.test.ts
+  - apps/web/src/server/features/signup/school/service.ts
   - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P09/HANDOFF.md
   - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-001.yaml
+  - ops/v2.1-execution/runtime/P09/steward-requests/P09-registration-001.yaml
+  - packages/contracts/src/signup/school/index.ts
+  - packages/contracts/src/signup/school/school-signup.contract.test.ts
+  - packages/domain/src/signup/school/index.ts
+  - packages/domain/src/signup/school/policy.test.ts
+  - packages/domain/src/signup/school/policy.ts
 migrations: []
-steward_requests: []
+steward_requests:
+  - id: P09-migration-001
+    sha256: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
+  - id: P09-registration-001
+    sha256: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
 verification:
   commands_run:
     - command: git fetch --no-tags origin and exact ref verification
@@ -84,6 +158,20 @@ verification:
       result: passed; all recorded task, context, interface, and dependency digests and heads exact
     - command: claim, SCHOOL_INQUIRY lease, branch mode, expiry, and effect-lock verification
       result: passed; exact claim, one unexpired writer lease, create-new-branch mode, and zero effect locks
+    - command: exact C00 claim reconciliation, branch, lease, scope, and zero-effect verification
+      result: passed; exact claim 64e56268 authorizes bounded source implementation and immutable requests only
+    - command: npx vitest run <four P09 focused test files>
+      result: passed; 4 files and 12 direct positive/negative assertions
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: focused ESLint and Prettier over all P09 TypeScript and YAML artifacts
+      result: passed
+    - command: exact owned-root/request scope audit and git diff --check
+      result: passed; exactly nine owned implementation/test files plus two structured requests
+    - command: npm run secret:scan
+      result: passed across 2891 repository text files
+    - command: exact Git-blob artifact and steward-request digest reproduction
+      result: passed; nine-artifact digest 15010bb5 and request aggregate 9229edbd
   known_baseline_failures: []
 external_effects:
   authority: none
