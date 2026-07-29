@@ -1351,3 +1351,30 @@ earlier passing P11 authorization, generation, ID, secret, provenance, window,
 timezone, accessibility, and navigation correction; publish a superseding
 final, release the lease, and stop for independent re-audit. No steward,
 provider, or external effect is authorized.
+
+Independent exact-source audits rejected P09 final
+`a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46` despite its clean lineage,
+scope, digests, 4 files / 12 tests, typecheck, and zero effects. Concurrent
+same-normalized-email submissions can create two leads and two acknowledgment
+intents; omitted optional `phone`/`note` keys are rejected; and the durable
+acknowledgment intent incorrectly reuses UI success copy instead of the
+approved notification template/version/digest. C00 authorized only a fresh
+three-runtime-file claim: READY `505e6823`, claim `555a5878`, SCHOOL_INQUIRY
+lease `8ca16a74` through `2026-07-29T12:26:54Z`. Product correction must wait
+for claim reconciliation. No steward, provider, or external effect is
+authorized.
+
+The independent exact-source audit also rejected P21 final
+`24f82a7484f2889349f7768d29ec7f2545cfa45a` despite clean lineage, scope,
+digests, 5 files / 11 tests, typecheck/lint/format, and zero effects. Approval
+lacks participant/redaction attestation; publication directly calls a provider
+and marks `published` without fenced provider-operation identity and canonical
+private-asset readback; assignment/library/recording-notice writes are absent;
+playback grants omit required Student/enrollment/consent/access/privacy and
+version bindings; unpublish uses `archived` and leaves active grants valid; and
+occurrence attachment has no governed occurrence/product relation. C00
+authorized only a fresh three-runtime-file claim: READY `571dff53`, claim
+`f7ed5c86`, CONTENT_PUBLICATION lease `2ea04691` through
+`2026-07-29T12:26:54Z`. Preserve the verified positive denials/search/resume
+behavior. Product correction, steward application, live provider work, and
+external effects remain unauthorized until claim reconciliation.

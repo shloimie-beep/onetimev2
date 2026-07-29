@@ -2,8 +2,110 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: P21
+  status: resume_ready
+  phase: publication_safety_correction
+  branch: codex/v21-p21-content-publication
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+  authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+  expected_existing_head: 24f82a7484f2889349f7768d29ec7f2545cfa45a
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173ef550
+  task_context_digest: 36e4fb76ff399ae66d3ccd9f4e5851ec31395c247d80a3d7f4392bb8ad30858e
+  dependency_heads_and_digests:
+    F05:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
+      observed_integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
+      interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
+      interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
+      interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
+      task_packet_digest: 807393d09cb614e05625677818976930cf4a14e07e65bb488f647cdcd3b63ec3
+      task_context_digest: 95728a601338101ba550f5b63edfa9cd96bd2e96c1011cf214462f98bfa40f6a
+    F06:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+      observed_integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+      interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
+      interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+      interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+      task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+      task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
+    P14:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+      observed_integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
+      interface_source_head_sha: 3393169e2284d65ff0a970d797aa1f83ebf9d895
+      interface_implementation_head_sha: 9c08e9c6735a61e201f7b05116a3406e6092e08b
+      interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
+      task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
+      task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
+  writer_slot_leases:
+  - slot: CONTENT_PUBLICATION
+    lease_id: 2ea04691-d951-4c3b-90cf-e1909f42be7c
+    holder_task_id: P21
+    holder_claim_id: f7ed5c86-2b2a-4e58-930a-b602ac9f1657
+    state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+    lease_issued_at: '2026-07-29T11:11:54Z'
+    lease_expires_at: '2026-07-29T12:26:54Z'
+    phase_scope: P21_atomic_claim_publication_safety_correction_only
+  effect_lock_leases: []
+  claim_id: f7ed5c86-2b2a-4e58-930a-b602ac9f1657
+  lease_issued_at: '2026-07-29T11:11:54Z'
+  lease_expires_at: '2026-07-29T12:26:54Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P21-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+- task_id: P09
+  status: resume_ready
+  phase: concurrency_optional_acknowledgment_correction
+  branch: codex/v21-p09-school-inquiry
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+  authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+  expected_existing_head: a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8
+  task_context_digest: a79a242f32c782ee37ffe345b419a443e5ce22dacec10b2390958456fc8cfece
+  dependency_heads_and_digests:
+    P08:
+      required_state: interface_ready_integrated
+      observed_state: interface_ready_integrated
+      observed_task_head_sha: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+      observed_integration_head_sha: 1b338e66d10a31db790377be38eed3d1e325fb55
+      interface_source_head_sha: 594570798a5af8145d7949ba10572e8b1e644f17
+      interface_implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
+      interface_checkpoint_digest: 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
+      task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
+      task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
+  writer_slot_leases:
+  - slot: SCHOOL_INQUIRY
+    lease_id: 8ca16a74-fa49-4c61-8aa8-b50416b50913
+    holder_task_id: P09
+    holder_claim_id: 555a5878-9a7f-4486-a6e0-a959dc9ab1a1
+    state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
+    lease_issued_at: '2026-07-29T11:11:54Z'
+    lease_expires_at: '2026-07-29T12:26:54Z'
+    phase_scope: P09_atomic_claim_concurrency_optional_acknowledgment_correction_only
+  effect_lock_leases: []
+  claim_id: 555a5878-9a7f-4486-a6e0-a959dc9ab1a1
+  lease_issued_at: '2026-07-29T11:11:54Z'
+  lease_expires_at: '2026-07-29T12:26:54Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P09-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: HIGH
+entry_payload_digests:
+  P21: 571dff5375ca1cfd20d305f1924eaab1d6d7b05bd8588799f519467972c28ff3
+  P09: 505e68237f3d2d0401e4727b9a8111a330026f994344ca804d83a6692a09f766
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

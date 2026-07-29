@@ -1114,3 +1114,42 @@ Bearer-filtering, provenance, window, timezone, privacy, and accessibility
 behavior. Run focused verification and typecheck, release the lease before
 expiry, publish a superseding final, and stop for independent re-audit. Apply
 no steward request and perform no provider or external effect.
+
+P09 final `a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46` is rejected and
+must not be integrated. Resume it only for an exact three-runtime-file atomic
+claim under claim `555a5878-9a7f-4486-a6e0-a959dc9ab1a1`,
+SCHOOL_INQUIRY lease `8ca16a74-fa49-4c61-8aa8-b50416b50913`, acquisition
+`b0dc03dc140dd05ab8ae65530cd672c8c10126e5`, and READY digest
+`505e68237f3d2d0401e4727b9a8111a330026f994344ca804d83a6692a09f766`.
+Change exactly P09 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+bind the rejected head and fresh identities, push normally, remote-verify, and
+stop for C00 reconciliation. After reconciliation only, serialize the exact
+normalized-email inquiry key or recover the uniqueness race, accept absent
+optional phone/note as canonical null while rejecting extras, and bind the
+durable acknowledgment intent to the approved template/version/digest rather
+than UI success copy. Add direct concurrent and four-field tests. Do not apply
+either steward request or perform a provider/external effect.
+
+P21 final `24f82a7484f2889349f7768d29ec7f2545cfa45a` is rejected and
+must not be integrated. Resume it only for an exact three-runtime-file atomic
+claim under claim `f7ed5c86-2b2a-4e58-930a-b602ac9f1657`,
+CONTENT_PUBLICATION lease `2ea04691-d951-4c3b-90cf-e1909f42be7c`,
+acquisition `b0dc03dc140dd05ab8ae65530cd672c8c10126e5`, and READY digest
+`571dff5375ca1cfd20d305f1924eaab1d6d7b05bd8588799f519467972c28ff3`.
+Change exactly P21 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+bind the rejected head and fresh identities, push normally, remote-verify, and
+stop for C00 reconciliation.
+
+After P21 claim reconciliation only, require immutable content-version,
+participant-snapshot, redaction-review, and Admin-attestation evidence before
+approval; remove direct web-process provider mutation and preserve one fenced
+F05/F06 provider-operation identity through canonical private-asset readback
+and ambiguity reconciliation; atomically create versioned Student assignments,
+library projections, and protected Student/adult recording notices; bind
+playback grants to exact Student/session/content/assignment/access versions and
+current enrollment, service-account consent, and revocation/privacy facts;
+unpublish to `approved` while immediately invalidating active grant generation;
+and validate/persist a governed occurrence/product relation. Preserve all
+passing denial, five-minute TTL, search, resume, optimistic-write, and URL
+redaction behavior. Strengthen but do not apply the steward request. Use local
+ports/mocks only and perform no live provider or external effect.

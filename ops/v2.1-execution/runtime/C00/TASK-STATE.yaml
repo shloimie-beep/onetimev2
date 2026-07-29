@@ -730,10 +730,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 257c59ec7a68205246c471ed6a675de9a642ae6fe164770ea5ffdf7f530f014f
-    control_lease: 17a4146fd0d8a89bb9654294edabc22e04098198c674a2f9010e665db27c48b6
-    task_registry: 473286cee53201d969ec19c05ecced686e053dfb190a4e80938ccbc4f2643c69
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: ec30db222fad228e1b8534474c231dbc364207a4f32bcfb3d336352ecce686bd
+    control_lease: bba4bdcff043305f10388d9a003cf689db5f6774b69a97865f15ea9db6d07a1d
+    task_registry: dcdf2a8f41739ad2ba1b026c3912c1e09ab9261c87de05e4982c0f9962eefcf9
+    ready_queue: a3df9067e05dcd7a1fb8ee18255c0d2396612a2b51f5d0433f3f62548abf8df8
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -895,6 +895,9 @@ verification:
   - canonical P11 retained-credential correction READY digest daa56dab against acquisition 930b5ab5, rejected head 17538da1, fresh claim 95a4b423, sole ADMIN_OPERATIONS_UI lease c9c69acd, and zero effect locks: passed
   - P11 claim bd40e5f0 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, no product edit, and zero effects: passed
   - consumed P11 ready entry and authorized only credential-version-bound retained private state with synchronous current-Admin render gating and direct rotated-credential tests under the unchanged claim and lease: passed
+  - P09 final a81e5e98 exact ancestry/scope/digests, 4 files/12 tests, typecheck, released lease, and zero effects: rejected because concurrent normalized-email commands can duplicate leads/intents, absent optional phone/note keys fail, and the acknowledgment intent uses UI copy instead of the approved notification template binding
+  - P21 final 24f82a74 exact ancestry/scope/digests, 5 files/11 tests, typecheck/lint/format, released lease, and zero effects: rejected for missing privacy/redaction approval evidence, fenced provider/readback lifecycle, assignments/notices, exact playback/grant/revocation projections, approved-state unpublish, and governed occurrence attachment
+  - canonical P09/P21 correction READY digests 505e6823/571dff53 against acquisition b0dc03dc, exact rejected heads, disjoint SCHOOL_INQUIRY/CONTENT_PUBLICATION leases, and zero effect locks: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
