@@ -1,13 +1,13 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
-status: active
+status: released
 claim_id: a9ab397d-54ed-42a7-9c3a-c18b7943400a
 holder_writer_id: codex-c00-orchestrator-a9ab397d
 state_based_on_head_sha: ea4293c319875866eab6cc33d1134f3162ca484a
 claimed_at: '2026-07-29T15:14:08Z'
-last_heartbeat_at: '2026-07-29T15:14:08Z'
+last_heartbeat_at: '2026-07-29T15:19:17Z'
 lease_expires_at: '2026-07-29T15:29:08Z'
-released_at: null
+released_at: '2026-07-29T15:19:17Z'
 rule: C00 is serialized by normal fast-forward remote control-branch updates. Every invocation acquires or renews
   this lease in its first pushed control commit. A live foreign lease or non-fast-forward push is a collision stop;
   never force.

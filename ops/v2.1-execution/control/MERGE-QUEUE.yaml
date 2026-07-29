@@ -4,120 +4,170 @@ integration_branch: codex/v21-integration
 items:
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: 8bd435bd-d5d6-4e40-b142-7cdeee817637
+  merge_id: 524f5ca9-6503-4b6c-b2ee-63f8755b5543
   kind: full
-  task_id: P19
-  source_branch: codex/v21-p19-content-ingest
-  source_head_sha: 306c26cfcb84672eb5e593d1bee847a0f3e01243
+  task_id: P17
+  source_branch: codex/v21-p17-zoom-preparation
+  source_head_sha: 78af71603713b6fc73fe755995bdf56193eb199a
   target_branch: codex/v21-integration
-  expected_target_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
-  source_delta_base_head_sha: e420eb833feee26efd431afd93457a7e0bc4d228
-  required_merge_base_sha: e420eb833feee26efd431afd93457a7e0bc4d228
+  expected_target_head_sha: 9f4c70189a742d54c5822e4a91f4895a4002334c
+  source_delta_base_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+  required_merge_base_sha: 49431959f58f284bdc13ca931acf09f980fc483a
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: 306c26cfcb84672eb5e593d1bee847a0f3e01243
+  required_postmerge_ancestor_sha: 78af71603713b6fc73fe755995bdf56193eb199a
   merge_after_heads:
     F05: 9174d845e1c04916e2f1884cfadfaef624ac6862
     F06: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
     P16: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
   allowed_paths:
-  - ops/v2.1-execution/runtime/P19/HANDOFF.md
-  - ops/v2.1-execution/runtime/P19/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P19/TASK-STATE.yaml
+  - apps/web/src/server/features/classroom/zoom-preparation/index.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
+  - apps/web/src/server/features/classroom/zoom-preparation/service.ts
+  - apps/worker/src/runners/zoom-preparation/index.ts
+  - apps/worker/src/runners/zoom-preparation/runner.test.ts
+  - apps/worker/src/runners/zoom-preparation/runner.ts
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/HANDOFF.md
+  - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - packages/contracts/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/repository.test.ts
+  - packages/db/src/classroom/zoom-preparation/repository.ts
+  - packages/db/src/classroom/zoom-preparation/schema-contract.ts
+  - packages/domain/src/classroom/zoom-preparation/index.ts
+  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: b726b1c2-f572-474b-bf16-b9ca2959b2f8
+    lease_id: 7015ba41-a825-4a18-9b0b-0a026682730d
     holder_task_id: I36
-    holder_claim_id: eeb23846-ea26-4d4e-9a96-54678160a0d2
-    state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
-    lease_issued_at: '2026-07-29T14:53:08Z'
-    lease_expires_at: '2026-07-29T16:08:08Z'
-    phase_scope: P19_P27_P32_full_integration_atomic_claim_only
-  task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
-  state_handoff_digest: b7f3337c3a089c4f3359c61e23c6c938944f8423e89fe3314dba865573db0d0b
+    holder_claim_id: 9059c2e9-a57d-412f-ac96-8d921365a3fb
+    state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
+    lease_issued_at: '2026-07-29T15:14:08Z'
+    lease_expires_at: '2026-07-29T16:29:08Z'
+    phase_scope: P17_P21_P24_full_integration_atomic_claim_only
+  task_packet_digest: 0509dc95a4e0695db4cba7e7ebccd3050176ef06eca3320ba0c190808c34d034
+  state_handoff_digest: 2425a48fe92ba7064d3ac5cd4e5b3f361c36b4d50f01efbd8d3ef989644858e4
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+  state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: 09ce44f1-2b87-4f9f-8812-cb61539e1736
+  merge_id: 387d09ef-6bef-4d60-885f-b18a794d96f3
   kind: full
-  task_id: P27
-  source_branch: codex/v21-p27-ghl-identity
-  source_head_sha: e1933d640657835cde17ee23381399f5539fe3cd
+  task_id: P21
+  source_branch: codex/v21-p21-content-publication
+  source_head_sha: cecdad0989e861254987970cfa3d222319369f52
   target_branch: codex/v21-integration
-  expected_target_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
-  source_delta_base_head_sha: e706587bfe581f881fb072271b15b4123f9aabe6
-  required_merge_base_sha: e706587bfe581f881fb072271b15b4123f9aabe6
+  expected_target_head_sha: 9f4c70189a742d54c5822e4a91f4895a4002334c
+  source_delta_base_head_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
+  required_merge_base_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: e1933d640657835cde17ee23381399f5539fe3cd
+  required_postmerge_ancestor_sha: cecdad0989e861254987970cfa3d222319369f52
   merge_after_heads:
-    F04: 54a0ac28b51d271aacab60003451dbcc66ffcac8
+    F05: 9174d845e1c04916e2f1884cfadfaef624ac6862
     F06: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
   allowed_paths:
-  - ops/v2.1-execution/runtime/P27/HANDOFF.md
-  - ops/v2.1-execution/runtime/P27/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P27/TASK-STATE.yaml
+  - apps/web/src/client/app/admin/content/publication/index.ts
+  - apps/web/src/client/app/admin/content/publication/model.test.ts
+  - apps/web/src/client/app/admin/content/publication/model.ts
+  - apps/web/src/client/app/student/library/index.ts
+  - apps/web/src/client/app/student/library/model.test.ts
+  - apps/web/src/client/app/student/library/model.ts
+  - apps/web/src/server/features/content/publication/index.ts
+  - apps/web/src/server/features/content/publication/service.test.ts
+  - apps/web/src/server/features/content/publication/service.ts
+  - ops/v2.1-execution/runtime/P21/HANDOFF.md
+  - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-001.yaml
+  - packages/contracts/src/content/publication/index.ts
+  - packages/db/src/content/publication/index.ts
+  - packages/db/src/content/publication/repository.test.ts
+  - packages/db/src/content/publication/repository.ts
+  - packages/domain/src/content/publication/errors.ts
+  - packages/domain/src/content/publication/index.ts
+  - packages/domain/src/content/publication/lifecycle.ts
+  - packages/domain/src/content/publication/publication.test.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: b726b1c2-f572-474b-bf16-b9ca2959b2f8
+    lease_id: 7015ba41-a825-4a18-9b0b-0a026682730d
     holder_task_id: I36
-    holder_claim_id: eeb23846-ea26-4d4e-9a96-54678160a0d2
-    state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
-    lease_issued_at: '2026-07-29T14:53:08Z'
-    lease_expires_at: '2026-07-29T16:08:08Z'
-    phase_scope: P19_P27_P32_full_integration_atomic_claim_only
-  task_packet_digest: 77c5a4de58a57dffea3f9cbe4aa7646ac75bc1f0462afebfff2c0279dc527a74
-  state_handoff_digest: 1a1f3184a89b2dda00114adb7135e57dfaa301efe21acc352c1511e64cda0c23
+    holder_claim_id: 9059c2e9-a57d-412f-ac96-8d921365a3fb
+    state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
+    lease_issued_at: '2026-07-29T15:14:08Z'
+    lease_expires_at: '2026-07-29T16:29:08Z'
+    phase_scope: P17_P21_P24_full_integration_atomic_claim_only
+  task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173ef550
+  state_handoff_digest: 6f54819674e3391ee8f978e386db3b09d81d3da3fd4b434a35f538f14d25d468
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+  state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
-  merge_id: ebaf848d-ad8d-4c56-8d16-9c02809af62d
+  merge_id: 30db2187-a2f2-4ef2-991f-c72283e8b878
   kind: full
-  task_id: P32
-  source_branch: codex/v21-p32-privacy-data-rights
-  source_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  task_id: P24
+  source_branch: codex/v21-p24-support
+  source_head_sha: 501c7a8b32864e4218a5325b8a755bb0a37a8ce6
   target_branch: codex/v21-integration
-  expected_target_head_sha: fca55e6c2fbea008e4fc2b8e7e5edeb47c454b6d
-  source_delta_base_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
-  required_merge_base_sha: 6a33944a75e717041b2f951134459769b8fc2617
+  expected_target_head_sha: 9f4c70189a742d54c5822e4a91f4895a4002334c
+  source_delta_base_head_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
+  required_merge_base_sha: 408b21afa4b9ac6f100b3ce33ea87984d18d4bf7
   preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  required_postmerge_ancestor_sha: 501c7a8b32864e4218a5325b8a755bb0a37a8ce6
   merge_after_heads:
-    F02: e4673ff1c2e621e26ac93034be245b280c4da4fa
     F03: 7c638131a0cab757657e95c4d2229a1573e4cde1
     F04: 54a0ac28b51d271aacab60003451dbcc66ffcac8
     F05: 9174d845e1c04916e2f1884cfadfaef624ac6862
     F07: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
   allowed_paths:
-  - ops/v2.1-execution/runtime/P32/HANDOFF.md
-  - ops/v2.1-execution/runtime/P32/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
+  - apps/web/src/client/app/admin/support/AdminSupportWorkspace.test.tsx
+  - apps/web/src/client/app/admin/support/AdminSupportWorkspace.tsx
+  - apps/web/src/client/app/admin/support/index.ts
+  - apps/web/src/client/app/student/support/StudentSupportCenter.test.tsx
+  - apps/web/src/client/app/student/support/StudentSupportCenter.tsx
+  - apps/web/src/client/app/student/support/index.ts
+  - apps/web/src/server/features/support/v21-index.ts
+  - apps/web/src/server/features/support/v21-service.ts
+  - ops/v2.1-execution/runtime/P24/HANDOFF.md
+  - ops/v2.1-execution/runtime/P24/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P24/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P24/steward-requests/P24-migration-001.yaml
+  - ops/v2.1-execution/runtime/P24/steward-requests/P24-registration-001.yaml
+  - packages/contracts/src/support/v21.ts
+  - packages/db/src/support/v21-index.ts
+  - packages/db/src/support/v21-repository.ts
+  - packages/domain/src/support/v21-errors.ts
+  - packages/domain/src/support/v21-index.ts
+  - packages/domain/src/support/v21-lifecycle.test.ts
+  - packages/domain/src/support/v21-lifecycle.ts
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: b726b1c2-f572-474b-bf16-b9ca2959b2f8
+    lease_id: 7015ba41-a825-4a18-9b0b-0a026682730d
     holder_task_id: I36
-    holder_claim_id: eeb23846-ea26-4d4e-9a96-54678160a0d2
-    state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
-    lease_issued_at: '2026-07-29T14:53:08Z'
-    lease_expires_at: '2026-07-29T16:08:08Z'
-    phase_scope: P19_P27_P32_full_integration_atomic_claim_only
-  task_packet_digest: a34f7c16bda5c68fc269cce7fbbb0eb574de64f4a9db66e272c3b99ff8a639f6
-  state_handoff_digest: ff20f1e2f7b1df10f4bdc10c33c1bd945f6d0cc685aa36d5d9b235b08b550f14
+    holder_claim_id: 9059c2e9-a57d-412f-ac96-8d921365a3fb
+    state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
+    lease_issued_at: '2026-07-29T15:14:08Z'
+    lease_expires_at: '2026-07-29T16:29:08Z'
+    phase_scope: P17_P21_P24_full_integration_atomic_claim_only
+  task_packet_digest: a0b763435e1c23e670b5894e56037735b4bfb74bfae247ebfa70145d86b89383
+  state_handoff_digest: 10bce92387a8894f7196690f982c670ade3618c13b5914194c63392e4b99e562
   external_effect_summary:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: f9b0ea273c6d0b21ccc841f1f675dc2c45a95c31
+  state_based_on_control_head_sha: a6f90c2fbe0412fd7c32e1455843b7b832a267ab
 item_payload_digests:
-  8bd435bd-d5d6-4e40-b142-7cdeee817637: b7848cda8ffc3f29da777716f1c82a2941d6474480e4e14acfb3b66af37ce4a5
-  09ce44f1-2b87-4f9f-8812-cb61539e1736: ce5ef0bc0cbe673c9de46212c37f50958aab1f321c70f34455617d4620e670ab
-  ebaf848d-ad8d-4c56-8d16-9c02809af62d: 60456d1fd7256dbd8d4d54029171d81573c01bf55e7d636df29bfe2bc84dbf5b
+  524f5ca9-6503-4b6c-b2ee-63f8755b5543: 245bef77c9d24435b7bf1db2c1eecc1a3142d580e77bdd3cbca1d0df3bf204df
+  387d09ef-6bef-4d60-885f-b18a794d96f3: 71dfa51630fef99a01d3404e6ab00c3508bbebb1e6cace4bbf69955eb2ff79af
+  30db2187-a2f2-4ef2-991f-c72283e8b878: b48855594a53addc04b6211c182b159fef2a8ddc6d9d2702526649e04d8cba27
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
