@@ -78,8 +78,10 @@ warn. Any credible duplicate external-effect risk is Sev1. Never retry an
 acceptance-unknown provider operation until canonical non-acceptance is proven.
 Queue evidence also includes exact active-lease count and oldest age, unfenced
 lease count, fencing-token high watermark, scheduled/exhausted retries, and
-content last-progress time/age. Missing fencing for an active lease, any
-unfenced lease, inconsistent retry state, contradictory content progress, or a
+content last-progress time/age. An active lease is stale at the exact
+five-minute worker-lease expiry even with valid fencing. Retry count must equal
+scheduled plus exhausted retry evidence. Missing fencing, any unfenced or stale
+active lease, unmatched retry counts, contradictory content progress, or a
 stalled content queue fails readiness.
 
 Worker heartbeat is normal through 60 seconds, warning after 120 seconds, and
@@ -103,7 +105,8 @@ Credential-shaped keys, Basic/Bearer/JWT values, secret hashes, signed query
 URLs, and secret-bearing `safe_context` or error text are leakage findings in
 addition to the protected material above. Raw links for Resend, GHL, Stripe,
 Zoom, Vimeo, Drive, and Telegram and common name/address/birth/identifier PII
-keys are covered. Any finding is Sev1:
+keys are covered, including street-address, address-line, street-line, and
+qualified common-address variants. Any finding is Sev1:
 
 1. Stop distribution of the affected diagnostic and restrict access to the
    secure operations channel.
