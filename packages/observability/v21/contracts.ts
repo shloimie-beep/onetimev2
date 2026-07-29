@@ -1,4 +1,4 @@
-export const OPERATIONS_CONTRACT_VERSION = '2.0.0' as const;
+export const OPERATIONS_CONTRACT_VERSION = '3.0.0' as const;
 
 export const RUNTIME_TIERS = ['isolated_staging', 'production'] as const;
 export type RuntimeTier = (typeof RUNTIME_TIERS)[number];
@@ -87,6 +87,8 @@ export interface RuntimeIdentity {
   runtime_id: string;
   service_role: OperationsServiceRole;
   release: string;
+  build_timestamp: string;
+  migration_schema_version: string;
   repository_sha: string;
   application_source_sha: string;
   artifact_digest: string;
@@ -103,6 +105,8 @@ export interface CandidateIdentity {
   repository_sha: string;
   application_source_sha: string;
   release: string;
+  build_timestamp: string;
+  migration_schema_version: string;
   configuration_digest: string;
   migration_inventory_digest: string;
   provider_registry_digest: string;
@@ -148,11 +152,18 @@ export interface QueueHealthObservation extends ObservationEvidence {
   depth: number;
   oldest_ready_age_ms: number | null;
   oldest_lease_age_ms: number | null;
+  active_lease_count: number;
+  unfenced_active_lease_count: number;
+  fencing_token_high_watermark: number;
   retry_count: number;
+  retry_scheduled_count: number;
+  retry_exhausted_count: number;
   acceptance_unknown_count: number;
   dead_letter_count: number;
   expired_lease_count: number;
   throughput_15m: number;
+  last_progress_at: string | null;
+  content_progress_age_ms: number | null;
   duplicate_effect_risk: boolean;
 }
 
@@ -217,6 +228,8 @@ export interface OperationsAlert {
   severity: Exclude<OperationsSeverity, 'ok'>;
   category: OperationsIssue['category'];
   generated_at: string;
+  runtime_tier: RuntimeTier;
+  verification_environment_id: VerificationEnvironmentId;
   summary: string;
   routes: readonly ['ot_secure_operations', 'admin_operations'];
   safe_context: OperationsIssue['safe_context'];

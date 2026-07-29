@@ -14,7 +14,7 @@ describe('P33 derived worker operations heartbeat', () => {
     });
     expect(publish).toHaveBeenCalledWith(heartbeat);
     expect(heartbeat).toMatchObject({
-      schema_version: '2.0.0',
+      schema_version: '3.0.0',
       state: 'ready',
       readiness_codes: ['operations.ready'],
       worker_type: 'delivery',
@@ -53,6 +53,7 @@ describe('P33 derived worker operations heartbeat', () => {
       runtime_id: 'worker-primary',
       worker_type: 'delivery',
       publisher: { publish },
+      now: () => new Date('2026-07-29T01:00:10.000Z'),
     });
     expect(heartbeat.state).toBe('degraded');
     expect(heartbeat.readiness_codes).toContain(code);
@@ -72,8 +73,23 @@ describe('P33 derived worker operations heartbeat', () => {
         runtime_id: 'worker-primary',
         worker_type: 'delivery',
         publisher: { publish },
+        now: () => new Date('2026-07-29T01:00:10.000Z'),
       }),
     ).rejects.toMatchObject({ code: 'runtime_candidate_mismatch' });
+    expect(publish).not.toHaveBeenCalled();
+  });
+
+  it('rejects a caller-generated health snapshot that is stale at publication time', async () => {
+    const publish = vi.fn(async () => undefined);
+    await expect(
+      publishOperationsHeartbeat({
+        health_input: healthyInput(),
+        runtime_id: 'worker-primary',
+        worker_type: 'delivery',
+        publisher: { publish },
+        now: () => new Date('2026-07-29T01:02:00.000Z'),
+      }),
+    ).rejects.toMatchObject({ code: 'heartbeat_health_snapshot_stale' });
     expect(publish).not.toHaveBeenCalled();
   });
 });

@@ -5,9 +5,10 @@ const REDACTED = '[redacted]';
 const SENSITIVE_KEY =
   /(?:^|[_-])(?:password|passwd|secret(?:[_-](?:key|hash))?|access[_-]?token|refresh[_-]?token|id[_-]?token|token|cookie|authorization|proxy[_-]?authorization|credential(?![_-](?:expires|expiry|age))|credentials|api[_-]?key|private[_-]?key|card[_-]?number|cvv|setup[_-]?link|reset[_-]?link)(?:$|[_-])/i;
 const PII_KEY =
-  /^(?:(?:email|phone)(?:_address|_number)?|full[_-]?name|display[_-]?name|(?:recipient|adult|parent|student|child|user|contact)_(?:email|phone|name)|student[_-]?(?:text|question)|child[_-]?(?:text|question))$/i;
+  /^(?:(?:email|phone)(?:_address|_number)?|first[_-]?name|middle[_-]?name|last[_-]?name|full[_-]?name|display[_-]?name|date[_-]?of[_-]?birth|dob|ssn|national[_-]?id|passport[_-]?number|address|street|city|postal[_-]?code|zip[_-]?code|ip[_-]?address|user[_-]?agent|(?:recipient|adult|parent|student|child|user|contact)_(?:email|phone|name|address)|student[_-]?(?:text|question)|child[_-]?(?:text|question))$/i;
 const SAFE_DIGEST_KEY =
   /^(?:repository_sha|application_source_sha|artifact_digest|configuration_digest|migration_inventory_digest|provider_registry_digest|public_asset_digest|specification_digest|acceptance_contract_digest|sha256)$/i;
+const SAFE_OPERATIONAL_KEY = /^(?:fencing_token_high_watermark|credential_expires_in_ms)$/i;
 const IDENTIFIER_KEY =
   /^(?:candidate_id|runtime_id|queue|worker_type|provider|safe_account_ref|release|evidence_id|alert_key|code|category)$/;
 const SAFE_CONTEXT_KEY = /^[a-z][a-z0-9_]{0,63}$/;
@@ -16,7 +17,8 @@ const BEARER = /\bbearer\s+[a-z0-9._~+/=-]+/i;
 const JWT = /\beyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b/;
 const EMAIL = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
 const PHONE = /(?:\+\d{8,15}\b|\b\d{3}[ .()-]\d{3}[ .-]\d{4}\b)/;
-const PROVIDER_URL = /https?:\/\/[^\s"'<>]*(?:zoom|vimeo|drive\.google|meet\.google)[^\s"'<>]*/i;
+const PROVIDER_URL =
+  /https?:\/\/[^\s"'<>]*(?:resend\.com|gohighlevel\.com|leadconnectorhq\.com|stripe\.com|zoom\.(?:us|com)|vimeo\.com|drive\.google\.com|meet\.google\.com|api\.telegram\.org|telegram\.me|t\.me\/)[^\s"'<>]*/i;
 const SIGNED_URL =
   /https?:\/\/[^\s"'<>]*[?&](?:x-amz-(?:signature|credential|security-token)|signature|sig|token|access_token|key)=[^&\s"'<>]+/i;
 const DATABASE_URL = /(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^\s]+/i;
@@ -67,7 +69,12 @@ export function scanOperationalLeakage(value: unknown): LeakageScanResult {
 }
 
 function redactValue(value: unknown, key: string | null): unknown {
-  if (key && !SAFE_DIGEST_KEY.test(key) && (SENSITIVE_KEY.test(key) || PII_KEY.test(key))) {
+  if (
+    key &&
+    !SAFE_DIGEST_KEY.test(key) &&
+    !SAFE_OPERATIONAL_KEY.test(key) &&
+    (SENSITIVE_KEY.test(key) || PII_KEY.test(key))
+  ) {
     return REDACTED;
   }
   if (typeof value === 'string') {
@@ -92,7 +99,7 @@ function scanValue(
   insideSafeContext: boolean,
   counts: Map<LeakageFindingCode, number>,
 ): void {
-  if (key && !SAFE_DIGEST_KEY.test(key)) {
+  if (key && !SAFE_DIGEST_KEY.test(key) && !SAFE_OPERATIONAL_KEY.test(key)) {
     if (SENSITIVE_KEY.test(key) && hasMaterial(value)) increment(counts, 'secret_field');
     if (PII_KEY.test(key) && hasMaterial(value)) increment(counts, 'pii_field');
     if (

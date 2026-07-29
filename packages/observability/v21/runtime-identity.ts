@@ -55,6 +55,8 @@ export function assertRuntimeIdentity(identity: RuntimeIdentity): void {
   }
   assertGitSha(identity.repository_sha, 'repository_sha_invalid');
   assertGitSha(identity.application_source_sha, 'application_source_sha_invalid');
+  assertCanonicalTimestamp(identity.build_timestamp, 'build_timestamp_invalid');
+  assertSafeIdentifier(identity.migration_schema_version, 'migration_schema_version_invalid');
   for (const [name, value] of Object.entries({
     artifact_digest: identity.artifact_digest,
     configuration_digest: identity.configuration_digest,
@@ -77,6 +79,11 @@ export function assertCandidateIdentity(candidate: CandidateIdentity): void {
   assertGitSha(candidate.repository_sha, 'candidate_repository_sha_invalid');
   assertGitSha(candidate.application_source_sha, 'candidate_application_source_sha_invalid');
   assertRelease(candidate.release, 'candidate_release_invalid');
+  assertCanonicalTimestamp(candidate.build_timestamp, 'candidate_build_timestamp_invalid');
+  assertSafeIdentifier(
+    candidate.migration_schema_version,
+    'candidate_migration_schema_version_invalid',
+  );
   for (const [name, value] of Object.entries({
     configuration_digest: candidate.configuration_digest,
     migration_inventory_digest: candidate.migration_inventory_digest,
@@ -270,6 +277,8 @@ function runtimeMismatchCount(
     runtime.repository_sha !== candidate.repository_sha,
     runtime.application_source_sha !== candidate.application_source_sha,
     runtime.release !== candidate.release,
+    runtime.build_timestamp !== candidate.build_timestamp,
+    runtime.migration_schema_version !== candidate.migration_schema_version,
     runtime.configuration_digest !== candidate.configuration_digest,
     runtime.migration_inventory_digest !== candidate.migration_inventory_digest,
     runtime.provider_registry_digest !== candidate.provider_registry_digest,
@@ -330,6 +339,17 @@ function assertPositiveInteger(value: number, code: string): void {
 function assertRelease(value: string, code: string): void {
   if (typeof value !== 'string' || !isSafeOperationsIdentifier(value) || value.length > 120) {
     throw new OperationsIdentityError(code, 'Release identity is absent or invalid.');
+  }
+}
+
+function assertCanonicalTimestamp(value: string, code: string): void {
+  const parsed = Date.parse(value);
+  if (
+    typeof value !== 'string' ||
+    !Number.isFinite(parsed) ||
+    new Date(parsed).toISOString() !== value
+  ) {
+    throw new OperationsIdentityError(code, 'Expected a canonical UTC timestamp.');
   }
 }
 

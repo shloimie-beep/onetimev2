@@ -9,7 +9,7 @@ import {
 } from '../../../../packages/observability/v21/index.ts';
 
 export interface OperationsHeartbeat {
-  schema_version: '2.0.0';
+  schema_version: '3.0.0';
   worker_type: string;
   heartbeat_at: string;
   health_observed_at: string;
@@ -17,6 +17,8 @@ export interface OperationsHeartbeat {
   readiness_codes: readonly string[];
   candidate_id: string;
   release: string;
+  build_timestamp: string;
+  migration_schema_version: string;
   repository_sha: string;
   application_source_sha: string;
   artifact_digest: string;
@@ -38,7 +40,13 @@ export async function publishOperationsHeartbeat(input: {
   publisher: OperationsHeartbeatPublisher;
   now?: () => Date;
 }): Promise<OperationsHeartbeat> {
+  const publicationTime = input.now?.() ?? new Date();
   const snapshot = buildOperationsHealthSnapshot(input.health_input);
+  assertSnapshotCurrent(
+    snapshot,
+    publicationTime,
+    input.health_input.candidate.operations_inventory.maximum_observation_age_ms,
+  );
   const runtime = exactWorkerRuntime(input.health_input, input.runtime_id);
   assertRuntimeMatchesCandidate(runtime, input.health_input.candidate);
   if (runtime.service_role !== 'worker') {
@@ -61,14 +69,16 @@ export async function publishOperationsHeartbeat(input: {
   }
   const readinessCodes = deriveReadinessCodes(snapshot);
   const heartbeat: OperationsHeartbeat = {
-    schema_version: '2.0.0',
+    schema_version: '3.0.0',
     worker_type: input.worker_type,
-    heartbeat_at: (input.now?.() ?? new Date()).toISOString(),
+    heartbeat_at: publicationTime.toISOString(),
     health_observed_at: snapshot.generated_at,
     state: snapshot.status === 'ok' && snapshot.evidence_ready ? 'ready' : 'degraded',
     readiness_codes: readinessCodes,
     candidate_id: input.health_input.candidate.candidate_id,
     release: runtime.release,
+    build_timestamp: runtime.build_timestamp,
+    migration_schema_version: runtime.migration_schema_version,
     repository_sha: runtime.repository_sha,
     application_source_sha: runtime.application_source_sha,
     artifact_digest: runtime.artifact_digest,
@@ -80,6 +90,27 @@ export async function publishOperationsHeartbeat(input: {
   };
   await input.publisher.publish(heartbeat);
   return heartbeat;
+}
+
+function assertSnapshotCurrent(
+  snapshot: OperationsHealthSnapshot,
+  publicationTime: Date,
+  maximumAgeMs: number,
+): void {
+  const publicationMs = publicationTime.getTime();
+  const snapshotMs = Date.parse(snapshot.generated_at);
+  const age = publicationMs - snapshotMs;
+  if (
+    !Number.isFinite(publicationMs) ||
+    !Number.isFinite(snapshotMs) ||
+    age < 0 ||
+    age > maximumAgeMs
+  ) {
+    throw new OperationsIdentityError(
+      'heartbeat_health_snapshot_stale',
+      'Worker heartbeat requires a current health snapshot at publication time.',
+    );
+  }
 }
 
 function exactWorkerRuntime(

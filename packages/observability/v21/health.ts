@@ -146,6 +146,8 @@ export function evaluateOperationsAlerts(snapshot: OperationsHealthSnapshot): Op
     severity: issue.severity,
     category: issue.category,
     generated_at: snapshot.generated_at,
+    runtime_tier: snapshot.runtime_tier,
+    verification_environment_id: snapshot.verification_environment_id,
     summary: issue.summary,
     routes: ['ot_secure_operations', 'admin_operations'],
     safe_context: issue.safe_context,
@@ -256,6 +258,7 @@ function evaluateQueueHealth(
     valid =
       validateEvidence(queue, candidate, generatedAt, 'queue', queueId, issues) &&
       validateQueueNumbers(queue, issues) &&
+      validateQueueConsistency(queue, generatedAt, issues) &&
       typeof queue.duplicate_effect_risk === 'boolean' &&
       valid;
     if (!valid) {
@@ -263,7 +266,10 @@ function evaluateQueueHealth(
       continue;
     }
     const threshold = QUEUE_AGE_THRESHOLDS_MS[queue.queue_class];
-    const age = queue.oldest_ready_age_ms ?? 0;
+    const age =
+      queue.queue_class === 'content_processing'
+        ? (queue.content_progress_age_ms ?? 0)
+        : (queue.oldest_ready_age_ms ?? 0);
     if (queue.duplicate_effect_risk) {
       issues.push(queueIssue(queue.queue, 'queue_duplicate_effect_risk', 'sev1', null));
     }
@@ -512,7 +518,37 @@ function validateQueueNumbers(
       'queue',
       issues,
     ),
+    validateNonnegativeInteger(
+      queue.active_lease_count,
+      'queue_active_lease_count_invalid',
+      'queue',
+      issues,
+    ),
+    validateNonnegativeInteger(
+      queue.unfenced_active_lease_count,
+      'queue_unfenced_lease_count_invalid',
+      'queue',
+      issues,
+    ),
+    validateNonnegativeInteger(
+      queue.fencing_token_high_watermark,
+      'queue_fencing_token_invalid',
+      'queue',
+      issues,
+    ),
     validateNonnegativeInteger(queue.retry_count, 'queue_retry_count_invalid', 'queue', issues),
+    validateNonnegativeInteger(
+      queue.retry_scheduled_count,
+      'queue_retry_scheduled_invalid',
+      'queue',
+      issues,
+    ),
+    validateNonnegativeInteger(
+      queue.retry_exhausted_count,
+      'queue_retry_exhausted_invalid',
+      'queue',
+      issues,
+    ),
     validateNonnegativeInteger(
       queue.acceptance_unknown_count,
       'queue_acceptance_unknown_invalid',
@@ -532,7 +568,59 @@ function validateQueueNumbers(
       issues,
     ),
     validateNonnegative(queue.throughput_15m, 'queue_throughput_invalid', 'queue', issues),
+    validateNullableNonnegative(
+      queue.content_progress_age_ms,
+      'queue_content_progress_age_invalid',
+      'queue',
+      issues,
+    ),
   ].every(Boolean);
+}
+
+function validateQueueConsistency(
+  queue: OperationsHealthInput['queues'][number],
+  generatedAt: string,
+  issues: OperationsIssue[],
+): boolean {
+  let valid = true;
+  const leaseShapeValid =
+    (queue.active_lease_count === 0 && queue.oldest_lease_age_ms === null) ||
+    (queue.active_lease_count > 0 &&
+      queue.oldest_lease_age_ms !== null &&
+      queue.fencing_token_high_watermark > 0);
+  if (
+    !leaseShapeValid ||
+    queue.unfenced_active_lease_count !== 0 ||
+    queue.retry_scheduled_count > queue.depth ||
+    queue.retry_exhausted_count > queue.dead_letter_count
+  ) {
+    valid = false;
+  }
+  if (queue.queue_class === 'content_processing') {
+    if (
+      queue.depth > 0 &&
+      (queue.last_progress_at === null || queue.content_progress_age_ms === null)
+    ) {
+      valid = false;
+    }
+    if (queue.last_progress_at !== null && queue.content_progress_age_ms !== null) {
+      const progressAt = Date.parse(queue.last_progress_at);
+      const expectedAge = Date.parse(generatedAt) - progressAt;
+      if (
+        !Number.isFinite(progressAt) ||
+        expectedAge < 0 ||
+        Math.abs(expectedAge - queue.content_progress_age_ms) > 1_000
+      ) {
+        valid = false;
+      }
+    }
+  } else if (queue.last_progress_at !== null || queue.content_progress_age_ms !== null) {
+    valid = false;
+  }
+  if (!valid) {
+    issues.push(queueIssue(queue.queue, 'queue_observation_inconsistent', 'sev1', null));
+  }
+  return valid;
 }
 
 function validatePercentage(

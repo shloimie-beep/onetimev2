@@ -7,6 +7,7 @@ import {
   buildOperationsHealthSnapshot,
   computeMigrationInventoryDigest,
   evaluateMigrationHealth,
+  evaluateOperationsAlerts,
   evaluateRuntimeAgreement,
   redactOperationalData,
   scanOperationalLeakage,
@@ -73,6 +74,26 @@ describe('P33 corrected runtime identity contract', () => {
       ],
     });
     expect(wrongArtifact.issues).toContainEqual(
+      expect.objectContaining({ code: 'runtime_candidate_mismatch', severity: 'sev1' }),
+    );
+  });
+
+  it('requires exact immutable build timestamp and migration schema version', () => {
+    const candidate = candidateIdentity();
+    const runtimes = runtimeIdentities();
+    const mismatch = evaluateRuntimeAgreement({
+      candidate,
+      runtimes: runtimes.map((runtime, index) =>
+        index === 0
+          ? {
+              ...runtime,
+              build_timestamp: '2026-07-29T00:46:00.000Z',
+              migration_schema_version: 'schema-2026.07.29.2',
+            }
+          : runtime,
+      ),
+    });
+    expect(mismatch.issues).toContainEqual(
       expect.objectContaining({ code: 'runtime_candidate_mismatch', severity: 'sev1' }),
     );
   });
@@ -174,6 +195,87 @@ describe('P33 corrected health evidence', () => {
     );
   });
 
+  it('includes exact runtime tier and verification environment on every alert', () => {
+    const input = healthyInput();
+    input.queues = input.queues.slice(1);
+    const snapshot = buildOperationsHealthSnapshot(input);
+    const alerts = evaluateOperationsAlerts(snapshot);
+    expect(alerts.length).toBeGreaterThan(0);
+    expect(alerts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          runtime_tier: 'isolated_staging',
+          verification_environment_id: 'persistent_staging',
+        }),
+      ]),
+    );
+    expect(
+      alerts.every(
+        (alert) =>
+          alert.runtime_tier === snapshot.runtime_tier &&
+          alert.verification_environment_id === snapshot.verification_environment_id,
+      ),
+    ).toBe(true);
+  });
+
+  it.each([
+    [
+      'lease without fencing evidence',
+      (input: ReturnType<typeof healthyInput>) => {
+        input.queues[0]!.active_lease_count = 1;
+      },
+    ],
+    [
+      'unfenced active lease',
+      (input: ReturnType<typeof healthyInput>) => {
+        input.queues[0]!.active_lease_count = 1;
+        input.queues[0]!.oldest_lease_age_ms = 1_000;
+        input.queues[0]!.fencing_token_high_watermark = 4;
+        input.queues[0]!.unfenced_active_lease_count = 1;
+      },
+    ],
+    [
+      'inconsistent retry evidence',
+      (input: ReturnType<typeof healthyInput>) => {
+        input.queues[0]!.retry_scheduled_count = 1;
+      },
+    ],
+    [
+      'inconsistent content progress evidence',
+      (input: ReturnType<typeof healthyInput>) => {
+        const queue = input.queues.find(
+          (observation) => observation.queue_class === 'content_processing',
+        )!;
+        queue.depth = 1;
+        queue.last_progress_at = OBSERVED_AT;
+        queue.content_progress_age_ms = 60_000;
+      },
+    ],
+  ])('rejects %s as inconsistent queue evidence', (_name, mutate) => {
+    const input = structuredClone(healthyInput());
+    mutate(input);
+    const snapshot = buildOperationsHealthSnapshot(input);
+    expect(snapshot.issues).toContainEqual(
+      expect.objectContaining({ code: 'queue_observation_inconsistent', severity: 'sev1' }),
+    );
+  });
+
+  it('rejects stalled content progress using exact progress evidence', () => {
+    const input = healthyInput();
+    const queue = input.queues.find(
+      (observation) => observation.queue_class === 'content_processing',
+    )!;
+    queue.depth = 1;
+    queue.throughput_15m = 0;
+    queue.last_progress_at = '2026-07-29T00:29:00.000Z';
+    queue.content_progress_age_ms = 31 * 60_000;
+    const snapshot = buildOperationsHealthSnapshot(input);
+    expect(snapshot.status).toBe('sev2');
+    expect(snapshot.issues).toContainEqual(
+      expect.objectContaining({ code: 'queue_age_critical', severity: 'sev2' }),
+    );
+  });
+
   it('binds qualified fresh migration readback to the exact candidate digest', () => {
     const input = healthyInput();
     expect(
@@ -258,4 +360,28 @@ describe('P33 strict operational leakage prevention', () => {
     expect(JSON.stringify(result)).not.toContain('private-literal');
     expect(JSON.stringify(redactOperationalData(payload))).not.toContain('private-literal');
   });
+
+  it.each([
+    ['resend', 'https://api.resend.com/emails/abc'],
+    ['ghl', 'https://services.leadconnectorhq.com/contacts/abc'],
+    ['stripe', 'https://dashboard.stripe.com/customers/abc'],
+    ['zoom', 'https://zoom.us/j/123'],
+    ['vimeo', 'https://vimeo.com/123'],
+    ['drive', 'https://drive.google.com/file/d/abc'],
+    ['telegram', 'https://api.telegram.org/bot123/sendMessage'],
+  ])('blocks raw %s links', (_provider, link) => {
+    expect(scanOperationalLeakage({ link })).toMatchObject({
+      passed: false,
+      finding_counts: { provider_url: 1 },
+    });
+  });
+
+  it.each(['first_name', 'last_name', 'date_of_birth', 'postal_code', 'ip_address'])(
+    'blocks common PII key %s',
+    (key) => {
+      expect(scanOperationalLeakage({ [key]: 'private-value' }).finding_counts).toHaveProperty(
+        'pii_field',
+      );
+    },
+  );
 });

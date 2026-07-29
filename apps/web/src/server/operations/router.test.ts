@@ -140,7 +140,7 @@ describe('P33 protected diagnostics readiness and exact-body leakage gate', () =
     const serialized = JSON.stringify(body);
     expect(response.status).toBe(503);
     expect(body).toEqual({
-      schema_version: '2.0.0',
+      schema_version: '3.0.0',
       success: false,
       code: 'ops_diagnostic_safety_block',
       message: 'Operational response was blocked.',

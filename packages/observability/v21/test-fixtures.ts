@@ -31,11 +31,13 @@ export const REQUIRED_QUEUES: readonly QueueExpectation[] = [
 
 export function candidateIdentity(): CandidateIdentity {
   return {
-    schema_version: '2.0.0',
+    schema_version: '3.0.0',
     candidate_id: 'candidate-2026-07-29',
     repository_sha: GIT_SHA,
     application_source_sha: SOURCE_SHA,
     release: 'v2.1.0',
+    build_timestamp: '2026-07-29T00:45:00.000Z',
+    migration_schema_version: 'schema-2026.07.29.1',
     configuration_digest: DIGEST,
     migration_inventory_digest: computeMigrationInventoryDigest(MIGRATIONS),
     provider_registry_digest: DIGEST,
@@ -68,8 +70,10 @@ export function candidateIdentity(): CandidateIdentity {
 export function runtimeIdentities(): RuntimeIdentity[] {
   const candidate = candidateIdentity();
   const common = {
-    schema_version: '2.0.0' as const,
+    schema_version: '3.0.0' as const,
     release: candidate.release,
+    build_timestamp: candidate.build_timestamp,
+    migration_schema_version: candidate.migration_schema_version,
     repository_sha: candidate.repository_sha,
     application_source_sha: candidate.application_source_sha,
     configuration_digest: candidate.configuration_digest,
@@ -126,11 +130,18 @@ export function healthyInput(): OperationsHealthInput {
       depth: 0,
       oldest_ready_age_ms: null,
       oldest_lease_age_ms: null,
+      active_lease_count: 0,
+      unfenced_active_lease_count: 0,
+      fencing_token_high_watermark: 0,
       retry_count: 0,
+      retry_scheduled_count: 0,
+      retry_exhausted_count: 0,
       acceptance_unknown_count: 0,
       dead_letter_count: 0,
       expired_lease_count: 0,
       throughput_15m: 1,
+      last_progress_at: null,
+      content_progress_age_ms: null,
       duplicate_effect_risk: false,
     })),
     workers: [
