@@ -7,37 +7,8 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
 branch: codex/v21-p08-family-signup
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-dependency_heads:
-  F03:
-    state: interface_ready_integrated
-    task_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
-    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
-    interface_source_head_sha: 7c638131a0cab757657e95c4d2229a1573e4cde1
-    interface_implementation_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
-    interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
-  F04:
-    state: interface_ready_integrated
-    task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
-    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
-    interface_source_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
-    interface_implementation_head_sha: 8ba3f6c83ed3d7239ae672e938829ec9c572cd6b
-    interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
-  F06:
-    state: interface_ready_integrated
-    task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
-    integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
-    interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
-    interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
-    interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
-  F07:
-    state: interface_ready_integrated
-    task_head_sha: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
-    integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
-    interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
-    interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
-    interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: claimed
-phase: correction
+status: ready_for_review
+phase: correction_complete
 claimed_by: codex-p08-worker-e9148002
 claim_time: '2026-07-29T01:27:25Z'
 claim_id: e9148002-e9ff-4b7c-ab6e-63080c66bd00
@@ -45,59 +16,65 @@ writer_slot: FAMILY_SIGNUP
 writer_slot_lease_id: 23274fa2-66cc-4cfd-8d6c-ba659d70a323
 lease_issued_at: '2026-07-29T01:18:05Z'
 lease_expires_at: '2026-07-29T02:18:05Z'
-last_heartbeat_at: '2026-07-29T01:27:25Z'
-lease_released_at: null
+last_heartbeat_at: '2026-07-29T01:49:19Z'
+lease_released_at: '2026-07-29T01:49:19Z'
 prior_claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
 prior_ready_for_review_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
 controller_authorization_sha: 5cc06e9a3692f1833be737b53d92595bc2bf3e95
-ready_entry_state_based_on_control_head_sha: f28533a2bc55672cedd86cd556d1ad396aa3db4c
+correction_reconciliation_sha: 398bc9b1e502652ac0af5700fdedd8cc57c92d91
+reconciliation_acquisition_parent_sha: 382ea5193b1de8fc8cd2844dde362106a8a0f57f
 ready_entry_payload_digest: 898063c08637b54f42567e21db5acb5dfe1a25410068c7d9b3a1530ae8917ac5
 claim_mode: resume_existing_branch
-expected_existing_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
 correction_parent_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
-state_based_on_head_sha: 59b43a601225d6f86a929621c89402d06ada39e4
-last_implementation_commit_sha: 7e20798c1161da0594cea363d1047335c9ae4fbe
+atomic_correction_claim_head_sha: 53e1ef74fc988aab22d12d6716f30cb841130fde
+correction_implementation_head_sha: c903d1df6a0c3ee94a700fe62b4e1c0b3c3eeb72
+correction_verification_head_sha: 3f030e734e31da548ace6ca619f38eb27968f3a4
+state_based_on_head_sha: 3f030e734e31da548ace6ca619f38eb27968f3a4
+last_implementation_commit_sha: c903d1df6a0c3ee94a700fe62b4e1c0b3c3eeb72
 interface_checkpoint:
   required: true
   unlocks:
     - P09
   status: interface_ready
-  implementation_head_sha: 0c386529ea7e9487a457e51cc5be9500a6c29b52
-  contract_digest: f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c
+  implementation_head_sha: c903d1df6a0c3ee94a700fe62b4e1c0b3c3eeb72
+  metadata_head_sha: ca06599ffbe62d7c617235f9e54f5ded57e4b6c7
+  semantic_contract_version: 1.1.0
+  contract_digest: 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
+  artifact_sha256: 3fa2d6280baa0725de15fe277b77affd1dcce0dc46c5c8eeb83c6612382ab9a5
+  supersedes_checkpoint_sha: b7601c002d2c37d0ef7760c328015f9a8d590893
+  supersedes_contract_digest: f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c
 completed_steps:
-  - Fetched corrected control authorization eb3b0e1deecbffe05177a07df0d8e52d648d109c and verified sole parent de271a6cab5fc74e8c77b5defc302094fe9a22fc.
-  - Verified the P08 create_new_branch entry, exact authorized start, task/context/package digests, four integrated dependency contracts, unexpired FAMILY_SIGNUP lease, and zero effect locks.
-  - Created branch codex/v21-p08-family-signup from exact authorized start 49431959f58f284bdc13ca931acf09f980fc483a.
-  - Seeded this atomic claim checkpoint in the three P08 runtime files only.
-  - Published the stable family-signup contract at 0c386529ea7e9487a457e51cc5be9500a6c29b52.
-  - Corrected the interface metadata to the independently reproduced repository-canonical digest f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c without changing the export artifact.
-  - Implemented exact Family/School public classification and rejected missing, unsupported, array, and hybrid payloads before any write.
-  - Implemented fixed-expiry Family form copy and server policy at 2026-09-13T16:24:00.000Z with immediate cardless free access only before the boundary.
-  - Implemented normalized adult dedupe, existing-account generic sign-in/reset handling, and existing GHL link/email matching with ambiguity quarantine.
-  - Implemented stable-idempotency interrupted recovery without duplicate adult, account, household, credential, outbox, or provider effect.
-  - Implemented one local transaction boundary for identity, credential, household, access, request, and durable GHL outbox persistence.
-  - Published structured migration and registration requests without editing migrations, routes, barrels, composers, or shared registries.
-  - Passed 13 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, and git diff checks.
+  - Consumed atomic correction claim e9148002-e9ff-4b7c-ab6e-63080c66bd00 at exact head 53e1ef74fc988aab22d12d6716f30cb841130fde.
+  - Verified C00 reconciliation 398bc9b1e502652ac0af5700fdedd8cc57c92d91, its sole parent 382ea5193b1de8fc8cd2844dde362106a8a0f57f, the exact claim, unexpired FAMILY_SIGNUP lease, and zero effect locks before correction work.
+  - Removed caller-supplied canonical request hashes and published semantic contract version 1.1.0 with exact scope, operation, receipt, and outbox bindings.
+  - Required 43-128 character high-entropy request keys, treated them only as idempotency material, and computed canonical digests server-side from semantic fields plus a keyed password fingerprint.
+  - Bound request locking, local-state reads, GHL evidence, recovery, receipt, commit, and outbox operations to exact validated FamilySignupScope plus public_family_signup.
+  - Changed public signup so every existing local HumanAccount state or Family household lifecycle returns the same generic sign-in-or-reset result with zero household, access, credential, outbox, or session writes.
+  - Preserved fresh local signup for GHL-only matches and kept provider effects outbox-only.
+  - Added negative coverage for all HumanAccount states, active/expired/archived/inactive households, cross-scope replay, changed semantic fields and password, spoofed caller hashes, and weak/short keys.
+  - Published and pushed superseding interface checkpoint ca06599ffbe62d7c617235f9e54f5ded57e4b6c7.
+  - Updated migration and registration steward requests without editing migrations, routes, barrels, composers, registries, manifests, lockfiles, or provider state.
+  - Passed 16 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, and git diff checks.
   - Re-ran the full unit suite with 566 of 567 passing; the sole failure is the inherited sender-registry count assertion outside P08 ownership.
   - Released the FAMILY_SIGNUP lease with zero external effects.
-  - Consumed the C00-issued bounded correction claim against exact existing head 59b43a601225d6f86a929621c89402d06ada39e4 without modifying any product, contract, test, steward-request, or interface-checkpoint file.
 remaining_steps:
-  - Push and report this exact three-file atomic correction claim checkpoint.
-  - Await C00 reconciliation before modifying any P08 product or contract path.
-next_action: Push the atomic correction claim checkpoint, report its exact head and parent, and stop until C00 explicitly reconciles claim e9148002-e9ff-4b7c-ab6e-63080c66bd00.
+  - C00 reviews and admits the corrected task and superseding interface checkpoint.
+  - The migration and registration stewards consume the two structured requests.
+  - P09 starts only after C00 integrates the superseding interface checkpoint.
+next_action: C00 should review the exact pushed ready-for-review head, reconcile lease release, and admit the superseding 1.1.0 interface checkpoint if accepted.
 requirements:
-  OTV2-SIGNUP-176: implementation_verified_pending_correction
-  OTV2-SIGNUP-177: implementation_verified_pending_correction
-  OTV2-SIGNUP-179: implementation_verified_pending_correction
-  OTV2-SIGNUP-213: implementation_verified_pending_correction
-  OTV2-SIGNUP-228: implementation_verified_pending_correction
+  OTV2-SIGNUP-176: implemented_and_verified
+  OTV2-SIGNUP-177: implemented_and_verified
+  OTV2-SIGNUP-179: implemented_and_verified
+  OTV2-SIGNUP-213: implemented_and_verified
+  OTV2-SIGNUP-228: implemented_and_verified
 acceptance_cases:
-  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed_pending_correction
-  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed_pending_correction
-  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed_pending_correction
-  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed_pending_correction
-  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed_pending_correction
-  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed_pending_correction
+  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed
+  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed
+  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed
+  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed
 changed_paths:
   - apps/web/src/client/public/signup/model.test.ts
   - apps/web/src/client/public/signup/model.ts
@@ -117,23 +94,23 @@ changed_paths:
 migrations: []
 steward_requests:
   - request_id: P08-migration-001
-    sha256: 5691d8d054c4e36724f6f12b0a5d62d1d5d6691b0b405824d81484d71b8df1c3
+    sha256: df97bdacc1ca40b7ad438304f96f6d78dd160786daf0a29de838654dc7599d8e
   - request_id: P08-registration-001
-    sha256: 8db3dbbd36b0de487659877b6e4e256721e2029221f9c5eb35ff9037541939e0
+    sha256: f23ed447b12d7728ebd57f5e13888cda54536927364fff8725c20ce95c8c98a0
 verification:
   commands_run:
     - command: focused P08 Vitest over contract, domain, server, and client
-      result: passed; 4 files and 13 assertions
+      result: passed; 4 files and 16 assertions
     - command: targeted ESLint over all P08 TypeScript artifacts
       result: passed
     - command: npm run typecheck
       result: passed
-    - command: focused Prettier over all P08 implementation and steward-request files
+    - command: focused Prettier over all changed P08 artifacts
       result: passed
     - command: npm run secret:scan
       result: passed; 2720 repository text files scanned
     - command: canonical interface digest recomputation
-      result: passed; f54e4381b53aa83522a2b15561a51a03319272a439afa8657c13655776c0d23c
+      result: passed; 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
     - command: npm run unit
       result: 566 passed, 1 inherited out-of-scope registry-count assertion failed
     - command: git diff --check
