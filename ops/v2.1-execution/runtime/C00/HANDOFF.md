@@ -1287,3 +1287,16 @@ child; lease `5f617e0e` was released before expiry. P23 migration and
 registration requests remain assigned but unapplied, the merge queue is
 cleared, and effects remain `0/0/0`. P11's isolated atomic correction claim is
 the active next action.
+
+P11 published exact atomic claim
+`77c168d0a4a27b81ba1f7cddaa8d31821a8654f6`: sole parent rejected final
+`899ef6a7`, exactly its three runtime files, exact authorization/acquisition/
+claim/lease/READY bindings, clean remote, no product edit, and effects
+`0/0/0`. C00 consumed its READY entry. Under unchanged claim `d76c097a` and
+ADMIN_OPERATIONS_UI lease `84cd0230` through `2026-07-29T10:40:29Z`, P11 may
+now implement only synchronous no-private rendering for non-current Admin,
+credential-generation guards for every in-flight search/resolver completion,
+injective DOM-safe option IDs, Bearer-whitespace redaction, and direct negative
+tests. Preserve every earlier passing correction, publish a superseding final,
+release the lease, and stop for independent re-audit. No steward/provider/
+external effect is authorized.

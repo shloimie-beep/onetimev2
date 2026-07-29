@@ -730,10 +730,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: c86c7470f7a23b43d1a80c5fc2e7e141233d7dfdcfaf535996da3ec214902148
-    control_lease: 3ae233c721d53717c86f620f6dac2d0d1293a6290003111d043b3038385dadc6
-    task_registry: 72c30a50c761e60ac7d2de5edb42983daa18f1d6c74a39c2f5f9996e565f9aa5
-    ready_queue: 3e3ce54feef7ef3f701374414ce4b597cc800d9dfa12db184a20d5648d321e78
+    control_state: 2d3e5029b09945e051f62d6ad4e1f45e33223816eff3f1ee2110fd57573b6329
+    control_lease: a4721b49b7b8a8dd8151943367e4260d648513ca03af881f41c4a9af5e2777bd
+    task_registry: 737d76f13d9f1175a4991cbb0907022629c2c5c47389d382fa4f2e6c7245b6cc
+    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 8c2cd23f6f5e65f07efd7d0a10e986edd132ef3dac2066d4d5aaa563ff80282a
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -884,6 +884,8 @@ verification:
   - P23 merge 3d31cb5f exact parents f75b0922/32f3a464, preserved source ancestry, exact 19-path first-parent scope, 4 focused files/22 tests, workspace typecheck, and zero effects: passed
   - I36 metadata-only release 088b4047 sole parent 3d31cb5f, exact three-runtime-file scope, released lease before expiry, clean remote state, unapplied P23 steward requests, and zero effects: passed
   - cleared completed P23 merge queue item, preserved P11 ready entry, updated I36/P23 integration evidence, and recorded control raw SHA-256 bindings: passed
+  - P11 claim 77c168d0 sole-parent ancestry, exact three-runtime-file scope, authorization/acquisition/claim/lease/ready/rejected-head bindings, clean remote state, no product edit, and zero effects: passed
+  - consumed P11 ready entry and authorized only the bounded revoked-render/stale-completion/option-ID/Bearer-redaction correction under the unchanged claim and lease: passed
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

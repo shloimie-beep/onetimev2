@@ -1006,6 +1006,19 @@ rejected final `899ef6a7` under ready digest `aeea25dd`, then reconcile that
 claim before allowing any product correction. No provider or external effect
 is authorized.
 
+P11 claim `77c168d0a4a27b81ba1f7cddaa8d31821a8654f6` is reconciled.
+Resume it under unchanged claim `d76c097a-d2df-4e8c-ae99-659deba00c64`
+and ADMIN_OPERATIONS_UI lease `84cd0230-d35a-4149-845c-9cd4bcfb6ff5`.
+Implement only the confirmed residuals: synchronous no-private state whenever
+authorization is not current Admin; exact credential-generation/authorization
+guards before every in-flight search or resolver state update/navigation;
+deterministic injective DOM-safe option IDs; and Bearer-secret handling for
+whitespace as well as `:`/`=`. Add direct revoked-first-render, stale-promise,
+dotted/colon collision, active-descendant uniqueness, and Bearer-space tests.
+Preserve earlier corrections, run focused verification and typecheck, release
+the lease before expiry, publish a superseding final, and stop for independent
+re-audit. Apply no steward/provider/external effect.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
