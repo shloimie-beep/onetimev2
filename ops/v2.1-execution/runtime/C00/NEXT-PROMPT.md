@@ -362,3 +362,19 @@ For I36, publish only atomic integration claim
 and P08 merge item `6fc2b7ae-b59a-4344-9399-669a5d79212b` digest
 `20642826a27d6e76d282420ad154ef53c398a33f6fb040a938dc2cc3e8298494`.
 Stop for C00 reconciliation before merging P08.
+
+I36 claim `931b6fe7b160a1b77e316b2212ad46f02d5698fc` is reconciled.
+Merge only queued P08 source `e15a7af6cde557ff7f0fbbd55c12244780ca2321`
+into that exact target under merge id
+`6fc2b7ae-b59a-4344-9399-669a5d79212b` and rebound digest
+`683cb0421dd30d87b36f2c36aa857088bd6b9c661714459cde7fff7cd29c64cf`.
+Require the source to become an ancestor, require the exact fifteen allowed
+paths, rerun the focused P08 checks and typecheck, then publish an I36
+metadata-only release checkpoint with zero effects and stop for C00.
+
+P10 final `5fccc34507ae9c5dbc609e234ab559576ab3a445` is admitted with
+implementation `da5576d3f675b90a5db812d293801f9f5fa17d38`, digest
+`07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873`,
+and steward digest
+`0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea`.
+It waits behind P08; do not integrate it in the current I36 checkpoint.

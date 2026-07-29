@@ -661,3 +661,21 @@ worktree, and zero effects all pass. The exact interface merge
 `87e3ba67`, and I36 may publish only atomic claim `2b9e5c96` before another C00
 reconciliation. P08 migration and registration requests are assigned to F02
 and I36 respectively.
+
+I36 atomic claim `931b6fe7` is independently reconciled: sole parent
+`87e3ba67`, exactly the three I36 runtime files, containing authorization
+`047186d8`, acquisition `9184bcfd`, exact claim/lease/ready/merge bindings,
+clean worktree, and zero effects. Under acquisition `4d4ae9e7`, only P08 merge
+`6fc2b7ae-b59a-4344-9399-669a5d79212b` is rebound to target `931b6fe7`,
+with canonical digest `683cb042`. I36 may now merge only P08 source
+`e15a7af6`, prove its exact fifteen-path scope and ancestry, publish its
+metadata release checkpoint, and stop.
+
+P10 corrected final `5fccc345` is independently admitted. Its bounded
+nine-path correction enforces current verified Parent-owner acceptance, exact
+identity-preserving monotonic revoked-enrollment restore, and one exhaustive
+locked ownership-effect inventory with complete atomic readback before
+persistence. The exact `07d90e33` implementation digest, `0bb00ea1` steward
+digest, 20 focused tests, released lease, clean worktree, and zero effects
+pass. Migration and registration requests are assigned to F02 and I36 and
+remain unapplied; P10 waits behind P08 for integration.

@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: P08 v2.0.0 interface is admitted and I36 publishes only integration claim 2b9e5c96 against target 87e3ba67; P33 resumes its reconciled identity, heartbeat, queue, alert, and leakage correction from claim 0ecfd73c; P10 continues its reconciled bounded correction.
+next_action: I36 merges only the exact P08 v2.0.0 interface from reconciled integration claim 931b6fe7; P10 corrected final 5fccc345 is independently admitted and waits behind P08 with its migration and registration requests assigned; P33 continues its bounded correction.
 authority_note: Only C00 updates this global control state.
