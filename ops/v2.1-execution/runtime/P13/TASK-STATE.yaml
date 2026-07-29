@@ -16,19 +16,16 @@ dependency_interface_bindings:
     interface_source_head_sha: e5f59e707f9b3a12c9b64b30aaa23e638c2d816f
     interface_implementation_head_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
     interface_checkpoint_digest: ec615147fd6b7becf278c97aef35ee28c4bdfd8109d7ee7897701e3e25216e26
-    task_packet_digest: 37a367f92ac2af2a1e9ef17ae97ec2caed3d80ea608d7bcbbeeb6ecc64a0c2bd
-    task_context_digest: 1b1bc9f0a0624836ba69e7c35acb2d70ea43f71347cb434be9796b307e418b73
   F07:
     required_state: interface_ready_integrated
     observed_integration_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-    task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
-    task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: implementation
+status: ready_for_review
+phase: complete
 claim_mode: create_new_branch
+resume_mode: resume_existing
 claimed_by: codex-p13-worker-183a8dcb
 claim_time: '2026-07-29T05:26:21Z'
 claim_id: 183a8dcb-d283-4e3e-b49b-790ca35e5f70
@@ -36,55 +33,129 @@ writer_slot: PARENT_SUMMARY_UI
 lease_id: cef8335b-8c6f-4111-9bc7-1f877c9cae15
 lease_issued_at: '2026-07-29T05:11:30Z'
 lease_expires_at: '2026-07-29T06:11:30Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T05:26:21Z'
-controller_authorization_sha: 86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8
-ready_entry_state_based_on_control_head_sha: f98ee8e79018e5875e9c2be3d5961954b3c5ce04
+lease_released_at: '2026-07-29T05:38:33Z'
+last_heartbeat_at: '2026-07-29T05:38:33Z'
+controller_authorization_sha: bb3f4fac568be8ce1fdeb2c07c1f108879825295
+reconciliation_state_based_on_control_head_sha: b25e390ecae267d3bbf5f4f7ec33d49577d43568
 ready_entry_payload_digest: 3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709
-phase_scope: P13_atomic_claim_only
-state_based_on_head_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
-last_implementation_commit_sha: 44fd536381e7af8885f31247d6bf91dd6266b195
+phase_scope: P13_parent_summary_implementation_only
+atomic_claim_head_sha: 645c41feff7ffa02b09647697764bf726a3380e9
+state_based_on_head_sha: 0380409b2eb5af6956fdb112a2384258c57d3b7c
+last_implementation_commit_sha: 0380409b2eb5af6956fdb112a2384258c57d3b7c
+implementation_artifact_digest: de06556f4136498798f36e47997e0e3024ea086ee32cb54e956e3f07cde7331a
+implementation_artifact_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
+  the 13 implementation and focused-test artifacts, sorted lexicographically
+  by path, with LF separators and no final newline.
+implementation_artifact_paths:
+  - apps/web/src/client/app/parent/progress/ParentProgressSummary.test.tsx
+  - apps/web/src/client/app/parent/progress/ParentProgressSummary.tsx
+  - apps/web/src/client/app/parent/progress/index.ts
+  - apps/web/src/client/app/parent/schedule/ParentSchedule.test.tsx
+  - apps/web/src/client/app/parent/schedule/ParentSchedule.tsx
+  - apps/web/src/client/app/parent/schedule/index.ts
+  - apps/web/src/client/app/parent/updates/ParentUpdates.test.tsx
+  - apps/web/src/client/app/parent/updates/ParentUpdates.tsx
+  - apps/web/src/client/app/parent/updates/index.ts
+  - apps/web/src/server/features/portals/parent-summary/index.ts
+  - apps/web/src/server/features/portals/parent-summary/service.test.ts
+  - apps/web/src/server/features/portals/parent-summary/service.ts
+  - packages/contracts/src/portals/parent-summary/index.ts
+steward_request_payload_digests:
+  P13-client-route-001: 8ec9bd96e810db78517f385bbbbb05788a4b24eaaff72f3e654a10b3dd4bd0c5
+  P13-contract-barrel-001: c0f7b1f72509a0e76c93fe66e847f82ce531239881876aad85010db947b51763
+  P13-server-registration-001: a651f04b4f51a5f7f9390cebe4f80a89c9cc53adc7bfba3192ef2bc7cef4c067
+steward_request_aggregate_digest: a16795209721bc08d6f6069e9ba7ccdcbc34785a773e8127b40e6f61b9352467
+steward_request_digest_algorithm: >-
+  Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
+  SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
+  and no final newline.
 completed_steps:
-  - Verified exact released control head 86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8,
-    state-based acquisition/renewal f98ee8e79018e5875e9c2be3d5961954b3c5ce04, and integration start
-    44fd536381e7af8885f31247d6bf91dd6266b195.
-  - Verified the registered local and remote P13 branch was absent before creation.
-  - Recomputed canonical ready-entry digest 3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709.
-  - Reproduced the exact P13 task and context digests.
-  - Verified the P12 and F07 interface checkpoint bindings, every exported artifact
-    SHA-256, both contract digests, implementation-to-interface ancestry, and
-    interface-to-authorized-integration ancestry.
-  - Created codex/v21-p13-parent-summary from the exact authorized integration start.
-  - Seeded this atomic claim in exactly the three P13 runtime files without product,
-    source, steward, provider, or external-effect work.
+  - Published and reconciled the exact three-file atomic claim at
+    645c41feff7ffa02b09647697764bf726a3380e9.
+  - Verified rebound control bb3f4fac568be8ce1fdeb2c07c1f108879825295,
+    acquisition b25e390ecae267d3bbf5f4f7ec33d49577d43568, the unchanged claim and
+    live PARENT_SUMMARY_UI lease, and the exact local/remote claim head.
+  - Preserved the exact P12 and F07 integrated interface bindings.
+  - Added an additive Parent-summary contract containing only household-scoped
+    schedule, attendance, badge, update, and support-entry data.
+  - Added a fail-closed Parent-summary service that rejects wrong-role,
+    cross-household, wrong-owner, duplicate-Student, and foreign-Student-reference
+    records before returning a bounded snapshot.
+  - Added isolated Parent schedule, progress, updates, and support-entry surfaces
+    with no Student-class, recording, library, private-question, or Rabbi-answer route.
+  - Added three schema-valid structured steward requests for server registration,
+    client routes/support linkage, and the contract barrel; none was applied.
+  - Committed the exact 13 implementation/test artifacts and three steward
+    requests at 0380409b2eb5af6956fdb112a2384258c57d3b7c.
+  - Reproduced the implementation artifact digest and every steward-request
+    payload and aggregate digest from immutable Git blobs.
+  - Passed 4 focused files and 11 positive/negative tests, cumulative workspace
+    typecheck, focused ESLint and Prettier, diff hygiene, request-schema
+    validation, and the repository secret scan.
+  - Released claim 183a8dcb-d283-4e3e-b49b-790ca35e5f70 and
+    PARENT_SUMMARY_UI lease cef8335b-8c6f-4111-9bc7-1f877c9cae15 at
+    2026-07-29T05:38:33Z with zero external effects.
 remaining_steps:
-  - Commit and normally publish this exact three-file atomic claim.
-  - Report the exact pushed remote head to C00 and stop for reconciliation.
-next_action: Report the exact pushed P13 atomic-claim head to C00, then stop until explicitly resumed.
+  - Commit and normally push this exact three-runtime-file final metadata checkpoint.
+  - Report the exact ready-for-review remote head to C00 and stop.
+next_action: Reconcile the exact pushed P13 ready-for-review head in C00; do not resume P13 without new authority.
 requirements:
-  OTV2-PARENT-037: not_started
-  OTV2-PARENT-039: not_started
-  OTV2-PARENT-185: not_started
+  OTV2-PARENT-037: ready_for_review
+  OTV2-PARENT-039: ready_for_review
+  OTV2-PARENT-185: ready_for_review
 acceptance_cases:
-  OTV2-PARENT-037-AC01: not_started
-  OTV2-PARENT-039-AC01: not_started
-  OTV2-PARENT-185-AC01: not_started
+  OTV2-PARENT-037-AC01: passed
+  OTV2-PARENT-039-AC01: passed
+  OTV2-PARENT-185-AC01: passed
 changed_paths:
-  - ops/v2.1-execution/runtime/P13/TASK-STATE.yaml
+  - apps/web/src/client/app/parent/progress/ParentProgressSummary.test.tsx
+  - apps/web/src/client/app/parent/progress/ParentProgressSummary.tsx
+  - apps/web/src/client/app/parent/progress/index.ts
+  - apps/web/src/client/app/parent/schedule/ParentSchedule.test.tsx
+  - apps/web/src/client/app/parent/schedule/ParentSchedule.tsx
+  - apps/web/src/client/app/parent/schedule/index.ts
+  - apps/web/src/client/app/parent/updates/ParentUpdates.test.tsx
+  - apps/web/src/client/app/parent/updates/ParentUpdates.tsx
+  - apps/web/src/client/app/parent/updates/index.ts
+  - apps/web/src/server/features/portals/parent-summary/index.ts
+  - apps/web/src/server/features/portals/parent-summary/service.test.ts
+  - apps/web/src/server/features/portals/parent-summary/service.ts
+  - packages/contracts/src/portals/parent-summary/index.ts
+  - ops/v2.1-execution/runtime/P13/steward-requests/P13-client-route-001.yaml
+  - ops/v2.1-execution/runtime/P13/steward-requests/P13-contract-barrel-001.yaml
+  - ops/v2.1-execution/runtime/P13/steward-requests/P13-server-registration-001.yaml
   - ops/v2.1-execution/runtime/P13/HANDOFF.md
   - ops/v2.1-execution/runtime/P13/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P13/TASK-STATE.yaml
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: P13-server-registration-001
+    status: pending_steward
+  - request_id: P13-client-route-001
+    status: pending_steward
+  - request_id: P13-contract-barrel-001
+    status: pending_steward
 verification:
   commands_run:
-    - command: git fetch, rev-parse, and branch absence checks
-      result: passed; exact released control, integration start, and absent local/remote P13 branch
-    - command: canonical P13 ready-entry payload digest recomputation
-      result: passed; 3bcc2c707a0d6fdd26bc8f3a3bc42c0b7cacb6bd91c2e3f7b8de0106542ff709
-    - command: raw Git blob P13 task and context SHA-256 reproduction
-      result: passed; exact recorded digests matched
-    - command: P12/F07 interface binding, artifact, contract, and ancestry verification
-      result: passed; 4 P12 and 5 F07 exports matched, both contracts reproduced, and both interfaces are integrated
+    - command: rebound control, acquisition, registry, claim, lease, branch-head, and scope verification
+      result: passed; exact control bb3f4fac, acquisition b25e390e, claim head 645c41fe, live unchanged claim/lease, and zero effects
+    - command: npx vitest run over the four focused P13 server/client test files
+      result: passed; 4 files and 11 tests
+    - command: npm run typecheck
+      result: passed after the exact implementation commit
+    - command: focused ESLint over the five P13 owned implementation roots
+      result: passed
+    - command: focused Prettier --check --end-of-line lf
+      result: passed over implementation, tests, and steward requests
+    - command: steward request JSON-schema validation
+      result: passed for all three exact committed request payloads
+    - command: immutable Git blob artifact and steward digest reproduction
+      result: passed; 13 artifacts, 3 requests, and both aggregate digests exact
+    - command: git diff --check 645c41feff7ffa02b09647697764bf726a3380e9..HEAD
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2823 repository text files
   known_baseline_failures: []
 external_effects:
   authority: none
