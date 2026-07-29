@@ -1,6 +1,7 @@
 import {
   PARENT_HOUSEHOLD_CONTRACT_VERSION,
   PARENT_HOUSEHOLD_ERROR_CODES,
+  STANDARD_FAMILY_STUDENT_ALLOWANCE,
   type ParentHouseholdAuditEvent,
   type ParentHouseholdMutation,
   type ParentHouseholdPrincipal,
@@ -20,14 +21,15 @@ export function buildParentHouseholdSnapshot(input: {
 }): ParentHouseholdSnapshot {
   assertOwnedHousehold(input.principal, input.household);
   const active = input.household.students.filter((student) => student.state === 'active').length;
+  const studentAllowance = effectiveStudentAllowance(input.household);
   return {
     contract_version: PARENT_HOUSEHOLD_CONTRACT_VERSION,
     household_id: input.household.household_id,
     display_name: input.household.display_name,
     access_state: input.household.access_state,
-    student_allowance: input.household.student_allowance,
+    student_allowance: studentAllowance,
     active_student_count: active,
-    available_student_seats: Math.max(0, input.household.student_allowance - active),
+    available_student_seats: Math.max(0, studentAllowance - active),
     can_manage_students: input.household.access_state !== 'inactive',
     revision: input.household.revision,
     students: input.household.students.map((student) => ({ ...student })),
@@ -101,19 +103,22 @@ export function archiveParentStudent(input: {
 }): { next: ParentHouseholdRecord; result: ParentHouseholdMutation } {
   assertMutable(input.principal, input.household, input.expected_revision);
   const current = ownedStudent(input.household, input.student_id);
-  const student =
-    current.state === 'archived'
-      ? current
-      : {
-          ...current,
-          state: 'archived' as const,
-          credential_version: current.credential_version + 1,
-          version: current.version + 1,
-        };
+  if (current.state === 'archived') {
+    throw new ParentHouseholdError(
+      PARENT_HOUSEHOLD_ERROR_CODES.lifecycleUnchanged,
+      'This Student is already archived.',
+    );
+  }
+  const student = {
+    ...current,
+    state: 'archived' as const,
+    credential_version: current.credential_version + 1,
+    version: current.version + 1,
+  };
   const next = replaceStudent(input.household, student);
   return mutation(input.principal, next, student, 'student_archived', {
-    revoke: current.state === 'active',
-    enrollment: current.state === 'active' ? 'disable' : 'unchanged',
+    revoke: true,
+    enrollment: 'disable',
     handoff: null,
   });
 }
@@ -126,15 +131,18 @@ export function restoreParentStudent(input: {
 }): { next: ParentHouseholdRecord; result: ParentHouseholdMutation } {
   assertMutable(input.principal, input.household, input.expected_revision);
   const current = ownedStudent(input.household, input.student_id);
-  if (current.state === 'archived') assertSeatAvailable(input.household);
-  const student =
-    current.state === 'active'
-      ? current
-      : { ...current, state: 'active' as const, version: current.version + 1 };
+  if (current.state === 'active') {
+    throw new ParentHouseholdError(
+      PARENT_HOUSEHOLD_ERROR_CODES.lifecycleUnchanged,
+      'This Student is already active.',
+    );
+  }
+  assertSeatAvailable(input.household);
+  const student = { ...current, state: 'active' as const, version: current.version + 1 };
   const next = replaceStudent(input.household, student);
   return mutation(input.principal, next, student, 'student_restored', {
     revoke: false,
-    enrollment: current.state === 'archived' ? 'enroll' : 'unchanged',
+    enrollment: 'enroll',
     handoff: null,
   });
 }
@@ -207,12 +215,20 @@ function assertMutable(
 
 function assertSeatAvailable(household: ParentHouseholdRecord) {
   const active = household.students.filter((student) => student.state === 'active').length;
-  if (active >= household.student_allowance) {
+  const studentAllowance = effectiveStudentAllowance(household);
+  if (active >= studentAllowance) {
     throw new ParentHouseholdError(
       PARENT_HOUSEHOLD_ERROR_CODES.seatLimit,
-      `This household already uses all ${household.student_allowance} active Student seats.`,
+      `This household already uses all ${studentAllowance} active Student seats.`,
     );
   }
+}
+
+function effectiveStudentAllowance(household: ParentHouseholdRecord) {
+  const configuredAllowance = Number.isFinite(household.student_allowance)
+    ? Math.max(0, Math.floor(household.student_allowance))
+    : 0;
+  return Math.min(STANDARD_FAMILY_STUDENT_ALLOWANCE, configuredAllowance);
 }
 
 function ownedStudent(household: ParentHouseholdRecord, studentId: string) {

@@ -100,6 +100,28 @@ describe('P12 Parent household aggregate', () => {
     ).toThrowError(/all 3 active Student seats/);
   });
 
+  it('hard-caps an inflated repository allowance at three active Student seats', () => {
+    const inflated = { ...household(3), student_allowance: 99 };
+    expect(buildParentHouseholdSnapshot({ principal, household: inflated })).toMatchObject({
+      student_allowance: 3,
+      active_student_count: 3,
+      available_student_seats: 0,
+    });
+    expect(() =>
+      createParentStudent({
+        principal,
+        household: inflated,
+        expected_revision: 7,
+        student_id: 'student-4',
+        actual_name: 'Fourth Student',
+        username: 'student.4',
+        relationship: 'dependent',
+        new_password: 'another-password',
+        password_confirmation: 'another-password',
+      }),
+    ).toThrowError(/all 3 active Student seats/);
+  });
+
   it('fails stale revisions and inactive access before any mutation', () => {
     expect(() =>
       updateParentStudent({
@@ -126,7 +148,7 @@ describe('P12 Parent household aggregate', () => {
     ).toThrowError(/inactive/);
   });
 
-  it('archives idempotently, frees a seat, restores only with allowance, and revokes sessions', () => {
+  it('archives, frees a seat, restores only with allowance, and revokes sessions', () => {
     const archived = archiveParentStudent({
       principal,
       household: household(3),
@@ -166,6 +188,40 @@ describe('P12 Parent household aggregate', () => {
         student_id: 'student-1',
       }),
     ).toThrowError(/all 3 active Student seats/);
+  });
+
+  it('rejects same-state lifecycle resubmits before replacement, revision, or audit creation', () => {
+    const archived = archiveParentStudent({
+      principal,
+      household: household(1),
+      expected_revision: 7,
+      student_id: 'student-1',
+    }).next;
+    const archivedBefore = structuredClone(archived);
+
+    expect(() =>
+      archiveParentStudent({
+        principal,
+        household: archived,
+        expected_revision: 8,
+        student_id: 'student-1',
+      }),
+    ).toThrowError(/already archived/);
+    expect(archived).toEqual(archivedBefore);
+    expect(archived.revision).toBe(8);
+
+    const active = household(1);
+    const activeBefore = structuredClone(active);
+    expect(() =>
+      restoreParentStudent({
+        principal,
+        household: active,
+        expected_revision: 7,
+        student_id: 'student-1',
+      }),
+    ).toThrowError(/already active/);
+    expect(active).toEqual(activeBefore);
+    expect(active.revision).toBe(7);
   });
 
   it('increments credential version, revokes sessions, and never exposes an old password', () => {

@@ -1,4 +1,4 @@
-export const PARENT_HOUSEHOLD_CONTRACT_VERSION = '1.0.0' as const;
+export const PARENT_HOUSEHOLD_CONTRACT_VERSION = '1.0.1' as const;
 export const STANDARD_FAMILY_STUDENT_ALLOWANCE = 3 as const;
 
 export const STUDENT_ACTUAL_NAME_INSTRUCTIONS = {
@@ -148,4 +148,5 @@ export const PARENT_HOUSEHOLD_ERROR_CODES = {
   usernameUnavailable: 'parent_student_username_unavailable',
   invalidInput: 'parent_student_input_invalid',
   archived: 'parent_student_archived',
+  lifecycleUnchanged: 'parent_student_lifecycle_unchanged',
 } as const;

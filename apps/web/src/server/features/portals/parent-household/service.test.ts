@@ -22,11 +22,16 @@ const household: ParentHouseholdRecord = {
   students: [],
 };
 
-function setup(overrides?: { owner?: string; usernameAvailable?: boolean }) {
+function setup(overrides?: {
+  owner?: string;
+  usernameAvailable?: boolean;
+  household?: ParentHouseholdRecord;
+}) {
   const commitMutation = vi.fn().mockResolvedValue(undefined);
-  const loadOwnedHousehold = vi
-    .fn()
-    .mockResolvedValue({ ...household, owner_adult_id: overrides?.owner ?? 'adult-1' });
+  const loadOwnedHousehold = vi.fn().mockResolvedValue({
+    ...(overrides?.household ?? household),
+    owner_adult_id: overrides?.owner ?? 'adult-1',
+  });
   const isUsernameAvailable = vi.fn().mockResolvedValue(overrides?.usernameAvailable ?? true);
   const hash = vi.fn().mockResolvedValue('argon2id-redacted-hash');
   return {
@@ -96,5 +101,41 @@ describe('P12 Parent household server service', () => {
     const crossOwner = setup({ owner: 'adult-2' });
     await expect(crossOwner.service.overview(principal)).rejects.toThrow(/unavailable/);
     expect(crossOwner.commitMutation).not.toHaveBeenCalled();
+  });
+
+  it('does not commit or emit audit effects for same-state lifecycle resubmits', async () => {
+    const activeStudent = {
+      student_id: 'student-1',
+      household_id: 'household-1',
+      actual_name: 'Student One',
+      display_name: null,
+      username: 'student.one',
+      relationship: 'dependent' as const,
+      state: 'active' as const,
+      credential_version: 2,
+      version: 3,
+    };
+    const archived = setup({
+      household: {
+        ...household,
+        students: [{ ...activeStudent, state: 'archived' }],
+      },
+    });
+    await expect(
+      archived.service.archiveStudent(principal, {
+        expected_revision: 4,
+        student_id: 'student-1',
+      }),
+    ).rejects.toThrow(/already archived/);
+    expect(archived.commitMutation).not.toHaveBeenCalled();
+
+    const active = setup({ household: { ...household, students: [activeStudent] } });
+    await expect(
+      active.service.restoreStudent(principal, {
+        expected_revision: 4,
+        student_id: 'student-1',
+      }),
+    ).rejects.toThrow(/already active/);
+    expect(active.commitMutation).not.toHaveBeenCalled();
   });
 });
