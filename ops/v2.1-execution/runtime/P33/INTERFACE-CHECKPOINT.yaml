@@ -1,0 +1,95 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P33
+interface_implementation_head_sha: 863cf2be646270f67b095f4b01a0feee69ba38b2
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 058bb36226c82ae8717fd85d17adee2926cf834da581b1d5a3ea2871aec30940
+contract_digest: d643626af5b5ba4c6fbdd158b2e418c9f5f88123285b67595610a2e49b0b79b6
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: apps/web/src/server/operations/index.ts
+    symbols:
+      - createOperationsDiagnosticsRouter
+      - OperationsDiagnosticsPorts
+    sha256: d2f8e74b9dd0fe68c769869d0eb7c6a8454f65a3b481a4d289b25aaded08b315
+  - path: apps/web/src/server/operations/router.ts
+    symbols:
+      - createOperationsDiagnosticsRouter
+      - OperationsDiagnosticsPorts
+    sha256: cd7754acdfe9b151d5ac02bfad3ff0d186e719607e637c712a8f07c20b98676e
+  - path: packages/observability/v21/contracts.ts
+    symbols:
+      - OPERATIONS_CONTRACT_VERSION
+      - RUNTIME_TIERS
+      - RuntimeTier
+      - VERIFICATION_ENVIRONMENTS
+      - VerificationEnvironmentId
+      - ENVIRONMENT_RUNTIME_TIERS
+      - OPERATIONS_SERVICE_ROLES
+      - OperationsServiceRole
+      - RuntimeIdentity
+      - CandidateIdentity
+      - OPERATIONS_PROVIDER_KEYS
+      - OperationsProviderKey
+      - OperationsSeverity
+      - OperationsIssue
+      - MigrationLedgerEntry
+      - MigrationHealthObservation
+      - QUEUE_CLASSES
+      - QueueClass
+      - QueueHealthObservation
+      - WorkerHealthObservation
+      - ProviderHealthObservation
+      - DatabaseHealthObservation
+      - OperationsHealthInput
+      - OperationsHealthSnapshot
+      - OperationsAlert
+    sha256: 568b1aef0435dc0558919a27bd8bf6c4535429d2c41b0edb1968336d959f155d
+  - path: packages/observability/v21/health.ts
+    symbols:
+      - QUEUE_AGE_THRESHOLDS_MS
+      - buildOperationsHealthSnapshot
+      - evaluateMigrationHealth
+      - evaluateOperationsAlerts
+    sha256: 5154d913aa4770ac24b12293dc2e025f63bc8fa34f7f1e42eb005db698733c1c
+  - path: packages/observability/v21/index.ts
+    symbols:
+      - all public v2.1 operations contract, health, runtime identity, and redaction exports
+    sha256: a4c66935753215ed94e5c273632b40396f5c327c35754e853e2ab924d93ab9f6
+  - path: packages/observability/v21/redaction.ts
+    symbols:
+      - LeakageFindingCode
+      - LeakageScanResult
+      - redactOperationalData
+      - scanOperationalLeakage
+    sha256: 787da95703134c463e3254d5783c89933c502e3d74070b8d1cb87706bbb0112b
+  - path: packages/observability/v21/runtime-identity.ts
+    symbols:
+      - OperationsIdentityError
+      - assertRuntimeIdentity
+      - assertCandidateIdentity
+      - evaluateRuntimeAgreement
+    sha256: 80432fc033942af82ed9545c38785b28edeef298d4232e4ab47546f53477afda
+compatibility_invariants:
+  - Runtime tier and verification environment are mandatory, separate, and fail closed when unknown or mismatched.
+  - The exact web and worker identities must agree with one candidate on repository, application source, release, artifact, configuration, migration inventory, provider registry, runtime tier, and verification environment.
+  - Migration inventory is forward-only; unknown ordinals, duplicate ordinals, missing expected entries, checksum or name drift, and failed read-only verification are Sev1.
+  - Queue observations preserve acceptance-unknown, dead-letter, expired-lease, and duplicate-effect-risk states; duplicate-effect risk is Sev1.
+  - Provider status is truthful for Resend, GHL, Stripe, Zoom, Vimeo, Drive, and Telegram; absent or not-configured status is never replaced by a fabricated ready state.
+  - Diagnostics and alerts contain safe identifiers, digests, counts, timestamps, and environment identity only; secret, bearer, PII, card, database URL, Zoom/Vimeo/Drive URL leakage is Sev1.
+  - Operations HTTP diagnostics are protected, private no-store, noindex, and return a fixed safe failure envelope without raw exception material.
+  - Central route registration, configuration, deployment, dependency, package, migration, and shared composer changes remain gated by P33 steward requests.
+downstream_tasks:
+  - P34
+verification_commands:
+  - npm run typecheck
+  - focused ESLint and Prettier checks over all interface implementation artifacts
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false
