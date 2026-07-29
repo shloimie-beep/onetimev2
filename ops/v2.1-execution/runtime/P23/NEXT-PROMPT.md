@@ -1,14 +1,20 @@
 # P23 Next Prompt
 
-REVIEW_OR_INTEGRATE the superseding P23 ready-for-review final on
-`codex/v21-p23-student-notifications`.
+STOP pending C00 reconciliation of the exact pushed P23 residual-correction
+claim on `codex/v21-p23-student-notifications`.
 
-Verify that its sole implementation lineage descends from reconciled correction
-claim `b341ce5209909771647c2ca02167e077468fd597`, that the corrected implementation
-is `8fdeaddb84a6c8e71271711fbd6b095046b6df21`, and that the final metadata records
-artifact digest `eb657253f3b531aa0c34b800a7c6a9643e4cfdacb75ca986193f21cdad1511f6`
-and request aggregate `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`.
+Verify its sole parent is rejected final
+`87da1f244ea8e19838c2695678089d1bcbe9687a`, its delta contains exactly
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` under the P23 runtime,
+and it binds:
 
-Confirm status `ready_for_review`, released lease
-`489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`, and external effects
-`none / 0 / 0 / 0`. Migration and central registration remain unapplied.
+- authorization `a95a1406200b139b4acd501c7b96821e6f74070a`;
+- sole acquisition parent `6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4`;
+- claim `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4`;
+- lease `f7b63d5e-489c-40aa-a793-9a7210f91bca`;
+- READY digest
+  `976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204`;
+- external effects `none / 0 / 0 / 0`.
+
+Do not implement route, route-admission, tab-keyboard, test, or request changes
+until C00 explicitly reconciles this claim and grants bounded continuation.

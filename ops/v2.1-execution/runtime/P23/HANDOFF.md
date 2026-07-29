@@ -1,39 +1,54 @@
-# P23 Superseding Ready-for-Review Handoff
+# P23 Atomic Residual-Correction Claim Handoff
 
 ## Exact identity
 
 - Branch: `codex/v21-p23-student-notifications`
-- Reconciled atomic correction claim: `b341ce5209909771647c2ca02167e077468fd597`
-- Reconciliation control: `331ffc12ba126aafa2c25fb48293a7fd0a8734e6`
-- Sole acquisition parent: `a6a9c53b670c1345187f846eaf1f53133f4c7e67`
-- Corrected implementation: `8fdeaddb84a6c8e71271711fbd6b095046b6df21`
-- Claim: `29e8b1d9-8769-479d-8a7a-df26137f185a`
-- Released lease: `489df25a-c3ed-4b34-8bb8-ddb6e8d88b99`
-- Artifact digest: `eb657253f3b531aa0c34b800a7c6a9643e4cfdacb75ca986193f21cdad1511f6`
-- Request aggregate digest: `f984e5ee374f4612bdc7e7f500791545acb7b98acef74703018a13b086596c4f`
+- Exact rejected final and claim parent:
+  `87da1f244ea8e19838c2695678089d1bcbe9687a`
+- Corrected implementation remains:
+  `8fdeaddb84a6c8e71271711fbd6b095046b6df21`
+- Containing authorization:
+  `a95a1406200b139b4acd501c7b96821e6f74070a`
+- Sole acquisition parent:
+  `6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4`
+- Claim: `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4`
+- Writer: `codex-p23-worker-f7e3fb0e`
+- STUDENT_NOTIFICATIONS lease:
+  `f7b63d5e-489c-40aa-a793-9a7210f91bca`
+- Lease expiry: `2026-07-29T09:37:54Z`
+- Canonical READY digest:
+  `976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204`
 
-## Corrected result
+The recursively key-sorted READY JSON preimage is 2,806 UTF-8 bytes and
+independently hashes to the recorded digest. Local, tracking, and fetched remote
+P23 heads were clean and exact before this checkpoint. Effect locks are empty;
+authority is none and effects remain `0 / 0 / 0`.
 
-The bounded correction closes every recorded rejection defect: canonical
-`/app/student` routes, cancellation/source-family serialization and race
-precedence, 30-day retention for superseded indefinite notices, runtime
-student-safe status allowlisting, literal Rabbi Eli copy, idempotent mark-one,
-real opt-in visual-paired foreground audio, timezone-labeled timestamps, and
-keyboard/focus/accessible-description behavior. Exact same-version dedupe,
-all eight categories, authorization rechecks, provider/private-copy rejection,
-default-off sound, and zero fake data remain intact.
+## Residual rejection record
 
-The migration and registration requests were refreshed but not applied.
-No migration, central registration, provider/send, or external effect occurred.
+C00 rejected final `87da1f244ea8e19838c2695678089d1bcbe9687a`.
+The prior concurrency, retention, privacy, sound, timezone, and idempotency
+corrections plus 18 focused tests and typecheck remain accepted, but four
+residual defects require correction:
 
-## Verification
+- class-change and cancellation actions use nonexistent
+  `/app/student/schedule` instead of canonical `/app/student/calendar`;
+- route admission accepts arbitrary `/app/student/*` rather than the closed
+  canonical Student route set;
+- inactive Read/All tabs use `tabIndex=-1` without Arrow/Home/End handling;
+- dependency metadata incorrectly described F05/F07 task heads as ancestors;
+  only their integration/interface heads are ancestors, while task heads are
+  exact control identity bindings.
 
-- 3 focused files / 18 deterministic tests passed.
-- Workspace TypeScript typecheck passed.
-- Focused ESLint, Prettier, and `git diff --check` passed.
-- Secret scan passed across 2876 repository text files.
-- Exact 13-artifact and two-request raw Git blob digests were reproduced.
-- Sole writer lease was released at `2026-07-29T08:13:00Z`, before expiry.
+This handoff records the rejection and fresh claim only. It does not implement
+or authorize any residual product, test, or request correction.
 
-Next action: C00 should review or integrate the superseding final after exact
-remote-head and ancestry verification.
+## Atomic scope and stop
+
+This checkpoint changes exactly P23 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. Product, tests, structured requests, migrations,
+registrations, stewards, providers, sends, and external effects remain
+byte-identical and untouched.
+
+C00 must reconcile the exact pushed residual-claim head before P23 changes any
+other file. Stop after normal push and remote verification.

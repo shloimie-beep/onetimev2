@@ -28,38 +28,37 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
+status: claimed
+phase: route_accessibility_correction
 claim_mode: resume_existing_branch
-claimed_by: codex-p23-worker-29e8b1d9
-claim_time: '2026-07-29T07:29:53Z'
-claim_id: 29e8b1d9-8769-479d-8a7a-df26137f185a
+claimed_by: codex-p23-worker-f7e3fb0e
+claim_time: '2026-07-29T08:43:00Z'
+claim_id: f7e3fb0e-a8d4-416b-8c79-786a696e2dc4
 writer_slot_leases:
   - slot: STUDENT_NOTIFICATIONS
-    lease_id: 489df25a-c3ed-4b34-8bb8-ddb6e8d88b99
-    lease_issued_at: '2026-07-29T07:21:29Z'
-    lease_expires_at: '2026-07-29T08:21:29Z'
-    state_based_on_control_head_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
-    phase_scope: P23_atomic_claim_correction_only
-    lease_released_at: '2026-07-29T08:13:00Z'
-    state: released
-lease_expires_at: '2026-07-29T08:21:29Z'
-lease_released_at: '2026-07-29T08:13:00Z'
-last_heartbeat_at: '2026-07-29T08:13:00Z'
-controller_authorization_sha: a96477209a5dc6e32b43460eb775bd99f5cba1fc
-correction_claim_reconciled_control_sha: 331ffc12ba126aafa2c25fb48293a7fd0a8734e6
-correction_claim_reconciled_acquisition_parent_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
-atomic_correction_claim_head_sha: b341ce5209909771647c2ca02167e077468fd597
-ready_entry_state_based_on_control_head_sha: 78626d9be8f42e3cd4ca1f0c2f8ea3e656122bb1
-ready_entry_payload_digest: 2f57bb42123e7879658d8a063ea6c14b256bbef8c2b26b72e1714e3c9cf7ed97
-phase_scope: P23_atomic_claim_correction_only
-state_based_on_head_sha: 8fdeaddb84a6c8e71271711fbd6b095046b6df21
+    lease_id: f7b63d5e-489c-40aa-a793-9a7210f91bca
+    lease_issued_at: '2026-07-29T08:37:54Z'
+    lease_expires_at: '2026-07-29T09:37:54Z'
+    state_based_on_control_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
+    phase_scope: P23_atomic_claim_route_accessibility_correction_only
+    lease_released_at: null
+    state: active
+lease_expires_at: '2026-07-29T09:37:54Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T08:43:00Z'
+controller_authorization_sha: a95a1406200b139b4acd501c7b96821e6f74070a
+authorization_acquisition_parent_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
+ready_entry_state_based_on_control_head_sha: 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4
+ready_entry_payload_digest: 976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204
+phase_scope: P23_atomic_claim_route_accessibility_correction_only
+state_based_on_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
 last_implementation_commit_sha: 8fdeaddb84a6c8e71271711fbd6b095046b6df21
-prior_claim_id: 68340416-7e06-4986-a125-59d81b500a0b
-prior_atomic_claim_head_sha: 05ef606022d260d11d56d31985a051d7b9013010
-prior_claim_reconciled_control_sha: 8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84
-rejected_final_head_sha: 39b050949a0874a1ea397c6c3f3420eb4fa19ccc
-rejection_status: correction_required_before_admission
+prior_claim_id: 29e8b1d9-8769-479d-8a7a-df26137f185a
+prior_atomic_claim_head_sha: b341ce5209909771647c2ca02167e077468fd597
+prior_claim_reconciled_control_sha: 331ffc12ba126aafa2c25fb48293a7fd0a8734e6
+prior_rejected_final_head_sha: 39b050949a0874a1ea397c6c3f3420eb4fa19ccc
+rejected_final_head_sha: 87da1f244ea8e19838c2695678089d1bcbe9687a
+rejection_status: residual_correction_required_before_admission
 implementation_artifact_digest: eb657253f3b531aa0c34b800a7c6a9643e4cfdacb75ca986193f21cdad1511f6
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for
@@ -115,16 +114,22 @@ completed_steps:
   - Corrected canonical /app/student route validation, cancellation/source-family race ordering, indefinite-notice retention, runtime status allowlisting, fixed Rabbi Eli copy, mark-one write idempotency, real visual-paired opt-in foreground sound consumption, timezone-labeled timestamps, and keyboard/focus/description accessibility.
   - Added deterministic race, privacy, retention, sound, timezone, idempotency, and accessibility coverage; passed 3 files and 18 tests, workspace typecheck, focused ESLint/Prettier, diff hygiene, and secret scan across 2876 text files.
   - Refreshed but did not apply the two bounded migration/registration requests, committed the corrected implementation at 8fdeaddb84a6c8e71271711fbd6b095046b6df21, reproduced all artifact/request digests, and released the sole writer lease before expiry.
+  - C00 rejected superseding final 87da1f244ea8e19838c2695678089d1bcbe9687a after exact-source re-audit found nonexistent /app/student/schedule routes, overbroad /app/student/* route admission, missing Arrow/Home/End tab handling, and an inaccurate dependency task-head ancestry statement.
+  - Verified containing authorization a95a1406200b139b4acd501c7b96821e6f74070a, its sole acquisition parent 6b3bb0619f3af04cb5a20a4f8650cc8ec6b042d4, exact clean local/tracking/remote rejected head 87da1f244ea8e19838c2695678089d1bcbe9687a, fresh claim f7e3fb0e-a8d4-416b-8c79-786a696e2dc4, sole unexpired STUDENT_NOTIFICATIONS lease f7b63d5e-489c-40aa-a793-9a7210f91bca, and zero effect locks.
+  - Recomputed the 2806-byte canonical recursively key-sorted READY preimage and matched digest 976b5c80e4bc3f437301603982168f3b4c7d3247fc8a26831006933d70432204.
+  - Claimed only the three-file residual-correction checkpoint; no product, test, request, migration, registration, steward, provider, send, or external-effect work was performed.
 remaining_steps:
-  - C00 review or integrate the superseding ready-for-review final; migration and central registration remain unapplied.
-next_action: REVIEW_OR_INTEGRATE the superseding ready-for-review final after remote verification.
+  - Commit, normally push, and remote-verify this exact three-runtime-file residual-correction claim.
+  - C00 must reconcile the exact pushed claim head before P23 changes product, tests, requests, or any other file.
+  - Only after explicit reconciliation may P23 correct the enumerated residual route/accessibility defects and dependency-ancestry statement.
+next_action: Stop after pushing and remote-verifying this exact three-file residual-correction claim; wait for C00 reconciliation.
 requirements:
-  OTV2-NOTIFY-203: implementation_verified_corrected
-  OTV2-NOTIFY-237: implementation_verified_corrected
+  OTV2-NOTIFY-203: residual_correction_claimed
+  OTV2-NOTIFY-237: residual_correction_claimed
 acceptance_cases:
-  OTV2-NOTIFY-203-AC01: task_owned_corrected_assertions_passed
-  OTV2-NOTIFY-237-CATEGORY-LIFETIME: task_owned_corrected_assertions_passed
-  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: task_owned_corrected_assertions_passed
+  OTV2-NOTIFY-203-AC01: rejected_requires_residual_correction
+  OTV2-NOTIFY-237-CATEGORY-LIFETIME: prior_correction_passes_residual_route_fix_required
+  OTV2-NOTIFY-237-DEDUPE-READ-SOUND: rejected_requires_residual_accessibility_correction
 changed_paths:
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
   - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
@@ -157,7 +162,7 @@ verification:
     - command: locked/source/package/task/context Git-blob SHA-256 verification
       result: passed; all 200 locked blobs, all 15 source-package blobs, and entry-bound digests match
     - command: exact F05 and F07 dependency binding and authorized-start ancestry verification
-      result: passed; task, integration, interface source, and interface implementation heads are exact ancestors
+      result: passed; integration, interface source, and interface implementation heads are exact ancestors; task heads are exact control identity bindings but are not ancestors
     - command: git worktree add -b codex/v21-p23-student-notifications <isolated-worktree> cecc1c0dc6ff57562e5d89dd731289d860086bf7
       result: passed; branch created from exact authorized start
     - command: exact C00 reconciliation and resumed-head verification
