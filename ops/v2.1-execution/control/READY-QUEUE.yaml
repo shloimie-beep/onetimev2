@@ -3,18 +3,18 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-- task_id: P08
+- task_id: P10
   status: ready
   phase: correction
-  branch: codex/v21-p08-family-signup
+  branch: codex/v21-p10-admin-directory
   claim_mode: resume_existing_branch
-  state_based_on_control_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+  state_based_on_control_head_sha: 765ad933964ce0019895c2133ff10a491b7938a2
   authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  expected_existing_head: 615e124dd49030e3af5e01d94518aea76b6a733e
+  expected_existing_head: 551d483e9678336655546eef6002a7a7daf9d4da
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
-  task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
+  task_packet_digest: fe7abc1af5110c1007c34927fe9909bc3643998dd10615c195046f30423f7e28
+  task_context_digest: a27b3c710d277153d8273f82d5d8e745d620fdd5ecacc619f6f7b9a5772bab17
   dependency_heads_and_digests:
     F03:
       required_state: interface_ready_integrated
@@ -36,16 +36,6 @@ ready:
       interface_checkpoint_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
       task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
       task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
-    F06:
-      required_state: interface_ready_integrated
-      observed_state: interface_ready_integrated
-      observed_task_head_sha: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
-      observed_integration_head_sha: d35166838267711a514cf73822cd2ca49a3f3ded
-      interface_source_head_sha: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
-      interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
-      interface_checkpoint_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
-      task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
-      task_context_digest: 872493646ff10ab4f894b10b61c2125fdf61193bea1d518e0a153ccaa3a47ce3
     F07:
       required_state: interface_ready_integrated
       observed_state: interface_ready_integrated
@@ -57,24 +47,24 @@ ready:
       task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
       task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
   writer_slot_leases:
-  - slot: FAMILY_SIGNUP
-    lease_id: 4dce3bb7-4411-4643-a367-d7e43adaabb8
-    holder_task_id: P08
-    holder_claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
-    state_based_on_control_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
-    lease_issued_at: '2026-07-29T02:07:09Z'
-    lease_expires_at: '2026-07-29T03:07:09Z'
-    phase_scope: superseding_exact_follow_up_correction_claim_only
+  - slot: ADMIN_DIRECTORY
+    lease_id: f7660370-d954-4ee3-8513-4069bef54025
+    holder_task_id: P10
+    holder_claim_id: cd15a4ba-db91-44ff-b522-f111fbcd9a0d
+    state_based_on_control_head_sha: 765ad933964ce0019895c2133ff10a491b7938a2
+    lease_issued_at: '2026-07-29T02:12:48Z'
+    lease_expires_at: '2026-07-29T03:12:48Z'
+    phase_scope: exact_consent_enrollment_transfer_correction_claim_only
   effect_lock_leases: []
-  claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
-  lease_issued_at: '2026-07-29T02:07:09Z'
-  lease_expires_at: '2026-07-29T03:07:09Z'
+  claim_id: cd15a4ba-db91-44ff-b522-f111fbcd9a0d
+  lease_issued_at: '2026-07-29T02:12:48Z'
+  lease_expires_at: '2026-07-29T03:12:48Z'
   heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/P08-START-OR-RESUME.md
+  prompt_path: ops/v2.1-execution/prompts/P10-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: HIGH
 entry_payload_digests:
-  P08: 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430
+  P10: e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

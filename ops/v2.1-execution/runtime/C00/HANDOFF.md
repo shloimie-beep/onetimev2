@@ -611,3 +611,19 @@ paths, clean worktree, and zero effects. Fresh acquisition `ab5e5cc8`
 supersedes the invalid entry and authorizes only replacement atomic claim
 `60986795` from exact runtime-only head `615e124d` under a new FAMILY_SIGNUP
 lease. Product work remains stopped pending reconciliation.
+
+Replacement P08 claim `c58b4a65` is now reconciled exactly under acquisition
+`765ad933`: sole parent `615e124d`, only the three P08 runtime files, corrected
+containing authorization and acquisition identities, ready digest `2bd935e8`,
+live FAMILY_SIGNUP lease, clean worktree, and zero effects. P08 may implement
+only the recorded IANA, Family-form, consent, School-boundary, and
+identity-review corrections from that claim.
+
+P10 final `551d483e` passes its mechanical evidence, exact eleven-path scope,
+18 focused tests, released lease, and zero-effect checks, but remains
+semantically rejected. Direct probes show acceptance evidence from an
+unrelated adult is accepted and a mismatched prior enrollment is ignored while
+restore recreates version 1. Ownership transfer also lacks a mandatory,
+scope-bound exhaustive locked revocation/readback path. C00 authorized only
+atomic claim `cd15a4ba` from exact final `551d483e` under a fresh
+ADMIN_DIRECTORY lease; no product edit may occur before reconciliation.

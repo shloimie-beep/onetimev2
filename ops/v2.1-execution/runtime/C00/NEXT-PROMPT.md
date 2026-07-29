@@ -313,3 +313,21 @@ atomic claim `60986795-c22a-4861-9e98-a93de2c1d22e` using the corrected
 ready entry based on exact acquisition
 `ab5e5cc865be45ef0a71bcec7d71d7df1c787744` and its fresh FAMILY_SIGNUP
 lease. Stop again for C00 reconciliation before product changes.
+
+P08 replacement claim `c58b4a65dfbdab52f7be7dddf41875194c4b632c`
+is reconciled and may proceed only with the already bounded exact-form
+correction, negative tests, superseding interface/steward digests, released
+lease, and zero effects.
+
+For P10, publish only atomic claim
+`cd15a4ba-db91-44ff-b522-f111fbcd9a0d` from exact rejected final
+`551d483e9678336655546eef6002a7a7daf9d4da`, binding acquisition
+`765ad933964ce0019895c2133ff10a491b7938a2`, lease
+`f7660370-d954-4ee3-8513-4069bef54025`, and ready digest
+`e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b`.
+Stop for C00 reconciliation before correcting relationship-authorized
+acceptance, exact monotonic enrollment restore, or exhaustive locked
+ownership-transfer revocation.
+
+Independently audit P33 final
+`38e8305e29f75714d8b3cc9c8198d1f0a47f5b4b` before admission.

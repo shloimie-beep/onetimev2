@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-fc959ada
-claim_time: '2026-07-29T02:07:09Z'
-claim_id: fc959ada-a1aa-4120-b292-8aaf1bebd18e
-lease_expires_at: '2026-07-29T02:08:53Z'
-last_heartbeat_at: '2026-07-29T02:08:53Z'
-controller_authorization_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+claimed_by: codex-c00-orchestrator-8d967eda
+claim_time: '2026-07-29T02:12:48Z'
+claim_id: 8d967eda-102c-4bba-b8f4-ebde8017e52f
+lease_expires_at: '2026-07-29T02:17:28Z'
+last_heartbeat_at: '2026-07-29T02:17:28Z'
+controller_authorization_sha: 765ad933964ce0019895c2133ff10a491b7938a2
 ready_entry_payload_digest: null
-state_based_on_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+state_based_on_head_sha: 765ad933964ce0019895c2133ff10a491b7938a2
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -174,8 +174,14 @@ completed_steps:
 - authorized only atomic follow-up correction claim a456f914 from exact rejected final 605c659a under a fresh FAMILY_SIGNUP lease with zero effect authority
 - rejected claim head 615e124d before product work because the authorizing ready entry transcribed acquisition 95883ac4 to a nonexistent long SHA; its sole parent, exact three runtime paths, true containing parent, clean worktree, and zero effects were otherwise verified
 - superseded invalid authorization and issued atomic replacement claim 60986795 from exact runtime-only head 615e124d under corrected acquisition ab5e5cc8 and a fresh FAMILY_SIGNUP lease
+- independently verified P08 replacement claim c58b4a65 with sole parent 615e124d, exact three P08 runtime paths, containing authorization 0233631c, exact acquisition ab5e5cc8, canonical ready digest 2bd935e8, live lease, and zero effects
+- consumed P08 replacement claim under exact acquisition 765ad933 and authorized only the recorded IANA/form/consent/School-boundary/identity-review corrections
+- reproduced P10 corrected final 551d483e ancestry, exact eleven-path scope, implementation/steward digests, 18 focused tests, released lease, and zero effects, but rejected semantic admission
+- reproduced that P10 accepts service-account evidence from an unrelated adult, ignores a mismatched prior enrollment on Student restore and recreates deterministic enrollment at version 1, and permits ownership-transfer persistence without requiring exhaustive locked revocation
+- issued P10 follow-up correction claim cd15a4ba from exact rejected final 551d483e under a fresh ADMIN_DIRECTORY lease, canonical ready digest e7b8877b, and zero effect authority
+- observed P33 corrected final 38e8305e and v2.0.0 interface cc9fa1dc for independent semantic admission review
 remaining_steps: []
-next_action: P08 publishes only atomic replacement claim 60986795 from 615e124d and stops for reconciliation; P10 and P33 continue only their already reconciled bounded corrections.
+next_action: P08 resumes only its reconciled follow-up correction from c58b4a65; P10 publishes only atomic claim cd15a4ba from 551d483e and stops for reconciliation; independently audit P33 final 38e8305e.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -183,12 +189,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+  current_control_parent_sha: 765ad933964ce0019895c2133ff10a491b7938a2
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: fc959ada-a1aa-4120-b292-8aaf1bebd18e
-      observed_head: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+      claim_id: 8d967eda-102c-4bba-b8f4-ebde8017e52f
+      observed_head: 765ad933964ce0019895c2133ff10a491b7938a2
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -347,24 +353,24 @@ orchestration:
     P08:
       branch: codex/v21-p08-family-signup
       claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
-      observed_head: 615e124dd49030e3af5e01d94518aea76b6a733e
+      observed_head: c58b4a65dfbdab52f7be7dddf41875194c4b632c
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T03:07:09Z'
-      scheduling_state: replacement_follow_up_claim_authorized_not_reconciled
+      scheduling_state: replacement_follow_up_claim_reconciled_implementation_authorized
     P10:
       branch: codex/v21-p10-admin-directory
-      claim_id: 0f061200-ff84-449d-aaa7-b0ebd7cd9c02
-      observed_head: 0b34fdf6b43cc3cdd7b003234a89f119b7e4a5c7
+      claim_id: cd15a4ba-db91-44ff-b522-f111fbcd9a0d
+      observed_head: 551d483e9678336655546eef6002a7a7daf9d4da
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T02:39:10Z'
-      scheduling_state: correction_claim_reconciled_implementation_authorized
+      lease_expires_at: '2026-07-29T03:12:48Z'
+      scheduling_state: consent_enrollment_transfer_claim_authorized_not_reconciled
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: 9f112031-01ef-4117-986d-27465a06d19e
-      observed_head: a956c9dd1c9d072a54e640fc004684f2e037c033
+      observed_head: 38e8305e29f75714d8b3cc9c8198d1f0a47f5b4b
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T02:39:10Z'
-      scheduling_state: correction_claim_reconciled_implementation_authorized
+      lease_expires_at: null
+      scheduling_state: corrected_ready_for_review_pending_admission
   active_native_subagents: []
   unresolved_blockers: []
 requirements: {}
@@ -534,10 +540,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 8633ac274fca8c51672a2ddd4f6161fb67756fd579ed3fad92b958ee5302471d
-    control_lease: 0e52c96021d888d2dd882e3ac6e26e8daf82b07a397ab02e2ed15be552465d60
-    task_registry: 75771153293bc73852d7a853878224c7db80bd54d64592d4f28ab60fc15adc5f
-    ready_queue: e67c0dffb4bcf95d53c5ddb20a0ea4de8de2f20592294975a364b049c0ed8c93
+    control_state: 4f89568699491b25d1a4a61c2e8639b2f1199df0bc4328ec223e8ed468d6d091
+    control_lease: 2df029562ebcd97b26648e16670c45249a69456cafbe8cfdb71f91fcdddfd37b
+    task_registry: e6b1fd7e0cc713b05fd404ccee51c22fdaafc6fae366e8cde636bfb66a588755
+    ready_queue: c92d97c46c4203f8ff888591b55c146c768665f1114640ae0a3b427a7a850c47
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: e4205fe1518700587b91dacd55ddb78190ce03944ad25a762941f6c67d4586ba
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -556,6 +562,11 @@ verification:
   - P08 exact PS-006.2, ACT-PUBLIC, UI-010.2, and UI-010.3 source-contract comparison: failed admission and bounded correction authorized
   - P08 invalid long-form controller acquisition identity in first follow-up ready entry: detected before product edits; claim rejected
   - corrected P08 replacement ready-entry canonical payload digest 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430: passed
+  - P08 replacement claim c58b4a65 sole-parent ancestry, exact three-runtime-path scope, authorization/acquisition/digest/lease bindings, clean worktree, and zero effects: passed
+  - P10 corrected-final ancestry, exact eleven-path scope, implementation/steward digests, 18 focused tests, released lease, clean worktree, and zero effects: passed
+  - P10 forged unrelated-adult acceptance and mismatched prior-enrollment restore direct probes: reproduced both semantic defects
+  - P10 source-contract ownership-transfer comparison: failed exhaustive locked-revocation admission and bounded claim-only correction authorized
+  - corrected P10 follow-up ready-entry canonical payload digest e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b: passed
   - autonomous addendum package binding and remote/native-agent reconciliation: passed
   - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   - F01 interface checkpoint schema, export hashes, canonical digest, merge base, and allowed-path admission: passed
