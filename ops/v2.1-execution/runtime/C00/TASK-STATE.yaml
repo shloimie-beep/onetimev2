@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-29fec961
-claim_time: '2026-07-29T01:05:19Z'
-claim_id: 29fec961-dd91-40dc-b272-66693202ddc8
-lease_expires_at: '2026-07-29T01:12:00Z'
-last_heartbeat_at: '2026-07-29T01:12:00Z'
-controller_authorization_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
+claimed_by: codex-c00-orchestrator-cbd6d388
+claim_time: '2026-07-29T01:18:05Z'
+claim_id: cbd6d388-3c41-4b27-b32a-a9c9a7907bfe
+lease_expires_at: '2026-07-29T01:24:00Z'
+last_heartbeat_at: '2026-07-29T01:24:00Z'
+controller_authorization_sha: f28533a2bc55672cedd86cd556d1ad396aa3db4c
 ready_entry_payload_digest: null
-state_based_on_head_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
+state_based_on_head_sha: f28533a2bc55672cedd86cd556d1ad396aa3db4c
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -155,8 +155,12 @@ completed_steps:
 - independently verified corrected P08 interface b7601c00, immutable export hash 52d75f16, canonical contract digest f54e4381, exact six-path delta, two focused assertions, lineage, and zero effects
 - independently verified P33 interface 8c8dee4e, seven export hashes, canonical contract digest d643626a, exact sixteen-path delta, typecheck, focused lint/format checks, lineage, and zero effects
 - queued only P08 interface for serialized I36 claim a2ae8e13 from exact integration target 49431959; P33 remains next because optimistic target CAS values cannot be precomputed across two ordered merges
+- independently verified I36 atomic claim 2e309398 with sole parent 49431959, exactly three I36 runtime paths, exact containing authorization/lease/digests, no source admission, and zero effects
+- reproduced P08 final 59b43a60 lineage, exact fifteen-path scope, 13 focused assertions, typecheck, lint, secret scan, steward/state digests, lease release, and zero effects, but rejected semantic admission
+- found P08 public-flow blockers in unauthenticated existing-account reuse, duplicate inactive-household creation, and unscoped weak-key recovery; the last blocker invalidates the published command semantics, so C00 withdrew the old interface and authorized only a bounded correction claim from 59b43a60
+- observed clean terminal P10 92212a7b and superseding P33 122608b5 finals for later independent review; earlier P33 interface 8c8dee4e is superseded by 0e674da7
 remaining_steps: []
-next_action: I36 atomically claims P08 interface from 49431959, C00 reconciles and rebinds its target CAS, then I36 merges it before P33 is queued from the resulting exact target.
+next_action: I36 publishes a metadata-only release with no P08 source admission; P08 publishes correction claim e9148002 from 59b43a60 and stops for reconciliation; then audit and queue superseding P33 interface.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -164,12 +168,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
+  current_control_parent_sha: f28533a2bc55672cedd86cd556d1ad396aa3db4c
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 29fec961-dd91-40dc-b272-66693202ddc8
-      observed_head: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
+      claim_id: cbd6d388-3c41-4b27-b32a-a9c9a7907bfe
+      observed_head: f28533a2bc55672cedd86cd556d1ad396aa3db4c
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -181,10 +185,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: a2ae8e13-f123-4190-badc-58269ced4219
-      observed_head: 49431959f58f284bdc13ca931acf09f980fc483a
+      observed_head: 2e3093987ae9a8094777224f7f308a56e92c6a50
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
       lease_expires_at: '2026-07-29T02:08:19Z'
-      scheduling_state: ready_for_P08_interface_atomic_claim_only
+      scheduling_state: claimed_release_required_P08_interface_withdrawn
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -327,42 +331,26 @@ orchestration:
       scheduling_state: ready_for_review_admitted
     P08:
       branch: codex/v21-p08-family-signup
-      claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
+      claim_id: e9148002-e9ff-4b7c-ab6e-63080c66bd00
       observed_head: 59b43a601225d6f86a929621c89402d06ada39e4
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: null
-      scheduling_state: ready_for_review_pending_final_admission_interface_queued
+      lease_expires_at: '2026-07-29T02:18:05Z'
+      scheduling_state: correction_claim_authorized_from_rejected_final
     P10:
       branch: codex/v21-p10-admin-directory
       claim_id: f7e5889d-4db4-4818-a47f-5f26927597ae
-      observed_head: 4260209637d4ddf931b8724dc32dc85691e35601
+      observed_head: 92212a7b6873a9b6da5e7173b4fd1af88ef47293
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T01:38:10Z'
-      scheduling_state: claimed_implementation_authorized
+      lease_expires_at: null
+      scheduling_state: ready_for_review_pending_admission
     P33:
       branch: codex/v21-p33-runtime-operations
       claim_id: e0ba9363-1e4e-41eb-b8fb-35043bd09881
-      observed_head: 8c8dee4e1c8ab95ddab31d10cf17741a6cce6966
+      observed_head: 122608b516046f9c2b93b18256573232b9958137
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T01:38:10Z'
-      scheduling_state: claimed_implementation_active_interface_verified_pending_queue
-  active_native_subagents:
-  - task_id: P10
-    agent: /root/f03_worker
-    branch: codex/v21-p10-admin-directory
-    observed_head: 4260209637d4ddf931b8724dc32dc85691e35601
-    claim_id: f7e5889d-4db4-4818-a47f-5f26927597ae
-    lease_expires_at: '2026-07-29T01:38:10Z'
-    status: claimed
-    phase: implementation
-  - task_id: P33
-    agent: /root/i36_worker2
-    branch: codex/v21-p33-runtime-operations
-    observed_head: 8c8dee4e1c8ab95ddab31d10cf17741a6cce6966
-    claim_id: e0ba9363-1e4e-41eb-b8fb-35043bd09881
-    lease_expires_at: '2026-07-29T01:38:10Z'
-    status: claimed
-    phase: implementation
+      lease_expires_at: null
+      scheduling_state: ready_for_review_superseding_interface_pending_admission
+  active_native_subagents: []
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -531,11 +519,11 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 420213794c392a2865397e36f4a7e975250e30357a9854099d0923a585371b48
-    control_lease: bbc8443ce625bb46b692452e3f89c759e97a92f4811daa94ed3339a40cfe546d
-    task_registry: 88fffca79113feda6e4e1bcc97404508437b7b28a30590a51fce0c097976da5a
-    ready_queue: 4c039fc67f10b7a1ec4c990f647e80c3c184b1d16f2752130547094fc7cf37d0
-    merge_queue: 85acc4c50829a147e6e7df225fce3443a75a5c07d189800f913ba2410b55164a
+    control_state: de909bb63752f024be6433aa3ffdf5e68046cd97f09a14b98312b076aaf6b9b1
+    control_lease: 8c93fd070c8815646aa74fc4e8311e723abee626421c5b74d08540ea072e0225
+    task_registry: eb0b8c6a61def7ac20c2dca33f704e4ca3e848232f9c29269aaee9f340e440dc
+    ready_queue: bc6a554760da0fb7970d311538540950af834d0f93e03b458d0594f14028502d
+    merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: e4205fe1518700587b91dacd55ddb78190ce03944ad25a762941f6c67d4586ba
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: 2c172c1fd3fcd2d5ddea074cfe3ce92987925711eba4f351af3d282c6fb237f9

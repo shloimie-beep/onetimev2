@@ -519,3 +519,21 @@ cannot be known before the first ancestry-preserving merge, C00 queued P08
 first under I36 claim `a2ae8e13`; P33 remains the next serialized interface.
 P08 has separately published final `59b43a60` and awaits final semantic
 admission while its interface proceeds.
+
+I36's claim-only checkpoint `2e309398` is exact: sole parent `49431959`,
+only the three I36 runtime files, containing authorization `6dbbb849`, ready
+digest `8733b95a`, queued-item digest `06612d73`, and zero source/effect
+activity. The later semantic audit showed the published command contract must
+change, so C00 withdrew the P08 merge item before any source admission. I36
+must publish only a metadata release checkpoint.
+
+P08 final `59b43a60` mechanically passes its exact fifteen-path scope, 13
+focused assertions, typecheck/lint/secret scan, steward/state digests, released
+lease, and zero effects, but is rejected for semantic correction. The public
+path can attach a new household to an existing local HumanAccount and return
+`signed_in` without credential proof; it recognizes only active Family
+households, so a post-expiry inactive household can be duplicated under a new
+key; and request recovery is keyed only by a weak caller value without exact
+FamilySignupScope binding. C00 authorized claim-only correction
+`e9148002` from exact final `59b43a60`. P10 final `92212a7b` and superseding
+P33 final `122608b5` are observed but not yet admitted.

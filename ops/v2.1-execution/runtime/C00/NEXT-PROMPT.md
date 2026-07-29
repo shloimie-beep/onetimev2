@@ -249,3 +249,15 @@ for a claim-only checkpoint, reconcile it, rebind the P08 merge target CAS,
 and integrate P08. Then queue P33 against the exact resulting integration
 head. In parallel, audit P08 final `59b43a601225d6f86a929621c89402d06ada39e4`
 and continue monitoring P10/P33. No provider effects are authorized.
+
+I36 atomic claim `2e3093987ae9a8094777224f7f308a56e92c6a50` is reconciled,
+but P08 interface `b7601c002d2c37d0ef7760c328015f9a8d590893` is withdrawn
+because its caller-controlled idempotency contract must change. I36 must
+publish only a metadata release checkpoint with no source admission. P08 final
+`59b43a60` is rejected: before product
+correction it must publish claim-only resume checkpoint
+`e9148002-e9ff-4b7c-ab6e-63080c66bd00` from that exact head, with only its
+three runtime files and zero effects. After reconciliation, correct existing
+local-account proof, inactive-household dedupe, and scope-bound strong
+idempotency with negative tests. Separately audit P10 `92212a7b` and P33
+`122608b5`; use only P33 superseding interface `0e674da7`/`9ac5c08a`.

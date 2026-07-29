@@ -1,46 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items:
-- schema_version: 1
-  execution_id: OT-V21-PRODUCTION
-  merge_id: 668de637-6114-4519-8460-6608d825e0d5
-  kind: interface
-  task_id: P08
-  source_branch: codex/v21-p08-family-signup
-  source_head_sha: b7601c002d2c37d0ef7760c328015f9a8d590893
-  target_branch: codex/v21-integration
-  expected_target_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  source_delta_base_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  required_merge_base_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  preserve_source_ancestry: true
-  required_postmerge_ancestor_sha: b7601c002d2c37d0ef7760c328015f9a8d590893
-  merge_after_heads: {}
-  allowed_paths:
-  - ops/v2.1-execution/runtime/P08/HANDOFF.md
-  - ops/v2.1-execution/runtime/P08/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P08/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P08/TASK-STATE.yaml
-  - packages/contracts/src/signup/family/family-signup.contract.test.ts
-  - packages/contracts/src/signup/family/index.ts
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: d2df925f-32a0-42e6-8ed5-fd018962f87d
-    holder_task_id: I36
-    holder_claim_id: a2ae8e13-f123-4190-badc-58269ced4219
-    state_based_on_control_head_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
-    lease_issued_at: '2026-07-29T01:08:19Z'
-    lease_expires_at: '2026-07-29T02:08:19Z'
-    phase_scope: P08_interface_atomic_claim_only
-  task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
-  state_handoff_digest: 468a81cdb63f55b74a7edf3bfbba7aeca90267aa19b10f90d962c5e542684484
-  external_effect_summary:
-    attempted: 0
-    succeeded: 0
-    reconciled: 0
-  state_based_on_control_head_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
-item_payload_digests:
-  668de637-6114-4519-8460-6608d825e0d5: 06612d73a42af81ba14ebb59ec407360150746d72553c474838817e7b25f1dc7
+items: []
+item_payload_digests: {}
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
