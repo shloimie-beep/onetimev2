@@ -1,9 +1,10 @@
 MODEL: GPT-5.6-SOL
 REASONING: HIGH
 SERVICE TIER: PRIORITY
-MODE: REVIEW_AND_INTEGRATE
+MODE: RECONCILE_THEN_CORRECT
 
-Review and integrate One Time v2.1 task P11 from its exact implementation head.
+Reconcile the exact P11 correction atomic-claim checkpoint before permitting
+any product, test, request, registration, provider, steward, or effect work.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p11-admin-operations
@@ -11,29 +12,33 @@ Authoritative control ref: origin/codex/v21-control
 Task state: ops/v2.1-execution/runtime/P11/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P11/HANDOFF.md
 
-Exact implementation head:
+Exact rejected final head:
+`51bd416bbf3b53a2eb985c41617673135bcfc7a7`.
+Exact rejected implementation head:
 `f482ebb76a1278eb6adbc6895b08c26ef111e452`.
-Exact reconciled control:
-`8172f8cd9b5a13697d928a5c3e5c7fa4bc826a84`.
-Corrected claim head:
-`c0fe1ec4fc16cc626e5b827f12e977851ede2bf1`.
-Claim `31da6bdb-f7ce-46f1-96a4-a6a78853d9eb` and ADMIN_OPERATIONS_UI
-lease `0e828d7b-9ee3-4cd0-919d-da27022ba243` were released cleanly.
+Containing correction authorization:
+`331ffc12ba126aafa2c25fb48293a7fd0a8734e6`.
+Sole acquisition parent:
+`a6a9c53b670c1345187f846eaf1f53133f4c7e67`.
+Ready-entry digest:
+`48210c4c569564fcf829a5ee5fbd3fcf9b4b989377ad0ca8f898fc66d32f1aba`.
+Claim: `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`.
+ADMIN_OPERATIONS_UI lease:
+`39ce3c68-6685-4981-bc09-f1cd3dd24c55`, issued
+`2026-07-29T07:37:36Z` and expiring `2026-07-29T08:37:36Z`.
 
-Verify the final remote metadata head and its implementation ancestry, then
-review the exact 13 implementation/test artifacts. Reproduce implementation
-artifact digest
-`bbfa303ea3fb60e5033c05c3e08bf3ec0ea553eba45371482effbe58a8e3af58`,
-request payload digest
-`9525fd3ee1f4a79debee0e4d2f4bb7c39a4254556504586a8e3d00eae484a365`,
-and steward aggregate
-`5135e83079188e7bb233cc0ca78dd1f72bade500bff6e9d922499e158c6f370a`.
+C00 rejected the exact final because navigation-time authorization and
+fail-closed stale resolution are missing; fixture provider readiness can be
+relabeled production; required quick actions and PS-025.3 operational groups
+are absent; inherited primary routes are noncanonical; content metadata is not
+searched; provider URLs and private title text can appear in results; Recent
+Activity uses lifetime totals; sign-out/cache clearing is incomplete; and
+keyboard association plus visible timezone/accessibility evidence is
+insufficient.
 
-Preserve the fail-closed current-Admin, product/runtime/environment, persistent
-source, safe-result destination, private POST-body query, no-analytics, and
-zero-fallback invariants. Disposition `P11-registration-001` for steward-owned
-barrels, authenticated routes, and client composition. Do not add a demo,
-fictional, cached, or placeholder data path.
+First reconcile the immutable three-runtime-file claim checkpoint with the
+exact identities above. Only after fresh reconciliation authority may P11
+correct the recorded findings within bounded scope.
 
 External authority is `none`; effects attempted `0`, succeeded `0`, reconciled
-`0`. No migration, provider, live operation, or external effect is part of P11.
+`0`. This atomic checkpoint performs no product correction or external effect.
