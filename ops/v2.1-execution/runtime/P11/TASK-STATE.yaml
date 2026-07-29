@@ -29,31 +29,32 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
+status: claimed
+phase: retained_credential_binding_correction
 claim_mode: resume_existing
-claimed_by: codex-p11-worker-d76c097a
-claim_time: '2026-07-29T10:15:17Z'
-claim_id: d76c097a-d2df-4e8c-ae99-659deba00c64
+claimed_by: codex-p11-worker-95a4b423
+claim_time: '2026-07-29T10:44:39Z'
+claim_id: 95a4b423-1906-4b24-846b-c4f9d3c1c32a
 writer_slot_leases:
   - slot: ADMIN_OPERATIONS_UI
-    lease_id: 84cd0230-d35a-4149-845c-9cd4bcfb6ff5
-    lease_issued_at: '2026-07-29T09:40:29Z'
-    lease_expires_at: '2026-07-29T10:40:29Z'
-    state_based_on_control_head_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
-    phase_scope: P11_atomic_claim_authorization_race_id_secret_correction_only
-    reconciled_resume_scope: P11_authorization_race_id_secret_correction
-    reconciled_resume_control_sha: dcb7fba1231d635af45a8a346f134559f2de08e9
-    lease_released_at: '2026-07-29T10:28:04Z'
-    state: released
-lease_expires_at: '2026-07-29T10:40:29Z'
-lease_released_at: '2026-07-29T10:28:04Z'
-last_heartbeat_at: '2026-07-29T10:28:04Z'
-controller_authorization_sha: 46a7bfeb51401d2b1df03f0eb58fa800751ba1e1
-controller_authorization_parent_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
-claim_reconciled_control_sha: dcb7fba1231d635af45a8a346f134559f2de08e9
-claim_reconciled_control_parent_sha: 637d1c389977da17a8c1ae52aa7862ff4aff9f0d
-atomic_claim_head_sha: 77c168d0a4a27b81ba1f7cddaa8d31821a8654f6
+    lease_id: c9c69acd-9df5-4411-9cbd-887f33f237f1
+    lease_issued_at: '2026-07-29T10:44:39Z'
+    lease_expires_at: '2026-07-29T11:44:39Z'
+    state_based_on_control_head_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
+    phase_scope: P11_atomic_claim_retained_credential_binding_correction_only
+    lease_released_at: null
+    state: active
+lease_expires_at: '2026-07-29T11:44:39Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T10:44:39Z'
+controller_authorization_sha: 54df8a79e1d2beb0e2ea7289dcbd13617ed90197
+controller_authorization_parent_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
+claim_reconciled_control_sha: null
+claim_reconciled_control_parent_sha: null
+atomic_claim_head_sha: null
+prior_authorization_race_claim_reconciled_control_sha: dcb7fba1231d635af45a8a346f134559f2de08e9
+prior_authorization_race_claim_reconciled_control_parent_sha: 637d1c389977da17a8c1ae52aa7862ff4aff9f0d
+prior_authorization_race_atomic_claim_head_sha: 77c168d0a4a27b81ba1f7cddaa8d31821a8654f6
 prior_claim_reconciled_control_sha: ef7a1fbea74ce2651344544acd26cfd7609f331b
 prior_claim_reconciled_control_parent_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
 prior_atomic_claim_head_sha: 2fa5c8da116d42c9202c462ef9e061c254dd3958
@@ -63,14 +64,33 @@ prior_renewal_atomic_claim_head_sha: b8c7643938e75bb2ea28b3ebd909f56b577d8b37
 prior_residual_claim_reconciled_control_sha: fff9a0a79f2db87ffca97451f8295080b9736549
 prior_residual_claim_reconciled_control_parent_sha: ca8eb4ab9957b6616664cfd5e944a73608596020
 prior_residual_atomic_claim_head_sha: ce87a6c2808216214870d4b2343c82c0a36aaf36
-ready_entry_state_based_on_control_head_sha: 6cd1efc5fdba8c2c6369ce15877eb3f008149f2b
-ready_entry_payload_digest: aeea25ddac610fb96f090609a9c17e3b67400aeff8209772b0b99e3efa85c456
+ready_entry_state_based_on_control_head_sha: 930b5ab55c1f7e40b1143a757417bee1ca9ae49e
+ready_entry_payload_digest: daa56dabb6b8f3d28f7a4d23ce252143d51f8b8b08fbad35802ac9fedef34dcb
 rejected_head_sha: 51bd416bbf3b53a2eb985c41617673135bcfc7a7
 rejected_implementation_head_sha: f482ebb76a1278eb6adbc6895b08c26ef111e452
 partial_correction_checkpoint_sha: e807e26e5882c3b8ad8e06221db9f28b743369b7
 rejected_residual_head_sha: 81486a86a85a3d6ffee64eb58c66119686af049e
 rejected_authorization_race_id_secret_head_sha: 899ef6a7fad4f0946378721a0af7d7ed66c25c81
-state_based_on_head_sha: 17924328cdc820e3cc9a8928f0685b868df4df74
+rejected_retained_credential_binding_head_sha: 17538da1ff15066c3e242567970062db4589577b
+retained_credential_rejection:
+  audit_outcome: rejected
+  auditor_task_id: I36
+  reviewed_final_sha: 17538da1ff15066c3e242567970062db4589577b
+  reviewed_implementation_sha: 17924328cdc820e3cc9a8928f0685b868df4df74
+  blocker: >-
+    Retained AdminSearchPage, initial request, and recent-query state carry no
+    credential-version binding. An Admin credential rotation therefore remains
+    indistinguishable from current retained state during synchronous render,
+    while version clearing runs only in a post-render effect.
+  reproduced_evidence:
+    retained_result_rendered: true
+    retained_recent_query_rendered: true
+    credential_version_in_page_contract: false
+  required_correction: >-
+    Bind every retained private result, request, recent-query, and dashboard
+    snapshot source to the exact credential/session version and synchronously
+    fail closed before render whenever that binding is absent or non-current.
+state_based_on_head_sha: 17538da1ff15066c3e242567970062db4589577b
 last_implementation_commit_sha: 17924328cdc820e3cc9a8928f0685b868df4df74
 implementation_artifact_digest: 3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986
 implementation_artifact_digest_algorithm: >-
@@ -151,19 +171,33 @@ completed_steps:
   - Passed four focused files and 18 direct positive/negative tests, workspace typecheck, focused ESLint and Prettier, exact seven-path scope, and diff hygiene.
   - Reproduced all 14 implementation Git-blob digests, superseding artifact digest 3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986, unchanged request payload digest 68a99cc059304f66570f2296a5872bfa379062ae854401c54c196ec12b56fa42, and unchanged request aggregate digest 2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e.
   - Released claim d76c097a-d2df-4e8c-ae99-659deba00c64 and ADMIN_OPERATIONS_UI lease 84cd0230-d35a-4149-845c-9cd4bcfb6ff5 before expiry with no steward, provider, or external effect attempted.
+  - Recorded I36 independent rejection of exact final
+    17538da1ff15066c3e242567970062db4589577b because retained private search
+    results, request state, and recent queries are not credential-version-bound
+    before synchronous render.
+  - Verified fresh containing authorization
+    54df8a79e1d2beb0e2ea7289dcbd13617ed90197, its sole acquisition parent
+    930b5ab55c1f7e40b1143a757417bee1ca9ae49e, exact READY digest
+    daa56dabb6b8f3d28f7a4d23ce252143d51f8b8b08fbad35802ac9fedef34dcb,
+    exact rejected branch head, exact F05/F07 dependency bindings, sole active
+    ADMIN_OPERATIONS_UI lease, and zero effect locks.
+  - Claimed only the three P11 runtime-memory files for the retained-credential
+    correction; no product, test, request, steward, provider, or effect file
+    was edited.
 remaining_steps:
-  - I36 must independently re-audit and integrate exact superseding implementation head 17924328cdc820e3cc9a8928f0685b868df4df74.
-  - I36 must reproduce the superseding implementation and unchanged request digests without weakening any earlier P11 boundary.
-  - Candidate-bound persistent-staging and production-operator-canary evidence remains with the assigned verification and release lanes.
-next_action: I36 should independently re-audit exact implementation head 17924328cdc820e3cc9a8928f0685b868df4df74, reproduce artifact digest 3529decc4b00ab8991bb151a49914676104ae00bb39a0711f2c8596019352986 and request aggregate 2327a180d429e131be3de3d65ada907ed964031496aa49b7eb2524bd797a7f8e, and integrate only after revoked-first-render, stale-completion, injective option identity, and Bearer-whitespace proofs pass independently.
+  - Commit and normally push this exact three-file P11 atomic correction claim.
+  - Report the exact pushed claim head to C00 and stop for reconciliation.
+  - After fresh explicit authorization, correct only the retained-credential
+    binding blocker while preserving every prior P11 boundary.
+next_action: C00 must reconcile the exact pushed P11 retained-credential atomic claim head before product or test correction begins.
 requirements:
-  OTV2-ADMIN-021: implementation_verified
-  OTV2-ADMIN-029: implementation_verified
-  OTV2-ADMIN-205: implementation_verified
+  OTV2-ADMIN-021: correction_pending
+  OTV2-ADMIN-029: correction_pending
+  OTV2-ADMIN-205: correction_pending
 acceptance_cases:
-  OTV2-ADMIN-021-AC01: task_owned_assertions_passed
-  OTV2-ADMIN-029-AC01: task_owned_assertions_passed
-  OTV2-ADMIN-205-AC01: task_owned_assertions_passed
+  OTV2-ADMIN-021-AC01: correction_pending
+  OTV2-ADMIN-029-AC01: correction_pending
+  OTV2-ADMIN-205-AC01: correction_pending
 changed_paths:
   - apps/web/src/client/app/admin/adminPrivateCompletion.ts
   - apps/web/src/client/app/admin/dashboard/AdminOperationsDashboard.test.tsx
@@ -259,6 +293,12 @@ verification:
       result: passed; exactly seven bounded implementation/test paths and unchanged structured request
     - command: exact superseding Git-blob artifact and request digest reproduction
       result: passed; 14-artifact digest 3529decc and unchanged request aggregate 2327a180
+    - command: independent exact-final I36 semantic re-audit
+      result: rejected; retained private result/request/recent-query state lacks a credential-version binding and renders synchronously for an Admin credential before post-render clearing
+    - command: fresh retained-credential correction control, READY, dependency, branch, claim, lease, and effect-lock verification
+      result: passed; exact control 54df8a79, acquisition 930b5ab5, rejected head 17538da1, F05/F07 bindings, sole live lease, and zero effect locks
+    - command: atomic correction-claim scope verification
+      result: passed; only P11 TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md changed, with no product, test, request, steward, provider, or effect work
   known_baseline_failures: []
 external_effects:
   authority: none
