@@ -29,8 +29,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: correction_claim
+status: renewal_requested
+phase: correction_in_progress
 claim_mode: resume_existing
 claimed_by: codex-p11-worker-b66b8fdf
 claim_time: '2026-07-29T07:55:22Z'
@@ -42,11 +42,14 @@ writer_slot_leases:
     lease_expires_at: '2026-07-29T08:37:36Z'
     state_based_on_control_head_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
     phase_scope: P11_atomic_claim_correction_only
-    state: active
+    state: renewal_requested
 lease_expires_at: '2026-07-29T08:37:36Z'
-last_heartbeat_at: '2026-07-29T07:55:22Z'
+last_heartbeat_at: '2026-07-29T08:27:19Z'
 controller_authorization_sha: 331ffc12ba126aafa2c25fb48293a7fd0a8734e6
 controller_authorization_parent_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
+claim_reconciled_control_sha: ef7a1fbea74ce2651344544acd26cfd7609f331b
+claim_reconciled_control_parent_sha: d9ba80e75ba28fc1abe5f1910d7fd1034a49907a
+atomic_claim_head_sha: 2fa5c8da116d42c9202c462ef9e061c254dd3958
 ready_entry_state_based_on_control_head_sha: a6a9c53b670c1345187f846eaf1f53133f4c7e67
 ready_entry_payload_digest: 48210c4c569564fcf829a5ee5fbd3fcf9b4b989377ad0ca8f898fc66d32f1aba
 rejected_head_sha: 51bd416bbf3b53a2eb985c41617673135bcfc7a7
@@ -100,9 +103,10 @@ completed_steps:
   - Recorded C00 rejection of exact final head 51bd416bbf3b53a2eb985c41617673135bcfc7a7; no rejected product, test, request, registration, provider, steward, or effect work was changed.
   - Verified fresh containing authorization 331ffc12ba126aafa2c25fb48293a7fd0a8734e6, sole acquisition parent a6a9c53b670c1345187f846eaf1f53133f4c7e67, exact READY digest 48210c4c569564fcf829a5ee5fbd3fcf9b4b989377ad0ca8f898fc66d32f1aba, exact rejected branch head, correction claim b66b8fdf-14d6-4f3b-8902-ebe8a16cba81, active ADMIN_OPERATIONS_UI lease 39ce3c68-6685-4981-bc09-f1cd3dd24c55, and zero effect locks.
 remaining_steps:
-  - C00 must reconcile the exact atomic correction-claim checkpoint before any P11 correction work begins.
-  - After fresh reconciliation authority, P11 must correct only the independently recorded rejection findings within bounded P11 scope.
-next_action: Push and remote-verify this exact three-runtime-file atomic claim checkpoint, report its immutable head to C00, and stop without implementing the correction.
+  - C00 must issue and reconcile a fresh ADMIN_OPERATIONS_UI lease before correction resumes.
+  - Complete direct fixtures/tests for the partially implemented resolver, environment, leakage, cache, time-window, timezone, keyboard, and accessibility corrections.
+  - Strengthen but do not apply P11-registration-001, run all required validation, reproduce exact digests, and publish the superseding ready_for_review final.
+next_action: Preserve this bounded partial correction checkpoint, request a fresh reconciled lease from C00, and do not resume implementation until that lease is live.
 requirements:
   OTV2-ADMIN-021: correction_required
   OTV2-ADMIN-029: correction_required

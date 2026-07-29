@@ -2,10 +2,12 @@ import type { AppConfig } from '../../../../../../../packages/config/src/index.t
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
 import type {
   AdminOperationsActor,
+  AdminNavigationRequest,
   AdminSearchRequest,
 } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
 import {
   readAuthorizedAdminDashboard,
+  resolveAuthorizedAdminNavigation,
   searchAuthorizedAdminOperations,
 } from '../../../../../../../packages/domain/src/admin-search/index.ts';
 import { PostgresAdminOperationsRepository } from './repository.ts';
@@ -23,5 +25,9 @@ export class AdminOperationsService {
 
   search(actor: AdminOperationsActor, request: AdminSearchRequest) {
     return searchAuthorizedAdminOperations({ actor, request, repository: this.repository });
+  }
+
+  resolveNavigation(actor: AdminOperationsActor, request: AdminNavigationRequest) {
+    return resolveAuthorizedAdminNavigation({ actor, request, repository: this.repository });
   }
 }

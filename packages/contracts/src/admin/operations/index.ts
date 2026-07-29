@@ -8,6 +8,11 @@ export const ADMIN_SEARCH_TRANSPORT = {
   queryInUrl: false,
   analyticsAllowed: false,
 } as const;
+export const ADMIN_RESOLVE_TRANSPORT = {
+  method: 'POST',
+  path: '/api/v2.1/admin/operations/resolve',
+  cache: 'no-store',
+} as const;
 
 export const ADMIN_SEARCH_KINDS = [
   'adult',
@@ -55,7 +60,8 @@ export type AdminSearchResult = AdminOperationsScope & {
   label: string;
   distinguishingMetadata: string;
   status: string;
-  matchedBy: 'safe_id' | 'name' | 'normalized_email' | 'normalized_phone' | 'title';
+  matchedBy:
+    'safe_id' | 'name' | 'normalized_email' | 'normalized_phone' | 'title' | 'approved_metadata';
   destination: AdminSearchDestination;
 };
 
@@ -110,6 +116,8 @@ export type AdminPeopleLearningSummary = AdminOperationsScope & {
 
 export type AdminRecentActivitySummary = AdminOperationsScope & {
   source: 'persistent_store';
+  windowStartedAt: string;
+  windowEndedAt: string;
   communications: number;
   auditEvents: number;
   lastActivityAt: string | null;
@@ -121,6 +129,9 @@ export type AdminProviderHealth = AdminOperationsScope & {
   state:
     'not_configured' | 'configured' | 'authenticated' | 'canary_verified' | 'live' | 'unavailable';
   observedAt: string;
+  sourceEnvironment: 'fixture' | 'test' | 'staging' | 'production';
+  observedRuntimeTier: RuntimeTier;
+  observedVerificationEnvironmentId: VerificationEnvironmentId;
 };
 
 export const ADMIN_OPERATIONAL_VIEWS = [
@@ -134,6 +145,48 @@ export const ADMIN_OPERATIONAL_VIEWS = [
 
 export type AdminOperationalView = (typeof ADMIN_OPERATIONAL_VIEWS)[number];
 
+export const ADMIN_CANONICAL_PRIMARY_NAVIGATION = [
+  { id: 'dashboard', label: 'Dashboard', href: '/app/dashboard' },
+  { id: 'contacts', label: 'Contacts', href: '/app/contacts' },
+  { id: 'content', label: 'Content', href: '/app/content' },
+  { id: 'classroom', label: 'Classroom', href: '/app/classroom' },
+  { id: 'live', label: 'Live Console', href: '/app/live' },
+] as const;
+
+export const ADMIN_QUICK_ACTIONS = [
+  { id: 'add_adult', label: 'Add adult', route: '/app/contacts' },
+  { id: 'add_household', label: 'Add household', route: '/app/households' },
+  { id: 'add_student', label: 'Add Student', route: '/app/students' },
+  { id: 'create_admin', label: 'Create Admin', route: '/app/users' },
+  { id: 'schedule_class', label: 'Create or schedule class', route: '/app/classroom/classes' },
+  { id: 'open_next_occurrence', label: 'Open next occurrence', route: '/app/live' },
+  { id: 'prepare_class', label: 'Prepare class', route: '/app/classroom/occurrences' },
+  { id: 'upload_recording', label: 'Upload recording', route: '/app/content/upload' },
+  { id: 'create_announcement', label: 'Create announcement', route: '/app/communications' },
+  { id: 'open_tickets', label: 'Open tickets', route: '/app/tickets' },
+] as const;
+
+export type AdminOperationalAvailability =
+  | { state: 'available'; observedAt: string; summary: string }
+  | { state: 'unavailable'; observedAt: string; reason: 'not_reported' | 'query_unavailable' };
+
+export type AdminOperationsStatus = AdminOperationsScope & {
+  source: 'persistent_store';
+  releaseSource: AdminOperationalAvailability;
+  webWorkerAgreement: AdminOperationalAvailability;
+  databaseMigrations: AdminOperationalAvailability;
+  queueHealth: AdminOperationalAvailability & {
+    depth?: number;
+    oldestAgeSeconds?: number | null;
+    deadLetterCount?: number;
+  };
+  providerDetail: AdminOperationalAvailability;
+  backupRestore: AdminOperationalAvailability;
+  recentRedactedFailures: AdminOperationalAvailability & {
+    failureCodes?: readonly string[];
+  };
+};
+
 export type AdminDashboardSnapshot = {
   source: 'persistent_store';
   authorization: 'runtime_admin';
@@ -145,11 +198,31 @@ export type AdminDashboardSnapshot = {
   recentActivity: AdminRecentActivitySummary;
   providerHealth: readonly AdminProviderHealth[];
   operationalViews: readonly AdminOperationalView[];
+  quickActions: typeof ADMIN_QUICK_ACTIONS;
+  operations: AdminOperationsStatus;
 };
+
+export type AdminNavigationRequest = {
+  kind: AdminSearchKind;
+  targetId: string;
+  selectedCredentialVersion: number;
+};
+
+export type AdminTargetAuthorization =
+  | { state: 'authorized'; kind: AdminSearchKind; targetId: string }
+  | { state: 'missing' | 'archived' | 'revoked' };
+
+export type AdminNavigationResolution =
+  | { state: 'open'; href: string; cache: 'no-store' }
+  | { state: 'unavailable'; reason: 'missing_or_unauthorized'; cache: 'no-store' };
 
 export interface AdminOperationsReadRepository {
   readDashboard(scope: AdminOperationsScope): Promise<AdminDashboardSnapshot>;
   search(scope: AdminOperationsScope, request: AdminSearchRequest): Promise<AdminSearchPage>;
+  resolveTarget(
+    scope: AdminOperationsScope,
+    request: Pick<AdminNavigationRequest, 'kind' | 'targetId'>,
+  ): Promise<AdminTargetAuthorization>;
 }
 
 export const ADMIN_OPERATIONS_ERROR_CODES = {

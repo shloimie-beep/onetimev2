@@ -1,7 +1,7 @@
 MODEL: GPT-5.6-SOL
 REASONING: HIGH
 SERVICE TIER: PRIORITY
-MODE: RECONCILE_THEN_CORRECT
+MODE: RENEW_LEASE_THEN_RESUME_CORRECTION
 
 Reconcile the exact P11 correction atomic-claim checkpoint before permitting
 any product, test, request, registration, provider, steward, or effect work.
@@ -42,3 +42,11 @@ correct the recorded findings within bounded scope.
 
 External authority is `none`; effects attempted `0`, succeeded `0`, reconciled
 `0`. This atomic checkpoint performs no product correction or external effect.
+
+The prior lease was insufficient to finish safely. First inspect the immutable
+remote renewal-requested checkpoint, then have C00 issue and reconcile a fresh
+`ADMIN_OPERATIONS_UI` lease for unchanged claim
+`b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`. Do not resume implementation before
+that authority is live. The checkpoint contains partial bounded correction
+work; tests, registration-request strengthening, validation, digests, lease
+release, and superseding final publication remain incomplete.

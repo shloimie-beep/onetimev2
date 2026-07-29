@@ -3,14 +3,12 @@ import type {
   AdminDashboardSnapshot,
   AdminOperationalView,
 } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
+import { ADMIN_CANONICAL_PRIMARY_NAVIGATION } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
 import {
   V21AppShell,
   V21StatePanel,
 } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
-import {
-  ADMIN_PRIMARY_NAVIGATION,
-  type V21StateKind,
-} from '../../../../../../../packages/brand-system/src/v21.ts';
+import { type V21StateKind } from '../../../../../../../packages/brand-system/src/v21.ts';
 
 export function AdminOperationsDashboard(props: {
   snapshot: AdminDashboardSnapshot | null;
@@ -20,7 +18,7 @@ export function AdminOperationsDashboard(props: {
   onOpenOccurrence: (occurrenceId: string) => void;
 }) {
   const navigation = [
-    ...ADMIN_PRIMARY_NAVIGATION.map((item) => ({
+    ...ADMIN_CANONICAL_PRIMARY_NAVIGATION.map((item) => ({
       ...item,
       current: item.id === 'dashboard',
     })),
@@ -65,7 +63,9 @@ function DashboardSections(props: {
   return (
     <>
       <p>
-        <small>Last refreshed {formatTimestamp(snapshot.generatedAt)}</small>
+        <small>
+          Last refreshed {formatTimestamp(snapshot.generatedAt)} — Israel time (Asia/Jerusalem)
+        </small>
       </p>
       <section aria-labelledby="now-next-heading">
         <h2 id="now-next-heading">Now &amp; Next</h2>
@@ -132,6 +132,10 @@ function DashboardSections(props: {
 
       <section aria-labelledby="activity-heading">
         <h2 id="activity-heading">Recent Activity</h2>
+        <p>
+          Previous 24 hours, {formatTimestamp(snapshot.recentActivity.windowStartedAt)} through{' '}
+          {formatTimestamp(snapshot.recentActivity.windowEndedAt)} Israel time (Asia/Jerusalem).
+        </p>
         <SummaryList
           values={[
             ['Communications', snapshot.recentActivity.communications],
@@ -144,6 +148,47 @@ function DashboardSections(props: {
             ? formatTimestamp(snapshot.recentActivity.lastActivityAt)
             : 'No activity recorded'}
         </p>
+      </section>
+
+      <section aria-labelledby="quick-actions-heading">
+        <h2 id="quick-actions-heading">Quick actions</h2>
+        <nav aria-label="Admin quick actions">
+          <ul>
+            {snapshot.quickActions.map((action) => (
+              <li key={action.id}>
+                <button type="button" onClick={() => props.onNavigate(action.route)}>
+                  {action.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </section>
+
+      <section aria-labelledby="operations-status-heading">
+        <h2 id="operations-status-heading">Production Operations</h2>
+        <OperationalStatus label="Release and source" value={snapshot.operations.releaseSource} />
+        <OperationalStatus
+          label="Web and worker agreement"
+          value={snapshot.operations.webWorkerAgreement}
+        />
+        <OperationalStatus
+          label="Database and migrations"
+          value={snapshot.operations.databaseMigrations}
+        />
+        <OperationalStatus
+          label="Queue depth, oldest age, and dead letter"
+          value={snapshot.operations.queueHealth}
+        />
+        <OperationalStatus label="Provider detail" value={snapshot.operations.providerDetail} />
+        <OperationalStatus
+          label="Backup age and last restore proof"
+          value={snapshot.operations.backupRestore}
+        />
+        <OperationalStatus
+          label="Recent redacted failures"
+          value={snapshot.operations.recentRedactedFailures}
+        />
       </section>
 
       <section aria-labelledby="provider-health-heading">
@@ -177,6 +222,24 @@ function DashboardSections(props: {
         </nav>
       </section>
     </>
+  );
+}
+
+function OperationalStatus(props: {
+  label: string;
+  value:
+    | AdminDashboardSnapshot['operations']['releaseSource']
+    | AdminDashboardSnapshot['operations']['queueHealth'];
+}) {
+  return (
+    <section aria-label={props.label}>
+      <h3>{props.label}</h3>
+      <p>
+        {props.value.state === 'available'
+          ? props.value.summary
+          : `Unavailable (${props.value.reason.replaceAll('_', ' ')})`}
+      </p>
+    </section>
   );
 }
 

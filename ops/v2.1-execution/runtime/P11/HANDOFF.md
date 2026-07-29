@@ -60,3 +60,17 @@ remote checkpoint before P11 performs any correction work.
 ## External effects
 
 Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`.
+
+## Renewal requested
+
+C00 reconciled atomic claim
+`2fa5c8da116d42c9202c462ef9e061c254dd3958` at control
+`ef7a1fbea74ce2651344544acd26cfd7609f331b` with sole parent
+`d9ba80e75ba28fc1abe5f1910d7fd1034a49907a`. Bounded correction work began,
+but the existing lease could not safely cover implementation, direct tests,
+full validation, digests, and final publication.
+
+The checkpoint preserves partial contract/domain/server/client correction work.
+No registration was applied and no steward, provider, or external effect was
+invoked. Resume only after C00 issues and reconciles a fresh
+`ADMIN_OPERATIONS_UI` lease.

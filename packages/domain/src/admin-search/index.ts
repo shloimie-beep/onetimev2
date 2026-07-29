@@ -1,11 +1,14 @@
 import {
   ADMIN_OPERATIONS_ERROR_CODES,
+  ADMIN_QUICK_ACTIONS,
   ADMIN_OPERATIONAL_VIEWS,
   ADMIN_SEARCH_KINDS,
   type AdminDashboardSnapshot,
   type AdminOperationsActor,
   type AdminOperationsReadRepository,
   type AdminOperationsScope,
+  type AdminNavigationRequest,
+  type AdminNavigationResolution,
   type AdminSearchKind,
   type AdminSearchPage,
   type AdminSearchRequest,
@@ -15,6 +18,8 @@ import {
 const SAFE_TARGET_ID = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/u;
 const SAFE_STATUS = /^[A-Za-z0-9][A-Za-z0-9 _./:-]{0,119}$/u;
 const SEARCH_KIND_SET = new Set<string>(ADMIN_SEARCH_KINDS);
+const PRIVATE_OR_PROVIDER_VALUE =
+  /(?:https?:\/\/|zoom\.us|vimeo\.com|(?:api|access|refresh|secret|token|bearer)[-_ ]?(?:key|token)?\s*[:=])/iu;
 
 export class AdminOperationsError extends Error {
   constructor(
@@ -34,10 +39,43 @@ export function assertAdminOperationsActor(
     actor.principal.role !== 'admin' ||
     actor.principal.household_id !== null ||
     actor.principal.student_id !== null ||
-    !SAFE_TARGET_ID.test(actor.principal.human_account_id)
+    !SAFE_TARGET_ID.test(actor.principal.human_account_id) ||
+    !Number.isSafeInteger(actor.principal.credential_version) ||
+    actor.principal.credential_version < 1
   ) {
     fail('accessDenied', 'A current server-validated Admin session is required.');
   }
+}
+
+export async function resolveAuthorizedAdminNavigation(input: {
+  actor: AdminOperationsActor;
+  request: AdminNavigationRequest;
+  repository: AdminOperationsReadRepository;
+}): Promise<AdminNavigationResolution> {
+  assertAdminOperationsActor(input.actor, input.actor);
+  assertSafeTarget(input.request.targetId);
+  if (
+    !SEARCH_KIND_SET.has(input.request.kind) ||
+    input.request.selectedCredentialVersion !== input.actor.principal.credential_version
+  ) {
+    return unavailableNavigation();
+  }
+  const authorization = await input.repository.resolveTarget(input.actor, {
+    kind: input.request.kind,
+    targetId: input.request.targetId,
+  });
+  if (
+    authorization.state !== 'authorized' ||
+    authorization.kind !== input.request.kind ||
+    authorization.targetId !== input.request.targetId
+  ) {
+    return unavailableNavigation();
+  }
+  return {
+    state: 'open',
+    href: canonicalDestination(input.request.kind, input.request.targetId),
+    cache: 'no-store',
+  };
 }
 
 export function normalizeAdminSearchRequest(input: AdminSearchRequest): AdminSearchRequest {
@@ -51,6 +89,18 @@ export function normalizeAdminSearchRequest(input: AdminSearchRequest): AdminSea
     })
   ) {
     fail('invalidQuery', 'Search requires 2-128 printable characters.');
+  }
+  const generatedAt = Date.parse(snapshot.generatedAt);
+  const windowStart = Date.parse(snapshot.recentActivity.windowStartedAt);
+  const windowEnd = Date.parse(snapshot.recentActivity.windowEndedAt);
+  if (
+    Number.isNaN(windowStart) ||
+    Number.isNaN(windowEnd) ||
+    windowEnd !== generatedAt ||
+    windowStart >= windowEnd ||
+    windowEnd - windowStart > 24 * 60 * 60 * 1000
+  ) {
+    fail('unsafeResult', 'Recent Activity must declare a bounded window ending at generation.');
   }
   if (!Number.isSafeInteger(input.pageSize) || input.pageSize < 1 || input.pageSize > 50) {
     fail('invalidQuery', 'Search page size must be between 1 and 50.');
@@ -138,6 +188,46 @@ function assertDashboard(scope: AdminOperationsScope, snapshot: AdminDashboardSn
   ) {
     fail('unsafeResult', 'Dashboard operational views must use the canonical safe routes.');
   }
+  if (
+    snapshot.quickActions.length !== ADMIN_QUICK_ACTIONS.length ||
+    snapshot.quickActions.some(
+      (action, index) =>
+        action.id !== ADMIN_QUICK_ACTIONS[index]?.id ||
+        action.route !== ADMIN_QUICK_ACTIONS[index]?.route,
+    )
+  ) {
+    fail('unsafeResult', 'Dashboard quick actions must use the locked canonical routes.');
+  }
+  assertSameScope(scope, snapshot.operations);
+  if (snapshot.operations.source !== 'persistent_store') {
+    fail('unsafeResult', 'Operational status must retain persistent provenance.');
+  }
+  for (const status of [
+    snapshot.operations.releaseSource,
+    snapshot.operations.webWorkerAgreement,
+    snapshot.operations.databaseMigrations,
+    snapshot.operations.queueHealth,
+    snapshot.operations.providerDetail,
+    snapshot.operations.backupRestore,
+    snapshot.operations.recentRedactedFailures,
+  ]) {
+    if (Number.isNaN(Date.parse(status.observedAt))) {
+      fail('unsafeResult', 'Operational status observation is invalid.');
+    }
+    if (status.state === 'available' && PRIVATE_OR_PROVIDER_VALUE.test(status.summary)) {
+      fail('unsafeResult', 'Operational status contains protected provider material.');
+    }
+  }
+  for (const provider of snapshot.providerHealth) {
+    if (
+      provider.observedRuntimeTier !== scope.runtimeTier ||
+      provider.observedVerificationEnvironmentId !== scope.verificationEnvironmentId ||
+      provider.sourceEnvironment !== providerEnvironment(scope.verificationEnvironmentId) ||
+      PRIVATE_OR_PROVIDER_VALUE.test(provider.provider)
+    ) {
+      fail('crossScope', 'Provider readiness came from a different runtime environment.');
+    }
+  }
   for (const occurrence of snapshot.nowAndNext) {
     assertSafeTarget(occurrence.occurrenceId);
     assertSafeTarget(occurrence.classId);
@@ -164,6 +254,14 @@ function assertDashboard(scope: AdminOperationsScope, snapshot: AdminDashboardSn
   }
 }
 
+function providerEnvironment(
+  environment: AdminOperationsScope['verificationEnvironmentId'],
+): 'test' | 'staging' | 'production' {
+  if (environment === 'ci') return 'test';
+  if (environment === 'provider_sandbox' || environment === 'persistent_staging') return 'staging';
+  return 'production';
+}
+
 function assertSearchResult(
   scope: AdminOperationsScope,
   allowedKinds: readonly AdminSearchKind[],
@@ -183,6 +281,13 @@ function assertSearchResult(
   ) {
     fail('unsafeResult', 'Search returned unsafe distinguishing metadata.');
   }
+  if (
+    PRIVATE_OR_PROVIDER_VALUE.test(result.label) ||
+    PRIVATE_OR_PROVIDER_VALUE.test(result.distinguishingMetadata) ||
+    PRIVATE_OR_PROVIDER_VALUE.test(result.status)
+  ) {
+    fail('unsafeResult', 'Search returned protected provider or secret material.');
+  }
   const expectedRoute: Record<AdminSearchKind, AdminSearchResult['destination']['route']> = {
     adult: '/app/contacts/:contactId',
     household: '/app/households/:householdId',
@@ -196,6 +301,25 @@ function assertSearchResult(
   if (result.destination.route !== expectedRoute[result.kind]) {
     fail('unsafeResult', 'Search result route does not match its authorized entity kind.');
   }
+}
+
+function canonicalDestination(kind: AdminSearchKind, targetId: string): string {
+  const encoded = encodeURIComponent(targetId);
+  const routes: Record<AdminSearchKind, string> = {
+    adult: `/app/contacts/${encoded}`,
+    household: `/app/households/${encoded}`,
+    student: `/app/students/${encoded}`,
+    class: `/app/classroom/classes/${encoded}`,
+    occurrence: `/app/classroom/occurrences/${encoded}`,
+    content: `/app/content/${encoded}`,
+    question: '/app/classroom/questions',
+    ticket: `/app/tickets/${encoded}`,
+  };
+  return routes[kind];
+}
+
+function unavailableNavigation(): AdminNavigationResolution {
+  return { state: 'unavailable', reason: 'missing_or_unauthorized', cache: 'no-store' };
 }
 
 function assertSameScope(left: AdminOperationsScope, right: AdminOperationsScope) {

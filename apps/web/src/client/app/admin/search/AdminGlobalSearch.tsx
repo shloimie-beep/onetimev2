@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type {
+  AdminNavigationResolution,
   AdminSearchKind,
   AdminSearchPage,
   AdminSearchRequest,
@@ -8,12 +9,12 @@ import type {
 import {
   ADMIN_SEARCH_KINDS,
   ADMIN_SEARCH_TRANSPORT,
+  ADMIN_CANONICAL_PRIMARY_NAVIGATION,
 } from '../../../../../../../packages/contracts/src/admin/operations/index.ts';
 import {
   V21AppShell,
   V21StatePanel,
 } from '../../../../../../../packages/brand-system/src/react-v21.tsx';
-import { ADMIN_PRIMARY_NAVIGATION } from '../../../../../../../packages/brand-system/src/v21.ts';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -49,7 +50,8 @@ export function AdminGlobalSearch(props: {
   initialRequest?: AdminSearchRequest | null;
   recentQueries?: readonly string[];
   onSearch: (request: AdminSearchRequest) => Promise<AdminSearchPage>;
-  onOpen: (result: AdminSearchResult) => void;
+  authorization?: { state: 'admin' | 'signed_out' | 'revoked'; credentialVersion: number };
+  onResolveOpen: (result: AdminSearchResult) => Promise<AdminNavigationResolution>;
   onClearRecentQueries: () => void;
   onNavigate: (href: string) => void;
 }) {
@@ -62,11 +64,40 @@ export function AdminGlobalSearch(props: {
   );
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [observedCredentialVersion, setObservedCredentialVersion] = useState(
+    props.authorization?.credentialVersion ?? 0,
+  );
   const grouped = useMemo(() => groupResults(page?.results ?? []), [page]);
   const navigation = [
-    ...ADMIN_PRIMARY_NAVIGATION.map((item) => ({ ...item, current: false })),
+    ...ADMIN_CANONICAL_PRIMARY_NAVIGATION.map((item) => ({
+      ...item,
+      current: false,
+    })),
     { id: 'search', label: 'Search', href: '/app/search', current: true },
   ];
+
+  const clearPrivateState = () => {
+    setPage(null);
+    setLastRequest(null);
+    setActiveIndex(0);
+    props.onClearRecentQueries();
+  };
+  useEffect(() => {
+    if (
+      props.authorization?.state !== 'admin' ||
+      props.authorization.credentialVersion !== observedCredentialVersion
+    ) {
+      clearPrivateState();
+      setObservedCredentialVersion(props.authorization?.credentialVersion ?? 0);
+    }
+  }, [props.authorization?.credentialVersion, props.authorization?.state]);
+  useEffect(() => {
+    const invalidateBfcache = (event: PageTransitionEvent) => {
+      if (event.persisted) clearPrivateState();
+    };
+    window.addEventListener('pageshow', invalidateBfcache);
+    return () => window.removeEventListener('pageshow', invalidateBfcache);
+  }, []);
 
   const runSearch = async (cursor: string | null = null) => {
     setState('loading');
@@ -89,6 +120,11 @@ export function AdminGlobalSearch(props: {
     const length = page?.results.length ?? 0;
     if (length === 0) return;
     setActiveIndex((index) => (index + direction + length) % length);
+  };
+  const resolveAndOpen = async (result: AdminSearchResult) => {
+    const resolution = await props.onResolveOpen(result);
+    if (resolution.state === 'open') props.onNavigate(resolution.href);
+    else clearPrivateState();
   };
 
   return (
@@ -113,6 +149,13 @@ export function AdminGlobalSearch(props: {
           Search adults, households, Students, classes, content, questions, and tickets
           <input
             type="search"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="admin-search-results"
+            aria-expanded={Boolean(page?.results.length)}
+            aria-activedescendant={
+              page?.results[activeIndex] ? resultOptionId(page.results[activeIndex]) : undefined
+            }
             value={query}
             minLength={2}
             maxLength={128}
@@ -131,7 +174,7 @@ export function AdminGlobalSearch(props: {
                 query.trim() === lastRequest?.query
               ) {
                 event.preventDefault();
-                props.onOpen(page.results[activeIndex]);
+                void resolveAndOpen(page.results[activeIndex]);
               }
             }}
           />
@@ -191,16 +234,18 @@ export function AdminGlobalSearch(props: {
           {[...grouped.entries()].map(([kind, results]) => (
             <section key={kind} aria-labelledby={`search-${kind}-heading`}>
               <h2 id={`search-${kind}-heading`}>{searchKindLabel(kind)}</h2>
-              <ul>
+              <ul id="admin-search-results" role="listbox">
                 {results.map((result) => {
                   const index = page.results.indexOf(result);
                   return (
                     <li key={`${result.kind}:${result.targetId}`}>
                       <button
+                        id={resultOptionId(result)}
                         type="button"
-                        aria-current={index === activeIndex ? 'true' : undefined}
+                        role="option"
+                        aria-selected={index === activeIndex}
                         onFocus={() => setActiveIndex(index)}
-                        onClick={() => props.onOpen(result)}
+                        onClick={() => void resolveAndOpen(result)}
                       >
                         <strong dir="auto">{result.label}</strong>{' '}
                         <span dir="auto">{result.distinguishingMetadata}</span>{' '}
@@ -221,6 +266,10 @@ export function AdminGlobalSearch(props: {
       ) : null}
     </V21AppShell>
   );
+}
+
+function resultOptionId(result: AdminSearchResult) {
+  return `admin-search-option-${result.kind}-${result.targetId.replaceAll(/[^A-Za-z0-9_-]/gu, '-')}`;
 }
 
 function groupResults(results: readonly AdminSearchResult[]) {
