@@ -1,74 +1,66 @@
-# I36 Wave C Part 2 Release
+# I36 Wave D Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Atomic claim target:
-  `eceef5f71495ba2053b0072a3604a785e424633a`
-- Reconciled authorizing control:
-  `1b0df4cdf073b1caed7c4eddacfdcfe9919d84d2`
+- Exact existing target:
+  `b06321b8e4b393fe546bb5251df5115d9b4a0dd3`
+- Authorizing control:
+  `f148cf704fb149e281d833cd5037cb0be1525b47`
 - Sole acquisition parent:
-  `862c81d83140f4b41fb5459371e90b2c6595fd3c`
+  `18b0d8eafac9417901a72149e4eff48cba13a24d`
 - READY I36 digest:
-  `5be9619627c178bf4fd685c2378889abaeec53e4cbba715cdfd4b1b80936410b`
-- Claim: `9059c2e9-a57d-412f-ac96-8d921365a3fb`
-- RELEASE_INTEGRATOR lease: `7015ba41-a825-4a18-9b0b-0a026682730d`
-- Lease window: `2026-07-29T15:14:08Z` through
-  `2026-07-29T16:29:08Z`
-- Lease released: `2026-07-29T15:38:52Z`
-- Phase scope: `P17_P21_P24_full_integration_atomic_claim_only`
-- Release head: derive with `git rev-parse HEAD`; C00 records and audits the
-  observed pushed head and its sole parent.
+  `a7e35893457ba55bb957959b47a475a30232181fb525f951d898a9bc3771af28`
+- Claim: `60998dcd-f3e9-45a8-a03a-9c1f4589b0ae`
+- RELEASE_INTEGRATOR lease: `de1ad066-2cc3-45bd-aa48-6d2d985e219c`
+- Lease window: `2026-07-29T15:51:20Z` through
+  `2026-07-29T17:06:20Z`
+- Phase scope: `P28_P18_P20_full_integration_atomic_claim_only`
+- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
+  pushed head, its sole parent, and the I36 state/handoff digests.
 
-## Ordered merge results
+## Ordered queue
 
-1. P17 merged at `c23dd73be235d2b48637003722b061e4b132c09f`
-   from parents `eceef5f71495ba2053b0072a3604a785e424633a` and
-   `78af71603713b6fc73fe755995bdf56193eb199a`.
-2. P21 merged at `33190a506cd40551ada7aa18e7af0c7457c835ba`
-   from parents `c23dd73be235d2b48637003722b061e4b132c09f` and
-   `cecdad0989e861254987970cfa3d222319369f52`.
-3. Corrected P24 merged at
-   `5da986554cc70e39bc2006e936058ba86be62024` from parents
-   `33190a506cd40551ada7aa18e7af0c7457c835ba` and
-   `501c7a8b32864e4218a5325b8a755bb0a37a8ce6`.
+1. P28 merge `be7c79b0-3861-41bd-bef7-9c9189f0c397`, source
+   `f891f16eb13593d0eb3bbe53c076513d12b07c23`, fixed base
+   `aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`, 3 paths, payload
+   `c455cd775a2950bc233586f2ff19751ae57938a4e3b5038ab765881794182c37`.
+2. P18 merge `904ca7b0-a13b-498d-ad66-d7b452015724`, source
+   `0a384577dec2ea58cbeaf22a247f7c05f6333c27`, fixed base
+   `9ba92b070eedfa3756eff4f78fd328de72507a96`, 23 paths, payload
+   `544ad42415b78e9125edfb21c03d1651fd0d953f61d4bf0f7f5806dde4fa4c19`.
+3. P20 merge `11727ded-ed12-4f92-a9eb-735a215da2bd`, source
+   `3d75b57e91c12ab3e0cad78b1a6a63497838f46f`, fixed base
+   `ebf88c8e422a6ad40202fc2b0249810d312edc30`, 17 paths, payload
+   `e870b85b765ee2dbe1408ddab83655f08827e5a57ffd0c4aaccde67d50101043`.
 
-Each merge preserves source ancestry and changes exactly its queued
-18/21/20-path scope. Every fixed merge base and queue-declared merge-after
-prerequisite passed.
+All queue-declared merge-after heads are ancestors of the exact target.
 
 ## Verification
 
-Canonical items, source bases, task/context/state-handoff, admitted tail
-inventory, implementation artifact and steward-request digests, scopes, lease,
-order, YAML syntax, and 0/0/0 effect admission passed. Post-merge parents,
-source ancestry, exact first-parent scopes, and the complete 59-path claim
-delta passed.
+The remote control and integration refs matched exactly. The canonical READY
+entry and all three merge items recomputed to their sibling-map digests. The
+raw-Git-blob execution-package validator passed with 200 locked files, all
+46 tasks/contexts/prompts, 16 source-spec files, 243 requirements, 265 cases,
+107 decisions, and 35 implementation tasks. Package, task, context,
+control-state, and prior I36 state/handoff bindings passed.
 
-The focused P17/P21/P24 suite passed 46 assertions across 12 files. Repository
-typecheck, full lint, full build, exact 59-path CRLF-aware Prettier and diff
-hygiene, the raw-Git-blob package validator (200 locked files; all package
-structure and coverage counts), seven YAML parses, and the secret scan across
-2991 repository text files passed.
+The exact P28, P18, and P20 branch refs were verified by `ls-remote` without
+fetching source content. Their recorded bases, 3/23/17-path declarations,
+merge-after prerequisites, order, claim, unexpired sole lease, zero effect
+locks, and 0/0/0 effects passed.
 
-The repository-wide formatting command retains the known pre-existing
-baseline; every exact Wave C part 2 path passes the CRLF-aware Prettier check.
-Full unit/integration baselines were not rerun because the 46 focused tests
-plus typecheck, lint, and build are the proportionate gate.
-
-## Scope and effects
-
-All P17, P21, and P24 steward requests remain committed but unapplied. No
-migration, registration, Zoom/config/reminder action, provider inspection,
-send, deployment, or external effect occurred.
-
-This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`.
+This checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. No queued source was fetched, read, or merged. P17 reminder
+routing and every migration, registration, config, and projection request
+remain unapplied. No provider inspection, send, deployment, or external effect
+was performed.
 
 ## Next action
 
-C00 must audit and reconcile the exact pushed release head and its sole parent.
-I36 must stop after reporting it.
+C00 must reconcile the exact pushed atomic claim head and its sole parent. I36
+must stop after reporting the claim and I36 state/handoff digests. Source
+admission and ordered merges require a subsequent explicit resume.
 
 ## Effects
 

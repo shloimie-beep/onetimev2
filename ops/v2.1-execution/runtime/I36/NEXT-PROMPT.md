@@ -1,36 +1,37 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: STOP
+MODE: START_OR_RESUME
 
-I36 completed the exact ordered Wave C part 2 integration. C00 must audit and
-reconcile the exact pushed release head and its sole parent; do not resume I36
-from this checkpoint.
+Resume I36 only after C00 reconciles the exact pushed Wave D atomic integration
+claim head.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Atomic claim target: eceef5f71495ba2053b0072a3604a785e424633a
-Reconciled authorizing control: 1b0df4cdf073b1caed7c4eddacfdcfe9919d84d2
-Sole acquisition parent: 862c81d83140f4b41fb5459371e90b2c6595fd3c
-READY I36 digest: 5be9619627c178bf4fd685c2378889abaeec53e4cbba715cdfd4b1b80936410b
+Expected pre-claim target: b06321b8e4b393fe546bb5251df5115d9b4a0dd3
+Authorizing control: f148cf704fb149e281d833cd5037cb0be1525b47
+Sole acquisition parent: 18b0d8eafac9417901a72149e4eff48cba13a24d
+READY I36 digest: a7e35893457ba55bb957959b47a475a30232181fb525f951d898a9bc3771af28
 
-Claim: 9059c2e9-a57d-412f-ac96-8d921365a3fb
-RELEASE_INTEGRATOR lease: 7015ba41-a825-4a18-9b0b-0a026682730d
-Lease released: 2026-07-29T15:38:52Z
-Phase scope: P17_P21_P24_full_integration_atomic_claim_only
+Claim: 60998dcd-f3e9-45a8-a03a-9c1f4589b0ae
+RELEASE_INTEGRATOR lease: de1ad066-2cc3-45bd-aa48-6d2d985e219c
+Lease expires: 2026-07-29T17:06:20Z
+Phase scope: P28_P18_P20_full_integration_atomic_claim_only
 
-Merge heads:
+P28: be7c79b0-3861-41bd-bef7-9c9189f0c397 /
+f891f16eb13593d0eb3bbe53c076513d12b07c23 /
+c455cd775a2950bc233586f2ff19751ae57938a4e3b5038ab765881794182c37
 
-- P17: c23dd73be235d2b48637003722b061e4b132c09f
-- P21: 33190a506cd40551ada7aa18e7af0c7457c835ba
-- P24: 5da986554cc70e39bc2006e936058ba86be62024
+P18: 904ca7b0-a13b-498d-ad66-d7b452015724 /
+0a384577dec2ea58cbeaf22a247f7c05f6333c27 /
+544ad42415b78e9125edfb21c03d1651fd0d953f61d4bf0f7f5806dde4fa4c19
 
-Each non-fast-forward merge changed exactly its queued 18/21/20-path scope.
-Verification passed for canonical items and source digests, bases, parents,
-ancestry, scopes, merge-after prerequisites, 46 focused tests, typecheck, full
-lint/build, exact-path formatting and diff hygiene, the raw-Git-blob package
-validator, YAML parsing, and the repository secret scan.
+P20: 11727ded-ed12-4f92-a9eb-735a215da2bd /
+3d75b57e91c12ab3e0cad78b1a6a63497838f46f /
+e870b85b765ee2dbe1408ddab83655f08827e5a57ffd0c4aaccde67d50101043
 
-Do not apply any P17/P21/P24 steward request, migration, registration,
-Zoom/config/reminder action, inspect providers, perform a send, deploy, or
-cause an external effect. Effects remain `0/0/0`.
+This checkpoint is atomic-claim-only. Do not fetch, read, or merge queued
+source, apply P17 reminder routing or any migration/registration/config/
+projection request, inspect providers, perform a send, deploy, or cause an
+external effect until C00 reconciles the exact claim head and explicitly
+resumes I36. Effects remain `0/0/0`.
