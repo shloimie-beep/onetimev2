@@ -38,28 +38,33 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: complete
-claimed_by: codex-p10-worker-f7e5889d
-claim_time: '2026-07-29T00:49:45Z'
-claim_id: f7e5889d-4db4-4818-a47f-5f26927597ae
+status: claimed
+phase: correction
+claim_mode: resume_existing_branch
+claimed_by: codex-p10-worker-0f061200
+claim_time: '2026-07-29T01:45:03Z'
+claim_id: 0f061200-ff84-449d-aaa7-b0ebd7cd9c02
 writer_slot_leases:
   - slot: ADMIN_DIRECTORY
-    lease_id: 45e45c29-d8eb-49e2-960b-b1c2a545398f
-    lease_issued_at: '2026-07-29T00:38:10Z'
-    lease_expires_at: '2026-07-29T01:38:10Z'
-lease_expires_at: '2026-07-29T01:38:10Z'
-lease_released_at: '2026-07-29T01:13:26Z'
-last_heartbeat_at: '2026-07-29T01:13:26Z'
-controller_authorization_sha: d8639ce20ce92a0f49ce8d69b57b09b355d09246
-state_based_on_control_head_sha: 629577e2ea6da2fdeca7754a6f314b6b254e952e
-ready_entry_payload_digest: 91d515fb029f45f7263b8aec6ee6ef39bac2066ab160428b5c253c94ff137587
-state_based_on_head_sha: 3abb4bb96929400838f0270586c5c459c8c6f9ed
+    lease_id: c3ee876e-793d-4c19-9a4c-40de4f27e758
+    lease_issued_at: '2026-07-29T01:39:10Z'
+    lease_expires_at: '2026-07-29T02:39:10Z'
+lease_expires_at: '2026-07-29T02:39:10Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T01:45:03Z'
+controller_authorization_sha: b0aeb1d1ba9ed25b27b7b519b9f06ba6bbbe7dfc
+ready_entry_state_based_on_control_head_sha: c743420931244135bcd61578ea1f322851b325a8
+ready_entry_payload_digest: 526ce8d0d61a88d2def1cf58d9d8d8e8375e03760e7c00db3dec5fab70168467
+state_based_on_head_sha: 92212a7b6873a9b6da5e7173b4fd1af88ef47293
 last_implementation_commit_sha: 3abb4bb96929400838f0270586c5c459c8c6f9ed
 implementation_artifact_digest: 600eb180ae6aa873702ef0018353f89a3d647bf2ee1381d54bc78e1a824975a8
 implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 10 non-runtime P10 artifacts, with LF separators and no final newline.
 steward_request_digest: 37c19321fb6ceea660839bd1b117ec03ae834aa783d9b352e7ce4931f5d693f2
 completed_steps:
+  - Fetched containing correction controller b0aeb1d1ba9ed25b27b7b519b9f06ba6bbbe7dfc and verified its sole parent/acquisition c743420931244135bcd61578ea1f322851b325a8.
+  - Recomputed and matched canonical P10 correction-ready digest 526ce8d0d61a88d2def1cf58d9d8d8e8375e03760e7c00db3dec5fab70168467.
+  - Verified resume_existing_branch head 92212a7b6873a9b6da5e7173b4fd1af88ef47293, correction claim 0f061200-ff84-449d-aaa7-b0ebd7cd9c02, active ADMIN_DIRECTORY lease c3ee876e-793d-4c19-9a4c-40de4f27e758, and zero effect locks.
+  - Consumed the correction claim only in the three P10 runtime-memory files; no product, contract, test, steward-request, migration, configuration, or shared file was changed.
   - Verified the reconciled continuation control d8639ce20ce92a0f49ce8d69b57b09b355d09246, sole parent 629577e2ea6da2fdeca7754a6f314b6b254e952e, exact claim head, task/ready digests, dependency interfaces, and active ADMIN_DIRECTORY lease.
   - Implemented exact runtime Admin authorization, product/runtime/environment isolation, adult and household lifecycle, Admin/Parent membership creation, Student lifecycle, protected Student credential reset, and F04 verified sole-ownership transfer.
   - Implemented an idempotent transaction service that checks replay before executing row-locked mutation reads and commits aggregate writes, audit, credential/transfer records, and receipt atomically.
@@ -67,10 +72,10 @@ completed_steps:
   - Passed full workspace typecheck and lint, 12 focused assertions, focused Prettier, diff hygiene, repository-wide secret scan, and provider-effect inventory.
   - Pushed exact implementation head 3abb4bb96929400838f0270586c5c459c8c6f9ed and derived its 10-artifact and steward-request Git-blob digests.
 remaining_steps:
-  - I36 must review and integrate the exact P10 implementation head.
-  - I36 must disposition P10-MIGRATION-001 and P10-REGISTRATION-001 without semantic weakening.
-  - Candidate-bound persistent-staging and production-operator-canary evidence remains with the assigned verification and release lanes.
-next_action: I36 should review and integrate implementation head 3abb4bb96929400838f0270586c5c459c8c6f9ed, verify artifact digest 600eb180ae6aa873702ef0018353f89a3d647bf2ee1381d54bc78e1a824975a8, and disposition the two P10 steward requests.
+  - Push and report this exact three-file atomic correction-claim checkpoint, then stop for C00 reconciliation.
+  - Begin correction product, contract, test, or steward-request work only after C00 explicitly reconciles this exact checkpoint and authorizes continuation.
+  - Preserve the prior implementation head, implementation artifact digest, steward requests, and candidate-bound verification responsibilities until that authorization.
+next_action: Push this three-file correction-claim checkpoint with sole parent 92212a7b6873a9b6da5e7173b4fd1af88ef47293, report the exact pushed head to C00, and stop without product work.
 requirements:
   OTV2-ADMIN-022: implementation_ready
   OTV2-ADMIN-023: implementation_ready
@@ -110,6 +115,8 @@ steward_requests:
   - P10-REGISTRATION-001
 verification:
   commands_run:
+    - Exact correction controller, sole-parent/acquisition, ready-entry digest, expected existing remote head, claim, active writer lease, and zero effect-lock verification (passed).
+    - Correction checkpoint scope inspection (passed; exactly the three P10 runtime-memory files and no product work).
     - Exact reconciled control, sole-parent/acquisition, claim head, task/ready digests, F03/F04/F07 interfaces, and active lease verification (passed).
     - npm run typecheck (passed).
     - npm run lint -- --quiet (passed).
