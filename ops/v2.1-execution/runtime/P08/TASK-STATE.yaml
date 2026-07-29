@@ -37,7 +37,7 @@ dependency_heads:
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
 status: claimed
-phase: contract
+phase: implementation
 claimed_by: codex-p08-worker-798ccc6e
 claim_time: '2026-07-29T00:49:22Z'
 claim_id: 798ccc6e-82cc-4eb6-82ca-167cc3998042
@@ -58,16 +58,19 @@ interface_checkpoint:
   required: true
   unlocks:
     - P09
-  status: pending
+  status: interface_ready
+  implementation_head_sha: 0c386529ea7e9487a457e51cc5be9500a6c29b52
+  contract_digest: d20fe1e9303aa3bab879e35294de4d6a38e5c80303f62934420a3e985b6177f4
 completed_steps:
   - Fetched corrected control authorization eb3b0e1deecbffe05177a07df0d8e52d648d109c and verified sole parent de271a6cab5fc74e8c77b5defc302094fe9a22fc.
   - Verified the P08 create_new_branch entry, exact authorized start, task/context/package digests, four integrated dependency contracts, unexpired FAMILY_SIGNUP lease, and zero effect locks.
   - Created branch codex/v21-p08-family-signup from exact authorized start 49431959f58f284bdc13ca931acf09f980fc483a.
   - Seeded this atomic claim checkpoint in the three P08 runtime files only.
+  - Published the stable family-signup contract at 0c386529ea7e9487a457e51cc5be9500a6c29b52 with exact interface digest d20fe1e9303aa3bab879e35294de4d6a38e5c80303f62934420a3e985b6177f4.
 remaining_steps:
-  - Push and report this exact three-file atomic claim checkpoint.
-  - Await C00 reconciliation before inspecting or modifying any P08 product, contract, test, steward-request, or interface-checkpoint path.
-next_action: Push this atomic claim as the branch's sole commit and stop until C00 explicitly reconciles claim 798ccc6e-82cc-4eb6-82ca-167cc3998042.
+  - Notify C00/I36 of the exact pushed interface checkpoint so P09 can be queued after integration.
+  - Implement the domain, server, and client Family signup behavior and complete task-owned verification.
+next_action: Push the exact interface checkpoint, report its head and digest, then continue the authorized P08 implementation.
 requirements:
   OTV2-SIGNUP-176: pending
   OTV2-SIGNUP-177: pending
@@ -82,6 +85,9 @@ acceptance_cases:
   OTV2-SIGNUP-228-BEFORE-EXPIRY: pending
   OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: pending
 changed_paths:
+  - packages/contracts/src/signup/family/index.ts
+  - packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - ops/v2.1-execution/runtime/P08/INTERFACE-CHECKPOINT.yaml
   - ops/v2.1-execution/runtime/P08/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P08/HANDOFF.md
   - ops/v2.1-execution/runtime/P08/NEXT-PROMPT.md

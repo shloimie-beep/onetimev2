@@ -1,0 +1,53 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P08
+interface_implementation_head_sha: 0c386529ea7e9487a457e51cc5be9500a6c29b52
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
+contract_digest: d20fe1e9303aa3bab879e35294de4d6a38e5c80303f62934420a3e985b6177f4
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/signup/family/index.ts
+    symbols:
+      - FAMILY_SIGNUP_CONTRACT_VERSION
+      - FAMILY_SIGNUP_CLASSIFICATIONS
+      - FamilySignupClassification
+      - FAMILY_FREE_EXPIRY
+      - FAMILY_SIGNUP_COPY
+      - FAMILY_SIGNUP_FIELDS
+      - FAMILY_SIGNUP_FORBIDDEN_FIELDS
+      - FamilySignupCommand
+      - SchoolInquiryCommand
+      - PublicSignupCommand
+      - FamilySignupAccessBranch
+      - FamilySignupDisposition
+      - FamilySignupScope
+      - FamilySignupLocalProjection
+      - FamilySignupOutboxIntent
+      - FamilySignupResult
+      - FAMILY_SIGNUP_SECURITY_INVARIANTS
+    sha256: 52d75f1604b05983482d677f0d0df12df47e88adf7574f968e0bd910f4f4c685
+compatibility_invariants:
+  - Public intake classifications are exactly family and school and are mutually exclusive.
+  - The Family form contains adult identity, password, timezone, and required legal acceptance only; it never contains card, Student, guardian, recording, recognition, reminder, phone, or country fields.
+  - The fixed expiry is exactly 2026-09-13T19:24:00+03:00, represented canonically as 2026-09-13T16:24:00.000Z.
+  - Before expiry, Family signup creates immediate cardless free access with no setup-email dependency; at or after expiry it persists inactive access and requires hosted Checkout.
+  - One normalized adult email maps to one adult identity and one HumanAccount; duplicate responses use the generic sign-in-or-reset path.
+  - Local identity, account, household, credential, access, idempotency, and outbox state commit before any provider effect.
+  - Provider failure never rolls back a committed signup; recovery reuses the stable idempotency key and durable outbox.
+  - Fresh signup grants no rolling trial, completes no provider effect inline, and never creates Student GHL contacts.
+downstream_tasks:
+  - P09
+verification_commands:
+  - npm run typecheck
+  - npx vitest run packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - npx eslint packages/contracts/src/signup/family/index.ts packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - canonical contract digest recomputation
+contains_product_completion_claim: false
+contains_external_effect: false

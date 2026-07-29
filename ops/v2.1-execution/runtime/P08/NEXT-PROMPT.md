@@ -1,6 +1,7 @@
-# P08 Atomic Claim — Next Prompt
+# P08 Family Signup Implementation — Next Prompt
 
-Stop after publishing the atomic P08 claim checkpoint.
+Resume from the exact pushed interface checkpoint after verifying C00 still
+authorizes claim `798ccc6e-82cc-4eb6-82ca-167cc3998042`.
 
 Before any contract or product work:
 
@@ -14,6 +15,11 @@ Before any contract or product work:
 5. verify the new ready/resume entry and recompute its canonical payload digest;
 6. then follow `ops/v2.1-execution/prompts/P08-START-OR-RESUME.md`.
 
-Until those checks pass, do not inspect or edit product code, contracts, tests,
-steward requests, interface checkpoints, migrations, composers, provider state,
-or deployment state. External-effect authority remains none.
+The stable contract implementation is
+`0c386529ea7e9487a457e51cc5be9500a6c29b52`, with interface digest
+`d20fe1e9303aa3bab879e35294de4d6a38e5c80303f62934420a3e985b6177f4`.
+Continue only within P08-owned globs: implement the domain planner, local-first
+server transaction/recovery service, and public signup client model, then run
+the full P08 verification and publish `ready_for_review`. Use structured steward
+requests for shared registration, route, config, or migration work. External
+effect authority remains none.
