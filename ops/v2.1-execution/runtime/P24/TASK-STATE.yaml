@@ -46,7 +46,7 @@ dependency_heads:
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
 status: ready_for_review
-phase: review
+phase: complete
 claim_mode: create_new_branch
 claimed_by: codex-p24-worker-ff79d0ab
 claim_time: '2026-07-29T12:23:30Z'
@@ -56,17 +56,20 @@ writer_slot_leases:
     lease_id: 4d0115d1-571f-4ca7-8b04-3fc79b43bcdf
     lease_issued_at: '2026-07-29T12:23:30Z'
     lease_expires_at: '2026-07-29T13:38:30Z'
-    state_based_on_control_head_sha: 4c9b217531ce76b52971707913d1e28c65958d76
-    phase_scope: P24_normalized_support_roots_and_structured_requests
+    state_based_on_control_head_sha: 8bb4680887b2ea320f914cf046184655601fade9
+    phase_scope: P24_atomic_claim_only
     lease_released_at: '2026-07-29T13:12:33Z'
     state: released
 effect_lock_leases: []
 lease_expires_at: '2026-07-29T13:38:30Z'
 lease_released_at: '2026-07-29T13:12:33Z'
 last_heartbeat_at: '2026-07-29T13:12:33Z'
-controller_authorization_sha: cb0a1de49ebc1d1113aae26798508e178346287c
-controller_authorization_parent_sha: 4c9b217531ce76b52971707913d1e28c65958d76
+controller_authorization_sha: 6d0278d46789b6d746c58effa6c5f182ff4a7741
+controller_authorization_parent_sha: 8bb4680887b2ea320f914cf046184655601fade9
+reconciliation_control_sha: cb0a1de49ebc1d1113aae26798508e178346287c
+reconciliation_control_parent_sha: 4c9b217531ce76b52971707913d1e28c65958d76
 reconciled_atomic_claim_head_sha: 2a3b36c98b9a8698536149d668f0c58552c7eea4
+reconciled_phase_scope: P24_normalized_support_roots_and_structured_requests
 ready_entry_state_based_on_control_head_sha: 8bb4680887b2ea320f914cf046184655601fade9
 ready_entry_payload_digest: 57d6b0bb804527dfd218860202b9bec3f66ee24a424fb4815d6308816cab5b75
 ready_entry_state: consumed
