@@ -712,3 +712,14 @@ worktree, and zero effects. P33 may now correct only exact `street_address`
 PII coverage, unmatched `retry_count: 9` evidence, and the ten-minute active
 lease age gate, add direct negative tests, refresh affected digests and
 runtime handoff state, release its lease, and keep effects at zero.
+
+I36 P10 atomic claim `6cb169c4` is independently reconciled: sole parent
+`1b338e66`, exactly the three I36 runtime files, containing authorization
+`aa68f504`, acquisition `acc5e601`, claim `ba9b0d15`, live lease
+`8f1bf970`, ready digest `6a90c2c7`, queued merge identity, clean worktree,
+and zero effects. Under acquisition `f4304c06`, only P10 full merge
+`bbe563fe-d993-494b-b735-daa68bc48473` is rebound to exact target
+`6cb169c4`, with canonical digest `49cd3b96`. I36 may now merge only source
+`5fccc345`, require its ancestry and exact fourteen allowed paths, rerun the
+20 focused P10 tests and typecheck, publish a metadata-only release
+checkpoint, release the lease, keep effects at zero, and stop for C00.

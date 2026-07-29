@@ -16,5 +16,5 @@ integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
 controller_authorization_sha: a1b37b8e3aa6f32a8e689161567f0f8eea5f1dd4
-next_action: P08 is integrated at 1b338e66; I36 publishes only atomic claim ba9b0d15 for the exact P10 full merge from target 1b338e66; P33 resumes only its reconciled street-address, retry-count, and active-lease evidence correction from claim 02cc575a.
+next_action: I36 merges only the exact P10 full source 5fccc345 from reconciled claim 6cb169c4; P33 continues only its bounded street-address, retry-count, and active-lease evidence correction from claim 02cc575a.
 authority_note: Only C00 updates this global control state.

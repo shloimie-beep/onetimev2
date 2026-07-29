@@ -414,3 +414,14 @@ Implement only the exact `street_address` leakage coverage, unmatched
 Add direct negative regression tests, refresh affected interface, steward,
 state, and handoff digests, release the OPERATIONS_RUNTIME lease, publish the
 superseding final, and keep all external-effect counters at zero.
+
+I36 claim `6cb169c4addd745183c10be605a6b9a0f58a2964` is reconciled.
+Merge only queued P10 source
+`5fccc34507ae9c5dbc609e234ab559576ab3a445` into that exact target under
+merge id `bbe563fe-d993-494b-b735-daa68bc48473` and rebound digest
+`49cd3b967be548ecab2a9f42effdf3018cd84aec5e945d0f4bbb1ad31ab29943`.
+Require the source to become an ancestor, require the exact fourteen allowed
+paths, rerun the three focused P10 files with all 20 tests plus typecheck,
+then publish an I36 metadata-only release checkpoint, release lease
+`8f1bf970-a69c-463d-98d2-a97f3591fd10`, keep effects at zero, and stop for
+C00 reconciliation.
