@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-2d2a3f6e
-claim_time: '2026-07-29T01:56:18Z'
-claim_id: 2d2a3f6e-72d6-423e-8185-f516adcbef7f
-lease_expires_at: '2026-07-29T02:03:04Z'
-last_heartbeat_at: '2026-07-29T02:03:04Z'
-controller_authorization_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
+claimed_by: codex-c00-orchestrator-fc959ada
+claim_time: '2026-07-29T02:07:09Z'
+claim_id: fc959ada-a1aa-4120-b292-8aaf1bebd18e
+lease_expires_at: '2026-07-29T02:08:53Z'
+last_heartbeat_at: '2026-07-29T02:08:53Z'
+controller_authorization_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
 ready_entry_payload_digest: null
-state_based_on_head_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
+state_based_on_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -172,8 +172,10 @@ completed_steps:
 - reproduced that P08 accepts invalid non-IANA timezone definitely/not-a-zone and compared its Family and School form models with the exact PS-006.2, ACT-PUBLIC, UI-010.2, and UI-010.3 source contracts
 - rejected P08 v1.1.0 because it omits password confirmation and both separate optional adult communication choices, fails server-side IANA validation/editable form metadata, owns a conflicting incorrect School form contract assigned to downstream P09, and does not block post-expiry checkout during GHL identity_review
 - authorized only atomic follow-up correction claim a456f914 from exact rejected final 605c659a under a fresh FAMILY_SIGNUP lease with zero effect authority
+- rejected claim head 615e124d before product work because the authorizing ready entry transcribed acquisition 95883ac4 to a nonexistent long SHA; its sole parent, exact three runtime paths, true containing parent, clean worktree, and zero effects were otherwise verified
+- superseded invalid authorization and issued atomic replacement claim 60986795 from exact runtime-only head 615e124d under corrected acquisition ab5e5cc8 and a fresh FAMILY_SIGNUP lease
 remaining_steps: []
-next_action: P08 publishes only atomic claim a456f914 from 605c659a and stops for reconciliation; P10 and P33 continue only their already reconciled bounded corrections.
+next_action: P08 publishes only atomic replacement claim 60986795 from 615e124d and stops for reconciliation; P10 and P33 continue only their already reconciled bounded corrections.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -181,12 +183,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
+  current_control_parent_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 2d2a3f6e-72d6-423e-8185-f516adcbef7f
-      observed_head: 95883ac406ec38b6c9399c0447022aa906532b5d
+      claim_id: fc959ada-a1aa-4120-b292-8aaf1bebd18e
+      observed_head: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -344,11 +346,11 @@ orchestration:
       scheduling_state: ready_for_review_admitted
     P08:
       branch: codex/v21-p08-family-signup
-      claim_id: a456f914-02cb-4c08-9717-af9709f1948a
-      observed_head: 605c659afe488e32114bae57b3751c044301bdca
+      claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
+      observed_head: 615e124dd49030e3af5e01d94518aea76b6a733e
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T02:57:52Z'
-      scheduling_state: follow_up_correction_claim_authorized_not_reconciled
+      lease_expires_at: '2026-07-29T03:07:09Z'
+      scheduling_state: replacement_follow_up_claim_authorized_not_reconciled
     P10:
       branch: codex/v21-p10-admin-directory
       claim_id: 0f061200-ff84-449d-aaa7-b0ebd7cd9c02
@@ -532,10 +534,10 @@ steward_requests:
   target_checkpoint: P28_next_communication_registration_checkpoint
 verification:
   control_digests:
-    control_state: 3188606ca8598222f8f47a0cc4e6dcec206f12db56d3ee482d6c8d44777ac107
-    control_lease: 7e995bd233381fc8152e5ead744311ff211f698fa0369540b6b1432453220510
-    task_registry: 956fa53cec5e702823c86a9f1855611460b9faad325bbba66ee98f730e983260
-    ready_queue: 45cd72e660646f9f47d4b0e46c13dec0d0979954e69fdc01f5d6f9966eb8e553
+    control_state: 8633ac274fca8c51672a2ddd4f6161fb67756fd579ed3fad92b958ee5302471d
+    control_lease: 0e52c96021d888d2dd882e3ac6e26e8daf82b07a397ab02e2ed15be552465d60
+    task_registry: 75771153293bc73852d7a853878224c7db80bd54d64592d4f28ab60fc15adc5f
+    ready_queue: e67c0dffb4bcf95d53c5ddb20a0ea4de8de2f20592294975a364b049c0ed8c93
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: e4205fe1518700587b91dacd55ddb78190ce03944ad25a762941f6c67d4586ba
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -552,6 +554,8 @@ verification:
   - P08 corrected final focused contract/domain/server/client verification: 4 files and 16 tests passed
   - P08 invalid-IANA direct negative probe with definitely/not-a-zone: reproduced acceptance defect
   - P08 exact PS-006.2, ACT-PUBLIC, UI-010.2, and UI-010.3 source-contract comparison: failed admission and bounded correction authorized
+  - P08 invalid long-form controller acquisition identity in first follow-up ready entry: detected before product edits; claim rejected
+  - corrected P08 replacement ready-entry canonical payload digest 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430: passed
   - autonomous addendum package binding and remote/native-agent reconciliation: passed
   - F01 atomic claim checkpoint and branch-scope reconciliation: passed
   - F01 interface checkpoint schema, export hashes, canonical digest, merge base, and allowed-path admission: passed

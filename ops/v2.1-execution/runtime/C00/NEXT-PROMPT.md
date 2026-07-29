@@ -305,3 +305,11 @@ consent; remove P09-owned School command/form details while preserving the
 mutually exclusive branch seam; and block post-expiry Checkout while GHL
 identity is `identity_review`. Republish the superseding interface and all
 digests with negative tests, a released lease, and zero effects.
+
+Do not use invalid P08 claim `a456f914` or its ready digest. Its controller
+entry referenced a nonexistent long acquisition SHA. From exact runtime-only
+head `615e124dd49030e3af5e01d94518aea76b6a733e`, publish only replacement
+atomic claim `60986795-c22a-4861-9e98-a93de2c1d22e` using the corrected
+ready entry based on exact acquisition
+`ab5e5cc865be45ef0a71bcec7d71d7df1c787744` and its fresh FAMILY_SIGNUP
+lease. Stop again for C00 reconciliation before product changes.

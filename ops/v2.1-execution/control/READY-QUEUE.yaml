@@ -8,9 +8,9 @@ ready:
   phase: correction
   branch: codex/v21-p08-family-signup
   claim_mode: resume_existing_branch
-  state_based_on_control_head_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
+  state_based_on_control_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
   authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  expected_existing_head: 605c659afe488e32114bae57b3751c044301bdca
+  expected_existing_head: 615e124dd49030e3af5e01d94518aea76b6a733e
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
   task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
@@ -58,23 +58,23 @@ ready:
       task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
   writer_slot_leases:
   - slot: FAMILY_SIGNUP
-    lease_id: 7b42f2bb-18ac-4f98-b86c-48b021afb66d
+    lease_id: 4dce3bb7-4411-4643-a367-d7e43adaabb8
     holder_task_id: P08
-    holder_claim_id: a456f914-02cb-4c08-9717-af9709f1948a
-    state_based_on_control_head_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
-    lease_issued_at: '2026-07-29T01:57:52Z'
-    lease_expires_at: '2026-07-29T02:57:52Z'
-    phase_scope: exact_follow_up_correction_claim_only
+    holder_claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
+    state_based_on_control_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+    lease_issued_at: '2026-07-29T02:07:09Z'
+    lease_expires_at: '2026-07-29T03:07:09Z'
+    phase_scope: superseding_exact_follow_up_correction_claim_only
   effect_lock_leases: []
-  claim_id: a456f914-02cb-4c08-9717-af9709f1948a
-  lease_issued_at: '2026-07-29T01:57:52Z'
-  lease_expires_at: '2026-07-29T02:57:52Z'
+  claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
+  lease_issued_at: '2026-07-29T02:07:09Z'
+  lease_expires_at: '2026-07-29T03:07:09Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/P08-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: HIGH
 entry_payload_digests:
-  P08: a013156d18578f4db3e5ff4a61e6b35aeb27ecbfa13eb857b3158daad58d6e5d
+  P08: 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

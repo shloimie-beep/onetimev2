@@ -601,3 +601,13 @@ P09; and post-expiry GHL `identity_review` still returns Checkout instead of
 blocking that GHL-hosted effect. C00 therefore authorized only atomic follow-up
 claim `a456f914` from exact final `605c659a`, with no product work before
 reconciliation and no provider effects.
+
+The first follow-up claim head `615e124d` exposed a controller-ledger defect
+before product work: its ready entry expanded acquisition short SHA
+`95883ac4` to a nonexistent full object rather than the true
+`95883ac4ffe1369ea3a635749952e7504c9f4c42`. C00 rejected that claim for
+authorization identity despite verifying its sole parent, exact three runtime
+paths, clean worktree, and zero effects. Fresh acquisition `ab5e5cc8`
+supersedes the invalid entry and authorizes only replacement atomic claim
+`60986795` from exact runtime-only head `615e124d` under a new FAMILY_SIGNUP
+lease. Product work remains stopped pending reconciliation.

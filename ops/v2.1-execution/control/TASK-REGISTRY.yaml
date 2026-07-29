@@ -401,21 +401,21 @@ tasks:
     correction: codex/v21-p08-family-signup
   phase_heads:
     contract: a22ab6d8df8841700cc8d336fdb1739290c01dc6
-    correction: 605c659afe488e32114bae57b3751c044301bdca
+    correction: 615e124dd49030e3af5e01d94518aea76b6a733e
   authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  last_known_remote_head: 605c659afe488e32114bae57b3751c044301bdca
-  active_claim_id: a456f914-02cb-4c08-9717-af9709f1948a
+  last_known_remote_head: 615e124dd49030e3af5e01d94518aea76b6a733e
+  active_claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
   active_writer_id: null
-  lease_expires_at: '2026-07-29T02:57:52Z'
+  lease_expires_at: '2026-07-29T03:07:09Z'
   last_heartbeat_at: null
-  controller_authorization_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
-  ready_entry_payload_digest: a013156d18578f4db3e5ff4a61e6b35aeb27ecbfa13eb857b3158daad58d6e5d
+  controller_authorization_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+  ready_entry_payload_digest: 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430
   interface_checkpoint_sha: ca06599ffbe62d7c617235f9e54f5ded57e4b6c7
   implementation_head_sha: c903d1df6a0c3ee94a700fe62b4e1c0b3c3eeb72
   status_proof:
     state: ready
     producer_task_id: C00
-    producer_head_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
+    producer_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
     canonical_candidate_digest: null
     interface_checkpoint_digest: 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
     integration_or_evidence_head_sha: null
@@ -429,8 +429,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
-    transitioned_at: '2026-07-29T01:57:52Z'
+    state_based_on_control_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+    transitioned_at: '2026-07-29T02:07:09Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P08/status_proof
 - task_id: P09
   status: planned
