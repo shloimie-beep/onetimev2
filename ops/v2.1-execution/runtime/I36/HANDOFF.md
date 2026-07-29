@@ -1,43 +1,47 @@
-# I36 P23 Full-Integration Atomic Claim
+# I36 P23 Full-Integration Release
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Exact existing target: `cecc1c0dc6ff57562e5d89dd731289d860086bf7`
-- Containing authorization: `a5656cd0a327ee9af3485ab64025221cecf6ed0e`
-- State-based acquisition: `a035638772b356916d5c59e962212a24ad668890`
-- READY I36 digest:
-  `732033d08cdaf7ed841579fe63545e9150fb9ffd8abe3204b74e09e780ba25f7`
+- Reconciled claim target: `f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e`
+- Containing merge authorization:
+  `4017049c4caa6b252c60d75cfc111367fd58e63f`
+- State-based authorization parent:
+  `90c5406f047cbcf06b86f9aa4395ffc5044a7a2c`
+- P23 source: `32f3a4649632c5768b46430c13b4cb2a3546cfc3`
+- P23 merge head: `3d31cb5f460a0b103d5d0433d7bdb8228b68fa02`
 - P23 merge digest:
-  `841bb07ed93e0ac07d83d68d0af55c2fc952d1d6040763c73d142eb474b0260a`
+  `7abbd657a3e4089ff5478f77fab356517c5fd090cb496a6ee53ea2cba5fae197`
 - Claim: `4f275da3-6bac-4149-8f0d-42206f5d238e`
 - RELEASE_INTEGRATOR lease: `5f617e0e-7f87-4eba-9dd0-1361227d272a`
-- Lease window: `2026-07-29T09:46:42Z` through
-  `2026-07-29T10:46:42Z`
-- Phase scope: `P23_full_integration_atomic_claim_only`
-- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the observed
-  pushed remote head.
+- Lease released: `2026-07-29T10:07:21Z`
+- Final metadata release head: derive with `git rev-parse HEAD`; C00 records the
+  observed pushed remote head.
 
-## Authority verification
+## Merge record
 
-The fetched control branch exactly matched the containing authorization. Its
-sole parent exactly matched the state-based acquisition. The local, tracking,
-and remote integration target all exactly matched the authorized existing head.
-The canonical READY I36 and P23 merge-item payload digests were independently
-recomputed and matched the authorized values above.
+The P23 source was ancestry-merged with exact first parent `f75b0922` and exact
+second parent `32f3a464`. Its required merge base was `cecc1c0d`; its
+first-parent delta is exactly the 19 authorized queue paths. The source commit
+is an ancestor of the merge result.
 
-## Preserved state
+## Verification
 
-This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md` in the I36 runtime directory. P23 was not merged. No product,
-test, steward-request, migration, registration, provider, or external-effect
-action was performed.
+- Exact P23 focused suite: 4 files and 22 tests passed.
+- Workspace TypeScript typecheck passed.
+- Merge parents, source ancestry, required base, canonical queue digest, and
+  exact 19-path scope passed.
+- This release checkpoint changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+  `NEXT-PROMPT.md`.
+
+The P23 steward-request files were admitted as immutable source artifacts only.
+No migration, registration, or steward request was applied. No provider, send,
+or external effect was attempted.
 
 ## Next action
 
-C00 should reconcile the exact pushed atomic claim head. I36 must stop after
-reporting that checkpoint; P23 integration requires a subsequent explicit
-resume.
+C00 should reconcile the exact pushed metadata release head and P23 merge head
+above. I36 must stop after reporting this checkpoint.
 
 ## Effects
 

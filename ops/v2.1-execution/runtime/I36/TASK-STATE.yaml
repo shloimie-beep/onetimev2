@@ -24,18 +24,19 @@ dependency_heads:
   P13: a9d641e6da6a08c805f34d3f827816fcd8c6138a
   P25: 0979e151f80900cea75edecabe8967ce382d168d
   P26: 5e33807200a24ec53be889234dbaafdda9717dcb
-status: claimed
-phase: integration
+  P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+status: ready
+phase: release
 claimed_by: codex-i36-worker-4f275da3
 claim_time: '2026-07-29T09:46:42Z'
 claim_id: 4f275da3-6bac-4149-8f0d-42206f5d238e
 lease_id: 5f617e0e-7f87-4eba-9dd0-1361227d272a
 lease_issued_at: '2026-07-29T09:46:42Z'
 lease_expires_at: '2026-07-29T10:46:42Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-29T09:46:42Z'
-controller_authorization_sha: a5656cd0a327ee9af3485ab64025221cecf6ed0e
-reconciled_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
+lease_released_at: '2026-07-29T10:07:21Z'
+last_heartbeat_at: '2026-07-29T10:07:21Z'
+controller_authorization_sha: 4017049c4caa6b252c60d75cfc111367fd58e63f
+reconciled_state_based_on_control_head_sha: 90c5406f047cbcf06b86f9aa4395ffc5044a7a2c
 ready_entry_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
 ready_entry_payload_digest: 732033d08cdaf7ed841579fe63545e9150fb9ffd8abe3204b74e09e780ba25f7
 claim_mode: resume_existing
@@ -44,20 +45,20 @@ lease_phase_scope: P23_full_integration_atomic_claim_only
 queued_merge_ids:
   P23: ceed4d92-af5a-413f-b9b3-034293e37caf
 queued_merge_item_payload_digests:
-  P23: 841bb07ed93e0ac07d83d68d0af55c2fc952d1d6040763c73d142eb474b0260a
+  P23: 7abbd657a3e4089ff5478f77fab356517c5fd090cb496a6ee53ea2cba5fae197
 queued_source_heads:
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
-queued_expected_target_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
+queued_expected_target_head_sha: f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e
 prior_merge_result_head_sha: 522fe505eca226ee7053e38bb67be5af78af79d6
 prior_release_head_sha: f1cecb5343cd1461ecd5c866ce7a9ad4a78c7635
-merge_authorization_state_based_on_control_head_sha: a5656cd0a327ee9af3485ab64025221cecf6ed0e
+merge_authorization_state_based_on_control_head_sha: 4017049c4caa6b252c60d75cfc111367fd58e63f
 lease_origin_state_based_on_control_head_sha: a035638772b356916d5c59e962212a24ad668890
 source_delta_base_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-merge_result_head_sha: 5016b50914c693b6ba123d29c82189263aa8781c
-merge_parent_target_head_sha: 2b5049e248dd48b9203daa2f55e2b24379af7d7b
-merge_parent_source_head_sha: 5e33807200a24ec53be889234dbaafdda9717dcb
-state_based_on_head_sha: cecc1c0dc6ff57562e5d89dd731289d860086bf7
-last_implementation_commit_sha: 5016b50914c693b6ba123d29c82189263aa8781c
+merge_result_head_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
+merge_parent_target_head_sha: f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e
+merge_parent_source_head_sha: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+state_based_on_head_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
+last_implementation_commit_sha: 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -391,16 +392,51 @@ completed_steps:
   - Released claim d17f9dc5-0f97-44ea-bb44-600c6c3635a3 and RELEASE_INTEGRATOR
     lease 6077f8e5-c498-405e-9cd8-754340775f53 at 2026-07-29T06:10:29Z
     with external effects remaining 0/0/0.
+  - Verified containing P23 merge authorization 4017049c4caa6b252c60d75cfc111367fd58e63f,
+    its sole state-based parent 90c5406f047cbcf06b86f9aa4395ffc5044a7a2c, exact reconciled
+    target f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e, live lease, and canonical
+    rebound merge digest 7abbd657a3e4089ff5478f77fab356517c5fd090cb496a6ee53ea2cba5fae197.
+  - Verified source and required merge base cecc1c0dc6ff57562e5d89dd731289d860086bf7,
+    the exact nineteen-path P23 delta, canonical queue scope, preserved source ancestry,
+    and 0/0/0 effects.
+  - Merged exact P23 source 32f3a4649632c5768b46430c13b4cb2a3546cfc3 with source
+    ancestry preserved at two-parent merge 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02.
+  - Passed all four focused P23 domain/database/server/client files with 22 tests and
+    workspace typecheck with plain diagnostics.
+  - Applied no P23 migration, registration, or steward request and performed no provider,
+    send, or external effect.
+  - Released claim 4f275da3-6bac-4149-8f0d-42206f5d238e and RELEASE_INTEGRATOR
+    lease 5f617e0e-7f87-4eba-9dd0-1361227d272a at 2026-07-29T10:07:21Z
+    with external effects remaining 0/0/0.
 remaining_steps:
   - Commit and normally push this exact three-file I36 metadata-only release checkpoint.
-  - Report the three merge heads and exact release head to C00, then stop.
-next_action: Reconcile the exact pushed P13/P25/P26 ordered-wave release head in C00, then stop.
+  - Report the exact P23 merge head and release head to C00, then stop.
+next_action: Reconcile the exact pushed P23 release head in C00, then stop.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+  - apps/web/src/client/app/student/notifications/StudentNotificationCenter.tsx
+  - apps/web/src/client/app/student/notifications/index.ts
+  - apps/web/src/server/features/notifications/student/index.ts
+  - apps/web/src/server/features/notifications/student/service.test.ts
+  - apps/web/src/server/features/notifications/student/service.ts
+  - ops/v2.1-execution/runtime/P23/HANDOFF.md
+  - ops/v2.1-execution/runtime/P23/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P23/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-migration-001.yaml
+  - ops/v2.1-execution/runtime/P23/steward-requests/P23-registration-001.yaml
+  - packages/contracts/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/index.ts
+  - packages/db/src/notifications/student/repository.test.ts
+  - packages/db/src/notifications/student/repository.ts
+  - packages/domain/src/notifications/student/errors.ts
+  - packages/domain/src/notifications/student/index.ts
+  - packages/domain/src/notifications/student/lifecycle.test.ts
+  - packages/domain/src/notifications/student/lifecycle.ts
 changed_paths:
   - apps/web/src/client/app/portal-entry.tsx
   - apps/web/src/client/app/router/index.ts
@@ -1127,6 +1163,20 @@ verification:
       result: passed
     - command: npm run secret:scan
       result: passed across 2858 repository text files
+    - command: fetched remote control/integration and P23 merge-authorization verification
+      result: passed; exact control 4017049c, state-based parent 90c5406f, reconciled target f75b0922, live claim/lease, and merge id ceed4d92
+    - command: canonical rebound P23 merge-item digest recomputation
+      result: passed; 7abbd657a3e4089ff5478f77fab356517c5fd090cb496a6ee53ea2cba5fae197
+    - command: P23 source merge-base, nineteen-path allowlist, and zero-effect verification
+      result: passed; exact source 32f3a464, base cecc1c0d, exact source scope, and 0/0/0 effects
+    - command: git merge --no-ff 32f3a4649632c5768b46430c13b4cb2a3546cfc3
+      result: passed; exact parents f75b0922c3b9db11a8ca4beacc9f45a285ac8f0e and 32f3a4649632c5768b46430c13b4cb2a3546cfc3 at merge commit 3d31cb5f460a0b103d5d0433d7bdb8228b68fa02
+    - command: npx vitest run packages/domain/src/notifications/student/lifecycle.test.ts packages/db/src/notifications/student/repository.test.ts apps/web/src/server/features/notifications/student/service.test.ts apps/web/src/client/app/student/notifications/StudentNotificationCenter.test.tsx
+      result: passed; 4 files and 22 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed after P23 full merge
+    - command: P23 post-merge ancestry, parent, scope, steward, migration, registration, provider, and effect checks
+      result: passed; source is an ancestor, exact two-parent merge, no steward or central mutation action, no provider/send action, and 0/0/0 effects
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
