@@ -9,26 +9,27 @@ branch: codex/v21-p08-family-signup
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
 status: claimed
 phase: follow_up_correction
-claimed_by: codex-p08-worker-a456f914
-claim_time: '2026-07-29T02:04:41Z'
-claim_id: a456f914-02cb-4c08-9717-af9709f1948a
+claimed_by: codex-p08-worker-60986795
+claim_time: '2026-07-29T02:10:04Z'
+claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
 writer_slot: FAMILY_SIGNUP
-writer_slot_lease_id: 7b42f2bb-18ac-4f98-b86c-48b021afb66d
-lease_issued_at: '2026-07-29T01:57:52Z'
-lease_expires_at: '2026-07-29T02:57:52Z'
-last_heartbeat_at: '2026-07-29T02:04:41Z'
+writer_slot_lease_id: 4dce3bb7-4411-4643-a367-d7e43adaabb8
+lease_issued_at: '2026-07-29T02:07:09Z'
+lease_expires_at: '2026-07-29T03:07:09Z'
+last_heartbeat_at: '2026-07-29T02:10:04Z'
 lease_released_at: null
-prior_claim_id: e9148002-e9ff-4b7c-ab6e-63080c66bd00
+prior_claim_id: a456f914-02cb-4c08-9717-af9709f1948a
+prior_rejected_atomic_claim_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
 prior_ready_for_review_head_sha: 605c659afe488e32114bae57b3751c044301bdca
-controller_authorization_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
-containing_control_authorization_sha: e695750e02c62ee9e95ca342265c1981f574e9b7
-containing_control_parent_sha: 95883ac4ffe1369ea3a635749952e7504c9f4c42
-ready_entry_state_based_on_control_head_sha: 95883ac406ec38b6c9399c0447022aa906532b5d
-ready_entry_payload_digest: a013156d18578f4db3e5ff4a61e6b35aeb27ecbfa13eb857b3158daad58d6e5d
+controller_authorization_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+containing_control_authorization_sha: 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101
+containing_control_parent_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+ready_entry_state_based_on_control_head_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
+ready_entry_payload_digest: 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430
 claim_mode: resume_existing_branch
-expected_existing_head_sha: 605c659afe488e32114bae57b3751c044301bdca
-correction_parent_head_sha: 605c659afe488e32114bae57b3751c044301bdca
-state_based_on_head_sha: 605c659afe488e32114bae57b3751c044301bdca
+expected_existing_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
+correction_parent_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
+state_based_on_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
 last_implementation_commit_sha: c903d1df6a0c3ee94a700fe62b4e1c0b3c3eeb72
 interface_checkpoint:
   required: true
@@ -39,16 +40,17 @@ interface_checkpoint:
   prior_metadata_head_sha: ca06599ffbe62d7c617235f9e54f5ded57e4b6c7
   prior_contract_digest: 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
 completed_steps:
-  - Fetched containing control authorization e695750e02c62ee9e95ca342265c1981f574e9b7 and verified its sole parent 95883ac4ffe1369ea3a635749952e7504c9f4c42.
-  - Verified the P08 resume_existing_branch entry, exact rejected head 605c659afe488e32114bae57b3751c044301bdca, canonical ready digest, task/context/package digests, and unexpired FAMILY_SIGNUP lease.
-  - Verified claim a456f914-02cb-4c08-9717-af9709f1948a and zero effect-lock leases.
-  - Seeded this atomic follow-up correction claim in exactly the three P08 task-local runtime files.
+  - Confirmed atomic claim 615e124dd49030e3af5e01d94518aea76b6a733e was rejected only because its recorded long-form acquisition SHA did not exist.
+  - Fetched corrected containing authorization 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101 and verified its exact acquisition parent ab5e5cc865be45ef0a71bcec7d71d7df1c787744.
+  - Verified the P08 resume_existing_branch entry, exact current head 615e124dd49030e3af5e01d94518aea76b6a733e, canonical ready digest, task/context/package digests, and unexpired FAMILY_SIGNUP lease.
+  - Verified replacement claim 60986795-c22a-4861-9e98-a93de2c1d22e and zero effect-lock leases.
+  - Seeded this superseding atomic follow-up correction claim in exactly the three P08 task-local runtime files.
 remaining_steps:
   - Push and report this exact three-file atomic claim checkpoint.
   - Await C00 reconciliation before modifying product, contract, test, interface-checkpoint, or steward-request files.
   - After reconciliation, implement only the authorized exact-form, consent, School-seam, and identity-review Checkout corrections.
   - Republish the superseding interface and steward requests, verify, release the lease, and return to ready_for_review.
-next_action: Push the atomic claim checkpoint, report its exact head and parent, and stop until C00 explicitly reconciles claim a456f914-02cb-4c08-9717-af9709f1948a.
+next_action: Push the superseding atomic claim checkpoint, report its exact head and parent, and stop until C00 explicitly reconciles claim 60986795-c22a-4861-9e98-a93de2c1d22e.
 requirements:
   OTV2-SIGNUP-176: implementation_verified_pending_follow_up_correction
   OTV2-SIGNUP-177: implementation_verified_pending_follow_up_correction
@@ -87,9 +89,9 @@ steward_requests:
 verification:
   commands_run:
     - command: exact local and remote branch head comparison
-      result: passed; both equal 605c659afe488e32114bae57b3751c044301bdca
-    - command: containing control authorization and sole-parent verification
-      result: passed; e695750e02c62ee9e95ca342265c1981f574e9b7 has sole parent 95883ac4ffe1369ea3a635749952e7504c9f4c42
+      result: passed; both equal 615e124dd49030e3af5e01d94518aea76b6a733e
+    - command: corrected containing authorization and exact acquisition verification
+      result: passed; 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101 has sole parent ab5e5cc865be45ef0a71bcec7d71d7df1c787744
     - command: canonical ready-entry and lease inspection
       result: passed; exact claim, ready digest, unexpired lease, and zero effect locks
 external_effects:
@@ -98,5 +100,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - C00 must reconcile the atomic follow-up correction claim before any non-runtime-file correction work.
+  - C00 must reconcile the superseding atomic follow-up correction claim before any non-runtime-file correction work.
 out_of_scope_findings: []

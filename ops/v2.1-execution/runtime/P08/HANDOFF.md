@@ -1,30 +1,33 @@
-# P08 Atomic Follow-up Correction Claim
+# P08 Superseding Atomic Follow-up Correction Claim
 
 ## Identity
 
 - Branch: `codex/v21-p08-family-signup`
 - Exact correction parent and expected existing head:
-  `605c659afe488e32114bae57b3751c044301bdca`
-- Follow-up claim: `a456f914-02cb-4c08-9717-af9709f1948a`
-- Writer: `codex-p08-worker-a456f914`
+  `615e124dd49030e3af5e01d94518aea76b6a733e`
+- Rejected metadata-only claim:
+  `615e124dd49030e3af5e01d94518aea76b6a733e`
+- Rejected follow-up claim: `a456f914-02cb-4c08-9717-af9709f1948a`
+- Replacement follow-up claim:
+  `60986795-c22a-4861-9e98-a93de2c1d22e`
+- Writer: `codex-p08-worker-60986795`
 - Containing control authorization:
-  `e695750e02c62ee9e95ca342265c1981f574e9b7`
-- Containing control parent:
-  `95883ac4ffe1369ea3a635749952e7504c9f4c42`
-- Ready-entry controller:
-  `95883ac406ec38b6c9399c0447022aa906532b5d`
+  `0233631c59c7d9c6845e35e6c4d35e6bd7b3a101`
+- Exact ready-entry acquisition:
+  `ab5e5cc865be45ef0a71bcec7d71d7df1c787744`
 - Canonical ready digest:
-  `a013156d18578f4db3e5ff4a61e6b35aeb27ecbfa13eb857b3158daad58d6e5d`
+  `2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430`
 - FAMILY_SIGNUP lease:
-  `7b42f2bb-18ac-4f98-b86c-48b021afb66d`
-- Lease issued: `2026-07-29T01:57:52Z`
-- Lease expires: `2026-07-29T02:57:52Z`
+  `4dce3bb7-4411-4643-a367-d7e43adaabb8`
+- Lease issued: `2026-07-29T02:07:09Z`
+- Lease expires: `2026-07-29T03:07:09Z`
 - External effects: authority none; attempted 0; succeeded 0; reconciled 0
 
 ## This checkpoint
 
-This commit consumes only the P08 follow-up correction claim. It changes
-exactly `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
+This commit supersedes the rejected metadata-only claim and consumes only the
+replacement P08 follow-up correction claim. It changes exactly
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
 
 No product, contract, test, interface checkpoint, steward request, migration,
 route, registration, provider, or external-effect change is included.
@@ -48,4 +51,4 @@ After C00 reconciliation only:
 ## Exact next action
 
 Push and report this three-file atomic claim checkpoint. Then stop until C00
-reconciles claim `a456f914-02cb-4c08-9717-af9709f1948a`.
+reconciles claim `60986795-c22a-4861-9e98-a93de2c1d22e`.
