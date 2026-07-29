@@ -152,35 +152,35 @@ migration_lease_B_control:
       file: packages/db/migrations/2244_v21_ghl_identity.sql
       request_id: P27-migration-001
   collision_count: 0
-  requester_content_read: false
-  allocation_proposal_read_or_edited: false
-  sql_authored: false
+  requester_content_read: true
+  allocation_proposal_read_or_edited: true
+  sql_authored: true
 status: claimed
-phase: migration_lease_B_2239_2244
-claimed_by: codex-f02-lease-b-e2a7b9ff
-claim_time: '2026-07-29T21:41:56Z'
-claim_id: e2a7b9ff-ce58-495e-b164-84d9299250d0
-writer_slot_lease_id: cad3d0dd-59a2-44dd-87fb-6597978daaaf
-lease_issued_at: '2026-07-29T21:25:57Z'
-lease_expires_at: '2026-07-29T22:40:57Z'
-last_heartbeat_at: '2026-07-29T21:41:56Z'
+phase: migration_lease_B_semantic_correction_renewal_requested
+claimed_by: codex-f02-lease-b-renewal-2002fc61
+claim_time: '2026-07-29T22:45:04Z'
+claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
+writer_slot_lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
+lease_issued_at: '2026-07-29T22:39:23Z'
+lease_expires_at: '2026-07-30T00:39:23Z'
+last_heartbeat_at: '2026-07-29T22:45:04Z'
 lease_released_at: null
-controller_authorization_sha: 7d8b9ea0b2a297e445a2efa3a3934695a33445cf
-ready_entry_parent_control_sha: 0d6b35ed4247aa857cc540efeefbceebe421a687
-state_based_on_control_head_sha: 0d6b35ed4247aa857cc540efeefbceebe421a687
-ready_entry_payload_digest: fe2adafd933c848fa9e4b2efb4809f9edc733e42c8f43b71f30ec5b5b9a8df6b
+controller_authorization_sha: 4c15cb1af043727ac9eed01dd7996f6a6a6c0997
+ready_entry_parent_control_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+state_based_on_control_head_sha: cc71835caf5f73a9642adf135efd25d21528f83f
+ready_entry_payload_digest: 635c8923ed3aa11f3dbcf11b1195a22235ce150e43284de265b48f1b0f7da8bd
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: cad3d0dd-59a2-44dd-87fb-6597978daaaf
-    lease_issued_at: '2026-07-29T21:25:57Z'
-    lease_expires_at: '2026-07-29T22:40:57Z'
+    lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
+    lease_issued_at: '2026-07-29T22:39:23Z'
+    lease_expires_at: '2026-07-30T00:39:23Z'
     released_at: null
   SCHEMA_CONTRACT:
-    lease_id: cad3d0dd-59a2-44dd-87fb-6597978daaaf
-    lease_issued_at: '2026-07-29T21:25:57Z'
-    lease_expires_at: '2026-07-29T22:40:57Z'
+    lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
+    lease_issued_at: '2026-07-29T22:39:23Z'
+    lease_expires_at: '2026-07-30T00:39:23Z'
     released_at: null
-state_based_on_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+state_based_on_head_sha: 6a5e359c0a7dae56542741126974a571af5da5a9
 last_implementation_commit_sha: 7132cd81ea260558777859cd4c7485a357e8f5fb
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
@@ -232,10 +232,31 @@ completed_steps:
   - Verified exact ordinals and filenames 2239 through 2244, next ordinal 2239, forbidden ordinal 2231, and zero collisions at control, integration, and F02 heads.
   - Verified shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease cad3d0dd, zero effect locks, fourteen unclaimed provider locks, and effects 0/0/0.
   - Claimed only the F02 runtime triplet for migration Lease B; the proposal, requester bodies, SQL, product, and control were not read or edited.
+  - Stopped the first Lease B implementation attempt without commit or push at 2026-07-29T22:33:50Z after the semantic audit found material blockers.
+  - Verified exact renewal containing control 4c15cb1a, sole authorization parent cc71835c, unchanged local and remote F02 head 6a5e359c, READY digest 635c8923, new claim, shared lease, and effects 0/0/0.
+  - Preserved the six SQL drafts and allocation proposal dirty and byte-identical while claiming only the F02 runtime triplet for renewal.
 remaining_steps:
-  - C00 must reconcile this exact atomic Lease B claim before F02 reads requester content or edits the proposal or SQL.
-  - After reconciliation, F02 may read only the six bound requests in required P16, P32, P10, P23, P24, P27 order and implement only the authorized Lease B paths.
-next_action: Stop after publishing this Lease B atomic claim. Await C00 reconciliation; do not read requester content, edit the proposal or SQL, register, inspect providers, deploy, send, integrate, or perform external effects.
+  - C00 must reconcile this exact renewal atomic claim before F02 performs any semantic SQL or proposal correction.
+  - After reconciliation, correct every bound semantic blocker, regenerate checksums, and rerun all required gates under the renewed lease.
+next_action: Stop after publishing this renewal atomic claim. Await C00 reconciliation; do not edit SQL or the proposal, register, inspect providers, deploy, send, integrate, or perform external effects.
+renewal_semantic_blockers:
+  - P27 classification vocabulary and complimentary compatibility
+  - P16 occurrence schedule columns, evidence-preserving state reconciliation, and exact create-capable canonical backfill
+  - P24 exact kind/category, author identity, structured redacted intent, and false invariants
+  - P32 scoped lifecycle enums and lowercase digest enforcement
+  - P10 complete composite scope, exact credential validation, and append-only audit
+  - P23 exact semantic dedupe tuple
+  - final checksum regeneration after SQL stabilization
+preserved_dirty_draft:
+  path_count: 7
+  allocation_proposal_raw_sha256: db69fb2d32c777a8cd1cb7d20f5c5173ca9ed4780fb1e7514e8e0a34cea5a413
+  sql_normalized_lf_sha256:
+    packages/db/migrations/2239_v21_classroom_core.sql: 96602bdba084f86307acfac71c54d5b699108b4070f1cd6c10210454bd282aa4
+    packages/db/migrations/2240_v21_privacy_data_rights.sql: 657dc8f4667058e6afe884c5e27c5a328a5449ea843e0eee6d018f5604a8e5da
+    packages/db/migrations/2241_v21_admin_directory.sql: ea0a055f6e72bb6d967057b757d90229412f44780cb804b8cd8e8ada869168d0
+    packages/db/migrations/2242_v21_student_notifications.sql: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+    packages/db/migrations/2243_v21_support.sql: 71d6848f48f3bc91355b227c06fc10db68c0d89e3f288f2a8ee19ce18fc43b2c
+    packages/db/migrations/2244_v21_ghl_identity.sql: 8289f6a67718355dcbd3f7c8cde5ff46e5010d955fe2be89a6d7a9978e7410bd
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -261,6 +282,10 @@ lease_A_changed_paths:
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
 lease_B_atomic_claim_changed_paths:
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+lease_B_renewal_atomic_claim_changed_paths:
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
