@@ -1,54 +1,53 @@
-# I36 P12/P22/P34 Ordered Full-Wave Release
+# I36 P13/P25/P26 Full-Wave Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-integration`
-- Clean claim head: `c4ee7d967ad5ff85f538307ad196c63d35fb5ad2`
-- Reconciled control / acquisition:
-  `38acd72b4fa7598ebb41b7e5ee32407bd6ec0dd1` /
-  `7e0c7e41c34b2ae94f05649386470bb28e52e9fb`
+- Exact existing target: `44fd536381e7af8885f31247d6bf91dd6266b195`
+- Containing authorization / acquisition:
+  `8f7a425ac5ba883e04d534857363aee3c4c881be` /
+  `d7df4df6954fcb3cdd06704461f86894285b09f6`
+- Ready digest:
+  `080fac5c73a526228fc7a8b0c957389362942b7e094decedf1454066bff56862`
 - Claim / RELEASE_INTEGRATOR lease:
-  `2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa` /
-  `08ea5a46-06b1-466e-a6f2-b1947f4ed402`
-- Lease released: `2026-07-29T05:04:13Z`
-- Phase scope: `P12_P22_P34_full_atomic_claim_only`
-- Final metadata release head: derive with `git rev-parse HEAD`; C00 records
-  the observed pushed remote head.
+  `d17f9dc5-0f97-44ea-bb44-600c6c3635a3` /
+  `6077f8e5-c498-405e-9cd8-754340775f53`
+- Lease issued / expiry:
+  `2026-07-29T05:46:11Z` / `2026-07-29T06:46:11Z`
+- Phase scope: `P13_P25_P26_full_atomic_claim_only`
+- Atomic claim head: derive with `git rev-parse HEAD`; C00 records the
+  observed pushed remote head.
 
-## Ordered merge record
+## Queue verification
 
-1. P12 source `4bc6f15c8beffb28dc845d976a62b9c4915a11dc`
-   merged at `fbdab647ceb9496c173b66ca2c3ed770445d9a5b`, with parents
-   `c4ee7d967ad5ff85f538307ad196c63d35fb5ad2` and the exact source.
-2. P22 source `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`
-   merged after P12 at `f57f809fc1b1d0880c0b70cd7c38552c537c6f54`,
-   with parents `fbdab647ceb9496c173b66ca2c3ed770445d9a5b` and the
-   exact source.
-3. P34 source `17f41c6b78bf6bedf1beb0803f855b2d4f01294a`
-   merged after P22 at `50fafc9ad9a797a71317a8b134b89f004b88edb1`,
-   with parents `f57f809fc1b1d0880c0b70cd7c38552c537c6f54` and the
-   exact source.
+The exact local and remote integration target matched before this checkpoint.
+The canonical ready digest and all three queue item digests were reproduced:
 
-The queue payload digests, all three task and state/handoff digests, exact
-16/14/15-path source scopes, required merge bases, P12 semantic interface
-digest, and P22 artifact digest were reproduced before merge.
+- P13 `a9d641e6da6a08c805f34d3f827816fcd8c6138a`, 19 paths,
+  digest `3c35d48d6b5eb67abcc4d8995add8ee95cea92d52cc81eea0a8fcb5f621be076`.
+- P25 `0979e151f80900cea75edecabe8967ce382d168d`, 15 paths,
+  after P13, digest
+  `677c7638e6777263d3a2dfb1b4304aa779b9a0be1593c619bc95fb34255c4d11`.
+- P26 `5e33807200a24ec53be889234dbaafdda9717dcb`, 20 paths,
+  after P25, digest
+  `1692243ec52369203f068bbe2eafd0e3a2795814a7828ae14f8a8653f34bbd7d`.
 
-## Verification
+Remote branch heads matched the queued heads without fetching or reading source
+content. All items bind the exact expected target, claim, live lease, ready
+dependency metadata, and zero-effect summaries.
 
-- P12: 3 focused files, 14 tests passed.
-- P22: 2 focused files, 11 tests passed.
-- P34: backup/restore mechanism and bounded canary accounting harnesses passed.
-- Cumulative workspace typecheck passed.
-- Focused ESLint and CRLF-aware Prettier checks passed.
-- Diff hygiene and the repository secret scan passed.
+## Preserved integration state
 
-No steward request, migration, provider, deployment, registration, legal
-approval, real R44 evidence/effect, or external effect was attempted.
+No queued source was fetched, read for admission, or merged. No P13 steward
+request, migration, registration, provider action, or external effect was
+attempted. This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md` under the I36 runtime directory.
 
 ## Next action
 
-C00 should reconcile the exact pushed metadata release head and the three merge
-heads above. I36 must stop after reporting this checkpoint.
+Push and report this atomic claim, then stop. Source admission and ordered
+integration may begin only after C00 consumes the exact pushed claim head and
+publishes target-CAS reconciliation.
 
 ## Effects
 

@@ -1,25 +1,31 @@
 MODEL: GPT-5.6-SOL
-REASONING: HIGH
+REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: STOP
+MODE: START_OR_RESUME
 
-I36 completed the exact ordered P12/P22/P34 full-source wave and released claim
-2fd3ab04-0ab1-4fa5-a4bb-1dc9dfa7bcfa and RELEASE_INTEGRATOR lease
-08ea5a46-06b1-466e-a6f2-b1947f4ed402.
+Resume I36 only after C00 has consumed the exact P13/P25/P26 full-wave atomic
+claim head and published explicit target-CAS reconciliation.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Clean claim head: c4ee7d967ad5ff85f538307ad196c63d35fb5ad2
-Control: 38acd72b4fa7598ebb41b7e5ee32407bd6ec0dd1
-Acquisition: 7e0c7e41c34b2ae94f05649386470bb28e52e9fb
+Expected pre-claim target: 44fd536381e7af8885f31247d6bf91dd6266b195
+Task packet: ops/v2.1-execution/tasks/I36.yaml
+Task context: ops/v2.1-execution/contexts/I36-CONTEXT.md
+Task state: ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+Handoff: ops/v2.1-execution/runtime/I36/HANDOFF.md
 
-Ordered merge heads:
+Authority binds control 8f7a425ac5ba883e04d534857363aee3c4c881be,
+acquisition d7df4df6954fcb3cdd06704461f86894285b09f6, ready digest
+080fac5c73a526228fc7a8b0c957389362942b7e094decedf1454066bff56862,
+claim d17f9dc5-0f97-44ea-bb44-600c6c3635a3, and RELEASE_INTEGRATOR
+lease 6077f8e5-c498-405e-9cd8-754340775f53 expiring
+2026-07-29T06:46:11Z.
 
-- P12: fbdab647ceb9496c173b66ca2c3ed770445d9a5b
-- P22: f57f809fc1b1d0880c0b70cd7c38552c537c6f54
-- P34: 50fafc9ad9a797a71317a8b134b89f004b88edb1
+Before source admission, fetch remote control/integration refs and verify C00
+consumed the exact pushed claim head, local and remote equal it, the lease
+remains valid, and no foreign writer or path collision exists. Read the exact
+rebound queue authorization before fetching or reading queued source content.
 
-Derive the final metadata release head with `git rev-parse HEAD` and reconcile
-it in C00. Do not resume I36 or perform steward, migration, provider,
-deployment, registration, legal-approval, real R44, or external-effect work
-without a new explicit controller authorization.
+Do not merge P13, P25, or P26, apply a P13 steward request, create or modify a
+migration, perform registration/provider work, or cause an external effect
+without explicit post-reconciliation authorization. Effects remain `0/0/0`.
