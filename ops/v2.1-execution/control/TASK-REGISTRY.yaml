@@ -439,25 +439,26 @@ tasks:
     transitioned_at: '2026-07-29T02:57:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P08/status_proof
 - task_id: P09
-  status: planned
-  active_phase: planned
-  branch: null
-  phase_branches: {}
+  status: ready
+  active_phase: implementation
+  branch: codex/v21-p09-school-inquiry
+  phase_branches:
+    implementation: codex/v21-p09-school-inquiry
   phase_heads: {}
-  authorized_start_sha: null
+  authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
   last_known_remote_head: null
-  active_claim_id: null
+  active_claim_id: 92d411ff-e9c0-431d-ab69-e7b71935e4e5
   active_writer_id: null
-  lease_expires_at: null
-  last_heartbeat_at: null
-  controller_authorization_sha: null
-  ready_entry_payload_digest: null
+  lease_expires_at: '2026-07-29T11:23:53Z'
+  last_heartbeat_at: '2026-07-29T10:23:53Z'
+  controller_authorization_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+  ready_entry_payload_digest: d40ec2fea20f686e5cf866e7f25c2693465ae2f1a7d6afe45f96de8a7b98e529
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: planned
-    producer_task_id: null
-    producer_head_sha: null
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -470,9 +471,9 @@ tasks:
       blocked: 0
       stale: 0
       waived: 0
-    external_effects_reconciled: null
-    state_based_on_control_head_sha: null
-    transitioned_at: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+    transitioned_at: '2026-07-29T10:23:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P09/status_proof
 - task_id: P10
   status: ready_for_review
@@ -955,25 +956,26 @@ tasks:
     transitioned_at: '2026-07-28T23:01:30Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P20/status_proof
 - task_id: P21
-  status: planned
-  active_phase: planned
-  branch: null
-  phase_branches: {}
+  status: ready
+  active_phase: implementation
+  branch: codex/v21-p21-content-publication
+  phase_branches:
+    implementation: codex/v21-p21-content-publication
   phase_heads: {}
-  authorized_start_sha: null
+  authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
   last_known_remote_head: null
-  active_claim_id: null
+  active_claim_id: 3a93eeca-5035-4328-b685-e580f2b32ce6
   active_writer_id: null
-  lease_expires_at: null
-  last_heartbeat_at: null
-  controller_authorization_sha: null
-  ready_entry_payload_digest: null
+  lease_expires_at: '2026-07-29T11:23:53Z'
+  last_heartbeat_at: '2026-07-29T10:23:53Z'
+  controller_authorization_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+  ready_entry_payload_digest: d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
-    state: planned
-    producer_task_id: null
-    producer_head_sha: null
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: null
@@ -986,9 +988,9 @@ tasks:
       blocked: 0
       stale: 0
       waived: 0
-    external_effects_reconciled: null
-    state_based_on_control_head_sha: null
-    transitioned_at: null
+    external_effects_reconciled: true
+    state_based_on_control_head_sha: d99fde51092abdee97f42f28e8bdee8a08c5e22c
+    transitioned_at: '2026-07-29T10:23:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P21/status_proof
 - task_id: P22
   status: ready_for_review

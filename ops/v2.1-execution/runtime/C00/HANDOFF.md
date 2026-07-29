@@ -1300,3 +1300,15 @@ injective DOM-safe option IDs, Bearer-whitespace redaction, and direct negative
 tests. Preserve every earlier passing correction, publish a superseding final,
 release the lease, and stop for independent re-audit. No steward/provider/
 external effect is authorized.
+
+P21 and P09 also passed an independent read-only frontier audit at integration
+`088b40476bd5ceeb0af901b6f78a4cb8c556671b`. P21's F05/F06/P14 and
+P09's P08 interface/integration dependencies are exact ancestors; both branches
+are absent, their owned roots and writer slots are disjoint from each other and
+P11, and both packets classify source work as `external_authority: none`.
+C00 issued only atomic new-branch claims: P21 READY `d2b127c6`, claim
+`3a93eeca`, CONTENT_PUBLICATION lease `31423c6c`; P09 READY `d40ec2fe`,
+claim `92d411ff`, SCHOOL_INQUIRY lease `55f80667`. Each first push must contain
+exactly its `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, then stop for
+C00 reconciliation. Live Vimeo/Drive/S3/GHL inspection or mutation, provider
+locks, steward application, sends, and external effects remain unauthorized.

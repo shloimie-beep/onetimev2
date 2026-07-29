@@ -1019,6 +1019,21 @@ Preserve earlier corrections, run focused verification and typecheck, release
 the lease before expiry, publish a superseding final, and stop for independent
 re-audit. Apply no steward/provider/external effect.
 
+In parallel, create only the two authorized atomic branches from exact
+integration head `088b40476bd5ceeb0af901b6f78a4cb8c556671b`:
+
+- P21 `codex/v21-p21-content-publication`, claim `3a93eeca-5035-4328-b685-e580f2b32ce6`,
+  CONTENT_PUBLICATION lease `31423c6c-74ef-43cc-b3a8-75b425568619`,
+  READY digest `d2b127c6cb94a4428a39f1789f153a625b6b3153b0e4104778aa7f51c98cebe2`.
+- P09 `codex/v21-p09-school-inquiry`, claim `92d411ff-e9c0-431d-ab69-e7b71935e4e5`,
+  SCHOOL_INQUIRY lease `55f80667-a56c-4eeb-b04c-dcd40700466e`,
+  READY digest `d40ec2fea20f686e5cf866e7f25c2693465ae2f1a7d6afe45f96de8a7b98e529`.
+
+For each, seed and push exactly the three task runtime-memory files, verify
+normal atomic branch creation, and stop for C00 reconciliation. Do not edit
+product code, inspect live providers, apply steward work, or perform effects
+in either first push.
+
 P11 final `51bd416bbf3b53a2eb985c41617673135bcfc7a7` failed semantic
 admission and must not be integrated. Resume that exact head only for an atomic
 correction claim under claim `b66b8fdf-14d6-4f3b-8902-ebe8a16cba81`,
