@@ -15,21 +15,28 @@ dependency_heads:
   P27: e706587bfe581f881fb072271b15b4123f9aabe6
   P28: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
   P32: 6a33944a75e717041b2f951134459769b8fc2617
-status: ready
+status: claimed
 phase: integration
-claimed_by: codex-i36-worker-9b1ad11d
-claim_time: '2026-07-28T22:56:11Z'
-claim_id: 9b1ad11d-f16c-40e7-aec9-e07172c90034
-lease_id: add98f8a-d111-44a0-9232-44140f8e2b9b
-lease_issued_at: '2026-07-28T22:50:05Z'
-lease_expires_at: '2026-07-28T23:50:05Z'
-lease_released_at: '2026-07-28T23:06:07Z'
-last_heartbeat_at: '2026-07-28T23:06:07Z'
-controller_authorization_sha: bd24429251acff6393c0311a223e0e723335d7cd
-ready_entry_state_based_on_control_head_sha: c9c3d288fa6cdb3aca756de8cc03d35471abe464
-ready_entry_payload_digest: b661e046bf1f18eb5d8a756e59f51258d19b7774b8d94b7390ea16901676f315
-state_based_on_head_sha: b5f77d758b251b49c1603b5e6a1eab85aa64c800
-last_implementation_commit_sha: b5f77d758b251b49c1603b5e6a1eab85aa64c800
+claimed_by: codex-i36-worker-a2ae8e13
+claim_time: '2026-07-29T01:14:50Z'
+claim_id: a2ae8e13-f123-4190-badc-58269ced4219
+lease_id: d2df925f-32a0-42e6-8ed5-fd018962f87d
+lease_issued_at: '2026-07-29T01:08:19Z'
+lease_expires_at: '2026-07-29T02:08:19Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-29T01:14:50Z'
+controller_authorization_sha: 6dbbb849db7373fb5caaffff4ad5bf3e547e72b1
+ready_entry_state_based_on_control_head_sha: 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb
+ready_entry_payload_digest: 8733b95aa3a627a63f1fa6ecf0e9d04f8a21af9b3323ef712a67181f99bfe20a
+claim_mode: resume_existing
+expected_existing_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+lease_phase_scope: P08_interface_atomic_claim_only
+queued_merge_id: 668de637-6114-4519-8460-6608d825e0d5
+queued_merge_item_payload_digest: 06612d73a42af81ba14ebb59ec407360150746d72553c474838817e7b25f1dc7
+queued_source_head_sha: b7601c002d2c37d0ef7760c328015f9a8d590893
+queued_expected_target_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+state_based_on_head_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+last_implementation_commit_sha: 49431959f58f284bdc13ca931acf09f980fc483a
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -263,10 +270,13 @@ completed_steps:
     failures; no P28 steward request was adjudicated or applied.
   - Released claim 9b1ad11d-f16c-40e7-aec9-e07172c90034 and RELEASE_INTEGRATOR lease
     add98f8a-d111-44a0-9232-44140f8e2b9b after the exact P28 integration checkpoint.
+  - Verified containing control 6dbbb849db7373fb5caaffff4ad5bf3e547e72b1, ready-entry parent 2ce11c77a5a39b20d8b1b5d1c928358f631b49bb, exact existing integration head 49431959f58f284bdc13ca931acf09f980fc483a, claim a2ae8e13-f123-4190-badc-58269ced4219, sole RELEASE_INTEGRATOR lease, canonical ready digest, and zero effect locks.
+  - Recorded queued P08 interface item 668de637-6114-4519-8460-6608d825e0d5 and its optimistic target without reading, scope-admitting, or merging the source.
+  - Seeded the P08-interface atomic claim checkpoint in the three I36 runtime files only.
 remaining_steps:
-  - Push and report the exact P28 integration metadata checkpoint to C00.
-  - Await a new exact C00 authorization before any further integration or steward work.
-next_action: Push and report the exact P28 integration metadata checkpoint to C00, then await a new exact control authorization.
+  - Push and report this exact three-file atomic claim checkpoint to C00.
+  - Stop until C00 reconciles the claim and issues an exact target-CAS rebind before any source read or merge.
+next_action: Push the P08-interface atomic claim checkpoint, report its exact head and parent, and stop for C00 reconciliation and target-CAS rebind.
 requirements: {}
 acceptance_cases: {}
 changed_paths:
