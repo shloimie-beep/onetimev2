@@ -104,14 +104,31 @@ export function createContentPublicationService(deps: {
           );
           return { record: current, replay: true as const };
         }
+        const pendingProviderContext = current.pendingProviderOperationId
+          ? await unit.getPendingPublishProviderContext(current.pendingProviderOperationId)
+          : null;
+        if (!pendingProviderContext) return providerConflict();
+        const eligibility = await Promise.all(
+          input.audience.map((member) =>
+            unit.getCurrentPublicationEligibility(
+              member.studentId,
+              input.contentId,
+              member.occurrenceId,
+            ),
+          ),
+        );
+        if (eligibility.some((entry) => entry === null)) return unavailable();
         const result = recordPrivatePublication({
           record: current,
           readback: input.readback,
           audience: input.audience,
+          eligibility: eligibility.filter((entry) => entry !== null),
+          pendingProviderContext,
           binding: input.binding,
         });
         await unit.saveContent(result.record, current.version);
         await unit.savePublicationMaterialization(result.materialization);
+        await unit.completePublishProviderOperation(result.providerCompletion);
         await unit.saveReceipt(
           receipt('record_published', input.contentId, result.record.version, input.binding),
         );
@@ -125,19 +142,39 @@ export function createContentPublicationService(deps: {
       relation: Omit<GovernedContentOccurrenceRelation, 'governedByAdminId' | 'attachedAt'>;
       binding: ContentPublicationCommandBinding;
     }) {
-      return mutate({
-        repository: deps.repository,
-        principal: input.principal,
-        contentId: input.contentId,
-        operation: 'attach_occurrence',
-        binding: input.binding,
-        apply: (record) =>
-          attachOccurrence({
-            principal: input.principal,
-            record,
-            relation: input.relation,
-            binding: input.binding,
-          }),
+      return deps.repository.inTransaction(async (unit) => {
+        assertAdminPublicationPrincipal(input.principal);
+        const current = await requiredContent(unit, input.contentId);
+        const priorReceipt = await unit.findReceipt(
+          'attach_occurrence',
+          input.binding.idempotencyKey,
+        );
+        if (priorReceipt) {
+          assertReceiptReplay(
+            priorReceipt,
+            'attach_occurrence',
+            input.binding.requestHash,
+            input.contentId,
+          );
+          return { record: current, replay: true as const };
+        }
+        const canonicalOccurrence = await unit.getCanonicalGovernedOccurrence(
+          input.relation.occurrenceId,
+          input.relation.productKey,
+        );
+        if (!canonicalOccurrence) return governedOccurrenceUnavailable();
+        const next = attachOccurrence({
+          principal: input.principal,
+          record: current,
+          relation: input.relation,
+          canonicalOccurrence,
+          binding: input.binding,
+        });
+        await unit.saveContent(next, current.version);
+        await unit.saveReceipt(
+          receipt('attach_occurrence', input.contentId, next.version, input.binding),
+        );
+        return { record: next, replay: false as const };
       });
     },
 
@@ -366,6 +403,20 @@ function unavailable(): never {
   throw new ContentPublicationError(
     CONTENT_PUBLICATION_ERROR_CODES.unavailable,
     'Content is unavailable.',
+  );
+}
+
+function providerConflict(): never {
+  throw new ContentPublicationError(
+    CONTENT_PUBLICATION_ERROR_CODES.conflict,
+    'Pending publication operation is unavailable.',
+  );
+}
+
+function governedOccurrenceUnavailable(): never {
+  throw new ContentPublicationError(
+    CONTENT_PUBLICATION_ERROR_CODES.invalidInput,
+    'Governed occurrence is unavailable.',
   );
 }
 

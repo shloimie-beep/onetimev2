@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type {
   ContentApprovalEvidence,
+  ContentPublicationOutboxIntent,
   ContentPublicationPrincipal,
   ContentPublicationRecord,
   StudentContentAssignment,
   StudentPlaybackAuthorizationFacts,
+  StudentPublicationEligibility,
   VimeoProviderOperationReadback,
 } from '../../../../contracts/src/content/publication/index.ts';
 import { ContentPublicationError } from './errors.ts';
@@ -59,6 +61,7 @@ describe('P21 publication lifecycle', () => {
       principal: admin,
       record: draft,
       relation: relation('occurrence_two', 2),
+      canonicalOccurrence: canonicalOccurrence('occurrence_two', 2),
       binding: binding(4),
     });
     expect(attached.occurrenceRelations).toHaveLength(2);
@@ -67,6 +70,7 @@ describe('P21 publication lifecycle', () => {
         principal: admin,
         record: attached,
         relation: relation('occurrence_two', 2),
+        canonicalOccurrence: canonicalOccurrence('occurrence_two', 2),
         binding: binding(5),
       }),
     ).toBe(attached);
@@ -75,6 +79,7 @@ describe('P21 publication lifecycle', () => {
         principal: admin,
         record: attached,
         relation: relation('occurrence_two', 3),
+        canonicalOccurrence: canonicalOccurrence('occurrence_two', 3),
         binding: binding(5),
       }),
     ).toThrow(/different governance/i);
@@ -137,10 +142,13 @@ describe('P21 publication lifecycle', () => {
       requested.record.publicationGeneration,
       hash('b'),
     );
+    const pendingProviderContext = providerContext(requested.intent);
     const published = recordPrivatePublication({
       record: requested.record,
       readback,
       audience: [audience()],
+      eligibility: [eligibility()],
+      pendingProviderContext,
       binding: binding(6, 'c'),
     });
     expect(published.record).toMatchObject({
@@ -148,6 +156,12 @@ describe('P21 publication lifecycle', () => {
       opaqueProviderAssetRef: 'asset_private_01',
       providerReadbackDigest: hash('e'),
       pendingProviderOperationId: null,
+    });
+    expect(published.providerCompletion).toMatchObject({
+      providerOperationId: requested.intent.providerOperationId,
+      expectedProviderOperationVersion: 3,
+      outboxIntentId: requested.intent.intentId,
+      canonicalRequestHash: hash('b'),
     });
     expect(published.materialization.assignments).toEqual([
       expect.objectContaining({
@@ -190,9 +204,43 @@ describe('P21 publication lifecycle', () => {
           record: requested.record,
           readback: invalid as VimeoProviderOperationReadback,
           audience: [audience()],
+          eligibility: [eligibility()],
+          pendingProviderContext,
           binding: binding(6, 'c'),
         }),
       ).toThrow(ContentPublicationError);
+    }
+    expect(() =>
+      recordPrivatePublication({
+        record: requested.record,
+        readback,
+        audience: [audience()],
+        eligibility: [eligibility()],
+        pendingProviderContext: {
+          ...pendingProviderContext,
+          intent: { ...pendingProviderContext.intent, requestHash: hash('9') },
+        },
+        binding: binding(6, 'c'),
+      }),
+    ).toThrow(/incomplete or ambiguous/i);
+    for (const ineligible of [
+      eligibility({ studentActive: false }),
+      eligibility({ enrollmentActive: false }),
+      eligibility({ accessState: 'inactive' }),
+      eligibility({ serviceAccountAccepted: false }),
+      eligibility({ privacyReviewState: 'hold' }),
+      eligibility({ contentRevoked: true }),
+    ]) {
+      expect(() =>
+        recordPrivatePublication({
+          record: requested.record,
+          readback,
+          audience: [audience()],
+          eligibility: [ineligible],
+          pendingProviderContext,
+          binding: binding(6, 'c'),
+        }),
+      ).toThrow(/not currently eligible/i);
     }
 
     const unpublished = unpublishContent({
@@ -437,6 +485,17 @@ function relation(occurrenceId: string, occurrenceVersion: number) {
   };
 }
 
+function canonicalOccurrence(occurrenceId: string, occurrenceVersion: number) {
+  return {
+    occurrenceId,
+    occurrenceVersion,
+    canonicalSeriesId: 'canonical_series_one',
+    productKey: 'one_time_mishnayos' as const,
+    governanceState: 'governed' as const,
+    active: true as const,
+  };
+}
+
 function binding(expectedVersion: number, digit = 'a') {
   return {
     idempotencyKey: `p21.operation.${expectedVersion}.${digit}`,
@@ -453,6 +512,8 @@ function providerReadback(
 ): VimeoProviderOperationReadback {
   return {
     providerOperationId,
+    providerOperationVersion: 3,
+    providerOperationState: 'accepted',
     operation: 'publish_private',
     contentId: 'content_one',
     contentVersionId: 'content_version_one',
@@ -471,9 +532,34 @@ function providerReadback(
     matchingCanonicalAssetCount: 1,
     exactContentVersionCorrelation: true,
     providerAcceptanceDigest: hash('d'),
+    providerReconciliationDigest: hash('a'),
     providerReadbackDigest: hash('e'),
-    oneTimePublicationReadback: 'applied',
+    oneTimePublicationReadback: 'ready_to_apply',
     oneTimeReadbackDigest: hash('f'),
+  };
+}
+
+function providerContext(intent: ContentPublicationOutboxIntent) {
+  return {
+    intent,
+    providerOperation: {
+      providerOperationId: intent.providerOperationId,
+      providerOperationVersion: 3,
+      provider: 'vimeo' as const,
+      operation: 'publish_private' as const,
+      productKey: 'one_time_mishnayos' as const,
+      contentId: intent.contentId,
+      contentVersionId: intent.contentVersionId,
+      publicationGeneration: intent.publicationGeneration,
+      idempotencyKey: intent.idempotencyKey,
+      canonicalRequestHash: intent.requestHash,
+      state: 'accepted' as const,
+      unknownEffect: false as const,
+      registryBindingKey: 'vimeo_publication_primary',
+      providerAccountRefHash: hash('9'),
+      providerAcceptanceDigest: hash('d'),
+      providerReconciliationDigest: hash('a'),
+    },
   };
 }
 
@@ -489,6 +575,27 @@ function audience() {
     serviceAccountConsentVersion: 8,
     privacyVersion: 9,
     revocationVersion: 10,
+  };
+}
+
+function eligibility(
+  overrides: Partial<StudentPublicationEligibility> = {},
+): StudentPublicationEligibility {
+  return {
+    ...audience(),
+    contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    publicationGeneration: 1,
+    studentActive: true,
+    enrollmentActive: true,
+    accessState: 'active',
+    serviceAccountAccepted: true,
+    privacyReviewState: 'clear',
+    studentRevoked: false,
+    accountRevoked: false,
+    contentRevoked: false,
+    adultRecipientActive: true,
+    ...overrides,
   };
 }
 

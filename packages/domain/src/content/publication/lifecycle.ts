@@ -2,20 +2,24 @@ import { createHash } from 'node:crypto';
 import {
   CONTENT_PLAYBACK_GRANT_TTL_MS,
   CONTENT_PUBLICATION_PRODUCT_KEY,
+  type CanonicalGovernedOccurrence,
   type ContentApprovalEvidence,
   type ContentPublicationCommandBinding,
   type ContentPublicationMaterialization,
   type ContentPublicationOutboxIntent,
+  type ContentPublicationProviderCompletion,
   type ContentPublicationPrincipal,
   type ContentPublicationReceipt,
   type ContentPublicationRecord,
   type GovernedContentOccurrenceRelation,
+  type PendingContentPublicationProviderContext,
   type StudentContentAssignment,
   type StudentContentResume,
   type StudentLibraryItem,
   type StudentPlaybackGrant,
   type StudentPlaybackAuthorizationFacts,
   type StudentPublicationAudience,
+  type StudentPublicationEligibility,
   type VimeoProviderOperationReadback,
 } from '../../../../contracts/src/content/publication/index.ts';
 import { CONTENT_PUBLICATION_ERROR_CODES, ContentPublicationError } from './errors.ts';
@@ -109,10 +113,16 @@ export function recordPrivatePublication(input: {
   record: ContentPublicationRecord;
   readback: VimeoProviderOperationReadback;
   audience: readonly StudentPublicationAudience[];
+  eligibility: readonly StudentPublicationEligibility[];
+  pendingProviderContext: PendingContentPublicationProviderContext;
   binding: ContentPublicationCommandBinding;
-}): { record: ContentPublicationRecord; materialization: ContentPublicationMaterialization } {
+}): {
+  record: ContentPublicationRecord;
+  materialization: ContentPublicationMaterialization;
+  providerCompletion: ContentPublicationProviderCompletion;
+} {
   assertBinding(input.binding, input.record);
-  assertPublicationReadback(input.record, input.readback);
+  assertPublicationReadback(input.record, input.pendingProviderContext, input.readback);
   const occurredAt = validInstant(input.binding.occurredAt);
   const record = {
     ...input.record,
@@ -128,7 +138,23 @@ export function recordPrivatePublication(input: {
   };
   return {
     record,
-    materialization: materializePublication(record, input.audience, occurredAt),
+    materialization: materializePublication(record, input.audience, input.eligibility, occurredAt),
+    providerCompletion: {
+      providerOperationId: input.readback.providerOperationId,
+      expectedProviderOperationVersion: input.readback.providerOperationVersion,
+      outboxIntentId: input.pendingProviderContext.intent.intentId,
+      contentId: input.record.contentId,
+      contentVersionId: input.record.contentVersionId,
+      publicationGeneration: input.record.publicationGeneration,
+      canonicalRequestHash: input.readback.canonicalRequestHash,
+      providerAcceptanceDigest: input.readback.providerAcceptanceDigest,
+      providerReconciliationDigest: input.readback.providerReconciliationDigest,
+      registryBindingKey: input.pendingProviderContext.providerOperation.registryBindingKey,
+      providerAccountRefHash: input.pendingProviderContext.providerOperation.providerAccountRefHash,
+      providerReadbackDigest: input.readback.providerReadbackDigest,
+      oneTimeReadbackDigest: input.readback.oneTimeReadbackDigest,
+      completedAt: occurredAt,
+    },
   };
 }
 
@@ -232,11 +258,12 @@ export function attachOccurrence(input: {
   principal: ContentPublicationPrincipal;
   record: ContentPublicationRecord;
   relation: Omit<GovernedContentOccurrenceRelation, 'governedByAdminId' | 'attachedAt'>;
+  canonicalOccurrence: CanonicalGovernedOccurrence;
   binding: ContentPublicationCommandBinding;
 }) {
   assertAdmin(input.principal);
   assertBinding(input.binding, input.record);
-  assertOccurrenceRelation(input.principal, input.relation);
+  assertOccurrenceRelation(input.principal, input.relation, input.canonicalOccurrence);
   if (input.record.state === 'archived' || input.record.state === 'failed') {
     throw failure('invalidState', 'Unavailable content cannot be attached.');
   }
@@ -541,6 +568,7 @@ function assertApprovalEvidence(
 function assertOccurrenceRelation(
   principal: ContentPublicationPrincipal,
   relation: Omit<GovernedContentOccurrenceRelation, 'governedByAdminId' | 'attachedAt'>,
+  canonical: CanonicalGovernedOccurrence,
 ) {
   assertSafeId(relation.relationId, 'relationId');
   assertSafeId(relation.occurrenceId, 'occurrenceId');
@@ -548,6 +576,12 @@ function assertOccurrenceRelation(
   if (
     relation.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY ||
     relation.productKey !== principal.productKey ||
+    canonical.governanceState !== 'governed' ||
+    canonical.active !== true ||
+    canonical.occurrenceId !== relation.occurrenceId ||
+    canonical.occurrenceVersion !== relation.occurrenceVersion ||
+    canonical.canonicalSeriesId !== relation.canonicalSeriesId ||
+    canonical.productKey !== relation.productKey ||
     !Number.isSafeInteger(relation.occurrenceVersion) ||
     relation.occurrenceVersion < 1
   ) {
@@ -557,13 +591,39 @@ function assertOccurrenceRelation(
 
 function assertPublicationReadback(
   record: ContentPublicationRecord,
+  pending: PendingContentPublicationProviderContext,
   readback: VimeoProviderOperationReadback,
 ) {
+  const intent = pending.intent;
+  const operation = pending.providerOperation;
   if (
     record.state !== 'publishing' ||
     !record.approval ||
     !record.pendingProviderOperationId ||
     readback.providerOperationId !== record.pendingProviderOperationId ||
+    intent.providerOperationId !== record.pendingProviderOperationId ||
+    intent.provider !== 'vimeo' ||
+    intent.operation !== 'publish_private' ||
+    intent.contentId !== record.contentId ||
+    intent.contentVersionId !== record.contentVersionId ||
+    intent.publicationGeneration !== record.publicationGeneration ||
+    intent.requestHash !== record.pendingProviderRequestHash ||
+    intent.state !== 'pending' ||
+    operation.providerOperationId !== intent.providerOperationId ||
+    operation.providerOperationVersion !== readback.providerOperationVersion ||
+    operation.provider !== intent.provider ||
+    operation.operation !== intent.operation ||
+    operation.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY ||
+    operation.contentId !== intent.contentId ||
+    operation.contentVersionId !== intent.contentVersionId ||
+    operation.publicationGeneration !== intent.publicationGeneration ||
+    operation.idempotencyKey !== intent.idempotencyKey ||
+    operation.canonicalRequestHash !== intent.requestHash ||
+    operation.state !== 'accepted' ||
+    operation.unknownEffect !== false ||
+    operation.providerAcceptanceDigest !== readback.providerAcceptanceDigest ||
+    operation.providerReconciliationDigest !== readback.providerReconciliationDigest ||
+    readback.providerOperationState !== operation.state ||
     readback.operation !== 'publish_private' ||
     readback.contentId !== record.contentId ||
     readback.contentVersionId !== record.contentVersionId ||
@@ -575,7 +635,7 @@ function assertPublicationReadback(
     readback.vimeoAvailability !== 'available' ||
     readback.matchingCanonicalAssetCount !== 1 ||
     readback.exactContentVersionCorrelation !== true ||
-    readback.oneTimePublicationReadback !== 'applied'
+    readback.oneTimePublicationReadback !== 'ready_to_apply'
   ) {
     throw failure(
       'conflict',
@@ -583,6 +643,8 @@ function assertPublicationReadback(
     );
   }
   assertSafeId(readback.fence.workerId, 'workerId');
+  assertSafeId(operation.registryBindingKey, 'registryBindingKey');
+  assertDigest(operation.providerAccountRefHash, 'providerAccountRefHash');
   if (
     !Number.isSafeInteger(readback.fence.leaseGeneration) ||
     readback.fence.leaseGeneration < 1 ||
@@ -593,6 +655,9 @@ function assertPublicationReadback(
   }
   assertOpaqueReference(readback.opaqueProviderAssetRef);
   assertDigest(readback.providerAcceptanceDigest, 'providerAcceptanceDigest');
+  if (readback.providerReconciliationDigest !== null) {
+    assertDigest(readback.providerReconciliationDigest, 'providerReconciliationDigest');
+  }
   assertDigest(readback.providerReadbackDigest, 'providerReadbackDigest');
   assertDigest(readback.oneTimeReadbackDigest, 'oneTimeReadbackDigest');
 }
@@ -600,21 +665,52 @@ function assertPublicationReadback(
 function materializePublication(
   record: ContentPublicationRecord,
   audience: readonly StudentPublicationAudience[],
+  eligibility: readonly StudentPublicationEligibility[],
   createdAt: string,
 ): ContentPublicationMaterialization {
+  if (eligibility.length !== audience.length) {
+    throw failure('accessDenied', 'Publication audience eligibility is unavailable.');
+  }
+  const eligibilityByStudent = new Map(
+    eligibility.map((entry) => [`${entry.studentId}:${entry.occurrenceId}`, entry]),
+  );
   const seenStudents = new Set<string>();
   const assignments = audience.map((member) => {
+    const current = eligibilityByStudent.get(`${member.studentId}:${member.occurrenceId}`);
     assertSafeId(member.studentId, 'studentId');
     assertSafeId(member.householdId, 'householdId');
     assertSafeId(member.adultRecipientId, 'adultRecipientId');
     assertSafeId(member.occurrenceId, 'occurrenceId');
     if (
       seenStudents.has(member.studentId) ||
+      !current ||
+      current.contentId !== record.contentId ||
+      current.contentVersionId !== record.contentVersionId ||
+      current.publicationGeneration !== record.publicationGeneration ||
+      current.studentId !== member.studentId ||
+      current.householdId !== member.householdId ||
+      current.adultRecipientId !== member.adultRecipientId ||
+      current.occurrenceId !== member.occurrenceId ||
+      current.studentVersion !== member.studentVersion ||
+      current.enrollmentVersion !== member.enrollmentVersion ||
+      current.accessVersion !== member.accessVersion ||
+      current.serviceAccountConsentVersion !== member.serviceAccountConsentVersion ||
+      current.privacyVersion !== member.privacyVersion ||
+      current.revocationVersion !== member.revocationVersion ||
+      !current.studentActive ||
+      !current.enrollmentActive ||
+      !['active', 'grace'].includes(current.accessState) ||
+      !current.serviceAccountAccepted ||
+      current.privacyReviewState !== 'clear' ||
+      current.studentRevoked ||
+      current.accountRevoked ||
+      current.contentRevoked ||
+      !current.adultRecipientActive ||
       !record.occurrenceRelations.some((relation) => relation.occurrenceId === member.occurrenceId)
     ) {
       throw failure(
-        'conflict',
-        'Publication audience is duplicated or outside the governed occurrence.',
+        'accessDenied',
+        'Publication audience is not currently eligible for protected materialization.',
       );
     }
     for (const version of [

@@ -44,6 +44,15 @@ export interface GovernedContentOccurrenceRelation {
   attachedAt: string;
 }
 
+export interface CanonicalGovernedOccurrence {
+  occurrenceId: string;
+  occurrenceVersion: number;
+  canonicalSeriesId: string;
+  productKey: typeof CONTENT_PUBLICATION_PRODUCT_KEY;
+  governanceState: 'governed';
+  active: true;
+}
+
 export interface ContentPublicationRecord {
   contentId: string;
   contentVersionId: string;
@@ -149,6 +158,21 @@ export interface StudentPublicationAudience {
   revocationVersion: number;
 }
 
+export interface StudentPublicationEligibility extends StudentPublicationAudience {
+  contentId: string;
+  contentVersionId: string;
+  publicationGeneration: number;
+  studentActive: boolean;
+  enrollmentActive: boolean;
+  accessState: 'active' | 'grace' | 'inactive' | 'archived';
+  serviceAccountAccepted: boolean;
+  privacyReviewState: 'clear' | 'hold' | 'revoked';
+  studentRevoked: boolean;
+  accountRevoked: boolean;
+  contentRevoked: boolean;
+  adultRecipientActive: boolean;
+}
+
 export interface StudentLibraryProjection {
   projectionId: string;
   assignmentId: string;
@@ -229,6 +253,47 @@ export interface ContentPublicationOutboxIntent {
   createdAt: string;
 }
 
+export interface ContentPublicationProviderOperation {
+  providerOperationId: string;
+  providerOperationVersion: number;
+  provider: 'vimeo';
+  operation: 'publish_private';
+  productKey: typeof CONTENT_PUBLICATION_PRODUCT_KEY;
+  contentId: string;
+  contentVersionId: string;
+  publicationGeneration: number;
+  idempotencyKey: string;
+  canonicalRequestHash: string;
+  state: 'accepted';
+  unknownEffect: false;
+  registryBindingKey: string;
+  providerAccountRefHash: string;
+  providerAcceptanceDigest: string;
+  providerReconciliationDigest: string | null;
+}
+
+export interface PendingContentPublicationProviderContext {
+  intent: ContentPublicationOutboxIntent;
+  providerOperation: ContentPublicationProviderOperation;
+}
+
+export interface ContentPublicationProviderCompletion {
+  providerOperationId: string;
+  expectedProviderOperationVersion: number;
+  outboxIntentId: string;
+  contentId: string;
+  contentVersionId: string;
+  publicationGeneration: number;
+  canonicalRequestHash: string;
+  providerAcceptanceDigest: string;
+  providerReconciliationDigest: string | null;
+  registryBindingKey: string;
+  providerAccountRefHash: string;
+  providerReadbackDigest: string;
+  oneTimeReadbackDigest: string;
+  completedAt: string;
+}
+
 export interface StudentPlaybackGrant {
   contentId: string;
   contentVersionId: string;
@@ -254,6 +319,8 @@ export interface StudentPlaybackGrant {
 
 export interface VimeoProviderOperationReadback {
   providerOperationId: string;
+  providerOperationVersion: number;
+  providerOperationState: 'accepted';
   operation: 'publish_private';
   contentId: string;
   contentVersionId: string;
@@ -272,8 +339,9 @@ export interface VimeoProviderOperationReadback {
   matchingCanonicalAssetCount: 1;
   exactContentVersionCorrelation: true;
   providerAcceptanceDigest: string;
+  providerReconciliationDigest: string | null;
   providerReadbackDigest: string;
-  oneTimePublicationReadback: 'applied';
+  oneTimePublicationReadback: 'ready_to_apply';
   oneTimeReadbackDigest: string;
 }
 
@@ -307,6 +375,19 @@ export interface ContentPublicationUnitOfWork {
   ): Promise<ContentPublicationReceipt | null>;
   saveReceipt(receipt: ContentPublicationReceipt): Promise<void>;
   saveOutboxIntent(intent: ContentPublicationOutboxIntent): Promise<void>;
+  getPendingPublishProviderContext(
+    providerOperationId: string,
+  ): Promise<PendingContentPublicationProviderContext | null>;
+  completePublishProviderOperation(completion: ContentPublicationProviderCompletion): Promise<void>;
+  getCanonicalGovernedOccurrence(
+    occurrenceId: string,
+    productKey: typeof CONTENT_PUBLICATION_PRODUCT_KEY,
+  ): Promise<CanonicalGovernedOccurrence | null>;
+  getCurrentPublicationEligibility(
+    studentId: string,
+    contentId: string,
+    occurrenceId: string,
+  ): Promise<StudentPublicationEligibility | null>;
   savePublicationMaterialization(materialization: ContentPublicationMaterialization): Promise<void>;
   listPublishedContent(): Promise<readonly ContentPublicationRecord[]>;
   getAssignment(studentId: string, contentId: string): Promise<StudentContentAssignment | null>;

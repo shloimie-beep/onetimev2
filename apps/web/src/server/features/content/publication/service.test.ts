@@ -3,14 +3,18 @@ import type {
   ContentApprovalEvidence,
   ContentPublicationMaterialization,
   ContentPublicationOutboxIntent,
+  ContentPublicationProviderCompletion,
+  ContentPublicationProviderOperation,
   ContentPublicationPrincipal,
   ContentPublicationReceipt,
   ContentPublicationRecord,
   ContentPublicationRepository,
   ContentPublicationUnitOfWork,
+  CanonicalGovernedOccurrence,
   StudentContentAssignment,
   StudentContentResume,
   StudentPlaybackAuthorizationFacts,
+  StudentPublicationEligibility,
   VimeoProviderOperationReadback,
 } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
 import { ContentPublicationError } from '../../../../../../../packages/domain/src/content/publication/index.ts';
@@ -58,6 +62,54 @@ describe('P21 content publication service', () => {
     );
   });
 
+  it('attaches only an exact repository-backed governed occurrence and replays idempotently', async () => {
+    const memory = new MemoryPublicationRepository();
+    memory.records.set('content_one', draft());
+    memory.canonicalOccurrences.set(
+      'one_time_mishnayos:occurrence_two',
+      canonicalOccurrence('occurrence_two', 2),
+    );
+    const service = createContentPublicationService({
+      repository: memory,
+      createId: () => 'playback_session_001',
+    });
+    const input = {
+      principal: admin,
+      contentId: 'content_one',
+      relation: {
+        relationId: 'relation_occurrence_two',
+        occurrenceId: 'occurrence_two',
+        occurrenceVersion: 2,
+        canonicalSeriesId: 'canonical_series_one',
+        productKey: 'one_time_mishnayos' as const,
+      },
+      binding: command(1, 'attach.occurrence.key', '7'),
+    };
+
+    await expect(service.attachOccurrence(input)).resolves.toMatchObject({
+      replay: false,
+      record: {
+        version: 2,
+        occurrenceRelations: expect.arrayContaining([expect.objectContaining(input.relation)]),
+      },
+    });
+    await expect(service.attachOccurrence(input)).resolves.toMatchObject({
+      replay: true,
+      record: { version: 2 },
+    });
+    await expect(
+      service.attachOccurrence({
+        ...input,
+        relation: {
+          ...input.relation,
+          relationId: 'relation_invented',
+          occurrenceId: 'occurrence_invented',
+        },
+        binding: command(2, 'attach.invented.key', '8'),
+      }),
+    ).rejects.toThrowError(/governed occurrence is unavailable/i);
+  });
+
   it('atomically applies a fenced worker readback and materializes protected Student access', async () => {
     const memory = new MemoryPublicationRepository();
     memory.records.set('content_one', draft());
@@ -92,6 +144,7 @@ describe('P21 content publication service', () => {
       binding: command(2, 'publish.key', 'b'),
     });
     const publishing = memory.records.get('content_one')!;
+    memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
     expect(memory.intents).toEqual([
       expect.objectContaining({
         provider: 'vimeo',
@@ -112,6 +165,8 @@ describe('P21 content publication service', () => {
       binding: completion,
     });
     expect(result).toMatchObject({ replay: false, record: { state: 'published', version: 4 } });
+    expect(memory.intentStates.get(memory.intents[0]!.intentId)).toBe('complete');
+    expect(memory.completedProviderOperations).toContain(publishing.pendingProviderOperationId);
     expect(memory.materializations).toHaveLength(1);
     expect(memory.materializations[0]).toMatchObject({
       contentVersionId: 'content_version_one',
@@ -265,6 +320,7 @@ describe('P21 content publication service', () => {
       binding: command(2, 'publish.key', 'b'),
     });
     const publishing = memory.records.get('content_one')!;
+    memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
     const completion = command(3, 'publish.complete.key', 'c');
     await expect(
       service.applyPrivatePublicationReadback({
@@ -282,6 +338,57 @@ describe('P21 content publication service', () => {
     ).rejects.toThrowError(/incomplete or ambiguous/i);
     expect(memory.records.get('content_one')).toMatchObject({ state: 'publishing', version: 3 });
     expect(memory.materializations).toHaveLength(0);
+
+    const providerContext = memory.providerContexts.get(publishing.pendingProviderOperationId!)!;
+    memory.providerContexts.delete(publishing.pendingProviderOperationId!);
+    await expect(
+      service.applyPrivatePublicationReadback({
+        contentId: 'content_one',
+        readback: providerReadback(
+          publishing.pendingProviderOperationId!,
+          publishing.pendingProviderRequestHash!,
+        ),
+        audience: [audience()],
+        binding: completion,
+      }),
+    ).rejects.toThrowError(/pending publication operation is unavailable/i);
+    memory.providerContexts.set(publishing.pendingProviderOperationId!, providerContext);
+
+    for (const ineligible of [
+      eligibility({ studentActive: false }),
+      eligibility({ contentRevoked: true }),
+    ]) {
+      memory.eligibilities.set('student_one:content_one:occurrence_one', ineligible);
+      await expect(
+        service.applyPrivatePublicationReadback({
+          contentId: 'content_one',
+          readback: providerReadback(
+            publishing.pendingProviderOperationId!,
+            publishing.pendingProviderRequestHash!,
+          ),
+          audience: [audience()],
+          binding: completion,
+        }),
+      ).rejects.toThrowError(/not currently eligible/i);
+    }
+    expect(memory.materializations).toHaveLength(0);
+    expect(memory.intentStates.get(memory.intents[0]!.intentId)).toBe('pending');
+    memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
+
+    await expect(
+      service.attachOccurrence({
+        principal: admin,
+        contentId: 'content_one',
+        relation: {
+          relationId: 'relation_invented',
+          occurrenceId: 'occurrence_invented',
+          occurrenceVersion: 1,
+          canonicalSeriesId: 'canonical_series_one',
+          productKey: 'one_time_mishnayos',
+        },
+        binding: command(3, 'attach.invented.key', '8'),
+      }),
+    ).rejects.toThrowError(/governed occurrence is unavailable/i);
 
     await service.applyPrivatePublicationReadback({
       contentId: 'content_one',
@@ -392,12 +499,49 @@ function audience() {
   };
 }
 
+function eligibility(
+  overrides: Partial<StudentPublicationEligibility> = {},
+): StudentPublicationEligibility {
+  return {
+    ...audience(),
+    contentId: 'content_one',
+    contentVersionId: 'content_version_one',
+    publicationGeneration: 1,
+    studentActive: true,
+    enrollmentActive: true,
+    accessState: 'active',
+    serviceAccountAccepted: true,
+    privacyReviewState: 'clear',
+    studentRevoked: false,
+    accountRevoked: false,
+    contentRevoked: false,
+    adultRecipientActive: true,
+    ...overrides,
+  };
+}
+
+function canonicalOccurrence(
+  occurrenceId: string,
+  occurrenceVersion: number,
+): CanonicalGovernedOccurrence {
+  return {
+    occurrenceId,
+    occurrenceVersion,
+    canonicalSeriesId: 'canonical_series_one',
+    productKey: 'one_time_mishnayos',
+    governanceState: 'governed',
+    active: true,
+  };
+}
+
 function providerReadback(
   providerOperationId: string,
   canonicalRequestHash: string,
 ): VimeoProviderOperationReadback {
   return {
     providerOperationId,
+    providerOperationVersion: 3,
+    providerOperationState: 'accepted',
     operation: 'publish_private',
     contentId: 'content_one',
     contentVersionId: 'content_version_one',
@@ -416,8 +560,9 @@ function providerReadback(
     matchingCanonicalAssetCount: 1,
     exactContentVersionCorrelation: true,
     providerAcceptanceDigest: hash('d'),
+    providerReconciliationDigest: hash('a'),
     providerReadbackDigest: hash('e'),
-    oneTimePublicationReadback: 'applied',
+    oneTimePublicationReadback: 'ready_to_apply',
     oneTimeReadbackDigest: hash('f'),
   };
 }
@@ -432,6 +577,17 @@ class MemoryPublicationRepository
   readonly resumes = new Map<string, StudentContentResume>();
   readonly receipts = new Map<string, ContentPublicationReceipt>();
   readonly intents: ContentPublicationOutboxIntent[] = [];
+  readonly intentStates = new Map<string, 'pending' | 'complete'>();
+  readonly providerContexts = new Map<
+    string,
+    {
+      intent: ContentPublicationOutboxIntent;
+      providerOperation: ContentPublicationProviderOperation;
+    }
+  >();
+  readonly completedProviderOperations = new Set<string>();
+  readonly canonicalOccurrences = new Map<string, CanonicalGovernedOccurrence>();
+  readonly eligibilities = new Map<string, StudentPublicationEligibility>();
 
   async inTransaction<T>(work: (unit: ContentPublicationUnitOfWork) => Promise<T>) {
     return work(this);
@@ -458,6 +614,72 @@ class MemoryPublicationRepository
 
   async saveOutboxIntent(intent: ContentPublicationOutboxIntent) {
     this.intents.push(intent);
+    this.intentStates.set(intent.intentId, 'pending');
+    if (intent.operation === 'publish_private') {
+      this.providerContexts.set(intent.providerOperationId, {
+        intent,
+        providerOperation: {
+          providerOperationId: intent.providerOperationId,
+          providerOperationVersion: 3,
+          provider: 'vimeo',
+          operation: 'publish_private',
+          productKey: 'one_time_mishnayos',
+          contentId: intent.contentId,
+          contentVersionId: intent.contentVersionId,
+          publicationGeneration: intent.publicationGeneration,
+          idempotencyKey: intent.idempotencyKey,
+          canonicalRequestHash: intent.requestHash,
+          state: 'accepted',
+          unknownEffect: false,
+          registryBindingKey: 'vimeo_publication_primary',
+          providerAccountRefHash: hash('9'),
+          providerAcceptanceDigest: hash('d'),
+          providerReconciliationDigest: hash('a'),
+        },
+      });
+    }
+  }
+
+  async getPendingPublishProviderContext(providerOperationId: string) {
+    const context = this.providerContexts.get(providerOperationId);
+    return context && this.intentStates.get(context.intent.intentId) === 'pending' ? context : null;
+  }
+
+  async completePublishProviderOperation(completion: ContentPublicationProviderCompletion) {
+    const context = this.providerContexts.get(completion.providerOperationId);
+    if (
+      !context ||
+      this.intentStates.get(context.intent.intentId) !== 'pending' ||
+      context.intent.intentId !== completion.outboxIntentId ||
+      context.intent.contentId !== completion.contentId ||
+      context.intent.contentVersionId !== completion.contentVersionId ||
+      context.intent.publicationGeneration !== completion.publicationGeneration ||
+      context.providerOperation.providerOperationVersion !==
+        completion.expectedProviderOperationVersion ||
+      context.providerOperation.canonicalRequestHash !== completion.canonicalRequestHash ||
+      context.providerOperation.providerAcceptanceDigest !== completion.providerAcceptanceDigest ||
+      context.providerOperation.providerReconciliationDigest !==
+        completion.providerReconciliationDigest ||
+      context.providerOperation.registryBindingKey !== completion.registryBindingKey ||
+      context.providerOperation.providerAccountRefHash !== completion.providerAccountRefHash
+    ) {
+      throw new Error('provider_completion_conflict');
+    }
+    this.completedProviderOperations.add(completion.providerOperationId);
+    this.intentStates.set(completion.outboxIntentId, 'complete');
+  }
+
+  async getCanonicalGovernedOccurrence(occurrenceId: string, productKey: string) {
+    const occurrence = this.canonicalOccurrences.get(`${productKey}:${occurrenceId}`);
+    return occurrence ?? null;
+  }
+
+  async getCurrentPublicationEligibility(
+    studentId: string,
+    contentId: string,
+    occurrenceId: string,
+  ) {
+    return this.eligibilities.get(`${studentId}:${contentId}:${occurrenceId}`) ?? null;
   }
 
   async savePublicationMaterialization(materialization: ContentPublicationMaterialization) {

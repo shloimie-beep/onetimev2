@@ -218,6 +218,42 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(client.queries[0]?.text).toBe('BEGIN');
     expect(client.queries.at(-1)?.text).toBe('COMMIT');
   });
+
+  it('atomically completes the exact accepted ProviderOperation and its original pending outbox', async () => {
+    const client = new CapturingClient();
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await repository.inTransaction((unit) =>
+      unit.completePublishProviderOperation({
+        providerOperationId: 'provider_operation_one',
+        expectedProviderOperationVersion: 3,
+        outboxIntentId: 'publish_intent_one',
+        contentId: 'content_one',
+        contentVersionId: 'content_version_one',
+        publicationGeneration: 1,
+        canonicalRequestHash: 'a'.repeat(64),
+        providerAcceptanceDigest: 'b'.repeat(64),
+        providerReconciliationDigest: 'c'.repeat(64),
+        registryBindingKey: 'vimeo_publication_primary',
+        providerAccountRefHash: 'f'.repeat(64),
+        providerReadbackDigest: 'd'.repeat(64),
+        oneTimeReadbackDigest: 'e'.repeat(64),
+        completedAt: '2026-07-29T10:44:00.000Z',
+      }),
+    );
+
+    const updates = client.queries.filter((query) => query.text.includes('UPDATE'));
+    expect(updates).toHaveLength(2);
+    expect(updates[0]?.text).toContain('onetime.job_outbox');
+    expect(updates[0]?.text).toContain("state = 'accepted'");
+    expect(updates[0]?.text).toContain("o.state = 'pending'");
+    expect(updates[1]?.text).toContain('onetime.content_publication_outbox');
+    expect(updates[1]?.text).toContain("state = 'complete'");
+    expect(client.queries[0]?.text).toBe('BEGIN');
+    expect(client.queries.at(-1)?.text).toBe('COMMIT');
+  });
 });
 
 class CapturingClient implements ContentPublicationSqlClient {
