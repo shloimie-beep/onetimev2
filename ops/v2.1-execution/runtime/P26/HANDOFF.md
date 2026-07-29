@@ -1,88 +1,84 @@
-# P26 Atomic Claim Handoff
+# P26 Ready-for-Review Handoff
 
 ## Identity
 
-- Branch: `codex/v21-p26-billing-access`
-- Start SHA: `d075dc1839660205845e7da039a182bbe44778d2`
-- Implementation SHA before this handoff metadata commit:
-  `d075dc1839660205845e7da039a182bbe44778d2`
+- Reconciled atomic claim:
+  `abb053f65ef7bb238e163bb36f576980d8fa0d61`
+- Reconciliation control / sole parent:
+  `86c4e9a640dbcff2f2de1ef85eb42ee433f22ae8` /
+  `f98ee8e79018e5875e9c2be3d5961954b3c5ce04`
+- Authorized start: `d075dc1839660205845e7da039a182bbe44778d2`
+- Implementation: `9096c2d63d0e68d7474984ae3b9cfad909253b03`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the
   observed pushed head.
-- Task packet digest:
-  `434c882a79d7931479310acc1d77a257213a704726ddf4b38db0cc3c1b31e5c2`
-- Context digest:
-  `8446bca73c9134afd103cb74cce8a94c3ce09aeaebda8a7b673c2587cb518cc6`
-- Source package digest:
-  `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
 - Claim: `1c659f83-31c3-4404-9488-c26ad4826922`
-- Writer: `codex-p26-worker-1c659f83`
-- Containing control authorization:
-  `2b29ce6ce75de10765f6f6c64d059e858c548281`
-- Ready-entry parent control:
-  `9e04eda2275f3b6a92066670d878a3e1c62361ca`
-- Ready-entry digest:
-  `ec58cc73ed98e8137cc652ad838f2300f0e498db536d21c39ad7837d82ca2ddb`
-- BILLING_ACCESS lease:
+- Released BILLING_ACCESS lease:
   `1bcd6b13-bf89-4000-a653-35a8afdcb9c3`
-- Lease issue / expiry:
-  `2026-07-29T05:02:55Z` / `2026-07-29T06:02:55Z`
+- Lease release / expiry:
+  `2026-07-29T05:36:54Z` / `2026-07-29T06:02:55Z`
+- Task/context/source digests:
+  `434c882a79d7931479310acc1d77a257213a704726ddf4b38db0cc3c1b31e5c2` /
+  `8446bca73c9134afd103cb74cce8a94c3ce09aeaebda8a7b673c2587cb518cc6` /
+  `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
+- Exact 17-artifact digest:
+  `a2208bbd9ca9bdc941432db73724407db85f90caca471d0ac102ce53b60db275`
 
 ## Completed behavior
 
-Verified the exact containing control authorization and acquisition parent,
-authorized integration start, absent branch, canonical ready-entry digest,
-package/task/context/source digests, F03/F04/F05/F06 dependency bindings and
-ancestry, sole writer lease, and zero effect locks. The F04 binding uses exact
-integrated implementation `81c0ee64072386db41aa5a40243c693762ab493a`.
-All 200 locked and 15 source-package Git blobs matched. Created the isolated
-P26 branch from the exact start. This atomic checkpoint contains only the
-three P26 runtime files; product, source, provider, steward, and effect work
-has not started.
+P26 now provides a direct-import `1.0.0` billing-access contract and pure
+projection for `free`, `active`, `grace`, and `inactive`. A newer unresolved
+failure invalidates an older paid winner and starts one event-time-based
+seven-day grace window. Replays and reordered older events do not extend
+grace. A newer verified paid event restores active access; grace expiry and
+explicit inactive truth project inactive idempotently.
 
-## Remaining work
+Inactive authorization is household-scoped and fails closed before protected
+rendering. Only the exact Parent overview, household switcher, billing,
+reactivation, support list/detail, account, privacy, and data-rights
+capabilities remain. All Student routes receive the exact locked inactive
+copy. Cross-household and upstream-role denials never permit provider
+bootstrap.
 
-After C00 reconciliation and explicit continuation authorization, implement
-the minimum signed billing-event projection, verified access winners,
-seven-day grace, recovery ordering, inactive route authorization, and
-household-scoped access inside P26-owned paths.
-
-## Exact next action
-
-Stop after the normal push and exact remote verification. Resume product work
-only after C00 records this atomic claim head and explicitly authorizes
-continuation.
-
-## Coverage
-
-- Requirements: nine assigned and claimed; implementation not started.
-- Acceptance cases: ten assigned; none run.
-
-## Changed files and migrations
-
-- `ops/v2.1-execution/runtime/P26/HANDOFF.md`
-- `ops/v2.1-execution/runtime/P26/NEXT-PROMPT.md`
-- `ops/v2.1-execution/runtime/P26/TASK-STATE.yaml`
-- Migrations: none
-- Steward requests: none
+The server verifies bounded Stripe-style HMAC receipts with timestamp
+tolerance, keeps only minimized event/idempotency data, rejects event-ID
+conflicts, and stores no raw payload or parallel financial ledger. The
+PostgreSQL repository uses an advisory household transaction lock, row
+locking, projection version fencing, and a migration-only schema contract.
+The worker accepts only mutation-prohibited Stripe readback bindings and
+fails closed on household/customer mismatch.
 
 ## Verification
 
-- Exact remote repository/control/acquisition/start/branch identity: passed.
-- Canonical ready-entry digest: passed.
-- All locked/source/package/task/context digests: passed.
-- F03/F04/F05/F06 dependency ancestry and exact bindings: passed.
-- Claim, BILLING_ACCESS lease, and zero effect locks: passed.
+- Full repository TypeScript typecheck: passed.
+- Focused ESLint over every P26 TypeScript artifact: passed.
+- Focused Vitest: 4 files, 11 tests, all passed.
+- Positive, negative, signature, stale-signature, replay, ordering,
+  concurrency, grace-expiry, recovery, inactive authorization, exact Student
+  copy, household isolation, and read-only reconciliation branches passed.
+- Focused Prettier and `git diff --check`: passed.
+- Exact SHA-256 recomputation from the 17 committed Git blobs produced
+  `a2208bbd9ca9bdc941432db73724407db85f90caca471d0ac102ce53b60db275`.
 
-## External effects
+## Scope and remaining integration
 
-Authority: none. Attempted: 0; succeeded: 0; reconciled: 0.
+The implementation commit adds exactly 17 files beneath the five P26-owned
+roots. This handoff commit updates only the three P26 runtime files. No
+migration, package manifest, lockfile, central registry/composer, provider
+configuration, steward application, or another task runtime changed.
 
-## Security, privacy, and data handling
+All nine requirements and ten acceptance cases are implementation-ready.
+Candidate-bound sandbox/canary evidence is not claimed because no external
+authority or effect was used. C00 must reconcile the exact pushed
+ready-for-review head. Migration and central registration, if activated, stay
+with their designated stewards.
 
-No secrets, provider payloads, customer data, live sends, provider mutation,
-deletion, deployment, or other external effect was accessed or performed.
+## External effects and security
 
-## Blockers, deviations, and recovery
+Authority none; attempted/succeeded/reconciled `0/0/0`. No Stripe or other
+provider call, mutation, charge, payload access, live send, deployment, secret,
+customer data, raw financial object, or external effect occurred.
 
-None. Recovery base is exact integration head
-`d075dc1839660205845e7da039a182bbe44778d2`.
+## Exact next action
+
+C00 reconciles the exact pushed `ready_for_review` head. Reopen P26 only under
+a new exact lease for reproduced P26-scoped review feedback.
