@@ -196,3 +196,10 @@ and P30 at `2f2aa5c9` for only the recorded audit repairs, add negative
 regression coverage, rerun full verification, refresh all material digests and
 runtime proofs, release each task-local lease, and publish corrected
 ready_for_review finals. Continue P17 independently.
+
+P17 admission is rejected pending bounded binding and operation-set repairs.
+Dispatch a claim-only resume checkpoint from exact head `0e6119a4` using claim
+`0c6d8f9d-c1d7-4b0e-a3da-ddab1ff3292b`, ready digest `f6ad4c57...`, and
+ZOOM_PREPARATION lease `bbf96443-a927-4198-bd2a-85e40b7162cd`. The atomic
+checkpoint may modify only P17's three runtime memory files. Reconcile it before
+product repair while P29/P30 continue.

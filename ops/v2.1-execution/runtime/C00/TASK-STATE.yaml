@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-3d8fe32b
-claim_time: '2026-07-28T23:58:06Z'
-claim_id: 3d8fe32b-09e1-4c90-b7f3-08812ee20106
-lease_expires_at: '2026-07-29T00:02:00Z'
-last_heartbeat_at: '2026-07-29T00:02:00Z'
-controller_authorization_sha: 9ebea9f2a7fc98447d880417f683f20cb964560f
+claimed_by: codex-c00-orchestrator-e0a70a3e
+claim_time: '2026-07-29T00:05:54Z'
+claim_id: e0a70a3e-f4de-4722-b54d-038c961092fe
+lease_expires_at: '2026-07-29T00:11:00Z'
+last_heartbeat_at: '2026-07-29T00:11:00Z'
+controller_authorization_sha: 9d284f93a236e52675d64f3be1498aff4df9e8cc
 ready_entry_payload_digest: null
-state_based_on_head_sha: 9ebea9f2a7fc98447d880417f683f20cb964560f
+state_based_on_head_sha: 9d284f93a236e52675d64f3be1498aff4df9e8cc
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -138,8 +138,11 @@ completed_steps:
 - issued resume-existing correction claims for P29 and P30 from their exact observed final heads under fresh disjoint writer leases and zero effect authority
 - independently verified P29 correction claim d5c779ca and P30 correction claim 2f2aa5c9, each with exact expected parent, only three task-local runtime files, correct resume authorization and digest, and zero effects
 - consumed both correction ready entries and authorized only the bounded P29/P30 cross-audit repairs under their disjoint leases
+- independently verified P17 final 0e6119a4 mechanical provenance, scope, digests, verification evidence, released lease, four steward requests, and zero effects
+- rejected P17 admission because roster and occurrence-version bindings, stable occurrence/Student resource identity, join/session cross-binding, and exact worker operation/readback set enforcement fail open
+- issued a resume-existing P17 correction claim from exact rejected final 0e6119a4 under a fresh ZOOM_PREPARATION lease with zero effect authority
 remaining_steps: []
-next_action: P17 implements while P29 and P30 repair bounded cross-audit findings under disjoint leases.
+next_action: P17 publishes a correction atomic claim while P29 and P30 repair independently.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -147,12 +150,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 9ebea9f2a7fc98447d880417f683f20cb964560f
+  current_control_parent_sha: 9d284f93a236e52675d64f3be1498aff4df9e8cc
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 3d8fe32b-09e1-4c90-b7f3-08812ee20106
-      observed_head: 9ebea9f2a7fc98447d880417f683f20cb964560f
+      claim_id: e0a70a3e-f4de-4722-b54d-038c961092fe
+      observed_head: 9d284f93a236e52675d64f3be1498aff4df9e8cc
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -289,11 +292,11 @@ orchestration:
       scheduling_state: ready_for_review_admitted
     P17:
       branch: codex/v21-p17-zoom-preparation
-      claim_id: 863e3375-64af-4763-8efd-80d424da2ed9
-      observed_head: 25614df1bb41f655ec1458f893a5a044c8729b31
+      claim_id: 0c6d8f9d-c1d7-4b0e-a3da-ddab1ff3292b
+      observed_head: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
       authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-      lease_expires_at: '2026-07-29T00:29:13Z'
-      scheduling_state: claimed_contract_implementation_authorized
+      lease_expires_at: '2026-07-29T01:06:15Z'
+      scheduling_state: ready_correction_atomic_claim_pending
     P29:
       branch: codex/v21-p29-core-workflows
       claim_id: 22467835-84ad-4d38-8187-a3b64d88d132
@@ -312,11 +315,11 @@ orchestration:
   - task_id: P17
     agent: /root/f03_worker
     branch: codex/v21-p17-zoom-preparation
-    observed_head: 25614df1bb41f655ec1458f893a5a044c8729b31
-    claim_id: 863e3375-64af-4763-8efd-80d424da2ed9
-    lease_expires_at: '2026-07-29T00:29:13Z'
-    status: claimed
-    phase: contract
+    observed_head: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
+    claim_id: 0c6d8f9d-c1d7-4b0e-a3da-ddab1ff3292b
+    lease_expires_at: '2026-07-29T01:06:15Z'
+    status: ready
+    phase: correction
   - task_id: P29
     agent: /root/f05_worker
     branch: codex/v21-p29-core-workflows
@@ -447,10 +450,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: f536dd22193fa9a47d0fd510a1104c88dc08e6edbf161a4d6ff69f40fe7b0027
-    control_lease: a7a2b09c7134200bc3a76010e7f5d97b6bb9e723b90b98d10167527026fcf617
-    task_registry: 695761db2d7c3b169b4e2b616c08f340aa701aba74e80bc338810d3af01566d3
-    ready_queue: f8f2cc814c91ae5263b6e6a8ff43ecf083c46e38ff109d2ed6dc5918702cff42
+    control_state: 518f1fb7c1e9b48da7b3de1f409010820393145086c52d9028431d02376af37a
+    control_lease: 859e57c379367131402195479f888ce80b70e21f1cbea49e836dfcaf978e814e
+    task_registry: 6d16634442a11af0a3d8148116ccdab7645712c778fb731797cd39d49643f536
+    ready_queue: fc78352c0e1c217cbfb81e5ca2efa770a79b51d161dc3a7c3c865083b2bf7cda
     merge_queue: d48d4d6ace20f6cefb073ae8dde73184a13af5d224f155022c9291ccc8993067
     steward_queue: 367563ad60f3674c5a6116e12593341c6be5bda8363072be6e6250f253ce9d93
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8

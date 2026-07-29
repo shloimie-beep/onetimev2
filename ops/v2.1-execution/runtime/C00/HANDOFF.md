@@ -464,3 +464,11 @@ each resumes its expected rejected-final head, changes only three task-local
 runtime files, binds the fresh controller authorization and ready digest, and
 records zero effects. C00 consumed both entries. The workers may now implement
 only the bounded audit repairs while P17 continues independently.
+
+P17 final `0e6119a4` passed provenance, scope, digest, verification, lease, and
+zero-effect checks but was not admitted. Semantic review found fail-open
+Student/enrollment and occurrence-version binding, unstable occurrence/Student
+resource identity across revisions, cross-bound join/session acceptance, and
+non-exact worker operation/readback sets. C00 issued a resume-existing,
+claim-only correction authorization from that exact head. P29/P30 corrections
+continue independently.
