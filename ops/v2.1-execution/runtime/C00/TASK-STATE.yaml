@@ -12,11 +12,11 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-30T22:55:05Z'
-last_heartbeat_at: '2026-07-30T20:55:05Z'
-controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+lease_expires_at: '2026-07-31T00:22:48Z'
+last_heartbeat_at: '2026-07-30T21:22:48Z'
+controller_authorization_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
 ready_entry_payload_digest: null
-state_based_on_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+state_based_on_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
@@ -119,6 +119,32 @@ lean_completion_bindings:
     F02_proposal_authority_correction_writer_id: codex-f02-proposal-authority-68f6e27a
     F02_proposal_authority_correction_authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
     F02_proposal_authority_correction_ready_entry_payload_digest: 2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2
+    F02_proposal_authority_terminal_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+    F02_proposal_authority_terminal_proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
+    F02_proposal_authority_terminal_state_handoff_digest: e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616
+    F02_proposal_authority_terminal_runtime_triplet_digest: 4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9
+    F02_proposal_authority_terminal_four_path_aggregate_digest: 2f8bca7ee12feb3af66ff9ac88f48ff59acdb0642f812440a05424a0afce770e
+    F02_proposal_authority_terminal_independent_admission: passed
+    accepted_source_microbatch_3_expected_target_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+    accepted_source_microbatch_3_order: F02_then_F04_then_F03_then_P31
+    accepted_source_microbatch_3_unique_source_path_count: 23
+    accepted_source_microbatch_3_path_collisions: 0
+    accepted_source_microbatch_3_claim_id: f7ed3c6a-683b-4971-9e5e-2a65398c74c2
+    accepted_source_microbatch_3_release_integrator_lease_id: 3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c
+    accepted_source_microbatch_3_ready_entry_payload_digest: a87a97b243b076b7ed7bfc10152ca373f187c76808a83d14acde72c86bc95801
+    accepted_source_microbatch_3_F02_merge_id: 402a3bb6-e350-42e7-be21-ecbf6694e2ed
+    accepted_source_microbatch_3_F02_merge_payload_digest: d220ad711e294736512d3bc090a4c4cf33d55e12171d39a58712c1b471a5b277
+    accepted_source_microbatch_3_F04_merge_id: f8afea17-0b67-4290-844d-b9c5bb5e61ea
+    accepted_source_microbatch_3_F04_merge_payload_digest: 71b960266129ad3511baecbb6488a73d4e9cf9ea27ab97def1d71c7854473f49
+    accepted_source_microbatch_3_F03_merge_id: 8bb26407-a463-4922-8174-b264ac20f9cc
+    accepted_source_microbatch_3_F03_merge_payload_digest: 9aa91c8b46ffd5a087c50ddadf2568f528076eb1c6f8f4f7507ca8c3c74df8ed
+    accepted_source_microbatch_3_P31_merge_id: 079b5b1b-c76b-4684-9f23-49abed788fa8
+    accepted_source_microbatch_3_P31_merge_payload_digest: e6fcb0d86b04bd8294823a781b094bf26cf7f568e8bbb914bb777af1dc99d6b0
+    accepted_source_microbatch_3_preflight_F02_tree_sha: 349bde88b5c68fe504a27b45a75e2bdcd9c043d2
+    accepted_source_microbatch_3_preflight_F04_tree_sha: 8807562439a76919b410c1470f6088de4489c072
+    accepted_source_microbatch_3_preflight_F03_tree_sha: fcd5ee04ec0b68c5105334eaae61557b2274db29
+    accepted_source_microbatch_3_preflight_P31_tree_sha: da84a488e64eb18493a13f40a16b0d6a4bb05af5
+    accepted_source_microbatch_3_preflight: passed_no_conflicts_exact_23_path_union
     F03_parent_session_implementation_head_sha: ac53a1afa05069566e9efe1c73bd1738639c9a27
     F03_parent_session_terminal_head_sha: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
     F03_parent_session_product_digest: 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
@@ -610,15 +636,17 @@ completed_steps:
 - corrected the F03/F04 runtime-digest nomenclature forward-only: 6d9644ad/76976d6a are path-to-blob aggregate digests, while the canonical raw-byte TASK+HANDOFF pairs are 93ce51b0/8670ae6f and TASK+HANDOFF+NEXT triplets are 211c2ee2/ad82d06d; no source, authority, queue, candidate, provider, or effect state changed
 - independently held F02 checksum-correction terminal edacab1d only because its live proposal authority still named the historical projection-v2 claim, dual leases, writer, control, start, and release; exact P17 request, migration-2251 checksums, allocations, acknowledgments, four-path scope, YAML, diff, secret, remote, released-lease, and effects 0/0/0 gates otherwise passed
 - authorized only a four-path F02 live-proposal-authority metadata correction from exact edacab1d under canonical READY 2f554b14, claim 68f6e27a, and sole MIGRATION_AUTHORITY lease defa457c; validated request/checksum/allocation bytes, central steward results, integration, candidate, providers, and effects remain frozen
+- independently admitted F02 proposal-authority terminal 9754f2ae with exact sole-parent four-path scope, live sole-lease authority parity, proposal f1c23180, state/handoff e0b2ede5, triplet 4059e319, unchanged allocations/checksums/P17/acknowledgments, released lease, clean remote equality, and effects 0/0/0
+- independently preflighted the ordered F02 9754f2ae, F04 b43c1923, F03 3947c988, P31 f50d95ba merge trees from exact integration 8634b2ab; all live heads, bases, 4/8/5/6 scopes, 23-path disjoint union, ancestry-preserving cumulative trees, and zero-effect boundaries passed
+- authorized one I36 source microbatch from 8634b2ab under canonical READY a87a97b2, claim f7ed3c6a, RELEASE_INTEGRATOR lease 3cd4b328, and four exact canonical MERGE payloads; shared composition, steward application, candidate, provider, deployment, and effects remain frozen
 remaining_steps:
-- Complete and independently reconcile the F02 proposal-authority metadata correction, then integrate its corrected acknowledgment followed by F04 b43c1923, F03 3947c988, and P31 f50d95ba in one ordered bounded microbatch.
+- Execute and independently reconcile the ordered I36 microbatch for F02 9754f2ae, F04 b43c1923, F03 3947c988, and P31 f50d95ba.
 - Compose the real Parent session through P08/I36; complete P09's missing signed-out GET /school and Admin configuration surface before its central registration; do not over-claim the broader P08-registration-002 request.
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
-next_action: Push this reconciled control boundary, dispatch only the exact four-path F02 proposal-authority metadata
-  correction from edacab1d, independently audit its terminal, then queue one ordered I36 integration microbatch for
-  corrected F02, F04, F03, and P31. Apply no steward result until F02 is integrated. No provider mutation or deployment
-  is authorized.
+next_action: Push this reconciled control boundary, execute exactly four ancestry-preserving I36 merges from 8634b2ab
+  in F02, F04, F03, P31 order, run combined changed-area verification, publish one I36 runtime release checkpoint, and
+  stop for independent reconciliation. Apply no steward result and perform no provider mutation or deployment.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -626,7 +654,7 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+  current_control_parent_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
@@ -1226,17 +1254,17 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 18bdef4356fc28af9cf1a06d9bd764cbba0e28876d1958cfeb8ee4a0e6dfe379
-    control_lease: b5ca84e757801c06f6354840210933051ab463266f2f46bf4abe97d915fa0c47
-    task_registry: 47270d64596688dde67df42328992a809293dcbf1f0a15dd75e1d36603767346
-    ready_queue: 14b8c995b8b362275b1a24c1b0327d048a19441cc70c4c88f0f2fdb721729305
-    merge_queue: 7bdbf617b4db48ff5667a820c06b12fa941140949850976731720aad578afeb9
+    control_state: b7a418006306deaa4f65b90708941b8fbc59aaf536a6e03b3efffc269e95eb2a
+    control_lease: 10e7a61401601f2fd838e732254d8b61f629e53b9d59cfc98010321c59021538
+    task_registry: da704c0791576d038871a54319be705ef82b60846382a410b16b95564e22cece
+    ready_queue: f43a28b202c85aca50d789e8994d036a7b9fe7525ed760e9fd55e27eadf21011
+    merge_queue: b3d87c8184af436a7a2238a68b1bea6944bf4706155dfe7dfcb8d5f55497da40
     steward_queue: afb96d8790debb685b0722ff5c7e0a282f241fa3fb3d4121356c343557789eff
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: a9970a1c7bc682d81815a9eae1826222e9fa94d1d359158a263e40ee792c94a2
     migration_allocations: 270d0b51ba5ce503ae3c5eb3e9f67e4be87830082a6f53ede939e21634c5714a
     current_candidate: d363b5688183208265274bc5521676505338df544965c36e76ec1205ea9bf724
-    blockers: 00e3ebc725a6d89cd52ee6996bdf0ebe50293b52c53add9db650020af53e766e
+    blockers: c8fa5b8cebff3c842e27c70650f9a914c87842513d6bf35f2c491ced1fe1349f
   commands_run:
   - delivery SHA256SUMS.txt: 214/214 passed
   - package inventory: 46 tasks, 46 contexts, 46 prompts, 16 source-spec files
@@ -1498,6 +1526,9 @@ verification:
   - F03/F04 runtime-digest correction: independently recomputed exact terminal Git bytes with SHA-256 over TASK then HANDOFF and TASK then HANDOFF then NEXT, with no separator; F03 pair/triplet 93ce51b0/211c2ee2 and F04 pair/triplet 8670ae6f/ad82d06d passed, and the previously recorded 6d9644ad/76976d6a values were retained only under their accurate path-blob aggregate labels
   - F02 checksum-correction terminal edacab1d independent audit: passed full P17 digest, migration-2251 Git-blob/LF/control/repository-runner checksums, allocations and 2250-2252 acknowledgments, exact four-path scope, YAML, diff, secret, released lease, clean remote equality, and effects 0/0/0; held only for the stale live projection-v2 authority block
   - F02 proposal-authority correction control validation: passed all 12 parsed YAML documents, 46 unique registry tasks, canonical READY 2f554b14 with one sole MIGRATION_AUTHORITY lease and no schema lease, empty active and nine exact completed MERGE items, 14 unclaimed provider locks, null candidate, effects 0/0/0, 11/11 normalized control digests, exact eight-path diff, diff-check, and secret scan across 2423 files; scoped Prettier reproduced the known baseline on all eight touched control/runtime files, so no formatting claim or broad rewrite was made
+  - F02 proposal-authority terminal 9754f2ae independent audit: passed exact sole-parent four-path scope, canonical control/READY, live sole-lease authority with no schema lease, proposal f1c23180, state/handoff e0b2ede5, triplet 4059e319, unchanged non-authority proposal objects and all allocation/request/migration/checksum/acknowledgment bytes, released lease, clean remote equality, YAML/format/diff/3104-file secret gates, and effects 0/0/0
+  - source microbatch 3 preflight: passed exact live 8634b2ab/F02/F04/F03/P31 heads, source bases, 4/8/5/6 scopes, collision-free 23-path union, raw runtime digests, and four cumulative ancestry-preserving merge trees ending da84a488 with no conflicts
+  - source microbatch 3 control validation: passed all 12 parsed YAML documents, 46 unique registry tasks, canonical I36 READY a87a97b2, four exact active MERGE payload digests d220ad71/71b96026/9aa91c8b/e6fcb0d8, all nine historical completed MERGE digests, one sole RELEASE_INTEGRATOR writer, zero effect locks, 14 unclaimed provider locks, null candidate, effects 0/0/0, 11/11 normalized control digests, exact nine-path diff, diff-check, and secret scan across 2423 files; scoped Prettier reproduced the known baseline on all nine touched control/runtime files
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
@@ -1511,5 +1542,4 @@ blockers:
 - P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
 - F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
 - F04-OWNERSHIP-TRANSFER-SESSION-SCOPE
-- F02-PROPOSAL-AUTHORITY-METADATA
 out_of_scope_findings: []

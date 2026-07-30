@@ -2207,3 +2207,55 @@ scan, effects `0/0/0`, released sole lease, and clean local/tracking/live remote
 equality. Do not rerun product or workspace suites for these metadata-only
 bytes. Commit and push normally to the exact F02 branch, then stop for C00
 independent admission; do not integrate or apply a steward result.
+
+# Latest I36 source microbatch 3 instruction
+
+Consume only I36 READY
+`a87a97b243b076b7ed7bfc10152ca373f187c76808a83d14acde72c86bc95801`
+from exact clean local/tracking/live integration
+`8634b2ab15df624576a88b31182ebdc68553ff74`, under claim
+`f7ed3c6a-683b-4971-9e5e-2a65398c74c2`, writer
+`codex-i36-source-microbatch3-f7ed3c6a`, and RELEASE_INTEGRATOR lease
+`3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c`. Its control parent is
+`a7978fb1f0d1d9914c3e2b8bd698290226087455`; resolve the exact pushed control
+commit containing this READY and the four MERGE items before editing. Stop on
+control, READY, queue, target, remote, lease, base, scope, or digest drift.
+
+Consume these four canonical MERGE items in exact order:
+
+1. F02 merge `402a3bb6-e350-42e7-be21-ecbf6694e2ed`, payload
+   `d220ad711e294736512d3bc090a4c4cf33d55e12171d39a58712c1b471a5b277`,
+   source `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20`, exact 4 paths;
+2. F04 merge `f8afea17-0b67-4290-844d-b9c5bb5e61ea`, payload
+   `71b960266129ad3511baecbb6488a73d4e9cf9ea27ab97def1d71c7854473f49`,
+   source `b43c1923bbfdd92d15572abc137a3ead3fdf2819`, exact 8 paths;
+3. F03 merge `8bb26407-a463-4922-8174-b264ac20f9cc`, payload
+   `9aa91c8b46ffd5a087c50ddadf2568f528076eb1c6f8f4f7507ca8c3c74df8ed`,
+   source `3947c9887f3c6914a8247c70ac816a4ae94c76d0`, exact 5 paths;
+4. P31 merge `079b5b1b-c76b-4684-9f23-49abed788fa8`, payload
+   `e6fcb0d86b04bd8294823a781b094bf26cf7f568e8bbb914bb777af1dc99d6b0`,
+   source `f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671`, exact 6 paths.
+
+Use sequential `--no-ff --no-commit` merges, verify each staged delta equals
+that item's exact allowlist, then create its merge commit so the exact source
+terminal remains a parent. Never cherry-pick, squash, copy, or patch source
+bytes. The exact 23-path union has zero collisions; the independently
+preflighted cumulative trees are `349bde88...`, `88075624...`,
+`fcd5ee04...`, and final `da84a488...`.
+
+After all four source merges, run only the combined F04 repository/domain and
+F03 adult-session changed-area suites, workspace typecheck, focused lint and
+Prettier, unchanged migration-tree proof, YAML, diff, secret, ancestry,
+exact-scope, and effects `0/0/0` gates. Preserve F02 proposal/checksum/request
+truth and unapplied steward results, all admitted F04/F03 semantics, and P31's
+read-only no-lock/no-effect boundary.
+
+Then change exactly the I36 runtime triplet to record the four merge heads,
+source union, verification evidence, released lease, and effects `0/0/0`.
+Commit, push normally, verify local/tracking/live remote equality and a clean
+worktree, then stop for independent C00 reconciliation.
+
+Do not add P08/P09 composition or shared registration, apply a steward result,
+edit a migration or database harness, freeze a candidate, inspect or mutate a
+provider, claim a provider lock, deploy, change DNS, migrate a live database,
+send, charge, or activate a customer.

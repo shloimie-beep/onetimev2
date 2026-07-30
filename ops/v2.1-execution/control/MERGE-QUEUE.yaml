@@ -1,8 +1,151 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 402a3bb6-e350-42e7-be21-ecbf6694e2ed
+  kind: implementation
+  task_id: F02
+  source_branch: codex/v21-lane1-migration-correction
+  source_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  source_delta_base_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  required_merge_base_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  merge_after_heads: {}
+  allowed_paths:
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  writer_slot_leases: &microbatch_3_integrator_lease
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c
+    holder_task_id: I36
+    holder_claim_id: f7ed3c6a-683b-4971-9e5e-2a65398c74c2
+    holder_writer_id: codex-i36-source-microbatch3-f7ed3c6a
+    state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+    lease_issued_at: '2026-07-30T21:22:48Z'
+    lease_expires_at: '2026-07-30T23:22:48Z'
+    phase_scope: accepted_source_microbatch_3_F02_F04_F03_P31_only
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
+  state_handoff_digest: e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616
+  runtime_triplet_digest: 4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9
+  four_path_aggregate_digest: 2f8bca7ee12feb3af66ff9ac88f48ff59acdb0642f812440a05424a0afce770e
+  central_steward_results_applied: false
+  external_effect_summary: &microbatch_3_zero_effects
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: f8afea17-0b67-4290-844d-b9c5bb5e61ea
+  kind: implementation
+  task_id: F04
+  source_branch: codex/v21-f04-household-identity
+  source_head_sha: b43c1923bbfdd92d15572abc137a3ead3fdf2819
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  source_delta_base_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  required_merge_base_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: b43c1923bbfdd92d15572abc137a3ead3fdf2819
+  merge_after_heads:
+    F02: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  allowed_paths:
+  - ops/v2.1-execution/runtime/F04/HANDOFF.md
+  - ops/v2.1-execution/runtime/F04/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
+  - packages/db/src/accounts/v21-household-identity-repository.test.ts
+  - packages/db/src/accounts/v21-household-identity-repository.ts
+  - packages/domain/src/accounts/v21-household-identity.test.ts
+  - packages/domain/src/accounts/v21-household-identity.ts
+  writer_slot_leases: *microbatch_3_integrator_lease
+  task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+  task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
+  product_digest: c87d04c097ca12496b602a765634017902994568428af9fc6110d50d245b0a85
+  interface_contract_digest: 79176042f6fef736e27c9280e89d116146c515bf3ab275360f31784fed587e33
+  state_handoff_digest: 8670ae6fdb20d0b8f2d05857f8f59e28f3c3fd912d3b1fb62bfad6851b74b04f
+  runtime_triplet_digest: ad82d06db2698c3b640343949b8ba19e45720cc2b5d4db44d55af7808605fa3d
+  external_effect_summary: *microbatch_3_zero_effects
+  state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 8bb26407-a463-4922-8174-b264ac20f9cc
+  kind: implementation
+  task_id: F03
+  source_branch: codex/v21-f03-adult-student-auth
+  source_head_sha: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  source_delta_base_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  required_merge_base_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
+  merge_after_heads:
+    F02: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+    F04: b43c1923bbfdd92d15572abc137a3ead3fdf2819
+  allowed_paths:
+  - apps/web/src/server/features/auth/v21-adult-session.test.ts
+  - apps/web/src/server/features/auth/v21-adult-session.ts
+  - ops/v2.1-execution/runtime/F03/HANDOFF.md
+  - ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
+  writer_slot_leases: *microbatch_3_integrator_lease
+  task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+  task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+  product_digest: 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
+  state_handoff_digest: 93ce51b03f559a923a348f0d3596c83164e79cfeac944c7741db05adf33209dc
+  runtime_triplet_digest: 211c2ee2a7bc981fe6670375a465775e03e2970fd7df9692baf9561f992308ba
+  external_effect_summary: *microbatch_3_zero_effects
+  state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 079b5b1b-c76b-4684-9f23-49abed788fa8
+  kind: implementation
+  task_id: P31
+  source_branch: codex/v21-lane2-ghl-email
+  source_head_sha: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  source_delta_base_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  required_merge_base_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
+  merge_after_heads:
+    F02: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+    F04: b43c1923bbfdd92d15572abc137a3ead3fdf2819
+    F03: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
+  allowed_paths:
+  - ops/v2.1-execution/runtime/P31/AUTHORIZATION-GAPS.yaml
+  - ops/v2.1-execution/runtime/P31/GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml
+  - ops/v2.1-execution/runtime/P31/HANDOFF.md
+  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P31/PROVIDER-PREFLIGHT-MATRIX.yaml
+  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+  writer_slot_leases: *microbatch_3_integrator_lease
+  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
+  task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
+  state_handoff_digest: e9b0e62bb831b77b953df1b988637df8e222bbab7cb93128301a4b47dd9a0f73
+  runtime_triplet_digest: bb3543e87256fcad61ff4ab3a013595a37c278ae567a7de23bc9cfd61d21b7c2
+  provider_preflight_matrix_digest: 35d6de26d55205f3937bf3d696886802d33041eba59a7fa2c2bdc671edf8b22f
+  GHL_workflow_preflight_matrix_digest: 80b46f631ae4cc1eca24d0b352c2cf13ce0aefa078c70d1c30d8b3a03a3a5fe7
+  authorization_gaps_digest: 83115cf51ad4ddd24b3d0984c7c009419d9d43cfc894d9de901922e876ab50a6
+  provider_boundary: read_only_no_lock_no_provider_effect
+  external_effect_summary: *microbatch_3_zero_effects
+  state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+item_payload_digests:
+  402a3bb6-e350-42e7-be21-ecbf6694e2ed: d220ad711e294736512d3bc090a4c4cf33d55e12171d39a58712c1b471a5b277
+  f8afea17-0b67-4290-844d-b9c5bb5e61ea: 71b960266129ad3511baecbb6488a73d4e9cf9ea27ab97def1d71c7854473f49
+  8bb26407-a463-4922-8174-b264ac20f9cc: 9aa91c8b46ffd5a087c50ddadf2568f528076eb1c6f8f4f7507ca8c3c74df8ed
+  079b5b1b-c76b-4684-9f23-49abed788fa8: e6fcb0d86b04bd8294823a781b094bf26cf7f568e8bbb914bb777af1dc99d6b0
 completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION

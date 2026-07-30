@@ -62,7 +62,7 @@ blockers:
     the superseded fd4cdaa3 value or truncate the P17 digest.
   next_check: Revalidate only after a later migration, request, or checksum-byte change and once at candidate freeze.
 - blocker_id: F02-PROPOSAL-AUTHORITY-METADATA
-  status: open
+  status: closed
   scope: preintegration_metadata_truth
   owner: C00_and_F02
   affected_tasks:
@@ -70,20 +70,16 @@ blockers:
   - P18
   - I36
   safe_work_completed: >-
-    Independent review held exact F02 terminal edacab1d only because its live allocation-proposal authority block still
-    names historical projection-v2 claim 88a902de, dual leases 7de57120/e0a6dd90, writer
-    codex-f02-projection-v2-88a902de, containing control f2b4a9fa, start c0a1e04b, and release
-    2026-07-30T17:44:04Z. Every checksum, request, allocation, acknowledgment, exact-scope, YAML, diff, secret,
-    remote-equality, released-lease, and zero-effect gate otherwise passes. Fresh claim 68f6e27a has sole
-    MIGRATION_AUTHORITY lease defa457c from exact start edacab1d and control parent fbc5d540.
-  required_authority_or_input:
-  - Complete the exact four-path proposal-authority/runtime correction from edacab1d.
-  - Independently verify live proposal-authority parity, clean remote equality, released lease, and unchanged validated checksum/request/allocation bytes.
+    Exact four-path terminal 9754f2ae rebinds the live allocation-proposal authority to claim 68f6e27a, sole
+    MIGRATION_AUTHORITY lease defa457c, writer codex-f02-proposal-authority-68f6e27a, control a7978fb1, parent/controller
+    fbc5d540, and start edacab1d, with no live schema lease. Independent review passed proposal raw f1c23180,
+    state/handoff e0b2ede5, triplet 4059e319, unchanged non-authority proposal objects, every allocation/checksum/P17 and
+    2250-2252 acknowledgment, released lease, exact scope, remote equality, YAML/format/diff/secret, and effects 0/0/0.
+  required_authority_or_input: []
   protection: >-
-    Change only the live proposal authority and its exact F02 runtime evidence. Do not edit migrations, product code,
-    requests, allocations, checksum fields, 2250-2252 acknowledgments, a central steward result, integration, candidate,
-    provider state, or external effects.
-  next_check: Re-evaluate only after the authority-corrected F02 terminal is pushed with clean remote equality and its sole lease released.
+    Preserve exact admitted terminal 9754f2ae, every allocation/request/migration/checksum byte, and the sole live
+    authority. Do not apply a central steward result until the exact terminal is integrated and independently reconciled.
+  next_check: Revalidate after integration and after any later allocation, request, migration, checksum, or proposal-authority byte change.
 - blocker_id: P20-P21-PUBLICATION-SEED-INTEGRATION
   status: closed
   scope: controlled_launch_candidate

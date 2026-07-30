@@ -2694,3 +2694,50 @@ integration order: corrected F02, F04 `b43c1923...`, F03 `3947c988...`, then
 read-only P31 `f50d95ba...`. Legal remains a `production_broad`-only gate. No
 provider lock is held and no provider, DNS, send, charge, live migration,
 customer, or other external effect is authorized.
+
+# F02 admission and I36 source microbatch 3
+
+Independent review admitted exact F02 terminal
+`9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20` as the sole-parent four-path
+successor of `edacab1d...`. Its live proposal authority binds exact control
+`a7978fb1...`, parent/controller `fbc5d540...`, claim `68f6e27a...`, sole
+MIGRATION_AUTHORITY lease `defa457c...`, and no live schema lease. Proposal raw
+SHA-256 is `f1c23180...`, state/handoff is `e0b2ede5...`, and runtime triplet
+is `4059e319...`. Every non-authority proposal object, allocation, checksum,
+P17 binding, 2250-2252 acknowledgment, proof `39cacd4a...`, merge
+`526f0384...`, and `central_steward_results_applied: false` remained exact.
+The lease was released before expiry, remote equality is clean, and effects are
+`0/0/0`.
+
+Read-only ordered merge-tree preflight also passed from exact integration
+`8634b2ab15df624576a88b31182ebdc68553ff74`:
+
+1. F02 `9754f2ae...`, exact 4 paths, cumulative tree `349bde88...`;
+2. F04 `b43c1923...`, exact 8 paths, cumulative tree `88075624...`;
+3. F03 `3947c988...`, exact 5 paths, cumulative tree `fcd5ee04...`;
+4. P31 `f50d95ba...`, exact 6 paths, final tree `da84a488...`.
+
+The union is exactly 23 unique paths with zero collisions or merge conflicts.
+F02/F04/F03 merge from `8634b2ab`; P31 merges from `c0a1e04b...`. All five
+live remote heads and clean worktrees matched.
+
+C00 authorized only this I36 source microbatch under:
+
+- claim `f7ed3c6a-683b-4971-9e5e-2a65398c74c2`;
+- RELEASE_INTEGRATOR lease
+  `3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c`;
+- writer `codex-i36-source-microbatch3-f7ed3c6a`;
+- READY `a87a97b243b076b7ed7bfc10152ca373f187c76808a83d14acde72c86bc95801`;
+- lease expiry `2026-07-30T23:22:48Z`.
+
+The four canonical MERGE payload digests are F02 `d220ad71...`, F04
+`71b96026...`, F03 `9aa91c8b...`, and P31 `e6fcb0d8...`. Merge each exact
+terminal normally, without squash or cherry-pick, verify its staged allowlist
+before committing, then run combined changed-area verification and publish one
+I36 runtime-triplet release checkpoint with the lease released.
+
+Do not add P08/P09 shared composition or registration, apply an F02 steward
+result, freeze a candidate, claim a provider lock, inspect or mutate a
+provider, deploy, change DNS, migrate a live database, send, charge, or activate
+a customer. Legal remains `production_broad` only. No external effect is
+authorized.
