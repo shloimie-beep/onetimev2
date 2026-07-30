@@ -12,13 +12,17 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T05:19:13Z'
-last_heartbeat_at: '2026-07-30T04:34:13Z'
-controller_authorization_sha: a0599de4502994d5028c9b24084b400d48f72f98
+lease_expires_at: '2026-07-30T05:44:02Z'
+last_heartbeat_at: '2026-07-30T04:59:02Z'
+controller_authorization_sha: 3f7403ca5b2601560478d0a12fef4b5418149309
 ready_entry_payload_digest: null
-state_based_on_head_sha: a0599de4502994d5028c9b24084b400d48f72f98
+state_based_on_head_sha: 3f7403ca5b2601560478d0a12fef4b5418149309
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently audited F02 Lease C final 6d16d6eb as the sole child of its reconciled claim, exact nine-path scope, five forward-only migrations 2245 through 2249, normalized/native and repository-runner checksum pairs, next ordinal 2250, released dual leases, and effects 0/0/0.
+- Independently reconciled P28 final a2025a76 and implementation 7a37ef5b with exact twelve-path scope, immutable P17 reminder-routing request, semantic digest f00013bb, 47 focused assertions, released lease, and effects 0/0/0.
+- Independently reconciled P31 final d72dda56 and implementation 8b3ed597 with exact eight-path scope, exact OT-15 step 2/3 copy digests, interface 1.1.0 digest a759c3db, focused/typecheck gates, released lease, and effects 0/0/0.
+- Marked F02, P28, and P31 ready_for_review for exact ordered I36 source integration; no steward request was marked applied and no candidate, provider lock, effect reservation, inspection, mutation, deployment, enrollment, or send occurred.
 - Independently audited all 38 assigned I36 steward duties across 24 source heads at final release 42068ace: every source is an ancestor, every immutable request replayed with its recorded raw or canonical digest, and central shared seams require serialized dependency-ordered batches.
 - Recorded OPS-084-LEGAL-BUNDLE as an explicit production_broad blocker after confirming all six required legal artifacts are absent, no task owns their legal text, and P34 is forbidden to fabricate them; restricted independent verification may continue.
 - Reconciled P31 atomic claim eff2434e4ec39af0eeb127f2c46c525a3bed6130 from exact parent ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d and exact runtime-triplet-only scope; authorized only P30-copy-registration-001 under its active COPY_CATALOG lease.

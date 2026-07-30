@@ -1899,3 +1899,25 @@ legal-text authorship, and P34 must not fabricate them. Restricted CI, staging,
 read-only, and operator-canary mechanism verification may continue, but broad
 real-customer activation must fail closed until the externally approved exact
 bundle is supplied.
+
+## Direct prerequisite release audit
+
+F02 final `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`, P28 final
+`a2025a768ae6e69a15ec5605379a9e359cf2deec`, and P31 final
+`d72dda5669627695edaf9dbf20f7650c9b5c9ded` passed independent C00 audit.
+Their exact implementation heads are F02 `6d16d6eb`, P28 `7a37ef5b`, and P31
+`8b3ed597`; their exact claim-to-final scopes are 9, 12, and 8 paths.
+
+F02 owns only migrations 2245 through 2249 plus its allocation proposal and
+runtime triplet. All five native and pg-mem checksum pairs replay, next ordinal
+is 2250, and both writer leases are released. P28 preserves communication
+foundation 1.0.0 with semantic digest `f00013bb` and passes 47 focused
+assertions. P31 publishes copy interface 1.1.0 with digest `a759c3db`, exact
+step-2/step-3 copy digests, and passes focused plus typecheck gates. All three
+records have effects `0/0/0`.
+
+Admit only these exact three source heads for ordered I36 ancestry integration
+from release `42068ace`, under a fresh atomic RELEASE_INTEGRATOR claim. Do not
+mark any steward result applied in the source-integration wave. Candidate,
+provider inspection/mutation, deployment, activation, enrollment, sends, and
+all external effects remain gated.

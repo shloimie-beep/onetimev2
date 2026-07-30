@@ -1595,3 +1595,15 @@ registration, GHL registry/projection, then deployment metadata. Keep protected
 or provider-bound targets fail-closed until concrete paths and approved
 non-secret metadata exist. Do not mark OPS-084 complete or begin
 `production_broad` without the exact externally approved six-file legal bundle.
+
+F02, P28, and P31 direct prerequisites are now independently audited. Prepare a
+fresh I36 runtime-triplet-only atomic claim from exact integration release
+`42068ace48fe1a93302ce7d5533e11803b526d5b`, then stop for C00 reconciliation.
+After target-CAS rebind, integrate exact F02
+`6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`, P28
+`a2025a768ae6e69a15ec5605379a9e359cf2deec`, and P31
+`d72dda5669627695edaf9dbf20f7650c9b5c9ded` in that order, preserving ancestry
+and exact 9/12/8-path allowlists. Run combined migrations, focused tests,
+typecheck, YAML, scope, digest, secret, and zero-effect gates; release the
+integrator lease and stop for independent audit. Do not apply central steward
+requests during this ancestry-only wave.
