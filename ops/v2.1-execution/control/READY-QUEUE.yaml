@@ -2,66 +2,8 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready:
-- task_id: I36
-  status: resume_ready
-  phase: P31_P20_P17_terminal_verification_runtime_metadata_correction
-  branch: codex/v21-integration
-  claim_mode: resume_existing
-  state_based_on_control_head_sha: 505804a1a3ab172229df94512f06c37cf214f270
-  authorized_start_sha: f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5
-  expected_existing_head: f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5
-  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
-  task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
-  dependency_heads_and_digests:
-    C00:
-      required_state: operational
-      observed_state: operational
-      observed_control_head_sha: 505804a1a3ab172229df94512f06c37cf214f270
-      control_state_digest: c6ba4310c2848b6fa5a72e45cd87f485fe61686d337a3a37260bfbc9fcfe7f2a
-    I36:
-      required_state: rejected_terminal_verification_metadata_correction_only
-      observed_state: release_pass_single_terminal_verification_row_stale
-      observed_task_head_sha: f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5
-      prior_metadata_claim_head_sha: 3aab6a199730ab2ed75f45c234ec8331894cdf6b
-      prior_release_state_handoff_digest: 0ad397970c536ee4250e041ce0476683c506b7c7eb8e03cebaa3cfb0c3271b4f
-      prior_release_runtime_triplet_digest: d069382c5794395d9f0e51d6d7197d245808d1db1f15d58caf79fbe650ccc3c4
-      remaining_steps_empty: true
-      out_of_scope_findings_empty: true
-      stale_verification_command: post-reconciliation runtime-metadata cleanup, package binding, YAML, formatting, diff, scope, lease-release, push, and remote-equality verification
-      stale_verification_result: pending exact superseding runtime-triplet-only final commit and normal push; every non-runtime byte and effect remains frozen
-      released_prior_lease_id: 745aefd4-8660-4a0b-8d43-852769ced512
-      released_prior_lease_at: '2026-07-30T08:56:39Z'
-      external_effects: 0/0/0
-  authorized_paths:
-  - ops/v2.1-execution/runtime/I36/HANDOFF.md
-  - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-  correction_directives:
-  - 'First push: change only the I36 runtime triplet to record this exact READY digest, fresh claim and lease; preserve the stale pending verification result and every other byte outside the triplet; push normally, verify remote equality, and stop for C00 reconciliation.'
-  - 'After reconciliation: replace only the stale pending result semantics with passed evidence at exact final f83ff0ce, sole parent 3aab6a19, runtime-triplet-only scope, pair/triplet 0ad39797/d069382c, released-before-expiry prior lease, clean remote equality, frozen non-runtime bytes, and effects 0/0/0.'
-  - 'Preserve remaining_steps: [], out_of_scope_findings: [], the historical failed P31 lint entry, the later current full-lint pass, all source and merge bytes, migrations, requests, control ledgers, providers, deployment, sends, and effects.'
-  writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 994b32cc-4ca9-4b11-88ed-713631a61f33
-    holder_task_id: I36
-    holder_claim_id: f34c38fb-f977-4c41-ae4b-5343d13c85f7
-    state_based_on_control_head_sha: 505804a1a3ab172229df94512f06c37cf214f270
-    lease_issued_at: '2026-07-30T09:02:00Z'
-    lease_expires_at: '2026-07-30T09:47:00Z'
-    phase_scope: I36_P31_P20_P17_terminal_verification_runtime_metadata_correction_atomic_claim_only
-  effect_lock_leases: []
-  claim_id: f34c38fb-f977-4c41-ae4b-5343d13c85f7
-  lease_issued_at: '2026-07-30T09:02:00Z'
-  lease_expires_at: '2026-07-30T09:47:00Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: XHIGH
-entry_payload_digests:
-  I36: 3252e7b6e9e35f332e799e0151c14cd097cbc549b2d6c7879227f83268fa6228
+ready: []
+entry_payload_digests: {}
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

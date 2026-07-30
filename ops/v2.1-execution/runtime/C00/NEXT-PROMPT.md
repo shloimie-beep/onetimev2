@@ -1825,3 +1825,15 @@ final `f83ff0ce`, sole parent `3aab6a19`, runtime-triplet-only scope,
 pair/triplet `0ad39797`/`d069382c`, released lease, clean remote equality,
 frozen non-runtime bytes, and effects `0/0/0`; release the new lease, push,
 and stop. Do not edit any non-runtime byte or perform an effect.
+
+I36 terminal-verification claim
+`391866bf32150b515159146a329568ce544ade48` is reconciled. Continue only
+under claim `f34c38fb-f977-4c41-ae4b-5343d13c85f7` and
+RELEASE_INTEGRATOR lease `994b32cc-4ca9-4b11-88ed-713631a61f33`
+through `2026-07-30T09:47:00Z`. Change only the I36 runtime triplet: replace
+the one stale pending post-reconciliation verification result with passed
+evidence at exact final `f83ff0ce`, sole parent `3aab6a19`,
+runtime-triplet-only scope, pair/triplet `0ad39797`/`d069382c`, prior lease
+released before expiry, clean remote equality, frozen non-runtime bytes, and
+effects `0/0/0`. Preserve both empty arrays and all historical/current lint
+evidence, release the new lease, push normally, and stop for final audit.

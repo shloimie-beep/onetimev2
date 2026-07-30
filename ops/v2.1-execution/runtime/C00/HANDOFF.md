@@ -2189,3 +2189,14 @@ first push may change only the runtime triplet to bind the claim while
 preserving the pending row, then must stop for C00 reconciliation. After that,
 replace the one stale result with exact passed evidence for `f83ff0ce`, release
 the lease, push, and stop. Every non-runtime byte remains frozen.
+
+I36 terminal-verification claim `391866bf` is independently reconciled as the
+exact runtime-triplet-only child of rejected final `f83ff0ce`. Claim
+pair/triplet `7ae5e961`/`354e39ca`, READY `3252e7b6`, exact
+control/claim/lease/task bindings, verbatim pending-result preservation, empty
+arrays, clean remote equality, and effects `0/0/0` pass. READY is empty.
+
+I36 may now replace only the one stale pending verification result with exact
+passed evidence for `f83ff0ce`, update derived runtime evidence, release
+RELEASE_INTEGRATOR lease `994b32cc`, push normally, and stop for final audit.
+Every non-runtime byte remains frozen.
