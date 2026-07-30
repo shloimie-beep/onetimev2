@@ -34,6 +34,30 @@ export function createMemoryPool(): DbPool {
     returns: DataType.integer,
     implementation: () => 1,
   });
+  db.public.registerFunction({
+    name: 'btrim',
+    args: [DataType.text],
+    returns: DataType.text,
+    implementation: (value: string) => value.trim(),
+  });
+  db.public.registerFunction({
+    name: 'length',
+    args: [DataType.text],
+    returns: DataType.integer,
+    implementation: (value: string) => value.length,
+  });
+  db.public.registerFunction({
+    name: 'cardinality',
+    args: [db.public.getType(DataType.text).asArray()],
+    returns: DataType.integer,
+    implementation: (value: string[]) => value.length,
+  });
+  db.public.registerFunction({
+    name: 'md5',
+    args: [DataType.text],
+    returns: DataType.text,
+    implementation: (value: string) => createHash('md5').update(value).digest('hex'),
+  });
   const adapter = db.adapters.createPg();
   const pool = new adapter.Pool() as DbPool & { __memory?: boolean };
   pool.__memory = true;

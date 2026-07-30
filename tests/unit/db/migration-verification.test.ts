@@ -127,6 +127,33 @@ describe('read-only migration verification', () => {
     }
   });
 
+  it('verifies the fully applied repository migration inventory without writes', async () => {
+    const pool = createMemoryPool();
+
+    try {
+      const applied = await runMigrations(pool);
+      const before = await databaseSnapshot(pool);
+      const { pool: recordingPool, statements } = recordQueries(pool);
+
+      const report = await verifyMigrations(recordingPool);
+      expect(report).toMatchObject({
+        ok: true,
+        status: 'verified',
+        ledger: 'present',
+        migration_file_count: applied.length,
+        ledger_row_count: applied.length,
+        applied_count: applied.length,
+        pending_count: 0,
+        issues: [],
+      });
+      expect(statements).not.toHaveLength(0);
+      expect(statements.every((statement) => /^\s*SELECT\b/i.test(statement))).toBe(true);
+      expect(await databaseSnapshot(pool)).toEqual(before);
+    } finally {
+      await pool.end();
+    }
+  });
+
   it('accepts only the exact checksum-pinned historical staging aliases', async () => {
     const pool = createMemoryPool();
     const directory = await migrationDirectory({
