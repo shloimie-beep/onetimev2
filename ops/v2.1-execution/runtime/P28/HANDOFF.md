@@ -7,18 +7,33 @@
 - Implementation SHA: `83355a7b6981073662d71f44a2c8f68264a307d8`
 - Interface metadata head: `aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`
 - Final ready-for-review head: derive with `git rev-parse HEAD`; C00 records the pushed head
+- Expected pre-claim head: `f891f16eb13593d0eb3bbe53c076513d12b07c23`
 - Task packet digest: `3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823`
 - Context digest: `96152f74273391337a3c6b8dd576829e7ddf9467cc867fb3b35ec4cf2c3cc18c`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim: `16640fee-ca26-4885-9be7-14fb2baa682c`
-- Writer: `codex-p28-worker-16640fee`
-- Containing control authorization: `e847dd790ae2f99ae526b0edcbd41897474c8f18`
-- Ready-entry parent control: `3cfe14a6e1171d002f7173c13776dc682fddd6a8`
-- Ready-entry digest: `2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285`
-- GHL_REGISTRY lease: `f59eb149-ec9e-4d32-afd7-55ad5e32c899`
-- COMMUNICATION_FOUNDATION lease: `d2cd17e1-c0d2-4dd9-ab21-62c1b2a24a30`
-- Lease expiry: `2026-07-28T22:55:38Z`
-- Both leases released: `2026-07-28T22:28:08Z`
+- Claim: `42599e59-5e65-4269-b3d1-d10632342be6`
+- Writer: `codex-p28-worker-42599e59`
+- Containing control authorization: `85100180449bf234a93f107eb66a1f7bc635b4f0`
+- Ready-entry state basis: `fe95eacb2a958ba043cc9f89c1c27e09e20b9324`
+- Ready-entry digest: `48da940a881f37fe700d478fa1c34ae86a33fbaf2c10d000624b71c444711e6b`
+- COMMUNICATION_FOUNDATION lease: `ac74a2a9-b988-418a-b429-fefb5feeeb37`
+- Lease issued: `2026-07-30T04:01:19Z`
+- Lease expiry: `2026-07-30T06:01:19Z`
+- Effect locks: none
+
+## Active atomic steward claim
+
+P28 has claimed only immutable request `P17-REMINDER-ROUTING-001`, canonical
+request digest
+`c6015bb11b581333946e8e9de6e3676d108ed327d52ee1894f355ab921da14cf`,
+from integrated P17 head
+`78af71603713b6fc73fe755995bdf56193eb199a` and request-container blob
+`bec8dc31dbe5d79a26434a7219d4d8696cf15f01`. The evaluated target is the exact
+pre-claim P28 head `f891f16eb13593d0eb3bbe53c076513d12b07c23`.
+
+This checkpoint changes only P28 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. All product, contract, interface, test, and steward-request
+bytes remain unchanged. Routing implementation has not started.
 
 ## Completed behavior
 
@@ -47,18 +62,15 @@ realization and save/reopen readback.
 
 ## Remaining work
 
-P28-owned implementation and final verification are complete, and both writer
-leases are released. I36 must validate/integrate the exact interface checkpoint
-and unlock P29/P30. F02/I36 must adjudicate the three steward requests. Later
-authorized verification waves must supply provider IDs, save/reopen readback,
-and candidate-bound external evidence.
+C00 must reconcile this atomic resume claim. Only after explicit continuation
+may P28 inspect or modify its owned communication-foundation paths for the
+bounded P17 reminder-routing request.
 
 ## Exact next action
 
-C00 and I36 validate this `ready_for_review` checkpoint, integrate interface
-metadata head `aaedc3f2`, unlock P29/P30, and adjudicate
-`P28-migration-001`, `P28-registration-001`, and
-`P28-registry-projection-001`.
+Push this three-file atomic claim, report its exact head, and stop until C00
+reconciles claim `42599e59-5e65-4269-b3d1-d10632342be6`. Do not implement
+routing before that reconciliation.
 
 ## Coverage
 
@@ -67,10 +79,9 @@ metadata head `aaedc3f2`, unlock P29/P30, and adjudicate
 
 ## Changed files and migrations
 
-- Six P28-owned implementation roots, including the canonical workflow registry
-- `ops/v2.1-execution/runtime/P28/INTERFACE-CHECKPOINT.yaml`
-- Three structured steward requests under `runtime/P28/steward-requests/`
-- P28 task state, handoff, and next prompt
+- `ops/v2.1-execution/runtime/P28/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/P28/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md`
 - Migrations: none
 
 ## Verification
@@ -86,7 +97,8 @@ metadata head `aaedc3f2`, unlock P29/P30, and adjudicate
 
 ## External effects
 
-Authority: none. Attempted: 0; succeeded: 0; reconciled: 0.
+Authority: none. Attempted: 0; succeeded: 0; reconciled: 0. No provider or
+effect lock exists.
 
 ## Security, privacy, and data handling
 

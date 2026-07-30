@@ -4,8 +4,11 @@ task_id: P28
 task_packet_digest: 3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823
 task_context_digest: 96152f74273391337a3c6b8dd576829e7ddf9467cc867fb3b35ec4cf2c3cc18c
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
 branch: codex/v21-p28-communication-foundation
 start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+authorized_resume_start_sha: c698da9826572c486f3ddf14cb01785dd2a120cf
+expected_existing_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
 dependency_heads:
   F06:
     state: interface_ready_integrated
@@ -28,29 +31,62 @@ dependency_heads:
     interface_source_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
     interface_implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
     interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-status: ready_for_review
-phase: complete
-claimed_by: codex-p28-worker-16640fee
-claim_time: '2026-07-28T22:03:46Z'
-claim_id: 16640fee-ca26-4885-9be7-14fb2baa682c
+resume_dependencies:
+  C00:
+    required_state: operational
+    observed_state: operational
+    observed_control_head_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
+    control_state_digest: 706714a4dc45d3fc83719e0ffb3a25573da461da0bdcb7f83526c12b8ef8c862
+  I36:
+    required_state: final_source_claim_reconciled
+    observed_state: final_source_claim_reconciled
+    observed_integration_head_sha: c698da9826572c486f3ddf14cb01785dd2a120cf
+  P28:
+    required_state: final_independently_audited
+    observed_state: final_independently_audited
+    observed_task_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
+    state_handoff_digest: b2efdd550d5879d3e96f3f8f8c5d5e5356d824efa70507b5819e1ec706335d3d
+    triplet_digest: 487543f6c171a0473a9379a732ec93fed3510edc06637f5cd197afabb4dcc782
+  P17:
+    required_state: final_integrated
+    observed_state: final_integrated
+    observed_task_head_sha: 78af71603713b6fc73fe755995bdf56193eb199a
+  P31:
+    required_state: copy_catalog_integrated
+    observed_state: copy_catalog_integrated
+    observed_task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+assigned_steward_request:
+  request_id: P17-REMINDER-ROUTING-001
+  request_digest: c6015bb11b581333946e8e9de6e3676d108ed327d52ee1894f355ab921da14cf
+  source_task_id: P17
+  source_head_sha: 78af71603713b6fc73fe755995bdf56193eb199a
+  source_path: ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
+  source_blob_sha: bec8dc31dbe5d79a26434a7219d4d8696cf15f01
+  assigned_steward: P28
+  target_checkpoint: P28_next_communication_registration_checkpoint
+  evaluated_target_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
+status: claimed
+phase: P17_reminder_routing_steward_atomic_claim
+claim_mode: resume_existing
+claimed_by: codex-p28-worker-42599e59
+claim_time: '2026-07-30T04:10:01Z'
+claim_id: 42599e59-5e65-4269-b3d1-d10632342be6
 writer_slot_leases:
-  - slot: GHL_REGISTRY
-    lease_id: f59eb149-ec9e-4d32-afd7-55ad5e32c899
-    lease_issued_at: '2026-07-28T21:55:38Z'
-    lease_expires_at: '2026-07-28T22:55:38Z'
-    lease_released_at: '2026-07-28T22:28:08Z'
   - slot: COMMUNICATION_FOUNDATION
-    lease_id: d2cd17e1-c0d2-4dd9-ab21-62c1b2a24a30
-    lease_issued_at: '2026-07-28T21:55:38Z'
-    lease_expires_at: '2026-07-28T22:55:38Z'
-    lease_released_at: '2026-07-28T22:28:08Z'
-lease_expires_at: '2026-07-28T22:55:38Z'
-last_heartbeat_at: '2026-07-28T22:28:08Z'
-lease_released_at: '2026-07-28T22:28:08Z'
-controller_authorization_sha: e847dd790ae2f99ae526b0edcbd41897474c8f18
-ready_entry_state_based_on_control_head_sha: 3cfe14a6e1171d002f7173c13776dc682fddd6a8
-ready_entry_payload_digest: 2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285
-state_based_on_head_sha: aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c
+    lease_id: ac74a2a9-b988-418a-b429-fefb5feeeb37
+    holder_task_id: P28
+    holder_claim_id: 42599e59-5e65-4269-b3d1-d10632342be6
+    state_based_on_control_head_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
+    lease_issued_at: '2026-07-30T04:01:19Z'
+    lease_expires_at: '2026-07-30T06:01:19Z'
+    phase_scope: P28_P17_reminder_routing_steward_atomic_claim_only
+lease_expires_at: '2026-07-30T06:01:19Z'
+last_heartbeat_at: '2026-07-30T04:10:01Z'
+lease_released_at: null
+controller_authorization_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
+ready_entry_state_based_on_control_head_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
+ready_entry_payload_digest: 48da940a881f37fe700d478fa1c34ae86a33fbaf2c10d000624b71c444711e6b
+state_based_on_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
 last_implementation_commit_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
 interface_contract_digest: 2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86
 completed_steps:
@@ -71,11 +107,15 @@ completed_steps:
   - Passed 32 focused assertions, full typecheck, focused lint/format, YAML source parsing, and diff checks.
   - Published the exact semantic interface checkpoint for downstream P29 and P30.
   - Re-ran the terminal verification suite against the clean pushed interface head and released both P28 leases in task-local metadata.
+  - Fetched and verified containing control 85100180449bf234a93f107eb66a1f7bc635b4f0 with acquisition/state basis fe95eacb2a958ba043cc9f89c1c27e09e20b9324.
+  - Recomputed the canonical P28 READY payload digest 48da940a881f37fe700d478fa1c34ae86a33fbaf2c10d000624b71c444711e6b.
+  - Verified resume_existing against exact local and remote P28 head f891f16eb13593d0eb3bbe53c076513d12b07c23.
+  - Bound integrated immutable request P17-REMINDER-ROUTING-001 digest c6015bb11b581333946e8e9de6e3676d108ed327d52ee1894f355ab921da14cf and source blob bec8dc31dbe5d79a26434a7219d4d8696cf15f01.
+  - Claimed only COMMUNICATION_FOUNDATION lease ac74a2a9-b988-418a-b429-fefb5feeeb37 with zero effect locks and preserved all product, contract, interface, and steward-request bytes.
 remaining_steps:
-  - I36 must validate and integrate the exact interface checkpoint.
-  - F02 and I36 must adjudicate the three structured steward requests.
-  - Later authorized verification waves must supply provider IDs, save/reopen readback, and candidate-bound external acceptance evidence.
-next_action: C00 and I36 validate this ready_for_review checkpoint, integrate exact interface head aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c, unlock P29/P30, and adjudicate the three structured steward requests.
+  - Push and report this exact three-runtime-file atomic steward claim checkpoint.
+  - Await C00 reconciliation before reading or changing routing product, contract, test, interface, or steward-request files.
+next_action: Push this exact three-file atomic claim, report its head, and stop until C00 explicitly reconciles claim 42599e59-5e65-4269-b3d1-d10632342be6.
 requirements:
   OTV2-GHL-120: implementation_verified
   OTV2-GHL-121: implementation_verified
@@ -98,16 +138,6 @@ acceptance_cases:
   OTV2-PARENT-226-PREFERENCES: task_owned_assertions_passed
   OTV2-PARENT-226-ESSENTIAL-EMAIL: task_owned_assertions_passed
 changed_paths:
-  - apps/worker/src/runners/communications-foundation/**
-  - integrations/highlevel/registry/workflow-registry.yaml
-  - integrations/highlevel/v21/foundation/**
-  - packages/contracts/src/communications/foundation/**
-  - packages/db/src/communications/foundation/**
-  - packages/domain/src/communications/foundation/**
-  - ops/v2.1-execution/runtime/P28/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P28/steward-requests/P28-migration-001.yaml
-  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registration-001.yaml
-  - ops/v2.1-execution/runtime/P28/steward-requests/P28-registry-projection-001.yaml
   - ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P28/HANDOFF.md
   - ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md
@@ -121,6 +151,12 @@ steward_requests:
     sha256: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
 verification:
   commands_run:
+    - command: exact containing-control, acquisition, local/remote branch, and expected-head verification
+      result: passed; control 85100180, acquisition fe95eacb, and local/remote P28 f891f16e
+    - command: canonical P28 resume READY digest recomputation
+      result: passed; 48da940a881f37fe700d478fa1c34ae86a33fbaf2c10d000624b71c444711e6b
+    - command: steward request, claim, sole writer lease, and zero effect-lock verification
+      result: passed; request c6015bb1, claim 42599e59, COMMUNICATION_FOUNDATION lease ac74a2a9, and no effect locks
     - command: git remote/control/integration/branch identity verification
       result: passed; exact repository, containing control, start SHA, and absent P28 branch
     - command: canonical P28 ready-entry digest recomputation
