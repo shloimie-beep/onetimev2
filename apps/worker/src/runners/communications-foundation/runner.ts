@@ -3,6 +3,7 @@ import type {
   CommunicationSenderKey,
   CommunicationSuppressionSnapshot,
   PlanCommunicationChannelsInput,
+  SafeClassReminderMessage,
   WebsiteLeadCaptureInput,
 } from '../../../../../packages/contracts/src/communications/foundation/index.ts';
 import { COMMUNICATION_SENDER_PROFILES } from '../../../../../packages/contracts/src/communications/foundation/index.ts';
@@ -22,6 +23,7 @@ export interface CommunicationEmailPort {
     adult_id: string;
     sender_key: CommunicationSenderKey;
     transport: 'GHL' | 'Resend';
+    safe_message?: SafeClassReminderMessage;
   }): Promise<{ safe_provider_ref_hash: string }>;
 }
 
@@ -32,6 +34,7 @@ export interface RunEmailFirstCommunicationInput {
   repository: CommunicationFoundationRepository;
   suppression: CommunicationSuppressionReadPort;
   email: CommunicationEmailPort;
+  safe_message?: SafeClassReminderMessage;
 }
 
 export type EmailFirstCommunicationResult =
@@ -119,6 +122,7 @@ export async function runEmailFirstCommunication(
       adult_id: currentPlan.adult_id,
       sender_key: input.sender_key,
       transport: sender.transport,
+      ...(input.safe_message ? { safe_message: input.safe_message } : {}),
     });
     await input.repository.completeDecision({
       operation_id: currentPlan.operation_id,

@@ -245,6 +245,78 @@ export interface CommunicationWorkflowFragment {
   workflows: readonly CommunicationWorkflowDefinition[];
 }
 
+export const CLASS_REMINDER_ROUTING_REQUEST_ID = 'P17-REMINDER-ROUTING-001' as const;
+export const CLASS_REMINDER_APP_PATH = '/app/parent/classes' as const;
+export const CLASS_REMINDER_LEAD_MS = 30 * 60 * 1000;
+
+export type ClassReminderRegistrantState =
+  'pending' | 'provisioning' | 'active' | 'failed' | 'acceptance_unknown' | 'revoked';
+
+export type ProtectedPortalState = 'pending' | 'ready' | 'unavailable';
+
+export interface ClassReminderStudentPreparation {
+  student_label: string;
+  registrant_state: ClassReminderRegistrantState;
+  protected_portal_state: ProtectedPortalState;
+}
+
+export interface ClassReminderHouseholdCandidate {
+  operation_id: string;
+  household_id: string;
+  account_owner_adult_id: string;
+  student_labels: readonly string[];
+  student_preparations: readonly ClassReminderStudentPreparation[];
+  app_path: string;
+  scheduled_for: string;
+  reminder_preference: ReminderPreference;
+  suppression: CommunicationSuppressionSnapshot;
+  expected_version: number;
+}
+
+export interface PlanClassReminderRoutingInput {
+  occurrence_id: string;
+  occurrence_starts_at: string;
+  households: readonly ClassReminderHouseholdCandidate[];
+}
+
+export interface SafeClassReminderMessage {
+  kind: 'account_owner_class_reminder';
+  affected_student_labels: readonly string[];
+  app_path: typeof CLASS_REMINDER_APP_PATH;
+  contains_zoom_url: false;
+  contains_launch_grant: false;
+  contains_technical_alias: false;
+  contains_student_authentication: false;
+}
+
+export interface ClassReminderRoutingIntent {
+  request_id: typeof CLASS_REMINDER_ROUTING_REQUEST_ID;
+  operation_id: string;
+  occurrence_id: string;
+  household_id: string;
+  account_owner_adult_id: string;
+  scheduled_for: string;
+  sender_key: 'office';
+  plan_input: PlanCommunicationChannelsInput;
+  channel_plan: CommunicationChannelPlan;
+  message: SafeClassReminderMessage;
+  expected_version: number;
+  prepared_in_app_access: 'preserve_independent_of_email';
+}
+
+export type ClassReminderRoutingPlan =
+  | {
+      disposition: 'partial_preparation';
+      safe_reason: 'named_student_not_ready';
+      intents: readonly [];
+      provider_calls: 0;
+    }
+  | {
+      disposition: 'ready';
+      intents: readonly ClassReminderRoutingIntent[];
+      provider_calls: 0;
+    };
+
 export interface CommunicationDecisionRecord {
   operation_id: string;
   adult_id: string;

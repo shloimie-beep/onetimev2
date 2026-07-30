@@ -1,4 +1,5 @@
 export { COMMUNICATION_FOUNDATION_ERROR_CODES, CommunicationFoundationError } from './errors.ts';
+export { planClassReminderRouting } from './class-reminder.ts';
 export { planWebsiteLeadCapture } from './lead-capture.ts';
 export {
   assertAdultSubject,

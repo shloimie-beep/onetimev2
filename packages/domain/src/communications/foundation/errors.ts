@@ -1,6 +1,7 @@
 export const COMMUNICATION_FOUNDATION_ERROR_CODES = [
   'student_contact_prohibited',
   'invalid_reminder_preference',
+  'invalid_class_reminder_routing',
   'non_admin_forbidden',
   'provider_readback_required',
   'unsafe_ghl_url',
