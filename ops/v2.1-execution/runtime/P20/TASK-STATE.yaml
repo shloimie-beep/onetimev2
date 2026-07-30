@@ -27,16 +27,16 @@ dependency_heads:
     interface_checkpoint_digest: 44952e92284a1dd20f6fff37e67686cd32328a0a3761e07eee90b70365aaac6f
     task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
     task_context_digest: f517475b52f50996ec6a2551daa091bbe5f3df982ee258d100ee11ffdbd7c7be
-status: claimed
-phase: approved_for_publication_projection_collision_correction_atomic_claim
+status: ready_for_review
+phase: approved_for_publication_projection_collision_correction_complete
 claim_mode: resume_existing
 claimed_by: codex-p20-projection-e8c768e8
 claim_time: '2026-07-30T06:47:54Z'
 claim_id: e8c768e8-f603-4d0c-a45b-34b5cd7ea92c
 expected_existing_head: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
 lease_expires_at: '2026-07-30T07:30:12Z'
-last_heartbeat_at: '2026-07-30T06:47:54Z'
-lease_released_at: null
+last_heartbeat_at: '2026-07-30T07:19:30Z'
+lease_released_at: '2026-07-30T07:19:30Z'
 writer_slot_leases:
   - slot: CONTENT_PROCESSING
     lease_id: 447a28a6-1675-4fbb-b52f-a77f75f8d356
@@ -51,15 +51,17 @@ writer_slot_leases:
     lease_issued_at: '2026-07-30T06:30:12Z'
     lease_expires_at: '2026-07-30T07:30:12Z'
     phase_scope: P20_approved_for_publication_projection_collision_correction_atomic_claim_only
-    released_at: null
+    released_at: '2026-07-30T07:19:30Z'
 initial_controller_authorization_sha: 4f82565865c615ecf91828b0cae41c1cf7b63dfe
-controller_authorization_sha: 2cb1cb46f37c3178217745876e0f09d694bbebf9
+controller_authorization_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 ready_entry_state_based_on_control_head_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
 ready_entry_payload_digest: ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea
-state_based_on_head_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
-last_implementation_commit_sha: e366ef926d6b2ee3be888eaae9fe2cad08b8a57f
+state_based_on_head_sha: 3cf5543b7fe2dde3118d35ce655e105dbd771a60
+last_implementation_commit_sha: 3cf5543b7fe2dde3118d35ce655e105dbd771a60
 implementation_artifact_digest: d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249
 implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 12 non-runtime P20 artifacts, with LF separators and no final newline.
+collision_correction_artifact_digest: ac8a6038c4a97a3b9347fd9a29cd9977ba24b3a0bddd294b862ccce65b9efe9c
+collision_correction_artifact_digest_algorithm: SHA-256 over exact correction-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the five authorized correction artifacts, with LF separators and no final newline.
 contract_digest: cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159
 schema_contract_digest: 7486ba836282a8f8caf453033286f5e8f8f57d65c95ae9aa914f644774e53fb9
 steward_request_digest: 821607d4c16a4627650ff1bf44ef435fb817d90a07ddf5e94f916269a988e01a
@@ -97,6 +99,10 @@ collision_correction_authorization:
     implementation_artifact_digest: 0ed47d3fc00de0f5e2660ebd857cbb128ac8fe70f7ebf7e7390cb4770cd5132d
     correction_state: withheld_pending_corrected_P20_final_and_integration
 completed_steps:
+  - Replayed reconciled containing control a5851edf70f3c60cc25ece3faf124bedf1629f21, exact atomic claim 0d58c8e4d6ca0263273d540bfd722586d8a1b5d3, unexpired claim e8c768e8-f603-4d0c-a45b-34b5cd7ea92c, CONTENT_PROCESSING lease 24d0fa6f-30ac-4fc0-af2a-2b495d826063, exact five-source/runtime-triplet allowlist, and zero effect locks.
+  - Implemented ApprovedForPublicationProjection at correction head 3cf5543b7fe2dde3118d35ce655e105dbd771a60 with exact account/product/version composite scope, immutable approved source and participant evidence, Admin approval evidence, seven-kind latest-approved artifact selection, and deterministic source/artifact/projection digests.
+  - Passed 13 focused projection tests including success, exact replay, nonapproved, missing, duplicate, stale, cross-scope, source, artifact, participant, and parameterized composite-SQL cases; full typecheck, focused lint and formatting, secret scan, YAML parse, scope, and diff hygiene also passed.
+  - Released CONTENT_PROCESSING lease 24d0fa6f-30ac-4fc0-af2a-2b495d826063 before expiry with external effects attempted 0, succeeded 0, reconciled 0.
   - Verified containing control 2cb1cb46f37c3178217745876e0f09d694bbebf9, canonical READY ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea, exact remote parent 3d75b57e91c12ab3e0cad78b1a6a63497838f46f, unexpired claim and CONTENT_PROCESSING lease, zero effect locks, migration result, P20/P21 evidence, and exact three-runtime/five-source allowlists.
   - Verified exact resume control bd24429251acff6393c0311a223e0e723335d7cd, claim head 6f894038117ee19d405e528670eb8bf86e8682b2, authorized start, dependency bindings, and active CONTENT_PROCESSING lease.
   - Implemented the versioned processing contract with exact storage, OT-VIDEO-1, OT-TRANSCRIBE-1, dated OT-LEARNING-DRAFT-1, strict schema, source-version, privacy, and draft-only pins.
@@ -106,10 +112,9 @@ completed_steps:
   - Passed all seven named acceptance cases, 15 focused tests, full workspace typecheck, focused lint, focused formatting, secret scan, and diff hygiene.
   - Committed and pushed implementation head e366ef926d6b2ee3be888eaae9fe2cad08b8a57f and released CONTENT_PROCESSING lease 447a28a6-1675-4fbb-b52f-a77f75f8d356.
 remaining_steps:
-  - Stop after this runtime-triplet-only atomic claim for C00 reconciliation.
-  - After reconciliation, implement the approved-for-publication projection only in the exact five authorized source paths, then run direct tests and publish a new final metadata checkpoint.
+  - C00 independently audits and integrates corrected P20.
   - Keep P21 and every P21 migration/registration correction withheld until corrected P20 is final, independently audited, and integrated.
-next_action: C00 must reconcile this atomic claim before P20 changes any source file. P20 must not self-extend the lease, edit migration 2246, publish a new P20 migration request, inspect a provider, or perform an external effect.
+next_action: C00 must independently audit the exact corrected P20 ancestry, five-source delta, runtime triplet, digests, gates, released lease, and zero external effects before integration. P21 remains withheld.
 requirements:
   OTV2-CONTENT-084: implementation_ready
   OTV2-CONTENT-085: implementation_ready
@@ -151,6 +156,14 @@ steward_requests:
   - P20-PINNED-MEDIA-RUNTIME-001
 verification:
   commands_run:
+    - reconciled control a5851edf70f3c60cc25ece3faf124bedf1629f21, atomic claim 0d58c8e4d6ca0263273d540bfd722586d8a1b5d3, branch, lease, allowlist, and zero-effect replay (passed)
+    - focused ApprovedForPublicationProjection Vitest suite (passed, 2 files and 13 tests)
+    - npm run typecheck using the verified shared dependency runtime (passed)
+    - focused ESLint over the exact five correction source files (passed)
+    - focused Prettier check over the exact five correction source files (passed)
+    - npm run secret:scan (passed across 2687 repository text files)
+    - YAML parse, git diff --check, and exact five-source/runtime-triplet scope checks (passed)
+    - exact five-artifact correction Git-blob digest derivation (passed)
     - canonical READY/dependency/migration/P20/P21/base-manifest/collision/allowlist/lease replay before atomic claim (passed)
     - exact resume control, claim head, branch, dependency, lease, and scope verification (passed)
     - npm run typecheck using the verified shared dependency runtime (passed)
