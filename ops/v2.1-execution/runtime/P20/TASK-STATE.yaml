@@ -28,32 +28,113 @@ dependency_heads:
     task_packet_digest: ca7b34a49abb1b74cc1f2405f0614c84ecbf8036eba0e3d47ded110bc9760e06
     task_context_digest: f517475b52f50996ec6a2551daa091bbe5f3df982ee258d100ee11ffdbd7c7be
 status: ready_for_review
-phase: review
-claimed_by: codex-p20-worker-1cd7bf99
-claim_time: '2026-07-28T22:58:09Z'
-claim_id: 1cd7bf99-21a7-4231-8418-b9cdfaf958c4
-lease_expires_at: '2026-07-28T23:50:05Z'
-last_heartbeat_at: '2026-07-28T23:22:00Z'
-lease_released_at: '2026-07-28T23:22:00Z'
+phase: approved_for_publication_projection_runtime_metadata_correction_complete
+claim_mode: resume_existing
+claimed_by: codex-p20-metadata-162924fc
+claim_time: '2026-07-30T07:32:00Z'
+claim_id: 162924fc-86b1-466b-8836-9e6fcc2a1326
+expected_existing_head: dc438725fb6bb8779c2d816d5e28d3b73227b6d4
+lease_expires_at: '2026-07-30T08:32:00Z'
+last_heartbeat_at: '2026-07-30T07:50:00Z'
+lease_released_at: '2026-07-30T07:50:00Z'
 writer_slot_leases:
   - slot: CONTENT_PROCESSING
     lease_id: 447a28a6-1675-4fbb-b52f-a77f75f8d356
     lease_issued_at: '2026-07-28T22:50:05Z'
     lease_expires_at: '2026-07-28T23:50:05Z'
     released_at: '2026-07-28T23:22:00Z'
+  - slot: CONTENT_PROCESSING
+    lease_id: 24d0fa6f-30ac-4fc0-af2a-2b495d826063
+    holder_task_id: P20
+    holder_claim_id: e8c768e8-f603-4d0c-a45b-34b5cd7ea92c
+    state_based_on_control_head_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+    lease_issued_at: '2026-07-30T06:30:12Z'
+    lease_expires_at: '2026-07-30T07:30:12Z'
+    phase_scope: P20_approved_for_publication_projection_collision_correction_atomic_claim_only
+    released_at: '2026-07-30T07:19:30Z'
+  - slot: CONTENT_PROCESSING
+    lease_id: 3da95218-b815-434a-ae63-154220c083b0
+    holder_task_id: P20
+    holder_claim_id: 162924fc-86b1-466b-8836-9e6fcc2a1326
+    state_based_on_control_head_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
+    lease_issued_at: '2026-07-30T07:32:00Z'
+    lease_expires_at: '2026-07-30T08:32:00Z'
+    phase_scope: P20_approved_for_publication_projection_runtime_metadata_correction_atomic_claim_only
+    released_at: '2026-07-30T07:50:00Z'
 initial_controller_authorization_sha: 4f82565865c615ecf91828b0cae41c1cf7b63dfe
-controller_authorization_sha: bd24429251acff6393c0311a223e0e723335d7cd
-ready_entry_state_based_on_control_head_sha: c9c3d288fa6cdb3aca756de8cc03d35471abe464
-ready_entry_payload_digest: c509304015a470c8c6c2ca7fa71ffcc13f8341f47b7414ddab093e8127d7e7d7
-state_based_on_head_sha: e366ef926d6b2ee3be888eaae9fe2cad08b8a57f
-last_implementation_commit_sha: e366ef926d6b2ee3be888eaae9fe2cad08b8a57f
-implementation_artifact_digest: d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249
+controller_authorization_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
+ready_entry_state_based_on_control_head_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
+ready_entry_payload_digest: f10eafc49cd2665bd6bf1b8ae5e804fd880799e4ca734c9e88954957e0f7ff91
+claim_reconciliation_control_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+claim_reconciliation_state_based_on_control_head_sha: e78d750887e2d56dc3c9b19612e4c51d6cbce0b5
+state_based_on_head_sha: 75abbd84cc8668aff4a4ed803f907e237f65bb5a
+last_implementation_commit_sha: 3cf5543b7fe2dde3118d35ce655e105dbd771a60
+implementation_artifact_digest: 9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370
 implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 12 non-runtime P20 artifacts, with LF separators and no final newline.
-contract_digest: cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159
+historical_pre_projection_implementation_artifact_digest: d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249
+collision_correction_artifact_digest: ac8a6038c4a97a3b9347fd9a29cd9977ba24b3a0bddd294b862ccce65b9efe9c
+collision_correction_artifact_digest_algorithm: SHA-256 over exact correction-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the five authorized correction artifacts, with LF separators and no final newline.
+contract_digest: cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9
+historical_pre_projection_contract_digest: cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159
 schema_contract_digest: 7486ba836282a8f8caf453033286f5e8f8f57d65c95ae9aa914f644774e53fb9
 steward_request_digest: 821607d4c16a4627650ff1bf44ef435fb817d90a07ddf5e94f916269a988e01a
 acceptance_matrix_digest: 64880d35b96afe201f459c46671c6d6a603ce1968f4d4c1017fdcdb367d52109
+runtime_metadata_correction_binding:
+  authorized_start_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  rejected_head_sha: dc438725fb6bb8779c2d816d5e28d3b73227b6d4
+  corrected_implementation_head_sha: 3cf5543b7fe2dde3118d35ce655e105dbd771a60
+  prior_state_handoff_digest: 945f2ab3c7230fdfb2db00a3801e2e435ad22c43f48eaeccda220bbca6ca2727
+  prior_runtime_triplet_digest: 38723f2ea2c464938250dcb46231d739ff4d3a7eefdd9e58fc59109db02ca53b
+  current_contract_blob_sha256: cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9
+  historical_recorded_contract_digest: cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159
+  current_twelve_artifact_manifest_digest: 9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370
+  historical_recorded_twelve_artifact_manifest_digest: d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249
+  digest_metadata_correction_complete: true
+  P21_state: withheld_pending_corrected_P20_metadata_final_and_integration
+collision_correction_authorization:
+  authorized_start_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  first_push_parent_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+  first_push_allowed_paths:
+    - ops/v2.1-execution/runtime/P20/HANDOFF.md
+    - ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md
+    - ops/v2.1-execution/runtime/P20/TASK-STATE.yaml
+  first_push_path_inventory_digest: 1d5eab5b0fbd443ab20c97bb1426ef5e83ad6b142a88cef6be8ac84d4e2b60ee
+  first_push_base_manifest_digest: 0e8f4c4366414beb1bdfa9cd6aff3179fee7bcc6fb6f2066dab847f18cf9a2b2
+  post_reconciliation_allowed_source_paths:
+    - packages/contracts/src/content/processing/index.ts
+    - packages/db/src/content/processing/repository.test.ts
+    - packages/db/src/content/processing/repository.ts
+    - packages/domain/src/content/processing/content-processing.acceptance.test.ts
+    - packages/domain/src/content/processing/index.ts
+  source_path_inventory_digest: 9a70f8864d7807d5ea26728a5835e10d489f91ed77f28f76f3458629cc3492ef
+  source_base_manifest_digest: eb01ac38bce07dd88f77b1e91d1899878d77edc6c2520a9769eec88ba3d900e8
+  applied_migration:
+    request_id: P20-MIGRATION-001
+    result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+    result_digest: 0f4260f833f65dab0a093f254585e9647bc98e231d540ae803cd5b60512d8363
+    ordinal: 2246
+    file: packages/db/migrations/2246_v21_content_processing.sql
+    new_request_authorized: false
+  dependent_P21_evidence:
+    rejected_ancestor_head_sha: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
+    implementation_head_sha: 7878b60fc72a17a7a6aeccc237c44141e2d5ec9b
+    audited_final_head_sha: cecdad0989e861254987970cfa3d222319369f52
+    state_handoff_digest: 35e94dfee5045cd08614ebfd38145dd7c489a26b1e7d9774d917a575197edd09
+    runtime_triplet_digest: 185d1ec301c61c9ec4b6c0d96f850e4eec59978a2f588278be96399823e46915
+    implementation_artifact_digest: 0ed47d3fc00de0f5e2660ebd857cbb128ac8fe70f7ebf7e7390cb4770cd5132d
+    correction_state: withheld_pending_corrected_P20_final_and_integration
 completed_steps:
+  - C00 reconciled the exact runtime-triplet atomic claim 75abbd84cc8668aff4a4ed803f907e237f65bb5a at canonical control a38b917f514b65c49d2d75789b8ae50d96985cdc before either digest field was corrected.
+  - Set contract_digest to the exact final contract Git-blob SHA-256 cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9 and implementation_artifact_digest to the corrected twelve-artifact aggregate 9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370; retained both prior values only under explicit historical_pre_projection fields.
+  - Passed final claim/correction binding, YAML, formatting, secret, diff, exact runtime-triplet scope, source/request/migration/P21 preservation, and sole-parent gates; released CONTENT_PROCESSING lease 3da95218-b815-434a-ae63-154220c083b0 before expiry with effects 0/0/0.
+  - Recomputed canonical READY f10eafc49cd2665bd6bf1b8ae5e804fd880799e4ca734c9e88954957e0f7ff91 from control 9e3eb50afbd1232bc83729f281bd82c12a14ab8e, verified its sole state-basis parent 6fec4000f1e31d608f8fc41488a9befab903aae8, exact remote head dc438725fb6bb8779c2d816d5e28d3b73227b6d4, fresh claim and CONTENT_PROCESSING lease, runtime-triplet-only allowlist, and zero effect locks.
+  - Recomputed the rejected-head state/handoff and runtime-triplet manifests, current contract Git-blob SHA-256, and corrected twelve-artifact aggregate while preserving both superseded digest fields for the pre-reconciliation checkpoint and every non-runtime byte.
+  - Atomically claimed only the runtime metadata correction from exact parent dc438725fb6bb8779c2d816d5e28d3b73227b6d4; no digest correction, source, test, acceptance, request, migration, P21, provider, deployment, or external-effect change was made.
+  - Replayed reconciled containing control a5851edf70f3c60cc25ece3faf124bedf1629f21, exact atomic claim 0d58c8e4d6ca0263273d540bfd722586d8a1b5d3, unexpired claim e8c768e8-f603-4d0c-a45b-34b5cd7ea92c, CONTENT_PROCESSING lease 24d0fa6f-30ac-4fc0-af2a-2b495d826063, exact five-source/runtime-triplet allowlist, and zero effect locks.
+  - Implemented ApprovedForPublicationProjection at correction head 3cf5543b7fe2dde3118d35ce655e105dbd771a60 with exact account/product/version composite scope, immutable approved source and participant evidence, Admin approval evidence, seven-kind latest-approved artifact selection, and deterministic source/artifact/projection digests.
+  - Passed 13 focused projection tests including success, exact replay, nonapproved, missing, duplicate, stale, cross-scope, source, artifact, participant, and parameterized composite-SQL cases; full typecheck, focused lint and formatting, secret scan, YAML parse, scope, and diff hygiene also passed.
+  - Released CONTENT_PROCESSING lease 24d0fa6f-30ac-4fc0-af2a-2b495d826063 before expiry with external effects attempted 0, succeeded 0, reconciled 0.
+  - Verified containing control 2cb1cb46f37c3178217745876e0f09d694bbebf9, canonical READY ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea, exact remote parent 3d75b57e91c12ab3e0cad78b1a6a63497838f46f, unexpired claim and CONTENT_PROCESSING lease, zero effect locks, migration result, P20/P21 evidence, and exact three-runtime/five-source allowlists.
   - Verified exact resume control bd24429251acff6393c0311a223e0e723335d7cd, claim head 6f894038117ee19d405e528670eb8bf86e8682b2, authorized start, dependency bindings, and active CONTENT_PROCESSING lease.
   - Implemented the versioned processing contract with exact storage, OT-VIDEO-1, OT-TRANSCRIBE-1, dated OT-LEARNING-DRAFT-1, strict schema, source-version, privacy, and draft-only pins.
   - Implemented bounded validation/hash/probe utilities, OBS evidence and deletion gate, begin/end trim, orientation-aware no-upscale transcode argv, exact derivative readback, bounded checksum-addressed transcription, captions, structured drafts, Admin edits/approval, retry, and dead-letter behavior.
@@ -62,9 +143,9 @@ completed_steps:
   - Passed all seven named acceptance cases, 15 focused tests, full workspace typecheck, focused lint, focused formatting, secret scan, and diff hygiene.
   - Committed and pushed implementation head e366ef926d6b2ee3be888eaae9fe2cad08b8a57f and released CONTENT_PROCESSING lease 447a28a6-1675-4fbb-b52f-a77f75f8d356.
 remaining_steps:
-  - I36/F02 must review and disposition P20-MIGRATION-001, P20-WORKER-REGISTRATION-001, P20-RUNTIME-CONFIG-001, and P20-PINNED-MEDIA-RUNTIME-001.
-  - Provider sandbox and production-operator canaries require separate explicit authority after steward integration; P20 performed no external effect.
-next_action: C00/I36 should review implementation head e366ef926d6b2ee3be888eaae9fe2cad08b8a57f, validate artifact digest d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249, and disposition the four structured steward requests.
+  - C00 independently audits and integrates the corrected P20 metadata final.
+  - Keep P21 and every P21 migration/registration correction withheld until corrected P20 is final, independently audited, and integrated.
+next_action: C00 must independently audit the exact metadata-correction ancestry, current and historical digest bindings, runtime-triplet scope, released lease, verification, remote equality, and effects 0/0/0 before integration. P21 remains withheld.
 requirements:
   OTV2-CONTENT-084: implementation_ready
   OTV2-CONTENT-085: implementation_ready
@@ -106,6 +187,21 @@ steward_requests:
   - P20-PINNED-MEDIA-RUNTIME-001
 verification:
   commands_run:
+    - canonical reconciliation control a38b917f514b65c49d2d75789b8ae50d96985cdc, exact claim head, claim/lease continuity, digest bindings, and zero-effect replay (passed)
+    - exact contract Git-blob SHA-256 and corrected twelve-artifact aggregate recomputation with historical digest labeling (passed)
+    - final runtime-triplet YAML, formatting, secret, diff, scope, non-runtime preservation, and sole-parent gates (passed)
+    - exact control parent, remote head, branch, READY canonicalization, fresh claim, CONTENT_PROCESSING lease, allowlist, P21 withholding, and zero-effect replay (passed)
+    - rejected-head state/handoff pair, runtime-triplet manifest, current contract blob, and corrected twelve-artifact manifest recomputation (passed)
+    - exact runtime-triplet-only scope, stale-field preservation, YAML parse, formatting, diff hygiene, and sole-parent ancestry (passed)
+    - reconciled control a5851edf70f3c60cc25ece3faf124bedf1629f21, atomic claim 0d58c8e4d6ca0263273d540bfd722586d8a1b5d3, branch, lease, allowlist, and zero-effect replay (passed)
+    - focused ApprovedForPublicationProjection Vitest suite (passed, 2 files and 13 tests)
+    - npm run typecheck using the verified shared dependency runtime (passed)
+    - focused ESLint over the exact five correction source files (passed)
+    - focused Prettier check over the exact five correction source files (passed)
+    - npm run secret:scan (passed across 2687 repository text files)
+    - YAML parse, git diff --check, and exact five-source/runtime-triplet scope checks (passed)
+    - exact five-artifact correction Git-blob digest derivation (passed)
+    - canonical READY/dependency/migration/P20/P21/base-manifest/collision/allowlist/lease replay before atomic claim (passed)
     - exact resume control, claim head, branch, dependency, lease, and scope verification (passed)
     - npm run typecheck using the verified shared dependency runtime (passed)
     - focused P20 Vitest suite (passed, 4 files and 15 tests)

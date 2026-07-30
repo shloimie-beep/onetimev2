@@ -77,6 +77,42 @@ describe('P20 content-processing persistence contract', () => {
     ).rejects.toThrow('synthetic conflict');
     expect(commands.at(-1)).toBe('ROLLBACK');
   });
+
+  it('reads publication evidence only through parameterized composite scope and latest artifact SQL', async () => {
+    const queries: Array<{ sql: string; values: readonly unknown[] }> = [];
+    const repository = createContentProcessingRepository({
+      connect: async () => ({
+        query: async (sql, values = []) => {
+          queries.push({ sql, values });
+          return { rows: [] };
+        },
+      }),
+    });
+    const params = {
+      accountKey: 'account-1',
+      productKey: 'one-time',
+      contentVersionId: 'content-version-1',
+    };
+
+    await expect(repository.getApprovedForPublicationProjection(params)).resolves.toBeNull();
+
+    expect(queries).toHaveLength(1);
+    expect(queries[0]?.values).toEqual([
+      params.accountKey,
+      params.productKey,
+      params.contentVersionId,
+    ]);
+    expect(queries[0]?.sql).toContain('account_key = $1');
+    expect(queries[0]?.sql).toContain('product_key = $2');
+    expect(queries[0]?.sql).toContain('content_version_key = $3');
+    expect(queries[0]?.sql).toContain('ROW_NUMBER() OVER');
+    expect(queries[0]?.sql).toContain('content_sources_v21');
+    expect(queries[0]?.sql).toContain('content_processing_capture_evidence');
+    expect(queries[0]?.sql).not.toContain(params.accountKey);
+    expect(queries[0]?.sql).not.toContain(params.productKey);
+    expect(queries[0]?.sql).not.toContain(params.contentVersionId);
+    expect(queries[0]?.sql).not.toMatch(/\b(?:CREATE|ALTER|DROP|INSERT|UPDATE|DELETE)\b/i);
+  });
 });
 
 function fixtureVersion(): ContentProcessingVersion {

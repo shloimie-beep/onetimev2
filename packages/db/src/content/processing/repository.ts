@@ -1,12 +1,19 @@
 import type {
+  ApprovedForPublicationProjection,
+  ApprovedForPublicationProjectionParams,
   ContentProcessingCommandReceipt,
   ContentProcessingRepository,
   ContentProcessingScope,
+  ContentProcessingSource,
   ContentProcessingUnitOfWork,
   ContentProcessingVersion,
   ControlledCaptureEvidence,
   ProcessingArtifact,
 } from '../../../../contracts/src/content/processing/index.ts';
+import {
+  buildApprovedForPublicationProjection,
+  ContentProcessingError,
+} from '../../../../domain/src/content/processing/index.ts';
 
 export type ContentProcessingSqlResult = {
   rows: readonly Record<string, unknown>[];
@@ -23,8 +30,78 @@ export interface ContentProcessingSqlPool {
 
 export function createContentProcessingRepository(
   pool: ContentProcessingSqlPool,
-): ContentProcessingRepository {
+): ContentProcessingRepository & {
+  getApprovedForPublicationProjection(
+    params: ApprovedForPublicationProjectionParams,
+  ): Promise<ApprovedForPublicationProjection | null>;
+} {
   return {
+    getApprovedForPublicationProjection: async (params) => {
+      const client = await pool.connect();
+      try {
+        const result = await client.query(
+          `WITH ranked_artifacts AS (
+             SELECT artifact_kind, artifact_revision, artifact_key, record_json,
+                    ROW_NUMBER() OVER (
+                      PARTITION BY account_key, product_key, content_version_key, artifact_kind
+                      ORDER BY artifact_revision DESC, artifact_key ASC
+                    ) AS latest_rank
+               FROM onetime.content_processing_artifacts
+              WHERE account_key = $1
+                AND product_key = $2
+                AND content_version_key = $3
+           )
+           SELECT version_row.record_json AS version_json,
+                  source_row.record_json AS source_json,
+                  evidence_row.record_json AS evidence_json,
+                  COALESCE(
+                    jsonb_agg(artifact_row.record_json ORDER BY artifact_row.artifact_kind)
+                      FILTER (WHERE artifact_row.latest_rank = 1),
+                    '[]'::jsonb
+                  ) AS artifacts_json
+             FROM onetime.content_processing_versions AS version_row
+             JOIN onetime.content_sources_v21 AS source_row
+               ON source_row.account_key = version_row.account_key
+              AND source_row.product_key = version_row.product_key
+              AND source_row.source_key = version_row.source_key
+              AND source_row.source_sha256 = version_row.source_sha256
+              AND source_row.object_version_id = version_row.source_object_version_id
+             JOIN onetime.content_processing_capture_evidence AS evidence_row
+               ON evidence_row.account_key = version_row.account_key
+              AND evidence_row.product_key = version_row.product_key
+              AND evidence_row.source_key = version_row.source_key
+              AND evidence_row.linked_ingest_source_key = version_row.source_key
+             LEFT JOIN ranked_artifacts AS artifact_row
+               ON artifact_row.latest_rank = 1
+            WHERE version_row.account_key = $1
+              AND version_row.product_key = $2
+              AND version_row.content_version_key = $3
+              AND version_row.processing_state = 'approved'
+            GROUP BY version_row.record_json, source_row.record_json, evidence_row.record_json`,
+          [params.accountKey, params.productKey, params.contentVersionId],
+        );
+        const row = result.rows[0];
+        if (!row) return null;
+        const version = parseRecord<ContentProcessingVersion>(row.version_json);
+        const source = parseRecord<ContentProcessingSource>(row.source_json);
+        const captureEvidence = parseRecord<ControlledCaptureEvidence>(row.evidence_json);
+        const artifacts = parseRecord<ProcessingArtifact[]>(row.artifacts_json);
+        if (!version || !source || !captureEvidence || !artifacts) return null;
+        try {
+          return buildApprovedForPublicationProjection({
+            params,
+            version: { ...version, artifacts },
+            source,
+            captureEvidence,
+          });
+        } catch (error) {
+          if (error instanceof ContentProcessingError) return null;
+          throw error;
+        }
+      } finally {
+        client.release?.();
+      }
+    },
     inTransaction: async (run) => {
       const client = await pool.connect();
       try {
