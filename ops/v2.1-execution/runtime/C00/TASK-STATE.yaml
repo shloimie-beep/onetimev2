@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-ad02f8b7
-claim_time: '2026-07-30T01:54:35Z'
-claim_id: ad02f8b7-15a4-46dc-9a75-57cf0728e8c0
-lease_expires_at: '2026-07-30T02:18:00Z'
-last_heartbeat_at: '2026-07-30T02:08:00Z'
-controller_authorization_sha: fd2582f7a252cd9b650012a692f30fedda573478
+claimed_by: codex-c00-orchestrator-9ce79e46
+claim_time: '2026-07-30T02:15:54Z'
+claim_id: 9ce79e46-890d-40bf-8938-97398b90c57e
+lease_expires_at: '2026-07-30T02:30:54Z'
+last_heartbeat_at: '2026-07-30T02:18:30Z'
+controller_authorization_sha: cd7ef277d079a62e2d487504debac6d3b81a5833
 ready_entry_payload_digest: null
-state_based_on_head_sha: fd2582f7a252cd9b650012a692f30fedda573478
+state_based_on_head_sha: cd7ef277d079a62e2d487504debac6d3b81a5833
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -982,6 +982,8 @@ verification:
   - consumed the corrected P16 READY entry and authorized only repository weekday encode/decode, its direct test, and runtime evidence under the unchanged claim and CLASSROOM_CORE lease
   - independently audited P16 final 55544f55 with exact five-path scope, public/domain 0..6 to database 1..7 encoding, canonical order-preserving roundtrip, malformed-input rejection, native migration proof, released lease, and effects 0/0/0
   - admitted the exact ordered P16 55544f55, P32 92a7ee63, and F02 cd2d7c2f compatibility wave for an I36 runtime-triplet-only atomic claim from integration 1798f31b under claim d2ba6c12 and RELEASE_INTEGRATOR lease 6c88e2a7; source merges and effects remain withheld pending reconciliation
+  - stopped the unused I36 claim before any edit when independent source readback found three prefix-only task-packet transcriptions in the first admission; integration remained exactly 1798f31b and effects 0/0/0
+  - rebound the unchanged unused I36 claim and lease to acquisition cd7ef277 with exact full P16, P32, and F02 task/context digests and recomputed canonical READY and merge-item payloads
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

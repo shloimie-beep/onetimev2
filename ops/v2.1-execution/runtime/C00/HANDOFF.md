@@ -1758,13 +1758,18 @@ ordered P16, P32, F02 compatibility wave from exact integration head
 `1798f31b5f698c80ee2babbd6414e9934745a178`.
 
 I36 READY digest
-`3dcde0501327b105a3e39204e2768276929e867e20f723a623d6c77a03fe9519`
+`c43e3426da387782cb547a7974e64a034cf6e1db2bb74671646eb4eba6fbae94`
 binds claim `d2ba6c12-e7c2-49b1-b4cd-883a1c394adb` and
 RELEASE_INTEGRATOR lease `6c88e2a7-e2fc-48be-acae-4b4a5e9839ad` through
-`2026-07-30T03:54:35Z`. Merge digests are P16 `bd400c4d`, P32
-`ef8c6f81`, and F02 `dfeea71b`.
+`2026-07-30T03:54:35Z`. Merge digests are P16 `dbf9d40f`, P32
+`f7cc644f`, and F02 `820fb99d`.
 
 The first I36 push must change exactly its runtime triplet and stop. C00 must
 reconcile that claim, consume the READY entry, and rebind all three optimistic
 merge targets before any source merge. Migration/steward application,
 providers, deployment, sends, and external effects remain unauthorized.
+
+The first admission was unused and safely superseded before any I36 edit after
+source readback caught three prefix-only task-packet transcriptions. The
+corrected entry above binds acquisition `cd7ef277`, the exact full source
+task/context digests, and freshly recomputed canonical payload digests.
