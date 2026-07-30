@@ -162,6 +162,7 @@ export class ContentProcessingRunner {
     });
     let version: ContentProcessingVersion = {
       id: contentVersionId,
+      contentId: command.source.occurrenceId!,
       accountKey: scope.accountKey,
       productKey: scope.productKey,
       sourceId: command.source.id,

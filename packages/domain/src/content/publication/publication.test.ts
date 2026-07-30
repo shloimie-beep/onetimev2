@@ -15,9 +15,11 @@ import { ContentPublicationError } from './errors.ts';
 import {
   approveContent,
   archiveContent,
+  assertRegisteredProjectionReplay,
   attachOccurrence,
   authorizeStudentPlayback,
   createContentPublicationProviderOperation,
+  createReviewReadyContentFromProjection,
   recordPrivatePublication,
   recordPrivateRevocation,
   requestPrivatePublication,
@@ -63,6 +65,42 @@ const parent: ContentPublicationPrincipal = {
 };
 
 describe('P21 publication lifecycle', () => {
+  it('registers one review-ready aggregate from the exact source-complete P20 projection', () => {
+    const evidence = approvalEvidence();
+    const occurrence = canonicalOccurrence('content_one', 1);
+    const registered = createReviewReadyContentFromProjection({
+      principal: admin,
+      evidence,
+      canonicalOccurrence: occurrence,
+    });
+    expect(registered).toMatchObject({
+      contentId: evidence.contentId,
+      contentVersionId: evidence.contentVersionId,
+      contentVersionDigest: evidence.contentVersionDigest,
+      participantSetVersion: evidence.participantSetVersion,
+      participantSnapshotSetDigest: evidence.participantSnapshotDigest,
+      requiredRedactionCount: evidence.requiredRedactionCount,
+      completedRedactionCount: evidence.completedRedactionCount,
+      title: evidence.title,
+      englishTranscriptText: evidence.englishTranscriptText,
+      classTopic: evidence.classTopic,
+      mishnahReferences: evidence.mishnahReferences,
+      occurredAt: evidence.occurredAt,
+      durationMs: evidence.durationMs,
+      version: 1,
+      state: 'needs_review',
+      approval: null,
+    });
+    expect(() => assertRegisteredProjectionReplay(registered, evidence, occurrence)).not.toThrow();
+    expect(() =>
+      assertRegisteredProjectionReplay(
+        registered,
+        approvalEvidence({ contentVersionDigest: hash('f') }),
+        occurrence,
+      ),
+    ).toThrow(/composite scope/i);
+  });
+
   it('fails closed until immutable version, participant, redaction, and Admin evidence agree', () => {
     const draft = content();
     const attached = attachOccurrence({
@@ -96,6 +134,9 @@ describe('P21 publication lifecycle', () => {
       approvalEvidence({ accountKey: 'account_other' }),
       approvalEvidence({ productKey: 'one_time_mishnayos', contentVersionId: 'version_other' }),
       approvalEvidence({ participantSnapshotDigest: hash('f') }),
+      approvalEvidence({ participantSetVersion: 'participant_set_other' }),
+      approvalEvidence({ redactionReviewDigest: hash('f') }),
+      approvalEvidence({ title: 'Different approved title' }),
       approvalEvidence({ approvedByAdminId: 'admin_other' }),
       approvalEvidence({ artifacts: approvalEvidence().artifacts.slice(0, 6) }),
       approvalEvidence({
@@ -486,51 +527,35 @@ function approvalEvidence(
   const { projectionDigest: overriddenDigest, ...coreOverrides } = overrides;
   const core = {
     ...scope,
+    contentId: 'content_one',
     contentVersionId: 'content_version_one',
+    contentVersionDigest: hash('1'),
     sourceId: 'source_one',
     sourceSha256: hash('1'),
     sourceObjectVersionId: 'source_object_version_one',
+    participantSetVersion: 'participant_set_v1',
     participantSnapshotDigest: hash('2'),
+    participantReviewState: 'complete' as const,
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount: 2,
+    completedRedactionCount: 2,
+    redactionReviewDigest: hash('3'),
+    title: 'Berachos Review',
+    englishTranscriptText: 'The class discusses the first Mishnah and evening Shema.',
+    classTopic: 'Berachos',
+    mishnahReferences: ['Berachos 1:1'],
+    occurredAt: '2026-07-27T16:00:00.000Z',
+    durationMs: 3_600_000,
     approvedByAdminId: 'admin_one',
     approvedAt: '2026-07-29T10:39:00.000Z',
     artifacts: [
-      {
-        artifactId: 'captions_one',
-        kind: 'captions' as const,
-        revision: 1,
-        payloadDigest: hash('3'),
-      },
-      {
-        artifactId: 'compressed_video_one',
-        kind: 'compressed_video' as const,
-        revision: 1,
-        payloadDigest: hash('4'),
-      },
-      {
-        artifactId: 'knowledge_artifact_one',
-        kind: 'knowledge_artifact' as const,
-        revision: 1,
-        payloadDigest: hash('5'),
-      },
-      {
-        artifactId: 'review_material_one',
-        kind: 'review_material' as const,
-        revision: 1,
-        payloadDigest: hash('6'),
-      },
-      {
-        artifactId: 'transcript_one',
-        kind: 'transcript' as const,
-        revision: 1,
-        payloadDigest: hash('7'),
-      },
-      { artifactId: 'trim_one', kind: 'trim' as const, revision: 1, payloadDigest: hash('8') },
-      {
-        artifactId: 'worksheet_one',
-        kind: 'worksheet' as const,
-        revision: 1,
-        payloadDigest: hash('9'),
-      },
+      approvedArtifact('captions_one', 'captions', '3'),
+      approvedArtifact('compressed_video_one', 'compressed_video', '4'),
+      approvedArtifact('knowledge_artifact_one', 'knowledge_artifact', '5'),
+      approvedArtifact('review_material_one', 'review_material', '6'),
+      approvedArtifact('transcript_one', 'transcript', '7'),
+      approvedArtifact('trim_one', 'trim', '8'),
+      approvedArtifact('worksheet_one', 'worksheet', '9'),
     ],
     approvedArtifactSetDigest: hash('a'),
     sourceEvidenceDigest: hash('b'),
@@ -540,6 +565,23 @@ function approvalEvidence(
     ...core,
     projectionDigest:
       overriddenDigest ?? createHash('sha256').update(JSON.stringify(core)).digest('hex'),
+  };
+}
+
+function approvedArtifact(
+  artifactId: string,
+  kind: ContentApprovalEvidence['artifacts'][number]['kind'],
+  digit: string,
+) {
+  return {
+    artifactId,
+    kind,
+    revision: 1,
+    payloadDigest: hash(digit),
+    model: null,
+    operationVersion: null,
+    promptVersion: null,
+    schemaVersion: null,
   };
 }
 

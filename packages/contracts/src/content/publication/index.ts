@@ -1,6 +1,6 @@
 import type {
-  ApprovedForPublicationProjection,
-  ContentProcessingPublicationProjectionRepository,
+  ApprovedForPublicationProjectionParams,
+  SourceCompleteApprovedForPublicationProjection,
 } from '../processing/index.ts';
 import type { ProviderOperation } from '../../providers/v21-provider-core.ts';
 
@@ -22,12 +22,15 @@ export const CONTENT_PUBLICATION_STATES = [
 export type ContentPublicationState = (typeof CONTENT_PUBLICATION_STATES)[number];
 
 export type ContentPublicationScope = Pick<
-  ApprovedForPublicationProjection,
+  SourceCompleteApprovedForPublicationProjection,
   'accountKey' | 'productKey'
 >;
-export type ContentApprovalEvidence = ApprovedForPublicationProjection;
-export type ContentPublicationProjectionRepository =
-  ContentProcessingPublicationProjectionRepository;
+export type ContentApprovalEvidence = SourceCompleteApprovedForPublicationProjection;
+export interface ContentPublicationProjectionRepository {
+  getApprovedForPublicationProjection(
+    params: ApprovedForPublicationProjectionParams,
+  ): Promise<SourceCompleteApprovedForPublicationProjection | null>;
+}
 
 export interface GovernedContentOccurrenceRelation extends ContentPublicationScope {
   relationId: string;
@@ -435,6 +438,9 @@ export interface ContentPublicationUnitOfWork {
     scope: ContentPublicationScope,
     contentId: string,
   ): Promise<ContentPublicationRecord | null>;
+  registerContent(
+    record: ContentPublicationRecord,
+  ): Promise<{ record: ContentPublicationRecord; inserted: boolean }>;
   saveContent(record: ContentPublicationRecord, expectedVersion: number): Promise<void>;
   findReceipt(
     scope: ContentPublicationScope,

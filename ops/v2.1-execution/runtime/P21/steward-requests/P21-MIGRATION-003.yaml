@@ -1,0 +1,152 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P21-MIGRATION-003
+task_id: P21
+kind: migration
+requirement_ids:
+  - OTV2-CONTENT-087
+  - OTV2-CONTENT-088
+  - OTV2-CONTENT-089
+  - OTV2-CONTENT-090
+  - OTV2-CONTENT-091
+  - OTV2-CONTENT-092
+  - OTV2-CONTENT-194
+  - OTV2-CONTENT-195
+acceptance_case_ids:
+  - OTV2-CONTENT-087-AC01
+  - OTV2-CONTENT-088-AC01
+  - OTV2-CONTENT-089-STUDENT
+  - OTV2-CONTENT-089-PARENT-DENY
+  - OTV2-CONTENT-090-AC01
+  - OTV2-CONTENT-091-AC01
+  - OTV2-CONTENT-092-AC01
+  - OTV2-CONTENT-194-AC01
+  - OTV2-CONTENT-195-AC01
+rationale: >-
+  Source head 38156528c1c022a0575db71426ce2cc8f2e20ab8 completes the
+  source-complete P20-to-P21 publication projection contract, while integrated
+  migration 2252_v21_content_publication.sql remains immutable at raw SHA-256
+  7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+  and still validates the superseded 13-field projection and 4-field artifact
+  shape. P21-MIGRATION-002 is immutable historical request evidence and must
+  never be repurposed. F02 must allocate the exact forward-only successor
+  2253_v21_content_publication_projection_v2.sql.
+desired_semantic_change: >-
+  In 2253_v21_content_publication_projection_v2.sql, use only forward-only
+  CREATE OR REPLACE function definitions to supersede 2252 projection digest,
+  validation, and binding behavior with the exact source-complete 27-field
+  projection and 8-field artifact contract at source head
+  38156528c1c022a0575db71426ce2cc8f2e20ab8. Update all five existing
+  valid_approved_publication_projection call sites, retain fail-closed
+  composite scope and immutable P20 evidence binding, and prove the successor
+  with native PostgreSQL accept/reject probes. Do not edit, rewrite, or amend
+  migration 2252.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    F02 allocates exactly
+    packages/db/migrations/2253_v21_content_publication_projection_v2.sql;
+    2252_v21_content_publication.sql remains byte-identical at SHA-256
+    7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc.
+  - >-
+    The exact top-level projection key order is accountKey, productKey,
+    contentId, contentVersionId, contentVersionDigest, sourceId, sourceSha256,
+    sourceObjectVersionId, participantSetVersion, participantSnapshotDigest,
+    participantReviewState, unresolvedParticipantCount,
+    requiredRedactionCount, completedRedactionCount, redactionReviewDigest,
+    title, englishTranscriptText, classTopic, mishnahReferences, occurredAt,
+    durationMs, approvedByAdminId, approvedAt, artifacts,
+    approvedArtifactSetDigest, sourceEvidenceDigest, projectionDigest.
+  - >-
+    Each artifact has exactly eight keys in this order: artifactId, kind,
+    revision, payloadDigest, model, operationVersion, promptVersion,
+    schemaVersion. Canonical artifact kind order remains captions,
+    compressed_video, knowledge_artifact, review_material, transcript, trim,
+    worksheet; the four pinned metadata fields are nonblank strings or
+    explicit JSON null, never missing.
+  - >-
+    CREATE OR REPLACE onetime.approved_publication_projection_digest so it
+    serializes the first 26 projection fields in the stated order, excludes
+    projectionDigest, preserves array order without jsonb-added whitespace,
+    preserves explicit JSON null for artifact metadata, and returns the exact
+    lowercase SHA-256 used by the TypeScript JSON.stringify implementation.
+  - >-
+    CREATE OR REPLACE onetime.valid_approved_publication_projection with an
+    expected_content_id argument and exact-key validation. Require exact
+    account/product/content/version binding, lowercase SHA-256 evidence,
+    complete participant review, zero unresolved participants, completed
+    redactions equal required redactions, positive integral duration,
+    canonical timestamps with approvedAt not before occurredAt, unique
+    nonblank Mishnah references, exact artifact order/keys/revisions/digests,
+    exact recomputed projectionDigest, and matching persisted P20
+    version/source/participant/artifact metadata.
+  - >-
+    Update exactly the five validator invocations inherited from 2252: both
+    calls in onetime.bind_content_publication_projection, the
+    content_publication_outbox guard, the student_content_assignments guard,
+    and the student_library_projections guard. Each call passes the row's exact
+    content_id in addition to account_key, product_key, and content_version_id.
+  - >-
+    CREATE OR REPLACE onetime.bind_content_publication_projection so the
+    publication record seed remains exactly bound to evidence contentId,
+    contentVersionId, contentVersionDigest, participant set/snapshot/review and
+    redaction fields, title, English transcript, class topic, Mishnah
+    references, occurredAt, and durationMs. Preserve existing provider
+    operation, generation, request-hash, and projection immutability fences.
+  - >-
+    Add native PostgreSQL probes that accept one exact source-complete 27/8
+    projection and exact replay; reject the legacy 13/4 shape, missing versus
+    explicit-null metadata, extra or missing keys, reordered artifacts,
+    tampered digests, cross-scope/content/version evidence, mismatched seed,
+    stale artifact revisions, and mismatched persisted P20 metadata. Verify all
+    five downstream guards reject mismatched evidence.
+compatibility_assumptions:
+  - >-
+    Source head 38156528c1c022a0575db71426ce2cc8f2e20ab8 is the sole
+    source contract authority for this successor request.
+  - >-
+    Migration 2252 is integrated and immutable at SHA-256
+    7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc;
+    2253 supersedes only the named function behavior through CREATE OR REPLACE
+    and does not alter historical bytes.
+  - >-
+    P21-MIGRATION-002 and all prior P21 steward requests remain immutable
+    historical evidence. This request is a new forward-only successor, not an
+    edit or reinterpretation of a prior request.
+  - >-
+    Existing P20 content-processing rows and P21 publication rows are
+    preserved. No destructive DDL, broad rewrite, data deletion, historical
+    backfill, or provider action is required.
+verification_performed:
+  - >-
+    Verified local HEAD and
+    origin/codex/v21-p20-publication-seed-enrichment both equal
+    38156528c1c022a0575db71426ce2cc8f2e20ab8 before authoring this request.
+  - >-
+    Recomputed exact raw SHA-256
+    7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+    for packages/db/migrations/2252_v21_content_publication.sql.
+  - >-
+    Inspected the source-complete TypeScript contract and exact five validator
+    invocations inherited from migration 2252.
+  - >-
+    The source correction at 38156528 passed five focused P21 files with 23
+    tests, focused ESLint and Prettier, and has no P21 TypeScript errors; the
+    repository-wide typecheck remains blocked only by pre-existing local
+    Playwright declaration failures.
+conflicts_or_risks:
+  - >-
+    Do not edit or amend 2252, reuse request ID P21-MIGRATION-002, allocate any
+    ordinal other than 2253, or combine unrelated schema work into the
+    successor.
+  - >-
+    jsonb textual output can add array whitespace or collapse missing and JSON
+    null; native probes must prove byte-for-byte digest parity with the
+    TypeScript JSON.stringify contract.
+  - >-
+    Do not weaken composite account/product/content/version isolation,
+    immutable approval evidence, provider-operation fencing, request hashes,
+    publication generations, or rollback behavior.
+  - >-
+    Do not apply the migration, backfill rows, invoke a provider, deploy, send,
+    publish, or claim candidate readiness from this request checkpoint.
+contains_secret_or_private_data: false

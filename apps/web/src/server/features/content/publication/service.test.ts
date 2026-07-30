@@ -16,6 +16,7 @@ import type {
   StudentContentAssignment,
   StudentContentResume,
   StudentPlaybackAuthorizationFacts,
+  StudentPublicationAudience,
   StudentPublicationEligibility,
   VimeoContentPublicationObservation,
   VimeoContentPublicationReadbackAdapter,
@@ -138,7 +139,10 @@ describe('P21 content publication service', () => {
 
   it('atomically applies a fenced worker readback and materializes protected Student access', async () => {
     const memory = new MemoryPublicationRepository();
-    memory.records.set('content_one', draft());
+    memory.canonicalOccurrences.set(
+      'one_time_mishnayos:content_one',
+      canonicalOccurrence('content_one', 1),
+    );
     const service = createContentPublicationService({
       repository: memory,
       approvedProjectionRepository: memory,
@@ -146,6 +150,29 @@ describe('P21 content publication service', () => {
       vimeoReadbackAdapter: memory,
       createId: () => 'playback_session_001',
     });
+
+    await expect(
+      service.registerApprovedProjection({
+        principal: admin,
+        contentVersionId: 'content_version_one',
+      }),
+    ).resolves.toMatchObject({
+      replay: false,
+      record: {
+        contentId: 'content_one',
+        contentVersionId: 'content_version_one',
+        contentVersionDigest: hash('1'),
+        participantSetVersion: 'participant_set_v1',
+        state: 'needs_review',
+        version: 1,
+      },
+    });
+    await expect(
+      service.registerApprovedProjection({
+        principal: admin,
+        contentVersionId: 'content_version_one',
+      }),
+    ).resolves.toMatchObject({ replay: true, record: { state: 'needs_review', version: 1 } });
 
     const approved = await service.approve({
       principal: admin,
@@ -207,7 +234,10 @@ describe('P21 content publication service', () => {
     });
     const publishing = memory.records.get('content_one')!;
     memory.acceptProviderOperation(publishing.pendingProviderOperationId!);
-    memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
+    memory.eligibilities.set(
+      'student_one:content_one:content_one',
+      eligibility({ occurrenceId: 'content_one' }),
+    );
     expect(memory.intents).toEqual([
       expect.objectContaining({
         accountKey: scope.accountKey,
@@ -228,7 +258,7 @@ describe('P21 content publication service', () => {
       scope,
       contentId: 'content_one',
       providerOperationId: publishing.pendingProviderOperationId!,
-      audience: [audience()],
+      audience: [audience({ occurrenceId: 'content_one' })],
       binding: completion,
     });
     expect(result).toMatchObject({ replay: false, record: { state: 'published', version: 4 } });
@@ -279,7 +309,7 @@ describe('P21 content publication service', () => {
         scope,
         contentId: 'content_one',
         providerOperationId: publishing.pendingProviderOperationId!,
-        audience: [audience()],
+        audience: [audience({ occurrenceId: 'content_one' })],
         binding: completion,
       }),
     ).resolves.toMatchObject({ replay: true, record: { state: 'published', version: 4 } });
@@ -618,51 +648,35 @@ function approvalEvidence(
   const { projectionDigest: overriddenDigest, ...coreOverrides } = overrides;
   const core = {
     ...scope,
+    contentId: 'content_one',
     contentVersionId: 'content_version_one',
+    contentVersionDigest: hash('1'),
     sourceId: 'source_one',
     sourceSha256: hash('1'),
     sourceObjectVersionId: 'source_object_version_one',
+    participantSetVersion: 'participant_set_v1',
     participantSnapshotDigest: hash('2'),
+    participantReviewState: 'complete' as const,
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount: 2,
+    completedRedactionCount: 2,
+    redactionReviewDigest: hash('3'),
+    title: 'Berachos Review',
+    englishTranscriptText: 'The class discusses the first Mishnah and evening Shema.',
+    classTopic: 'Berachos',
+    mishnahReferences: ['Berachos 1:1'],
+    occurredAt: '2026-07-27T16:00:00.000Z',
+    durationMs: 3_600_000,
     approvedByAdminId: 'admin_one',
     approvedAt: '2026-07-29T10:39:00.000Z',
     artifacts: [
-      {
-        artifactId: 'captions_one',
-        kind: 'captions' as const,
-        revision: 1,
-        payloadDigest: hash('3'),
-      },
-      {
-        artifactId: 'compressed_video_one',
-        kind: 'compressed_video' as const,
-        revision: 1,
-        payloadDigest: hash('4'),
-      },
-      {
-        artifactId: 'knowledge_artifact_one',
-        kind: 'knowledge_artifact' as const,
-        revision: 1,
-        payloadDigest: hash('5'),
-      },
-      {
-        artifactId: 'review_material_one',
-        kind: 'review_material' as const,
-        revision: 1,
-        payloadDigest: hash('6'),
-      },
-      {
-        artifactId: 'transcript_one',
-        kind: 'transcript' as const,
-        revision: 1,
-        payloadDigest: hash('7'),
-      },
-      { artifactId: 'trim_one', kind: 'trim' as const, revision: 1, payloadDigest: hash('8') },
-      {
-        artifactId: 'worksheet_one',
-        kind: 'worksheet' as const,
-        revision: 1,
-        payloadDigest: hash('9'),
-      },
+      approvedArtifact('captions_one', 'captions', '3'),
+      approvedArtifact('compressed_video_one', 'compressed_video', '4'),
+      approvedArtifact('knowledge_artifact_one', 'knowledge_artifact', '5'),
+      approvedArtifact('review_material_one', 'review_material', '6'),
+      approvedArtifact('transcript_one', 'transcript', '7'),
+      approvedArtifact('trim_one', 'trim', '8'),
+      approvedArtifact('worksheet_one', 'worksheet', '9'),
     ],
     approvedArtifactSetDigest: hash('a'),
     sourceEvidenceDigest: hash('b'),
@@ -675,7 +689,24 @@ function approvalEvidence(
   };
 }
 
-function audience() {
+function approvedArtifact(
+  artifactId: string,
+  kind: ContentApprovalEvidence['artifacts'][number]['kind'],
+  digit: string,
+) {
+  return {
+    artifactId,
+    kind,
+    revision: 1,
+    payloadDigest: hash(digit),
+    model: null,
+    operationVersion: null,
+    promptVersion: null,
+    schemaVersion: null,
+  };
+}
+
+function audience(overrides: Partial<StudentPublicationAudience> = {}) {
   return {
     studentId: 'student_one',
     householdId: 'household_one',
@@ -687,6 +718,7 @@ function audience() {
     serviceAccountConsentVersion: 8,
     privacyVersion: 9,
     revocationVersion: 10,
+    ...overrides,
   };
 }
 
@@ -856,6 +888,13 @@ class MemoryPublicationRepository
   async getContent(requestScope: ContentPublicationScope, contentId: string) {
     const record = this.records.get(contentId) ?? null;
     return record && matchesScope(record, requestScope) ? record : null;
+  }
+
+  async registerContent(record: ContentPublicationRecord) {
+    const existing = await this.getContent(record, record.contentId);
+    if (existing) return { record: existing, inserted: false };
+    this.records.set(record.contentId, record);
+    return { record, inserted: true };
   }
 
   async saveContent(record: ContentPublicationRecord, expectedVersion: number) {

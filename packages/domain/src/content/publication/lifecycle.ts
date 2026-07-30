@@ -32,14 +32,149 @@ import { assertProviderOperationBound } from '../../providers/shared/index.ts';
 import { CONTENT_PUBLICATION_ERROR_CODES, ContentPublicationError } from './errors.ts';
 
 const REQUIRED_APPROVED_ARTIFACT_KINDS = [
-  'trim',
-  'compressed_video',
-  'transcript',
   'captions',
-  'review_material',
-  'worksheet',
+  'compressed_video',
   'knowledge_artifact',
+  'review_material',
+  'transcript',
+  'trim',
+  'worksheet',
 ] as const;
+
+const APPROVAL_PROJECTION_KEYS = [
+  'accountKey',
+  'productKey',
+  'contentId',
+  'contentVersionId',
+  'contentVersionDigest',
+  'sourceId',
+  'sourceSha256',
+  'sourceObjectVersionId',
+  'participantSetVersion',
+  'participantSnapshotDigest',
+  'participantReviewState',
+  'unresolvedParticipantCount',
+  'requiredRedactionCount',
+  'completedRedactionCount',
+  'redactionReviewDigest',
+  'title',
+  'englishTranscriptText',
+  'classTopic',
+  'mishnahReferences',
+  'occurredAt',
+  'durationMs',
+  'approvedByAdminId',
+  'approvedAt',
+  'artifacts',
+  'approvedArtifactSetDigest',
+  'sourceEvidenceDigest',
+  'projectionDigest',
+] as const;
+
+const APPROVAL_ARTIFACT_KEYS = [
+  'artifactId',
+  'kind',
+  'revision',
+  'payloadDigest',
+  'model',
+  'operationVersion',
+  'promptVersion',
+  'schemaVersion',
+] as const;
+
+export function createReviewReadyContentFromProjection(input: {
+  principal: ContentPublicationPrincipal;
+  evidence: ContentApprovalEvidence;
+  canonicalOccurrence: CanonicalGovernedOccurrence;
+}): ContentPublicationRecord {
+  const { principal, evidence, canonicalOccurrence } = input;
+  assertAdmin(principal);
+  assertProjectionEvidence(evidence);
+  const occurrenceRelation: Omit<
+    GovernedContentOccurrenceRelation,
+    'governedByAdminId' | 'attachedAt'
+  > = {
+    accountKey: evidence.accountKey,
+    productKey: CONTENT_PUBLICATION_PRODUCT_KEY,
+    relationId: stableKey('content_occurrence', [
+      evidence.accountKey,
+      evidence.productKey,
+      evidence.contentId,
+      evidence.contentVersionId,
+    ]),
+    occurrenceId: evidence.contentId,
+    occurrenceVersion: canonicalOccurrence.occurrenceVersion,
+    canonicalSeriesId: canonicalOccurrence.canonicalSeriesId,
+  };
+  assertOccurrenceRelation(principal, occurrenceRelation, canonicalOccurrence);
+  const record: ContentPublicationRecord = {
+    accountKey: evidence.accountKey,
+    productKey: CONTENT_PUBLICATION_PRODUCT_KEY,
+    contentId: evidence.contentId,
+    contentVersionId: evidence.contentVersionId,
+    contentVersionDigest: evidence.contentVersionDigest,
+    participantSetVersion: evidence.participantSetVersion,
+    participantSnapshotSetDigest: evidence.participantSnapshotDigest,
+    participantReviewState: evidence.participantReviewState,
+    unresolvedParticipantCount: evidence.unresolvedParticipantCount,
+    requiredRedactionCount: evidence.requiredRedactionCount,
+    completedRedactionCount: evidence.completedRedactionCount,
+    redactionReviewDigest: evidence.redactionReviewDigest,
+    version: 1,
+    state: 'needs_review',
+    title: evidence.title,
+    englishTranscriptText: evidence.englishTranscriptText,
+    classTopic: evidence.classTopic,
+    mishnahReferences: [...evidence.mishnahReferences],
+    occurredAt: evidence.occurredAt,
+    updatedAt: evidence.approvedAt,
+    durationMs: evidence.durationMs,
+    approval: null,
+    publicationGeneration: 0,
+    playbackGrantGeneration: 1,
+    pendingProviderOperationId: null,
+    pendingProviderRequestHash: null,
+    opaqueProviderAssetRef: null,
+    providerReadbackDigest: null,
+    publishedAt: null,
+    archivedAt: null,
+    occurrenceRelations: [
+      {
+        ...occurrenceRelation,
+        governedByAdminId: principal.actorId,
+        attachedAt: evidence.approvedAt,
+      },
+    ],
+  };
+  assertProjectionRecordBinding(record, evidence, 'invalidState');
+  return record;
+}
+
+export function assertRegisteredProjectionReplay(
+  record: ContentPublicationRecord,
+  evidence: ContentApprovalEvidence,
+  canonicalOccurrence: CanonicalGovernedOccurrence,
+) {
+  assertProjectionEvidence(evidence);
+  assertProjectionRecordBinding(record, evidence, 'conflict');
+  if (
+    (record.approval !== null &&
+      record.approval.evidence.projectionDigest !== evidence.projectionDigest) ||
+    !record.occurrenceRelations.some(
+      (relation) =>
+        relation.accountKey === canonicalOccurrence.accountKey &&
+        relation.productKey === canonicalOccurrence.productKey &&
+        relation.occurrenceId === canonicalOccurrence.occurrenceId &&
+        relation.occurrenceVersion === canonicalOccurrence.occurrenceVersion &&
+        relation.canonicalSeriesId === canonicalOccurrence.canonicalSeriesId,
+    )
+  ) {
+    throw failure(
+      'conflict',
+      'Content is already bound to different approval or occurrence evidence.',
+    );
+  }
+}
 
 export function approveContent(input: {
   principal: ContentPublicationPrincipal;
@@ -760,65 +895,179 @@ function assertApprovalEvidence(
   evidence: ContentApprovalEvidence,
   approvalInstant: string,
 ) {
-  const artifactKinds = evidence.artifacts.map(({ kind }) => kind);
-  const projectionCore = {
-    accountKey: evidence.accountKey,
-    productKey: evidence.productKey,
-    contentVersionId: evidence.contentVersionId,
-    sourceId: evidence.sourceId,
-    sourceSha256: evidence.sourceSha256,
-    sourceObjectVersionId: evidence.sourceObjectVersionId,
-    participantSnapshotDigest: evidence.participantSnapshotDigest,
-    approvedByAdminId: evidence.approvedByAdminId,
-    approvedAt: evidence.approvedAt,
-    artifacts: evidence.artifacts,
-    approvedArtifactSetDigest: evidence.approvedArtifactSetDigest,
-    sourceEvidenceDigest: evidence.sourceEvidenceDigest,
-  };
-  const expectedProjectionDigest = createHash('sha256')
-    .update(JSON.stringify(projectionCore))
-    .digest('hex');
+  assertProjectionEvidence(evidence);
+  assertProjectionRecordBinding(record, evidence, 'invalidState');
   if (
-    evidence.accountKey !== record.accountKey ||
     evidence.accountKey !== principal.accountKey ||
-    evidence.productKey !== record.productKey ||
     evidence.productKey !== principal.productKey ||
-    evidence.contentVersionId !== record.contentVersionId ||
-    evidence.projectionDigest !== expectedProjectionDigest ||
-    evidence.participantSnapshotDigest !== record.participantSnapshotSetDigest ||
-    record.participantReviewState !== 'complete' ||
-    record.unresolvedParticipantCount !== 0 ||
-    record.completedRedactionCount !== record.requiredRedactionCount ||
     evidence.approvedByAdminId !== principal.actorId ||
-    Date.parse(validInstant(evidence.approvedAt)) > Date.parse(approvalInstant) ||
-    evidence.artifacts.length !== REQUIRED_APPROVED_ARTIFACT_KINDS.length ||
-    new Set(artifactKinds).size !== REQUIRED_APPROVED_ARTIFACT_KINDS.length ||
-    REQUIRED_APPROVED_ARTIFACT_KINDS.some((kind) => !artifactKinds.includes(kind)) ||
-    evidence.artifacts.some(
-      (artifact) =>
-        !/^[A-Za-z0-9][A-Za-z0-9._:-]{2,179}$/.test(artifact.artifactId) ||
-        !Number.isSafeInteger(artifact.revision) ||
-        artifact.revision < 1 ||
-        !/^[a-f0-9]{64}$/.test(artifact.payloadDigest),
-    )
+    Date.parse(evidence.approvedAt) > Date.parse(validInstant(approvalInstant))
   ) {
     throw failure(
       'invalidState',
       'The approved processing projection does not match the publication composite scope.',
     );
   }
+}
+
+function assertProjectionEvidence(evidence: ContentApprovalEvidence) {
+  const artifactKinds = Array.isArray(evidence.artifacts)
+    ? evidence.artifacts.map(({ kind }) => kind)
+    : [];
+  const mishnahReferences = Array.isArray(evidence.mishnahReferences)
+    ? evidence.mishnahReferences
+    : [];
+  const projectionCore = approvalProjectionCore(evidence);
+  const expectedProjectionDigest = sha256(JSON.stringify(projectionCore));
+  if (
+    !hasExactKeys(evidence, APPROVAL_PROJECTION_KEYS) ||
+    evidence.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY ||
+    evidence.participantReviewState !== 'complete' ||
+    evidence.unresolvedParticipantCount !== 0 ||
+    !Number.isSafeInteger(evidence.requiredRedactionCount) ||
+    evidence.requiredRedactionCount < 0 ||
+    !Number.isSafeInteger(evidence.completedRedactionCount) ||
+    evidence.completedRedactionCount !== evidence.requiredRedactionCount ||
+    !Number.isSafeInteger(evidence.durationMs) ||
+    evidence.durationMs < 1 ||
+    !exactNonemptyString(evidence.accountKey) ||
+    !exactNonemptyString(evidence.participantSetVersion) ||
+    !exactNonemptyString(evidence.title) ||
+    !exactNonblankText(evidence.englishTranscriptText) ||
+    !exactNonemptyString(evidence.classTopic) ||
+    !Array.isArray(evidence.mishnahReferences) ||
+    mishnahReferences.some((reference) => !exactNonemptyString(reference)) ||
+    new Set(mishnahReferences).size !== mishnahReferences.length ||
+    validInstant(evidence.occurredAt) !== evidence.occurredAt ||
+    validInstant(evidence.approvedAt) !== evidence.approvedAt ||
+    Date.parse(evidence.approvedAt) < Date.parse(evidence.occurredAt) ||
+    !Array.isArray(evidence.artifacts) ||
+    artifactKinds.length !== REQUIRED_APPROVED_ARTIFACT_KINDS.length ||
+    artifactKinds.some((kind, index) => kind !== REQUIRED_APPROVED_ARTIFACT_KINDS[index]) ||
+    evidence.artifacts.some(
+      (artifact) =>
+        !hasExactKeys(artifact, APPROVAL_ARTIFACT_KEYS) ||
+        !/^[A-Za-z0-9][A-Za-z0-9._:-]{2,179}$/.test(artifact.artifactId) ||
+        !Number.isSafeInteger(artifact.revision) ||
+        artifact.revision < 1 ||
+        !/^[a-f0-9]{64}$/.test(artifact.payloadDigest) ||
+        !nullablePinnedString(artifact.model) ||
+        !nullablePinnedString(artifact.operationVersion) ||
+        !nullablePinnedString(artifact.promptVersion) ||
+        !nullablePinnedString(artifact.schemaVersion),
+    ) ||
+    evidence.projectionDigest !== expectedProjectionDigest
+  ) {
+    throw failure(
+      'invalidState',
+      'The approved processing projection is incomplete, non-canonical, or digest-mismatched.',
+    );
+  }
   for (const [value, field] of [
+    [evidence.contentVersionDigest, 'contentVersionDigest'],
     [evidence.sourceSha256, 'sourceSha256'],
     [evidence.participantSnapshotDigest, 'participantSnapshotDigest'],
+    [evidence.redactionReviewDigest, 'redactionReviewDigest'],
     [evidence.approvedArtifactSetDigest, 'approvedArtifactSetDigest'],
     [evidence.sourceEvidenceDigest, 'sourceEvidenceDigest'],
     [evidence.projectionDigest, 'projectionDigest'],
   ] as const) {
     assertDigest(value, field);
   }
+  assertSafeId(evidence.contentId, 'contentId');
+  assertSafeId(evidence.contentVersionId, 'contentVersionId');
   assertSafeId(evidence.sourceId, 'sourceId');
   assertSafeId(evidence.sourceObjectVersionId, 'sourceObjectVersionId');
   assertSafeId(evidence.approvedByAdminId, 'approvedByAdminId');
+}
+
+function assertProjectionRecordBinding(
+  record: ContentPublicationRecord,
+  evidence: ContentApprovalEvidence,
+  mismatchCode: 'invalidState' | 'conflict',
+) {
+  if (
+    evidence.accountKey !== record.accountKey ||
+    evidence.productKey !== record.productKey ||
+    evidence.contentId !== record.contentId ||
+    evidence.contentVersionId !== record.contentVersionId ||
+    evidence.contentVersionDigest !== record.contentVersionDigest ||
+    evidence.participantSetVersion !== record.participantSetVersion ||
+    evidence.participantSnapshotDigest !== record.participantSnapshotSetDigest ||
+    evidence.participantReviewState !== record.participantReviewState ||
+    evidence.unresolvedParticipantCount !== record.unresolvedParticipantCount ||
+    evidence.requiredRedactionCount !== record.requiredRedactionCount ||
+    evidence.completedRedactionCount !== record.completedRedactionCount ||
+    evidence.redactionReviewDigest !== record.redactionReviewDigest ||
+    evidence.title !== record.title ||
+    evidence.englishTranscriptText !== record.englishTranscriptText ||
+    evidence.classTopic !== record.classTopic ||
+    JSON.stringify(evidence.mishnahReferences) !== JSON.stringify(record.mishnahReferences) ||
+    evidence.occurredAt !== record.occurredAt ||
+    evidence.durationMs !== record.durationMs ||
+    record.participantReviewState !== 'complete' ||
+    record.unresolvedParticipantCount !== 0 ||
+    record.completedRedactionCount !== record.requiredRedactionCount
+  ) {
+    throw failure(
+      mismatchCode,
+      'The approved processing projection does not match the publication composite scope.',
+    );
+  }
+}
+
+function approvalProjectionCore(evidence: ContentApprovalEvidence) {
+  return {
+    accountKey: evidence.accountKey,
+    productKey: evidence.productKey,
+    contentId: evidence.contentId,
+    contentVersionId: evidence.contentVersionId,
+    contentVersionDigest: evidence.contentVersionDigest,
+    sourceId: evidence.sourceId,
+    sourceSha256: evidence.sourceSha256,
+    sourceObjectVersionId: evidence.sourceObjectVersionId,
+    participantSetVersion: evidence.participantSetVersion,
+    participantSnapshotDigest: evidence.participantSnapshotDigest,
+    participantReviewState: evidence.participantReviewState,
+    unresolvedParticipantCount: evidence.unresolvedParticipantCount,
+    requiredRedactionCount: evidence.requiredRedactionCount,
+    completedRedactionCount: evidence.completedRedactionCount,
+    redactionReviewDigest: evidence.redactionReviewDigest,
+    title: evidence.title,
+    englishTranscriptText: evidence.englishTranscriptText,
+    classTopic: evidence.classTopic,
+    mishnahReferences: evidence.mishnahReferences,
+    occurredAt: evidence.occurredAt,
+    durationMs: evidence.durationMs,
+    approvedByAdminId: evidence.approvedByAdminId,
+    approvedAt: evidence.approvedAt,
+    artifacts: evidence.artifacts,
+    approvedArtifactSetDigest: evidence.approvedArtifactSetDigest,
+    sourceEvidenceDigest: evidence.sourceEvidenceDigest,
+  };
+}
+
+function hasExactKeys(value: unknown, expected: readonly string[]) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) return false;
+  const keys = Object.keys(value);
+  return keys.length === expected.length && expected.every((key) => keys.includes(key));
+}
+
+function exactNonemptyString(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    value.length > 0 &&
+    value === value.trim() &&
+    !containsControlCharacter(value)
+  );
+}
+
+function exactNonblankText(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0 && value === value.trim();
+}
+
+function nullablePinnedString(value: unknown): value is string | null {
+  return value === null || exactNonemptyString(value);
 }
 
 function assertOccurrenceRelation(

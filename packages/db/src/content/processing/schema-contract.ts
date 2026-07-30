@@ -7,6 +7,7 @@ export const CONTENT_PROCESSING_SCHEMA_CONTRACT = {
     invariants: [
       'one checksum- and object-version-bound processing version per opaque content version key',
       'state, attempt count, retry/dead-letter posture, and optimistic version are durable',
+      'approved record JSON binds the stable occurrence-backed content identity, exact content digest, participant/redaction review, and human-approved library metadata',
       'no processing row can imply publication or Student visibility',
     ],
   },

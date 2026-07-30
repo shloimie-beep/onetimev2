@@ -11,6 +11,7 @@ export const CONTENT_PROCESSING_MAX_BYTES = 5 * 1024 * 1024 * 1024;
 export const CONTENT_PROCESSING_STREAM_CHUNK_BYTES = 4 * 1024 * 1024;
 export const CONTENT_PROCESSING_MAX_ATTEMPTS = 8;
 export const CONTENT_PROCESSING_LANGUAGE = 'en' as const;
+export const CONTENT_VERSION_DIGEST_VERSION = 'OT-CONTENT-VERSION-DIGEST-1' as const;
 
 export const OT_VIDEO_1_PROFILE = {
   version: 'OT-VIDEO-1',
@@ -48,7 +49,7 @@ export const OT_LEARNING_DRAFT_1_OPERATION = {
   requestFormatVersion: 'OT-RESPONSES-REQUEST-1',
   promptTemplateDigestVersion: 'OT-LEARNING-DRAFT-PROMPT-1',
   glossaryVersion: 'OT-ENGLISH-GLOSSARY-1',
-  schemaVersion: 'OT-LEARNING-DRAFT-SCHEMA-1',
+  schemaVersion: 'OT-LEARNING-DRAFT-SCHEMA-2',
   strict: true,
   webSearch: false,
   externalTools: false,
@@ -58,9 +59,23 @@ export const OT_LEARNING_DRAFT_1_OPERATION = {
 export const OT_LEARNING_DRAFT_JSON_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['title', 'summary', 'reviewQuestions', 'worksheet', 'knowledgeArtifact'],
+  required: [
+    'title',
+    'classTopic',
+    'mishnahReferences',
+    'summary',
+    'reviewQuestions',
+    'worksheet',
+    'knowledgeArtifact',
+  ],
   properties: {
     title: { type: 'string', minLength: 1 },
+    classTopic: { type: 'string', minLength: 1 },
+    mishnahReferences: {
+      type: 'array',
+      uniqueItems: true,
+      items: { type: 'string', minLength: 1 },
+    },
     summary: { type: 'string', minLength: 1 },
     reviewQuestions: {
       type: 'array',
@@ -123,6 +138,15 @@ export type ProcessingArtifactKind =
   | 'review_material'
   | 'worksheet'
   | 'knowledge_artifact';
+
+export const CONTENT_REDACTION_ACTIONS = [
+  'cut',
+  'mute',
+  'blur',
+  'transcript_redaction',
+  'worksheet_redaction',
+] as const;
+export type ContentRedactionAction = (typeof CONTENT_REDACTION_ACTIONS)[number];
 
 export type MediaProbeReadback = {
   probeVersion: 'OT-FFPROBE-1';
@@ -267,6 +291,8 @@ export type TranscriptDraft = {
 
 export type LearningDraft = {
   title: string;
+  classTopic: string;
+  mishnahReferences: readonly string[];
   summary: string;
   reviewQuestions: readonly {
     question: string;
@@ -322,14 +348,65 @@ export type ProcessingArtifact = ContentProcessingScope & {
 export type ContentPublicationApprovalEvidence = {
   evidenceVersion: 'OT-PUBLICATION-APPROVAL-1';
   participantSnapshotDigest: string;
+  participantReview: ContentParticipantReviewEvidence;
   approvedByAdminId: string;
   approvedAt: string;
   approvedArtifactSetDigest: string;
   sourceEvidenceDigest: string;
+  contentVersionDigestVersion: typeof CONTENT_VERSION_DIGEST_VERSION;
+  contentVersionDigest: string;
+};
+
+export type ContentParticipantDetectionEvidence = {
+  detectorVersion: string;
+  mediaIntervals: readonly {
+    startedAtMs: number;
+    endedAtMs: number;
+    kind: 'image' | 'voice';
+  }[];
+  transcriptSegmentIds: readonly string[];
+  detectionEvidenceDigest: string;
+};
+
+export type ContentParticipantAdminReview = {
+  studentId: string;
+  recordingParticipantSnapshotId: string;
+  detection: ContentParticipantDetectionEvidence;
+  presenceDecision: 'confirmed_present' | 'confirmed_not_present';
+  requiredRedactionActions: readonly ContentRedactionAction[];
+  completedRedactionActions: readonly ContentRedactionAction[];
+  reviewedByAdminId: string;
+  reviewedAt: string;
+};
+
+export type ContentParticipantReviewSourceEvidence = {
+  evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-SOURCE-1';
+  occurrenceId: string;
+  recordingParticipantSnapshotSetDigest: string;
+  recordingParticipantSnapshotIds: readonly string[];
+  participantReviews: readonly ContentParticipantAdminReview[];
+};
+
+export type ContentParticipantReviewEvidence = ContentProcessingScope & {
+  evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-1';
+  contentVersionId: string;
+  sourceId: string;
+  occurrenceId: string;
+  participantSetVersion: string;
+  participantSnapshotDigest: string;
+  participantReviewState: 'pending' | 'complete';
+  unresolvedParticipantCount: number;
+  requiredRedactionCount: number;
+  completedRedactionCount: number;
+  redactionReviewDigest: string;
+  reviewedByAdminId: string;
+  reviewedAt: string;
+  sourceEvidence: ContentParticipantReviewSourceEvidence;
 };
 
 export type ContentProcessingVersion = ContentProcessingScope & {
   id: string;
+  contentId: string;
   sourceId: string;
   sourceSha256: string;
   sourceObjectVersionId: string;
@@ -352,11 +429,24 @@ export type ApprovedForPublicationProjectionParams = ContentProcessingScope & {
   contentVersionId: string;
 };
 
+export type ContentParticipantReviewInput = {
+  studentId: string;
+  recordingParticipantSnapshotId: string;
+  detection: Omit<ContentParticipantDetectionEvidence, 'detectionEvidenceDigest'>;
+  presenceDecision: ContentParticipantAdminReview['presenceDecision'];
+  requiredRedactionActions: readonly ContentRedactionAction[];
+  completedRedactionActions: readonly ContentRedactionAction[];
+};
+
 export type ApprovedForPublicationArtifact = {
   artifactId: string;
   kind: ProcessingArtifactKind;
   revision: number;
   payloadDigest: string;
+  model: string | null;
+  operationVersion: string | null;
+  promptVersion: string | null;
+  schemaVersion: string | null;
 };
 
 export type ApprovedForPublicationProjection = ContentProcessingScope & {
@@ -372,6 +462,26 @@ export type ApprovedForPublicationProjection = ContentProcessingScope & {
   sourceEvidenceDigest: string;
   projectionDigest: string;
 };
+
+export type ContentPublicationSeed = {
+  contentId: string;
+  contentVersionDigest: string;
+  participantSetVersion: string;
+  participantReviewState: 'complete';
+  unresolvedParticipantCount: number;
+  requiredRedactionCount: number;
+  completedRedactionCount: number;
+  redactionReviewDigest: string;
+  title: string;
+  englishTranscriptText: string;
+  classTopic: string;
+  mishnahReferences: readonly string[];
+  occurredAt: string;
+  durationMs: number;
+};
+
+export type SourceCompleteApprovedForPublicationProjection = ApprovedForPublicationProjection &
+  ContentPublicationSeed;
 
 export type ContentProcessingCommandReceipt = ContentProcessingScope & {
   idempotencyKey: string;
@@ -407,7 +517,7 @@ export interface ContentProcessingRepository {
 export interface ContentProcessingPublicationProjectionRepository {
   getApprovedForPublicationProjection(
     params: ApprovedForPublicationProjectionParams,
-  ): Promise<ApprovedForPublicationProjection | null>;
+  ): Promise<SourceCompleteApprovedForPublicationProjection | null>;
 }
 
 export const CONTENT_PROCESSING_ERROR_CODES = {

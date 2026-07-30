@@ -3,41 +3,48 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-P21 completed the controller-authorized publication scope correction on branch
-`codex/v21-p21-publication-scope-correction`, starting exactly at
-`7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d`.
+P21 source correction is complete on
+`codex/v21-p20-publication-seed-enrichment` at exact source head
+`38156528c1c022a0575db71426ce2cc8f2e20ab8`.
 
-Authority is the pushed containing control
-`a58965e989a9dab81d079a8d02afe23aab146fb8`, controller authorization/state
-basis `4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4`, and claim
-`00402ed6-57b7-4aed-92fa-a558ae11aef1`. The six source paths are committed at
-`7b51bae186728351ff1cf93b1c02fcba893b1051`; the remaining authorized paths are
-this P21 runtime triplet.
+Resume from `TASK-STATE.yaml` and `HANDOFF.md`. Verify the containing metadata
+checkpoint is the normal pushed child of source head `38156528...`, the remote
+branch equals that checkpoint, and its delta is exactly:
 
-The correction binds receipts and replay to exact `contentVersionId`,
-`publicationGeneration`, and `approvalProjectionDigest`; binds Student resume
-to exact `contentVersionId`; and uses composite account/product/identifier
-conflict targets for outbox, assignments, library projections, and notices.
-Provider completion correlation remains composite and unchanged.
+- `ops/v2.1-execution/runtime/P21/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P21/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/P21/steward-requests/P21-MIGRATION-003.yaml`
 
-Verification passed: five focused files and 17 tests, workspace typecheck,
-focused ESLint and Prettier, secret scan across 3,087 text files, and diff,
-scope, and immutable-request checks. The six-source-artifact aggregate is
-`1ddfb7f2ddee9b25af0dc1b2352bb440ccf22e4ecfe347b4d67c48bad93d8a7c`.
+The source-complete projection has exactly 27 top-level fields and eight fields
+per artifact. The current 17-artifact aggregate is
+`94689409b4eb4dacaddf24335c95669384ed9002df16989fbdb186703a36ab35`;
+the exact eight-artifact companion aggregate is
+`55070ee51ae052e07d655faf404ea25a3a5116b38d18a14573e7bf57dfdeddb2`.
 
-Immutable requests remain byte-identical:
+Integrated migration 2252 is immutable at raw SHA-256
+`7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc`.
+Never edit or amend it. Never repurpose `P21-MIGRATION-002`, whose immutable
+raw Git-blob SHA-256 is
+`aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`.
 
-- `P21-MIGRATION-002`
-  `aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`
-- `P21-registration-001`
-  `fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`
+The current successor request is `P21-MIGRATION-003` at canonical sorted-JSON
+payload SHA-256
+`4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9`
+and exact raw Git-blob SHA-256
+`4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33`.
+It requests F02 allocation of exact forward-only
+`packages/db/migrations/2253_v21_content_publication_projection_v2.sql`,
+limited to `CREATE OR REPLACE` function successors, all five validator call
+sites, and native PostgreSQL exact accept/reject probes. The four-request
+aggregate is
+`b0bcabe474905f4a0529fb9a7b8d091de3007949cba2cf68b622430053541f01`.
 
-Effects remain `0/0/0`; no provider, migration, registration, deployment, or
-send action occurred.
+Next action: F02 consumes the immutable request, authors and probes 2253, and
+publishes an immutable steward result. I36 independently validates and
+integrates that result. Until then, P21 is source-complete but migration
+successor pending; do not mark acceptance passed, candidate ready, operator
+accepted, or released.
 
-Next action: C00 independently audits the pushed final for ancestry, exact
-nine-path scope, hashes, focused gates, normal remote equality, and zero
-effects, then reconciles claim
-`00402ed6-57b7-4aed-92fa-a558ae11aef1` and its lease (expiry
-`2026-07-30T14:23:56Z`). Do not continue P21 product work or apply any request
-without new authority.
+No migration application, provider action, backfill, deployment, send, control
+edit, or external effect is authorized by this checkpoint.

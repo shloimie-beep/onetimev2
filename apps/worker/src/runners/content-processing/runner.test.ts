@@ -50,6 +50,7 @@ function commandFixture(): ProcessContentCommand {
     stableAt: occurredAt,
     occurrenceId: 'occurrence-1',
     matchConfidence: 'exact',
+    matchedByAdminId: 'admin-1',
     retentionDueAt: '2026-10-28T22:00:00.000Z',
     lifecycleState: 'processing',
     retryState: 'ready',
@@ -236,6 +237,8 @@ class FakeProvider implements ContentProcessingProvider {
       transcriptDigest: input.transcriptDigest,
       output: {
         title: 'Review',
+        classTopic: 'Berachos',
+        mishnahReferences: ['Berachos 1:1'],
         summary: 'A grounded lesson summary.',
         reviewQuestions: [
           {
@@ -272,10 +275,18 @@ describe('P20 content-processing worker', () => {
 
     const first = await runner.run(command);
     expect(first).toMatchObject({ disposition: 'needs_review', replayed: false });
+    expect(first.version.contentId).toBe(command.source.occurrenceId);
     expect(first.version.artifacts).toHaveLength(7);
     expect(first.version.artifacts.every((artifact) => artifact.status === 'draft')).toBe(true);
     expect(repository.artifacts).toHaveLength(7);
     expect(repository.evidence.has(command.source.id)).toBe(true);
+    expect(
+      first.version.artifacts.find(({ kind }) => kind === 'review_material')?.payload,
+    ).toMatchObject({
+      title: 'Review',
+      classTopic: 'Berachos',
+      mishnahReferences: ['Berachos 1:1'],
+    });
     expect(provider.calls).toEqual({ transcode: 1, transcribe: 1, drafts: 1 });
 
     const replay = await runner.run(command);

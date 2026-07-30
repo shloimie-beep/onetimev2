@@ -5,6 +5,7 @@ import type {
   ControlledCaptureEvidence,
   ProcessingArtifact,
 } from '../../../../contracts/src/content/processing/index.ts';
+import { createMemoryPool } from '../../index.ts';
 import { createContentProcessingRepository } from './repository.ts';
 import {
   CONTENT_PROCESSING_SCHEMA_CONTRACT,
@@ -29,7 +30,9 @@ describe('P20 content-processing persistence contract', () => {
       connect: async () => ({
         query: async (sql, values = []) => {
           queries.push({ sql, values });
-          return { rows: [] };
+          return {
+            rows: sql.includes('FROM onetime.content_processing_') ? [{}] : [],
+          };
         },
       }),
     });
@@ -90,7 +93,7 @@ describe('P20 content-processing persistence contract', () => {
     });
     const params = {
       accountKey: 'account-1',
-      productKey: 'one-time',
+      productKey: 'one_time_mishnayos',
       contentVersionId: 'content-version-1',
     };
 
@@ -108,10 +111,163 @@ describe('P20 content-processing persistence contract', () => {
     expect(queries[0]?.sql).toContain('ROW_NUMBER() OVER');
     expect(queries[0]?.sql).toContain('content_sources_v21');
     expect(queries[0]?.sql).toContain('content_processing_capture_evidence');
+    expect(queries[0]?.sql).toContain('recording_participant_snapshot');
     expect(queries[0]?.sql).not.toContain(params.accountKey);
     expect(queries[0]?.sql).not.toContain(params.productKey);
     expect(queries[0]?.sql).not.toContain(params.contentVersionId);
     expect(queries[0]?.sql).not.toMatch(/\b(?:CREATE|ALTER|DROP|INSERT|UPDATE|DELETE)\b/i);
+  });
+
+  it('returns no projection for legacy approved JSON without the source-complete seed evidence', async () => {
+    const legacyVersion = {
+      ...fixtureVersion(),
+      contentId: undefined,
+      state: 'approved',
+      publicationApproval: {
+        evidenceVersion: 'OT-PUBLICATION-APPROVAL-1',
+        participantSnapshotDigest: 'd'.repeat(64),
+        approvedByAdminId: 'admin-1',
+        approvedAt: '2026-07-28T22:10:00.000Z',
+        approvedArtifactSetDigest: 'e'.repeat(64),
+        sourceEvidenceDigest: 'f'.repeat(64),
+      },
+    };
+    const repository = createContentProcessingRepository({
+      connect: async () => ({
+        query: async () => ({
+          rows: [
+            {
+              version_json: legacyVersion,
+              source_json: {},
+              evidence_json: {},
+              artifacts_json: [],
+              snapshots_json: [],
+            },
+          ],
+        }),
+      }),
+    });
+
+    await expect(
+      repository.getApprovedForPublicationProjection({
+        accountKey: legacyVersion.accountKey,
+        productKey: legacyVersion.productKey,
+        contentVersionId: legacyVersion.id,
+      }),
+    ).resolves.toBeNull();
+  });
+
+  it('round-trips immutable draft and approved artifact revisions through a real repository', async () => {
+    const pool = createMemoryPool();
+    await pool.query(`CREATE SCHEMA onetime;
+      CREATE TABLE onetime.content_processing_versions (
+        content_version_key text NOT NULL,
+        account_key text NOT NULL,
+        product_key text NOT NULL,
+        source_key text NOT NULL,
+        source_sha256 text NOT NULL,
+        source_object_version_id text NOT NULL,
+        processing_state text NOT NULL,
+        retry_state text NOT NULL,
+        attempt_count integer NOT NULL,
+        version integer NOT NULL,
+        record_json jsonb NOT NULL,
+        updated_at timestamptz NOT NULL,
+        PRIMARY KEY (account_key, product_key, content_version_key)
+      );
+      CREATE TABLE onetime.content_processing_artifacts (
+        artifact_key text NOT NULL,
+        account_key text NOT NULL,
+        product_key text NOT NULL,
+        content_version_key text NOT NULL,
+        artifact_kind text NOT NULL,
+        artifact_revision integer NOT NULL,
+        source_key text NOT NULL,
+        source_sha256 text NOT NULL,
+        source_object_version_id text NOT NULL,
+        artifact_status text NOT NULL,
+        payload_digest text NOT NULL,
+        record_json jsonb NOT NULL,
+        created_at timestamptz NOT NULL,
+        updated_at timestamptz NOT NULL,
+        PRIMARY KEY (account_key, product_key, artifact_key),
+        UNIQUE (account_key, product_key, content_version_key, artifact_kind, artifact_revision)
+      );
+      CREATE TABLE onetime.content_processing_commands (
+        account_key text NOT NULL,
+        product_key text NOT NULL,
+        idempotency_key text NOT NULL,
+        request_hash text NOT NULL,
+        operation text NOT NULL,
+        result_ref text NOT NULL,
+        result_version integer NOT NULL,
+        record_json jsonb NOT NULL,
+        committed_at timestamptz NOT NULL,
+        PRIMARY KEY (account_key, product_key, idempotency_key)
+      );
+      CREATE TABLE onetime.content_processing_capture_evidence (
+        account_key text NOT NULL,
+        product_key text NOT NULL,
+        source_key text NOT NULL,
+        evidence_version text NOT NULL,
+        participant_snapshot_digest text NOT NULL,
+        checksum_readback_receipt_key text NOT NULL,
+        linked_ingest_source_key text NOT NULL,
+        record_json jsonb NOT NULL,
+        captured_at timestamptz NOT NULL,
+        upload_confirmed_at timestamptz NOT NULL,
+        PRIMARY KEY (account_key, product_key, source_key)
+      );`);
+    const repository = createContentProcessingRepository(pool);
+    const draftVersion = fixtureVersion();
+    const draftArtifact = fixtureArtifact(draftVersion);
+    const approvedAt = '2026-07-28T22:10:00.000Z';
+    const approvedArtifact: ProcessingArtifact = {
+      ...draftArtifact,
+      id: 'artifact-approved-1',
+      revision: 2,
+      status: 'approved',
+      approvedByAdminId: 'admin-1',
+      approvedAt,
+      createdAt: approvedAt,
+      updatedAt: approvedAt,
+    };
+    const approvedVersion: ContentProcessingVersion = {
+      ...draftVersion,
+      state: 'approved',
+      artifacts: [approvedArtifact],
+      version: draftVersion.version + 1,
+      updatedAt: approvedAt,
+    };
+
+    await repository.inTransaction(async (unit) => {
+      await unit.saveVersion(draftVersion);
+      await unit.saveArtifact(draftArtifact);
+      await unit.saveVersion(approvedVersion);
+      await expect(unit.getVersion(approvedVersion, approvedVersion.id)).resolves.toEqual(
+        approvedVersion,
+      );
+    });
+
+    const rows = await pool.query(
+      `SELECT artifact_key, artifact_revision, artifact_status, record_json
+         FROM onetime.content_processing_artifacts
+        ORDER BY artifact_revision`,
+    );
+    expect(rows.rows).toHaveLength(2);
+    expect(rows.rows.map(({ artifact_key }) => artifact_key)).toEqual([
+      draftArtifact.id,
+      approvedArtifact.id,
+    ]);
+    expect(rows.rows.map(({ artifact_revision }) => Number(artifact_revision))).toEqual([1, 2]);
+    expect(rows.rows.map(({ artifact_status }) => artifact_status)).toEqual(['draft', 'approved']);
+
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.saveArtifact({ ...approvedArtifact, payloadDigest: 'f'.repeat(64) }),
+      ),
+    ).rejects.toThrow('immutable processing artifact readback');
+    await pool.end();
   });
 });
 
@@ -119,8 +275,9 @@ function fixtureVersion(): ContentProcessingVersion {
   const now = '2026-07-28T22:00:00.000Z';
   return {
     id: 'content-version-1',
+    contentId: 'occurrence-1',
     accountKey: 'account-1',
-    productKey: 'one-time',
+    productKey: 'one_time_mishnayos',
     sourceId: 'source-1',
     sourceSha256: 'b'.repeat(64),
     sourceObjectVersionId: 'object-version-1',

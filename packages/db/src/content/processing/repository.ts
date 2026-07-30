@@ -1,5 +1,4 @@
 import type {
-  ApprovedForPublicationProjection,
   ApprovedForPublicationProjectionParams,
   ContentProcessingCommandReceipt,
   ContentProcessingRepository,
@@ -9,7 +8,9 @@ import type {
   ContentProcessingVersion,
   ControlledCaptureEvidence,
   ProcessingArtifact,
+  SourceCompleteApprovedForPublicationProjection,
 } from '../../../../contracts/src/content/processing/index.ts';
+import type { RecordingParticipantSnapshot } from '../../../../contracts/src/privacy/index.ts';
 import {
   buildApprovedForPublicationProjection,
   ContentProcessingError,
@@ -33,7 +34,7 @@ export function createContentProcessingRepository(
 ): ContentProcessingRepository & {
   getApprovedForPublicationProjection(
     params: ApprovedForPublicationProjectionParams,
-  ): Promise<ApprovedForPublicationProjection | null>;
+  ): Promise<SourceCompleteApprovedForPublicationProjection | null>;
 } {
   return {
     getApprovedForPublicationProjection: async (params) => {
@@ -50,10 +51,17 @@ export function createContentProcessingRepository(
               WHERE account_key = $1
                 AND product_key = $2
                 AND content_version_key = $3
+           ),
+           participant_snapshots AS (
+             SELECT occurrence_id,
+                    jsonb_agg(snapshot_json ORDER BY student_id, snapshot_id) AS snapshots_json
+               FROM onetime.recording_participant_snapshot
+              GROUP BY occurrence_id
            )
            SELECT version_row.record_json AS version_json,
                   source_row.record_json AS source_json,
                   evidence_row.record_json AS evidence_json,
+                  snapshot_row.snapshots_json AS snapshots_json,
                   COALESCE(
                     jsonb_agg(artifact_row.record_json ORDER BY artifact_row.artifact_kind)
                       FILTER (WHERE artifact_row.latest_rank = 1),
@@ -71,13 +79,16 @@ export function createContentProcessingRepository(
               AND evidence_row.product_key = version_row.product_key
               AND evidence_row.source_key = version_row.source_key
               AND evidence_row.linked_ingest_source_key = version_row.source_key
+             JOIN participant_snapshots AS snapshot_row
+               ON snapshot_row.occurrence_id = version_row.record_json->>'contentId'
              LEFT JOIN ranked_artifacts AS artifact_row
                ON artifact_row.latest_rank = 1
             WHERE version_row.account_key = $1
               AND version_row.product_key = $2
               AND version_row.content_version_key = $3
               AND version_row.processing_state = 'approved'
-            GROUP BY version_row.record_json, source_row.record_json, evidence_row.record_json`,
+            GROUP BY version_row.record_json, source_row.record_json, evidence_row.record_json,
+                     snapshot_row.snapshots_json`,
           [params.accountKey, params.productKey, params.contentVersionId],
         );
         const row = result.rows[0];
@@ -86,13 +97,25 @@ export function createContentProcessingRepository(
         const source = parseRecord<ContentProcessingSource>(row.source_json);
         const captureEvidence = parseRecord<ControlledCaptureEvidence>(row.evidence_json);
         const artifacts = parseRecord<ProcessingArtifact[]>(row.artifacts_json);
-        if (!version || !source || !captureEvidence || !artifacts) return null;
+        const recordingParticipantSnapshots = parseRecord<RecordingParticipantSnapshot[]>(
+          row.snapshots_json,
+        );
+        if (
+          !version ||
+          !source ||
+          !captureEvidence ||
+          !artifacts ||
+          !recordingParticipantSnapshots
+        ) {
+          return null;
+        }
         try {
           return buildApprovedForPublicationProjection({
             params,
             version: { ...version, artifacts },
             source,
             captureEvidence,
+            recordingParticipantSnapshots,
           });
         } catch (error) {
           if (error instanceof ContentProcessingError) return null;
@@ -134,6 +157,12 @@ function createUnit(client: ContentProcessingSqlClient): ContentProcessingUnitOf
       return parseRecord<ContentProcessingVersion>(result.rows[0]?.record_json);
     },
     saveVersion: async (version) => {
+      if (version.state === 'approved') {
+        for (const artifact of version.artifacts) {
+          await saveArtifactRecord(client, artifact);
+        }
+      }
+      const recordJson = JSON.stringify(version);
       await client.query(
         `INSERT INTO onetime.content_processing_versions
            (content_version_key, account_key, product_key, source_key, source_sha256,
@@ -160,36 +189,29 @@ function createUnit(client: ContentProcessingSqlClient): ContentProcessingUnitOf
           version.retryState,
           version.attemptCount,
           version.version,
-          JSON.stringify(version),
+          recordJson,
           version.updatedAt,
         ],
       );
+      const readback = await client.query(
+        `SELECT record_json
+           FROM onetime.content_processing_versions
+          WHERE account_key = $1
+            AND product_key = $2
+            AND content_version_key = $3
+            AND version = $4
+            AND record_json = $5::jsonb`,
+        [version.accountKey, version.productKey, version.id, version.version, recordJson],
+      );
+      if (!readback.rows[0]) {
+        throw new ContentProcessingError(
+          'content_processing_stale_version',
+          'The processing-version write did not survive exact optimistic readback.',
+        );
+      }
     },
     saveArtifact: async (artifact) => {
-      await client.query(
-        `INSERT INTO onetime.content_processing_artifacts
-           (artifact_key, account_key, product_key, content_version_key, artifact_kind,
-            artifact_revision, source_key, source_sha256, source_object_version_id,
-            artifact_status, payload_digest, record_json, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13, $14)
-         ON CONFLICT (account_key, product_key, artifact_key) DO NOTHING`,
-        [
-          artifact.id,
-          artifact.accountKey,
-          artifact.productKey,
-          artifact.contentVersionId,
-          artifact.kind,
-          artifact.revision,
-          artifact.sourceId,
-          artifact.sourceSha256,
-          artifact.sourceObjectVersionId,
-          artifact.status,
-          artifact.payloadDigest,
-          JSON.stringify(artifact),
-          artifact.createdAt,
-          artifact.updatedAt,
-        ],
-      );
+      await saveArtifactRecord(client, artifact);
     },
     saveCaptureEvidence: async (scope, evidence) => {
       await client.query(
@@ -247,6 +269,73 @@ function createUnit(client: ContentProcessingSqlClient): ContentProcessingUnitOf
       );
     },
   };
+}
+
+async function saveArtifactRecord(
+  client: ContentProcessingSqlClient,
+  artifact: ProcessingArtifact,
+) {
+  const recordJson = JSON.stringify(artifact);
+  await client.query(
+    `INSERT INTO onetime.content_processing_artifacts
+       (artifact_key, account_key, product_key, content_version_key, artifact_kind,
+        artifact_revision, source_key, source_sha256, source_object_version_id,
+        artifact_status, payload_digest, record_json, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13, $14)
+     ON CONFLICT (account_key, product_key, artifact_key) DO NOTHING`,
+    [
+      artifact.id,
+      artifact.accountKey,
+      artifact.productKey,
+      artifact.contentVersionId,
+      artifact.kind,
+      artifact.revision,
+      artifact.sourceId,
+      artifact.sourceSha256,
+      artifact.sourceObjectVersionId,
+      artifact.status,
+      artifact.payloadDigest,
+      recordJson,
+      artifact.createdAt,
+      artifact.updatedAt,
+    ],
+  );
+  const readback = await client.query(
+    `SELECT record_json
+       FROM onetime.content_processing_artifacts
+      WHERE account_key = $1
+        AND product_key = $2
+        AND artifact_key = $3
+        AND content_version_key = $4
+        AND artifact_kind = $5
+        AND artifact_revision = $6
+        AND source_key = $7
+        AND source_sha256 = $8
+        AND source_object_version_id = $9
+        AND artifact_status = $10
+        AND payload_digest = $11
+        AND record_json = $12::jsonb`,
+    [
+      artifact.accountKey,
+      artifact.productKey,
+      artifact.id,
+      artifact.contentVersionId,
+      artifact.kind,
+      artifact.revision,
+      artifact.sourceId,
+      artifact.sourceSha256,
+      artifact.sourceObjectVersionId,
+      artifact.status,
+      artifact.payloadDigest,
+      recordJson,
+    ],
+  );
+  if (!readback.rows[0]) {
+    throw new ContentProcessingError(
+      'content_processing_idempotency_conflict',
+      'The immutable processing artifact readback did not match the requested revision.',
+    );
+  }
 }
 
 function parseRecord<T>(value: unknown): T | null {

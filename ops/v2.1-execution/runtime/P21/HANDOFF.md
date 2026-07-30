@@ -1,55 +1,82 @@
-# P21 Publication Scope Correction — Final Handoff
+# P21 Source-Complete Projection — Migration Successor Handoff
 
 ## Exact identity
 
-- Branch: `codex/v21-p21-publication-scope-correction`
-- Exact start: `7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d`
-- Pushed containing control: `a58965e989a9dab81d079a8d02afe23aab146fb8`
-- Controller authorization/state basis:
-  `4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4`
-- Claim: `00402ed6-57b7-4aed-92fa-a558ae11aef1`
-- Implementation commit: `7b51bae186728351ff1cf93b1c02fcba893b1051`
-- Lease expiry: `2026-07-30T14:23:56Z`
-- Authorized scope: six source paths and the three P21 runtime files.
+- Branch: `codex/v21-p20-publication-seed-enrichment`
+- Source-complete implementation head:
+  `38156528c1c022a0575db71426ce2cc8f2e20ab8`
+- Remote source equality: verified before this metadata checkpoint
+- Current 17-artifact aggregate:
+  `94689409b4eb4dacaddf24335c95669384ed9002df16989fbdb186703a36ab35`
+- Exact eight-artifact P21 companion aggregate:
+  `55070ee51ae052e07d655faf404ea25a3a5116b38d18a14573e7bf57dfdeddb2`
+- Metadata checkpoint scope: this handoff, `NEXT-PROMPT.md`,
+  `TASK-STATE.yaml`, and new immutable request `P21-MIGRATION-003.yaml`
 
-## Completed correction
+## Source correction complete
 
-Publication receipts now require and persist exact `contentVersionId`,
-`publicationGeneration`, and `approvalProjectionDigest`. Replay checks all
-three against the current record; pre-approval attachment retains the exact
-content-version digest fallback, while approved and published operations use
-the P20 projection digest.
+P20 now emits and P21 now consumes the exact source-complete publication
+projection. The contract has 27 top-level fields, seven canonically ordered
+artifacts, and exactly eight fields per artifact. P21 validates the exact
+projection/digest, constructs and idempotently registers the review-ready
+publication record, refetches P20 evidence server-side for approval, and keeps
+the publication seed bound to exact source evidence.
 
-Student resume now requires, persists, and queries the exact
-`contentVersionId`. Content publication outbox, assignments, library
-projections, and protected notices use composite account/product/identifier
-conflict targets. Existing provider completion correlation remains composite
-and unchanged. Request bytes and provider/effect paths were not changed.
+Focused verification at the source head passed five files and 23 tests,
+focused ESLint, and focused Prettier. The full TypeScript run has no P21 error;
+its remaining failures are the existing missing local Playwright declarations
+in historical browser harnesses.
 
-Verification passed:
+This is source completion only. It is not acceptance passed, candidate ready,
+operator accepted, or production released.
 
-- five focused files and 17 tests;
-- workspace typecheck;
-- focused ESLint and Prettier;
-- secret scan across 3,087 text files;
-- diff, exact-scope, and immutable-request checks.
+## Immutable migration boundary
 
-The six-source-artifact aggregate SHA-256 is
-`1ddfb7f2ddee9b25af0dc1b2352bb440ccf22e4ecfe347b4d67c48bad93d8a7c`.
+Integrated
+`packages/db/migrations/2252_v21_content_publication.sql` remains byte-identical
+at raw SHA-256
+`7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc`.
+It still implements the superseded 13-field projection and 4-field artifact
+validator. It must never be edited or amended.
 
-## Immutable request evidence
+`P21-MIGRATION-002` remains immutable historical request evidence at raw
+Git-blob SHA-256
+`aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`.
+It was not repurposed.
 
-- `P21-MIGRATION-002`: raw SHA-256
-  `aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`
-- `P21-registration-001`: raw SHA-256
-  `fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`
+The new forward-only successor request is:
 
-Both remain byte-identical. No request was applied and no migration, provider,
-deployment, send, or other external effect occurred. Effects are `0/0/0`.
+- Request: `P21-MIGRATION-003`
+- Canonical sorted-JSON payload SHA-256:
+  `4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9`
+- Raw Git-blob SHA-256:
+  `4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33`
+- Four-request aggregate:
+  `b0bcabe474905f4a0529fb9a7b8d091de3007949cba2cf68b622430053541f01`
+- Requested steward: `F02`
+- Exact requested allocation:
+  `packages/db/migrations/2253_v21_content_publication_projection_v2.sql`
+
+The request binds F02 to source head `38156528...`, immutable migration-2252
+checksum `7981b9cf...`, the exact 27/8 contract, both publication-binding
+validator calls plus outbox, assignment, and library call sites, and native
+PostgreSQL acceptance/rejection probes. The successor may supersede 2252 only
+through forward-only `CREATE OR REPLACE` functions.
+
+## Effects and readiness
+
+No migration was authored or applied. No backfill, provider inspection or
+mutation, deployment, send, publication, control-ledger edit, central
+registration, or external effect occurred. Effects remain `0/0/0`.
+
+P21 status is `implementation_complete_steward_successor_pending`. Candidate
+preparation and final acceptance remain blocked on the authored, probed, and
+integrated 2253 successor plus later candidate-bound evidence.
 
 ## Exact next action
 
-C00 independently audits the pushed final for authorized ancestry, exact
-nine-path scope, source and immutable-request hashes, focused gates, normal
-remote equality, and zero effects. C00 must also reconcile the claim and
-lease; this handoff does not claim that the active lease was released.
+F02 consumes immutable request `P21-MIGRATION-003`, allocates and authors exact
+forward-only `2253_v21_content_publication_projection_v2.sql`, runs the
+requested native PostgreSQL probes, and publishes an immutable steward result.
+I36 then independently validates and integrates that result before any claim
+of P21 candidate readiness.

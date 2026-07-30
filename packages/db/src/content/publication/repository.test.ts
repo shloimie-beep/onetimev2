@@ -6,6 +6,7 @@ import {
 import type { ProviderOperation } from '../../../../contracts/src/providers/v21-provider-core.ts';
 import type {
   ContentPublicationPrincipal,
+  ContentPublicationRecord,
   StudentContentAssignment,
   StudentPublicationEligibility,
 } from '../../../../contracts/src/content/publication/index.ts';
@@ -16,11 +17,25 @@ const scope = {
 };
 const approvalEvidence = {
   ...scope,
+  contentId: 'content_one',
   contentVersionId: 'content_version_one',
+  contentVersionDigest: '1'.repeat(64),
   sourceId: 'source_one',
   sourceSha256: '1'.repeat(64),
   sourceObjectVersionId: 'source_object_version_one',
+  participantSetVersion: 'participant_set_v1',
   participantSnapshotDigest: '2'.repeat(64),
+  participantReviewState: 'complete' as const,
+  unresolvedParticipantCount: 0,
+  requiredRedactionCount: 1,
+  completedRedactionCount: 1,
+  redactionReviewDigest: '3'.repeat(64),
+  title: 'Berachos Review',
+  englishTranscriptText: 'Approved transcript',
+  classTopic: 'Berachos',
+  mishnahReferences: ['Berachos 1:1'],
+  occurredAt: '2026-07-27T16:00:00.000Z',
+  durationMs: 3_600_000,
   approvedByAdminId: 'admin_one',
   approvedAt: '2026-07-29T10:39:00.000Z',
   artifacts: [],
@@ -30,6 +45,35 @@ const approvalEvidence = {
 };
 
 describe('P21 PostgreSQL publication repository', () => {
+  it('registers a source-complete review-ready publication with composite convergence', async () => {
+    const record = reviewReadyRecord();
+    const client = new CapturingClient(false, undefined, (text) =>
+      text.includes('INSERT INTO onetime.content_publications') ? [{ record_json: record }] : [],
+    );
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await expect(repository.inTransaction((unit) => unit.registerContent(record))).resolves.toEqual(
+      { record, inserted: true },
+    );
+
+    const insert = client.queries[1];
+    expect(insert?.text).toContain('ON CONFLICT (account_key, product_key, content_id) DO NOTHING');
+    expect(insert?.text).toContain('RETURNING record_json');
+    expect(insert?.values?.slice(0, 9)).toEqual([
+      record.accountKey,
+      record.productKey,
+      record.contentId,
+      record.contentVersionId,
+      record.contentVersionDigest,
+      1,
+      'needs_review',
+      0,
+      1,
+    ]);
+  });
+
   it('uses a transaction and parameterized Student-scoped resume insert', async () => {
     const client = new CapturingClient();
     const repository = createPostgresContentPublicationRepository({
@@ -523,6 +567,41 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(client.queries.at(-1)?.text).toBe('COMMIT');
   });
 });
+
+function reviewReadyRecord(): ContentPublicationRecord {
+  return {
+    ...scope,
+    contentId: approvalEvidence.contentId,
+    contentVersionId: approvalEvidence.contentVersionId,
+    contentVersionDigest: approvalEvidence.contentVersionDigest,
+    participantSetVersion: approvalEvidence.participantSetVersion,
+    participantSnapshotSetDigest: approvalEvidence.participantSnapshotDigest,
+    participantReviewState: approvalEvidence.participantReviewState,
+    unresolvedParticipantCount: approvalEvidence.unresolvedParticipantCount,
+    requiredRedactionCount: approvalEvidence.requiredRedactionCount,
+    completedRedactionCount: approvalEvidence.completedRedactionCount,
+    redactionReviewDigest: approvalEvidence.redactionReviewDigest,
+    version: 1,
+    state: 'needs_review',
+    title: approvalEvidence.title,
+    englishTranscriptText: approvalEvidence.englishTranscriptText,
+    classTopic: approvalEvidence.classTopic,
+    mishnahReferences: approvalEvidence.mishnahReferences,
+    occurredAt: approvalEvidence.occurredAt,
+    updatedAt: approvalEvidence.approvedAt,
+    durationMs: approvalEvidence.durationMs,
+    approval: null,
+    publicationGeneration: 0,
+    playbackGrantGeneration: 1,
+    pendingProviderOperationId: null,
+    pendingProviderRequestHash: null,
+    opaqueProviderAssetRef: null,
+    providerReadbackDigest: null,
+    publishedAt: null,
+    archivedAt: null,
+    occurrenceRelations: [],
+  };
+}
 
 class CapturingClient implements ContentPublicationSqlClient {
   readonly queries: { text: string; values?: readonly unknown[] }[] = [];
