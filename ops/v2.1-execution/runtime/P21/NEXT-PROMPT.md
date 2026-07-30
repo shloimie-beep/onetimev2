@@ -1,67 +1,51 @@
 MODEL: GPT-5.6-SOL
-REASONING: HIGH
+REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: INDEPENDENT_AUDIT
+MODE: START_OR_RESUME
 
-Independently audit One Time v2.1 task P21 at its exact superseding remote
-ready-for-review head.
+P21 is stopped at a runtime-triplet-only composite-projection correction claim
+on branch `codex/v21-p21-content-publication`.
 
-Repository: shloimie-beep/onetimev2
-Branch: codex/v21-p21-content-publication
-Authoritative control ref: origin/codex/v21-control
-Task packet: ops/v2.1-execution/tasks/P21.yaml
-Task context: ops/v2.1-execution/contexts/P21-CONTEXT.md
-Task state: ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/P21/HANDOFF.md
+The atomic claim must be the sole child of adopted integration release
+`99fd8c33ea023e838d8ee9c993b5de52f4763e7f`, which contains exact prior P21
+`cecdad0989e861254987970cfa3d222319369f52` and integrated corrected P20
+`75137bf476b4a1773f29bb41a6a149148df2623d`.
 
-Rejected final:
-`29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af`.
-Residual-correction claim:
-`cc7e7439ba3567969cb12e3e4b7f0c01af276f93`.
-C00 reconciliation:
-`fec562171cc5f049b3b0626d2ba95e45d8da87f6`.
-Sole acquisition parent:
-`6209cee92ae59c12b431dcf399e50be4392d538c`.
-Corrected implementation:
-`7878b60fc72a17a7a6aeccc237c44141e2d5ec9b`.
-Artifact aggregate:
-`0ed47d3fc00de0f5e2660ebd857cbb128ac8fe70f7ebf7e7390cb4770cd5132d`.
-Request payload:
-`fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`.
-Request aggregate:
-`3967bfc144214ab517d8df1b2c70a537b1c7fa92aafef019ccfc9f43917d7d81`.
-Claim:
-`eba3bd79-7a63-46fe-89eb-edace22f1a1e`.
-Released CONTENT_PUBLICATION lease:
-`d4c8a72c-7beb-40e9-93d4-73d4f3c62668`, released
-`2026-07-29T12:32:56Z` before expiry `2026-07-29T13:18:14Z`.
+Authorization is bound to:
 
-Recompute the exact final remote head and sole-parent chain, all 17 artifact
-Git-blob hashes and aggregate, steward-request payload and aggregate, and exact
-owned scope. Re-run the five focused files, workspace typecheck, focused
-lint/format, diff hygiene, provider-mutation/reference scan, and secret scan.
+- containing control:
+  `3757ee49b83027d69208f25b0f709d309d5c6c1a`
+- READY state basis:
+  `f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0`
+- canonical control-state digest:
+  `7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade`
+- READY:
+  `ede4095b8ab517b3fe734208e14dfef82527f0f52a2b21409361acf4e0ef724b`
+- claim:
+  `9e38d9dd-8293-451d-9335-ddb466e7234e`
+- `CONTENT_PUBLICATION` lease:
+  `afe1ac21-bafb-475b-967a-28bdb9bcda66`, expiring
+  `2026-07-30T10:46:00Z`
 
-Audit specifically:
+This first push changes only the P21 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. C00 must:
 
-1. the accepted durable F05/F06 ProviderOperation and original pending P21
-   outbox are locked and exactly bound to the same operation, registry/account,
-   product, content version, publication generation, idempotency key, canonical
-   request, acceptance digest, and reconciliation digest;
-2. publication, all assignments/projections/notices, exact operation and outbox
-   completion, and receipt are one transaction with fail-closed rollback;
-3. occurrence governance comes from the repository-backed active canonical
-   product/occurrence/version/series row before exact idempotent attachment; and
-4. transactionally current Student/enrollment/access/service-account-consent/
-   privacy/revocation eligibility is required before every active assignment,
-   projection, Student notice, or adult notice.
+1. verify the pushed head has sole parent `99fd8c33`;
+2. verify the delta is exactly the P21 runtime triplet;
+3. recompute the state/handoff and runtime-triplet digests;
+4. verify exact READY, claim, lease, task/context/package/request/path bindings,
+   preserved non-runtime bytes, and effects `0/0/0`; and
+5. reconcile the claim before authorizing any source, test, or successor-request
+   change.
 
-Confirm direct pending-outbox, invented-occurrence, inactive-audience, and
-revoked-audience regressions, and confirm all earlier approval/readback/grant/
-unpublish/archive/denial/search/resume/privacy/concurrency behavior remains
-passing.
+After reconciliation, follow only the exact canonical READY directives and
+14-path inventory
+`92698702ddafb76e5ea660ae0ce7fa1314b02dba86b5fe35be839b76003f5c61`.
+Consume P20 `ApprovedForPublicationProjection` through server-derived composite
+scope, preserve immutable mixed `P21-registration-001` byte-identically as
+superseded/withheld, and publish exactly `P21-MIGRATION-002` and
+`P21-registration-002`.
 
-No live provider inspection or effect is authorized. Do not inspect or mutate a
-provider, send anything, apply P21-registration-001, or change a migration or
-shared registration. If the head passes, report it to C00/I36 for serialized
-admission. If it fails, identify the exact immutable head, path, invariant, and
-smallest bounded correction authorization required.
+Do not create either successor before reconciliation. Do not edit P20, allocate
+a migration ordinal, write or apply SQL, apply registration, inspect or mutate
+a provider, deploy, send, or perform any external effect.

@@ -39,13 +39,13 @@ dependency_heads:
     interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
     task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
     task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
-status: ready_for_review
-phase: complete
-claim_mode: resume_existing
-claimed_by: codex-p21-worker-eba3bd79
-claim_time: '2026-07-29T12:08:50Z'
-claim_id: eba3bd79-7a63-46fe-89eb-edace22f1a1e
-expected_existing_head: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
+status: claimed
+phase: P21_P20_approved_projection_composite_binding_correction_atomic_claim
+claim_mode: adopt_integration
+claimed_by: codex-p21-composite-binding-9e38d9dd
+claim_time: '2026-07-30T09:46:00Z'
+claim_id: 9e38d9dd-8293-451d-9335-ddb466e7234e
+expected_existing_head: cecdad0989e861254987970cfa3d222319369f52
 rejected_final_head_sha: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
 prior_correction_claim_head_sha: 355d7b126fe2db7b2e8061f86585d724866998a6
 residual_correction_claim_head_sha: cc7e7439ba3567969cb12e3e4b7f0c01af276f93
@@ -80,18 +80,29 @@ writer_slot_leases:
     phase_scope: P21_atomic_claim_provider_operation_occurrence_audience_correction_only
     lease_released_at: '2026-07-29T12:32:56Z'
     state: released
+  - slot: CONTENT_PUBLICATION
+    lease_id: afe1ac21-bafb-475b-967a-28bdb9bcda66
+    holder_task_id: P21
+    holder_claim_id: 9e38d9dd-8293-451d-9335-ddb466e7234e
+    lease_issued_at: '2026-07-30T09:46:00Z'
+    lease_expires_at: '2026-07-30T10:46:00Z'
+    state_based_on_control_head_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
+    phase_scope: P21_P20_approved_projection_composite_binding_correction_atomic_claim_only
+    lease_released_at: null
+    state: active
 effect_lock_leases: []
-lease_expires_at: '2026-07-29T13:18:14Z'
-lease_released_at: '2026-07-29T12:32:56Z'
-last_heartbeat_at: '2026-07-29T12:32:56Z'
-controller_authorization_sha: fec562171cc5f049b3b0626d2ba95e45d8da87f6
-controller_authorization_parent_sha: 6209cee92ae59c12b431dcf399e50be4392d538c
-claim_reconciled_control_sha: fec562171cc5f049b3b0626d2ba95e45d8da87f6
-claim_reconciled_control_parent_sha: 6209cee92ae59c12b431dcf399e50be4392d538c
-latest_observed_control_sha: fec562171cc5f049b3b0626d2ba95e45d8da87f6
-ready_entry_state_based_on_control_head_sha: d633726e427e659adf55d71d009919ae4f6b4dde
-ready_entry_payload_digest: f0875254206ba39499fe3d21ad147ec252551aa4e25dcfb0f3f4c162fd237528
-state_based_on_head_sha: 7878b60fc72a17a7a6aeccc237c44141e2d5ec9b
+lease_expires_at: '2026-07-30T10:46:00Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-30T09:48:00Z'
+controller_authorization_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
+controller_authorization_parent_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
+claim_reconciled_control_sha: null
+claim_reconciled_control_parent_sha: null
+latest_observed_control_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
+ready_entry_state_based_on_control_head_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
+ready_entry_control_state_digest: 7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade
+ready_entry_payload_digest: ede4095b8ab517b3fe734208e14dfef82527f0f52a2b21409361acf4e0ef724b
+state_based_on_head_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
 last_implementation_commit_sha: 7878b60fc72a17a7a6aeccc237c44141e2d5ec9b
 implementation_artifact_digest: 0ed47d3fc00de0f5e2660ebd857cbb128ac8fe70f7ebf7e7390cb4770cd5132d
 implementation_artifact_digest_algorithm: >-
@@ -123,7 +134,29 @@ steward_request_digest_algorithm: >-
   Each payload digest is SHA-256 over the exact raw Git blob; the aggregate is
   SHA-256 over sorted UTF-8 <path>=<payload-digest> lines with LF separators
   and no final newline.
+composite_binding_correction_authorization:
+  authorized_start_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+  expected_existing_head: cecdad0989e861254987970cfa3d222319369f52
+  expected_claim_parent_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+  integrated_P20_head_sha: 75137bf476b4a1773f29bb41a6a149148df2623d
+  first_push_allowed_paths:
+    - ops/v2.1-execution/runtime/P21/HANDOFF.md
+    - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
+    - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+  first_push_path_inventory_digest: 4335f312329a0e5656634189b69d167460b724505d5dcd25eba5da094deb9520
+  first_push_base_manifest_digest: 185d1ec301c61c9ec4b6c0d96f850e4eec59978a2f588278be96399823e46915
+  total_authorized_path_inventory_digest: 92698702ddafb76e5ea660ae0ce7fa1314b02dba86b5fe35be839b76003f5c61
+  immutable_registration_001:
+    raw_sha256: fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3
+    canonical_sha256: b47894b8827ba9e098725355215dda28b408f8668ab5cc3ad8d0a47019d3b61a
+    disposition: superseded_withheld_bytes_preserved
+  required_successor_requests:
+    - P21-MIGRATION-002
+    - P21-registration-002
 completed_steps:
+  - Adopted exact integrated release 99fd8c33ea023e838d8ee9c993b5de52f4763e7f as the correction claim parent after verifying it contains exact P21 cecdad0989e861254987970cfa3d222319369f52 and integrated P20 75137bf476b4a1773f29bb41a6a149148df2623d.
+  - Recomputed containing control 3757ee49b83027d69208f25b0f709d309d5c6c1a, canonical state-basis digest 7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade, READY ede4095b8ab517b3fe734208e14dfef82527f0f52a2b21409361acf4e0ef724b, task/context/package/request identities, exact 14-path inventory, fresh claim 9e38d9dd-8293-451d-9335-ddb466e7234e, active CONTENT_PUBLICATION lease afe1ac21-bafb-475b-967a-28bdb9bcda66, and zero effect locks.
+  - Recorded this runtime-triplet-only atomic claim without changing any source, test, P20, migration, steward-request, registration, provider, or effect byte.
   - Verified exact reconciled remote claim cc7e7439ba3567969cb12e3e4b7f0c01af276f93, C00 reconciliation fec562171cc5f049b3b0626d2ba95e45d8da87f6 and sole acquisition parent 6209cee92ae59c12b431dcf399e50be4392d538c, unchanged claim eba3bd79-7a63-46fe-89eb-edace22f1a1e, active CONTENT_PUBLICATION lease d4c8a72c-7beb-40e9-93d4-73d4f3c62668, consumed READY f0875254206ba39499fe3d21ad147ec252551aa4e25dcfb0f3f4c162fd237528, and zero effect locks.
   - Added a repository-locked exact accepted F05/F06 ProviderOperation plus original pending publication outbox context bound to operation id/version, registry/account hashes, product, content version, publication generation, idempotency key, canonical request, acceptance digest, and reconciliation digest.
   - Made publication, assignments, library projections, Student/adult notices, exact ProviderOperation accepted-to-complete transition, original outbox pending-to-complete transition, and completion receipt one transaction so no canonical readback can leave the original intent pending.
@@ -135,10 +168,11 @@ completed_steps:
   - Reproduced all 17 artifact hashes and aggregate 0ed47d3fc00de0f5e2660ebd857cbb128ac8fe70f7ebf7e7390cb4770cd5132d plus request payload fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3 and aggregate 3967bfc144214ab517d8df1b2c70a537b1c7fa92aafef019ccfc9f43917d7d81.
   - Released claim eba3bd79-7a63-46fe-89eb-edace22f1a1e and CONTENT_PUBLICATION lease d4c8a72c-7beb-40e9-93d4-73d4f3c62668 before expiry with zero external effects.
 remaining_steps:
-  - C00 must independently audit and admit the exact superseding remote final.
-  - F02/I36 may later evaluate P21-registration-001 under their own authority; P21 did not apply it.
+  - Stop after this runtime-triplet-only atomic claim for C00 reconciliation.
+  - After reconciliation, implement the approved projection composite binding only in the exact authorized P21 paths and publish exactly the two immutable successor requests.
+  - Preserve P21-registration-001 byte-identically as superseded/withheld; do not edit P20, allocate an ordinal, write or apply a migration, apply a registration, or perform a provider effect.
   - Candidate-bound provider-sandbox or production-canary evidence remains gated on a later immutable candidate and exact external-effect authority.
-next_action: Push and remote-verify the superseding ready-for-review final, then report its exact head and digests to C00 for independent audit.
+next_action: C00 must reconcile this exact runtime-triplet-only atomic claim before P21 changes any source, test, or steward-request file.
 requirements:
   OTV2-CONTENT-087: source_implemented_candidate_provider_evidence_pending
   OTV2-CONTENT-088: source_implemented_candidate_evidence_pending
@@ -209,6 +243,7 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
+  - C00 reconciliation of this atomic claim is required before product or successor-request work.
   - Candidate-bound provider and end-to-end registration evidence is not authorized in this phase.
 out_of_scope_findings:
-  - Forward-only schema migration and central server, worker, and authenticated-client composition remain in P21-registration-001 and were not applied.
+  - P21-registration-001 remains immutable, unapplied, and withheld pending exact successors P21-MIGRATION-002 and P21-registration-002 after reconciliation.
