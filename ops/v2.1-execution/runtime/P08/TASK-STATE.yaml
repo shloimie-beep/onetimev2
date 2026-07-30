@@ -5,126 +5,231 @@ task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa514501198
 task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
 package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-branch: codex/v21-p08-family-signup
-start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
+branch: codex/v21-p08-registration-server
+original_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
 status: ready_for_review
-phase: follow_up_correction_complete
-claimed_by: codex-p08-worker-60986795
-claim_time: '2026-07-29T02:10:04Z'
-claim_id: 60986795-c22a-4861-9e98-a93de2c1d22e
-writer_slot: FAMILY_SIGNUP
-writer_slot_lease_id: 4dce3bb7-4411-4643-a367-d7e43adaabb8
-lease_issued_at: '2026-07-29T02:07:09Z'
-lease_expires_at: '2026-07-29T03:07:09Z'
-last_heartbeat_at: '2026-07-29T02:26:07Z'
-lease_released_at: '2026-07-29T02:26:07Z'
-prior_claim_id: a456f914-02cb-4c08-9717-af9709f1948a
-prior_rejected_atomic_claim_head_sha: 615e124dd49030e3af5e01d94518aea76b6a733e
-prior_ready_for_review_head_sha: 605c659afe488e32114bae57b3751c044301bdca
-controller_authorization_sha: 0233631c59c7d9c6845e35e6c4d35e6bd7b3a101
-claim_acquisition_sha: ab5e5cc865be45ef0a71bcec7d71d7df1c787744
-claim_reconciliation_sha: 04ebe46bc1cff1223bdade3379457cf774c0dce1
-reconciliation_acquisition_parent_sha: 765ad933964ce0019895c2133ff10a491b7938a2
-ready_entry_payload_digest: 2bd935e8708acd22a72d256d08d300340c0ac96753457cb697d1e2ff25ca0430
-claim_mode: resume_existing_branch
-correction_parent_head_sha: c58b4a65dfbdab52f7be7dddf41875194c4b632c
-correction_implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
-correction_verification_head_sha: 67fb8b74c5109e06fa2829797fed1ffa0ce995d4
-state_based_on_head_sha: 67fb8b74c5109e06fa2829797fed1ffa0ce995d4
-last_implementation_commit_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
-interface_checkpoint:
-  required: true
-  unlocks:
-    - P09
-  status: interface_ready
+phase: corrected_registration_server_source_terminal_metadata_complete
+state_based_on_head_sha: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+last_implementation_commit_sha: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+review_target:
+  base_sha: 9cb28a0078e3dfe814cfca34cf93000993416ce8
+  implementation_parent_sha: 30de59df0555058fc021bc6002a3dffc4e3ea916
+  implementation_head_sha: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+  implementation_commit_timestamp: '2026-07-30T20:44:55+03:00'
+  terminal_metadata_parent_sha: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+  terminal_metadata_commit_sha: derive_from_git_and_verify_remote
+  source_commit_path_count: 17
+  cumulative_product_and_request_path_count: 14
+  note: >-
+    Commit 1550e668 also reverses three out-of-scope shared-path edits made by
+    parent 30de59df. The cumulative base-to-implementation diff contains only
+    the fourteen P08-owned product and successor-request paths recorded below.
+prior_checkpoint:
+  status: superseded_historical
+  branch: codex/v21-p08-family-signup
   implementation_head_sha: 8ab2c55c56e93fa343e6e50dd70a36ef193bd73e
-  metadata_head_sha: 594570798a5af8145d7949ba10572e8b1e644f17
+  verification_head_sha: 67fb8b74c5109e06fa2829797fed1ffa0ce995d4
   semantic_contract_version: 2.0.0
+  metadata_checkpoint_sha: 594570798a5af8145d7949ba10572e8b1e644f17
   contract_digest: 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
   artifact_sha256: 502bb09dcf4e95ffba49951ca92ff6ae591be2ded7034493269349b73e8965ef
-  supersedes_checkpoint_sha: ca06599ffbe62d7c617235f9e54f5ded57e4b6c7
-  supersedes_contract_digest: 922f9624679581868b598f4b89c94a5d2e53d650a2cd32e87a0ce88945002b0c
+interface_checkpoint:
+  required: true
+  status: corrected_2_1_0_pending_independent_admission
+  semantic_contract_version: 2.1.0
+  implementation_head_sha: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+  export_path: packages/contracts/src/signup/family/index.ts
+  export_git_blob: ab1033a22c5c8019ba3c98c1a8b3979beb9b9358
+  export_artifact_sha256: a29ab4b30049719e530ca38eb0c78671d171959c694d4b6593a5c688caf4dd4c
+  proposed_contract_digest: 800fe2387b47b064d89e2a272253c24c4594deea4b992943fbc3cf3a494bcfcd
+  proposed_contract_digest_algorithm: >-
+    SHA-256 over UTF-8 semantic_contract_version=2.1.0 followed by the exact
+    packages/contracts/src/signup/family/index.ts artifact SHA-256 line, with
+    one LF separator and no final newline.
+  checkpoint_published: false
+  checkpoint_owner: C00/I36
+  admission_request_id: P08-registration-002
+  contains_product_completion_claim: false
 completed_steps:
-  - Consumed replacement claim 60986795-c22a-4861-9e98-a93de2c1d22e at exact head c58b4a65dfbdab52f7be7dddf41875194c4b632c.
-  - Verified C00 reconciliation 04ebe46bc1cff1223bdade3379457cf774c0dce1, its sole parent 765ad933964ce0019895c2133ff10a491b7938a2, the exact claim, unexpired FAMILY_SIGNUP lease, and zero effect locks.
-  - Published exact Family form fields including password confirmation and separate explicit general-marketing and Parent-newsletter booleans.
-  - Published editable/searchable IANA timezone combobox metadata with browser prefill as suggestion-only and enforced independent server-side IANA validation.
-  - Required exact password confirmation before repository access while excluding confirmation and raw password from canonical persistence and outbox data.
-  - Canonicalized and persisted the two independent optional adult consent choices and carried them in the durable quarantinable outbox without inferring or bundling consent.
-  - Removed P09-owned School command and form details while preserving the exact family|school classification seam.
-  - Added inactive_identity_review so ambiguous post-expiry signup commits inactive local state but blocks Checkout, GHL sync/workflow dispatch, and paid billing pending Admin resolution.
-  - Preserved local login and pre-expiry free access during identity review, with GHL work quarantined for later resolution.
-  - Added negative coverage for invalid IANA zones/raw offsets, password mismatch, missing consent choices, consent replay conflicts, and post-expiry identity-review Checkout denial.
-  - Published and pushed superseding interface checkpoint 594570798a5af8145d7949ba10572e8b1e644f17 at semantic contract version 2.0.0.
-  - Updated migration and registration steward requests without editing migrations, routes, barrels, composers, registries, manifests, lockfiles, or provider state.
-  - Passed 17 task-owned assertions, targeted ESLint, repository typecheck, Prettier, secret scan, canonical digest recomputation, and git diff checks.
-  - Re-ran the full unit suite with 566 of 567 passing; the sole failure is the inherited sender-registry count assertion outside P08 ownership.
-  - Released the FAMILY_SIGNUP lease with zero external effects.
+  - >-
+    Published implementation correction 1550e6682ff1bcacdea260d1b6b80ec231381ded
+    as the sole child of parent 30de59df0555058fc021bc6002a3dffc4e3ea916
+    on base 9cb28a0078e3dfe814cfca34cf93000993416ce8.
+  - >-
+    Restored apps/web/src/server/app.ts, packages/config/src/index.ts, and
+    tests/unit/config/v21-verification-environment.test.ts exactly to the base
+    tree state, including the test path's restored absence, leaving no
+    cumulative shared-path change.
+  - >-
+    Corrected missing or unavailable GHL evidence to readback_required instead
+    of identity_review while preserving actual multiple-match or provider-email
+    disagreement as identity_review.
+  - >-
+    Kept actual identity_review locally durable but blocked post-expiry
+    checkout dispatch, workflow enrollment, message delivery, and billing.
+  - >-
+    Persisted the exact adult-only P27 handoff with Student contact prohibited
+    and provider, message, and billing effect authorization all false.
+  - >-
+    At or after expiry, atomically persisted the exact P25 standard
+    HighLevel-orchestrated Stripe-hosted commercial command and one job_outbox
+    intent without creating a URL, charge, or direct Stripe mutation.
+  - >-
+    Added an injectable v2.1 session-establishment seam and claimed
+    session_established true only when middleware_readback_verified is true;
+    the default path returns the truthful durable 202 pending state.
+  - >-
+    Advanced the source contract constant and focused contract assertion from
+    semantic version 2.0.0 to 2.1.0 without falsely publishing an integrated
+    interface checkpoint.
+  - >-
+    Published three immutable successor requests for the shared auth/household,
+    configuration, and registration work without editing either predecessor
+    request.
+  - >-
+    Passed 29 focused tests across five files, workspace typecheck, targeted
+    ESLint, focused Prettier, secret scan across 3097 repository text files,
+    native PGlite proof, scope checks, and diff hygiene.
+  - No provider, message, enrollment, billing, deployment, DNS, or migration effect was attempted.
 remaining_steps:
-  - C00 reviews and admits the corrected task and semantic-version-2.0.0 interface checkpoint.
-  - The migration and registration stewards consume the two structured requests.
-  - P09 starts only after C00 integrates the superseding interface checkpoint.
-next_action: C00 should review the exact pushed ready-for-review head, reconcile lease release, and admit the superseding 2.0.0 Family interface if accepted.
+  - C00 independently reviews and admits exact implementation head 1550e6682ff1bcacdea260d1b6b80ec231381ded; ready_for_review is not integration or release.
+  - I36 registers the Family route in the central server composer and binds the canonical validated runtime/configuration fields.
+  - F03/F04 provide the v2.1 adult-session writer plus the same current middleware resolver used by authenticated Parent routes.
+  - F04 removes the invalid v21_households.display_name read and supplies one real schema-backed safe household label.
+  - P27 consumes the adult-only Family handoff and performs canonical provider readback before any classification or later effect.
+  - F06 supplies the exact provider_operation_binding plus provider lock, fencing token, and reconciliation gates before any P25 worker dispatch.
+  - F07/I36 implement public client handling for truthful session success and the safe single-use checkout redirect handle.
+  - C00/I36 admit and publish a superseding semantic-contract 2.1.0 checkpoint with recomputed artifact and contract digests.
+  - I36/shared stewards add required root-barrel exports and shared registration/configuration tests covered by the three successor requests.
+next_action: >-
+  C00 independently audits and admits source head
+  1550e6682ff1bcacdea260d1b6b80ec231381ded; on acceptance, I36 dispositions
+  P08-registration-002 and P08-config-002 while F03/F04 disposition
+  P08-auth-household-002, with no provider effect.
 requirements:
-  OTV2-SIGNUP-176: implemented_and_verified
-  OTV2-SIGNUP-177: implemented_and_verified
-  OTV2-SIGNUP-179: implemented_and_verified
-  OTV2-SIGNUP-213: implemented_and_verified
-  OTV2-SIGNUP-228: implemented_and_verified
+  OTV2-SIGNUP-176: source_implemented_shared_registration_pending
+  OTV2-SIGNUP-177: source_implemented_auth_and_candidate_evidence_pending
+  OTV2-SIGNUP-179: source_implemented_provider_consumer_pending
+  OTV2-SIGNUP-213: source_implemented_auth_and_candidate_evidence_pending
+  OTV2-SIGNUP-228: source_implemented_billing_dispatch_and_candidate_evidence_pending
 acceptance_cases:
-  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: task_owned_assertions_passed
-  OTV2-SIGNUP-177-AC01: task_owned_assertions_passed
-  OTV2-SIGNUP-179-AC01: task_owned_assertions_passed
-  OTV2-SIGNUP-213-AC01: task_owned_assertions_passed
-  OTV2-SIGNUP-228-BEFORE-EXPIRY: task_owned_assertions_passed
-  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: task_owned_assertions_passed
+  OTV2-SIGNUP-176-FAMILY-OR-SCHOOL-BRANCH: focused_source_assertions_passed_integration_pending
+  OTV2-SIGNUP-177-AC01: focused_source_assertions_passed_auth_integration_pending
+  OTV2-SIGNUP-179-AC01: focused_source_assertions_passed_provider_readback_pending
+  OTV2-SIGNUP-213-AC01: focused_source_assertions_passed_auth_integration_pending
+  OTV2-SIGNUP-228-BEFORE-EXPIRY: focused_source_assertions_passed_auth_integration_pending
+  OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY: focused_source_assertions_passed_worker_and_client_integration_pending
 changed_paths:
-  - apps/web/src/client/public/signup/model.test.ts
-  - apps/web/src/client/public/signup/model.ts
-  - apps/web/src/server/features/signup/family/service.test.ts
-  - apps/web/src/server/features/signup/family/service.ts
-  - packages/contracts/src/signup/family/index.ts
-  - packages/contracts/src/signup/family/family-signup.contract.test.ts
-  - packages/domain/src/signup/family/index.ts
-  - packages/domain/src/signup/family/policy.test.ts
-  - packages/domain/src/signup/family/policy.ts
-  - ops/v2.1-execution/runtime/P08/INTERFACE-CHECKPOINT.yaml
   - ops/v2.1-execution/runtime/P08/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P08/HANDOFF.md
   - ops/v2.1-execution/runtime/P08/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P08/steward-requests/P08-migration-001.yaml
-  - ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-001.yaml
+implementation_changed_paths:
+  - apps/web/src/server/features/signup/family/repository.test.ts
+  - apps/web/src/server/features/signup/family/repository.ts
+  - apps/web/src/server/features/signup/family/router.test.ts
+  - apps/web/src/server/features/signup/family/router.ts
+  - apps/web/src/server/features/signup/family/service.test.ts
+  - apps/web/src/server/features/signup/family/service.ts
+  - ops/v2.1-execution/runtime/P08/steward-requests/P08-auth-household-002.yaml
+  - ops/v2.1-execution/runtime/P08/steward-requests/P08-config-002.yaml
+  - ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-002.yaml
+  - packages/contracts/src/signup/family/family-signup.contract.test.ts
+  - packages/contracts/src/signup/family/index.ts
+  - packages/domain/src/signup/family/index.ts
+  - packages/domain/src/signup/family/policy.test.ts
+  - packages/domain/src/signup/family/policy.ts
+shared_paths_restored_to_base:
+  - apps/web/src/server/app.ts
+  - packages/config/src/index.ts
+  - tests/unit/config/v21-verification-environment.test.ts
 migrations: []
-steward_requests:
-  - request_id: P08-migration-001
-    sha256: d77c51fb84a06a3e8a3e8a0b9d28f64f1aea5223711afa23fef656e4c2617749
-  - request_id: P08-registration-001
-    sha256: 5958df286bf5a8213b4431709084b7fabe05ae8d6fdb1c2aa08d97db4f35409c
+successor_request_digest_algorithm: >-
+  Raw SHA-256 is over the exact Git-blob bytes at implementation head
+  1550e668. Canonical SHA-256 is over UTF-8 JSON.stringify output after parsing
+  YAML and recursively sorting every object key while preserving array order.
+successor_request_bindings:
+  P08-auth-household-002:
+    path: ops/v2.1-execution/runtime/P08/steward-requests/P08-auth-household-002.yaml
+    git_blob: 0b883423f57ccfbadbf2d8e01d15bb0a1aa82a1c
+    raw_sha256: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+    canonical_sha256: aa7628c7665033ea0ad85ff10fc36a8890cadc6202314dec712feeb4f1db9860
+    immutable_at_implementation_head: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+    status: pending_independent_steward_admission
+  P08-config-002:
+    path: ops/v2.1-execution/runtime/P08/steward-requests/P08-config-002.yaml
+    git_blob: 3f6ec5d305b7c9a7cbfe92b18ae6078a1ffbdcaf
+    raw_sha256: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+    canonical_sha256: d7131affc30ad18aba0a691ffda5410195f3bec829aca1e8f3a270bdec6f26be
+    immutable_at_implementation_head: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+    status: pending_independent_steward_admission
+  P08-registration-002:
+    path: ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-002.yaml
+    git_blob: e5f0743ac6326e9b85d6a83d7673f4d12f997cc7
+    raw_sha256: 0b0b82567be04624d0facf501dbc9d5fb418d0d86b79462f6220e8d8b56856d3
+    canonical_sha256: da27ec8f95da3007e3bf51edec04d18cac093e1c1a568c67fa79d360ced6b5f5
+    immutable_at_implementation_head: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+    status: pending_independent_steward_admission
+predecessor_request_preservation:
+  P08-migration-001:
+    path: ops/v2.1-execution/runtime/P08/steward-requests/P08-migration-001.yaml
+    base_and_head_git_blob: 0822e598cf2bb619f6968e5fbba2fad3c2a103c7
+    raw_sha256: d77c51fb84a06a3e8a3e8a0b9d28f64f1aea5223711afa23fef656e4c2617749
+    bytes_preserved: true
+  P08-registration-001:
+    path: ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-001.yaml
+    base_and_head_git_blob: d27d048cfca13a0193ec7718eec20c8ed22141ba
+    raw_sha256: 5958df286bf5a8213b4431709084b7fabe05ae8d6fdb1c2aa08d97db4f35409c
+    bytes_preserved: true
 verification:
-  commands_run:
-    - command: focused P08 Vitest over contract, domain, server, and client
-      result: passed; 4 files and 17 assertions
-    - command: targeted ESLint over all P08 TypeScript artifacts
-      result: passed
-    - command: npm run typecheck
-      result: passed
-    - command: focused Prettier check over all changed P08 artifacts
-      result: passed
-    - command: npm run secret:scan
-      result: passed; 2720 repository text files scanned
-    - command: canonical interface digest recomputation
-      result: passed; 32a4a8bedd1ef290ca8484033076923e8184eb6d52e13b6ec8cc871eeef0fa43
-    - command: npm run unit
-      result: 566 passed, 1 inherited out-of-scope registry-count assertion failed
-    - command: git diff --check
-      result: passed
-  known_baseline_failures:
-    - tests/unit/highlevel/sender-registry-v1-1.test.ts expects 19 automation assets but the integrated registry contains 22.
+  focused_tests:
+    result: passed
+    file_count: 5
+    test_count: 29
+    files:
+      - packages/contracts/src/signup/family/family-signup.contract.test.ts
+      - packages/domain/src/signup/family/policy.test.ts
+      - apps/web/src/server/features/signup/family/repository.test.ts
+      - apps/web/src/server/features/signup/family/service.test.ts
+      - apps/web/src/server/features/signup/family/router.test.ts
+  native_pglite:
+    result: passed
+    migrations:
+      - 2234
+      - 2235
+      - 2236
+      - 2248
+    proof: P08_NATIVE_OK adults=2 households=2 signups=2 commercial_commands=3 hosted_checkout_jobs=1
+  source_checks:
+    - workspace typecheck passed
+    - targeted ESLint passed
+    - focused Prettier passed
+    - secret scan passed across 3097 repository text files
+    - exact cumulative scope and shared-path restoration passed
+    - source branch local, tracking, and ls-remote equality passed at 1550e6682ff1bcacdea260d1b6b80ec231381ded
+  metadata_checks:
+    - TASK-STATE and all successor request YAML parsing passed
+    - raw and canonical successor-request digest recomputation passed
+    - exact runtime-triplet-only metadata diff passed
+    - implementation, shared-path, predecessor-request, and successor-request Git-blob preservation passed
+    - git diff --check passed
+    - metadata secret scan passed
+  known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
 blockers: []
+remaining_steward_gaps:
+  - I36 central route registration and canonical configuration binding.
+  - F03/F04 v2.1 session writer and current authenticated middleware resolver.
+  - F04 invalid v21_households.display_name query and canonical safe-label remedy.
+  - P27 adult-only Family outbox consumer and canonical GHL readback.
+  - F06 provider binding, lock, fence, and reconciliation before P25 worker dispatch.
+  - F07/I36 session-success and safe checkout-redirect-handle client/server continuation.
+  - C00/I36 semantic-contract 2.1.0 checkpoint admission and publication.
+  - I36/shared root-barrel registration plus configuration and shared integration tests.
 out_of_scope_findings:
-  - P08 does not own the sender-registry test or integrated registry count; its full-suite failure remains for the registry steward.
+  - Source readiness does not establish an authenticated Parent session until F03/F04 integrate the same v2.1 writer and resolver.
+  - Source readiness does not expose or create a hosted-checkout URL and does not authorize a payment effect.
+  - No shared composer, root barrel, shared configuration, shared test, provider account, deployment, migration, or control-plane file is changed by the cumulative source diff.
