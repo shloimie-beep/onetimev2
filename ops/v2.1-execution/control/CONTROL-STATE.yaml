@@ -16,14 +16,15 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+controller_authorization_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
 next_action: >-
-  Execute the exact I36 family Parent-session composition checkpoint from independently audited integration 524563f0
-  under SERVER_COMPOSER lease 1af50c79. Change only apps/web/src/server/app.ts, one new real-composition integration
-  test, and the I36 runtime triplet; preserve the recovery-capable P08 boundary without claiming stricter
-  cross-transaction atomicity. In parallel, finish read-only P09 GET /school and Admin-configuration surface preflight.
-  Candidate freeze, provider locks/mutations, deployment, DNS, sends, charges, live migration execution, and customer
-  activation remain gated.
+  Execute one exact I36 Parent auth/client successor from independently audited partial integration a5a2ad94 under
+  claim ef14f276 and lease 21315060. Add v2.1 credential login, fresh CSRF bootstrap, exact logout/revocation and
+  invalid-cookie recovery, sole-household selection redirect, verified same-origin signup continuation, a v2-specific
+  Parent client boot, and native production-repository proof across only the authorized paths. Keep
+  P08-auth-household-002 assigned and the P08 blocker open until later P12 persistence/routes/forms and browser proof
+  pass. Candidate freeze, provider locks/mutations, deployment, DNS, sends, charges, live migration execution, and
+  customer activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -63,13 +64,24 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: family_parent_session_composition_dispatched
+  status: family_parent_session_partial_reconciled_successor_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
-  expected_head_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
-  claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
-  writer_lease_id: 1af50c79-1fb7-42b7-96e4-a29d8d8873f5
-  scope: exact_app_composer_plus_one_real_composition_test_and_I36_runtime_triplet
+  partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+  partial_checkpoint_parent_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+  partial_checkpoint_tree_sha: cbcea6aeb2d15de016e51a8dfa69648b0c98d8cf
+  partial_checkpoint_timestamp: '2026-07-31T01:52:57+03:00'
+  partial_checkpoint_path_count: 5
+  partial_checkpoint_classification: accepted_server_shell_partial_not_request_complete
+  partial_checkpoint_state_handoff_digest: 5e24f529d107e1cf501ab1c543fbc6497a1c762ffebab1c6ca712c9d2553998f
+  partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
+  partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
+  all_producer_implementation_heads_ancestor_count: 35
+  expected_head_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+  successor_authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+  claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+  writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
+  scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through

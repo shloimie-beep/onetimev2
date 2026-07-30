@@ -6,12 +6,12 @@ ready:
 - task_id: I36
   lane: D
   status: resume_ready
-  phase: family_parent_session_composition
+  phase: parent_session_auth_client_successor
   branch: codex/v21-integration
   claim_mode: resume_existing
-  state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
-  authorized_start_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
-  expected_existing_head: 524563f07b3bb8544db989982dc55d4bc86a1999
+  state_based_on_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+  authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+  expected_existing_head: a5a2ad94b77eaf596930609d4d5abe4fa672439b
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
   task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -20,74 +20,108 @@ ready:
     C00:
       required_state: full_production_completion_convergence
       observed_state: full_production_completion_convergence
-      observed_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
-    prior_release:
-      required_state: accepted_source_microbatch_3_complete
-      observed_state: accepted_source_microbatch_3_complete
-      terminal_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
-      state_handoff_digest: bcb70bf3424bcc9a2449027c74864f09d244d113fc4c20f8937dc1b650da5b64
-      runtime_triplet_digest: ca50b64e6c34e5e5900b52d377a8fd0f82390ad8b3632cfd3f79285caef6849d
-    F04:
-      required_state: ownership_transfer_corrections_integrated
-      observed_state: ownership_transfer_corrections_integrated
-      terminal_head_sha: b43c1923bbfdd92d15572abc137a3ead3fdf2819
-      merge_head_sha: 303ae3a74febbfc7ecdc6dbd32ecad36e3cf5ab4
-      product_digest: c87d04c097ca12496b602a765634017902994568428af9fc6110d50d245b0a85
-    F03:
-      required_state: parent_host_cookie_runtime_integrated
-      observed_state: parent_host_cookie_runtime_integrated
-      terminal_head_sha: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
-      merge_head_sha: 78283a2e17847c6ebdfcdd86e2a52a992521adad
-      product_digest: 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
-    P08:
-      required_state: corrected_registration_server_source_integrated
-      observed_state: corrected_registration_server_source_integrated
-      terminal_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
-      integration_ancestor_sha: e1dce668fb452a4c1892a33ea6d9c37061603aef
-      state_handoff_digest: 4605827ee19b5ce1590a17b7206d8937b9ac11895bb74eb542022910e6ae85e4
-      runtime_triplet_digest: 5ab55a75807c4da97f66feeb8a29f4d56ce24448d887c8707e41da581ec6e21d
-    P08_auth_household_002:
-      request_id: P08-auth-household-002
-      status: assigned_unapplied
-      raw_sha256: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
-      target_checkpoint: I36_family_parent_session_checkpoint_after_F04_F03_P08
-    app_base:
-      path: apps/web/src/server/app.ts
-      raw_git_blob_sha256: 4457d6906ccb5407ae9ae60b433672e4d53e732a2fd32149dfe37f79ff8f32e0
+      observed_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+    partial_checkpoint:
+      classification: accepted_server_shell_partial_not_request_complete
+      terminal_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+      sole_parent_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+      tree_sha: cbcea6aeb2d15de016e51a8dfa69648b0c98d8cf
+      commit_timestamp: '2026-07-31T01:52:57+03:00'
+      exact_path_count: 5
+      app_raw_sha256: a706144080fbc62023c19d818dde2e151bfed04dbf73730c76b790a5b02a2ff2
+      composition_test_raw_sha256: 92fd1c92d09ffc04bbb36af78b41d8fdb50d1f89594356701c314ab47068c770
+      I36_state_raw_sha256: 411e8a496a75b9835d52d7da8967933b883848cf160cef2a798ae73bdb762e1d
+      I36_handoff_raw_sha256: 33109536edb57d390a118a42870074e80f9748cbac038cc79016091caa2b7ad2
+      I36_next_raw_sha256: 32f65260d2223ee99eb0e0023993987ddf620e873f5710ca287f1711f335e0b2
+      product_pair_digest: 9d762c1cc1f6c58ad8623c3e1251bf4f0ff9e28a20fa07e5e3da69ee1e508e91
+      state_handoff_digest: 5e24f529d107e1cf501ab1c543fbc6497a1c762ffebab1c6ca712c9d2553998f
+      runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
+      five_path_aggregate_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
+      lease_released_at: '2026-07-30T22:50:00Z'
+      clean_pushed_remote_equal: true
+    producer_ancestry:
+      implementation_heads_expected: 35
+      implementation_heads_ancestors_of_start: 35
+    unresolved_requests:
+      P08_auth_household_002: assigned_unapplied
+      P08_config_002: assigned_unapplied
+      P08_registration_002: assigned_unapplied
+      P12_registration_001: assigned_unapplied
+      P22_migration_001: assigned_unapplied
+      P22_registration_001: assigned_unapplied
   authorized_paths:
   - apps/web/src/server/app.ts
+  - apps/web/src/server/features/auth/v21-adult-session.ts
+  - apps/web/src/server/features/auth/v21-adult-session.test.ts
+  - packages/db/src/accounts/v21-household-identity-repository.ts
+  - packages/db/src/accounts/v21-household-identity-repository.test.ts
+  - apps/web/src/client/public/public-entry.ts
+  - apps/web/src/client/app/portal-api.ts
+  - apps/web/src/client/app/portal-entry.tsx
   - tests/integration/accounts/v21-family-parent-session-composition.test.ts
+  - tests/e2e/landing-signup.spec.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   correction_directives:
-  - Create exactly one PostgreSQL v2.1 adult-session runtime from the existing pool, config.authCsrfSecret, and clock; inject that same object into the centrally bound P08 family router and Parent middleware.
-  - Replace or filter the unbound onetime.signup-family registration so production cannot bypass the injected FamilySignupSessionEstablisher; preserve P08's retryable post-commit session-recovery behavior.
-  - Treat a present __Host-onetime-session cookie as v2.1-only with no legacy fallback. Preserve the explicit otcrm_session compatibility path only when the host cookie is absent.
-  - Guard /app/parent and descendants plus /select-household through authorizeV21ParentRoute; serve free, active, and grace contexts, allow only the exact inactive-route allowlist, and return no-store 403 before shell or data on denial.
-  - Add one focused real-composition test covering P08 submit pre-expiry and at/after expiry, emitted host-cookie middleware resolution, exact household/free readback, inactive allowed and denied routes, and wrong-household, stale-security, expired, and revoked fail-closed behavior.
-  - Do not edit F03, F04, or P08 source, create a new secret, rewrite a migration, apply P08-config-002 or broad P08-registration-002, claim cross-transaction signup/session atomicity, touch a provider, freeze a candidate, deploy, send, charge, or create any external effect.
-  - Update only the two product/test paths and the I36 runtime triplet at the terminal checkpoint, release the lease, push normally, and stop for C00 reconciliation.
+  - Resume only from exact clean pushed integration a5a2ad94; stop on branch, remote, parent, request, scope, or lease drift.
+  - Implement v2.1 adult email/password login with generic denial, host-cookie issuance and rotation, fresh session-bound CSRF bootstrap, exact logout revocation/readback, and clearing of both host and legacy cookies without weakening host-cookie-first fail-closed behavior.
+  - A malformed, stale, revoked, or expired host cookie must never fall back to legacy on that request; return no-store denial and an exact clearing header so a later request can recover.
+  - For a verified sole-household Parent session, make /select-household redirect with 302 or 303 to /app/parent. Do not fabricate a multi-household selector.
+  - Preserve an allowlisted same-origin continue_to through public signup only after the new session is established and verified. Reject absolute, protocol-relative, encoded cross-origin, credentialed, or non-allowlisted targets.
+  - Make the Parent client boot v2.1-specific so it does not call legacy session, dashboard, contact, or shell APIs for a v2.1 session; render only truthful bootstrap data until later Parent feature registration.
+  - Extend the real-composition and landing-signup proof to cover signup through client continuation, reload/bootstrap, invalid-cookie recovery, fresh CSRF, logout, re-login, cutoff inactive behavior, and no legacy fallback.
+  - Run native disposable PostgreSQL proof through createPostgresV21AdultSessionRuntime with the real migration inventory and production repositories. An injected test repository is secondary coverage only.
+  - Keep P08-auth-household-002, P08-config-002, P08-registration-002, and P12-registration-001 assigned and unapplied; do not close P08 until the later P12 migration, concrete repository/router/forms, persistent browser, and Student-creation proof pass.
+  - Do not create or edit a migration, apply a central steward result, touch a provider, claim a provider lock, freeze a candidate, deploy, change DNS, send, charge, or create any external effect.
+  - Update the I36 runtime triplet once at the meaningful terminal, release all four task-bound writer slots together, push normally, and stop for C00 independent reconciliation.
   writer_slot_leases:
   - slot: SERVER_COMPOSER
-    lease_id: 1af50c79-1fb7-42b7-96e4-a29d8d8873f5
+    lease_id: 21315060-463e-49a8-a246-20057483ec20
     holder_task_id: I36
-    holder_claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
-    holder_writer_id: codex-i36-parent-session-composition-2e5c6cef
-    state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
-    lease_issued_at: '2026-07-30T21:58:04Z'
-    lease_expires_at: '2026-07-30T23:58:04Z'
-    phase_scope: family_parent_session_composition_only
+    holder_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+    holder_writer_id: codex-i36-parent-session-successor-ef14f276
+    state_based_on_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+    lease_issued_at: '2026-07-30T23:18:02Z'
+    lease_expires_at: '2026-07-31T01:18:02Z'
+    phase_scope: parent_session_auth_client_successor
+  - slot: CLIENT_COMPOSER
+    lease_id: 21315060-463e-49a8-a246-20057483ec20
+    holder_task_id: I36
+    holder_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+    holder_writer_id: codex-i36-parent-session-successor-ef14f276
+    state_based_on_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+    lease_issued_at: '2026-07-30T23:18:02Z'
+    lease_expires_at: '2026-07-31T01:18:02Z'
+    phase_scope: parent_session_auth_client_successor
+  - slot: IDENTITY_AUTH_ACCESS
+    lease_id: 21315060-463e-49a8-a246-20057483ec20
+    holder_task_id: I36
+    holder_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+    holder_writer_id: codex-i36-parent-session-successor-ef14f276
+    state_based_on_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+    lease_issued_at: '2026-07-30T23:18:02Z'
+    lease_expires_at: '2026-07-31T01:18:02Z'
+    phase_scope: parent_session_auth_client_successor
+  - slot: ACCOUNT_HOUSEHOLD_IDENTITY
+    lease_id: 21315060-463e-49a8-a246-20057483ec20
+    holder_task_id: I36
+    holder_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+    holder_writer_id: codex-i36-parent-session-successor-ef14f276
+    state_based_on_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+    lease_issued_at: '2026-07-30T23:18:02Z'
+    lease_expires_at: '2026-07-31T01:18:02Z'
+    phase_scope: parent_session_auth_client_successor
   effect_lock_leases: []
-  claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
-  lease_issued_at: '2026-07-30T21:58:04Z'
-  lease_expires_at: '2026-07-30T23:58:04Z'
+  claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+  lease_issued_at: '2026-07-30T23:18:02Z'
+  lease_expires_at: '2026-07-31T01:18:02Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
 entry_payload_digests:
-  I36: 09952344b45d7b9f63419a5e5b167a6d49bbc9f5edb15d90283b81361dbd3257
+  I36: 9da7b8a521b2ff8f4da4cd502c3903fceb8b7f4fcce938cdf24a3ec7051656b2
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

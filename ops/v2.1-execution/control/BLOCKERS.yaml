@@ -105,30 +105,40 @@ blockers:
 - blocker_id: P08-FAMILY-PARENT-SESSION-COMPOSITION
   status: open
   scope: controlled_launch_candidate
-  owner: F04_F03_P08_I36
+  owner: F04_F03_P08_P12_I36
   affected_tasks:
   - F04
   - F03
   - P08
+  - P12
   - I36
   - V37
   - R44
   safe_work_completed: >-
     Corrected P08 terminal 7ba18b92, F04 transfer terminal b43c1923, and F03 host-cookie/runtime terminal 3947c988 are
-    exact ancestors of independently audited integration 524563f0 at ordered merges e1dce668, 303ae3a7, and 78283a2e.
-    The merged 63-assertion changed-area suite, workspace typecheck, focused lint/format, unchanged 84-migration tree,
-    ancestry/scope, secret, and zero-effect gates pass. Read-only composition preflight proved the remaining central seam
-    is bounded to apps/web/src/server/app.ts plus one new real-composition integration test and the I36 runtime triplet;
-    exact I36 SERVER_COMPOSER authority is issued from 524563f0. The active middleware remains legacy-only until that
-    checkpoint is implemented and independently reconciled.
+    exact ancestors of independently audited integration a5a2ad94 at ordered merges e1dce668, 303ae3a7, and 78283a2e.
+    I36 partial checkpoint a5a2ad94 is a clean pushed sole-child of 524563f0 with exact five-path scope and released
+    lease. It correctly shares one production v2.1 session runtime across Family signup and the Parent shell, enforces
+    host-cookie-first no-fallback authorization, and passes the focused shell-composition proof plus changed-area
+    typecheck/lint/format/secret gates. Independent code audit classifies it only as an accepted server-shell partial:
+    client bootstrap, credential login, fresh CSRF, logout/revocation, invalid-cookie recovery, safe continuation,
+    truthful household selection, native production-repository proof, and durable P12 Student management remain open.
   required_authority_or_input:
-  - Execute and independently reconcile the exact I36 family_parent_session_composition checkpoint from 524563f0
-  - Pass real P08 submit-through-middleware pre/post-expiry, household, inactive-route, wrong-household, stale-security,
-    expired, revoked, and no-legacy-fallback verification
-  protection: Do not claim signup session establishment from row insertion alone, expose raw token material, rewrite migration 2235, or treat inactive access as an unauthenticated Parent.
+  - Execute and independently reconcile the exact I36 v2.1 auth/client lifecycle successor from a5a2ad94 with credential
+    login, CSRF bootstrap, logout/revocation, invalid-cookie clearing, safe continue_to, sole-household redirect, and
+    native production-repository proof
+  - Create and admit an immutable P12 forward-migration request preserving distinct actual_name and optional
+    display_name, then implement its forward migration, concrete PostgreSQL repository/router/forms, service-account
+    acceptance, canonical enrollment, audit/idempotency, and persistent Student-creation browser proof
+  - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
+    stale-security, expired, revoked, no-legacy-fallback, and Student create/manage verification
+  protection: >-
+    Do not mark P08-auth-household-002 or P12-registration-001 applied from the server-shell partial, claim signup
+    session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
+    multi-household selector, or treat inactive access as an unauthenticated Parent.
   next_check: >-
-    Close only after the exact central checkpoint passes. Do not use this narrow recovery-capable seam to claim stricter
-    cross-transaction signup/session atomicity without candidate evidence or an explicit larger P08 refactor decision.
+    Re-evaluate after the exact auth/client successor and later P12 persistence/route/browser checkpoint both pass.
+    Preserve the recovery-capable post-commit session boundary without claiming stricter cross-transaction atomicity.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
   status: open
   scope: controlled_launch_candidate

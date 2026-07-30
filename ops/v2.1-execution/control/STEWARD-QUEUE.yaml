@@ -1044,7 +1044,7 @@ items:
   kind: auth_household_integration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_family_parent_session_checkpoint_after_F04_F03_P08
+  target_checkpoint: I36_parent_session_auth_client_successor_then_P12_operationalization
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
@@ -1075,6 +1075,51 @@ items:
   status: assigned
   assigned_steward: I36
   target_checkpoint: I36_shared_registration_checkpoint_1_after_family_session
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P12-registration-001
+  request_digest: 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733
+  requesting_task_id: P12
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_parent_household_registration_after_auth_client_and_P12_persistence
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-migration-001
+  request_digest: e6c02f0e0fe7bd412e86e642ce7d041b550fd9952cad46c7f8eff3c9a4e0ea28
+  requesting_task_id: P22
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_next_bounded_P22_migration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-registration-001
+  request_digest: bdaad58058ce9b3dba2c34c4e1898de2a8eb6f4343ce42510091a56a3374ffee
+  requesting_task_id: P22
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P22_registration_after_migration_2254
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null

@@ -3,7 +3,54 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 Parent-session composition dispatch
+# Latest I36 Parent auth/client successor dispatch
+
+Control acquisition parent is
+`90e70b07e5b10a16342e80c4f8b537a8ea21263c`; exact clean pushed integration
+start and expected existing head are
+`a5a2ad94b77eaf596930609d4d5abe4fa672439b`; candidate is null.
+
+Treat `a5a2ad94` only as an accepted server-shell partial. It is the exact
+five-path sole child of `524563f0`, with tree `cbcea6ae`, state/handoff
+`5e24f529`, runtime triplet `a877b1e2`, timely old-lease release, clean remote
+equality, and effects `0/0/0`. Keep `P08-auth-household-002`,
+`P08-config-002`, `P08-registration-002`, and
+`P12-registration-001` assigned and unapplied; keep the P08 blocker open.
+
+Resume I36 under:
+
+- claim `ef14f276-f6a2-45a5-b35d-d45d37572ca5`;
+- task-bound writer lease `21315060-463e-49a8-a246-20057483ec20`;
+- writer `codex-i36-parent-session-successor-ef14f276`;
+- SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+  ACCOUNT_HOUSEHOLD_IDENTITY slots;
+- the canonical READY digest recorded in the live control queue;
+- expiry `2026-07-31T01:18:02Z`.
+
+Change only the exact thirteen paths in READY. Implement v2.1
+email/password adult login with generic denial and host-cookie rotation,
+fresh session-bound CSRF bootstrap, exact logout revocation/readback and
+clearing headers, and invalid host-cookie clearing without legacy fallback on
+that request. A verified sole-household `/select-household` request redirects
+to `/app/parent`; do not fabricate a selector.
+
+Preserve only an allowlisted same-origin `continue_to` through Family signup
+and use it only after session establishment readback succeeds. Make the Parent
+client boot v2.1-specific and stop it from calling legacy session, dashboard,
+contact, or shell APIs. Extend integration/E2E proof through signup, reload,
+CSRF, logout, re-login, invalid-cookie recovery, cutoff inactive behavior,
+and no-fallback denial. Native proof must use the real migration inventory,
+`createPostgresV21AdultSessionRuntime`, and production repositories; injected
+repositories are secondary coverage.
+
+Do not edit a migration, apply any central steward result, close P08, freeze a
+candidate, acquire a provider lock, inspect or mutate a provider, deploy,
+change DNS, execute a live migration, send, charge, or activate a customer.
+Update the I36 runtime triplet once at the meaningful terminal, release all
+four slots together, push normally, and stop for independent C00
+reconciliation.
+
+# Superseded I36 Parent-session composition dispatch
 
 Control acquisition parent is
 `1d0fb443cde2ab992215a52f09c35ae56a97458f`; exact integration start and

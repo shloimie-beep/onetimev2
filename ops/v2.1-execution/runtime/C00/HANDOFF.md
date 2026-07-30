@@ -1,4 +1,42 @@
-# Forward-only publication projection successor — current handoff
+# Parent auth/client successor — current handoff
+
+Control basis is exact pushed `90e70b07e5b10a16342e80c4f8b537a8ea21263c`;
+integration is exact clean pushed
+`a5a2ad94b77eaf596930609d4d5abe4fa672439b`; candidate remains null.
+
+I36 checkpoint `a5a2ad94` is independently preserved as an accepted
+server-shell partial only. It is the sole child of `524563f0`, has tree
+`cbcea6ae`, exact five-path scope, state/handoff digest `5e24f529`, runtime
+triplet `a877b1e2`, timely lease release, and effects `0/0/0`. It shares one
+production v2.1 session runtime across Family signup and Parent shell
+authorization, but it does not close P08 or apply
+`P08-auth-household-002`.
+
+The active successor starts from `a5a2ad94` under claim
+`ef14f276-f6a2-45a5-b35d-d45d37572ca5`, task-bound lease
+`21315060-463e-49a8-a246-20057483ec20`, and the SERVER_COMPOSER,
+CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY slots.
+Its exact thirteen-path ceiling adds v2.1 credential login, fresh
+session-bound CSRF, logout/revocation and cookie clearing, invalid-cookie
+recovery, verified same-origin signup continuation, sole-household redirect,
+v2-specific Parent client boot, and native production-repository proof. It
+must release all four slots together and stop for C00 audit.
+
+Three missing immutable source requests are now centrally recorded and remain
+assigned/unapplied: `P12-registration-001` raw digest `501ae46b...`,
+`P22-migration-001` raw digest `e6c02f0e...`, and
+`P22-registration-001` raw digest `bdaad580...`. Independent migration
+preflight confirms P22 requires migration 2254. P12 needs a new immutable
+forward-migration request for distinct `actual_name` and optional
+`display_name`; P09/P10 need a separate joint School-seat authority
+convergence request. Neither has been invented or applied.
+
+Legal remains scoped only to `production_broad`. All 35 producer
+implementation heads are ancestors of `a5a2ad94`; all 14 provider locks are
+unclaimed; no provider, deployment, DNS, send, charge, live migration, or
+customer effect is authorized.
+
+# Superseded forward-only publication projection handoff
 
 P20/P21 source-complete implementation
 `38156528c1c022a0575db71426ce2cc8f2e20ab8` and its sole-child four-path
