@@ -59,14 +59,20 @@ export interface FamilySignupRecoveryRecord {
   receipt: FamilySignupReceipt;
 }
 
-export interface FamilySignupGhlEvidence {
-  verified_contact_ref_hash: string | null;
-  verified_contact_email_hash: string | null;
-  exact_email_match_ref_hashes: readonly string[];
-  marketing_suppressed: boolean;
-  service_suppressed: boolean;
-  suppression_evidence_digest: string;
-}
+export type FamilySignupGhlEvidence =
+  | {
+      status: 'available';
+      verified_contact_ref_hash: string | null;
+      verified_contact_email_hash: string | null;
+      exact_email_match_ref_hashes: readonly string[];
+      marketing_suppressed: boolean;
+      service_suppressed: boolean;
+      suppression_evidence_digest: string;
+    }
+  | {
+      status: 'evidence_unavailable';
+      safe_reason: 'evidence_unavailable';
+    };
 
 export interface CanonicalFamilySignupRequest {
   classification: 'family';
@@ -103,6 +109,7 @@ export interface FamilySignupPlan {
   session_write_required: boolean;
   ghl_identity_state: 'unlinked' | 'linked' | 'identity_review';
   ghl_contact_ref_hash: string | null;
+  ghl_evidence_status: FamilySignupGhlEvidence['status'];
   ghl_sync_quarantined: boolean;
 }
 
@@ -220,17 +227,23 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
   }
 
   const normalizedEmailHash = digest(input.normalized_email);
-  const link = resolveGhlIdentityLink({
-    adult_id: input.proposed_adult_id,
-    normalized_email_hash: normalizedEmailHash,
-    verified_contact_ref_hash: input.ghl_evidence.verified_contact_ref_hash,
-    verified_contact_email_hash: input.ghl_evidence.verified_contact_email_hash,
-    exact_email_match_ref_hashes: input.ghl_evidence.exact_email_match_ref_hashes,
-    outbox_intent_ids: [`${input.command.idempotency_key}:ghl-sync`],
-    marketing_suppressed: input.ghl_evidence.marketing_suppressed,
-    service_suppressed: input.ghl_evidence.service_suppressed,
-    suppression_evidence_digest: input.ghl_evidence.suppression_evidence_digest,
-  });
+  const link =
+    input.ghl_evidence.status === 'available'
+      ? resolveGhlIdentityLink({
+          adult_id: input.proposed_adult_id,
+          normalized_email_hash: normalizedEmailHash,
+          verified_contact_ref_hash: input.ghl_evidence.verified_contact_ref_hash,
+          verified_contact_email_hash: input.ghl_evidence.verified_contact_email_hash,
+          exact_email_match_ref_hashes: input.ghl_evidence.exact_email_match_ref_hashes,
+          outbox_intent_ids: [`${input.command.idempotency_key}:ghl-sync`],
+          marketing_suppressed: input.ghl_evidence.marketing_suppressed,
+          service_suppressed: input.ghl_evidence.service_suppressed,
+          suppression_evidence_digest: input.ghl_evidence.suppression_evidence_digest,
+        })
+      : {
+          state: 'identity_review' as const,
+          verified_contact_ref_hash: null,
+        };
   const beforeExpiry = input.now.getTime() < Date.parse(FAMILY_FREE_EXPIRY);
   const identityReviewBlocksCheckout = !beforeExpiry && link.state === 'identity_review';
   const consentChoices: FamilySignupAdultConsentChoices = {
@@ -292,6 +305,7 @@ export function planFamilySignup(input: PlanFamilySignupInput): FamilySignupPlan
     session_write_required: beforeExpiry,
     ghl_identity_state: link.state,
     ghl_contact_ref_hash: link.verified_contact_ref_hash,
+    ghl_evidence_status: input.ghl_evidence.status,
     ghl_sync_quarantined: link.state === 'identity_review',
   };
 }
@@ -352,6 +366,7 @@ function noWritePlan(
     session_write_required: false,
     ghl_identity_state: 'unlinked',
     ghl_contact_ref_hash: null,
+    ghl_evidence_status: 'evidence_unavailable',
     ghl_sync_quarantined: false,
   };
 }

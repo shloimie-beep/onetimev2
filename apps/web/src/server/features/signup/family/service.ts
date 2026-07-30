@@ -8,6 +8,7 @@ import {
   type FamilySignupScope,
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
 import {
+  assertFamilySignupPassword,
   assertFamilySignupEnvelope,
   canonicalizeFamilySignupRequest,
   planFamilySignup,
@@ -46,6 +47,8 @@ export interface FamilySignupTransaction {
     session_creation_required: boolean;
     ghl_identity_state: 'unlinked' | 'linked' | 'identity_review';
     ghl_contact_ref_hash: string | null;
+    ghl_evidence_status: FamilySignupGhlEvidence['status'];
+    committed_at: string;
   }): Promise<void>;
 }
 
@@ -81,6 +84,7 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
       now: Date;
     }): Promise<FamilySignupResult> {
       assertFamilySignupEnvelope(input.scope, input.command);
+      assertFamilySignupPassword(input.command);
       const passwordFingerprint = await dependencies.fingerprintPasswordForIdempotency(
         input.command.password,
       );
@@ -168,6 +172,8 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
           session_creation_required: plan.session_write_required,
           ghl_identity_state: plan.ghl_identity_state,
           ghl_contact_ref_hash: plan.ghl_contact_ref_hash,
+          ghl_evidence_status: plan.ghl_evidence_status,
+          committed_at: input.now.toISOString(),
         });
         return plan.result;
       });

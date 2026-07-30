@@ -44,6 +44,7 @@ const input = (now: string, signupCommand = command()): PlanFamilySignupInput =>
     existing_local_state: { identity: null, household: null },
     existing_request: null,
     ghl_evidence: {
+      status: 'available',
       verified_contact_ref_hash: null,
       verified_contact_email_hash: null,
       exact_email_match_ref_hashes: [],
@@ -128,7 +129,8 @@ describe('P08 family signup policy', () => {
 
   it('allows a GHL-only match to create fresh local identity and access', () => {
     const linked = input('2026-09-13T00:00:00.000Z');
-    linked.ghl_evidence!.exact_email_match_ref_hashes = [h('c')];
+    if (linked.ghl_evidence?.status !== 'available') throw new Error('available evidence expected');
+    linked.ghl_evidence.exact_email_match_ref_hashes = [h('c')];
     const plan = planFamilySignup(linked);
     expect(plan.result.projection).toMatchObject({
       adult_id: 'adult_1',
@@ -145,7 +147,8 @@ describe('P08 family signup policy', () => {
 
   it('quarantines GHL ambiguity and blocks only post-expiry Checkout', () => {
     const before = input('2026-09-13T16:23:59.000Z');
-    before.ghl_evidence!.exact_email_match_ref_hashes = [h('c'), h('d')];
+    if (before.ghl_evidence?.status !== 'available') throw new Error('available evidence expected');
+    before.ghl_evidence.exact_email_match_ref_hashes = [h('c'), h('d')];
     const free = planFamilySignup(before);
     expect(free.result.next_action).toBe('signed_in');
     expect(free.result.projection).toMatchObject({
@@ -156,7 +159,10 @@ describe('P08 family signup policy', () => {
     expect(free.outbox_intents[0]?.dispatch_state).toBe('identity_review');
 
     const boundary = input('2026-09-13T16:24:00.000Z');
-    boundary.ghl_evidence!.exact_email_match_ref_hashes = [h('c'), h('d')];
+    if (boundary.ghl_evidence?.status !== 'available') {
+      throw new Error('available evidence expected');
+    }
+    boundary.ghl_evidence.exact_email_match_ref_hashes = [h('c'), h('d')];
     const blocked = planFamilySignup(boundary);
     expect(blocked.result.next_action).toBe('identity_review');
     expect(blocked.result.projection).toMatchObject({
@@ -171,6 +177,46 @@ describe('P08 family signup policy', () => {
       adult_consent_choices: {
         general_marketing: false,
         parent_newsletter: true,
+      },
+    });
+  });
+
+  it('quarantines unavailable GHL evidence without fabricating an unlinked proof', () => {
+    const before = input('2026-09-13T16:23:59.000Z');
+    before.ghl_evidence = {
+      status: 'evidence_unavailable',
+      safe_reason: 'evidence_unavailable',
+    };
+    const free = planFamilySignup(before);
+    expect(free).toMatchObject({
+      ghl_identity_state: 'identity_review',
+      ghl_contact_ref_hash: null,
+      ghl_evidence_status: 'evidence_unavailable',
+      ghl_sync_quarantined: true,
+      result: {
+        next_action: 'signed_in',
+        projection: {
+          access_state: 'free',
+          checkout_required: false,
+        },
+      },
+      outbox_intents: [{ dispatch_state: 'identity_review' }],
+    });
+
+    const after = input('2026-09-13T16:24:00.000Z');
+    after.ghl_evidence = {
+      status: 'evidence_unavailable',
+      safe_reason: 'evidence_unavailable',
+    };
+    expect(planFamilySignup(after)).toMatchObject({
+      ghl_identity_state: 'identity_review',
+      ghl_evidence_status: 'evidence_unavailable',
+      result: {
+        next_action: 'identity_review',
+        projection: {
+          access_branch: 'inactive_identity_review',
+          checkout_required: false,
+        },
       },
     });
   });
