@@ -15,11 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: a7a07aded9146cdb5f6360a7aae099c04203ee8b
+controller_authorization_sha: d2f7c554d2e3aa55c0621882b3591fb18a7c8818
 next_action: >-
-  Admit the final source-only implementation wave P29 aa7b3638 then P30 772d4783 from exact integration release
-  36dca384. Both P28/P31 dependencies are integrated, their exact 15-path and 14-path source deltas are disjoint,
-  and no third source remains. I36 must first publish an exact runtime-triplet-only claim, stop for C00 reconciliation,
-  then merge only the queued sources with ancestry preserved and run combined gates. Central steward application,
-  candidate freeze, provider inspection, deployment, sends, and external effects remain unauthorized.
+  I36 claim c698da98 is reconciled as the exact runtime-triplet-only child of release 36dca384. Under unchanged claim
+  4ec8712e and RELEASE_INTEGRATOR lease 2ed546f8 through 2026-07-30T05:45:23Z, merge only queued P29 aa7b3638
+  then P30 772d4783 with ancestry preserved and run combined focused, typecheck, lint, format, secret, scope,
+  ancestry, and zero-effect gates. Central steward application, candidate freeze, provider inspection, deployment,
+  sends, and external effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

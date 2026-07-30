@@ -12,11 +12,11 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T04:15:23Z'
-last_heartbeat_at: '2026-07-30T03:45:23Z'
-controller_authorization_sha: a7a07aded9146cdb5f6360a7aae099c04203ee8b
+lease_expires_at: '2026-07-30T04:25:30Z'
+last_heartbeat_at: '2026-07-30T03:55:30Z'
+controller_authorization_sha: d2f7c554d2e3aa55c0621882b3591fb18a7c8818
 ready_entry_payload_digest: null
-state_based_on_head_sha: a7a07aded9146cdb5f6360a7aae099c04203ee8b
+state_based_on_head_sha: d2f7c554d2e3aa55c0621882b3591fb18a7c8818
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -993,6 +993,7 @@ verification:
   - independently audited release 36dca384 with exact runtime triplet, state/handoff and triplet digests, 31-path claim-to-release scope, ordered 5/13/10 source merge scopes, full focused/typecheck/native/pg-mem gates, released integrator lease, and effects 0/0/0
   - cleared the consumed merge queue, mirrored migration allocations 2239 through 2244 with next ordinal 2245, and recorded all six exact migration steward results applied and acknowledged without any provider or external effect
   - independently inventoried all 35 ready-for-review source refs against integration 36dca384; 33 exact remote heads are ancestors and only disjoint dependency-valid P29 aa7b3638 and P30 772d4783 remain
+  - independently reconciled I36 claim c698da98 as the exact runtime-triplet-only child of release 36dca384 with claim/READY/lease/control bindings, pair digest 48f35adf, triplet digest 8f77c68b, clean remote equality, and effects 0/0/0
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -1538,3 +1538,18 @@ product/steward byte, push normally, remote-verify, and stop for C00
 reconciliation. Do not merge, apply a steward request, inspect providers,
 deploy, send, or perform an external effect before C00 consumes READY and
 rebinds both targets to the exact claim head.
+
+I36 claim `c698da9826572c486f3ddf14cb01785dd2a120cf` is independently
+reconciled. READY is consumed and both merge targets are rebound to that
+claim. Recompute P29 payload `d26853a6ae2eeb0b7c15c5730a5ccd83ff6b318b29fcea997d9e622a023e87d3`
+and P30 payload `e005f5c019ccc58160fb46e273abdb00068ea9f482fe670597707cb2cee76884`,
+then merge exact P29
+`aa7b363812676afce8ac9ebd13f335e65551bb1f` followed by P30
+`772d4783f82b7eb89a5c98d897601b444cd3c2f4`, preserving ancestry and
+the exact 15-path and 14-path allowlists.
+
+Run combined focused workflow tests, typecheck, lint, focused format, YAML,
+secret, ancestry, scope, and effects `0/0/0` gates. Update only I36 runtime
+metadata to release lease `2ed546f8-d65b-4fe3-b86c-042d441e3015`,
+push, remote-verify, and stop for C00 audit. Do not apply steward requests,
+inspect providers, deploy, send, or perform an external effect.

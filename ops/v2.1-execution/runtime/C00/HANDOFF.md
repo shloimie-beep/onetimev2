@@ -1837,3 +1837,12 @@ and merge payloads P29 `f1294fce` then P30 `81d29fd0`. The first I36 push
 must change exactly its runtime triplet and stop for C00 reconciliation.
 Central steward application and all provider/external effects remain
 unauthorized.
+
+I36 claim `c698da9826572c486f3ddf14cb01785dd2a120cf` is the exact
+runtime-triplet-only child of release `36dca384`. Claim, containing control
+`d2f7c554`, acquisition `a7a07ade`, READY `25dc83c5`, lease `2ed546f8`,
+pair digest `48f35adf`, triplet digest `8f77c68b`, clean remote equality,
+and effects `0/0/0` pass. C00 consumed READY and rebound both merge targets
+to the exact claim; rebound payloads are P29 `d26853a6` and P30 `e005f5c0`.
+I36 may merge P29 then P30 only, run combined gates, release the lease, and
+stop for audit.
