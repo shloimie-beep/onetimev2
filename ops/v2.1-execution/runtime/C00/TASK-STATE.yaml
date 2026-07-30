@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T06:33:54Z'
-last_heartbeat_at: '2026-07-30T05:48:54Z'
-controller_authorization_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
+lease_expires_at: '2026-07-30T07:05:50Z'
+last_heartbeat_at: '2026-07-30T06:20:50Z'
+controller_authorization_sha: 0eb6204622792a6add325f0cb11bc25847701f10
 ready_entry_payload_digest: null
-state_based_on_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
+state_based_on_head_sha: 0eb6204622792a6add325f0cb11bc25847701f10
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently reconciled P31 lint-correction atomic claim 9d878d88 as the sole child of d72dda56 with exactly its runtime triplet changed, exact control/READY/claim/lease/lint bindings, preserved source/interface/request bytes, clean remote equality, and effects 0/0/0.
+- Audited P17/P18/F05/F06/P16 ownership and persistence boundaries and admitted only a P17 runtime-triplet claim under canonical READY b141b750, claim f7c01bf5, ZOOM_PREPARATION lease 0e53a171, an explicit eleven-path/glob allowlist, and no effect locks.
 - Independently audited I36 direct-prerequisite release 3cf78740 with exact ordered merge parents acde075e/cb7a700e/5b479ac0, exact 9/12/8 scopes, 32-path claim delta, pair/triplet 3113baf2/5c85deb3, 68 focused passes, typecheck, 80/80 migrations, released lease, clean remote equality, and effects 0/0/0.
 - Cleared the consumed merge queue, mirrored exact migrations 2245 through 2249 with next ordinal 2250, and recorded five F02 migration results plus P28 reminder-routing and P31 copy-registration results as applied and acknowledged using documented canonical sorted-JSON result objects.
 - Recorded the exact-source P31 ESLint finding at tests/unit/communications/copy-catalog.test.ts:143 without altering the admitted source and issued only a runtime-triplet atomic correction READY under digest 23b245aa, claim 7f50cef8, COPY_CATALOG lease 42734cda, and effects 0/0/0.
@@ -1092,6 +1094,8 @@ verification:
   - independently audited I36 direct-prerequisite release 3cf78740 with exact ordered merge ancestry and 9/12/8 first-parent scopes, 32-path claim delta, pair/triplet digests 3113baf2/5c85deb3, 68 focused passes, workspace typecheck, native and pg-mem 80/80 migration replay, released lease, clean remote equality, and effects 0/0/0
   - migration allocation mirror and canonical steward-result reconciliation: passed allocations 2245 through 2249, next ordinal 2250, seven applied and acknowledged duties with recomputed sorted-JSON result digests, empty merge queue, and zero effects
   - P31 lint-correction admission: passed exact source finding and file digest, C00/I36/P31 dependency bindings, canonical READY digest 23b245aa, fresh claim 7f50cef8, sole COPY_CATALOG lease 42734cda, runtime-triplet-only atomic-claim scope, and zero effect locks
+  - P31 lint-correction atomic claim 9d878d88: passed sole-parent ancestry, exact runtime-triplet-only scope, containing-control/READY/claim/lease/lint bindings, preserved product/interface/request bytes, remote equality, and zero effects
+  - P17 collision-correction admission: passed exact P17/P18 ownership boundary, F05/F06 canonical outbox/binding reuse, five preparation-table ceiling, withheld immutable -001 requests, explicit allowed paths, canonical READY digest b141b750, disjoint ZOOM_PREPARATION lease, and zero effect locks
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

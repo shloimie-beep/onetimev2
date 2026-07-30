@@ -1650,3 +1650,23 @@ equality, and stop for C00 reconciliation.
 Do not remove `_removedNamedApproval` before C00 consumes READY and reconciles
 the atomic claim. Do not configure, inspect, activate, enroll, or send through
 a provider; do not deploy or perform an external effect.
+
+P31 claim `9d878d88587d6f742a927d3cf4e175594d1e12de` is independently
+reconciled. Continue only under claim `7f50cef8-f816-4a32-8f9e-071db09abbc0`
+and COPY_CATALOG lease `42734cda-47b5-44ec-8d9a-8da7c4f86ed1`. Remove only
+the unused `_removedNamedApproval` binding in
+`tests/unit/communications/copy-catalog.test.ts`; preserve the test assertion,
+copy catalog, approval semantics, interface checkpoint, requests, and runtime
+behavior. Run the focused test, workspace typecheck, full lint, scoped format,
+YAML, secret, scope, and diff gates. Release the lease, publish a superseding
+final, verify remote equality, and stop for C00 audit. Effects remain `0/0/0`.
+
+P17 may make only its runtime-triplet atomic claim from exact
+`78af71603713b6fc73fe755995bdf56193eb199a` under canonical READY
+`b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6`,
+claim `f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1`, and ZOOM_PREPARATION lease
+`0e53a171-263b-41d9-b957-80588027c194`. Recompute every dependency, ownership,
+request, allowlist, and lease binding. The first push changes only P17
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, preserves every product
+and existing request byte, pushes normally, verifies remote equality, and
+stops for C00 reconciliation. Do not edit a migration or inspect a provider.

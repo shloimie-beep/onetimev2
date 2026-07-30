@@ -1984,3 +1984,34 @@ edit is removal of that unused test binding without changing assertions, copy
 catalog, named-approval semantics, interface checkpoint, or runtime behavior.
 Candidate, provider inspection/mutation, deployment, activation, enrollment,
 sends, and every external effect remain gated.
+
+## P31 claim reconciled and P17 correction admitted
+
+P31 claim `9d878d88587d6f742a927d3cf4e175594d1e12de` is the exact sole
+child of `d72dda5669627695edaf9dbf20f7650c9b5c9ded` and changes only
+`ops/v2.1-execution/runtime/P31/{TASK-STATE.yaml,HANDOFF.md,NEXT-PROMPT.md}`.
+It binds containing control `0eb62046`, READY `23b245aa`, claim `7f50cef8`,
+COPY_CATALOG lease `42734cda`, exact lint source digest `a0d18123`, preserved
+P31 interface `a759c3db`, and effects `0/0/0`. Product, test, copy, request,
+and interface bytes are unchanged; remote equality passes. READY is consumed.
+P31 may now remove only the unused `_removedNamedApproval` test binding,
+preserve every assertion and semantic contract, run focused tests, typecheck,
+full lint, scoped format/YAML/secret/diff gates, release its lease, push, and
+stop for C00 audit.
+
+The P17/P18 collision audit confirms P18 remains sole owner of launch grants,
+Meeting SDK bootstrap issuance/consumption, live Student sessions, attendance,
+and their persistence. P17 owns only preparation saga, roster snapshots,
+classroom resources, Student registrants, preparation commands, join-state
+availability, and provider-operation lifecycle through canonical
+`job_outbox` plus `provider_operation_binding`.
+
+P17 READY digest `b141b750` binds exact remote `78af7160`, integration
+`3cf78740`, claim `f7c01bf5`, and ZOOM_PREPARATION lease `0e53a171` through
+`2026-07-30T07:11:00Z`. It has an explicit five-product-glob plus six-runtime/
+successor-request allowlist and no effect locks. The first P17 push must
+change only its runtime triplet and stop for C00 reconciliation. Existing
+P17 migration and server/worker registration `-001` requests remain immutable,
+assigned, unapplied, and withheld; successor `-002` request digests must be
+computed only from later committed blobs. No provider inspection or effect is
+authorized.
