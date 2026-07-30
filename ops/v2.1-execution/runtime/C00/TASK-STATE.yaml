@@ -12,13 +12,14 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T07:41:00Z'
-last_heartbeat_at: '2026-07-30T06:56:00Z'
-controller_authorization_sha: 2cb1cb46f37c3178217745876e0f09d694bbebf9
+lease_expires_at: '2026-07-30T07:48:19Z'
+last_heartbeat_at: '2026-07-30T07:03:19Z'
+controller_authorization_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 ready_entry_payload_digest: null
-state_based_on_head_sha: 2cb1cb46f37c3178217745876e0f09d694bbebf9
+state_based_on_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Reconciled P17 pre-expiry renewal checkpoint 7596a0f1 as an exact runtime-triplet-only child with pair/triplet f87946bc/9d82cfcc, no product work, preserved requests, and effects 0/0/0; issued fresh renewal READY 4574e539, claim e85735a2, and ZOOM_PREPARATION lease 0d08dc64 through 08:31:44Z.
 - Independently reconciled P17 claim 7e05a1e3 and P20 claim 0d58c8e4 as exact sole children of their authorized parents with runtime-triplet-only scopes, exact READY/claim/lease/dependency bindings, pair/triplet manifests 67ed46d7/4582e952 and 97acf477/96aa1603, preserved source/request bytes, remote equality, and effects 0/0/0.
 - Admitted only P20's five-source approved-for-publication projection correction for a runtime-triplet atomic claim under canonical READY ba07246d, claim e8c768e8, CONTENT_PROCESSING lease 24d0fa6f, exact composite-scope/source/artifact/participant evidence gates, preserved applied migration 2246, withheld P21, and effects 0/0/0.
 - Independently audited P31 lint-correction final 839ec12b with exact claim/implementation/final ancestry, test-only implementation 4f61ec10, runtime-only final, four-path total scope, corrected test digest b82cb884, full lint with zero findings, typecheck, 3/3 focused tests, released lease, clean remote equality, and effects 0/0/0.
@@ -1102,6 +1103,7 @@ verification:
   - P17 collision-correction admission: passed exact P17/P18 ownership boundary, F05/F06 canonical outbox/binding reuse, five preparation-table ceiling, withheld immutable -001 requests, explicit allowed paths, canonical READY digest b141b750, disjoint ZOOM_PREPARATION lease, and zero effect locks
   - P20 publication-projection correction admission: passed exact P20/P21 ancestry and manifests, applied migration/result readback, five-source/three-runtime allowlists and base digests, composite scope and evidence gates, canonical READY ba07246d, disjoint CONTENT_PROCESSING lease, withheld P21, and zero effect locks
   - P17/P20 atomic claims 7e05a1e3/0d58c8e4: passed exact sole-parent ancestry, runtime-triplet-only scopes, canonical READY/claim/lease/dependency bindings, pair/triplet manifests, preserved source/request bytes, remote equality, empty READY after consumption, and zero effects
+  - P17 pre-expiry checkpoint and renewal admission: passed checkpoint 7596a0f1 sole-parent/runtime-only scope, no product work, pair/triplet f87946bc/9d82cfcc, preserved requests, canonical renewal READY 4574e539, fresh claim/lease, and zero effects
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

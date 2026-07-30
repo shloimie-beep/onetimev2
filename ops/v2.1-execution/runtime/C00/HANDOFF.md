@@ -2049,3 +2049,10 @@ preserved source/request bytes, clean remote equality, and effects `0/0/0`
 pass. READY is empty. P17 and P20 may now implement only their explicit
 allowlists under their unchanged claims and leases. P17 must publish only its
 two immutable `-002` successors; P20 must not publish a migration request.
+
+P17 stopped safely before its original short lease at renewal checkpoint
+`7596a0f1`; the exact runtime-only scope, pair/triplet `f87946bc`/`9d82cfcc`,
+unchanged products/requests, remote equality, and effects `0/0/0` pass.
+Renewal READY `4574e539` binds fresh claim `e85735a2` and ZOOM_PREPARATION
+lease `0d08dc64` through `2026-07-30T08:31:44Z`. Its first renewed push may
+change only the P17 runtime triplet and must stop again for C00 reconciliation.

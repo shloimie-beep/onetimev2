@@ -1041,6 +1041,14 @@ composite scope and exact source/seven-artifact/participant/Admin evidence
 with fail-closed replay/conflict tests. Do not edit a migration, publish a new
 P20 request, or touch P21. Run exact gates, release, push, and stop for audit.
 
+P17 must first atomically renew from exact checkpoint
+`7596a0f1701fb135a4f8d133d1381d0e5ad00af8` under READY
+`4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb`,
+fresh claim `e85735a2-4a41-476b-bca2-d1dde009e69d`, and ZOOM_PREPARATION lease
+`0d08dc64-fb12-4aa5-bf5d-10a3267e18f4`. Change only its runtime triplet,
+preserve all partial/product/request bytes, push normally, verify remote
+equality, and stop for C00 reconciliation before implementation resumes.
+
 P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
 reconciled. Resume it under unchanged claim
 `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease

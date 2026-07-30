@@ -2,8 +2,87 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: P17
+  status: resume_ready
+  phase: canonical_classroom_ownership_and_provider_outbox_correction_lease_renewal
+  branch: codex/v21-p17-zoom-preparation
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+  authorized_start_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  expected_existing_head: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
+  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 0509dc95a4e0695db4cba7e7ebccd3050176ef06eca3320ba0c190808c34d034
+  task_context_digest: 3d3841e11f5a0c6d2ea7b07d7f2f41debd66c1bced78d8c217cacac21b8ce1c6
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+      control_state_digest: 0583d881567972418d12daaa0c5dd0b67650e528c745b8e8f48108ab470b0220
+    I36:
+      required_state: direct_prerequisite_release_audited
+      observed_state: direct_prerequisite_release_audited
+      observed_integration_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+      state_handoff_digest: 3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e
+      runtime_triplet_digest: 5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2
+    P17:
+      required_state: renewal_requested_product_work_not_started
+      observed_state: renewal_requested_product_work_not_started
+      observed_task_head_sha: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
+      prior_claim_head_sha: 7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f
+      prior_claim_id: f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1
+      prior_lease_id: 0e53a171-263b-41d9-b957-80588027c194
+      prior_ready_digest: b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6
+      state_handoff_digest: f87946bc4dfb2cd86d416aefbeb0b45c9c9ffab62abd0f96ca3b79ac26a18a0c
+      runtime_triplet_digest: 9d82cfccdbf896c247025c3c4183ce8dacb88afe578e6013655965fdbed9c76e
+      source_request_container_raw_sha256: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
+      product_and_request_bytes_preserved: true
+    P18:
+      required_state: sole_launch_bootstrap_live_session_attendance_owner
+      observed_state: sole_launch_bootstrap_live_session_attendance_owner
+      observed_task_head_sha: b9ad947405de53c138561fd47b9d5c65a25f6b8b
+      contract_artifact_digest: de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c
+  authorized_paths:
+  - apps/web/src/server/features/classroom/zoom-preparation/**
+  - apps/worker/src/runners/zoom-preparation/**
+  - packages/contracts/src/classroom/zoom-preparation/**
+  - packages/db/src/classroom/zoom-preparation/**
+  - packages/domain/src/classroom/zoom-preparation/**
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/HANDOFF.md
+  - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P17/steward-requests/P17-MIGRATION-002.yaml
+  - ops/v2.1-execution/runtime/P17/steward-requests/P17-SERVER-WORKER-REGISTRATION-002.yaml
+  correction_directives:
+  - 'First renewed push: change only the P17 runtime triplet, record this exact READY digest, fresh claim and lease, preserve all product and request bytes, push normally, and stop for C00 reconciliation.'
+  - 'P18 remains the sole owner of launch grants, Meeting SDK bootstrap issuance and consumption, live Student sessions, attendance, and their persistence.'
+  - 'P17 keeps only preparation saga, roster snapshots, classroom resources, Student registrants, preparation commands, join-state availability, retry, quarantine, and provider lifecycle through canonical job_outbox plus provider_operation_binding.'
+  - 'Remove competing P17 launch, bootstrap, live-session, attendance, device, unit-of-work, domain, persistence, and schema claims.'
+  - 'Advance only the P17 schema contract to exactly five preparation tables and publish only P17-MIGRATION-002 and P17-SERVER-WORKER-REGISTRATION-002.'
+  - 'Keep all existing -001 requests immutable and withheld; compute successor raw and canonical digests only from committed blobs.'
+  - 'Do not edit migrations, root barrels, central composers, manifests, lockfiles, P18 paths, provider configuration, control ledgers, or perform an external effect.'
+  writer_slot_leases:
+  - slot: ZOOM_PREPARATION
+    lease_id: 0d08dc64-fb12-4aa5-bf5d-10a3267e18f4
+    holder_task_id: P17
+    holder_claim_id: e85735a2-4a41-476b-bca2-d1dde009e69d
+    state_based_on_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+    lease_issued_at: '2026-07-30T07:01:44Z'
+    lease_expires_at: '2026-07-30T08:31:44Z'
+    phase_scope: P17_canonical_classroom_ownership_and_provider_outbox_correction_renewal_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: e85735a2-4a41-476b-bca2-d1dde009e69d
+  lease_issued_at: '2026-07-30T07:01:44Z'
+  lease_expires_at: '2026-07-30T08:31:44Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P17-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  P17: 4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
