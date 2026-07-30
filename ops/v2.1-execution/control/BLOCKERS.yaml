@@ -1,5 +1,26 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
-blockers: []
+blockers:
+- blocker_id: OPS-084-LEGAL-BUNDLE
+  status: open
+  scope: production_broad
+  owner: external_product_owner_and_qualified_legal_reviewer
+  affected_tasks:
+  - P34
+  - V43
+  - R45
+  safe_work_completed: >-
+    Final source release 42068ace was inspected read-only. All six required repository paths are absent, no existing
+    steward request names them, P34 owns only the non-fabricatable gate mechanism, and restricted CI, staging,
+    production-read-only, and operator-canary verification may continue.
+  required_authority_or_input:
+  - Exact approved legal/terms-of-service.html
+  - Exact approved legal/privacy-notice.html
+  - Exact approved legal/student-data-and-recording-consent.html
+  - Exact approved legal/cancellation-policy.html
+  - Exact approved legal/refund-policy.html
+  - Exact legal/legal-policy-manifest.json containing matching hashes, immutable versions, effective dates, named product-owner approval, and named qualified-legal-reviewer credential or firm and approval
+  protection: Codex must not draft, infer, approve, substitute, or weaken the legal text or approval record.
+  next_check: Re-evaluate only when the exact externally approved six-file bundle is supplied; until then fail production_broad closed.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

@@ -15,10 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 30689e76f3697ab11dedab3b77d5bb5cbededde5
+controller_authorization_sha: a0599de4502994d5028c9b24084b400d48f72f98
 next_action: >-
   F02 may implement only migrations 2245 through 2249 and P28 may implement only P17 reminder routing under their
   reconciled active claims. P31 atomic claim eff2434e is reconciled and may implement only P30 copy registration
-  under its active COPY_CATALOG lease. P17/P18/P21 migration duties remain blocked pending corrected requests.
-  Candidate freeze, provider inspection, deployment, sends, and external effects remain unauthorized.
+  under its active COPY_CATALOG lease. After those direct prerequisites, I36 must apply its 38 immutable duties in
+  dependency-ordered serialized batches. P17/P18/P21 migration duties remain blocked pending corrected requests.
+  OPS-084 production_broad remains fail-closed pending the externally approved six-file legal bundle. Candidate
+  freeze, provider inspection, deployment, sends, and external effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

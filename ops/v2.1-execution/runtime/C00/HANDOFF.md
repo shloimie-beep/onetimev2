@@ -1884,3 +1884,18 @@ parent `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` and its runtime-triplet-only
 scope. P31 may implement only `P30-copy-registration-001` under its active
 COPY_CATALOG lease. Provider configuration, activation, enrollment, sends, and
 all external effects remain unauthorized.
+## Central-duty audit and legal release blocker
+
+All 38 I36-assigned requests from 24 source heads are immutable at release
+`42068ace48fe1a93302ce7d5533e11803b526d5b`: all source heads are ancestors,
+20 raw-YAML digests and 18 canonical-object digests replay exactly, and no
+request drift was found. Their shared barrels, composers, config, lockfiles,
+and GHL projections require serialized dependency-ordered batches after F02,
+P28, and P31 direct prerequisites finish.
+
+OPS-084 remains an explicit `production_broad` blocker. The five exact legal
+HTML files and `legal/legal-policy-manifest.json` are absent, no task owns
+legal-text authorship, and P34 must not fabricate them. Restricted CI, staging,
+read-only, and operator-canary mechanism verification may continue, but broad
+real-customer activation must fail closed until the externally approved exact
+bundle is supplied.

@@ -1589,3 +1589,9 @@ COPY_CATALOG lease `d03dd6a9-384f-4b52-aaaf-3ac5752a36da`, implementing only
 `P30-copy-registration-001`. Preserve adult-only, current-consent,
 named-approval, exact-digest, and no-token-content gates. Do not configure,
 activate, enroll, or send through providers. Keep effects `0/0/0`.
+After F02, P28, and P31 direct prerequisites finish, apply the 38 immutable I36
+steward duties in serialized dependency order: config/dependency, central
+registration, GHL registry/projection, then deployment metadata. Keep protected
+or provider-bound targets fail-closed until concrete paths and approved
+non-secret metadata exist. Do not mark OPS-084 complete or begin
+`production_broad` without the exact externally approved six-file legal bundle.
