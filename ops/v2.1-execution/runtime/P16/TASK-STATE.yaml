@@ -25,20 +25,20 @@ dependency_heads:
     integration_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
     interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
     interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
-status: ready_for_review
-phase: complete
-claimed_by: codex-p16-worker-0a4c2e0f
-claim_time: '2026-07-29T23:53:18Z'
-claim_id: 0a4c2e0f-6c3d-4e42-aee8-8bfd27ce5c9d
-writer_slot_lease_id: 01453191-8f65-4dcd-8559-9045599dae9b
-lease_issued_at: '2026-07-29T23:53:18Z'
-lease_expires_at: '2026-07-30T01:23:18Z'
-lease_released_at: '2026-07-30T00:45:59Z'
-last_heartbeat_at: '2026-07-30T00:45:59Z'
-controller_authorization_sha: 5644d38395e86ea114197eb12415106994bbf3ea
-state_based_on_control_head_sha: fe0d60fa2807b02882390df960f3e75517672d11
-ready_entry_payload_digest: 5a7d1bebc22b55cf415ad4cea51131aee21c880c09792c3c8bd4c064104bf675
-state_based_on_head_sha: be95754a1b331a5e420f9cf755bc190357fe3436
+status: claimed
+phase: classroom_repository_weekday_encoding_compatibility_correction
+claimed_by: codex-p16-worker-ebdca6e9
+claim_time: '2026-07-30T01:01:25Z'
+claim_id: ebdca6e9-aa5b-411b-88fd-747089e869ce
+writer_slot_lease_id: 8c250e39-5c4d-4684-93ba-2ff373a1253a
+lease_issued_at: '2026-07-30T01:01:25Z'
+lease_expires_at: '2026-07-30T02:31:25Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-30T01:01:25Z'
+controller_authorization_sha: 27100588cff40879024c88e11213864a1245741a
+state_based_on_control_head_sha: a84c647b2926b782b4b9b4289389d8584293ebbe
+ready_entry_payload_digest: bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5
+state_based_on_head_sha: c58ed7d65f46783717901512d249202b2ec46614
 last_implementation_commit_sha: 07475dd776f046f238061217ebc63ed9320c54c8
 interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
 implementation_artifact_digest: e84eb12e42832288446f756e1933dc887be37839440d738f156373d25ab62b7d
@@ -63,10 +63,12 @@ completed_steps:
   - passed exact native PGlite PostgreSQL execution of 70 migrations through 2239_v21_classroom_core.sql, positive repository writes, NOT NULL/no-default inspection, omission rejection, and invalid-timing rejection
   - passed full typecheck, 571 unit assertions across 87 files, focused ESLint and Prettier, secret scan, diff hygiene, artifact digest recomputation, and scope review
   - published terminal ready_for_review metadata and released the sole CLASSROOM_CORE lease before expiry
+  - verified exact containing control 27100588cff40879024c88e11213864a1245741a, sole acquisition parent a84c647b2926b782b4b9b4289389d8584293ebbe, expected remote head c58ed7d65f46783717901512d249202b2ec46614, canonical READY digest, canonical control-state digest, task/context/package bindings, fresh claim, sole CLASSROOM_CORE lease, empty effect locks, and effects 0/0/0
+  - claimed only the P16 runtime triplet for the classroom repository weekday-encoding compatibility correction; all product, test, interface, steward-request, migration, control, provider, deployment, send, and effect bytes remain unchanged
 remaining_steps:
-  - C00 must review the exact pushed terminal head and I36 must ancestry-integrate the accepted P16 correction.
-  - C00/F02/I36 must separately disposition the pre-existing recurrence-weekday numbering mismatch recorded below.
-next_action: C00 should validate the exact terminal P16 head, implementation commit 07475dd776f046f238061217ebc63ed9320c54c8, artifact digest e84eb12e42832288446f756e1933dc887be37839440d738f156373d25ab62b7d, migration-through-2239 proof, released lease, and effects 0/0/0 before I36 ancestry-integration.
+  - C00 must reconcile this exact pushed atomic claim before any product or test correction.
+  - After reconciliation, preserve public/domain weekdays 0 through 6 while encoding Sunday 0 as database 7 on write and decoding database 7 back to Sunday 0 on read, with direct and native PostgreSQL proof.
+next_action: Stop after pushing this triplet-only claim. Await exact C00 reconciliation before reading or editing product/test paths for the bounded classroom repository weekday-encoding compatibility correction.
 requirements:
   OTV2-CLASSROOM-065: implementation_ready
   OTV2-CLASSROOM-066: implementation_ready
@@ -135,13 +137,18 @@ verification:
     - information_schema proof that reminder_local_time, reminder_due_at, and joinable_until are NOT NULL with no defaults; raw omission and repository invalid-input rejection (passed)
     - exact 16-artifact implementation Git-blob digest derivation, including validation that the same algorithm reproduces the prior 15-artifact digest (passed)
     - git diff --check, changed-path, migration, registration, interface, steward-request, effect, and branch-scope review (passed)
+    - exact corrected resume control, sole acquisition parent, registry/READY entry, remote branch head, claim, lease, effect-lock, and dependency binding verification (passed)
+    - canonical recursively key-sorted READY payload recomputation (passed; 3006-byte preimage and digest bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5)
+    - canonical acquisition-parent control-state recomputation (passed; 1619-byte preimage and digest c54becb37cc4bb37236c2efa0b2944ea70739a5d0c05ff667cec215d015c29ae)
+    - exact prior P16 head, clean branch, triplet-only scope, sole CLASSROOM_CORE lease, empty effect locks, and effects 0/0/0 verification (passed)
   known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+blockers:
+  - C00 reconciliation of this atomic triplet-only claim is required before the bounded product/test correction.
 out_of_scope_findings:
   - Shared migration, root barrel, and central server/client registration changes are captured in STEWARD-REQUESTS.yaml and were not edited by P16.
-  - Migration 2237 constrains class_series.recurrence_weekdays to ISO values 1 through 7, while the existing P16 contract/domain uses 0 through 6 and the canonical schedule is 0,1,2,3,4; the native database rejected that existing representation. The bounded correction did not alter contracts, domain weekday semantics, or F02 migrations and used a schema-valid 1,3,5 proof series solely to exercise the authorized repository timestamp paths.
+  - Contract/domain weekday semantics and F02 migration 2237 remain immutable under this phase; after C00 reconciliation, only the P16-owned repository boundary and its direct test may translate public/domain 0 through 6 to database ISO 1 through 7 and back.
