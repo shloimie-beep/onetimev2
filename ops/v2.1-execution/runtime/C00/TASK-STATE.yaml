@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-9ce79e46
-claim_time: '2026-07-30T02:15:54Z'
-claim_id: 9ce79e46-890d-40bf-8938-97398b90c57e
-lease_expires_at: '2026-07-30T02:30:54Z'
-last_heartbeat_at: '2026-07-30T02:18:30Z'
-controller_authorization_sha: cd7ef277d079a62e2d487504debac6d3b81a5833
+claimed_by: codex-c00-orchestrator-18d2f9ae
+claim_time: '2026-07-30T02:23:40Z'
+claim_id: 18d2f9ae-b23d-4c0e-9b24-8f20bab91b77
+lease_expires_at: '2026-07-30T02:38:40Z'
+last_heartbeat_at: '2026-07-30T02:25:00Z'
+controller_authorization_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
 ready_entry_payload_digest: null
-state_based_on_head_sha: cd7ef277d079a62e2d487504debac6d3b81a5833
+state_based_on_head_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -984,6 +984,8 @@ verification:
   - admitted the exact ordered P16 55544f55, P32 92a7ee63, and F02 cd2d7c2f compatibility wave for an I36 runtime-triplet-only atomic claim from integration 1798f31b under claim d2ba6c12 and RELEASE_INTEGRATOR lease 6c88e2a7; source merges and effects remain withheld pending reconciliation
   - stopped the unused I36 claim before any edit when independent source readback found three prefix-only task-packet transcriptions in the first admission; integration remained exactly 1798f31b and effects 0/0/0
   - rebound the unchanged unused I36 claim and lease to acquisition cd7ef277 with exact full P16, P32, and F02 task/context digests and recomputed canonical READY and merge-item payloads
+  - stopped the still-unused I36 claim again before any edit when full field-by-field source recomputation found one extra trailing hex character in the F02 source-manifest binding; integration remained 1798f31b and effects 0/0/0
+  - rebound the unchanged unused claim to acquisition 15cdddda with every path inventory, raw Git-byte source manifest, state/handoff, runtime triplet, task packet, and task context independently recomputed and exact
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

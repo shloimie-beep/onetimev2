@@ -15,7 +15,7 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: cd7ef277d079a62e2d487504debac6d3b81a5833
+controller_authorization_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
 next_action: >-
   Exact independently audited P16 55544f55, P32 92a7ee63, and F02 cd2d7c2f sources are admitted in that order
   for the bounded I36 compatibility wave from integration head 1798f31b. I36 must first push only its runtime

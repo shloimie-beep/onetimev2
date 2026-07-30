@@ -1758,18 +1758,20 @@ ordered P16, P32, F02 compatibility wave from exact integration head
 `1798f31b5f698c80ee2babbd6414e9934745a178`.
 
 I36 READY digest
-`c43e3426da387782cb547a7974e64a034cf6e1db2bb74671646eb4eba6fbae94`
+`ac622e744953504c52a7250aadcf75ba4b2b73126c42c4a0c6e2463a470500c9`
 binds claim `d2ba6c12-e7c2-49b1-b4cd-883a1c394adb` and
 RELEASE_INTEGRATOR lease `6c88e2a7-e2fc-48be-acae-4b4a5e9839ad` through
-`2026-07-30T03:54:35Z`. Merge digests are P16 `dbf9d40f`, P32
-`f7cc644f`, and F02 `820fb99d`.
+`2026-07-30T03:54:35Z`. Merge digests are P16 `ed66b040`, P32
+`3f4bbb74`, and F02 `f1a0838c`.
 
 The first I36 push must change exactly its runtime triplet and stop. C00 must
 reconcile that claim, consume the READY entry, and rebind all three optimistic
 merge targets before any source merge. Migration/steward application,
 providers, deployment, sends, and external effects remain unauthorized.
 
-The first admission was unused and safely superseded before any I36 edit after
-source readback caught three prefix-only task-packet transcriptions. The
-corrected entry above binds acquisition `cd7ef277`, the exact full source
-task/context digests, and freshly recomputed canonical payload digests.
+The prior admissions were unused and safely superseded before any I36 edit.
+Source readback first caught three prefix-only task-packet transcriptions, then
+full field-by-field recomputation caught one extra trailing hex character in
+the F02 source manifest. The final entry above binds acquisition `15cdddda`
+and exact recomputed path inventories, raw Git-byte manifests, runtime
+pair/triplet, task/context, READY, and merge payload digests.
