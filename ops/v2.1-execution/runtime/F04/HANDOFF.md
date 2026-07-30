@@ -1,56 +1,72 @@
-# F04 Handoff
+# F04 Adult-Session and Household-Label Correction — Final Handoff
 
-## Identity
+## Exact identity
 
 - Branch: `codex/v21-f04-household-identity`
-- Start SHA: `d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec`
-- Implementation SHA before this handoff metadata commit: `8ba3f6c83ed3d7239ae672e938829ec9c572cd6b`
-- Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head.
+- Expected pre-correction remote head:
+  `54a0ac28b51d271aacab60003451dbcc66ffcac8`
+- Authorized integration start:
+  `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`
+- Correction implementation:
+  `dd5ce9ae49e2ef7800657289f7aa5bbc839163c4`
+- Final runtime commit: derive with `git rev-parse HEAD`; C00 records the exact pushed remote head.
+- Substantive control: `26f29aeb6734948dd8b80ab85a342831defaecc9`
+- Claim: `ac096257-657d-40ab-88bb-80247126bf6b`
+- Released `ACCOUNT_HOUSEHOLD_IDENTITY` lease:
+  `ecf3aa70-8429-4846-ab39-c74816547e35`
 - Task packet digest: `8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5`
 - Context digest: `ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Interface contract digest: `a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d`
+- READY payload digest:
+  `e78da256b221d8fe55a650246e57210497b6cd00235f67b549049ba0dd127f44`
+- Two-artifact aggregate:
+  `cd88df7415a8ef8643f4553b868dbe12410a93c1045ef32a958e2a43f6def9e9`
 
-## Completed behavior
+## Completed correction
 
-F04 now provides a versioned v2.1 contract and pure domain guard for one normalized adult identity, one HumanAccount, exact `admin`/`parent` memberships, explicit role context, server-authorized household context, and strict Parent/Student capability separation.
+F04 now provides an atomic PostgreSQL v2.1 Parent-session repository over the
+unchanged migration-2235 table. Creation, access/refresh resolution, and
+revocation bind the exact active AdultIdentity, HumanAccount, unrevoked Parent
+membership, owned active household, product, runtime tier, verification
+environment, security version, current canonical access readback, unrevoked
+session, and live idle/absolute deadlines. Inactive canonical access remains a
+valid authenticated Parent state so downstream routing can enforce the
+specification's restricted billing/support/account allowlist.
 
-Ownership transfer is version-checked, idempotent, single-use, Admin-assisted, and atomic by construction. It blocks an outgoing active `self` Student, requires archive or same-adult owned-household relocation without identity/history/credential conversion, requires current replacement-owner attestations for every dependent, adds `parent` to an existing Admin login, and produces exact revocation/audit/provider-intent plans without changing financial identity. Server services enforce same-origin/CSRF and rotate context sessions; the PostgreSQL adapter uses parameterized SQL and never creates schema at runtime.
+Repository inputs accept only distinct lowercase SHA-256 access and refresh
+digests. Raw opaque session material is absent from repository inputs, query
+results, errors, logs, URLs, and runtime evidence. Revocation reasons use a
+bounded vocabulary and increment the persisted session version exactly once.
 
-## Remaining work
-
-No F04-owned implementation remains. F02 must adjudicate `F04-migration-001`; I36 must adjudicate `F04-registration-001`, integrate the exact interface checkpoint, and reconcile the F03 session seam. Candidate-bound browser/persistence proof remains for the verification waves.
-
-## Exact next action
-
-C00 validates the exact remote F04 head, interface/artifact/contract digests, scope, task-owned verification, zero effects, and steward requests before queueing I36.
-
-## Coverage
-
-- Requirements: all four implementation-verified.
-- Acceptance cases: all four task-owned positive, negative, isolation, concurrency/version, idempotency, retry/replay, and recovery assertions passed; candidate-bound environment proof is intentionally not claimed.
-
-## Changed files and migrations
-
-Thirteen implementation/request files were added within F04-owned paths plus F04 runtime metadata. No migration or central registration file was edited. Two structured steward requests name the exact migration and registration work.
+The household context query no longer reads nonexistent
+`v21_households.display_name`. It joins the exact active owner
+`v21_adult_identities.display_name` and derives `<owner> household` for family
+records or `<owner> school` for school records; the opaque household ID remains
+authoritative.
 
 ## Verification
 
-- Full TypeScript typecheck: passed.
-- Focused Vitest: 3 files, 14 assertions, all passed.
-- Focused ESLint: passed.
-- Focused Prettier: passed.
-- Git diff check: passed.
-- Repository secret scan across 2,477 text files: passed.
+- Focused Vitest: six deterministic repository tests passed.
+- Native PostgreSQL 16: one end-to-end proof passed after applying the exact,
+  unchanged 2234 and 2235 migrations to an isolated disposable database.
+- The native proof covered create, digest-only readback, exact resolution,
+  wrong household, wrong security version, wrong digest, exact idle expiry,
+  revoked membership, one-time revoke, and post-revoke denial.
+- The exact disposable database and role were dropped after the proof.
+- Workspace TypeScript typecheck, focused ESLint, focused Prettier, Git diff
+  hygiene, artifact hashes, and the repository secret scan all passed.
+
+## Remaining work and exact next action
+
+C00 independently audits the exact pushed final for c0a1e04b ancestry, the
+five authorized paths, two-artifact aggregate, focused and native proofs,
+released lease, normal remote equality, and zero effects, then admits the
+correction through I36. Candidate-bound staging/operator verification remains
+outside this source-only phase; no further F04 implementation is authorized.
 
 ## External effects
 
-Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider or live effect occurred.
-
-## Security, privacy, and data handling
-
-No secrets, raw tokens, provider payloads, child data, private questions, email values from real users, or external identities were used. Runtime/verification scope is bound to the exact F02 isolation mapping.
-
-## Blockers, deviations, and recovery
-
-No F04-owned blocker. Migration and root registration are correctly routed to their stewards and do not weaken the stable direct-import interface.
+Attempted `0`, succeeded `0`, reconciled `0`. No provider, deployment, DNS,
+message, billing, migration, registration, or live-database effect occurred.
+The only database mutation was inside an exact disposable local PostgreSQL
+proof database, which was fully removed. No blocker remains.
