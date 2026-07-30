@@ -15,12 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
+controller_authorization_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
 next_action: >-
-  P20 behavior at dc438725 passes but admission is rejected for stale contract and implementation-aggregate
-  digest metadata. It may make only a runtime-triplet atomic claim under READY f10eafc4, claim 162924fc,
-  and CONTENT_PROCESSING lease 3da95218, then stop for reconciliation; every source, test, migration, request,
-  P21, and provider byte remains frozen. P17 final 506d9024 is awaiting independent audit; P18/P21 remain withheld.
-  OPS-084 production_broad remains fail-closed; candidate, provider inspection/mutation, deployment, sends, and
-  effects remain unauthorized.
+  P20 may make only its runtime-triplet metadata-correction atomic claim under READY f10eafc4, claim 162924fc,
+  and CONTENT_PROCESSING lease 3da95218, then stop. P17 behavior at 506d9024 passes but its terminal handoff is
+  rejected for conflicting historical instructions, a pending-terminal verification line, and overbroad -001
+  withholding language; it may make only a runtime-triplet atomic claim under READY e716a27e, claim
+  023cf8f0, and ZOOM_PREPARATION lease 24a593bc, then stop. All product, test, request, migration, provider, and
+  effect bytes remain frozen. P18/P21 remain withheld; candidate, deployment, sends, and effects are unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

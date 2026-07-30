@@ -2086,3 +2086,22 @@ four canonical launch/live/attendance tables and must wait for audited and
 integrated corrected P17. Only then may C00 consider a bounded successor
 `P18-migration-003`; `P18-registration-001` and migration `-001`/`-002` remain
 immutable.
+
+P17 final `506d9024` passes exact ancestry, eleven-path implementation plus
+runtime-triplet scope, implementation manifest `c3afe953`, canonical
+thirteen-product manifest `c35cf10d`, all recorded artifact/request digests,
+23/23 focused tests, five-table/P18 ownership and canonical outbox/binding
+semantics, released lease, remote equality, and effects `0/0/0`. Admission is
+rejected only because its runtime handoff and next prompt retain unlabeled
+conflicting instructions for old head `3560b053`, terminal verification still
+says pending, and blanket `-001` withholding incorrectly includes applied
+reminder routing and assigned Zoom configuration.
+
+Fresh P17 metadata-correction claim `023cf8f0` and ZOOM_PREPARATION lease
+`24a593bc` run through `2026-07-30T08:37:15Z`. Its first push may change only
+the P17 runtime triplet to record the claim while preserving the identified
+stale text, then must stop for C00 reconciliation. After that, only the
+conflicting historical instructions, terminal verification status, exact
+request disposition language, and derived runtime evidence may change. Every
+product, test, acceptance, successor/existing request, provider, and effect
+byte remains frozen.

@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T08:17:00Z'
-last_heartbeat_at: '2026-07-30T07:32:00Z'
-controller_authorization_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
+lease_expires_at: '2026-07-30T08:22:15Z'
+last_heartbeat_at: '2026-07-30T07:37:15Z'
+controller_authorization_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
 ready_entry_payload_digest: null
-state_based_on_head_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
+state_based_on_head_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Rejected P17 final 506d9024 admission only for conflicting stale runtime handoff/next instructions, one pending-terminal verification line, and false blanket -001 withholding language; implementation semantics, exact fourteen-path scope, all recorded artifact/request digests, 23 focused tests, type/lint/format, released lease, remote equality, and effects 0/0/0 pass.
+- Issued a runtime-triplet-only P17 metadata-correction READY under fresh claim 023cf8f0 and ZOOM_PREPARATION lease 24a593bc through 08:37:15Z; all product, test, acceptance, request, provider, and effect bytes remain frozen.
 - Rejected P20 final dc438725 admission only for stale runtime metadata: final contract raw cdeff616 was still recorded as cb557d14 and the 12-file aggregate at corrected implementation 3cf5543b is 9b4cfb26 rather than historical d58ec3c6; behavior, exact eight-path scope, 13 focused tests, type/lint/format, released lease, P21 isolation, remote equality, and effects 0/0/0 pass.
 - Issued a runtime-triplet-only P20 metadata-correction READY under fresh claim 162924fc and CONTENT_PROCESSING lease 3da95218 through 08:32:00Z; all product, test, migration, request, P21, provider, and effect bytes remain frozen.
 - Refreshed P18 read-only and withheld admission: it remains sole owner of exactly four launch/live/attendance tables, must wait for audited and integrated P17, then may create only successor P18-migration-003 while preserving registration-001 and immutable migration-001/-002.
@@ -1111,6 +1113,7 @@ verification:
   - P17 renewal claim b9e7b49a: passed exact sole-parent ancestry, runtime-triplet-only scope, canonical READY/fresh-claim/lease bindings, pair/triplet 794ede72/af7c6342, preserved products/requests, remote equality, consumed READY, and zero effects
   - P20 rejected final dc438725: passed ancestry, exact five-source plus runtime-triplet scope, corrected source digest ac8a6038, terminal triplet 38723f2e, 13/13 focused tests, composite SQL/evidence semantics, released lease, P21 isolation, remote equality, and zero effects; failed only stale contract and 12-file aggregate metadata
   - P18 read-only refresh: passed exact four-table ownership, no P17 competing names, preserved request identities and free EMBEDDED_CLASSROOM slot; withheld until corrected P17 final is audited and integrated
+  - P17 rejected final 506d9024: passed exact ancestry/scope, canonical manifests, five-table/P18 ownership and job-outbox/provider-binding semantics, successor request identities, 23/23 focused tests, released lease, remote equality, and zero effects; failed only conflicting stale runtime instructions/status
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

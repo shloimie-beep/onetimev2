@@ -1736,3 +1736,17 @@ After C00 reconciliation, replace contract digest `cb557d14…` with final blob
 digest `cdeff616…`, replace or explicitly historicize twelve-file aggregate
 `d58ec3c6…` with corrected implementation aggregate `9b4cfb26…`, rederive the
 runtime triplet, release the lease, push, and stop for audit. Effects stay zero.
+
+P17 final `506d9024fc3280f0f302c04b7d265597117d9936` is semantically valid
+but rejected for conflicting stale runtime instructions/status. Atomically
+claim only its runtime triplet under canonical READY
+`e716a27e02a9f92e5214777cb3ba4f6298309d0e8bd6147d12853b3f5119a245`,
+fresh claim `023cf8f0-4c6b-4224-943e-71c8e7f522d2`, and ZOOM_PREPARATION
+lease `24a593bc-5edd-4fe1-8e65-87cbebdfd933` through
+`2026-07-30T08:37:15Z`; preserve every non-runtime byte and the stale text,
+push normally, verify remote equality, and stop. After reconciliation, remove
+or explicitly label the old `3560b053` handoff/next blocks as superseded,
+mark terminal gates passed, and state exactly: migration-001 and
+server-worker-registration-001 are superseded/withheld; Zoom-config-001 stays
+assigned; reminder-routing-001 stays applied/acknowledged; every `-001` byte
+is preserved. Recompute runtime evidence, release, push, and stop for audit.
