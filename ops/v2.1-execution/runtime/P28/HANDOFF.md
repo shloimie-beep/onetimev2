@@ -4,7 +4,8 @@
 
 - Branch: `codex/v21-p28-communication-foundation`
 - Start SHA: `9ba92b070eedfa3756eff4f78fd328de72507a96`
-- Implementation SHA: `83355a7b6981073662d71f44a2c8f68264a307d8`
+- Original foundation implementation SHA: `83355a7b6981073662d71f44a2c8f68264a307d8`
+- Reminder-routing implementation SHA: `7a37ef5b57bf0e1a03114cf344a7aaf9f184b6d5`
 - Interface metadata head: `aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`
 - Final ready-for-review head: derive with `git rev-parse HEAD`; C00 records the pushed head
 - Expected pre-claim head: `f891f16eb13593d0eb3bbe53c076513d12b07c23`
@@ -19,9 +20,11 @@
 - COMMUNICATION_FOUNDATION lease: `ac74a2a9-b988-418a-b429-fefb5feeeb37`
 - Lease issued: `2026-07-30T04:01:19Z`
 - Lease expiry: `2026-07-30T06:01:19Z`
+- Lease released: `2026-07-30T04:37:00Z`
+- Claim reconciliation control head: `1b5e5dd662390dd5affc159990a59b3b8d99c127`
 - Effect locks: none
 
-## Active atomic steward claim
+## Completed bounded steward request
 
 P28 has claimed only immutable request `P17-REMINDER-ROUTING-001`, canonical
 request digest
@@ -31,9 +34,11 @@ from integrated P17 head
 `bec8dc31dbe5d79a26434a7219d4d8696cf15f01`. The evaluated target is the exact
 pre-claim P28 head `f891f16eb13593d0eb3bbe53c076513d12b07c23`.
 
-This checkpoint changes only P28 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. All product, contract, interface, test, and steward-request
-bytes remain unchanged. Routing implementation has not started.
+After C00 reconciled exact claim checkpoint `79ba5cc8f903f9b88319681ae57fe959c4d11a1a`,
+P28 implemented only the additive communication-foundation contract, pure
+domain planner, worker adapter, and owned tests required by that request. No
+P17, database, migration, registry, central composer, provider, or
+steward-request file changed.
 
 ## Completed behavior
 
@@ -44,6 +49,15 @@ suppression gates, the four-value reminder preference, email-first dormant
 WhatsApp behavior, Admin-only sanitized Communications Review, governed
 Start/Pause requests, adult-only public website lead capture, and P29/P30
 workflow-fragment validation are implemented.
+
+The P17 reminder delta rejects the whole routing batch before persistence or
+provider access unless every named Student has an active registrant and ready
+protected portal state. It produces one account-owner intent per household,
+includes sorted affected Student labels and only `/app/parent/classes`, reads
+the current reminder preference, rechecks current suppression immediately
+before delivery reservation, and uses the existing delivery dedupe for replay
+safety. Email failure remains `retry_pending` while prepared in-app access is
+reported as preserved.
 
 The registry keeps OT-11 retired/reserved, restores OT-12 to adult support,
 reserves OT-14/OT-15 for their exact purposes, and assigns OT-B01 to the
@@ -60,17 +74,26 @@ realization and save/reopen readback.
 - Contract digest: `2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86`
 - Downstream tasks: P29, P30
 
+The additive steward delta preserves semantic version `1.0.0`. Its current
+artifact SHA-256 is
+`b3ec5642dea691cd81b08814d76cd3544f73b1a094333ab4d8b4ceb48f2735ea`
+and its current semantic contract digest is
+`f00013bbb46413c973276ef3454ef3b406e21d780349dbfcdccc004120cb1612`.
+The original `INTERFACE-CHECKPOINT.yaml` remains historical evidence for the
+already-integrated P29/P30 interface; I36 must integrate this exact steward
+implementation head before central registration.
+
 ## Remaining work
 
-C00 must reconcile this atomic resume claim. Only after explicit continuation
-may P28 inspect or modify its owned communication-foundation paths for the
-bounded P17 reminder-routing request.
+C00 must verify this pushed ready-for-review checkpoint and hand the exact
+implementation head to I36 for integration. Central caller registration
+remains outside P28 and must not precede that integration.
 
 ## Exact next action
 
-Push this three-file atomic claim, report its exact head, and stop until C00
-reconciles claim `42599e59-5e65-4269-b3d1-d10632342be6`. Do not implement
-routing before that reconciliation.
+Push the runtime release checkpoint, report the exact remote head and evidence,
+and await C00/I36 reconciliation. Do not perform provider inspection, sends, or
+central composer edits.
 
 ## Coverage
 
@@ -79,19 +102,20 @@ routing before that reconciliation.
 
 ## Changed files and migrations
 
-- `ops/v2.1-execution/runtime/P28/TASK-STATE.yaml`
-- `ops/v2.1-execution/runtime/P28/HANDOFF.md`
-- `ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md`
+- Nine owned contract/domain/worker implementation and test files under the
+  existing P28 globs
+- P28 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`
 - Migrations: none
 
 ## Verification
 
-- 32 focused assertions in five files: passed
+- 47 focused assertions in seven files: passed
 - Full TypeScript typecheck: passed
-- Focused ESLint and new-file Prettier checks: passed
-- Canonical YAML source parsing and identity assertions: passed
-- Interface artifact/contract digests and diff check: passed
-- Terminal verification against the clean pushed interface head: passed
+- Focused ESLint and Prettier checks: passed
+- Repository secret scan across 2684 text files: passed
+- Immutable P17 request digest and source blob: exact
+- Contract artifact/semantic digests, owned-path scope, and diff checks: passed
+- Terminal verification against clean implementation head `7a37ef5b`: passed
 - Generated registry projection checks: expected stale-projection failure,
   stewarded by `P28-registry-projection-001`
 
@@ -102,8 +126,9 @@ effect lock exists.
 
 ## Security, privacy, and data handling
 
-No secrets, provider payloads, learner data, URLs, bearer material, live sends,
-workflow mutations, enrollments, or deployments were accessed or performed.
+No secrets, provider payloads, learner data, raw Zoom URLs, launch grants,
+technical aliases, Student authentication, live sends, workflow mutations,
+enrollments, or deployments were accessed or performed.
 
 ## Blockers, deviations, and recovery
 
@@ -111,4 +136,4 @@ No implementation blocker. Applied migration, central registration, generated
 registry projections, shared message-class coverage, and validator semantics
 are explicitly requested in `P28-migration-001`, `P28-registration-001`, and
 `P28-registry-projection-001`. Recovery base is implementation commit
-`83355a7b6981073662d71f44a2c8f68264a307d8`.
+`7a37ef5b57bf0e1a03114cf344a7aaf9f184b6d5`.

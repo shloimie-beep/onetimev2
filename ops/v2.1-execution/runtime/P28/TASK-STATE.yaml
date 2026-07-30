@@ -65,8 +65,13 @@ assigned_steward_request:
   assigned_steward: P28
   target_checkpoint: P28_next_communication_registration_checkpoint
   evaluated_target_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
-status: claimed
-phase: P17_reminder_routing_steward_atomic_claim
+  claim_checkpoint_sha: 79ba5cc8f903f9b88319681ae57fe959c4d11a1a
+  claim_reconciled_at_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
+  result: implemented_ready_for_review
+  implementation_head_sha: 7a37ef5b57bf0e1a03114cf344a7aaf9f184b6d5
+  interface_contract_digest: f00013bbb46413c973276ef3454ef3b406e21d780349dbfcdccc004120cb1612
+status: ready_for_review
+phase: P17_reminder_routing_steward_ready_for_review
 claim_mode: resume_existing
 claimed_by: codex-p28-worker-42599e59
 claim_time: '2026-07-30T04:10:01Z'
@@ -79,16 +84,17 @@ writer_slot_leases:
     state_based_on_control_head_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
     lease_issued_at: '2026-07-30T04:01:19Z'
     lease_expires_at: '2026-07-30T06:01:19Z'
+    lease_released_at: '2026-07-30T04:37:00Z'
     phase_scope: P28_P17_reminder_routing_steward_atomic_claim_only
 lease_expires_at: '2026-07-30T06:01:19Z'
-last_heartbeat_at: '2026-07-30T04:10:01Z'
-lease_released_at: null
+last_heartbeat_at: '2026-07-30T04:37:00Z'
+lease_released_at: '2026-07-30T04:37:00Z'
 controller_authorization_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
 ready_entry_state_based_on_control_head_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
 ready_entry_payload_digest: 48da940a881f37fe700d478fa1c34ae86a33fbaf2c10d000624b71c444711e6b
-state_based_on_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
-last_implementation_commit_sha: 83355a7b6981073662d71f44a2c8f68264a307d8
-interface_contract_digest: 2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86
+state_based_on_head_sha: 79ba5cc8f903f9b88319681ae57fe959c4d11a1a
+last_implementation_commit_sha: 7a37ef5b57bf0e1a03114cf344a7aaf9f184b6d5
+interface_contract_digest: f00013bbb46413c973276ef3454ef3b406e21d780349dbfcdccc004120cb1612
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2 and exact containing control head.
   - Verified the P28 branch was absent locally and remotely and the integration start SHA matched exactly.
@@ -112,10 +118,19 @@ completed_steps:
   - Verified resume_existing against exact local and remote P28 head f891f16eb13593d0eb3bbe53c076513d12b07c23.
   - Bound integrated immutable request P17-REMINDER-ROUTING-001 digest c6015bb11b581333946e8e9de6e3676d108ed327d52ee1894f355ab921da14cf and source blob bec8dc31dbe5d79a26434a7219d4d8696cf15f01.
   - Claimed only COMMUNICATION_FOUNDATION lease ac74a2a9-b988-418a-b429-fefb5feeeb37 with zero effect locks and preserved all product, contract, interface, and steward-request bytes.
+  - C00 reconciled exact atomic claim head 79ba5cc8f903f9b88319681ae57fe959c4d11a1a at control commit 1b5e5dd662390dd5affc159990a59b3b8d99c127.
+  - Implemented the additive P17 class-reminder contract without changing communication-foundation semantic version 1.0.0.
+  - Added all-named-Student active-registrant and protected-portal readiness gating before any persistence, preference read, suppression read, or provider port.
+  - Added household-grouped account-owner intents carrying only affected Student labels and constant /app/parent/classes access.
+  - Reused current preference, send-time suppression, optimistic decision persistence, and email-delivery reservation for replay-safe routing.
+  - Kept email failure retry_pending and observable while reporting prepared in-app access as preserved.
+  - Rejected unsafe route/timing/label/suppression bindings and proved injected Zoom bearer, launch-grant, technical-alias, and Student-authentication values do not propagate.
+  - Passed 47 focused P28 assertions in seven files, full typecheck, focused lint/format, secret scan, immutable request digest/blob verification, and diff checks.
+  - Released COMMUNICATION_FOUNDATION lease ac74a2a9-b988-418a-b429-fefb5feeeb37 with external effects unchanged at 0/0/0.
 remaining_steps:
-  - Push and report this exact three-runtime-file atomic steward claim checkpoint.
-  - Await C00 reconciliation before reading or changing routing product, contract, test, interface, or steward-request files.
-next_action: Push this exact three-file atomic claim, report its head, and stop until C00 explicitly reconciles claim 42599e59-5e65-4269-b3d1-d10632342be6.
+  - C00 must verify the exact pushed P28 review head, owned-path scope, released lease, request binding, and zero-effect record.
+  - I36 must integrate the admitted additive reminder-routing delta before any central composer registers a caller.
+next_action: Push the ready-for-review runtime triplet, report the exact remote head and evidence, and await C00/I36 reconciliation.
 requirements:
   OTV2-GHL-120: implementation_verified
   OTV2-GHL-121: implementation_verified
@@ -138,9 +153,18 @@ acceptance_cases:
   OTV2-PARENT-226-PREFERENCES: task_owned_assertions_passed
   OTV2-PARENT-226-ESSENTIAL-EMAIL: task_owned_assertions_passed
 changed_paths:
+  - apps/worker/src/runners/communications-foundation/index.ts
+  - apps/worker/src/runners/communications-foundation/reminder-routing.test.ts
+  - apps/worker/src/runners/communications-foundation/reminder-routing.ts
+  - apps/worker/src/runners/communications-foundation/runner.ts
   - ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P28/HANDOFF.md
   - ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md
+  - packages/contracts/src/communications/foundation/index.ts
+  - packages/domain/src/communications/foundation/class-reminder.test.ts
+  - packages/domain/src/communications/foundation/class-reminder.ts
+  - packages/domain/src/communications/foundation/errors.ts
+  - packages/domain/src/communications/foundation/index.ts
 migrations: []
 steward_requests:
   - request_id: P28-migration-001
@@ -151,6 +175,20 @@ steward_requests:
     sha256: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
 verification:
   commands_run:
+    - command: C00 claim reconciliation and latest remote branch/control identity verification
+      result: passed; claim head 79ba5cc8 reconciled at control 1b5e5dd6 and remote branch remained exact
+    - command: immutable P17-REMINDER-ROUTING-001 canonical digest and Git blob verification
+      result: passed; request c6015bb1 and source blob bec8dc31
+    - command: npm exec -- vitest run seven focused P28 foundation/reminder/persistence/registry/worker files
+      result: passed; 7 files and 47 assertions
+    - command: npm run typecheck
+      result: passed against clean implementation head 7a37ef5b
+    - command: focused ESLint and Prettier over all reminder-routing and touched foundation TypeScript
+      result: passed
+    - command: npm run secret:scan
+      result: passed across 2684 repository text files
+    - command: version, ownership, artifact digest, and git diff checks
+      result: passed; semantic version remains 1.0.0 and contract digest is f00013bb
     - command: exact containing-control, acquisition, local/remote branch, and expected-head verification
       result: passed; control 85100180, acquisition fe95eacb, and local/remote P28 f891f16e
     - command: canonical P28 resume READY digest recomputation
