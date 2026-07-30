@@ -1,140 +1,50 @@
-# P31 Handoff
+# P31 Provider-Readback Preflight Handoff
+
+## Outcome
+
+The strictly read-only Lane C preflight is complete and ready for C00/I36 review. It records 14 provider rows, all 17 P31/V42 workflow rows, nine cross-cutting V42 case rows, all 28 V42 case IDs plus the P31 adult-support case, and one consolidated authorization-gap packet. No provider effect or lock was used.
 
 ## Identity
 
-- Branch: `codex/v21-p31-email-copy-approval`
-- Start SHA: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
-- Implementation SHA before this handoff metadata commit: `8b3ed597115fe4c11a85f8ab35a1b2feb6f58649`
-- Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`
-- Task packet digest: `bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374`
-- Context digest: `c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342`
-- Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
+- Branch: `codex/v21-lane2-ghl-email`
+- Required integration base: `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`
+- Verified prior remote branch head: `1e9f41a3af58d3385754961861a260d2746a5073`
+- Control basis: `f0ccbdc81e6962add93d0900dd159e24df7cf05f`
+- Claim: `8e264a4e-d748-4f11-84f1-cfe78869dd18`
+- COPY_CATALOG lease: `43f6f071-e111-489d-b2ed-2c8d6db7f948`
+- Candidate: `null`
 
-## Completed behavior
+## Material readback
 
-The canonical catalog now defines the exact three sender identities, Rabbi greeting/signoff, Resend-only account setup and password-reset copy, and GHL lifecycle fragments for Parent activation, class reminder, recording, newsletter, legacy migration, and former-member reactivation. Under exact request `P30-copy-registration-001`, OT-15 step 2 and step 3 now publish owner-authored immutable bodies, their fixed subjects, day-4/day-9 approval-launch offsets, required variables, and canonical digests `530df43199316af56f2227090e164c898988d24a07e2fd08998e26539b6678c4` and `e2bdbc3063431caa10bfd2ae2a2e6768a99d1f07a5b7f83d5e53b52faa0e4087`. Step 1 and its digest `ff7fd5af4c77c5e9dfd62c5340ff0cb058f48d427ce407f8d6976593f1420ae2` remain unchanged.
+- HighLevel: the signed-in UI path exactly matched location `pBSnOK2nkdxp6gf9Rg3o`; the visible label was `info@onetimeonetime.com`; the `One Time` root and ten canonical folders were visible.
+- Workflows: OT-01 through OT-10, OT-13, and OT-B01 were Draft with zero active and zero total enrollments. OT-12, OT-14, OT-15, and OT-16 were absent. No row is active or candidate-ready.
+- Resend: `onetimeonetime.com` was verified in `us-east-1`, ready to send and receive, with GoDaddy DNS. Incoming mail to `info@onetimeonetime.com` was observed. The exact governed `rabbielischeller@onetimeonetime.com` route into HighLevel was not proven.
+- Google Drive: read access worked, but many similarly named private folders made the canonical ingest folder ambiguous.
+- Vimeo: a signed-in account/folder and an Unlisted asset were observed, but no canonical registry binds that account or folder.
+- Railway: account read access worked and multiple plausible projects were present; the worktree was not linked and no canonical project was selected.
+- DNS: GoDaddy nameservers and email records were present; `join.onetimeonetime.com` pointed to Railway, while `app` and `www` were absent. The exact DNS account identity is not registered.
+- Stripe-through-GHL, Zoom, Telegram, S3/KMS, OpenAI, backup source, restore target, and alert destinations remain unproven or not canonically bound.
 
-The approval guard checks every WNC-9 gate and automatically blocks on content, subject, or sequence-day digest drift, missing named approval or required current consent, wrong sender, over-budget audience, Student contact, delivery/approval gaps, bounce/complaint thresholds, provider failures, and unrelated effects. No provider call or live send was made.
+The HighLevel connector returned unrelated contact data rather than exact location metadata. It was rejected as identity evidence, and no returned personal data was retained in these artifacts.
 
-## Remaining work
+## Locked communication rules preserved
 
-No P31 implementation work remains. C00/I36 must review and integrate interface implementation `8b3ed597115fe4c11a85f8ab35a1b2feb6f58649`; P30 can then consume the two registrations and re-run its blocked OT-15 launch contract.
+The workflow matrix preserves Rabbi Eli Scheller as the display name and the accepted replacement mailbox `rabbielischeller@onetimeonetime.com`; one adult guardian email per household; no Student contacts or email addresses; immediate Family access; School acknowledgment/manual follow-up only; email as the launch channel; disabled/no-op WhatsApp; normalized update/tag rather than duplicates; GHL billing authority; and zero broad sends.
 
-## Exact next action
+## Artifacts
 
-Await C00/I36 review and integration of the exact semantic contract `1.1.0` checkpoint.
-
-## Coverage
-
-- Requirements: OTV2-EMAIL-139 through OTV2-EMAIL-146 are implementation_ready.
-- Acceptance cases: OTV2-EMAIL-139-AC01 through OTV2-EMAIL-146-AC01 are implementation_ready; candidate-bound live proof remains V38/operator work only.
-
-## Changed files and migrations
-
-- `ops/v2.1-execution/runtime/P31/TASK-STATE.yaml`
-- `ops/v2.1-execution/runtime/P31/HANDOFF.md`
-- `ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md`
-- `ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml`
-- `packages/domain/src/communications/copy/catalog.ts`
-- `packages/domain/src/communications/copy/approval.ts`
-- `integrations/highlevel/v21/copy/catalog.ts`
-- `apps/web/src/server/features/email/templates/security.ts`
-- `tests/unit/communications/copy-catalog.test.ts`
-- No migrations.
-
-## Verification
-
-`npm run typecheck` passed. The focused Vitest contract passed 3 tests covering the exact two registrations and digests, the unchanged step 1 contract, GHL publication with no token-bearing content, named approval/current consent, and fail-closed body/subject/day drift. Scoped Prettier, YAML parsing, `npm run secret:scan`, `git diff --check`, and the owned-path scope audit passed. The refreshed P31 interface contract digest is `a759c3db1cd946549d97359a68f394e8f8bd6af5c4c615748993bd901bb27f3a`.
+- `PROVIDER-PREFLIGHT-MATRIX.yaml`: `35d6de26d55205f3937bf3d696886802d33041eba59a7fa2c2bdc671edf8b22f`
+- `GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml`: `80b46f631ae4cc1eca24d0b352c2cf13ce0aefa078c70d1c30d8b3a03a3a5fe7`
+- `AUTHORIZATION-GAPS.yaml`: `83115cf51ad4ddd24b3d0984c7c009419d9d43cfc894d9de901922e876ab50a6`
 
 ## External effects
 
-Authority: none. Attempted: 0. Succeeded: 0. Reconciled: 0. No provider or live effects are authorized or performed.
+Authority was strictly read-only. Effects attempted/succeeded/reconciled: `0/0/0`. Locks acquired: `0`. No message, charge, contact write, enrollment, workflow change, deployment, DNS change, Drive move, or Vimeo publication occurred.
 
-## Security, privacy, and data handling
+## Remaining critical gates
 
-No secrets, tokens, provider payloads, child data, Zoom/Vimeo bearers, or live sends are included. P31 must retain the adult-only GHL and digest-approval invariants.
+C00/I36 should review and integrate this exact six-path checkpoint. After a candidate is frozen, C00 must bind each exact canonical provider identity, the candidate digest, authority, fixture, budget, cleanup plan, and fencing token before V41/V42 configuration or canaries. The legal bundle is a broad-release gate only; it need not block staging preparation, read-only checks, or otherwise authorized operator-owned canaries.
 
-## Blockers, deviations, and recovery
+## Exact next action
 
-No blocker. COPY_CATALOG lease `d03dd6a9-384f-4b52-aaaf-3ac5752a36da` was released at `2026-07-30T04:43:17Z`, before its `2026-07-30T05:56:56Z` expiry. Reopen only under a new C00-issued resume lease for a reproduced P31-scoped finding.
-
-## P30 copy registration atomic claim
-
-- Claim parent: `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`
-- Claim authorization control: `30689e76f3697ab11dedab3b77d5bb5cbededde5`
-- Reconciliation control: `a0599de4502994d5028c9b24084b400d48f72f98`
-- READY parent control: `1b5e5dd662390dd5affc159990a59b3b8d99c127`
-- Claim: `ff4a79d9-158b-4e3f-a150-03b171427749`
-- COPY_CATALOG lease: `d03dd6a9-384f-4b52-aaaf-3ac5752a36da`
-- READY digest: `53c8b3774408a96350e8050746a2e2894ab65a7c418b7932bb05f5e2f9e375cb`
-- Request digest: `0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf`
-- Implementation: `8b3ed597115fe4c11a85f8ab35a1b2feb6f58649`
-- Request disposition: implemented exactly
-- Step 2 digest: `530df43199316af56f2227090e164c898988d24a07e2fd08998e26539b6678c4`
-- Step 3 digest: `e2bdbc3063431caa10bfd2ae2a2e6768a99d1f07a5b7f83d5e53b52faa0e4087`
-- Lease released: `2026-07-30T04:43:17Z`
-- Effects: `0/0/0`
-
-The exact P31-owned registration and interface checkpoint are ready for
-review. No provider configuration, activation, enrollment, or send is
-authorized.
-
-## Copy-catalog test lint-correction atomic claim
-
-- Claim parent: `d72dda5669627695edaf9dbf20f7650c9b5c9ded`
-- Containing canonical control: `0eb6204622792a6add325f0cb11bc25847701f10`
-- READY state-basis control: `2718c23f19cc3f76f161a5e4f2562f9d7265f68e`
-- READY digest: `23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314`
-- Claim: `7f50cef8-f816-4a32-8f9e-071db09abbc0`
-- COPY_CATALOG lease: `42734cda-47b5-44ec-8d9a-8da7c4f86ed1`
-- Lease issued: `2026-07-30T05:48:54Z`
-- Lease expires: `2026-07-30T06:48:54Z`
-- Heartbeat: `2026-07-30T06:14:20Z`
-- I36 release: `3cf787409decb5beb84561ef7e37924111d398b6`
-- I36 state/handoff digest:
-  `3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e`
-- I36 runtime-triplet digest:
-  `5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2`
-- P31 prior state/handoff digest:
-  `7e3bf5382afd76cfd71bd31fafaf880715a947bb41bd086dfab04a760225187f`
-- P31 prior runtime-triplet digest:
-  `f9ced9e2537b39d58b9382d8dc965986f00bd38f3471710a661194ae99e5e47c`
-- Lint source digest:
-  `a0d18123cf3d5741b57eaf278803563125d34784f33bee357badaed9e2f8c60d`
-- Exact finding:
-  `tests/unit/communications/copy-catalog.test.ts:143`
-  `@typescript-eslint/no-unused-vars` for `_removedNamedApproval`
-- Effects: `0/0/0`
-
-Only the P31 runtime triplet changes in this atomic claim. The unused binding
-remains untouched until C00 independently audits and reconciles the pushed
-claim. Product, test, copy, request, interface, and provider bytes remain
-unchanged; no provider configuration, activation, enrollment, send, or other
-external effect is authorized.
-
-## Copy-catalog test lint correction complete
-
-C00 independently reconciled atomic claim
-`9d878d88587d6f742a927d3cf4e175594d1e12de` at canonical control
-`9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`, whose sole parent is
-`0eb6204622792a6add325f0cb11bc25847701f10`.
-
-Implementation `4f61ec10f3270faf07dd217c9aab39df5ca7a8d9` removes only the
-unused `_removedNamedApproval` binding from
-`tests/unit/communications/copy-catalog.test.ts` using an
-optional-property-safe copy/delete. The assertion, catalog, approval
-semantics, interface checkpoint, requests, and runtime behavior are unchanged.
-The corrected test source SHA-256 is
-`b82cb8841fe138755b1bd59705d3eaf8cb2f4d5af34bd2bd473f1ed1a88b2eba`.
-
-Focused Vitest passed 1 file and 3 tests. Workspace typecheck and full quiet
-repository lint passed. Scoped Prettier, YAML parsing, the repository secret
-scan across 2443 text files, diff/scope checks, and effects `0/0/0` passed.
-
-Claim `7f50cef8-f816-4a32-8f9e-071db09abbc0` remained unchanged.
-COPY_CATALOG lease `42734cda-47b5-44ec-8d9a-8da7c4f86ed1` was released at
-`2026-07-30T06:25:48Z`, before its `2026-07-30T06:48:54Z` expiry.
-
-C00 must independently audit the exact pushed final, its implementation/final
-ancestry, four-path scope, released lease, verification, remote equality, and
-effects `0/0/0`. P31 must stop.
+Stop for C00/I36 audit of the pushed head, six-path scope, three matrix hashes, parsed counts, remote equality, and zero-effect record.

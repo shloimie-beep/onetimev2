@@ -1,0 +1,497 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P31
+phase: provider_readback_preflight
+generated_at: '2026-07-30T16:54:07Z'
+claim_id: 8e264a4e-d748-4f11-84f1-cfe78869dd18
+writer_slot_lease:
+  slot: COPY_CATALOG
+  lease_id: 43f6f071-e111-489d-b2ed-2c8d6db7f948
+control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+communications_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+candidate:
+  status: not_frozen
+  digest: null
+authority:
+  source_grant_id: ot-v21-production-source-grant-20260729
+  status: active_source_grant_only
+  effect_authority_usable: false
+  candidate_binding_status: pending
+readback_policy:
+  mode: strictly_read_only
+  provider_effects_performed: 0
+  effect_locks_acquired: 0
+  secrets_read_or_recorded: 0
+  rule: Unknown or ambiguous identities remain unknown. Repository desired state is not provider readback.
+providers:
+  - provider_key: highlevel
+    canonical_account_identity: unknown
+    canonical_location_identity: pBSnOK2nkdxp6gf9Rg3o
+    identity_status: location_confirmed_account_name_not_registered
+    read_permission_proven: true
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:ghl-location
+    required_authority_scope: candidate-bound readback, then exact workflow/template configuration and operator-only canary
+    expected_candidate_bound_config:
+      location_id: pBSnOK2nkdxp6gf9Rg3o
+      adult_contacts_only: true
+      one_guardian_email_per_household: true
+      student_contacts_max: 0
+      billing_boundary: GHL-managed Stripe only
+      whatsapp_state: disabled_no_op
+    current_canonical_readback:
+      authenticated_ui_location_url_matches: true
+      visible_location_label: info@onetimeonetime.com
+      workflow_root: One Time
+      canonical_folders_visible: 10
+      workflow_publication_authorized: false
+      production_enrollment_authorized: false
+      connector_result: rejected_as_identity_evidence
+      connector_reason: The HighLevel connector returned unrelated contact rows and no location/account metadata.
+    exact_gap:
+      - Register the canonical HighLevel account/agency identity in addition to the confirmed location ID.
+      - Build or correct the workflow rows identified in GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml.
+      - Prove the fixed Rabbi sender and reply route before any seed or customer send.
+    verification_case_ids:
+      - OTV2-GHL-117-AC01
+      - OTV2-GHL-118-AC01
+      - OTV2-GHL-119-AC01
+      - OTV2-PROVIDER-209-AC01
+      - OTV2-PROVIDER-231-MULTI-HOUSEHOLD-MAPPING
+      - OTV2-PROVIDER-243-GHL-IDENTITY-QUARANTINE
+      - OTV2-GHL-120-AC01
+      - OTV2-GHL-121-AC01
+      - OTV2-GHL-122-AC01
+      - OTV2-GHL-138-COMMUNICATIONS-READBACK
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - signed-in HighLevel Automation UI under exact location path
+      - integrations/highlevel/registry/current.json
+      - integrations/highlevel/registry/workflow-registry.yaml
+      - integrations/highlevel/registry/sender-registry.yaml
+  - provider_key: stripe_through_ghl
+    canonical_account_identity: unknown
+    canonical_location_identity: pBSnOK2nkdxp6gf9Rg3o
+    identity_status: not_live_read_back
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:stripe-account
+    required_authority_scope: GHL-managed checkout/readback only; one operator checkout up to USD 67 and one refund only if separately reserved
+    expected_candidate_bound_config:
+      standard_family_price_usd: 67
+      cadence: monthly
+      direct_one_time_stripe_mutation: prohibited
+      signed_billing_projection_required: true
+    current_canonical_readback:
+      highlevel_payments_surface_visible: true
+      stripe_account_id: unknown
+      product_price_id: unknown
+      checkout_identity: unknown
+    exact_gap:
+      - Confirm the GHL-bound Stripe account, product, price, webhook, and signed projection identities.
+      - Candidate-bound billing verification and the bounded operator checkout are not yet authorized.
+    verification_case_ids:
+      - OTV2-BILLING-101-AC01
+      - OTV2-BILLING-102-AC01
+      - OTV2-BILLING-103-AC01
+      - OTV2-BILLING-104-AC01
+      - OTV2-BILLING-105-AC01
+      - OTV2-BILLING-106-AC01
+      - OTV2-BILLING-107-AC01
+      - OTV2-BILLING-108-AC01
+      - OTV2-BILLING-109-AC01
+      - OTV2-BILLING-110-AC01
+      - OTV2-BILLING-224-STANDARD
+      - OTV2-BILLING-224-IMMEDIATE-EXCEPTION
+      - OTV2-BILLING-242-EVENT-PRECEDENCE-GRACE
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - signed-in HighLevel navigation readback
+      - EXTERNAL-AUTHORITY-MATRIX.yaml
+  - provider_key: zoom
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: no_connection_or_live_readback
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:zoom-account
+    required_authority_scope: candidate-bound meeting/registrant readback; later one meeting and up to three operator registrants
+    expected_candidate_bound_config:
+      raw_join_urls_publicly_exposed_max: 0
+      one_occurrence_per_canonical_series: true
+      registrants_are_students_but_not_ghl_contacts: true
+    current_canonical_readback: unavailable
+    exact_gap:
+      - Connect or identify the canonical Zoom account and app.
+      - Confirm the canonical recurring meeting/occurrence identity and registrant API permissions.
+    verification_case_ids:
+      - OTV2-CLASSROOM-068-AC01
+      - OTV2-CLASSROOM-069-AC01
+      - OTV2-CLASSROOM-070-AC01
+      - OTV2-CLASSROOM-071-AC01
+      - OTV2-CLASSROOM-072-AC01
+      - OTV2-CLASSROOM-073-AC01
+      - OTV2-CLASSROOM-075-AC01
+      - OTV2-CLASSROOM-078-AC01
+      - OTV2-CLASSROOM-187-AC01
+      - OTV2-CLASSROOM-188-AC01
+      - OTV2-CLASSROOM-232-TIMING
+      - OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - connector/tool discovery found no Zoom connector or CLI
+      - canonical source contracts only
+  - provider_key: google_drive
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: connector_authenticated_canonical_folder_ambiguous
+    read_permission_proven: true
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:drive-folder
+    required_authority_scope: exact candidate-bound ingest folder readback; later one authorized file
+    expected_candidate_bound_config:
+      exact_ingest_folder_id_required: true
+      unrelated_files_moved_or_deleted_max: 0
+    current_canonical_readback:
+      shared_drives_visible: 0
+      folder_search_succeeded: true
+      unique_canonical_ingest_folder: false
+      ambiguity: Many similarly named private folders were returned; none is registered as canonical.
+    exact_gap:
+      - Register one exact Google account and ingest-folder ID.
+      - Re-read that immutable folder identity before the candidate canary.
+    verification_case_ids:
+      - OTV2-CONTENT-080-AC01
+      - OTV2-CONTENT-081-AC01
+      - OTV2-CONTENT-082-AC01
+      - OTV2-CONTENT-083-AC01
+      - OTV2-CONTENT-190-AC01
+      - OTV2-CONTENT-192-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - connected Google Drive metadata-only folder search
+      - connected Google Drive shared-drive listing
+  - provider_key: vimeo
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: signed_in_candidate_account_observed_not_registry_bound
+    read_permission_proven: true
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:vimeo-account
+    required_authority_scope: candidate-bound account/folder readback; later one operator asset
+    expected_candidate_bound_config:
+      private_or_unlisted_delivery: true
+      raw_bearer_or_public_video_url_exposure: prohibited
+      exact_account_and_folder_registry_required: true
+    current_canonical_readback:
+      signed_in_manage_surface: true
+      observed_account_path: /user/199059518
+      observed_folder_path: /user/199059518/folder/29864796
+      observed_uploader_label: OneTimeOneTime
+      observed_asset_visibility: Unlisted
+      canonical_registry_match: false
+    exact_gap:
+      - Register or reject the observed Vimeo account and folder as the canonical target.
+      - Prove candidate-bound privacy, embed, transcoding, and playback-token behavior.
+    verification_case_ids:
+      - OTV2-CONTENT-084-AC01
+      - OTV2-CONTENT-085-AC01
+      - OTV2-CONTENT-086-AC01
+      - OTV2-CONTENT-191-AC01
+      - OTV2-CONTENT-193-AC01
+      - OTV2-CONTENT-233-STORAGE-MODELS-TRANSCODE
+      - OTV2-CONTENT-087-AC01
+      - OTV2-CONTENT-089-STUDENT
+      - OTV2-CONTENT-089-PARENT-DENY
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - signed-in Vimeo manage-video UI
+      - content provider contracts
+  - provider_key: resend_email_transport
+    canonical_account_identity: sdratler
+    canonical_location_identity: onetimeonetime.com
+    identity_status: domain_confirmed_mailbox_route_partially_confirmed
+    read_permission_proven: true
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:resend-domain
+    required_authority_scope: candidate-bound security-template readback and bounded operator-only delivery
+    expected_candidate_bound_config:
+      domain: onetimeonetime.com
+      account_security_sender:
+        display_name: One Time Mishnayos Account
+        current_address: info@onetimeonetime.com
+      rabbi_sender:
+        display_name: Rabbi Eli Scheller
+        address: rabbielischeller@onetimeonetime.com
+        ownership: GHL lifecycle/campaign, not Resend security runtime
+    current_canonical_readback:
+      authenticated_account: sdratler
+      domain_status: verified
+      domain_region: us-east-1
+      dns_provider: GoDaddy
+      ready_to_send_and_receive: true
+      info_mailbox_receiving_observed: true
+      rabbi_mailbox_governed_ghl_route_observed: false
+    exact_gap:
+      - Prove rabbielischeller@onetimeonetime.com routes into governed GHL Conversations and is accepted for exact From and Reply-To use.
+      - Bind the candidate templates and a protected operator destination before any send.
+    verification_case_ids:
+      - OTV2-EMAIL-139-AC01
+      - OTV2-EMAIL-140-AC01
+      - OTV2-EMAIL-141-AC01
+      - OTV2-EMAIL-142-AC01
+      - OTV2-EMAIL-143-AC01
+      - OTV2-EMAIL-144-AC01
+      - OTV2-EMAIL-145-AC01
+      - OTV2-EMAIL-146-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - signed-in Resend Domains UI
+      - signed-in Resend Receiving UI
+      - public DNS readback without secret material
+      - integrations/highlevel/registry/sender-registry.yaml
+  - provider_key: telegram
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: no_connection_or_live_readback
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:telegram-bot
+    required_authority_scope: exact bot/chat destination readback; later operator notifications only
+    expected_candidate_bound_config:
+      operator_notifications_only: true
+      customer_messages_max: 0
+      raw_token_recording: prohibited
+    current_canonical_readback: unavailable
+    exact_gap:
+      - Register the exact bot identity and operator destination.
+      - Confirm the deployed worker belongs to this release rather than another Railway project.
+    verification_case_ids:
+      - OTV2-TICKETS-147-AC01
+      - OTV2-TICKETS-148-AC01
+      - OTV2-TICKETS-149-AC01
+      - OTV2-TICKETS-150-AC01
+      - OTV2-TICKETS-151-AC01
+      - OTV2-TICKETS-152-AC01
+      - OTV2-TICKETS-186-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - connector/tool discovery found no Telegram connector or CLI
+      - Railway inventory was not sufficient to bind a canonical bot
+  - provider_key: deployment_host_railway
+    canonical_account_identity: sdratler@gmail.com
+    canonical_location_identity: unknown
+    identity_status: account_authenticated_multiple_plausible_projects
+    read_permission_proven: true
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: production:deployment
+    required_authority_scope: exact candidate/project/environment/service-bound staging then production deployment
+    expected_candidate_bound_config:
+      provider: Railway
+      candidate_commit_sha_required: true
+      separate_web_and_worker_identity_required: true
+      production_deploy_only_after_candidate_verification: true
+    current_canonical_readback:
+      railway_account: sdratler@gmail.com
+      linked_project_in_worktree: false
+      plausible_projects:
+        - project_id: 7c8eee26-7a6a-4684-826d-9f4377d67d46
+          name: one-time-ot99-staging-96b42905
+        - project_id: ce55ef20-1418-4ad3-aafa-f877fb992dc8
+          name: one-time-production
+      canonical_project_selected: false
+    exact_gap:
+      - Register the exact project/environment/web/worker/database identities and active source SHA.
+      - Do not link or deploy from this preflight lane.
+    verification_case_ids:
+      - OTV2-FOUNDATION-216-AC01
+      - OTV2-OPS-166-AC01
+      - OTV2-OPS-167-AC01
+      - OTV2-OPS-171-AC01
+      - OTV2-OPS-172-AC01
+      - OTV2-OPS-173-AC01
+      - OTV2-OPS-218-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - railway whoami
+      - railway list --json
+      - no project link or variable read was performed
+  - provider_key: dns
+    canonical_account_identity: unknown
+    canonical_location_identity: onetimeonetime.com
+    identity_status: provider_and_public_records_confirmed_account_unknown
+    read_permission_proven: true
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: infra:dns
+    required_authority_scope: exact candidate-bound DNS change set and rollback
+    expected_candidate_bound_config:
+      registrar_or_dns_provider: GoDaddy
+      apex: onetimeonetime.com
+      required_hosts:
+        - onetimeonetime.com
+        - www.onetimeonetime.com
+        - app.onetimeonetime.com
+        - join.onetimeonetime.com
+      email_auth_required: true
+    current_canonical_readback:
+      authoritative_nameservers: ns37.domaincontrol.com, ns38.domaincontrol.com
+      resend_domain_verified: true
+      public_mail_records_present: true
+      join_cname_target: awaz36ln.up.railway.app
+      app_cname_present: false
+      www_cname_present: false
+      dns_account_identity: unknown
+    exact_gap:
+      - Register the exact GoDaddy account/zone identity.
+      - Supply candidate-bound app/www targets and an exact cutover/rollback packet.
+      - Legal remains a broad-release gate; it does not block read-only DNS preparation.
+    verification_case_ids:
+      - OTV2-DOMAIN-153-AC01
+      - OTV2-DOMAIN-154-AC01
+      - OTV2-DOMAIN-155-AC01
+      - OTV2-DOMAIN-156-AC01
+      - OTV2-DOMAIN-157-AC01
+      - OTV2-MIGRATION-206-AC01
+      - OTV2-MIGRATION-207-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - public DNS readback
+      - signed-in Resend domain readback
+      - P35 domain transition contracts
+  - provider_key: s3_kms
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: no_connection_or_live_readback
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:s3-kms
+    required_authority_scope: exact bucket/key-prefix/KMS/candidate bound canary
+    expected_candidate_bound_config:
+      encrypted_storage_required: true
+      exact_bucket_prefix_required: true
+      unrelated_object_mutation_max: 0
+    current_canonical_readback: unavailable
+    exact_gap:
+      - Register the AWS account, region, bucket, key prefix, and KMS key identities.
+      - Provide read-only credentials or a connected provider surface for candidate verification.
+    verification_case_ids:
+      - OTV2-CONTENT-233-STORAGE-MODELS-TRANSCODE
+      - OTV2-OPS-168-AC01
+      - OTV2-OPS-169-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - no AWS CLI, connector, or relevant environment name was available
+      - external authority matrix
+  - provider_key: openai
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: no_project_connection_or_live_readback
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: provider:openai-project
+    required_authority_scope: exact project/model/audio/token/cost candidate-bound canary
+    expected_candidate_bound_config:
+      exact_project_id_required: true
+      exact_model_and_operation_required: true
+      provenance_in_content_version_digest_required: true
+    current_canonical_readback: unavailable
+    exact_gap:
+      - Register the OpenAI project, model, operation, prompt, schema, token, and cost ceilings.
+      - Do not run transcription or generation until the P20/P21 publication-seed blocker is closed.
+    verification_case_ids:
+      - OTV2-CONTENT-084-AC01
+      - OTV2-CONTENT-085-AC01
+      - OTV2-CONTENT-086-AC01
+      - OTV2-CONTENT-191-AC01
+      - OTV2-CONTENT-193-AC01
+      - OTV2-CONTENT-233-OBS-CAPTURE
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - no OpenAI project-management connector, CLI, or relevant environment name was available
+      - P20/P21 control blocker
+  - provider_key: backup_source
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: no_candidate_bound_live_readback
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: infra:backup-source
+    required_authority_scope: exact production database/source and one pre-effect snapshot
+    expected_candidate_bound_config:
+      exact_source_identity_required: true
+      encrypted_snapshot_required: true
+      checksum_and_retention_required: true
+    current_canonical_readback:
+      mechanism_implemented: true
+      historical_evidence_exists: true
+      current_candidate_bound_source: unknown
+    exact_gap:
+      - Bind one production database/source identity after the deployment registry is canonical.
+      - Produce fresh candidate-bound backup evidence before any live mutation.
+    verification_case_ids:
+      - OTV2-OPS-168-AC01
+      - OTV2-OPS-170-AC01
+      - OTV2-OPS-218-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - P34 mechanism-only runtime state
+      - Railway inventory ambiguity
+  - provider_key: restore_target
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: no_candidate_bound_live_readback
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: infra:restore-target
+    required_authority_scope: exact isolated disposable restore target and cleanup
+    expected_candidate_bound_config:
+      isolated_from_production: true
+      unrelated_data_allowed: false
+      effects_disabled: true
+      immutable_cleanup_scope_required: true
+    current_canonical_readback:
+      mechanism_implemented: true
+      isolated_target_identity: unknown
+    exact_gap:
+      - Allocate and register one exact isolated restore target after candidate freeze.
+      - Run restore proof only with exact lock, retention, reconciliation, and cleanup authority.
+    verification_case_ids:
+      - OTV2-OPS-169-AC01
+      - OTV2-OPS-170-AC01
+      - OTV2-OPS-218-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - P34 mechanism-only runtime state
+  - provider_key: alert_destinations
+    canonical_account_identity: unknown
+    canonical_location_identity: unknown
+    identity_status: no_canonical_destinations_or_live_readback
+    read_permission_proven: false
+    write_permission_present_but_unused: unknown_not_tested
+    required_lock: ops:alert-destinations
+    required_authority_scope: exact operator-only destination and bounded test alert
+    expected_candidate_bound_config:
+      exact_destination_identity_required: true
+      customer_recipients_max: 0
+      redacted_payloads_only: true
+    current_canonical_readback:
+      alert_contracts_present: true
+      destination_identity: unknown
+    exact_gap:
+      - Register the exact operator alert destination and owner.
+      - Bind it to the candidate and separately authorize any test alert.
+    verification_case_ids:
+      - OTV2-OPS-171-AC01
+      - OTV2-OPS-172-AC01
+      - OTV2-OPS-173-AC01
+      - OTV2-OPS-219-AC01
+    timestamp: '2026-07-30T16:54:07Z'
+    evidence_source:
+      - operations/observability contracts only
+summary:
+  provider_rows: 14
+  read_permission_proven: 6
+  canonical_effect_targets_ready: 0
+  provider_effects: 0
+  locks_acquired: 0

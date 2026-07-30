@@ -1,0 +1,287 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P31
+generated_at: '2026-07-30T16:54:07Z'
+location_id: pBSnOK2nkdxp6gf9Rg3o
+candidate_digest: null
+mode: strictly_read_only
+global_invariants:
+  adult_or_guardian_contact_only: true
+  one_guardian_email_per_household: true
+  student_contacts_or_emails: prohibited
+  family_free_access: immediate_before_canonical_expiry
+  school_behavior: inquiry_acknowledgement_then_manual_follow_up_only
+  email_channel: launch_required
+  whatsapp_branch: disabled_no_op_channel_skipped_not_configured
+  whatsapp_may_block_email: false
+  canonical_identity_action: normalize_then_update_or_tag_existing_contact
+  duplicate_contact_creation: prohibited
+  billing_authority: GHL-managed Stripe boundary
+  direct_stripe_mutation_by_one_time: prohibited
+  broad_send_or_historical_enrollment: prohibited_without_exact_audience_and_final_copy_approval
+  canonical_sender:
+    display_name: Rabbi Eli Scheller
+    from_and_reply_to: rabbielischeller@onetimeonetime.com
+    status: provider_and_governed_conversations_route_proof_missing
+cross_cutting_case_coverage:
+  - case_id: OTV2-GHL-120-AC01
+    behavior: Rabbi sender uses the accepted Rabbi Eli Scheller identity and rabbielischeller@onetimeonetime.com, which explicitly supersede the historical rabbi@ address.
+    current_readback: Canonical sender registry is integrated; exact mailbox routing and provider acceptance are not proven.
+    required_correction: Prove exact From acceptance, seed delivery, and governed GHL Conversations routing before any activation.
+  - case_id: OTV2-GHL-121-AC01
+    behavior: Rabbi Reply-To uses the accepted rabbielischeller@onetimeonetime.com replacement identity.
+    current_readback: Canonical registry is integrated; a live reply reaching governed GHL Conversations is not proven.
+    required_correction: Send only an authorized operator seed, reply to it, and read back the exact governed conversation route.
+  - case_id: OTV2-GHL-122-AC01
+    behavior: Office and brand operational senders use info@onetimeonetime.com.
+    current_readback: Resend receiving at info@ was observed; exact HighLevel From/Reply-To acceptance was not exercised.
+    required_correction: Prove the exact office/brand HighLevel sender and reply path in the candidate-bound operator seed.
+  - case_id: OTV2-GHL-137-AC01
+    behavior: Suppression, DND, unsubscribe, complaint, and hard-bounce gates are enforced.
+    current_readback: Canonical suppression contracts are integrated; no candidate-bound provider execution was performed.
+    required_correction: Prove send-time exclusion and zero delivery for each protected suppression state.
+  - case_id: OTV2-GHL-138-COMMUNICATIONS-READBACK
+    behavior: Persisted adult communications state and provider drift readback.
+    current_readback: Provider workflow list is readable; candidate-bound persistence proof is deferred.
+    required_correction: Run the candidate-bound readback case in persistent staging or operator canary.
+  - case_id: OTV2-GHL-199-AC01
+    behavior: Dormant WhatsApp never fails, delays, or duplicates email.
+    current_readback: Repository contract passes; provider actions are not configured.
+    required_correction: Prove email proceeds and WhatsApp resolves channel_skipped_not_configured.
+  - case_id: OTV2-GHL-220-AC01
+    behavior: OT-11 remains retired; OT-12 is adult support; OT-14 is Parent Newsletter; OT-15 is Former Member Reactivation.
+    current_readback: OT-11 is absent, the live Support folder is empty, and OT-14/OT-15 are absent.
+    required_correction: Preserve retired OT-11, build the three exact canonical identities, and reject any legacy identifier collision.
+  - case_id: OTV2-PARENT-226-PREFERENCES
+    behavior: Persist Parent email/WhatsApp/both/none preference honestly.
+    current_readback: Repository contract passes; provider readback deferred.
+    required_correction: Prove saved preference without a WhatsApp send.
+  - case_id: OTV2-PARENT-226-ESSENTIAL-EMAIL
+    behavior: Essential security, billing, and access email ignores dormant WhatsApp availability.
+    current_readback: Repository contract passes; provider readback deferred.
+    required_correction: Prove essential email is not blocked by preference fallback.
+workflows:
+  - case_id: OTV2-GHL-123-AC01
+    workflow_key: OT-01
+    trigger: Adult public Family signup or School inquiry is durably accepted.
+    audience: One normalized adult/guardian contact per household or one adult School inquirer.
+    exclusions: Student contacts, duplicate normalized contacts, ambiguous provider matches, suppressed optional email.
+    timing: Immediate after local commit; GHL ambiguity never blocks Family login or pre-expiry access.
+    email_template: exact Family confirmation and School acknowledgement copy not registered as immutable P31 IDs
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: 95a6f461-1a04-4260-b379-246fdcc45af7
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Build adult-only Family and School branches; School sends one acknowledgement and stops, while Family access remains immediate.
+  - case_id: OTV2-GHL-124-AC01
+    workflow_key: OT-02A
+    trigger: Exact approved legacy-member migration segment is launched.
+    audience: Explicitly approved adult legacy segment with current permission.
+    exclusions: Students, activated accounts, opted-out/suppressed adults, all unapproved historical audiences.
+    timing: Three approved messages at the named approval launch cadence.
+    email_template:
+      - ghl.legacy_member_migration.step_1.v1
+      - step_2_and_step_3_exact_P31_template_ids_missing
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: 368d47ca-c6d2-4545-acb0-664f98bac8f2
+    canonical_template_id: partial
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Register the remaining exact copy/cadence, prove Rabbi sender routing, and obtain exact segment/final-copy approval before enrollment.
+  - case_id: OTV2-GHL-125-AC01
+    workflow_key: OT-02B
+    trigger: Admin starts the exact consented new-lead nurture segment.
+    audience: Consented, unsuppressed adult new leads only.
+    exclusions: Students, School inquiries, checkout started, active paid access, opt-out, suppression.
+    timing: Start, day 2, and day 5 per WNC-6.4.
+    email_template: exact three-step nurture template IDs not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: a7038e32-79d2-4d2d-b103-5722ab0abcfc
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Register exact copy and cadence, prove Rabbi sender routing, and keep Admin-start/broad-audience approval closed.
+  - case_id: OTV2-GHL-126-AC01
+    workflow_key: OT-03
+    trigger: Checkout starts and no verified active projection arrives.
+    audience: Adult Family checkout owner.
+    exclusions: Students, completed/active/canceled/newer checkout episodes, suppression.
+    timing: Two hours after start and final follow-up 24 hours after start.
+    email_template: checkout-abandonment exact template IDs not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: b5c3e702-a7e6-415d-9ffc-fa2b0027a27f
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Bind the GHL-managed checkout event, exact templates, waits, exits, and no-charge wording.
+  - case_id: OTV2-GHL-127-AC01
+    workflow_key: OT-04
+    trigger: Signed billing/access projection becomes Active.
+    audience: Adult account owner for the verified household.
+    exclusions: Students, unsigned or stale projections, duplicate activation episode, suppression.
+    timing: Once per verified activation episode.
+    email_template: payment-active exact template ID not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: dd1e90ea-f9bd-4c3b-97de-2230f119f38b
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Bind signed projection, exact USD 67/month or approved School terms, next billing date, copy, and idempotent access adapter.
+  - case_id: OTV2-GHL-128-AC01
+    workflow_key: OT-05
+    trigger: Signed billing/access projection becomes Grace after failure.
+    audience: Adult account owner for the affected household.
+    exclusions: Students, recovered/expired/newer billing episodes, suppression where legally permitted.
+    timing: Immediate, day 3, day 6, verified grace expiry, and recovery.
+    email_template: payment-failure/grace exact template IDs not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: 8c7a0a37-6747-492f-99f6-1a1fb90518de
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Bind exact grace timestamps, provider-hosted repair URL, templates, and recovery/expiry exits.
+  - case_id: OTV2-GHL-129-AC01
+    workflow_key: OT-06
+    trigger: Signed subscription projection becomes Canceled.
+    audience: Adult account owner for the affected household.
+    exclusions: Students, reactivated/reversed/newer episodes, suppression.
+    timing: Immediate and 24 hours before verified final access.
+    email_template: cancellation exact template IDs not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: 7421cd97-a61b-4434-b7f3-163b8cc7237c
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Bind the signed final-access date, non-refund wording, exact copy, and reactivation exit.
+  - case_id: OTV2-GHL-130-AC01
+    workflow_key: OT-07
+    trigger: One Time requests an adult Parent portal companion email.
+    audience: Invited adult Parent only.
+    exclusions: Students, revoked invitation, suppression.
+    timing: Immediate once per invitation episode.
+    email_template: Parent companion template ID not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: fb48c3bf-7154-44c9-825e-88afb5bb7942
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Add the exact non-token companion action; setup token creation and delivery remain Resend-only.
+  - case_id: OTV2-GHL-131-AC01
+    workflow_key: OT-08
+    trigger: Parent portal projection becomes Active.
+    audience: Activated adult Parent.
+    exclusions: Students, duplicate first-setup episode, suppression.
+    timing: Immediate once per first activation.
+    email_template: ghl.parent_portal_activated.v1
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: eeca2efb-41be-40a7-bbc4-ee6fe8760dd9
+    canonical_template_id: ghl.parent_portal_activated.v1
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Configure the exact registered template, adult-only trigger, send guard, and save/reopen readback.
+  - case_id: OTV2-GHL-132-AC01
+    workflow_key: OT-09
+    trigger: Confirmed class occurrence and Parent reminder preference pass.
+    audience: One adult/guardian email per household plus Student in-app notices only.
+    exclusions: Student email/GHL contact, canceled/replaced/completed occurrence, suppression.
+    timing: Thirty minutes before occurrence; schedule change/cancellation immediately.
+    email_template: ghl.parent_class_reminder.v1
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: bc8af9fc-22d5-4b4f-b71a-121eeff87f5b
+    canonical_template_id: ghl.parent_class_reminder.v1
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Configure exact wait, Parent protected link, one-household dedupe, Student in-app branch, and no raw Zoom URL.
+  - case_id: OTV2-GHL-133-AC01
+    workflow_key: OT-10
+    trigger: One Time publishes a protected recording for an entitled household.
+    audience: One adult/guardian email per eligible household plus Student in-app notices only.
+    exclusions: Student email/GHL contact, reversed publication, ineligible household, suppression.
+    timing: Immediate after approved publication/readback.
+    email_template: ghl.parent_recording_available.v1
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: 1bca5210-a3b9-496b-b3cd-48c60c0e33ca
+    canonical_template_id: ghl.parent_recording_available.v1
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Register the protected portal URL, configure exact template and entitlement gate, and never expose Vimeo bearer/public playback URLs.
+  - case_id: OTV2-TICKETS-147-AC01
+    workflow_key: OT-12
+    trigger: Verified adult Parent or public support intake.
+    audience: Adult requester and operator support only.
+    exclusions: Student outbound email/GHL contact and private Student support body.
+    timing: One acknowledgement then manual or governed support follow-up.
+    email_template: adult support acknowledgement exact template ID not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: unknown
+    canonical_template_id: unknown
+    current_readback: Missing; the live 50 - Support folder is empty.
+    required_correction: Assign a unique provider workflow identity and configure adult-only support acknowledgement/manual follow-up.
+  - case_id: OTV2-GHL-136-AC01
+    workflow_key: OT-13
+    trigger: Verified refund or chargeback support state is recorded.
+    audience: Adult billing owner only.
+    exclusions: Students, speculative or unverified amounts/status, duplicate episode, suppression.
+    timing: Once per verified refund/chargeback episode.
+    email_template: refund/chargeback exact template IDs not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: 9459a4a1-c5fa-4912-920e-e30c86f1fbe9
+    canonical_template_id: unknown
+    current_readback: Draft, zero total enrolled, zero active enrolled.
+    required_correction: Bind verified provider amount/status, neutral dispute copy, current access, and no independent access mutation.
+  - case_id: OTV2-GHL-134-AC01
+    workflow_key: OT-14
+    trigger: Approved weekly Parent newsletter publication.
+    audience: Current adult account owners with current newsletter permission.
+    exclusions: Students, School inquiries, suppressed/opted-out adults, private child/billing/cross-household data.
+    timing: Thursday at 12:00 household local time.
+    email_template: ghl.parent_newsletter.v1
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: unknown
+    canonical_template_id: ghl.parent_newsletter.v1
+    current_readback: Missing; no OT-14 exists in the live Enrollment & Nurture folder.
+    required_correction: Assign provider ID, save/reopen exact build, operator seed, then retain named approval for the first broad send.
+  - case_id: OTV2-GHL-135-AC01
+    workflow_key: OT-15
+    trigger: Named approval launches the exact former-member segment.
+    audience: Former/canceled adults with current marketing permission.
+    exclusions: Students, active Parents, School classification, suppression, signup or reactivation.
+    timing: Approval launch, day 4, and day 9.
+    email_template:
+      - ghl.former_member_reactivation.step_1.v1
+      - ghl.former_member_reactivation.step_2.v1
+      - ghl.former_member_reactivation.step_3.v1
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: unknown
+    canonical_template_id: P31_catalog_registered
+    current_readback: Missing; no OT-15 exists in the live Enrollment & Nurture folder.
+    required_correction: Assign provider ID, build exact three-step sequence, save/reopen, and keep exact segment/final-copy broad-send approval closed.
+  - case_id:
+      - OTV2-GHL-225-SCHEDULE
+      - OTV2-GHL-225-PAID-EXIT
+      - OTV2-GHL-225-SCHOOL-EXIT
+      - OTV2-GHL-225-SUPPRESSION
+    workflow_key: OT-16
+    trigger: 14, 7, 3, and 1 days before canonical expiry, and at expiry.
+    audience: Free-period Family adult with current marketing permission.
+    exclusions: Students, verified paid access, explicit decline, custom School terms, send-time suppression.
+    timing: Checkpoints -14d, -7d, -3d, -1d, and expiry 2026-09-13T19:24:00+03:00.
+    email_template: free-period conversion checkpoint template IDs not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: unknown
+    canonical_template_id: unknown
+    current_readback: Missing; no OT-16 exists in the live Billing & Access folder.
+    required_correction: Register exact checkpoint templates and provider ID, build deterministic adult/expiry/checkpoint dedupe, and recheck paid/School/suppression immediately before dispatch.
+  - case_id: OTV2-GHL-198-AC01
+    workflow_key: OT-B01
+    trigger: Public website assistant submits adult Family or School details.
+    audience: Adult public lead or School inquirer only.
+    exclusions: Students, WhatsApp qualification, ambiguous duplicate, School nurture/billing/access.
+    timing: Immediate Family CTA or one School acknowledgement followed by manual contact.
+    email_template: Family confirmation and School acknowledgement IDs not registered
+    whatsapp_branch: disabled_no_op
+    canonical_workflow_id: unknown
+    canonical_template_id: unknown
+    current_readback: Historical OT-B01 Complete Signup is Draft with zero enrollments but is an identity collision, not the canonical website lead-capture asset.
+    required_correction: Create a separately identified canonical OT-B01 asset from a reviewed packet; do not reuse the historical collision.
+summary:
+  workflow_rows: 17
+  cross_cutting_case_rows: 9
+  live_draft_zero_enrollment_rows: 13
+  live_missing_rows: 4
+  identity_collision_rows: 1
+  live_active_candidate_ready_rows: 0
+  messages_sent: 0
+  enrollments_created: 0
+  contacts_created_or_updated: 0
+  whatsapp_calls: 0

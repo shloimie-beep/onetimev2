@@ -1,166 +1,104 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: P31
-task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
-task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
-spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-branch: codex/v21-p31-email-copy-approval
-start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-dependency_heads:
-  C00:
-    required_state: operational
-    observed_state: operational
-    observed_control_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
-    control_state_digest: 630276e18850ddedbdc67ae6e119da9539bb04adc6ecf0f8dd03587568467ed3
-  I36:
-    required_state: direct_prerequisite_release_audited
-    observed_state: direct_prerequisite_release_audited
-    observed_integration_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
-    state_handoff_digest: 3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e
-    runtime_triplet_digest: 5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2
-  P30:
-    required_state: final_integrated
-    observed_state: final_integrated
-    observed_task_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
-  F01:
-    required_state: interface_ready_integrated
-    observed_state: interface_ready_integrated
-    observed_task_head_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
-    observed_integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-    interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
-    interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
-steward_request_binding:
-  request_id: P30-copy-registration-001
-  request_digest: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
-  request_digest_kind: raw_sha256
-  source_task_id: P30
-  source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
-  source_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-copy-registration-001.yaml
-  source_blob_sha: e62dc0f3b9a870608ddb74b6eba66b8d34bbc6af
-  target_checkpoint: P31_next_canonical_copy_registration_checkpoint
-correction_binding:
-  source_task_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
-  state_handoff_digest: 7e3bf5382afd76cfd71bd31fafaf880715a947bb41bd086dfab04a760225187f
-  runtime_triplet_digest: f9ced9e2537b39d58b9382d8dc965986f00bd38f3471710a661194ae99e5e47c
-  interface_contract_digest: a759c3db1cd946549d97359a68f394e8f8bd6af5c4c615748993bd901bb27f3a
-  lint_finding:
-    file: tests/unit/communications/copy-catalog.test.ts
-    source_file_digest: a0d18123cf3d5741b57eaf278803563125d34784f33bee357badaed9e2f8c60d
-    line: 143
-    rule: '@typescript-eslint/no-unused-vars'
-    symbol: _removedNamedApproval
-    required_correction: Remove only the unused binding without changing the test assertion, copy catalog, approval semantics, interface checkpoint, or runtime behavior.
 status: ready_for_review
-phase: copy_catalog_test_lint_correction_complete
-claimed_by: codex-p31-copy-7f50cef8
-claim_time: '2026-07-30T05:48:54Z'
-claim_id: 7f50cef8-f816-4a32-8f9e-071db09abbc0
-writer_slot_lease_id: 42734cda-47b5-44ec-8d9a-8da7c4f86ed1
-lease_issued_at: '2026-07-30T05:48:54Z'
-lease_expires_at: '2026-07-30T06:48:54Z'
-last_heartbeat_at: '2026-07-30T06:25:48Z'
-lease_released_at: '2026-07-30T06:25:48Z'
-controller_authorization_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
-claim_reconciled_control_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
-claim_reconciled_parent_control_sha: 0eb6204622792a6add325f0cb11bc25847701f10
-ready_entry_parent_control_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
-state_based_on_control_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
-ready_entry_payload_digest: 23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314
-writer_slot_leases:
-  COPY_CATALOG:
-    lease_id: 42734cda-47b5-44ec-8d9a-8da7c4f86ed1
-    lease_issued_at: '2026-07-30T05:48:54Z'
-    lease_expires_at: '2026-07-30T06:48:54Z'
-    released_at: '2026-07-30T06:25:48Z'
-state_based_on_head_sha: 4f61ec10f3270faf07dd217c9aab39df5ca7a8d9
-last_implementation_commit_sha: 4f61ec10f3270faf07dd217c9aab39df5ca7a8d9
+phase: provider_readback_preflight_complete
+updated_at: '2026-07-30T17:00:48Z'
+branch: codex/v21-lane2-ghl-email
+expected_prior_branch_head_sha: 1e9f41a3af58d3385754961861a260d2746a5073
+start_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+communications_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+candidate:
+  status: not_frozen
+  digest: null
+claim:
+  claim_id: 8e264a4e-d748-4f11-84f1-cfe78869dd18
+  mode: ready
+  disposition: completed_for_review
+writer_slot_lease:
+  slot: COPY_CATALOG
+  lease_id: 43f6f071-e111-489d-b2ed-2c8d6db7f948
+authority:
+  mode: strictly_read_only_preflight
+  source_grant_id: ot-v21-production-source-grant-20260729
+  source_grant_present: true
+  candidate_bound_effect_authority_usable: false
+  provider_locks_acquired: 0
 completed_steps:
-  - Verified C00 independent reconciliation at canonical control 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b with sole parent 0eb6204622792a6add325f0cb11bc25847701f10, unchanged claim and COPY_CATALOG lease, and exact remote claim head 9d878d88587d6f742a927d3cf4e175594d1e12de.
-  - Removed only the unused _removedNamedApproval test binding using an optional-property-safe copy/delete without changing its assertion, catalog, approval semantics, interface checkpoint, requests, or runtime behavior.
-  - Passed the focused 3-test Vitest file, workspace typecheck, full quiet repository lint, scoped Prettier, YAML parsing, secret scan across 2443 repository text files, diff/scope checks, and effects 0/0/0.
-  - Released COPY_CATALOG lease 42734cda-47b5-44ec-8d9a-8da7c4f86ed1 before expiry.
-  - Atomically claimed only the exact P31 copy-catalog test lint correction from remote head d72dda5669627695edaf9dbf20f7650c9b5c9ded under canonical control 0eb6204622792a6add325f0cb11bc25847701f10.
-  - Recomputed and matched READY digest 23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314, exact package/task/context bindings, C00/I36/P31 dependency bindings, the P31 interface digest, and the exact lint source digest.
-  - Reproduced only tests/unit/communications/copy-catalog.test.ts:143 @typescript-eslint/no-unused-vars for _removedNamedApproval without removing the binding or changing any product, test, copy, request, or interface byte.
-  - Atomically claimed P30-copy-registration-001 from exact branch head ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d under C00 authorization 30689e76f3697ab11dedab3b77d5bb5cbededde5.
-  - Verified the exact P30 request blob and raw SHA-256 binding without editing the copy catalog or performing any provider effect.
-  - Verified C00 reconciliation of atomic claim eff2434e4ec39af0eeb127f2c46c525a3bed6130 at control commit a0599de4502994d5028c9b24084b400d48f72f98.
-  - Verified remote control head, branch absence, exact authorized start SHA, P31 task/context digests, F01 integrated interface proof, and active COPY_CATALOG lease.
-  - Seeded first-claim runtime state for atomic remote branch creation.
-  - Implemented the canonical sender/copy catalog, Resend-only token template renderer, GHL adult-only fragments, and digest-bound campaign approval enforcement with current-consent and approval-launch timing semantics.
-  - Published the P31 interface checkpoint for P28, P29, and P30.
-  - Authored and registered only OT-15 step 2 and step 3 with their fixed IDs, subjects, day-4/day-9 offsets, exact bodies, required variables, and canonical digests while preserving step 1 unchanged.
-  - Added focused contract coverage for exact registrations, immutable digests, no token-bearing content, current consent, named approval, and fail-closed body/subject/timing drift.
-  - Refreshed the P31 interface checkpoint to semantic contract 1.1.0 and released COPY_CATALOG lease d03dd6a9-384f-4b52-aaaf-3ac5752a36da before expiry.
+  - Fast-forwarded the lane branch to the exact required integration head without a merge commit, reset, rebase, or force push.
+  - Read P28 through P31 implementation evidence, the provider and HighLevel registries, acceptance mapping, and V41/V42 coverage.
+  - Performed connector-first, strictly read-only provider discovery and recorded unknown or ambiguous identities as gaps rather than guessing.
+  - Confirmed the exact HighLevel location path pBSnOK2nkdxp6gf9Rg3o and the live One Time workflow folders.
+  - Read back 13 canonical P31/V42 workflow rows as Draft with zero active and zero total enrollments; four required rows are absent.
+  - Confirmed the Resend domain onetimeonetime.com is verified and ready to send and receive; the governed Rabbi sender route remains unproven.
+  - Recorded observed but not registry-bound Vimeo, Drive, Railway, and DNS identities without selecting a canonical target.
+  - Produced the canonical provider matrix, GHL workflow matrix with all 28 V42 case IDs plus the P31 adult-support case, and consolidated authorization-gap packet.
+  - Performed no provider mutation, send, charge, contact write, enrollment, workflow change, deployment, DNS change, file move, or publication.
 remaining_steps:
-  - C00 must independently audit the exact pushed P31 lint-correction final.
-next_action: Stop for C00 audit of the exact P31 lint-correction implementation/final ancestry, four-path scope, released lease, verification, remote equality, and effects 0/0/0.
+  - C00 and I36 independently audit and integrate this exact six-path preflight checkpoint.
+  - After candidate freeze, C00 must bind exact provider identities, authority, fixtures, budgets, and fencing tokens before any live effect.
+  - V41/V42 must perform candidate-bound configuration, readback, bounded canaries, and reconciliation under the required exclusive locks.
+next_action: Stop. C00/I36 should audit the pushed preflight head, its six-path scope, matrix hashes, remote equality, and zero-effect record.
 requirements:
-  OTV2-EMAIL-139: implementation_ready
-  OTV2-EMAIL-140: implementation_ready
-  OTV2-EMAIL-141: implementation_ready
-  OTV2-EMAIL-142: implementation_ready
-  OTV2-EMAIL-143: implementation_ready
-  OTV2-EMAIL-144: implementation_ready
-  OTV2-EMAIL-145: implementation_ready
-  OTV2-EMAIL-146: implementation_ready
+  OTV2-EMAIL-139: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-140: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-141: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-142: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-143: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-144: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-145: implementation_ready_preflight_readback_recorded
+  OTV2-EMAIL-146: implementation_ready_preflight_readback_recorded
 acceptance_cases:
-  OTV2-EMAIL-139-AC01: implementation_ready
-  OTV2-EMAIL-140-AC01: implementation_ready
-  OTV2-EMAIL-141-AC01: implementation_ready
-  OTV2-EMAIL-142-AC01: implementation_ready
-  OTV2-EMAIL-143-AC01: implementation_ready
-  OTV2-EMAIL-144-AC01: implementation_ready
-  OTV2-EMAIL-145-AC01: implementation_ready
-  OTV2-EMAIL-146-AC01: implementation_ready
+  OTV2-EMAIL-139-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-140-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-141-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-142-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-143-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-144-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-145-AC01: candidate_bound_verification_pending
+  OTV2-EMAIL-146-AC01: candidate_bound_verification_pending
 changed_paths:
-  - integrations/highlevel/v21/copy/catalog.ts
-  - packages/domain/src/communications/copy/approval.ts
-  - packages/domain/src/communications/copy/catalog.ts
-  - tests/unit/communications/copy-catalog.test.ts
-  - ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P31/HANDOFF.md
-  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
-current_checkpoint_changed_paths:
-  - tests/unit/communications/copy-catalog.test.ts
+  - ops/v2.1-execution/runtime/P31/PROVIDER-PREFLIGHT-MATRIX.yaml
+  - ops/v2.1-execution/runtime/P31/GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml
+  - ops/v2.1-execution/runtime/P31/AUTHORIZATION-GAPS.yaml
   - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P31/HANDOFF.md
   - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
 migrations: []
-steward_requests:
-  - request_id: P30-copy-registration-001
-    source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
-    source_blob_sha: e62dc0f3b9a870608ddb74b6eba66b8d34bbc6af
-    raw_sha256: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
-    disposition: implemented_exactly
+artifacts:
+  provider_preflight_matrix:
+    path: ops/v2.1-execution/runtime/P31/PROVIDER-PREFLIGHT-MATRIX.yaml
+    sha256: 35d6de26d55205f3937bf3d696886802d33041eba59a7fa2c2bdc671edf8b22f
+  ghl_workflow_preflight_matrix:
+    path: ops/v2.1-execution/runtime/P31/GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml
+    sha256: 80b46f631ae4cc1eca24d0b352c2cf13ce0aefa078c70d1c30d8b3a03a3a5fe7
+  authorization_gaps:
+    path: ops/v2.1-execution/runtime/P31/AUTHORIZATION-GAPS.yaml
+    sha256: 83115cf51ad4ddd24b3d0984c7c009419d9d43cfc894d9de901922e876ab50a6
 verification:
   commands_run:
-    - C00 reconciliation, exact remote claim head, unchanged claim/lease, and authorized one-binding scope verification (passed)
-    - npm exec -- vitest run tests/unit/communications/copy-catalog.test.ts --config vitest.unit.config.ts (passed; 1 file, 3 tests)
-    - npm run typecheck (passed)
-    - npm run lint -- --quiet (passed; zero findings)
-    - npm exec -- prettier --check tests/unit/communications/copy-catalog.test.ts and the P31 runtime triplet (passed)
-    - YAML parse of P31 TASK-STATE.yaml (passed)
-    - npm run secret:scan (passed across 2443 repository text files)
-    - exact four-path implementation/final scope, preserved catalog/approval/interface/request bytes, and git diff --check (passed)
-    - exact remote branch/control, resume READY, claim, lease, package/task/context, dependency, interface, and zero-effect-lock binding verification (passed)
-    - canonical sorted-JSON READY payload digest recomputation (passed)
-    - raw Git-byte C00/I36/P31 dependency and lint-source binding recomputation (passed)
-    - npm exec -- eslint tests/unit/communications/copy-catalog.test.ts (passed after the exact authorized correction)
-    - exact runtime-triplet-only claim scope verification (passed)
-    - npm run typecheck (passed)
-    - npm exec -- vitest run tests/unit/communications/copy-catalog.test.ts --config vitest.unit.config.ts (passed; 3 tests)
-    - npm exec -- prettier --check on P31 product/test/runtime files (passed)
-    - YAML parse of P31 runtime/interface files (passed)
-    - npm run secret:scan (passed)
-    - git diff --check (passed)
-    - P31 owned-path scope audit against eff2434e4ec39af0eeb127f2c46c525a3bed6130 (passed)
-  known_baseline_failures: []
+    - YAML parse and structural validation of all P31 preflight YAML artifacts
+    - Exact 14-provider uniqueness and six proven read-permission count validation
+    - Exact 17 P31/V42 workflow-key uniqueness, nine cross-cutting case-row, and all 28 V42 case-ID validation
+    - Matrix summary reconciliation against parsed rows
+    - git diff --check
+    - repository secret scan
+    - exact six-path scope audit
 external_effects:
-  authority: none
+  authority: read_only_preflight
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+  locks_acquired: 0
+blockers:
+  - id: P31-CANDIDATE-NULL
+    scope: candidate_bound_provider_configuration_and_verification
+    detail: No candidate digest exists, so effect authority and provider locks cannot be bound.
+  - id: P31-PROVIDER-IDENTITIES
+    scope: future_provider_effects
+    detail: Exact canonical identities and/or live permissions remain missing for the providers listed in AUTHORIZATION-GAPS.yaml.
+  - id: OPS-084-LEGAL-BUNDLE
+    scope: broad_production_release_only
+    detail: The external legal bundle does not block staging preparation, read-only provider checks, or an otherwise authorized operator-owned canary; it blocks the legal acceptance case, R45, customer activation, DNS cutover, and broad release.
 out_of_scope_findings: []
