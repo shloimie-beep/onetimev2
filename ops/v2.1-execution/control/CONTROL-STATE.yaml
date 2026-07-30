@@ -16,29 +16,30 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+controller_authorization_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
 next_action: >-
-  Dispatch the three exact disjoint READY entries from this phase boundary. I36 consumes accepted-source microbatch 1 in
-  order F02 26234c47, P20/P21 a210c6cb, then P08 7ba18b92 and repairs only the four-function pg-mem compatibility
-  harness. In parallel F04 completes the v2.1 Parent-session/household-label repository correction and P09 completes the
-  durable School inquiry repository/router. Reconcile that batch before Lane B/Lane C integration or any central
-  registration. Candidate freeze and all provider mutation, deployment, DNS, sends, charges, live migration execution,
-  and customer activation remain gated.
+  Dispatch I36 accepted-source microbatch 2 from integration 4bc8e7a8 in exact order F04 a5868a95, P09 a64a0c03, then
+  Lane B/F07 fc16537d. Preserve all three source ancestries and edit only the I36 runtime triplet outside queued source
+  paths. After that release, dispatch disjoint F03 v2.1 host-cookie middleware and the focused F04 ownership-transfer
+  revocation-column and household-session-scope corrections before P08 session composition or any central registration.
+  Candidate freeze and all provider mutation, deployment, DNS, sends, charges, live migration execution, and customer
+  activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: independently_admitted_pending_integration
+  status: integrated_and_reconciled
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
-  expected_integration_parent_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  integration_merge_sha: 131413297b7eb6510a1e12d44337e576406cafae
+  integration_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
   successor_request_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
   successor_request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
-  next_migration_ordinal: 2253
+  next_migration_ordinal: 2254
   scope: immutable_2250_2252_plus_forward_only_2253_projection_v2
   provider_effects: prohibited
 - lane: B
   owner: F07_with_P08_public_entry
-  status: independently_admitted_pending_next_microbatch
+  status: independently_admitted_queued_microbatch_2
   branch: codex/v21-lane3-landing-campaign
   implementation_head_sha: 0937404a24cb1c880afc1d1a8a555a29936e735b
   expected_head_sha: fc16537da38e82bbd82f3210136145ed44988cd2
@@ -53,10 +54,11 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: accepted_source_microbatch_1_ready
+  status: accepted_source_microbatch_2_ready
   branch: codex/v21-integration
-  expected_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-  scope: accepted_source_microbatch_1_migration_harness_then_producer_corrections_and_registration
+  prior_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
+  expected_head_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
+  scope: accepted_source_microbatch_2_F04_P09_LaneB_only
   provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through

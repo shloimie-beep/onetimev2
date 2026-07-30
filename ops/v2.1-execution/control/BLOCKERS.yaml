@@ -10,8 +10,8 @@ blockers:
   - V43
   - R45
   safe_work_completed: >-
-    Final source release 42068ace was inspected read-only. All six required repository paths are absent, no existing
-    steward request names them, P34 owns only the non-fabricatable gate mechanism, and restricted CI, staging,
+    Current integration release 4bc8e7a8 was inspected read-only. All six required repository paths are absent, no
+    existing steward request names them, P34 owns only the non-fabricatable gate mechanism, and restricted CI, staging,
     production-read-only, and operator-canary verification may continue.
   required_authority_or_input:
   - Exact approved legal/terms-of-service.html
@@ -40,9 +40,9 @@ blockers:
     migrations 2250-2252 replay, typecheck and secret checks pass, and no live database or external effect occurred.
   required_authority_or_input: []
   protection: The historical rejected head 68e3c527 remains diagnostic only; only the corrected final migration bytes may be considered for candidate replay.
-  next_check: Revalidate the final 2252 checksum after the coordinated P20/P21 publication-seed correction and before candidate freeze.
+  next_check: Revalidate after any later migration or database-byte change and once at candidate freeze.
 - blocker_id: P20-P21-PUBLICATION-SEED-INTEGRATION
-  status: open
+  status: closed
   scope: controlled_launch_candidate
   owner: P20_P21_F02_I36
   affected_tasks:
@@ -53,18 +53,16 @@ blockers:
   - V39
   - R44
   safe_work_completed: >-
-    Source-complete P20/P21 implementation 38156528 passed 42/42 focused assertions, exact repository reload,
-    canonical persisted participant evidence, immutable approved artifact revisions, and 27-field/8-field projection
-    parity. Immutable successor request P21-MIGRATION-003 is pushed at checkpoint a210c6cb and assigned only to F02 for
-    exact forward-only ordinal 2253. F02 terminal 26234c47 now supplies that exact forward-only migration; fresh native
-    PostgreSQL and pg-mem replay, every malformed/stale/cross-scope/mismatch/five-guard rejection probe, independent
-    scope review, remote equality, and effects 0/0/0 passed. Both accepted heads are queued for one ordered I36
-    ancestry-preserving microbatch. Empty Mishnah references remain valid when none were supplied and approved.
-  required_authority_or_input:
-  - Integrate exact F02 26234c47 followed by P20/P21 a210c6cb while preserving both source ancestries
-  - Re-run merged migration order/checksum/native/pg-mem verification before closing the blocker
-  protection: Do not merge the source checkpoint, execute migration 2253 on a live database, freeze a candidate, or claim publication readiness until the coordinated source and forward-only migration set is independently admitted.
-  next_check: Re-evaluate only after I36 publishes the exact ordered microbatch release and merged database proof.
+    Exact F02 26234c47, P20/P21 a210c6cb, and P08 7ba18b92 are ordered integration ancestors of release 4bc8e7a8 at
+    merges 13141329, 4c2d9a6c, and e1dce668. The merged repository applied all 84 migrations to fresh PostgreSQL 16.14,
+    replayed all 84 as already applied, verified zero pending, passed the complete pg-mem inventory, 78 focused tests,
+    typecheck, independent ancestry/scope/digest review, and effects 0/0/0. Migration 2253 is mirrored as the exact
+    forward-only P21-MIGRATION-003 allocation; empty Mishnah references remain valid when none were supplied and approved.
+  required_authority_or_input: []
+  protection: Preserve the independently admitted source and forward-only migration bytes; do not execute migration
+    2253 on a live database or claim candidate publication readiness until the later candidate and live-migration gates
+    are satisfied.
+  next_check: Re-run the complete migration inventory only after later merged migration or database-byte changes and once at candidate freeze.
 - blocker_id: P08-FAMILY-PARENT-SESSION-COMPOSITION
   status: open
   scope: controlled_launch_candidate
@@ -77,13 +75,12 @@ blockers:
   - V37
   - R44
   safe_work_completed: >-
-    Corrected P08 source 1550e668 and terminal 7ba18b92 are independently admitted. The source persists the local Family
-    transaction, truthful 202 recovery, adult-only provider handoff, and post-expiry local checkout intent with no
-    provider effect. Read-only inspection proved the active middleware still resolves only legacy sessions and F04
-    selects nonexistent v21_households.display_name. Exact successor requests are recorded and F04 has a bounded
-    no-migration correction READY.
+    Corrected P08 source 1550e668/terminal 7ba18b92 are integrated at 4bc8e7a8. F04 terminal a5868a95 independently
+    passes exact Parent-session create/resolve/revoke persistence against unchanged migration 2235 and derives labels
+    from the owner AdultIdentity instead of nonexistent v21_households.display_name. F04 is queued first in source
+    microbatch 2. The active middleware still resolves only legacy sessions, so F03 and then P08/I36 composition remain.
   required_authority_or_input:
-  - Complete F04 v2.1 adult-session persistence/resolution and owner-derived household label
+  - Integrate exact F04 terminal a5868a95
   - Complete F03 host-cookie runtime using the same resolver, then wire P08 and I36
   - Pass real pre/post-expiry Parent-session middleware and inactive-route allowlist verification
   protection: Do not claim signup session establishment from row insertion alone, expose raw token material, rewrite migration 2235, or treat inactive access as an unauthenticated Parent.
@@ -98,14 +95,58 @@ blockers:
   - I36
   - V37
   safe_work_completed: >-
-    The corrected landing terminal fc16537d posts the exact School payload to
-    /api/v2.1/signup/school-inquiry. Existing P09 contracts, domain policy, and service are integrated, but no concrete
-    PostgreSQL repository or task-owned router exists, so the route would currently return 404. A bounded seven-path
-    P09 correction READY is active with zero provider authority.
+    Corrected P09 terminal a64a0c03 adds the concrete transactional PostgreSQL repository and task-owned exact POST
+    /api/v2.1/signup/school-inquiry descriptor. Independent review passed its exact seven-path scope, 26 focused tests,
+    typecheck, durable normalized-email deduplication, one local acknowledgment intent, and zero account, access,
+    Student, nurture, provider, WhatsApp, or Stripe effects. P09 and corrected landing terminal fc16537d are queued in
+    microbatch 2.
   required_authority_or_input:
-  - Complete the durable P09 PostgreSQL repository and exact task-owned route descriptor
+  - Integrate exact P09 terminal a64a0c03 and Lane B terminal fc16537d
   - Register the reviewed descriptor in the next I36 central checkpoint and rerun the static production landing test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
   next_check: Re-evaluate after P09 correction admission and I36 route registration.
+- blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
+  status: open
+  scope: controlled_launch_candidate
+  owner: F04_I36
+  affected_tasks:
+  - F04
+  - I36
+  - V37
+  - R44
+  safe_work_completed: >-
+    Independent review of F04 terminal a5868a95 confirmed its bounded Parent-session/label correction and also reproduced
+    a separate defect already present at integration base c0a1e04b and current integration 4bc8e7a8.
+    persistAppliedOwnershipTransfer calls revokeIds with schema-incompatible columns under migration 2235.
+    v21_adult_sessions uses revoke_reason; v21_billing_portal_sessions has no reason column and requires the canonical
+    revoked state; v21_account_action_tokens uses action_token_id/revoked_at rather than
+    token_id/invalidated_at/invalidation_reason. A nonempty transfer revocation set would roll back.
+  required_authority_or_input:
+  - After F04 source integration, correct only the existing repository/helper and focused tests against unchanged migration 2235
+  - Prove exact row counts, full rollback on stale or missing rows, and atomic nonempty adult-session, billing-session,
+    and action-token revocation on PostgreSQL, including all three version increments and the adult updated_at advance
+  protection: Do not alter migration 2235, weaken ownership-transfer atomicity, omit any revocation set, or treat empty-set tests as production proof.
+  next_check: Re-evaluate after an exact F04 follow-up terminal is independently reviewed and integrated.
+- blocker_id: F04-OWNERSHIP-TRANSFER-SESSION-SCOPE
+  status: open
+  scope: controlled_launch_candidate
+  owner: F04_I36
+  affected_tasks:
+  - F04
+  - I36
+  - V37
+  - R44
+  safe_work_completed: >-
+    Independent review found a second pre-existing transfer defect in the F04 domain logic. Outgoing Parent sessions
+    are selected by account, Parent role, and unrevoked state, but not by the transferred household. A transfer can
+    therefore revoke a sibling-household session even though locked specification section 4.4 requires independent
+    multi-household access.
+  required_authority_or_input:
+  - After F04 source integration, require activeHouseholdId to equal the transferred household in both outgoing-session
+    selection and locked-inventory validation
+  - Add a sibling-household regression proving unrelated sessions remain active through an otherwise successful transfer
+  protection: Do not broaden revocation to every Parent session on the account or weaken the locked-inventory equality
+    check.
+  next_check: Re-evaluate with the exact F04 transfer follow-up terminal and its repository/domain tests.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

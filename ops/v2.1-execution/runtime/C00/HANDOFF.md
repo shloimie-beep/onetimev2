@@ -2472,3 +2472,45 @@ sequence is F04 → F03 → P08 → I36 for the Parent session, P09 → I36 for 
 then Lane B/Lane C and the remaining producer-adapter batches. Legal remains a
 broad-release-only blocker. No provider lock is held and all external effects
 remain `0/0/0`.
+
+# Source microbatch 1 reconciliation and microbatch 2 authorization
+
+Control acquisition parent is
+`26f29aeb6734948dd8b80ab85a342831defaecc9`; exact remote integration is
+`4bc8e7a84039394ffb0584deaccdff19eebaea9b`; candidate remains null.
+
+I36 release `4bc8e7a8` is independently accepted. It preserves the ordered
+F02/P20-P21/P08 source ancestries at merges `13141329`, `4c2d9a6c`, and
+`e1dce668`, adds only the two-path pg-mem compatibility harness at
+`dd819ae6`, and publishes one runtime-only terminal. The release passed 13
+files/78 focused tests, workspace typecheck, the complete 84/84 pg-mem
+inventory, fresh PostgreSQL 16.14 apply/replay with zero pending, exact scope
+and digest review, clean remote equality, and effects `0/0/0`.
+
+F04 terminal `a5868a9503d1037890f5f8e250c2afe5131c4331` and P09 terminal
+`a64a0c03edb6ae50023011f470358e9214f1196c` are independently source-ready.
+F04 is exact five-path Parent-session/owner-label work; P09 is exact
+seven-path transactional School-inquiry repository/route work. Their producer
+leases are released and effects remain `0/0/0`. Corrected Lane B/F07 terminal
+`fc16537da38e82bbd82f3210136145ed44988cd2` is also source-ready with its
+exact eighteen-path landing/brand/campaign scope.
+
+I36 may consume only READY digest
+`e41f28294f2a128ed697634d0d47050c8d04640355c1f71bb491ba9c7f3d1636`
+and the three exact MERGE items in order F04, P09, F07 from target `4bc8e7a8`,
+under claim `77b3e5e2-bc2f-4c74-95c1-6bd61a4884a6` and
+RELEASE_INTEGRATOR lease `3043fafc-a550-487a-9109-76dc7373caff` through
+`2026-07-30T20:44:51Z`. Outside queued source paths it may change only its
+runtime triplet, run changed-area validation, release the lease, push normally,
+and stop for C00 audit. Central registration, configuration, candidate freeze,
+provider effects, deployment, DNS, sends, charges, and live migration
+execution remain outside this checkpoint.
+
+Independent F04 review also found two pre-existing candidate blockers that
+the bounded session source does not fix: ownership-transfer revocation SQL is
+incompatible with migration 2235, and outgoing Parent-session selection does
+not restrict revocation to the transferred household. After microbatch 2,
+authorize one focused F04 repository/domain correction with exact row-count
+and rollback proof plus a sibling-household regression, in parallel with the
+F03 v2.1 host-cookie middleware correction. Legal remains
+`production_broad` only. No provider lock is held and effects remain `0/0/0`.

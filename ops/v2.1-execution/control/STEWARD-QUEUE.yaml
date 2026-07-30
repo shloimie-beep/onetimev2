@@ -982,16 +982,16 @@ items:
   request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
   requesting_task_id: P21
   kind: migration
-  status: assigned
+  status: applied
   assigned_steward: F02
   target_checkpoint: F02_content_publication_projection_v2_2253_checkpoint
   acknowledged_by_task: true
   acknowledgment_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   acknowledgment_state_handoff_digest: 3d8d2efe445ac6c4f65816680ec4d75fcd81cc5136df3f496e3ba278a0ceb79c
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  applied_commit_sha: 131413297b7eb6510a1e12d44337e576406cafae
+  result_record_head_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
+  evaluated_target_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  result_digest: af088e7b42fd4722dbb0f99d0ab2284921e7efbac8594a6f2de85e6a33ead397
   rejection_reason: null
 - request_id: P21-registration-002
   request_digest: 63ee368f245772ca72043c301c7a7ea370fcbed86f511f3a157b2a3bb0d717f0

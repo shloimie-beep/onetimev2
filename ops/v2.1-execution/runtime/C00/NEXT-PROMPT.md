@@ -3,11 +3,34 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Current phase boundary: control parent
+# Latest source microbatch 2 instruction
+
+Current control acquisition parent is
+`26f29aeb6734948dd8b80ab85a342831defaecc9`; exact integration target is
+`4bc8e7a84039394ffb0584deaccdff19eebaea9b`; candidate is null.
+
+I36 consumes only READY `e41f2829...` and the exact MERGE-QUEUE items F04
+`a5868a95`, P09 `a64a0c03`, and F07/Lane B `fc16537d` in that order. Preserve
+all source ancestry and exact 5/7/18-path scopes. Use claim
+`77b3e5e2-bc2f-4c74-95c1-6bd61a4884a6` and RELEASE_INTEGRATOR lease
+`3043fafc-a550-487a-9109-76dc7373caff` through
+`2026-07-30T20:44:51Z`. Outside queued source paths, change only the I36
+runtime triplet. Release the lease, push normally, and stop for C00 audit.
+
+After reconciliation, dispatch disjoint F03 v2.1 host-cookie middleware and
+focused F04 ownership-transfer corrections for schema-correct exact-row-count
+revocation plus transferred-household session scoping. P08 Parent-session and
+P09 School central composition follow those producer gates. Candidate freeze,
+provider effects, deployment, DNS, sends, charges, live migration execution,
+and customer activation remain withheld.
+
+# Superseded prior phase instruction
+
+Prior phase boundary: control parent
 `f2b4a9faefdb5f780c9b620fedb413d408d27a19`, integration
 `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`, candidate null.
 
-Dispatch and reconcile exactly three disjoint writers:
+The following three-writer dispatch is complete and retained only as history:
 
 1. I36 consumes MERGE-QUEUE microbatch F02 `26234c47`, P20/P21 `a210c6cb`,
    P08 `7ba18b92` in that order, preserves ancestry and exact merge bases, then

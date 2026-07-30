@@ -3,8 +3,8 @@ execution_id: OT-V21-PRODUCTION
 semantic_owner: F02
 mechanical_control_writer: C00
 proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-reviewed_latest: 2252_v21_content_publication.sql
-next_available_ordinal: 2253
+reviewed_latest: 2253_v21_content_publication_projection_v2.sql
+next_available_ordinal: 2254
 never_allocate:
 - 2231
 allocations:
@@ -251,6 +251,21 @@ allocations:
   integrated_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
   integration_release_sha: 526f038412d7652451e519fae0f8ef857625029a
   native_postgresql_evidence_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2253
+  file: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+  task_id: P21
+  request_id: P21-MIGRATION-003
+  request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+  purpose: Forward-only source-complete publication projection parity with exact 27-field evidence, 8-field immutable artifact provenance, persisted P20 evidence binding, and content-scoped validation at all five publication guards.
+  interface_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+  status: allocated
+  checksum_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
+  pg_mem_checksum_sha256: 3d86765f1f026b891c3f908987980b7de6e431ce004b034e179ba703902fe517
+  integrated_merge_sha: 131413297b7eb6510a1e12d44337e576406cafae
+  integration_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
+  native_postgresql_evidence_head_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
   replaces_applied_migration: false
   destructive: false
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00
