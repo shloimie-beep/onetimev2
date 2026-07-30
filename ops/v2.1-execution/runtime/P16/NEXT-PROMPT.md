@@ -13,13 +13,18 @@ Task context: ops/v2.1-execution/contexts/P16-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P16/HANDOFF.md
 
-Fetch remote refs and verify the exact P16 registry/ready entry, branch head,
-claim, lease, package/task/context and dependency digests. Read task state plus
-handoff before named work and resume the exact next action. P16 is
-`ready_for_review` with its task-local lease released; do not reopen
-implementation without a new exact C00 `resume_ready` entry. I36 should
-integrate interface digest
-95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
-from implementation head 46b5c39aceb6006376903750cfc268b35bbaccdd
-and disposition the two structured steward requests. No global control edits,
-steward application, or live effects belong on the P16 branch.
+Stop at this atomic claim checkpoint until C00 reconciles its exact pushed head
+and sole parent. The claim is
+`0a4c2e0f-6c3d-4e42-aee8-8bfd27ce5c9d` under CLASSROOM_CORE lease
+`01453191-8f65-4dcd-8559-9045599dae9b`, expiring
+`2026-07-30T01:23:18Z`.
+
+After explicit reconciliation, resume only the bounded classroom repository
+migration-compatibility correction: persist non-null `reminder_local_time` for
+every class-series insert, persist non-null `reminder_due_at` and
+`joinable_until` for every occurrence insert, and prove the exact repository
+paths against native PostgreSQL after migrations through 2239.
+
+Do not implement before reconciliation. Do not edit control or integration,
+apply steward requests, register, inspect providers, deploy, send, or perform
+external effects. Effects remain `0/0/0`.

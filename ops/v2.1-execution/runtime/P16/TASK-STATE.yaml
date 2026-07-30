@@ -25,19 +25,20 @@ dependency_heads:
     integration_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
     interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
     interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
-status: ready_for_review
-phase: complete
-claimed_by: codex-p16-worker-fd104a34
-claim_time: '2026-07-28T21:04:00Z'
-claim_id: afd00130-7e98-4428-b9ef-303b50815189
-writer_slot_lease_id: b9bbf43a-ccce-40a2-a491-e333207e64ab
-lease_expires_at: '2026-07-28T22:04:00Z'
-lease_released_at: '2026-07-28T21:22:00Z'
-last_heartbeat_at: '2026-07-28T21:22:00Z'
-controller_authorization_sha: 6be24ff7ebe3bd8188aa4d100eb9160c62a414a8
-state_based_on_control_head_sha: c9b4a8085f87fb958ad8688ac345f642bb23f94b
-ready_entry_payload_digest: baa5c566c8d30882b022723ff7cd0d3ab22eb6a9b0d3f4f64c940dcdec8853ac
-state_based_on_head_sha: 45649e52ea792f2ead63415555776497747cacad
+status: claimed
+phase: classroom_repository_migration_compatibility_correction
+claimed_by: codex-p16-worker-0a4c2e0f
+claim_time: '2026-07-29T23:53:18Z'
+claim_id: 0a4c2e0f-6c3d-4e42-aee8-8bfd27ce5c9d
+writer_slot_lease_id: 01453191-8f65-4dcd-8559-9045599dae9b
+lease_issued_at: '2026-07-29T23:53:18Z'
+lease_expires_at: '2026-07-30T01:23:18Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-30T00:16:50Z'
+controller_authorization_sha: 9d53cf1c581dcb67e30b2beb62d048a1839f23e2
+state_based_on_control_head_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+ready_entry_payload_digest: 5a7d1bebc22b55cf415ad4cea51131aee21c880c09792c3c8bd4c064104bf675
+state_based_on_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
 last_implementation_commit_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
 interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
 implementation_artifact_digest: 1fb4658cf45b75fb99b009dad04e5d127d35ffd5c9816bf41a544dd0514e58b4
@@ -54,9 +55,12 @@ completed_steps:
   - passed full typecheck, 17 focused assertions, focused lint, formatting, and diff hygiene
   - published the exact P16 interface artifact hashes and combined contract digest for P17, P18, and P19
   - published terminal ready_for_review metadata with exact implementation, interface, artifact, state/handoff, and steward-request bindings and released the task-local lease
+  - verified exact containing control 9d53cf1c581dcb67e30b2beb62d048a1839f23e2, sole acquisition parent a6bc58cc4a35173fd1606124c0fa651dda2dac64, expected remote head 72fca16b3a9cd82c666e293f8bfd7d84c30722a1, canonical READY digest, task/context/package bindings, fresh claim, sole CLASSROOM_CORE lease, empty effect locks, and effects 0/0/0
+  - claimed only the P16 runtime triplet for the classroom repository migration-compatibility correction; all product, test, interface, steward-request, control, provider, deployment, send, and effect bytes remain unchanged
 remaining_steps:
-  - I36 must integrate the interface checkpoint and disposition structured migration/registration requests
-next_action: I36 should integrate interface digest 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68 from implementation head 46b5c39aceb6006376903750cfc268b35bbaccdd, then disposition P16-MIGRATION-001 and P16-REGISTRATION-001.
+  - C00 must reconcile this exact pushed atomic claim before any product or test correction.
+  - After reconciliation, persist non-null reminder_local_time for every class_series insert, persist non-null reminder_due_at and joinable_until for every class_occurrences insert, and prove the exact repository paths against native PostgreSQL after migrations through 2239.
+next_action: Stop after pushing this triplet-only claim. Await exact C00 reconciliation before reading or editing product/test paths for the bounded classroom repository migration-compatibility correction.
 requirements:
   OTV2-CLASSROOM-065: implementation_ready
   OTV2-CLASSROOM-066: implementation_ready
@@ -110,12 +114,17 @@ verification:
     - focused Prettier check and git diff --check (passed)
     - exact 15-artifact implementation Git-blob digest derivation (passed)
     - exact six-export interface digest recomputation from implementation-head Git blobs (passed)
+    - exact resume control, acquisition parent, registry, READY entry, remote branch head, claim, lease, effect-lock, and dependency binding verification (passed)
+    - canonical recursively key-sorted READY payload recomputation (passed; 2682-byte preimage and digest 5a7d1bebc22b55cf415ad4cea51131aee21c880c09792c3c8bd4c064104bf675)
+    - exact prior P16 state/handoff and triplet digest recomputation (passed)
+    - task, context, and package-lock raw Git-blob digest verification (passed)
   known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+blockers:
+  - C00 reconciliation of this atomic triplet-only claim is required before the bounded product/test correction.
 out_of_scope_findings:
   - Shared migration, root barrel, and central server/client registration changes are captured in STEWARD-REQUESTS.yaml and were not edited by P16.

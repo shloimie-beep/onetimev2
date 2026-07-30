@@ -1,21 +1,21 @@
-# P16 Handoff
+# P16 Classroom Repository Migration-Compatibility Atomic Claim
 
 ## Identity
 
 - Branch: `codex/v21-p16-class-series-occurrences`
 - Start SHA: `01cdb992660a1fbc20b204b829d28062fd044679`
-- Renewal base SHA before this handoff metadata commit: `45649e52ea792f2ead63415555776497747cacad`
+- Exact resume head before this claim: `72fca16b3a9cd82c666e293f8bfd7d84c30722a1`
 - Last committed implementation SHA: `46b5c39aceb6006376903750cfc268b35bbaccdd`
 - Interface metadata SHA: `418ffcc5cbf78643b40b89dbc5da64ea04806f6e`
 - Current handoff commit: derive with `git rev-parse HEAD`; C00 records the observed remote head
 - Task packet digest: `a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e`
 - Context digest: `1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0`
 - Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Renewal claim: `afd00130-7e98-4428-b9ef-303b50815189`
-- CLASSROOM_CORE lease: `b9bbf43a-ccce-40a2-a491-e333207e64ab`, issued `2026-07-28T21:04:00Z` and expiring `2026-07-28T22:04:00Z`
-- Containing control authorization: `6be24ff7ebe3bd8188aa4d100eb9160c62a414a8`
-- Ready-entry parent: `c9b4a8085f87fb958ad8688ac345f642bb23f94b`
-- Ready payload digest: `baa5c566c8d30882b022723ff7cd0d3ab22eb6a9b0d3f4f64c940dcdec8853ac`
+- Resume claim: `0a4c2e0f-6c3d-4e42-aee8-8bfd27ce5c9d`
+- CLASSROOM_CORE lease: `01453191-8f65-4dcd-8559-9045599dae9b`, issued `2026-07-29T23:53:18Z` and expiring `2026-07-30T01:23:18Z`
+- Containing control authorization: `9d53cf1c581dcb67e30b2beb62d048a1839f23e2`
+- Sole acquisition parent: `a6bc58cc4a35173fd1606124c0fa651dda2dac64`
+- Ready payload digest: `5a7d1bebc22b55cf415ad4cea51131aee21c880c09792c3c8bd4c064104bf675`
 - Implementation artifact digest: `1fb4658cf45b75fb99b009dad04e5d127d35ffd5c9816bf41a544dd0514e58b4`
 - Interface contract digest: `95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`
 - Interface state/handoff digest: `afd57cbd0cc837caf6b6b007a61269f676f99ee1ea2d7d4edd7f2da65d31714e`
@@ -23,45 +23,39 @@
 
 ## Completed behavior
 
-Implemented the additive P16 classroom-core contract, exact series and occurrence
-state machines, canonical singleton and draft-zero-effect rules, DST-safe
-rolling occurrence projection, atomic automatic canonical enrollment, idempotent
-reconciliation, tenant/version/replay fences, transaction repository and
-service, and the accessible Admin lifecycle workspace.
-
-The P17/P18/P19 interface is published at implementation head
-`46b5c39aceb6006376903750cfc268b35bbaccdd` with contract digest
-`95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`.
+Verified the exact resume authorization, remote head, canonical READY payload,
+fresh claim, sole CLASSROOM_CORE lease, rejected semantic gates, empty effect
+locks, and effects `0/0/0`. This checkpoint changes only the P16 runtime
+triplet. All product, test, interface, and steward-request bytes are preserved.
 
 ## Remaining work
 
-I36 must integrate the exact interface checkpoint and disposition the migration
-and central registration steward requests. Candidate-bound environment proof
-remains with verification/release lanes.
+C00 must reconcile the exact pushed atomic claim before any bounded correction.
+After reconciliation, P16 must persist authoritative non-null reminder timing
+for every series and occurrence insert and prove those repository paths
+natively after migrations through 2239.
 
 ## Exact next action
 
-Integrate contract digest
-`95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68`
-from implementation head `46b5c39aceb6006376903750cfc268b35bbaccdd`,
-then disposition `P16-MIGRATION-001` and `P16-REGISTRATION-001`.
+Stop after publishing this exact triplet-only claim. Await C00 reconciliation;
+do not implement the correction from this checkpoint.
 
 ## Coverage
 
-- Requirements: all seven assigned requirements are implementation-ready.
-- Acceptance cases: all seven assigned cases are implementation-ready; candidate-bound environment proof remains with verification/release lanes.
+- Requirements: prior implementation remains preserved; compatibility correction not started.
+- Acceptance cases: prior evidence remains preserved; native correction proof not started.
 
 ## Changed files and migrations
 
-Added only P16-owned contract, domain, database, server, client, test, and
-runtime paths. No migration, shared barrel/composer, control/integration,
-manifest/lock, or global style/token path was edited.
+This claim changes only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
+No product, test, migration, registration, control, integration, provider,
+deployment, or send path changed.
 
 ## Verification
 
-Exact continuation authority and dependency bindings passed. Full typecheck,
-17 focused lifecycle/enrollment assertions, focused ESLint, focused Prettier,
-and diff hygiene pass using the authorized shared dependency runtime.
+Exact control/acquisition, registry/READY, branch, canonical READY digest,
+claim/lease, package/task/context, prior triplet, effect-lock, and effect
+bindings passed.
 
 ## External effects
 
@@ -74,5 +68,5 @@ accessed or attempted.
 
 ## Blockers, deviations, and recovery
 
-No task-local blocker. Shared schema and central registration are represented by
-`P16-MIGRATION-001` and `P16-REGISTRATION-001` for I36.
+C00 reconciliation of the exact pushed claim is required before product or test
+work resumes.
