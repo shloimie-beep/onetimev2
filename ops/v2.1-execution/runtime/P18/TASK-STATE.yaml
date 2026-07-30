@@ -29,23 +29,23 @@ dependency_heads:
     interface_source_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
     interface_implementation_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
     interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
-status: claimed
-phase: P18_P17_disjoint_ownership_successor_request_correction_atomic_claim
+status: ready_for_review
+phase: P18_P17_disjoint_ownership_successor_request_correction_complete
 completed_correction_phase: launch_grant_table_collision_correction
 claimed_by: codex-p18-successor-correction-baeb91ef
 claim_time: '2026-07-30T09:46:00Z'
 claim_id: baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4
-writer_slot_lease_id: b84e8273-7109-435f-93a6-6d35b41678de
-lease_issued_at: '2026-07-30T09:46:00Z'
-lease_expires_at: '2026-07-30T10:46:00Z'
-last_heartbeat_at: '2026-07-30T09:48:00Z'
-lease_released_at: null
-controller_authorization_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
-acquisition_parent_control_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
-state_based_on_control_head_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
+writer_slot_lease_id: 39d6a728-0cde-43e6-9a3f-693c1b07ab4c
+lease_issued_at: '2026-07-30T11:04:00Z'
+lease_expires_at: '2026-07-30T12:04:00Z'
+last_heartbeat_at: '2026-07-30T11:08:08Z'
+lease_released_at: '2026-07-30T11:08:08Z'
+controller_authorization_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
+acquisition_parent_control_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
+state_based_on_control_head_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
 ready_entry_payload_digest: ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811
-reconciled_claim_head_sha: null
-reconciled_claim_control_sha: null
+reconciled_claim_head_sha: 9b10ef41d65c39bd33d673d0849f0106e13296d2
+reconciled_claim_control_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
 prior_reconciled_claim_head_sha: d315c47ff9e616ef7909c6edce85a226c5e4fbec
 prior_reconciled_claim_control_sha: 8241e5527b7cfbdf12cdeb0c3916fb259a6a7054
 prior_request_reauthorization_sha: 01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc
@@ -94,7 +94,36 @@ successor_request_correction_binding:
   registration_001_canonical_sha256: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
   product_test_request_bytes_preserved: true
   external_effects: 0/0/0
+substantive_correction_binding:
+  reconciliation_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
+  reconciliation_control_parent_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
+  claim_checkpoint_head_sha: 9b10ef41d65c39bd33d673d0849f0106e13296d2
+  claim_state_raw_sha256: 8d0a89c657fab02c8c64a603d61b100df7e1b58a7abb5b76f88727912d73b566
+  claim_handoff_raw_sha256: fd3f668d468fde1c893c2390dca3e43dea90a9cabe4de1426b3f0970a67bf02a
+  claim_state_handoff_digest: 4655004bf0494d4561934e3ee33359e2625b34eb784c8a6ce6fcf8e3c385cdb1
+  claim_runtime_triplet_digest: c02dd015e5cc637ffb4a0c79559ee575d9b23e5bb76e0bffa931b45fddc894ed
+  rebound_writer_slot_lease_id: 39d6a728-0cde-43e6-9a3f-693c1b07ab4c
+  rebound_lease_issued_at: '2026-07-30T11:04:00Z'
+  rebound_lease_expires_at: '2026-07-30T12:04:00Z'
+  rebound_lease_released_at: '2026-07-30T11:08:08Z'
+  correction_path_inventory_digest: bc7d137af343a7a8bb71e411ad4dc1b42d36fd1320d5168bc15a3bd49c9b1c7d
+  migration_003_raw_sha256: 20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9
+  migration_003_canonical_sha256: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
+  repository_raw_sha256: fff7c15fe9144c00da6a8515b5f319ba88df241f4558de2a89239b990676135b
+  repository_test_raw_sha256: b2bcc9fd7e8106b0c0450efd47bc6d6cc3427c3ae3bc5d8e6b66ba7746119ef3
+  schema_contract_raw_sha256: f2437b9533afc0d8b7453fb4ac8e8c02ff3eee91aff910c768e5ec10ada5de71
+  launch_grant_raw_sha256: b7245798c1f49dd7e375f061fc8c7f593ec7cb1923c2de6da6e0bd3e9277131e
+  live_session_raw_sha256: ed93f86cd1f364de90054b9dc1812ff881565afe8aa274893bc92447505ba3f2
+  existing_request_and_source_bytes_preserved: true
+  migration_003_is_sole_successor: true
+  source_compatibility_change_required: false
+  external_effects: 0/0/0
 completed_steps:
+  - C00 reconciled exact runtime-triplet claim 9b10ef41d65c39bd33d673d0849f0106e13296d2 at control 246990489b99575c3ded7af18ab22571d2fcb3a6 and rebound the unchanged claim to sole EMBEDDED_CLASSROOM lease 39d6a728-0cde-43e6-9a3f-693c1b07ab4c.
+  - Confirmed no P18 source compatibility change is required after exact P17 integration; all five conditional source/test artifacts remain byte-identical.
+  - Created immutable P18-migration-003 as the complete successor to immutable withheld migration-002, preserved rejected migration-001 and registration-001 byte-identically, and requested exactly the four P18-owned tables with explicit disjoint P17 and canonical outbox/binding reuse boundaries.
+  - Passed focused YAML, formatting, raw/canonical request digest, exact scope, protected-byte, ownership, runtime-manifest, diff-hygiene, clean-push, remote-equality, and zero-effect checks.
+  - Released sole EMBEDDED_CLASSROOM lease 39d6a728-0cde-43e6-9a3f-693c1b07ab4c at 2026-07-30T11:08:08Z before its 2026-07-30T12:04:00Z expiry.
   - Recomputed exact P18 READY ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811 from containing control 3757ee49b83027d69208f25b0f709d309d5c6c1a and state-basis control f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0 with control-state digest 7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade.
   - Verified exact task, context, package, runtime, request, ownership, dependency, path-ceiling, fresh claim, sole EMBEDDED_CLASSROOM lease, and zero-effect bindings.
   - Claimed only the P18 runtime triplet from exact head b9ad947405de53c138561fd47b9d5c65a25f6b8b; every product, test, migration request, registration request, control, provider, deployment, send, and effect byte remains unchanged.
@@ -126,10 +155,11 @@ completed_steps:
   - Passed four focused files with 18 assertions, full typecheck, focused ESLint and Prettier, repository-wide secret scan, and exact path/digest/YAML/blob checks.
   - Released the EMBEDDED_CLASSROOM lease in task-local terminal metadata after correction verification.
 remaining_steps:
-  - C00 must independently audit and reconcile this exact runtime-triplet-only atomic claim.
-  - Only after reconciliation, P18 may publish immutable P18-migration-003 as the complete successor to immutable migration-002 while preserving rejected migration-001 and registration-001 byte-identically.
-  - The five authorized source/test paths remain byte-identical unless an exact post-claim compatibility defect is proven and recorded.
-next_action: C00 must reconcile the exact pushed P18 atomic claim before P18 creates migration-003 or edits any source; P18 must stop.
+  - C00 must independently audit and integrate this exact four-path successor-request correction final.
+  - F02 must independently adjudicate only immutable P18-migration-003; migration-001 remains rejected and migration-002 remains superseded and withheld.
+  - I36 must independently disposition the byte-identical P18-registration-001 request.
+  - Candidate-bound provider-sandbox and production-operator proof remains for verification waves.
+next_action: C00 audits and integrates this exact P18 final, then F02 adjudicates only P18-migration-003 and I36 independently handles the preserved registration request; P18 must stop.
 requirements:
   OTV2-CLASSROOM-073: implementation_verified
   OTV2-CLASSROOM-075: implementation_verified
@@ -175,6 +205,11 @@ current_claim_changed_paths:
   - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P18/HANDOFF.md
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
+current_correction_changed_paths:
+  - ops/v2.1-execution/runtime/P18/HANDOFF.md
+  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-003.yaml
 authorized_successor_correction_paths:
   - ops/v2.1-execution/runtime/P18/HANDOFF.md
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
@@ -201,9 +236,14 @@ steward_requests:
   - request_id: P18-migration-002
     sha256: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
     canonical_queue_sha256: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
-    disposition: pending_F02_adjudication
+    disposition: superseded_immutable_withheld_by_P18-migration-003
+  - request_id: P18-migration-003
+    sha256: 20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9
+    canonical_queue_sha256: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
+    disposition: proposed_immutable_pending_F02_adjudication
   - request_id: P18-registration-001
     sha256: 1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0
+    canonical_queue_sha256: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
 verification:
   commands_run:
     - Exact remote/control/integration/branch/claim/lease/effect-lock verification passed.
@@ -222,6 +262,8 @@ verification:
     - Focused ESLint and Prettier passed all four correction source/request artifacts.
     - npm run secret:scan passed across 2669 repository text files.
     - Exact seven-path diff, correction manifest, repository/schema/request digests, YAML parsing, protected-blob preservation, and git diff --check passed.
+    - Exact reconciliation control, claim checkpoint, rebound lease, four-path ceiling, disjoint P17/P18 ownership, and zero-effect bindings passed.
+    - P18-migration-003 YAML, raw/canonical digest, exact four-table request, immutable predecessor/registration preservation, conditional source-byte preservation, focused Prettier, runtime manifests, and diff hygiene passed.
   known_baseline_failures: []
 external_effects:
   authority: none

@@ -110,3 +110,40 @@ migration, control, provider, deployment, send, or effect byte. Effects remain
 
 C00 must independently audit and reconcile the exact pushed atomic claim before
 P18 creates the immutable successor request or edits any source. P18 must stop.
+
+## P17-disjoint ownership successor-request correction final
+
+C00 reconciled exact claim checkpoint
+`9b10ef41d65c39bd33d673d0849f0106e13296d2` at control
+`246990489b99575c3ded7af18ab22571d2fcb3a6`. The unchanged claim
+`baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4` continued under sole rebound
+EMBEDDED_CLASSROOM lease `39d6a728-0cde-43e6-9a3f-693c1b07ab4c`.
+
+P18 published only immutable `P18-migration-003` plus this runtime triplet.
+The request:
+
+- has raw SHA-256
+  `20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9`;
+- has canonical queue SHA-256
+  `a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960`;
+- completely supersedes and withholds immutable `P18-migration-002`;
+- never revives or edits rejected immutable `P18-migration-001`;
+- requests exactly P18's four owned tables and no P17 table;
+- reuses, but does not create or alter, canonical `job_outbox` and
+  `provider_operation_binding`;
+- allocates no ordinal, contains no SQL, and claims no application or execution.
+
+Exact integrated P17 `7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c`
+retains its five disjoint preparation tables. No source incompatibility was
+found, so all five conditional source/test artifacts remain byte-identical.
+`P18-registration-001`, migration-001, and migration-002 also remain
+byte-identical.
+
+Lease `39d6a728-0cde-43e6-9a3f-693c1b07ab4c` was released at
+`2026-07-30T11:08:08Z`, before its `2026-07-30T12:04:00Z` expiry. No
+provider, migration, registration, deployment, send, or external effect
+occurred. Effects remain `0/0/0`.
+
+C00 must independently audit and integrate the exact pushed four-path final.
+F02 then adjudicates only immutable `P18-migration-003`; I36 independently
+handles the preserved registration request. P18 must stop.
