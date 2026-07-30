@@ -127,3 +127,53 @@ and `9d82cfccdbf896c247025c3c4183ce8dacb88afe578e6013655965fdbed9c76e`.
 Every product, acceptance, existing request, successor-request, and
 partial-work byte remains unchanged. Effects remain `0/0/0`. Stop for C00
 reconciliation before implementation.
+
+## Canonical ownership/provider-outbox correction complete
+
+C00 reconciled the renewed claim at control
+`6fec4000f1e31d608f8fc41488a9befab903aae8`. P17 then published exact
+implementation head `178af0c35012828016f395611e3d2f8cb3f88ff8` as the sole
+child of renewal claim `b9e7b49a2fa8c0ad1281dc262babd457d4f532ac`.
+
+The implementation removes all P17 launch-grant, Meeting SDK bootstrap,
+live-session, device, Admin reset, attendance, unit-of-work, persistence, test,
+and schema ownership. P18 remains the sole owner of those responsibilities.
+P17 retains only preparation saga, roster snapshot, classroom resource,
+Student registrant, preparation command, join-state availability, retry,
+quarantine, and provider lifecycle behavior.
+
+Provider intent now persists atomically to canonical `onetime.job_outbox` plus
+`onetime.provider_operation_binding` with F05 idempotency equality and exact
+F06 registry/account/effect fields. Mismatched existing jobs or bindings fail
+closed and roll back. The corrected schema contract is
+`P17-ZOOM-PREPARATION-SCHEMA-002` and names exactly five P17 tables.
+
+### Immutable evidence
+
+- 11-path implementation checkpoint:
+  `c3afe953e44a0fd5b86aa9e7522d066c4c048eca4472372c5c7f50349160603a`
+- Canonical 13-product digest:
+  `c35cf10d10031cf4227faf31c6442bcef9aa41c9a55e6ec24320a7f8c4b4d731`
+- Contract artifact:
+  `4e99730e9ac01b0f84474009152f7e8b2dd4ba1f8d2022cc5f0e5a69728b5916`
+- Five-table schema artifact:
+  `60156982482173fc84a2e42c17e6a79106f970997e3212715c2999a309180eac`
+- Acceptance matrix:
+  `0573200dc876dc6cbac4892bd3dce027c3d6413a6861dd2d1653efc9616487aa`
+- Existing request container, unchanged:
+  `92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444`
+- `P17-MIGRATION-002` raw/canonical:
+  `fa9868d91b12a30808f80a5233219011126ea9cde5571380c25058a53b2818c8` /
+  `e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca`
+- `P17-SERVER-WORKER-REGISTRATION-002` raw/canonical:
+  `375142acb5e58ac91c11c83721930f43f5b5bc4e9bc90a027669a80dd933d53a` /
+  `e90e471bb23f71b85ad321e188e64144d323461805838baff33f46ed4cd4f1b8`
+
+Verification passed: 23 focused tests, workspace typecheck, focused ESLint and
+Prettier, successor YAML parsing, secret scan across 2725 files, exact scope,
+forbidden-ownership scan, existing-request byte preservation, and diff hygiene.
+
+The renewed ZOOM_PREPARATION lease
+`0d08dc64-fb12-4aa5-bf5d-10a3267e18f4` was released task-locally at
+`2026-07-30T07:27:44Z`. External-effect authority remained `none`; effects
+were `0/0/0`. No provider inspection or operation occurred.

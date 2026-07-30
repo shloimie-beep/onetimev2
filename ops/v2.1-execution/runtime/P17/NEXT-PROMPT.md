@@ -1,7 +1,7 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: STOP
+MODE: START_OR_RESUME
 
 Review corrected One Time v2.1 task P17 from its exact remote
 ready-for-review checkpoint.
@@ -70,3 +70,20 @@ Stop for C00 reconciliation of this renewed runtime-triplet claim. Do not
 change any product, acceptance, existing request, successor request, partial
 work, provider configuration, or external-effect byte before explicit
 continuation authority.
+
+Review completed P17 canonical ownership/provider-outbox correction from exact
+implementation head `178af0c35012828016f395611e3d2f8cb3f88ff8` and its
+terminal runtime checkpoint. C00 continuation authority was
+`6fec4000f1e31d608f8fc41488a9befab903aae8`.
+
+Independently verify the exact 11-path implementation delta, corrected
+13-product digest `c35cf10d10031cf4227faf31c6442bcef9aa41c9a55e6ec24320a7f8c4b4d731`,
+five-table schema, atomic `job_outbox` plus `provider_operation_binding`
+adapter, and absence of all P17 launch/bootstrap/live-session/attendance
+ownership.
+
+Disposition only committed successors `P17-MIGRATION-002` and
+`P17-SERVER-WORKER-REGISTRATION-002`. Every `-001` request remains immutable
+and withheld. The renewed lease was released at `2026-07-30T07:27:44Z`.
+External-effect authority is `none`; do not inspect or call Zoom, access
+credentials, deploy, or run provider canaries.

@@ -55,9 +55,9 @@ collision_correction_binding:
   required_successor_requests:
     - P17-MIGRATION-002
     - P17-SERVER-WORKER-REGISTRATION-002
-status: claimed
-phase: canonical_classroom_ownership_and_provider_outbox_correction_lease_renewal_atomic_claim
-correction_work_status: renewal_atomic_claim_only
+status: ready_for_review
+phase: canonical_classroom_ownership_and_provider_outbox_correction_complete
+correction_work_status: completed
 claimed_by: codex-p17-correction-e85735a2
 claim_time: '2026-07-30T07:01:44Z'
 claim_id: e85735a2-4a41-476b-bca2-d1dde009e69d
@@ -84,30 +84,48 @@ writer_slot_leases:
     lease_issued_at: '2026-07-30T07:01:44Z'
     lease_expires_at: '2026-07-30T08:31:44Z'
     phase_scope: P17_canonical_classroom_ownership_and_provider_outbox_correction_renewal_atomic_claim_only
-    released_at: null
+    released_at: '2026-07-30T07:27:44Z'
 lease_expires_at: '2026-07-30T08:31:44Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-30T07:09:00Z'
+lease_released_at: '2026-07-30T07:27:44Z'
+last_heartbeat_at: '2026-07-30T07:27:44Z'
 controller_authorization_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
 claim_checkpoint_sha: 7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f
 claim_reconciliation_control_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 renewal_checkpoint_sha: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
 continuation_authorization_sha: 268ab601b89573238befe70de7995908925575cc
 continuation_acquisition_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
+renewal_continuation_authorization_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
 ready_entry_state_based_on_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 ready_entry_payload_digest: 4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb
-state_based_on_head_sha: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
-last_implementation_commit_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
-implementation_artifact_digest: 6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0
+state_based_on_head_sha: 178af0c35012828016f395611e3d2f8cb3f88ff8
+last_implementation_commit_sha: 178af0c35012828016f395611e3d2f8cb3f88ff8
+implementation_artifact_digest: c35cf10d10031cf4227faf31c6442bcef9aa41c9a55e6ec24320a7f8c4b4d731
 implementation_artifact_digest_algorithm: SHA-256 over exact correction implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the canonical 13 non-runtime P17 product artifacts, with LF separators and no final newline.
-correction_checkpoint_digest: 43c8795f9f53557abf5a5c1f7e3d1431eae674b2a48055f2448a03c959272d5d
-correction_checkpoint_digest_algorithm: SHA-256 over the seven exact Git blobs changed by correction implementation commit 3560b053a535b2889ea95e1d05ab58bb82b219cc as lexicographically sorted UTF-8 path=sha256 lines, with LF separators and no final newline.
-correction_product_digest: 969e0807db933ecf9a1ec7849b6fd5d95a45164e7bd1ce66cfac0532669febd7
-contract_artifact_digest: 1408feedc82fd0009d996d2699a04289093db191196f4c4a2ae659e3a32d8ae9
-schema_contract_artifact_digest: 908048ef2f7ad13277a00f63f452390480bdc9b065163fda3381f17bd645ed3e
+correction_checkpoint_digest: c3afe953e44a0fd5b86aa9e7522d066c4c048eca4472372c5c7f50349160603a
+correction_checkpoint_digest_algorithm: SHA-256 over the exact 11 Git blobs changed by correction implementation commit 178af0c35012828016f395611e3d2f8cb3f88ff8 as lexicographically sorted UTF-8 path=sha256 lines, with LF separators and no final newline.
+correction_product_digest: c35cf10d10031cf4227faf31c6442bcef9aa41c9a55e6ec24320a7f8c4b4d731
+contract_artifact_digest: 4e99730e9ac01b0f84474009152f7e8b2dd4ba1f8d2022cc5f0e5a69728b5916
+schema_contract_artifact_digest: 60156982482173fc84a2e42c17e6a79106f970997e3212715c2999a309180eac
 steward_request_digest: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
-acceptance_matrix_digest: b3fafe36b3e3aabe9c6a592dcef201629d94847b231d6a9184afa7c861a908a2
+successor_request_bindings:
+  P17-MIGRATION-002:
+    raw_sha256: fa9868d91b12a30808f80a5233219011126ea9cde5571380c25058a53b2818c8
+    canonical_sha256: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+    status: proposed_immutable
+  P17-SERVER-WORKER-REGISTRATION-002:
+    raw_sha256: 375142acb5e58ac91c11c83721930f43f5b5bc4e9bc90a027669a80dd933d53a
+    canonical_sha256: e90e471bb23f71b85ad321e188e64144d323461805838baff33f46ed4cd4f1b8
+    status: proposed_immutable
+acceptance_matrix_digest: 0573200dc876dc6cbac4892bd3dce027c3d6413a6861dd2d1653efc9616487aa
 completed_steps:
+  - C00 reconciled the renewed atomic claim at control 6fec4000f1e31d608f8fc41488a9befab903aae8 before product work began.
+  - Removed every P17 launch-grant, Meeting SDK bootstrap, live-session, device, Admin reset, attendance contract, domain, unit-of-work, persistence, test, and schema claim while preserving P18 as sole owner.
+  - Preserved the preparation saga, roster snapshot, classroom resource, Student registrant, preparation command, join-availability, retry, quarantine, and canonical provider lifecycle surfaces.
+  - Replaced the noncanonical provider_operations insert with one transactionally atomic F05-style job_outbox insert plus exact F06 provider_operation_binding insert; mismatched existing jobs or bindings fail closed and roll back.
+  - Advanced the P17 schema contract to P17-ZOOM-PREPARATION-SCHEMA-002 with exactly five preparation tables.
+  - Published only immutable P17-MIGRATION-002 and P17-SERVER-WORKER-REGISTRATION-002 while preserving every existing -001 request byte.
+  - Passed 23 focused tests across four files, workspace typecheck, focused ESLint, focused Prettier, successor YAML parse, secret scan across 2725 repository text files, exact scope, and diff hygiene.
+  - Published implementation commit 178af0c35012828016f395611e3d2f8cb3f88ff8 by normal non-force update and released the renewed ZOOM_PREPARATION lease in this terminal metadata.
   - Recomputed renewal READY digest 4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb from canonical control fbc944ab1ec5aa4ca768cff7db76c1da03bac516 and verified exact checkpoint, prior pair/triplet, request bytes, fresh claim, renewed lease, and zero effect locks.
   - Atomically claimed only the renewed correction lease from exact parent 7596a0f1701fb135a4f8d133d1381d0e5ad00af8; every product, request, and partial-work byte remains unchanged.
   - Atomically claimed only the canonical classroom ownership and provider-outbox correction from exact P17 head 78af71603713b6fc73fe755995bdf56193eb199a under canonical control 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b and READY digest b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6.
@@ -122,10 +140,11 @@ completed_steps:
   - Passed full workspace typecheck, 21 focused tests across four files, focused ESLint and Prettier, repository-wide secret scan over 2723 files, and diff hygiene.
   - Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released the task-local lease in terminal metadata.
 remaining_steps:
-  - C00 must independently reconcile this exact renewal atomic claim before any product or successor-request work begins.
-  - Only after that reconciliation, implement and fully gate the exact 11-path canonical ownership/provider-outbox correction.
+  - C00/I36 must independently review implementation head 178af0c35012828016f395611e3d2f8cb3f88ff8, exact scope, digests, and provider-free gates.
+  - F02 must independently disposition P17-MIGRATION-002; I36 must independently disposition P17-SERVER-WORKER-REGISTRATION-002.
+  - Every existing -001 request remains immutable and withheld.
   - Provider inspection and every external effect remain prohibited.
-next_action: Push and report this exact runtime-triplet renewal claim, then stop for C00 reconciliation without changing any product or request byte.
+next_action: C00/I36 should review exact implementation head 178af0c35012828016f395611e3d2f8cb3f88ff8 and the committed successor request digests, then steward the two -002 requests without provider effects.
 requirements:
   OTV2-CLASSROOM-068: implementation_ready
   OTV2-CLASSROOM-069: implementation_ready
@@ -152,16 +171,38 @@ changed_paths:
   - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P17/HANDOFF.md
   - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+implementation_changed_paths:
+  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
+  - apps/worker/src/runners/zoom-preparation/runner.test.ts
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/steward-requests/P17-MIGRATION-002.yaml
+  - ops/v2.1-execution/runtime/P17/steward-requests/P17-SERVER-WORKER-REGISTRATION-002.yaml
+  - packages/contracts/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/repository.test.ts
+  - packages/db/src/classroom/zoom-preparation/repository.ts
+  - packages/db/src/classroom/zoom-preparation/schema-contract.ts
+  - packages/domain/src/classroom/zoom-preparation/index.ts
+  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
 migrations: []
 steward_requests:
   - P17-MIGRATION-001
   - P17-SERVER-WORKER-REGISTRATION-001
   - P17-ZOOM-CONFIG-DEPENDENCY-001
   - P17-REMINDER-ROUTING-001
+  - P17-MIGRATION-002
+  - P17-SERVER-WORKER-REGISTRATION-002
 verification:
   commands_run:
-    - Exact canonical renewal control, state basis, expected checkpoint, parsed READY digest, prior pair/triplet, fresh claim, renewed lease, preserved request bytes, and zero effect locks (passed).
-    - Exact runtime-triplet-only renewal-claim scope, YAML parse, formatting, diff hygiene, sole-parent ancestry, and normal non-force remote update (pending commit).
+    - Exact canonical renewal control, renewed claim reconciliation, expected checkpoint, parsed READY digest, claim/lease, preserved request bytes, and zero effect locks (passed).
+    - Focused Vitest over domain acceptance, database repository, server service, and worker runner suites (passed, 23 tests across four files).
+    - npm run typecheck (passed).
+    - Focused ESLint over every P17 TypeScript root (passed).
+    - Focused Prettier over every P17 root, acceptance evidence, and successor request (passed).
+    - Successor request YAML parsing and committed raw/canonical digest recomputation (passed).
+    - npm run secret:scan (passed, 2725 repository text files).
+    - Exact 11-path implementation scope, forbidden ownership scan, five-table assertion, existing-request byte preservation, and git diff --check (passed).
+    - Normal non-force implementation push and remote equality (passed).
+    - Exact runtime-triplet-only terminal scope, YAML parse, formatting, diff hygiene, sole-parent ancestry, normal push, and remote equality (pending terminal commit).
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -170,7 +211,5 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - The renewed first push is restricted to the runtime triplet; no implementation or successor request was started.
-  - The reconciled implementation authority arrived at 2026-07-30T06:59:20Z, too late to implement and fully gate eleven paths before the mandatory 2026-07-30T07:05:00Z renewal checkpoint.
-  - No product, acceptance, migration, existing or successor request, shared runtime, provider configuration, manifest, lockfile, P18, or control path changed in this renewal checkpoint.
+  - No migration, root barrel, central composer, manifest, lockfile, P18, provider configuration, existing request, or control path changed.
   - No Zoom/provider request, credential access, account mutation, meeting/registrant creation, reminder delivery, bootstrap issuance, deployment, or canary was performed.
