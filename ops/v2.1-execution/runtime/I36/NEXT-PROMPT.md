@@ -3,53 +3,35 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: STOP
 
-I36 completed the exact P16/P32/F02 compatibility integration and released
-its lease. C00 must independently audit the pushed release; do not resume I36
-from this checkpoint.
+I36 completed the exact P29/P30 source-only integration and released its
+RELEASE_INTEGRATOR lease. C00 must independently audit the pushed release; do
+not resume I36 from this checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Reconciled claim target: d53c1d22dfa84806b07c51e599997c7ebc053849
-Containing authorizing control: 7bce3ea3a8976f2a4eb8dd713c4bfc96bcd3939a
-Sole acquisition parent: e25d0b521ada437c6e19236bfb7aaf59f0579889
+Atomic claim head: c698da9826572c486f3ddf14cb01785dd2a120cf
+Containing authorizing control: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
+Sole acquisition parent: d2f7c554d2e3aa55c0621882b3591fb18a7c8818
 READY state: consumed
 
-Claim: d2ba6c12-e7c2-49b1-b4cd-883a1c394adb
-RELEASE_INTEGRATOR lease: 6c88e2a7-e2fc-48be-acae-4b4a5e9839ad
-Lease expires: 2026-07-30T03:54:35Z
-Lease released: 2026-07-30T03:04:04Z
-Phase scope: P16_P32_F02_compatibility_integration
+Claim: 4ec8712e-8ed3-4164-8774-c03c67748ec4
+RELEASE_INTEGRATOR lease: 2ed546f8-d65b-4fe3-b86c-042d441e3015
+Lease expires: 2026-07-30T05:45:23Z
+Lease released: 2026-07-30T04:02:31Z
+Phase scope: P29_P30_source_integration
 
-P16 merge: 44100afb13c58506a18b0612ebce07113caff47e /
-source 55544f557f5b7aee01d264fba688fc56b971ad4b /
-payload 58695dcb553d55502ba509ea54783b5e78d1edd9094ea9333f6467eca9a7fcf2
+P29 merge: 4f4a11e3ee248af656d8443bbfb676a7de8d237e /
+source aa7b363812676afce8ac9ebd13f335e65551bb1f /
+payload d26853a6ae2eeb0b7c15c5730a5ccd83ff6b318b29fcea997d9e622a023e87d3
 
-P32 merge: f53a0592438df77f3d34d0e7b67e90d9924dbcdf /
-source 92a7ee6377d9507140def1159a440fbfd1733123 /
-payload 18378a2ea0fae5b91640def9946c8ccf2e54f11c1d879ecbab55fbcf27af5836
+P30 merge: 3033f13b06d95f6018113033521131cc4429cff3 /
+source 772d4783f82b7eb89a5c98d897601b444cd3c2f4 /
+payload e005f5c019ccc58160fb46e273abdb00068ea9f482fe670597707cb2cee76884
 
-F02 merge: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623 /
-source cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 /
-payload e85b0073845c7bd7489d8596e5b68ddfe5792a0653ab376bdd69c7fdfa701195
+Focused workflow/worker tests passed 70/70. Typecheck, full lint, raw Git-byte
+focused formatting, YAML, secret scan, diff/scope/ancestry, source bindings,
+and zero effects passed.
 
-Focused compatibility passed 36/36. Native PGlite and pg-mem full migration
-inventories passed 75/75 through 2244 with all six checksum pairs and zero
-pending migrations. Typecheck, full lint, raw Git-byte format/package
-validation, diff hygiene, secret scan, exact merge ancestry/scope, and zero
-effects passed.
-
-No steward or central allocation/registration was applied. Do not inspect or
-mutate providers, deploy, send, or cause an external effect. Effects remain
-`0/0/0`.
-
-Atomic claim only: containing control
-`d2f7c554d2e3aa55c0621882b3591fb18a7c8818`, acquisition
-`a7a07aded9146cdb5f6360a7aae099c04203ee8b`, release
-`36dca3844664657875b7c66a1ff30378b21c5cbb`, READY
-`25dc83c569bb1e5a6a8f2196c4b9f9e01371d9268593360cc0560468f964a7b9`,
-claim `4ec8712e-8ed3-4164-8774-c03c67748ec4`, and lease
-`2ed546f8-d65b-4fe3-b86c-042d441e3015`.
-
-Do not merge P29 or P30 until C00 reconciles this exact runtime-triplet-only
-claim, consumes READY, and rebinds both expected targets. Do not apply steward
-requests, inspect providers, deploy, send, or perform an external effect.
+Do not apply the committed steward requests, alter central registry/config/copy
+state, inspect or mutate providers, deploy, send, or cause an external effect.
+Effects remain `0/0/0`.

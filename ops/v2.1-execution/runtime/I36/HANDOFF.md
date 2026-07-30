@@ -1,4 +1,4 @@
-# I36 P16/P32/F02 Compatibility Integration Release
+# I36 Integration Releases
 
 ## Identity
 
@@ -66,21 +66,40 @@ released lease, I36 triplet digests, and effects `0/0/0`. I36 must stop.
 
 Authority none; attempted/succeeded/reconciled `0/0/0`.
 
-## P29/P30 atomic claim
+## P29/P30 final source integration
 
-Containing control `d2f7c554d2e3aa55c0621882b3591fb18a7c8818`
-with sole parent `a7a07aded9146cdb5f6360a7aae099c04203ee8b`
-authorizes an atomic runtime-triplet-only claim from exact release
-`36dca3844664657875b7c66a1ff30378b21c5cbb`.
+Containing control `fe95eacb2a958ba043cc9f89c1c27e09e20b9324`
+with sole acquisition/state-basis parent
+`d2f7c554d2e3aa55c0621882b3591fb18a7c8818` consumed READY and reconciled
+atomic claim `c698da9826572c486f3ddf14cb01785dd2a120cf`.
 
-READY digest `25dc83c569bb1e5a6a8f2196c4b9f9e01371d9268593360cc0560468f964a7b9`
-binds claim `4ec8712e-8ed3-4164-8774-c03c67748ec4` and
+The unchanged claim is `4ec8712e-8ed3-4164-8774-c03c67748ec4`.
 RELEASE_INTEGRATOR lease `2ed546f8-d65b-4fe3-b86c-042d441e3015`
-through `2026-07-30T05:45:23Z`. Queued source payloads are P29
-`f1294fce31816562ef31e836603b0e52bded62171acd09840b1fd4937a600878`
-and P30
-`81d29fd049e72b51ad9cb70bd3d0daa1cad08e905f99bdc9c3e034c20c89b5b1`.
+was released at `2026-07-30T04:02:31Z`, before its
+`2026-07-30T05:45:23Z` expiry.
 
-This checkpoint changes only the I36 runtime triplet. No source was merged,
-no steward request was applied, and effects remain `0/0/0`. Stop for C00
-reconciliation and target rebinding.
+P29 source `aa7b363812676afce8ac9ebd13f335e65551bb1f` merged at
+`4f4a11e3ee248af656d8443bbfb676a7de8d237e` from exact claim head
+`c698da98` with rebound payload
+`d26853a6ae2eeb0b7c15c5730a5ccd83ff6b318b29fcea997d9e622a023e87d3`
+and exact fifteen-path first-parent scope.
+
+P30 source `772d4783f82b7eb89a5c98d897601b444cd3c2f4` merged at
+`3033f13b06d95f6018113033521131cc4429cff3` from P29 merge
+`4f4a11e3` with rebound payload
+`e005f5c019ccc58160fb46e273abdb00068ea9f482fe670597707cb2cee76884`
+and exact fourteen-path first-parent scope.
+
+Both sources and the P28/P29/P31 merge-after heads are ancestors of the final
+result. Focused P29/P30 workflow and worker tests passed 70/70. Workspace
+typecheck, full ESLint, raw Git-byte focused Prettier, YAML parsing, repository
+secret scan, diff hygiene, exact 29-path combined scope, ancestry, source
+digests, and zero-effects checks passed.
+
+All steward requests remain committed evidence only and unapplied. No central
+registry/config/copy state was changed, no provider was inspected or mutated,
+and no deployment, send, or external effect occurred.
+
+C00 must independently audit the pushed metadata release head, its sole parent
+`3033f13b`, ordered merge ancestry/scopes, released lease, I36 triplet digests,
+and effects `0/0/0`. I36 must stop.
