@@ -8,20 +8,24 @@ branch: codex/v21-lane1-migration-correction
 start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
 dependency_heads:
   C00:
-    required_state: full_production_completion_convergence
-    observed_state: full_production_completion_convergence
-    observed_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
-    controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-    control_state_digest: d5723b527ff1f48496bbcb8615f7874c1021d56c5792b007595732183ff3c0e4
+    required_state: migration_2250_2252_steward_acknowledgment_ready
+    observed_state: migration_2250_2252_steward_acknowledgment_ready
+    observed_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+    controller_authorization_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+    control_state_digest: a67e5bb59969caea19f49ea6ba67cd23b8917b4ee26d9b3af7b9a13f6e47a770
   I36:
-    required_state: current_integration
-    observed_state: current_integration
-    observed_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    required_state: accepted_source_microbatch_2_complete
+    observed_state: accepted_source_microbatch_2_complete
+    observed_integration_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+    state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
+    runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
   F02:
-    required_state: prior_semantic_fencing_correction_integrated
-    observed_state: prior_semantic_fencing_correction_integrated
-    observed_task_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
-    observed_integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+    required_state: prior_migration_release_integrated_and_runtime_acknowledgment_authorized
+    observed_state: prior_migration_release_integrated_and_runtime_acknowledgment_authorized
+    expected_existing_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+    authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+    native_proof_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+    integration_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
     immutable_2252_checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
   P20_P21:
     required_state: source_complete_projection_checkpoint_pushed
@@ -303,34 +307,114 @@ projection_v2_control:
   sql_authored: true
   native_postgresql_required: true
   native_postgresql_version: 16.14
+migration_2250_2252_steward_acknowledgment:
+  disposition: producer_acknowledged_pending_independent_C00_result_disposition
+  central_steward_results_applied: false
+  containing_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+  state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+  authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  expected_existing_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+  evaluated_target_head_sha: dd944eee39c314c562171c89c7350a6900ea2e6f
+  native_proof_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+  integration_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
+  integration_release_sha: 526f038412d7652451e519fae0f8ef857625029a
+  native_proof:
+    engine: PostgreSQL_18.3_PGlite
+    reproduced_bypasses_rejected: 11
+    exact_positive_rows_passed: true
+    provider_readback_ledger_append_only: true
+    focused_tests_passed: 54
+    tracked_migrations_replayed:
+      - 2250
+      - 2251
+      - 2252
+    typecheck_passed: true
+    secret_scan_passed: true
+    live_database_effect_occurred: false
+  acknowledgments:
+    - request_id: P17-MIGRATION-002
+      requesting_task_id: P17
+      kind: migration
+      target_checkpoint: F02_next_migration_checkpoint
+      acknowledged_by_task: true
+      status: acknowledged_pending_independent_C00_result_disposition
+      request_path: ops/v2.1-execution/runtime/P17/steward-requests/P17-MIGRATION-002.yaml
+      request_git_blob: c1dc3d8dd35e242fe7f4ec8621590c3472eab584
+      request_blob_raw_sha256: fa9868d91b12a30808f80a5233219011126ea9cde5571380c25058a53b2818c8
+      request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+      digest_kind: canonical_entry_sha256
+      producer_source_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+      migration_ordinal: 2250
+      migration_path: packages/db/migrations/2250_v21_zoom_preparation.sql
+      migration_git_blob: 152cfd37703a9dc0e28059cbab7cd99832543b23
+      migration_normalized_lf_sha256: 820b4a6ac033531bd735b8087c46dd5c7d6c3d79f21be80d0dca7b5d83011df2
+      migration_control_checksum_sha256: e63ae53369575b77a8f9f86564bd06e9e5fe72cf19b2ad15bfcd177ddbe93b38
+      migration_pg_mem_checksum_sha256: 08192ed0fae69324e53cf75a6f367de924006be29e7cd5daea699ca01c7d18f3
+    - request_id: P18-migration-003
+      requesting_task_id: P18
+      kind: migration
+      target_checkpoint: F02_next_migration_checkpoint
+      acknowledged_by_task: true
+      status: acknowledged_pending_independent_C00_result_disposition
+      request_path: ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-003.yaml
+      request_git_blob: 159ba57377c372563b63b1afdeba7a1e3ad2a729
+      request_blob_raw_sha256: 20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9
+      request_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
+      digest_kind: canonical_entry_sha256
+      producer_source_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+      migration_ordinal: 2251
+      migration_path: packages/db/migrations/2251_v21_embedded_classroom.sql
+      migration_git_blob: 4bd4afdc152dd47977d7ab0aaeee246d5f75a16f
+      migration_normalized_lf_sha256: 525172d9072c930e0178e35ec8a7ddc6b1217b70f17b5e1f1c970228dee43dec
+      migration_control_checksum_sha256: 3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9
+      migration_pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
+    - request_id: P21-MIGRATION-002
+      requesting_task_id: P21
+      kind: migration
+      target_checkpoint: F02_next_migration_checkpoint
+      acknowledged_by_task: true
+      status: acknowledged_pending_independent_C00_result_disposition
+      request_path: ops/v2.1-execution/runtime/P21/steward-requests/P21-MIGRATION-002.yaml
+      request_git_blob: 5427f8e5333e634f06d4ab12f897f6220fd30c5b
+      request_blob_raw_sha256: aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45
+      request_digest: aeb2db007026e9ad6286c4daa10a8b1970df6869b4d9eb821e3fe29c6eefc792
+      digest_kind: canonical_entry_sha256
+      producer_source_head_sha: 705030f2d5163f95340a19dc42efd0f167259869
+      migration_ordinal: 2252
+      migration_path: packages/db/migrations/2252_v21_content_publication.sql
+      migration_git_blob: 54099822cebce5bfe7fd699bac1b479e2884013d
+      migration_normalized_lf_sha256: 5dbafdb781d2dea1f091cb19d11a183f31b499e88e4cb3def6c08d0c0f5a3741
+      migration_control_checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+      migration_pg_mem_checksum_sha256: bf1194f9da673a54e280f531395bc3af11500e132ca1cd483c2bc356281e33a2
 status: ready_for_review
-phase: content_publication_projection_v2_migration_complete
-claimed_by: codex-f02-projection-v2-88a902de
-claim_time: '2026-07-30T17:03:38Z'
-claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
-writer_slot_lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
-lease_issued_at: '2026-07-30T17:03:38Z'
-lease_expires_at: '2026-07-30T19:03:38Z'
-last_heartbeat_at: '2026-07-30T17:44:04Z'
-lease_released_at: '2026-07-30T17:44:04Z'
-controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-ready_entry_parent_control_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-ready_entry_payload_digest: 3145d5b3fe237f0b9f62ae6ff6f5443a7f4f402c4322cc00f0c9d2183a59015f
+phase: migration_2250_2252_steward_acknowledgment_complete
+claimed_by: codex-f02-steward-ack-c6e15ead
+claim_time: '2026-07-30T19:30:53Z'
+claim_id: c6e15ead-7f47-46f0-aaea-6fe00cd4338b
+writer_slot_lease_id: 203f8836-7958-4791-afb0-764a289a9ac0
+lease_issued_at: '2026-07-30T19:30:53Z'
+lease_expires_at: '2026-07-30T21:30:53Z'
+last_heartbeat_at: '2026-07-30T19:55:00Z'
+lease_released_at: '2026-07-30T19:55:00Z'
+controller_authorization_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+containing_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+ready_entry_parent_control_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+ready_entry_payload_digest: d8303358cef529777a0ced6ef7463261d0c622fca1ecb12dcd39b552dddf3841
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
-    lease_issued_at: '2026-07-30T17:03:38Z'
-    lease_expires_at: '2026-07-30T19:03:38Z'
-    released_at: '2026-07-30T17:44:04Z'
-  SCHEMA_CONTRACT:
-    lease_id: e0a6dd90-820f-4625-9979-e057d0bdad1c
-    lease_issued_at: '2026-07-30T17:03:38Z'
-    lease_expires_at: '2026-07-30T19:03:38Z'
-    released_at: '2026-07-30T17:44:04Z'
-state_based_on_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    lease_id: 203f8836-7958-4791-afb0-764a289a9ac0
+    lease_issued_at: '2026-07-30T19:30:53Z'
+    lease_expires_at: '2026-07-30T21:30:53Z'
+    released_at: '2026-07-30T19:55:00Z'
+state_based_on_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
 last_implementation_commit_sha: null
 completed_steps:
+  - Verified canonical control c44656d4, controller authorization 98e7b05c, READY digest d8303358, claim c6e15ead, sole MIGRATION_AUTHORITY lease 203f8836, and zero effect locks.
+  - Fetched and verified the exact remote F02 head 26234c47 and integration head 8634b2ab, then fast-forwarded without branch, ancestry, or path drift before editing.
+  - Independently recomputed the three immutable request raw and canonical digests at exact producer source heads 7f8a41bc, 3be7bf49, and 705030f2.
+  - Independently verified the exact 2250-2252 migration Git blobs, normalized-LF hashes, control checksums, proof head 39cacd4a, evaluated target dd944eee, and integration merge/release 526f0384.
+  - Published three separate producer acknowledgments only; no C00 steward result was marked applied and no migration, proposal, product, request, provider, deployment, send, or external-effect byte was changed.
   - atomically claimed migration lease C from exact remote head cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 under claim 0e98de00-4873-41cb-a06f-bd0ace918b89
   - bound only P19, P20, P28, P08, and P09 requests to ordinals 2245 through 2249; P17, P18, and P21 remain withheld
   - changed only the F02 runtime triplet; no allocation proposal, SQL, provider, deployment, send, or external effect was attempted
@@ -431,8 +515,8 @@ completed_steps:
   - Applied the complete final 84-migration inventory to fresh native PostgreSQL 16.14, replayed migration 2253, and passed the full malformed, stale, reordered, cross-scope, mismatch, and five-guard native rejection probe batch.
   - Applied and verified the complete 84-migration repository pg-mem inventory with harness-only built-in registrations and zero pending migrations.
 remaining_steps:
-  - An independent auditor and C00 must audit and admit the exact projection-v2 migration result before I36 integration.
-next_action: Stop after publishing the projection-v2 migration release. Await independent and C00 audit; do not merge, allocate ordinal 2254, register, inspect providers, deploy, backfill, send, charge, or perform external effects.
+  - C00 must independently audit the exact pushed runtime acknowledgment checkpoint, derive its state/handoff digest, and disposition the three central steward results.
+next_action: Stop after publishing the runtime-triplet-only acknowledgment checkpoint. Await independent C00 audit; do not mark steward results applied, edit migrations or proposals, merge, register, inspect providers, deploy, backfill, send, charge, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -506,6 +590,10 @@ migration_lease_D1_changed_paths:
 projection_v2_changed_paths:
   - packages/db/migrations/2253_v21_content_publication_projection_v2.sql
   - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+steward_acknowledgment_changed_paths:
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
@@ -592,6 +680,11 @@ migrations:
 steward_requests: []
 verification:
   commands_run:
+    - canonical control c44656d4, READY d8303358, claim c6e15ead, lease 203f8836, and no-effect authority matched
+    - exact remote F02 26234c47 and integration 8634b2ab heads matched and fast-forward ancestry passed
+    - P17, P18, and P21 request Git blobs, raw digests, canonical digests, and producer source heads matched independently
+    - migration 2250-2252 Git blobs, normalized-LF hashes, control checksums, proof 39cacd4a, evaluated target dd944eee, and merge/release 526f0384 matched independently
+    - exact runtime-triplet-only scope, YAML, immutable request and migration bytes, diff hygiene, secret scan, released lease, clean remote equality, and effects 0/0/0 passed
     - corrective containing control head matched d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
     - corrective resume_existing remote head, claim, and both writer leases matched
     - parent CONTROL-STATE.yaml raw SHA-256 matched 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215
