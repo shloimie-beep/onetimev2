@@ -3,18 +3,18 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 7f2ab8d1-a53f-41da-8143-28da4b62b200
-  schema_contract_lease_id: 9a3469a3-87c6-45b6-824f-c3b886a01b46
-  claim_id: 3469667a-69e2-4c35-afac-5b1dfbbf417d
-  writer_id: codex-f02-migration-batch-3469667a
-  containing_control_head_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
-  controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
-  authorized_start_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
-  lease_expires_at: '2026-07-30T13:34:41Z'
-  released_at: '2026-07-30T12:58:26Z'
+  lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
+  schema_contract_lease_id: e0a6dd90-820f-4625-9979-e057d0bdad1c
+  claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
+  writer_id: codex-f02-projection-v2-88a902de
+  containing_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+  controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+  authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  lease_expires_at: '2026-07-30T19:03:38Z'
+  released_at: '2026-07-30T17:44:04Z'
   audit_status: PASS
 policy:
-  reviewed_latest: 2233_zoom_class_occurrence_resources.sql
+  reviewed_latest: 2252_v21_content_publication.sql
   first_new_ordinal: 2234
   never_allocate:
     - 2231
@@ -184,10 +184,10 @@ allocations:
     request_id: P17-MIGRATION-002
     request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
     state: allocated
-    purpose: Scoped Zoom preparation, immutable roster snapshots, normal-classroom resource and Student registrant projections, and append-only idempotent preparation commands without duplicate provider identity or operation authority.
+    purpose: Scoped Zoom preparation, immutable roster snapshots, normal-classroom resources and Student registrants, exact request/preview/confirmation fencing, and append-only idempotent preparation commands.
     replaces_applied_migration: false
     destructive: false
-    checksum_sha256: 65c25dd8e542bf4f25b03f12715d4f1dea880880e989849db7f921263108b4b8
+    checksum_sha256: e63ae53369575b77a8f9f86564bd06e9e5fe72cf19b2ad15bfcd177ddbe93b38
     pg_mem_checksum_sha256: 08192ed0fae69324e53cf75a6f367de924006be29e7cd5daea699ca01c7d18f3
   - ordinal: 2251
     file: packages/db/migrations/2251_v21_embedded_classroom.sql
@@ -195,9 +195,31 @@ allocations:
     request_id: P18-migration-003
     request_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
     state: allocated
-    purpose: Disjoint embedded-classroom launch grants, live Student sessions, immutable attendance events, and versioned attendance projections with fixed TTL and lease fencing.
+    purpose: Disjoint embedded-classroom launch grants, active-session and revocation fencing, immutable attendance events, and request-bound attendance projections with fixed TTL and lease semantics.
     replaces_applied_migration: false
     destructive: false
-    checksum_sha256: 7ad8166bbb67e3cc3ef8af1f36b7f55ef1c73341000c3a64599ff403830499f3
+    checksum_sha256: 3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9
     pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
-next_available_ordinal: 2252
+  - ordinal: 2252
+    file: packages/db/migrations/2252_v21_content_publication.sql
+    owner_task_id: P21
+    request_id: P21-MIGRATION-002
+    request_digest: aeb2db007026e9ad6286c4daa10a8b1970df6869b4d9eb821e3fe29c6eefc792
+    state: allocated
+    purpose: Composite-scoped publication, approval evidence, provider completion readback, playback authorization, occurrence attachment, and exact content-version resume fencing.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+    pg_mem_checksum_sha256: bf1194f9da673a54e280f531395bc3af11500e132ca1cd483c2bc356281e33a2
+  - ordinal: 2253
+    file: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+    owner_task_id: P21
+    request_id: P21-MIGRATION-003
+    request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+    state: allocated
+    purpose: Forward-only source-complete publication projection parity with exact 27-field evidence, 8-field immutable artifact provenance, persisted P20 evidence binding, and content-scoped validation at all five publication guards.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
+    pg_mem_checksum_sha256: 3d86765f1f026b891c3f908987980b7de6e431ce004b034e179ba703902fe517
+next_available_ordinal: 2254
