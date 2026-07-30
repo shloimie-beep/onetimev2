@@ -295,3 +295,30 @@ C00 must independently audit the exact pushed metadata release head, its sole
 parent `00ec4f9a4011ab125f1f5c38f3433462398a8da5`, ordered merge ancestry and
 4/8/14 scopes, released lease, I36 pair/triplet, unapplied successor requests,
 and effects `0/0/0`. I36 must stop.
+
+## Runtime-metadata-correction atomic claim
+
+Containing control `7d1a9fffdb7f12ace8f6161232a0ad9c1b749089` with sole
+state-basis parent `60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19` authorizes only
+an I36 runtime-triplet metadata-correction claim from exact release
+`e2907b4086e65074a49717a840f45d53685b15f3`.
+
+Canonical READY
+`b793c1816f3e150ec5b2e1d79b4e317388b0e61dcd92d58a2418ae17c563382d`
+and state-basis control-state digest
+`39d11513c5436660ace30325f84cc70ceca419b180f7584156183612a018eae3`
+were recomputed exactly with the required task/context/package bindings.
+
+Claim `27f0fe39-785e-4cae-a707-de596a7e8500` is held by
+`codex-i36-release-integrator-27f0fe39` under sole RELEASE_INTEGRATOR lease
+`745aefd4-8660-4a0b-8d43-852769ced512` through
+`2026-07-30T09:47:00Z`.
+
+This first checkpoint changes only I36 TASK-STATE/HANDOFF/NEXT-PROMPT. The
+stale top-level TASK-STATE `remaining_steps` and `out_of_scope_findings` fields
+are intentionally preserved for the post-reconciliation cleanup. Every source,
+merge, migration, request, control, provider, deployment, send, and effect byte
+is frozen. Effects remain `0/0/0`.
+
+C00 must independently audit and reconcile the exact pushed atomic claim before
+I36 may correct either stale field. I36 must stop.
