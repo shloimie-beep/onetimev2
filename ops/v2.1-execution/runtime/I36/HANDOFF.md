@@ -353,3 +353,27 @@ C00 must independently audit the exact pushed superseding final, its sole
 parent `3aab6a199730ab2ed75f45c234ec8331894cdf6b`, runtime-triplet-only
 scope, current lint evidence, released lease, final pair/triplet, and effects.
 I36 must stop.
+
+## Terminal-verification metadata-correction atomic claim
+
+Containing control `628e83b4a06923448a622322201992076493c779` with sole
+state-basis parent `505804a1a3ab172229df94512f06c37cf214f270` authorizes only
+an I36 runtime-triplet claim from exact final
+`f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5`.
+
+Canonical READY
+`3252e7b6e9e35f332e799e0151c14cd097cbc549b2d6c7879227f83268fa6228`
+and state-basis control-state digest
+`c6ba4310c2848b6fa5a72e45cd87f485fe61686d337a3a37260bfbc9fcfe7f2a`
+were recomputed exactly. Claim `f34c38fb-f977-4c41-ae4b-5343d13c85f7`
+holds sole RELEASE_INTEGRATOR lease
+`994b32cc-4ca9-4b11-88ed-713631a61f33` through
+`2026-07-30T09:47:00Z`.
+
+This first checkpoint intentionally preserves verbatim the single stale pending
+post-reconciliation verification result. Top-level `remaining_steps` and
+`out_of_scope_findings` remain empty. Every non-runtime byte is frozen and
+effects remain `0/0/0`.
+
+C00 must reconcile the exact pushed claim before I36 fixes the pending result.
+I36 must stop.
