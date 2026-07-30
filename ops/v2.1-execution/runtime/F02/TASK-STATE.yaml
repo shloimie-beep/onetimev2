@@ -210,33 +210,88 @@ migration_lease_C_control:
   allocation_proposal_read_or_edited: true
   sql_authored: true
   withheld_requester_content_read_for_implementation: false
+migration_lease_D1_plan_bindings:
+  authorized_requests:
+    P17:
+      request_id: P17-MIGRATION-002
+      request_path: ops/v2.1-execution/runtime/P17/steward-requests/P17-MIGRATION-002.yaml
+      request_git_blob: c1dc3d8dd35e242fe7f4ec8621590c3472eab584
+      request_blob_raw_sha256: fa9868d91b12a30808f80a5233219011126ea9cde5571380c25058a53b2818c8
+      request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+      digest_kind: canonical_entry_sha256
+      observed_task_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+      ordinal: 2250
+      file: packages/db/migrations/2250_v21_zoom_preparation.sql
+    P18:
+      request_id: P18-migration-003
+      request_path: ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-003.yaml
+      request_git_blob: 159ba57377c372563b63b1afdeba7a1e3ad2a729
+      request_blob_raw_sha256: 20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9
+      request_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
+      digest_kind: canonical_entry_sha256
+      observed_task_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+      ordinal: 2251
+      file: packages/db/migrations/2251_v21_embedded_classroom.sql
+  source_request_bytes_preserved: true
+  ownership_boundary:
+    P17_owned_table_count: 5
+    P18_owned_table_count: 4
+    shared_provider_tables_reused:
+      - job_outbox
+      - provider_operation_binding
+    duplicate_provider_operations_table_created: false
+migration_lease_D1_control:
+  containing_control_head_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
+  sole_control_parent_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+  controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+  authorized_start_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  prior_allocation_ordinal: 2249
+  next_available_ordinal: 2250
+  never_allocate:
+    - 2231
+  planned_ordinals:
+    - 2250
+    - 2251
+  path_ceiling: 6
+  collision_count: 0
+  requester_content_read: true
+  allocation_proposal_read_or_edited: true
+  sql_authored: true
+  delegation_digest_discrepancy:
+    incorrect_transcribed_digest: e4aed5d95c2f05df31d792a18821892c8f0ab5f57d15afe3cf0fa31bdf054fe3
+    authoritative_control_and_request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+    resolution: parent_confirmed_transcription_error_do_not_propagate
+  excluded_untracked_draft:
+    file: packages/db/migrations/2252_v21_content_publication.sql
+    status: preserved_untracked_not_committed
+    reason: P21 composite-scope and content-version contract correction requires separate authority
 status: ready_for_review
-phase: migration_lease_C_2245_2249_complete
-claimed_by: codex-f02-migration-0e98de00
-claim_time: '2026-07-30T04:01:19Z'
-claim_id: 0e98de00-4873-41cb-a06f-bd0ace918b89
-writer_slot_lease_id: 7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95
-lease_issued_at: '2026-07-30T04:01:19Z'
-lease_expires_at: '2026-07-30T06:01:19Z'
-last_heartbeat_at: '2026-07-30T04:45:00Z'
-lease_released_at: '2026-07-30T04:45:00Z'
-controller_authorization_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
-ready_entry_parent_control_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
-state_based_on_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
-ready_entry_payload_digest: 5ab53779afff1e0a2a7ae4759818f9a98c259970298449ae767cee788a12b936
+phase: migration_lease_D1_2250_2251_complete
+claimed_by: codex-f02-migration-batch-3469667a
+claim_time: '2026-07-30T12:04:41Z'
+claim_id: 3469667a-69e2-4c35-afac-5b1dfbbf417d
+writer_slot_lease_id: 7f2ab8d1-a53f-41da-8143-28da4b62b200
+lease_issued_at: '2026-07-30T12:04:41Z'
+lease_expires_at: '2026-07-30T13:34:41Z'
+last_heartbeat_at: '2026-07-30T12:58:26Z'
+lease_released_at: '2026-07-30T12:58:26Z'
+controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+ready_entry_parent_control_sha: null
+state_based_on_control_head_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
+ready_entry_payload_digest: null
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: 7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95
-    lease_issued_at: '2026-07-30T04:01:19Z'
-    lease_expires_at: '2026-07-30T06:01:19Z'
-    released_at: '2026-07-30T04:45:00Z'
+    lease_id: 7f2ab8d1-a53f-41da-8143-28da4b62b200
+    lease_issued_at: '2026-07-30T12:04:41Z'
+    lease_expires_at: '2026-07-30T13:34:41Z'
+    released_at: '2026-07-30T12:58:26Z'
   SCHEMA_CONTRACT:
-    lease_id: b7ddd6c3-8a8e-4c9a-a304-5b4c15390fe1
-    lease_issued_at: '2026-07-30T04:01:19Z'
-    lease_expires_at: '2026-07-30T06:01:19Z'
-    released_at: '2026-07-30T04:45:00Z'
-state_based_on_head_sha: ff35555611e7261d1b7b96fc2233eaf82a9f9fdf
-last_implementation_commit_sha: ff35555611e7261d1b7b96fc2233eaf82a9f9fdf
+    lease_id: 9a3469a3-87c6-45b6-824f-c3b886a01b46
+    lease_issued_at: '2026-07-30T12:04:41Z'
+    lease_expires_at: '2026-07-30T13:34:41Z'
+    released_at: '2026-07-30T12:58:26Z'
+state_based_on_head_sha: 7a828767e68807a5b16c0b71a65218553a121856
+last_implementation_commit_sha: 7a828767e68807a5b16c0b71a65218553a121856
 completed_steps:
   - atomically claimed migration lease C from exact remote head cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 under claim 0e98de00-4873-41cb-a06f-bd0ace918b89
   - bound only P19, P20, P28, P08, and P09 requests to ordinals 2245 through 2249; P17, P18, and P21 remain withheld
@@ -322,10 +377,19 @@ completed_steps:
   - Passed native PostgreSQL probes for optimistic versioning, append-only evidence, and IANA timezone enforcement across all five migrations.
   - Passed typecheck, lint, focused unit contracts, YAML, checksum, exact nine-path scope, diff hygiene, and zero-effect gates; focused integration tests remain blocked by the pre-existing pg-mem btrim registration omission at migration 2235.
   - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-30T04:45:00Z before lease expiry.
+  - Verified exact pushed split control 4ea98556 with sole parent 4b22c470, authorized and remote F02 start 6d16d6eb, unchanged claim 3469667a, narrowed dual writer leases, exact P17/P18 request assignments, and effects 0/0/0.
+  - Recomputed the two immutable request raw and canonical digests; P18 matched directly, and pinned control plus source bytes confirmed P17 e4aed5ae after the delegated e4aed5d9 transcription was explicitly corrected.
+  - Allocated exact forward-only ordinals 2250 and 2251, authored only the two authorized SQL files, and advanced the proposal next ordinal to 2252.
+  - Preserved existing migrations and request bytes, created exactly five P17 and four P18 persistence tables, reused canonical job_outbox/provider_operation_binding authority, and excluded the preserved untracked 2252 P21 draft.
+  - Passed complete disposable PGlite PostgreSQL and repository-runner pg-mem migration inventories 82/82 with zero pending migrations and all nine new owned tables queryable.
+  - Passed 26/26 P17 fail-closed missing-key/optional-reference probes and 35/35 focused native D1 semantic probes for confirmation/scope immutability, state/quarantine fencing, one-use grants, monotonic live-session leases, audited corrections, interval structure, and lowercase-hex digests.
+  - Committed the exact six-path implementation checkpoint as 7a828767e68807a5b16c0b71a65218553a121856 while preserving draft 2252 untracked.
+  - Passed final typecheck, lint, YAML, repository Prettier, normalized/native and runner checksum, secret, diff, exact staged-scope, and zero-effect gates.
+  - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-30T12:58:26Z before lease expiry.
 remaining_steps:
-  - An independent auditor and C00 must audit and admit the exact Lease C result head before I36 integration.
-  - I36 may integrate only the exact admitted nine-path Lease C result under a fresh bounded claim and merge item.
-next_action: Stop after publishing the Lease C result. Await independent and C00 audit; do not edit SQL, allocate ordinal 2250, merge, register, inspect providers, deploy, send, or perform external effects.
+  - An independent auditor and C00 must audit and admit the exact Lease D1 result head before I36 integration.
+  - P21 migration correction remains separately gated; draft 2252 is not part of this result.
+next_action: Stop after publishing the Lease D1 release. Await independent and C00 audit; do not commit 2252, merge, allocate ordinal 2252, register, inspect providers, deploy, send, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -385,6 +449,13 @@ migration_lease_C_changed_paths:
   - packages/db/migrations/2247_v21_communication_foundation.sql
   - packages/db/migrations/2248_v21_family_signup.sql
   - packages/db/migrations/2249_v21_school_inquiry.sql
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+migration_lease_D1_changed_paths:
+  - packages/db/migrations/2250_v21_zoom_preparation.sql
+  - packages/db/migrations/2251_v21_embedded_classroom.sql
   - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
@@ -453,6 +524,14 @@ migrations:
     file: packages/db/migrations/2249_v21_school_inquiry.sql
     checksum_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
     pg_mem_checksum_sha256: 6666c474a4fbd87c028f59bf0c4863df71b6f8f547aefd7cb98abde4d284d9ce
+  - ordinal: 2250
+    file: packages/db/migrations/2250_v21_zoom_preparation.sql
+    checksum_sha256: 65c25dd8e542bf4f25b03f12715d4f1dea880880e989849db7f921263108b4b8
+    pg_mem_checksum_sha256: 08192ed0fae69324e53cf75a6f367de924006be29e7cd5daea699ca01c7d18f3
+  - ordinal: 2251
+    file: packages/db/migrations/2251_v21_embedded_classroom.sql
+    checksum_sha256: 7ad8166bbb67e3cc3ef8af1f36b7f55ef1c73341000c3a64599ff403830499f3
+    pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
 steward_requests: []
 verification:
   commands_run:
@@ -508,6 +587,14 @@ verification:
     - native PostgreSQL Lease C probes passed optimistic concurrency, append-only enforcement, and IANA timezone validation
     - migration proposal matched all five normalized-LF/native and repository-runner pg-mem checksum pairs and next ordinal advanced to 2250
     - typecheck, lint, focused communications and lead-validation unit contracts, YAML, diff hygiene, exact nine-path scope, lease release, and zero effects passed
+    - exact pushed split control 4ea98556 with sole parent/controller 4b22c470, authorized and remote start 6d16d6eb, claim 3469667a, narrowed dual leases, two request identities, path ceiling six, and effects 0/0/0 matched
+    - immutable P17/P18 request Git blobs and raw/canonical digests matched pinned control; delegated P17 digest transcription discrepancy was corrected to authoritative e4aed5ae
+    - complete disposable PGlite PostgreSQL and repository-runner pg-mem inventories passed 82/82 with zero pending migrations
+    - native fail-closed P17 missing-key and optional-provider-reference probes passed 26/26
+    - focused native Lease D1 semantic probes passed 35/35 for immutable confirmation/scope, legal state/quarantine transitions, one-use grants, session generation/heartbeat/state fencing, nonempty audit evidence, correction interval structure, and lowercase-hex digests
+    - exact five/four P17/P18 table ownership passed with shared job_outbox/provider_operation_binding reuse, no provider_operations table, and preserved untracked 2252 excluded from commit
+    - final typecheck, lint, YAML, repository Prettier, exact checksum pairs, secret scan, diff hygiene, exact six-path implementation scope, and effects 0/0/0 passed
+    - both shared writer slots were released at 2026-07-30T12:58:26Z before expiry
   known_baseline_failures:
     - pg-mem replay of the pre-existing schema_migrations CREATE TABLE IF NOT EXISTS statement hits a known planner/AST coverage limitation after a clean complete first apply; no failure originated in migrations 2235-2238
     - focused integration suites use a pg-mem setup that does not register the pre-existing btrim(text) dependency required by migration 2235; failure occurs before migrations 2245-2249

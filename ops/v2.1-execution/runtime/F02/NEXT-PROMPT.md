@@ -3,26 +3,33 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Audit the exact F02 migration Lease C result.
+Finish and then audit the exact F02 migration Lease D1 result.
 
-Require sole parent `ff35555611e7261d1b7b96fc2233eaf82a9f9fdf`,
-reconciliation control `1b5e5dd662390dd5affc159990a59b3b8d99c127`, sole
-reconciliation parent `85100180449bf234a93f107eb66a1f7bc635b4f0`, claim
-`0e98de00-4873-41cb-a06f-bd0ace918b89`, MIGRATION_AUTHORITY lease
-`7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95`, SCHEMA_CONTRACT lease
-`b7ddd6c3-8a8e-4c9a-a304-5b4c15390fe1`, and READY digest
-`5ab53779afff1e0a2a7ae4759818f9a98c259970298449ae767cee788a12b936`.
+Require pushed split control `4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4`,
+sole parent/controller `4b22c4704edc8bd21b0e0242ad00debfba67f5c2`,
+authorized start `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`, claim
+`3469667a-69e2-4c35-afac-5b1dfbbf417d`, MIGRATION_AUTHORITY lease
+`7f2ab8d1-a53f-41da-8143-28da4b62b200`, and SCHEMA_CONTRACT lease
+`9a3469a3-87c6-45b6-824f-c3b886a01b46`.
+Require implementation checkpoint
+`7a828767e68807a5b16c0b71a65218553a121856` and dual-lease release at
+`2026-07-30T12:58:26Z`.
 
-Require the exact nine-path delta: migrations 2245 through 2249, the allocation
-proposal, and the F02 runtime triplet. Confirm only P19, P20, P28, P08, and P09
-were implemented and that P17, P18, and P21 remained withheld.
+Require the exact six-path committed delta: migrations 2250 and 2251, the
+allocation proposal, and the F02 runtime triplet. Confirm only
+`P17-MIGRATION-002` and `P18-migration-003` were implemented, with exact
+canonical digests `e4aed5ae...24ca` and `a7fea380...1960`. Treat the delegated
+P17 `e4aed5d9...` value only as the confirmed transcription error. Confirm the
+draft 2252 remains untracked and absent from both commits.
 
-Rerun complete disposable PGlite PostgreSQL and repository-runner pg-mem 80/80
-inventories plus focused native and pg-mem probes. Verify all five
-normalized-LF/native and pg-mem checksum pairs, next ordinal 2250, typecheck,
-lint, YAML, diff, scope, lease release, and effects `0/0/0`. Treat the focused
-integration-suite `btrim(text)` failure at pre-existing migration 2235 as a
-test-harness baseline issue, not a Lease C migration failure.
+Require exact five/four P17/P18 table ownership, existing
+`job_outbox`/`provider_operation_binding` reuse, and absence of a
+`provider_operations` table. Rerun the complete disposable PGlite PostgreSQL
+and repository-runner pg-mem 82/82 inventories plus 26/26 P17 fail-closed and
+35/35 focused D1 semantic native probes. Verify both normalized-LF/native and
+pg-mem checksum pairs, next ordinal 2252, YAML, formatting, secret scan, diff
+hygiene, exact committed scope, dual-lease
+release before `2026-07-30T13:34:41Z`, remote equality, and effects `0/0/0`.
 
-Stop for C00 admission. Do not merge, allocate ordinal 2250, inspect providers,
-deploy, send, or perform external effects.
+Stop for C00 admission. Do not commit 2252, merge, allocate ordinal 2252,
+inspect providers, deploy, send, or perform external effects.

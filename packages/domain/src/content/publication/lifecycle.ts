@@ -20,8 +20,15 @@ import {
   type StudentPlaybackAuthorizationFacts,
   type StudentPublicationAudience,
   type StudentPublicationEligibility,
+  type VimeoContentPublicationObservation,
   type VimeoProviderOperationReadback,
+  type VimeoProviderRevocationReadback,
 } from '../../../../contracts/src/content/publication/index.ts';
+import type {
+  ProviderOperation,
+  ProviderRegistryBinding,
+} from '../../../../contracts/src/providers/v21-provider-core.ts';
+import { assertProviderOperationBound } from '../../providers/shared/index.ts';
 import { CONTENT_PUBLICATION_ERROR_CODES, ContentPublicationError } from './errors.ts';
 
 const REQUIRED_APPROVED_ARTIFACT_KINDS = [
@@ -73,7 +80,12 @@ export function requestPrivatePublication(input: {
 }): { record: ContentPublicationRecord; intent: ContentPublicationOutboxIntent } {
   assertAdmin(input.principal, input.record);
   assertBinding(input.binding, input.record);
-  if (input.record.state !== 'approved' || !input.record.approval) {
+  if (
+    input.record.state !== 'approved' ||
+    !input.record.approval ||
+    input.record.pendingProviderOperationId ||
+    input.record.pendingProviderRequestHash
+  ) {
     throw failure('invalidState', 'Admin approval is required before publication.');
   }
   const generation = input.record.publicationGeneration + 1;
@@ -129,9 +141,71 @@ export function requestPrivatePublication(input: {
   };
 }
 
+export function createContentPublicationProviderOperation(input: {
+  intent: ContentPublicationOutboxIntent;
+  binding: ProviderRegistryBinding;
+}): ProviderOperation {
+  const { intent, binding } = input;
+  if (
+    intent.provider !== 'vimeo' ||
+    !['publish_private', 'revoke_private'].includes(intent.operation) ||
+    binding.provider !== 'vimeo' ||
+    binding.mutation_policy !== 'allowed' ||
+    binding.scope.product !== intent.productKey
+  ) {
+    throw failure(
+      'conflict',
+      'Publication provider operation is not authorized by the exact Vimeo binding.',
+    );
+  }
+  const operation: ProviderOperation = {
+    job_id: intent.providerOperationId,
+    operation_type: intent.operation,
+    aggregate_ref: intent.contentId,
+    source_version: intent.publicationGeneration,
+    provider: intent.provider,
+    scope: binding.scope,
+    idempotency_key: intent.idempotencyKey,
+    canonical_request_hash: intent.requestHash,
+    payload_ref: intent.contentVersionId,
+    payload_digest: intent.approvalEvidence.projectionDigest,
+    compensation_for_job_id: null,
+    state: 'not_started',
+    version: 1,
+    recovery_generation: 0,
+    dispatch_attempts: 0,
+    lifetime_dispatch_attempts: 0,
+    reconciliation_attempts: 0,
+    lease_owner: null,
+    lease_generation: 0,
+    lease_expires_at: null,
+    last_heartbeat_at: null,
+    next_attempt_at: null,
+    unknown_effect: false,
+    provider_acceptance_digest: null,
+    reconciliation_digest: null,
+    safe_error_code: null,
+    created_at: intent.createdAt,
+    updated_at: intent.createdAt,
+    registry_binding_key: binding.registry_binding_key,
+    provider_account_ref_hash: binding.provider_account_ref_hash,
+    effect_kind: 'mutation',
+    household_id: null,
+  };
+  try {
+    assertProviderOperationBound(operation, binding);
+  } catch {
+    throw failure(
+      'conflict',
+      'Publication provider operation is not authorized by the exact Vimeo binding.',
+    );
+  }
+  return operation;
+}
+
 export function recordPrivatePublication(input: {
   record: ContentPublicationRecord;
-  readback: VimeoProviderOperationReadback;
+  observation: Extract<VimeoContentPublicationObservation, { operation: 'publish_private' }>;
   audience: readonly StudentPublicationAudience[];
   eligibility: readonly StudentPublicationEligibility[];
   pendingProviderContext: PendingContentPublicationProviderContext;
@@ -142,16 +216,26 @@ export function recordPrivatePublication(input: {
   providerCompletion: ContentPublicationProviderCompletion;
 } {
   assertBinding(input.binding, input.record);
-  assertPublicationReadback(input.record, input.pendingProviderContext, input.readback);
   const occurredAt = validInstant(input.binding.occurredAt);
+  const readback = buildPublicationReadback(
+    input.record,
+    input.pendingProviderContext,
+    input.observation,
+  );
+  assertPublicationReadback(input.record, input.pendingProviderContext, readback);
+  assertReadbackChronology(
+    input.pendingProviderContext.intent.createdAt,
+    readback.observedAt,
+    occurredAt,
+  );
   const record = {
     ...input.record,
     version: input.record.version + 1,
     state: 'published' as const,
     pendingProviderOperationId: null,
     pendingProviderRequestHash: null,
-    opaqueProviderAssetRef: input.readback.opaqueProviderAssetRef,
-    providerReadbackDigest: input.readback.providerReadbackDigest,
+    opaqueProviderAssetRef: readback.opaqueProviderAssetRef,
+    providerReadbackDigest: readback.providerReadbackDigest,
     publishedAt: occurredAt,
     archivedAt: null,
     updatedAt: occurredAt,
@@ -160,21 +244,24 @@ export function recordPrivatePublication(input: {
     record,
     materialization: materializePublication(record, input.audience, input.eligibility, occurredAt),
     providerCompletion: {
-      providerOperationId: input.readback.providerOperationId,
-      expectedProviderOperationVersion: input.readback.providerOperationVersion,
+      providerOperationId: readback.providerOperationId,
+      expectedProviderOperationVersion: readback.providerOperationVersion,
       outboxIntentId: input.pendingProviderContext.intent.intentId,
+      operation: 'publish_private',
       accountKey: input.record.accountKey,
       productKey: input.record.productKey,
       contentId: input.record.contentId,
       contentVersionId: input.record.contentVersionId,
       publicationGeneration: input.record.publicationGeneration,
-      canonicalRequestHash: input.readback.canonicalRequestHash,
-      providerAcceptanceDigest: input.readback.providerAcceptanceDigest,
-      providerReconciliationDigest: input.readback.providerReconciliationDigest,
+      canonicalRequestHash: readback.canonicalRequestHash,
+      providerAcceptanceDigest: readback.providerAcceptanceDigest,
+      providerReconciliationDigest: readback.providerReconciliationDigest,
       registryBindingKey: input.pendingProviderContext.providerOperation.registryBindingKey,
       providerAccountRefHash: input.pendingProviderContext.providerOperation.providerAccountRefHash,
-      providerReadbackDigest: input.readback.providerReadbackDigest,
-      oneTimeReadbackDigest: input.readback.oneTimeReadbackDigest,
+      providerReadbackDigest: readback.providerReadbackDigest,
+      oneTimeReadbackDigest: readback.oneTimeReadbackDigest,
+      providerResourceRefHash: readback.providerResourceRefHash,
+      providerObservedAt: readback.observedAt,
       completedAt: occurredAt,
       approvalProjectionDigest: input.record.approval!.evidence.projectionDigest,
     },
@@ -192,12 +279,24 @@ export function unpublishContent(input: {
     throw failure('invalidState', 'Only currently published content can be unpublished.');
   }
   const occurredAt = validInstant(input.binding.occurredAt);
+  const providerOperationId = stableKey('provider_operation', [
+    'vimeo',
+    'revoke_private',
+    input.record.accountKey,
+    input.record.productKey,
+    input.record.contentId,
+    input.record.contentVersionId,
+    input.record.approval!.evidence.projectionDigest,
+    String(input.record.publicationGeneration),
+  ]);
   return {
     record: {
       ...input.record,
       version: input.record.version + 1,
       state: 'approved',
       playbackGrantGeneration: input.record.playbackGrantGeneration + 1,
+      pendingProviderOperationId: providerOperationId,
+      pendingProviderRequestHash: input.binding.requestHash,
       publishedAt: null,
       archivedAt: null,
       updatedAt: occurredAt,
@@ -217,16 +316,7 @@ export function unpublishContent(input: {
       contentId: input.record.contentId,
       contentVersionId: input.record.contentVersionId,
       publicationGeneration: input.record.publicationGeneration,
-      providerOperationId: stableKey('provider_operation', [
-        'vimeo',
-        'revoke_private',
-        input.record.accountKey,
-        input.record.productKey,
-        input.record.contentId,
-        input.record.contentVersionId,
-        input.record.approval!.evidence.projectionDigest,
-        String(input.record.publicationGeneration),
-      ]),
+      providerOperationId,
       provider: 'vimeo',
       operation: 'revoke_private',
       idempotencyKey: input.binding.idempotencyKey,
@@ -238,6 +328,63 @@ export function unpublishContent(input: {
   };
 }
 
+export function recordPrivateRevocation(input: {
+  record: ContentPublicationRecord;
+  observation: Extract<VimeoContentPublicationObservation, { operation: 'revoke_private' }>;
+  pendingProviderContext: PendingContentPublicationProviderContext;
+  binding: ContentPublicationCommandBinding;
+}): {
+  record: ContentPublicationRecord;
+  providerCompletion: ContentPublicationProviderCompletion;
+} {
+  assertBinding(input.binding, input.record);
+  const completedAt = validInstant(input.binding.occurredAt);
+  const readback = buildRevocationReadback(
+    input.record,
+    input.pendingProviderContext,
+    input.observation,
+  );
+  assertRevocationReadback(input.record, input.pendingProviderContext, readback);
+  assertReadbackChronology(
+    input.pendingProviderContext.intent.createdAt,
+    readback.observedAt,
+    completedAt,
+  );
+  return {
+    record: {
+      ...input.record,
+      version: input.record.version + 1,
+      pendingProviderOperationId: null,
+      pendingProviderRequestHash: null,
+      opaqueProviderAssetRef: null,
+      providerReadbackDigest: readback.providerReadbackDigest,
+      updatedAt: completedAt,
+    },
+    providerCompletion: {
+      providerOperationId: readback.providerOperationId,
+      expectedProviderOperationVersion: readback.providerOperationVersion,
+      outboxIntentId: input.pendingProviderContext.intent.intentId,
+      operation: 'revoke_private',
+      accountKey: input.record.accountKey,
+      productKey: input.record.productKey,
+      contentId: input.record.contentId,
+      contentVersionId: input.record.contentVersionId,
+      publicationGeneration: input.record.publicationGeneration,
+      canonicalRequestHash: readback.canonicalRequestHash,
+      providerAcceptanceDigest: readback.providerAcceptanceDigest,
+      providerReconciliationDigest: readback.providerReconciliationDigest,
+      registryBindingKey: input.pendingProviderContext.providerOperation.registryBindingKey,
+      providerAccountRefHash: input.pendingProviderContext.providerOperation.providerAccountRefHash,
+      providerReadbackDigest: readback.providerReadbackDigest,
+      oneTimeReadbackDigest: readback.oneTimeReadbackDigest,
+      providerResourceRefHash: readback.providerResourceRefHash,
+      providerObservedAt: readback.observedAt,
+      completedAt,
+      approvalProjectionDigest: input.record.approval!.evidence.projectionDigest,
+    },
+  };
+}
+
 export function archiveContent(input: {
   principal: ContentPublicationPrincipal;
   record: ContentPublicationRecord;
@@ -245,20 +392,41 @@ export function archiveContent(input: {
 }): { record: ContentPublicationRecord; intent?: ContentPublicationOutboxIntent } {
   assertAdmin(input.principal, input.record);
   assertBinding(input.binding, input.record);
-  if (input.record.state === 'archived' || input.record.state === 'publishing') {
+  if (
+    input.record.state === 'archived' ||
+    input.record.state === 'publishing' ||
+    input.record.pendingProviderOperationId ||
+    input.record.pendingProviderRequestHash
+  ) {
     throw failure('invalidState', 'Content cannot be archived from its current state.');
   }
   const occurredAt = validInstant(input.binding.occurredAt);
+  const revokeRequired =
+    input.record.state === 'published' && input.record.opaqueProviderAssetRef !== null;
+  const providerOperationId = revokeRequired
+    ? stableKey('provider_operation', [
+        'vimeo',
+        'archive_revoke_private',
+        input.record.accountKey,
+        input.record.productKey,
+        input.record.contentId,
+        input.record.contentVersionId,
+        input.record.approval!.evidence.projectionDigest,
+        String(input.record.publicationGeneration),
+      ])
+    : null;
   const record = {
     ...input.record,
     version: input.record.version + 1,
     state: 'archived' as const,
     playbackGrantGeneration: input.record.playbackGrantGeneration + 1,
+    pendingProviderOperationId: providerOperationId,
+    pendingProviderRequestHash: revokeRequired ? input.binding.requestHash : null,
     publishedAt: null,
     archivedAt: occurredAt,
     updatedAt: occurredAt,
   };
-  if (!input.record.opaqueProviderAssetRef || input.record.state !== 'published') return { record };
+  if (!revokeRequired || !providerOperationId) return { record };
   return {
     record,
     intent: {
@@ -271,16 +439,7 @@ export function archiveContent(input: {
         String(input.record.publicationGeneration),
         input.binding.idempotencyKey,
       ]),
-      providerOperationId: stableKey('provider_operation', [
-        'vimeo',
-        'archive_revoke_private',
-        input.record.accountKey,
-        input.record.productKey,
-        input.record.contentId,
-        input.record.contentVersionId,
-        input.record.approval!.evidence.projectionDigest,
-        String(input.record.publicationGeneration),
-      ]),
+      providerOperationId,
       provider: 'vimeo',
       accountKey: input.record.accountKey,
       productKey: input.record.productKey,
@@ -688,6 +847,192 @@ function assertOccurrenceRelation(
   }
 }
 
+function buildPublicationReadback(
+  record: ContentPublicationRecord,
+  pending: PendingContentPublicationProviderContext,
+  observation: Extract<VimeoContentPublicationObservation, { operation: 'publish_private' }>,
+): VimeoProviderOperationReadback {
+  const operation = pending.providerOperation;
+  const observedAt = validInstant(observation.observedAt);
+  assertOpaqueReference(observation.opaqueProviderAssetRef);
+  const providerResourceRefHash = sha256(observation.opaqueProviderAssetRef);
+  if (
+    observation.providerResourceRefHash !== providerResourceRefHash ||
+    observation.providerAcceptanceDigest !== operation.providerAcceptanceDigest
+  ) {
+    throw failure('conflict', 'Canonical Vimeo publication readback does not match the provider.');
+  }
+  const providerReadbackDigest = canonicalProviderReadbackDigest({
+    record,
+    pending,
+    observation,
+    providerResourceRefHash,
+  });
+  const oneTimeReadbackDigest = canonicalOneTimeReadbackDigest({
+    record,
+    pending,
+    providerReadbackDigest,
+    readiness: 'ready_to_apply',
+  });
+  return {
+    accountKey: record.accountKey,
+    productKey: record.productKey,
+    providerOperationId: operation.providerOperationId,
+    providerOperationVersion: operation.providerOperationVersion,
+    providerOperationState: 'accepted',
+    operation: 'publish_private',
+    contentId: record.contentId,
+    contentVersionId: record.contentVersionId,
+    publicationGeneration: record.publicationGeneration,
+    canonicalRequestHash: operation.canonicalRequestHash,
+    state: 'complete',
+    observedAt,
+    opaqueProviderAssetRef: observation.opaqueProviderAssetRef,
+    providerResourceRefHash,
+    vimeoPrivacy: observation.vimeoPrivacy,
+    vimeoAvailability: observation.vimeoAvailability,
+    matchingCanonicalAssetCount: observation.matchingCanonicalAssetCount,
+    exactContentVersionCorrelation: observation.exactContentVersionCorrelation,
+    providerAcceptanceDigest: observation.providerAcceptanceDigest,
+    providerReconciliationDigest: operation.providerReconciliationDigest,
+    providerReadbackDigest,
+    oneTimePublicationReadback: 'ready_to_apply',
+    oneTimeReadbackDigest,
+    approvalProjectionDigest: operation.approvalProjectionDigest,
+  };
+}
+
+function buildRevocationReadback(
+  record: ContentPublicationRecord,
+  pending: PendingContentPublicationProviderContext,
+  observation: Extract<VimeoContentPublicationObservation, { operation: 'revoke_private' }>,
+): VimeoProviderRevocationReadback {
+  const operation = pending.providerOperation;
+  const observedAt = validInstant(observation.observedAt);
+  const providerResourceRefHash = sha256(record.opaqueProviderAssetRef ?? '');
+  if (
+    !record.opaqueProviderAssetRef ||
+    observation.providerResourceRefHash !== providerResourceRefHash ||
+    observation.providerAcceptanceDigest !== operation.providerAcceptanceDigest
+  ) {
+    throw failure('conflict', 'Canonical Vimeo revocation readback does not match the provider.');
+  }
+  const providerReadbackDigest = canonicalProviderReadbackDigest({
+    record,
+    pending,
+    observation,
+    providerResourceRefHash,
+  });
+  const oneTimeReadbackDigest = canonicalOneTimeReadbackDigest({
+    record,
+    pending,
+    providerReadbackDigest,
+    readiness: 'revocation_ready_to_apply',
+  });
+  return {
+    accountKey: record.accountKey,
+    productKey: record.productKey,
+    providerOperationId: operation.providerOperationId,
+    providerOperationVersion: operation.providerOperationVersion,
+    providerOperationState: 'accepted',
+    operation: 'revoke_private',
+    contentId: record.contentId,
+    contentVersionId: record.contentVersionId,
+    publicationGeneration: record.publicationGeneration,
+    canonicalRequestHash: operation.canonicalRequestHash,
+    state: 'complete',
+    observedAt,
+    providerResourceRefHash,
+    vimeoAvailability: observation.vimeoAvailability,
+    matchingCanonicalAssetCount: observation.matchingCanonicalAssetCount,
+    exactContentVersionCorrelation: observation.exactContentVersionCorrelation,
+    providerAcceptanceDigest: observation.providerAcceptanceDigest,
+    providerReconciliationDigest: operation.providerReconciliationDigest,
+    providerReadbackDigest,
+    oneTimePublicationReadback: 'revocation_ready_to_apply',
+    oneTimeReadbackDigest,
+    approvalProjectionDigest: operation.approvalProjectionDigest,
+  };
+}
+
+function canonicalProviderReadbackDigest(input: {
+  record: ContentPublicationRecord;
+  pending: PendingContentPublicationProviderContext;
+  observation: VimeoContentPublicationObservation;
+  providerResourceRefHash: string;
+}) {
+  const operation = input.pending.providerOperation;
+  const privacy =
+    input.observation.operation === 'publish_private' ? input.observation.vimeoPrivacy : null;
+  return sha256(
+    JSON.stringify([
+      'vimeo_content_publication_readback_v1',
+      input.record.accountKey,
+      input.record.productKey,
+      operation.providerOperationId,
+      operation.providerOperationVersion,
+      input.observation.operation,
+      input.record.contentId,
+      input.record.contentVersionId,
+      input.record.publicationGeneration,
+      operation.canonicalRequestHash,
+      operation.registryBindingKey,
+      operation.providerAccountRefHash,
+      input.providerResourceRefHash,
+      input.observation.providerAcceptanceDigest,
+      input.observation.vimeoAvailability,
+      privacy,
+      input.observation.matchingCanonicalAssetCount,
+      input.observation.exactContentVersionCorrelation,
+      operation.approvalProjectionDigest,
+    ]),
+  );
+}
+
+function canonicalOneTimeReadbackDigest(input: {
+  record: ContentPublicationRecord;
+  pending: PendingContentPublicationProviderContext;
+  providerReadbackDigest: string;
+  readiness: 'ready_to_apply' | 'revocation_ready_to_apply';
+}) {
+  return sha256(
+    JSON.stringify([
+      'one_time_content_publication_readback_v1',
+      input.record.accountKey,
+      input.record.productKey,
+      input.record.contentId,
+      input.record.contentVersionId,
+      input.record.version,
+      input.record.state,
+      input.record.publicationGeneration,
+      input.record.pendingProviderOperationId,
+      input.record.pendingProviderRequestHash,
+      input.pending.intent.intentId,
+      input.pending.providerOperation.providerOperationVersion,
+      input.record.approval?.evidence.projectionDigest ?? null,
+      input.providerReadbackDigest,
+      input.readiness,
+    ]),
+  );
+}
+
+function assertReadbackChronology(
+  intentCreatedAt: string,
+  observedAt: string,
+  completedAt: string,
+) {
+  const intentTime = Date.parse(validInstant(intentCreatedAt));
+  const observedTime = Date.parse(validInstant(observedAt));
+  const completedTime = Date.parse(validInstant(completedAt));
+  if (observedTime < intentTime || observedTime > completedTime) {
+    throw failure('conflict', 'Canonical provider readback chronology is invalid.');
+  }
+}
+
+function sha256(value: string) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
 function assertPublicationReadback(
   record: ContentPublicationRecord,
   pending: PendingContentPublicationProviderContext,
@@ -750,18 +1095,85 @@ function assertPublicationReadback(
       'Canonical Vimeo and One Time publication readback is incomplete or ambiguous.',
     );
   }
-  assertSafeId(readback.fence.workerId, 'workerId');
   assertSafeId(operation.registryBindingKey, 'registryBindingKey');
   assertDigest(operation.providerAccountRefHash, 'providerAccountRefHash');
-  if (
-    !Number.isSafeInteger(readback.fence.leaseGeneration) ||
-    readback.fence.leaseGeneration < 1 ||
-    Date.parse(validInstant(readback.fence.leaseExpiresAt)) <=
-      Date.parse(validInstant(readback.fence.observedAt))
-  ) {
-    throw failure('conflict', 'ProviderOperation fence is stale.');
-  }
+  validInstant(readback.observedAt);
   assertOpaqueReference(readback.opaqueProviderAssetRef);
+  assertDigest(readback.providerResourceRefHash, 'providerResourceRefHash');
+  assertDigest(readback.providerAcceptanceDigest, 'providerAcceptanceDigest');
+  if (readback.providerReconciliationDigest !== null) {
+    assertDigest(readback.providerReconciliationDigest, 'providerReconciliationDigest');
+  }
+  assertDigest(readback.providerReadbackDigest, 'providerReadbackDigest');
+  assertDigest(readback.oneTimeReadbackDigest, 'oneTimeReadbackDigest');
+}
+
+function assertRevocationReadback(
+  record: ContentPublicationRecord,
+  pending: PendingContentPublicationProviderContext,
+  readback: VimeoProviderRevocationReadback,
+) {
+  const intent = pending.intent;
+  const operation = pending.providerOperation;
+  if (
+    !['approved', 'archived'].includes(record.state) ||
+    !record.approval ||
+    !record.opaqueProviderAssetRef ||
+    !record.pendingProviderOperationId ||
+    !record.pendingProviderRequestHash ||
+    intent.providerOperationId !== record.pendingProviderOperationId ||
+    intent.provider !== 'vimeo' ||
+    intent.operation !== 'revoke_private' ||
+    intent.accountKey !== record.accountKey ||
+    intent.productKey !== record.productKey ||
+    intent.contentId !== record.contentId ||
+    intent.contentVersionId !== record.contentVersionId ||
+    intent.publicationGeneration !== record.publicationGeneration ||
+    intent.requestHash !== record.pendingProviderRequestHash ||
+    JSON.stringify(intent.approvalEvidence) !== JSON.stringify(record.approval.evidence) ||
+    intent.state !== 'pending' ||
+    operation.providerOperationId !== intent.providerOperationId ||
+    operation.providerOperationVersion !== readback.providerOperationVersion ||
+    operation.provider !== intent.provider ||
+    operation.operation !== intent.operation ||
+    operation.accountKey !== record.accountKey ||
+    operation.productKey !== record.productKey ||
+    operation.productKey !== CONTENT_PUBLICATION_PRODUCT_KEY ||
+    operation.contentId !== intent.contentId ||
+    operation.contentVersionId !== intent.contentVersionId ||
+    operation.publicationGeneration !== intent.publicationGeneration ||
+    operation.idempotencyKey !== intent.idempotencyKey ||
+    operation.canonicalRequestHash !== intent.requestHash ||
+    operation.state !== 'accepted' ||
+    operation.unknownEffect !== false ||
+    operation.providerAcceptanceDigest !== readback.providerAcceptanceDigest ||
+    operation.providerReconciliationDigest !== readback.providerReconciliationDigest ||
+    operation.approvalProjectionDigest !== record.approval.evidence.projectionDigest ||
+    readback.providerOperationId !== record.pendingProviderOperationId ||
+    readback.accountKey !== record.accountKey ||
+    readback.productKey !== record.productKey ||
+    readback.approvalProjectionDigest !== record.approval.evidence.projectionDigest ||
+    readback.providerOperationState !== operation.state ||
+    readback.operation !== 'revoke_private' ||
+    readback.contentId !== record.contentId ||
+    readback.contentVersionId !== record.contentVersionId ||
+    readback.publicationGeneration !== record.publicationGeneration ||
+    readback.canonicalRequestHash !== record.pendingProviderRequestHash ||
+    readback.state !== 'complete' ||
+    readback.vimeoAvailability !== 'revoked' ||
+    ![0, 1].includes(readback.matchingCanonicalAssetCount) ||
+    readback.exactContentVersionCorrelation !== true ||
+    readback.oneTimePublicationReadback !== 'revocation_ready_to_apply'
+  ) {
+    throw failure(
+      'conflict',
+      'Canonical Vimeo and One Time revocation readback is incomplete or ambiguous.',
+    );
+  }
+  assertSafeId(operation.registryBindingKey, 'registryBindingKey');
+  assertDigest(operation.providerAccountRefHash, 'providerAccountRefHash');
+  validInstant(readback.observedAt);
+  assertDigest(readback.providerResourceRefHash, 'providerResourceRefHash');
   assertDigest(readback.providerAcceptanceDigest, 'providerAcceptanceDigest');
   if (readback.providerReconciliationDigest !== null) {
     assertDigest(readback.providerReconciliationDigest, 'providerReconciliationDigest');

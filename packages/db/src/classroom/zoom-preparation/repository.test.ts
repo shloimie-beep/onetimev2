@@ -23,7 +23,11 @@ describe('P17 Zoom preparation persistence contract', () => {
       connect: async () => ({
         query: async (sql, values = []) => {
           queries.push({ sql, values });
-          return { rows: [] };
+          return {
+            rows: sql.includes('RETURNING idempotency_key')
+              ? [{ idempotency_key: 'prepare-1' }]
+              : [],
+          };
         },
       }),
     });
@@ -72,6 +76,64 @@ describe('P17 Zoom preparation persistence contract', () => {
       ),
     ).rejects.toThrow('synthetic failure');
     expect(commands.at(-1)).toBe('ROLLBACK');
+  });
+
+  it('fails closed and rolls back stale versioned or changed immutable writes', async () => {
+    const versionCommands: string[] = [];
+    const staleRepository = createZoomPreparationRepository({
+      connect: async () => ({
+        query: async (sql) => {
+          versionCommands.push(sql);
+          return { rows: [] };
+        },
+      }),
+    });
+    await expect(
+      staleRepository.inTransaction((unit) =>
+        unit.saveSaga({
+          id: 'saga-1',
+          accountKey: 'account-1',
+          productKey: 'one-time',
+          occurrenceId: 'occurrence-1',
+          trigger: 'admin_manual',
+          scheduleVersion: 1,
+          rosterVersion: 1,
+          state: 'draft',
+          providerOperationIds: [],
+          completedOperationIds: [],
+          unknownOperationIds: [],
+          version: 2,
+          createdAt: '2026-07-28T23:00:00.000Z',
+          updatedAt: '2026-07-28T23:01:00.000Z',
+        }),
+      ),
+    ).rejects.toThrow('zoom_preparation_optimistic_conflict');
+    expect(versionCommands.at(-1)).toBe('ROLLBACK');
+
+    const receiptCommands: string[] = [];
+    const conflictRepository = createZoomPreparationRepository({
+      connect: async () => ({
+        query: async (sql) => {
+          receiptCommands.push(sql);
+          return { rows: [] };
+        },
+      }),
+    });
+    await expect(
+      conflictRepository.inTransaction((unit) =>
+        unit.saveReceipt({
+          accountKey: 'account-1',
+          productKey: 'one-time',
+          idempotencyKey: 'prepare-1',
+          requestHash: 'a'.repeat(64),
+          operation: 'prepare_preview',
+          resultRef: 'saga-1',
+          resultVersion: 2,
+          committedAt: '2026-07-28T23:00:00.000Z',
+        }),
+      ),
+    ).rejects.toThrow('zoom_preparation_command_idempotency_conflict');
+    expect(receiptCommands.at(-1)).toBe('ROLLBACK');
   });
 
   it('atomically persists the canonical job outbox row and exact provider binding', async () => {

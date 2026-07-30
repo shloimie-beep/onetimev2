@@ -124,38 +124,51 @@ export function buildRosterSnapshot(input: {
   generatedAt: string;
 }): OccurrenceRosterSnapshot {
   assertOccurrence(input.scope, input.occurrence);
+  positiveVersion(input.rosterVersion, 'roster');
   const seen = new Set<string>();
-  const entries: ZoomRosterEntry[] = input.students.map((candidate) => {
-    if (seen.has(candidate.student.studentId)) {
-      fail('invalidRoster', 'A Student may appear only once in a roster snapshot.');
-    }
-    seen.add(candidate.student.studentId);
-    assertSameScope(input.scope, candidate.student);
-    assertSameScope(input.scope, candidate.enrollment);
-    if (
-      candidate.enrollment.studentId !== candidate.student.studentId ||
-      candidate.enrollment.householdId !== candidate.student.householdId
-    ) {
-      fail(
-        'invalidRoster',
-        'Enrollment must bind the exact Student and household eligibility identity.',
+  const entries = input.students
+    .map<ZoomRosterEntry>((candidate) => {
+      if (seen.has(candidate.student.studentId)) {
+        fail('invalidRoster', 'A Student may appear only once in a roster snapshot.');
+      }
+      seen.add(candidate.student.studentId);
+      assertSameScope(input.scope, candidate.student);
+      assertSameScope(input.scope, candidate.enrollment);
+      if (
+        candidate.enrollment.studentId !== candidate.student.studentId ||
+        candidate.enrollment.householdId !== candidate.student.householdId
+      ) {
+        fail(
+          'invalidRoster',
+          'Enrollment must bind the exact Student and household eligibility identity.',
+        );
+      }
+      positiveVersion(candidate.student.version, 'Student');
+      positiveVersion(candidate.enrollment.version, 'enrollment');
+      positiveVersion(candidate.householdAccessVersion, 'household access');
+      positiveVersion(candidate.serviceAccountConsentVersion, 'service-account consent');
+      positiveVersion(
+        candidate.recordingParticipationConsentVersion,
+        'recording-participation consent',
       );
-    }
-    const safeReason = rosterReason(candidate, input.occurrence.seriesId);
-    return {
-      ...input.scope,
-      studentId: candidate.student.studentId,
-      householdId: candidate.student.householdId,
-      decision: safeReason === 'eligible' ? 'included' : 'excluded',
-      safeReason,
-      approvedClassroomName: safeClassroomName(candidate.approvedClassroomName),
-      studentVersion: candidate.student.version,
-      enrollmentVersion: candidate.enrollment.version,
-      serviceAccountConsentVersion: candidate.serviceAccountConsentVersion,
-      recordingParticipationConsentVersion: candidate.recordingParticipationConsentVersion,
-      memberRecognitionConsentVersion: candidate.memberRecognitionConsentVersion,
-    };
-  });
+      positiveVersion(candidate.memberRecognitionConsentVersion, 'member-recognition consent');
+      const safeReason = rosterReason(candidate, input.occurrence.seriesId);
+      return {
+        ...input.scope,
+        studentId: candidate.student.studentId,
+        householdId: candidate.student.householdId,
+        decision: safeReason === 'eligible' ? 'included' : 'excluded',
+        safeReason,
+        approvedClassroomName: safeClassroomName(candidate.approvedClassroomName),
+        studentVersion: candidate.student.version,
+        enrollmentVersion: candidate.enrollment.version,
+        householdAccessVersion: candidate.householdAccessVersion,
+        serviceAccountConsentVersion: candidate.serviceAccountConsentVersion,
+        recordingParticipationConsentVersion: candidate.recordingParticipationConsentVersion,
+        memberRecognitionConsentVersion: candidate.memberRecognitionConsentVersion,
+      };
+    })
+    .sort((left, right) => left.studentId.localeCompare(right.studentId));
   if (!entries.some((entry) => entry.decision === 'included')) {
     fail('invalidRoster', 'Preparation requires at least one currently authorized Student.');
   }
@@ -725,6 +738,12 @@ function safeClassroomName(value: string) {
     fail('invalidRoster', 'Classroom name is missing or unsafe.');
   }
   return normalized;
+}
+
+function positiveVersion(value: number, label: string) {
+  if (!Number.isSafeInteger(value) || value < 1) {
+    fail('invalidRoster', `A positive ${label} version is required.`);
+  }
 }
 
 function canonicalJson(value: unknown): string {

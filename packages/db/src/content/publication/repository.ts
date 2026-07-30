@@ -2,9 +2,11 @@ import type {
   CanonicalGovernedOccurrence,
   ContentPublicationOutboxIntent,
   ContentPublicationMaterialization,
+  ContentPublicationPrincipal,
   ContentPublicationReceipt,
   ContentPublicationRecord,
   ContentPublicationRepository,
+  ContentPublicationScope,
   ContentPublicationUnitOfWork,
   PendingContentPublicationProviderContext,
   StudentContentAssignment,
@@ -51,7 +53,7 @@ interface PendingProviderContextRow extends Record<string, unknown> {
   provider_operation_id: string;
   provider_operation_version: number;
   provider: 'vimeo';
-  operation: 'publish_private';
+  operation: 'publish_private' | 'revoke_private';
   product_key: 'one_time_mishnayos';
   content_id: string;
   content_version_id: string;
@@ -77,6 +79,23 @@ interface CanonicalOccurrenceRow extends Record<string, unknown> {
 
 interface PublicationEligibilityRow extends Record<string, unknown> {
   eligibility_json: StudentPublicationEligibility;
+  session_security_version?: number;
+}
+
+interface CompletedProviderOperationRow extends Record<string, unknown> {
+  job_id: string;
+  version: number;
+  provider: 'vimeo';
+  product: 'one_time_mishnayos';
+  runtime_tier: 'isolated_staging' | 'production';
+  verification_environment_id:
+    | 'ci'
+    | 'provider_sandbox'
+    | 'persistent_staging'
+    | 'production_read_only'
+    | 'production_operator_canary'
+    | 'production_broad';
+  reconciliation_digest: string | null;
 }
 
 export function createPostgresContentPublicationRepository(
@@ -181,6 +200,82 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       requireOne(result.rowCount, 'content_publication_receipt_conflict');
     },
 
+    async saveProviderOperation(operation) {
+      const outbox = await client.query(
+        `INSERT INTO onetime.job_outbox
+           (job_id, operation_type, aggregate_ref, source_version, provider, product,
+            runtime_tier, verification_environment_id, idempotency_key,
+            canonical_request_hash, payload_ref, payload_digest, compensation_for_job_id,
+            state, version, recovery_generation, dispatch_attempts,
+            lifetime_dispatch_attempts, reconciliation_attempts, lease_generation,
+            unknown_effect, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,
+                 'not_started',1,0,0,0,0,0,false,$14,$15)
+         ON CONFLICT (product, runtime_tier, verification_environment_id, idempotency_key)
+         DO UPDATE SET idempotency_key = EXCLUDED.idempotency_key
+           WHERE job_outbox.job_id = EXCLUDED.job_id
+             AND job_outbox.operation_type = EXCLUDED.operation_type
+             AND job_outbox.aggregate_ref = EXCLUDED.aggregate_ref
+             AND job_outbox.source_version = EXCLUDED.source_version
+             AND job_outbox.provider = EXCLUDED.provider
+             AND job_outbox.canonical_request_hash = EXCLUDED.canonical_request_hash
+             AND job_outbox.payload_ref = EXCLUDED.payload_ref
+             AND job_outbox.payload_digest = EXCLUDED.payload_digest
+             AND job_outbox.compensation_for_job_id
+               IS NOT DISTINCT FROM EXCLUDED.compensation_for_job_id
+             AND job_outbox.state = 'not_started'
+             AND job_outbox.version = 1
+             AND job_outbox.unknown_effect = FALSE
+             AND job_outbox.provider_acceptance_digest IS NULL
+             AND job_outbox.reconciliation_digest IS NULL
+         RETURNING job_id`,
+        [
+          operation.job_id,
+          operation.operation_type,
+          operation.aggregate_ref,
+          operation.source_version,
+          operation.provider,
+          operation.scope.product,
+          operation.scope.runtime_tier,
+          operation.scope.verification_environment_id,
+          operation.idempotency_key,
+          operation.canonical_request_hash,
+          operation.payload_ref,
+          operation.payload_digest,
+          operation.compensation_for_job_id,
+          operation.created_at,
+          operation.updated_at,
+        ],
+      );
+      if (String(outbox.rows[0]?.job_id ?? '') !== operation.job_id) {
+        throw new Error('content_provider_job_outbox_conflict');
+      }
+      const binding = await client.query(
+        `INSERT INTO onetime.provider_operation_binding
+           (job_id, registry_binding_key, provider_account_ref_hash, effect_kind, household_id)
+         VALUES ($1,$2,$3,$4,$5)
+         ON CONFLICT (job_id) DO UPDATE SET job_id = EXCLUDED.job_id
+           WHERE provider_operation_binding.registry_binding_key =
+                 EXCLUDED.registry_binding_key
+             AND provider_operation_binding.provider_account_ref_hash =
+                 EXCLUDED.provider_account_ref_hash
+             AND provider_operation_binding.effect_kind = EXCLUDED.effect_kind
+             AND provider_operation_binding.household_id
+               IS NOT DISTINCT FROM EXCLUDED.household_id
+         RETURNING job_id`,
+        [
+          operation.job_id,
+          operation.registry_binding_key,
+          operation.provider_account_ref_hash,
+          operation.effect_kind,
+          operation.household_id,
+        ],
+      );
+      if (String(binding.rows[0]?.job_id ?? '') !== operation.job_id) {
+        throw new Error('content_provider_operation_binding_conflict');
+      }
+    },
+
     async saveOutboxIntent(intent: ContentPublicationOutboxIntent) {
       const result = await client.query(
         `INSERT INTO onetime.content_publication_outbox (
@@ -211,7 +306,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       requireOne(result.rowCount, 'content_publication_outbox_conflict');
     },
 
-    async getPendingPublishProviderContext(scope, providerOperationId) {
+    async getPendingProviderContext(scope, providerOperationId, operation) {
       const result = await client.query<PendingProviderContextRow>(
         `SELECT o.intent_json,
                 o.account_key,
@@ -240,22 +335,22 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
           WHERE o.account_key = $1
             AND o.product_key = $2
             AND o.provider_operation_id = $3
-            AND o.operation = 'publish_private'
+            AND o.operation = $4
             AND o.state = 'pending'
             AND j.provider = 'vimeo'
             AND j.product = o.product_key
-            AND j.operation_type = 'publish_private'
+            AND j.operation_type = $4
             AND j.state = 'accepted'
             AND j.unknown_effect = FALSE
           LIMIT 1
           FOR UPDATE OF o, j`,
-        [scope.accountKey, scope.productKey, providerOperationId],
+        [scope.accountKey, scope.productKey, providerOperationId, operation],
       );
       return result.rows[0] ? mapPendingProviderContext(result.rows[0]) : null;
     },
 
-    async completePublishProviderOperation(completion) {
-      const providerResult = await client.query(
+    async completeProviderOperation(completion) {
+      const providerResult = await client.query<CompletedProviderOperationRow>(
         `UPDATE onetime.job_outbox
             SET state = 'complete',
                 version = version + 1,
@@ -263,7 +358,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
           WHERE job_id = $1
             AND version = $2
             AND provider = 'vimeo'
-            AND operation_type = 'publish_private'
+            AND operation_type = $16
             AND product = $14
             AND aggregate_ref = $3
             AND payload_ref = $4
@@ -285,6 +380,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
                  AND o.publication_generation = $5
                  AND o.request_hash = $6
                  AND o.approval_projection_digest = $15
+                 AND o.operation = $16
                  AND o.state = 'pending'
             )
             AND EXISTS (
@@ -293,7 +389,9 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
                WHERE b.job_id = $1
                  AND b.registry_binding_key = $10
                  AND b.provider_account_ref_hash = $11
-            )`,
+            )
+          RETURNING job_id, version, provider, product, runtime_tier,
+                    verification_environment_id, reconciliation_digest`,
         [
           completion.providerOperationId,
           completion.expectedProviderOperationVersion,
@@ -310,13 +408,71 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
           completion.accountKey,
           completion.productKey,
           completion.approvalProjectionDigest,
+          completion.operation,
         ],
       );
       requireOne(providerResult.rowCount, 'content_provider_operation_completion_conflict');
+      const completedProvider = providerResult.rows[0];
+      if (
+        !completedProvider ||
+        completedProvider.reconciliation_digest !== completion.providerReconciliationDigest
+      ) {
+        throw new Error('content_provider_reconciliation_fence_conflict');
+      }
+      await client.query(
+        `INSERT INTO onetime.provider_readback_ledger (
+           operation_id, operation_version, provider, runtime_tier,
+           verification_environment_id, provider_account_ref_hash, disposition,
+           provider_resource_ref_hash, reconciliation_digest, observed_at, product_key
+         ) VALUES ($1,$2,$3,$4,$5,$6,'effect_exists',$7,$8,$9::timestamptz,$10)
+         ON CONFLICT (operation_id, operation_version, reconciliation_digest)
+         DO NOTHING`,
+        [
+          completedProvider.job_id,
+          completedProvider.version,
+          completedProvider.provider,
+          completedProvider.runtime_tier,
+          completedProvider.verification_environment_id,
+          completion.providerAccountRefHash,
+          completion.providerResourceRefHash,
+          completion.providerReadbackDigest,
+          completion.providerObservedAt,
+          completedProvider.product,
+        ],
+      );
+      const persistedReadback = await client.query(
+        `SELECT operation_id
+           FROM onetime.provider_readback_ledger
+          WHERE operation_id = $1
+            AND operation_version = $2
+            AND provider = $3
+            AND runtime_tier = $4
+            AND verification_environment_id = $5
+            AND provider_account_ref_hash = $6
+            AND disposition = 'effect_exists'
+            AND provider_resource_ref_hash = $7
+            AND reconciliation_digest = $8
+            AND observed_at = $9::timestamptz
+            AND product_key = $10`,
+        [
+          completedProvider.job_id,
+          completedProvider.version,
+          completedProvider.provider,
+          completedProvider.runtime_tier,
+          completedProvider.verification_environment_id,
+          completion.providerAccountRefHash,
+          completion.providerResourceRefHash,
+          completion.providerReadbackDigest,
+          completion.providerObservedAt,
+          completedProvider.product,
+        ],
+      );
+      requireOne(persistedReadback.rowCount, 'content_provider_readback_ledger_conflict');
       const outboxResult = await client.query(
         `UPDATE onetime.content_publication_outbox
             SET state = 'complete',
                 provider_readback_digest = $7,
+                provider_resource_ref_hash = $14,
                 one_time_readback_digest = $8,
                 completed_at = $9::timestamptz
           WHERE intent_id = $1
@@ -328,7 +484,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
             AND account_key = $10
             AND product_key = $11
             AND approval_projection_digest = $12
-            AND operation = 'publish_private'
+            AND operation = $13
             AND state = 'pending'`,
         [
           completion.outboxIntentId,
@@ -343,12 +499,60 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
           completion.accountKey,
           completion.productKey,
           completion.approvalProjectionDigest,
+          completion.operation,
+          completion.providerResourceRefHash,
         ],
       );
       requireOne(outboxResult.rowCount, 'content_publication_outbox_completion_conflict');
     },
 
     async getCanonicalGovernedOccurrence(scope, occurrenceId) {
+      await client.query(
+        `INSERT INTO onetime.governed_content_occurrences (
+           account_key, product_key, occurrence_id, occurrence_version,
+           canonical_series_id, governance_state, active, relation_json, attached_at
+         )
+         SELECT occurrence.account_key,
+                occurrence.product_key,
+                occurrence.occurrence_key,
+                occurrence.version,
+                series.class_series_key,
+                'governed',
+                series.series_state <> 'archived'
+                  AND occurrence.occurrence_state <> 'canceled',
+                jsonb_build_object(
+                  'accountKey', occurrence.account_key,
+                  'productKey', occurrence.product_key,
+                  'occurrenceId', occurrence.occurrence_key,
+                  'occurrenceVersion', occurrence.version,
+                  'canonicalSeriesId', series.class_series_key,
+                  'canonicalSeriesVersion', series.version,
+                  'occurrenceState', occurrence.occurrence_state,
+                  'seriesState', series.series_state,
+                  'isCanonical', series.is_canonical
+                ),
+                GREATEST(occurrence.updated_at, series.updated_at)
+           FROM onetime.class_occurrences AS occurrence
+           JOIN onetime.class_series AS series
+             ON series.account_key = occurrence.account_key
+            AND series.product_key = occurrence.product_key
+            AND series.class_series_key = occurrence.class_series_key
+          WHERE occurrence.account_key = $1
+            AND occurrence.product_key = $2
+            AND occurrence.occurrence_key = $3
+            AND series.is_canonical = TRUE
+         ON CONFLICT (account_key, product_key, occurrence_id)
+         DO UPDATE SET
+           occurrence_version = EXCLUDED.occurrence_version,
+           canonical_series_id = EXCLUDED.canonical_series_id,
+           governance_state = EXCLUDED.governance_state,
+           active = EXCLUDED.active,
+           relation_json = EXCLUDED.relation_json,
+           attached_at = EXCLUDED.attached_at
+         WHERE governed_content_occurrences.occurrence_version <=
+           EXCLUDED.occurrence_version`,
+        [scope.accountKey, scope.productKey, occurrenceId],
+      );
       const result = await client.query<CanonicalOccurrenceRow>(
         `SELECT account_key, occurrence_id, occurrence_version, canonical_series_id, product_key
            FROM onetime.governed_content_occurrences
@@ -502,16 +706,41 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       return result.rows[0]?.assignment_json ?? null;
     },
 
-    async getPlaybackFacts(scope, studentId, contentId) {
+    async refreshPlaybackFacts(scope, principal, assignment) {
+      const facts = await buildCurrentPlaybackFacts(client, scope, principal, assignment);
+      if (!facts) return null;
       const result = await client.query<PlaybackFactsRow>(
-        `SELECT facts_json
-           FROM onetime.student_content_playback_facts
-          WHERE account_key = $1
-            AND product_key = $2
-            AND student_id = $3
-            AND content_id = $4
-          LIMIT 1`,
-        [scope.accountKey, scope.productKey, studentId, contentId],
+        `INSERT INTO onetime.student_content_playback_facts (
+           account_key, product_key, assignment_id, assignment_version, student_id,
+           household_id, content_id, content_version_id, publication_generation,
+           approval_projection_digest, facts_json, updated_at
+         ) VALUES (
+           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb, now()
+         )
+         ON CONFLICT (account_key, product_key, student_id, content_id)
+         DO UPDATE SET
+           assignment_id = EXCLUDED.assignment_id,
+           assignment_version = EXCLUDED.assignment_version,
+           household_id = EXCLUDED.household_id,
+           content_version_id = EXCLUDED.content_version_id,
+           publication_generation = EXCLUDED.publication_generation,
+           approval_projection_digest = EXCLUDED.approval_projection_digest,
+           facts_json = EXCLUDED.facts_json,
+           updated_at = EXCLUDED.updated_at
+         RETURNING facts_json`,
+        [
+          scope.accountKey,
+          scope.productKey,
+          facts.assignmentId,
+          facts.assignmentVersion,
+          facts.studentId,
+          facts.householdId,
+          assignment.contentId,
+          assignment.contentVersionId,
+          assignment.publicationGeneration,
+          facts.approvalProjectionDigest,
+          JSON.stringify(facts),
+        ],
       );
       return result.rows[0]?.facts_json ?? null;
     },
@@ -579,6 +808,166 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       );
       requireOne(result.rowCount, 'student_content_resume_conflict');
     },
+  };
+}
+
+async function buildCurrentPlaybackFacts(
+  client: ContentPublicationSqlClient,
+  scope: ContentPublicationScope,
+  principal: ContentPublicationPrincipal,
+  assignment: StudentContentAssignment,
+): Promise<StudentPlaybackAuthorizationFacts | null> {
+  if (
+    principal.role !== 'student' ||
+    !principal.studentId ||
+    !principal.sessionId ||
+    !Number.isSafeInteger(principal.sessionVersion) ||
+    principal.sessionVersion! < 1 ||
+    principal.accountKey !== scope.accountKey ||
+    principal.productKey !== scope.productKey ||
+    principal.studentId !== assignment.studentId ||
+    principal.householdId !== assignment.householdId ||
+    principal.accessState === 'inactive' ||
+    principal.accessState === 'archived' ||
+    assignment.accountKey !== scope.accountKey ||
+    assignment.productKey !== scope.productKey ||
+    !assignment.active ||
+    assignment.revokedAt !== null
+  ) {
+    return null;
+  }
+  const result = await client.query<PublicationEligibilityRow>(
+    `SELECT eligibility.eligibility_json,
+            session.security_version AS session_security_version
+       FROM onetime.student_content_publication_eligibility AS eligibility
+       JOIN onetime.account_learner_identity_links AS identity_link
+         ON identity_link.account_key = eligibility.account_key
+        AND identity_link.product_key = eligibility.product_key
+        AND identity_link.household_key = eligibility.household_id
+        AND identity_link.learner_key = eligibility.student_id
+        AND identity_link.link_state = 'active'
+       JOIN onetime.account_users AS student_user
+         ON student_user.user_key = identity_link.user_key
+        AND student_user.account_key = identity_link.account_key
+        AND student_user.product_key = identity_link.product_key
+        AND student_user.role = 'student'
+        AND student_user.status = 'active'
+       JOIN onetime.user_sessions AS session
+         ON session.user_key = student_user.user_key
+        AND session.account_key = student_user.account_key
+        AND session.product_key = student_user.product_key
+        AND session.security_version = student_user.security_version
+        AND session.revoked_at IS NULL
+        AND session.expires_at > now()
+        AND session.last_seen_at > now() - interval '7 days'
+       JOIN onetime.portal_student_access_state AS student_access
+         ON student_access.account_key = identity_link.account_key
+        AND student_access.product_key = identity_link.product_key
+        AND student_access.household_key = identity_link.household_key
+        AND student_access.learner_key = identity_link.learner_key
+        AND student_access.student_user_ref = identity_link.user_key
+        AND student_access.status = 'active'
+       JOIN onetime.portal_learners AS learner
+         ON learner.account_key = identity_link.account_key
+        AND learner.product_key = identity_link.product_key
+        AND learner.household_key = identity_link.household_key
+        AND learner.learner_key = identity_link.learner_key
+        AND learner.learner_status = 'active'
+       JOIN onetime.portal_households AS household
+         ON household.account_key = identity_link.account_key
+        AND household.product_key = identity_link.product_key
+        AND household.household_key = identity_link.household_key
+        AND household.status = 'active'
+      WHERE eligibility.account_key = $1
+        AND eligibility.product_key = $2
+        AND eligibility.student_id = $3
+        AND eligibility.household_id = $4
+        AND eligibility.content_id = $5
+        AND eligibility.content_version_id = $6
+        AND eligibility.occurrence_id = $7
+        AND eligibility.publication_generation = $8
+        AND eligibility.approval_projection_digest = $9
+        AND student_user.user_key = $10
+        AND session.session_key = $11
+        AND session.security_version = $12
+      LIMIT 1
+      FOR SHARE OF eligibility, identity_link, student_user, session,
+        student_access, learner, household`,
+    [
+      scope.accountKey,
+      scope.productKey,
+      assignment.studentId,
+      assignment.householdId,
+      assignment.contentId,
+      assignment.contentVersionId,
+      assignment.occurrenceId,
+      assignment.publicationGeneration,
+      assignment.approvalEvidence.projectionDigest,
+      principal.actorId,
+      principal.sessionId,
+      principal.sessionVersion,
+    ],
+  );
+  const row = result.rows[0];
+  const eligibility = row?.eligibility_json;
+  const sessionSecurityVersion = Number(row?.session_security_version);
+  if (
+    !eligibility ||
+    !Number.isSafeInteger(sessionSecurityVersion) ||
+    sessionSecurityVersion < 1 ||
+    sessionSecurityVersion !== principal.sessionVersion ||
+    eligibility.accountKey !== scope.accountKey ||
+    eligibility.productKey !== scope.productKey ||
+    eligibility.studentId !== assignment.studentId ||
+    eligibility.householdId !== assignment.householdId ||
+    eligibility.contentId !== assignment.contentId ||
+    eligibility.contentVersionId !== assignment.contentVersionId ||
+    eligibility.occurrenceId !== assignment.occurrenceId ||
+    eligibility.publicationGeneration !== assignment.publicationGeneration ||
+    eligibility.approvalProjectionDigest !== assignment.approvalEvidence.projectionDigest ||
+    eligibility.studentVersion !== assignment.studentVersion ||
+    eligibility.enrollmentVersion !== assignment.enrollmentVersion ||
+    eligibility.accessVersion !== assignment.accessVersion ||
+    eligibility.serviceAccountConsentVersion !== assignment.serviceAccountConsentVersion ||
+    eligibility.privacyVersion !== assignment.privacyVersion ||
+    eligibility.revocationVersion !== assignment.revocationVersion ||
+    !eligibility.studentActive ||
+    !eligibility.enrollmentActive ||
+    !['active', 'grace'].includes(eligibility.accessState) ||
+    eligibility.accessState !== principal.accessState ||
+    !eligibility.serviceAccountAccepted ||
+    eligibility.privacyReviewState !== 'clear' ||
+    eligibility.studentRevoked ||
+    eligibility.accountRevoked ||
+    eligibility.contentRevoked
+  ) {
+    return null;
+  }
+  return {
+    accountKey: scope.accountKey,
+    productKey: scope.productKey,
+    assignmentId: assignment.assignmentId,
+    assignmentVersion: assignment.assignmentVersion,
+    studentId: assignment.studentId,
+    householdId: assignment.householdId,
+    sessionId: principal.sessionId,
+    sessionVersion: sessionSecurityVersion,
+    sessionActive: true,
+    studentVersion: eligibility.studentVersion,
+    studentActive: eligibility.studentActive,
+    enrollmentVersion: eligibility.enrollmentVersion,
+    enrollmentActive: eligibility.enrollmentActive,
+    accessVersion: eligibility.accessVersion,
+    accessState: eligibility.accessState,
+    serviceAccountConsentVersion: eligibility.serviceAccountConsentVersion,
+    serviceAccountAccepted: eligibility.serviceAccountAccepted,
+    privacyVersion: eligibility.privacyVersion,
+    revocationVersion: eligibility.revocationVersion,
+    studentRevoked: eligibility.studentRevoked,
+    accountRevoked: eligibility.accountRevoked,
+    contentRevoked: eligibility.contentRevoked,
+    privacyReviewState: eligibility.privacyReviewState,
+    approvalProjectionDigest: eligibility.approvalProjectionDigest,
   };
 }
 

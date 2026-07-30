@@ -163,6 +163,30 @@ describe('embedded classroom domain', () => {
       'admin-1',
       'audit-reset-1',
     ]);
+    const reacquiredAfterReset = acquireLiveStudentSession({
+      current: revoked,
+      context: joinContext({
+        actor: { ...joinContext().actor, device_lineage_id: 'device-after-reset' },
+      }),
+      live_session_id: 'live-after-reset',
+      now: new Date('2026-07-28T17:00:40.001Z'),
+    });
+    expect(reacquiredAfterReset).toMatchObject({
+      allowed: true,
+      disposition: 'reacquired_after_reset',
+      session: {
+        live_session_id: 'live-after-reset',
+        lease_generation: 2,
+        version: 1,
+        revoked_at: null,
+      },
+    });
+    expect(revoked).toMatchObject({
+      live_session_id: 'live-1',
+      state: 'revoked',
+      revoked_by_admin_id: 'admin-1',
+      revoke_audit_ref: 'audit-reset-1',
+    });
   });
 
   it('uses verified provider intervals, merges overlap, and records mismatch and reconnects', () => {

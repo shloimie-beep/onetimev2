@@ -8,9 +8,12 @@ import type {
   ContentPublicationProjectionRepository,
   ContentPublicationScope,
   GovernedContentOccurrenceRelation,
+  PendingContentPublicationProviderContext,
   StudentPublicationAudience,
-  VimeoProviderOperationReadback,
+  VimeoContentPublicationReadbackAdapter,
+  VimeoContentPublicationObservation,
 } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
+import type { ProviderRegistryBinding } from '../../../../../../../packages/contracts/src/providers/v21-provider-core.ts';
 import {
   archiveContent,
   approveContent,
@@ -19,7 +22,9 @@ import {
   assertStudentContentAccess,
   attachOccurrence,
   authorizeStudentPlayback,
+  createContentPublicationProviderOperation,
   recordPrivatePublication,
+  recordPrivateRevocation,
   requestPrivatePublication,
   saveStudentResume,
   searchStudentLibrary,
@@ -34,6 +39,9 @@ import {
 export function createContentPublicationService(deps: {
   repository: ContentPublicationRepository;
   approvedProjectionRepository: ContentPublicationProjectionRepository;
+  vimeoProviderBinding: ProviderRegistryBinding;
+  vimeoReadbackAdapter: VimeoContentPublicationReadbackAdapter;
+  providerReadbackTimeoutMs?: number;
   createId: () => string;
 }) {
   return {
@@ -91,6 +99,7 @@ export function createContentPublicationService(deps: {
     }) {
       return mutate({
         repository: deps.repository,
+        vimeoProviderBinding: deps.vimeoProviderBinding,
         principal: input.principal,
         contentId: input.contentId,
         operation: 'request_publish',
@@ -110,10 +119,47 @@ export function createContentPublicationService(deps: {
     async applyPrivatePublicationReadback(input: {
       scope: ContentPublicationScope;
       contentId: string;
-      readback: VimeoProviderOperationReadback;
+      providerOperationId: string;
       audience: readonly Omit<StudentPublicationAudience, 'accountKey' | 'productKey'>[];
       binding: ContentPublicationCommandBinding;
     }) {
+      const prepared = await deps.repository.inTransaction(async (unit) => {
+        const current = await requiredContent(unit, input.scope, input.contentId);
+        const audience = input.audience.map((member) => ({
+          ...member,
+          ...input.scope,
+        }));
+        const binding = authoritativeBinding(input.binding, 'record_published', current, {
+          providerOperationId: input.providerOperationId,
+          audience,
+        });
+        const priorReceipt = await unit.findReceipt(
+          input.scope,
+          'record_published',
+          binding.idempotencyKey,
+        );
+        if (priorReceipt) {
+          assertReceiptReplay(priorReceipt, 'record_published', binding.requestHash, current);
+          return { replayResult: { record: current, replay: true as const } };
+        }
+        const pendingProviderContext =
+          current.pendingProviderOperationId === input.providerOperationId
+            ? await unit.getPendingProviderContext(
+                input.scope,
+                input.providerOperationId,
+                'publish_private',
+              )
+            : null;
+        if (!pendingProviderContext) return providerConflict();
+        return { pendingProviderContext };
+      });
+      if ('replayResult' in prepared) return prepared.replayResult;
+      const observation = await readCanonicalVimeo(
+        deps.vimeoReadbackAdapter,
+        prepared.pendingProviderContext,
+        deps.providerReadbackTimeoutMs,
+      );
+      if (observation.operation !== 'publish_private') return providerConflict();
       return deps.repository.inTransaction(async (unit) => {
         const current = await requiredContent(unit, input.scope, input.contentId);
         const audience = input.audience.map((member) => ({
@@ -121,7 +167,7 @@ export function createContentPublicationService(deps: {
           ...input.scope,
         }));
         const binding = authoritativeBinding(input.binding, 'record_published', current, {
-          readback: input.readback,
+          providerOperationId: input.providerOperationId,
           audience,
         });
         const priorReceipt = await unit.findReceipt(
@@ -133,13 +179,20 @@ export function createContentPublicationService(deps: {
           assertReceiptReplay(priorReceipt, 'record_published', binding.requestHash, current);
           return { record: current, replay: true as const };
         }
-        const pendingProviderContext = current.pendingProviderOperationId
-          ? await unit.getPendingPublishProviderContext(
-              input.scope,
-              current.pendingProviderOperationId,
-            )
-          : null;
-        if (!pendingProviderContext) return providerConflict();
+        const pendingProviderContext =
+          current.pendingProviderOperationId === input.providerOperationId
+            ? await unit.getPendingProviderContext(
+                input.scope,
+                input.providerOperationId,
+                'publish_private',
+              )
+            : null;
+        if (
+          !pendingProviderContext ||
+          JSON.stringify(pendingProviderContext) !== JSON.stringify(prepared.pendingProviderContext)
+        ) {
+          return providerConflict();
+        }
         const eligibility = await Promise.all(
           audience.map((member) =>
             unit.getCurrentPublicationEligibility(
@@ -153,7 +206,7 @@ export function createContentPublicationService(deps: {
         if (eligibility.some((entry) => entry === null)) return unavailable();
         const result = recordPrivatePublication({
           record: current,
-          readback: input.readback,
+          observation,
           audience,
           eligibility: eligibility.filter((entry) => entry !== null),
           pendingProviderContext,
@@ -161,8 +214,87 @@ export function createContentPublicationService(deps: {
         });
         await unit.saveContent(result.record, current.version);
         await unit.savePublicationMaterialization(result.materialization);
-        await unit.completePublishProviderOperation(result.providerCompletion);
+        await unit.completeProviderOperation(result.providerCompletion);
         await unit.saveReceipt(receipt('record_published', result.record, binding));
+        return { record: result.record, replay: false as const };
+      });
+    },
+
+    async applyPrivateRevocationReadback(input: {
+      scope: ContentPublicationScope;
+      contentId: string;
+      providerOperationId: string;
+      binding: ContentPublicationCommandBinding;
+    }) {
+      const prepared = await deps.repository.inTransaction(async (unit) => {
+        const current = await requiredContent(unit, input.scope, input.contentId);
+        const binding = authoritativeBinding(input.binding, 'record_revoked', current, {
+          providerOperationId: input.providerOperationId,
+        });
+        const priorReceipt = await unit.findReceipt(
+          input.scope,
+          'record_revoked',
+          binding.idempotencyKey,
+        );
+        if (priorReceipt) {
+          assertReceiptReplay(priorReceipt, 'record_revoked', binding.requestHash, current);
+          return { replayResult: { record: current, replay: true as const } };
+        }
+        const pendingProviderContext =
+          current.pendingProviderOperationId === input.providerOperationId
+            ? await unit.getPendingProviderContext(
+                input.scope,
+                input.providerOperationId,
+                'revoke_private',
+              )
+            : null;
+        if (!pendingProviderContext) return providerConflict();
+        return { pendingProviderContext };
+      });
+      if ('replayResult' in prepared) return prepared.replayResult;
+      const observation = await readCanonicalVimeo(
+        deps.vimeoReadbackAdapter,
+        prepared.pendingProviderContext,
+        deps.providerReadbackTimeoutMs,
+      );
+      if (observation.operation !== 'revoke_private') return providerConflict();
+      return deps.repository.inTransaction(async (unit) => {
+        const current = await requiredContent(unit, input.scope, input.contentId);
+        const binding = authoritativeBinding(input.binding, 'record_revoked', current, {
+          providerOperationId: input.providerOperationId,
+        });
+        const priorReceipt = await unit.findReceipt(
+          input.scope,
+          'record_revoked',
+          binding.idempotencyKey,
+        );
+        if (priorReceipt) {
+          assertReceiptReplay(priorReceipt, 'record_revoked', binding.requestHash, current);
+          return { record: current, replay: true as const };
+        }
+        const pendingProviderContext =
+          current.pendingProviderOperationId === input.providerOperationId
+            ? await unit.getPendingProviderContext(
+                input.scope,
+                input.providerOperationId,
+                'revoke_private',
+              )
+            : null;
+        if (
+          !pendingProviderContext ||
+          JSON.stringify(pendingProviderContext) !== JSON.stringify(prepared.pendingProviderContext)
+        ) {
+          return providerConflict();
+        }
+        const result = recordPrivateRevocation({
+          record: current,
+          observation,
+          pendingProviderContext,
+          binding,
+        });
+        await unit.saveContent(result.record, current.version);
+        await unit.completeProviderOperation(result.providerCompletion);
+        await unit.saveReceipt(receipt('record_revoked', result.record, binding));
         return { record: result.record, replay: false as const };
       });
     },
@@ -223,6 +355,7 @@ export function createContentPublicationService(deps: {
     }) {
       return mutate({
         repository: deps.repository,
+        vimeoProviderBinding: deps.vimeoProviderBinding,
         principal: input.principal,
         contentId: input.contentId,
         operation: 'unpublish',
@@ -246,6 +379,7 @@ export function createContentPublicationService(deps: {
     }) {
       return mutate({
         repository: deps.repository,
+        vimeoProviderBinding: deps.vimeoProviderBinding,
         principal: input.principal,
         contentId: input.contentId,
         operation: 'archive',
@@ -271,8 +405,8 @@ export function createContentPublicationService(deps: {
         const assignment = input.principal.studentId
           ? await unit.getAssignment(scope, input.principal.studentId, input.contentId)
           : null;
-        const facts = input.principal.studentId
-          ? await unit.getPlaybackFacts(scope, input.principal.studentId, input.contentId)
+        const facts = assignment
+          ? await unit.refreshPlaybackFacts(scope, input.principal, assignment)
           : null;
         return authorizeStudentPlayback({
           principal: input.principal,
@@ -300,16 +434,17 @@ export function createContentPublicationService(deps: {
               ] as const,
           ),
         );
+        const assignments = new Map(assignmentEntries);
         const factEntries = await Promise.all(
-          published.map(
-            async (record) =>
-              [
-                record.contentId,
-                input.principal.studentId
-                  ? await unit.getPlaybackFacts(scope, input.principal.studentId, record.contentId)
-                  : null,
-              ] as const,
-          ),
+          published.map(async (record) => {
+            const assignment = assignments.get(record.contentId);
+            return [
+              record.contentId,
+              assignment
+                ? await unit.refreshPlaybackFacts(scope, input.principal, assignment)
+                : null,
+            ] as const;
+          }),
         );
         const resumeEntries = await Promise.all(
           published.map(
@@ -326,7 +461,7 @@ export function createContentPublicationService(deps: {
           principal: input.principal,
           query: input.query,
           published,
-          assignments: new Map(assignmentEntries),
+          assignments,
           facts: new Map(factEntries),
           resumes: new Map(resumeEntries),
         });
@@ -349,8 +484,8 @@ export function createContentPublicationService(deps: {
         const assignment = studentId
           ? await unit.getAssignment(scope, studentId, input.contentId)
           : null;
-        const facts = studentId
-          ? await unit.getPlaybackFacts(scope, studentId, input.contentId)
+        const facts = assignment
+          ? await unit.refreshPlaybackFacts(scope, input.principal, assignment)
           : null;
         assertStudentContentAccess({
           principal: input.principal,
@@ -384,6 +519,7 @@ export function createContentPublicationService(deps: {
 
 async function mutate(input: {
   repository: ContentPublicationRepository;
+  vimeoProviderBinding: ProviderRegistryBinding;
   principal: ContentPublicationPrincipal;
   contentId: string;
   operation: Exclude<ContentPublicationOperation, 'save_resume'>;
@@ -416,6 +552,13 @@ async function mutate(input: {
     }
     const applied = input.apply(current, binding);
     const next = 'record' in applied ? applied.record : applied;
+    if ('outboxIntent' in applied) {
+      const providerOperation = createContentPublicationProviderOperation({
+        intent: applied.outboxIntent,
+        binding: input.vimeoProviderBinding,
+      });
+      await unit.saveProviderOperation(providerOperation);
+    }
     await unit.saveContent(next, current.version);
     if ('outboxIntent' in applied) await unit.saveOutboxIntent(applied.outboxIntent);
     await unit.saveReceipt(receipt(input.operation, next, binding));
@@ -509,6 +652,31 @@ function governedOccurrenceUnavailable(): never {
     CONTENT_PUBLICATION_ERROR_CODES.invalidInput,
     'Governed occurrence is unavailable.',
   );
+}
+
+async function readCanonicalVimeo(
+  adapter: VimeoContentPublicationReadbackAdapter,
+  context: PendingContentPublicationProviderContext,
+  timeoutMs = 10_000,
+): Promise<VimeoContentPublicationObservation> {
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 60_000) {
+    throw new ContentPublicationError(
+      CONTENT_PUBLICATION_ERROR_CODES.conflict,
+      'Provider readback timeout is invalid.',
+    );
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await adapter.readCanonical(context, controller.signal);
+  } catch {
+    throw new ContentPublicationError(
+      CONTENT_PUBLICATION_ERROR_CODES.unavailable,
+      'Canonical Vimeo readback is unavailable.',
+    );
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export function publicationRequestHash(value: unknown) {

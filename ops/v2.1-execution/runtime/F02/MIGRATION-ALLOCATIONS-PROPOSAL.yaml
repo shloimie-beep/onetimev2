@@ -3,12 +3,15 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95
-  claim_id: 0e98de00-4873-41cb-a06f-bd0ace918b89
-  containing_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
-  ready_entry_parent_control_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
-  lease_expires_at: '2026-07-30T06:01:19Z'
-  released_at: '2026-07-30T04:45:00Z'
+  lease_id: 7f2ab8d1-a53f-41da-8143-28da4b62b200
+  schema_contract_lease_id: 9a3469a3-87c6-45b6-824f-c3b886a01b46
+  claim_id: 3469667a-69e2-4c35-afac-5b1dfbbf417d
+  writer_id: codex-f02-migration-batch-3469667a
+  containing_control_head_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
+  controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+  authorized_start_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  lease_expires_at: '2026-07-30T13:34:41Z'
+  released_at: '2026-07-30T12:58:26Z'
   audit_status: PASS
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
@@ -175,4 +178,26 @@ allocations:
     destructive: false
     checksum_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
     pg_mem_checksum_sha256: 6666c474a4fbd87c028f59bf0c4863df71b6f8f547aefd7cb98abde4d284d9ce
-next_available_ordinal: 2250
+  - ordinal: 2250
+    file: packages/db/migrations/2250_v21_zoom_preparation.sql
+    owner_task_id: P17
+    request_id: P17-MIGRATION-002
+    request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+    state: allocated
+    purpose: Scoped Zoom preparation, immutable roster snapshots, normal-classroom resource and Student registrant projections, and append-only idempotent preparation commands without duplicate provider identity or operation authority.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 65c25dd8e542bf4f25b03f12715d4f1dea880880e989849db7f921263108b4b8
+    pg_mem_checksum_sha256: 08192ed0fae69324e53cf75a6f367de924006be29e7cd5daea699ca01c7d18f3
+  - ordinal: 2251
+    file: packages/db/migrations/2251_v21_embedded_classroom.sql
+    owner_task_id: P18
+    request_id: P18-migration-003
+    request_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
+    state: allocated
+    purpose: Disjoint embedded-classroom launch grants, live Student sessions, immutable attendance events, and versioned attendance projections with fixed TTL and lease fencing.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 7ad8166bbb67e3cc3ef8af1f36b7f55ef1c73341000c3a64599ff403830499f3
+    pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
+next_available_ordinal: 2252
