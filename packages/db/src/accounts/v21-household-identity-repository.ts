@@ -652,29 +652,23 @@ export async function persistAppliedOwnershipTransfer(
     );
   }
 
-  await revokeIds(
+  await revokeTransferInventory(
     db,
-    'onetime.v21_adult_sessions',
-    'session_id',
+    'adult_session',
     [...result.outgoingSessionIdsRevoked, ...result.replacementSessionIdsRevoked],
     result.transfer.acceptedAt!,
-    'household_ownership_transfer',
   );
-  await revokeIds(
+  await revokeTransferInventory(
     db,
-    'onetime.v21_billing_portal_sessions',
-    'billing_session_id',
+    'billing_portal_session',
     result.billingSessionIdsRevoked,
     result.transfer.acceptedAt!,
-    'household_ownership_transfer',
   );
-  await revokeIds(
+  await revokeTransferInventory(
     db,
-    'onetime.v21_account_action_tokens',
-    'token_id',
+    'account_action_token',
     result.setupOrResetTokenIdsInvalidated,
     result.transfer.acceptedAt!,
-    'household_ownership_transfer',
   );
 
   await db.query(
@@ -843,33 +837,61 @@ function householdDisplayName(value: unknown, classification: 'family' | 'school
   return `${ownerName(value)} ${classification === 'family' ? 'household' : 'school'}`;
 }
 
-async function revokeIds(
+async function revokeTransferInventory(
   db: Queryable,
-  table: string,
-  idColumn: string,
+  target: 'adult_session' | 'billing_portal_session' | 'account_action_token',
   ids: readonly string[],
   revokedAt: string,
-  reason: string,
 ) {
   if (ids.length === 0) return;
-  const allowedTargets = new Set([
-    'onetime.v21_adult_sessions:session_id',
-    'onetime.v21_billing_portal_sessions:billing_session_id',
-    'onetime.v21_account_action_tokens:token_id',
-  ]);
-  if (!allowedTargets.has(`${table}:${idColumn}`)) {
+  const uniqueIds = new Set(ids);
+  if (uniqueIds.size !== ids.length) {
     throw new HouseholdIdentityRepositoryError(
       'persistence_invariant',
-      'Session/token revocation target is not an allowlisted F04 table.',
+      'Ownership-transfer revocation inventory must contain unique identifiers.',
     );
   }
-  const update =
-    table === 'onetime.v21_account_action_tokens'
-      ? `UPDATE ${table} SET invalidated_at = $2, invalidation_reason = $3
-           WHERE ${idColumn} = ANY($1::text[]) AND invalidated_at IS NULL`
-      : `UPDATE ${table} SET revoked_at = $2, revocation_reason = $3
-           WHERE ${idColumn} = ANY($1::text[]) AND revoked_at IS NULL`;
-  await db.query(update, [ids, revokedAt, reason]);
+
+  const result =
+    target === 'adult_session'
+      ? await db.query(
+          `UPDATE onetime.v21_adult_sessions
+              SET revoked_at = $2,
+                  revoke_reason = 'household_ownership_transfer',
+                  version = version + 1,
+                  updated_at = $2
+            WHERE session_id = ANY($1::text[])
+              AND revoked_at IS NULL`,
+          [ids, revokedAt],
+        )
+      : target === 'billing_portal_session'
+        ? await db.query(
+            `UPDATE onetime.v21_billing_portal_sessions
+                SET state = 'revoked',
+                    revoked_at = $2,
+                    version = version + 1
+              WHERE billing_session_id = ANY($1::text[])
+                AND state = 'issued'
+                AND used_at IS NULL
+                AND revoked_at IS NULL`,
+            [ids, revokedAt],
+          )
+        : await db.query(
+            `UPDATE onetime.v21_account_action_tokens
+                SET revoked_at = $2,
+                    version = version + 1
+              WHERE action_token_id = ANY($1::text[])
+                AND used_at IS NULL
+                AND revoked_at IS NULL`,
+            [ids, revokedAt],
+          );
+
+  if (result.rowCount !== uniqueIds.size) {
+    throw new HouseholdIdentityRepositoryError(
+      'stale_version',
+      `The locked ${target.replaceAll('_', ' ')} inventory changed; the transaction must roll back.`,
+    );
+  }
 }
 
 async function requireOneRow(pending: Promise<{ rowCount: number | null }>, aggregate: string) {

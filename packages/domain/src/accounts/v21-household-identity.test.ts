@@ -306,6 +306,10 @@ describe('v2.1 ownership transfer invariants', () => {
       outgoingSessions: [
         session(),
         session({ sessionId: 'session_outgoing_admin', activeRole: 'admin' }),
+        session({
+          sessionId: 'session_sibling_household',
+          activeHouseholdId: 'household_sibling',
+        }),
       ],
       replacementSessions: [
         session({
