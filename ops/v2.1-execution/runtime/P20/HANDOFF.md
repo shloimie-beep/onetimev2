@@ -9,7 +9,9 @@
 - Collision-correction atomic claim: `0d58c8e4d6ca0263273d540bfd722586d8a1b5d3`
 - Corrected implementation head: `3cf5543b7fe2dde3118d35ce655e105dbd771a60`
 - Rejected metadata head: `dc438725fb6bb8779c2d816d5e28d3b73227b6d4`
-- Current atomic-claim head: derive with `git rev-parse HEAD`; C00 records the
+- Runtime-metadata atomic claim:
+  `75abbd84cc8668aff4a4ed803f907e237f65bb5a`
+- Corrected metadata final: derive with `git rev-parse HEAD`; C00 records the
   pushed head
 - Reconciled containing control: `a5851edf70f3c60cc25ece3faf124bedf1629f21`
 - READY state base: `9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`
@@ -24,11 +26,13 @@
 - Runtime-metadata READY payload:
   `f10eafc49cd2665bd6bf1b8ae5e804fd880799e4ca734c9e88954957e0f7ff91`
 - Runtime-metadata claim: `162924fc-86b1-466b-8836-9e6fcc2a1326`
-- Active CONTENT_PROCESSING lease:
-  `3da95218-b815-434a-ae63-154220c083b0` through
-  `2026-07-30T08:32:00Z`
+- Claim reconciliation control:
+  `a38b917f514b65c49d2d75789b8ae50d96985cdc`
+- Released CONTENT_PROCESSING lease:
+  `3da95218-b815-434a-ae63-154220c083b0` at `2026-07-30T07:50:00Z`,
+  before its `2026-07-30T08:32:00Z` expiry
 
-## Runtime-metadata atomic claim
+## Runtime-metadata correction
 
 C00 rejected only the runtime digest metadata at
 `dc438725fb6bb8779c2d816d5e28d3b73227b6d4`; the five corrected source files,
@@ -47,14 +51,23 @@ its runtime-triplet digest is
 `38723f2ea2c464938250dcb46231d739ff4d3a7eefdd9e58fc59109db02ca53b`.
 The current contract blob SHA-256 is
 `cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9`,
-and the corrected twelve-artifact manifest is
+and the current twelve-artifact manifest is
 `9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370`.
 
-The existing `contract_digest` and `implementation_artifact_digest` fields
-remain deliberately unchanged in this atomic claim. They may be corrected only
-after C00 reconciles this checkpoint. Every source, test, acceptance, request,
-migration, P21, provider, deployment, manifest, lockfile, and external-effect
-byte is unchanged.
+C00 reconciled the atomic claim at
+`a38b917f514b65c49d2d75789b8ae50d96985cdc`. The terminal correction sets
+`contract_digest` to the exact final contract blob
+`cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9`
+and sets `implementation_artifact_digest` to the exact current twelve-artifact
+aggregate
+`9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370`.
+The superseded values are retained only under explicitly named
+`historical_pre_projection_*` fields. No superseded digest statement remains
+authoritative.
+
+The terminal correction changes only the same P20 runtime triplet. Every
+source, test, acceptance, request, migration, P21, provider, deployment,
+manifest, lockfile, and external-effect byte is unchanged.
 
 ## Correction boundary
 
@@ -121,10 +134,14 @@ source, artifact, or participant mismatches.
   `gpt-4.1-mini-2025-04-14` / strict `OT-LEARNING-DRAFT-SCHEMA-1`
 - Schema contract: `P20-CONTENT-PROCESSING-SCHEMA-001`
 - Contract file digest:
+  `cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9`
+- Historical pre-projection contract digest:
   `cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159`
 - Schema contract digest:
   `7486ba836282a8f8caf453033286f5e8f8f57d65c95ae9aa914f644774e53fb9`
 - Twelve-artifact implementation digest:
+  `9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370`
+- Historical pre-projection twelve-artifact digest:
   `d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249`
 - Five-artifact collision-correction digest:
   `ac8a6038c4a97a3b9347fd9a29cd9977ba24b3a0bddd294b862ccce65b9efe9c`
@@ -155,6 +172,9 @@ Primary exported symbols include `ApprovedForPublicationProjection`,
 - Secret scan: passed across 2687 repository text files.
 - YAML parse, diff hygiene, exact five-source/runtime-triplet inventory, and
   correction digest derivation: passed.
+- Runtime metadata claim reconciliation, exact contract/twelve-artifact digest
+  recomputation, historical labeling, terminal runtime-triplet scope, lease
+  release, and effects `0/0/0`: passed.
 
 ## Steward work
 
@@ -178,7 +198,8 @@ exact corrected implementation head
 
 ## Next action
 
-C00 must reconcile this exact runtime-triplet-only atomic claim before P20
-corrects either stale digest field. P20 stops after the normal claim push and
-remote verification. P21 remains withheld until the corrected P20 metadata is
-final, independently audited, and integrated.
+C00 independently audits the exact claim/final ancestry, corrected current and
+historical digest bindings, terminal runtime-triplet scope, released lease,
+verification, remote equality, and effects `0/0/0` before integration. P21
+remains withheld until corrected P20 is final, independently audited, and
+integrated.
