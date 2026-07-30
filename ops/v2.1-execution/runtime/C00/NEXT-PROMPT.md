@@ -1578,3 +1578,9 @@ through 2249. Continue P28 only under claim
 implementing only P17 reminder routing. P17/P18/P21 migration duties remain
 withheld. Keep provider inspection, deployment, sends, and all effects blocked
 until candidate gates are satisfied.
+P31 may atomically resume from exact head
+`ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` under claim
+`ff4a79d9-158b-4e3f-a150-03b171427749` and COPY_CATALOG lease
+`d03dd6a9-384f-4b52-aaaf-3ac5752a36da` for only
+`P30-copy-registration-001`. Change exactly its runtime triplet, push, and stop
+for C00 reconciliation before copy-catalog edits. Keep effects `0/0/0`.

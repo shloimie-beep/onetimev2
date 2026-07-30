@@ -15,11 +15,10 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
+controller_authorization_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
 next_action: >-
-  F02 atomic claim ff355556 and P28 atomic claim 79ba5cc8 are independently reconciled from their exact authorized
-  parents and runtime-triplet-only scopes. F02 may implement only migrations 2245 through 2249, and P28 may
-  implement only P17 reminder routing under their active leases. P17/P18/P21 migration duties remain blocked
-  pending corrected requests. Candidate freeze, provider inspection, deployment, sends, and external effects
-  remain unauthorized.
+  F02 may implement only migrations 2245 through 2249 and P28 may implement only P17 reminder routing under their
+  reconciled active claims. P31 may atomically claim only P30 copy registration; product edits remain withheld
+  until that exact claim is reconciled. P17/P18/P21 migration duties remain blocked pending corrected requests.
+  Candidate freeze, provider inspection, deployment, sends, and external effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

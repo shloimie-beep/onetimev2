@@ -1411,8 +1411,8 @@ tasks:
     transitioned_at: '2026-07-30T04:06:30Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P30/status_proof
 - task_id: P31
-  status: ready_for_review
-  active_phase: verification
+  status: ready
+  active_phase: P30_copy_registration_steward
   branch: codex/v21-p31-email-copy-approval
   phase_branches:
     contract: codex/v21-p31-email-copy-approval
@@ -1426,21 +1426,21 @@ tasks:
     review: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
   authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
   last_known_remote_head: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
-  active_claim_id: null
+  active_claim_id: ff4a79d9-158b-4e3f-a150-03b171427749
   active_writer_id: null
-  lease_expires_at: null
-  last_heartbeat_at: '2026-07-28T16:50:38Z'
-  controller_authorization_sha: beb72be5ba1f993c1806e9314146e88f951affdb
-  ready_entry_payload_digest: e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74
+  lease_expires_at: '2026-07-30T05:56:56Z'
+  last_heartbeat_at: '2026-07-30T04:26:56Z'
+  controller_authorization_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
+  ready_entry_payload_digest: 53c8b3774408a96350e8050746a2e2894ab65a7c418b7932bb05f5e2f9e375cb
   interface_checkpoint_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
   implementation_head_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
   status_proof:
-    state: ready_for_review
-    producer_task_id: P31
-    producer_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+    state: ready
+    producer_task_id: C00
+    producer_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
     canonical_candidate_digest: null
     interface_checkpoint_digest: d66db4101eb4b3f4a28696e6741e5f3b9a4790650c6ddc4369a13813800f4e59
-    integration_or_evidence_head_sha: eefca0644e57dca48609682cbc3e1b01992d286d
+    integration_or_evidence_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
@@ -1451,8 +1451,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 193df1fbd101ebb5dd7f0f66adf2c1a78283aab0
-    transitioned_at: '2026-07-28T17:13:44Z'
+    state_based_on_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
+    transitioned_at: '2026-07-30T04:26:56Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P31/status_proof
 - task_id: P32
   status: ready_for_review

@@ -1868,3 +1868,12 @@ authorized parents and runtime-triplet-only scopes. F02 may implement only
 migrations 2245 through 2249. P28 may implement only P17 reminder routing.
 P17/P18/P21 migration requests remain withheld. Effects remain `0/0/0`; no
 provider inspection or mutation is authorized before candidate gates.
+## P31 copy registration admitted for atomic claim
+
+P31 may atomically claim only `P30-copy-registration-001` from exact source
+`772d4783f82b7eb89a5c98d897601b444cd3c2f4`, raw request digest
+`0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf`,
+under claim `ff4a79d9-158b-4e3f-a150-03b171427749` and COPY_CATALOG lease
+`d03dd6a9-384f-4b52-aaaf-3ac5752a36da`. The first push must change only the P31
+runtime triplet. Product edits remain withheld until C00 reconciliation. No
+provider configuration, activation, enrollment, or send is authorized.
