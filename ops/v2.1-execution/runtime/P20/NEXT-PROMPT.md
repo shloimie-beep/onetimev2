@@ -3,27 +3,33 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-P20 is `ready_for_review` on branch `codex/v21-p20-media-processing`.
+P20 is in an atomic runtime-triplet-only collision-correction claim on branch
+`codex/v21-p20-media-processing`.
 
-Implementation head:
-`e366ef926d6b2ee3be888eaae9fe2cad08b8a57f`
+The claim has parent
+`3d75b57e91c12ab3e0cad78b1a6a63497838f46f` and is authorized by containing
+control `2cb1cb46f37c3178217745876e0f09d694bbebf9`, state-based control
+`9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`, canonical READY
+`ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea`,
+claim `e8c768e8-f603-4d0c-a45b-34b5cd7ea92c`, and CONTENT_PROCESSING lease
+`24d0fa6f-30ac-4fc0-af2a-2b495d826063` through
+`2026-07-30T07:30:12Z`.
 
-Implementation artifact digest:
-`d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249`
+This first push changes only:
 
-The CONTENT_PROCESSING lease
-`447a28a6-1675-4fbb-b52f-a77f75f8d356` was released at
-`2026-07-28T23:22:00Z`. Do not resume implementation without a new C00-issued
-claim/lease or a specific review finding.
+- `ops/v2.1-execution/runtime/P20/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P20/TASK-STATE.yaml`
 
-C00/I36 next actions:
+C00 next action:
 
-1. Review the exact implementation head and the seven-case matrix.
-2. Recompute the 12-artifact digest using the algorithm in `TASK-STATE.yaml`.
-3. Disposition `P20-MIGRATION-001`, `P20-WORKER-REGISTRATION-001`,
-   `P20-RUNTIME-CONFIG-001`, and `P20-PINNED-MEDIA-RUNTIME-001`.
-4. Run provider sandbox/production-operator canaries only under a new explicit
-   effect authority after migration, registration, runtime, and pinned-binary
-   readiness.
+1. Verify the claim is the sole child of `3d75b57e`.
+2. Verify its delta is exactly the P20 runtime triplet.
+3. Recompute its state/handoff and runtime-triplet digests.
+4. Reconcile the claim in control before authorizing any source correction.
 
-P20 performed no provider or external effect.
+After reconciliation, P20 may change only the five source paths and implement
+the exact approved-for-publication composite projection described in the
+canonical READY entry. Migration 2246 is already applied; no migration or
+steward-request edit is authorized. P21 stays withheld. P20 must not continue
+past lease expiry or perform any provider/external effect.

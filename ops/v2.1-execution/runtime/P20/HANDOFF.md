@@ -4,12 +4,46 @@
 
 - Branch: `codex/v21-p20-media-processing`
 - Start SHA: `ebf88c8e422a6ad40202fc2b0249810d312edc30`
-- Atomic claim head: `6f894038117ee19d405e528670eb8bf86e8682b2`
+- Prior atomic claim head: `6f894038117ee19d405e528670eb8bf86e8682b2`
 - Implementation head: `e366ef926d6b2ee3be888eaae9fe2cad08b8a57f`
-- Current terminal metadata commit: derive with `git rev-parse HEAD`; C00 records the pushed head
-- Resume control: `bd24429251acff6393c0311a223e0e723335d7cd`
-- Claim: `1cd7bf99-21a7-4231-8418-b9cdfaf958c4`
-- Released CONTENT_PROCESSING lease: `447a28a6-1675-4fbb-b52f-a77f75f8d356`
+- Collision-correction claim parent: `3d75b57e91c12ab3e0cad78b1a6a63497838f46f`
+- Current atomic claim head: derive with `git rev-parse HEAD`; C00 records the pushed head
+- Containing control: `2cb1cb46f37c3178217745876e0f09d694bbebf9`
+- READY state base: `9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`
+- READY payload: `ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea`
+- Claim: `e8c768e8-f603-4d0c-a45b-34b5cd7ea92c`
+- Active CONTENT_PROCESSING lease: `24d0fa6f-30ac-4fc0-af2a-2b495d826063`
+  through `2026-07-30T07:30:12Z`
+
+## Atomic claim boundary
+
+This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md` under `runtime/P20`. Source, migration, steward-request,
+acceptance-matrix, runner, service, registry, configuration, manifest, lockfile,
+and provider bytes are unchanged.
+
+After C00 reconciles this claim, P20 may implement the
+`ApprovedForPublicationProjection` correction only in these five source paths:
+
+- `packages/contracts/src/content/processing/index.ts`
+- `packages/db/src/content/processing/repository.test.ts`
+- `packages/db/src/content/processing/repository.ts`
+- `packages/domain/src/content/processing/content-processing.acceptance.test.ts`
+- `packages/domain/src/content/processing/index.ts`
+
+The five-path inventory digest is
+`9a70f8864d7807d5ea26728a5835e10d489f91ed77f28f76f3458629cc3492ef`;
+its integration-base manifest is
+`eb01ac38bce07dd88f77b1e91d1899878d77edc6c2520a9769eec88ba3d900e8`.
+No source change is authorized by this atomic claim.
+
+`P20-MIGRATION-001` is already applied and acknowledged in integration release
+`3cf787409decb5beb84561ef7e37924111d398b6`, with canonical result digest
+`0f4260f833f65dab0a093f254585e9647bc98e231d540ae803cd5b60512d8363`.
+Migration 2246 and every P20 steward request remain byte-identical.
+
+P21 remains withheld pending corrected P20 finalization, independent audit, and
+integration. No P21 path is authorized here.
 
 ## Completed behavior
 
@@ -88,6 +122,6 @@ exact pushed implementation head
 
 ## Next action
 
-C00/I36 should validate the implementation/artifact digests and disposition the
-four steward requests. Any provider sandbox or production-operator canary
-requires a new explicit authority after those integrations.
+C00 must reconcile the exact runtime-triplet claim before P20 changes any
+source file. P20 stops after the normal claim push and remote verification.
+External effects remain attempted `0`, succeeded `0`, reconciled `0`.
