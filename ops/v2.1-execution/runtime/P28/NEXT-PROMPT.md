@@ -1,9 +1,11 @@
 MODEL: GPT-5.6-SOL
-REASONING: HIGH
+REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Review One Time v2.1 task P28 from its ready-for-review checkpoint.
+Continue One Time v2.1 task P28 only if C00 issues another exact READY or
+RESUME_READY entry. The bounded P17 reminder-routing steward request is
+implementation-complete and ready for review.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p28-communication-foundation
@@ -13,33 +15,24 @@ Task context: ops/v2.1-execution/contexts/P28-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P28/HANDOFF.md
 
-Fetch remote refs and resume the exact branch head. The first-run atomic claim
-uses containing control `e847dd790ae2f99ae526b0edcbd41897474c8f18`,
-ready-entry parent `3cfe14a6e1171d002f7173c13776dc682fddd6a8`,
-start `9ba92b070eedfa3756eff4f78fd328de72507a96`, claim
-`16640fee-ca26-4885-9be7-14fb2baa682c`, ready digest
-`2801e38a195ad4c98ddd7305440bd3b67a21273118d0fc3865410ff0410b4285`,
-GHL_REGISTRY lease `f59eb149-ec9e-4d32-afd7-55ad5e32c899`, and
-COMMUNICATION_FOUNDATION lease `d2cd17e1-c0d2-4dd9-ab21-62c1b2a24a30`.
-Both leases were released at `2026-07-28T22:28:08Z`; no effect lock or external
-authority existed.
+Claim `42599e59-5e65-4269-b3d1-d10632342be6` was reconciled at control commit
+`1b5e5dd662390dd5affc159990a59b3b8d99c127`. Immutable request
+`P17-REMINDER-ROUTING-001` has digest
+`c6015bb11b581333946e8e9de6e3676d108ed327d52ee1894f355ab921da14cf`
+and source-container blob `bec8dc31dbe5d79a26434a7219d4d8696cf15f01`.
+Implementation commit is
+`7a37ef5b57bf0e1a03114cf344a7aaf9f184b6d5`.
 
-The implementation commit is
-`83355a7b6981073662d71f44a2c8f68264a307d8`. The exact P29/P30 interface
-contract digest is
-`2b8b685495e654dd1369a55086d8709f9612df26f042db676df9f0560a606c86`.
-The interface metadata head is
-`aaedc3f2ec0a857658c943ea6e00dc6c1e97c46c`. Read
-`TASK-STATE.yaml:next_action` without repeating a broad audit.
+The additive contract preserves semantic version `1.0.0`; artifact SHA-256 is
+`b3ec5642dea691cd81b08814d76cd3544f73b1a094333ab4d8b4ceb48f2735ea`
+and semantic contract digest is
+`f00013bbb46413c973276ef3454ef3b406e21d780349dbfcdccc004120cb1612`.
+The COMMUNICATION_FOUNDATION lease
+`ac74a2a9-b988-418a-b429-fefb5feeeb37` was released at
+`2026-07-30T04:37:00Z`. External effects remain attempted 0, succeeded 0,
+reconciled 0.
 
-Do not change the realized interface or implementation during review. Do not
-edit control files from the task branch, another task runtime, a migration,
-central barrel/composer, package manifest, lockfile, generated GHL projection,
-message-class registry, validator, or other steward-owned path. Perform no
-provider or external effect.
-
-Exact next action: C00/I36 verify the pushed terminal head and the exact
-interface digest, integrate interface metadata head `aaedc3f2`, unlock P29/P30,
-and adjudicate the three structured steward requests. Preserve the expected
-generated-projection drift record and require separately authorized provider
-IDs, save/reopen readback, and candidate-bound external evidence.
+Do not repeat implementation or verification if the remote result head and
+digests match. C00 must verify the pushed review checkpoint and route the exact
+implementation head to I36. P28 must not edit the central composer, inspect a
+provider, send a reminder, deploy, or perform any external effect.
