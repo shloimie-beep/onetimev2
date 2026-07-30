@@ -111,3 +111,30 @@ remains untouched until C00 independently audits and reconciles the pushed
 claim. Product, test, copy, request, interface, and provider bytes remain
 unchanged; no provider configuration, activation, enrollment, send, or other
 external effect is authorized.
+
+## Copy-catalog test lint correction complete
+
+C00 independently reconciled atomic claim
+`9d878d88587d6f742a927d3cf4e175594d1e12de` at canonical control
+`9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`, whose sole parent is
+`0eb6204622792a6add325f0cb11bc25847701f10`.
+
+Implementation `4f61ec10f3270faf07dd217c9aab39df5ca7a8d9` removes only the
+unused `_removedNamedApproval` binding from
+`tests/unit/communications/copy-catalog.test.ts` using an
+optional-property-safe copy/delete. The assertion, catalog, approval
+semantics, interface checkpoint, requests, and runtime behavior are unchanged.
+The corrected test source SHA-256 is
+`b82cb8841fe138755b1bd59705d3eaf8cb2f4d5af34bd2bd473f1ed1a88b2eba`.
+
+Focused Vitest passed 1 file and 3 tests. Workspace typecheck and full quiet
+repository lint passed. Scoped Prettier, YAML parsing, the repository secret
+scan across 2443 text files, diff/scope checks, and effects `0/0/0` passed.
+
+Claim `7f50cef8-f816-4a32-8f9e-071db09abbc0` remained unchanged.
+COPY_CATALOG lease `42734cda-47b5-44ec-8d9a-8da7c4f86ed1` was released at
+`2026-07-30T06:25:48Z`, before its `2026-07-30T06:48:54Z` expiry.
+
+C00 must independently audit the exact pushed final, its implementation/final
+ancestry, four-path scope, released lease, verification, remote equality, and
+effects `0/0/0`. P31 must stop.

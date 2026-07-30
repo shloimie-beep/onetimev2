@@ -64,3 +64,17 @@ assertion, copy catalog, approval semantics, interface checkpoint, or runtime
 behavior. Do not make that edit until C00 independently audits and reconciles
 this exact atomic claim. Product, test, copy, request, and interface bytes are
 unchanged; effects remain `0/0/0`.
+
+C00 reconciled the atomic claim at canonical control
+`9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`. P31 then removed only the
+authorized unused binding at implementation
+`4f61ec10f3270faf07dd217c9aab39df5ca7a8d9`, passed focused Vitest,
+workspace typecheck, full quiet lint, scoped formatting, YAML, secret,
+diff/scope, and zero-effect gates, and released COPY_CATALOG lease
+`42734cda-47b5-44ec-8d9a-8da7c4f86ed1` at
+`2026-07-30T06:25:48Z`.
+
+C00 must independently audit the exact pushed lint-correction final, its
+implementation/final ancestry, exact four-path scope, released lease, remote
+equality, and effects `0/0/0`. P31 must stop; no provider configuration,
+activation, enrollment, send, or other external effect is authorized.

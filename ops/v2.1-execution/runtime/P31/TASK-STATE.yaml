@@ -50,17 +50,19 @@ correction_binding:
     rule: '@typescript-eslint/no-unused-vars'
     symbol: _removedNamedApproval
     required_correction: Remove only the unused binding without changing the test assertion, copy catalog, approval semantics, interface checkpoint, or runtime behavior.
-status: claimed
-phase: copy_catalog_test_lint_correction_atomic_claim
+status: ready_for_review
+phase: copy_catalog_test_lint_correction_complete
 claimed_by: codex-p31-copy-7f50cef8
 claim_time: '2026-07-30T05:48:54Z'
 claim_id: 7f50cef8-f816-4a32-8f9e-071db09abbc0
 writer_slot_lease_id: 42734cda-47b5-44ec-8d9a-8da7c4f86ed1
 lease_issued_at: '2026-07-30T05:48:54Z'
 lease_expires_at: '2026-07-30T06:48:54Z'
-last_heartbeat_at: '2026-07-30T06:14:20Z'
-lease_released_at: null
-controller_authorization_sha: 0eb6204622792a6add325f0cb11bc25847701f10
+last_heartbeat_at: '2026-07-30T06:25:48Z'
+lease_released_at: '2026-07-30T06:25:48Z'
+controller_authorization_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+claim_reconciled_control_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+claim_reconciled_parent_control_sha: 0eb6204622792a6add325f0cb11bc25847701f10
 ready_entry_parent_control_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
 state_based_on_control_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
 ready_entry_payload_digest: 23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314
@@ -69,10 +71,14 @@ writer_slot_leases:
     lease_id: 42734cda-47b5-44ec-8d9a-8da7c4f86ed1
     lease_issued_at: '2026-07-30T05:48:54Z'
     lease_expires_at: '2026-07-30T06:48:54Z'
-    released_at: null
-state_based_on_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
-last_implementation_commit_sha: 8b3ed597115fe4c11a85f8ab35a1b2feb6f58649
+    released_at: '2026-07-30T06:25:48Z'
+state_based_on_head_sha: 4f61ec10f3270faf07dd217c9aab39df5ca7a8d9
+last_implementation_commit_sha: 4f61ec10f3270faf07dd217c9aab39df5ca7a8d9
 completed_steps:
+  - Verified C00 independent reconciliation at canonical control 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b with sole parent 0eb6204622792a6add325f0cb11bc25847701f10, unchanged claim and COPY_CATALOG lease, and exact remote claim head 9d878d88587d6f742a927d3cf4e175594d1e12de.
+  - Removed only the unused _removedNamedApproval test binding using an optional-property-safe copy/delete without changing its assertion, catalog, approval semantics, interface checkpoint, requests, or runtime behavior.
+  - Passed the focused 3-test Vitest file, workspace typecheck, full quiet repository lint, scoped Prettier, YAML parsing, secret scan across 2443 repository text files, diff/scope checks, and effects 0/0/0.
+  - Released COPY_CATALOG lease 42734cda-47b5-44ec-8d9a-8da7c4f86ed1 before expiry.
   - Atomically claimed only the exact P31 copy-catalog test lint correction from remote head d72dda5669627695edaf9dbf20f7650c9b5c9ded under canonical control 0eb6204622792a6add325f0cb11bc25847701f10.
   - Recomputed and matched READY digest 23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314, exact package/task/context bindings, C00/I36/P31 dependency bindings, the P31 interface digest, and the exact lint source digest.
   - Reproduced only tests/unit/communications/copy-catalog.test.ts:143 @typescript-eslint/no-unused-vars for _removedNamedApproval without removing the binding or changing any product, test, copy, request, or interface byte.
@@ -87,9 +93,8 @@ completed_steps:
   - Added focused contract coverage for exact registrations, immutable digests, no token-bearing content, current consent, named approval, and fail-closed body/subject/timing drift.
   - Refreshed the P31 interface checkpoint to semantic contract 1.1.0 and released COPY_CATALOG lease d03dd6a9-384f-4b52-aaaf-3ac5752a36da before expiry.
 remaining_steps:
-  - C00 must independently audit and reconcile this exact runtime-triplet-only atomic claim.
-  - Only after C00 reconciliation may P31 remove the one authorized unused binding and run the exact lint/focused verification.
-next_action: Stop for C00 reconciliation before removing _removedNamedApproval or changing any product, test, copy, request, or interface byte.
+  - C00 must independently audit the exact pushed P31 lint-correction final.
+next_action: Stop for C00 audit of the exact P31 lint-correction implementation/final ancestry, four-path scope, released lease, verification, remote equality, and effects 0/0/0.
 requirements:
   OTV2-EMAIL-139: implementation_ready
   OTV2-EMAIL-140: implementation_ready
@@ -118,6 +123,7 @@ changed_paths:
   - ops/v2.1-execution/runtime/P31/HANDOFF.md
   - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
 current_checkpoint_changed_paths:
+  - tests/unit/communications/copy-catalog.test.ts
   - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P31/HANDOFF.md
   - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
@@ -130,10 +136,18 @@ steward_requests:
     disposition: implemented_exactly
 verification:
   commands_run:
+    - C00 reconciliation, exact remote claim head, unchanged claim/lease, and authorized one-binding scope verification (passed)
+    - npm exec -- vitest run tests/unit/communications/copy-catalog.test.ts --config vitest.unit.config.ts (passed; 1 file, 3 tests)
+    - npm run typecheck (passed)
+    - npm run lint -- --quiet (passed; zero findings)
+    - npm exec -- prettier --check tests/unit/communications/copy-catalog.test.ts and the P31 runtime triplet (passed)
+    - YAML parse of P31 TASK-STATE.yaml (passed)
+    - npm run secret:scan (passed across 2443 repository text files)
+    - exact four-path implementation/final scope, preserved catalog/approval/interface/request bytes, and git diff --check (passed)
     - exact remote branch/control, resume READY, claim, lease, package/task/context, dependency, interface, and zero-effect-lock binding verification (passed)
     - canonical sorted-JSON READY payload digest recomputation (passed)
     - raw Git-byte C00/I36/P31 dependency and lint-source binding recomputation (passed)
-    - npm exec -- eslint tests/unit/communications/copy-catalog.test.ts (reproduced exactly one authorized finding at line 143; expected before correction)
+    - npm exec -- eslint tests/unit/communications/copy-catalog.test.ts (passed after the exact authorized correction)
     - exact runtime-triplet-only claim scope verification (passed)
     - npm run typecheck (passed)
     - npm exec -- vitest run tests/unit/communications/copy-catalog.test.ts --config vitest.unit.config.ts (passed; 3 tests)
