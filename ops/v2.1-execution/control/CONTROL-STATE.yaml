@@ -15,11 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+controller_authorization_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
 next_action: >-
-  P31 final 839ec12b, corrected P20 final 75137bf4, and corrected P17 final 7f8a41bc are independently audited,
-  pairwise disjoint, and queued in that order for I36 source integration. I36 may make only a runtime-triplet
-  atomic claim from release 3cf78740 under READY f04fd323, claim b3e05cde, and RELEASE_INTEGRATOR lease dbef2b0e,
-  then stop for reconciliation. Source merges, steward-request application, P18/P21 admission, candidate,
-  providers, deployment, sends, and effects remain unauthorized before that reconciliation.
+  I36 claim 1b0df6fa is reconciled. Under claim b3e05cde and RELEASE_INTEGRATOR lease dbef2b0e, merge exact P31
+  839ec12b, P20 75137bf4, and P17 7f8a41bc in that order using rebound payloads 951e3547/a3c16a42/1017f826,
+  preserving source ancestry and exact 4/8/14-path scopes. Run focused tests, typecheck, full lint, formatting,
+  YAML/secret/migration/diff/parent gates; publish a runtime-triplet terminal release and release the lease.
+  Do not apply P17 requests, allocate migration 2250, inspect providers, deploy, send, or perform effects.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

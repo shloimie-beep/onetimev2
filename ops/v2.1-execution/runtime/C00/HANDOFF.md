@@ -2130,3 +2130,13 @@ through `2026-07-30T09:28:30Z`. Its first push may change only the I36 runtime
 triplet and must stop for reconciliation. P17's two `-002` files are preserved
 requests only; no migration or registration is applied in this source wave,
 and next migration ordinal remains 2250.
+
+I36 claim `1b0df6fa` is independently reconciled as the exact
+runtime-triplet-only child of release `3cf78740`. Claim pair/triplet
+`e4e6b567`/`aadacfe0`, canonical READY/control/claim/lease/source bindings,
+preserved source/request bytes, clean remote equality, and effects `0/0/0`
+pass. READY is empty. All merge target CAS fields are rebound to claim head
+`1b0df6fa`; canonical payloads are now P31 `951e3547`, P20 `a3c16a42`, and
+P17 `1017f826`. I36 may merge those exact heads in that exact order, but must
+leave both P17 steward requests unapplied and migration ordinal 2250
+unallocated.

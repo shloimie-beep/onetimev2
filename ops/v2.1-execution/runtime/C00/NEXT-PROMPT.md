@@ -1774,3 +1774,15 @@ The first push changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
 verifies remote equality, and stops for C00 reconciliation. Do not merge,
 apply either P17 request, allocate migration 2250, inspect a provider, deploy,
 send, or perform an external effect.
+
+I36 claim `1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7` is reconciled.
+Continue only under claim `b3e05cde-c76b-4b54-8a63-9a32624f6a87` and
+RELEASE_INTEGRATOR lease `dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7`.
+Recompute rebound payloads P31 `951e3547`, P20 `a3c16a42`, and P17
+`1017f826`, then merge exact sources `839ec12b`, `75137bf4`, and `7f8a41bc`
+in that order with ancestry-preserving two-parent commits and exact 4/8/14
+scopes. Run focused tests, workspace typecheck, full lint, formatting,
+YAML/secret/migration/diff/parent/scope gates; publish a runtime-triplet-only
+release final, release the lease, push normally, and stop for audit. Do not
+apply P17 requests, allocate migration 2250, inspect providers, deploy, send,
+or perform effects.
