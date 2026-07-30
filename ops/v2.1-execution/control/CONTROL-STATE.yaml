@@ -15,12 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
+controller_authorization_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
 next_action: >-
-  P18 and P21 fresh read-only admissions pass. P18 may make only a runtime-triplet claim from b9ad9474 under
-  READY ba3d425b, claim baeb91ef, and EMBEDDED_CLASSROOM lease b84e8273. P21 must adopt exact integrated release
-  99fd8c33 as its claim parent and change only its runtime triplet under READY ede4095b, claim 9e38d9dd, and
-  CONTENT_PUBLICATION lease afe1ac21. Both must push normally and stop for C00 reconciliation before successor
-  requests or source edits. Candidate is null; provider inspection/mutation, deployment, sends, migration or
-  registration application, and effects remain unauthorized.
+  P18 claim 9b10ef41 and P21 claim d3ee9a2b are reconciled as exact runtime-triplet-only children of b9ad9474
+  and integrated release 99fd8c33. P18 may complete its single migration-003 successor plus runtime evidence under
+  claim baeb91ef and rebound EMBEDDED_CLASSROOM lease 39d6a728. P21 may complete its bounded authoritative
+  publication-binding correction, two immutable successor requests, focused tests, and runtime evidence under claim
+  9e38d9dd and rebound CONTENT_PUBLICATION lease eb2c3340. Their scopes remain disjoint, product/provider effects stay
+  zero, C00 alone integrates final heads, and candidate freeze remains withheld until both corrections and required
+  shared registrations are clean.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

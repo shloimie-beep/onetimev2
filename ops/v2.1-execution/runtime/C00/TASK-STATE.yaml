@@ -8,17 +8,20 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: complete
-claimed_by: codex-c00-orchestrator-3acbac75
-claim_time: '2026-07-30T03:45:23Z'
-claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T10:33:00Z'
-last_heartbeat_at: '2026-07-30T09:48:00Z'
-controller_authorization_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
+phase: P18_P21_substantive_correction_reconciliation
+claimed_by: codex-c00-orchestrator-2baa2f4b
+claim_time: '2026-07-30T11:04:00Z'
+claim_id: 2baa2f4b-8eed-4b92-a0d8-b1725d8fcfe8
+lease_expires_at: '2026-07-30T12:04:00Z'
+last_heartbeat_at: '2026-07-30T11:04:00Z'
+controller_authorization_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
 ready_entry_payload_digest: null
-state_based_on_head_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
+state_based_on_head_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Reconciled live P18 claim 9b10ef41 as the exact runtime-triplet-only child of b9ad9474 and rebound its complete substantive correction phase to claim baeb91ef and EMBEDDED_CLASSROOM lease 39d6a728 through 12:04:00Z; product, request, provider, and effect bytes remain unchanged at reconciliation.
+- Reconciled live P21 claim d3ee9a2b as the exact runtime-triplet-only child of integrated release 99fd8c33 and rebound its complete substantive correction phase to claim 9e38d9dd and CONTENT_PUBLICATION lease eb2c3340 through 12:04:00Z; P20, request, provider, and effect bytes remain unchanged at reconciliation.
+- Adopted the lean five-lane steer: C00 remains sole control/integration writer, P18/P21 may finish concurrently in disjoint worktrees, communications and verification preparation remain repository-only until exact authority, metadata-only work receives only schema/hash/diff/ancestry/readback checks, and legal remains a broad-release-only fail-closed gate.
 - Fresh read-only P18 admission passed exact four-table ownership, P17 disjointness, runtime/request digests, nine-path ceiling 514fd42b, frozen existing source bytes, free EMBEDDED_CLASSROOM slot, and effects 0/0/0; issued claim-only READY ba3d425b, claim baeb91ef, and lease b84e8273.
 - Fresh read-only P21 admission passed exact integrated P20 composite projection authority, 14-path ceiling 92698702, immutable mixed request digest, two-successor correction, free CONTENT_PUBLICATION slot, and effects 0/0/0; issued integration-adoption claim-only READY ede4095b, claim 9e38d9dd, and lease afe1ac21.
 - Independently audited and reconciled final I36 release 99fd8c33 with exact sole-parent runtime-triplet scope, no non-runtime drift from original release e2907b40, corrected passed terminal row, empty remaining/out-of-scope arrays, preserved historical/current lint evidence, pair/triplet 7f20095c/679fd2db, released lease, clean remote equality, and effects 0/0/0.
@@ -343,12 +346,11 @@ completed_steps:
 - issued only an atomic runtime-triplet renewal for the preserved dirty F02 draft under READY digest 635c8923, claim 2002fc61, and shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 4d52c050
 - independently reconciled F02 renewal claim 9daa5251 as an exact runtime-triplet child of 6a5e359c with remote proposal and migrations unchanged, all seven local draft paths byte-preserved, renewed authority exact, and effects zero
 remaining_steps:
-- independently audit the superseding P16 weekday final before admitting the ordered P16, P32, and F02 compatibility wave to I36
-- integrate and independently audit F02's exact six-migration Lease B release together with the accepted P16/P32 source corrections
-- integrate and independently audit the remaining governed migration leases before consolidated registrations and candidate freeze
-- resolve all remaining non-ancestral review heads and assigned steward duties before candidate freeze
-- derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P16 claim 79c745344e71c3b90a9fd7e569920e63a4d865cf is reconciled under claim ebdca6e9-aa5b-411b-88fd-747089e869ce and CLASSROOM_CORE lease 8c250e39-5c4d-4684-93ba-2ff373a1253a through 2026-07-30T02:31:25Z. Change exactly packages/db/src/classes/core/repository.ts, tests/unit/classes/classroom-core-repository.test.ts, and the P16 runtime triplet to translate public/domain weekdays 0..6 to database ISO 1..7 and back without reordering, reject malformed sets before persistence, prove the canonical roundtrip natively through migration 2239, run task gates, release the lease, publish a superseding final, and stop. No migration, contract/domain, interface, steward, registration, provider, deployment, send, or external effect is authorized.
+- P18 publishes only immutable P18-migration-003 plus its runtime triplet, preserving all existing product/test/request bytes and effects 0/0/0.
+- P21 completes the authoritative P20 composite projection binding, focused tests, P21-MIGRATION-002, P21-registration-002, and its runtime triplet within the exact authorized ceiling and effects 0/0/0.
+- C00 independently validates and integrates the two final heads, then batches the three F02 duties, 38 I36 shared duties, and one coherent Rabbi sender update before candidate freeze.
+- Freeze one exact candidate and execute V37-V43 in machine-readable parallel shards, followed by R44, deferred V43 cases, and R45; derive exact provider/effect authorities only at their applicable candidate gates.
+next_action: P18 and P21 claims are reconciled. P18 may now create only P18-migration-003 and final runtime evidence under claim baeb91ef and EMBEDDED_CLASSROOM lease 39d6a728; P21 may now complete only its exact authorized publication-binding source/test paths, P21-MIGRATION-002, P21-registration-002, and final runtime evidence under claim 9e38d9dd and CONTENT_PUBLICATION lease eb2c3340. Both run focused checks, release their leases, push normally, and return exact heads to C00. C00 alone validates and integrates. Candidate, live provider mutations, sends, enrollments, charges, deployment, DNS, migration application, and registration application remain withheld.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -356,13 +358,14 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: ae24cef068b50576569eb190695feddc79ddecc6
+  current_control_parent_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: a99f3592-b0ae-4a1f-a42f-a4229f6f6159
-      observed_head: ae24cef068b50576569eb190695feddc79ddecc6
-      lease_state: released_in_containing_checkpoint
+      claim_id: 2baa2f4b-8eed-4b92-a0d8-b1725d8fcfe8
+      observed_head: 3757ee49b83027d69208f25b0f709d309d5c6c1a
+      lease_expires_at: '2026-07-30T12:04:00Z'
+      lease_state: active
     F01:
       branch: codex/v21-f01-foundation-seams
       claim_id: a0810342-31c8-42c7-b758-ce0c4e9f1779
@@ -373,17 +376,17 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: null
-      observed_head: 1798f31b5f698c80ee2babbd6414e9934745a178
+      observed_head: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
       authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
       lease_expires_at: null
-      scheduling_state: ready_F02_lease_A_released
+      scheduling_state: ready_current_release_P18_P21_corrections_pending
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: null
-      observed_head: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
+      observed_head: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: null
-      scheduling_state: compatibility_final_independently_accepted_held_for_ordered_integration
+      scheduling_state: ready_for_review_three_migration_duties_deferred_until_P18_P21_integration
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -393,11 +396,11 @@ orchestration:
       scheduling_state: ready_for_review_agent_returned
     P31:
       branch: codex/v21-p31-email-copy-approval
-      claim_id: 39538a2e-2d15-44a7-9485-0cba68919b21
-      observed_head: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+      claim_id: null
+      observed_head: 839ec12bb83317a63f1d064891fb2929a707f3ec
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: null
-      scheduling_state: ready_for_review_interface_integrated_at_eefca064
+      scheduling_state: corrected_final_integrated_at_99fd8c33_repository_only_sender_review_active
     P35:
       branch: codex/v21-p35-domain-transition-archive
       claim_id: 9ee0d8f8-944d-47f2-b67a-54cb333cc29d
@@ -470,11 +473,18 @@ orchestration:
       scheduling_state: ready_for_review_interface_integrated_at_972fa435
     P18:
       branch: codex/v21-p18-embedded-classroom
-      claim_id: 415e950e-cfbb-4635-9f1a-3ffd6af825ac
-      observed_head: 0a384577dec2ea58cbeaf22a247f7c05f6333c27
+      claim_id: baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4
+      observed_head: 9b10ef41d65c39bd33d673d0849f0106e13296d2
       authorized_start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
-      lease_expires_at: '2026-07-28T22:55:38Z'
-      scheduling_state: ready_for_review_admitted
+      lease_expires_at: '2026-07-30T12:04:00Z'
+      scheduling_state: successor_request_correction_claim_reconciled_substantive_phase_authorized
+    P21:
+      branch: codex/v21-p21-content-publication
+      claim_id: 9e38d9dd-8293-451d-9335-ddb466e7234e
+      observed_head: d3ee9a2ba7933663544af2bc22f6873794162986
+      authorized_start_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+      lease_expires_at: '2026-07-30T12:04:00Z'
+      scheduling_state: composite_projection_binding_claim_reconciled_substantive_phase_authorized
     P19:
       branch: codex/v21-p19-content-ingest
       claim_id: de624026-ff9a-4c35-ad02-bc6c1f28a3dc
@@ -603,7 +613,8 @@ orchestration:
       scheduling_state: ready_for_review_full_integrated_at_cecc1c0d
   active_native_subagents:
   - f03_worker
-  - i36_worker2
+  - f05_worker
+  - p31_copy_worker
   unresolved_blockers: []
 requirements: {}
 acceptance_cases: {}
@@ -1141,6 +1152,9 @@ verification:
   - I36 final 99fd8c33: passed live remote equality, sole-parent/runtime-triplet scope, no non-runtime drift from e2907b40, exact passed terminal verification row, empty remaining/out-of-scope arrays, preserved historical/current P31 lint evidence, pair/triplet 7f20095c/679fd2db, released lease before expiry, and effects 0/0/0
   - P18 fresh admission: passed integrated P17 ancestry/disjoint ownership, exact four P18 tables, request raw/canonical digests, nine-path inventory 514fd42b, frozen product bytes absent proven compatibility need, free writer slot, and zero effects
   - P21 fresh admission: passed integrated P20 ancestry/composite authority, exact adoption base 99fd8c33, immutable mixed request preservation, exact two successors, 14-path inventory 92698702, free writer slot, and zero effects
+  - P18 claim 9b10ef41 reconciliation: passed exact sole-parent b9ad9474 ancestry, exact runtime-triplet-only scope, preserved product/test/request bytes, pair/triplet 4655004b/c02dd015, live remote equality, and effects 0/0/0
+  - P21 claim d3ee9a2b reconciliation: passed exact sole-parent 99fd8c33 ancestry, exact runtime-triplet-only scope, preserved P20/product/request bytes, pair/triplet 734998c0/f4b3800b, live remote equality, and effects 0/0/0
+  - Lean phase authorization: passed one complete rebound writer lease per disjoint P18/P21 phase, empty consumed READY queue, C00-only integration, candidate/provider/effect withholding, repository-only communications and verifier preparation, and production-broad legal fail-closed scope
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -1855,3 +1855,19 @@ only its runtime triplet under READY `ede4095b`, claim `9e38d9dd`, and
 CONTENT_PUBLICATION lease `afe1ac21`. Each must push normally, remote-verify,
 and stop for C00 reconciliation. Do not create successor requests or edit
 source before reconciliation; effects remain `0/0/0`.
+
+P18 claim `9b10ef41d65c39bd33d673d0849f0106e13296d2` and P21 claim
+`d3ee9a2ba7933663544af2bc22f6873794162986` are reconciled. Continue the two
+complete substantive phases concurrently. P18 uses unchanged claim
+`baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4` and rebound EMBEDDED_CLASSROOM lease
+`39d6a728-0cde-43e6-9a3f-693c1b07ab4c`; create only immutable
+`P18-migration-003` plus final runtime evidence and preserve all prior
+product/test/request bytes. P21 uses unchanged claim
+`9e38d9dd-8293-451d-9335-ddb466e7234e` and rebound CONTENT_PUBLICATION lease
+`eb2c3340-baa7-493c-afc1-bcb050911bb4`; change only its exact authorized
+publication source/tests, `P21-MIGRATION-002`, `P21-registration-002`, and
+final runtime evidence. Both leases expire `2026-07-30T12:04:00Z`. Run focused
+checks, release the leases, push, and return heads. C00 independently validates
+and integrates. No provider query/mutation, send, enrollment, charge,
+deployment, DNS, migration application, registration application, or effect is
+authorized.

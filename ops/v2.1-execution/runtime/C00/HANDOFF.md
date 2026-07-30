@@ -2221,3 +2221,15 @@ CONTENT_PUBLICATION lease `afe1ac21` authorize only a runtime-triplet claim
 whose sole parent is integrated release `99fd8c33`. Both first pushes must stop
 for reconciliation. No successor request, source, provider, migration,
 registration, deployment, send, or effect change is authorized before that.
+
+Lean phase-level reconciliation is complete. Live P18 `9b10ef41` and P21
+`d3ee9a2b` are exact runtime-triplet-only claim children of `b9ad9474` and
+`99fd8c33`; no product, request, provider, or effect byte changed. P18 retains
+claim `baeb91ef` under rebound EMBEDDED_CLASSROOM lease `39d6a728` through
+`2026-07-30T12:04:00Z` and may publish only immutable
+`P18-migration-003` plus its final runtime triplet. P21 retains claim
+`9e38d9dd` under rebound CONTENT_PUBLICATION lease `eb2c3340` through the same
+time and may complete only its exact authorized publication source/tests, two
+successor requests, and final runtime triplet. Both run focused gates, release
+their phase leases, push normally, and return exact heads; C00 alone integrates.
+Candidate and every live effect remain withheld.
