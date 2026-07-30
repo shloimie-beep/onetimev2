@@ -26,3 +26,11 @@ not restart completed work or globally re-audit the repository. Continue until
 next prompt, checkpoint, commit, and push before returning. C00 follows its
 serialized `CONTROL-LEASE.yaml` path; I36 follows the explicit bootstrap-branch
 adoption rule on its first invocation.
+
+After C00 reconciles atomic claim `ff4a79d9-158b-4e3f-a150-03b171427749`,
+apply only `P30-copy-registration-001` under COPY_CATALOG lease
+`d03dd6a9-384f-4b52-aaaf-3ac5752a36da`. Author and register exactly the
+requested OT-15 step 2 and step 3 canonical adult-only copy entries with the
+fixed IDs and subjects, current-consent and named-approval gates, no
+token-bearing content, and exact canonical digests. Do not configure, activate,
+enroll, or send through a provider. Keep effects `0/0/0`.

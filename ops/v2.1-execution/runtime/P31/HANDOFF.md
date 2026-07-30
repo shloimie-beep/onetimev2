@@ -54,3 +54,18 @@ No secrets, tokens, provider payloads, child data, Zoom/Vimeo bearers, or live s
 ## Blockers, deviations, and recovery
 
 No blocker. The C00-issued lease expires at `2026-07-28T17:37:00Z`; do not continue after that time without a C00-issued resume lease.
+
+## P30 copy registration atomic claim
+
+- Claim parent: `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`
+- Containing control: `30689e76f3697ab11dedab3b77d5bb5cbededde5`
+- READY parent control: `1b5e5dd662390dd5affc159990a59b3b8d99c127`
+- Claim: `ff4a79d9-158b-4e3f-a150-03b171427749`
+- COPY_CATALOG lease: `d03dd6a9-384f-4b52-aaaf-3ac5752a36da`
+- READY digest: `53c8b3774408a96350e8050746a2e2894ab65a7c418b7932bb05f5e2f9e375cb`
+- Request digest: `0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf`
+- Effects: `0/0/0`
+
+Only the P31 runtime triplet changed. Stop for C00 reconciliation before
+authoring or registering the requested OT-15 step 2 and step 3 copy. No
+provider configuration, activation, enrollment, or send is authorized.
