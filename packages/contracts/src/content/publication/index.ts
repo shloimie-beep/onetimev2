@@ -236,6 +236,8 @@ export interface ContentPublicationReceipt extends ContentPublicationScope {
   requestHash: string;
   operation: ContentPublicationOperation;
   contentId: string;
+  contentVersionId: string;
+  publicationGeneration: number;
   resultVersion: number;
   committedAt: string;
   approvalProjectionDigest: string;
@@ -367,6 +369,7 @@ export interface StudentContentResume extends ContentPublicationScope {
   studentId: string;
   householdId: string;
   contentId: string;
+  contentVersionId: string;
   publicationVersion: number;
   positionMs: number;
   updatedAt: string;

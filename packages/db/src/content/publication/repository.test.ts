@@ -37,6 +37,7 @@ describe('P21 PostgreSQL publication repository', () => {
           studentId: 'student_one',
           householdId: 'household_one',
           contentId: 'content_one',
+          contentVersionId: 'content_version_one',
           publicationVersion: 4,
           positionMs: 125_000,
           updatedAt: '2026-07-29T10:46:00.000Z',
@@ -56,17 +57,82 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(insert?.text).toContain(
       'ON CONFLICT (account_key, product_key, student_id, content_id) DO NOTHING',
     );
-    expect(insert?.values?.slice(0, 8)).toEqual([
+    expect(insert?.values?.slice(0, 9)).toEqual([
       'account_one',
       'one_time_mishnayos',
       'student_one',
       'household_one',
       'content_one',
+      'content_version_one',
       4,
       125_000,
       1,
     ]);
     expect(client.released).toBe(true);
+  });
+
+  it('persists exact receipt version, generation, and approval projection bindings', async () => {
+    const client = new CapturingClient();
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await repository.inTransaction((unit) =>
+      unit.saveReceipt({
+        ...scope,
+        operation: 'approve',
+        idempotencyKey: 'approval.key',
+        requestHash: 'a'.repeat(64),
+        contentId: 'content_one',
+        contentVersionId: 'content_version_one',
+        publicationGeneration: 3,
+        resultVersion: 4,
+        committedAt: '2026-07-29T10:46:00.000Z',
+        approvalProjectionDigest: approvalEvidence.projectionDigest,
+      }),
+    );
+
+    const insert = client.queries[1];
+    expect(insert?.text).toContain('content_id, content_version_id, publication_generation');
+    expect(insert?.values?.slice(5, 9)).toEqual([
+      'content_one',
+      'content_version_one',
+      3,
+      approvalEvidence.projectionDigest,
+    ]);
+  });
+
+  it('fails closed on a conflicting composite-scoped publication outbox id', async () => {
+    const client = new CapturingClient(false, 'onetime.content_publication_outbox');
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.saveOutboxIntent({
+          ...scope,
+          intentId: 'intent_one',
+          providerOperationId: 'provider_operation_one',
+          provider: 'vimeo',
+          contentId: 'content_one',
+          contentVersionId: 'content_version_one',
+          publicationGeneration: 1,
+          operation: 'publish_private',
+          idempotencyKey: 'publish.key',
+          requestHash: 'a'.repeat(64),
+          state: 'pending',
+          createdAt: '2026-07-29T10:46:00.000Z',
+          approvalEvidence,
+        }),
+      ),
+    ).rejects.toThrowError('content_publication_outbox_conflict');
+
+    const insert = client.queries.find((query) =>
+      query.text.includes('onetime.content_publication_outbox'),
+    );
+    expect(insert?.text).toContain('ON CONFLICT (account_key, product_key, intent_id) DO NOTHING');
+    expect(client.queries.at(-1)?.text).toBe('ROLLBACK');
   });
 
   it('rolls back an optimistic conflict without a partial commit', async () => {
@@ -235,6 +301,11 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(sql).toContain('onetime.student_content_assignments');
     expect(sql).toContain('onetime.student_library_projections');
     expect(sql.match(/onetime\.protected_recording_notices/g)).toHaveLength(2);
+    expect(sql).toContain('ON CONFLICT (account_key, product_key, assignment_id) DO NOTHING');
+    expect(sql).toContain('ON CONFLICT (account_key, product_key, projection_id) DO NOTHING');
+    expect(
+      sql.match(/ON CONFLICT \(account_key, product_key, notice_id\) DO NOTHING/g),
+    ).toHaveLength(2);
     expect(client.queries[0]?.text).toBe('BEGIN');
     expect(client.queries.at(-1)?.text).toBe('COMMIT');
   });
@@ -286,16 +357,22 @@ class CapturingClient implements ContentPublicationSqlClient {
   readonly queries: { text: string; values?: readonly unknown[] }[] = [];
   released = false;
 
-  constructor(private readonly failUpdates = false) {}
+  constructor(
+    private readonly failUpdates = false,
+    private readonly failText?: string,
+  ) {}
 
   async query<Row extends Record<string, unknown>>(
     text: string,
     values?: readonly unknown[],
   ): Promise<{ rows: Row[]; rowCount: number }> {
     this.queries.push(values === undefined ? { text } : { text, values });
+    const failed =
+      (this.failUpdates && text.includes('UPDATE')) ||
+      (this.failText !== undefined && text.includes(this.failText));
     return {
       rows: [],
-      rowCount: this.failUpdates && text.includes('UPDATE') ? 0 : 1,
+      rowCount: failed ? 0 : 1,
     };
   }
 
