@@ -15,11 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
+controller_authorization_sha: 505804a1a3ab172229df94512f06c37cf214f270
 next_action: >-
-  I36 metadata claim 3aab6a19 is reconciled. Under unchanged claim 27f0fe39 and RELEASE_INTEGRATOR lease
-  745aefd4 through 09:47:00Z, change only the I36 runtime triplet: set top-level remaining_steps to [], clear or
-  explicitly resolve the obsolete top-level P31 lint finding, preserve the historical failed and later passing
-  lint evidence, recompute terminal manifests, release the lease, push normally, and stop for audit. Every source,
-  merge, migration, request, control-ledger, provider, deployment, send, and effect byte remains frozen.
+  I36 final f83ff0ce passes all requested release and metadata gates but is rejected for one stale verification row
+  that still says its completed final push is pending. I36 may make only a runtime-triplet atomic claim under READY
+  3252e7b6, fresh claim f34c38fb, and RELEASE_INTEGRATOR lease 994b32cc through 09:47:00Z, then stop for C00
+  reconciliation. Every source, merge, migration, request, control-ledger, provider, deployment, send, and effect
+  byte remains frozen.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

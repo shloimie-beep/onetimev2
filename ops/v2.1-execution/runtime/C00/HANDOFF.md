@@ -2174,3 +2174,18 @@ and RELEASE_INTEGRATOR lease `745aefd4`: set top-level
 `out_of_scope_findings`, preserve the historical failed lint command and later
 passing run, update derived terminal evidence, release the lease, push, and
 stop for audit. Every non-runtime byte remains frozen.
+
+I36 final `f83ff0ce` passes exact runtime-triplet scope, empty
+`remaining_steps` and `out_of_scope_findings`, preserved historical P31 lint
+failure plus current integrated correction/zero-finding evidence, pair/triplet
+`0ad39797`/`d069382c`, released lease, clean remote equality, frozen
+non-runtime bytes, and effects `0/0/0`. Admission is rejected only because one
+current post-reconciliation verification row still labels its completed final
+commit/push as pending.
+
+Fresh I36 verification-metadata claim `f34c38fb` and RELEASE_INTEGRATOR lease
+`994b32cc` run through `2026-07-30T09:47:00Z` under READY `3252e7b6`. Its
+first push may change only the runtime triplet to bind the claim while
+preserving the pending row, then must stop for C00 reconciliation. After that,
+replace the one stale result with exact passed evidence for `f83ff0ce`, release
+the lease, push, and stop. Every non-runtime byte remains frozen.

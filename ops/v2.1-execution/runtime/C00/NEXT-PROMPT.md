@@ -1811,3 +1811,17 @@ lint finding, preserve the historical failed verification and later passing
 full lint, rederive pair/triplet evidence, release the lease, push normally,
 and stop for independent audit. All source, merge, migration, request,
 control-ledger, provider, deployment, send, and effect bytes remain frozen.
+
+I36 final `f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5` passes all other
+release and metadata gates but is rejected because one current verification
+row still says the completed final push is pending. Atomically claim only the
+I36 runtime triplet under READY
+`3252e7b6e9e35f332e799e0151c14cd097cbc549b2d6c7879227f83268fa6228`,
+fresh claim `f34c38fb-f977-4c41-ae4b-5343d13c85f7`, and RELEASE_INTEGRATOR
+lease `994b32cc-4ca9-4b11-88ed-713631a61f33` through
+`2026-07-30T09:47:00Z`. Preserve the pending result on the first push and stop
+for C00 reconciliation. After reconciliation, record it as passed at exact
+final `f83ff0ce`, sole parent `3aab6a19`, runtime-triplet-only scope,
+pair/triplet `0ad39797`/`d069382c`, released lease, clean remote equality,
+frozen non-runtime bytes, and effects `0/0/0`; release the new lease, push,
+and stop. Do not edit any non-runtime byte or perform an effect.
