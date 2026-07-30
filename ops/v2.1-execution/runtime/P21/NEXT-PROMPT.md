@@ -3,47 +3,41 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-P21 completed the P20 `ApprovedForPublicationProjection` composite-binding
-correction under unchanged claim
-`9e38d9dd-8293-451d-9335-ddb466e7234e`, substantive control
-`246990489b99575c3ded7af18ab22571d2fcb3a6`, and implementation
-`7e2a269e564507b560fa07d826169ff670dfba36`.
+P21 completed the controller-authorized publication scope correction on branch
+`codex/v21-p21-publication-scope-correction`, starting exactly at
+`7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d`.
 
-The exact authorized 14 paths bind approval, publication outbox/provider
-correlation, atomic Student materialization, playback, library, and resume to
-server-derived account/product/content-version scope and immutable P20
-projection evidence. Exact replay converges; missing, non-approved, stale,
-malformed, changed, Admin-mismatched, or cross-scope evidence conflicts or
-fails closed.
+Authority is the pushed containing control
+`a58965e989a9dab81d079a8d02afe23aab146fb8`, controller authorization/state
+basis `4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4`, and claim
+`00402ed6-57b7-4aed-92fa-a558ae11aef1`. The six source paths are committed at
+`7b51bae186728351ff1cf93b1c02fcba893b1051`; the remaining authorized paths are
+this P21 runtime triplet.
 
-Verification passed:
+The correction binds receipts and replay to exact `contentVersionId`,
+`publicationGeneration`, and `approvalProjectionDigest`; binds Student resume
+to exact `contentVersionId`; and uses composite account/product/identifier
+conflict targets for outbox, assignments, library projections, and notices.
+Provider completion correlation remains composite and unchanged.
 
-- five focused files and 15 tests;
-- workspace typecheck;
-- focused ESLint and Prettier;
-- YAML, composite SQL, provider-reference, secret, scope, hash, and diff gates;
-- 17-artifact aggregate
-  `fabbd6499db0639f130c6ba7385d0e9b2b9b0b2d995e498b72a74f60cddff04c`.
+Verification passed: five focused files and 17 tests, workspace typecheck,
+focused ESLint and Prettier, secret scan across 3,087 text files, and diff,
+scope, and immutable-request checks. The six-source-artifact aggregate is
+`1ddfb7f2ddee9b25af0dc1b2352bb440ccf22e4ecfe347b4d67c48bad93d8a7c`.
 
-Exactly two immutable corrected proposals exist:
+Immutable requests remain byte-identical:
 
 - `P21-MIGRATION-002`
   `aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`
-- `P21-registration-002`
-  `af851f718e99945fed2d9b805a93fa20a0cea815a42ce33f2c22fda8c52ac45d`
+- `P21-registration-001`
+  `fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`
 
-`P21-registration-001` remains byte-identical, unapplied, superseded, and
-withheld at raw digest
-`fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`.
-No migration ordinal or SQL was created and no registration was applied.
+Effects remain `0/0/0`; no provider, migration, registration, deployment, or
+send action occurred.
 
-The rebound `CONTENT_PUBLICATION` lease
-`eb2c3340-baa7-493c-afc1-bcb050911bb4` was released before its
-`2026-07-30T12:04:00Z` expiry. Effects remain `0/0/0`; no provider query or
-mutation, send, enrollment, charge, deployment, DNS, migration application, or
-registration application occurred.
-
-Next action: C00 independently audits the exact pushed final, normal remote
-equality, 14-path scope, preserved P20 and immutable `-001` bytes, hashes,
-focused gates, released lease, and zero effects. Do not continue P21 product
-work or apply either successor proposal without new authority.
+Next action: C00 independently audits the pushed final for ancestry, exact
+nine-path scope, hashes, focused gates, normal remote equality, and zero
+effects, then reconciles claim
+`00402ed6-57b7-4aed-92fa-a558ae11aef1` and its lease (expiry
+`2026-07-30T14:23:56Z`). Do not continue P21 product work or apply any request
+without new authority.
