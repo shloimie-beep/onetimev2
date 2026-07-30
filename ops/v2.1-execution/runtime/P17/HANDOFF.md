@@ -107,3 +107,23 @@ product, acceptance, migration, existing request, and successor-request byte
 remains unchanged. Correction work was not started. The last heartbeat is
 `2026-07-30T07:00:00Z`, effects remain `0/0/0`, and P17 stops pending a renewed
 claim and ZOOM_PREPARATION lease.
+
+## Renewed lease atomic claim
+
+P17 atomically claimed the renewed correction lease from exact parent
+`7596a0f1701fb135a4f8d133d1381d0e5ad00af8` under containing control
+`fbc944ab1ec5aa4ca768cff7db76c1da03bac516`, READY state basis
+`a5851edf70f3c60cc25ece3faf124bedf1629f21`, and recomputed READY digest
+`4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb`.
+
+Fresh claim `e85735a2-4a41-476b-bca2-d1dde009e69d` holds ZOOM_PREPARATION lease
+`0d08dc64-fb12-4aa5-bf5d-10a3267e18f4`, issued
+`2026-07-30T07:01:44Z`, expiring `2026-07-30T08:31:44Z`, with heartbeat
+`2026-07-30T07:09:00Z`.
+
+This push changes only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`.
+Prior state/handoff and runtime-triplet digests are `f87946bc4dfb2cd86d416aefbeb0b45c9c9ffab62abd0f96ca3b79ac26a18a0c`
+and `9d82cfccdbf896c247025c3c4183ce8dacb88afe578e6013655965fdbed9c76e`.
+Every product, acceptance, existing request, successor-request, and
+partial-work byte remains unchanged. Effects remain `0/0/0`. Stop for C00
+reconciliation before implementation.

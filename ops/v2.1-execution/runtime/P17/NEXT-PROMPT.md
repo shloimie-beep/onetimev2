@@ -57,3 +57,16 @@ all product and request bytes remain unchanged.
 Stop pending a renewed claim and ZOOM_PREPARATION lease. Do not resume under
 lease `0e53a171-263b-41d9-b957-80588027c194` after its
 `2026-07-30T07:11:00Z` expiry.
+
+C00 issued a renewed first-push-only READY at control
+`fbc944ab1ec5aa4ca768cff7db76c1da03bac516`. P17 claimed it from exact
+checkpoint `7596a0f1701fb135a4f8d133d1381d0e5ad00af8` using READY digest
+`4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb`,
+claim `e85735a2-4a41-476b-bca2-d1dde009e69d`, and ZOOM_PREPARATION lease
+`0d08dc64-fb12-4aa5-bf5d-10a3267e18f4` through
+`2026-07-30T08:31:44Z`.
+
+Stop for C00 reconciliation of this renewed runtime-triplet claim. Do not
+change any product, acceptance, existing request, successor request, partial
+work, provider configuration, or external-effect byte before explicit
+continuation authority.
