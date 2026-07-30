@@ -125,8 +125,24 @@ describe('P08 family signup service', () => {
           },
           dispatch_state: 'ready',
           local_commit_required: true,
+          ghl_handoff: {
+            target: 'p27_ghl_identity_sync',
+            subject: { kind: 'adult' },
+            provider_effect_authorized: false,
+            message_delivery_authorized: false,
+            billing_effect_authorized: false,
+            student_contact_prohibited: true,
+          },
         },
       ],
+      commercial_billing: {
+        signup: {
+          resulting_version: 1,
+          response: { projection: { accessState: 'free' } },
+          outbox_intents: [],
+        },
+        checkout: null,
+      },
       ghl_evidence_status: 'available',
       committed_at: '2026-09-13T16:23:59.000Z',
     });
@@ -234,6 +250,8 @@ describe('P08 family signup service', () => {
       setup_email_required: false,
       provider_effects_completed_inline: 0,
       outbox_intent_ids: [],
+      ghl_handoff_state: 'ready',
+      checkout_handoff_state: 'queued',
       safe_message: 'Your account is ready. Continue to checkout.',
     };
     const repository = repositoryFor({
@@ -334,10 +352,11 @@ describe('P08 family signup service', () => {
       ghl_identity_state: 'identity_review',
       ghl_evidence_status: 'available',
       outbox_intents: [{ dispatch_state: 'identity_review' }],
+      commercial_billing: { checkout: null },
     });
   });
 
-  it('commits local free access while missing GHL evidence remains quarantined', async () => {
+  it('commits local free access while missing GHL evidence requires downstream readback', async () => {
     const commits: unknown[] = [];
     const service = createFamilySignupService({
       repository: repositoryFor({
@@ -368,10 +387,19 @@ describe('P08 family signup service', () => {
       projection: { access_state: 'free' },
     });
     expect(commits[0]).toMatchObject({
-      ghl_identity_state: 'identity_review',
+      ghl_identity_state: 'readback_required',
       ghl_contact_ref_hash: null,
       ghl_evidence_status: 'evidence_unavailable',
-      outbox_intents: [{ dispatch_state: 'identity_review' }],
+      outbox_intents: [
+        {
+          dispatch_state: 'ready',
+          ghl_handoff: {
+            provider_readback_required: true,
+            provider_effect_authorized: false,
+            student_contact_prohibited: true,
+          },
+        },
+      ],
     });
   });
 

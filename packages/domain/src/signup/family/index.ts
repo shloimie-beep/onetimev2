@@ -8,6 +8,8 @@ export {
   type ExistingFamilyHousehold,
   type ExistingFamilyIdentity,
   type ExistingFamilyLocalState,
+  type FamilySignupCommercialBillingPlan,
+  type FamilySignupCommercialCommandRecord,
   type FamilySignupGhlEvidence,
   type FamilySignupPlan,
   type FamilySignupRecoveryRecord,

@@ -1,5 +1,11 @@
 import { createHash } from 'node:crypto';
+import {
+  FAMILY_PLAN,
+  FIXED_FREE_PERIOD,
+} from '../../../../../../../packages/contracts/src/billing/commercial/index.ts';
+import { GHL_IDENTITY_CONTRACT_VERSION } from '../../../../../../../packages/contracts/src/communications/ghl-identity/index.ts';
 import type {
+  FamilySignupGhlHandoff,
   FamilySignupOutboxIntent,
   FamilySignupReceipt,
   FamilySignupRequestBinding,
@@ -10,6 +16,7 @@ import type { DbPool, Queryable } from '../../../../../../../packages/db/src/ind
 import type {
   CanonicalFamilySignupRequest,
   ExistingFamilyLocalState,
+  FamilySignupCommercialBillingPlan,
   FamilySignupGhlEvidence,
   FamilySignupRecoveryRecord,
 } from '../../../../../../../packages/domain/src/signup/family/index.ts';
@@ -114,7 +121,8 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
               parent_newsletter_consent,
               dispatch_state,
               preserve_adult_suppression,
-              local_commit_required
+              local_commit_required,
+              intent_json
          FROM onetime.family_signup_outbox
         WHERE idempotency_key = $1
           AND product = $2
@@ -133,7 +141,11 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
       ],
     );
     const outboxIntents = outboxRows.rows.map((outboxRow) =>
-      storedOutboxIntent(outboxRow as Row, requestBinding),
+      storedOutboxIntent(
+        outboxRow as Row,
+        requestBinding,
+        result.projection as NonNullable<FamilySignupResult['projection']>,
+      ),
     );
     if (
       result.outbox_intent_ids.length !== outboxIntents.length ||
@@ -270,8 +282,9 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
     }
 
     // No current table binds a fresh signup email to canonical provider
-    // readback. An absent row must not be converted into a fabricated
-    // "unlinked" observation; the durable GHL intent remains quarantined.
+    // readback. An absent row is not evidence of ambiguity or an "unlinked"
+    // provider state; the adult-only handoff explicitly requires readback
+    // before any downstream provider effect.
     return {
       status: 'evidence_unavailable',
       safe_reason: 'evidence_unavailable',
@@ -284,8 +297,9 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
     password_hash: string;
     receipt: FamilySignupReceipt;
     outbox_intents: readonly FamilySignupOutboxIntent[];
+    commercial_billing: FamilySignupCommercialBillingPlan;
     session_creation_required: boolean;
-    ghl_identity_state: 'unlinked' | 'linked' | 'identity_review';
+    ghl_identity_state: 'unlinked' | 'linked' | 'readback_required' | 'identity_review';
     ghl_contact_ref_hash: string | null;
     ghl_evidence_status: FamilySignupGhlEvidence['status'];
     committed_at: string;
@@ -530,6 +544,12 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
         'Family-signup outbox intent',
       );
     }
+    await insertCommercialBillingPlan(
+      this.db,
+      binding.scope,
+      input.commercial_billing,
+      input.committed_at,
+    );
   }
 
   private assertLockedScope(scope: FamilySignupScope, operation: 'public_family_signup'): void {
@@ -554,6 +574,7 @@ class PostgresFamilySignupTransaction implements FamilySignupTransaction {
 }
 
 const LOWER_SHA256 = /^[a-f0-9]{64}$/u;
+const SAFE_OPAQUE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
 const ADULT_PASSWORD_HASH =
   /^argon2id-v1\$v=19\$m=19456,t=2,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{43}$/u;
 
@@ -563,8 +584,9 @@ function assertCommitInput(input: {
   password_hash: string;
   receipt: FamilySignupReceipt;
   outbox_intents: readonly FamilySignupOutboxIntent[];
+  commercial_billing: FamilySignupCommercialBillingPlan;
   session_creation_required: boolean;
-  ghl_identity_state: 'unlinked' | 'linked' | 'identity_review';
+  ghl_identity_state: 'unlinked' | 'linked' | 'readback_required' | 'identity_review';
   ghl_contact_ref_hash: string | null;
   ghl_evidence_status: FamilySignupGhlEvidence['status'];
   committed_at: string;
@@ -589,7 +611,7 @@ function assertCommitInput(input: {
     projection.active_seat_count !== 0 ||
     projection.rolling_trial_granted !== false ||
     projection.card_collected !== false ||
-    input.session_creation_required !== (result.next_action === 'signed_in') ||
+    input.session_creation_required !== true ||
     input.outbox_intents.length !== 1 ||
     JSON.stringify(input.receipt.outbox_intents) !== JSON.stringify(input.outbox_intents)
   ) {
@@ -606,6 +628,7 @@ function assertCommitInput(input: {
     !LOWER_SHA256.test(intent.normalized_email_hash) ||
     intent.preserve_adult_suppression !== true ||
     intent.local_commit_required !== true ||
+    !validGhlHandoff(intent.ghl_handoff, intent, projection) ||
     result.outbox_intent_ids.length !== 1 ||
     result.outbox_intent_ids[0] !== intent.intent_id
   ) {
@@ -613,24 +636,233 @@ function assertCommitInput(input: {
   }
   if (
     input.ghl_evidence_status === 'evidence_unavailable' &&
-    (input.ghl_identity_state !== 'identity_review' ||
+    (input.ghl_identity_state !== 'readback_required' ||
       input.ghl_contact_ref_hash !== null ||
-      intent.dispatch_state !== 'identity_review')
+      intent.dispatch_state !== 'ready' ||
+      intent.ghl_handoff.provider_readback_required !== true ||
+      result.ghl_handoff_state !== 'readback_required')
   ) {
-    throw invariant('Unavailable GHL evidence must remain in identity-review quarantine.');
+    throw invariant('Unavailable GHL evidence must remain an explicit readback requirement.');
   }
   if (input.ghl_contact_ref_hash !== null && !LOWER_SHA256.test(input.ghl_contact_ref_hash)) {
     throw invariant('The GHL contact reference hash is malformed.');
+  }
+  if (
+    (input.ghl_evidence_status === 'available' && intent.ghl_handoff.provider_readback_required) ||
+    (input.ghl_identity_state === 'identity_review' &&
+      result.ghl_handoff_state !== 'identity_review') ||
+    (input.ghl_identity_state === 'readback_required' &&
+      result.ghl_handoff_state !== 'readback_required') ||
+    ((input.ghl_identity_state === 'linked' || input.ghl_identity_state === 'unlinked') &&
+      result.ghl_handoff_state !== 'ready') ||
+    (result.next_action === 'checkout' && result.checkout_handoff_state !== 'queued') ||
+    (result.next_action === 'identity_review' &&
+      result.checkout_handoff_state !== 'blocked_identity_review') ||
+    (result.next_action === 'signed_in' && result.checkout_handoff_state !== 'not_applicable')
+  ) {
+    throw invariant('The Family result and provider handoff states disagree.');
   }
   if (
     (input.ghl_identity_state === 'linked' &&
       (input.ghl_contact_ref_hash === null || intent.dispatch_state !== 'ready')) ||
     (input.ghl_identity_state === 'unlinked' &&
       (input.ghl_contact_ref_hash !== null || intent.dispatch_state !== 'ready')) ||
+    (input.ghl_identity_state === 'readback_required' &&
+      (input.ghl_contact_ref_hash !== null || intent.dispatch_state !== 'ready')) ||
     (input.ghl_identity_state === 'identity_review' &&
       (input.ghl_contact_ref_hash !== null || intent.dispatch_state !== 'identity_review'))
   ) {
     throw invariant('The durable GHL identity decision and outbox dispatch state disagree.');
+  }
+  assertCommercialBillingPlan(input.commercial_billing, binding, projection, result);
+}
+
+function validGhlHandoff(
+  handoff: FamilySignupGhlHandoff,
+  intent: FamilySignupOutboxIntent,
+  projection: NonNullable<FamilySignupResult['projection']>,
+): boolean {
+  if (!isRecord(handoff) || !isRecord(handoff.subject) || !isRecord(handoff.household)) {
+    return false;
+  }
+  const subjectKeys = isRecord(handoff?.subject) ? Object.keys(handoff.subject).sort() : [];
+  const household = handoff?.household;
+  return (
+    handoff?.contract_version === '1.0.0' &&
+    handoff.target === 'p27_ghl_identity_sync' &&
+    handoff.target_contract_version === GHL_IDENTITY_CONTRACT_VERSION &&
+    SAFE_OPAQUE.test(handoff.operation_id) &&
+    SAFE_OPAQUE.test(handoff.local_commit_id) &&
+    handoff.local_commit_state === 'committed' &&
+    handoff.local_result_durable === true &&
+    handoff.provider_failure_rolls_back_local_result === false &&
+    subjectKeys.join(',') === 'adult_id,kind,normalized_email_hash' &&
+    handoff.subject.kind === 'adult' &&
+    handoff.subject.adult_id === intent.adult_id &&
+    handoff.subject.normalized_email_hash === intent.normalized_email_hash &&
+    household.household_id === projection.household_id &&
+    household.owner_adult_id === projection.adult_id &&
+    household.classification === 'family' &&
+    household.lifecycle_state === 'active' &&
+    household.access_projection === projection.access_state &&
+    household.stripe_customer_ref_hash === null &&
+    household.service_reminders_enabled === false &&
+    household.source_evidence_digest === intent.request_binding.canonical_request_digest &&
+    LOWER_SHA256.test(household.policy_consent_evidence_digest) &&
+    typeof handoff.provider_readback_required === 'boolean' &&
+    handoff.provider_effect_authorized === false &&
+    handoff.message_delivery_authorized === false &&
+    handoff.billing_effect_authorized === false &&
+    handoff.student_contact_prohibited === true
+  );
+}
+
+function assertCommercialBillingPlan(
+  plan: FamilySignupCommercialBillingPlan,
+  binding: FamilySignupRequestBinding,
+  projection: NonNullable<FamilySignupResult['projection']>,
+  result: FamilySignupResult,
+): void {
+  const signup = plan.signup;
+  const signupProjection = signup.response.projection;
+  if (
+    signup.actor_ref !== projection.adult_id ||
+    signup.operation_scope !== `billing.commercial.signup:${projection.household_id}` ||
+    signup.idempotency_key !== binding.idempotency_key ||
+    !LOWER_SHA256.test(signup.canonical_request_hash) ||
+    signup.resulting_version !== 1 ||
+    signup.outbox_intents.length !== 0 ||
+    signup.response.intent !== undefined ||
+    signupProjection.householdId !== projection.household_id ||
+    signupProjection.ownerAdultId !== projection.adult_id ||
+    signupProjection.accessState !== projection.access_state ||
+    signupProjection.subscriptionState !== 'none' ||
+    signupProjection.activeStudentCount !== 0 ||
+    signupProjection.freePeriodEndsAt !== FIXED_FREE_PERIOD.endsAt ||
+    signupProjection.paidPeriodEndsAt !== null ||
+    signupProjection.firstChargeAt !== null ||
+    signupProjection.cancelAtPeriodEnd !== false ||
+    signupProjection.sourceEvidenceDigest !== null ||
+    signupProjection.version !== 1
+  ) {
+    throw invariant('The Family signup does not carry the exact P25 signup projection.');
+  }
+
+  const checkout = plan.checkout;
+  if (result.checkout_handoff_state !== 'queued') {
+    if (checkout !== null) {
+      throw invariant('A non-checkout Family branch cannot persist a hosted-checkout command.');
+    }
+    return;
+  }
+  const checkoutIntent = checkout?.outbox_intents[0];
+  if (
+    !checkout ||
+    !checkoutIntent ||
+    checkout.outbox_intents.length !== 1 ||
+    checkout.response.intent !== checkoutIntent ||
+    checkout.actor_ref !== projection.adult_id ||
+    checkout.operation_scope !==
+      `billing.commercial.request_hosted_checkout:${projection.household_id}` ||
+    checkout.idempotency_key !== `${binding.idempotency_key}:hosted-checkout` ||
+    !LOWER_SHA256.test(checkout.canonical_request_hash) ||
+    checkout.resulting_version !== 2 ||
+    checkout.response.projection.householdId !== projection.household_id ||
+    checkout.response.projection.ownerAdultId !== projection.adult_id ||
+    checkout.response.projection.accessState !== 'inactive' ||
+    checkout.response.projection.subscriptionState !== 'checkout_requested' ||
+    checkout.response.projection.version !== 2 ||
+    checkoutIntent.operation_type !== 'billing.commercial.checkout.request' ||
+    checkoutIntent.aggregate_ref !== projection.household_id ||
+    checkoutIntent.source_version !== 2 ||
+    checkoutIntent.provider !== 'highlevel' ||
+    checkoutIntent.financialProvider !== 'stripe' ||
+    checkoutIntent.providerMutationByOneTime !== false ||
+    checkoutIntent.householdId !== projection.household_id ||
+    checkoutIntent.planKey !== FAMILY_PLAN.planKey ||
+    checkoutIntent.planAmountCents !== FAMILY_PLAN.amountCents ||
+    checkoutIntent.planCurrency !== FAMILY_PLAN.currency ||
+    checkoutIntent.planInterval !== FAMILY_PLAN.interval ||
+    checkoutIntent.chargeMode !== 'at_hosted_checkout' ||
+    checkoutIntent.firstChargeAt !== checkout.response.projection.firstChargeAt ||
+    checkoutIntent.immediateChargeAmountCents !== 0 ||
+    checkoutIntent.explicitConsentDigest !== null ||
+    checkoutIntent.scope.product !== binding.scope.product ||
+    checkoutIntent.scope.runtime_tier !== binding.scope.runtime_tier ||
+    checkoutIntent.scope.verification_environment_id !==
+      binding.scope.verification_environment_id ||
+    checkoutIntent.idempotency_key !== checkout.idempotency_key ||
+    checkoutIntent.canonical_request_hash !== checkout.canonical_request_hash ||
+    !LOWER_SHA256.test(checkoutIntent.payload_digest) ||
+    checkoutIntent.compensation_for_job_id !== null
+  ) {
+    throw invariant('The Family checkout handoff is not the exact P25 hosted-checkout plan.');
+  }
+}
+
+async function insertCommercialBillingPlan(
+  db: Queryable,
+  scope: FamilySignupScope,
+  plan: FamilySignupCommercialBillingPlan,
+  committedAt: string,
+): Promise<void> {
+  for (const command of [plan.signup, ...(plan.checkout ? [plan.checkout] : [])]) {
+    const outboxJobIds: string[] = [];
+    for (const intent of command.outbox_intents) {
+      await insertExactlyOne(
+        db,
+        `INSERT INTO onetime.job_outbox
+           (job_id, operation_type, aggregate_ref, source_version, provider,
+            product, runtime_tier, verification_environment_id, idempotency_key,
+            canonical_request_hash, payload_ref, payload_digest,
+            compensation_for_job_id, state, version, recovery_generation,
+            dispatch_attempts, lifetime_dispatch_attempts,
+            reconciliation_attempts, lease_generation, unknown_effect,
+            created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,
+                 'not_started',1,0,0,0,0,0,false,$14,$14)`,
+        [
+          intent.job_id,
+          intent.operation_type,
+          intent.aggregate_ref,
+          intent.source_version,
+          intent.provider,
+          scope.product,
+          scope.runtime_tier,
+          scope.verification_environment_id,
+          intent.idempotency_key,
+          intent.canonical_request_hash,
+          intent.payload_ref,
+          intent.payload_digest,
+          intent.compensation_for_job_id,
+          committedAt,
+        ],
+        'P25 hosted-checkout outbox intent',
+      );
+      outboxJobIds.push(intent.job_id);
+    }
+    await insertExactlyOne(
+      db,
+      `INSERT INTO onetime.job_command_idempotency
+         (product, runtime_tier, verification_environment_id, actor_ref,
+          operation_scope, idempotency_key, canonical_request_hash,
+          response_json, resulting_version, outbox_job_ids, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10::text[],$11)`,
+      [
+        scope.product,
+        scope.runtime_tier,
+        scope.verification_environment_id,
+        command.actor_ref,
+        command.operation_scope,
+        command.idempotency_key,
+        command.canonical_request_hash,
+        JSON.stringify(command.response),
+        command.resulting_version,
+        outboxJobIds,
+        committedAt,
+      ],
+      'P25 commercial command receipt',
+    );
   }
 }
 
@@ -748,6 +980,12 @@ function storedResult(value: unknown): FamilySignupResult {
     result.provider_effects_completed_inline !== 0 ||
     !Array.isArray(result.outbox_intent_ids) ||
     result.outbox_intent_ids.some((value) => typeof value !== 'string') ||
+    !['ready', 'readback_required', 'identity_review', 'not_applicable'].includes(
+      result.ghl_handoff_state,
+    ) ||
+    !['queued', 'blocked_identity_review', 'not_applicable'].includes(
+      result.checkout_handoff_state,
+    ) ||
     typeof result.safe_message !== 'string'
   ) {
     throw invariant('The persisted Family-signup result violates its contract.');
@@ -770,6 +1008,7 @@ function assertStoredProjectionBinding(result: FamilySignupResult, row: Row): vo
 function storedOutboxIntent(
   row: Row,
   requestBinding: FamilySignupRequestBinding,
+  projection: NonNullable<FamilySignupResult['projection']>,
 ): FamilySignupOutboxIntent {
   if (
     row.kind !== 'ghl_adult_and_household_sync' ||
@@ -782,7 +1021,9 @@ function storedOutboxIntent(
   ) {
     throw invariant('The persisted Family-signup outbox intent is malformed.');
   }
-  return {
+  const durable = storedJsonObject(row.intent_json, 'intent_json');
+  const handoff = durable.ghl_handoff as FamilySignupGhlHandoff;
+  const intent: FamilySignupOutboxIntent = {
     intent_id: requiredText(row.intent_id, 'intent_id'),
     kind: 'ghl_adult_and_household_sync',
     request_binding: requestBinding,
@@ -796,7 +1037,12 @@ function storedOutboxIntent(
     dispatch_state: row.dispatch_state as 'ready' | 'identity_review',
     preserve_adult_suppression: true,
     local_commit_required: true,
+    ghl_handoff: handoff,
   };
+  if (!validGhlHandoff(handoff, intent, projection)) {
+    throw invariant('The persisted Family-signup GHL handoff is malformed.');
+  }
+  return intent;
 }
 
 function householdLifecycle(row: Row): 'active' | 'expired' | 'archived' | 'inactive' {
@@ -835,6 +1081,19 @@ function requiredText(value: unknown, field: string): string {
     throw invariant(`The persisted ${field} is missing.`);
   }
   return value;
+}
+
+function storedJsonObject(value: unknown, field: string): Record<string, unknown> {
+  let parsed = value;
+  if (typeof value === 'string') {
+    try {
+      parsed = JSON.parse(value) as unknown;
+    } catch {
+      throw invariant(`The persisted ${field} is malformed.`);
+    }
+  }
+  if (!isRecord(parsed)) throw invariant(`The persisted ${field} is malformed.`);
+  return parsed;
 }
 
 function enumText<const Values extends readonly string[]>(

@@ -9,7 +9,11 @@ import type {
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
 import { createApp } from '../../../app.ts';
-import { createFamilySignupRouter } from './router.ts';
+import {
+  createFamilySignupRouter,
+  familySignupFeatureRegistration,
+  type FamilySignupSessionEstablisher,
+} from './router.ts';
 
 const servers: Array<ReturnType<express.Express['listen']>> = [];
 const observedAt = new Date('2026-08-01T12:00:00.000Z');
@@ -23,7 +27,7 @@ afterEach(async () => {
 });
 
 describe('P08 Family-signup route security', () => {
-  it('is mounted by the default web application composition', async () => {
+  it('is mountable through the shared feature registry without changing the central composer', async () => {
     const config = loadConfig({
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
@@ -33,6 +37,7 @@ describe('P08 Family-signup route security', () => {
       config,
       pool: unusedPool(),
       clock: () => new Date(observedAt),
+      featureRegistrations: [familySignupFeatureRegistration],
     });
     const server = await listen(app);
     const address = server.address() as AddressInfo;
@@ -101,7 +106,7 @@ describe('P08 Family-signup route security', () => {
       local_access_state: 'free',
       next_action: 'session_integration_pending',
       session_established: false,
-      provider_projection_state: 'evidence_unavailable_identity_review',
+      provider_projection_state: 'readback_required',
       provider_effects_completed_inline: 0,
     });
     expect(JSON.stringify(acceptedBody)).not.toContain('adult_private');
@@ -172,6 +177,8 @@ describe('P08 Family-signup route security', () => {
       setup_email_required: false,
       provider_effects_completed_inline: 0,
       outbox_intent_ids: [],
+      ghl_handoff_state: 'not_applicable',
+      checkout_handoff_state: 'not_applicable',
       safe_message: 'Sign in or reset your password to continue.',
     }));
     const harness = await startHarness({ submitter: { submit } });
@@ -190,6 +197,77 @@ describe('P08 Family-signup route security', () => {
     });
     expect(body).not.toHaveProperty('disposition');
   });
+
+  it('claims immediate Parent access only after an injected session is middleware-readable', async () => {
+    const sessionEstablisher: FamilySignupSessionEstablisher = {
+      establish: vi.fn(async () => ({
+        established: true as const,
+        browser_session_token: 's'.repeat(48),
+        csrf_token: 'c'.repeat(48),
+        expires_at: '2026-08-31T12:00:00.000Z',
+        middleware_readback_verified: true as const,
+      })),
+    };
+    const harness = await startHarness({
+      submitter: { submit: vi.fn(async () => createdResult()) },
+      sessionEstablisher,
+    });
+    const bootstrap = await getBootstrap(harness.baseUrl);
+    const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
+      origin: 'https://join.onetimeonetime.com',
+    });
+    const body = (await response.json()) as Record<string, unknown>;
+
+    expect(response.status).toBe(201);
+    expect(body).toMatchObject({
+      code: 'FAMILY_SIGNUP_COMPLETE',
+      next_action: 'parent_overview',
+      session_established: true,
+      continue_to: '/app/parent',
+      csrf_token: 'c'.repeat(48),
+    });
+    expect(response.headers.get('set-cookie')).toContain('__Host-onetime-session=');
+    expect(sessionEstablisher.establish).toHaveBeenCalledWith({
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: 'isolated_staging',
+        verification_environment_id: 'ci',
+      },
+      adult_id: 'adult_private',
+      human_account_id: 'account_private',
+      household_id: 'household_private',
+      active_role: 'parent',
+      security_version: 1,
+      now: observedAt,
+    });
+  });
+
+  it('returns a truthful queued hosted-checkout handoff without a provider URL or charge claim', async () => {
+    const harness = await startHarness({
+      submitter: { submit: vi.fn(async () => checkoutResult()) },
+    });
+    const bootstrap = await getBootstrap(harness.baseUrl);
+    const response = await post(harness.baseUrl, command(bootstrap.idempotencyKey), bootstrap, {
+      origin: 'https://join.onetimeonetime.com',
+    });
+    const body = (await response.json()) as Record<string, unknown>;
+
+    expect(response.status).toBe(202);
+    expect(body).toMatchObject({
+      code: 'SIGNUP_COMMITTED_CHECKOUT_HANDOFF_QUEUED',
+      next_action: 'checkout_handoff_queued',
+      checkout_handoff_state: 'queued',
+      local_access_state: 'inactive',
+      session_established: false,
+      checkout_provider: 'highlevel',
+      financial_provider: 'stripe',
+      direct_stripe_mutation_by_one_time: false,
+      provider_effects_completed_inline: 0,
+    });
+    expect(JSON.stringify(body)).not.toContain('http');
+    expect(JSON.stringify(body)).not.toContain('checkout_url');
+    expect(JSON.stringify(body)).not.toContain('redirect_handle');
+  });
 });
 
 async function startHarness(input: {
@@ -201,13 +279,13 @@ async function startHarness(input: {
     }) => Promise<FamilySignupResult>;
   };
   productionReadOnly?: boolean;
+  sessionEstablisher?: FamilySignupSessionEstablisher;
 }) {
   const config = input.productionReadOnly
     ? loadConfig({
         NODE_ENV: 'production',
         PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
         ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
-        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_read_only',
         AUTH_CSRF_SECRET: 'production-family-signup-route-csrf-secret',
         PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'production-family-signup-route-payload-key',
       })
@@ -225,6 +303,7 @@ async function startHarness(input: {
       pool: unusedPool(),
       clock: () => new Date(observedAt),
       submitter: input.submitter,
+      ...(input.sessionEstablisher ? { sessionEstablisher: input.sessionEstablisher } : {}),
       rateLimit: false,
     }),
   );
@@ -319,7 +398,37 @@ function createdResult(): FamilySignupResult {
     setup_email_required: false,
     provider_effects_completed_inline: 0,
     outbox_intent_ids: ['outbox_private'],
+    ghl_handoff_state: 'readback_required',
+    checkout_handoff_state: 'not_applicable',
     safe_message: 'Your family account is ready.',
+  };
+}
+
+function checkoutResult(): FamilySignupResult {
+  return {
+    disposition: 'created',
+    projection: {
+      adult_id: 'adult_private',
+      human_account_id: 'account_private',
+      household_id: 'household_private',
+      normalized_email: 'ari@example.com',
+      access_branch: 'inactive_checkout',
+      access_state: 'inactive',
+      seat_limit: 3,
+      active_seat_count: 0,
+      free_access_expires_at: null,
+      checkout_required: true,
+      checkout_blocked_by_identity_review: false,
+      rolling_trial_granted: false,
+      card_collected: false,
+    },
+    next_action: 'checkout',
+    setup_email_required: false,
+    provider_effects_completed_inline: 0,
+    outbox_intent_ids: ['outbox_private'],
+    ghl_handoff_state: 'readback_required',
+    checkout_handoff_state: 'queued',
+    safe_message: 'Your account is ready. Continue to checkout.',
   };
 }
 

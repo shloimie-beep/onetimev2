@@ -1,0 +1,53 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P08-auth-household-002
+task_id: P08
+kind: auth_household_integration
+requirement_ids:
+  - OTV2-SIGNUP-177
+  - OTV2-SIGNUP-213
+  - OTV2-SIGNUP-228
+acceptance_case_ids:
+  - OTV2-SIGNUP-177-AC01
+  - OTV2-SIGNUP-213-AC01
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+rationale: >-
+  Current F03 login/session middleware reads legacy
+  onetime.account_users/onetime.user_sessions, while P08 correctly persists
+  v2.1 HumanAccounts and credentials and migration 2235 defines
+  onetime.v21_adult_sessions. No callable v2.1 session writer/resolver is
+  available to P08. Separately, F04 listOwnedHouseholdContexts selects
+  v21_households.display_name although migration 2235 defines no such column.
+  Both shared defects prevent a truthful immediately usable Parent context and
+  are outside P08 ownership.
+desired_semantic_change: >-
+  Complete one canonical v2.1 adult-session path from the freshly committed
+  credential/account/Parent membership/household to the active authenticated
+  middleware, and establish a real schema-backed safe household display label.
+  The same resolver that authorizes /app/parent must read the newly issued
+  token, active Parent role, exact owned household, security version, and
+  canonical access state.
+proposed_symbols_routes_keys_or_dependencies:
+  - Add an F03/F04 repository/service that atomically creates onetime.v21_adult_sessions with opaque access/refresh token digests, active_role=parent, the exact active_household_id, security_version=1, and the locked Parent idle/absolute expiries.
+  - Return raw browser session material only to the server adapter; persist only digests and never log, serialize into receipts, or place tokens in URLs.
+  - Update the canonical authenticated middleware to read AUTH_SESSION_COOKIE (__Host-onetime-session), resolve the v2.1 session and account security version, reject expired/revoked/stale sessions, and derive owned household scope server-side.
+  - Implement FamilySignupSessionEstablisher for P08 and set middleware_readback_verified=true only when the issued token uses the same repository/resolver contract as authenticated Parent routes.
+  - Preserve the legacy session path only behind an explicit compatibility boundary; never claim a P08 v2.1 signup is signed in through legacy account_users.
+  - Correct listOwnedHouseholdContexts so it never reads a nonexistent v21_households.display_name. Define one canonical persisted or deterministically derived safe household label in the F04 contract/schema and use the same source for creation and readback.
+  - Add a migration only through F02 if a new household label column is the steward-approved canonical remedy; do not edit applied migration 2235.
+  - Add integration tests that submit a pre-expiry Family signup, read the resulting cookie through the real auth middleware, resolve /app/parent to the exact household/free access, and prove wrong-household, stale-security-version, inactive-access, expired, and revoked cases fail closed.
+  - Add the equivalent post-expiry readback proving the account and household exist with inactive access and only the inactive-household allowlist/checkout continuation is available.
+compatibility_assumptions:
+  - P08 persists v21_adult_identities, v21_human_accounts, Parent membership, v21_households, v21_adult_credentials, and canonical access transition in one transaction.
+  - ADULT_SESSION_POLICY and AUTH_SESSION_COOKIE remain the shared F03/F04 contracts.
+  - The household label remedy must preserve existing F04 SafeHouseholdContext consumers without inventing a provider-owned name.
+verification_performed:
+  - P08 route proves session_established remains false without the injected adapter and becomes true only for an adapter result carrying middleware_readback_verified=true.
+  - Read-only schema inspection reproduced the missing v21_households.display_name column and legacy/v2.1 session split.
+conflicts_or_risks:
+  - Do not weaken the route by accepting adult_id, household_id, role, or security_version from the browser.
+  - Do not store a raw access/refresh token or expose it in a response body.
+  - Do not label a session established merely because a row was inserted; the active middleware must be able to authenticate it.
+  - Do not guess a household label column, rewrite migration 2235, or silently return an empty label.
+contains_secret_or_private_data: false

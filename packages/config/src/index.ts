@@ -56,27 +56,8 @@ const OT89_KNOWN_TEST_VALUES = new Set([
 ]);
 
 const deliveryEnvironmentSchema = z.enum(['local', 'test', 'isolated_staging', 'production']);
-const verificationEnvironmentSchema = z.enum([
-  'ci',
-  'provider_sandbox',
-  'persistent_staging',
-  'production_read_only',
-  'production_operator_canary',
-  'production_broad',
-]);
 
 export type OneTimeRuntimeEnvironment = z.infer<typeof deliveryEnvironmentSchema>;
-export type OneTimeVerificationEnvironment = z.infer<typeof verificationEnvironmentSchema>;
-export type OneTimeRuntimeTier = 'isolated_staging' | 'production';
-
-const VERIFICATION_RUNTIME_TIER = {
-  ci: 'isolated_staging',
-  provider_sandbox: 'isolated_staging',
-  persistent_staging: 'isolated_staging',
-  production_read_only: 'production',
-  production_operator_canary: 'production',
-  production_broad: 'production',
-} as const satisfies Record<OneTimeVerificationEnvironment, OneTimeRuntimeTier>;
 
 export const CURRENT_APPLICATION_ROLES = ['admin', 'parent', 'student'] as const;
 export type CurrentApplicationRole = (typeof CURRENT_APPLICATION_ROLES)[number];
@@ -117,14 +98,6 @@ function defaultDeliveryEnvironment(
   if (nodeEnv === 'test') return 'test';
   if (nodeEnv === 'production') return 'production';
   return 'local';
-}
-
-function defaultVerificationEnvironment(
-  runtime: OneTimeRuntimeEnvironment,
-): OneTimeVerificationEnvironment {
-  if (runtime === 'production') return 'production_read_only';
-  if (runtime === 'isolated_staging') return 'persistent_staging';
-  return 'ci';
 }
 
 export function classifyRuntime(input: {
@@ -209,7 +182,6 @@ const envSchema = z.object({
   ONE_TIME_RUNTIME_ENVIRONMENT: z
     .enum(['local', 'test', 'isolated_staging', 'production'])
     .optional(),
-  ONE_TIME_VERIFICATION_ENVIRONMENT_ID: verificationEnvironmentSchema.optional(),
   DELIVERY_PROVIDER_MODE: z.enum(['sink', 'mock', 'provider']).default('sink'),
   DELIVERY_PROVIDER_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
   DELIVERY_STAGING_CANARY_PROOF: optionalTrimmedString(8, 160),
@@ -359,16 +331,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
 
   const oneTimeRuntimeEnvironment = runtime.environment;
-  const oneTimeRuntimeTier: OneTimeRuntimeTier =
-    oneTimeRuntimeEnvironment === 'production' ? 'production' : 'isolated_staging';
-  const oneTimeVerificationEnvironmentId =
-    parsed.ONE_TIME_VERIFICATION_ENVIRONMENT_ID ??
-    defaultVerificationEnvironment(oneTimeRuntimeEnvironment);
-  if (VERIFICATION_RUNTIME_TIER[oneTimeVerificationEnvironmentId] !== oneTimeRuntimeTier) {
-    throw new Error(
-      'ONE_TIME_VERIFICATION_ENVIRONMENT_ID does not belong to the configured One Time runtime tier.',
-    );
-  }
   if (
     parsed.ONE_TIME_RABBI_GHL_REPLY_MODE === 'synthetic' &&
     !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
@@ -601,9 +563,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     lifecycleDeliveryKeyConfigured: Boolean(parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY),
     outboxTransportMode: parsed.OUTBOX_TRANSPORT_MODE,
     oneTimeRuntimeEnvironment,
-    oneTimeRuntimeTier,
-    oneTimeVerificationEnvironmentId,
-    oneTimeVerificationWritesAllowed: oneTimeVerificationEnvironmentId !== 'production_read_only',
     deliveryProviderMode: parsed.DELIVERY_PROVIDER_MODE,
     deliveryProviderAuthorizationId: parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID,
     deliveryStagingCanaryProof: parsed.DELIVERY_STAGING_CANARY_PROOF,

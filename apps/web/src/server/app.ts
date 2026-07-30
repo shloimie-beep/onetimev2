@@ -280,9 +280,6 @@ import {
   installServerFeatureRouters,
   type ServerFeatureRegistration,
 } from './features/registry/index.ts';
-import { familySignupFeatureRegistration } from './features/signup/family/router.ts';
-
-const DEFAULT_SERVER_FEATURE_REGISTRATIONS = [familySignupFeatureRegistration] as const;
 
 type AppDeps = {
   config: AppConfig;
@@ -368,7 +365,7 @@ export function createApp({
   contentFactoryJobNotifier,
   zoomAdminProvider,
   zoomClassOccurrenceProvider,
-  featureRegistrations = DEFAULT_SERVER_FEATURE_REGISTRATIONS,
+  featureRegistrations = [],
 }: AppDeps) {
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);

@@ -75,6 +75,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
       'family_signup_consents',
       'family_signup_receipts',
       'family_signup_outbox',
+      'job_command_idempotency',
     ]) {
       expect(harness.calls.some(({ text }) => text.includes(`INTO onetime.${table}`))).toBe(true);
     }
@@ -97,7 +98,7 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     const outbox = harness.calls.find(({ text }) =>
       text.includes('INTO onetime.family_signup_outbox'),
     );
-    expect(outbox?.values).toContain('identity_review');
+    expect(outbox?.values).toContain('ready');
     expect(outbox?.values.some((value) => String(value).includes('evidence_unavailable'))).toBe(
       true,
     );
@@ -105,6 +106,64 @@ describe('P08 PostgreSQL Family-signup repository', () => {
     expect(
       outbox?.values.some((value) => String(value).includes('verified_contact_ref_hash')),
     ).toBe(true);
+    expect(outbox?.values.some((value) => String(value).includes('"kind":"student"'))).toBe(false);
+    expect(
+      outbox?.values.some((value) => String(value).includes('"provider_effect_authorized":false')),
+    ).toBe(true);
+    expect(harness.calls.some(({ text }) => text.includes('INTO onetime.job_outbox'))).toBe(false);
+  });
+
+  it('persists the exact P25 standard hosted-checkout handoff at the expiry boundary', async () => {
+    const harness = recordingPool();
+    const service = createFamilySignupService({
+      repository: createPostgresFamilySignupRepository(harness.pool),
+      hashPassword: async () => passwordHash,
+      fingerprintPasswordForIdempotency: async () => 'c'.repeat(64),
+      allocateIds: () => ({
+        adult_id: 'adult_1',
+        human_account_id: 'account_1',
+        household_id: 'household_1',
+      }),
+    });
+
+    const result = await service.submit({
+      scope,
+      command: command(),
+      now: new Date('2026-09-13T16:24:00.000Z'),
+    });
+    expect(result).toMatchObject({
+      next_action: 'checkout',
+      checkout_handoff_state: 'queued',
+      provider_effects_completed_inline: 0,
+      projection: {
+        access_state: 'inactive',
+        checkout_required: true,
+        rolling_trial_granted: false,
+        card_collected: false,
+      },
+    });
+
+    const commercialCommands = harness.calls.filter(({ text }) =>
+      text.includes('INTO onetime.job_command_idempotency'),
+    );
+    expect(commercialCommands).toHaveLength(2);
+    expect(commercialCommands[0]?.values).toContain('billing.commercial.signup:household_1');
+    expect(commercialCommands[1]?.values).toContain(
+      'billing.commercial.request_hosted_checkout:household_1',
+    );
+    const hostedCheckout = harness.calls.find(({ text }) =>
+      text.includes('INTO onetime.job_outbox'),
+    );
+    expect(hostedCheckout?.values).toEqual(
+      expect.arrayContaining(['billing.commercial.checkout.request', 'highlevel', 'household_1']),
+    );
+    const persistedResponse = commercialCommands[1]?.values.find(
+      (value) => typeof value === 'string' && value.includes('"financialProvider":"stripe"'),
+    );
+    expect(persistedResponse).toEqual(expect.stringContaining('"providerMutationByOneTime":false'));
+    expect(persistedResponse).toEqual(expect.stringContaining('"chargeMode":"at_hosted_checkout"'));
+    expect(JSON.stringify(harness.calls)).not.toContain('checkout_url');
+    expect(JSON.stringify(harness.calls)).not.toContain('4242');
   });
 
   it('rolls back the full transaction when any required insert is not singular', async () => {

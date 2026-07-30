@@ -68,6 +68,14 @@ describe('P08 family signup policy', () => {
     });
     expect(before.result.next_action).toBe('signed_in');
     expect(before.session_write_required).toBe(true);
+    expect(before.commercial_billing).toMatchObject({
+      signup: {
+        resulting_version: 1,
+        response: { projection: { accessState: 'free', subscriptionState: 'none' } },
+        outbox_intents: [],
+      },
+      checkout: null,
+    });
 
     for (const instant of ['2026-09-13T16:24:00.000Z', '2026-09-13T16:24:01.000Z']) {
       const after = planFamilySignup(input(instant));
@@ -78,6 +86,24 @@ describe('P08 family signup policy', () => {
         free_access_expires_at: null,
       });
       expect(after.result.next_action).toBe('checkout');
+      expect(after.result.checkout_handoff_state).toBe('queued');
+      expect(after.commercial_billing?.checkout).toMatchObject({
+        resulting_version: 2,
+        response: {
+          projection: {
+            accessState: 'inactive',
+            subscriptionState: 'checkout_requested',
+          },
+          intent: {
+            operation_type: 'billing.commercial.checkout.request',
+            provider: 'highlevel',
+            financialProvider: 'stripe',
+            providerMutationByOneTime: false,
+            chargeMode: 'at_hosted_checkout',
+            immediateChargeAmountCents: 0,
+          },
+        },
+      });
     }
   });
 
@@ -98,6 +124,8 @@ describe('P08 family signup policy', () => {
         setup_email_required: false,
         provider_effects_completed_inline: 0,
         outbox_intent_ids: [],
+        ghl_handoff_state: 'not_applicable',
+        checkout_handoff_state: 'not_applicable',
         safe_message: 'Sign in or reset your password to continue.',
       });
       expect(plan).toMatchObject({
@@ -143,6 +171,27 @@ describe('P08 family signup policy', () => {
       general_marketing: false,
       parent_newsletter: true,
     });
+    expect(plan.outbox_intents[0]?.ghl_handoff).toMatchObject({
+      target: 'p27_ghl_identity_sync',
+      target_contract_version: '1.0.0',
+      local_commit_state: 'committed',
+      subject: {
+        kind: 'adult',
+        adult_id: 'adult_1',
+        normalized_email_hash: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      },
+      household: {
+        household_id: 'household_1',
+        owner_adult_id: 'adult_1',
+        classification: 'family',
+        access_projection: 'free',
+      },
+      provider_effect_authorized: false,
+      message_delivery_authorized: false,
+      billing_effect_authorized: false,
+      student_contact_prohibited: true,
+    });
+    expect(JSON.stringify(plan.outbox_intents[0])).not.toContain('student_id');
   });
 
   it('quarantines GHL ambiguity and blocks only post-expiry Checkout', () => {
@@ -181,7 +230,7 @@ describe('P08 family signup policy', () => {
     });
   });
 
-  it('quarantines unavailable GHL evidence without fabricating an unlinked proof', () => {
+  it('requires provider readback without converting absent evidence into identity ambiguity', () => {
     const before = input('2026-09-13T16:23:59.000Z');
     before.ghl_evidence = {
       status: 'evidence_unavailable',
@@ -189,18 +238,29 @@ describe('P08 family signup policy', () => {
     };
     const free = planFamilySignup(before);
     expect(free).toMatchObject({
-      ghl_identity_state: 'identity_review',
+      ghl_identity_state: 'readback_required',
       ghl_contact_ref_hash: null,
       ghl_evidence_status: 'evidence_unavailable',
-      ghl_sync_quarantined: true,
+      ghl_sync_quarantined: false,
       result: {
         next_action: 'signed_in',
+        ghl_handoff_state: 'readback_required',
+        checkout_handoff_state: 'not_applicable',
         projection: {
           access_state: 'free',
           checkout_required: false,
         },
       },
-      outbox_intents: [{ dispatch_state: 'identity_review' }],
+      outbox_intents: [
+        {
+          dispatch_state: 'ready',
+          ghl_handoff: {
+            provider_readback_required: true,
+            provider_effect_authorized: false,
+            student_contact_prohibited: true,
+          },
+        },
+      ],
     });
 
     const after = input('2026-09-13T16:24:00.000Z');
@@ -209,13 +269,26 @@ describe('P08 family signup policy', () => {
       safe_reason: 'evidence_unavailable',
     };
     expect(planFamilySignup(after)).toMatchObject({
-      ghl_identity_state: 'identity_review',
+      ghl_identity_state: 'readback_required',
       ghl_evidence_status: 'evidence_unavailable',
       result: {
-        next_action: 'identity_review',
+        next_action: 'checkout',
+        ghl_handoff_state: 'readback_required',
+        checkout_handoff_state: 'queued',
         projection: {
-          access_branch: 'inactive_identity_review',
-          checkout_required: false,
+          access_branch: 'inactive_checkout',
+          checkout_required: true,
+        },
+      },
+      commercial_billing: {
+        checkout: {
+          outbox_intents: [
+            {
+              provider: 'highlevel',
+              financialProvider: 'stripe',
+              providerMutationByOneTime: false,
+            },
+          ],
         },
       },
     });

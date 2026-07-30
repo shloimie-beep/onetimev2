@@ -7,11 +7,13 @@ import express, {
 } from 'express';
 import { z, ZodError } from 'zod';
 import type { AppConfig } from '../../../../../../../packages/config/src/index.ts';
+import { ADULT_SESSION_POLICY } from '../../../../../../../packages/contracts/src/accounts/v21-household-identity.ts';
 import type {
   FamilySignupCommand,
   FamilySignupResult,
   FamilySignupScope,
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
+import { VERIFICATION_RUNTIME_TIER } from '../../../../../../../packages/contracts/src/state/index.ts';
 import type { DbPool } from '../../../../../../../packages/db/src/index.ts';
 import { hashAuthPassword } from '../../../../../../../packages/domain/src/auth/policy.ts';
 import { FamilySignupError } from '../../../../../../../packages/domain/src/signup/family/index.ts';
@@ -24,6 +26,7 @@ import {
   defineServerFeature,
   SERVER_FEATURE_REGISTRY_CONTRACT_VERSION,
 } from '../../registry/index.ts';
+import { authReturnLocation, sessionCookieHeader } from '../../auth/http-security.ts';
 import {
   createPostgresFamilySignupRepository,
   PostgresFamilySignupRepositoryError,
@@ -57,7 +60,7 @@ const familySignupPayloadSchema = z
   })
   .strict();
 
-type FamilySignupSubmitter = {
+export type FamilySignupSubmitter = {
   submit(input: {
     scope: FamilySignupScope;
     command: FamilySignupCommand;
@@ -65,11 +68,38 @@ type FamilySignupSubmitter = {
   }): Promise<FamilySignupResult>;
 };
 
-type FamilySignupRouterInput = {
+export type FamilySignupSessionEstablishment =
+  | {
+      established: true;
+      browser_session_token: string;
+      csrf_token: string;
+      expires_at: string;
+      middleware_readback_verified: true;
+    }
+  | {
+      established: false;
+      safe_reason: 'integration_unavailable' | 'session_creation_failed';
+    };
+
+export interface FamilySignupSessionEstablisher {
+  establish(input: {
+    scope: FamilySignupScope;
+    adult_id: string;
+    human_account_id: string;
+    household_id: string;
+    active_role: 'parent';
+    security_version: 1;
+    now: Date;
+  }): Promise<FamilySignupSessionEstablishment>;
+}
+
+export type FamilySignupRouterInput = {
   config: AppConfig;
   pool: DbPool;
+  runtimeBinding?: FamilySignupScope | undefined;
   clock?: (() => Date) | undefined;
   submitter?: FamilySignupSubmitter | undefined;
+  sessionEstablisher?: FamilySignupSessionEstablisher | undefined;
   rateLimit?: RequestHandler | false | undefined;
   randomKey?: (() => string) | undefined;
 };
@@ -79,6 +109,8 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
   const now = input.clock ?? (() => new Date());
   const randomKey = input.randomKey ?? (() => randomBytes(32).toString('base64url'));
   const submitter = input.submitter ?? defaultSubmitter(input.config, input.pool);
+  const scope = input.runtimeBinding ?? resolveFamilySignupScope(input.config);
+  const writesAllowed = scope.verification_environment_id !== 'production_read_only';
   const mutationRateLimit =
     input.rateLimit === false
       ? (_req: Request, _res: Response, next: NextFunction) => next()
@@ -112,14 +144,14 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
       idempotency_key: idempotencyKey,
       csrf_token: csrfToken,
       expires_at: new Date(observedAt.getTime() + CSRF_TTL_MS).toISOString(),
-      writes_allowed: input.config.oneTimeVerificationWritesAllowed,
+      writes_allowed: writesAllowed,
     });
   });
 
   router.post(
     '/',
     (req: RequestWithTrace, res, next) => {
-      if (!input.config.oneTimeVerificationWritesAllowed) {
+      if (!writesAllowed) {
         res
           .status(403)
           .json(
@@ -177,12 +209,19 @@ export function createFamilySignupRouter(input: FamilySignupRouterInput): expres
     async (req: RequestWithTrace, res) => {
       try {
         const command = res.locals.familySignupCommand as FamilySignupCommand;
+        const submittedAt = now();
         const result = await submitter.submit({
-          scope: signupScope(input.config),
+          scope,
           command,
-          now: now(),
+          now: submittedAt,
         });
-        sendSafeResult(res, result);
+        const session = await establishFamilySignupSession(
+          input.sessionEstablisher,
+          scope,
+          result,
+          submittedAt,
+        );
+        sendSafeResult(res, result, session, submittedAt);
       } catch (error) {
         if (error instanceof FamilySignupError) {
           const conflict = error.code === 'idempotency_conflict';
@@ -254,15 +293,93 @@ function defaultSubmitter(config: AppConfig, pool: DbPool): FamilySignupSubmitte
   });
 }
 
-function signupScope(config: AppConfig): FamilySignupScope {
+export function resolveFamilySignupScope(config: AppConfig): FamilySignupScope {
+  const fallback =
+    config.oneTimeRuntimeEnvironment === 'production'
+      ? ({
+          runtime_tier: 'production',
+          verification_environment_id: 'production_read_only',
+        } as const)
+      : config.oneTimeRuntimeEnvironment === 'isolated_staging'
+        ? ({
+            runtime_tier: 'isolated_staging',
+            verification_environment_id: 'persistent_staging',
+          } as const)
+        : ({
+            runtime_tier: 'isolated_staging',
+            verification_environment_id: 'ci',
+          } as const);
+  const centrallyBound = config as AppConfig & {
+    oneTimeRuntimeTier?: unknown;
+    oneTimeVerificationEnvironmentId?: unknown;
+  };
+  const runtimeTier = centrallyBound.oneTimeRuntimeTier ?? fallback.runtime_tier;
+  const verificationEnvironmentId =
+    centrallyBound.oneTimeVerificationEnvironmentId ?? fallback.verification_environment_id;
+  if (
+    (runtimeTier !== 'isolated_staging' && runtimeTier !== 'production') ||
+    typeof verificationEnvironmentId !== 'string' ||
+    !Object.hasOwn(VERIFICATION_RUNTIME_TIER, verificationEnvironmentId) ||
+    VERIFICATION_RUNTIME_TIER[
+      verificationEnvironmentId as keyof typeof VERIFICATION_RUNTIME_TIER
+    ] !== runtimeTier
+  ) {
+    throw new Error('Family signup requires an exact verification-environment runtime binding.');
+  }
   return {
     product: 'one_time_mishnayos',
-    runtime_tier: config.oneTimeRuntimeTier,
-    verification_environment_id: config.oneTimeVerificationEnvironmentId,
+    runtime_tier: runtimeTier,
+    verification_environment_id:
+      verificationEnvironmentId as FamilySignupScope['verification_environment_id'],
   };
 }
 
-function sendSafeResult(res: Response, result: FamilySignupResult): void {
+async function establishFamilySignupSession(
+  establisher: FamilySignupSessionEstablisher | undefined,
+  scope: FamilySignupScope,
+  result: FamilySignupResult,
+  now: Date,
+): Promise<FamilySignupSessionEstablishment> {
+  if (!establisher || !result.projection) {
+    return { established: false, safe_reason: 'integration_unavailable' };
+  }
+  try {
+    const session = await establisher.establish({
+      scope,
+      adult_id: result.projection.adult_id,
+      human_account_id: result.projection.human_account_id,
+      household_id: result.projection.household_id,
+      active_role: 'parent',
+      security_version: 1,
+      now,
+    });
+    if (!session.established) return session;
+    const expiresAt = Date.parse(session.expires_at);
+    const maximumExpiry = now.getTime() + ADULT_SESSION_POLICY.parent.absoluteMilliseconds + 60_000;
+    if (
+      session.middleware_readback_verified !== true ||
+      session.browser_session_token.length < 32 ||
+      session.browser_session_token.length > 4096 ||
+      session.csrf_token.length < 32 ||
+      session.csrf_token.length > 4096 ||
+      !Number.isFinite(expiresAt) ||
+      expiresAt <= now.getTime() ||
+      expiresAt > maximumExpiry
+    ) {
+      return { established: false, safe_reason: 'session_creation_failed' };
+    }
+    return session;
+  } catch {
+    return { established: false, safe_reason: 'session_creation_failed' };
+  }
+}
+
+function sendSafeResult(
+  res: Response,
+  result: FamilySignupResult,
+  session: FamilySignupSessionEstablishment,
+  now: Date,
+): void {
   if (result.projection === null) {
     res.status(200).json({
       success: true,
@@ -275,6 +392,24 @@ function sendSafeResult(res: Response, result: FamilySignupResult): void {
     return;
   }
 
+  const sessionFields = session.established
+    ? {
+        session_established: true as const,
+        csrf_token: session.csrf_token,
+        session_expires_at: session.expires_at,
+      }
+    : {
+        session_established: false as const,
+      };
+  if (session.established) {
+    res.setHeader(
+      'Set-Cookie',
+      sessionCookieHeader({
+        token: session.browser_session_token,
+        max_age_seconds: Math.floor((Date.parse(session.expires_at) - now.getTime()) / 1000),
+      }),
+    );
+  }
   const common = {
     success: true,
     disposition: result.disposition,
@@ -282,11 +417,22 @@ function sendSafeResult(res: Response, result: FamilySignupResult): void {
     local_access_state: result.projection.access_state,
     free_access_expires_at: result.projection.free_access_expires_at,
     checkout_required: result.projection.checkout_required,
-    provider_projection_state: 'evidence_unavailable_identity_review',
+    checkout_handoff_state: result.checkout_handoff_state,
+    provider_projection_state: result.ghl_handoff_state,
     provider_effects_completed_inline: 0,
-    session_established: false,
+    ...sessionFields,
   } as const;
   if (result.next_action === 'signed_in') {
+    if (session.established) {
+      res.status(result.disposition === 'created' ? 201 : 200).json({
+        ...common,
+        code: 'FAMILY_SIGNUP_COMPLETE',
+        next_action: 'parent_overview',
+        continue_to: authReturnLocation({ role: 'parent' }),
+        message: 'Your family account and free access are ready.',
+      });
+      return;
+    }
     res.status(202).json({
       ...common,
       code: 'SIGNUP_COMMITTED_SESSION_UNAVAILABLE',
@@ -308,9 +454,13 @@ function sendSafeResult(res: Response, result: FamilySignupResult): void {
   }
   res.status(202).json({
     ...common,
-    code: 'SIGNUP_COMMITTED_CHECKOUT_UNAVAILABLE',
-    next_action: 'checkout_integration_pending',
-    message: 'Your inactive account was saved. Hosted checkout is not available yet.',
+    code: 'SIGNUP_COMMITTED_CHECKOUT_HANDOFF_QUEUED',
+    next_action: 'checkout_handoff_queued',
+    checkout_provider: 'highlevel',
+    financial_provider: 'stripe',
+    direct_stripe_mutation_by_one_time: false,
+    message:
+      'Your inactive account was saved. The standard hosted-checkout handoff is queued; no charge was made by this form.',
   });
 }
 
