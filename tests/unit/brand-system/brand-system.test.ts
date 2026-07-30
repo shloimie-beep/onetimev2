@@ -21,6 +21,7 @@ describe('One Time brand system manifest', () => {
     expect(manifest.tokens.color.background).toBe(oneTimeTokens.color.background);
     expect(manifest.tokens.color.action).toBe(oneTimeTokens.color.action);
     expect(manifest.tokens.typography.display).toBe(oneTimeTokens.typography.display);
+    expect(manifest.tokens.typography.campaign).toBe(oneTimeTokens.typography.campaign);
     expect(manifest.tokens.motion.standard).toBe(oneTimeTokens.motion.standard);
     expect(manifest.tokens.layers.dialog).toBe(oneTimeTokens.layers.dialog);
     expect(manifest.tokens.density.default).toBe(oneTimeTokens.density.default);

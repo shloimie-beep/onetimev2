@@ -323,9 +323,9 @@ img {
   display: grid;
   gap: 0;
   margin: 0 auto;
-  font-family: var(--font-body);
+  font-family: var(--font-campaign);
   font-size: clamp(3.5rem, 5.65vw, 5.35rem);
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.055em;
   line-height: 0.88;
   text-wrap: balance;
@@ -333,7 +333,7 @@ img {
 }
 
 .hero h1 span:last-child {
-  color: var(--ot-v21-yellow);
+  color: var(--color-yellow);
 }
 
 .hero h1 span {
@@ -365,7 +365,7 @@ img {
 .schedule {
   max-width: 520px;
   margin: 12px auto 0;
-  color: var(--ot-v21-yellow);
+  color: var(--color-yellow);
   font-size: clamp(1rem, 1.4vw, 1.16rem);
   font-weight: 800;
   line-height: 1.4;
@@ -378,7 +378,7 @@ img {
   margin-top: 20px;
   padding-inline: 32px;
   color: #090909;
-  background: var(--ot-v21-yellow);
+  background: var(--color-yellow);
   font-size: 1rem;
   letter-spacing: 0.025em;
   box-shadow:

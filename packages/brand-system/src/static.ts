@@ -140,6 +140,7 @@ export function renderPageShell({
   <meta name="theme-color" content="#050505">
   ${iconMetadata}
   <link rel="preload" href="/assets/fonts/dm-serif-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="${brandAssetPaths.campaignFont}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="${stylesheet}">
 </head>
 <body>

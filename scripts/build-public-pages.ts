@@ -237,7 +237,7 @@ function landingPage() {
       <h1 id="landing-hero-heading" aria-label="${escapeHtml(landingContent.hero.titleLines.join(' '))}">${landingContent.hero.titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
       <p class="hero-supporting">${escapeHtml(landingContent.hero.supporting)}</p>
       <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
-      <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}">${escapeHtml(landingContent.hero.cta.label)}</a>
+      <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-event="${escapeHtml(landingContent.hero.cta.analyticsEvent)}" data-ot-analytics-destination="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-placement="${escapeHtml(landingContent.hero.cta.analyticsPlacement)}">${escapeHtml(landingContent.hero.cta.label)}</a>
       <p class="hero-note">${escapeHtml(landingContent.hero.note)}</p>
     </div>
   </section>

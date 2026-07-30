@@ -21,8 +21,10 @@ export const landingContent = {
     cta: {
       label: 'JOIN FREE',
       href: '/signup',
+      analyticsEvent: 'landing.signup.cta.clicked',
+      analyticsPlacement: 'hero',
     },
-    note: 'No credit card • Up to three learners per family.',
+    note: 'No credit card • Up to three learners per family',
     // Retained for domain consumers that still read the pre-v2.1 hero contract.
     kickerLines: ['WORLDWIDE MISHNAH LEARNING', 'LIVE FROM ERETZ YISRAEL'],
     heading: 'Give your son a love for learning Torah.',

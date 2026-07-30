@@ -124,14 +124,31 @@ test('landing preserves exact receive structure and asset assignments', async ({
   ).toBeVisible();
   await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE ONLINE + ON-DEMAND');
   await expect(page.locator('.hero h1 span')).toHaveText(['MISHNAYOS', 'MADE MEMORABLE']);
+  await expect(page.locator('.hero h1')).toHaveCSS('font-family', /Montserrat/);
+  await expect(page.locator('.hero h1')).toHaveCSS('font-weight', '800');
+  await expect(page.locator('.hero h1 span').last()).toHaveCSS('color', 'rgb(255, 210, 31)');
   await expect(page.locator('.hero-supporting')).toHaveText(
     'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
   );
   await expect(page.locator('.hero .schedule')).toHaveText('Daily at 7:00 PM Israel time');
+  await expect(page.locator('.hero .schedule')).toHaveCSS('color', 'rgb(255, 210, 31)');
   await expect(page.locator('.hero .hero-cta')).toHaveText('JOIN FREE');
   await expect(page.locator('.hero .hero-cta')).toHaveAttribute('href', '/signup');
+  await expect(page.locator('.hero .hero-cta')).toHaveCSS('background-color', 'rgb(255, 210, 31)');
+  await expect(page.locator('.hero .hero-cta')).toHaveAttribute(
+    'data-ot-analytics-event',
+    'landing.signup.cta.clicked',
+  );
+  await expect(page.locator('.hero .hero-cta')).toHaveAttribute(
+    'data-ot-analytics-destination',
+    '/signup',
+  );
+  await expect(page.locator('.hero .hero-cta')).toHaveAttribute(
+    'data-ot-analytics-placement',
+    'hero',
+  );
   await expect(page.locator('.hero-note')).toHaveText(
-    'No credit card • Up to three learners per family.',
+    'No credit card • Up to three learners per family',
   );
   await expect(page.locator('.hero')).toHaveCSS('background-image', /landing-hero-desktop\.webp/);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
@@ -310,6 +327,37 @@ test('landing preserves exact receive structure and asset assignments', async ({
   expect(html).not.toContain('View as Rabbi');
   expect(html).not.toContain('$67');
   expect(html).not.toContain('coverage');
+});
+
+test('hero CTA emits the bounded analytics event before entering canonical family signup', async ({
+  page,
+}) => {
+  const analyticsEvents: unknown[] = [];
+  await page.exposeFunction('recordOtAnalyticsEvent', (detail: unknown) => {
+    analyticsEvents.push(detail);
+  });
+  await page.addInitScript(() => {
+    window.addEventListener('ot:analytics', (event) => {
+      void (
+        window as typeof window & {
+          recordOtAnalyticsEvent: (detail: unknown) => Promise<void>;
+        }
+      ).recordOtAnalyticsEvent((event as CustomEvent<unknown>).detail);
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('link', { name: 'JOIN FREE' }).click();
+  await expect(page).toHaveURL(`${testBaseUrl}/signup`);
+  await expect
+    .poll(() => analyticsEvents)
+    .toEqual([
+      {
+        event_name: 'landing.signup.cta.clicked',
+        destination: '/signup',
+        placement: 'hero',
+      },
+    ]);
 });
 
 test('landing and signup use the approved footer contract', async ({ page }) => {

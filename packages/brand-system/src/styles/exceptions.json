@@ -15,6 +15,12 @@
       "owner": "OT-82"
     },
     {
+      "path": "apps/web/public/assets/fonts/montserrat-latin-800.woff2",
+      "rule": "font-binary",
+      "rationale": "Canonical self-hosted campaign font registered in the manifest.",
+      "owner": "OT-V21-LANE3"
+    },
+    {
       "path": "ops/evidence/ot-82/**",
       "rule": "screenshot-and-evidence-data",
       "rationale": "OT82 evidence may contain captured color values and screenshots.",
