@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type { CommunicationSuppressionSnapshot } from '../../../../../contracts/src/communications/foundation/index.ts';
 import type { CampaignApprovalInput } from '../../copy/approval.ts';
 import { canonicalContentDigest } from '../../copy/approval.ts';
+import type { CanonicalCopyMessage } from '../../copy/catalog.ts';
+import { findCanonicalCopy, SENDER_IDENTITIES } from '../../copy/catalog.ts';
 import {
   FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY,
   FORMER_MEMBER_REACTIVATION_STEPS,
@@ -58,7 +60,7 @@ function candidate(overrides: Partial<CampaignAudienceCandidate> = {}): Campaign
 }
 
 function approvalEvidence(
-  message: typeof PARENT_NEWSLETTER_COPY | typeof FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY,
+  message: CanonicalCopyMessage,
   overrides: Partial<Omit<CampaignApprovalInput, 'message' | 'sender'>> = {},
 ): Omit<CampaignApprovalInput, 'message' | 'sender'> {
   const digest = canonicalContentDigest(message);
@@ -91,14 +93,13 @@ function reactivationApproval(
   overrides: Partial<ReactivationStepApproval> = {},
 ): ReactivationStepApproval {
   const step = FORMER_MEMBER_REACTIVATION_STEPS[stepIndex];
+  const message = findCanonicalCopy(step.copy_id);
+  if (!message) throw new Error(`missing canonical test copy: ${step.copy_id}`);
   return {
     copy_id: step.copy_id,
     approved_subject: step.subject,
-    evidence: approvalEvidence(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY, {
-      approvedContentDigest:
-        stepIndex === 0
-          ? canonicalContentDigest(FORMER_MEMBER_REACTIVATION_STEP_ONE_COPY)
-          : h(`${stepIndex}`),
+    evidence: approvalEvidence(message, {
+      approvedContentDigest: canonicalContentDigest(message),
     }),
     ...overrides,
   };
@@ -193,11 +194,20 @@ describe('P30 campaign workflows', () => {
       state: 'blocked',
       reasons: expect.arrayContaining([
         'missing exact content approval for ghl.former_member_reactivation.step_2.v1',
-        'canonical copy is not registered: ghl.former_member_reactivation.step_2.v1',
         'missing exact content approval for ghl.former_member_reactivation.step_3.v1',
-        'canonical copy is not registered: ghl.former_member_reactivation.step_3.v1',
       ]),
     });
+    const validApprovals = [
+      reactivationApproval(0),
+      reactivationApproval(1),
+      reactivationApproval(2),
+    ];
+    expect(
+      planFormerMemberReactivationLaunch({
+        candidate: candidate(),
+        step_approvals: validApprovals,
+      }),
+    ).toMatchObject({ state: 'ready', reasons: [] });
     const forgedChangedApprovals = [
       reactivationApproval(0),
       reactivationApproval(1, { approved_subject: 'Changed day 4 subject' }),
@@ -216,8 +226,7 @@ describe('P30 campaign workflows', () => {
       state: 'blocked',
       reasons: expect.arrayContaining([
         'approved subject drift for ghl.former_member_reactivation.step_2.v1',
-        'canonical copy is not registered: ghl.former_member_reactivation.step_2.v1',
-        'canonical copy is not registered: ghl.former_member_reactivation.step_3.v1',
+        'ghl.former_member_reactivation.step_3.v1: content digest drift or missing approval',
       ]),
     });
     expect(
@@ -243,16 +252,26 @@ describe('P30 campaign workflows', () => {
         operation_id: h('r'),
         candidate: candidate(),
         suppression: suppression({ snapshot_id: 'send-time', email_dnd: true }),
-        step_approvals: [reactivationApproval(0)],
+        step_approvals: validApprovals,
       }),
     ).toMatchObject({
-      state: 'excluded',
-      reasons: expect.arrayContaining([
-        'canonical copy is not registered: ghl.former_member_reactivation.step_2.v1',
-        'canonical copy is not registered: ghl.former_member_reactivation.step_3.v1',
-      ]),
+      state: 'suppressed',
+      reason: 'email_dnd',
       email_provider_calls_planned: 0,
       whatsapp_provider_calls: 0,
+    });
+    expect(SENDER_IDENTITIES.rabbi_campaign).toEqual({
+      key: 'rabbi_campaign',
+      fromName: 'Rabbi Eli Scheller',
+      fromAddress: 'rabbielischeller@onetimeonetime.com',
+      replyTo: 'rabbielischeller@onetimeonetime.com',
+      permittedPurposes: [
+        'Migration',
+        'reactivation',
+        'lead nurture',
+        'Parent newsletter',
+        'teaching/program messages',
+      ],
     });
   });
 

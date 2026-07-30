@@ -163,9 +163,10 @@ business_workflows:
       audience_authority: 'operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority'
       sequence_length: 3
       sender_registry_key: 'rabbi_campaign'
-      desired_from_after_acceptance: 'Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>'
-      current_fallback_from: 'info@onetimeonetime.com until provider acceptance'
-      reply_to: 'info@onetimeonetime.com only'
+      canonical_public_rabbi_identity: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      desired_from_after_acceptance: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      current_fallback_from: 'none; provider-era fallback is superseded and retained only as historical data'
+      reply_to: 'rabbielischeller@onetimeonetime.com only'
       sender_decision_status: 'fixed; not an operator decision gate'
       sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
       reviewed_sequence_version: 'ot_02a_existing_subscriber_migration_three_email_v1'
@@ -241,9 +242,10 @@ business_workflows:
       audience_scope: 'consented unsuppressed new leads only'
       audience_authority: 'independently proven general-marketing permission only; Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never grant authority'
       sender_registry_key: 'rabbi_campaign'
-      desired_from_after_acceptance: 'Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>'
-      current_fallback_from: 'info@onetimeonetime.com until provider acceptance'
-      reply_to: 'info@onetimeonetime.com only'
+      canonical_public_rabbi_identity: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      desired_from_after_acceptance: 'Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>'
+      current_fallback_from: 'none; provider-era fallback is superseded and retained only as historical data'
+      reply_to: 'rabbielischeller@onetimeonetime.com only'
       sender_decision_status: 'fixed; not an operator decision gate'
       sender_acceptance_job: 'GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance'
       reviewed_email_one_identity: 'rabbi_new_program_prelaunch_nurture_v1'
@@ -951,11 +953,27 @@ business_workflows:
       - 'Await the reviewed P30 workflow fragment and exact segment/copy approval.'
       - 'Enter only a currently permitted former/canceled adult who is neither active Parent nor School.'
     exactOrderedActions:
-      - 'Send the approved launch, day 4, and day 9 email sequence through rabbi_campaign.'
+      - 'Send canonical step 1 ghl.former_member_reactivation.step_1.v1 at approval launch through rabbi_campaign.'
+      - 'Wait 4 days, recheck every gate, then send canonical step 2 ghl.former_member_reactivation.step_2.v1 only while eligible.'
+      - 'Wait 5 additional days, recheck every gate, then send canonical step 3 ghl.former_member_reactivation.step_3.v1 only while eligible.'
       - 'Recheck suppression and exit conditions immediately before each step.'
       - 'Record dormant WhatsApp intent truthfully and make zero WhatsApp provider calls.'
     observedTriggers: []
     observedActions: []
+    essentialValues:
+      canonical_copy_ids:
+        - 'ghl.former_member_reactivation.step_1.v1'
+        - 'ghl.former_member_reactivation.step_2.v1'
+        - 'ghl.former_member_reactivation.step_3.v1'
+      canonical_subjects:
+        - 'See what is new in One Time Mishnayos'
+        - 'A separate Student portal for live class and recordings'
+        - 'Come back free until September 13'
+      canonical_timing_days:
+        - '0'
+        - '4'
+        - '9'
+      copy_registration_status: 'all three exact canonical copy entries registered; no send authorized'
     lastReadback:
       at: '2026-07-28T20:00:00Z'
       method: 'Git-authored canonical registry reservation; no provider mutation or claimed provider readback'
@@ -968,6 +986,98 @@ business_workflows:
     evidence:
       - 'integrations/highlevel/v21/foundation/desired-state.ts'
       - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'packages/domain/src/communications/copy/catalog.ts'
+  - key: 'OT-16'
+    canonicalName: 'OT-16 Free-Period Conversion'
+    normalizedName: 'ot_16_free_period_conversion'
+    ghlId: ''
+    ghlKey: 'ot_16_free_period_conversion'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    asset_kind: 'workflow'
+    category: 'business_workflow'
+    folder: '20 - Billing & Access'
+    purpose: 'Adult-only free-period conversion checkpoints with exact price/expiry truth, send-time suppression, and paid/decline/School exits.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      - 'adult_only'
+      - 'family_standard_price'
+      - 'checkpoint_14_7_3_1_0'
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      - 'packages/contracts/src/communications/foundation/index.ts'
+      - 'packages/domain/src/communications/workflows/campaigns/definitions.ts'
+      - 'integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml'
+    aliases: []
+    assetLifecycle: 'canonical'
+    createdDate: '2026-07-30'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/registry/workflow-registry.yaml'
+    checklistPath: 'integrations/highlevel/registry/workflow-registry.yaml'
+    messageClass: 'billing_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: '14, 7, 3, and 1 days before canonical free-period expiry and at expiry'
+    companionDelivery: 'WhatsApp is dormant; eligible email checkpoints proceed without waiting for WhatsApp.'
+    providerContract:
+      exactTriggerFilter: 'eligible adult Family subject at one exact canonical expiry checkpoint'
+      orderedCriticalActions:
+        - 'recompute the deterministic adult, expiry, and checkpoint operation identity'
+        - 'refresh verified paid, explicit decline, custom School, consent, and suppression state immediately before dispatch'
+        - 'deliver exact price, expiry, no-card, no-auto-charge, and Checkout CTA copy only while eligible'
+        - 'deduplicate by adult, expiry, and checkpoint'
+        - 'record dormant WhatsApp with zero provider calls'
+      deliveryCategory: 'billing_help'
+      senderKey: 'office'
+    displayOrder: 25
+    desiredStatus: 'DRAFT_WAITING_EXTERNAL'
+    observedStatus: 'MISSING'
+    exactOrderedTriggers:
+      - 'Evaluate only the deterministic 14-day, 7-day, 3-day, 1-day, or expiry checkpoint.'
+      - 'Enter only an eligible adult Family subject with no paid-access, decline, School, consent, or suppression exit.'
+    exactOrderedActions:
+      - 'Recompute and validate the deterministic OT-16 operation identity before persistence or provider access.'
+      - 'Resolve canonical expiry and the standard Family price from controlled configuration.'
+      - 'Read back the adult-only audience and recheck every exit and suppression gate immediately before dispatch.'
+      - 'Deliver exact price, expiry, no-card, no-auto-charge, and Checkout CTA copy only while eligible.'
+      - 'Deduplicate by adult, expiry, and checkpoint and record dormant WhatsApp with zero provider calls.'
+    observedTriggers: []
+    observedActions: []
+    essentialValues:
+      checkpoint_days:
+        - '14'
+        - '7'
+        - '3'
+        - '1'
+        - '0'
+      standard_family_price_amount: 67
+      standard_family_price_currency: 'USD'
+      automatic_charge_without_checkout: false
+      idempotency_scope: 'OT-16:adult_id:expiry_at:checkpoint_days'
+      registry_only_no_send_authority: true
+    lastReadback:
+      at: '2026-07-30T00:00:00Z'
+      method: 'Git-authored canonical registry registration; no provider mutation or claimed provider readback'
+      reference: 'ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml'
+    canary:
+      result: 'not_run'
+      reference: 'ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml'
+      detail: 'Repository registration authorizes no provider canary, activation, enrollment, or send.'
+    blocker: 'Provider workflow identity, dedicated provider build packet, exact save/reopen readback, and separate effect authority are absent.'
+    evidence:
+      - 'integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml'
+      - 'packages/domain/src/communications/workflows/campaigns/definitions.ts'
+      - 'Exact workflow: OT-16 Free-Period Conversion'
+      - 'Folder: 20 - Billing & Access'
+      - 'Exact trigger: 14, 7, 3, and 1 days before canonical free-period expiry and at expiry'
+      - 'message_class: billing_help'
+      - 'sender_key: office'
+      - 'Registry dependencies: sender-registry.yaml and message-class-registry.yaml'
+      - 'Do not publish, activate, enroll, or send from this registry-only registration.'
+      - 'Do not type or guess sender identity or provider text.'
   - key: 'OT-13'
     canonicalName: 'OT-13 Refund / Chargeback'
     normalizedName: 'ot_13_refund_chargeback'

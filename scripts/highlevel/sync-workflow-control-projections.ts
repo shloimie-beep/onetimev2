@@ -21,12 +21,21 @@ import {
 const require = createRequire(import.meta.url);
 const yaml = require('js-yaml') as {
   dump(value: unknown, options?: Record<string, unknown>): string;
+  load(value: string): unknown;
 };
 
 const repoRoot = process.cwd();
 const currentPath = 'integrations/highlevel/registry/current.json';
 const manifestPath = 'integrations/highlevel/workflows.yaml';
+const customValuesPath = 'integrations/highlevel/registry/custom-values.yaml';
+const senderProfilesPath = 'integrations/highlevel/registry/sender-registry.yaml';
+const messageClassesPath = 'integrations/highlevel/registry/message-class-registry.yaml';
 const write = process.argv.includes('--write');
+const [customValues, senderProfiles, messageClasses] = await Promise.all([
+  readYamlArray(customValuesPath),
+  readYamlArray(senderProfilesPath),
+  readYamlArray(messageClassesPath),
+]);
 const registryText = await readFile(path.join(repoRoot, workflowRegistryPath), 'utf8');
 const sourceSha256 = createHash('sha256').update(canonicalTextForHash(registryText)).digest('hex');
 const projectionMetadata = {
@@ -90,10 +99,22 @@ async function buildCurrentProjection(source: string) {
   let output = source;
   output = replaceJsonProperty(output, 'counts', 'standard_contact_fields', {
     ...parsed.counts,
+    custom_values: customValues.length,
+    active_custom_values: customValues.filter((value) => value.deprecationState === 'active')
+      .length,
+    blocked_custom_values: customValues.filter(
+      (value) => value.deprecationState === 'blocked_ui_or_business_value',
+    ).length,
+    business_workflows: businessWorkflowRecords.length,
+    bot_action_workflows: botActionWorkflowRecords.length,
+    deprecated_workflows: deprecatedWorkflowRecords.length,
     workflow_assets: canonicalWorkflowAssets.length,
     campaign_assets: canonicalCampaignAssets.length,
     non_workflow_assets: nonWorkflowAssets.length,
   });
+  output = replaceJsonProperty(output, 'custom_values', 'sender_profiles', customValues);
+  output = replaceJsonProperty(output, 'sender_profiles', 'message_classes', senderProfiles);
+  output = replaceJsonProperty(output, 'message_classes', 'pipelines', messageClasses);
   output = replaceJsonProperty(
     output,
     'business_workflows',
@@ -152,6 +173,9 @@ async function refreshPromptFingerprints(records: PromptProjectionRecord[]) {
 }
 
 function buildManifestProjection(source: string) {
+  const customValuesBlock = dumpYaml({ custom_values: customValues });
+  const senderProfilesBlock = dumpYaml({ sender_profiles: senderProfiles });
+  const messageClassesBlock = dumpYaml({ message_classes: messageClasses });
   const controlBlock = dumpYaml({
     workflow_root: workflowRoot,
     workflow_projection: projectionMetadata,
@@ -176,9 +200,18 @@ function buildManifestProjection(source: string) {
     ? 'automation_assets'
     : 'workflows';
   let output = replaceYamlSection(source, controlStart, 'custom_fields', controlBlock);
+  output = replaceYamlSection(output, 'custom_values', 'sender_profiles', customValuesBlock);
+  output = replaceYamlSection(output, 'sender_profiles', 'message_classes', senderProfilesBlock);
+  output = replaceYamlSection(output, 'message_classes', 'pipelines', messageClassesBlock);
   output = replaceYamlSection(output, automationStart, 'workflow_readback', automationBlock);
   output = replaceYamlSection(output, 'deprecated_workflows', 'contact_import', deprecatedBlock);
   return ensureTrailingNewline(output);
+}
+
+async function readYamlArray(filePath: string): Promise<Record<string, unknown>[]> {
+  const parsed = yaml.load(await readFile(path.join(repoRoot, filePath), 'utf8'));
+  if (!Array.isArray(parsed)) throw new Error(`projection_source_not_array:${filePath}`);
+  return parsed as Record<string, unknown>[];
 }
 
 function replaceJsonProperty(

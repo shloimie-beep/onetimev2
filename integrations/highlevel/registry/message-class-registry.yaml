@@ -5,6 +5,7 @@
   sourceOfTruth: 'HighLevel'
   allowedWorkflows:
     - 'OT-03'
+    - 'OT-15'
   securityTokensAllowed: false
 - key: 'existing_subscriber_migration'
   senderKey: 'rabbi_campaign'
@@ -27,7 +28,8 @@
   transport: 'GHL'
   owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows: []
+  allowedWorkflows:
+    - 'OT-14'
   securityTokensAllowed: false
 - key: 'rabbi_teaching_email'
   senderKey: 'rabbi_campaign'
@@ -79,7 +81,8 @@
   transport: 'GHL'
   owner: 'Shloimie'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows: []
+  allowedWorkflows:
+    - 'OT-16'
   securityTokensAllowed: false
 - key: 'payment_failed_support'
   senderKey: 'office'

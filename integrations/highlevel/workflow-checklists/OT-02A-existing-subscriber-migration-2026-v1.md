@@ -10,13 +10,14 @@ Registry: integrations/highlevel/registry/workflow-registry.yaml
 - Build only in Draft.
 - Confirm every field, tag, and custom value exists in `registry/current.json` before use.
 - Read `sender-registry.yaml`, `message-class-registry.yaml`, and `communications-contract.json` before sender configuration.
-- Select the registered picker value: One Time Rabbi Campaign Sender Name.
-- Select the registered picker value: One Time Default Reply-To.
-- The fixed post-acceptance visible From is `Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>` using One Time Rabbi Campaign Phase 2 From; this is not an open product decision.
-- Preserve the current Phase 1 From fallback until GHL-UI-24 proves provider acceptance. Do not activate or send from the desired address in this Draft-only task.
-- Keep Reply-To at `info@onetimeonetime.com`; rabbi@ may use the same governed GHL Conversations route and needs no separately monitored second inbox.
+- Select One Time Rabbi Campaign Sender Name and verify it renders exactly `Rabbi Eli Scheller`.
+- Select One Time Rabbi Campaign Phase 2 From and verify it renders exactly `rabbielischeller@onetimeonetime.com`.
+- Select One Time Rabbi Reply-To and verify it renders exactly `rabbielischeller@onetimeonetime.com`.
+- The single canonical public identity is `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>` for both From and Reply-To; this is not an open product decision.
+- Preserve One Time Rabbi Campaign Phase 1 From and historical `rabbi@onetimeonetime.com` data, but never select either for canonical public use.
+- Until GHL-UI-24 proves provider acceptance, keep this Draft blocked. Do not use a fallback identity, activate, enroll, or send.
 - Never guess or hardcode an unregistered sender identity.
-- Use the three reviewed emails from the paired canonical prompt, in this exact order: `rabbi_new_program_existing_subscriber_migration_v1`, `rabbi_parent_student_experience_existing_subscriber_migration_v1`, then `rabbi_controlled_pilot_existing_subscriber_migration_v1`.
+- Use the three current controlled emails from the paired canonical prompt, in this exact order: `rabbi_new_program_existing_subscriber_migration_v1`, `rabbi_parent_student_experience_existing_subscriber_migration_v1`, then `rabbi_controlled_pilot_existing_subscriber_migration_v1`. They supersede provider-era copy instructions and authorize no send.
 - Preserve Reviewed Email One exactly. Do not derive, paraphrase, or overwrite it while adding the reviewed Email Two and Email Three repository specifications.
 - Email Two may describe only the verified Parent/Student experience: live Mishnah learning, recordings for review, steady progress, and secure family access. Keep Student data out of GHL.
 - Email Three may invite the recipient to learn about the controlled pilot only through the registered One Time Home URL. Do not use a direct signup, checkout, Zoom/provider, recording, or application URL.

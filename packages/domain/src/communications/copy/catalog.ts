@@ -1,7 +1,8 @@
 export const COPY_CATALOG_SEMANTIC_VERSION = '1.1.0';
 
 export type CopyProvider = 'resend' | 'ghl';
-export type SenderKey = 'rabbi_campaign' | 'office' | 'security_resend';
+export type SenderKey =
+  'rabbi_campaign' | 'rabbi_personal' | 'office' | 'brand' | 'security_resend';
 export type CopyAudience = 'adult' | 'parent_account_owner' | 'former_adult';
 
 export type SenderIdentity = Readonly<{
@@ -32,9 +33,9 @@ export type CanonicalCopyMessage = Readonly<{
 export const SENDER_IDENTITIES: Readonly<Record<SenderKey, SenderIdentity>> = {
   rabbi_campaign: {
     key: 'rabbi_campaign',
-    fromName: 'Rabbi Eli Scheller | One Time Mishnayos',
-    fromAddress: 'rabbi@onetimeonetime.com',
-    replyTo: 'info@onetimeonetime.com',
+    fromName: 'Rabbi Eli Scheller',
+    fromAddress: 'rabbielischeller@onetimeonetime.com',
+    replyTo: 'rabbielischeller@onetimeonetime.com',
     permittedPurposes: [
       'Migration',
       'reactivation',
@@ -42,6 +43,13 @@ export const SENDER_IDENTITIES: Readonly<Record<SenderKey, SenderIdentity>> = {
       'Parent newsletter',
       'teaching/program messages',
     ],
+  },
+  rabbi_personal: {
+    key: 'rabbi_personal',
+    fromName: 'Rabbi Eli Scheller',
+    fromAddress: 'rabbielischeller@onetimeonetime.com',
+    replyTo: 'rabbielischeller@onetimeonetime.com',
+    permittedPurposes: ['Torah answers', 'Rabbi-authored follow-up'],
   },
   office: {
     key: 'office',
@@ -55,6 +63,18 @@ export const SENDER_IDENTITIES: Readonly<Record<SenderKey, SenderIdentity>> = {
       'support',
       'school acknowledgment',
       'neutral operations',
+    ],
+  },
+  brand: {
+    key: 'brand',
+    fromName: 'One Time Mishnayos',
+    fromAddress: 'info@onetimeonetime.com',
+    replyTo: 'info@onetimeonetime.com',
+    permittedPurposes: [
+      'Portal lifecycle',
+      'class reminders',
+      'recording availability',
+      'neutral program notices',
     ],
   },
   security_resend: {
@@ -109,7 +129,7 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     id: 'ghl.parent_portal_activated.v1',
     workflowId: 'OT-08',
     provider: 'ghl',
-    sender: 'office',
+    sender: 'brand',
     audience: 'parent_account_owner',
     subject: 'Add your Student accounts',
     body: 'Hi {{contact.first_name}},\n\nYour Parent account is active.\n\nAdd up to three Student accounts. Each Student gets a separate username and password for the live class and recording library. If you also want to learn, you may use one of those three Student seats with separate Student credentials.\n\nAll active Students are automatically added to the daily 7:00 p.m. Jerusalem-time class.',
@@ -124,7 +144,7 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     id: 'ghl.parent_class_reminder.v1',
     workflowId: 'OT-09',
     provider: 'ghl',
-    sender: 'office',
+    sender: 'brand',
     audience: 'parent_account_owner',
     subject: 'One Time class begins in 30 minutes',
     body: 'Hi {{contact.first_name}},\n\nRabbi Eli’s One Time Mishnayos class begins in 30 minutes at {{occurrence.parent_local_time}}.\n\nStudents joining today: {{household.active_student_names}}.\n\nEach Student should sign in to the Student Portal on their own device and select Join Class.',
@@ -143,7 +163,7 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     id: 'ghl.parent_recording_available.v1',
     workflowId: 'OT-10',
     provider: 'ghl',
-    sender: 'office',
+    sender: 'brand',
     audience: 'parent_account_owner',
     subject: 'A new One Time recording is ready',
     body: 'Hi {{contact.first_name}},\n\nA new One Time recording is ready. Your eligible Students can open it from their Student Library.',

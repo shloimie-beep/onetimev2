@@ -106,6 +106,7 @@ export type RegistrySender = {
   currentFallbackFromEmail: string;
   replyTo: string;
   status: string;
+  historicalAliases?: string[];
   phase1: {
     displayName: string;
     fromEmail: string;
@@ -164,29 +165,31 @@ export const senderProfiles: RegistrySender[] = [
     ],
     provider: 'GHL',
     owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility',
-    displayName: 'Rabbi Eli Scheller | One Time Mishnayos',
-    fromEmail: 'rabbi@onetimeonetime.com',
-    preferredFromEmail: 'rabbi@onetimeonetime.com',
-    currentFallbackFromEmail: 'info@onetimeonetime.com',
-    replyTo: 'info@onetimeonetime.com',
-    status: 'sender_decision_fixed_provider_acceptance_pending',
+    displayName: 'Rabbi Eli Scheller',
+    fromEmail: 'rabbielischeller@onetimeonetime.com',
+    preferredFromEmail: 'rabbielischeller@onetimeonetime.com',
+    currentFallbackFromEmail: 'rabbielischeller@onetimeonetime.com',
+    replyTo: 'rabbielischeller@onetimeonetime.com',
+    status: 'canonical_identity_fixed_provider_acceptance_pending',
+    historicalAliases: ['rabbi@onetimeonetime.com'],
     phase1: {
       displayName: 'Rabbi Eli Scheller | One Time Mishnayos',
       fromEmail: 'info@onetimeonetime.com',
       replyTo: 'info@onetimeonetime.com',
-      status: 'active_phase_1',
+      status: 'superseded_historical_provider_era',
     },
     phase2: {
-      displayName: 'Rabbi Eli Scheller | One Time Mishnayos',
-      fromEmail: 'rabbi@onetimeonetime.com',
-      replyTo: 'info@onetimeonetime.com',
-      status: 'sender_decision_fixed_provider_acceptance_pending',
+      displayName: 'Rabbi Eli Scheller',
+      fromEmail: 'rabbielischeller@onetimeonetime.com',
+      replyTo: 'rabbielischeller@onetimeonetime.com',
+      status: 'canonical_identity_provider_acceptance_pending',
       activationPrerequisites: [
-        'rabbi@ routes into the governed GHL Conversations workflow; no separately monitored second inbox is required',
+        'rabbielischeller@onetimeonetime.com routes into the governed GHL Conversations workflow',
         'HighLevel accepts the From address',
         'a seed delivers',
         'a reply reaches GHL Conversations',
         'the result is recorded',
+        'historical rabbi@ data remains preserved but is never selected as the canonical public identity',
       ],
     },
     messageClasses: [
@@ -204,11 +207,12 @@ export const senderProfiles: RegistrySender[] = [
     provider: 'GHL',
     owner: 'Rabbi authors through Telegram; Shloimie retains visibility',
     displayName: 'Rabbi Eli Scheller',
-    fromEmail: 'rabbi@onetimeonetime.com',
-    preferredFromEmail: 'rabbi@onetimeonetime.com',
-    currentFallbackFromEmail: '',
-    replyTo: 'info@onetimeonetime.com',
-    status: 'pending_mailbox_and_reply_acceptance',
+    fromEmail: 'rabbielischeller@onetimeonetime.com',
+    preferredFromEmail: 'rabbielischeller@onetimeonetime.com',
+    currentFallbackFromEmail: 'rabbielischeller@onetimeonetime.com',
+    replyTo: 'rabbielischeller@onetimeonetime.com',
+    status: 'canonical_identity_provider_acceptance_pending',
+    historicalAliases: ['rabbi@onetimeonetime.com'],
     phase1: null,
     phase2: null,
     messageClasses: ['torah_answer', 'torah_follow_up'],
@@ -1099,7 +1103,7 @@ const customValueInputs = [
   [
     'One Time - Senders',
     'One Time Rabbi Campaign Sender Name',
-    'Rabbi Eli Scheller | One Time Mishnayos',
+    'Rabbi Eli Scheller',
     'TEXT',
     'rabbi_campaign display name.',
   ],
@@ -1108,14 +1112,14 @@ const customValueInputs = [
     'One Time Rabbi Campaign Phase 1 From',
     'info@onetimeonetime.com',
     'TEXT',
-    'Current fallback rabbi_campaign From address until provider acceptance.',
+    'Superseded provider-era rabbi_campaign fallback retained as historical data; never select it for canonical Rabbi sending.',
   ],
   [
     'One Time - Senders',
     'One Time Rabbi Campaign Phase 2 From',
-    'rabbi@onetimeonetime.com',
+    'rabbielischeller@onetimeonetime.com',
     'TEXT',
-    'Fixed desired rabbi_campaign From address pending provider acceptance and one authorized seed.',
+    'Canonical rabbi_campaign From address pending provider acceptance and separately authorized acceptance.',
   ],
   [
     'One Time - Senders',
@@ -1127,9 +1131,16 @@ const customValueInputs = [
   [
     'One Time - Senders',
     'One Time Rabbi Personal From',
-    'rabbi@onetimeonetime.com',
+    'rabbielischeller@onetimeonetime.com',
     'TEXT',
-    'rabbi_personal From address pending mailbox and reply acceptance.',
+    'Canonical rabbi_personal From address pending provider acceptance.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Rabbi Reply-To',
+    'rabbielischeller@onetimeonetime.com',
+    'TEXT',
+    'Canonical Reply-To for both Rabbi sender profiles pending provider acceptance.',
   ],
   [
     'One Time - Senders',
@@ -1178,7 +1189,7 @@ const customValueInputs = [
     'One Time Default Reply-To',
     'info@onetimeonetime.com',
     'TEXT',
-    'Canonical default reply-to for registered sender profiles.',
+    'Canonical business, administration, and technical Reply-To; Rabbi profiles use One Time Rabbi Reply-To.',
   ],
   [
     'One Time - Brand',
@@ -1343,25 +1354,44 @@ export const customValues: RegistryCustomValue[] = customValueInputs.map(
     humansMayEdit: true,
     dependencies:
       canonicalName === 'One Time Published Price Label' ? ['One Time Pricing Display Status'] : [],
-    aliases: ['One Time Sender Name', 'One Time Sender Email', 'One Time Reply-To Email'].includes(
-      canonicalName,
-    )
-      ? ['compatibility_alias', 'migrate_to_registered_sender_key']
-      : [],
-    deprecationState: [
-      'One Time Sender Name',
-      'One Time Sender Email',
-      'One Time Reply-To Email',
-    ].includes(canonicalName)
-      ? 'deprecated_existing'
-      : value
-        ? 'pending_creation'
-        : 'blocked_ui_or_business_value',
+    aliases: customValueAliases(canonicalName),
+    deprecationState:
+      ['One Time Sender Name', 'One Time Sender Email', 'One Time Reply-To Email'].includes(
+        canonicalName,
+      ) || canonicalName === 'One Time Rabbi Campaign Phase 1 From'
+        ? 'deprecated_existing'
+        : value
+          ? 'pending_creation'
+          : 'blocked_ui_or_business_value',
     createdDate: date,
     lastVerifiedDate: '',
     lastTestedDate: '',
   }),
 );
+
+function customValueAliases(canonicalName: string): string[] {
+  if (
+    ['One Time Sender Name', 'One Time Sender Email', 'One Time Reply-To Email'].includes(
+      canonicalName,
+    )
+  ) {
+    return ['compatibility_alias', 'migrate_to_registered_sender_key'];
+  }
+  if (
+    canonicalName === 'One Time Rabbi Campaign Phase 2 From' ||
+    canonicalName === 'One Time Rabbi Personal From' ||
+    canonicalName === 'One Time Rabbi Reply-To'
+  ) {
+    return ['rabbi@onetimeonetime.com'];
+  }
+  if (canonicalName === 'One Time Rabbi Campaign Sender Name') {
+    return ['Rabbi Eli Scheller | One Time Mishnayos'];
+  }
+  if (canonicalName === 'One Time Rabbi Campaign Phase 1 From') {
+    return ['historical_provider_era_rabbi_from'];
+  }
+  return [];
+}
 
 export const businessWorkflows = businessWorkflowRecords;
 export const botActionWorkflows = botActionWorkflowRecords;

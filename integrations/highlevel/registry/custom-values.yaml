@@ -123,15 +123,16 @@
   dataType: 'TEXT'
   category: 'one_time_senders'
   purpose: 'rabbi_campaign display name.'
-  value: 'Rabbi Eli Scheller | One Time Mishnayos'
+  value: 'Rabbi Eli Scheller'
   sourceOfTruth: 'Shared'
   allowedValues: []
   workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: true
   dependencies: []
-  aliases: []
-  deprecationState: 'active'
+  aliases:
+    - 'Rabbi Eli Scheller | One Time Mishnayos'
+  deprecationState: 'pending_creation'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
@@ -144,7 +145,7 @@
   objectType: 'custom_value'
   dataType: 'TEXT'
   category: 'one_time_senders'
-  purpose: 'Current fallback rabbi_campaign From address until provider acceptance.'
+  purpose: 'Superseded provider-era rabbi_campaign fallback retained as historical data; never select it for canonical Rabbi sending.'
   value: 'info@onetimeonetime.com'
   sourceOfTruth: 'Shared'
   allowedValues: []
@@ -152,8 +153,9 @@
   oneTimeAllowedToWrite: false
   humansMayEdit: true
   dependencies: []
-  aliases: []
-  deprecationState: 'active'
+  aliases:
+    - 'historical_provider_era_rabbi_from'
+  deprecationState: 'deprecated_existing'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
@@ -166,16 +168,17 @@
   objectType: 'custom_value'
   dataType: 'TEXT'
   category: 'one_time_senders'
-  purpose: 'Fixed desired rabbi_campaign From address pending provider acceptance and one authorized seed.'
-  value: 'rabbi@onetimeonetime.com'
+  purpose: 'Canonical rabbi_campaign From address pending provider acceptance and separately authorized acceptance.'
+  value: 'rabbielischeller@onetimeonetime.com'
   sourceOfTruth: 'Shared'
   allowedValues: []
   workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: true
   dependencies: []
-  aliases: []
-  deprecationState: 'active'
+  aliases:
+    - 'rabbi@onetimeonetime.com'
+  deprecationState: 'pending_creation'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
@@ -210,20 +213,43 @@
   objectType: 'custom_value'
   dataType: 'TEXT'
   category: 'one_time_senders'
-  purpose: 'rabbi_personal From address pending mailbox and reply acceptance.'
-  value: 'rabbi@onetimeonetime.com'
+  purpose: 'Canonical rabbi_personal From address pending provider acceptance.'
+  value: 'rabbielischeller@onetimeonetime.com'
   sourceOfTruth: 'Shared'
   allowedValues: []
   workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: true
   dependencies: []
-  aliases: []
-  deprecationState: 'active'
+  aliases:
+    - 'rabbi@onetimeonetime.com'
+  deprecationState: 'pending_creation'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a987678811c253d3'
+- canonicalName: 'One Time Rabbi Reply-To'
+  normalizedName: 'one_time_rabbi_reply_to'
+  ghlId: ''
+  ghlKey: 'one_time_rabbi_reply_to'
+  folder: 'One Time - Senders'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_senders'
+  purpose: 'Canonical Reply-To for both Rabbi sender profiles pending provider acceptance.'
+  value: 'rabbielischeller@onetimeonetime.com'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases:
+    - 'rabbi@onetimeonetime.com'
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-28'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
 - canonicalName: 'One Time Office Sender Name'
   normalizedName: 'one_time_office_sender_name'
   ghlId: 'Lr6PxCIoU2vMpJWkngow'
@@ -364,7 +390,7 @@
   objectType: 'custom_value'
   dataType: 'TEXT'
   category: 'one_time_senders'
-  purpose: 'Canonical default reply-to for registered sender profiles.'
+  purpose: 'Canonical business, administration, and technical Reply-To; Rabbi profiles use One Time Rabbi Reply-To.'
   value: 'info@onetimeonetime.com'
   sourceOfTruth: 'Shared'
   allowedValues: []
