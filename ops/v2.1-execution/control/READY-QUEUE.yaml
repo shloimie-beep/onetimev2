@@ -3,6 +3,96 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
+- task_id: F02
+  lane: A
+  status: resume_ready
+  phase: content_publication_projection_v2_migration
+  branch: codex/v21-lane1-migration-correction
+  claim_mode: resume_phase_branch
+  state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+  authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  expected_existing_head: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  dependency_heads_and_digests:
+    C00:
+      required_state: full_production_completion_convergence
+      observed_state: full_production_completion_convergence
+      observed_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+      control_state_digest: d5723b527ff1f48496bbcb8615f7874c1021d56c5792b007595732183ff3c0e4
+    I36:
+      required_state: current_integration
+      observed_state: current_integration
+      observed_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    F02:
+      required_state: prior_semantic_fencing_correction_integrated
+      observed_state: prior_semantic_fencing_correction_integrated
+      observed_task_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+      integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+      immutable_2252_checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+      next_migration_ordinal: 2253
+    P20_P21:
+      required_state: source_complete_projection_checkpoint_pushed
+      observed_state: source_complete_projection_checkpoint_pushed
+      source_implementation_head_sha: 38156528c1c022a0575db71426ce2cc8f2e20ab8
+      checkpoint_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
+      projection_field_count: 27
+      artifact_field_count: 8
+      focused_tests_passed: 42
+    authorized_requests:
+    - request_id: P21-MIGRATION-003
+      request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+      raw_git_blob_sha256: 4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33
+      source_task_id: P21
+      source_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
+      source_path: ops/v2.1-execution/runtime/P21/steward-requests/P21-MIGRATION-003.yaml
+      ordinal: 2253
+      filename: 2253_v21_content_publication_projection_v2.sql
+    withheld_requests:
+    - P21-MIGRATION-002
+    withheld_reason: P21-MIGRATION-002 and migration 2252 are immutable historical predecessor evidence; only the exact forward-only P21-MIGRATION-003 successor may be implemented.
+  authorized_paths:
+  - packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - tests/integration/content/v21-content-publication-projection-v2-migration.test.ts
+  correction_directives:
+  - Fast-forward the exact existing F02 phase branch from 39cacd4a to integration c0a1e04b before editing; a head mismatch or non-fast-forward is a collision stop.
+  - Implement only forward-only 2253_v21_content_publication_projection_v2.sql from immutable request P21-MIGRATION-003. Never edit, replace, amend, or reinterpret migration 2252 or P21-MIGRATION-002.
+  - Reconcile the F02 proposal through immutable 2252 and allocate exact ordinal 2253 with request digest 4c102308; C00 will mechanically mirror the proposal only after independent admission.
+  - Use CREATE OR REPLACE functions only for the exact 27-field projection, 8-field artifacts, digest parity, persisted P20 evidence binding, and all five existing validator call sites.
+  - Run fresh native PostgreSQL accept/replay and every requested malformed, stale, reordered, cross-scope, mismatch, and five-guard rejection probe. PGlite alone is insufficient.
+  - This is one complete bounded phase: one normal terminal push is permitted after all checks. Do not stop for a separate claim-only checkpoint unless a collision, expiry, or exact blocker occurs.
+  - Do not integrate, execute against staging or production, backfill, deploy, inspect or mutate providers, send, charge, freeze a candidate, or perform any external effect.
+  writer_slot_leases:
+  - slot: MIGRATION_AUTHORITY
+    lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
+    holder_task_id: F02
+    holder_claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
+    state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+    lease_issued_at: '2026-07-30T17:03:38Z'
+    lease_expires_at: '2026-07-30T19:03:38Z'
+    phase_scope: forward_only_2253_projection_v2_migration_only
+  - slot: SCHEMA_CONTRACT
+    lease_id: e0a6dd90-820f-4625-9979-e057d0bdad1c
+    holder_task_id: F02
+    holder_claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
+    state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+    lease_issued_at: '2026-07-30T17:03:38Z'
+    lease_expires_at: '2026-07-30T19:03:38Z'
+    phase_scope: exact_27_8_projection_validator_contract_only
+  effect_lock_leases: []
+  claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
+  lease_issued_at: '2026-07-30T17:03:38Z'
+  lease_expires_at: '2026-07-30T19:03:38Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
 - task_id: F07
   co_owner_task_id: P08
   lane: B
@@ -176,6 +266,7 @@ ready:
   model: GPT-5.6-SOL
   reasoning: XHIGH
 entry_payload_digests:
+  F02: 3145d5b3fe237f0b9f62ae6ff6f5443a7f4f402c4322cc00f0c9d2183a59015f
   F07: 5c3f77395001c337ea5eb9e8602f5369c77efdbe1dba70c77760e543c8de3fc2
   P31: 63ac2cf72a6e376b2b58c9b4ecc3cae8a5ea7963541fa7d7fa9171266fc7c670
   I36: c010024f345d2df9d2d0580cfa69a01f2a2872e34f7690da8117d57680e153f5

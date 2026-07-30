@@ -978,6 +978,21 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
+- request_id: P21-MIGRATION-003
+  request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+  requesting_task_id: P21
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_content_publication_projection_v2_2253_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
 - request_id: P21-registration-002
   request_digest: 63ee368f245772ca72043c301c7a7ea370fcbed86f511f3a157b2a3bb0d717f0
   requesting_task_id: P21

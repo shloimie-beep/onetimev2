@@ -16,36 +16,38 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
 next_action: >-
-  Continue from exact integration c0a1e04b. F02 semantic-fencing correction 39cacd4a is integrated at 526f0384 and
-  passed focused tests, native PostgreSQL probes, tracked migration replay, typecheck, and zero-effect review. The
-  communications source 3364c1c3, P18 3be7bf49, and P21 705030f2 are verified ancestors. Finish the active P08 server
-  registration seam and the coordinated P20/P21 publication-seed correction; complete the full landing correction
-  under locked product tokens; produce read-only provider/GHL matrices; then apply the four bounded I36 registration,
-  configuration, provider-registry, and deployment/asset checkpoints. Candidate freeze and all provider mutation,
+  Consume exact F02 successor READY after remote control publication. Fast-forward the F02 phase branch to integration
+  c0a1e04b and implement only forward-only migration 2253 from immutable request P21-MIGRATION-003 at checkpoint
+  a210c6cb. In parallel, independently admit Lane B head 97108442, Lane C head f50d95ba, and the active P08/P20
+  producer checkpoints, then apply the bounded I36 registration checkpoints. Candidate freeze and all provider mutation,
   deployment, DNS, sends, charges, live migration execution, and customer activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: completed_integrated
+  status: forward_only_2253_successor_ready
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
   integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
-  scope: migrations_2250_2252_and_exact_F02_P17_P18_P21_semantic_fencing
+  successor_request_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
+  successor_request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+  next_migration_ordinal: 2253
+  scope: immutable_2250_2252_plus_forward_only_2253_projection_v2
   provider_effects: prohibited
 - lane: B
   owner: F07_with_P08_public_entry
-  status: ready
+  status: checkpoint_pushed_pending_independent_admission
   branch: codex/v21-lane3-landing-campaign
-  expected_head_sha: 2650c75ea9a5edc222af8c61a6fed433b73ede28
+  implementation_head_sha: 092941f165c35779a987b4e4477cc436a961563e
+  expected_head_sha: 97108442bb75f1b30455a8658c2c7ab55f4d9e5f
   scope: public_landing_brand_campaign_and_assets_only
   provider_effects: prohibited
 - lane: C
   owner: P31_provider_preflight
-  status: ready_read_only
+  status: checkpoint_pushed_pending_independent_admission
   branch: codex/v21-lane2-ghl-email
-  expected_head_sha: 1e9f41a3af58d3385754961861a260d2746a5073
+  expected_head_sha: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
   scope: canonical_provider_and_GHL_workflow_readback_matrices
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D

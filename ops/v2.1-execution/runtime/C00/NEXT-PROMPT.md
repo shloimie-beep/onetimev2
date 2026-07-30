@@ -1935,6 +1935,34 @@ Communications is integrated and remotely clean at
 Candidate freeze, providers, live database execution, sends, enrollments,
 charges, deployment, DNS, and every external effect remain withheld.
 
+# Latest forward-only publication projection instruction
+
+Remote control parent is
+`f0ccbdc81e6962add93d0900dd159e24df7cf05f`; integration remains
+`c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`. P20/P21 source implementation
+`38156528` and successor-request checkpoint `a210c6cb` are pushed and
+remote-equal. `P21-MIGRATION-003` canonical/raw digests are
+`4c102308…` / `4ab2d70e…`; immutable migration 2252 remains
+`7981b9cf…`.
+
+Consume the exact F02 READY entry and only:
+
+1. Verify branch `codex/v21-lane1-migration-correction` is exactly
+   `39cacd4a`, then fast-forward it to exact integration `c0a1e04b`.
+2. Under claim `88a902de…` and leases `7de57120…` / `e0a6dd90…`, author
+   forward-only `2253_v21_content_publication_projection_v2.sql`, reconcile
+   the F02 allocation proposal through 2253, update the F02 runtime triplet,
+   and optionally add only the named dedicated migration test.
+3. Use CREATE OR REPLACE only, preserve 2252 byte-for-byte, and prove exact
+   27/8 digest parity plus all five validator calls with fresh native
+   PostgreSQL accept/replay and negative probes.
+4. Push one normal terminal checkpoint and stop for C00 admission. Do not
+   integrate or perform any provider, deployment, DNS, send, charge, live
+   migration, or candidate effect.
+
+In parallel, independently admit already-pushed Lane B `97108442`, Lane C
+`f50d95ba`, P08, and P20/P21. Keep I36 idle until the producers are admitted.
+
 # Latest full-production completion instruction
 
 Resume from control parent

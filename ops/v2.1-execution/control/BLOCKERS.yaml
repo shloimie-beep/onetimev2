@@ -53,15 +53,15 @@ blockers:
   - V39
   - R44
   safe_work_completed: >-
-    Source-complete P20 enrichment head 12980cb0 passed its focused tests and exact eight-file boundary, but independent
-    admission quarantined it before merge. Empty Mishnah references are allowed when none were supplied and approved.
+    Source-complete P20/P21 implementation 38156528 passed 42/42 focused assertions, exact repository reload,
+    canonical persisted participant evidence, immutable approved artifact revisions, and 27-field/8-field projection
+    parity. Immutable successor request P21-MIGRATION-003 is pushed at checkpoint a210c6cb and assigned only to F02 for
+    exact forward-only ordinal 2253. Empty Mishnah references remain valid when none were supplied and approved.
   required_authority_or_input:
-  - Align the enriched P20 projection with P21 types, digest validation, consumer, and persistence
-  - Persist approved artifacts as immutable approved revisions that survive a real repository reload
-  - Bind participant and redaction evidence to canonical persisted roster/provider/detection/Admin evidence
-  - Bind model, operation, prompt, and schema provenance into the immutable content-version digest
-  - Correct migration 2252 through F02 and pass an actual database round-trip plus native PostgreSQL validation
-  protection: Do not merge 12980cb0, freeze a candidate, or claim publication readiness until the coordinated correction is independently admitted.
-  next_check: Re-evaluate the single corrected P20/P21/F02 head set after focused and native database proof.
+  - Implement exact forward-only 2253_v21_content_publication_projection_v2.sql without changing immutable migration 2252
+  - Pass native PostgreSQL 27/8 accept/replay and all malformed, stale, reordered, cross-scope, mismatch, and five-guard rejection probes
+  - Independently admit and integrate the exact P20/P21 source checkpoint and F02 steward result
+  protection: Do not merge the source checkpoint, execute migration 2253 on a live database, freeze a candidate, or claim publication readiness until the coordinated source and forward-only migration set is independently admitted.
+  next_check: Re-evaluate exact source checkpoint a210c6cb and the single F02 2253 terminal head after native database proof.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

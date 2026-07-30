@@ -1,3 +1,37 @@
+# Forward-only publication projection successor — current handoff
+
+P20/P21 source-complete implementation
+`38156528c1c022a0575db71426ce2cc8f2e20ab8` and its sole-child four-path
+metadata checkpoint `a210c6cb2e0f1ea9901745e131140646e91935f9` are pushed and
+remote-equal. The source set passed 42/42 focused assertions and now binds the
+exact 27-field projection, 8-field artifact provenance, immutable approved
+revisions, canonical persisted participant evidence, and repository reload.
+
+Immutable request `P21-MIGRATION-003` has canonical digest
+`4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9`
+and raw Git-blob digest
+`4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33`.
+It assigns only forward-only
+`2253_v21_content_publication_projection_v2.sql`; migration 2252 remains
+immutable at `7981b9cf…`.
+
+F02 may fast-forward its exact phase branch from `39cacd4a` to integration
+`c0a1e04b`, then complete the single bounded 2253 phase under claim
+`88a902de-af91-412f-9e38-6e82dac1d3d2` and MIGRATION_AUTHORITY /
+SCHEMA_CONTRACT leases `7de57120…` / `e0a6dd90…` through
+`2026-07-30T19:03:38Z`. It may change only the exact six authorized paths,
+must run native PostgreSQL accept/replay and rejection probes, and must not
+edit 2252, integrate, deploy, execute a live migration, or perform an effect.
+
+Lane C read-only preflight is pushed at `f50d95ba` with exactly six runtime
+paths, no effect lock, and effects `0/0/0`; independent admission remains.
+Lane B is pushed at `97108442` from exact integration parent `c0a1e04b`, with
+substantive head `092941f1`, reported build/typecheck, responsive browser,
+accessibility, performance, brand, format, and secret checks, and effects
+`0/0/0`; independent admission remains. Candidate is null and every provider
+mutation, send, charge, DNS, deployment, customer activation, and live database
+effect remains withheld.
+
 # Full production completion convergence — current handoff
 
 Remote control parent is `1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca`;
