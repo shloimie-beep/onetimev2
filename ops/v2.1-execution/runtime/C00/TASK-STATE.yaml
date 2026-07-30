@@ -12,11 +12,11 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-30T21:30:53Z'
-last_heartbeat_at: '2026-07-30T19:30:53Z'
-controller_authorization_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+lease_expires_at: '2026-07-30T22:10:49Z'
+last_heartbeat_at: '2026-07-30T20:10:49Z'
+controller_authorization_sha: c44656d40769b28f2d55e6e1041d716175129f4a
 ready_entry_payload_digest: null
-state_based_on_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+state_based_on_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
@@ -88,10 +88,33 @@ lean_completion_bindings:
     F02_steward_ack_claim_id: c6e15ead-7f47-46f0-aaea-6fe00cd4338b
     F02_steward_ack_writer_lease_id: 203f8836-7958-4791-afb0-764a289a9ac0
     F02_steward_ack_ready_entry_payload_digest: d8303358cef529777a0ced6ef7463261d0c622fca1ecb12dcd39b552dddf3841
+    F02_steward_ack_terminal_head_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+    F02_steward_ack_independent_disposition: held_not_admissible
+    F02_steward_ack_state_handoff_digest: c3cd86e54f0142e9a169aa0581a9e332cf37b6332ab0f9f10d69c94cb453083e
+    F02_steward_ack_runtime_triplet_digest: b1d6109ed9f0383720a790f15fb67c0dc1cdff9ffe70b8fb4e45b7b05dc518a8
+    F02_READY_malformed_P17_request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624
+    P17_MIGRATION_002_authoritative_request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+    F02_2251_current_migration_git_blob: 4bd4afdc152dd47977d7ab0aaeee246d5f75a16f
+    F02_2251_stale_pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
+    F02_2251_exact_pg_mem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
+    F02_2251_checksum_correction_claim_id: 07870f1c-ed37-4637-a92f-708f80fb36df
+    F02_2251_checksum_correction_writer_lease_id: 35b6ed2e-7863-493c-8d5e-dee6850f5110
+    F02_2251_checksum_correction_ready_entry_payload_digest: d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82
+    F03_parent_session_implementation_head_sha: ac53a1afa05069566e9efe1c73bd1738639c9a27
+    F03_parent_session_terminal_head_sha: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
+    F03_parent_session_product_digest: 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
+    F03_parent_session_runtime_triplet_digest: 6d9644ad0a93742ba2a3cacb5910be1a0b1263c0118e6595657b810ed947e167
+    F03_parent_session_independent_admission: passed
+    F04_followup_implementation_head_sha: 2834f79b9e45f7c310de037adf07c8ffc7ed50b7
+    F04_followup_terminal_head_sha: b43c1923bbfdd92d15572abc137a3ead3fdf2819
+    F04_followup_product_digest: c87d04c097ca12496b602a765634017902994568428af9fc6110d50d245b0a85
+    F04_followup_runtime_triplet_digest: 76976d6a50cc9245bfa0550afca4088dfbccdf3f047707195d0b36dab2cacacc
+    F04_followup_interface_contract_digest: 79176042f6fef736e27c9280e89d116146c515bf3ab275360f31784fed587e33
+    F04_followup_independent_admission: passed
     P09_prior_claim_id: c18bb60c-98f2-4448-b768-67fcafed9438
     P09_terminal_head_sha: a64a0c03edb6ae50023011f470358e9214f1196c
     P09_source_admission: passed
-    active_writer_count_after_control_push: 3
+    active_writer_count_after_control_push: 1
   P21_scope_correction_integration:
     authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
     implementation_head_sha: 7b51bae186728351ff1cf93b1c02fcba893b1051
@@ -557,14 +580,18 @@ completed_steps:
 - preserved the unchanged Playwright fixture baseline where e2e_class_occurrence omits required join_opens_at; no shared-fixture mutation was authorized in microbatch 2
 - proved migrations 2250-2252 are source-integrated and native-proven but their three assigned steward results lack a truthful F02 acknowledgment checkpoint; refused to fabricate stale acknowledgment fields
 - authorized three disjoint zero-effect successors from integration 8634b2ab: F02 runtime-only 2250-2252 acknowledgment, F04 ownership-transfer atomicity/session-scope correction, and F03 Parent host-cookie/session runtime
+- independently held F02 acknowledgment terminal bd17fd6f after reproducing exactly two metadata truth defects: the prior C00 READY truncated P17-MIGRATION-002 to 62 hex characters, and migration 2251 still recorded a pg-mem checksum from superseded blob 2ed1385c instead of current blob 4bd4afdc; all other ancestry, scope, immutable-byte, lease, remote, and zero-effect checks passed
+- independently admitted F04 correction terminal b43c1923 with exact eight-path scope, unchanged exported declarations, migration-compatible atomic revocation, transferred-household filtering, sibling preservation, 25 focused passes plus 14 native PostgreSQL passes, released lease, clean remote equality, and effects 0/0/0
+- independently admitted F03 correction terminal 3947c988 with exact five-path scope, fail-closed host-cookie/session/CSRF semantics, strict safe-segment routing, 44 focused passes, typecheck/lint/format, released lease, clean remote equality, and effects 0/0/0
+- authorized only a four-path F02 checksum-metadata correction from held head bd17fd6f under canonical READY d2e9a20b, claim 07870f1c, and MIGRATION_AUTHORITY lease 35b6ed2e; migrations, product code, steward dispositions, integration, candidate, providers, and effects remain frozen
 remaining_steps:
-- Complete and independently reconcile the F02 runtime acknowledgment, F04 transfer correction, and F03 Parent-session runtime; integrate them in that order.
+- Complete and independently reconcile the F02 checksum-metadata correction, then integrate its corrected acknowledgment followed by F04 b43c1923, F03 3947c988, and P31 f50d95ba in one ordered bounded microbatch.
 - Compose the real Parent session through P08/I36; complete P09's missing signed-out GET /school and Admin configuration surface before its central registration; do not over-claim the broader P08-registration-002 request.
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
-next_action: Push this reconciled control boundary, dispatch exact F02 runtime acknowledgment, F04 transfer correction,
-  and F03 Parent-session runtime claims, independently audit their terminals, then queue one ordered I36 integration
-  microbatch. No provider mutation or deployment is authorized.
+next_action: Push this reconciled control boundary, dispatch only the exact four-path F02 checksum-metadata correction,
+  independently audit its terminal, then queue one ordered I36 integration microbatch for corrected F02, F04, F03,
+  and P31. No provider mutation or deployment is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -1172,17 +1199,17 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: a67e5bb59969caea19f49ea6ba67cd23b8917b4ee26d9b3af7b9a13f6e47a770
-    control_lease: 3ffdb8351538f3de0b14ebf59189e4f2d2684e15bdaa6affe19e70c4bd142b62
-    task_registry: 7364b1501c531b3fadfe10c1487d78798260d6d7bc99ec025275c9abfc8fab59
-    ready_queue: 1f3e0585271732c479abaa27b77d433bcc088e5f7439d9c3519fa733b068e41f
+    control_state: d3a8e5d59d7a7161cbaa3ebbcbbfc82925bbc21c237e0f8e7eddc405225a77de
+    control_lease: 7a8e80be9bd8297538a6046dba22ebe149649ceafaa0bb68f97ba92c503aeb5b
+    task_registry: 58a121af047a8230637ae003cc3adbc416440a2c12c0a9cdba62315da18a44f0
+    ready_queue: 949dd1604e0b1392d9a9c1b490f296a50ba01d48ac400c09add48d1d78353453
     merge_queue: 7bdbf617b4db48ff5667a820c06b12fa941140949850976731720aad578afeb9
     steward_queue: afb96d8790debb685b0722ff5c7e0a282f241fa3fb3d4121356c343557789eff
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: a9970a1c7bc682d81815a9eae1826222e9fa94d1d359158a263e40ee792c94a2
     migration_allocations: 270d0b51ba5ce503ae3c5eb3e9f67e4be87830082a6f53ede939e21634c5714a
     current_candidate: d363b5688183208265274bc5521676505338df544965c36e76ec1205ea9bf724
-    blockers: 17589648c1671ff6085395fea79c6f141ab07c6c4505a77073e038d752924eb5
+    blockers: b594e1dc95af48d4b8ac2f53e7b0a9ea4469a48f1621139534c6e403ce5df653
   commands_run:
   - delivery SHA256SUMS.txt: 214/214 passed
   - package inventory: 46 tasks, 46 contexts, 46 prompts, 16 source-spec files
@@ -1437,6 +1464,10 @@ verification:
   - migration steward acknowledgment audit: proved exact request/migration/native/integration bindings for P17-MIGRATION-002, P18-migration-003, and P21-MIGRATION-002 but rejected stale F02 runtime bytes as acknowledgment; issued only a three-path F02 runtime acknowledgment claim
   - successor correction dispatch: passed exact disjoint F02/F04/F03 path sets, recursively sorted canonical READY digests d8303358/1c8541d2/04208bf0, fresh claims and writer leases, zero effect locks, candidate null, legal broad-only scope, and provider/deployment withholding
   - control phase validation: all eleven canonical control YAML files and C00 TASK-STATE parsed, 46 registry task IDs remained unique, all nine completed MERGE payload digests and all three READY payload digests reproduced, normalized Git-byte control digests matched, diff-check and secret scan across 2423 files passed; scoped Prettier continued the known baseline on all nine touched control/runtime documents, so no formatting claim or broad rewrite was made
+  - F02 acknowledgment terminal bd17fd6f independent audit: held only for malformed 62-hex P17 READY binding and stale migration-2251 pg-mem checksum; exact local/tracking/live remote, sole-parent three-path scope, immutable request/migration bytes, state-handoff c3cd86e5, runtime triplet b1d6109e, released lease, clean worktree, and effects 0/0/0 otherwise passed
+  - F03 terminal 3947c988 independent audit: passed exact ancestry/five-path scope, product 0f78ec6c, runtime triplet 6d9644ad, 44 focused tests with one declared native skip, typecheck, focused lint/format, YAML/diff/secret gates, released lease, clean remote equality, and effects 0/0/0
+  - F04 terminal b43c1923 independent audit: passed exact ancestry/eight-path scope, unchanged 17 repository and eight domain exported signatures, interface 1.0.1 digest 79176042, 25 focused tests with three declared native skips, verified 14-test PostgreSQL proof, typecheck/lint/format/YAML/diff/secret gates, released lease, clean remote equality, and effects 0/0/0
+  - F02 checksum-metadata correction control validation: passed all 12 parsed YAML documents, 46 unique registry tasks, canonical READY d2e9a20b, empty active and nine exact completed MERGE items, 14 unclaimed provider locks, null candidate, 11/11 normalized control digests, exact eight-path diff, diff-check, and secret scan across 2423 files; scoped Prettier reproduced the known baseline on all eight touched control/runtime files, so no formatting claim or broad rewrite was made
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
@@ -1450,4 +1481,5 @@ blockers:
 - P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
 - F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
 - F04-OWNERSHIP-TRANSFER-SESSION-SCOPE
+- F02-2251-PGMEM-CHECKSUM-METADATA
 out_of_scope_findings: []

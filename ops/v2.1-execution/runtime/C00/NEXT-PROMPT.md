@@ -2089,3 +2089,51 @@ Legal remains a `production_broad` blocker only. No bulk send, Student contact,
 WhatsApp activation, real-customer charge, live migration, deployment, DNS
 change, or provider mutation may precede its exact dependency, candidate, and
 effect-lock gates.
+
+# Latest F02 checksum-metadata correction instruction
+
+Consume only F02 READY
+`d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82`
+from exact clean local/tracking/live remote head
+`bd17fd6fc11cc122ea452b131e1107dd0bb88fcc`, under claim
+`07870f1c-ed37-4637-a92f-708f80fb36df` and MIGRATION_AUTHORITY lease
+`35b6ed2e-7863-493c-8d5e-dee6850f5110`. Stop immediately on branch, ancestry,
+remote, lease, READY-digest, or path drift.
+
+Change exactly these four paths:
+
+1. `ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml`;
+2. `ops/v2.1-execution/runtime/F02/TASK-STATE.yaml`;
+3. `ops/v2.1-execution/runtime/F02/HANDOFF.md`;
+4. `ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md`.
+
+Replace every current F02 migration-2251 pg-mem checksum value
+`fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654`
+with the exact repository-runner checksum
+`ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36`.
+Bind it to immutable migration Git blob
+`4bd4afdc152dd47977d7ab0aaeee246d5f75a16f`, normalized-LF checksum
+`525172d9072c930e0178e35ec8a7ddc6b1217b70f17b5e1f1c970228dee43dec`,
+and control checksum
+`3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9`.
+
+Record that the prior C00 READY value for `P17-MIGRATION-002` was the malformed
+62-hex value
+`e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624`,
+and bind the immutable authoritative digest
+`e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca`.
+Do not change the request identity or bytes.
+
+Preserve the separate 2250-2252 acknowledgments, implementation proof
+`39cacd4a...`, integration merge `526f0384...`, and
+`central_steward_results_applied: false`. Do not edit or execute a migration,
+rerun product/workspace suites, change product/control/provider/deployment
+files, apply steward results, integrate, freeze a candidate, or perform any
+external effect.
+
+Validate exact four-path scope, YAML, Git ancestry, immutable request and
+migration bytes, the pg-mem derivation through the repository-runner
+transform, diff hygiene, secret scan, and effects `0/0/0`. Commit, release the
+lease in the terminal metadata, push normally to the exact F02 branch, verify
+local/tracking/live remote equality and a clean worktree, then stop for C00
+independent admission.

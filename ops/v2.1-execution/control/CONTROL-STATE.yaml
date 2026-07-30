@@ -16,20 +16,23 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
+controller_authorization_sha: c44656d40769b28f2d55e6e1041d716175129f4a
 next_action: >-
-  From audited integration 8634b2ab, dispatch three exact disjoint claims: F02 runtime-only acknowledgments for the
-  already-integrated 2250-2252 migration steward requests, F04 ownership-transfer revocation atomicity and
-  transferred-household session scope, and F03 v2.1 Parent host-cookie/session runtime. Integrate F02 acknowledgment
-  first, F04 correction second, and F03 correction third after independent terminal review. Then bind the real runtime
-  through P08 and I36 central composition. Candidate freeze and all provider mutation, deployment, DNS, sends, charges,
-  live migration execution, and customer activation remain gated.
+  Correct only F02 migration-2251 repository-runner checksum metadata from the held bd17fd6f acknowledgment terminal,
+  under the exact four-path grant. F04 b43c1923 and F03 3947c988 have independently passed terminal review. After the
+  corrected F02 terminal independently passes, admit one ordered I36 microbatch: corrected F02 acknowledgment, F04
+  transfer correction, F03 Parent-session runtime, and P31 provider-readback matrices. Apply no steward result until
+  the corrected F02 terminal is integrated. Candidate freeze and all provider mutation, deployment, DNS, sends,
+  charges, live migration execution, and customer activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: integrated_and_reconciled
+  status: migration_2251_pgmem_checksum_metadata_correction_dispatched
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+  held_acknowledgment_head_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+  held_reason: stale_2251_repository_runner_checksum_and_malformed_prior_READY_request_digest
+  exact_2251_pgmem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
   integration_merge_sha: 131413297b7eb6510a1e12d44337e576406cafae
   integration_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
   successor_request_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
@@ -56,11 +59,11 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: producer_corrections_dispatched
+  status: F04_F03_terminals_admitted_F02_metadata_correction_dispatched
   branch: codex/v21-integration
   prior_release_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
   expected_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-  scope: F02_runtime_acknowledgment_F04_transfer_correction_F03_parent_session_runtime
+  scope: corrected_F02_acknowledgment_F04_transfer_F03_parent_session_P31_readback_next_microbatch
   provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through

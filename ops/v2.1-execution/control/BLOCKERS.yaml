@@ -42,6 +42,28 @@ blockers:
   required_authority_or_input: []
   protection: The historical rejected head 68e3c527 remains diagnostic only; only the corrected final migration bytes may be considered for candidate replay.
   next_check: Revalidate after any later migration or database-byte change and once at candidate freeze.
+- blocker_id: F02-2251-PGMEM-CHECKSUM-METADATA
+  status: open
+  scope: preintegration_metadata_truth
+  owner: C00_and_F02
+  affected_tasks:
+  - F02
+  - P18
+  - I36
+  safe_work_completed: >-
+    Independent review held F02 acknowledgment terminal bd17fd6f before integration. Current immutable migration
+    2251 blob 4bd4afdc retains normalized-LF checksum 525172d9 and control checksum 3fdeedcb, but the exact
+    repository-runner transform derives ee0f9616. The recorded fd4cdaa3 checksum belongs to superseded pre-hardening
+    blob 2ed1385c. The same review found c446 READY had truncated the P17 canonical request digest to 62 hex
+    characters; the immutable request, steward queue, and allocation record all bind the correct 64-character value
+    ending 624ca. No migration, request, product, provider, or external-effect byte is implicated.
+  required_authority_or_input:
+  - Complete the exact four-path F02 proposal/runtime metadata correction from bd17fd6f.
+  - Independently rederive the 2251 repository-runner checksum and full P17 request digest before admission.
+  protection: >-
+    Do not edit migration or request bytes, integrate bd17fd6f, apply a central steward result, or rerun unrelated
+    product suites for this metadata-only correction.
+  next_check: Re-evaluate only after the corrected F02 terminal is pushed with clean remote equality and a released lease.
 - blocker_id: P20-P21-PUBLICATION-SEED-INTEGRATION
   status: closed
   scope: controlled_launch_candidate
@@ -78,14 +100,16 @@ blockers:
   safe_work_completed: >-
     Corrected P08 source 1550e668/terminal 7ba18b92 and F04 Parent-session terminal a5868a95 are integration ancestors of
     audited release 8634b2ab. F04 passes exact create/resolve/revoke persistence against unchanged migration 2235 and
-    owner-derived household labels. The active middleware still resolves only legacy sessions. Exact disjoint F03
-    host-cookie/runtime and F04 transfer-correction claims are now authorized from 8634b2ab with zero external authority.
+    owner-derived household labels. F04 transfer terminal b43c1923 and F03 host-cookie/runtime terminal 3947c988 now
+    independently pass their exact eight-path and five-path scopes, focused/native verification, released leases, clean
+    remote equality, and effects 0/0/0. They remain unintegrated, and the active middleware still resolves only legacy
+    sessions.
   required_authority_or_input:
-  - Complete and integrate the exact F03 host-cookie runtime using the same F04 resolver
+  - Integrate exact F04 b43c1923 followed by F03 3947c988, preserving the same F04 resolver binding
   - Bind that runtime through P08, then install the same resolver in the I36 production middleware/composer
   - Pass real pre/post-expiry Parent-session middleware and inactive-route allowlist verification
   protection: Do not claim signup session establishment from row insertion alone, expose raw token material, rewrite migration 2235, or treat inactive access as an unauthenticated Parent.
-  next_check: Re-evaluate after the ordered F04 then F03 then P08 then I36 correction chain.
+  next_check: Re-evaluate after the ordered F04/F03 integration and the remaining P08/I36 composition chain.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
   status: open
   scope: controlled_launch_candidate
@@ -124,14 +148,14 @@ blockers:
     persistAppliedOwnershipTransfer calls revokeIds with schema-incompatible columns under migration 2235.
     v21_adult_sessions uses revoke_reason; v21_billing_portal_sessions has no reason column and requires the canonical
     revoked state; v21_account_action_tokens uses action_token_id/revoked_at rather than
-    token_id/invalidated_at/invalidation_reason. A nonempty transfer revocation set would roll back. Exact eight-path
-    F04 correction claim dba6e4fc is authorized from 8634b2ab under ACCOUNT_HOUSEHOLD_IDENTITY lease 9e8691f9.
+    token_id/invalidated_at/invalidation_reason. Exact eight-path correction terminal b43c1923/product 2834f79b now
+    independently passes migration-2235-compatible revocation SQL, unique-ID row-count checks, three required version
+    increments, adult updated_at/reason handling, mixed nonempty revocation, late-failure whole-transaction rollback,
+    25 focused tests, and the verified 14-test native PostgreSQL proof. Its lease is released and effects remain 0/0/0.
   required_authority_or_input:
-  - Complete the exact authorized repository/domain correction and focused tests against unchanged migration 2235
-  - Prove exact row counts, full rollback on stale or missing rows, and atomic nonempty adult-session, billing-session,
-    and action-token revocation on PostgreSQL, including all three version increments and the adult updated_at advance
+  - Integrate exact F04 terminal b43c1923 after corrected F02 and rerun the combined changed-area verification at the I36 head
   protection: Do not alter migration 2235, weaken ownership-transfer atomicity, omit any revocation set, or treat empty-set tests as production proof.
-  next_check: Re-evaluate after an exact F04 follow-up terminal is independently reviewed and integrated.
+  next_check: Close only after b43c1923 is integrated and its exact correction remains green at the resulting I36 head.
 - blocker_id: F04-OWNERSHIP-TRANSFER-SESSION-SCOPE
   status: open
   scope: controlled_launch_candidate
@@ -145,13 +169,14 @@ blockers:
     Independent review found a second pre-existing transfer defect in the F04 domain logic. Outgoing Parent sessions
     are selected by account, Parent role, and unrevoked state, but not by the transferred household. A transfer can
     therefore revoke a sibling-household session even though locked specification section 4.4 requires independent
-    multi-household access. The same exact eight-path F04 correction claim dba6e4fc is authorized from 8634b2ab.
+    multi-household access. Exact eight-path correction terminal b43c1923/product 2834f79b now independently passes
+    transferred-household selection and locked-inventory scope, a sibling-household preservation regression, focused
+    domain/repository verification, and the verified native PostgreSQL proof. Its lease is released and effects remain
+    0/0/0.
   required_authority_or_input:
-  - Require activeHouseholdId to equal the transferred household in both outgoing-session selection and locked-inventory
-    validation
-  - Add a sibling-household regression proving unrelated sessions remain active through an otherwise successful transfer
+  - Integrate exact F04 terminal b43c1923 after corrected F02 and rerun the combined changed-area verification at the I36 head
   protection: Do not broaden revocation to every Parent session on the account or weaken the locked-inventory equality
     check.
-  next_check: Re-evaluate with the exact F04 transfer follow-up terminal and its repository/domain tests.
+  next_check: Close only after b43c1923 is integrated and its exact household-scope correction remains green at the resulting I36 head.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

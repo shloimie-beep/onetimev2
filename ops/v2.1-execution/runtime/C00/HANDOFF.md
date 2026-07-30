@@ -2573,3 +2573,50 @@ that request or the broader P08-registration-002 request from narrow
 session/route composition. Legal remains a `production_broad`-only gate. No
 provider lock is held and no provider, deployment, DNS, send, charge, live
 migration, or customer effect is authorized.
+
+# F02 acknowledgment hold and checksum-metadata correction
+
+Control acquisition parent is
+`c44656d40769b28f2d55e6e1041d716175129f4a`; exact remote integration remains
+`8634b2ab15df624576a88b31182ebdc68553ff74`; candidate remains null.
+
+Independent review held F02 acknowledgment terminal
+`bd17fd6fc11cc122ea452b131e1107dd0bb88fcc` for exactly two metadata truth
+defects:
+
+- the prior C00 READY entry truncated the immutable
+  `P17-MIGRATION-002` digest to 62 hexadecimal characters
+  (`e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624`);
+  the authoritative 64-character digest ends `624ca`;
+- the current migration-2251 blob
+  `4bd4afdc152dd47977d7ab0aaeee246d5f75a16f` derives repository-runner
+  pg-mem checksum
+  `ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36`,
+  while the recorded `fd4cdaa3...` checksum belongs to a superseded blob.
+
+All other F02 ancestry, exact three-path scope, immutable request/migration
+bytes, state/handoff `c3cd86e5...`, runtime triplet `b1d6109e...`, released
+lease, clean remote equality, and effects `0/0/0` passed.
+
+C00 therefore authorized only the proposal plus F02 runtime triplet under:
+
+- claim `07870f1c-ed37-4637-a92f-708f80fb36df`;
+- MIGRATION_AUTHORITY lease
+  `35b6ed2e-7863-493c-8d5e-dee6850f5110`;
+- READY `d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82`.
+
+No migration, product code, request, central steward disposition, merge, live
+database, candidate, provider, deployment, or external-effect byte is in
+scope. The correction must preserve
+`central_steward_results_applied: false`, push one exact four-path terminal,
+release its lease, and stop for independent review.
+
+F04 correction terminal `b43c1923...` and F03 correction terminal
+`3947c988...` independently passed their exact scope, security, native/focused
+test, typecheck, lint/format, lease, remote, and zero-effect admission audits.
+After the corrected F02 terminal passes, queue one ordered integration
+microbatch: corrected F02, F04, F03, then read-only P31 `f50d95ba...`.
+
+Legal remains a `production_broad`-only gate. No provider lock is held and no
+provider, deployment, DNS, send, charge, live migration, customer, or other
+external effect is authorized.

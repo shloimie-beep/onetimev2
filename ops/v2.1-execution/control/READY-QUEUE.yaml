@@ -6,12 +6,12 @@ ready:
 - task_id: F02
   lane: A
   status: resume_ready
-  phase: migration_2250_2252_steward_acknowledgment_checkpoint
+  phase: migration_2251_pgmem_checksum_metadata_correction
   branch: codex/v21-lane1-migration-correction
-  claim_mode: resume_phase_branch_fast_forward
-  state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
-  authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-  expected_existing_head: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+  claim_mode: resume_phase_branch_exact_head
+  state_based_on_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+  authorized_start_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+  expected_existing_head: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
   task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
@@ -23,167 +23,60 @@ ready:
       observed_integration_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
       state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
       runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
-    migration_batch:
+    held_acknowledgment_terminal:
+      head_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+      disposition: held_not_admissible_pending_exact_metadata_correction
+      state_handoff_digest: c3cd86e54f0142e9a169aa0581a9e332cf37b6332ab0f9f10d69c94cb453083e
+      runtime_triplet_digest: b1d6109ed9f0383720a790f15fb67c0dc1cdff9ffe70b8fb4e45b7b05dc518a8
+    canonical_request_binding:
+      request_id: P17-MIGRATION-002
+      malformed_prior_ready_value: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624
+      authoritative_request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+      authoritative_sources:
+      - ops/v2.1-execution/control/STEWARD-QUEUE.yaml
+      - ops/v2.1-execution/control/MIGRATION-ALLOCATIONS.yaml
+      - immutable P17-MIGRATION-002 request bytes
+    migration_2251_binding:
       implementation_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
       integration_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
-      requests:
-        P17-MIGRATION-002: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624
-        P18-migration-003: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
-        P21-MIGRATION-002: aeb2db007026e9ad6286c4daa10a8b1970df6869b4d9eb821e3fe29c6eefc792
+      migration_path: packages/db/migrations/2251_v21_embedded_classroom.sql
+      migration_git_blob: 4bd4afdc152dd47977d7ab0aaeee246d5f75a16f
+      migration_normalized_lf_sha256: 525172d9072c930e0178e35ec8a7ddc6b1217b70f17b5e1f1c970228dee43dec
+      migration_control_checksum_sha256: 3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9
+      stale_pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
+      exact_pg_mem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
   authorized_paths:
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
   correction_directives:
-  - Fast-forward the exact F02 branch from 26234c47 to integration 8634b2ab before editing; stop on any branch, ancestry, remote, or path drift.
-  - Update only the F02 runtime triplet to acknowledge the immutable 2250-2252 request, migration, native-proof, and integration bindings; do not edit a migration, proposal, product file, request, or control file.
-  - Record P17-MIGRATION-002, P18-migration-003, and P21-MIGRATION-002 separately with their exact canonical request digests, producer source heads, migration paths/checksums, proof 39cacd4a, and merge 526f0384.
-  - Do not claim that C00 has applied a steward result. Publish only the missing producer acknowledgment checkpoint and its reproducible state/handoff digest for later independent C00 disposition.
-  - Validate YAML, exact sole-parent/runtime-triplet scope, immutable request and migration bytes, diff hygiene, secret scan, released lease, clean remote equality, and effects 0/0/0. Do not rerun product or workspace suites for metadata-only bytes.
+  - Resume only from exact clean local/tracking/remote F02 head bd17fd6f; stop on branch, ancestry, remote, or path drift.
+  - Replace the stale migration-2251 repository-runner checksum fd4cdaa3 with exact current-blob derivation ee0f9616 in the allocation proposal and every current F02 acknowledgment/inventory field.
+  - Record that the prior c446 READY P17 digest was malformed at 62 hex characters and bind the immutable full 64-character digest ending 624ca; do not change any request identity or bytes.
+  - Update only the proposal plus F02 runtime triplet. Do not edit a migration, product file, request, provider record, deployment file, or control file.
+  - Preserve the three separate 2250-2252 acknowledgments, proof 39cacd4a, merge 526f0384, and explicit central_steward_results_applied false disposition.
+  - Validate exact four-path scope, YAML, derivation from Git blob 4bd4afdc using the packages/db repository-runner transform, immutable request/migration bytes, diff hygiene, secret scan, released lease, clean remote equality, and effects 0/0/0. Do not rerun product or workspace suites for metadata-only bytes.
   writer_slot_leases:
   - slot: MIGRATION_AUTHORITY
-    lease_id: 203f8836-7958-4791-afb0-764a289a9ac0
+    lease_id: 35b6ed2e-7863-493c-8d5e-dee6850f5110
     holder_task_id: F02
-    holder_claim_id: c6e15ead-7f47-46f0-aaea-6fe00cd4338b
-    holder_writer_id: codex-f02-steward-ack-c6e15ead
-    state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
-    lease_issued_at: '2026-07-30T19:30:53Z'
-    lease_expires_at: '2026-07-30T21:30:53Z'
-    phase_scope: migration_2250_2252_runtime_acknowledgment_only
+    holder_claim_id: 07870f1c-ed37-4637-a92f-708f80fb36df
+    holder_writer_id: codex-f02-2251-checksum-07870f1c
+    state_based_on_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+    lease_issued_at: '2026-07-30T20:10:49Z'
+    lease_expires_at: '2026-07-30T21:40:49Z'
+    phase_scope: migration_2251_pgmem_checksum_metadata_correction_only
   effect_lock_leases: []
-  claim_id: c6e15ead-7f47-46f0-aaea-6fe00cd4338b
-  lease_issued_at: '2026-07-30T19:30:53Z'
-  lease_expires_at: '2026-07-30T21:30:53Z'
+  claim_id: 07870f1c-ed37-4637-a92f-708f80fb36df
+  lease_issued_at: '2026-07-30T20:10:49Z'
+  lease_expires_at: '2026-07-30T21:40:49Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
-- task_id: F04
-  lane: D-auth
-  status: resume_ready
-  phase: ownership_transfer_revocation_atomicity_and_scope_correction
-  branch: codex/v21-f04-household-identity
-  claim_mode: resume_phase_branch_fast_forward
-  state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
-  authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-  expected_existing_head: a5868a9503d1037890f5f8e250c2afe5131c4331
-  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
-  task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
-  dependency_heads_and_digests:
-    I36:
-      required_state: accepted_source_microbatch_2_complete
-      observed_state: accepted_source_microbatch_2_complete
-      observed_integration_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-      state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
-      runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
-    interface:
-      prior_metadata_head_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
-      prior_contract_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
-      required_successor_version: 1.0.1
-  authorized_paths:
-  - packages/db/src/accounts/v21-household-identity-repository.ts
-  - packages/db/src/accounts/v21-household-identity-repository.test.ts
-  - packages/domain/src/accounts/v21-household-identity.ts
-  - packages/domain/src/accounts/v21-household-identity.test.ts
-  - ops/v2.1-execution/runtime/F04/INTERFACE-CHECKPOINT.yaml
-  - ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/F04/HANDOFF.md
-  - ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
-  correction_directives:
-  - Fast-forward the exact F04 branch from a5868a95 to integration 8634b2ab before editing; stop on any branch, ancestry, remote, or path drift.
-  - Restrict outgoing Parent-session selection and locked-inventory validation to activeHouseholdId equal to the transferred household; prove a sibling-household Parent session remains active.
-  - Use only migration-2235-compatible allowlisted revocation SQL for adult sessions, billing sessions, and account action tokens, with canonical identifiers, states, timestamps, reasons where supported, and version increments.
-  - Require every nonempty inventory to affect its exact unique-ID count; throw stale_version on missing, stale, used, or already-revoked rows so the complete transfer transaction rolls back.
-  - Preserve public signatures and immutable contract/migration/request bytes. Publish backward-compatible interface checkpoint 1.0.1 changing only the domain implementation hash and binding the four-file product commit.
-  - Run focused contract/domain/service/repository tests, native disposable PostgreSQL positive and rollback probes, workspace typecheck, targeted lint/format, YAML/digest/immutability/secret/diff gates, then release the lease and push with effects 0/0/0.
-  writer_slot_leases:
-  - slot: ACCOUNT_HOUSEHOLD_IDENTITY
-    lease_id: 9e8691f9-a6c3-4386-9c1e-7aeef8db6578
-    holder_task_id: F04
-    holder_claim_id: dba6e4fc-04d0-4245-94e8-cc722e73b013
-    holder_writer_id: codex-f04-transfer-dba6e4fc
-    state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
-    lease_issued_at: '2026-07-30T19:30:53Z'
-    lease_expires_at: '2026-07-30T21:30:53Z'
-    phase_scope: ownership_transfer_revocation_atomicity_and_household_scope_only
-  effect_lock_leases: []
-  claim_id: dba6e4fc-04d0-4245-94e8-cc722e73b013
-  lease_issued_at: '2026-07-30T19:30:53Z'
-  lease_expires_at: '2026-07-30T21:30:53Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/F04-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: XHIGH
-- task_id: F03
-  lane: D-auth
-  status: resume_ready
-  phase: v21_parent_host_cookie_session_runtime_correction
-  branch: codex/v21-f03-adult-student-auth
-  claim_mode: resume_phase_branch_fast_forward
-  state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
-  authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-  expected_existing_head: 7c638131a0cab757657e95c4d2229a1573e4cde1
-  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
-  task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
-  dependency_heads_and_digests:
-    I36:
-      required_state: accepted_source_microbatch_2_complete
-      observed_state: accepted_source_microbatch_2_complete
-      observed_integration_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-      state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
-      runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
-    F04:
-      required_state: parent_session_repository_integrated
-      observed_state: parent_session_repository_integrated
-      source_head_sha: a5868a9503d1037890f5f8e250c2afe5131c4331
-      integration_merge_sha: 98cc221f3b5dcb9d8d4038015dd4d4c96817618d
-      stable_repository_symbols:
-      - V21AdultSessionRepository
-      - createPostgresV21AdultSessionRepository
-    P08:
-      required_state: corrected_registration_server_integrated
-      observed_state: corrected_registration_server_integrated
-      source_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
-      integration_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
-  authorized_paths:
-  - apps/web/src/server/features/auth/v21-adult-session.ts
-  - apps/web/src/server/features/auth/v21-adult-session.test.ts
-  - ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/F03/HANDOFF.md
-  - ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
-  correction_directives:
-  - Fast-forward the exact F03 branch from 7c638131 to integration 8634b2ab before editing; stop on any branch, ancestry, remote, or path drift.
-  - Add a neutral injectable Parent-session runtime backed by the stable F04 repository symbols; do not import P08 or edit central composition.
-  - Generate independent 32-byte-or-greater access and refresh material, persist only the proven domain-separated lowercase SHA-256 digests, and expose raw material only inside the strict signed HttpOnly host-cookie envelope.
-  - Resolve only __Host-onetime-session through the same F04 repository binding; reject malformed, oversized, duplicate, legacy, tampered, cross-tier, extra-field, stale-security, inactive-identity, revoked, expired, or wrong-household authority fail closed before render or provider dispatch.
-  - Establish only after same-resolver middleware round-trip; on mismatch or failure best-effort revoke the exact session and return no token. Export exact-session CSRF proof/verification and the segment-safe inactive-Parent allowlist.
-  - Preserve the F04 repository public signatures, all migrations, P08 source, central composer, config, barrels, manifests, lockfiles, and provider boundary. Run focused tests, targeted lint/format, workspace typecheck, YAML/secret/diff gates, then release the lease and push with effects 0/0/0.
-  writer_slot_leases:
-  - slot: IDENTITY_AUTH_ACCESS
-    lease_id: 343a0e56-33ee-4227-b4ee-d373d1d3f3a9
-    holder_task_id: F03
-    holder_claim_id: 01368f45-d6ea-4816-b70f-4b21ac418a83
-    holder_writer_id: codex-f03-parent-session-01368f45
-    state_based_on_control_head_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
-    lease_issued_at: '2026-07-30T19:30:53Z'
-    lease_expires_at: '2026-07-30T21:30:53Z'
-    phase_scope: v21_parent_host_cookie_session_runtime_only
-  effect_lock_leases: []
-  claim_id: 01368f45-d6ea-4816-b70f-4b21ac418a83
-  lease_issued_at: '2026-07-30T19:30:53Z'
-  lease_expires_at: '2026-07-30T21:30:53Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/F03-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: XHIGH
 entry_payload_digests:
-  F02: d8303358cef529777a0ced6ef7463261d0c622fca1ecb12dcd39b552dddf3841
-  F04: 1c8541d27f0e96522bc877ef7b74023b8861168088cbd5457b4ca980e7e07a06
-  F03: 04208bf0d5d926b5f08387688ffacf4818336feef7636b6dcf651c01c3a945f1
+  F02: d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
