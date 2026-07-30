@@ -3,44 +3,48 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-P20 completed the approved-for-publication projection collision correction on
-branch `codex/v21-p20-media-processing`.
+P20 is in a runtime-triplet-only metadata-correction atomic claim on branch
+`codex/v21-p20-media-processing`.
 
-The corrected ancestry is:
+The exact parent is the rejected metadata head
+`dc438725fb6bb8779c2d816d5e28d3b73227b6d4`. Canonical control
+`9e3eb50afbd1232bc83729f281bd82c12a14ab8e` has sole state-basis parent
+`6fec4000f1e31d608f8fc41488a9befab903aae8` and READY digest
+`f10eafc49cd2665bd6bf1b8ae5e804fd880799e4ca734c9e88954957e0f7ff91`.
 
-1. Reconciled atomic claim
-   `0d58c8e4d6ca0263273d540bfd722586d8a1b5d3`.
-2. Corrected implementation
-   `3cf5543b7fe2dde3118d35ce655e105dbd771a60`.
-3. Final runtime-triplet checkpoint: derive with `git rev-parse HEAD`; C00
-   records the pushed head.
+Fresh claim `162924fc-86b1-466b-8836-9e6fcc2a1326` holds CONTENT_PROCESSING
+lease `3da95218-b815-434a-ae63-154220c083b0` through
+`2026-07-30T08:32:00Z`.
 
-Containing control is `a5851edf70f3c60cc25ece3faf124bedf1629f21`.
-Claim `e8c768e8-f603-4d0c-a45b-34b5cd7ea92c` used CONTENT_PROCESSING lease
-`24d0fa6f-30ac-4fc0-af2a-2b495d826063`, released at
-`2026-07-30T07:19:30Z` before its `2026-07-30T07:30:12Z` expiry.
+This first push changes exactly:
 
-The implementation delta is exactly the five authorized contract, repository,
-repository-test, domain, and domain-acceptance-test paths. The correction
-artifact digest is
-`ac8a6038c4a97a3b9347fd9a29cd9977ba24b3a0bddd294b862ccce65b9efe9c`.
-The terminal checkpoint delta is exactly the P20 runtime triplet.
+- `ops/v2.1-execution/runtime/P20/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P20/TASK-STATE.yaml`
+
+It records the claim, lease, READY binding, rejected-head state/handoff digest
+`945f2ab3c7230fdfb2db00a3801e2e435ad22c43f48eaeccda220bbca6ca2727`,
+and runtime-triplet digest
+`38723f2ea2c464938250dcb46231d739ff4d3a7eefdd9e58fc59109db02ca53b`.
+
+The current contract Git-blob SHA-256 is
+`cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9`.
+The corrected twelve-artifact aggregate is
+`9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370`.
+The existing stale `contract_digest` and `implementation_artifact_digest`
+fields remain unchanged. No actual digest correction is authorized before C00
+reconciles this atomic claim.
 
 C00 next action:
 
-1. Verify the exact ancestry and remote heads.
-2. Verify the implementation delta is exactly five authorized source paths and
-   the terminal delta is exactly the P20 runtime triplet.
-3. Recompute the correction and runtime-triplet digests.
-4. Independently audit the projection invariants and passed gates.
-5. Integrate corrected P20 only after the audit succeeds.
+1. Verify the claim is the sole child of
+   `dc438725fb6bb8779c2d816d5e28d3b73227b6d4`.
+2. Verify its delta is exactly the P20 runtime triplet.
+3. Recompute the READY, prior pair/triplet, current contract blob, and corrected
+   twelve-artifact bindings.
+4. Reconcile this claim before P20 resumes the metadata correction.
 
-Focused tests passed 13/13, including success, exact replay, every required
-fail-closed mismatch, and parameterized composite SQL. Typecheck, focused lint,
-focused formatting, secret scan, YAML parse, scope, and diff checks passed.
-External effects are attempted `0`, succeeded `0`, reconciled `0`.
-
-Migration 2246 and all steward requests remain unchanged. No new migration,
-request, runner, service, P21, provider, control, manifest, or lockfile path was
-changed. P21 remains withheld until corrected P20 is final, independently
-audited, and integrated.
+Every source, test, acceptance, request, migration, P21, provider, deployment,
+manifest, lockfile, and effect byte remains unchanged. External effects remain
+attempted `0`, succeeded `0`, reconciled `0`. P20 must stop after the normal
+claim push and remote verification.

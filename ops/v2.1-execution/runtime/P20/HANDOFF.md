@@ -8,13 +8,53 @@
 - Implementation head: `e366ef926d6b2ee3be888eaae9fe2cad08b8a57f`
 - Collision-correction atomic claim: `0d58c8e4d6ca0263273d540bfd722586d8a1b5d3`
 - Corrected implementation head: `3cf5543b7fe2dde3118d35ce655e105dbd771a60`
-- Final metadata head: derive with `git rev-parse HEAD`; C00 records the pushed head
+- Rejected metadata head: `dc438725fb6bb8779c2d816d5e28d3b73227b6d4`
+- Current atomic-claim head: derive with `git rev-parse HEAD`; C00 records the
+  pushed head
 - Reconciled containing control: `a5851edf70f3c60cc25ece3faf124bedf1629f21`
 - READY state base: `9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`
 - READY payload: `ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea`
 - Claim: `e8c768e8-f603-4d0c-a45b-34b5cd7ea92c`
 - Released CONTENT_PROCESSING lease: `24d0fa6f-30ac-4fc0-af2a-2b495d826063`
   at `2026-07-30T07:19:30Z`, before its `2026-07-30T07:30:12Z` expiry
+- Runtime-metadata correction control:
+  `9e3eb50afbd1232bc83729f281bd82c12a14ab8e`
+- Runtime-metadata READY state base:
+  `6fec4000f1e31d608f8fc41488a9befab903aae8`
+- Runtime-metadata READY payload:
+  `f10eafc49cd2665bd6bf1b8ae5e804fd880799e4ca734c9e88954957e0f7ff91`
+- Runtime-metadata claim: `162924fc-86b1-466b-8836-9e6fcc2a1326`
+- Active CONTENT_PROCESSING lease:
+  `3da95218-b815-434a-ae63-154220c083b0` through
+  `2026-07-30T08:32:00Z`
+
+## Runtime-metadata atomic claim
+
+C00 rejected only the runtime digest metadata at
+`dc438725fb6bb8779c2d816d5e28d3b73227b6d4`; the five corrected source files,
+behavior, tests, requests, migration evidence, and effects remain accepted
+inputs for a metadata-only correction.
+
+This first claim checkpoint changes exactly:
+
+- `ops/v2.1-execution/runtime/P20/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P20/TASK-STATE.yaml`
+
+The rejected-head state/handoff pair digest is
+`945f2ab3c7230fdfb2db00a3801e2e435ad22c43f48eaeccda220bbca6ca2727`;
+its runtime-triplet digest is
+`38723f2ea2c464938250dcb46231d739ff4d3a7eefdd9e58fc59109db02ca53b`.
+The current contract blob SHA-256 is
+`cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9`,
+and the corrected twelve-artifact manifest is
+`9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370`.
+
+The existing `contract_digest` and `implementation_artifact_digest` fields
+remain deliberately unchanged in this atomic claim. They may be corrected only
+after C00 reconciles this checkpoint. Every source, test, acceptance, request,
+migration, P21, provider, deployment, manifest, lockfile, and external-effect
+byte is unchanged.
 
 ## Correction boundary
 
@@ -138,7 +178,7 @@ exact corrected implementation head
 
 ## Next action
 
-C00 independently audits the exact corrected ancestry, five-source delta,
-runtime triplet, correction digest, verification evidence, released lease, and
-zero external effects before integration. P21 remains withheld until corrected
-P20 is final, independently audited, and integrated.
+C00 must reconcile this exact runtime-triplet-only atomic claim before P20
+corrects either stale digest field. P20 stops after the normal claim push and
+remote verification. P21 remains withheld until the corrected P20 metadata is
+final, independently audited, and integrated.
