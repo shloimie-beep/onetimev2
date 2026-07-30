@@ -15,12 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
+controller_authorization_sha: e78d750887e2d56dc3c9b19612e4c51d6cbce0b5
 next_action: >-
-  P20 may make only its runtime-triplet metadata-correction atomic claim under READY f10eafc4, claim 162924fc,
-  and CONTENT_PROCESSING lease 3da95218, then stop. P17 behavior at 506d9024 passes but its terminal handoff is
-  rejected for conflicting historical instructions, a pending-terminal verification line, and overbroad -001
-  withholding language; it may make only a runtime-triplet atomic claim under READY e716a27e, claim
-  023cf8f0, and ZOOM_PREPARATION lease 24a593bc, then stop. All product, test, request, migration, provider, and
-  effect bytes remain frozen. P18/P21 remain withheld; candidate, deployment, sends, and effects are unauthorized.
+  P20 claim 75abbd84 and P17 claim 8d409a2d are reconciled. P20 may update only its exact stale contract and
+  corrected twelve-artifact digest metadata under claim 162924fc and CONTENT_PROCESSING lease 3da95218. P17 may
+  update only its conflicting old/current runtime instructions, terminal verification status, and exact -001
+  dispositions under claim 023cf8f0 and ZOOM_PREPARATION lease 24a593bc. Both must publish runtime-triplet-only
+  terminal finals and release leases. All non-runtime bytes remain frozen. P18/P21, candidate, providers,
+  deployment, sends, and effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

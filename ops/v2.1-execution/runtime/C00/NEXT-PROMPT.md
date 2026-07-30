@@ -1750,3 +1750,15 @@ mark terminal gates passed, and state exactly: migration-001 and
 server-worker-registration-001 are superseded/withheld; Zoom-config-001 stays
 assigned; reminder-routing-001 stays applied/acknowledged; every `-001` byte
 is preserved. Recompute runtime evidence, release, push, and stop for audit.
+
+P20 claim `75abbd84cc8668aff4a4ed803f907e237f65bb5a` is reconciled.
+Change only its runtime triplet: replace stale contract digest with
+`cdeff616…`, replace or explicitly historicize the stale twelve-file aggregate
+with corrected `9b4cfb26…`, make every runtime statement unambiguous, rederive
+manifests, release CONTENT_PROCESSING lease `3da95218`, push, and stop.
+
+P17 claim `8d409a2d70017a60dc70c54eac3942deaf40eb7d` is reconciled. Change
+only its runtime triplet: remove or label superseded old-head instructions,
+mark terminal verification passed, and record exact `-001` dispositions
+without changing request bytes. Recompute manifests, release ZOOM_PREPARATION
+lease `24a593bc`, push, and stop. Both effects remain `0/0/0`.

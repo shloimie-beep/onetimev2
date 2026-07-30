@@ -2105,3 +2105,12 @@ conflicting historical instructions, terminal verification status, exact
 request disposition language, and derived runtime evidence may change. Every
 product, test, acceptance, successor/existing request, provider, and effect
 byte remains frozen.
+
+P20 metadata claim `75abbd84` and P17 metadata claim `8d409a2d` are
+independently reconciled as exact runtime-triplet-only children of
+`dc438725` and `506d9024`. Their pair/triplet manifests are P20
+`ac692e24`/`df5fb59f` and P17 `2457d2ae`/`a69a2e57`. Exact READY, fresh
+claim, lease, state-basis, stale-text preservation, sole-parent scope, clean
+remote equality, and effects `0/0/0` pass. READY is empty. P20 and P17 may now
+perform only their explicit runtime metadata corrections, publish
+runtime-triplet-only terminal finals, release their leases, and stop for audit.
