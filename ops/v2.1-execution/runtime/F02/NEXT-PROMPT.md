@@ -3,26 +3,26 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Audit the exact F02 Lease B compatibility-semantic correction release.
+Audit the exact F02 migration Lease C result.
 
-Require sole parent `24c327eaf06fc502d167d2d5863c5fbb05db5a2c`,
-containing continuation control
-`5644d38395e86ea114197eb12415106994bbf3ea`, sole acquisition parent
-`fe0d60fa2807b02882390df960f3e75517672d11`, claim
-`6b1e1632-e3d9-4f87-92b3-8b150a6715d2`, and shared lease
-`31e905c8-d5c2-4e3c-9e98-c2e8f78989ce`.
+Require sole parent `ff35555611e7261d1b7b96fc2233eaf82a9f9fdf`,
+reconciliation control `1b5e5dd662390dd5affc159990a59b3b8d99c127`, sole
+reconciliation parent `85100180449bf234a93f107eb66a1f7bc635b4f0`, claim
+`0e98de00-4873-41cb-a06f-bd0ace918b89`, MIGRATION_AUTHORITY lease
+`7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95`, SCHEMA_CONTRACT lease
+`b7ddd6c3-8a8e-4c9a-a304-5b4c15390fe1`, and READY digest
+`5ab53779afff1e0a2a7ae4759818f9a98c259970298449ae767cee788a12b936`.
 
-Require an exact five-path delta: migration 2239, the allocation proposal, and
-the F02 runtime triplet. Confirm migration 2239 preserves sole paused and sole
-archived canonical lifecycle, prefers active in multi-row scopes, and enforces
-one canonical per account/product independent of lifecycle.
+Require the exact nine-path delta: migrations 2245 through 2249, the allocation
+proposal, and the F02 runtime triplet. Confirm only P19, P20, P28, P08, and P09
+were implemented and that P17, P18, and P21 remained withheld.
 
-Rerun direct native lifecycle probes and complete disposable PGlite and pg-mem
-75/75 inventories. Confirm checksum pair
-`acdd52511fb2fa738d2a122087c65dbf7ae06879b51bd913095a0c86f63ea111` /
-`816a086b5ec6cc0aa6d3c13b8b36e2f75dbc381cb2f60b4f859dba0328be755c`,
-protected 2234-2238 and 2240-2244 bytes, next ordinal 2245, typecheck, lint,
-build, format, YAML, secret, scope, diff, package 200/200, lease release, and
-effects `0/0/0`.
+Rerun complete disposable PGlite PostgreSQL and repository-runner pg-mem 80/80
+inventories plus focused native and pg-mem probes. Verify all five
+normalized-LF/native and pg-mem checksum pairs, next ordinal 2250, typecheck,
+lint, YAML, diff, scope, lease release, and effects `0/0/0`. Treat the focused
+integration-suite `btrim(text)` failure at pre-existing migration 2235 as a
+test-harness baseline issue, not a Lease C migration failure.
 
-Stop for C00 admission; do not integrate or perform external effects.
+Stop for C00 admission. Do not merge, allocate ordinal 2250, inspect providers,
+deploy, send, or perform external effects.

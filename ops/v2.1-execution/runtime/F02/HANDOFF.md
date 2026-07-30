@@ -27,3 +27,54 @@ next ordinal 2245, lease release, and effects `0/0/0` passed.
 
 Stop for independent and C00 audit. Do not merge, register, inspect providers,
 deploy, send, or perform external effects.
+
+# F02 Migration Lease C Atomic Claim
+
+- Claim parent: `cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911`
+- Containing control: `85100180449bf234a93f107eb66a1f7bc635b4f0`
+- READY parent control: `fe95eacb2a958ba043cc9f89c1c27e09e20b9324`
+- Claim: `0e98de00-4873-41cb-a06f-bd0ace918b89`
+- MIGRATION_AUTHORITY lease: `7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95`
+- SCHEMA_CONTRACT lease: `b7ddd6c3-8a8e-4c9a-a304-5b4c15390fe1`
+- READY digest: `5ab53779afff1e0a2a7ae4759818f9a98c259970298449ae767cee788a12b936`
+- Effects: `0/0/0`
+
+This atomic claim binds only P19, P20, P28, P08, and P09 migration requests to
+ordinals 2245 through 2249. P17, P18, and P21 remain withheld. Only the F02
+runtime triplet changed. Stop for C00 reconciliation before reading requester
+bodies, editing the allocation proposal, authoring SQL, or performing effects.
+
+# F02 Migration Lease C Release
+
+- Sole parent: `ff35555611e7261d1b7b96fc2233eaf82a9f9fdf`
+- Reconciliation control: `1b5e5dd662390dd5affc159990a59b3b8d99c127`
+- Sole reconciliation parent: `85100180449bf234a93f107eb66a1f7bc635b4f0`
+- Claim: `0e98de00-4873-41cb-a06f-bd0ace918b89`
+- MIGRATION_AUTHORITY lease: `7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95`
+- SCHEMA_CONTRACT lease: `b7ddd6c3-8a8e-4c9a-a304-5b4c15390fe1`
+- Released: `2026-07-30T04:45:00Z`, before expiry `2026-07-30T06:01:19Z`
+- Effects: `0/0/0`
+
+Implemented only the authorized P19, P20, P28, P08, and P09 requests as
+forward-only migrations 2245 through 2249. The result provides bounded,
+checksum-deduplicated content ingest; immutable versioned content processing;
+adult-only communication preferences and governed reminder evidence; global
+family-signup idempotency with fixed free access and separate consents; and
+email-deduplicated school inquiries with explicit zero access before approval.
+P17, P18, and P21 remained withheld from implementation.
+
+Complete disposable PGlite PostgreSQL and repository-runner pg-mem inventories
+passed 80/80. Focused probes passed ingest size/checksum bounds, processing
+immutability, communication preference scope, family idempotency/access/consent,
+school dedupe/zero-access separation, optimistic concurrency, append-only
+enforcement, and IANA timezone validation.
+
+The exact result is nine paths: five SQL files, the allocation proposal, and the
+F02 runtime triplet. Typecheck, lint, focused unit contracts, YAML, checksum,
+scope, diff, lease-release, and zero-effect gates passed. Focused integration
+suites reached the pre-existing migration 2235 and stopped because their pg-mem
+setup omits `btrim(text)`; the complete registered pg-mem and native inventories
+passed all Lease C migrations.
+
+Stop for independent and C00 audit. Do not merge, allocate ordinal 2250,
+register, inspect providers, deploy, send, or perform external effects.

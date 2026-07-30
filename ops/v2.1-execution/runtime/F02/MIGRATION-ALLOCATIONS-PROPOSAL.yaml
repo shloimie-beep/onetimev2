@@ -3,12 +3,12 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
-  claim_id: 6b1e1632-e3d9-4f87-92b3-8b150a6715d2
-  containing_control_head_sha: 5644d38395e86ea114197eb12415106994bbf3ea
-  ready_entry_parent_control_sha: fe0d60fa2807b02882390df960f3e75517672d11
-  lease_expires_at: '2026-07-30T01:23:18Z'
-  released_at: '2026-07-30T00:37:21Z'
+  lease_id: 7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95
+  claim_id: 0e98de00-4873-41cb-a06f-bd0ace918b89
+  containing_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
+  ready_entry_parent_control_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
+  lease_expires_at: '2026-07-30T06:01:19Z'
+  released_at: '2026-07-30T04:45:00Z'
   audit_status: PASS
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
@@ -125,4 +125,54 @@ allocations:
     destructive: false
     checksum_sha256: afee7e1471f1c6c1b84c6570bb32d39cc8f6a1e576c4e5d7064753ef57939418
     pg_mem_checksum_sha256: 464bbe61224cd3ab343aa21e5ed88956684171c082703272be0e973cc866bb73
-next_available_ordinal: 2245
+  - ordinal: 2245
+    file: packages/db/migrations/2245_v21_content_ingest.sql
+    owner_task_id: P19
+    request_id: P19-MIGRATION-001
+    state: allocated
+    purpose: Durable content upload sessions and bounded multipart evidence, checksum-deduplicated original sources, source links, Drive observations, and append-only ingest commands.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: 3cd620f1efa3b47c4f052fee7b217da9a627e929d2ac328129224ed2e8042a99
+    pg_mem_checksum_sha256: c047ea117ce66a201a60b3c2bb7d5f3096e07c14b832282fd8f7f706455ba3fe
+  - ordinal: 2246
+    file: packages/db/migrations/2246_v21_content_processing.sql
+    owner_task_id: P20
+    request_id: P20-MIGRATION-001
+    state: allocated
+    purpose: Versioned content-processing lifecycle, immutable artifact revisions, idempotent commands, bounded retry state, and append-only capture evidence over canonical ingest sources.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: b065b91e0705719b31cb13cfcd609a6144680c59ef48582e1cb8c6e8e1d0f5ba
+    pg_mem_checksum_sha256: e1a468be490ff3204f7a2e20f09a819d8f761c8e40b25efec66f753e55b94405
+  - ordinal: 2247
+    file: packages/db/migrations/2247_v21_communication_foundation.sql
+    owner_task_id: P28
+    request_id: P28-migration-001
+    state: allocated
+    purpose: Adult-only reminder preferences, WhatsApp opt-in evidence, versioned household reminder plans, append-only delivery attempts, governed public-lead plans, and email acquisition state.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: f43afa371d0d6f52d43ec0dab3bb0b5927915ae3a6187226f9a5b0285017b04b
+    pg_mem_checksum_sha256: 6a916a88a196439fd23e930c400ceecb667970f7c4000a4b1db21bb7d96d8468
+  - ordinal: 2248
+    file: packages/db/migrations/2248_v21_family_signup.sql
+    owner_task_id: P08
+    request_id: P08-migration-001
+    state: allocated
+    purpose: Global family-signup idempotency, credential isolation, owner binding, fixed free-access projection, separate consent evidence, receipts, and zero-effect outbox intent.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: e32f62b3494d8ac2f8110cc0e6df02c127d699f69b284abc09ca9db735ede87f
+    pg_mem_checksum_sha256: faba8d6659dc6288cd4df42b5b28f66ae29a6184450279351761a3cb1ac6214a
+  - ordinal: 2249
+    file: packages/db/migrations/2249_v21_school_inquiry.sql
+    owner_task_id: P09
+    request_id: P09-migration-001
+    state: allocated
+    purpose: Email-deduplicated public school inquiries, locked acknowledgment intent evidence, explicit zero-access posture, and separately approved versioned school configurations.
+    replaces_applied_migration: false
+    destructive: false
+    checksum_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
+    pg_mem_checksum_sha256: 6666c474a4fbd87c028f59bf0c4863df71b6f8f547aefd7cb98abde4d284d9ce
+next_available_ordinal: 2250
