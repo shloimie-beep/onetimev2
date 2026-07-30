@@ -16,17 +16,18 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+controller_authorization_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
 next_action: >-
-  Execute one exact I36 source microbatch from 8634b2ab in order F02 9754f2ae, F04 b43c1923, F03 3947c988, then
-  read-only P31 f50d95ba. Preserve all four terminal ancestries and the collision-free 23-path union, run only combined
-  changed-area verification, then publish one I36 runtime release checkpoint. Apply no F02 steward result until that
-  release is independently reconciled. Shared P08/P09 composition, candidate freeze, and every provider mutation,
-  deployment, DNS change, send, charge, live migration execution, and customer activation remain gated.
+  Execute the exact I36 family Parent-session composition checkpoint from independently audited integration 524563f0
+  under SERVER_COMPOSER lease 1af50c79. Change only apps/web/src/server/app.ts, one new real-composition integration
+  test, and the I36 runtime triplet; preserve the recovery-capable P08 boundary without claiming stricter
+  cross-transaction atomicity. In parallel, finish read-only P09 GET /school and Admin-configuration surface preflight.
+  Candidate freeze, provider locks/mutations, deployment, DNS, sends, charges, live migration execution, and customer
+  activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: proposal_authority_terminal_independently_admitted_queued_for_I36
+  status: proposal_authority_terminal_integrated_and_reconciled
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   admitted_acknowledgment_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
@@ -34,6 +35,8 @@ production_completion_lanes:
   exact_2251_pgmem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
   integration_merge_sha: 131413297b7eb6510a1e12d44337e576406cafae
   integration_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
+  proposal_authority_integration_merge_sha: a9ea9281f30b8ff38d997f1c26c22aae90b37e29
+  proposal_authority_integration_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   successor_request_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
   successor_request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
   next_migration_ordinal: 2254
@@ -51,18 +54,22 @@ production_completion_lanes:
   provider_effects: prohibited
 - lane: C
   owner: P31_provider_preflight
-  status: independently_admitted_queued_in_microbatch_3
+  status: read_only_preflight_integrated_and_reconciled
   branch: codex/v21-lane2-ghl-email
   expected_head_sha: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
+  integration_merge_sha: b4469dda07c0e43823a036dd16e8b4874d1b4eea
+  integration_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   scope: canonical_provider_and_GHL_workflow_readback_matrices
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: accepted_source_microbatch_3_F02_F04_F03_P31_dispatched
+  status: family_parent_session_composition_dispatched
   branch: codex/v21-integration
-  prior_release_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-  expected_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-  scope: exact_23_path_F02_then_F04_then_F03_then_P31_source_microbatch_plus_I36_runtime_triplet
+  prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+  expected_head_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+  claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
+  writer_lease_id: 1af50c79-1fb7-42b7-96e4-a29d8d8873f5
+  scope: exact_app_composer_plus_one_real_composition_test_and_I36_runtime_triplet
   provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through

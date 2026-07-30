@@ -2741,3 +2741,60 @@ result, freeze a candidate, claim a provider lock, inspect or mutate a
 provider, deploy, change DNS, migrate a live database, send, charge, or activate
 a customer. Legal remains `production_broad` only. No external effect is
 authorized.
+
+# Source microbatch 3 reconciliation and I36 Parent-session composition
+
+I36 published source microbatch 3 at exact integration terminal
+`524563f07b3bb8544db989982dc55d4bc86a1999`. It preserves the four source
+heads in authorized order at merge commits `a9ea9281` (F02), `303ae3a7`
+(F04), `78283a2e` (F03), and `b4469dda` (P31), then adds only the I36 runtime
+triplet. The final source tree is exact preflight tree `da84a488`; the source
+union is 23 collision-free paths and the release is 26 paths.
+
+Changed-area verification passed 63 tests with three declared native
+PostgreSQL-only skips, workspace typecheck, focused lint, CRLF-aware formatting,
+YAML, secret, ancestry, scope, protected-byte, migration-tree, and zero-effect
+checks. The terminal state/handoff digest is `bcb70bf3...`, runtime-triplet
+digest is `ca50b64e...`, and the RELEASE_INTEGRATOR lease was released at
+`2026-07-30T21:44:52Z`. Independent terminal review passed. The controller's
+explicit four-source exception is recorded as true; no generic three-head
+limit is claimed satisfied.
+
+The F04 ownership-transfer correction is therefore integrated and both exact
+F04 follow-up blockers are closed. P31's read-only provider matrices are
+integrated without a provider inspection or mutation. Candidate remains null,
+all 14 provider locks remain unclaimed, and effects remain `0/0/0`.
+
+Read-only composition preflight found F04, F03, and P08 already ancestral and
+selected one bounded central I36 checkpoint. C00 authorized only:
+
+- claim `2e5c6cef-5e9d-4462-92a4-41510ac24959`;
+- SERVER_COMPOSER lease `1af50c79-1fb7-42b7-96e4-a29d8d8873f5`;
+- exact start and expected integration head `524563f0...`;
+- `apps/web/src/server/app.ts`;
+- one new real-composition test at
+  `tests/integration/accounts/v21-family-parent-session-composition.test.ts`;
+- the I36 runtime triplet.
+
+Use one PostgreSQL v2.1 adult-session runtime in the central composer and inject
+that same instance into the P08 family router and Parent authorization
+middleware. A present `__Host-onetime-session` cookie is v2.1-only and must
+never fall back to legacy; `otcrm_session` remains an explicit compatibility
+path only when the host cookie is absent. Guard `/app/parent` and descendants
+plus `/select-household`, fail closed with `Cache-Control: no-store` before
+shell/data on denial, and preserve the exact inactive-route allowlist.
+
+The focused test must prove P08 submit before and at/after expiry, carried
+host-cookie resolution, household/free readback, inactive allowed and denied
+routes, and wrong-household, stale-security, expired, and revoked fail-closed
+behavior. The narrow `P08-auth-household-002` result may be recorded only after
+that integrated proof. Keep `P08-config-002` and broad
+`P08-registration-002` assigned and unapplied. P08's durable signup transaction
+and retryable post-commit session establishment do not prove stricter
+cross-transaction atomicity, so do not claim it.
+
+Do not edit F03, F04, or P08 source, create a secret or migration, add a
+provider effect, freeze a candidate, deploy, change DNS, send, charge, or
+activate a customer. In parallel, only read-only preflight for P09's missing
+signed-out GET `/school` and Admin-authorized configuration surface is allowed.
+Legal remains a `production_broad`-only gate.

@@ -3,7 +3,67 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest producer-correction dispatch
+# Latest I36 Parent-session composition dispatch
+
+Control acquisition parent is
+`1d0fb443cde2ab992215a52f09c35ae56a97458f`; exact integration start and
+expected existing head are
+`524563f07b3bb8544db989982dc55d4bc86a1999`; candidate is null.
+
+Source microbatch 3 is independently accepted at `524563f0`. Its ordered
+ancestry-preserving merge commits are `a9ea9281` (F02), `303ae3a7` (F04),
+`78283a2e` (F03), and `b4469dda` (P31), with exact 23-path collision-free
+source union, final source tree `da84a488`, and an exact 26-path terminal.
+Focused verification passed 63 tests with three declared native-only skips,
+typecheck, lint, formatting, YAML, secret, ancestry, scope, protected-byte,
+migration-tree, and zero-effect checks. Its state/handoff digest is
+`bcb70bf3...`, runtime-triplet digest is `ca50b64e...`, and the old
+RELEASE_INTEGRATOR lease is released. Independent terminal review passed.
+
+Resume I36 under:
+
+- claim `2e5c6cef-5e9d-4462-92a4-41510ac24959`;
+- sole SERVER_COMPOSER lease
+  `1af50c79-1fb7-42b7-96e4-a29d8d8873f5`;
+- writer `codex-i36-parent-session-composition-2e5c6cef`;
+- READY `09952344b45d7b9f63419a5e5b167a6d49bbc9f5edb15d90283b81361dbd3257`;
+- lease expiry `2026-07-30T23:58:04Z`.
+
+Change exactly:
+
+1. `apps/web/src/server/app.ts`;
+2. new
+   `tests/integration/accounts/v21-family-parent-session-composition.test.ts`;
+3. the I36 runtime triplet.
+
+Create one PostgreSQL v2.1 adult-session runtime from the existing pool,
+`config.authCsrfSecret`, and clock. Inject the same instance into the centrally
+bound P08 family router and Parent middleware. Replace or filter the unbound
+`onetime.signup-family` registration so production cannot bypass the injected
+session establisher while preserving P08's retryable post-commit recovery.
+
+Treat a present `__Host-onetime-session` cookie as v2.1-only with no legacy
+fallback. Preserve `otcrm_session` compatibility only when the host cookie is
+absent. Guard `/app/parent` and descendants plus `/select-household` through
+`authorizeV21ParentRoute`; serve free, active, and grace contexts, allow only
+the exact inactive-route allowlist, and return no-store 403 before shell or data
+on denial.
+
+The real-composition test must exercise P08 submit before and at/after expiry,
+carry the emitted host cookie into central middleware, verify exact
+household/free readback and inactive allowed/denied routes, and prove
+wrong-household, stale-security, expired, and revoked sessions fail closed
+without legacy fallback.
+
+Do not edit F03, F04, or P08 source, create a secret or migration, apply
+`P08-config-002` or broad `P08-registration-002`, or claim cross-transaction
+signup/session atomicity. Update the I36 runtime triplet at the terminal,
+release the lease, push normally, and stop for C00 reconciliation. Do not freeze
+a candidate, acquire a provider lock, inspect or mutate a provider, deploy,
+change DNS, execute a live migration, send, charge, or activate a customer.
+Legal remains `production_broad` only.
+
+# Superseded producer-correction dispatch
 
 Current control acquisition parent is
 `98e7b05c7d256d55fd8a4dbd829230e42303e67e`; exact integration base is

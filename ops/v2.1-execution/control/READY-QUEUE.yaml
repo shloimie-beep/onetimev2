@@ -6,12 +6,12 @@ ready:
 - task_id: I36
   lane: D
   status: resume_ready
-  phase: accepted_source_microbatch_3_F02_F04_F03_P31
+  phase: family_parent_session_composition
   branch: codex/v21-integration
   claim_mode: resume_existing
-  state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-  authorized_start_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-  expected_existing_head: 8634b2ab15df624576a88b31182ebdc68553ff74
+  state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+  authorized_start_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+  expected_existing_head: 524563f07b3bb8544db989982dc55d4bc86a1999
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
   task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -20,71 +20,74 @@ ready:
     C00:
       required_state: full_production_completion_convergence
       observed_state: full_production_completion_convergence
-      observed_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+      observed_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
     prior_release:
-      required_state: accepted_source_microbatch_2_complete
-      observed_state: accepted_source_microbatch_2_complete
-      terminal_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-      state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
-      runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
-    source_microbatch:
-      F02:
-        terminal_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
-        proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
-        state_handoff_digest: e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616
-        runtime_triplet_digest: 4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9
-        exact_path_count: 4
-      F04:
-        terminal_head_sha: b43c1923bbfdd92d15572abc137a3ead3fdf2819
-        product_digest: c87d04c097ca12496b602a765634017902994568428af9fc6110d50d245b0a85
-        state_handoff_digest: 8670ae6fdb20d0b8f2d05857f8f59e28f3c3fd912d3b1fb62bfad6851b74b04f
-        runtime_triplet_digest: ad82d06db2698c3b640343949b8ba19e45720cc2b5d4db44d55af7808605fa3d
-        exact_path_count: 8
-      F03:
-        terminal_head_sha: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
-        product_digest: 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
-        state_handoff_digest: 93ce51b03f559a923a348f0d3596c83164e79cfeac944c7741db05adf33209dc
-        runtime_triplet_digest: 211c2ee2a7bc981fe6670375a465775e03e2970fd7df9692baf9561f992308ba
-        exact_path_count: 5
-      P31:
-        terminal_head_sha: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
-        state_handoff_digest: e9b0e62bb831b77b953df1b988637df8e222bbab7cb93128301a4b47dd9a0f73
-        runtime_triplet_digest: bb3543e87256fcad61ff4ab3a013595a37c278ae567a7de23bc9cfd61d21b7c2
-        exact_path_count: 6
-      order: F02_then_F04_then_F03_then_P31
-      exact_unique_path_count: 23
-      path_collisions: 0
+      required_state: accepted_source_microbatch_3_complete
+      observed_state: accepted_source_microbatch_3_complete
+      terminal_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+      state_handoff_digest: bcb70bf3424bcc9a2449027c74864f09d244d113fc4c20f8937dc1b650da5b64
+      runtime_triplet_digest: ca50b64e6c34e5e5900b52d377a8fd0f82390ad8b3632cfd3f79285caef6849d
+    F04:
+      required_state: ownership_transfer_corrections_integrated
+      observed_state: ownership_transfer_corrections_integrated
+      terminal_head_sha: b43c1923bbfdd92d15572abc137a3ead3fdf2819
+      merge_head_sha: 303ae3a74febbfc7ecdc6dbd32ecad36e3cf5ab4
+      product_digest: c87d04c097ca12496b602a765634017902994568428af9fc6110d50d245b0a85
+    F03:
+      required_state: parent_host_cookie_runtime_integrated
+      observed_state: parent_host_cookie_runtime_integrated
+      terminal_head_sha: 3947c9887f3c6914a8247c70ac816a4ae94c76d0
+      merge_head_sha: 78283a2e17847c6ebdfcdd86e2a52a992521adad
+      product_digest: 0f78ec6c9d4455d9bffdb7824a1af7b67c78b71cfde38ed96ea3a1132e773350
+    P08:
+      required_state: corrected_registration_server_source_integrated
+      observed_state: corrected_registration_server_source_integrated
+      terminal_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
+      integration_ancestor_sha: e1dce668fb452a4c1892a33ea6d9c37061603aef
+      state_handoff_digest: 4605827ee19b5ce1590a17b7206d8937b9ac11895bb74eb542022910e6ae85e4
+      runtime_triplet_digest: 5ab55a75807c4da97f66feeb8a29f4d56ce24448d887c8707e41da581ec6e21d
+    P08_auth_household_002:
+      request_id: P08-auth-household-002
+      status: assigned_unapplied
+      raw_sha256: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+      target_checkpoint: I36_family_parent_session_checkpoint_after_F04_F03_P08
+    app_base:
+      path: apps/web/src/server/app.ts
+      raw_git_blob_sha256: 4457d6906ccb5407ae9ae60b433672e4d53e732a2fd32149dfe37f79ff8f32e0
   authorized_paths:
+  - apps/web/src/server/app.ts
+  - tests/integration/accounts/v21-family-parent-session-composition.test.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   correction_directives:
-  - Consume exactly the four MERGE-QUEUE items in F02, F04, F03, P31 order with no squash or cherry-pick; preserve each exact terminal as a merge parent and stop on target, remote, base, digest, scope, or queue drift.
-  - Verify the staged source deltas are exactly 4, 8, 5, and 6 paths with a 23-path collision-free union; F02/F04/F03 merge from 8634b2ab and P31 from c0a1e04b.
-  - Preserve all F02 allocations, checksums, P17 and 2250-2252 acknowledgments, unapplied central steward results, all F04/F03 admitted semantics, and P31's read-only provider boundary.
-  - Run only the combined changed-area F04/F03 verification, workspace typecheck, unchanged migration-tree proof, YAML, scoped format/lint, diff, secret, ancestry, and exact-scope checks.
-  - Do not add shared P08/P09 composition or registration, apply a steward result, freeze a candidate, claim a provider lock, inspect or mutate a provider, deploy, migrate a live database, send, charge, or activate a customer in this claim.
-  - After all four exact merges pass, update only the I36 runtime triplet with merge heads, verification, effects 0/0/0, and the released lease; push one terminal and stop for C00 reconciliation.
+  - Create exactly one PostgreSQL v2.1 adult-session runtime from the existing pool, config.authCsrfSecret, and clock; inject that same object into the centrally bound P08 family router and Parent middleware.
+  - Replace or filter the unbound onetime.signup-family registration so production cannot bypass the injected FamilySignupSessionEstablisher; preserve P08's retryable post-commit session-recovery behavior.
+  - Treat a present __Host-onetime-session cookie as v2.1-only with no legacy fallback. Preserve the explicit otcrm_session compatibility path only when the host cookie is absent.
+  - Guard /app/parent and descendants plus /select-household through authorizeV21ParentRoute; serve free, active, and grace contexts, allow only the exact inactive-route allowlist, and return no-store 403 before shell or data on denial.
+  - Add one focused real-composition test covering P08 submit pre-expiry and at/after expiry, emitted host-cookie middleware resolution, exact household/free readback, inactive allowed and denied routes, and wrong-household, stale-security, expired, and revoked fail-closed behavior.
+  - Do not edit F03, F04, or P08 source, create a new secret, rewrite a migration, apply P08-config-002 or broad P08-registration-002, claim cross-transaction signup/session atomicity, touch a provider, freeze a candidate, deploy, send, charge, or create any external effect.
+  - Update only the two product/test paths and the I36 runtime triplet at the terminal checkpoint, release the lease, push normally, and stop for C00 reconciliation.
   writer_slot_leases:
-  - slot: RELEASE_INTEGRATOR
-    lease_id: 3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c
+  - slot: SERVER_COMPOSER
+    lease_id: 1af50c79-1fb7-42b7-96e4-a29d8d8873f5
     holder_task_id: I36
-    holder_claim_id: f7ed3c6a-683b-4971-9e5e-2a65398c74c2
-    holder_writer_id: codex-i36-source-microbatch3-f7ed3c6a
-    state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-    lease_issued_at: '2026-07-30T21:22:48Z'
-    lease_expires_at: '2026-07-30T23:22:48Z'
-    phase_scope: accepted_source_microbatch_3_F02_F04_F03_P31_only
+    holder_claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
+    holder_writer_id: codex-i36-parent-session-composition-2e5c6cef
+    state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+    lease_issued_at: '2026-07-30T21:58:04Z'
+    lease_expires_at: '2026-07-30T23:58:04Z'
+    phase_scope: family_parent_session_composition_only
   effect_lock_leases: []
-  claim_id: f7ed3c6a-683b-4971-9e5e-2a65398c74c2
-  lease_issued_at: '2026-07-30T21:22:48Z'
-  lease_expires_at: '2026-07-30T23:22:48Z'
+  claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
+  lease_issued_at: '2026-07-30T21:58:04Z'
+  lease_expires_at: '2026-07-30T23:58:04Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
 entry_payload_digests:
-  I36: a87a97b243b076b7ed7bfc10152ca373f187c76808a83d14acde72c86bc95801
+  I36: 09952344b45d7b9f63419a5e5b167a6d49bbc9f5edb15d90283b81361dbd3257
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
