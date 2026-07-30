@@ -120,3 +120,46 @@ effects passed.
 Both writer leases were released before expiry. Stop for independent and C00
 audit. Do not commit draft 2252, merge, allocate ordinal 2252, register,
 inspect providers, deploy, send, or perform external effects.
+
+# F02 Content-Publication Projection-v2 Migration Release
+
+- Containing control: `f2b4a9faefdb5f780c9b620fedb413d408d27a19`
+- Controller authorization: `f0ccbdc81e6962add93d0900dd159e24df7cf05f`
+- Authorized integration parent: `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`
+- Prior F02 head: `39cacd4aeef63ba247902b1fc7051b6bd6ca0f23`
+- READY digest: `3145d5b3fe237f0b9f62ae6ff6f5443a7f4f402c4322cc00f0c9d2183a59015f`
+- Claim: `88a902de-af91-412f-9e38-6e82dac1d3d2`
+- MIGRATION_AUTHORITY lease: `7de57120-0ed6-4e9d-8dcd-53cdbdf471b4`
+- SCHEMA_CONTRACT lease: `e0a6dd90-820f-4625-9979-e057d0bdad1c`
+- Lease expiry: `2026-07-30T19:03:38Z`
+- Released: `2026-07-30T17:44:04Z`
+- Effects: `0/0/0`
+
+Implemented only immutable `P21-MIGRATION-003` as forward-only migration 2253.
+The replacement validator requires the exact 27-field projection, exact
+eight-field ordered artifact provenance, digest parity, explicit null metadata,
+persisted P20 source/version/capture/participant/artifact evidence, current
+artifact revisions, matching account/product/content/version scope, and public
+seed parity. All five inherited publication guards now pass the exact content
+identifier.
+
+Migration 2252 and P21-MIGRATION-002 remain byte-identical historical evidence.
+The allocation proposal now reconciles through immutable 2252, allocates exact
+ordinal 2253, records native/repository-runner checksum pairs, and advances the
+next available ordinal to 2254.
+
+A fresh native PostgreSQL 16.14 database applied all 84 migrations, replayed
+2253 cleanly, and passed the complete accept/replay plus malformed, missing,
+extra, reordered, tampered, cross-scope, seed-mismatch, stale-revision,
+persisted-evidence-mismatch, and five-guard rejection probe batch. The complete
+repository pg-mem inventory also applied and verified 84/84 with zero pending
+migrations using the repository harness registrations.
+
+The exact result is five paths: migration 2253, the allocation proposal, and
+the F02 runtime triplet. Typecheck, lint, focused migration verification, YAML,
+runtime-document formatting, secret scan, checksum, exact scope, diff, remote
+fencing, lease release, and zero-effect gates passed. Both bounded writer slots
+were released at `2026-07-30T17:44:04Z`, before expiry.
+
+Stop for independent and C00 audit. Do not merge, allocate ordinal 2254,
+backfill, inspect providers, deploy, send, charge, or perform external effects.
