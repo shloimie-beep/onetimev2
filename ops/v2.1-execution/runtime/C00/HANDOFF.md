@@ -2064,3 +2064,25 @@ ZOOM_PREPARATION lease `0d08dc64`, preserved product/request bytes, clean
 remote equality, and effects `0/0/0` pass. READY is empty. P17 may now
 implement only its explicit eleven-path allowlist, preserving P18 ownership
 and publishing only the exact two immutable `-002` successor requests.
+
+P20 final `dc438725` passes exact ancestry, five-source plus runtime-triplet
+scope, corrected source manifest `ac8a6038`, terminal triplet `38723f2e`,
+13/13 focused tests, composite SQL/evidence semantics, released lease, P21
+isolation, remote equality, and effects `0/0/0`. Admission is nevertheless
+rejected because runtime metadata still records pre-correction contract digest
+`cb557d14` instead of `cdeff616`, and historical twelve-file aggregate
+`d58ec3c6` beside corrected implementation `3cf5543b` instead of recomputed
+`9b4cfb26`.
+
+Fresh P20 metadata-correction claim `162924fc` and CONTENT_PROCESSING lease
+`3da95218` run through `2026-07-30T08:32:00Z`. Its first push may change only
+the P20 runtime triplet to record the claim while preserving both stale fields,
+then must stop for C00 reconciliation. After that, only the exact metadata
+fields and runtime evidence may change. Every source, test, migration, request,
+P21, provider, and effect byte remains frozen.
+
+P18 remains withheld after read-only refresh. It still solely owns exactly the
+four canonical launch/live/attendance tables and must wait for audited and
+integrated corrected P17. Only then may C00 consider a bounded successor
+`P18-migration-003`; `P18-registration-001` and migration `-001`/`-002` remain
+immutable.

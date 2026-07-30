@@ -12,13 +12,16 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T07:57:00Z'
-last_heartbeat_at: '2026-07-30T07:12:00Z'
-controller_authorization_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
+lease_expires_at: '2026-07-30T08:17:00Z'
+last_heartbeat_at: '2026-07-30T07:32:00Z'
+controller_authorization_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
 ready_entry_payload_digest: null
-state_based_on_head_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
+state_based_on_head_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Rejected P20 final dc438725 admission only for stale runtime metadata: final contract raw cdeff616 was still recorded as cb557d14 and the 12-file aggregate at corrected implementation 3cf5543b is 9b4cfb26 rather than historical d58ec3c6; behavior, exact eight-path scope, 13 focused tests, type/lint/format, released lease, P21 isolation, remote equality, and effects 0/0/0 pass.
+- Issued a runtime-triplet-only P20 metadata-correction READY under fresh claim 162924fc and CONTENT_PROCESSING lease 3da95218 through 08:32:00Z; all product, test, migration, request, P21, provider, and effect bytes remain frozen.
+- Refreshed P18 read-only and withheld admission: it remains sole owner of exactly four launch/live/attendance tables, must wait for audited and integrated P17, then may create only successor P18-migration-003 while preserving registration-001 and immutable migration-001/-002.
 - Independently reconciled renewed P17 claim b9e7b49a as the exact sole child of checkpoint 7596a0f1 with runtime-triplet-only scope, canonical READY 4574e539, fresh claim e85735a2 and lease 0d08dc64 bindings, pair/triplet 794ede72/af7c6342, preserved product/request bytes, remote equality, and effects 0/0/0.
 - Reconciled P17 pre-expiry renewal checkpoint 7596a0f1 as an exact runtime-triplet-only child with pair/triplet f87946bc/9d82cfcc, no product work, preserved requests, and effects 0/0/0; issued fresh renewal READY 4574e539, claim e85735a2, and ZOOM_PREPARATION lease 0d08dc64 through 08:31:44Z.
 - Independently reconciled P17 claim 7e05a1e3 and P20 claim 0d58c8e4 as exact sole children of their authorized parents with runtime-triplet-only scopes, exact READY/claim/lease/dependency bindings, pair/triplet manifests 67ed46d7/4582e952 and 97acf477/96aa1603, preserved source/request bytes, remote equality, and effects 0/0/0.
@@ -1106,6 +1109,8 @@ verification:
   - P17/P20 atomic claims 7e05a1e3/0d58c8e4: passed exact sole-parent ancestry, runtime-triplet-only scopes, canonical READY/claim/lease/dependency bindings, pair/triplet manifests, preserved source/request bytes, remote equality, empty READY after consumption, and zero effects
   - P17 pre-expiry checkpoint and renewal admission: passed checkpoint 7596a0f1 sole-parent/runtime-only scope, no product work, pair/triplet f87946bc/9d82cfcc, preserved requests, canonical renewal READY 4574e539, fresh claim/lease, and zero effects
   - P17 renewal claim b9e7b49a: passed exact sole-parent ancestry, runtime-triplet-only scope, canonical READY/fresh-claim/lease bindings, pair/triplet 794ede72/af7c6342, preserved products/requests, remote equality, consumed READY, and zero effects
+  - P20 rejected final dc438725: passed ancestry, exact five-source plus runtime-triplet scope, corrected source digest ac8a6038, terminal triplet 38723f2e, 13/13 focused tests, composite SQL/evidence semantics, released lease, P21 isolation, remote equality, and zero effects; failed only stale contract and 12-file aggregate metadata
+  - P18 read-only refresh: passed exact four-table ownership, no P17 competing names, preserved request identities and free EMBEDDED_CLASSROOM slot; withheld until corrected P17 final is audited and integrated
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

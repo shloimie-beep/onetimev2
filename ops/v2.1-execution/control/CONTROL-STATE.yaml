@@ -15,12 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
+controller_authorization_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
 next_action: >-
-  P17 renewed claim b9e7b49a is reconciled and may implement only the explicit eleven-path preparation
-  ownership/outbox correction under fresh claim e85735a2 and ZOOM_PREPARATION lease 0d08dc64 through 08:31:44Z,
-  publishing only the two exact -002 successor requests. P20 claim 0d58c8e4 remains authorized for only the
-  five-source approved-publication projection correction under claim e8c768e8 and CONTENT_PROCESSING lease
-  24d0fa6f. P18/P21 remain withheld. OPS-084 production_broad remains fail-closed; candidate, provider
-  inspection/mutation, deployment, sends, and effects remain unauthorized.
+  P20 behavior at dc438725 passes but admission is rejected for stale contract and implementation-aggregate
+  digest metadata. It may make only a runtime-triplet atomic claim under READY f10eafc4, claim 162924fc,
+  and CONTENT_PROCESSING lease 3da95218, then stop for reconciliation; every source, test, migration, request,
+  P21, and provider byte remains frozen. P17 final 506d9024 is awaiting independent audit; P18/P21 remain withheld.
+  OPS-084 production_broad remains fail-closed; candidate, provider inspection/mutation, deployment, sends, and
+  effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

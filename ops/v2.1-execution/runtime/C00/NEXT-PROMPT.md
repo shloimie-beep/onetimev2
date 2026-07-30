@@ -1723,3 +1723,16 @@ plus `provider_operation_binding`; limit P17 to five preparation tables;
 publish only `P17-MIGRATION-002` and
 `P17-SERVER-WORKER-REGISTRATION-002`; run exact gates, release the lease,
 push, and stop for C00 audit. Provider inspection and effects remain forbidden.
+
+P20 final `dc438725fb6bb8779c2d816d5e28d3b73227b6d4` is behaviorally valid
+but rejected for stale runtime digest metadata. Atomically claim only its
+runtime triplet under canonical READY
+`f10eafc49cd2665bd6bf1b8ae5e804fd880799e4ca734c9e88954957e0f7ff91`, fresh claim
+`162924fc-86b1-466b-8836-9e6fcc2a1326`, and CONTENT_PROCESSING lease
+`3da95218-b815-434a-ae63-154220c083b0` through
+`2026-07-30T08:32:00Z`; preserve every source/test/request/migration/P21 byte
+and the two stale fields, push normally, verify remote equality, and stop.
+After C00 reconciliation, replace contract digest `cb557d14…` with final blob
+digest `cdeff616…`, replace or explicitly historicize twelve-file aggregate
+`d58ec3c6…` with corrected implementation aggregate `9b4cfb26…`, rederive the
+runtime triplet, release the lease, push, and stop for audit. Effects stay zero.
