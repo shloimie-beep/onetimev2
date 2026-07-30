@@ -1405,3 +1405,21 @@ to P16; and explicit trusted product/runtime-tier/verification-environment
 persistence plus composite binding to P32. Require native positive and
 negative compatibility probes, task tests, typecheck, scope/format/secret
 gates, released leases, and effects `0/0/0` before any re-admission.
+
+F02 claim `24c327eaf06fc502d167d2d5863c5fbb05db5a2c`, P16 claim
+`be95754a1b331a5e420f9cf755bc190357fe3436`, and P32 claim
+`39a578ff9a8ba91c59ebe082dc6611a17c051b79` are reconciled.
+Resume each exact head under its unchanged claim and lease. F02 may alter only
+2239, its allocation proposal/checksum metadata, direct schema probes, and its
+runtime triplet while preserving 2234-2238 and 2240-2244. P16 may alter only
+its task-owned class-series/occurrence repository roots, direct tests, and
+runtime triplet to persist authoritative non-null reminder timing. P32 may
+alter only its task-owned privacy contract/domain/repository/server roots,
+direct tests, and runtime triplet to carry explicit trusted
+product/runtime-tier/verification-environment scope without unsafe defaults.
+
+Each worker must run exact native positive/negative compatibility probes,
+focused tests, typecheck, formatting, secret/diff/scope gates, release its
+lease before expiry, push a superseding final, remote-verify, and stop for
+independent audit. Do not merge, register, inspect providers, deploy, send, or
+perform an external effect.

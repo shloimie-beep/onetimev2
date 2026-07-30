@@ -15,13 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+controller_authorization_sha: fe0d60fa2807b02882390df960f3e75517672d11
 next_action: >-
-  F02 release 032aeb9c passed mechanical audit but failed exact-source semantic admission and is not queued for
-  integration. F02, P16, and P32 may each publish only an atomic runtime-triplet correction claim from exact heads
-  032aeb9c, 72fca16b, and f4ae1c03 under fresh disjoint claims and writer leases, then stop for C00 reconciliation.
-  The bounded corrections are canonical paused/archived preservation in 2239, complete legacy reminder-time
-  persistence in P16 repository inserts, and explicit product/runtime-tier/verification-environment persistence in
-  P32 privacy repositories. No product or SQL correction is authorized before claim reconciliation; no merge,
-  registration, provider inspection, deployment, send, or external effect is authorized.
+  Exact atomic claims F02 24c327ea, P16 be95754a, and P32 39a578ff are reconciled and their READY entries consumed.
+  F02 may correct only migration 2239 canonical promotion plus its proposal/runtime evidence; P16 may correct only
+  task-owned class-series/occurrence repository reminder-time persistence plus direct tests/runtime evidence; P32
+  may correct only task-owned explicit trusted privacy scope propagation/persistence plus direct tests/runtime
+  evidence. Each must run native positive/negative compatibility proof and task gates, release its writer lease,
+  push a superseding final, and stop for independent audit. No merge, registration, provider inspection,
+  deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

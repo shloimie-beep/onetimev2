@@ -1666,3 +1666,25 @@ only that task's runtime triplet, must preserve product/SQL bytes, push
 normally, remote-verify, and stop for C00 reconciliation. No merge,
 registration, provider inspection, deployment, send, or external effect is
 authorized.
+
+## Compatibility correction claim reconciliation
+
+F02 `24c327eaf06fc502d167d2d5863c5fbb05db5a2c`, P16
+`be95754a1b331a5e420f9cf755bc190357fe3436`, and P32
+`39a578ff9a8ba91c59ebe082dc6611a17c051b79` are independently
+reconciled as exact sole children of their respective rejected heads. Each
+delta is exactly its runtime triplet; all product, migration, test, interface,
+steward, control, provider, and effect bytes remain unchanged. Exact
+control/acquisition, canonical READY, claim, lease, task/context/package,
+dependency, and effects `0/0/0` bindings pass.
+
+C00 consumed the three READY entries. Under the unchanged claims and disjoint
+leases through `2026-07-30T01:23:18Z`, F02 may correct only migration 2239
+canonical selection plus proposal/checksum/runtime evidence; P16 may correct
+only task-owned class-series and occurrence reminder-time persistence plus
+direct tests/runtime evidence; P32 may correct only task-owned explicit trusted
+product/runtime-tier/environment propagation and persistence plus direct
+tests/runtime evidence. Each must prove the exact positive and negative native
+compatibility boundary, run task gates, release its lease, publish a
+superseding final, and stop for independent audit. No merge, registration,
+provider inspection, deployment, send, or external effect is authorized.

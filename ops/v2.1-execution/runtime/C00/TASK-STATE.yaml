@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-407e49c3
-claim_time: '2026-07-29T23:53:18Z'
-claim_id: 407e49c3-1ea6-45a6-83ef-f58beea2c72d
-lease_expires_at: '2026-07-30T00:08:18Z'
-last_heartbeat_at: '2026-07-29T23:54:05Z'
-controller_authorization_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+claimed_by: codex-c00-orchestrator-393f6932
+claim_time: '2026-07-30T00:27:35Z'
+claim_id: 393f6932-6cb2-439e-86b7-74bcef644614
+lease_expires_at: '2026-07-30T00:42:35Z'
+last_heartbeat_at: '2026-07-30T00:28:12Z'
+controller_authorization_sha: fe0d60fa2807b02882390df960f3e75517672d11
 ready_entry_payload_digest: null
-state_based_on_head_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+state_based_on_head_sha: fe0d60fa2807b02882390df960f3e75517672d11
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -768,10 +768,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: fb954f31832a419295974ad8b04081385eb084712bed57b7edce9b8bceb9e209
-    control_lease: 9550a184531abe38a36aad018ac9cca2e18cc87b4830e60eab231826021ec483
-    task_registry: e4cbf34ad2a46064657db2ee29de21d73f4e76f13391c57e0ea16db35064f46c
-    ready_queue: d156bf06964476931b9baecd2e9d8f5bd21e83e8b75d9f860e6a6108132a3262
+    control_state: cb0b66286c318d5e60cad5b412ef56161023ea586d43843c17fcb58fb5260f25
+    control_lease: b20db8664acb9f10bfa152d7dd0c9e6d0d9e6b2552ee1696d27f38b8dd5de734
+    task_registry: 81aaa8e4dbdedeb05bdfcc90f7bda3b4c3e729fc98e5a2e5cb9937121a3d231c
+    ready_queue: 84f7e3ca967d5c383fae8b671082b3d90d167efa80ab690012dedb888c1a6707
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 1264d4293cfdac277b19fcf0e7c546ed80d6f68045f95158f7e04f5b1994e814
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -969,6 +969,8 @@ verification:
   - F02 final 032aeb9c mechanical audit: passed exact remote CAS and ten-path scope, protected 2234-2238 blobs, six native/pg-mem checksum pairs, 75/75 disposable replay, package, formatting, YAML, secret, lease-release, and effects 0/0/0 gates
   - F02 final 032aeb9c exact-source semantic audit: rejected because committed P16 repository inserts omit required reminder timing, committed P32 privacy inserts omit exact product/runtime/environment scope, and migration 2239 promotes sole paused/archived legacy evidence to active
   - contained rejected F02 release before integration and issued disjoint claim-only correction entries for F02, P16, and P32 from exact heads 032aeb9c, 72fca16b, and f4ae1c03 under fresh migration/schema, classroom-core, and privacy-data-rights leases with zero effect locks
+  - independently reconciled F02 24c327ea, P16 be95754a, and P32 39a578ff as exact sole children of their rejected heads with only each task's runtime triplet changed, exact control/READY/claim/lease bindings, preserved product/SQL bytes, and effects 0/0/0
+  - consumed all three READY entries and authorized only the bounded F02 canonical-lifecycle, P16 reminder-time persistence, and P32 explicit trusted-scope compatibility corrections under unchanged disjoint leases
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
