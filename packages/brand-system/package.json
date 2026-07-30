@@ -7,6 +7,8 @@
     ".": "./src/index.ts",
     "./static": "./src/static.ts",
     "./react": "./src/react.tsx",
+    "./v21": "./src/v21.ts",
+    "./react-v21": "./src/react-v21.tsx",
     "./tokens.css": "./src/tokens.css",
     "./route-branding": "./src/route-branding.ts",
     "./visual-contract": "./src/visual-contract.ts"

@@ -1,0 +1,58 @@
+schema_version: 1
+archive_id: one-time-tisha-bav-2026
+archive_state: inactive_historical_template
+event_code: tisha-bav-2026
+archived_at_specification: ONE-TIME-PRODUCTION-V2.1
+source_decisions:
+  - DEC-142
+source_disposition: SUP-016
+runtime:
+  active_route: false
+  active_api: false
+  accepts_registration: false
+  provider_enrollment: false
+  sends_messages: false
+  grants_parent_or_student_access: false
+historical_routes:
+  - path: /tisha-bav
+    browser_response: 410_ended_event
+    mutation_response: 410_no_write
+  - path: /tisha-bav/live
+    browser_response: 410_ended_event
+    mutation_response: 410_no_write
+  - path: /api/v1/events/tisha-bav-2026/register
+    browser_response: 410_ended_event
+    mutation_response: 410_no_write
+  - path: /api/v1/events/tisha-bav-2026/join
+    browser_response: 410_ended_event
+    mutation_response: 410_no_write
+historical_assets:
+  - logical_id: OT-E01
+    kind: workflow
+    canonical_name: OT-E01 Tisha B'Av 2026 Registration and Reminders
+    provider_asset_id: a34ea513-4612-4f53-8bd8-49e89e6610f9
+    required_state: archived_or_ended_zero_enrollment
+  - logical_id: OT-C01-campaign
+    kind: email_marketing_campaign
+    canonical_name: OT-C01 Tisha B'Av 2026 Warm Invitation
+    provider_asset_id: 6a5f750b557817806a14b19e
+    required_state: draft_or_archived_zero_recipients_zero_sends
+  - logical_id: OT-C01-workflow-wrapper
+    kind: workflow
+    canonical_name: OT-C01 Tisha B'Av 2026 Warm Invitation
+    provider_asset_id: f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae
+    required_state: draft_or_archived_zero_enrollment
+consent_boundary:
+  event_only_consent_becomes_general_marketing: false
+  event_registration_grants_product_access: false
+  adult_contact_reentry: normal_v2_1_signup_and_dedupe_only
+reuse_contract:
+  direct_activation_allowed: false
+  requires_new_event_name: true
+  requires_new_identifiers: true
+  requires_new_dates: true
+  requires_new_consent_text: true
+  requires_copy_approval: true
+  requires_provider_authority: true
+  requires_route_and_deployment_review: true
+contains_secret_or_private_data: false

@@ -1,0 +1,54 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P28-registry-projection-001
+task_id: P28
+kind: registration
+requirement_ids:
+  - OTV2-GHL-120
+  - OTV2-GHL-121
+  - OTV2-GHL-122
+  - OTV2-GHL-198
+  - OTV2-GHL-220
+acceptance_case_ids:
+  - OTV2-GHL-120-AC01
+  - OTV2-GHL-121-AC01
+  - OTV2-GHL-122-AC01
+  - OTV2-GHL-198-AC01
+  - OTV2-GHL-220-AC01
+rationale: >-
+  P28 owns the canonical workflow-registry.yaml source but cannot edit generated
+  projections, the shared message-class registry, or registry validator
+  semantics.
+desired_semantic_change: >-
+  After P28 is integrated, regenerate the committed workflow-control projections
+  from workflow-registry.yaml, authorize OT-14 under torah_newsletter and OT-15
+  under warm_enrollment_campaign in the message-class registry, and update
+  validator count/semantic assertions so OT-11 is uniquely retired/reserved,
+  OT-12 is canonical adult support, OT-14 is Parent Newsletter, OT-15 is Former
+  Member Reactivation, and OT-B01 is public website lead capture. Preserve empty
+  provider IDs and BLOCKED/DRAFT_WAITING_EXTERNAL truth until separately
+  authorized provider creation plus save/reopen readback supplies exact IDs;
+  never invent IDs or claim provider realization.
+proposed_symbols_routes_keys_or_dependencies:
+  - integrations/highlevel/registry/current.json
+  - integrations/highlevel/workflows.yaml
+  - integrations/highlevel/registry/message-class-registry.yaml
+  - scripts/highlevel/validate-registry.ts
+  - OT-11
+  - OT-12
+  - OT-14
+  - OT-15
+  - OT-B01
+compatibility_assumptions:
+  - workflow-registry.yaml remains the single canonical workflow source
+  - generated projections are never hand-edited
+  - P29/P30 fragments are validated against the P28 1.0.0 contract before registration
+  - no GHL mutation, enrollment, send, or canary is authorized by projection reconciliation
+verification_performed:
+  - workflow-registry YAML source parser accepts unique keys and allowed states
+  - workflow prompt/checklist dependency content is present in P28-owned paths
+  - projection check reports only expected source/projection drift
+conflicts_or_risks:
+  - current projection validation remains red until the stewarded generated updates land
+  - exact provider IDs remain intentionally absent until authorized provider readback
+contains_secret_or_private_data: false

@@ -30,18 +30,6 @@ const optionalTrimmedString = (minimum: number, maximum: number) =>
     z.string().trim().min(minimum).max(maximum).optional(),
   );
 
-function parseUniqueCsv(value: string | undefined) {
-  if (!value) return [];
-  return [
-    ...new Set(
-      value
-        .split(',')
-        .map((part) => part.trim())
-        .filter(Boolean),
-    ),
-  ];
-}
-
 const OT89_LOCAL_ONETIME_KEY_ID = 'ot89-onetime-local';
 const OT89_LOCAL_ONETIME_SECRET = 'ot89-test-secret-do-not-use-local-producer';
 const OT89_LOCAL_BNA_KEY_ID = 'ot89-bna-local';
@@ -175,7 +163,7 @@ const envSchema = z.object({
   LOGIN_GLOBAL_RATE_LIMIT_MAX: numberFromString.default(600),
   SESSION_LAST_SEEN_WRITE_INTERVAL_MS: numberFromString.default(5 * 60_000),
   AUTH_CSRF_SECRET: z.string().min(32).optional(),
-  MFA_SECRET_ENCRYPTION_KEY: z.string().optional(),
+  PROTECTED_PAYLOAD_ENCRYPTION_KEY: z.string().optional(),
   ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID: z.string().min(1).max(120).default('local-lifecycle-v1'),
   ONE_TIME_LIFECYCLE_DELIVERY_KEY: z.string().min(32).optional(),
   OUTBOX_TRANSPORT_MODE: z.enum(['sink', 'mock', 'provider']).default('sink'),
@@ -212,17 +200,10 @@ const envSchema = z.object({
   ONETIME_WHATSAPP_CANARY_AUTHORIZED: booleanFromString,
   ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK: z.url().optional(),
   ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT: z.string().trim().max(240).optional(),
-  ONE_TIME_WHATSAPP_ASSISTANT_COPY_VERSION: z.string().min(1).default('w12-06-public-assistant-v1'),
-  WHATSAPP_ASSISTANT_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
-  WHATSAPP_ASSISTANT_SENDER_RATE_LIMIT_MAX: numberFromString.default(8),
-  WHATSAPP_ASSISTANT_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(300),
   OT86_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
   OT86_PUBLISH_SIGNING_SECRET: z.string().optional(),
   OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
   OT86_PREVIOUS_PUBLISH_SIGNING_SECRET: z.string().optional(),
-  BUFFER_ACCESS_TOKEN: z.string().optional(),
-  BUFFER_ORGANIZATION_ID: z.string().optional(),
-  BUFFER_DESTINATION_IDS: z.string().optional(),
   ENABLE_REAL_EMAIL_TRANSPORT: booleanFromString,
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
@@ -275,18 +256,10 @@ const envSchema = z.object({
   ZOOM_HOST_USER_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
-  ONE_TIME_EVENT_EMAIL_FALLBACK: z.enum(['disabled', 'resend']).default('disabled'),
-  ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: z.url().optional(),
-  ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF: optionalTrimmedString(4, 240),
-  HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
   HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
   HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
   HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
   HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
-  HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: optionalTrimmedString(1, 160),
-  HIGHLEVEL_CANARY_RUN_ID: optionalTrimmedString(8, 160),
-  HIGHLEVEL_CANARY_DELIVERY_KEYS: optionalTrimmedString(8, 4000),
-  HIGHLEVEL_CANARY_BUDGET: numberFromString.default(0),
   HIGHLEVEL_PROVIDER_TIMEOUT_MS: numberFromString.default(15_000),
   HIGHLEVEL_ROW_LEASE_MS: numberFromString.default(120_000),
   HIGHLEVEL_ACTIONS_MODE: z.enum(['disabled', 'enabled']).default('disabled'),
@@ -314,9 +287,6 @@ const envSchema = z.object({
   OT89_MOCK_BNA_OUTAGE: booleanFromString,
   OT89_SUPPORT_DEPLOYMENT_ID: z.string().min(1).max(64).default('local-ot89a'),
   LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
-  PORTAL_TEST_LAB_ENABLED: booleanFromString,
-  LEARNING_DELIVERY_DEMO_ENABLED: booleanFromString,
-  ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: booleanFromString,
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -345,10 +315,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
 
   const oneTimeRuntimeEnvironment = runtime.environment;
-  const portalTestLabRuntimeAllowed =
-    ['isolated_staging', 'test'].includes(deliveryEnvironment) &&
-    ['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment);
-
   if (
     parsed.ONE_TIME_RABBI_GHL_REPLY_MODE === 'synthetic' &&
     !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
@@ -380,31 +346,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Zoom canary execution is limited to test or isolated_staging.');
   }
 
-  if (parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' && !runtime.allowsProviderActions) {
-    throw new Error('HighLevel provider event sync is limited to test or isolated_staging.');
-  }
-
-  if (
-    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
-  ) {
-    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
-  }
-
-  const highLevelCanaryDeliveryKeys = parseUniqueCsv(parsed.HIGHLEVEL_CANARY_DELIVERY_KEYS);
-  if (
-    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    (!parsed.HIGHLEVEL_CANARY_RUN_ID ||
-      highLevelCanaryDeliveryKeys.length < 1 ||
-      parsed.HIGHLEVEL_CANARY_BUDGET < 1 ||
-      !Number.isInteger(parsed.HIGHLEVEL_CANARY_BUDGET) ||
-      parsed.HIGHLEVEL_CANARY_BUDGET > 20 ||
-      highLevelCanaryDeliveryKeys.length > parsed.HIGHLEVEL_CANARY_BUDGET)
-  ) {
-    throw new Error(
-      'HighLevel event sync requires an exact canary run ID, delivery-key allowlist, and sufficient positive budget.',
-    );
-  }
   if (parsed.HIGHLEVEL_ROW_LEASE_MS <= parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS * 2 + 5_000) {
     throw new Error(
       'HIGHLEVEL_ROW_LEASE_MS must fence both provider operations and their safety margin.',
@@ -434,28 +375,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     );
   }
 
-  if (
-    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
-    parsed.HIGHLEVEL_LOCATION_ID !== 'pBSnOK2nkdxp6gf9Rg3o'
-  ) {
-    throw new Error('Provider event sync is restricted to the canonical One Time location.');
-  }
-
-  if (parsed.ONE_TIME_EVENT_EMAIL_FALLBACK === 'resend') {
-    const missing = [
-      !parsed.RESEND_API_KEY && 'RESEND_API_KEY',
-      !parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED &&
-        'ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED',
-      !parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED && 'ONE_TIME_RESEND_TRANSPORT_ENABLED',
-      !parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID && 'DELIVERY_PROVIDER_AUTHORIZATION_ID',
-      parsed.DELIVERY_PROVIDER_PER_RUN_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_RUN_BUDGET',
-      parsed.DELIVERY_PROVIDER_PER_PROVIDER_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
-    ].filter(Boolean);
-    if (missing.length) {
-      throw new Error(`Tisha B'Av Resend fallback config missing: ${missing.join(', ')}`);
-    }
-  }
-
   if (parsed.RUN_MIGRATIONS_ON_STARTUP && !runtime.allowsStartupMigrations) {
     throw new Error('Web startup migrations are limited to the test runtime.');
   }
@@ -478,26 +397,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (runtime.isProductionRuntime && parsed.OT89_MOCK_BNA_ENABLED) {
     throw new Error('OT89 mock BNA endpoint is forbidden in production.');
-  }
-
-  if (parsed.PORTAL_TEST_LAB_ENABLED && !portalTestLabRuntimeAllowed) {
-    throw new Error(
-      'Portal Test Lab requires explicit test or isolated_staging runtime classification.',
-    );
-  }
-
-  if (parsed.LEARNING_DELIVERY_DEMO_ENABLED && !runtime.allowsMockOrDemo) {
-    throw new Error('Learning Delivery demo is forbidden in production.');
-  }
-
-  if (
-    parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED &&
-    (deliveryEnvironment === 'production' ||
-      !['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment))
-  ) {
-    throw new Error(
-      'Experience Preview requires explicit test or isolated_staging runtime classification.',
-    );
   }
 
   if (parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED && !runtime.allowsMockOrDemo) {
@@ -567,8 +466,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     );
   }
 
-  if (runtime.isProductionRuntime && !parsed.MFA_SECRET_ENCRYPTION_KEY) {
-    throw new Error('MFA_SECRET_ENCRYPTION_KEY is required in production.');
+  if (runtime.isProductionRuntime && !parsed.PROTECTED_PAYLOAD_ENCRYPTION_KEY) {
+    throw new Error('PROTECTED_PAYLOAD_ENCRYPTION_KEY is required in production.');
   }
 
   return {
@@ -613,8 +512,12 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     sessionLastSeenWriteIntervalMs: parsed.SESSION_LAST_SEEN_WRITE_INTERVAL_MS,
     authCsrfSecret:
       parsed.AUTH_CSRF_SECRET ?? 'local-only-auth-csrf-secret-for-tests-and-development',
+    protectedPayloadEncryptionKey:
+      parsed.PROTECTED_PAYLOAD_ENCRYPTION_KEY ??
+      'test-only-32-byte-protected-payload-key-do-not-use',
     mfaSecretEncryptionKey:
-      parsed.MFA_SECRET_ENCRYPTION_KEY ?? 'test-only-32-byte-mfa-key-do-not-use',
+      parsed.PROTECTED_PAYLOAD_ENCRYPTION_KEY ??
+      'test-only-32-byte-protected-payload-key-do-not-use',
     lifecycleDeliveryKeyId: parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID,
     lifecycleDeliveryKey:
       parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY ??
@@ -651,10 +554,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     whatsappCanaryAuthorized: parsed.ONETIME_WHATSAPP_CANARY_AUTHORIZED,
     whatsappPublicDeepLink: parsed.ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK,
     whatsappPublicPrefillText: parsed.ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT,
-    whatsappAssistantCopyVersion: parsed.ONE_TIME_WHATSAPP_ASSISTANT_COPY_VERSION,
-    whatsappAssistantRateLimitWindowMs: parsed.WHATSAPP_ASSISTANT_RATE_LIMIT_WINDOW_MS,
-    whatsappAssistantSenderRateLimitMax: parsed.WHATSAPP_ASSISTANT_SENDER_RATE_LIMIT_MAX,
-    whatsappAssistantAccountRateLimitMax: parsed.WHATSAPP_ASSISTANT_ACCOUNT_RATE_LIMIT_MAX,
+    whatsappAssistantCopyVersion: 'retired',
+    whatsappAssistantRateLimitWindowMs: 0,
+    whatsappAssistantSenderRateLimitMax: 0,
+    whatsappAssistantAccountRateLimitMax: 0,
     oneTimeTelegramWebhookEnabled: parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED,
     oneTimeTelegramWebhookSecret: parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET,
     oneTimeTelegramWebhookSecretConfigured:
@@ -724,18 +627,18 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomS2sAccountIdConfigured: Boolean(canonicalZoomS2sAccountId),
     zoomS2sClientIdConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_ID),
     zoomS2sClientSecretConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_SECRET),
-    oneTimeEventEmailFallback: parsed.ONE_TIME_EVENT_EMAIL_FALLBACK,
-    tishaBavZoomJoinUrl: parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL,
-    tishaBavZoomMeetingRefConfigured: Boolean(parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF),
-    highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
+    oneTimeEventEmailFallback: 'disabled' as 'disabled' | 'resend',
+    tishaBavZoomJoinUrl: undefined as string | undefined,
+    tishaBavZoomMeetingRefConfigured: false,
+    highLevelEventSyncMode: 'disabled' as 'disabled' | 'mock' | 'provider',
     highLevelApiBaseUrl: parsed.HIGHLEVEL_API_BASE_URL,
     highLevelApiVersion: parsed.HIGHLEVEL_API_VERSION,
     highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
     highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
-    highLevelTishaBavWorkflowId: parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID,
-    highLevelCanaryRunId: parsed.HIGHLEVEL_CANARY_RUN_ID,
-    highLevelCanaryDeliveryKeys,
-    highLevelCanaryBudget: parsed.HIGHLEVEL_CANARY_BUDGET,
+    highLevelTishaBavWorkflowId: undefined as string | undefined,
+    highLevelCanaryRunId: undefined as string | undefined,
+    highLevelCanaryDeliveryKeys: [] as string[],
+    highLevelCanaryBudget: 0,
     highLevelProviderTimeoutMs: parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS,
     highLevelRowLeaseMs: parsed.HIGHLEVEL_ROW_LEASE_MS,
     highLevelActionsMode: parsed.HIGHLEVEL_ACTIONS_MODE,
@@ -778,14 +681,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ot86PublishSigningSecret: parsed.OT86_PUBLISH_SIGNING_SECRET,
     ot86PreviousPublishSigningKeyId: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID,
     ot86PreviousPublishSigningSecret: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_SECRET,
-    bufferAccessToken: parsed.BUFFER_ACCESS_TOKEN,
-    bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
-    bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
-    portalTestLabEnabled:
-      (runtime.environment === 'test' || parsed.PORTAL_TEST_LAB_ENABLED) &&
-      portalTestLabRuntimeAllowed,
-    learningDeliveryDemoEnabled:
-      runtime.environment === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
-    experiencePreviewEnabled: parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED,
+    bufferAccessToken: undefined,
+    bufferOrganizationId: undefined,
+    bufferDestinationIds: undefined,
+    portalTestLabEnabled: false,
+    learningDeliveryDemoEnabled: false,
+    experiencePreviewEnabled: false,
   };
 }

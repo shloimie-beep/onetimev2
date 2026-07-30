@@ -71,6 +71,19 @@
   --ot-size-logo-public-desktop: 64px;
   --ot-size-logo-app: 40px;
 
+  /* Versioned v2.1 shell aliases. Feature CSS consumes these rather than owning a route palette. */
+  --ot-v21-black: #090909;
+  --ot-v21-yellow: #ffd400;
+  --ot-v21-yellow-hover: #e6bf00;
+  --ot-v21-cyan: #67e8f9;
+  --ot-v21-white: #ffffff;
+  --ot-v21-raised: #151515;
+  --ot-v21-overlay: #202020;
+  --ot-v21-border: #3b3b3b;
+  --ot-v21-muted: #b8b8b8;
+  --ot-v21-focus: #67e8f9;
+  --ot-v21-danger: #ff6b6b;
+
   --color-black: var(--ot-color-background);
   --color-panel: #111311;
   --color-ink: var(--ot-color-text-warm);

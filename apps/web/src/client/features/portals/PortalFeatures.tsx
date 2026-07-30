@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import type {
   AdministrativeUpdate,
   ClassLeaderboardSummary,
-  HelperAnswer,
-  HelperAvailability,
   LearnerProfile,
   LibraryItem,
   ParentLearnerMaterials,
@@ -47,7 +45,7 @@ export const PARENT_PORTAL_SECTIONS = [
   {
     id: 'progress',
     label: 'Progress & rewards',
-    description: 'Private progress, milestones, class activity, and parent-created goals.',
+    description: 'Private progress, milestones, and class activity.',
   },
   {
     id: 'billing',
@@ -71,11 +69,6 @@ export const STUDENT_PORTAL_SECTIONS = [
     id: 'library',
     label: 'Library',
     description: 'Only approved lessons and resources assigned to you.',
-  },
-  {
-    id: 'helper',
-    label: 'Class Helper',
-    description: 'Answers grounded in Rabbi-approved class material.',
   },
   {
     id: 'progress',
@@ -119,27 +112,24 @@ export type ParentPortalFeatureProps = {
   ) => void;
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onOpenContent?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
-  onQueryHelper?: (learnerKey: string, question: string) => Promise<HelperAnswer>;
   onPreviewSupport?: (learnerKey?: string) => void;
-  onCreateRewardGoal?: (
-    learnerKey: string,
-    goal: { title: string; description: string; pointsRequired: number },
-  ) => void;
   onRetry?: () => void;
   accountSecurity?: React.ReactNode;
+  /** @deprecated The parent-created reward-goal surface is retired; this callback is ignored. */
+  onCreateRewardGoal?: (...args: never[]) => void;
 };
 
 export type StudentPortalFeatureProps = {
   viewState: PortalViewState;
   dashboard: StudentPortalDashboard | null;
   readOnly?: boolean;
-  activeSection?: StudentPortalSection;
+  /** @deprecated `helper` is accepted only for source compatibility and renders no helper surface. */
+  activeSection?: StudentPortalSection | 'helper';
   navigationMode?: 'shell' | 'embedded';
   actorFingerprint: string;
   resetSignal?: number;
   onLaunchClass?: (action: ProtectedActionDescriptor) => void;
   onOpenContent?: (action: ProtectedActionDescriptor) => void;
-  onQueryHelper?: (question: string) => Promise<HelperAnswer>;
   onSubmitQuestion?: (question: string, classKey?: string | undefined) => void;
   onSubmitClassroomQuestion?: (occurrenceKey: string, body: string) => void;
   liveClassQuestions?: LiveClassQuestion[];
@@ -148,6 +138,8 @@ export type StudentPortalFeatureProps = {
   onPreviewSupport?: () => void;
   onRetry?: () => void;
   accountSecurity?: React.ReactNode;
+  /** @deprecated The class-helper surface is retired; this callback is ignored. */
+  onQueryHelper?: (question: string, classKey?: string) => Promise<unknown>;
 };
 
 export function ParentPortalFeature({
@@ -169,9 +161,7 @@ export function ParentPortalFeature({
   onStudentAccessAction,
   onLaunchClass,
   onOpenContent,
-  onQueryHelper,
   onPreviewSupport,
-  onCreateRewardGoal,
   onRetry,
   accountSecurity,
 }: ParentPortalFeatureProps) {
@@ -362,13 +352,7 @@ export function ParentPortalFeature({
                 key={selectedLearner.learner_key}
                 library={selectedMaterials?.library ?? []}
                 reviewSheets={selectedMaterials?.review_sheets ?? []}
-                helper={selectedMaterials?.helper ?? dashboard.helper}
                 onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
-                onQueryHelper={
-                  onQueryHelper
-                    ? (question) => onQueryHelper(selectedLearner.learner_key, question)
-                    : undefined
-                }
                 onPreviewSupport={() => onPreviewSupport?.(selectedLearner.learner_key)}
               />
             </section>
@@ -385,11 +369,6 @@ export function ParentPortalFeature({
               gamification={
                 selectedMaterials?.gamification ??
                 dashboard.gamification?.[selectedLearner.learner_key]
-              }
-              onCreateRewardGoal={
-                onCreateRewardGoal
-                  ? (goal) => onCreateRewardGoal(selectedLearner.learner_key, goal)
-                  : undefined
               }
             />
             <LeaderboardPanel
@@ -471,7 +450,6 @@ export function StudentPortalFeature({
   resetSignal,
   onLaunchClass,
   onOpenContent,
-  onQueryHelper,
   onSubmitQuestion,
   onSubmitClassroomQuestion,
   liveClassQuestions = [],
@@ -489,7 +467,8 @@ export function StudentPortalFeature({
     setSessionMarker(actorFingerprint);
   }, [actorFingerprint, resetSignal]);
   const currentClass = dashboard?.upcoming_classes[0] ?? null;
-  const activeSection = requestedSection ?? localSection;
+  const activeSection =
+    requestedSection === 'helper' ? 'today' : (requestedSection ?? localSection);
 
   function selectSection(section: StudentPortalSection) {
     setLocalSection(section);
@@ -630,17 +609,6 @@ export function StudentPortalFeature({
             <ContentList
               items={dashboard.library_items.filter((item) => item.status === 'published')}
               onOpen={readOnly ? undefined : onOpenContent}
-            />
-          </>
-        )}
-
-        {activeSection === 'helper' && (
-          <>
-            <h2 id="student-helper-heading">Class Helper</h2>
-            <ClassHelperPanel
-              helper={dashboard.helper}
-              onQueryHelper={readOnly ? undefined : onQueryHelper}
-              readOnly={readOnly}
             />
           </>
         )}
@@ -1085,23 +1053,18 @@ function ClassSummary({
 function MaterialsSummary({
   library,
   reviewSheets,
-  helper,
   onOpen,
-  onQueryHelper,
   onPreviewSupport,
 }: {
   library: LibraryItem[];
   reviewSheets: LibraryItem[];
-  helper: HelperAvailability;
   onOpen?: ((action: ProtectedActionDescriptor) => void) | undefined;
-  onQueryHelper?: ((question: string) => Promise<HelperAnswer>) | undefined;
   onPreviewSupport?: (() => void) | undefined;
 }) {
   return (
     <section className="ot-subsection" aria-labelledby="materials-heading">
       <h3 id="materials-heading">Materials</h3>
       <ContentList items={[...library, ...reviewSheets]} onOpen={onOpen} />
-      <ClassHelperPanel helper={helper} onQueryHelper={onQueryHelper} />
       {onPreviewSupport && (
         <button type="button" className="ot-button" onClick={onPreviewSupport}>
           Technical support
@@ -1165,96 +1128,6 @@ function ContentList({
           </article>
         );
       })}
-    </div>
-  );
-}
-
-function ClassHelperPanel({
-  helper,
-  onQueryHelper,
-  readOnly = false,
-}: {
-  helper: HelperAvailability;
-  onQueryHelper?: ((question: string) => Promise<HelperAnswer>) | undefined;
-  readOnly?: boolean;
-}) {
-  const [draft, setDraft] = useState('');
-  const [answer, setAnswer] = useState<HelperAnswer | null>(null);
-  const [state, setState] = useState<'idle' | 'loading' | 'answered' | 'error'>('idle');
-  const [error, setError] = useState('');
-  const trimmed = draft.trim();
-  const canAsk = !readOnly && helper.available && Boolean(onQueryHelper) && trimmed.length > 0;
-  return (
-    <div className="ot-stack ot-helper-panel">
-      <HelperState helper={helper} />
-      <p className="ot-muted">
-        Class Helper answers from Rabbi Scheller's approved class material.
-      </p>
-      <form
-        className="ot-question-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!canAsk || !onQueryHelper) return;
-          setState('loading');
-          setError('');
-          void onQueryHelper(trimmed)
-            .then((result) => {
-              setAnswer(result);
-              setDraft('');
-              setState('answered');
-            })
-            .catch((caught: unknown) => {
-              setState('error');
-              setError(
-                caught instanceof Error
-                  ? caught.message
-                  : 'Class Helper is being prepared for this class. Send a private question and we will route it for review.',
-              );
-            });
-        }}
-      >
-        <label className="ot-field">
-          <span>Ask Class Helper</span>
-          <textarea
-            value={draft}
-            maxLength={800}
-            rows={4}
-            disabled={readOnly || !helper.available || state === 'loading'}
-            onChange={(event) => {
-              setDraft(event.currentTarget.value);
-              setState('idle');
-              setError('');
-            }}
-          />
-        </label>
-        <button type="submit" className="ot-button ot-button-primary" disabled={!canAsk}>
-          {state === 'loading' ? 'Checking' : 'Ask helper'}
-        </button>
-      </form>
-      {error && (
-        <p className="ot-warning" role="alert">
-          {error}
-        </p>
-      )}
-      {answer && (
-        <article className="ot-helper-answer" data-abstained={answer.abstained}>
-          <p>{answer.answer}</p>
-          {answer.provider_mode === 'provider_off' && (
-            <p className="ot-guardrail-note">
-              Approved-source fallback is active while the model provider is off.
-            </p>
-          )}
-          {answer.citations.length > 0 && (
-            <ul className="ot-citation-list" aria-label="Approved sources">
-              {answer.citations.map((citation) => (
-                <li key={`${citation.content_id}:${citation.section_id}`}>
-                  <a href={citation.deep_link}>{citation.section_title}</a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </article>
-      )}
     </div>
   );
 }
@@ -1521,14 +1394,11 @@ function RewardSummary({
   progress,
   history,
   gamification,
-  onCreateRewardGoal,
 }: {
   rewards?: RewardBalance | undefined;
   progress?: ProgressSummary | undefined;
   history: RewardEvent[];
   gamification?: GamificationSummary | undefined;
-  onCreateRewardGoal?:
-    ((goal: { title: string; description: string; pointsRequired: number }) => void) | undefined;
 }) {
   if (!rewards) return <p className="ot-muted">Rewards are not loaded.</p>;
   if (gamification) {
@@ -1537,7 +1407,6 @@ function RewardSummary({
         summary={gamification}
         fallbackProgress={progress}
         fallbackRewards={rewards}
-        onCreateRewardGoal={onCreateRewardGoal}
       />
     );
   }
@@ -1571,13 +1440,10 @@ function GamificationSummaryView({
   summary,
   fallbackProgress,
   fallbackRewards,
-  onCreateRewardGoal,
 }: {
   summary: GamificationSummary;
   fallbackProgress?: ProgressSummary | undefined;
   fallbackRewards: RewardBalance;
-  onCreateRewardGoal?:
-    ((goal: { title: string; description: string; pointsRequired: number }) => void) | undefined;
 }) {
   const attendance = summary.streaks.find((streak) => streak.kind === 'attendance');
   const review = summary.streaks.find((streak) => streak.kind === 'review');
@@ -1636,8 +1502,6 @@ function GamificationSummaryView({
       <BadgeList badges={summary.badges} />
       <MilestoneList milestones={summary.milestones} />
       <ClassMilestoneList milestones={summary.class_milestones} />
-      <ParentRewardList rewards={summary.parent_rewards} />
-      {onCreateRewardGoal && <ParentRewardGoalForm onCreate={onCreateRewardGoal} />}
       <AccomplishmentList accomplishments={summary.accomplishments} />
       <p className="ot-guardrail-note">
         Private progress only. No public rankings, random rewards, or points for empty clicks.
@@ -1748,79 +1612,6 @@ function ClassMilestoneList({
   );
 }
 
-function ParentRewardList({ rewards }: { rewards: GamificationSummary['parent_rewards'] }) {
-  if (rewards.length === 0) {
-    return <p className="ot-muted">Optional parent rewards can be added for this learner.</p>;
-  }
-  return (
-    <div className="ot-stack" aria-label="Parent rewards">
-      {rewards.map((reward) => (
-        <article className="ot-item" key={reward.reward_goal_key}>
-          <div>
-            <strong>{reward.title}</strong>
-            <span>{reward.description || label(reward.status)}</span>
-          </div>
-          <b>{reward.points_required} pts</b>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-function ParentRewardGoalForm({
-  onCreate,
-}: {
-  onCreate: (goal: { title: string; description: string; pointsRequired: number }) => void;
-}) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [pointsRequired, setPointsRequired] = useState(50);
-  const canSubmit = title.trim().length > 0 && pointsRequired > 0;
-  return (
-    <form
-      className="ot-reward-form"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (!canSubmit) return;
-        onCreate({ title: title.trim(), description: description.trim(), pointsRequired });
-        setTitle('');
-        setDescription('');
-        setPointsRequired(50);
-      }}
-    >
-      <label className="ot-field">
-        <span>Parent reward</span>
-        <input
-          value={title}
-          maxLength={160}
-          onChange={(event) => setTitle(event.currentTarget.value)}
-        />
-      </label>
-      <label className="ot-field">
-        <span>Details</span>
-        <input
-          value={description}
-          maxLength={320}
-          onChange={(event) => setDescription(event.currentTarget.value)}
-        />
-      </label>
-      <label className="ot-field">
-        <span>Points required</span>
-        <input
-          type="number"
-          min={1}
-          max={5000}
-          value={pointsRequired}
-          onChange={(event) => setPointsRequired(Number(event.currentTarget.value))}
-        />
-      </label>
-      <button type="submit" className="ot-button ot-button-primary" disabled={!canSubmit}>
-        Add reward
-      </button>
-    </form>
-  );
-}
-
 function AccomplishmentList({
   accomplishments,
 }: {
@@ -1873,15 +1664,6 @@ function UpdatesList({ updates }: { updates: AdministrativeUpdate[] }) {
           {update.read_at ? <span>Read</span> : <span>New</span>}
         </article>
       ))}
-    </div>
-  );
-}
-
-function HelperState({ helper }: { helper: HelperAvailability }) {
-  return (
-    <div className="ot-helper" data-helper-available={helper.available}>
-      <strong>{helper.scope_label}</strong>
-      <span>{helper.available ? 'Available' : (helper.reason ?? 'Unavailable')}</span>
     </div>
   );
 }

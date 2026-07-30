@@ -1,0 +1,38 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: F01-retired-client-002
+task_id: F01
+kind: retired_surface
+requirement_ids:
+  - OTV2-FOUNDATION-005
+  - OTV2-FOUNDATION-006
+  - OTV2-FOUNDATION-208
+acceptance_case_ids:
+  - OTV2-FOUNDATION-005-AC01
+  - OTV2-FOUNDATION-006-AC01
+  - OTV2-FOUNDATION-208-AC01
+rationale: The owned composers unmount retired routes and deny emitted preview/event assets, but the current production client build still emits or contains experience-preview, Tisha event, routine email-challenge, social/Buffer, demo-copy, and unused Parent-goal API code from paths outside F01 ownership.
+desired_semantic_change: Remove retired entries, controls, copy, and API clients from the production client graph and public static bundle while retaining only non-product historical evidence outside runtime.
+proposed_symbols_routes_keys_or_dependencies:
+  - apps/web/vite.app.config.ts experience-preview-student input
+  - apps/web/src/client/public/public-entry.ts Tisha event and email-challenge flows
+  - apps/web/public/index.html retired event controls and assets
+  - apps/web/public/tisha-bav.html
+  - apps/web/public/tisha-bav-live.html
+  - apps/web/src/client/app/content-workspace/ContentWorkspace.tsx social, Buffer, and demo surfaces
+  - apps/web/src/client/app/portal-api.ts#createParentRewardGoal
+  - apps/web/src/client/app/crm-api.ts experience_preview capability
+  - apps/web/src/client/app/crm.css retired preview/demo selectors
+compatibility_assumptions:
+  - Support-message preview, CRM reply preview, content prompt preview, and ordinary question preview are launch workflows and are not experience-demo surfaces.
+  - Historical source and evidence may remain outside the compiled runtime graph.
+  - Removing unused API exports must not change current Admin, Parent, or Student routes.
+verification_performed:
+  - npm run build:client passed after owned retirement changes.
+  - The build manifest still listed app-experience-preview-student.js.
+  - The owned server denies direct preview and Tisha event assets with 404.
+  - Exact current-source inventory found public-entry and ContentWorkspace retired references outside F01 ownership.
+conflicts_or_risks:
+  - Shared public-entry deletion must preserve signup, login, activation, password reset, privacy, terms, and consent flows.
+  - ContentWorkspace cleanup must preserve Vimeo-backed content management and safe prompt-preview behavior.
+contains_secret_or_private_data: false

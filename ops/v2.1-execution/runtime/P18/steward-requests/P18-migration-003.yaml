@@ -1,0 +1,85 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P18-migration-003
+task_id: P18
+kind: migration
+requirement_ids:
+  - OTV2-CLASSROOM-073
+  - OTV2-CLASSROOM-075
+  - OTV2-CLASSROOM-078
+  - OTV2-CLASSROOM-187
+  - OTV2-CLASSROOM-232
+acceptance_case_ids:
+  - OTV2-CLASSROOM-073-AC01
+  - OTV2-CLASSROOM-075-AC01
+  - OTV2-CLASSROOM-078-AC01
+  - OTV2-CLASSROOM-187-AC01
+  - OTV2-CLASSROOM-232-TIMING
+  - OTV2-CLASSROOM-232-BOOTSTRAP-LEASE
+rationale: >-
+  P18 solely owns the four-table embedded-classroom schema contract and its
+  parameterized repository, but only F02 may allocate and write a forward-only
+  migration. P18-migration-001 remains rejected and immutable because it
+  collided with the protected legacy onetime.classroom_launch_grants table.
+  P18-migration-002 remains immutable but is superseded and withheld because it
+  predates the reconciled exact P17 ownership boundary. This complete successor
+  is the only P18 migration request F02 may adjudicate.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and create exactly the four
+  P18-owned tables: onetime.classroom_launch_grants_v21,
+  onetime.live_student_classroom_sessions,
+  onetime.classroom_attendance_events_v21, and
+  onetime.classroom_attendance_projection_v21. Do not create, alter, rename,
+  backfill, read, or write the protected legacy
+  onetime.classroom_launch_grants table, any P17-owned preparation table, or
+  the canonical onetime.job_outbox and
+  onetime.provider_operation_binding tables.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    onetime.classroom_launch_grants_v21: product/runtime/environment scope,
+    digest-only grant identity, exact Student/household/app-session/occurrence/
+    registrant bindings, 60-second issue/expiry, one-use/revocation timestamps,
+    authorization source versions, and optimistic version.
+  - >-
+    onetime.live_student_classroom_sessions: one exact current row per scoped
+    Student, occurrence/app-session/device lineage, active/revoked/expired state,
+    lease generation, 30-second heartbeat evidence, 90-second expiry, audited
+    Admin revocation, and optimistic version.
+  - >-
+    onetime.classroom_attendance_events_v21: append-only exact
+    occurrence/Student scope, provider/client/Admin source, event kind/time,
+    connection lineage, idempotency key, digest-only source reference,
+    provider-verification flag, and audited correction data; prohibit update and
+    delete.
+  - >-
+    onetime.classroom_attendance_projection_v21: unique scoped
+    occurrence/Student projection with first/last timestamps, merged connected
+    minutes, capped percentage, reconnect count, late flag, reconciliation
+    state, correction evidence, source-event count, and optimistic version.
+compatibility_assumptions:
+  - Applied migration 2002_ot88_zoom_learner_classroom.sql and its onetime.classroom_launch_grants table remain immutable legacy evidence.
+  - P18-migration-001 remains rejected and immutable and must never be revived, edited, or applied.
+  - P18-migration-002 remains immutable, is superseded completely by this request, and must be withheld from adjudication and application.
+  - Exact integrated P17 head 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c solely owns onetime.zoom_preparations, onetime.zoom_roster_snapshots, onetime.zoom_classroom_resources, onetime.zoom_student_registrants, and onetime.zoom_preparation_commands.
+  - P17 reuses canonical onetime.job_outbox and onetime.provider_operation_binding from migrations 2236 and 2238; P18 does not own, create, or alter them.
+  - Every mutable P18 row includes product, runtime_tier, and verification_environment_id.
+  - F03 derives Student/app-session/device identity; request bodies never assert identity.
+  - P16 supplies exact occurrence and enrollment versions; P32 supplies exact current consent evidence.
+  - Active-session uniqueness and transaction fencing prevent overlapping devices without a provider call.
+  - Existing provider attendance tables remain source evidence only and are never display-name matched to Students.
+verification_performed:
+  - exact P18 four-table and integrated P17 five-table disjoint ownership inspection
+  - canonical job_outbox and provider_operation_binding reuse inspection
+  - focused domain, server, database, and Student client assertions from the unchanged P18 implementation
+  - explicit repository regression proving launch-grant insert, load, bootstrap-consume, and reset SQL uses only onetime.classroom_launch_grants_v21 and rejects the legacy table
+  - parameterized SQL inspection against fixed allowlisted table names
+  - no migration ordinal was allocated and no migration SQL was written, applied, or executed by P18
+conflicts_or_risks:
+  - Do not create, alter, rename, backfill, read, or write onetime.classroom_launch_grants or edit applied migration 2002_ot88_zoom_learner_classroom.sql.
+  - Do not create, alter, or claim any P17-owned preparation table.
+  - Do not create or alter onetime.job_outbox or onetime.provider_operation_binding.
+  - F02 must independently validate only this immutable successor request, allocate the next safe ordinal, and write any forward-only migration.
+  - Do not persist a raw launch secret, raw Zoom URL, Meeting SDK bearer, Student email alias, participant display-name identity match, or private Student data.
+  - Do not update/delete attendance source events or replace them with a correction.
+  - Do not weaken one-use expiry, exact version binding, active-session uniqueness, or optimistic fencing.
+contains_secret_or_private_data: false

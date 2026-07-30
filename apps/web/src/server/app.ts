@@ -53,7 +53,6 @@ import {
   liveClassStageResponseSchema,
   liveClassZoomControlPayloadSchema,
   liveClassZoomAdminActionPayloadSchema,
-  liveClassZoomAdminDeletePayloadSchema,
   liveClassZoomAdminStatusResponseSchema,
   liveClassZoomCommandPollResponseSchema,
   liveClassZoomHostBootstrapResponseSchema,
@@ -99,7 +98,6 @@ import {
   contentAdminPromptPreviewPayloadSchema,
   contentAdminPromptPreviewResponseSchema,
   contentAdminPromptRollbackPayloadSchema,
-  contentAdminSocialWorkspaceResponseSchema,
   contentAdminSourceDetailResponseSchema,
   contentAdminWorkspaceQuerySchema,
   contentFactoryActionSchema,
@@ -112,11 +110,8 @@ import {
   gamificationCorrectionAuditSchema,
   gamificationCorrectionPayloadSchema,
   gamificationLearningEventPayloadSchema,
-  parentRewardGoalPayloadSchema,
-  parentRewardGoalSchema,
-  ot86bReadinessResponseSchema,
-  ot86bSocialDraftListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
+import type { SessionUser } from '../../../../packages/contracts/src/index.ts';
 import {
   providerCanaryPlanResponseSchema,
   providerControlCenterResponseSchema,
@@ -178,10 +173,8 @@ import {
   createPortalGamificationAdapter,
   createSession,
   currentApplicationAccessForUser,
-  consumeWhatsAppAccountLink,
   createScopedKnowledgeHelperAdapter,
   createStudentPortalService,
-  resendEmailChallenge,
   getClassOccurrenceDetail,
   getManagedClassOccurrence,
   getContentItemDetail,
@@ -196,10 +189,8 @@ import {
   getSessionByToken,
   householdHasLearningAccess,
   readHouseholdAccess,
-  buildWhatsAppPublicAssistantStatus,
   inspectAccountLifecycleToken,
   buildOwnerDashboard,
-  captureTishaBavRegistration,
   listClassOccurrences,
   listClassEnrollmentCandidates,
   listClassEnrollments,
@@ -212,29 +203,21 @@ import {
   listOt110aActivity,
   listOt110aKnowledgeWorkspace,
   listOt110aPromptTemplates,
-  listOt110aSocialWorkspace,
   ownerAdminVisibleActions,
   performOt110aContentAction,
   performContentFactoryAction,
   retryContentFactoryIntake,
   previewOt110aPromptPatch,
-  inspectOt86bBufferReadinessFromEnv,
   listCrmTags,
-  listOt86bSocialDrafts,
   previewSingleRecipientReply,
   receiveOt86PublicationManifest,
-  receiveOt86bSocialEvent,
   requestPasswordReset,
   reactivateContact,
-  revokeTrustedDevice,
   resolveOt110aContentAdminActor,
   rollbackOt110aPromptVersion,
   revokeSession,
   rotateSessionCsrf,
   removeCrmTag,
-  receiveWhatsAppWebhook,
-  requestTishaBavJoin,
-  resolveTishaBavRedirect,
   attachRecordingToClass,
   enrollLearnerInClass,
   setClassRecordingLearnerAccess,
@@ -244,15 +227,10 @@ import {
   updateContact,
   editContentFactoryItem,
   inspectLearningDeliveryInputAdapters,
-  verifyEmailChallengeCode,
-  verifyEmailChallengeLink,
   CrmReplyError,
   verifyLoginCsrf,
   verifyRecentEmailAssurance,
   verifySessionCsrf,
-  verifyWhatsAppWebhookChallenge,
-  TishaBavIdempotencyConflictError,
-  TishaBavJoinError,
   type AuthenticatedSession,
   PortalServiceError,
   type PortalServiceDeps,
@@ -290,14 +268,11 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
-import { registerLearningDeliveryDemoRoutes } from './features/learning-delivery-demo/router.ts';
-import { isLiveConsoleNavigationEnabled } from './features/experience-preview/router.ts';
-import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
 import { createHighLevelActionsRouter } from './features/highlevel/actions-router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
-import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
+import { leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
 import { createContactOperationsRouter } from './features/contact-operations/router.ts';
 import { createAdminDirectoryRouter } from './features/admin-directory/router.ts';
@@ -310,18 +285,17 @@ type AppDeps = {
   config: AppConfig;
   pool: DbPool;
   distDir?: string;
-  learningDeliveryDemoReportPath?: string;
   clock?: () => Date;
   contentFactoryJobNotifier?: (intakeKey: string) => Promise<void> | void;
   zoomAdminProvider?: ZoomAdminProviderPort;
   zoomClassOccurrenceProvider?: ZoomClassOccurrenceProvider;
   featureRegistrations?: readonly ServerFeatureRegistration[];
+  /** @deprecated Retained only so historical test harnesses compile; no demo route is registered. */
+  learningDeliveryDemoReportPath?: string;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
 const CSRF_COOKIE = 'otcrm_csrf';
-const TRUSTED_DEVICE_COOKIE = 'otcrm_trusted_device';
-const TISHA_BAV_EVENT_COOKIE = 'ot_tisha_bav_2026_session';
 type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
 const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
   (tokenType) => tokenType !== 'password_reset',
@@ -354,23 +328,6 @@ const authenticatedPasswordChangePayloadSchema = z
       }),
   })
   .strict();
-const emailChallengeVerifyPayloadSchema = z.object({
-  challenge_token: z.string().trim().min(32).max(240),
-  code: z
-    .string()
-    .trim()
-    .regex(/^\d{6}$/),
-  trust_device: z.boolean().optional().default(false),
-  return_to: z.string().trim().max(400).optional(),
-});
-const emailChallengeLinkPayloadSchema = z.object({
-  link_token: z.string().trim().min(32).max(240),
-  trust_device: z.boolean().optional().default(false),
-  return_to: z.string().trim().max(400).optional(),
-});
-const emailChallengeResendPayloadSchema = z.object({
-  challenge_token: z.string().trim().min(32).max(240),
-});
 const crmNotePayloadSchema = z.object({
   body: z.string().trim().min(1).max(4000),
 });
@@ -400,13 +357,10 @@ class PublicRouteError extends Error {
   }
 }
 
-type EmailChallengeVerificationResult = Awaited<ReturnType<typeof verifyEmailChallengeCode>>;
-
 export function createApp({
   config,
   pool,
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
-  learningDeliveryDemoReportPath,
   clock,
   contentFactoryJobNotifier,
   zoomAdminProvider,
@@ -451,7 +405,7 @@ export function createApp({
       maxStringLength: 1000,
       maxArrayLength: 32,
       inbox: new TelegramSqlInboxRepository(pool),
-      codec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:telegram-payload-v1`),
+      codec: new AesGcmPayloadCodec(`${config.protectedPayloadEncryptionKey}:telegram-payload-v1`),
     });
     app.post('/api/v1/telegram/one-time/webhook', (req, res) => {
       void telegramWebhook(req, res).catch(() => {
@@ -459,43 +413,6 @@ export function createApp({
       });
     });
   }
-
-  app.get('/api/v1/whatsapp/meta/webhook', (req, res) => {
-    const challenge = verifyWhatsAppWebhookChallenge(config, req.query);
-    if (!challenge) {
-      res.status(403).json(publicError('INVALID_VERIFY_TOKEN', 'Webhook verification failed.'));
-      return;
-    }
-    res.status(200).type('text/plain').send(challenge);
-  });
-
-  app.get('/api/v1/whatsapp/public-assistant', (_req, res) => {
-    setPrivateNoStore(res);
-    res.status(200).json(buildWhatsAppPublicAssistantStatus(config));
-  });
-
-  app.post(
-    '/api/v1/whatsapp/meta/webhook',
-    express.raw({ type: '*/*', limit: '128kb' }),
-    async (req: RequestWithTrace, res) => {
-      const result = await withTiming(req, 'whatsapp_webhook', () =>
-        receiveWhatsAppWebhook({
-          pool,
-          config,
-          rawBody: req.body,
-          signatureHeader: req.header('x-hub-signature-256') ?? undefined,
-        }),
-      );
-      res.status(result.status).json({
-        success: result.ok,
-        code: result.code,
-        accepted: result.accepted,
-        duplicates: result.duplicates,
-        processed: result.processed,
-        request_id: req.traceId,
-      });
-    },
-  );
 
   app.post(
     '/internal/content-publications/v1/manifests',
@@ -513,43 +430,6 @@ export function createApp({
         return;
       }
       const result = await receiveOt86PublicationManifest({
-        pool,
-        rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
-        headers: {
-          contentType: req.header('content-type') ?? null,
-          keyId: req.header('x-ot86-key-id') ?? null,
-          timestamp: req.header('x-ot86-timestamp') ?? null,
-          deliveryId: req.header('x-ot86-delivery-id') ?? null,
-          signature: req.header('x-ot86-signature') ?? null,
-        },
-        secrets,
-      });
-      res.status(result.status).json({
-        success: result.status === 200 || result.status === 202,
-        code: result.code,
-        message: result.message,
-        receipt_state: result.receipt_state,
-        request_id: req.traceId,
-      });
-    },
-  );
-
-  app.post(
-    '/internal/social-publishing/v1/events',
-    express.raw({ type: 'application/json', limit: '512kb' }),
-    async (req: RequestWithTrace, res) => {
-      setPrivateNoStore(res);
-      const secrets = ot86PublishSecrets(config);
-      if (secrets.length < 1) {
-        res.status(503).json({
-          success: false,
-          code: 'OT86_SOCIAL_SIGNING_UNCONFIGURED',
-          message: 'Social event intake is not configured.',
-          request_id: req.traceId,
-        });
-        return;
-      }
-      const result = await receiveOt86bSocialEvent({
         pool,
         rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
         headers: {
@@ -651,29 +531,6 @@ export function createApp({
     ...(clock ? { clock } : {}),
   });
 
-  registerPortalTestLabRoutes({
-    app,
-    config,
-    pool,
-    session: {
-      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
-      ensureSessionCsrfCookie: (req, res, session) =>
-        ensureSessionCsrfCookie(req, res, pool, config, session),
-      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
-      setPrivateNoStore,
-    },
-  });
-
-  registerLearningDeliveryDemoRoutes({
-    app,
-    config,
-    session: {
-      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
-      setPrivateNoStore,
-    },
-    ...(learningDeliveryDemoReportPath ? { reportPath: learningDeliveryDemoReportPath } : {}),
-  });
-
   app.get('/health', (_req, res) => {
     setPrivateNoStore(res);
     res.json({ ok: true, service: 'onetime-web', code: 'PUBLIC_HEALTH_OK' });
@@ -765,7 +622,6 @@ export function createApp({
         token_type: inspected.token_type,
         target_role: inspected.target_role,
         expires_at: inspected.expires_at,
-        mfa_required: inspected.mfa_required,
       });
     } catch (error) {
       handleLifecycleRouteError(error, req, res, 'We could not check that link yet.');
@@ -832,7 +688,6 @@ export function createApp({
       setAuthCookies(res, config, session.session_token, session.csrf_token);
       res.status(200).json({
         success: true,
-        mfa_required: false,
         csrf_token: session.csrf_token,
         return_to: defaultRouteForRole(session.user.role),
       });
@@ -894,16 +749,6 @@ export function createApp({
     }
   });
 
-  app.post('/api/v1/account-lifecycle/mfa/activate', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/account-lifecycle/mfa/ack', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
   app.get(/^\/app\/crm(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     const session = await sessionFromRequest(req, pool, config);
     if (!session) {
@@ -921,13 +766,6 @@ export function createApp({
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
     await sendAppHtml(res, distDir, 'crm', config);
-  });
-
-  app.get('/app/experience-preview', async (_req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res.setHeader('Referrer-Policy', 'no-referrer');
-    res.status(404).type('text').send('Experience Preview is unavailable.');
   });
 
   if (config.legacyBillingRuntimeEnabled) {
@@ -1132,75 +970,6 @@ export function createApp({
   app.post('/api/v1/leads', leadRateLimit(config, pool), handleLeadPost);
   app.post('/api/one-time/interest', leadRateLimit(config, pool), handleLeadPost);
 
-  app.post(
-    '/api/v1/events/tisha-bav-2026/register',
-    eventRateLimit(config, pool),
-    async (req: RequestWithTrace, res) => {
-      setPrivateNoStore(res);
-      try {
-        const result = await withTiming(req, 'tisha_bav_register', () =>
-          captureTishaBavRegistration({ pool, config, payload: req.body }),
-        );
-        res.status(200).json(result);
-      } catch (error) {
-        handleTishaBavRouteError(error, req, res, 'We could not save that event registration yet.');
-      }
-    },
-  );
-
-  app.post(
-    '/api/v1/events/tisha-bav-2026/join',
-    eventRateLimit(config, pool),
-    async (req: RequestWithTrace, res) => {
-      setEventAccessNoStore(res);
-      try {
-        const userAgent = req.header('user-agent') ?? undefined;
-        const result = await withTiming(req, 'tisha_bav_join', () =>
-          requestTishaBavJoin({
-            pool,
-            config,
-            payload: req.body,
-            ...(req.ip ? { ip: req.ip } : {}),
-            ...(userAgent ? { userAgent } : {}),
-            ...(clock ? { now: clock() } : {}),
-          }),
-        );
-        res.cookie(TISHA_BAV_EVENT_COOKIE, result.sessionToken, {
-          httpOnly: true,
-          secure: config.runtime.requiresSecureCookies,
-          sameSite: 'strict',
-          path: '/',
-          maxAge: Math.max(1, new Date(result.response.expires_at).getTime() - Date.now()),
-        });
-        if (req.accepts(['json', 'html']) === 'html') {
-          res.redirect(303, result.response.redirect_path);
-          return;
-        }
-        res.status(200).json(result.response);
-      } catch (error) {
-        handleTishaBavRouteError(error, req, res, 'Private access is not available yet.');
-      }
-    },
-  );
-
-  app.get('/api/v1/events/tisha-bav-2026/redirect', async (req: RequestWithTrace, res) => {
-    setEventAccessNoStore(res);
-    try {
-      const sessionToken = getCookie(req, TISHA_BAV_EVENT_COOKIE);
-      const result = await withTiming(req, 'tisha_bav_redirect', () =>
-        resolveTishaBavRedirect({
-          pool,
-          config,
-          ...(sessionToken ? { sessionToken } : {}),
-          ...(clock ? { now: clock() } : {}),
-        }),
-      );
-      res.redirect(302, result.joinUrl);
-    } catch (error) {
-      handleTishaBavRouteError(error, req, res, 'Private access is not available yet.');
-    }
-  });
-
   app.post('/api/v1/auth/login', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     try {
@@ -1225,28 +994,20 @@ export function createApp({
           password: payload.password,
           ip: req.ip,
           userAgent: req.header('user-agent') ?? undefined,
-          trustedDeviceToken: getCookie(req, TRUSTED_DEVICE_COOKIE),
         }),
       );
       if (!login.ok) {
-        const status =
-          login.code === 'RATE_LIMITED'
-            ? 429
-            : login.code === 'EMAIL_CHALLENGE_REQUIRED'
-              ? 403
-              : 401;
+        const status = login.code === 'RATE_LIMITED' ? 429 : 401;
         if (login.retry_after_seconds)
           res.setHeader('retry-after', String(login.retry_after_seconds));
         res.status(status).json({
           success: false,
-          code: login.code === 'DISABLED' ? 'INVALID_CREDENTIALS' : login.code,
+          code:
+            login.code === 'DISABLED' || login.code === 'EMAIL_CHALLENGE_REQUIRED'
+              ? 'INVALID_CREDENTIALS'
+              : login.code,
           message:
-            login.code === 'EMAIL_CHALLENGE_REQUIRED'
-              ? 'Check your email for a six-digit login code.'
-              : 'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
-          challenge_token: login.challenge_token,
-          challenge_expires_at: login.challenge_expires_at,
-          delivery_state: login.delivery_state,
+            'Email/username or password is not correct. If access was revoked, ask your Parent or an Administrator to restore it.',
           request_id: req.traceId,
         });
         return;
@@ -1271,10 +1032,26 @@ export function createApp({
           assuranceMethod: login.assuranceMethod,
         }),
       );
+      const currentUser = currentClientUser(session.user);
+      if (!currentUser) {
+        await revokeSession({
+          pool,
+          config,
+          sessionToken: session.session_token,
+          reason: 'role_retired',
+          ip: req.ip,
+          userAgent: req.header('user-agent') ?? undefined,
+        });
+        clearAuthCookies(res, config);
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'This account role is not available.', req.traceId));
+        return;
+      }
       setAuthCookies(res, config, session.session_token, session.csrf_token);
       res.status(200).json({
         success: true,
-        user: session.user,
+        user: currentUser,
         csrf_token: session.csrf_token,
         return_to: returnPathForRole(payload.return_to, session.user.role, config),
       });
@@ -1293,127 +1070,6 @@ export function createApp({
         .status(500)
         .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
     }
-  });
-
-  app.post('/api/v1/auth/email-challenge/verify', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    try {
-      const payload = emailChallengeVerifyPayloadSchema.parse(req.body);
-      const verified = await verifyEmailChallengeCode({
-        pool,
-        config,
-        challengeToken: payload.challenge_token,
-        code: payload.code,
-        trustDevice: payload.trust_device,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      await completeEmailChallengeLogin(req, res, pool, config, verified, payload.return_to);
-    } catch (error) {
-      handleEmailChallengeRouteError(error, req, res);
-    }
-  });
-
-  app.post('/api/v1/auth/email-challenge/link', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    try {
-      const payload = emailChallengeLinkPayloadSchema.parse(req.body);
-      const verified = await verifyEmailChallengeLink({
-        pool,
-        config,
-        linkToken: payload.link_token,
-        trustDevice: payload.trust_device,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      await completeEmailChallengeLogin(req, res, pool, config, verified, payload.return_to);
-    } catch (error) {
-      handleEmailChallengeRouteError(error, req, res);
-    }
-  });
-
-  app.post('/api/v1/auth/email-challenge/resend', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    try {
-      const payload = emailChallengeResendPayloadSchema.parse(req.body);
-      const resent = await resendEmailChallenge({
-        pool,
-        config,
-        challengeToken: payload.challenge_token,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      if (!resent.ok) {
-        const status = resent.code === 'RATE_LIMITED' ? 429 : 401;
-        if (resent.retryAfterSeconds)
-          res.setHeader('retry-after', String(resent.retryAfterSeconds));
-        res.status(status).json({
-          success: false,
-          code: resent.code,
-          message:
-            resent.code === 'RATE_LIMITED'
-              ? 'Please wait before requesting another code.'
-              : 'Email or password is not correct.',
-          request_id: req.traceId,
-        });
-        return;
-      }
-      res.status(200).json({
-        success: true,
-        challenge_token: resent.challengeToken,
-        challenge_expires_at: resent.expiresAt,
-        delivery_state: resent.deliveryState,
-      });
-    } catch (error) {
-      handleEmailChallengeRouteError(error, req, res);
-    }
-  });
-
-  app.post('/api/v1/auth/mfa/enroll/activate', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/challenge', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/recovery', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/recovery/replace', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/mfa/revoke', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    retiredAuthMethod(res, req);
-  });
-
-  app.post('/api/v1/auth/trusted-devices/revoke', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!['owner', 'admin'].includes(session.user.role)) {
-      res
-        .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot manage trusted devices.', req.traceId));
-      return;
-    }
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    if (!(await requireRecentEmailAssurance(req, res, pool, session))) return;
-    await revokeTrustedDevice({
-      pool,
-      config,
-      trustedDeviceToken: getCookie(req, TRUSTED_DEVICE_COOKIE),
-      userKey: session.user.user_key,
-    });
-    clearTrustedDeviceCookie(res, config);
-    res.status(200).json({ success: true, trusted_device_revoked: true });
   });
 
   app.post('/api/v1/auth/password', async (req: RequestWithTrace, res) => {
@@ -1510,40 +1166,25 @@ export function createApp({
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
     const csrfToken = await ensureSessionCsrfCookie(req, res, pool, config, session);
+    const currentUser = currentClientUser(session.user);
+    if (!currentUser) {
+      clearAuthCookies(res, config);
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'This account role is not available.', req.traceId));
+      return;
+    }
     res.json({
       authenticated: true,
-      user: session.user,
+      user: currentUser,
       csrf_token: csrfToken,
       expires_at: session.expires_at,
       capabilities: {
         operator_experience: {
-          experience_preview: false,
-          live_console: isLiveConsoleNavigationEnabled(config),
+          live_console: true,
         },
       },
     });
-  });
-
-  app.post('/api/v1/whatsapp/account-link/consume', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    const linkToken = typeof req.body?.link_token === 'string' ? req.body.link_token.trim() : '';
-    const householdKey =
-      typeof req.body?.household_key === 'string' ? req.body.household_key.trim() : '';
-    if (!linkToken || !householdKey) {
-      res
-        .status(400)
-        .json(publicError('VALIDATION_ERROR', 'Submit a link token and household.', req.traceId));
-      return;
-    }
-    const result = await withTiming(req, 'whatsapp_account_link', () =>
-      consumeWhatsAppAccountLink({ pool, config, session, linkToken, householdKey }),
-    );
-    res
-      .status(result.ok ? 200 : 403)
-      .json({ success: result.ok, ...result, request_id: req.traceId });
   });
 
   app.get('/api/v1/dashboard/owner', async (req: RequestWithTrace, res) => {
@@ -1666,7 +1307,9 @@ export function createApp({
   const classroomService = createClassroomService({
     config,
     repository: classroomRepository,
-    questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
+    questionCodec: new AesGcmPayloadCodec(
+      `${config.protectedPayloadEncryptionKey}:classroom-question-v1`,
+    ),
     ...classroomZoomPorts,
     ...(clock ? { clock } : {}),
   });
@@ -1674,7 +1317,7 @@ export function createApp({
     config,
     repository: liveClassRepository,
     questionCodec: new AesGcmPayloadCodec(
-      `${config.mfaSecretEncryptionKey}:live-class-question-v1`,
+      `${config.protectedPayloadEncryptionKey}:live-class-question-v1`,
     ),
     ...(resolvedZoomHostLaunchPort ? { zoomHostLaunchPort: resolvedZoomHostLaunchPort } : {}),
     ...(clock ? { clock } : {}),
@@ -2171,69 +1814,6 @@ export function createApp({
     }
   });
 
-  app.post('/api/v1/live-class/zoom/admin/test-meeting', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!requireSameOriginPost(req, res, config)) return;
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    const actor = await resolvePortalActor(req);
-    if (!actor) {
-      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
-      return;
-    }
-    try {
-      const payload = liveClassZoomAdminActionPayloadSchema.parse(req.body);
-      const data = await zoomAdminService.createTestMeeting(actor, payload.idempotency_key);
-      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
-    } catch (error) {
-      handleApiError(error, req, res);
-    }
-  });
-
-  app.post('/api/v1/live-class/zoom/admin/test-learner', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!requireSameOriginPost(req, res, config)) return;
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    const actor = await resolvePortalActor(req);
-    if (!actor) {
-      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
-      return;
-    }
-    try {
-      const payload = liveClassZoomAdminActionPayloadSchema.parse(req.body);
-      const data = await zoomAdminService.registerTestLearner(actor, payload.idempotency_key);
-      res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
-    } catch (error) {
-      handleApiError(error, req, res);
-    }
-  });
-
-  app.post(
-    '/api/v1/live-class/zoom/admin/test-meeting/delete',
-    async (req: RequestWithTrace, res) => {
-      setPrivateNoStore(res);
-      const session = await requireApiSession(req, res, pool, config);
-      if (!session) return;
-      if (!requireSameOriginPost(req, res, config)) return;
-      if (!(await requireSessionCsrf(req, res, pool, session))) return;
-      const actor = await resolvePortalActor(req);
-      if (!actor) {
-        res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
-        return;
-      }
-      try {
-        const payload = liveClassZoomAdminDeletePayloadSchema.parse(req.body);
-        const data = await zoomAdminService.deleteTestMeeting(actor, payload.idempotency_key);
-        res.json(liveClassZoomAdminStatusResponseSchema.parse({ success: true, data }));
-      } catch (error) {
-        handleApiError(error, req, res);
-      }
-    },
-  );
-
   app.post('/api/v1/live-class/zoom/control', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -2477,30 +2057,9 @@ export function createApp({
     }
   });
 
-  app.post('/api/v1/gamification/parent-rewards', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const actor = await resolvePortalActor(req);
-    if (!actor) {
-      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
-      return;
-    }
-    if (!(await verifyPortalCsrf(req, actor))) {
-      res
-        .status(403)
-        .json(publicError('CSRF_REQUIRED', 'Refresh the portal and try again.', req.traceId));
-      return;
-    }
-    try {
-      const payload = parentRewardGoalPayloadSchema.parse(req.body);
-      const reward = await gamificationService.createParentRewardGoal(actor, payload);
-      res.status(201).json({ success: true, data: parentRewardGoalSchema.parse(reward) });
-    } catch (error) {
-      handleApiError(error, req, res);
-    }
-  });
-
   app.use(
     '/api/v1/portals/parent',
+    rejectRetiredPortalSurface,
     createParentPortalRouter({
       resolveActor: resolvePortalActor,
       verifyCsrf: verifyPortalCsrf,
@@ -2510,6 +2069,7 @@ export function createApp({
   );
   app.use(
     '/api/v1/portals/student',
+    rejectRetiredPortalSurface,
     createStudentPortalRouter({
       resolveActor: resolvePortalActor,
       verifyCsrf: verifyPortalCsrf,
@@ -3425,26 +2985,6 @@ export function createApp({
     }
   });
 
-  app.get('/api/v1/admin/content/social', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    try {
-      const actor = await ot110aActorFromSession(pool, config, session);
-      const workspace = await withTiming(req, 'db', () =>
-        listOt110aSocialWorkspace({
-          pool,
-          config,
-          actor,
-          ports: createOt110aIntegratedProviderPorts(config),
-        }),
-      );
-      res.json(contentAdminSocialWorkspaceResponseSchema.parse({ success: true, ...workspace }));
-    } catch (error) {
-      handleApiError(error, req, res);
-    }
-  });
-
   app.get('/api/v1/admin/content/knowledge', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -3641,27 +3181,6 @@ export function createApp({
     },
   );
 
-  app.post(
-    '/api/v1/admin/content/sources/:sourceKey/social/approve',
-    async (req: RequestWithTrace, res) => {
-      await handleOt110aSourceAction(req, res, pool, config, 'social.approve');
-    },
-  );
-
-  app.post(
-    '/api/v1/admin/content/sources/:sourceKey/social/schedule',
-    async (req: RequestWithTrace, res) => {
-      await handleOt110aSourceAction(req, res, pool, config, 'social.schedule');
-    },
-  );
-
-  app.post(
-    '/api/v1/admin/content/sources/:sourceKey/social/retract',
-    async (req: RequestWithTrace, res) => {
-      await handleOt110aSourceAction(req, res, pool, config, 'social.retract');
-    },
-  );
-
   app.get('/api/v1/admin/content/sources/:sourceKey', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -3687,38 +3206,6 @@ export function createApp({
     } catch (error) {
       handleApiError(error, req, res);
     }
-  });
-
-  app.get('/api/v1/social-publishing/readiness', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!canUseSocialPublishing(session.user.role)) {
-      res
-        .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot manage social publishing.', req.traceId));
-      return;
-    }
-    const readiness = inspectOt86bBufferReadinessFromEnv(ot86bBufferEnv(config));
-    res.json(ot86bReadinessResponseSchema.parse({ success: true, readiness }));
-  });
-
-  app.get('/api/v1/social-publishing/drafts', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!canUseSocialPublishing(session.user.role)) {
-      res
-        .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot view social drafts.', req.traceId));
-      return;
-    }
-    const drafts = await withTiming(req, 'db', () =>
-      listOt86bSocialDrafts({ pool, tenantId: config.accountKey, limit: 25 }),
-    );
-    res.json(
-      ot86bSocialDraftListResponseSchema.parse({ success: true, drafts, next_cursor: null }),
-    );
   });
 
   app.post('/api/v1/crm/contacts', async (req: RequestWithTrace, res) => {
@@ -4095,13 +3582,18 @@ export function createApp({
     distDir,
   });
 
-  app.get('/tisha-bav/live', async (_req, res) => {
-    await sendNoStorePublicHtml(
-      res,
-      path.join(distDir, 'tisha-bav-live.html'),
-      config,
-      '/tisha-bav/live',
-    );
+  app.use((req, res, next) => {
+    if (
+      /^\/tisha-bav(?:\/|\.html$|$)/u.test(req.path) ||
+      /^\/api\/v1\/events\/tisha-bav-2026(?:\/|$)/u.test(req.path) ||
+      /^\/assets\/events\/tisha-bav-2026(?:\/|$)/u.test(req.path) ||
+      /^\/assets\/app-experience-preview(?:-|\.|$)/u.test(req.path)
+    ) {
+      setPrivateNoStore(res);
+      res.status(404).type('text').send('Not found.');
+      return;
+    }
+    next();
   });
 
   app.use(async (req, res, next) => {
@@ -4147,11 +3639,9 @@ function isMutableBuiltClientAsset(filePath: string) {
 
 function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
-  if (pathname === '/tisha-bav.html') return 'tisha-bav.html';
   if (pathname.startsWith('/app/content/')) return 'app/content.html';
   const staticPages = new Set([
     '/signup',
-    '/tisha-bav',
     '/login',
     '/privacy',
     '/terms',
@@ -4187,32 +3677,10 @@ async function sendPublicHtml(
       .set('Cache-Control', 'no-store, private')
       .set('Pragma', 'no-cache')
       .set('Expires', '0');
-  } else if (canonicalPath === '/tisha-bav' || canonicalPath === '/tisha-bav.html') {
-    response
-      .set('Cache-Control', 'no-cache, max-age=0, must-revalidate')
-      .set('Pragma', 'no-cache')
-      .set('Expires', '0');
   } else {
     response.set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache');
   }
   response.send(rewritePublicMetadata(html, config, canonicalPath));
-}
-
-async function sendNoStorePublicHtml(
-  res: Response,
-  filePath: string,
-  config: AppConfig,
-  canonicalPath: string,
-) {
-  const html = await readFile(filePath, 'utf8');
-  res
-    .type('html')
-    .set('Cache-Control', 'no-store, private')
-    .set('Pragma', 'no-cache')
-    .set('Expires', '0')
-    .set('Referrer-Policy', 'no-referrer')
-    .set('X-Robots-Tag', 'noindex, nofollow')
-    .send(rewritePublicMetadata(html, config, canonicalPath));
 }
 
 function rewritePublicMetadata(html: string, config: AppConfig, canonicalPath: string) {
@@ -4320,10 +3788,7 @@ async function handleOt110aSourceAction(
     | 'artifact.approve'
     | 'artifact.publish'
     | 'content.retry'
-    | 'content.retract'
-    | 'social.approve'
-    | 'social.schedule'
-    | 'social.retract',
+    | 'content.retract',
 ) {
   setPrivateNoStore(res);
   const session = await requireApiSession(req, res, pool, config);
@@ -4349,91 +3814,6 @@ async function handleOt110aSourceAction(
   } catch (error) {
     handleApiError(error, req, res);
   }
-}
-
-async function completeEmailChallengeLogin(
-  req: RequestWithTrace,
-  res: Response,
-  pool: DbPool,
-  config: AppConfig,
-  verified: EmailChallengeVerificationResult,
-  returnTo: string | undefined,
-) {
-  if (!verified.ok) {
-    const status = verified.code === 'RATE_LIMITED' ? 429 : 401;
-    if (verified.retry_after_seconds) {
-      res.setHeader('retry-after', String(verified.retry_after_seconds));
-    }
-    res.status(status).json({
-      success: false,
-      code: verified.code,
-      message:
-        verified.code === 'RATE_LIMITED'
-          ? 'Please wait before trying another code.'
-          : 'Email or password is not correct.',
-      request_id: req.traceId,
-    });
-    return;
-  }
-
-  const rotatedFromSessionKey = await revokeSession({
-    pool,
-    config,
-    sessionToken: getCookie(req, SESSION_COOKIE),
-    reason: 'email_challenge_login_rotation',
-    ip: req.ip,
-    userAgent: req.header('user-agent') ?? undefined,
-  });
-  const session = await createSession({
-    pool,
-    config,
-    user: verified.user,
-    ip: req.ip,
-    userAgent: req.header('user-agent') ?? undefined,
-    rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
-    assuranceMethod: verified.assuranceMethod,
-  });
-  setAuthCookies(res, config, session.session_token, session.csrf_token);
-  if (verified.trustedDeviceToken && verified.trustedDeviceExpiresAt) {
-    setTrustedDeviceCookie(
-      res,
-      config,
-      verified.trustedDeviceToken,
-      verified.trustedDeviceExpiresAt,
-    );
-  }
-  res.status(200).json({
-    success: true,
-    user: session.user,
-    csrf_token: session.csrf_token,
-    return_to: returnPathForRole(returnTo, session.user.role, config),
-  });
-}
-
-function handleEmailChallengeRouteError(error: unknown, req: RequestWithTrace, res: Response) {
-  if (res.headersSent) return;
-  if (error instanceof ZodError) {
-    res.status(400).json({
-      success: false,
-      code: 'VALIDATION_ERROR',
-      message: 'Please check the submitted fields.',
-      field_errors: publicFieldErrors(error),
-      request_id: req.traceId,
-    });
-    return;
-  }
-  res
-    .status(500)
-    .json(publicError('SERVER_ERROR', 'Email confirmation is unavailable right now.', req.traceId));
-}
-
-function retiredAuthMethod(res: Response, req: RequestWithTrace) {
-  res.status(410).json({
-    success: false,
-    code: 'AUTH_METHOD_RETIRED',
-    message: 'This sign-in method has been retired. Please use email login.',
-    request_id: req.traceId,
-  });
 }
 
 function requireSameOriginPost(req: RequestWithTrace, res: Response, config: AppConfig) {
@@ -4477,8 +3857,6 @@ function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
     config.whatsappCanaryRecipientE164,
     env.ONE_TIME_TELEGRAM_CANARY_CHAT_REF,
     env.ONE_TIME_STRIPE_TEST_CANARY_FIXTURE,
-    env.ONE_TIME_HELPER_FIXTURE_ALLOWLIST,
-    env.BUFFER_CANARY_DESTINATION_ALLOWLIST,
   ];
   return values.filter(
     (value): value is string => typeof value === 'string' && value.trim() !== '',
@@ -4512,12 +3890,15 @@ function isSameOriginPost(req: Request, config: AppConfig) {
 }
 
 async function sessionFromRequest(req: Request, pool: DbPool, config: AppConfig) {
-  return getSessionByToken({
+  const session = await getSessionByToken({
     pool,
     config,
     sessionToken: getCookie(req, SESSION_COOKIE),
     userAgent: req.header('user-agent') ?? undefined,
   });
+  if (!session) return null;
+  const currentUser = currentClientUser(session.user);
+  return currentUser ? { ...session, user: currentUser } : null;
 }
 
 async function ensureSessionCsrfCookie(
@@ -5120,11 +4501,22 @@ function canReadClasses(role: string) {
 }
 
 function canReadContacts(role: string) {
-  return role === 'owner' || role === 'admin' || role === 'crm_agent' || role === 'viewer';
+  return role === 'owner' || role === 'admin';
 }
 
 function canReadContentLibrary(role: string) {
   return role === 'owner' || role === 'admin' || role === 'rabbi';
+}
+
+function currentClientUser(user: SessionUser): SessionUser | null {
+  if (user.role === 'owner' || user.role === 'rabbi') {
+    return { ...user, role: 'admin', role_label: 'Admin' };
+  }
+  if (user.role === 'admin') {
+    return { ...user, role_label: 'Admin' };
+  }
+  if (user.role === 'parent' || user.role === 'student') return user;
+  return null;
 }
 
 function isContentFactoryAdmin(session: AuthenticatedSession) {
@@ -5145,10 +4537,6 @@ function canUseRabbiTeachingSurface(role: string, path: string) {
   );
 }
 
-function canUseSocialPublishing(role: string) {
-  return role === 'owner' || role === 'admin';
-}
-
 function ot86PublishSecrets(config: AppConfig) {
   const current =
     config.ot86PublishSigningKeyId && config.ot86PublishSigningSecret
@@ -5164,14 +4552,6 @@ function ot86PublishSecrets(config: AppConfig) {
         ]
       : [];
   return [...current, ...previous];
-}
-
-function ot86bBufferEnv(config: AppConfig): NodeJS.ProcessEnv {
-  return {
-    BUFFER_ACCESS_TOKEN: config.bufferAccessToken,
-    BUFFER_ORGANIZATION_ID: config.bufferOrganizationId,
-    BUFFER_DESTINATION_IDS: config.bufferDestinationIds,
-  };
 }
 
 function hashCookieValue(value: string) {
@@ -5209,32 +4589,6 @@ function setCsrfCookie(res: Response, config: AppConfig, csrfToken: string) {
   });
 }
 
-function setTrustedDeviceCookie(
-  res: Response,
-  config: AppConfig,
-  trustedDeviceToken: string,
-  trustedUntil: string,
-) {
-  const maxAge = Math.max(0, new Date(trustedUntil).getTime() - Date.now());
-  if (maxAge <= 0) return;
-  res.cookie(TRUSTED_DEVICE_COOKIE, trustedDeviceToken, {
-    httpOnly: true,
-    secure: config.runtime.requiresSecureCookies,
-    sameSite: 'strict',
-    path: '/',
-    maxAge,
-  });
-}
-
-function clearTrustedDeviceCookie(res: Response, config: AppConfig) {
-  res.clearCookie(TRUSTED_DEVICE_COOKIE, {
-    httpOnly: true,
-    secure: config.runtime.requiresSecureCookies,
-    sameSite: 'strict',
-    path: '/',
-  });
-}
-
 function clearAuthCookies(res: Response, config: AppConfig) {
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
@@ -5258,10 +4612,17 @@ function setPrivateNoStore(res: Response) {
   res.removeHeader('Last-Modified');
 }
 
-function setEventAccessNoStore(res: Response) {
-  setPrivateNoStore(res);
-  res.setHeader('Referrer-Policy', 'no-referrer');
-  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+function rejectRetiredPortalSurface(req: Request, res: Response, next: express.NextFunction) {
+  if (req.path.endsWith('/helper/query')) {
+    setPrivateNoStore(res);
+    res.status(404).json({
+      success: false,
+      code: 'NOT_FOUND',
+      message: 'This portal action is not available.',
+    });
+    return;
+  }
+  next();
 }
 
 function toIso(value: unknown) {
@@ -5354,44 +4715,6 @@ function handleLifecycleRouteError(
   res.status(500).json(publicError('SERVER_ERROR', fallbackMessage, req.traceId));
 }
 
-function handleTishaBavRouteError(
-  error: unknown,
-  req: RequestWithTrace,
-  res: Response,
-  fallbackMessage: string,
-) {
-  if (res.headersSent) return;
-  if (error instanceof ZodError) {
-    res.status(400).json({
-      success: false,
-      code: 'VALIDATION_ERROR',
-      message: 'Please check the event form.',
-      field_errors: publicFieldErrors(error),
-      request_id: req.traceId,
-    });
-    return;
-  }
-  if (error instanceof TishaBavIdempotencyConflictError) {
-    res.status(409).json({
-      success: false,
-      code: 'IDEMPOTENCY_CONFLICT',
-      message: 'This request key was already used. Refresh and try again.',
-      request_id: req.traceId,
-    });
-    return;
-  }
-  if (error instanceof TishaBavJoinError) {
-    res.status(error.status).json({
-      success: false,
-      code: error.code,
-      message: error.publicMessage,
-      request_id: req.traceId,
-    });
-    return;
-  }
-  res.status(500).json(publicError('SERVER_ERROR', fallbackMessage, req.traceId));
-}
-
 function defaultRouteForRole(role: string) {
   if (role === 'owner' || role === 'admin') return '/app/dashboard';
   if (role === 'rabbi') return '/app/dashboard';
@@ -5467,8 +4790,8 @@ function forbiddenOwnerAdminHtml(requestPath: string) {
 <body>
   <main class="app-workspace">
     <section class="state-panel error" aria-labelledby="dashboard-forbidden-title">
-      <h1 id="dashboard-forbidden-title">Owner dashboard access unavailable</h1>
-      <p>This signed-in account cannot open the owner/admin shell.</p>
+      <h1 id="dashboard-forbidden-title">Admin dashboard access unavailable</h1>
+      <p>This signed-in account cannot open the Admin shell.</p>
       <a class="button-primary" href="/login?return_to=${encodeURIComponent(
         requestPath,
       )}">Sign in</a>
@@ -5509,24 +4832,6 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
           <label for="password">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required>
           <p tabindex="-1" class="error" data-error-for="password"></p>
-        </div>
-        <div class="email-challenge" data-email-challenge hidden>
-          <div class="field">
-            <label for="email_code">Verification code</label>
-            <input id="email_code" name="email_code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}">
-            <p tabindex="-1" class="error" data-error-for="email_code"></p>
-          </div>
-          <label class="consent trusted-device">
-            <input type="checkbox" name="trust_device" value="true">
-            <span>Trust this device for 30 days</span>
-          </label>
-          <div class="email-challenge-actions">
-            <button class="button" type="button" data-resend-challenge disabled>Resend code</button>
-            <span class="form-status" role="status" data-resend-status></span>
-          </div>
-        </div>
-        <div class="email-challenge-actions" data-email-link-confirm hidden>
-          <button class="button" type="button">Confirm email sign-in</button>
         </div>
         <button class="button button-primary" type="submit">Login</button>
         <a class="form-link" href="/forgot-password">Forgot password?</a>

@@ -1,0 +1,90 @@
+.ot-student-shell__timezone {
+  color: var(--ot-v21-muted);
+}
+
+.ot-student-shell__bottom-nav {
+  display: none;
+}
+
+.ot-student-card-grid {
+  display: grid;
+  gap: var(--ot-space-4);
+}
+
+.ot-student-card {
+  border: 1px solid var(--ot-v21-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-v21-raised);
+  padding: var(--ot-space-4);
+}
+
+.ot-student-card a,
+.ot-student-card button,
+.ot-student-account button {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ot-size-touch-target);
+  border: 1px solid var(--ot-v21-border);
+  border-radius: var(--ot-radius-control);
+  color: var(--ot-v21-black);
+  background: var(--ot-v21-yellow);
+  padding: var(--ot-space-2) var(--ot-space-4);
+  font: inherit;
+}
+
+.ot-student-card a:focus-visible,
+.ot-student-card button:focus-visible,
+.ot-student-account button:focus-visible,
+.ot-student-shell__bottom-nav a:focus-visible {
+  outline: var(--ot-focus-width) solid var(--ot-v21-focus);
+  outline-offset: var(--ot-focus-offset);
+}
+
+.ot-student-card__join {
+  min-height: 48px;
+  font-weight: 700;
+}
+
+.ot-student-profile dl,
+.ot-student-account dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--ot-space-2) var(--ot-space-4);
+}
+
+.ot-student-profile dd,
+.ot-student-account dd {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .ot-student-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  .ot-student-shell__bottom-nav {
+    display: grid;
+    position: sticky;
+    bottom: 0;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    z-index: 10;
+    border-top: 1px solid var(--ot-v21-border);
+    background: var(--ot-v21-black);
+    padding-bottom: var(--ot-safe-area-bottom);
+  }
+
+  .ot-student-shell__bottom-nav a {
+    display: grid;
+    place-items: center;
+    min-height: var(--ot-size-touch-target);
+    color: var(--ot-v21-white);
+    text-align: center;
+  }
+
+  .ot-student-shell__bottom-nav a[aria-current='page'] {
+    color: var(--ot-v21-black);
+    background: var(--ot-v21-yellow);
+  }
+}

@@ -1,0 +1,211 @@
+schema_version: 1
+contract_version: '1.0.0'
+owner_task: P30
+fragment_id: P30-campaigns-v1
+registration_state: steward_request_required
+external_effect_authority: none
+workflows:
+  - workflow_key: OT-14
+    canonical_name: OT-14 Parent Newsletter
+    purpose: parent_newsletter
+    subject: adult_only
+    sender_key: rabbi_campaign
+    message_purpose: marketing
+    trigger: weekly Thursday at 12:00 household local time after explicit publication
+    ordered_steps:
+      - select current account owners with newsletter permission
+      - render the approved Rabbi note, class recap, schedule, recording or review, approved question highlight, and one CTA
+      - read back audience, suppression, sender, links, and rendered copy
+      - deliver one bounded operator seed through the release-verification harness
+      - hold the first broad send for named Rabbi or Admin approval
+      - recheck consent and suppression immediately before every email
+      - record dormant WhatsApp as channel_skipped_not_configured with zero provider calls
+    audience:
+      current_account_owner: true
+      newsletter_permission: current
+      student_contact: prohibited
+    cadence:
+      frequency: weekly
+      weekday: Thursday
+      household_local_time: '12:00'
+    content:
+      copy_id: ghl.parent_newsletter.v1
+      default_subject: This week in One Time Mishnayos
+      required_sections:
+        - brief Rabbi note
+        - class recap
+        - upcoming schedule
+        - new recording or review
+        - approved question highlight
+        - one CTA
+    release:
+      operator_seed_required: true
+      first_broad_send_named_approval_required: true
+      ordinary_product_canary_action: false
+    exit_conditions:
+      - newsletter permission withdrawn
+      - account owner no longer current
+      - send-time suppression
+      - publication paused
+      - weekly edition completed
+    idempotency_scope: OT-14:adult_id:household_local_week
+    approval_gates:
+      - registry_identity
+      - sender
+      - audience
+      - consent
+      - copy
+      - suppression
+      - publication
+      - broad_send
+    requires_send_time_suppression_recheck: true
+    email_required: true
+    whatsapp_state: dormant
+    student_contact_prohibited: true
+    whatsapp:
+      state: dormant
+      provider_calls: 0
+      disposition: channel_skipped_not_configured
+  - workflow_key: OT-15
+    canonical_name: OT-15 Former Member Reactivation
+    purpose: former_member_reactivation
+    subject: adult_only
+    sender_key: rabbi_campaign
+    message_purpose: marketing
+    trigger: named approval launch for the exact former-member segment
+    ordered_steps:
+      - validate all three canonical copy entries and exact content approvals
+      - send approved step 1 at approval launch
+      - wait 4 days and re-evaluate every exit and suppression condition
+      - send approved step 2
+      - wait 5 additional days and re-evaluate every exit and suppression condition
+      - send approved step 3 on day 9
+      - record dormant WhatsApp as channel_skipped_not_configured with zero provider calls
+    audience:
+      former_or_canceled_adult: true
+      marketing_permission: current
+      active_parent: excluded
+      school_classification: excluded
+      student_contact: prohibited
+    steps:
+      - day: 0
+        timing: approval_launch
+        copy_id: ghl.former_member_reactivation.step_1.v1
+        subject: See what is new in One Time Mishnayos
+        canonical_copy_state: integrated
+        exact_content_approval_required: true
+      - day: 4
+        copy_id: ghl.former_member_reactivation.step_2.v1
+        subject: A separate Student portal for live class and recordings
+        canonical_copy_state: pending_P30-copy-registration-001
+        exact_content_approval_required: true
+      - day: 9
+        copy_id: ghl.former_member_reactivation.step_3.v1
+        subject: Come back free until September 13
+        canonical_copy_state: pending_P30-copy-registration-001
+        exact_content_approval_required: true
+    launch_readiness: blocked_until_all_three_canonical_copy_entries_and_exact_content_approvals
+    exit_conditions:
+      - signup completed
+      - active membership verified
+      - School classification present
+      - marketing permission withdrawn
+      - send-time suppression
+      - sequence completed
+    idempotency_scope: OT-15:adult_id:reactivation_campaign_version:step
+    approval_gates:
+      - registry_identity
+      - sender
+      - audience
+      - consent
+      - copy
+      - suppression
+      - publication
+      - broad_send
+    requires_send_time_suppression_recheck: true
+    email_required: true
+    whatsapp_state: dormant
+    student_contact_prohibited: true
+    whatsapp:
+      state: dormant
+      provider_calls: 0
+      disposition: channel_skipped_not_configured
+  - workflow_key: OT-16
+    canonical_name: OT-16 Free-Period Conversion
+    purpose: free_period_conversion
+    subject: adult_only
+    sender_key: office
+    message_purpose: marketing
+    trigger: 14, 7, 3, and 1 days before canonical free-period expiry and at expiry
+    ordered_steps:
+      - recompute and validate deterministic adult, expiry, and checkpoint operation identity
+      - resolve the exact canonical expiry and $67 USD monthly Family price
+      - exclude verified paid access, explicit decline, and custom School terms
+      - read back the approved adult-only Family audience
+      - recheck suppression immediately before each checkpoint
+      - refresh verified paid access, explicit decline, and custom School eligibility immediately before dispatch
+      - deliver the exact price, expiry, no-card, no-auto-charge, and Checkout CTA email
+      - record dormant WhatsApp as channel_skipped_not_configured with zero provider calls
+      - deduplicate by adult, expiry, and checkpoint
+    audience:
+      free_family_adult: true
+      marketing_permission: current
+      verified_paid_access: excluded
+      explicit_decline: excluded
+      custom_school_terms: excluded
+      student_contact: prohibited
+    canonical_expiry_at: '2026-09-13T19:24:00+03:00'
+    replacement_expiry_source: canonical_configuration
+    standard_family_price:
+      amount: 67
+      currency: USD
+      cadence: month
+    checkpoints_days_before_expiry:
+      - 14
+      - 7
+      - 3
+      - 1
+      - 0
+    operation_identity:
+      algorithm: SHA-256
+      fields:
+        - workflow key OT-16
+        - adult ID
+        - expiry instant
+        - checkpoint days
+      caller_supplied_mismatch: reject_before_persistence_or_provider_access
+    final_eligibility_recheck:
+      timing: after durable reservation and immediately before provider dispatch
+      exit_on:
+        - verified paid access
+        - explicit decline
+        - custom School terms
+    required_message_facts:
+      - $67/month standard Family price
+      - no card is on file unless Checkout was voluntarily completed
+      - no automatic charge occurs without completed Checkout
+      - exact access-effective date
+      - billing CTA
+    exit_conditions:
+      - verified active paid access
+      - explicit cancellation or decline
+      - send-time suppression where legally permitted
+      - custom School billing terms
+      - expiry checkpoint completed
+    idempotency_scope: OT-16:adult_id:expiry_at:checkpoint_days
+    approval_gates:
+      - registry_identity
+      - sender
+      - audience
+      - consent
+      - copy
+      - suppression
+      - publication
+    requires_send_time_suppression_recheck: true
+    email_required: true
+    whatsapp_state: dormant
+    student_contact_prohibited: true
+    whatsapp:
+      state: dormant
+      provider_calls: 0
+      disposition: channel_skipped_not_configured

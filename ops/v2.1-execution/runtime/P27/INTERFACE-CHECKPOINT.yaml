@@ -1,0 +1,50 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P27
+interface_implementation_head_sha: 7d5edd687016b827769cc931b3766b2ae566507c
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: 77c5a4de58a57dffea3f9cbe4aa7646ac75bc1f0462afebfff2c0279dc527a74
+contract_digest: 788e150f7819431fecd8036701d1e78d6fe0a39b818795b318d54e70998d5ce6
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/communications/ghl-identity/index.ts
+    symbols:
+      - GHL_IDENTITY_CONTRACT_VERSION
+      - GHL_ADULT_CLASSIFICATIONS
+      - GhlAdultClassification
+      - GhlIdentitySubject
+      - GhlAdultSegmentFacts
+      - GhlContactEvidence
+      - GhlHouseholdProjection
+      - GhlIdentityIntent
+      - GhlIdentityReviewCase
+      - GhlIdentitySyncPlan
+      - PlanGhlIdentitySyncInput
+      - GhlIdentityPlanRepository
+    sha256: 0902595802bff7648b342eb44a65303a75d8bf68742b5140ff9d8cb98ed7044e
+compatibility_invariants:
+  - The contract accepts Adult subjects only; Student input is rejected before repository access, intent creation, or provider invocation.
+  - A verified contact link wins, then one exact normalized-email match; disagreement or multiple matches enters visible review quarantine with zero provider intents.
+  - Name and phone are never matching or merge keys, and active household membership alone never classifies an Adult as active legacy.
+  - Adult classification is exactly active_legacy, former_canceled, opted_in_lead, suppressed, or review, with suppression taking precedence.
+  - One Adult contact may project multiple household-keyed records, and every projection preserves household lifecycle, access, and applicable Stripe reference boundaries.
+  - The complete local plan and household projection commit before provider synchronization; later provider failure cannot roll back the local result.
+  - Provider desired-state construction is pure, review plans emit no mutation intent, and live provider authority remains absent.
+  - Persistence is parameterized and migration-only; P27 requests F02 migration authority and I36 registration without editing central hotspots.
+downstream_tasks:
+  - P28
+verification_commands:
+  - npm run typecheck
+  - npm exec -- vitest run packages/domain/src/communications/ghl-identity/planner.test.ts packages/db/src/communications/ghl-identity/repository.test.ts apps/worker/src/runners/ghl-identity/runner.test.ts
+  - focused ESLint over all P27 TypeScript artifacts
+  - focused Prettier check over all P27 TypeScript/YAML artifacts
+  - canonical contract digest and per-artifact SHA-256 verification
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

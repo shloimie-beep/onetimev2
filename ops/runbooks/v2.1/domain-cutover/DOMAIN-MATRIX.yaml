@@ -1,0 +1,42 @@
+schema_version: 1
+canonical:
+  marketing:
+    origins:
+      - https://onetimeonetime.com
+      - https://www.onetimeonetime.com
+    session_cookie_allowed: false
+  transition:
+    origin: https://join.onetimeonetime.com
+    minimum_continuous_days_after_cutover: 30
+    session_cookie_shared_with_application: false
+  application:
+    origin: https://app.onetimeonetime.com
+    https_required: true
+    session_cookie:
+      domain_attribute: null
+      http_only: true
+      secure: true
+      same_site: strict
+      path: /
+redirects:
+  - source: legacy login bookmarks
+    target: https://app.onetimeonetime.com/login
+    safe_query_only: true
+  - source: legacy signup bookmarks
+    target: https://join.onetimeonetime.com/signup
+    safe_query_only: true
+  - source: old Tisha B'Av browser routes
+    target: none
+    response: 410 ended-event page with current-funnel link
+  - source: old Tisha B'Av mutation and API routes
+    target: none
+    response: 410 no-write
+forbidden_redirect_values:
+  - credentials
+  - tokens
+  - email addresses
+  - provider references
+  - arbitrary redirect targets
+  - session or cookie values
+unknown_legacy_path_response: 404
+verified_redirect_retention_months_after_retirement: 12

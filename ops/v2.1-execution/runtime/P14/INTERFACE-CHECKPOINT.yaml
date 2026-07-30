@@ -1,0 +1,50 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: P14
+interface_implementation_head_sha: 9c08e9c6735a61e201f7b05116a3406e6092e08b
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
+contract_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
+contract_digest_algorithm: SHA-256 over UTF-8 lines containing semantic_contract_version=<version> followed by exact path=<artifact SHA-256> lines sorted lexicographically by path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 2.1.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/portals/student/index.ts
+    symbols:
+      - STUDENT_PORTAL_CONTRACT_VERSION
+      - StudentRelationship
+      - StudentAccessState
+      - StudentLifecycleState
+      - StudentPortalPrincipal
+      - StudentSelfRecord
+      - StudentJoinSummary
+      - StudentTodaySnapshot
+      - StudentSelfProfile
+      - StudentAccountControls
+      - StudentPortalBootstrap
+      - StudentNavigationItem
+      - STUDENT_CANONICAL_ROUTES
+      - StudentSelfRepository
+      - StudentSessionRevocationPort
+      - STUDENT_PORTAL_ERROR_CODES
+    sha256: a8fa2ba40e65827f1add282ca551c7b1654a5920910bb21b99cae5b5cf7818c1
+compatibility_invariants:
+  - A Student principal is bound to exactly one Student identity and one household by authenticated server context; neither a request body nor a route parameter selects the self record.
+  - The repository port accepts only the authenticated Student and household identifiers together; profile projection fails closed on sibling, cross-household, relationship, archived-state, or inactive-access drift.
+  - Student profile and account outputs contain own actual/display name and username only; no email, age, billing, adult CRM, sibling data, current password, or credential mutation is exported.
+  - Student credentials are Parent/Admin managed, existing passwords are never displayed, and Student account controls provide help plus idempotent session logout only.
+  - Today, Calendar, Class, Library, Progress, Questions, Updates, Notifications, Support, and Account routes are closed canonical Student routes; Parent/Admin and malformed paths are denied.
+  - Privacy and data-rights navigation/routes exist only for a self Student with verified adult-owner identity; they are absent and denied for dependent Students.
+  - Join output contains only an opaque internal Student-class action and occurrence identity; provider IDs, raw provider URLs, and browser bearers are absent.
+  - Inactive household access and archived Student state are denied before protected data projection; free, active, and grace retain normal Student capability.
+downstream_tasks:
+  - P21
+verification_commands:
+  - npm run typecheck
+  - npm run lint -- --quiet
+  - npx vitest run packages/domain/src/portals/student/student-portal.test.ts apps/web/src/server/features/portals/student/service.test.ts apps/web/src/client/app/student/shell/StudentShell.test.tsx --environment node
+  - focused raw palette/font and out-of-scope provider/adult-data inventory
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

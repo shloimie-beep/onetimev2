@@ -9,7 +9,7 @@ Exact trigger: registered existing subscriber migration audience entry
 message_class: existing_subscriber_migration
 sender_key: rabbi_campaign
 transport: GHL
-Purpose: Three-email existing-subscriber migration sequence. Use only the three reviewed emails below, in order, and do not invent or expand their claims.
+Purpose: Three-email existing-subscriber migration sequence. The three reviewed emails below are the current controlled copy and supersede provider-era sender/copy instructions. Use them only in order and do not invent or expand their claims.
 
 Registry dependencies:
 
@@ -20,11 +20,12 @@ Registry dependencies:
 
 Exact sender state for this Draft:
 
-- One Time Rabbi Campaign Sender Name
-- One Time Default Reply-To
-- The fixed post-acceptance visible From is `Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>` using One Time Rabbi Campaign Phase 2 From.
-- Reply-To remains `info@onetimeonetime.com`; rabbi@ may route into the same governed GHL Conversations workflow and does not require a separately monitored second inbox.
-- Until GHL-UI-24 records provider acceptance, preserve the current One Time Rabbi Campaign Phase 1 From fallback and do not activate or send from the desired address.
+- Select One Time Rabbi Campaign Sender Name; it must render exactly `Rabbi Eli Scheller`.
+- Select One Time Rabbi Campaign Phase 2 From; it must render exactly `rabbielischeller@onetimeonetime.com`.
+- Select One Time Rabbi Reply-To; it must render exactly `rabbielischeller@onetimeonetime.com`.
+- The single canonical public identity is `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>` for both From and Reply-To.
+- One Time Rabbi Campaign Phase 1 From and the historical `rabbi@onetimeonetime.com` alias remain preserved data but are superseded and must never be selected for canonical public use.
+- Until GHL-UI-24 records provider acceptance, keep the workflow Draft and blocked; do not fall back to another identity and do not activate or send.
 - Do not type or guess sender display-name, From, reply-to, or provider text.
 - If a registered sender value is absent from the picker, block this workflow instead of inventing it.
 

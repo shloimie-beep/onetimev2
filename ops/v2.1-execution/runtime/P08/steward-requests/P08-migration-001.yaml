@@ -1,0 +1,60 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P08-migration-001
+task_id: P08
+kind: migration
+requirement_ids:
+  - OTV2-SIGNUP-177
+  - OTV2-SIGNUP-179
+  - OTV2-SIGNUP-213
+  - OTV2-SIGNUP-228
+acceptance_case_ids:
+  - OTV2-SIGNUP-177-AC01
+  - OTV2-SIGNUP-179-AC01
+  - OTV2-SIGNUP-213-AC01
+  - OTV2-SIGNUP-228-BEFORE-EXPIRY
+  - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+rationale: >-
+  P08 owns the family-signup contract, policy, and transaction-neutral service,
+  but only the migration steward may allocate a forward-only migration. The
+  service deliberately performs no schema creation.
+desired_semantic_change: >-
+  Add transactionally consistent Family signup persistence that binds one
+  normalized adult to one HumanAccount and permits a new local Family signup
+  only when no local HumanAccount identity and no Family household lifecycle
+  exists. Lock a globally collision-detecting, high-entropy request key and bind
+  the request, local-state reads, GHL evidence, recovery receipt, commit, and
+  durable outbox to the exact product/runtime/verification scope plus the
+  public_family_signup operation. Persist only the server-computed semantic
+  request digest, validated IANA household timezone, and the two exact,
+  separately scoped optional adult consent choices. Local rows, consent
+  evidence, receipt, and outbox must commit atomically; no provider effect may
+  execute inside the transaction.
+proposed_symbols_routes_keys_or_dependencies:
+  - unique scoped normalized adult email and one-to-one adult/HumanAccount identity
+  - globally collision-detecting 43-128 character family-signup idempotency key, exact scope, and public_family_signup operation
+  - server-computed canonical request digest covering canonical name, normalized email, validated IANA timezone, legal acceptance, separate general-marketing and Parent-newsletter booleans, and keyed password fingerprint; no caller hash or password-confirmation column
+  - immutable recovery receipt bound to exact scope, operation, key, and canonical request digest
+  - append-only adult consent evidence for separate general_marketing and parent_newsletter scopes, recording exact true or false choices without inference or bundling
+  - transactional local-state read covering invited, active, disabled, and archived HumanAccounts and active, expired, archived, and inactive Family households
+  - household classification fixed to family with seat_limit 3 and active_seat_count 0
+  - access state free before 2026-09-13T16:24:00.000Z and inactive at or after it
+  - free expiry fixed to 2026-09-13T16:24:00.000Z with no rolling-trial column or derivation
+  - durable outbox intent unique by exact request binding and household, carrying exact consent choices while preserving existing adult suppression
+  - optional hashed verified GHL link and identity-review metadata; no raw provider identifiers
+  - explicit outbox dispatch state ready or identity_review and inactive_identity_review access branch with checkout_required false while unresolved
+compatibility_assumptions:
+  - Reuse the integrated F03 credential and F04 identity/household persistence seams.
+  - Reuse the F06 provider-link and durable job/outbox semantics.
+  - The migration composes with the F02 isolation mapping and never edits an applied migration.
+verification_performed:
+  - focused P08 contract, domain, server, and client assertions
+  - repository TypeScript typecheck
+conflicts_or_risks:
+  - Any local HumanAccount identity or Family household lifecycle must return the generic sign-in-or-reset result with zero household, access, credential, receipt, outbox, or session writes.
+  - Cross-scope key collision or any scope, operation, key, or semantic-digest disagreement must fail closed without returning a prior projection identifier or email.
+  - Creating a new household for an existing HumanAccount is a separate authenticated operation and must not be implemented as public-signup recovery.
+  - Provider failure or identity ambiguity must not roll back the local signup or pre-expiry free access.
+  - At or after expiry, identity_review must quarantine GHL sync/workflow and paid billing, persist inactive local state, and keep Checkout unavailable until Admin resolution.
+  - Password confirmation is validated exactly but is never persisted, logged, or included in an outbox.
+contains_secret_or_private_data: false

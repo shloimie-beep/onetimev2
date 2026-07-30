@@ -10,7 +10,7 @@ production_workflow_enrollment_authorized: false
 workflow_root: One Time
 workflow_projection:
   generated_from: integrations/highlevel/registry/workflow-registry.yaml
-  source_sha256: 53aed7a638155c7145aac16ba796f76b88d3df0e9b322dce5d9ec8f6194da82c
+  source_sha256: 5df557be7a02e522d425b3c51498f4f06f47a4a0f7e8fc012bc38a375a1d472a
   editable: false
 workflow_folders:
   - order: 0
@@ -1626,1293 +1626,1327 @@ tags:
     lastVerifiedDate: '2026-07-21'
     lastTestedDate: '2026-07-21'
 custom_values:
-  - canonicalName: 'One Time Brand Name'
-    normalizedName: 'one_time_brand_name'
-    ghlId: 'j8heHDPqOmfrpfZJajlH'
-    ghlKey: 'one_time_brand_name'
-    folder: 'One Time - Brand'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_brand'
-    purpose: 'Public brand name.'
-    value: 'One Time Mishnayos'
-    sourceOfTruth: 'Shared'
+  - canonicalName: One Time Brand Name
+    normalizedName: one_time_brand_name
+    ghlId: j8heHDPqOmfrpfZJajlH
+    ghlKey: one_time_brand_name
+    folder: One Time - Brand
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_brand
+    purpose: Public brand name.
+    value: One Time Mishnayos
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '8ca59ebfb4f7adab'
-  - canonicalName: 'One Time Rabbi Name'
-    normalizedName: 'one_time_rabbi_name'
-    ghlId: 'pPkems3FM5UWt0SyhEWS'
-    ghlKey: 'one_time_rabbi_name'
-    folder: 'One Time - Brand'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_brand'
-    purpose: 'Public teacher name.'
-    value: 'Rabbi Eli Scheller'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 8ca59ebfb4f7adab
+  - canonicalName: One Time Rabbi Name
+    normalizedName: one_time_rabbi_name
+    ghlId: pPkems3FM5UWt0SyhEWS
+    ghlKey: one_time_rabbi_name
+    folder: One Time - Brand
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_brand
+    purpose: Public teacher name.
+    value: Rabbi Eli Scheller
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '38b8d5e95e97ce17'
-  - canonicalName: 'One Time Sender Name'
-    normalizedName: 'one_time_sender_name'
-    ghlId: 'yVZ4cwtSqORKX2DNMQpH'
-    ghlKey: 'one_time_sender_name'
-    folder: 'One Time - Brand'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_brand'
-    purpose: 'Compatibility alias. New workflows select a registered sender key.'
-    value: 'One Time Mishnayos'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 38b8d5e95e97ce17
+  - canonicalName: One Time Sender Name
+    normalizedName: one_time_sender_name
+    ghlId: yVZ4cwtSqORKX2DNMQpH
+    ghlKey: one_time_sender_name
+    folder: One Time - Brand
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_brand
+    purpose: Compatibility alias. New workflows select a registered sender key.
+    value: One Time Mishnayos
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases:
-      - 'compatibility_alias'
-      - 'migrate_to_registered_sender_key'
-    deprecationState: 'deprecated_existing'
+      - compatibility_alias
+      - migrate_to_registered_sender_key
+    deprecationState: deprecated_existing
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '8ca59ebfb4f7adab'
-  - canonicalName: 'One Time Sender Email'
-    normalizedName: 'one_time_sender_email'
-    ghlId: 'v79xSZ5H0t1GaldtK8dS'
-    ghlKey: 'one_time_sender_email'
-    folder: 'One Time - Brand'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_brand'
-    purpose: 'Compatibility alias. New workflows select a registered sender key.'
-    value: 'info@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 8ca59ebfb4f7adab
+  - canonicalName: One Time Sender Email
+    normalizedName: one_time_sender_email
+    ghlId: v79xSZ5H0t1GaldtK8dS
+    ghlKey: one_time_sender_email
+    folder: One Time - Brand
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_brand
+    purpose: Compatibility alias. New workflows select a registered sender key.
+    value: info@onetimeonetime.com
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases:
-      - 'compatibility_alias'
-      - 'migrate_to_registered_sender_key'
-    deprecationState: 'deprecated_existing'
+      - compatibility_alias
+      - migrate_to_registered_sender_key
+    deprecationState: deprecated_existing
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a64728a6a2bb16c6'
-  - canonicalName: 'One Time Reply-To Email'
-    normalizedName: 'one_time_reply_to_email'
-    ghlId: 'M4thgFhvZusXeqvfXoOZ'
-    ghlKey: 'one_time_reply_to_email'
-    folder: 'One Time - Brand'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_brand'
-    purpose: 'Compatibility alias. New workflows use One Time Default Reply-To.'
-    value: 'info@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: a64728a6a2bb16c6
+  - canonicalName: One Time Reply-To Email
+    normalizedName: one_time_reply_to_email
+    ghlId: M4thgFhvZusXeqvfXoOZ
+    ghlKey: one_time_reply_to_email
+    folder: One Time - Brand
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_brand
+    purpose: Compatibility alias. New workflows use One Time Default Reply-To.
+    value: info@onetimeonetime.com
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases:
-      - 'compatibility_alias'
-      - 'migrate_to_registered_sender_key'
-    deprecationState: 'deprecated_existing'
+      - compatibility_alias
+      - migrate_to_registered_sender_key
+    deprecationState: deprecated_existing
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a64728a6a2bb16c6'
-  - canonicalName: 'One Time Rabbi Campaign Sender Name'
-    normalizedName: 'one_time_rabbi_campaign_sender_name'
-    ghlId: 'YTbMWivrsI10LnH26Xfv'
-    ghlKey: 'one_time_rabbi_campaign_sender_name'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'rabbi_campaign display name.'
-    value: 'Rabbi Eli Scheller | One Time Mishnayos'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: a64728a6a2bb16c6
+  - canonicalName: One Time Rabbi Campaign Sender Name
+    normalizedName: one_time_rabbi_campaign_sender_name
+    ghlId: YTbMWivrsI10LnH26Xfv
+    ghlKey: one_time_rabbi_campaign_sender_name
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: rabbi_campaign display name.
+    value: Rabbi Eli Scheller
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases:
+      - Rabbi Eli Scheller | One Time Mishnayos
+    deprecationState: pending_creation
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 6cd9a86d282f59c5
+  - canonicalName: One Time Rabbi Campaign Phase 1 From
+    normalizedName: one_time_rabbi_campaign_phase_1_from
+    ghlId: 1ciJqvUIDDCxs1cBumdL
+    ghlKey: one_time_rabbi_campaign_phase_1_from
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: Superseded provider-era rabbi_campaign fallback retained as historical data; never select it for canonical Rabbi sending.
+    value: info@onetimeonetime.com
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases:
+      - historical_provider_era_rabbi_from
+    deprecationState: deprecated_existing
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: a64728a6a2bb16c6
+  - canonicalName: One Time Rabbi Campaign Phase 2 From
+    normalizedName: one_time_rabbi_campaign_phase_2_from
+    ghlId: vry4UlKB4PAvWLkiz6Ac
+    ghlKey: one_time_rabbi_campaign_phase_2_from
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: Canonical rabbi_campaign From address pending provider acceptance and separately authorized acceptance.
+    value: rabbielischeller@onetimeonetime.com
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases:
+      - rabbi@onetimeonetime.com
+    deprecationState: pending_creation
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: a987678811c253d3
+  - canonicalName: One Time Rabbi Personal Sender Name
+    normalizedName: one_time_rabbi_personal_sender_name
+    ghlId: WnvMdhccgwGVuBCReHIU
+    ghlKey: one_time_rabbi_personal_sender_name
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: rabbi_personal display name pending mailbox and reply acceptance.
+    value: Rabbi Eli Scheller
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '6cd9a86d282f59c5'
-  - canonicalName: 'One Time Rabbi Campaign Phase 1 From'
-    normalizedName: 'one_time_rabbi_campaign_phase_1_from'
-    ghlId: '1ciJqvUIDDCxs1cBumdL'
-    ghlKey: 'one_time_rabbi_campaign_phase_1_from'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'Current fallback rabbi_campaign From address until provider acceptance.'
-    value: 'info@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 38b8d5e95e97ce17
+  - canonicalName: One Time Rabbi Personal From
+    normalizedName: one_time_rabbi_personal_from
+    ghlId: 9wK6SJKlPoN1WytManp5
+    ghlKey: one_time_rabbi_personal_from
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: Canonical rabbi_personal From address pending provider acceptance.
+    value: rabbielischeller@onetimeonetime.com
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
-    aliases: []
-    deprecationState: 'active'
+    aliases:
+      - rabbi@onetimeonetime.com
+    deprecationState: pending_creation
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a64728a6a2bb16c6'
-  - canonicalName: 'One Time Rabbi Campaign Phase 2 From'
-    normalizedName: 'one_time_rabbi_campaign_phase_2_from'
-    ghlId: 'vry4UlKB4PAvWLkiz6Ac'
-    ghlKey: 'one_time_rabbi_campaign_phase_2_from'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'Fixed desired rabbi_campaign From address pending provider acceptance and one authorized seed.'
-    value: 'rabbi@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a987678811c253d3'
-  - canonicalName: 'One Time Rabbi Personal Sender Name'
-    normalizedName: 'one_time_rabbi_personal_sender_name'
-    ghlId: 'WnvMdhccgwGVuBCReHIU'
-    ghlKey: 'one_time_rabbi_personal_sender_name'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'rabbi_personal display name pending mailbox and reply acceptance.'
-    value: 'Rabbi Eli Scheller'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '38b8d5e95e97ce17'
-  - canonicalName: 'One Time Rabbi Personal From'
-    normalizedName: 'one_time_rabbi_personal_from'
-    ghlId: '9wK6SJKlPoN1WytManp5'
-    ghlKey: 'one_time_rabbi_personal_from'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'rabbi_personal From address pending mailbox and reply acceptance.'
-    value: 'rabbi@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a987678811c253d3'
-  - canonicalName: 'One Time Office Sender Name'
-    normalizedName: 'one_time_office_sender_name'
-    ghlId: 'Lr6PxCIoU2vMpJWkngow'
-    ghlKey: 'one_time_office_sender_name'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'office display name.'
-    value: 'Shloimie from One Time Mishnayos'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '4cae599b7c5cf5e2'
-  - canonicalName: 'One Time Office From'
-    normalizedName: 'one_time_office_from'
-    ghlId: 'hqUv17HvF9zGd781UDpX'
-    ghlKey: 'one_time_office_from'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'office From address.'
-    value: 'info@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a64728a6a2bb16c6'
-  - canonicalName: 'One Time Brand Sender Name'
-    normalizedName: 'one_time_brand_sender_name'
-    ghlId: 'XyASPYbVa4ZBHuJe2yJI'
-    ghlKey: 'one_time_brand_sender_name'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'brand display name.'
-    value: 'One Time Mishnayos'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '8ca59ebfb4f7adab'
-  - canonicalName: 'One Time Brand From'
-    normalizedName: 'one_time_brand_from'
-    ghlId: 'o9aOerC0VSMKzDv4hrkX'
-    ghlKey: 'one_time_brand_from'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'brand From address.'
-    value: 'info@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a64728a6a2bb16c6'
-  - canonicalName: 'One Time Account Sender Name'
-    normalizedName: 'one_time_account_sender_name'
-    ghlId: 'UT4ehcG0QqMBnu7Cg6ed'
-    ghlKey: 'one_time_account_sender_name'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'account_security display name for Resend.'
-    value: 'One Time Mishnayos Account'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '94f515243398e9ae'
-  - canonicalName: 'One Time Account Preferred From'
-    normalizedName: 'one_time_account_preferred_from'
-    ghlId: 'cb2pQ72WD9EAOyZwTh9u'
-    ghlKey: 'one_time_account_preferred_from'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'Preferred account_security From address; do not claim live until domain acceptance is verified.'
-    value: 'account@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '88b79ed1deacb1df'
-  - canonicalName: 'One Time Default Reply-To'
-    normalizedName: 'one_time_default_reply_to'
-    ghlId: 'u0msWwGUDL4Upjfe58Bm'
-    ghlKey: 'one_time_default_reply_to'
-    folder: 'One Time - Senders'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_senders'
-    purpose: 'Canonical default reply-to for registered sender profiles.'
-    value: 'info@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a64728a6a2bb16c6'
-  - canonicalName: 'One Time Program Short Description'
-    normalizedName: 'one_time_program_short_description'
-    ghlId: 'KuWt6c6BW7X2qfwNE6Ct'
-    ghlKey: 'one_time_program_short_description'
-    folder: 'One Time - Brand'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_brand'
-    purpose: 'Approved program summary.'
-    value: 'A live hybrid Mishnayos experience from Eretz Yisrael designed to build consistency, accountability, understanding, and excitement in Torah learning.'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '58d65b2517c8f2af'
-  - canonicalName: 'One Time Home URL'
-    normalizedName: 'one_time_home_url'
-    ghlId: 'gyRIy9gSabnBF4038v7A'
-    ghlKey: 'one_time_home_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Public home URL.'
-    value: 'https://join.onetimeonetime.com/'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '93435e57639e9bc1'
-  - canonicalName: 'One Time Signup URL'
-    normalizedName: 'one_time_signup_url'
-    ghlId: 'Don4uQa4aJOc3wYYErgd'
-    ghlKey: 'one_time_signup_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Signup URL.'
-    value: 'https://join.onetimeonetime.com/signup'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '974171385908288a'
-  - canonicalName: 'One Time Member Login URL'
-    normalizedName: 'one_time_member_login_url'
-    ghlId: 'GIbhzBI8WrkDDUNau0ZI'
-    ghlKey: 'one_time_member_login_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Login URL.'
-    value: 'https://join.onetimeonetime.com/login'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '23c3c4da660ca0ec'
-  - canonicalName: 'One Time Password Help URL'
-    normalizedName: 'one_time_password_help_url'
-    ghlId: 'nQv2QX1nYE9TvVDBgWCr'
-    ghlKey: 'one_time_password_help_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Password-help URL.'
-    value: 'https://join.onetimeonetime.com/forgot-password'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '09dc9d051f2713af'
-  - canonicalName: 'One Time Parent Portal URL'
-    normalizedName: 'one_time_parent_portal_url'
-    ghlId: 'ixqb7lPdQZmyCmMilVno'
-    ghlKey: 'one_time_parent_portal_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Parent portal URL.'
-    value: 'https://join.onetimeonetime.com/app/parent'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'fa626ad68d3005e3'
-  - canonicalName: 'One Time Student Portal URL'
-    normalizedName: 'one_time_student_portal_url'
-    ghlId: 'UhbQj0yQbk0xRuqRJPnz'
-    ghlKey: 'one_time_student_portal_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Student portal URL; not collected by OT-A1.'
-    value: 'https://join.onetimeonetime.com/app/student'
-    sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'active'
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '7daca07c4c2739e0'
-  - canonicalName: 'One Time Early Access URL'
-    normalizedName: 'one_time_early_access_url'
+    liveValueFingerprint: a987678811c253d3
+  - canonicalName: One Time Rabbi Reply-To
+    normalizedName: one_time_rabbi_reply_to
     ghlId: ''
-    ghlKey: 'one_time_early_access_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Pending accepted early-access route.'
-    value: ''
-    sourceOfTruth: 'Shared'
+    ghlKey: one_time_rabbi_reply_to
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: Canonical Reply-To for both Rabbi sender profiles pending provider acceptance.
+    value: rabbielischeller@onetimeonetime.com
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases:
+      - rabbi@onetimeonetime.com
+    deprecationState: pending_creation
+    createdDate: '2026-07-28'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+  - canonicalName: One Time Office Sender Name
+    normalizedName: one_time_office_sender_name
+    ghlId: Lr6PxCIoU2vMpJWkngow
+    ghlKey: one_time_office_sender_name
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: office display name.
+    value: Shloimie from One Time Mishnayos
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'blocked_ui_or_business_value'
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 4cae599b7c5cf5e2
+  - canonicalName: One Time Office From
+    normalizedName: one_time_office_from
+    ghlId: hqUv17HvF9zGd781UDpX
+    ghlKey: one_time_office_from
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: office From address.
+    value: info@onetimeonetime.com
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: a64728a6a2bb16c6
+  - canonicalName: One Time Brand Sender Name
+    normalizedName: one_time_brand_sender_name
+    ghlId: XyASPYbVa4ZBHuJe2yJI
+    ghlKey: one_time_brand_sender_name
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: brand display name.
+    value: One Time Mishnayos
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 8ca59ebfb4f7adab
+  - canonicalName: One Time Brand From
+    normalizedName: one_time_brand_from
+    ghlId: o9aOerC0VSMKzDv4hrkX
+    ghlKey: one_time_brand_from
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: brand From address.
+    value: info@onetimeonetime.com
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: a64728a6a2bb16c6
+  - canonicalName: One Time Account Sender Name
+    normalizedName: one_time_account_sender_name
+    ghlId: UT4ehcG0QqMBnu7Cg6ed
+    ghlKey: one_time_account_sender_name
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: account_security display name for Resend.
+    value: One Time Mishnayos Account
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 94f515243398e9ae
+  - canonicalName: One Time Account Preferred From
+    normalizedName: one_time_account_preferred_from
+    ghlId: cb2pQ72WD9EAOyZwTh9u
+    ghlKey: one_time_account_preferred_from
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: Preferred account_security From address; do not claim live until domain acceptance is verified.
+    value: account@onetimeonetime.com
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 88b79ed1deacb1df
+  - canonicalName: One Time Default Reply-To
+    normalizedName: one_time_default_reply_to
+    ghlId: u0msWwGUDL4Upjfe58Bm
+    ghlKey: one_time_default_reply_to
+    folder: One Time - Senders
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_senders
+    purpose: Canonical business, administration, and technical Reply-To; Rabbi profiles use One Time Rabbi Reply-To.
+    value: info@onetimeonetime.com
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: a64728a6a2bb16c6
+  - canonicalName: One Time Program Short Description
+    normalizedName: one_time_program_short_description
+    ghlId: KuWt6c6BW7X2qfwNE6Ct
+    ghlKey: one_time_program_short_description
+    folder: One Time - Brand
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_brand
+    purpose: Approved program summary.
+    value: A live hybrid Mishnayos experience from Eretz Yisrael designed to build consistency, accountability, understanding, and excitement in Torah learning.
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 58d65b2517c8f2af
+  - canonicalName: One Time Home URL
+    normalizedName: one_time_home_url
+    ghlId: gyRIy9gSabnBF4038v7A
+    ghlKey: one_time_home_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Public home URL.
+    value: https://join.onetimeonetime.com/
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 93435e57639e9bc1
+  - canonicalName: One Time Signup URL
+    normalizedName: one_time_signup_url
+    ghlId: Don4uQa4aJOc3wYYErgd
+    ghlKey: one_time_signup_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Signup URL.
+    value: https://join.onetimeonetime.com/signup
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 974171385908288a
+  - canonicalName: One Time Member Login URL
+    normalizedName: one_time_member_login_url
+    ghlId: GIbhzBI8WrkDDUNau0ZI
+    ghlKey: one_time_member_login_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Login URL.
+    value: https://join.onetimeonetime.com/login
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 23c3c4da660ca0ec
+  - canonicalName: One Time Password Help URL
+    normalizedName: one_time_password_help_url
+    ghlId: nQv2QX1nYE9TvVDBgWCr
+    ghlKey: one_time_password_help_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Password-help URL.
+    value: https://join.onetimeonetime.com/forgot-password
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 09dc9d051f2713af
+  - canonicalName: One Time Parent Portal URL
+    normalizedName: one_time_parent_portal_url
+    ghlId: ixqb7lPdQZmyCmMilVno
+    ghlKey: one_time_parent_portal_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Parent portal URL.
+    value: https://join.onetimeonetime.com/app/parent
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: fa626ad68d3005e3
+  - canonicalName: One Time Student Portal URL
+    normalizedName: one_time_student_portal_url
+    ghlId: UhbQj0yQbk0xRuqRJPnz
+    ghlKey: one_time_student_portal_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Student portal URL; not collected by OT-A1.
+    value: https://join.onetimeonetime.com/app/student
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: active
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
+    liveValueFingerprint: 7daca07c4c2739e0
+  - canonicalName: One Time Early Access URL
+    normalizedName: one_time_early_access_url
+    ghlId: ''
+    ghlKey: one_time_early_access_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Pending accepted early-access route.
+    value: ''
+    sourceOfTruth: Shared
+    allowedValues: []
+    workflowsAllowedToWrite: []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies: []
+    aliases: []
+    deprecationState: blocked_ui_or_business_value
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-    blocker: 'blocked_ui_or_business_value:verified_url_missing'
-  - canonicalName: 'One Time Checkout URL'
-    normalizedName: 'one_time_checkout_url'
+    blocker: blocked_ui_or_business_value:verified_url_missing
+  - canonicalName: One Time Checkout URL
+    normalizedName: one_time_checkout_url
     ghlId: ''
-    ghlKey: 'one_time_checkout_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Pending verified checkout URL.'
+    ghlKey: one_time_checkout_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Pending verified checkout URL.
     value: ''
-    sourceOfTruth: 'Shared'
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'blocked_ui_or_business_value'
+    deprecationState: blocked_ui_or_business_value
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-    blocker: 'blocked_ui_or_business_value:verified_url_missing'
-  - canonicalName: 'One Time Recording Portal URL'
-    normalizedName: 'one_time_recording_portal_url'
+    blocker: blocked_ui_or_business_value:verified_url_missing
+  - canonicalName: One Time Recording Portal URL
+    normalizedName: one_time_recording_portal_url
     ghlId: ''
-    ghlKey: 'one_time_recording_portal_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Pending protected portal route.'
+    ghlKey: one_time_recording_portal_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Pending protected portal route.
     value: ''
-    sourceOfTruth: 'Shared'
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'blocked_ui_or_business_value'
+    deprecationState: blocked_ui_or_business_value
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-    blocker: 'blocked_ui_or_business_value:verified_url_missing'
-  - canonicalName: 'One Time WhatsApp Entry URL'
-    normalizedName: 'one_time_whatsapp_entry_url'
+    blocker: blocked_ui_or_business_value:verified_url_missing
+  - canonicalName: One Time WhatsApp Entry URL
+    normalizedName: one_time_whatsapp_entry_url
     ghlId: ''
-    ghlKey: 'one_time_whatsapp_entry_url'
-    folder: 'One Time - URLs'
-    objectType: 'custom_value'
-    dataType: 'URL'
-    category: 'one_time_urls'
-    purpose: 'Pending verified WhatsApp entry URL.'
+    ghlKey: one_time_whatsapp_entry_url
+    folder: One Time - URLs
+    objectType: custom_value
+    dataType: URL
+    category: one_time_urls
+    purpose: Pending verified WhatsApp entry URL.
     value: ''
-    sourceOfTruth: 'Shared'
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'blocked_ui_or_business_value'
+    deprecationState: blocked_ui_or_business_value
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-    blocker: 'blocked_ui_or_business_value:verified_url_missing'
-  - canonicalName: 'One Time Complimentary Access Label'
-    normalizedName: 'one_time_complimentary_access_label'
-    ghlId: 'PxPr2cZEZKVQpC2cqLdT'
-    ghlKey: 'one_time_complimentary_access_label'
-    folder: 'One Time - Offer'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_offer'
-    purpose: 'Complimentary access label.'
-    value: 'A complimentary month of early access'
-    sourceOfTruth: 'Shared'
+    blocker: blocked_ui_or_business_value:verified_url_missing
+  - canonicalName: One Time Complimentary Access Label
+    normalizedName: one_time_complimentary_access_label
+    ghlId: PxPr2cZEZKVQpC2cqLdT
+    ghlKey: one_time_complimentary_access_label
+    folder: One Time - Offer
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_offer
+    purpose: Complimentary access label.
+    value: A complimentary month of early access
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '6151d1f5b0eb1966'
-  - canonicalName: 'One Time Promotion Status'
-    normalizedName: 'one_time_promotion_status'
-    ghlId: '8ukEaZNNsvZOJC4M1jja'
-    ghlKey: 'one_time_promotion_status'
-    folder: 'One Time - Offer'
-    objectType: 'custom_value'
-    dataType: 'STATUS'
-    category: 'one_time_offer'
-    purpose: 'Promotion status.'
-    value: 'inactive'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 6151d1f5b0eb1966
+  - canonicalName: One Time Promotion Status
+    normalizedName: one_time_promotion_status
+    ghlId: 8ukEaZNNsvZOJC4M1jja
+    ghlKey: one_time_promotion_status
+    folder: One Time - Offer
+    objectType: custom_value
+    dataType: STATUS
+    category: one_time_offer
+    purpose: Promotion status.
+    value: inactive
+    sourceOfTruth: Shared
     allowedValues:
-      - 'active'
-      - 'inactive'
+      - active
+      - inactive
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'd1022618b99a974b'
-  - canonicalName: 'One Time Promotion End Date Label'
-    normalizedName: 'one_time_promotion_end_date_label'
+    liveValueFingerprint: d1022618b99a974b
+  - canonicalName: One Time Promotion End Date Label
+    normalizedName: one_time_promotion_end_date_label
     ghlId: ''
-    ghlKey: 'one_time_promotion_end_date_label'
-    folder: 'One Time - Offer'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_offer'
-    purpose: 'Approved promotion end date label.'
+    ghlKey: one_time_promotion_end_date_label
+    folder: One Time - Offer
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_offer
+    purpose: Approved promotion end date label.
     value: ''
-    sourceOfTruth: 'Shared'
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'blocked_ui_or_business_value'
+    deprecationState: blocked_ui_or_business_value
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-    blocker: 'blocked_ui_or_business_value:approved_business_copy_missing'
-  - canonicalName: 'One Time Pricing Display Status'
-    normalizedName: 'one_time_pricing_display_status'
-    ghlId: 'i1o66xW9Y0Kl18xIQtvB'
-    ghlKey: 'one_time_pricing_display_status'
-    folder: 'One Time - Offer'
-    objectType: 'custom_value'
-    dataType: 'STATUS'
-    category: 'one_time_offer'
-    purpose: 'Price display gate.'
-    value: 'hidden'
-    sourceOfTruth: 'Shared'
+    blocker: blocked_ui_or_business_value:approved_business_copy_missing
+  - canonicalName: One Time Pricing Display Status
+    normalizedName: one_time_pricing_display_status
+    ghlId: i1o66xW9Y0Kl18xIQtvB
+    ghlKey: one_time_pricing_display_status
+    folder: One Time - Offer
+    objectType: custom_value
+    dataType: STATUS
+    category: one_time_offer
+    purpose: Price display gate.
+    value: hidden
+    sourceOfTruth: Shared
     allowedValues:
-      - 'hidden'
-      - 'published'
+      - hidden
+      - published
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'e564b4081d7a9ea4'
-  - canonicalName: 'One Time Published Price Label'
-    normalizedName: 'one_time_published_price_label'
+    liveValueFingerprint: e564b4081d7a9ea4
+  - canonicalName: One Time Published Price Label
+    normalizedName: one_time_published_price_label
     ghlId: ''
-    ghlKey: 'one_time_published_price_label'
-    folder: 'One Time - Offer'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_offer'
-    purpose: 'Approved price label when published.'
+    ghlKey: one_time_published_price_label
+    folder: One Time - Offer
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_offer
+    purpose: Approved price label when published.
     value: ''
-    sourceOfTruth: 'Shared'
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies:
-      - 'One Time Pricing Display Status'
+      - One Time Pricing Display Status
     aliases: []
-    deprecationState: 'blocked_ui_or_business_value'
+    deprecationState: blocked_ui_or_business_value
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-    blocker: 'blocked_ui_or_business_value:approved_business_copy_missing'
-  - canonicalName: 'One Time Default Time Zone'
-    normalizedName: 'one_time_default_time_zone'
-    ghlId: 'YSpFDAE6PEnfShEmypRQ'
-    ghlKey: 'one_time_default_time_zone'
-    folder: 'One Time - Class'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_class'
-    purpose: 'Default class timezone.'
-    value: 'Asia/Jerusalem'
-    sourceOfTruth: 'Shared'
+    blocker: blocked_ui_or_business_value:approved_business_copy_missing
+  - canonicalName: One Time Default Time Zone
+    normalizedName: one_time_default_time_zone
+    ghlId: YSpFDAE6PEnfShEmypRQ
+    ghlKey: one_time_default_time_zone
+    folder: One Time - Class
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_class
+    purpose: Default class timezone.
+    value: Asia/Jerusalem
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '767f41f547937e73'
-  - canonicalName: 'One Time Class Time Israel'
-    normalizedName: 'one_time_class_time_israel'
-    ghlId: 'h1Ukxh0kQerrlRgh8IFO'
-    ghlKey: 'one_time_class_time_israel'
-    folder: 'One Time - Class'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_class'
-    purpose: 'Approved normal class time.'
-    value: '7:00 p.m. Israel time'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 767f41f547937e73
+  - canonicalName: One Time Class Time Israel
+    normalizedName: one_time_class_time_israel
+    ghlId: h1Ukxh0kQerrlRgh8IFO
+    ghlKey: one_time_class_time_israel
+    folder: One Time - Class
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_class
+    purpose: Approved normal class time.
+    value: 7:00 p.m. Israel time
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '9f8c31c8247070f3'
-  - canonicalName: 'One Time Schedule Notice'
-    normalizedName: 'one_time_schedule_notice'
+    liveValueFingerprint: 9f8c31c8247070f3
+  - canonicalName: One Time Schedule Notice
+    normalizedName: one_time_schedule_notice
     ghlId: ''
-    ghlKey: 'one_time_schedule_notice'
-    folder: 'One Time - Class'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_class'
-    purpose: 'Approved schedule notice.'
+    ghlKey: one_time_schedule_notice
+    folder: One Time - Class
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_class
+    purpose: Approved schedule notice.
     value: ''
-    sourceOfTruth: 'Shared'
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'blocked_ui_or_business_value'
+    deprecationState: blocked_ui_or_business_value
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-    blocker: 'blocked_ui_or_business_value:approved_business_copy_missing'
-  - canonicalName: 'One Time Support Email'
-    normalizedName: 'one_time_support_email'
-    ghlId: 'DOmCxdkR1cVxQmNvY2yJ'
-    ghlKey: 'one_time_support_email'
-    folder: 'One Time - Support'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_support'
-    purpose: 'Support email.'
-    value: 'info@onetimeonetime.com'
-    sourceOfTruth: 'Shared'
+    blocker: blocked_ui_or_business_value:approved_business_copy_missing
+  - canonicalName: One Time Support Email
+    normalizedName: one_time_support_email
+    ghlId: DOmCxdkR1cVxQmNvY2yJ
+    ghlKey: one_time_support_email
+    folder: One Time - Support
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_support
+    purpose: Support email.
+    value: info@onetimeonetime.com
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: 'a64728a6a2bb16c6'
-  - canonicalName: 'One Time Public Bot Name'
-    normalizedName: 'one_time_public_bot_name'
-    ghlId: 'gv4IikUMoT1fjxzXBoHi'
-    ghlKey: 'one_time_public_bot_name'
-    folder: 'One Time - Bot'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_bot'
-    purpose: 'Canonical public bot name.'
-    value: 'OT-A1 One Time Enrollment Assistant'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: a64728a6a2bb16c6
+  - canonicalName: One Time Public Bot Name
+    normalizedName: one_time_public_bot_name
+    ghlId: gv4IikUMoT1fjxzXBoHi
+    ghlKey: one_time_public_bot_name
+    folder: One Time - Bot
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_bot
+    purpose: Canonical public bot name.
+    value: OT-A1 One Time Enrollment Assistant
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '9278e33c632e4fbd'
-  - canonicalName: 'One Time Public Bot Version'
-    normalizedName: 'one_time_public_bot_version'
-    ghlId: 'MGrhKfk5ndE4uLkJy6s7'
-    ghlKey: 'one_time_public_bot_version'
-    folder: 'One Time - Bot'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_bot'
-    purpose: 'Canonical bot version.'
-    value: '1.0.0'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 9278e33c632e4fbd
+  - canonicalName: One Time Public Bot Version
+    normalizedName: one_time_public_bot_version
+    ghlId: MGrhKfk5ndE4uLkJy6s7
+    ghlKey: one_time_public_bot_version
+    folder: One Time - Bot
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_bot
+    purpose: Canonical bot version.
+    value: 1.0.0
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '92521fc3cbd964bd'
-  - canonicalName: 'One Time Knowledge Base Version'
-    normalizedName: 'one_time_knowledge_base_version'
-    ghlId: 'liBRazBsirZuJUNPFO81'
-    ghlKey: 'one_time_knowledge_base_version'
-    folder: 'One Time - Bot'
-    objectType: 'custom_value'
-    dataType: 'TEXT'
-    category: 'one_time_bot'
-    purpose: 'Canonical knowledge-base version.'
-    value: '1.0.0'
-    sourceOfTruth: 'Shared'
+    liveValueFingerprint: 92521fc3cbd964bd
+  - canonicalName: One Time Knowledge Base Version
+    normalizedName: one_time_knowledge_base_version
+    ghlId: liBRazBsirZuJUNPFO81
+    ghlKey: one_time_knowledge_base_version
+    folder: One Time - Bot
+    objectType: custom_value
+    dataType: TEXT
+    category: one_time_bot
+    purpose: Canonical knowledge-base version.
+    value: 1.0.0
+    sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'active'
+    deprecationState: active
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
     lastTestedDate: '2026-07-22'
-    liveValueFingerprint: '92521fc3cbd964bd'
+    liveValueFingerprint: 92521fc3cbd964bd
 sender_profiles:
-  - key: 'rabbi_campaign'
+  - key: rabbi_campaign
     purpose:
-      - 'warm enrollment campaigns'
-      - 'Torah newsletters'
-      - 'Rabbi-authored teaching emails'
-      - 'Rabbi-authored event invitations'
-    provider: 'GHL'
-    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
-    displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
-    fromEmail: 'rabbi@onetimeonetime.com'
-    preferredFromEmail: 'rabbi@onetimeonetime.com'
-    currentFallbackFromEmail: 'info@onetimeonetime.com'
-    replyTo: 'info@onetimeonetime.com'
-    status: 'sender_decision_fixed_provider_acceptance_pending'
+      - warm enrollment campaigns
+      - Torah newsletters
+      - Rabbi-authored teaching emails
+      - Rabbi-authored event invitations
+    provider: GHL
+    owner: Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility
+    displayName: Rabbi Eli Scheller
+    fromEmail: rabbielischeller@onetimeonetime.com
+    preferredFromEmail: rabbielischeller@onetimeonetime.com
+    currentFallbackFromEmail: rabbielischeller@onetimeonetime.com
+    replyTo: rabbielischeller@onetimeonetime.com
+    status: canonical_identity_fixed_provider_acceptance_pending
+    historicalAliases:
+      - rabbi@onetimeonetime.com
     phase1:
-      displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
-      fromEmail: 'info@onetimeonetime.com'
-      replyTo: 'info@onetimeonetime.com'
-      status: 'active_phase_1'
+      displayName: Rabbi Eli Scheller | One Time Mishnayos
+      fromEmail: info@onetimeonetime.com
+      replyTo: info@onetimeonetime.com
+      status: superseded_historical_provider_era
     phase2:
-      displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
-      fromEmail: 'rabbi@onetimeonetime.com'
-      replyTo: 'info@onetimeonetime.com'
-      status: 'sender_decision_fixed_provider_acceptance_pending'
+      displayName: Rabbi Eli Scheller
+      fromEmail: rabbielischeller@onetimeonetime.com
+      replyTo: rabbielischeller@onetimeonetime.com
+      status: canonical_identity_provider_acceptance_pending
       activationPrerequisites:
-        - 'rabbi@ routes into the governed GHL Conversations workflow; no separately monitored second inbox is required'
-        - 'HighLevel accepts the From address'
-        - 'a seed delivers'
-        - 'a reply reaches GHL Conversations'
-        - 'the result is recorded'
+        - rabbielischeller@onetimeonetime.com routes into the governed GHL Conversations workflow
+        - HighLevel accepts the From address
+        - a seed delivers
+        - a reply reaches GHL Conversations
+        - the result is recorded
+        - historical rabbi@ data remains preserved but is never selected as the canonical public identity
     messageClasses:
-      - 'warm_enrollment_campaign'
-      - 'existing_subscriber_migration'
-      - 'prelaunch_nurture'
-      - 'torah_newsletter'
-      - 'rabbi_teaching_email'
-      - 'rabbi_event_invitation'
-  - key: 'rabbi_personal'
+      - warm_enrollment_campaign
+      - existing_subscriber_migration
+      - prelaunch_nurture
+      - torah_newsletter
+      - rabbi_teaching_email
+      - rabbi_event_invitation
+  - key: rabbi_personal
     purpose:
-      - 'Rabbi-authored Torah answers and follow-up'
-    provider: 'GHL'
-    owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
-    displayName: 'Rabbi Eli Scheller'
-    fromEmail: 'rabbi@onetimeonetime.com'
-    preferredFromEmail: 'rabbi@onetimeonetime.com'
-    currentFallbackFromEmail: ''
-    replyTo: 'info@onetimeonetime.com'
-    status: 'pending_mailbox_and_reply_acceptance'
+      - Rabbi-authored Torah answers and follow-up
+    provider: GHL
+    owner: Rabbi authors through Telegram; Shloimie retains visibility
+    displayName: Rabbi Eli Scheller
+    fromEmail: rabbielischeller@onetimeonetime.com
+    preferredFromEmail: rabbielischeller@onetimeonetime.com
+    currentFallbackFromEmail: rabbielischeller@onetimeonetime.com
+    replyTo: rabbielischeller@onetimeonetime.com
+    status: canonical_identity_provider_acceptance_pending
+    historicalAliases:
+      - rabbi@onetimeonetime.com
     phase1: ''
     phase2: ''
     messageClasses:
-      - 'torah_answer'
-      - 'torah_follow_up'
-  - key: 'office'
+      - torah_answer
+      - torah_follow_up
+  - key: office
     purpose:
-      - 'customer support'
-      - 'billing help'
-      - 'access help'
-      - 'complaints and administration'
-    provider: 'GHL'
-    owner: 'Shloimie'
-    displayName: 'Shloimie from One Time Mishnayos'
-    fromEmail: 'info@onetimeonetime.com'
-    preferredFromEmail: 'info@onetimeonetime.com'
-    currentFallbackFromEmail: 'info@onetimeonetime.com'
-    replyTo: 'info@onetimeonetime.com'
-    status: 'active'
+      - customer support
+      - billing help
+      - access help
+      - complaints and administration
+    provider: GHL
+    owner: Shloimie
+    displayName: Shloimie from One Time Mishnayos
+    fromEmail: info@onetimeonetime.com
+    preferredFromEmail: info@onetimeonetime.com
+    currentFallbackFromEmail: info@onetimeonetime.com
+    replyTo: info@onetimeonetime.com
+    status: active
     phase1: ''
     phase2: ''
     messageClasses:
-      - 'support_reply'
-      - 'access_help'
-      - 'billing_help'
-      - 'payment_failed_support'
-      - 'cancellation_help'
-      - 'refund_help'
-      - 'complaint_reply'
-      - 'parent_administration_reply'
-  - key: 'brand'
+      - support_reply
+      - access_help
+      - billing_help
+      - payment_failed_support
+      - cancellation_help
+      - refund_help
+      - complaint_reply
+      - parent_administration_reply
+  - key: brand
     purpose:
-      - 'neutral One Time program, portal, event, class, content, and receipt notices'
-    provider: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    displayName: 'One Time Mishnayos'
-    fromEmail: 'info@onetimeonetime.com'
-    preferredFromEmail: 'info@onetimeonetime.com'
-    currentFallbackFromEmail: 'info@onetimeonetime.com'
-    replyTo: 'info@onetimeonetime.com'
-    status: 'active'
+      - neutral One Time program, portal, event, class, content, and receipt notices
+    provider: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    displayName: One Time Mishnayos
+    fromEmail: info@onetimeonetime.com
+    preferredFromEmail: info@onetimeonetime.com
+    currentFallbackFromEmail: info@onetimeonetime.com
+    replyTo: info@onetimeonetime.com
+    status: active
     phase1: ''
     phase2: ''
     messageClasses:
-      - 'signup_confirmation'
-      - 'event_registration_confirmation'
-      - 'event_reminder'
-      - 'class_reminder'
-      - 'schedule_change'
-      - 'recording_available'
-      - 'new_video_available'
-      - 'worksheet_available'
-      - 'portal_welcome'
-      - 'portal_activated'
-      - 'payment_receipt'
-      - 'cancellation_confirmation'
-      - 'support_acknowledgement'
-  - key: 'account_security'
+      - signup_confirmation
+      - event_registration_confirmation
+      - event_reminder
+      - class_reminder
+      - schedule_change
+      - recording_available
+      - new_video_available
+      - worksheet_available
+      - portal_welcome
+      - portal_activated
+      - payment_receipt
+      - cancellation_confirmation
+      - support_acknowledgement
+  - key: account_security
     purpose:
-      - 'activation/setup links'
-      - 'password reset'
-      - 'email verification'
-      - 'Administrator login challenge'
-      - 'security-token email'
-    provider: 'Resend'
-    owner: 'One Time authentication and security runtime'
-    displayName: 'One Time Mishnayos Account'
-    fromEmail: 'info@onetimeonetime.com'
-    preferredFromEmail: 'account@onetimeonetime.com'
-    currentFallbackFromEmail: 'info@onetimeonetime.com'
-    replyTo: 'info@onetimeonetime.com'
-    status: 'preferred_address_pending_domain_acceptance'
+      - activation/setup links
+      - password reset
+      - email verification
+      - Administrator login challenge
+      - security-token email
+    provider: Resend
+    owner: One Time authentication and security runtime
+    displayName: One Time Mishnayos Account
+    fromEmail: info@onetimeonetime.com
+    preferredFromEmail: account@onetimeonetime.com
+    currentFallbackFromEmail: info@onetimeonetime.com
+    replyTo: info@onetimeonetime.com
+    status: preferred_address_pending_domain_acceptance
     phase1: ''
     phase2: ''
     messageClasses:
-      - 'activation_token'
-      - 'password_setup'
-      - 'password_reset'
-      - 'email_verification'
-      - 'login_challenge'
-      - 'security_notice'
+      - activation_token
+      - password_setup
+      - password_reset
+      - email_verification
+      - login_challenge
+      - security_notice
 message_classes:
-  - key: 'warm_enrollment_campaign'
-    senderKey: 'rabbi_campaign'
-    transport: 'GHL'
-    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
-    sourceOfTruth: 'HighLevel'
+  - key: warm_enrollment_campaign
+    senderKey: rabbi_campaign
+    transport: GHL
+    owner: Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-03'
+      - OT-03
+      - OT-15
     securityTokensAllowed: false
-  - key: 'existing_subscriber_migration'
-    senderKey: 'rabbi_campaign'
-    transport: 'GHL'
-    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
-    sourceOfTruth: 'HighLevel'
+  - key: existing_subscriber_migration
+    senderKey: rabbi_campaign
+    transport: GHL
+    owner: Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-02A'
+      - OT-02A
     securityTokensAllowed: false
-  - key: 'prelaunch_nurture'
-    senderKey: 'rabbi_campaign'
-    transport: 'GHL'
-    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
-    sourceOfTruth: 'HighLevel'
+  - key: prelaunch_nurture
+    senderKey: rabbi_campaign
+    transport: GHL
+    owner: Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-02B'
+      - OT-02B
     securityTokensAllowed: false
-  - key: 'torah_newsletter'
-    senderKey: 'rabbi_campaign'
-    transport: 'GHL'
-    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
-    sourceOfTruth: 'HighLevel'
+  - key: torah_newsletter
+    senderKey: rabbi_campaign
+    transport: GHL
+    owner: Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-14
+    securityTokensAllowed: false
+  - key: rabbi_teaching_email
+    senderKey: rabbi_campaign
+    transport: GHL
+    owner: Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'rabbi_teaching_email'
-    senderKey: 'rabbi_campaign'
-    transport: 'GHL'
-    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
-    sourceOfTruth: 'HighLevel'
+  - key: rabbi_event_invitation
+    senderKey: rabbi_campaign
+    transport: GHL
+    owner: Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-C01
+    securityTokensAllowed: false
+  - key: torah_answer
+    senderKey: rabbi_personal
+    transport: GHL
+    owner: Rabbi authors through Telegram; Shloimie retains visibility
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'rabbi_event_invitation'
-    senderKey: 'rabbi_campaign'
-    transport: 'GHL'
-    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows:
-      - 'OT-C01'
-    securityTokensAllowed: false
-  - key: 'torah_answer'
-    senderKey: 'rabbi_personal'
-    transport: 'GHL'
-    owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
-    sourceOfTruth: 'HighLevel'
+  - key: torah_follow_up
+    senderKey: rabbi_personal
+    transport: GHL
+    owner: Rabbi authors through Telegram; Shloimie retains visibility
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'torah_follow_up'
-    senderKey: 'rabbi_personal'
-    transport: 'GHL'
-    owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
-    sourceOfTruth: 'HighLevel'
+  - key: support_reply
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-12
+    securityTokensAllowed: false
+  - key: access_help
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-B03
+    securityTokensAllowed: false
+  - key: billing_help
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-16
+    securityTokensAllowed: false
+  - key: payment_failed_support
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-05
+    securityTokensAllowed: false
+  - key: cancellation_help
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-06
+    securityTokensAllowed: false
+  - key: refund_help
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
+    allowedWorkflows:
+      - OT-13
+    securityTokensAllowed: false
+  - key: complaint_reply
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'support_reply'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows:
-      - 'OT-12'
-    securityTokensAllowed: false
-  - key: 'access_help'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows:
-      - 'OT-B03'
-    securityTokensAllowed: false
-  - key: 'billing_help'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
+  - key: parent_administration_reply
+    senderKey: office
+    transport: GHL
+    owner: Shloimie
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'payment_failed_support'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
+  - key: signup_confirmation
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-05'
+      - OT-01
+      - OT-04
+      - OT-B01
     securityTokensAllowed: false
-  - key: 'cancellation_help'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
+  - key: event_registration_confirmation
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-06'
+      - OT-E01
     securityTokensAllowed: false
-  - key: 'refund_help'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows:
-      - 'OT-13'
-    securityTokensAllowed: false
-  - key: 'complaint_reply'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
+  - key: event_reminder
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'parent_administration_reply'
-    senderKey: 'office'
-    transport: 'GHL'
-    owner: 'Shloimie'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows: []
-    securityTokensAllowed: false
-  - key: 'signup_confirmation'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: class_reminder
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-01'
-      - 'OT-04'
-      - 'OT-B01'
+      - OT-09
+      - OT-B02
     securityTokensAllowed: false
-  - key: 'event_registration_confirmation'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: schedule_change
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
+    allowedWorkflows: []
+    securityTokensAllowed: false
+  - key: recording_available
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-E01'
+      - OT-10
     securityTokensAllowed: false
-  - key: 'event_reminder'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: new_video_available
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'class_reminder'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: worksheet_available
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
+    allowedWorkflows: []
+    securityTokensAllowed: false
+  - key: portal_welcome
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-09'
-      - 'OT-B02'
+      - OT-07
     securityTokensAllowed: false
-  - key: 'schedule_change'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows: []
-    securityTokensAllowed: false
-  - key: 'recording_available'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: portal_activated
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-10'
+      - OT-08
     securityTokensAllowed: false
-  - key: 'new_video_available'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: payment_receipt
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'worksheet_available'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: cancellation_confirmation
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows: []
     securityTokensAllowed: false
-  - key: 'portal_welcome'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
+  - key: support_acknowledgement
+    senderKey: brand
+    transport: GHL
+    owner: Shloimie operates; One Time Mishnayos owns the neutral brand identity
+    sourceOfTruth: HighLevel
     allowedWorkflows:
-      - 'OT-07'
+      - OT-B05
+      - OT-11
+      - OT-HUMAN-HANDOFF
     securityTokensAllowed: false
-  - key: 'portal_activated'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows:
-      - 'OT-08'
-    securityTokensAllowed: false
-  - key: 'payment_receipt'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows: []
-    securityTokensAllowed: false
-  - key: 'cancellation_confirmation'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows: []
-    securityTokensAllowed: false
-  - key: 'support_acknowledgement'
-    senderKey: 'brand'
-    transport: 'GHL'
-    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
-    sourceOfTruth: 'HighLevel'
-    allowedWorkflows:
-      - 'OT-B05'
-      - 'OT-11'
-      - 'OT-HUMAN-HANDOFF'
-    securityTokensAllowed: false
-  - key: 'activation_token'
-    senderKey: 'account_security'
-    transport: 'Resend'
-    owner: 'One Time authentication and security runtime'
-    sourceOfTruth: 'One Time'
-    allowedWorkflows: []
-    securityTokensAllowed: true
-  - key: 'password_setup'
-    senderKey: 'account_security'
-    transport: 'Resend'
-    owner: 'One Time authentication and security runtime'
-    sourceOfTruth: 'One Time'
+  - key: activation_token
+    senderKey: account_security
+    transport: Resend
+    owner: One Time authentication and security runtime
+    sourceOfTruth: One Time
     allowedWorkflows: []
     securityTokensAllowed: true
-  - key: 'password_reset'
-    senderKey: 'account_security'
-    transport: 'Resend'
-    owner: 'One Time authentication and security runtime'
-    sourceOfTruth: 'One Time'
+  - key: password_setup
+    senderKey: account_security
+    transport: Resend
+    owner: One Time authentication and security runtime
+    sourceOfTruth: One Time
+    allowedWorkflows: []
+    securityTokensAllowed: true
+  - key: password_reset
+    senderKey: account_security
+    transport: Resend
+    owner: One Time authentication and security runtime
+    sourceOfTruth: One Time
     allowedWorkflows:
-      - 'OT-B04'
+      - OT-B04
     securityTokensAllowed: true
-  - key: 'email_verification'
-    senderKey: 'account_security'
-    transport: 'Resend'
-    owner: 'One Time authentication and security runtime'
-    sourceOfTruth: 'One Time'
+  - key: email_verification
+    senderKey: account_security
+    transport: Resend
+    owner: One Time authentication and security runtime
+    sourceOfTruth: One Time
     allowedWorkflows: []
     securityTokensAllowed: true
-  - key: 'login_challenge'
-    senderKey: 'account_security'
-    transport: 'Resend'
-    owner: 'One Time authentication and security runtime'
-    sourceOfTruth: 'One Time'
+  - key: login_challenge
+    senderKey: account_security
+    transport: Resend
+    owner: One Time authentication and security runtime
+    sourceOfTruth: One Time
     allowedWorkflows: []
     securityTokensAllowed: true
-  - key: 'security_notice'
-    senderKey: 'account_security'
-    transport: 'Resend'
-    owner: 'One Time authentication and security runtime'
-    sourceOfTruth: 'One Time'
+  - key: security_notice
+    senderKey: account_security
+    transport: Resend
+    owner: One Time authentication and security runtime
+    sourceOfTruth: One Time
     allowedWorkflows: []
     securityTokensAllowed: true
 pipelines:
@@ -3212,7 +3246,7 @@ knowledge_base_readback:
     duplicateCandidates: []
 automation_assets:
   generated_from: integrations/highlevel/registry/workflow-registry.yaml
-  source_sha256: 53aed7a638155c7145aac16ba796f76b88d3df0e9b322dce5d9ec8f6194da82c
+  source_sha256: 5df557be7a02e522d425b3c51498f4f06f47a4a0f7e8fc012bc38a375a1d472a
   editable: false
   workflows:
     - key: OT-01
@@ -3335,9 +3369,10 @@ automation_assets:
         audience_authority: operator-selected adult migration list only; historic payment, attendance, event registration, portal state, deliverability, and legacy tags never grant authority
         sequence_length: 3
         sender_registry_key: rabbi_campaign
-        desired_from_after_acceptance: Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>
-        current_fallback_from: info@onetimeonetime.com until provider acceptance
-        reply_to: info@onetimeonetime.com only
+        canonical_public_rabbi_identity: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>
+        desired_from_after_acceptance: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>
+        current_fallback_from: none; provider-era fallback is superseded and retained only as historical data
+        reply_to: rabbielischeller@onetimeonetime.com only
         sender_decision_status: fixed; not an operator decision gate
         sender_acceptance_job: GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance
         reviewed_sequence_version: ot_02a_existing_subscriber_migration_three_email_v1
@@ -3413,9 +3448,10 @@ automation_assets:
         audience_scope: consented unsuppressed new leads only
         audience_authority: independently proven general-marketing permission only; Tisha registration, attendance, payment, portal state, deliverability, and legacy tags never grant authority
         sender_registry_key: rabbi_campaign
-        desired_from_after_acceptance: Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>
-        current_fallback_from: info@onetimeonetime.com until provider acceptance
-        reply_to: info@onetimeonetime.com only
+        canonical_public_rabbi_identity: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>
+        desired_from_after_acceptance: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>
+        current_fallback_from: none; provider-era fallback is superseded and retained only as historical data
+        reply_to: rabbielischeller@onetimeonetime.com only
         sender_decision_status: fixed; not an operator decision gate
         sender_acceptance_job: GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance
         reviewed_email_one_identity: rabbi_new_program_prelaunch_nurture_v1
@@ -3947,6 +3983,311 @@ automation_assets:
         - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
         - integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
         - integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json
+    - key: OT-12
+      canonicalName: OT-12 Adult Support Intake
+      normalizedName: ot_12_adult_support_intake
+      ghlId: ''
+      ghlKey: ot_12_adult_support_intake
+      objectType: business_workflow
+      dataType: workflow
+      asset_kind: workflow
+      category: business_workflow
+      folder: 50 - Support
+      purpose: Adult Parent/public support intake and GHL conversation continuation; Student support remains in One Time.
+      sourceOfTruth: Shared
+      allowedValues:
+        - adult_only
+      workflowsAllowedToWrite: []
+      oneTimeAllowedToWrite: false
+      humansMayEdit: true
+      dependencies:
+        - packages/contracts/src/communications/foundation/index.ts
+      aliases:
+        - ot_12_support_intake_technical_escalation
+      assetLifecycle: canonical
+      createdDate: '2026-07-21'
+      lastVerifiedDate: '2026-07-28'
+      lastTestedDate: ''
+      promptPath: integrations/highlevel/v21/foundation/prompts/OT-12-adult-support-intake.md
+      checklistPath: integrations/highlevel/v21/foundation/checklists/OT-12-adult-support-intake.md
+      messageClass: support_reply
+      senderKey: office
+      transport: GHL
+      exactTrigger: verified adult Parent or public support intake is recorded
+      companionDelivery: Student support stays inside One Time and never creates or continues a GHL conversation.
+      providerContract:
+        exactTriggerFilter: verified adult Parent or public support intake with a current adult GHL identity
+        orderedCriticalActions:
+          - hard-stop Student subjects before provider access
+          - create or continue only the adult GHL conversation
+          - store only the safe GHL reference in One Time
+          - recheck suppression before an optional acknowledgment
+        deliveryCategory: support_reply
+        senderKey: office
+      displayOrder: 20
+      desiredStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: MISSING
+      exactOrderedTriggers:
+        - Receive a verified adult Parent/public support intake.
+        - Reject every Student subject before any GHL contact or conversation operation.
+      exactOrderedActions:
+        - Create or continue the adult GHL conversation idempotently.
+        - Store the One Time ticket and sanitized GHL reference.
+        - Send an approved adult acknowledgment only after a current suppression readback.
+      observedTriggers: []
+      observedActions: []
+      lastReadback:
+        at: '2026-07-28T20:00:00Z'
+        method: Git-authored canonical registry migration; no provider mutation or claimed provider readback
+        reference: ops/v2.1-execution/runtime/P28/HANDOFF.md
+      canary:
+        result: not_run
+        reference: ops/v2.1-execution/runtime/P28/HANDOFF.md
+        detail: No external effect is authorized in P28; adult-support provider realization remains gated.
+      blocker: Provider workflow identity is not yet assigned; keep non-executable until the reviewed adult-support definition, provider ID, save/reopen readback, and approval gates agree.
+      evidence:
+        - integrations/highlevel/v21/foundation/desired-state.ts
+        - packages/contracts/src/communications/foundation/index.ts
+    - key: OT-14
+      canonicalName: OT-14 Parent Newsletter
+      normalizedName: ot_14_parent_newsletter
+      ghlId: ''
+      ghlKey: ot_14_parent_newsletter
+      objectType: business_workflow
+      dataType: workflow
+      asset_kind: workflow
+      category: business_workflow
+      folder: 10 - Enrollment & Nurture
+      purpose: Weekly Parent newsletter for current adult account owners with newsletter permission.
+      sourceOfTruth: HighLevel
+      allowedValues:
+        - adult_only
+        - newsletter_permission_required
+      workflowsAllowedToWrite: []
+      oneTimeAllowedToWrite: false
+      humansMayEdit: true
+      dependencies:
+        - packages/contracts/src/communications/foundation/index.ts
+        - P30 workflow fragment
+      aliases: []
+      assetLifecycle: canonical
+      createdDate: '2026-07-28'
+      lastVerifiedDate: '2026-07-28'
+      lastTestedDate: ''
+      promptPath: integrations/highlevel/v21/foundation/prompts/OT-14-parent-newsletter.md
+      checklistPath: integrations/highlevel/v21/foundation/checklists/OT-14-parent-newsletter.md
+      messageClass: torah_newsletter
+      senderKey: rabbi_campaign
+      transport: GHL
+      exactTrigger: approved weekly Parent newsletter audience enters at Thursday 12:00 household local time
+      companionDelivery: Drafting and execution remain in GHL; One Time exposes sanitized readback and governed Start/Pause requests only.
+      providerContract:
+        exactTriggerFilter: current adult account owner with current newsletter permission and current send-time suppression eligibility
+        orderedCriticalActions:
+          - recheck audience, permission, and suppression immediately before send
+          - send exact approved newsletter copy from rabbi_campaign
+          - exclude all Student, private-child, billing, and cross-household information
+          - never expose ordinary product test-send, seed-send, or provider-canary actions
+        deliveryCategory: torah_newsletter
+        senderKey: rabbi_campaign
+      displayOrder: 23
+      desiredStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: MISSING
+      exactOrderedTriggers:
+        - Await the reviewed P30 workflow fragment, exact audience/copy digests, and explicit Rabbi/Admin approval.
+        - At Thursday 12:00 household local time, recheck adult ownership, newsletter permission, dedupe, and every suppression gate.
+      exactOrderedActions:
+        - Render the approved Rabbi note, recap, schedule, recording/review, approved question highlight, and one CTA.
+        - Send through rabbi_campaign only after every approval and send-time gate passes.
+        - Keep first broad send blocked until the release-verification harness records its bounded operator-only canary.
+      observedTriggers: []
+      observedActions: []
+      lastReadback:
+        at: '2026-07-28T20:00:00Z'
+        method: Git-authored canonical registry reservation; no provider mutation or claimed provider readback
+        reference: ops/v2.1-execution/runtime/P28/HANDOFF.md
+      canary:
+        result: not_run
+        reference: ops/v2.1-execution/runtime/P28/HANDOFF.md
+        detail: P28 authorizes no provider canary; P30 realization and release-verification authority are pending.
+      blocker: P30 workflow fragment, provider identity, exact copy/audience approvals, and release-verification canary are pending.
+      evidence:
+        - integrations/highlevel/v21/foundation/desired-state.ts
+        - packages/contracts/src/communications/foundation/index.ts
+    - key: OT-15
+      canonicalName: OT-15 Former Member Reactivation
+      normalizedName: ot_15_former_member_reactivation
+      ghlId: ''
+      ghlKey: ot_15_former_member_reactivation
+      objectType: business_workflow
+      dataType: workflow
+      asset_kind: workflow
+      category: business_workflow
+      folder: 10 - Enrollment & Nurture
+      purpose: Former/canceled adult reactivation after exact segment, copy, consent, and suppression approval.
+      sourceOfTruth: HighLevel
+      allowedValues:
+        - adult_only
+        - former_or_canceled
+      workflowsAllowedToWrite: []
+      oneTimeAllowedToWrite: false
+      humansMayEdit: true
+      dependencies:
+        - packages/contracts/src/communications/foundation/index.ts
+        - P30 workflow fragment
+      aliases: []
+      assetLifecycle: canonical
+      createdDate: '2026-07-28'
+      lastVerifiedDate: '2026-07-28'
+      lastTestedDate: ''
+      promptPath: integrations/highlevel/v21/foundation/prompts/OT-15-former-member-reactivation.md
+      checklistPath: integrations/highlevel/v21/foundation/checklists/OT-15-former-member-reactivation.md
+      messageClass: warm_enrollment_campaign
+      senderKey: rabbi_campaign
+      transport: GHL
+      exactTrigger: approved former/canceled adult segment enters the approved reactivation launch
+      companionDelivery: WhatsApp is dormant; email completes each eligible step without delay.
+      providerContract:
+        exactTriggerFilter: former/canceled adult with current marketing permission who is not an active Parent and not a School contact
+        orderedCriticalActions:
+          - send the approved launch, day 4, and day 9 email sequence
+          - recheck permission and every suppression gate before each email
+          - exit on signup, suppression, active membership, school classification, or completion
+          - record requested WhatsApp as channel_skipped_not_configured with zero provider calls
+        deliveryCategory: warm_enrollment_campaign
+        senderKey: rabbi_campaign
+      displayOrder: 24
+      desiredStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: MISSING
+      exactOrderedTriggers:
+        - Await the reviewed P30 workflow fragment and exact segment/copy approval.
+        - Enter only a currently permitted former/canceled adult who is neither active Parent nor School.
+      exactOrderedActions:
+        - Send canonical step 1 ghl.former_member_reactivation.step_1.v1 at approval launch through rabbi_campaign.
+        - Wait 4 days, recheck every gate, then send canonical step 2 ghl.former_member_reactivation.step_2.v1 only while eligible.
+        - Wait 5 additional days, recheck every gate, then send canonical step 3 ghl.former_member_reactivation.step_3.v1 only while eligible.
+        - Recheck suppression and exit conditions immediately before each step.
+        - Record dormant WhatsApp intent truthfully and make zero WhatsApp provider calls.
+      observedTriggers: []
+      observedActions: []
+      essentialValues:
+        canonical_copy_ids:
+          - ghl.former_member_reactivation.step_1.v1
+          - ghl.former_member_reactivation.step_2.v1
+          - ghl.former_member_reactivation.step_3.v1
+        canonical_subjects:
+          - See what is new in One Time Mishnayos
+          - A separate Student portal for live class and recordings
+          - Come back free until September 13
+        canonical_timing_days:
+          - '0'
+          - '4'
+          - '9'
+        copy_registration_status: all three exact canonical copy entries registered; no send authorized
+      lastReadback:
+        at: '2026-07-28T20:00:00Z'
+        method: Git-authored canonical registry reservation; no provider mutation or claimed provider readback
+        reference: ops/v2.1-execution/runtime/P28/HANDOFF.md
+      canary:
+        result: not_run
+        reference: ops/v2.1-execution/runtime/P28/HANDOFF.md
+        detail: P28 authorizes no provider canary; P30 realization and release-verification authority are pending.
+      blocker: P30 workflow fragment, provider identity, exact segment/copy approvals, and save/reopen readback are pending.
+      evidence:
+        - integrations/highlevel/v21/foundation/desired-state.ts
+        - packages/contracts/src/communications/foundation/index.ts
+        - packages/domain/src/communications/copy/catalog.ts
+    - key: OT-16
+      canonicalName: OT-16 Free-Period Conversion
+      normalizedName: ot_16_free_period_conversion
+      ghlId: ''
+      ghlKey: ot_16_free_period_conversion
+      objectType: business_workflow
+      dataType: workflow
+      asset_kind: workflow
+      category: business_workflow
+      folder: 20 - Billing & Access
+      purpose: Adult-only free-period conversion checkpoints with exact price/expiry truth, send-time suppression, and paid/decline/School exits.
+      sourceOfTruth: Shared
+      allowedValues:
+        - adult_only
+        - family_standard_price
+        - checkpoint_14_7_3_1_0
+      workflowsAllowedToWrite: []
+      oneTimeAllowedToWrite: false
+      humansMayEdit: true
+      dependencies:
+        - packages/contracts/src/communications/foundation/index.ts
+        - packages/domain/src/communications/workflows/campaigns/definitions.ts
+        - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+      aliases: []
+      assetLifecycle: canonical
+      createdDate: '2026-07-30'
+      lastVerifiedDate: ''
+      lastTestedDate: ''
+      promptPath: integrations/highlevel/registry/workflow-registry.yaml
+      checklistPath: integrations/highlevel/registry/workflow-registry.yaml
+      messageClass: billing_help
+      senderKey: office
+      transport: GHL
+      exactTrigger: 14, 7, 3, and 1 days before canonical free-period expiry and at expiry
+      companionDelivery: WhatsApp is dormant; eligible email checkpoints proceed without waiting for WhatsApp.
+      providerContract:
+        exactTriggerFilter: eligible adult Family subject at one exact canonical expiry checkpoint
+        orderedCriticalActions:
+          - recompute the deterministic adult, expiry, and checkpoint operation identity
+          - refresh verified paid, explicit decline, custom School, consent, and suppression state immediately before dispatch
+          - deliver exact price, expiry, no-card, no-auto-charge, and Checkout CTA copy only while eligible
+          - deduplicate by adult, expiry, and checkpoint
+          - record dormant WhatsApp with zero provider calls
+        deliveryCategory: billing_help
+        senderKey: office
+      displayOrder: 25
+      desiredStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: MISSING
+      exactOrderedTriggers:
+        - Evaluate only the deterministic 14-day, 7-day, 3-day, 1-day, or expiry checkpoint.
+        - Enter only an eligible adult Family subject with no paid-access, decline, School, consent, or suppression exit.
+      exactOrderedActions:
+        - Recompute and validate the deterministic OT-16 operation identity before persistence or provider access.
+        - Resolve canonical expiry and the standard Family price from controlled configuration.
+        - Read back the adult-only audience and recheck every exit and suppression gate immediately before dispatch.
+        - Deliver exact price, expiry, no-card, no-auto-charge, and Checkout CTA copy only while eligible.
+        - Deduplicate by adult, expiry, and checkpoint and record dormant WhatsApp with zero provider calls.
+      observedTriggers: []
+      observedActions: []
+      essentialValues:
+        checkpoint_days:
+          - '14'
+          - '7'
+          - '3'
+          - '1'
+          - '0'
+        standard_family_price_amount: 67
+        standard_family_price_currency: USD
+        automatic_charge_without_checkout: false
+        idempotency_scope: OT-16:adult_id:expiry_at:checkpoint_days
+        registry_only_no_send_authority: true
+      lastReadback:
+        at: '2026-07-30T00:00:00Z'
+        method: Git-authored canonical registry registration; no provider mutation or claimed provider readback
+        reference: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml
+      canary:
+        result: not_run
+        reference: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml
+        detail: Repository registration authorizes no provider canary, activation, enrollment, or send.
+      blocker: Provider workflow identity, dedicated provider build packet, exact save/reopen readback, and separate effect authority are absent.
+      evidence:
+        - integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml
+        - packages/domain/src/communications/workflows/campaigns/definitions.ts
+        - 'Exact workflow: OT-16 Free-Period Conversion'
+        - 'Folder: 20 - Billing & Access'
+        - 'Exact trigger: 14, 7, 3, and 1 days before canonical free-period expiry and at expiry'
+        - 'message_class: billing_help'
+        - 'sender_key: office'
+        - 'Registry dependencies: sender-registry.yaml and message-class-registry.yaml'
+        - Do not publish, activate, enroll, or send from this registry-only registration.
+        - Do not type or guess sender identity or provider text.
     - key: OT-13
       canonicalName: OT-13 Refund / Chargeback
       normalizedName: ot_13_refund_chargeback
@@ -4106,16 +4447,16 @@ automation_assets:
         - integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
         - integrations/highlevel/agent-mode/results/GHL-UI-14-18-20260723.result.json
     - key: OT-B01
-      canonicalName: OT-B01 Complete Signup
-      normalizedName: ot_b01_complete_signup
-      ghlId: 1c1c0bcd-6185-492e-819f-3b7c749d4c23
-      ghlKey: ot_b01_complete_signup
+      canonicalName: OT-B01 Website Lead-Capture Bot
+      normalizedName: ot_b01_website_lead_capture_bot
+      ghlId: ''
+      ghlKey: ot_b01_website_lead_capture_bot
       objectType: bot_action_workflow
       dataType: workflow
       asset_kind: workflow
       category: bot_action_workflow
       folder: 60 - Bot Actions
-      purpose: Typed bot action adapter for adult signup.
+      purpose: Public website Family/School adult lead capture; never WhatsApp qualification or Student creation.
       sourceOfTruth: Shared
       allowedValues: []
       workflowsAllowedToWrite: []
@@ -4127,41 +4468,42 @@ automation_assets:
       createdDate: '2026-07-21'
       lastVerifiedDate: '2026-07-22'
       lastTestedDate: ''
-      promptPath: integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md
-      checklistPath: integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md
+      promptPath: integrations/highlevel/v21/foundation/prompts/OT-B01-website-lead-capture.md
+      checklistPath: integrations/highlevel/v21/foundation/checklists/OT-B01-website-lead-capture.md
       messageClass: signup_confirmation
       senderKey: brand
       transport: GHL
-      exactTrigger: OT-A1 invokes the typed complete-signup adapter for an adult
-      companionDelivery: ''
+      exactTrigger: an adult submits Family or School lead details through the public One Time website assistant
+      companionDelivery: No WhatsApp qualification, Student contact, access grant, or school-pricing promise is permitted.
       providerContract:
-        exactTriggerFilter: OT-A1 invokes the typed complete-signup adapter after all required adult details and consent context are complete
+        exactTriggerFilter: public One Time website assistant submits name, email, family|school, timezone, and optional phone for an adult
         orderedCriticalActions:
-          - validate required adult fields
-          - invoke the protected HighLevel-to-One-Time adapter with idempotency key
+          - identify as the One Time website assistant and answer only from approved public knowledge
+          - offer family signup or record a school inquiry
+          - escalate uncertain answers to adult support
           - never create a Student contact
         deliveryCategory: signup_confirmation
         senderKey: brand
       displayOrder: 15
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_SHELL
+      observedStatus: MISSING
       exactOrderedTriggers:
-        - Receive the typed OT-A1 complete-signup invocation with required adult data and consent.
+        - Receive an adult Family or School lead from the public One Time website assistant.
       exactOrderedActions:
-        - Validate all required adult fields.
-        - Invoke the protected HighLevel-to-One-Time adapter with an idempotency key.
-        - Never create a Student contact.
+        - Validate name, email, family|school, timezone, optional phone, and transcript retention reference.
+        - Offer Family signup or record a School inquiry; escalate uncertain answers to adult support.
+        - Never qualify through WhatsApp, create a Student, promise School pricing, or grant access.
       observedTriggers: []
       observedActions: []
       lastReadback:
         at: '2026-07-22T14:00:12.763Z'
-        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        method: read-only historical collision readback; the prior Complete Signup provider ID is intentionally not reused
         reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
-        detail: No executable trigger or critical action exists; controlled execution is not possible.
-      blocker: 'DRAFT_BLOCKED_APP_CONTRACT: typed complete-signup adapter is absent.'
+        detail: The prior provider asset has a different purpose and is not the canonical website lead-capture bot; no executable canonical provider asset exists.
+      blocker: 'DRAFT_BLOCKED_IDENTITY_COLLISION: the historical Complete Signup provider ID is reserved to its observed purpose and cannot be reused; a separately identified website lead-capture asset plus save/reopen readback is required.'
       evidence:
         - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
         - integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -4690,23 +5032,24 @@ workflow_readback:
     duplicateCandidates: []
 deprecated_workflows:
   - key: OT-11
-    canonicalName: OT-11 WhatsApp Lead Qualification
-    normalizedName: ot_11_whatsapp_lead_qualification
+    canonicalName: OT-11 Retired / Reserved
+    normalizedName: ot_11_retired_reserved
     ghlId: ''
-    ghlKey: ot_11_whatsapp_lead_qualification
+    ghlKey: ot_11_retired_reserved
     objectType: deprecated_workflow
     dataType: workflow
     asset_kind: workflow
     category: deprecated_workflow
     folder: 99 - Deprecated
-    purpose: Superseded by OT-A1 and OT-B01.
+    purpose: Permanently retired and reserved; this identifier may never execute or be reused.
     sourceOfTruth: Shared
     allowedValues: []
     workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies: []
-    aliases: []
+    aliases:
+      - ot_11_whatsapp_lead_qualification
     assetLifecycle: deprecated
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
@@ -4716,7 +5059,7 @@ deprecated_workflows:
     messageClass: support_acknowledgement
     senderKey: brand
     transport: GHL
-    exactTrigger: deprecated; no active trigger is allowed
+    exactTrigger: permanently retired and reserved; no active trigger is allowed
     companionDelivery: ''
     displayOrder: 20
     desiredStatus: BLOCKED
@@ -4724,7 +5067,7 @@ deprecated_workflows:
     exactOrderedTriggers:
       - No active trigger is allowed.
     exactOrderedActions:
-      - Do not create or activate; OT-A1 and OT-B01 supersede this contract.
+      - Do not create, activate, or reuse this identifier for any purpose.
     observedTriggers: []
     observedActions: []
     lastReadback:
@@ -4734,57 +5077,8 @@ deprecated_workflows:
     canary:
       result: not_applicable
       reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
-      detail: Deprecated contract.
-    blocker: Superseded; dependency-check before any safe quarantine of an unknown historical asset.
-    evidence:
-      - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
-  - key: OT-12
-    canonicalName: OT-12 Support Intake / Technical Escalation
-    normalizedName: ot_12_support_intake_technical_escalation
-    ghlId: ''
-    ghlKey: ot_12_support_intake_technical_escalation
-    objectType: deprecated_workflow
-    dataType: workflow
-    asset_kind: workflow
-    category: deprecated_workflow
-    folder: 99 - Deprecated
-    purpose: Deprecated when it creates tasks or support escalation workflows.
-    sourceOfTruth: Shared
-    allowedValues: []
-    workflowsAllowedToWrite: []
-    oneTimeAllowedToWrite: false
-    humansMayEdit: true
-    dependencies: []
-    aliases: []
-    assetLifecycle: deprecated
-    createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-22'
-    lastTestedDate: ''
-    promptPath: ''
-    checklistPath: ''
-    messageClass: support_reply
-    senderKey: office
-    transport: GHL
-    exactTrigger: deprecated when it creates tasks; no active trigger is allowed
-    companionDelivery: ''
-    displayOrder: 21
-    desiredStatus: BLOCKED
-    observedStatus: MISSING
-    exactOrderedTriggers:
-      - No task-creating support trigger is allowed.
-    exactOrderedActions:
-      - Do not create or activate a human-task workflow.
-    observedTriggers: []
-    observedActions: []
-    lastReadback:
-      at: '2026-07-22T09:09:54.117Z'
-      method: navigate-away/reopen plus sanitized UI/API readback
-      reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
-    canary:
-      result: not_applicable
-      reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
-      detail: Deprecated contract.
-    blocker: Deprecated; dependency-check before any safe quarantine of an unknown historical asset.
+      detail: Permanently retired/reserved contract; execution is prohibited.
+    blocker: Permanently retired and reserved; dependency-check before any safe quarantine of an unknown historical asset.
     evidence:
       - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
   - key: OT-HUMAN-HANDOFF

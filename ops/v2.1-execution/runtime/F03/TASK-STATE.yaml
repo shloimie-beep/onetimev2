@@ -1,0 +1,163 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F03
+task_packet_digest: 8474eeb85ea4c7991c1a42a798c1c3f6a3cda9f2b9a3b51b7c15617b5817ba27
+task_context_digest: 9ccc41a037fe9163800d56e8b34991d46e63399a46f3b6f47c986fa200e2ce5e
+spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+branch: codex/v21-f03-adult-student-auth
+start_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+dependency_heads:
+  F02:
+    required_state: interface_ready_integrated
+    observed_state: interface_ready_integrated
+    task_head_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
+    integration_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    interface_implementation_head_sha: 191dac288ea1721bdc0252bd012060ca974d2242
+    interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
+status: ready_for_review
+phase: review
+claimed_by: codex-f03-worker-0b100424
+claim_time: '2026-07-28T18:24:00Z'
+claim_id: 0b100424-7be3-4613-ae07-e7019d140a30
+lease_id: 82b0973d-b5b7-4ea6-9618-a5c50d3b14ba
+lease_expires_at: '2026-07-28T19:11:45Z'
+last_heartbeat_at: '2026-07-28T18:38:00Z'
+lease_released_at: '2026-07-28T18:38:00Z'
+writer_slot_leases:
+  IDENTITY_AUTH_ACCESS:
+    lease_id: 82b0973d-b5b7-4ea6-9618-a5c50d3b14ba
+    lease_expires_at: '2026-07-28T19:11:45Z'
+    released_at: '2026-07-28T18:38:00Z'
+controller_authorization_sha: 398ebf34ec72892d354370af11af297d45302888
+ready_entry_parent_control_sha: 4c72f7850fb0d0fdfa609c3947c907550d91140e
+ready_entry_payload_digest: fa68fd0b273ddffd6769c309fa0e5fd2a1197ed61021fc7eeed9ec36a3a88e66
+state_based_on_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+last_implementation_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+interface_checkpoint_digest: 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+completed_steps:
+  - Verified repository identity and exact remote control authorization.
+  - Recomputed the canonical F03 ready-entry payload digest.
+  - Verified the exact integrated F02 dependency checkpoint and digests.
+  - Atomically seeded the first F03 task claim.
+  - Read the locked F03 context and only its exact named authentication, role, session, provider-boundary, and privacy source sections.
+  - Published the additive v2.1 authentication contract and pure password, token, session, rate-limit, role, cookie, and safe-return enforcement.
+  - Applied F01-retired-auth-001 at implementation commit 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e.
+  - Removed the routine owner/admin/rabbi email-challenge and trusted-device branch from authenticateUser while preserving rate limits, audit, current-access, password verification, and session rotation.
+  - Normalized owner/rabbi migration-history roles to the public admin boundary and removed MFA capability from returned session principals.
+  - Applied exact Admin, Parent, and Student idle/absolute session lifetimes and exact account+IP/IP login throttles.
+  - Applied exact Unicode password bounds without composition rules, identity/common-password rejection, uniquely salted Argon2id credentials, and legacy Student credential rehash on successful authentication.
+  - Added seven-day setup and 60-minute reset token issuance, hashing, single-use, expiry, and supersession semantics.
+  - Added host-only Secure HttpOnly SameSite=Lax session-cookie and role-safe same-origin return-target helpers.
+  - Passed typecheck, focused lint, 23 F03 contract/steward tests, and four current-access integration tests.
+  - Published interface checkpoint 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111 for seven downstream tasks.
+remaining_steps: []
+next_action: C00/I36 should validate and integrate the F03 interface checkpoint, record the applied F01 steward result, notify F01 for acknowledgment, and authorize downstream tasks from the resulting integration head.
+requirements:
+  OTV2-AUTH-007: implementation_ready
+  OTV2-AUTH-008: implementation_ready
+  OTV2-AUTH-009: implementation_ready
+  OTV2-AUTH-010: implementation_ready
+  OTV2-AUTH-011: implementation_ready
+  OTV2-AUTH-012: implementation_ready
+  OTV2-AUTH-013: implementation_ready
+  OTV2-AUTH-014: implementation_ready
+  OTV2-AUTH-015: implementation_ready
+  OTV2-AUTH-016: implementation_ready
+  OTV2-AUTH-017: implementation_ready
+  OTV2-AUTH-018: implementation_ready
+  OTV2-AUTH-019: implementation_ready
+  OTV2-AUTH-020: implementation_ready
+  OTV2-AUTH-180: implementation_ready
+  OTV2-AUTH-227: implementation_ready
+acceptance_cases:
+  OTV2-AUTH-007-AC01: implementation_ready
+  OTV2-AUTH-008-AC01: implementation_ready
+  OTV2-AUTH-009-AC01: implementation_ready
+  OTV2-AUTH-010-AC01: implementation_ready
+  OTV2-AUTH-011-AC01: implementation_ready
+  OTV2-AUTH-012-AC01: implementation_ready
+  OTV2-AUTH-013-SINGLE-USE-TTL: implementation_ready
+  OTV2-AUTH-013-RENEWAL: implementation_ready
+  OTV2-AUTH-014-AC01: implementation_ready
+  OTV2-AUTH-015-AC01: implementation_ready
+  OTV2-AUTH-016-AC01: implementation_ready
+  OTV2-AUTH-017-AC01: implementation_ready
+  OTV2-AUTH-018-AC01: implementation_ready
+  OTV2-AUTH-019-AC01: implementation_ready
+  OTV2-AUTH-020-CSRF: implementation_ready
+  OTV2-AUTH-020-RATE: implementation_ready
+  OTV2-AUTH-020-COOKIE: implementation_ready
+  OTV2-AUTH-020-ROTATE: implementation_ready
+  OTV2-AUTH-180-AC01: implementation_ready
+  OTV2-AUTH-227-PASSWORDS-RATE-LIMITS: implementation_ready
+  OTV2-AUTH-227-SESSIONS-TOKENS-LEASES: implementation_ready
+  OTV2-AUTH-227-WEBHOOK-WORKER: implementation_ready
+changed_paths:
+  - ops/v2.1-execution/runtime/F03/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F03/HANDOFF.md
+  - ops/v2.1-execution/runtime/F03/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F03/INTERFACE-CHECKPOINT.yaml
+  - apps/web/src/client/auth/token-fragment.ts
+  - apps/web/src/server/features/auth/http-security.ts
+  - packages/contracts/src/identity/auth/index.ts
+  - packages/domain/src/auth/index.ts
+  - packages/domain/src/auth/policy.ts
+  - packages/domain/src/auth/rate-limits.ts
+  - packages/domain/src/auth/service.ts
+  - packages/domain/src/auth/sessions.ts
+  - packages/domain/src/auth/tokens.ts
+  - packages/domain/src/auth/v21-auth.contract.test.ts
+migrations: []
+steward_requests: []
+steward_results:
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    request_id: F01-retired-auth-001
+    request_digest: b6a115c0e71ba20a0d68a2426c1fd6e01a220ed6e017a58d7dc211751b5be13d
+    requesting_task_id: F01
+    kind: retired_surface
+    status: applied
+    assigned_steward: F03
+    source_head_sha: dc991ef901617cc6d7e4fe780c53b4833172a0a2
+    evaluated_target_head_sha: d8b35b2aaa0dc4b687b6e88192c7eac6222ecdec
+    target_checkpoint: F03_ready_for_review
+    acknowledged_by_task: false
+    applied_commit_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    result_head_sha: 56fa990c5d4a6cb7b602b5f68fe0d2402a0ee71e
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+steward_result_payload_digests:
+  F01-retired-auth-001: f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+steward_result_digest_algorithm: Parse each steward_results entry to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ',' and ':', ensure_ascii=false, and SHA-256 those bytes; the digest lives in the sibling steward_result_payload_digests map and not in the entry.
+verification:
+  commands_run:
+    - command: git ls-remote exact control, integration, task, and dependency refs
+      result: passed
+    - command: canonical sorted-JSON SHA-256 recomputation of the F03 ready entry
+      result: passed; fa68fd0b273ddffd6769c309fa0e5fd2a1197ed61021fc7eeed9ec36a3a88e66
+    - command: SHA-256 verification of package lock, task packet, context, prompt, and immutable F01 steward request
+      result: passed
+    - command: npm run typecheck
+      result: passed
+    - command: focused ESLint over all ten F03 TypeScript artifacts
+      result: passed
+    - command: vitest run packages/domain/src/auth/v21-auth.contract.test.ts tests/integration/accounts/current-access-auth.test.ts
+      result: passed; 27 tests across two files
+    - command: direct F01-retired-auth-001 pg-mem proof
+      result: passed; owner login returned public admin with password assurance and created zero email challenges and zero trusted-device artifacts
+    - command: Prettier and git diff --check over exact F03 scope
+      result: passed
+    - command: canonical interface contract digest recomputation
+      result: passed; 66464e9a769c717dfdfda082bb8a26030da1681d601d6752fb04b10d812db111
+    - command: canonical applied steward-result payload digest recomputation
+      result: passed; f557eacfce20aace5ea74ec926e09c949f7d80e660ac44021b445476d5f53f6e
+  known_baseline_failures: []
+external_effects:
+  authority: none
+  attempted: 0
+  succeeded: 0
+  reconciled: 0
+blockers: []
+out_of_scope_findings: []

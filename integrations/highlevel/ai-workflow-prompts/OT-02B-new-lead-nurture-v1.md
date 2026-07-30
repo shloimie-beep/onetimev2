@@ -9,7 +9,7 @@ Exact trigger: registered new lead nurture audience entry
 message_class: prelaunch_nurture
 sender_key: rabbi_campaign
 transport: GHL
-Purpose: New lead nurture separate from migration. This reviewed email is the first nurture message only; do not invent later nurture copy from it.
+Purpose: New lead nurture separate from migration. The reviewed email below is the current controlled first nurture message and supersedes provider-era sender/copy instructions; do not invent later nurture copy from it.
 
 Registry dependencies:
 
@@ -20,11 +20,12 @@ Registry dependencies:
 
 Exact sender state for this Draft:
 
-- One Time Rabbi Campaign Sender Name
-- One Time Default Reply-To
-- The fixed post-acceptance visible From is `Rabbi Eli Scheller | One Time Mishnayos <rabbi@onetimeonetime.com>` using One Time Rabbi Campaign Phase 2 From.
-- Reply-To remains `info@onetimeonetime.com`; rabbi@ may route into the same governed GHL Conversations workflow and does not require a separately monitored second inbox.
-- Until GHL-UI-24 records provider acceptance, preserve the current One Time Rabbi Campaign Phase 1 From fallback and do not activate or send from the desired address.
+- Select One Time Rabbi Campaign Sender Name; it must render exactly `Rabbi Eli Scheller`.
+- Select One Time Rabbi Campaign Phase 2 From; it must render exactly `rabbielischeller@onetimeonetime.com`.
+- Select One Time Rabbi Reply-To; it must render exactly `rabbielischeller@onetimeonetime.com`.
+- The single canonical public identity is `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>` for both From and Reply-To.
+- One Time Rabbi Campaign Phase 1 From and the historical `rabbi@onetimeonetime.com` alias remain preserved data but are superseded and must never be selected for canonical public use.
+- Until GHL-UI-24 records provider acceptance, keep the workflow Draft and blocked; do not fall back to another identity and do not activate or send.
 - Do not type or guess sender display-name, From, reply-to, or provider text.
 - If a registered sender value is absent from the picker, block this workflow instead of inventing it.
 

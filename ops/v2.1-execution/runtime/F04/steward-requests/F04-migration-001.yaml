@@ -1,0 +1,91 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: F04-migration-001
+task_id: F04
+kind: migration
+requirement_ids:
+  - OTV2-ACCOUNT-181
+  - OTV2-ACCOUNT-182
+  - OTV2-ACCOUNT-183
+  - OTV2-ACCOUNT-230
+acceptance_case_ids:
+  - OTV2-ACCOUNT-181-AC01
+  - OTV2-ACCOUNT-182-AC01
+  - OTV2-ACCOUNT-183-AC01
+  - OTV2-ACCOUNT-230-IDENTITY-ROLE-CONTEXT
+rationale: >-
+  F04 owns the exact contract, domain guard, server orchestration, and parameterized
+  repository modules, but only F02 may allocate and write a forward-only migration.
+  The repository intentionally performs no runtime schema creation and targets the
+  canonical v2.1 persistence names below.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and create normalized adult identity,
+  sole HumanAccount, adult role membership, household ownership, Student
+  relationship, context-bound adult session, verified ownership-transfer,
+  dependent-attestation, action-token, billing-session revocation,
+  provider-reassociation intent, and account-audit persistence. Preserve the F02
+  canonical aggregate-state tables and make ownership acceptance enforceable in one
+  PostgreSQL transaction with optimistic versions and append-only idempotency.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    Every mutable F04 row carries product_key fixed to one_time_mishnayos plus
+    runtime_tier and verification_environment_id constrained to the exact F02
+    isolation mapping; foreign keys and unique keys include the isolation scope
+    where needed.
+  - >-
+    onetime.v21_adult_identities: adult_id primary key, normalized_email citext-like
+    normalized text unique, display_name, state active|archived, positive version,
+    timestamps, product fixed to one_time_mishnayos
+  - >-
+    onetime.v21_human_accounts: human_account_id primary key, adult_id unique
+    foreign key, state invited|active|disabled|archived, positive security_version
+    and version, timestamps
+  - >-
+    onetime.v21_human_account_role_memberships: role check admin|parent only,
+    active unique(human_account_id,role) where revoked_at is null, grant/revoke audit
+    columns
+  - >-
+    onetime.v21_households: one owner_adult_id plus owner_human_account_id pair,
+    classification family|school, state active|archived, seat_limit and
+    active_seat_count checks, positive version, independent billing/access refs
+  - >-
+    onetime.v21_student_profiles: relationship self|dependent; self requires
+    self_adult_id equal to the household owner at creation/move and dependent
+    requires null self_adult_id; no email, phone, DOB, age, grade, or GHL reference;
+    stable credential/history refs and positive version
+  - >-
+    onetime.v21_adult_sessions: active_role check admin|parent, nullable
+    active_household_id permitted only for parent, hashed token material,
+    security/version/idle/absolute/revocation columns
+  - >-
+    onetime.v21_household_ownership_transfers: pending|accepted|expired|canceled|failed,
+    partial unique pending transfer per household, normalized replacement email,
+    hashed single-use acceptance token reference, seven-day expiry, policy versions,
+    canonical request hash, positive version
+  - >-
+    onetime.v21_transfer_dependent_attestations: unique(transfer_id,student_id),
+    replacement adult, authority confirmation, exact service-account and
+    recording-participation policy versions, recorded_at
+  - >-
+    onetime.v21_account_action_tokens and onetime.v21_billing_portal_sessions:
+    hashed token/reference material and atomic invalidation/revocation columns
+  - >-
+    onetime.v21_provider_reassociation_intents: unique(household_id,
+    canonical_request_hash), queued outbox semantics, changes_financial_identity
+    constrained false
+  - >-
+    onetime.v21_account_audit_events: append-only unique(event_type,
+    canonical_request_hash), both outgoing/replacement adults and Admin actor
+compatibility_assumptions:
+  - Migration ordinal is allocated only by F02/C00 and does not edit any applied migration.
+  - The migration composes with 2234_canonical_state_machines.sql and uses its exact product/runtime isolation mapping.
+  - Root database barrel registration is a separate I36 steward action.
+  - F03 supplies the final credential/token hashing and authenticated-session seam; no raw token is persisted by F04.
+verification_performed:
+  - npm run typecheck
+  - focused v2.1 household identity contract/domain assertions
+  - parameterized SQL inspection with fixed allowlisted table targets
+conflicts_or_risks:
+  - Existing legacy account_users/portal_* tables contain historical role and account shapes and must not be treated as the canonical v2.1 identity model.
+  - A compatibility/backfill plan must fail closed on duplicate normalized adults, duplicate HumanAccounts, legacy roles, simultaneous owners, or Student email/GHL fields.
+contains_secret_or_private_data: false

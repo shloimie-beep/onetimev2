@@ -22,7 +22,6 @@ import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js
 import {
   PortalApiError,
   changeOwnPassword,
-  createParentRewardGoal,
   createParentLearner,
   getParentAccessShell,
   getParentDashboard,
@@ -34,17 +33,12 @@ import {
   markLiveClassQuestionReady,
   runStudentAccessOperation,
   requestParentRecovery,
-  queryParentHelper,
   setParentLearnerArchived,
   submitClassroomQuestion,
-  queryStudentHelper,
   submitStudentQuestion,
   updateParentLearner,
 } from './portal-api.js';
 import './crm.css';
-
-const HELPER_PREPARING_MESSAGE =
-  'Class Helper is being prepared for this class. Send a private question and we will route it for review.';
 
 type Notice = {
   kind: 'info' | 'success' | 'error';
@@ -369,29 +363,6 @@ function PortalApp() {
     }
   }
 
-  async function handleCreateRewardGoal(
-    learnerKey: string,
-    goal: { title: string; description: string; pointsRequired: number },
-  ) {
-    if (!session || !parentDashboard) return;
-    try {
-      await createParentRewardGoal({
-        csrfToken: session.csrf_token,
-        learnerKey,
-        title: goal.title,
-        description: goal.description || undefined,
-        pointsRequired: goal.pointsRequired,
-      });
-      await reloadParentAfterMutation(learnerKey);
-      setNotice({ kind: 'success', message: 'Parent reward added.' });
-      setViewState('success');
-    } catch (error) {
-      if (handleAuthError(error)) return;
-      setNotice({ kind: 'error', message: errorMessage(error, 'Reward was not saved.') });
-      setViewState(stateForError(error));
-    }
-  }
-
   async function handleProtectedAction(action: ProtectedActionDescriptor) {
     if (!session) return;
     try {
@@ -430,42 +401,6 @@ function PortalApp() {
       if (handleAuthError(error)) return;
       setNotice({ kind: 'error', message: errorMessage(error, 'Question was not submitted.') });
       setViewState(stateForError(error));
-    }
-  }
-
-  async function handleStudentHelper(question: string) {
-    if (!session || portalRole !== 'student') {
-      throw new Error(HELPER_PREPARING_MESSAGE);
-    }
-    try {
-      return await queryStudentHelper({
-        csrfToken: session.csrf_token,
-        question,
-      });
-    } catch (error) {
-      if (handleAuthError(error)) throw error;
-      setNotice({ kind: 'error', message: errorMessage(error, HELPER_PREPARING_MESSAGE) });
-      setViewState(stateForError(error));
-      throw error;
-    }
-  }
-
-  async function handleParentHelper(learnerKey: string, question: string) {
-    if (!session || portalRole !== 'parent' || !parentDashboard) {
-      throw new Error(HELPER_PREPARING_MESSAGE);
-    }
-    try {
-      return await queryParentHelper({
-        csrfToken: session.csrf_token,
-        householdKey: parentDashboard.household.household_key,
-        learnerKey,
-        question,
-      });
-    } catch (error) {
-      if (handleAuthError(error)) throw error;
-      setNotice({ kind: 'error', message: errorMessage(error, HELPER_PREPARING_MESSAGE) });
-      setViewState(stateForError(error));
-      throw error;
     }
   }
 
@@ -665,9 +600,7 @@ function PortalApp() {
             onStudentAccessAction={openStudentAccessDialog}
             onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
             onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
-            onQueryHelper={(learnerKey, question) => handleParentHelper(learnerKey, question)}
             onPreviewSupport={() => window.location.assign('/app/support')}
-            onCreateRewardGoal={(learnerKey, goal) => void handleCreateRewardGoal(learnerKey, goal)}
             onRetry={() => void load()}
             accountSecurity={
               session ? (
@@ -694,7 +627,6 @@ function PortalApp() {
           }}
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
-          onQueryHelper={(question) => handleStudentHelper(question)}
           onSubmitQuestion={(question, classKey) => void handleStudentQuestion(question, classKey)}
           onSubmitClassroomQuestion={(occurrenceKey, body) =>
             void handleClassroomQuestion(occurrenceKey, body)

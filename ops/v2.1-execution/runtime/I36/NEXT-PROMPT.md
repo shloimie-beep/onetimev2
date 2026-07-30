@@ -1,30 +1,29 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: CONTINUE
 
-Continue One Time v2.1 task I36 from its remote checkpoint.
+Lane 1 has independently admitted and merged the exact P21 publication-scope
+correction. Publish the terminal integration checkpoint, verify the remote
+head, and reconcile P21 plus the F02 rejection once on control. Then record the
+short runtime-only four-lane ownership table and start the nonoverlapping
+landing, provider-readback, migration-correction, and verification lanes.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Authoritative control ref: origin/codex/v21-control
-Task packet: ops/v2.1-execution/tasks/I36.yaml
-Task context: ops/v2.1-execution/contexts/I36-CONTEXT.md
-Task state: ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/I36/HANDOFF.md
+Runtime-final parent: `7adeaaa16fd4ed63a0374a36838010f88aeb5aa7`
+Authorizing control: `a58965e989a9dab81d079a8d02afe23aab146fb8`
+Admitted P21 final: `705030f2d5163f95340a19dc42efd0f167259869`
+P21 implementation: `7b51bae186728351ff1cf93b1c02fcba893b1051`
 
-Fetch remote refs. Derive the containing control commit from
-`origin/codex/v21-control`, read I36's exact registry and ready/resume entry
-from that remote ref, verify its expected branch head, canonical entry payload
-digest, lease/claim, package/task/context/dependency digests, and reject a live
-foreign lease or non-fast-forward collision. Check out the exact integration
-branch and resume `TASK-STATE.yaml:next_action` without restarting valid work.
+Admission passed exact ancestry and nine-path scope, protected-request byte
+identity, source-artifact digest reproduction, clean merge-tree, 17/17 focused
+tests, typecheck, and zero-effect checks.
 
-Current exact next action: report the exact pushed verified integration head
-to C00, then fetch `origin/codex/v21-control` and consume only the next exact
-C00-authorized merge item. F01 source
-`fa9e5c92231c4b92340d07945cc91d76c85bd444` must remain an ancestor and its
-source merge commit is `34718371ee0ff26758120b11d0d4b788aa11be97`.
-Typecheck and focused F01 seam verification passed. Request renewal before the
-current lease expires; continue until `candidate_frozen`,
-`evidence_aggregated`, or a permitted precise blocker.
+Do not merge F02 `68e3c527`; its native database admission failed. Return it
+for one bounded correction covering the recorded P17/P18 semantic bypasses,
+then admit migrations 2250–2252 only after focused negative probes pass.
+
+No provider call, candidate, deployment, activation, enrollment, charge, DNS
+change, send, migration apply, or external effect occurred. Effects remain
+`0/0/0`.

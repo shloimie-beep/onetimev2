@@ -1,0 +1,41 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P12-registration-001
+task_id: P12
+kind: registration
+requirement_ids:
+  - OTV2-PARENT-031
+  - OTV2-PARENT-032
+  - OTV2-PARENT-033
+  - OTV2-PARENT-034
+  - OTV2-PARENT-035
+  - OTV2-PARENT-036
+  - OTV2-PARENT-040
+acceptance_case_ids:
+  - OTV2-PARENT-031-AC01
+  - OTV2-PARENT-032-AC01
+  - OTV2-PARENT-033-AC01
+  - OTV2-PARENT-034-AC01
+  - OTV2-PARENT-035-AC01
+  - OTV2-PARENT-036-AC01
+  - OTV2-PARENT-040-AC01
+rationale: P12 owns isolated Parent-household modules but not the central portal router or root contract/domain barrels.
+desired_semantic_change: Register the Parent household overview and Student management service at the canonical Parent routes, and re-export the P12 contract/domain roots without changing their semantics.
+proposed_symbols_routes_keys_or_dependencies:
+  - Export packages/contracts/src/portals/parent-household/index.ts from the steward-owned portals contract barrel.
+  - Export packages/domain/src/portals/parent-household/index.ts from the steward-owned portals/domain barrel.
+  - Register apps/web/src/server/features/portals/parent-household/index.ts at /app/parent, /app/parent/students, /app/parent/students/new, and /app/parent/students/:studentId using only the authenticated server-derived Parent principal.
+  - Register apps/web/src/client/app/parent/household/index.ts in the existing Parent shell without adding an inactive-access route bypass.
+compatibility_assumptions:
+  - Existing F03 Parent session identity supplies adult_id, household_id, and session_id.
+  - Existing F04 household identity remains authoritative for the one-owner household scope.
+  - Existing F07 shell and design tokens are reused without modification.
+  - Repository commitMutation performs the household revision check, username uniqueness check, credential/session update, canonical-enrollment update, and audit append atomically.
+verification_performed:
+  - P12 focused domain, server, and client tests.
+  - Workspace TypeScript typecheck.
+  - Focused ESLint and Prettier checks.
+conflicts_or_risks:
+  - Central registration must conceal cross-household, wrong-role, missing, and inactive Student-management targets before protected data is rendered.
+  - No plaintext password may cross persistence, audit, logs, email, or any response after the immediate credential-handoff result.
+contains_secret_or_private_data: false

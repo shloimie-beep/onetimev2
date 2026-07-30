@@ -1,0 +1,46 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P28-migration-001
+task_id: P28
+kind: migration
+requirement_ids:
+  - OTV2-GHL-137
+  - OTV2-GHL-138
+  - OTV2-GHL-198
+  - OTV2-GHL-199
+  - OTV2-PARENT-226
+acceptance_case_ids:
+  - OTV2-GHL-137-AC01
+  - OTV2-GHL-138-COMMUNICATIONS-READBACK
+  - OTV2-GHL-198-AC01
+  - OTV2-GHL-199-AC01
+  - OTV2-PARENT-226-PREFERENCES
+  - OTV2-PARENT-226-ESSENTIAL-EMAIL
+rationale: P28 owns the parameterized persistence and schema contract but cannot create an applied migration outside F02 authority.
+desired_semantic_change: >-
+  Add the six communication-foundation tables named in
+  packages/db/src/communications/foundation/schema-contract.ts. Enforce exactly
+  email|whatsapp|both|none, adult-only subjects, immutable operation/request
+  identities, channel delivery dedupe, optimistic version fences on mutable
+  projections, sanitized provider-reference storage, and audited governed
+  Start/Pause requests. Do not add runtime schema creation, Student contact
+  representation, raw provider payloads, or live-effect authority.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.communication_reminder_preference
+  - onetime.communication_decision
+  - onetime.communication_delivery_dedupe
+  - onetime.communication_workflow_readback
+  - onetime.communication_workflow_request
+  - onetime.communication_website_lead_plan
+compatibility_assumptions:
+  - the next C00/F02 allocated migration ordinal is used
+  - direct P28 repository imports remain disabled until the migration is active
+  - workflow readback and request rows contain sanitized application data only
+  - Student identities have no representable GHL contact or website-lead row
+verification_performed:
+  - 30 focused P28 domain, database, integration, and worker assertions
+  - full TypeScript typecheck
+  - parameterized-query and no-runtime-DDL assertions
+conflicts_or_risks:
+  - activation before the migration and adult-only constraints are active must fail closed
+contains_secret_or_private_data: false

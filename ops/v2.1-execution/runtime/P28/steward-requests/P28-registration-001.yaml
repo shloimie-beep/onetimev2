@@ -1,0 +1,54 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P28-registration-001
+task_id: P28
+kind: registration
+requirement_ids:
+  - OTV2-GHL-120
+  - OTV2-GHL-121
+  - OTV2-GHL-122
+  - OTV2-GHL-137
+  - OTV2-GHL-138
+  - OTV2-GHL-198
+  - OTV2-GHL-199
+  - OTV2-PARENT-226
+acceptance_case_ids:
+  - OTV2-GHL-120-AC01
+  - OTV2-GHL-121-AC01
+  - OTV2-GHL-122-AC01
+  - OTV2-GHL-137-AC01
+  - OTV2-GHL-138-COMMUNICATIONS-READBACK
+  - OTV2-GHL-198-AC01
+  - OTV2-GHL-199-AC01
+  - OTV2-PARENT-226-PREFERENCES
+  - OTV2-PARENT-226-ESSENTIAL-EMAIL
+rationale: P28 cannot edit central route, worker, dependency, or root barrel composers.
+desired_semantic_change: >-
+  After the stewarded migration is active, register the communication
+  repository and email-first runner behind durable jobs, expose authenticated
+  preference and Admin-only sanitized Communications Review adapters, and
+  register the public website adult lead-capture adapter. Derive actor/role and
+  adult identity from trusted context, deny non-Admin review access before
+  loading data, expose only governed Start/Pause requests, and keep campaign
+  editing/test-send/seed-send/provider-canary APIs absent. Bind Resend-only
+  security/essential delivery and GHL adult-only delivery to exact reviewed
+  registry identities; do not add WhatsApp provider wiring while dormant.
+proposed_symbols_routes_keys_or_dependencies:
+  - runEmailFirstCommunication
+  - runWebsiteLeadCapture
+  - createPostgresCommunicationFoundationRepository
+  - buildCommunicationsReview
+  - planGovernedWorkflowRequest
+  - packages/contracts/src/communications/foundation/index.ts
+compatibility_assumptions:
+  - F05 durable job/outbox and F06 provider boundaries are integrated first
+  - P27 Adult GHL identity and P31 sender/copy contracts remain exact dependencies
+  - direct source imports remain stable until central registration
+  - no provider or external-effect authority is implied by registration
+verification_performed:
+  - 30 focused P28 domain, database, integration, and worker assertions
+  - full TypeScript typecheck
+  - Student-before-data/provider and Admin-before-readback denial assertions
+conflicts_or_risks:
+  - runner activation before migration, exact provider binding, and workflow approval must fail closed
+contains_secret_or_private_data: false

@@ -1,0 +1,109 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+task_id: F06
+interface_implementation_head_sha: 94281de13063203808ecabef8a818762e5ff1e2e
+metadata_commit_sha: derive_from_git_and_record_in_control_registry
+task_packet_digest: f1a02ca5959cfb9087b68bf4d3bc06d6ace9d07cc0ac8dd464cfc748651f2e66
+contract_digest: 7d0e2e360036fa6e3b742053c714b13f442e29c9ff3e83ad7b6bf02c005694a0
+contract_digest_algorithm: >-
+  SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
+  followed by exact path=<artifact SHA-256> lines sorted lexicographically by
+  path, with LF separators and no final newline.
+contract_schema_version: 1
+semantic_contract_version: 1.0.0
+state: interface_ready
+exports:
+  - path: packages/contracts/src/providers/v21-provider-core.ts
+    symbols:
+      - PROVIDER_CORE_CONTRACT_VERSION
+      - PROVIDER_KEYS
+      - ProviderKey
+      - PROVIDER_MUTATION_POLICIES
+      - ProviderMutationPolicy
+      - ProviderRegistryBinding
+      - ProviderOperation
+      - ProviderReadbackDisposition
+      - ProviderCanonicalReadback
+      - ProviderReadbackAdapter
+      - ClaimProviderReconciliationInput
+      - PersistProviderReconciliationInput
+      - ProviderReconciliationRepository
+      - toProviderReconciliationOutcome
+      - GHL_IDENTITY_LINK_STATES
+      - GhlIdentityLinkState
+      - AdultContactSuppression
+      - AdultGhlIdentityLink
+      - HouseholdProviderMapping
+      - IdentityBoundEffect
+      - ProviderEffectDecision
+    sha256: 6e74e8468f8f66437b568e2e22c8c0b6948804c84769d4aacf890ff2b360a0d0
+  - path: packages/domain/src/providers/shared/errors.ts
+    symbols:
+      - PROVIDER_CORE_ERROR_CODES
+      - ProviderCoreErrorCode
+      - ProviderCoreError
+    sha256: 78cbf84514912000173ea26bdd2f4623fe53fc2f3fa37cd0e5960ffd4dd69ce8
+  - path: packages/domain/src/providers/shared/index.ts
+    symbols:
+      - PROVIDER_CORE_ERROR_CODES
+      - ProviderCoreError
+      - assertCanonicalReadback
+      - assertProviderOperationBound
+      - assertProviderRegistryBinding
+      - reconcileProviderOperation
+      - assertHouseholdProviderMappings
+      - completeHouseholdOwnerReassociation
+      - decideIdentityBoundEffect
+      - resolveGhlIdentityLink
+      - resolveGhlIdentityReview
+      - transferHouseholdProviderOwner
+      - updateAdultSuppression
+      - updateHouseholdLifecycle
+    sha256: 71fb22ec4e83434811acd494d70d0bcdd2383a5a25b09966b1110db322a18370
+  - path: packages/domain/src/providers/shared/mapping.ts
+    symbols:
+      - resolveGhlIdentityLink
+      - decideIdentityBoundEffect
+      - resolveGhlIdentityReview
+      - assertHouseholdProviderMappings
+      - updateAdultSuppression
+      - updateHouseholdLifecycle
+      - transferHouseholdProviderOwner
+      - completeHouseholdOwnerReassociation
+    sha256: 592a039e8b3f531972b05b6ce70958a90b199d145c1dad2eb73b9300c14d030b
+  - path: packages/domain/src/providers/shared/operation.ts
+    symbols:
+      - assertProviderRegistryBinding
+      - assertProviderOperationBound
+      - reconcileProviderOperation
+      - assertCanonicalReadback
+    sha256: 1d03bfa4dc0da8234e2fd4f7376f44241f05d7fe9a1b558dc79c04efa24d53c1
+compatibility_invariants:
+  - ProviderOperation extends the integrated F05 fenced job contract and retains one stable idempotency key and canonical request hash across retry, readback, and recovery.
+  - Every operation and readback binds the exact active registry key, protected provider-account reference, product, runtime tier, verification environment, operation type, and request hash.
+  - Stripe bindings prohibit mutation; One Time may ingest verified signed events and read canonical financial truth but never create or mutate financial objects.
+  - Acceptance-unknown operations are readback-only until canonical proof establishes accepted/current, absent-and-retry-safe, permanently rejected, or still unknown.
+  - A verified GHL link wins, then exact normalized-email match; disagreement or multiple matches enters identity_review and name or phone is never a merge key.
+  - Identity review blocks only GHL contact/projection/workflow/billing effects; local login, valid free access, local Student work, and Resend security remain independently available.
+  - One adult GHL contact may own multiple household-keyed records, while GHL household records and Stripe Customers remain distinct per household and contact suppression remains adult-scoped.
+  - Ownership transfer starts only after the F04 local transfer commits, preserves household and financial references, and completes provider reassociation only after exact readback.
+  - Persistence is migration-only and parameterized; F06 requests F02 migration authority and I36 registration without editing central hotspots.
+downstream_tasks:
+  - P08
+  - P17
+  - P19
+  - P21
+  - P25
+  - P26
+  - P27
+  - P28
+  - P33
+verification_commands:
+  - npm run typecheck
+  - npm exec -- vitest run packages/domain/src/providers/shared/provider-core.test.ts packages/db/src/providers/v21-provider-core-repository.test.ts apps/worker/src/runners/provider-reconciliation/runner.test.ts
+  - focused ESLint over all F06 TypeScript artifacts
+  - focused Prettier check over all F06 TypeScript/YAML artifacts
+  - canonical contract digest and per-artifact SHA-256 verification
+  - git diff --check
+contains_product_completion_claim: false
+contains_external_effect: false

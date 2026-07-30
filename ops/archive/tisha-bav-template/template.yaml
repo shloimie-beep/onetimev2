@@ -1,0 +1,24 @@
+schema_version: 1
+template_id: historical-event-funnel-v1
+template_state: dormant
+source_archive: one-time-tisha-bav-2026
+purpose: Reusable structure for a separately approved future event.
+placeholders:
+  event_name: required_new_value
+  event_code: required_new_value
+  event_dates: required_new_value
+  consent_text_and_version: required_new_value
+  public_copy_approval_digest: required_new_value
+  provider_asset_ids: required_new_values
+  provider_authority_id: required_new_value
+  route_registration_approval: required_new_value
+prohibited_reuse:
+  - historical_event_code
+  - historical_provider_asset_ids
+  - historical_event_only_consent
+  - historical audience or enrollment
+  - historical meeting or bearer URL
+  - historical product-access inference
+activation:
+  supported_by_this_template: false
+  rule: Copy into a newly named reviewed artifact; this archive never activates itself.
