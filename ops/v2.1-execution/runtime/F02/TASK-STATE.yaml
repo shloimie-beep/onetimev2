@@ -155,33 +155,33 @@ migration_lease_B_control:
   requester_content_read: true
   allocation_proposal_read_or_edited: true
   sql_authored: true
-status: claimed
-phase: migration_lease_B_compatibility_semantic_correction_atomic_claim
+status: ready_for_review
+phase: migration_lease_B_compatibility_semantic_correction_complete
 claimed_by: codex-f02-compatibility-6b1e1632
 claim_time: '2026-07-30T00:16:26Z'
 claim_id: 6b1e1632-e3d9-4f87-92b3-8b150a6715d2
 writer_slot_lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
 lease_issued_at: '2026-07-29T23:53:18Z'
 lease_expires_at: '2026-07-30T01:23:18Z'
-last_heartbeat_at: '2026-07-30T00:16:26Z'
-lease_released_at: null
-controller_authorization_sha: 9d53cf1c581dcb67e30b2beb62d048a1839f23e2
-ready_entry_parent_control_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
-state_based_on_control_head_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+last_heartbeat_at: '2026-07-30T00:37:21Z'
+lease_released_at: '2026-07-30T00:37:21Z'
+controller_authorization_sha: 5644d38395e86ea114197eb12415106994bbf3ea
+ready_entry_parent_control_sha: fe0d60fa2807b02882390df960f3e75517672d11
+state_based_on_control_head_sha: fe0d60fa2807b02882390df960f3e75517672d11
 ready_entry_payload_digest: 5011b9dd7fe5c1883e091b46b097d907d6aaa99669999f60b7554dc225e45134
 writer_slot_leases:
   MIGRATION_AUTHORITY:
     lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
     lease_issued_at: '2026-07-29T23:53:18Z'
     lease_expires_at: '2026-07-30T01:23:18Z'
-    released_at: null
+    released_at: '2026-07-30T00:37:21Z'
   SCHEMA_CONTRACT:
     lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
     lease_issued_at: '2026-07-29T23:53:18Z'
     lease_expires_at: '2026-07-30T01:23:18Z'
-    released_at: null
-state_based_on_head_sha: 032aeb9cb0c786729ff2c394744ab561eeb3f6c1
-last_implementation_commit_sha: 032aeb9cb0c786729ff2c394744ab561eeb3f6c1
+    released_at: '2026-07-30T00:37:21Z'
+state_based_on_head_sha: 24c327eaf06fc502d167d2d5863c5fbb05db5a2c
+last_implementation_commit_sha: 24c327eaf06fc502d167d2d5863c5fbb05db5a2c
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
   - independently verified parent CONTROL-STATE.yaml digest 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215 at 3eb407ef050175d7c21f55f67cf99626f1dd5afd
@@ -248,10 +248,18 @@ completed_steps:
   - Recomputed package, source, task, context, control, F02, and I36 dependency digests; passed the 200/200 locked Git-byte package gate.
   - Verified exact claim 6b1e1632, shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 31e905c8, fourteen unclaimed provider locks, zero effect locks, and current lease expiry.
   - Claimed only the F02 runtime triplet for compatibility semantic correction; the allocation proposal, SQL, product, control, providers, and effects were not read for implementation or edited.
+  - C00 reconciled exact claim head 24c327ea at containing continuation control 5644d383 with sole acquisition parent fe0d60fa.
+  - Corrected only migration 2239 canonical selection so a sole paused or archived legacy series remains canonical without lifecycle activation, while an existing active series remains preferred in multi-row scopes.
+  - Enforced exactly one canonical series per account/product scope independent of active, paused, archived, or draft lifecycle.
+  - Passed direct native sole-paused, sole-archived, sole-active, multi-row active-preference, canonical-normalization, and singleton-removal probes.
+  - Passed the complete disposable PGlite PostgreSQL and repository-runner pg-mem migration inventories 75/75.
+  - Regenerated the migration 2239 normalized-LF/native and repository-runner pg-mem checksum pair without changing migrations 2234-2238 or 2240-2244.
+  - Passed typecheck, lint, production build, format, YAML, secret, diff, exact five-path scope, 200/200 package Git-byte, protected-blob, checksum, next-ordinal 2245, and zero-effect gates.
+  - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-30T00:37:21Z before lease expiry.
 remaining_steps:
-  - C00 must reconcile this exact compatibility-correction atomic claim before F02 edits migration 2239 or the allocation proposal.
-  - After reconciliation, preserve a sole paused or archived legacy canonical series without forcing active lifecycle and rerun the required native and complete migration probes.
-next_action: Stop after publishing this compatibility-correction atomic claim. Await C00 reconciliation; do not edit SQL or the proposal, merge, register, inspect providers, deploy, send, or perform external effects.
+  - An independent auditor and C00 must admit the exact superseding final head before I36 integration.
+  - I36 may integrate only the exact admitted five-path compatibility correction under a fresh bounded claim and merge item.
+next_action: Stop after publishing this superseding compatibility-correction release. Await independent and C00 audit; do not edit SQL, allocate ordinal 2245, merge, register, inspect providers, deploy, send, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -299,6 +307,12 @@ compatibility_semantic_correction_atomic_claim_changed_paths:
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+compatibility_semantic_correction_changed_paths:
+  - packages/db/migrations/2239_v21_classroom_core.sql
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
 migrations:
   - ordinal: 2234
     file: packages/db/migrations/2234_canonical_state_machines.sql
@@ -321,8 +335,8 @@ migrations:
     pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
   - ordinal: 2239
     file: packages/db/migrations/2239_v21_classroom_core.sql
-    checksum_sha256: 64ed34d588d2cb073e622f480d03189197ae87eecf74153cd4b3f4d8be6484a2
-    pg_mem_checksum_sha256: d4e1d9db366764ebe0b5490bc8d7b9ccad32781353139f634540372f2c34421c
+    checksum_sha256: acdd52511fb2fa738d2a122087c65dbf7ae06879b51bd913095a0c86f63ea111
+    pg_mem_checksum_sha256: 816a086b5ec6cc0aa6d3c13b8b36e2f75dbc381cb2f60b4f859dba0328be755c
   - ordinal: 2240
     file: packages/db/migrations/2240_v21_privacy_data_rights.sql
     checksum_sha256: 1b1627bfbef7c4500d7be7e50d217efdecd97af9f1148b7e6a769cc6ed4f6831
@@ -385,6 +399,12 @@ verification:
     - complete disposable PGlite PostgreSQL and repository-runner pg-mem migration inventories passed 75/75
     - migration proposal matched all six native normalized-LF and repository-runner pg-mem checksum pairs, exact authority, and next ordinal 2245
     - typecheck, lint, production build, YAML, repository Prettier, secret scan, diff hygiene, exact ten-path scope, protected 2234-2238 blobs, and 200/200 locked Git-byte package passed
+    - both shared writer slots were released before expiry and external effects remained 0/0/0
+    - continuation control 5644d383, sole acquisition parent fe0d60fa, exact reconciled claim head 24c327ea, claim 6b1e1632, and shared lease 31e905c8 matched
+    - native canonical lifecycle compatibility probes passed sole paused, sole archived, sole active, mixed-series active preference, normalization, and singleton fencing
+    - complete disposable PGlite PostgreSQL and repository-runner pg-mem inventories passed 75/75
+    - migration 2239 checksum pair acdd5251/816a086b matched the allocation proposal and next ordinal remained 2245
+    - typecheck, lint, production build, format, YAML, secret, diff, exact five-path scope, protected 2234-2238 and 2240-2244 blobs, and 200/200 package Git bytes passed
     - both shared writer slots were released before expiry and external effects remained 0/0/0
   known_baseline_failures:
     - pg-mem replay of the pre-existing schema_migrations CREATE TABLE IF NOT EXISTS statement hits a known planner/AST coverage limitation after a clean complete first apply; no failure originated in migrations 2235-2238

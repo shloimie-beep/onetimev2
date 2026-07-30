@@ -1,24 +1,29 @@
-# F02 Lease B Compatibility-Correction Atomic Claim
+# F02 Lease B Compatibility-Semantic Correction Release
 
-- Claim parent: `032aeb9cb0c786729ff2c394744ab561eeb3f6c1`
-- Containing control: `9d53cf1c581dcb67e30b2beb62d048a1839f23e2`
-- Sole control acquisition parent: `a6bc58cc4a35173fd1606124c0fa651dda2dac64`
-- READY digest: `5011b9dd7fe5c1883e091b46b097d907d6aaa99669999f60b7554dc225e45134`
+- Claim parent: `24c327eaf06fc502d167d2d5863c5fbb05db5a2c`
+- Containing continuation control: `5644d38395e86ea114197eb12415106994bbf3ea`
+- Sole control acquisition parent: `fe0d60fa2807b02882390df960f3e75517672d11`
 - Claim: `6b1e1632-e3d9-4f87-92b3-8b150a6715d2`
 - Shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease: `31e905c8-d5c2-4e3c-9e98-c2e8f78989ce`
-- Lease expiry: `2026-07-30T01:23:18Z`
+- Released: `2026-07-30T00:37:21Z`, before expiry `2026-07-30T01:23:18Z`
 - Effects: `0/0/0`
 
-The prior Lease B release was rejected for one compatibility semantic gate:
-migration 2239 must preserve a sole paused or archived legacy canonical series
-without forcing it to active lifecycle. The correction window must rerun the
-native sole-paused and sole-archived probes plus both complete 75/75 migration
-inventories while preserving protected migrations 2234 through 2238, the
-exact ten-path ceiling, next ordinal 2245, and effects `0/0/0`.
+Migration 2239 now selects exactly one canonical series per account/product
+scope without changing the selected series lifecycle. A sole paused series
+remains paused; a sole archived series remains archived; an active series is
+preferred when a scope contains multiple lifecycle states. Canonical schedule,
+teacher, classroom, and recording fields are still normalized.
 
-This atomic claim changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. The allocation proposal, migrations, product code, control,
-provider state, and all external systems remain untouched.
+Direct native probes passed sole paused, sole archived, sole active, mixed-row
+active preference, canonical normalization, and singleton fencing. Complete
+disposable PGlite PostgreSQL and repository-runner pg-mem inventories passed
+75/75.
 
-Stop for C00 reconciliation. Do not edit SQL or the proposal, merge, register,
-inspect providers, deploy, send, or perform external effects beforehand.
+Only migration 2239, its allocation checksum metadata, and the F02 runtime
+triplet changed. Migrations 2234 through 2238 and 2240 through 2244 remain
+byte-identical. Typecheck, lint, production build, format, YAML, secret, diff,
+five-path scope, 200/200 package Git bytes, protected blobs, checksum pairs,
+next ordinal 2245, lease release, and effects `0/0/0` passed.
+
+Stop for independent and C00 audit. Do not merge, register, inspect providers,
+deploy, send, or perform external effects.

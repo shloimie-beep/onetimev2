@@ -3,12 +3,12 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
-  claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
-  containing_control_head_sha: 87179bc537935cd316414764ff7ed86c67e0e4e1
-  ready_entry_parent_control_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
-  lease_expires_at: '2026-07-30T00:39:23Z'
-  released_at: '2026-07-29T23:33:32Z'
+  lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
+  claim_id: 6b1e1632-e3d9-4f87-92b3-8b150a6715d2
+  containing_control_head_sha: 5644d38395e86ea114197eb12415106994bbf3ea
+  ready_entry_parent_control_sha: fe0d60fa2807b02882390df960f3e75517672d11
+  lease_expires_at: '2026-07-30T01:23:18Z'
+  released_at: '2026-07-30T00:37:21Z'
   audit_status: PASS
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
@@ -73,8 +73,8 @@ allocations:
     purpose: Canonical classroom series, occurrence lifecycle reconciliation, scoped series enrollments, immutable command idempotency, and Jerusalem recurrence backfill.
     replaces_applied_migration: false
     destructive: false
-    checksum_sha256: 64ed34d588d2cb073e622f480d03189197ae87eecf74153cd4b3f4d8be6484a2
-    pg_mem_checksum_sha256: d4e1d9db366764ebe0b5490bc8d7b9ccad32781353139f634540372f2c34421c
+    checksum_sha256: acdd52511fb2fa738d2a122087c65dbf7ae06879b51bd913095a0c86f63ea111
+    pg_mem_checksum_sha256: 816a086b5ec6cc0aa6d3c13b8b36e2f75dbc381cb2f60b4f859dba0328be755c
   - ordinal: 2240
     file: packages/db/migrations/2240_v21_privacy_data_rights.sql
     owner_task_id: P32

@@ -24,9 +24,9 @@ ALTER TABLE onetime.class_series
   ADD CONSTRAINT class_series_timezone_check
     CHECK (timezone = 'Asia/Jerusalem');
 
-CREATE UNIQUE INDEX class_series_active_canonical_idx
+CREATE UNIQUE INDEX class_series_canonical_idx
   ON onetime.class_series(account_key, product_key)
-  WHERE is_canonical = true AND series_state = 'active';
+  WHERE is_canonical = true;
 
 ALTER TABLE onetime.class_occurrences
   ADD COLUMN IF NOT EXISTS scheduled_ends_at timestamptz,
@@ -123,6 +123,13 @@ WITH canonical_candidate AS (
          row_number() OVER (
            PARTITION BY account_key, product_key
            ORDER BY
+             CASE series_state
+               WHEN 'active' THEN 0
+               WHEN 'paused' THEN 1
+               WHEN 'archived' THEN 2
+               WHEN 'draft' THEN 3
+               ELSE 4
+             END,
              CASE
                WHEN timezone = 'Asia/Jerusalem'
                 AND local_start_time = '19:00'
@@ -137,8 +144,6 @@ WITH canonical_candidate AS (
 )
 UPDATE onetime.class_series AS series
    SET is_canonical = true,
-       series_state = 'active',
-       status = 'active',
        timezone = 'Asia/Jerusalem',
        local_start_time = '19:00',
        duration_minutes = 60,
@@ -169,7 +174,6 @@ WITH missing_scope AS (
       WHERE canonical.account_key = scope.account_key
         AND canonical.product_key = scope.product_key
         AND canonical.is_canonical = true
-        AND canonical.series_state = 'active'
    )
 )
 INSERT INTO onetime.class_series (
@@ -225,7 +229,7 @@ SELECT CASE
        now()
   FROM missing_scope;
 
-CREATE OR REPLACE FUNCTION onetime.enforce_active_canonical_class_series()
+CREATE OR REPLACE FUNCTION onetime.enforce_canonical_class_series()
 RETURNS trigger
 LANGUAGE plpgsql
 AS $$
@@ -238,10 +242,9 @@ BEGIN
       FROM onetime.class_series
      WHERE account_key = OLD.account_key
        AND product_key = OLD.product_key
-       AND is_canonical = true
-       AND series_state = 'active';
+       AND is_canonical = true;
     IF canonical_count <> 1 THEN
-      RAISE EXCEPTION 'class series scope must retain exactly one active canonical series';
+      RAISE EXCEPTION 'class series scope must retain exactly one canonical series';
     END IF;
   END IF;
 
@@ -256,10 +259,9 @@ BEGIN
       FROM onetime.class_series
      WHERE account_key = NEW.account_key
        AND product_key = NEW.product_key
-       AND is_canonical = true
-       AND series_state = 'active';
+       AND is_canonical = true;
     IF canonical_count <> 1 THEN
-      RAISE EXCEPTION 'class series scope must contain exactly one active canonical series';
+      RAISE EXCEPTION 'class series scope must contain exactly one canonical series';
     END IF;
   END IF;
   RETURN NULL;
@@ -269,5 +271,5 @@ $$;
 CREATE CONSTRAINT TRIGGER class_series_canonical_exists_guard
 AFTER INSERT OR UPDATE OR DELETE ON onetime.class_series
 DEFERRABLE INITIALLY DEFERRED
-FOR EACH ROW EXECUTE FUNCTION onetime.enforce_active_canonical_class_series();
+FOR EACH ROW EXECUTE FUNCTION onetime.enforce_canonical_class_series();
 -- @postgres-only-end
