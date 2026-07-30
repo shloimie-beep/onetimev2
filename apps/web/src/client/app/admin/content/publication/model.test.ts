@@ -5,6 +5,8 @@ import { buildAdminPublicationProjection } from './model.ts';
 function record(state: ContentPublicationRecord['state']): ContentPublicationRecord {
   const hash = (digit: string) => digit.repeat(64);
   return {
+    accountKey: 'account_one',
+    productKey: 'one_time_mishnayos',
     contentId: 'content_one',
     contentVersionId: 'content_version_one',
     contentVersionDigest: hash('1'),
@@ -33,22 +35,19 @@ function record(state: ContentPublicationRecord['state']): ContentPublicationRec
             approvedAt: '2026-07-29T10:40:00.000Z',
             policyVersion: 'content-publication-v1',
             evidence: {
+              accountKey: 'account_one',
+              productKey: 'one_time_mishnayos',
               contentVersionId: 'content_version_one',
-              contentVersionDigest: hash('1'),
-              participantSnapshotSetDigest: hash('2'),
-              participantSetVersion: 'participant_set_v1',
-              participantReviewState: 'complete',
-              unresolvedParticipantCount: 0,
-              requiredRedactionCount: 1,
-              completedRedactionCount: 1,
-              redactionReviewDigest: hash('3'),
-              adminAttestation: {
-                attestationId: 'attestation_one',
-                attestedByAdminId: 'admin_one',
-                attestedAt: '2026-07-29T10:39:00.000Z',
-                inspectedMediaAndMemberVisibleArtifacts: true,
-                requiredRedactionsComplete: true,
-              },
+              sourceId: 'source_one',
+              sourceSha256: hash('1'),
+              sourceObjectVersionId: 'source_object_version_one',
+              participantSnapshotDigest: hash('2'),
+              approvedByAdminId: 'admin_one',
+              approvedAt: '2026-07-29T10:39:00.000Z',
+              artifacts: [],
+              approvedArtifactSetDigest: hash('3'),
+              sourceEvidenceDigest: hash('4'),
+              projectionDigest: hash('5'),
             },
           },
     publicationGeneration: state === 'published' ? 1 : 0,
@@ -61,6 +60,7 @@ function record(state: ContentPublicationRecord['state']): ContentPublicationRec
     archivedAt: null,
     occurrenceRelations: [
       {
+        accountKey: 'account_one',
         relationId: 'relation_one',
         occurrenceId: 'occurrence_one',
         occurrenceVersion: 1,

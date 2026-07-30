@@ -29,6 +29,8 @@ describe('P21 Student library client boundary', () => {
 
   it('accepts only a live canonical same-origin playback bootstrap', () => {
     const grant: StudentPlaybackGrant = {
+      accountKey: 'account_one',
+      productKey: 'one_time_mishnayos',
       contentId: 'content_one',
       contentVersionId: 'content_version_one',
       publicationGeneration: 1,
@@ -49,6 +51,7 @@ describe('P21 Student library client boundary', () => {
       issuedAt: '2026-07-29T10:45:00.000Z',
       expiresAt: '2026-07-29T10:50:00.000Z',
       renewable: true,
+      approvalProjectionDigest: 'a'.repeat(64),
     };
     expect(safePlaybackBootstrap(grant, new Date('2026-07-29T10:49:59.999Z'))).toBe(
       grant.bootstrapPath,

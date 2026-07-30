@@ -1,87 +1,77 @@
-# P21 Superseding Ready-for-Review Handoff
+# P21 Composite Projection Correction — Final Handoff
 
 ## Exact identity
 
 - Branch: `codex/v21-p21-content-publication`
-- Rejected final: `29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af`
-- Residual-correction claim:
-  `cc7e7439ba3567969cb12e3e4b7f0c01af276f93`
-- C00 reconciliation:
-  `fec562171cc5f049b3b0626d2ba95e45d8da87f6`
-- Sole acquisition parent:
-  `6209cee92ae59c12b431dcf399e50be4392d538c`
-- Corrected implementation: `7878b60fc72a17a7a6aeccc237c44141e2d5ec9b`
-- Consumed READY digest:
-  `f0875254206ba39499fe3d21ad147ec252551aa4e25dcfb0f3f4c162fd237528`
-- Claim: `eba3bd79-7a63-46fe-89eb-edace22f1a1e`
+- Adopted integration and correction parent:
+  `99fd8c33ea023e838d8ee9c993b5de52f4763e7f`
+- Reconciled atomic claim:
+  `d3ee9a2ba7933663544af2bc22f6873794162986`
+- Implementation commit:
+  `7e2a269e564507b560fa07d826169ff670dfba36`
+- Integrated P20 projection authority:
+  `75137bf476b4a1773f29bb41a6a149148df2623d`
+- Substantive control:
+  `246990489b99575c3ded7af18ab22571d2fcb3a6`
+- Claim:
+  `9e38d9dd-8293-451d-9335-ddb466e7234e`
 - Released `CONTENT_PUBLICATION` lease:
-  `d4c8a72c-7beb-40e9-93d4-73d4f3c62668`
-- Lease released: `2026-07-29T12:32:56Z`, before
-  `2026-07-29T13:18:14Z`
-- Artifact aggregate:
-  `0ed47d3fc00de0f5e2660ebd857cbb128ac8fe70f7ebf7e7390cb4770cd5132d`
-- Steward-request payload:
-  `fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`
-- Steward-request aggregate:
-  `3967bfc144214ab517d8df1b2c70a537b1c7fa92aafef019ccfc9f43917d7d81`
+  `eb2c3340-baa7-493c-afc1-bcb050911bb4`
+- Authorized 14-path inventory:
+  `92698702ddafb76e5ea660ae0ce7fa1314b02dba86b5fe35be839b76003f5c61`
 
-## Residual correction
+## Completed correction
 
-P21 now closes the three remaining transaction-bound truth gaps:
+P21 now consumes P20 `ApprovedForPublicationProjection` only through the
+server-injected typed repository and exact server-derived `accountKey`,
+`productKey`, and current `contentVersionId`. Approval evidence and composite
+scope are not accepted from public command bodies. The projection structure,
+seven required approved artifacts, participant snapshot, Admin identity/time,
+and P20 projection digest are verified before approval.
 
-- publication completion locks the accepted durable F05/F06 ProviderOperation
-  and its original pending P21 outbox. The operation id/version,
-  registry/account binding, product, content version, publication generation,
-  idempotency key, canonical request hash, acceptance digest, and optional
-  reconciliation digest must all agree;
-- the publication record, versioned assignments, library projections,
-  Student/adult protected notices, ProviderOperation accepted-to-complete
-  transition, original outbox pending-to-complete transition, and exact
-  completion receipt commit in one transaction. Any mismatch rolls everything
-  back, so a canonical readback cannot leave the original intent pending;
-- occurrence attachment first locks a repository-backed active governed
-  occurrence and exactly matches its product, occurrence version, and canonical
-  series. Caller-invented or mismatched governance is rejected before the
-  idempotent constrained relation is attached; and
-- each requested audience member is matched against a transactionally locked
-  current eligibility row for exact content/publication, household/adult
-  recipient, Student, enrollment, access, service-account consent, privacy, and
-  revocation versions and states. Missing, stale, inactive, unaccepted,
-  privacy-held, or revoked truth prevents every active assignment, projection,
-  Student notice, and adult notice.
+Canonical request hashes bind scope, content/version, exact projection
+evidence, expected version, and semantic payload. Exact replay converges;
+changed evidence or request semantics conflicts. Composite scope and immutable
+approval evidence or its digest are preserved through receipts, publication
+outbox, F05/F06 accepted-operation correlation, atomic materialization,
+assignments, library projections, protected notices, playback facts/grants, and
+Student resume. Cross-scope, missing, stale, malformed, non-approved,
+Admin-mismatched, readback-mismatched, and partial-transaction states fail
+closed.
 
-All earlier approval evidence, canonical private/available readback, Student-only
-grant, Parent/sibling denial, unpublish generation invalidation, separate
-archive, search, resume, privacy, and optimistic-concurrency behavior remains
-covered and passing.
+The exact five focused files pass all 15 tests. Workspace typecheck, focused
+ESLint/Prettier, YAML, parameterized composite SQL, scope, provider-reference,
+secret, hash, and diff gates pass. The 17-artifact aggregate is
+`fabbd6499db0639f130c6ba7385d0e9b2b9b0b2d995e498b72a74f60cddff04c`.
 
-## Structured request
+## Immutable steward proposals
 
-`P21-registration-001` was strengthened for the required forward-only tables,
-locks, constraints, and I36/F05/F06 composition. It remains `proposed`; P21 did
-not apply a migration or steward request and did not change shared registration.
+P21 published exactly:
 
-## Verification
+- `P21-MIGRATION-002`, raw SHA-256
+  `aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`
+- `P21-registration-002`, raw SHA-256
+  `af851f718e99945fed2d9b805a93fa20a0cea815a42ce33f2c22fda8c52ac45d`
 
-- 5 focused files / 15 deterministic tests passed.
-- Workspace TypeScript typecheck passed.
-- Focused ESLint and Prettier passed.
-- Exact owned scope and `git diff --check` passed.
-- Provider-mutation/reference scan passed; the only URL match is the deliberate
-  unsafe-URL negative test fixture.
-- Secret scan passed across 2898 repository text files.
-- All 17 implementation/test Git-blob hashes and aggregate reproduced.
-- Structured-request payload and aggregate reproduced.
-- No known baseline failure was encountered.
+Immutable mixed `P21-registration-001` remains byte-identical, unapplied,
+superseded, and withheld at raw SHA-256
+`fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`
+and canonical SHA-256
+`b47894b8827ba9e098725355215dda28b408f8668ab5cc3ad8d0a47019d3b61a`.
+The three-request aggregate is
+`7fb0017a549a560c119550d42386ad30f64b6a791a9f7a5ac42721e3dfdeb6f1`.
+No request was applied and no migration ordinal was allocated.
 
 ## External effects
 
-Authority was `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider
-was inspected or mutated, nothing was sent, and no effect lock was claimed.
+Authority was `none`; attempted `0`, succeeded `0`, reconciled `0`. No
+provider was inspected or mutated, no deployment or send occurred, and no
+effect lock was held.
 
 ## Exact next action
 
-C00 should independently audit the exact superseding remote head, sole-parent
-chain, bounded correction scope, artifact/request digests, transaction and
-regression evidence, lease release, and zero-effect record. F02/I36 may later
-evaluate the unapplied steward request under their own authority.
+C00 independently audits the pushed final for exact ancestry, 14-path scope,
+artifact and request hashes, focused gates, released lease, preserved P20 and
+`P21-registration-001` bytes, remote equality, and zero effects. F02 and I36
+may independently disposition the two corrected proposals only under later
+authority; nothing in this handoff applies them.

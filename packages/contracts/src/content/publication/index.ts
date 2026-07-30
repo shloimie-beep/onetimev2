@@ -1,3 +1,8 @@
+import type {
+  ApprovedForPublicationProjection,
+  ContentProcessingPublicationProjectionRepository,
+} from '../processing/index.ts';
+
 export const CONTENT_PUBLICATION_CONTRACT_VERSION = '2.1.0';
 export const CONTENT_PUBLICATION_PRODUCT_KEY = 'one_time_mishnayos';
 export const CONTENT_PLAYBACK_GRANT_TTL_MS = 5 * 60 * 1000;
@@ -15,26 +20,15 @@ export const CONTENT_PUBLICATION_STATES = [
 ] as const;
 export type ContentPublicationState = (typeof CONTENT_PUBLICATION_STATES)[number];
 
-export interface ContentApprovalEvidence {
-  contentVersionId: string;
-  contentVersionDigest: string;
-  participantSnapshotSetDigest: string;
-  participantSetVersion: string;
-  participantReviewState: 'complete';
-  unresolvedParticipantCount: 0;
-  requiredRedactionCount: number;
-  completedRedactionCount: number;
-  redactionReviewDigest: string;
-  adminAttestation: {
-    attestationId: string;
-    attestedByAdminId: string;
-    attestedAt: string;
-    inspectedMediaAndMemberVisibleArtifacts: true;
-    requiredRedactionsComplete: true;
-  };
-}
+export type ContentPublicationScope = Pick<
+  ApprovedForPublicationProjection,
+  'accountKey' | 'productKey'
+>;
+export type ContentApprovalEvidence = ApprovedForPublicationProjection;
+export type ContentPublicationProjectionRepository =
+  ContentProcessingPublicationProjectionRepository;
 
-export interface GovernedContentOccurrenceRelation {
+export interface GovernedContentOccurrenceRelation extends ContentPublicationScope {
   relationId: string;
   occurrenceId: string;
   occurrenceVersion: number;
@@ -44,7 +38,7 @@ export interface GovernedContentOccurrenceRelation {
   attachedAt: string;
 }
 
-export interface CanonicalGovernedOccurrence {
+export interface CanonicalGovernedOccurrence extends ContentPublicationScope {
   occurrenceId: string;
   occurrenceVersion: number;
   canonicalSeriesId: string;
@@ -53,7 +47,7 @@ export interface CanonicalGovernedOccurrence {
   active: true;
 }
 
-export interface ContentPublicationRecord {
+export interface ContentPublicationRecord extends ContentPublicationScope {
   contentId: string;
   contentVersionId: string;
   contentVersionDigest: string;
@@ -94,6 +88,7 @@ export interface ContentPublicationRecord {
 export interface ContentPublicationPrincipal {
   actorId: string;
   role: 'admin' | 'parent' | 'student';
+  accountKey: string;
   productKey: typeof CONTENT_PUBLICATION_PRODUCT_KEY;
   householdId: string;
   studentId: string | null;
@@ -102,7 +97,7 @@ export interface ContentPublicationPrincipal {
   accessState: 'active' | 'grace' | 'inactive' | 'archived';
 }
 
-export interface StudentContentAssignment {
+export interface StudentContentAssignment extends ContentPublicationScope {
   assignmentId: string;
   assignmentVersion: number;
   contentId: string;
@@ -119,9 +114,10 @@ export interface StudentContentAssignment {
   revocationVersion: number;
   active: boolean;
   revokedAt: string | null;
+  approvalEvidence: ContentApprovalEvidence;
 }
 
-export interface StudentPlaybackAuthorizationFacts {
+export interface StudentPlaybackAuthorizationFacts extends ContentPublicationScope {
   assignmentId: string;
   assignmentVersion: number;
   studentId: string;
@@ -143,9 +139,10 @@ export interface StudentPlaybackAuthorizationFacts {
   accountRevoked: boolean;
   contentRevoked: boolean;
   privacyReviewState: 'clear' | 'hold' | 'revoked';
+  approvalProjectionDigest: string;
 }
 
-export interface StudentPublicationAudience {
+export interface StudentPublicationAudience extends ContentPublicationScope {
   studentId: string;
   householdId: string;
   adultRecipientId: string;
@@ -171,9 +168,10 @@ export interface StudentPublicationEligibility extends StudentPublicationAudienc
   accountRevoked: boolean;
   contentRevoked: boolean;
   adultRecipientActive: boolean;
+  approvalProjectionDigest: string;
 }
 
-export interface StudentLibraryProjection {
+export interface StudentLibraryProjection extends ContentPublicationScope {
   projectionId: string;
   assignmentId: string;
   assignmentVersion: number;
@@ -185,9 +183,10 @@ export interface StudentLibraryProjection {
   internalRoute: string;
   active: true;
   createdAt: string;
+  approvalEvidence: ContentApprovalEvidence;
 }
 
-export interface ProtectedRecordingNotice {
+export interface ProtectedRecordingNotice extends ContentPublicationScope {
   noticeId: string;
   recipientKind: 'student' | 'adult';
   recipientId: string;
@@ -203,15 +202,17 @@ export interface ProtectedRecordingNotice {
   actionPath: string;
   deliveryState: 'pending';
   createdAt: string;
+  approvalProjectionDigest: string;
 }
 
-export interface ContentPublicationMaterialization {
+export interface ContentPublicationMaterialization extends ContentPublicationScope {
   contentId: string;
   contentVersionId: string;
   publicationGeneration: number;
   assignments: readonly StudentContentAssignment[];
   libraryProjections: readonly StudentLibraryProjection[];
   notices: readonly ProtectedRecordingNotice[];
+  approvalEvidence: ContentApprovalEvidence;
 }
 
 export type ContentPublicationOperation =
@@ -230,16 +231,17 @@ export interface ContentPublicationCommandBinding {
   occurredAt: string;
 }
 
-export interface ContentPublicationReceipt {
+export interface ContentPublicationReceipt extends ContentPublicationScope {
   idempotencyKey: string;
   requestHash: string;
   operation: ContentPublicationOperation;
   contentId: string;
   resultVersion: number;
   committedAt: string;
+  approvalProjectionDigest: string;
 }
 
-export interface ContentPublicationOutboxIntent {
+export interface ContentPublicationOutboxIntent extends ContentPublicationScope {
   intentId: string;
   providerOperationId: string;
   provider: 'vimeo';
@@ -251,9 +253,10 @@ export interface ContentPublicationOutboxIntent {
   requestHash: string;
   state: 'pending';
   createdAt: string;
+  approvalEvidence: ContentApprovalEvidence;
 }
 
-export interface ContentPublicationProviderOperation {
+export interface ContentPublicationProviderOperation extends ContentPublicationScope {
   providerOperationId: string;
   providerOperationVersion: number;
   provider: 'vimeo';
@@ -270,6 +273,7 @@ export interface ContentPublicationProviderOperation {
   providerAccountRefHash: string;
   providerAcceptanceDigest: string;
   providerReconciliationDigest: string | null;
+  approvalProjectionDigest: string;
 }
 
 export interface PendingContentPublicationProviderContext {
@@ -277,7 +281,7 @@ export interface PendingContentPublicationProviderContext {
   providerOperation: ContentPublicationProviderOperation;
 }
 
-export interface ContentPublicationProviderCompletion {
+export interface ContentPublicationProviderCompletion extends ContentPublicationScope {
   providerOperationId: string;
   expectedProviderOperationVersion: number;
   outboxIntentId: string;
@@ -292,9 +296,10 @@ export interface ContentPublicationProviderCompletion {
   providerReadbackDigest: string;
   oneTimeReadbackDigest: string;
   completedAt: string;
+  approvalProjectionDigest: string;
 }
 
-export interface StudentPlaybackGrant {
+export interface StudentPlaybackGrant extends ContentPublicationScope {
   contentId: string;
   contentVersionId: string;
   publicationGeneration: number;
@@ -315,9 +320,10 @@ export interface StudentPlaybackGrant {
   issuedAt: string;
   expiresAt: string;
   renewable: true;
+  approvalProjectionDigest: string;
 }
 
-export interface VimeoProviderOperationReadback {
+export interface VimeoProviderOperationReadback extends ContentPublicationScope {
   providerOperationId: string;
   providerOperationVersion: number;
   providerOperationState: 'accepted';
@@ -343,6 +349,7 @@ export interface VimeoProviderOperationReadback {
   providerReadbackDigest: string;
   oneTimePublicationReadback: 'ready_to_apply';
   oneTimeReadbackDigest: string;
+  approvalProjectionDigest: string;
 }
 
 export interface StudentLibraryItem {
@@ -356,7 +363,7 @@ export interface StudentLibraryItem {
   internalRoute: string;
 }
 
-export interface StudentContentResume {
+export interface StudentContentResume extends ContentPublicationScope {
   studentId: string;
   householdId: string;
   contentId: string;
@@ -364,38 +371,56 @@ export interface StudentContentResume {
   positionMs: number;
   updatedAt: string;
   version: number;
+  approvalProjectionDigest: string;
 }
 
 export interface ContentPublicationUnitOfWork {
-  getContent(contentId: string): Promise<ContentPublicationRecord | null>;
+  getContent(
+    scope: ContentPublicationScope,
+    contentId: string,
+  ): Promise<ContentPublicationRecord | null>;
   saveContent(record: ContentPublicationRecord, expectedVersion: number): Promise<void>;
   findReceipt(
+    scope: ContentPublicationScope,
     operation: ContentPublicationOperation,
     idempotencyKey: string,
   ): Promise<ContentPublicationReceipt | null>;
   saveReceipt(receipt: ContentPublicationReceipt): Promise<void>;
   saveOutboxIntent(intent: ContentPublicationOutboxIntent): Promise<void>;
   getPendingPublishProviderContext(
+    scope: ContentPublicationScope,
     providerOperationId: string,
   ): Promise<PendingContentPublicationProviderContext | null>;
   completePublishProviderOperation(completion: ContentPublicationProviderCompletion): Promise<void>;
   getCanonicalGovernedOccurrence(
+    scope: ContentPublicationScope,
     occurrenceId: string,
-    productKey: typeof CONTENT_PUBLICATION_PRODUCT_KEY,
   ): Promise<CanonicalGovernedOccurrence | null>;
   getCurrentPublicationEligibility(
+    scope: ContentPublicationScope,
     studentId: string,
     contentId: string,
     occurrenceId: string,
   ): Promise<StudentPublicationEligibility | null>;
   savePublicationMaterialization(materialization: ContentPublicationMaterialization): Promise<void>;
-  listPublishedContent(): Promise<readonly ContentPublicationRecord[]>;
-  getAssignment(studentId: string, contentId: string): Promise<StudentContentAssignment | null>;
+  listPublishedContent(
+    scope: ContentPublicationScope,
+  ): Promise<readonly ContentPublicationRecord[]>;
+  getAssignment(
+    scope: ContentPublicationScope,
+    studentId: string,
+    contentId: string,
+  ): Promise<StudentContentAssignment | null>;
   getPlaybackFacts(
+    scope: ContentPublicationScope,
     studentId: string,
     contentId: string,
   ): Promise<StudentPlaybackAuthorizationFacts | null>;
-  getResume(studentId: string, contentId: string): Promise<StudentContentResume | null>;
+  getResume(
+    scope: ContentPublicationScope,
+    studentId: string,
+    contentId: string,
+  ): Promise<StudentContentResume | null>;
   saveResume(resume: StudentContentResume, expectedVersion: number | null): Promise<void>;
 }
 
