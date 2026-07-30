@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: a38b917f514b65c49d2d75789b8ae50d96985cdc
+  C00: be9a5964cd69fd73a6f42713c96ece75982bd515
   F02: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
@@ -34,27 +34,68 @@ dependency_heads:
   P31: 839ec12bb83317a63f1d064891fb2929a707f3ec
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+  P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+  P21: 83d906221a0f2882cf99a75459e7288a3e30f629
 status: ready
-phase: P31_P20_P17_terminal_verification_runtime_metadata_corrected
-claimed_by: codex-i36-release-integrator-f34c38fb
-claim_time: '2026-07-30T09:02:00Z'
-claim_id: f34c38fb-f977-4c41-ae4b-5343d13c85f7
-lease_id: 994b32cc-4ca9-4b11-88ed-713631a61f33
-lease_issued_at: '2026-07-30T09:02:00Z'
-lease_expires_at: '2026-07-30T09:47:00Z'
-lease_released_at: '2026-07-30T09:11:07Z'
-last_heartbeat_at: '2026-07-30T09:11:07Z'
-controller_authorization_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
-latest_valid_observed_control_head_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
-reconciled_state_based_on_control_head_sha: 628e83b4a06923448a622322201992076493c779
-ready_consumed_by_control_head_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
-ready_consumed_state_based_on_control_head_sha: 628e83b4a06923448a622322201992076493c779
-ready_authorization_control_head_sha: 628e83b4a06923448a622322201992076493c779
-ready_entry_state_based_on_control_head_sha: 505804a1a3ab172229df94512f06c37cf214f270
-ready_entry_payload_digest: 3252e7b6e9e35f332e799e0151c14cd097cbc549b2d6c7879227f83268fa6228
-claim_mode: resume_existing
-expected_existing_head_sha: f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5
-lease_phase_scope: I36_P31_P20_P17_terminal_verification_runtime_metadata_correction
+phase: P18_P21_lean_source_integration_complete
+claimed_by: codex-c00-i36-lean-integration-1f77c6ea
+claim_time: '2026-07-30T11:39:12Z'
+claim_id: 1f77c6ea-f888-4f47-a16c-3b30f8549e6c
+lease_id: 6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3
+lease_issued_at: '2026-07-30T11:39:12Z'
+lease_expires_at: '2026-07-30T13:09:12Z'
+lease_released_at: '2026-07-30T11:59:37Z'
+last_heartbeat_at: '2026-07-30T11:59:37Z'
+controller_authorization_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+latest_valid_observed_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+reconciled_state_based_on_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
+ready_consumed_by_control_head_sha: null
+ready_consumed_state_based_on_control_head_sha: null
+ready_authorization_control_head_sha: null
+ready_entry_state_based_on_control_head_sha: null
+ready_entry_payload_digest: null
+claim_mode: direct_C00_lean_integration
+expected_existing_head_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+lease_phase_scope: I36_P18_P21_lean_source_integration
+lean_P18_P21_source_integration_binding:
+  containing_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+  state_based_on_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
+  control_state_digest: 0fa52ee2d10bf6478e653accdc41f78adb104a6f7afc03dc2330fa7939744577
+  authorized_start_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+  claim_id: 1f77c6ea-f888-4f47-a16c-3b30f8549e6c
+  lease_id: 6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3
+  P18:
+    head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+    merge_result_head_sha: 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554
+    source_path_count: 4
+    source_path_inventory_digest: bc7d137af343a7a8bb71e411ad4dc1b42d36fd1320d5168bc15a3bd49c9b1c7d
+    source_manifest_digest: 2460f30245ddc0effb90236398c78f6cea9cc28855e72f39c1a51da4e868d9cf
+    merge_payload_digest: 17a8fb4df87915b48083ab1c264e87a80e0e7f15a8453d62f7845b8bd0232554
+  P21:
+    head_sha: 83d906221a0f2882cf99a75459e7288a3e30f629
+    merge_result_head_sha: 71070dad9c69dff125194ceeddf271021d62304f
+    source_path_count: 14
+    source_path_inventory_digest: 92698702ddafb76e5ea660ae0ce7fa1314b02dba86b5fe35be839b76003f5c61
+    source_manifest_digest: d279b1d40377b829ced76dc385ae5d051b3b02d50fd4aa2345ccf31b449da880
+    merge_payload_digest: 4030c6f118b74a7b71be13cc31d15c81a2432322f4983aff81bf1a02d271dc1c
+  combined_source_path_count: 18
+  combined_release_path_count: 21
+  focused_tests:
+    files: 5
+    tests: 15
+    result: passed
+  package_validator:
+    result: passed
+    source: LF-normalized Git archive
+    locked_files: 200
+    tasks_contexts_prompts_each: 46
+    source_spec_files: 16
+    requirements: 243
+    acceptance_cases: 265
+    decisions: 107
+    implementation_tasks: 35
+  steward_requests_applied: false
+  external_effects: 0/0/0
 terminal_verification_metadata_correction_binding:
   containing_control_head_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
   initial_authorizing_control_head_sha: 628e83b4a06923448a622322201992076493c779
@@ -211,13 +252,20 @@ merge_result_heads:
   P31_correction_release: e834523855ced654482552a5c5cda16767eb99d2
   P20_correction_release: bb4a13a39cfbe843647793775a8a07285b446d6a
   P17_correction_release: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
-merge_result_head_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
-merge_parent_target_head_sha: bb4a13a39cfbe843647793775a8a07285b446d6a
-merge_parent_source_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+  P18_lean_release: 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554
+  P21_lean_release: 71070dad9c69dff125194ceeddf271021d62304f
+merge_result_head_sha: 71070dad9c69dff125194ceeddf271021d62304f
+merge_parent_target_head_sha: 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554
+merge_parent_source_head_sha: 83d906221a0f2882cf99a75459e7288a3e30f629
 prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: 391866bf32150b515159146a329568ce544ade48
-last_implementation_commit_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
+state_based_on_head_sha: 71070dad9c69dff125194ceeddf271021d62304f
+last_implementation_commit_sha: 71070dad9c69dff125194ceeddf271021d62304f
 completed_steps:
+  - Accepted lean direct C00 integration authority from control be9a5964cd69fd73a6f42713c96ece75982bd515 at exact integration start 99fd8c33ea023e838d8ee9c993b5de52f4763e7f under one phase claim and lease.
+  - Merged exact P18 correction 3be7bf4930a02ea5559db057ceedd6bb11a1b543 at 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554 with exact parents and four-path first-parent scope.
+  - Merged exact P21 correction 83d906221a0f2882cf99a75459e7288a3e30f629 at 71070dad9c69dff125194ceeddf271021d62304f with exact parents and fourteen-path first-parent scope.
+  - Passed the focused P21 postmerge suite with five files and fifteen tests, and passed the execution-package validator from an LF-normalized Git archive with 200 locked files, 46 tasks/contexts/prompts, 16 source-spec files, 243 requirements, 265 cases, 107 decisions, and 35 implementation tasks.
+  - Preserved all steward requests as unapplied and released sole integration lease 6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3 at 2026-07-30T11:59:37Z; provider, deployment, send, and external effects remain 0/0/0.
   - C00 reconciled exact terminal-verification metadata claim 391866bf32150b515159146a329568ce544ade48 at control 4dd5749977205516ad94b23a5b628eadd3c8cf7c with claim pair/triplet 7ae5e9613bf66cadbc3228d49f39144720c09f05efbc735a6708eacdc16ad6cf/354e39ca8702ad1d63dc1d2bc33403c1dbed9b60a2bd023fb94e47dde57f55df and unchanged claim/lease.
   - Replaced only the reconciled stale terminal verification result with exact passed evidence for prior final f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5 while preserving both empty arrays, historical failed/current passed lint evidence, and every non-runtime byte.
   - Released sole RELEASE_INTEGRATOR lease 994b32cc-4ca9-4b11-88ed-713631a61f33 at 2026-07-30T09:11:07Z; no source, merge, migration, request, control, provider, deployment, send, or effect byte changed.
@@ -1158,7 +1206,7 @@ completed_steps:
     No steward or central state was applied, no provider was inspected or
     mutated, and no deployment, send, or external effect occurred.
 remaining_steps: []
-next_action: C00 must independently audit the exact pushed terminal-verification-corrected I36 final, its sole parent 391866bf32150b515159146a329568ce544ade48, runtime-triplet-only scope, exact passed prior-final evidence, both empty arrays, preserved lint history, released lease, final pair/triplet, and effects 0/0/0; I36 must stop.
+next_action: C00 must audit this exact terminal runtime final and reconcile control; F02 may then receive the corrected 2250-2252 migration batch and communications head 3364c1c31ef12a81abf02cf9f80f7e8008c1778f may be admitted separately after independent validation. No candidate, steward application, provider action, deployment, send, or external effect occurred.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -1700,6 +1748,14 @@ steward_result_digest_algorithm:
   sibling steward_result_payload_digests map and not in the entry.
 verification:
   commands_run:
+    - command: ordered git merge --no-ff for exact P18 and P21 lean correction heads
+      result: passed; merge heads 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554 and 71070dad9c69dff125194ceeddf271021d62304f have exact two-parent ancestry and four/fourteen-path first-parent scopes
+    - command: focused P21 postmerge Vitest suites
+      result: passed; five files and fifteen tests
+    - command: execution-package validator from LF-normalized Git archive
+      result: passed; 200 locked files, 46 tasks/contexts/prompts, 16 source-spec files, 243 requirements, 265 cases, 107 decisions, and 35 implementation tasks
+    - command: P18/P21 ancestry, exact scope, immutable request, steward, provider, deployment, send, and effect checks
+      result: passed; both sources are ancestors, exact combined eighteen source paths, no steward application or external action, and effects 0/0/0
     - command: git remote get-url origin
       result: passed; exact repository identity verified
     - command: git fetch origin and rev-parse authorized refs

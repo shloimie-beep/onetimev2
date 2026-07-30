@@ -404,3 +404,33 @@ failed and current passed full-lint entries remain intact. New lease
 C00 must independently audit the exact pushed corrected final, its sole parent
 `391866bf32150b515159146a329568ce544ade48`, runtime-triplet-only scope,
 final pair/triplet, and effects. I36 must stop.
+
+## Lean P18/P21 source-integration release
+
+Control `be9a5964cd69fd73a6f42713c96ece75982bd515` authorized one
+phase-level direct C00 integration from exact target
+`99fd8c33ea023e838d8ee9c993b5de52f4763e7f` under claim
+`1f77c6ea-f888-4f47-a16c-3b30f8549e6c` and sole integration lease
+`6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3`.
+
+Exact P18 correction `3be7bf4930a02ea5559db057ceedd6bb11a1b543` merged at
+`91ea3ff9ad679ded033e9945d3a3ec48fb8ca554` with four first-parent
+paths. Exact P21 correction `83d906221a0f2882cf99a75459e7288a3e30f629`
+then merged at `71070dad9c69dff125194ceeddf271021d62304f` with fourteen
+first-parent paths. Both source heads are ancestors and the combined source
+scope is eighteen paths.
+
+The focused postmerge suite passed five files and fifteen tests. The complete
+execution-package validator passed from an LF-normalized Git archive with 200
+locked files, 46 tasks/contexts/prompts, 16 source-spec files, 243
+requirements, 265 cases, 107 decisions, and 35 implementation tasks.
+
+No steward request was applied. No provider was inspected or mutated, no
+candidate was frozen, and no deployment or send occurred. Effects remain
+attempted `0`, succeeded `0`, reconciled `0`. The lease was released at
+`2026-07-30T11:59:37Z`, before its `2026-07-30T13:09:12Z` expiry.
+
+C00 must audit the exact pushed terminal runtime final and reconcile control.
+After that milestone, F02 may receive the corrected 2250-2252 migration batch,
+and communications head `3364c1c31ef12a81abf02cf9f80f7e8008c1778f` may be
+admitted separately after independent validation.
