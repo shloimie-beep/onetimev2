@@ -21,6 +21,8 @@ export const oneTimeTokens = {
   },
   typography: {
     display: "'DM Serif Display', Georgia, 'Times New Roman', serif",
+    campaign:
+      "'Montserrat', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     body: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   },
   spacing: {
@@ -95,4 +97,5 @@ export const oneTimeTokens = {
 export const brandAssetPaths = {
   logo: '/assets/brand/onetimelogo.webp',
   displayFont: '/assets/fonts/dm-serif-display-latin.woff2',
+  campaignFont: '/assets/fonts/montserrat-latin-800.woff2',
 } as const;

@@ -6,7 +6,7 @@ test('landing meets local performance and overflow gates', async ({ page }) => {
   await page.goto('/', { waitUntil: 'load' });
   await page
     .getByRole('heading', {
-      name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+      name: 'MISHNAYOS MADE MEMORABLE',
     })
     .waitFor();
   const usableMs = Date.now() - started;

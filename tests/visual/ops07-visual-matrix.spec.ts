@@ -25,12 +25,7 @@ test.describe('OPS-07 visual matrix', () => {
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       results.push(
-        await captureRoute(
-          page,
-          `landing-${viewport.name}`,
-          '/',
-          'Worldwide Mishnah Learning / Live from Eretz Yisrael',
-        ),
+        await captureRoute(page, `landing-${viewport.name}`, '/', 'MISHNAYOS MADE MEMORABLE'),
       );
       results.push(await captureRoute(page, `signup-${viewport.name}`, '/signup', 'Sign Up Now'));
     }

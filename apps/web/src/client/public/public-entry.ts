@@ -2,6 +2,25 @@ import './styles.css';
 
 import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../../../../../packages/domain/src/legal/policies.ts';
 
+const analyticsTargets = document.querySelectorAll<HTMLElement>('[data-ot-analytics-event]');
+for (const target of analyticsTargets) {
+  target.addEventListener('click', () => {
+    const eventName = target.dataset.otAnalyticsEvent;
+    const destination = target.dataset.otAnalyticsDestination;
+    const placement = target.dataset.otAnalyticsPlacement;
+    if (!eventName || !destination || !placement) return;
+    window.dispatchEvent(
+      new CustomEvent('ot:analytics', {
+        detail: {
+          event_name: eventName,
+          destination,
+          placement,
+        },
+      }),
+    );
+  });
+}
+
 const drawer = document.querySelector<HTMLElement>('[data-drawer]');
 const drawerOverlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
 const drawerToggle = document.querySelector<HTMLButtonElement>('[data-drawer-toggle]');

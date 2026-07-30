@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-const testBaseUrl = `http://127.0.0.1:${process.env.PORT ?? '3100'}`;
+const testBaseUrl =
+  process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? '3100'}`;
 
 async function expectLocatorInsideViewport(
   locator: Locator,
@@ -43,11 +44,18 @@ test('landing works on required mobile viewports with visible header and hero CT
     await expect(hamburger).toBeVisible();
     await expect(
       page.getByRole('heading', {
-        name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+        name: 'MISHNAYOS MADE MEMORABLE',
       }),
     ).toBeVisible();
-    await expect(page.getByText('Give your son a love for learning Torah.')).toBeVisible();
+    await expect(
+      page.getByText(
+        'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
+      ),
+    ).toBeVisible();
+    await expect(page.locator('.hero')).toHaveCSS('background-image', /landing-hero-mobile\.webp/);
     await expect(heroSignup).toBeVisible();
+    await expect(heroSignup).toHaveText('JOIN FREE');
+    await expect(heroSignup).toHaveAttribute('href', '/signup');
     await expectLocatorInsideViewport(brandLogo, size);
     await expectLocatorInsideViewport(brandTitle, size);
     await expectLocatorInsideViewport(brandSubtitle, size);
@@ -111,17 +119,46 @@ test('landing preserves exact receive structure and asset assignments', async ({
   ]);
   await expect(
     page.getByRole('heading', {
-      name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+      name: 'MISHNAYOS MADE MEMORABLE',
     }),
   ).toBeVisible();
-  await expect(page.locator('.hero h1 span')).toHaveText([
-    'WORLDWIDE MISHNAH LEARNING',
-    'LIVE FROM ERETZ YISRAEL',
-  ]);
+  await expect(page.locator('.hero-eyebrow')).toHaveText('LIVE ONLINE + ON-DEMAND');
+  await expect(page.locator('.hero h1 span')).toHaveText(['MISHNAYOS', 'MADE MEMORABLE']);
+  await expect(page.locator('.hero h1')).toHaveCSS('font-family', /Montserrat/);
+  await expect(page.locator('.hero h1')).toHaveCSS('font-weight', '800');
+  await expect(page.locator('.hero h1 span').last()).toHaveCSS('color', 'rgb(255, 210, 31)');
   await expect(page.locator('.hero-supporting')).toHaveText(
-    'Give your son a love for learning Torah.',
+    'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
   );
-  await expect(page.locator('.hero .schedule')).toHaveCount(0);
+  await expect(page.locator('.hero .schedule')).toHaveText('Daily at 7:00 PM Israel time');
+  await expect(page.locator('.hero .schedule')).toHaveCSS('color', 'rgb(255, 210, 31)');
+  await expect(page.locator('.hero .hero-cta')).toHaveText('JOIN FREE');
+  await expect(page.locator('.hero .hero-cta')).toHaveAttribute('href', '/signup');
+  await expect(page.locator('.hero .hero-cta')).toHaveCSS('background-color', 'rgb(255, 210, 31)');
+  await expect(page.locator('.hero .hero-cta')).toHaveAttribute(
+    'data-ot-analytics-event',
+    'landing.signup.cta.clicked',
+  );
+  await expect(page.locator('.hero .hero-cta')).toHaveAttribute(
+    'data-ot-analytics-destination',
+    '/signup',
+  );
+  await expect(page.locator('.hero .hero-cta')).toHaveAttribute(
+    'data-ot-analytics-placement',
+    'hero',
+  );
+  await expect(page.locator('.hero-note')).toHaveText(
+    'No credit card • Up to three learners per family',
+  );
+  await expect(page.locator('.hero')).toHaveCSS('background-image', /landing-hero-desktop\.webp/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    'content',
+    'https://join.onetimeonetime.com/assets/social/mishnayos-made-memorable.png',
+  );
+  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
+    'content',
+    'https://join.onetimeonetime.com/assets/social/mishnayos-made-memorable.png',
+  );
   await expect(page.getByText('Live every day at 7:00 p.m. Israel time.')).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Everything He Needs to Learn, Review, and Remember' }),
@@ -292,6 +329,37 @@ test('landing preserves exact receive structure and asset assignments', async ({
   expect(html).not.toContain('coverage');
 });
 
+test('hero CTA emits the bounded analytics event before entering canonical family signup', async ({
+  page,
+}) => {
+  const analyticsEvents: unknown[] = [];
+  await page.exposeFunction('recordOtAnalyticsEvent', (detail: unknown) => {
+    analyticsEvents.push(detail);
+  });
+  await page.addInitScript(() => {
+    window.addEventListener('ot:analytics', (event) => {
+      void (
+        window as typeof window & {
+          recordOtAnalyticsEvent: (detail: unknown) => Promise<void>;
+        }
+      ).recordOtAnalyticsEvent((event as CustomEvent<unknown>).detail);
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('link', { name: 'JOIN FREE' }).click();
+  await expect(page).toHaveURL(`${testBaseUrl}/signup`);
+  await expect
+    .poll(() => analyticsEvents)
+    .toEqual([
+      {
+        event_name: 'landing.signup.cta.clicked',
+        destination: '/signup',
+        placement: 'hero',
+      },
+    ]);
+});
+
 test('landing and signup use the approved footer contract', async ({ page }) => {
   const expectedLinks = ['Home', 'Sign Up Now', 'Privacy', 'Terms', 'Member Login'];
   for (const path of ['/', '/signup']) {
@@ -409,7 +477,7 @@ test('landing content remains visible when JavaScript is unavailable', async ({ 
     await noJsPage.goto('/');
     await expect(
       noJsPage.getByRole('heading', {
-        name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+        name: 'MISHNAYOS MADE MEMORABLE',
       }),
     ).toBeVisible();
     await expect(noJsPage.locator('.benefit-card')).toHaveCount(4);
