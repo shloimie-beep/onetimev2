@@ -608,3 +608,68 @@ C00 must audit the exact pushed terminal runtime head, reproduce the three
 merge parents and 33-path release scope, retain the shared-fixture baseline
 and F04 blocker, reconcile control, and issue a new exact I36 authorization.
 I36 must stop.
+
+## Accepted source microbatch 3 release
+
+Containing control `1d0fb443cde2ab992215a52f09c35ae56a97458f`,
+based on controller/state-basis head
+`a7978fb1f0d1d9914c3e2b8bd698290226087455`, authorized the exact
+four-item source microbatch from integration
+`8634b2ab15df624576a88b31182ebdc68553ff74`. Claim
+`f7ed3c6a-683b-4971-9e5e-2a65398c74c2` held the sole
+RELEASE_INTEGRATOR lease `3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c`.
+
+This was the controller-specific four-item exception required by the current
+consolidation steer. It does not claim that the locked generic three-head
+microbatch sentence was satisfied; the exception is bound only to the exact
+containing control, claim, lease, source terminals, order, and disjoint scope
+recorded here.
+
+Canonical READY
+`a87a97b243b076b7ed7bfc10152ca373f187c76808a83d14acde72c86bc95801`
+and all four merge-item payload, source-runtime, source-remote, merge-base,
+and exact-scope bindings were independently reproduced before writing. The
+ancestry-preserving merge sequence is:
+
+1. F02 `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20` merged at
+   `a9ea9281f30b8ff38d997f1c26c22aae90b37e29` with exact parents and four
+   first-parent paths.
+2. F04 `b43c1923bbfdd92d15572abc137a3ead3fdf2819` merged at
+   `303ae3a74febbfc7ecdc6dbd32ecad36e3cf5ab4` with exact parents and eight
+   first-parent paths.
+3. F03 `3947c9887f3c6914a8247c70ac816a4ae94c76d0` merged at
+   `78283a2e17847c6ebdfcdd86e2a52a992521adad` with exact parents and five
+   first-parent paths.
+4. P31 `f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671` merged at
+   `b4469dda07c0e43823a036dd16e8b4874d1b4eea` with exact parents and six
+   first-parent paths.
+
+All four source terminals are ancestors. Their collision-free union is exactly
+23 paths, and the terminal I36 runtime triplet makes the complete release
+scope exactly 26 paths. The final source tree
+`da84a488e64eb18493a13f40a16b0d6a4bb05af5` matches independent preflight.
+
+Postmerge verification passed 63 focused assertions across seven files with
+only the three source-declared native-PostgreSQL cases skipped; workspace
+typecheck; focused ESLint; CRLF-aware Prettier across all 23 source paths;
+nine YAML parses; repository secret scan across 3,109 text files; exact
+parent, ancestry, tree, scope, and diff gates; and independent admission. The
+84-migration tree, source specification, task/context/prompt packets,
+immutable steward requests, and central migration/steward ledgers remain
+unchanged.
+
+P31 contributes admitted read-only preflight evidence only. This integration
+claimed no provider lock and performed no provider call, registry application,
+contact mutation, send, enrollment, charge, deployment, DNS change, WhatsApp
+action, candidate freeze, or other external effect. Effects remain attempted
+`0`, succeeded `0`, reconciled `0`.
+
+Lease `3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c` was released at
+`2026-07-30T21:44:52Z`, before its `2026-07-30T23:22:48Z` expiry.
+
+C00 must independently audit the exact pushed terminal runtime final and sole
+parent `b4469dda07c0e43823a036dd16e8b4874d1b4eea`, reproduce the four ordered
+merge parents and exact 26-path release scope, reconcile all four queue items,
+and issue a new exact authorization before further integration, central
+registration, provider work, candidate freeze, deployment, or external
+effect. I36 must stop.
