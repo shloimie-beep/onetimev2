@@ -72,6 +72,7 @@ export type ZoomStudentPreparationInput = {
   student: StudentEligibilityRecord;
   enrollment: SeriesEnrollmentRecord;
   householdAccess: 'free' | 'active' | 'grace' | 'inactive';
+  householdAccessVersion: number;
   serviceAccountConsent: ZoomConsentState;
   serviceAccountConsentVersion: number;
   recordingParticipationConsent: ZoomConsentState;
@@ -96,6 +97,7 @@ export type ZoomRosterEntry = ZoomPreparationScope & {
   approvedClassroomName: string;
   studentVersion: number;
   enrollmentVersion: number;
+  householdAccessVersion: number;
   serviceAccountConsentVersion: number;
   recordingParticipationConsentVersion: number;
   memberRecognitionConsentVersion: number;

@@ -35,6 +35,7 @@ export function acquireLiveStudentSession(input: {
   }
 
   const nextGeneration = (current?.lease_generation ?? 0) + 1;
+  const afterReset = current?.state === 'revoked';
   const session: LiveStudentSession = {
     live_session_id: required(input.live_session_id),
     scope: context.scope,
@@ -50,11 +51,16 @@ export function acquireLiveStudentSession(input: {
     revoked_at: null,
     revoked_by_admin_id: null,
     revoke_audit_ref: null,
-    version: (current?.version ?? 0) + 1,
+    version: afterReset ? 1 : (current?.version ?? 0) + 1,
   };
   return {
     allowed: true,
-    disposition: current === null ? 'acquired' : 'reacquired_after_expiry',
+    disposition:
+      current === null
+        ? 'acquired'
+        : afterReset
+          ? 'reacquired_after_reset'
+          : 'reacquired_after_expiry',
     session,
   };
 }

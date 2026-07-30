@@ -125,7 +125,8 @@ export interface LiveStudentSession {
 export type LiveSessionDecision =
   | {
       allowed: true;
-      disposition: 'acquired' | 'reconnected' | 'reacquired_after_expiry';
+      disposition:
+        'acquired' | 'reconnected' | 'reacquired_after_expiry' | 'reacquired_after_reset';
       session: LiveStudentSession;
     }
   | {

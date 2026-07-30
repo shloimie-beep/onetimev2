@@ -60,6 +60,7 @@ type AssuranceMethod =
 
 export type AuthenticatedSession = {
   session_key: string;
+  session_security_version?: number;
   user: SessionUser;
   expires_at: string;
   assurance_method: AssuranceMethod;
@@ -874,7 +875,10 @@ export async function createSession({
       WHERE account_key = $1 AND product_key = $2 AND user_key = $3`,
     [config.accountKey, config.productKey, user.user_key],
   );
-  const securityVersion = Number(userVersion.rows[0]?.security_version ?? 1);
+  const securityVersion = Number(userVersion.rows[0]?.security_version);
+  if (!Number.isSafeInteger(securityVersion) || securityVersion < 1) {
+    throw new Error('AUTH_SESSION_SECURITY_VERSION_UNAVAILABLE');
+  }
   await pool.query(
     `INSERT INTO onetime.user_sessions
      (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
@@ -907,6 +911,7 @@ export async function createSession({
   });
   return {
     session_key: sessionKey,
+    session_security_version: securityVersion,
     session_token: sessionToken,
     csrf_token: csrfToken,
     user,
@@ -929,7 +934,9 @@ export async function getSessionByToken({
 }): Promise<AuthenticatedSession | null> {
   if (!sessionToken) return null;
   const result = await pool.query(
-    `SELECT sessions.session_key, sessions.expires_at, sessions.assurance_method,
+    `SELECT sessions.session_key,
+            sessions.security_version AS session_security_version,
+            sessions.expires_at, sessions.assurance_method,
             sessions.assurance_at,
             sessions.last_seen_at,
             users.user_key, users.email_normalized, users.display_name, users.role,
@@ -953,6 +960,8 @@ export async function getSessionByToken({
   );
   const row = result.rows[0];
   if (!row) return null;
+  const sessionSecurityVersion = Number(row.session_security_version);
+  if (!Number.isSafeInteger(sessionSecurityVersion) || sessionSecurityVersion < 1) return null;
   const idleTimeoutMs = idleSessionLifetimeMs(String(row.role));
   const lastSeenAt = new Date(String(row.last_seen_at));
   if (
@@ -1010,6 +1019,7 @@ export async function getSessionByToken({
   }
   return {
     session_key: row.session_key,
+    session_security_version: sessionSecurityVersion,
     expires_at: toIso(row.expires_at),
     assurance_method: String(row.assurance_method ?? 'password') as AssuranceMethod,
     assurance_at: row.assurance_at ? toIso(row.assurance_at) : null,

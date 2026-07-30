@@ -33,7 +33,18 @@ CREATE TABLE onetime.classroom_launch_grants_v21 (
   ),
   CHECK (expires_at = issued_at + interval '60 seconds'),
   CHECK (used_at IS NULL OR used_at BETWEEN issued_at AND expires_at),
-  CHECK (used_at IS NULL OR revoked_at IS NULL)
+  CHECK (used_at IS NULL OR revoked_at IS NULL),
+  CHECK (
+    (runtime_tier = 'isolated_staging'
+      AND verification_environment_id IN ('ci', 'provider_sandbox', 'persistent_staging'))
+    OR
+    (runtime_tier = 'production'
+      AND verification_environment_id IN (
+        'production_read_only',
+        'production_operator_canary',
+        'production_broad'
+      ))
+  )
 );
 
 CREATE TABLE onetime.live_student_classroom_sessions (
@@ -67,6 +78,17 @@ CREATE TABLE onetime.live_student_classroom_sessions (
       AND revoked_at IS NULL
       AND revoked_by_admin_id IS NULL
       AND revoke_audit_ref IS NULL)
+  ),
+  CHECK (
+    (runtime_tier = 'isolated_staging'
+      AND verification_environment_id IN ('ci', 'provider_sandbox', 'persistent_staging'))
+    OR
+    (runtime_tier = 'production'
+      AND verification_environment_id IN (
+        'production_read_only',
+        'production_operator_canary',
+        'production_broad'
+      ))
   )
 );
 
@@ -123,7 +145,18 @@ CREATE TABLE onetime.classroom_attendance_events_v21 (
       AND audit_ref IS NULL
       AND correction_intervals = '[]'::jsonb)
   ),
-  CHECK (source = 'zoom_provider' OR provider_verified = false)
+  CHECK (source = 'zoom_provider' OR provider_verified = false),
+  CHECK (
+    (runtime_tier = 'isolated_staging'
+      AND verification_environment_id IN ('ci', 'provider_sandbox', 'persistent_staging'))
+    OR
+    (runtime_tier = 'production'
+      AND verification_environment_id IN (
+        'production_read_only',
+        'production_operator_canary',
+        'production_broad'
+      ))
+  )
 );
 
 CREATE TABLE onetime.classroom_attendance_projection_v21 (
@@ -148,7 +181,7 @@ CREATE TABLE onetime.classroom_attendance_projection_v21 (
   )),
   manual_correction_reason text,
   correction_admin_id text,
-  source_event_count bigint NOT NULL CHECK (source_event_count >= 0),
+  source_event_count bigint NOT NULL CHECK (source_event_count > 0),
   version bigint NOT NULL CHECK (version > 0),
   updated_at timestamptz NOT NULL,
   PRIMARY KEY (
@@ -170,6 +203,17 @@ CREATE TABLE onetime.classroom_attendance_projection_v21 (
     (reconciliation_state <> 'admin_corrected'
       AND manual_correction_reason IS NULL
       AND correction_admin_id IS NULL)
+  ),
+  CHECK (
+    (runtime_tier = 'isolated_staging'
+      AND verification_environment_id IN ('ci', 'provider_sandbox', 'persistent_staging'))
+    OR
+    (runtime_tier = 'production'
+      AND verification_environment_id IN (
+        'production_read_only',
+        'production_operator_canary',
+        'production_broad'
+      ))
   )
 );
 
@@ -332,6 +376,9 @@ BEGIN
      OR NEW.student_id IS DISTINCT FROM OLD.student_id THEN
     RAISE EXCEPTION 'live classroom Student scope is immutable';
   END IF;
+  IF OLD.state = 'revoked' THEN
+    RAISE EXCEPTION 'revoked live classroom audit evidence is immutable';
+  END IF;
   IF NEW.lease_generation < OLD.lease_generation
      OR NEW.lease_generation > OLD.lease_generation + 1 THEN
     RAISE EXCEPTION 'live classroom lease generation regression';
@@ -342,6 +389,7 @@ BEGIN
   generation_advanced := NEW.lease_generation = OLD.lease_generation + 1;
   IF generation_advanced THEN
     IF NEW.state <> 'active'
+       OR NEW.last_heartbeat_at < OLD.lease_expires_at
        OR NEW.last_heartbeat_at <= OLD.last_heartbeat_at
        OR NEW.revoked_at IS NOT NULL
        OR NEW.revoked_by_admin_id IS NOT NULL
@@ -362,6 +410,130 @@ BEGIN
     IF NOT transition_allowed THEN
       RAISE EXCEPTION 'live classroom session state regression';
     END IF;
+    IF NEW.state = 'active'
+       AND NEW.last_heartbeat_at <= OLD.last_heartbeat_at THEN
+      RAISE EXCEPTION 'live classroom heartbeat did not advance';
+    END IF;
+    IF NEW.state = 'revoked'
+       AND NEW.revoked_at < OLD.last_heartbeat_at THEN
+      RAISE EXCEPTION 'live classroom revocation timestamp regressed';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION onetime.enforce_attendance_projection_update()
+RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE
+  facts_changed boolean;
+BEGIN
+  IF NEW.version <> OLD.version + 1 THEN
+    RAISE EXCEPTION 'embedded classroom optimistic version conflict';
+  END IF;
+  IF NEW.product IS DISTINCT FROM OLD.product
+     OR NEW.runtime_tier IS DISTINCT FROM OLD.runtime_tier
+     OR NEW.verification_environment_id
+       IS DISTINCT FROM OLD.verification_environment_id
+     OR NEW.occurrence_id IS DISTINCT FROM OLD.occurrence_id
+     OR NEW.student_id IS DISTINCT FROM OLD.student_id THEN
+    RAISE EXCEPTION 'attendance projection scope is immutable';
+  END IF;
+  IF NEW.source_event_count < OLD.source_event_count
+     OR NEW.updated_at < OLD.updated_at THEN
+    RAISE EXCEPTION 'attendance projection source evidence regressed';
+  END IF;
+  IF OLD.reconciliation_state = 'admin_corrected'
+     AND NEW.reconciliation_state <> 'admin_corrected' THEN
+    RAISE EXCEPTION 'attendance correction audit evidence cannot be cleared';
+  END IF;
+  IF OLD.reconciliation_state IN (
+       'provider_verified', 'provider_mismatch', 'admin_corrected'
+     )
+     AND NEW.reconciliation_state = 'provisional' THEN
+    RAISE EXCEPTION 'attendance reconciliation evidence cannot regress';
+  END IF;
+  facts_changed :=
+    NEW.first_joined_at IS DISTINCT FROM OLD.first_joined_at
+    OR NEW.last_left_at IS DISTINCT FROM OLD.last_left_at
+    OR NEW.total_connected_minutes IS DISTINCT FROM OLD.total_connected_minutes
+    OR NEW.attendance_percentage IS DISTINCT FROM OLD.attendance_percentage
+    OR NEW.reconnect_count IS DISTINCT FROM OLD.reconnect_count
+    OR NEW.late IS DISTINCT FROM OLD.late
+    OR NEW.reconciliation_state IS DISTINCT FROM OLD.reconciliation_state
+    OR NEW.manual_correction_reason IS DISTINCT FROM OLD.manual_correction_reason
+    OR NEW.correction_admin_id IS DISTINCT FROM OLD.correction_admin_id;
+  IF facts_changed
+     AND NEW.source_event_count = OLD.source_event_count THEN
+    RAISE EXCEPTION 'attendance projection changed without new source evidence';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION onetime.validate_attendance_projection_evidence()
+RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE
+  matching_event_count bigint;
+  verified_provider_count bigint;
+  embedded_client_count bigint;
+  matching_correction_count bigint;
+BEGIN
+  SELECT
+    count(*),
+    count(*) FILTER (
+      WHERE source = 'zoom_provider' AND provider_verified = TRUE
+    ),
+    count(*) FILTER (
+      WHERE source = 'embedded_client'
+    ),
+    count(*) FILTER (
+      WHERE source = 'admin_correction'
+        AND correction_reason IS NOT DISTINCT FROM NEW.manual_correction_reason
+        AND correction_admin_id IS NOT DISTINCT FROM NEW.correction_admin_id
+    )
+  INTO
+    matching_event_count,
+    verified_provider_count,
+    embedded_client_count,
+    matching_correction_count
+  FROM onetime.classroom_attendance_events_v21
+  WHERE product = NEW.product
+    AND runtime_tier = NEW.runtime_tier
+    AND verification_environment_id = NEW.verification_environment_id
+    AND occurrence_id = NEW.occurrence_id
+    AND student_id = NEW.student_id;
+
+  IF NEW.source_event_count <= 0
+     OR NEW.source_event_count <> matching_event_count THEN
+    RAISE EXCEPTION 'attendance projection must bind every exact source event';
+  END IF;
+  IF NEW.reconciliation_state = 'provisional'
+     AND (
+       embedded_client_count = 0
+       OR verified_provider_count <> 0
+       OR matching_correction_count <> 0
+     ) THEN
+    RAISE EXCEPTION 'provisional attendance requires only embedded source evidence';
+  END IF;
+  IF NEW.reconciliation_state = 'provider_verified'
+     AND (
+       verified_provider_count = 0
+       OR matching_correction_count <> 0
+     ) THEN
+    RAISE EXCEPTION 'provider-verified attendance requires provider source evidence';
+  END IF;
+  IF NEW.reconciliation_state = 'provider_mismatch'
+     AND (
+       verified_provider_count = 0
+       OR embedded_client_count = 0
+       OR matching_correction_count <> 0
+     ) THEN
+    RAISE EXCEPTION 'attendance mismatch requires provider and embedded source evidence';
+  END IF;
+  IF NEW.reconciliation_state = 'admin_corrected'
+     AND matching_correction_count = 0 THEN
+    RAISE EXCEPTION 'corrected attendance requires matching audited correction evidence';
   END IF;
   RETURN NEW;
 END;
@@ -377,5 +549,9 @@ FOR EACH ROW EXECUTE FUNCTION onetime.enforce_live_classroom_session_update();
 
 CREATE TRIGGER classroom_attendance_projection_v21_version_step
 BEFORE UPDATE ON onetime.classroom_attendance_projection_v21
-FOR EACH ROW EXECUTE FUNCTION onetime.enforce_embedded_classroom_version_step();
+FOR EACH ROW EXECUTE FUNCTION onetime.enforce_attendance_projection_update();
+
+CREATE TRIGGER classroom_attendance_projection_v21_evidence_guard
+BEFORE INSERT OR UPDATE ON onetime.classroom_attendance_projection_v21
+FOR EACH ROW EXECUTE FUNCTION onetime.validate_attendance_projection_evidence();
 -- @postgres-only-end

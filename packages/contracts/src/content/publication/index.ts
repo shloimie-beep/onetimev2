@@ -2,6 +2,7 @@ import type {
   ApprovedForPublicationProjection,
   ContentProcessingPublicationProjectionRepository,
 } from '../processing/index.ts';
+import type { ProviderOperation } from '../../providers/v21-provider-core.ts';
 
 export const CONTENT_PUBLICATION_CONTRACT_VERSION = '2.1.0';
 export const CONTENT_PUBLICATION_PRODUCT_KEY = 'one_time_mishnayos';
@@ -219,6 +220,7 @@ export type ContentPublicationOperation =
   | 'approve'
   | 'request_publish'
   | 'record_published'
+  | 'record_revoked'
   | 'attach_occurrence'
   | 'unpublish'
   | 'archive'
@@ -262,7 +264,7 @@ export interface ContentPublicationProviderOperation extends ContentPublicationS
   providerOperationId: string;
   providerOperationVersion: number;
   provider: 'vimeo';
-  operation: 'publish_private';
+  operation: 'publish_private' | 'revoke_private';
   productKey: typeof CONTENT_PUBLICATION_PRODUCT_KEY;
   contentId: string;
   contentVersionId: string;
@@ -287,6 +289,7 @@ export interface ContentPublicationProviderCompletion extends ContentPublication
   providerOperationId: string;
   expectedProviderOperationVersion: number;
   outboxIntentId: string;
+  operation: 'publish_private' | 'revoke_private';
   contentId: string;
   contentVersionId: string;
   publicationGeneration: number;
@@ -297,6 +300,8 @@ export interface ContentPublicationProviderCompletion extends ContentPublication
   providerAccountRefHash: string;
   providerReadbackDigest: string;
   oneTimeReadbackDigest: string;
+  providerResourceRefHash: string;
+  providerObservedAt: string;
   completedAt: string;
   approvalProjectionDigest: string;
 }
@@ -335,13 +340,9 @@ export interface VimeoProviderOperationReadback extends ContentPublicationScope 
   publicationGeneration: number;
   canonicalRequestHash: string;
   state: 'complete';
-  fence: {
-    workerId: string;
-    leaseGeneration: number;
-    leaseExpiresAt: string;
-    observedAt: string;
-  };
+  observedAt: string;
   opaqueProviderAssetRef: string;
+  providerResourceRefHash: string;
   vimeoPrivacy: 'private';
   vimeoAvailability: 'available';
   matchingCanonicalAssetCount: 1;
@@ -352,6 +353,58 @@ export interface VimeoProviderOperationReadback extends ContentPublicationScope 
   oneTimePublicationReadback: 'ready_to_apply';
   oneTimeReadbackDigest: string;
   approvalProjectionDigest: string;
+}
+
+export interface VimeoProviderRevocationReadback extends ContentPublicationScope {
+  providerOperationId: string;
+  providerOperationVersion: number;
+  providerOperationState: 'accepted';
+  operation: 'revoke_private';
+  contentId: string;
+  contentVersionId: string;
+  publicationGeneration: number;
+  canonicalRequestHash: string;
+  state: 'complete';
+  observedAt: string;
+  providerResourceRefHash: string;
+  vimeoAvailability: 'revoked';
+  matchingCanonicalAssetCount: 0 | 1;
+  exactContentVersionCorrelation: true;
+  providerAcceptanceDigest: string;
+  providerReconciliationDigest: string | null;
+  providerReadbackDigest: string;
+  oneTimePublicationReadback: 'revocation_ready_to_apply';
+  oneTimeReadbackDigest: string;
+  approvalProjectionDigest: string;
+}
+
+export type VimeoContentPublicationObservation =
+  | {
+      operation: 'publish_private';
+      observedAt: string;
+      opaqueProviderAssetRef: string;
+      providerResourceRefHash: string;
+      vimeoPrivacy: 'private';
+      vimeoAvailability: 'available';
+      matchingCanonicalAssetCount: 1;
+      exactContentVersionCorrelation: true;
+      providerAcceptanceDigest: string;
+    }
+  | {
+      operation: 'revoke_private';
+      observedAt: string;
+      providerResourceRefHash: string;
+      vimeoAvailability: 'revoked';
+      matchingCanonicalAssetCount: 0 | 1;
+      exactContentVersionCorrelation: true;
+      providerAcceptanceDigest: string;
+    };
+
+export interface VimeoContentPublicationReadbackAdapter {
+  readCanonical(
+    context: PendingContentPublicationProviderContext,
+    signal: AbortSignal,
+  ): Promise<VimeoContentPublicationObservation>;
 }
 
 export interface StudentLibraryItem {
@@ -389,12 +442,14 @@ export interface ContentPublicationUnitOfWork {
     idempotencyKey: string,
   ): Promise<ContentPublicationReceipt | null>;
   saveReceipt(receipt: ContentPublicationReceipt): Promise<void>;
+  saveProviderOperation(operation: ProviderOperation): Promise<void>;
   saveOutboxIntent(intent: ContentPublicationOutboxIntent): Promise<void>;
-  getPendingPublishProviderContext(
+  getPendingProviderContext(
     scope: ContentPublicationScope,
     providerOperationId: string,
+    operation: 'publish_private' | 'revoke_private',
   ): Promise<PendingContentPublicationProviderContext | null>;
-  completePublishProviderOperation(completion: ContentPublicationProviderCompletion): Promise<void>;
+  completeProviderOperation(completion: ContentPublicationProviderCompletion): Promise<void>;
   getCanonicalGovernedOccurrence(
     scope: ContentPublicationScope,
     occurrenceId: string,
@@ -414,10 +469,10 @@ export interface ContentPublicationUnitOfWork {
     studentId: string,
     contentId: string,
   ): Promise<StudentContentAssignment | null>;
-  getPlaybackFacts(
+  refreshPlaybackFacts(
     scope: ContentPublicationScope,
-    studentId: string,
-    contentId: string,
+    principal: ContentPublicationPrincipal,
+    assignment: StudentContentAssignment,
   ): Promise<StudentPlaybackAuthorizationFacts | null>;
   getResume(
     scope: ContentPublicationScope,

@@ -43,20 +43,39 @@ export function createPostgresEmbeddedClassroomRepository(
             version)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::timestamptz,
                  NULL,NULL,$13,$14,$15,$16,$17,$18,$19)
-         ON CONFLICT (product, runtime_tier, verification_environment_id, grant_key_digest)
-         DO UPDATE SET grant_key_digest = EXCLUDED.grant_key_digest
-           WHERE classroom_launch_grants_v21.student_id = EXCLUDED.student_id
-             AND classroom_launch_grants_v21.household_id = EXCLUDED.household_id
-             AND classroom_launch_grants_v21.authenticated_session_id = EXCLUDED.authenticated_session_id
-             AND classroom_launch_grants_v21.occurrence_id = EXCLUDED.occurrence_id
-             AND classroom_launch_grants_v21.registrant_id = EXCLUDED.registrant_id
-             AND classroom_launch_grants_v21.expires_at = EXCLUDED.expires_at
-         RETURNING (xmax = 0) AS inserted`,
+         ON CONFLICT DO NOTHING
+         RETURNING grant_id`,
         grantValues(grant),
       );
-      const row = inserted.rows[0];
-      if (row === undefined) throw new Error('embedded_launch_grant_idempotency_conflict');
-      return row.inserted === true ? 'inserted' : 'replayed';
+      if (inserted.rows[0]?.grant_id === grant.grant_id) return 'inserted';
+      const replay = await poolQuery(
+        pool,
+        `SELECT grant_id
+           FROM onetime.classroom_launch_grants_v21
+          WHERE product = $3
+            AND runtime_tier = $4
+            AND verification_environment_id = $5
+            AND grant_key_digest = $2
+            AND grant_id = $1
+            AND student_id = $6
+            AND household_id = $7
+            AND authenticated_session_id = $8
+            AND occurrence_id = $9
+            AND registrant_id = $10
+            AND issued_at = $11::timestamptz
+            AND expires_at = $12::timestamptz
+            AND student_version = $13
+            AND enrollment_version = $14
+            AND access_version = $15
+            AND consent_version_digest = $16
+            AND registrant_version = $17
+            AND occurrence_version = $18`,
+        grantValues(grant).slice(0, 18),
+      );
+      if (replay.rows[0]?.grant_id !== grant.grant_id) {
+        throw new Error('embedded_launch_grant_idempotency_conflict');
+      }
+      return 'replayed';
     },
 
     async loadLaunchGrant(input) {
@@ -221,7 +240,7 @@ async function persistBootstrapSession(
   client: EmbeddedClassroomSqlClient,
   input: CommitBootstrapInput,
 ): Promise<void> {
-  if (input.prior_session === null) {
+  if (input.prior_session === null || input.prior_session.state === 'revoked') {
     const inserted = await client.query(
       `INSERT INTO onetime.live_student_classroom_sessions
          (live_session_id, product, runtime_tier, verification_environment_id,
@@ -277,10 +296,7 @@ async function appendEvent(
         correction_admin_id, audit_ref)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::timestamptz,$10,$11,$12,$13,
              $14::jsonb,$15,$16,$17)
-     ON CONFLICT (product, runtime_tier, verification_environment_id, idempotency_key)
-     DO UPDATE SET idempotency_key = EXCLUDED.idempotency_key
-       WHERE classroom_attendance_events_v21.source_event_ref_digest =
-             EXCLUDED.source_event_ref_digest
+     ON CONFLICT DO NOTHING
      RETURNING attendance_event_id`,
     [
       event.attendance_event_id,
@@ -302,7 +318,51 @@ async function appendEvent(
       event.audit_ref,
     ],
   );
-  if (inserted.rowCount !== 1) throw new Error('attendance_event_idempotency_conflict');
+  if (inserted.rows[0]?.attendance_event_id === event.attendance_event_id) return;
+  const replay = await client.query(
+    `SELECT attendance_event_id
+       FROM onetime.classroom_attendance_events_v21
+      WHERE product = $2
+        AND runtime_tier = $3
+        AND verification_environment_id = $4
+        AND idempotency_key = $11
+        AND attendance_event_id = $1
+        AND occurrence_id = $5
+        AND student_id = $6
+        AND source = $7
+        AND event_kind = $8
+        AND observed_at = $9::timestamptz
+        AND connection_lineage_id = $10
+        AND source_event_ref_digest = $12
+        AND provider_verified = $13
+        AND correction_intervals = $14::jsonb
+        AND correction_reason IS NOT DISTINCT FROM $15
+        AND correction_admin_id IS NOT DISTINCT FROM $16
+        AND audit_ref IS NOT DISTINCT FROM $17
+      FOR SHARE`,
+    [
+      event.attendance_event_id,
+      event.scope.product,
+      event.scope.runtime_tier,
+      event.scope.verification_environment_id,
+      event.occurrence_id,
+      event.student_id,
+      event.source,
+      event.event_kind,
+      event.observed_at,
+      event.connection_lineage_id,
+      event.idempotency_key,
+      event.source_event_ref_digest,
+      event.provider_verified,
+      JSON.stringify(event.correction_intervals),
+      event.correction_reason,
+      event.correction_admin_id,
+      event.audit_ref,
+    ],
+  );
+  if (replay.rows[0]?.attendance_event_id !== event.attendance_event_id) {
+    throw new Error('attendance_event_idempotency_conflict');
+  }
 }
 
 async function persistProjection(
@@ -324,7 +384,7 @@ async function persistProjection(
        RETURNING occurrence_id`,
       values,
     );
-    if (inserted.rowCount !== 1) throw STALE;
+    if (inserted.rowCount !== 1 && !(await projectionMatches(client, next))) throw STALE;
     return;
   }
   const updated = await client.query(
@@ -350,7 +410,37 @@ async function persistProjection(
       RETURNING occurrence_id`,
     [...values, prior.version],
   );
-  if (updated.rowCount !== 1) throw STALE;
+  if (updated.rowCount !== 1 && !(await projectionMatches(client, next))) throw STALE;
+}
+
+async function projectionMatches(
+  client: EmbeddedClassroomSqlClient,
+  projection: AttendanceProjection,
+): Promise<boolean> {
+  const matched = await client.query(
+    `SELECT occurrence_id
+       FROM onetime.classroom_attendance_projection_v21
+      WHERE product = $1
+        AND runtime_tier = $2
+        AND verification_environment_id = $3
+        AND occurrence_id = $4
+        AND student_id = $5
+        AND first_joined_at IS NOT DISTINCT FROM $6::timestamptz
+        AND last_left_at IS NOT DISTINCT FROM $7::timestamptz
+        AND total_connected_minutes = $8
+        AND attendance_percentage = $9
+        AND reconnect_count = $10
+        AND late = $11
+        AND reconciliation_state = $12
+        AND manual_correction_reason IS NOT DISTINCT FROM $13
+        AND correction_admin_id IS NOT DISTINCT FROM $14
+        AND source_event_count = $15
+        AND version = $16
+        AND updated_at = $17::timestamptz
+      FOR SHARE`,
+    projectionValues(projection),
+  );
+  return matched.rows[0]?.occurrence_id === projection.occurrence_id;
 }
 
 async function withTransaction<T>(

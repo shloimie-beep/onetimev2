@@ -17,15 +17,33 @@ import type {
   StudentContentResume,
   StudentPlaybackAuthorizationFacts,
   StudentPublicationEligibility,
-  VimeoProviderOperationReadback,
+  VimeoContentPublicationObservation,
+  VimeoContentPublicationReadbackAdapter,
 } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
 import { ContentPublicationError } from '../../../../../../../packages/domain/src/content/publication/index.ts';
+import type {
+  ProviderOperation,
+  ProviderRegistryBinding,
+} from '../../../../../../../packages/contracts/src/providers/v21-provider-core.ts';
 import { createContentPublicationService, publicationRequestHash } from './service.ts';
 
 const hash = (digit: string) => digit.repeat(64);
 const scope = {
   accountKey: 'account_one',
   productKey: 'one_time_mishnayos' as const,
+};
+const vimeoProviderBinding: ProviderRegistryBinding = {
+  registry_binding_key: 'vimeo_publication_primary',
+  provider: 'vimeo',
+  scope: {
+    product: 'one_time_mishnayos',
+    runtime_tier: 'isolated_staging',
+    verification_environment_id: 'ci',
+  },
+  provider_account_ref_hash: hash('9'),
+  allowed_operation_types: ['publish_private', 'revoke_private'],
+  mutation_policy: 'allowed',
+  active: true,
 };
 const admin: ContentPublicationPrincipal = {
   actorId: 'admin_one',
@@ -78,6 +96,8 @@ describe('P21 content publication service', () => {
     const service = createContentPublicationService({
       repository: memory,
       approvedProjectionRepository: memory,
+      vimeoProviderBinding,
+      vimeoReadbackAdapter: memory,
       createId: () => 'playback_session_001',
     });
     const input = {
@@ -122,6 +142,8 @@ describe('P21 content publication service', () => {
     const service = createContentPublicationService({
       repository: memory,
       approvedProjectionRepository: memory,
+      vimeoProviderBinding,
+      vimeoReadbackAdapter: memory,
       createId: () => 'playback_session_001',
     });
 
@@ -184,6 +206,7 @@ describe('P21 content publication service', () => {
       binding: command(2, 'publish.key', 'b'),
     });
     const publishing = memory.records.get('content_one')!;
+    memory.acceptProviderOperation(publishing.pendingProviderOperationId!);
     memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
     expect(memory.intents).toEqual([
       expect.objectContaining({
@@ -204,10 +227,7 @@ describe('P21 content publication service', () => {
     const result = await service.applyPrivatePublicationReadback({
       scope,
       contentId: 'content_one',
-      readback: providerReadback(
-        publishing.pendingProviderOperationId!,
-        publishing.pendingProviderRequestHash!,
-      ),
+      providerOperationId: publishing.pendingProviderOperationId!,
       audience: [audience()],
       binding: completion,
     });
@@ -258,15 +278,13 @@ describe('P21 content publication service', () => {
       service.applyPrivatePublicationReadback({
         scope,
         contentId: 'content_one',
-        readback: providerReadback(
-          publishing.pendingProviderOperationId!,
-          publishing.pendingProviderRequestHash!,
-        ),
+        providerOperationId: publishing.pendingProviderOperationId!,
         audience: [audience()],
         binding: completion,
       }),
     ).resolves.toMatchObject({ replay: true, record: { state: 'published', version: 4 } });
     expect(memory.materializations).toHaveLength(1);
+    expect(memory.readbackCalls).toEqual([publishing.pendingProviderOperationId]);
 
     const grant = await service.playback({
       principal: student,
@@ -321,6 +339,7 @@ describe('P21 content publication service', () => {
       version: 5,
       playbackGrantGeneration: 2,
       archivedAt: null,
+      pendingProviderOperationId: expect.any(String),
     });
     await expect(
       service.playback({
@@ -330,14 +349,34 @@ describe('P21 content publication service', () => {
       }),
     ).rejects.toThrowError(/unavailable/i);
 
+    const revoking = memory.records.get('content_one')!;
+    memory.acceptProviderOperation(revoking.pendingProviderOperationId!);
+    await service.applyPrivateRevocationReadback({
+      scope,
+      contentId: 'content_one',
+      providerOperationId: revoking.pendingProviderOperationId!,
+      binding: command(5, 'revoke.complete.key', 'f'),
+    });
+    expect(memory.records.get('content_one')).toMatchObject({
+      state: 'approved',
+      version: 6,
+      pendingProviderOperationId: null,
+      opaqueProviderAssetRef: null,
+    });
+    expect(memory.intentStates.get(memory.intents[1]!.intentId)).toBe('complete');
+    expect(memory.readbackCalls).toEqual([
+      publishing.pendingProviderOperationId,
+      revoking.pendingProviderOperationId,
+    ]);
+
     await service.archive({
       principal: admin,
       contentId: 'content_one',
-      binding: command(5, 'archive.key', 'f'),
+      binding: command(6, 'archive.key', '7'),
     });
     expect(memory.records.get('content_one')).toMatchObject({
       state: 'archived',
-      version: 6,
+      version: 7,
       playbackGrantGeneration: 3,
     });
     expect(memory.intents.map((intent) => intent.operation)).toEqual([
@@ -352,6 +391,8 @@ describe('P21 content publication service', () => {
     const service = createContentPublicationService({
       repository: memory,
       approvedProjectionRepository: memory,
+      vimeoProviderBinding,
+      vimeoReadbackAdapter: memory,
       createId: () => 'playback_session_001',
     });
 
@@ -400,32 +441,29 @@ describe('P21 content publication service', () => {
       binding: command(2, 'publish.key', 'b'),
     });
     const publishing = memory.records.get('content_one')!;
+    memory.acceptProviderOperation(publishing.pendingProviderOperationId!);
     memory.eligibilities.set('student_one:content_one:occurrence_one', eligibility());
     const completion = command(3, 'publish.complete.key', 'c');
+    memory.readbackMutation = (observation) => ({
+      ...observation,
+      providerResourceRefHash: hash('0'),
+    });
     await expect(
       service.applyPrivatePublicationReadback({
         scope,
         contentId: 'content_one',
-        readback: {
-          ...providerReadback(
-            publishing.pendingProviderOperationId!,
-            publishing.pendingProviderRequestHash!,
-          ),
-          accountKey: 'account_other',
-        },
+        providerOperationId: publishing.pendingProviderOperationId!,
         audience: [audience()],
         binding: completion,
       }),
-    ).rejects.toThrowError(/incomplete or ambiguous/i);
+    ).rejects.toThrowError(/does not match the provider/i);
+    memory.readbackMutation = null;
     memory.failProviderCompletion = true;
     await expect(
       service.applyPrivatePublicationReadback({
         scope,
         contentId: 'content_one',
-        readback: providerReadback(
-          publishing.pendingProviderOperationId!,
-          publishing.pendingProviderRequestHash!,
-        ),
+        providerOperationId: publishing.pendingProviderOperationId!,
         audience: [audience()],
         binding: completion,
       }),
@@ -434,21 +472,21 @@ describe('P21 content publication service', () => {
     expect(memory.records.get('content_one')).toMatchObject({ state: 'publishing', version: 3 });
     expect(memory.materializations).toHaveLength(0);
     expect(memory.intentStates.get(memory.intents[0]!.intentId)).toBe('pending');
+    memory.readbackMutation = (observation) =>
+      ({
+        ...observation,
+        matchingCanonicalAssetCount: 2,
+      }) as unknown as VimeoContentPublicationObservation;
     await expect(
       service.applyPrivatePublicationReadback({
         scope,
         contentId: 'content_one',
-        readback: {
-          ...providerReadback(
-            publishing.pendingProviderOperationId!,
-            publishing.pendingProviderRequestHash!,
-          ),
-          matchingCanonicalAssetCount: 2 as unknown as 1,
-        },
+        providerOperationId: publishing.pendingProviderOperationId!,
         audience: [audience()],
         binding: completion,
       }),
     ).rejects.toThrowError(/incomplete or ambiguous/i);
+    memory.readbackMutation = null;
     expect(memory.records.get('content_one')).toMatchObject({ state: 'publishing', version: 3 });
     expect(memory.materializations).toHaveLength(0);
 
@@ -458,10 +496,7 @@ describe('P21 content publication service', () => {
       service.applyPrivatePublicationReadback({
         scope,
         contentId: 'content_one',
-        readback: providerReadback(
-          publishing.pendingProviderOperationId!,
-          publishing.pendingProviderRequestHash!,
-        ),
+        providerOperationId: publishing.pendingProviderOperationId!,
         audience: [audience()],
         binding: completion,
       }),
@@ -477,10 +512,7 @@ describe('P21 content publication service', () => {
         service.applyPrivatePublicationReadback({
           scope,
           contentId: 'content_one',
-          readback: providerReadback(
-            publishing.pendingProviderOperationId!,
-            publishing.pendingProviderRequestHash!,
-          ),
+          providerOperationId: publishing.pendingProviderOperationId!,
           audience: [audience()],
           binding: completion,
         }),
@@ -507,14 +539,14 @@ describe('P21 content publication service', () => {
     await service.applyPrivatePublicationReadback({
       scope,
       contentId: 'content_one',
-      readback: providerReadback(
-        publishing.pendingProviderOperationId!,
-        publishing.pendingProviderRequestHash!,
-      ),
+      providerOperationId: publishing.pendingProviderOperationId!,
       audience: [audience()],
       binding: completion,
     });
-    memory.playbackFacts.get('student_one:content_one')!.assignmentVersion = 2;
+    memory.eligibilities.set('student_one:content_one:occurrence_one', {
+      ...eligibility(),
+      enrollmentVersion: 99,
+    });
     await expect(
       service.playback({
         principal: student,
@@ -696,43 +728,47 @@ function canonicalOccurrence(
   };
 }
 
-function providerReadback(
-  providerOperationId: string,
-  canonicalRequestHash: string,
-): VimeoProviderOperationReadback {
-  return {
-    ...scope,
-    providerOperationId,
-    providerOperationVersion: 3,
-    providerOperationState: 'accepted',
-    operation: 'publish_private',
-    contentId: 'content_one',
-    contentVersionId: 'content_version_one',
-    publicationGeneration: 1,
-    canonicalRequestHash,
-    state: 'complete',
-    fence: {
-      workerId: 'content_worker_one',
-      leaseGeneration: 3,
-      leaseExpiresAt: '2026-07-29T10:48:00.000Z',
-      observedAt: '2026-07-29T10:43:00.000Z',
-    },
-    opaqueProviderAssetRef: 'asset_private_01',
-    vimeoPrivacy: 'private',
-    vimeoAvailability: 'available',
-    matchingCanonicalAssetCount: 1,
-    exactContentVersionCorrelation: true,
-    providerAcceptanceDigest: hash('d'),
-    providerReconciliationDigest: hash('a'),
-    providerReadbackDigest: hash('e'),
-    oneTimePublicationReadback: 'ready_to_apply',
-    oneTimeReadbackDigest: hash('f'),
-    approvalProjectionDigest: approvalEvidence().projectionDigest,
-  };
+function providerObservation(
+  operation: 'publish_private',
+): Extract<VimeoContentPublicationObservation, { operation: 'publish_private' }>;
+function providerObservation(
+  operation: 'revoke_private',
+): Extract<VimeoContentPublicationObservation, { operation: 'revoke_private' }>;
+function providerObservation(
+  operation: 'publish_private' | 'revoke_private',
+): VimeoContentPublicationObservation;
+function providerObservation(
+  operation: 'publish_private' | 'revoke_private',
+): VimeoContentPublicationObservation {
+  const providerResourceRefHash = createHash('sha256').update('asset_private_01').digest('hex');
+  return operation === 'publish_private'
+    ? {
+        operation,
+        observedAt: '2026-07-29T10:44:00.000Z',
+        opaqueProviderAssetRef: 'asset_private_01',
+        providerResourceRefHash,
+        vimeoPrivacy: 'private',
+        vimeoAvailability: 'available',
+        matchingCanonicalAssetCount: 1,
+        exactContentVersionCorrelation: true,
+        providerAcceptanceDigest: hash('d'),
+      }
+    : {
+        operation,
+        observedAt: '2026-07-29T10:44:00.000Z',
+        providerResourceRefHash,
+        vimeoAvailability: 'revoked',
+        matchingCanonicalAssetCount: 1,
+        exactContentVersionCorrelation: true,
+        providerAcceptanceDigest: hash('d'),
+      };
 }
 
 class MemoryPublicationRepository
-  implements ContentPublicationRepository, ContentPublicationUnitOfWork
+  implements
+    ContentPublicationRepository,
+    ContentPublicationUnitOfWork,
+    VimeoContentPublicationReadbackAdapter
 {
   approvedProjection: ContentApprovalEvidence | null = approvalEvidence();
   failProviderCompletion = false;
@@ -742,6 +778,7 @@ class MemoryPublicationRepository
   readonly materializations: ContentPublicationMaterialization[] = [];
   readonly resumes = new Map<string, StudentContentResume>();
   readonly receipts = new Map<string, ContentPublicationReceipt>();
+  readonly providerOperations = new Map<string, ProviderOperation>();
   readonly intents: ContentPublicationOutboxIntent[] = [];
   readonly intentStates = new Map<string, 'pending' | 'complete'>();
   readonly providerContexts = new Map<
@@ -754,6 +791,18 @@ class MemoryPublicationRepository
   readonly completedProviderOperations = new Set<string>();
   readonly canonicalOccurrences = new Map<string, CanonicalGovernedOccurrence>();
   readonly eligibilities = new Map<string, StudentPublicationEligibility>();
+  readonly readbackCalls: string[] = [];
+  readbackMutation:
+    | ((observation: VimeoContentPublicationObservation) => VimeoContentPublicationObservation)
+    | null = null;
+
+  async readCanonical(
+    context: Parameters<VimeoContentPublicationReadbackAdapter['readCanonical']>[0],
+  ) {
+    this.readbackCalls.push(context.providerOperation.providerOperationId);
+    const observation = providerObservation(context.intent.operation);
+    return this.readbackMutation?.(observation) ?? observation;
+  }
 
   async inTransaction<T>(work: (unit: ContentPublicationUnitOfWork) => Promise<T>) {
     const snapshot = {
@@ -763,6 +812,7 @@ class MemoryPublicationRepository
       materializations: [...this.materializations],
       resumes: new Map(this.resumes),
       receipts: new Map(this.receipts),
+      providerOperations: new Map(this.providerOperations),
       intents: [...this.intents],
       intentStates: new Map(this.intentStates),
       providerContexts: new Map(this.providerContexts),
@@ -777,6 +827,7 @@ class MemoryPublicationRepository
       this.materializations.splice(0, this.materializations.length, ...snapshot.materializations);
       restoreMap(this.resumes, snapshot.resumes);
       restoreMap(this.receipts, snapshot.receipts);
+      restoreMap(this.providerOperations, snapshot.providerOperations);
       this.intents.splice(0, this.intents.length, ...snapshot.intents);
       restoreMap(this.intentStates, snapshot.intentStates);
       restoreMap(this.providerContexts, snapshot.providerContexts);
@@ -827,55 +878,81 @@ class MemoryPublicationRepository
     this.receipts.set(`${receipt.operation}:${receipt.idempotencyKey}`, receipt);
   }
 
+  async saveProviderOperation(operation: ProviderOperation) {
+    const prior = this.providerOperations.get(operation.job_id);
+    if (prior && JSON.stringify(prior) !== JSON.stringify(operation)) {
+      throw new Error('provider_operation_conflict');
+    }
+    this.providerOperations.set(operation.job_id, operation);
+  }
+
   async saveOutboxIntent(intent: ContentPublicationOutboxIntent) {
     this.intents.push(intent);
     this.intentStates.set(intent.intentId, 'pending');
-    if (intent.operation === 'publish_private') {
-      this.providerContexts.set(intent.providerOperationId, {
-        intent,
-        providerOperation: {
-          accountKey: intent.accountKey,
-          providerOperationId: intent.providerOperationId,
-          providerOperationVersion: 3,
-          provider: 'vimeo',
-          operation: 'publish_private',
-          productKey: 'one_time_mishnayos',
-          contentId: intent.contentId,
-          contentVersionId: intent.contentVersionId,
-          publicationGeneration: intent.publicationGeneration,
-          idempotencyKey: intent.idempotencyKey,
-          canonicalRequestHash: intent.requestHash,
-          state: 'accepted',
-          unknownEffect: false,
-          registryBindingKey: 'vimeo_publication_primary',
-          providerAccountRefHash: hash('9'),
-          providerAcceptanceDigest: hash('d'),
-          providerReconciliationDigest: hash('a'),
-          approvalProjectionDigest: intent.approvalEvidence.projectionDigest,
-        },
-      });
-    }
   }
 
-  async getPendingPublishProviderContext(
+  acceptProviderOperation(providerOperationId: string) {
+    const operation = this.providerOperations.get(providerOperationId);
+    const intent = this.intents.find(
+      (candidate) => candidate.providerOperationId === providerOperationId,
+    );
+    if (!operation || !intent) {
+      throw new Error('provider_operation_not_pending');
+    }
+    this.providerOperations.set(providerOperationId, {
+      ...operation,
+      state: 'accepted',
+      version: 3,
+      provider_acceptance_digest: hash('d'),
+      reconciliation_digest: hash('c'),
+    });
+    this.providerContexts.set(providerOperationId, {
+      intent,
+      providerOperation: {
+        accountKey: intent.accountKey,
+        providerOperationId,
+        providerOperationVersion: 3,
+        provider: 'vimeo',
+        operation: intent.operation,
+        productKey: 'one_time_mishnayos',
+        contentId: intent.contentId,
+        contentVersionId: intent.contentVersionId,
+        publicationGeneration: intent.publicationGeneration,
+        idempotencyKey: intent.idempotencyKey,
+        canonicalRequestHash: intent.requestHash,
+        state: 'accepted',
+        unknownEffect: false,
+        registryBindingKey: operation.registry_binding_key,
+        providerAccountRefHash: operation.provider_account_ref_hash,
+        providerAcceptanceDigest: hash('d'),
+        providerReconciliationDigest: hash('c'),
+        approvalProjectionDigest: intent.approvalEvidence.projectionDigest,
+      },
+    });
+  }
+
+  async getPendingProviderContext(
     requestScope: ContentPublicationScope,
     providerOperationId: string,
+    operation: 'publish_private' | 'revoke_private',
   ) {
     const context = this.providerContexts.get(providerOperationId);
     return context &&
       matchesScope(context.intent, requestScope) &&
+      context.intent.operation === operation &&
       this.intentStates.get(context.intent.intentId) === 'pending'
       ? context
       : null;
   }
 
-  async completePublishProviderOperation(completion: ContentPublicationProviderCompletion) {
+  async completeProviderOperation(completion: ContentPublicationProviderCompletion) {
     if (this.failProviderCompletion) throw new Error('forced_provider_completion_failure');
     const context = this.providerContexts.get(completion.providerOperationId);
     if (
       !context ||
       this.intentStates.get(context.intent.intentId) !== 'pending' ||
       context.intent.intentId !== completion.outboxIntentId ||
+      context.intent.operation !== completion.operation ||
       !matchesScope(context.intent, completion) ||
       context.intent.contentId !== completion.contentId ||
       context.intent.contentVersionId !== completion.contentVersionId ||
@@ -919,32 +996,6 @@ class MemoryPublicationRepository
     for (const assignment of materialization.assignments) {
       const key = `${assignment.studentId}:${assignment.contentId}`;
       this.assignments.set(key, assignment);
-      this.playbackFacts.set(key, {
-        accountKey: assignment.accountKey,
-        productKey: assignment.productKey,
-        assignmentId: assignment.assignmentId,
-        assignmentVersion: assignment.assignmentVersion,
-        studentId: assignment.studentId,
-        householdId: assignment.householdId,
-        sessionId: 'student_session_one',
-        sessionVersion: 7,
-        sessionActive: true,
-        studentVersion: assignment.studentVersion,
-        studentActive: true,
-        enrollmentVersion: assignment.enrollmentVersion,
-        enrollmentActive: true,
-        accessVersion: assignment.accessVersion,
-        accessState: 'active',
-        serviceAccountConsentVersion: assignment.serviceAccountConsentVersion,
-        serviceAccountAccepted: true,
-        privacyVersion: assignment.privacyVersion,
-        revocationVersion: assignment.revocationVersion,
-        studentRevoked: false,
-        accountRevoked: false,
-        contentRevoked: false,
-        privacyReviewState: 'clear',
-        approvalProjectionDigest: assignment.approvalEvidence.projectionDigest,
-      });
     }
   }
 
@@ -959,13 +1010,69 @@ class MemoryPublicationRepository
     return found && matchesScope(found, requestScope) ? found : null;
   }
 
-  async getPlaybackFacts(
+  async refreshPlaybackFacts(
     requestScope: ContentPublicationScope,
-    studentId: string,
-    contentId: string,
+    principal: ContentPublicationPrincipal,
+    assignment: StudentContentAssignment,
   ) {
-    const found = this.playbackFacts.get(`${studentId}:${contentId}`) ?? null;
-    return found && matchesScope(found, requestScope) ? found : null;
+    const eligibilityValue =
+      this.eligibilities.get(
+        `${assignment.studentId}:${assignment.contentId}:${assignment.occurrenceId}`,
+      ) ?? null;
+    if (
+      principal.role !== 'student' ||
+      !principal.studentId ||
+      !principal.sessionId ||
+      !principal.sessionVersion ||
+      principal.studentId !== assignment.studentId ||
+      principal.householdId !== assignment.householdId ||
+      !eligibilityValue ||
+      !matchesScope(eligibilityValue, requestScope) ||
+      eligibilityValue.enrollmentVersion !== assignment.enrollmentVersion ||
+      eligibilityValue.accessVersion !== assignment.accessVersion ||
+      eligibilityValue.serviceAccountConsentVersion !== assignment.serviceAccountConsentVersion ||
+      eligibilityValue.privacyVersion !== assignment.privacyVersion ||
+      eligibilityValue.revocationVersion !== assignment.revocationVersion ||
+      !eligibilityValue.studentActive ||
+      !eligibilityValue.enrollmentActive ||
+      !['active', 'grace'].includes(eligibilityValue.accessState) ||
+      eligibilityValue.accessState !== principal.accessState ||
+      !eligibilityValue.serviceAccountAccepted ||
+      eligibilityValue.privacyReviewState !== 'clear' ||
+      eligibilityValue.studentRevoked ||
+      eligibilityValue.accountRevoked ||
+      eligibilityValue.contentRevoked
+    ) {
+      return null;
+    }
+    const facts: StudentPlaybackAuthorizationFacts = {
+      accountKey: assignment.accountKey,
+      productKey: assignment.productKey,
+      assignmentId: assignment.assignmentId,
+      assignmentVersion: assignment.assignmentVersion,
+      studentId: assignment.studentId,
+      householdId: assignment.householdId,
+      sessionId: principal.sessionId,
+      sessionVersion: principal.sessionVersion,
+      sessionActive: true,
+      studentVersion: eligibilityValue.studentVersion,
+      studentActive: eligibilityValue.studentActive,
+      enrollmentVersion: eligibilityValue.enrollmentVersion,
+      enrollmentActive: eligibilityValue.enrollmentActive,
+      accessVersion: eligibilityValue.accessVersion,
+      accessState: eligibilityValue.accessState,
+      serviceAccountConsentVersion: eligibilityValue.serviceAccountConsentVersion,
+      serviceAccountAccepted: eligibilityValue.serviceAccountAccepted,
+      privacyVersion: eligibilityValue.privacyVersion,
+      revocationVersion: eligibilityValue.revocationVersion,
+      studentRevoked: eligibilityValue.studentRevoked,
+      accountRevoked: eligibilityValue.accountRevoked,
+      contentRevoked: eligibilityValue.contentRevoked,
+      privacyReviewState: eligibilityValue.privacyReviewState,
+      approvalProjectionDigest: eligibilityValue.approvalProjectionDigest,
+    };
+    this.playbackFacts.set(`${assignment.studentId}:${assignment.contentId}`, facts);
+    return facts;
   }
 
   async getResume(requestScope: ContentPublicationScope, studentId: string, contentId: string) {

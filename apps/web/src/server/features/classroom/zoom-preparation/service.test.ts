@@ -83,6 +83,7 @@ function commandFixture(): PrepareZoomPreviewCommand {
           version: 1,
         },
         householdAccess: 'active',
+        householdAccessVersion: 1,
         serviceAccountConsent: 'accepted',
         serviceAccountConsentVersion: 1,
         recordingParticipationConsent: 'accepted',

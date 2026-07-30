@@ -19,6 +19,7 @@ export function reconcileAttendance(input: {
     return emptyProjection(input.prior_projection, input.now);
   }
   assertOneSubject(events);
+  assertPriorProjection(input.prior_projection, events[0]!);
   const correction = events
     .filter((event) => event.source === 'admin_correction')
     .sort(compareEvent)
@@ -45,6 +46,24 @@ export function reconcileAttendance(input: {
   } else {
     selected = clientIntervals;
     state = 'provisional';
+  }
+  if (
+    input.prior_projection?.reconciliation_state === 'admin_corrected' &&
+    state !== 'admin_corrected'
+  ) {
+    throw new EmbeddedClassroomError(
+      'invalid_contract',
+      'Audited attendance correction evidence cannot be cleared.',
+    );
+  }
+  if (
+    input.prior_projection !== null &&
+    events.length < input.prior_projection.source_event_count
+  ) {
+    throw new EmbeddedClassroomError(
+      'invalid_contract',
+      'Attendance source evidence cannot regress.',
+    );
   }
 
   const merged = merge(selected);
@@ -183,6 +202,22 @@ function assertOneSubject(events: readonly AttendanceEvent[]): void {
   }
 }
 
+function assertPriorProjection(prior: AttendanceProjection | null, event: AttendanceEvent): void {
+  if (
+    prior !== null &&
+    (prior.student_id !== event.student_id ||
+      prior.occurrence_id !== event.occurrence_id ||
+      prior.scope.product !== event.scope.product ||
+      prior.scope.runtime_tier !== event.scope.runtime_tier ||
+      prior.scope.verification_environment_id !== event.scope.verification_environment_id)
+  ) {
+    throw new EmbeddedClassroomError(
+      'invalid_contract',
+      'Attendance projection must remain bound to one exact Student occurrence.',
+    );
+  }
+}
+
 function emptyProjection(prior: AttendanceProjection | null, now: Date): AttendanceProjection {
   if (prior === null) {
     throw new EmbeddedClassroomError(
@@ -192,13 +227,6 @@ function emptyProjection(prior: AttendanceProjection | null, now: Date): Attenda
   }
   return {
     ...prior,
-    first_joined_at: null,
-    last_left_at: null,
-    total_connected_minutes: 0,
-    attendance_percentage: 0,
-    reconnect_count: 0,
-    late: false,
-    source_event_count: 0,
     version: prior.version + 1,
     updated_at: now.toISOString(),
   };

@@ -86,6 +86,7 @@ function candidate(index: number, overrides: Partial<ZoomStudentPreparationInput
       version: 2,
     },
     householdAccess: 'active',
+    householdAccessVersion: 7,
     serviceAccountConsent: 'accepted',
     serviceAccountConsentVersion: 2,
     recordingParticipationConsent: 'accepted',
@@ -188,6 +189,14 @@ describe('P17 Zoom preparation acceptance', () => {
     expect(data.roster.entries.find((entry) => entry.studentId === 'student-4')).toMatchObject({
       decision: 'excluded',
       safeReason: 'recording_participation_consent_missing',
+    });
+    expect(data.roster.entries[0]).toMatchObject({
+      studentVersion: 3,
+      enrollmentVersion: 2,
+      householdAccessVersion: 7,
+      serviceAccountConsentVersion: 2,
+      recordingParticipationConsentVersion: 3,
+      memberRecognitionConsentVersion: 1,
     });
     expect(data.previewed.saga.state).toBe('preview_ready');
     expect(data.confirmed.confirmedPreviewDigest).toBe(data.previewed.preview.digest);

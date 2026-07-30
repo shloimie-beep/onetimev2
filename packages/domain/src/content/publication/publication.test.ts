@@ -8,15 +8,18 @@ import type {
   StudentContentAssignment,
   StudentPlaybackAuthorizationFacts,
   StudentPublicationEligibility,
-  VimeoProviderOperationReadback,
+  VimeoContentPublicationObservation,
 } from '../../../../contracts/src/content/publication/index.ts';
+import type { ProviderRegistryBinding } from '../../../../contracts/src/providers/v21-provider-core.ts';
 import { ContentPublicationError } from './errors.ts';
 import {
   approveContent,
   archiveContent,
   attachOccurrence,
   authorizeStudentPlayback,
+  createContentPublicationProviderOperation,
   recordPrivatePublication,
+  recordPrivateRevocation,
   requestPrivatePublication,
   saveStudentResume,
   searchStudentLibrary,
@@ -146,15 +149,38 @@ describe('P21 publication lifecycle', () => {
       contentVersionId: 'content_version_one',
       operation: 'publish_private',
     });
-    const readback = providerReadback(
-      requested.record.pendingProviderOperationId!,
-      requested.record.publicationGeneration,
-      hash('b'),
-    );
+    const providerOperation = createContentPublicationProviderOperation({
+      intent: requested.intent,
+      binding: vimeoBinding(),
+    });
+    expect(providerOperation).toMatchObject({
+      job_id: requested.intent.providerOperationId,
+      operation_type: 'publish_private',
+      aggregate_ref: 'content_one',
+      source_version: 1,
+      provider: 'vimeo',
+      payload_ref: 'content_version_one',
+      payload_digest: approvalEvidence().projectionDigest,
+      state: 'not_started',
+      effect_kind: 'mutation',
+    });
+    expect(() =>
+      createContentPublicationProviderOperation({
+        intent: requested.intent,
+        binding: { ...vimeoBinding(), active: false },
+      }),
+    ).toThrow(ContentPublicationError);
+    expect(() =>
+      createContentPublicationProviderOperation({
+        intent: requested.intent,
+        binding: { ...vimeoBinding(), mutation_policy: 'prohibited' },
+      }),
+    ).toThrow(ContentPublicationError);
+    const observation = providerObservation('publish_private');
     const pendingProviderContext = providerContext(requested.intent);
     const published = recordPrivatePublication({
       record: requested.record,
-      readback,
+      observation,
       audience: [audience()],
       eligibility: [eligibility()],
       pendingProviderContext,
@@ -163,7 +189,7 @@ describe('P21 publication lifecycle', () => {
     expect(published.record).toMatchObject({
       state: 'published',
       opaqueProviderAssetRef: 'asset_private_01',
-      providerReadbackDigest: hash('e'),
+      providerReadbackDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
       pendingProviderOperationId: null,
     });
     expect(published.providerCompletion).toMatchObject({
@@ -200,18 +226,21 @@ describe('P21 publication lifecycle', () => {
     expect(JSON.stringify(published.materialization)).not.toMatch(/vimeo|asset_private|https?:/i);
 
     for (const invalid of [
-      { ...readback, matchingCanonicalAssetCount: 2 },
-      { ...readback, vimeoPrivacy: 'unlisted' },
-      { ...readback, vimeoAvailability: 'processing' },
-      {
-        ...readback,
-        fence: { ...readback.fence, leaseExpiresAt: readback.fence.observedAt },
-      },
+      { ...observation, matchingCanonicalAssetCount: 2 },
+      { ...observation, vimeoPrivacy: 'unlisted' },
+      { ...observation, vimeoAvailability: 'processing' },
+      { ...observation, providerResourceRefHash: hash('0') },
+      { ...observation, observedAt: 'not-an-instant' },
+      { ...observation, observedAt: '2026-07-29T10:43:59.999Z' },
+      { ...observation, observedAt: '2026-07-29T10:44:00.001Z' },
     ]) {
       expect(() =>
         recordPrivatePublication({
           record: requested.record,
-          readback: invalid as VimeoProviderOperationReadback,
+          observation: invalid as Extract<
+            VimeoContentPublicationObservation,
+            { operation: 'publish_private' }
+          >,
           audience: [audience()],
           eligibility: [eligibility()],
           pendingProviderContext,
@@ -222,7 +251,7 @@ describe('P21 publication lifecycle', () => {
     expect(() =>
       recordPrivatePublication({
         record: requested.record,
-        readback,
+        observation,
         audience: [audience()],
         eligibility: [eligibility()],
         pendingProviderContext: {
@@ -243,7 +272,7 @@ describe('P21 publication lifecycle', () => {
       expect(() =>
         recordPrivatePublication({
           record: requested.record,
-          readback,
+          observation,
           audience: [audience()],
           eligibility: [ineligible],
           pendingProviderContext,
@@ -262,12 +291,27 @@ describe('P21 publication lifecycle', () => {
       playbackGrantGeneration: 2,
       publishedAt: null,
       archivedAt: null,
+      pendingProviderOperationId: unpublished.intent.providerOperationId,
     });
     expect(unpublished.intent.operation).toBe('revoke_private');
+    const revoked = recordPrivateRevocation({
+      record: unpublished.record,
+      observation: providerObservation('revoke_private'),
+      pendingProviderContext: providerContext(unpublished.intent),
+      binding: binding(8, 'e'),
+    });
+    expect(revoked).toMatchObject({
+      record: {
+        state: 'approved',
+        pendingProviderOperationId: null,
+        opaqueProviderAssetRef: null,
+      },
+      providerCompletion: { operation: 'revoke_private' },
+    });
     const archived = archiveContent({
       principal: admin,
-      record: unpublished.record,
-      binding: binding(8, 'e'),
+      record: revoked.record,
+      binding: binding(9, 'f'),
     });
     expect(archived.record).toMatchObject({ state: 'archived', archivedAt: expect.any(String) });
   });
@@ -559,40 +603,40 @@ function binding(expectedVersion: number, digit = 'a') {
   };
 }
 
-function providerReadback(
-  providerOperationId: string,
-  publicationGeneration: number,
-  canonicalRequestHash: string,
-): VimeoProviderOperationReadback {
-  return {
-    ...scope,
-    providerOperationId,
-    providerOperationVersion: 3,
-    providerOperationState: 'accepted',
-    operation: 'publish_private',
-    contentId: 'content_one',
-    contentVersionId: 'content_version_one',
-    publicationGeneration,
-    canonicalRequestHash,
-    state: 'complete',
-    fence: {
-      workerId: 'content_worker_one',
-      leaseGeneration: 3,
-      leaseExpiresAt: '2026-07-29T10:48:00.000Z',
-      observedAt: '2026-07-29T10:43:00.000Z',
-    },
-    opaqueProviderAssetRef: 'asset_private_01',
-    vimeoPrivacy: 'private',
-    vimeoAvailability: 'available',
-    matchingCanonicalAssetCount: 1,
-    exactContentVersionCorrelation: true,
-    providerAcceptanceDigest: hash('d'),
-    providerReconciliationDigest: hash('a'),
-    providerReadbackDigest: hash('e'),
-    oneTimePublicationReadback: 'ready_to_apply',
-    oneTimeReadbackDigest: hash('f'),
-    approvalProjectionDigest: approvalEvidence().projectionDigest,
-  };
+function providerObservation(
+  operation: 'publish_private',
+): Extract<VimeoContentPublicationObservation, { operation: 'publish_private' }>;
+function providerObservation(
+  operation: 'revoke_private',
+): Extract<VimeoContentPublicationObservation, { operation: 'revoke_private' }>;
+function providerObservation(
+  operation: 'publish_private' | 'revoke_private',
+): VimeoContentPublicationObservation;
+function providerObservation(
+  operation: 'publish_private' | 'revoke_private',
+): VimeoContentPublicationObservation {
+  const providerResourceRefHash = createHash('sha256').update('asset_private_01').digest('hex');
+  return operation === 'publish_private'
+    ? {
+        operation,
+        observedAt: '2026-07-29T10:44:00.000Z',
+        opaqueProviderAssetRef: 'asset_private_01',
+        providerResourceRefHash,
+        vimeoPrivacy: 'private',
+        vimeoAvailability: 'available',
+        matchingCanonicalAssetCount: 1,
+        exactContentVersionCorrelation: true,
+        providerAcceptanceDigest: hash('d'),
+      }
+    : {
+        operation,
+        observedAt: '2026-07-29T10:44:00.000Z',
+        providerResourceRefHash,
+        vimeoAvailability: 'revoked',
+        matchingCanonicalAssetCount: 1,
+        exactContentVersionCorrelation: true,
+        providerAcceptanceDigest: hash('d'),
+      };
 }
 
 function providerContext(intent: ContentPublicationOutboxIntent) {
@@ -602,7 +646,7 @@ function providerContext(intent: ContentPublicationOutboxIntent) {
       providerOperationId: intent.providerOperationId,
       providerOperationVersion: 3,
       provider: 'vimeo' as const,
-      operation: 'publish_private' as const,
+      operation: intent.operation,
       ...scope,
       contentId: intent.contentId,
       contentVersionId: intent.contentVersionId,
@@ -614,7 +658,7 @@ function providerContext(intent: ContentPublicationOutboxIntent) {
       registryBindingKey: 'vimeo_publication_primary',
       providerAccountRefHash: hash('9'),
       providerAcceptanceDigest: hash('d'),
-      providerReconciliationDigest: hash('a'),
+      providerReconciliationDigest: hash('c'),
       approvalProjectionDigest: approvalEvidence().projectionDigest,
     },
   };
@@ -706,5 +750,21 @@ function facts(): StudentPlaybackAuthorizationFacts {
     contentRevoked: false,
     privacyReviewState: 'clear',
     approvalProjectionDigest: approvalEvidence().projectionDigest,
+  };
+}
+
+function vimeoBinding(): ProviderRegistryBinding {
+  return {
+    registry_binding_key: 'vimeo_publication_primary',
+    provider: 'vimeo',
+    scope: {
+      product: 'one_time_mishnayos',
+      runtime_tier: 'isolated_staging',
+      verification_environment_id: 'ci',
+    },
+    provider_account_ref_hash: hash('9'),
+    allowed_operation_types: ['publish_private', 'revoke_private'],
+    mutation_policy: 'allowed',
+    active: true,
   };
 }

@@ -61,14 +61,20 @@ function createUnit(client: ZoomPreparationSqlClient): ZoomPreparationUnitOfWork
         record.id,
         record,
       ),
-    getClassroomResource: (scope, occurrenceId) =>
-      read<ClassroomResource>(
-        client,
-        'onetime.zoom_classroom_resources',
-        'occurrence_key',
-        scope,
-        occurrenceId,
-      ),
+    getClassroomResource: async (scope, occurrenceId) => {
+      const result = await client.query(
+        `SELECT record_json
+           FROM onetime.zoom_classroom_resources
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = $3
+            AND resource_state NOT IN ('closed', 'deleted')
+          LIMIT 1
+          FOR UPDATE`,
+        [scope.accountKey, scope.productKey, occurrenceId],
+      );
+      return parse<ClassroomResource>(result.rows[0]?.record_json);
+    },
     saveClassroomResource: (record) =>
       saveVersioned(
         client,
@@ -107,13 +113,20 @@ function createUnit(client: ZoomPreparationSqlClient): ZoomPreparationUnitOfWork
                  'not_started',1,0,0,0,0,0,false,$14,$15)
          ON CONFLICT (product, runtime_tier, verification_environment_id, idempotency_key)
          DO UPDATE SET idempotency_key = EXCLUDED.idempotency_key
-           WHERE job_outbox.operation_type = EXCLUDED.operation_type
+           WHERE job_outbox.job_id = EXCLUDED.job_id
+             AND job_outbox.operation_type = EXCLUDED.operation_type
              AND job_outbox.aggregate_ref = EXCLUDED.aggregate_ref
              AND job_outbox.source_version = EXCLUDED.source_version
              AND job_outbox.provider = EXCLUDED.provider
              AND job_outbox.canonical_request_hash = EXCLUDED.canonical_request_hash
+             AND job_outbox.payload_ref = EXCLUDED.payload_ref
              AND job_outbox.payload_digest = EXCLUDED.payload_digest
              AND job_outbox.compensation_for_job_id IS NOT DISTINCT FROM EXCLUDED.compensation_for_job_id
+             AND job_outbox.state = 'not_started'
+             AND job_outbox.version = 1
+             AND job_outbox.unknown_effect = FALSE
+             AND job_outbox.provider_acceptance_digest IS NULL
+             AND job_outbox.reconciliation_digest IS NULL
          RETURNING job_id`,
         [
           operation.job_id,
@@ -167,12 +180,14 @@ function createUnit(client: ZoomPreparationSqlClient): ZoomPreparationUnitOfWork
       return parse<ZoomPreparationCommandReceipt>(result.rows[0]?.record_json);
     },
     saveReceipt: async (record) => {
-      await client.query(
+      const result = await client.query(
         `INSERT INTO onetime.zoom_preparation_commands
            (account_key, product_key, idempotency_key, request_hash, operation,
             result_ref, result_version, record_json, committed_at)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9)
-         ON CONFLICT (account_key, product_key, idempotency_key) DO NOTHING`,
+         ON CONFLICT (account_key, product_key, idempotency_key)
+         DO NOTHING
+         RETURNING idempotency_key`,
         [
           record.accountKey,
           record.productKey,
@@ -184,6 +199,38 @@ function createUnit(client: ZoomPreparationSqlClient): ZoomPreparationUnitOfWork
           JSON.stringify(record),
           record.committedAt,
         ],
+      );
+      if (String(result.rows[0]?.idempotency_key ?? '') === record.idempotencyKey) return;
+      const replay = await client.query(
+        `SELECT idempotency_key
+           FROM onetime.zoom_preparation_commands
+          WHERE account_key = $1
+            AND product_key = $2
+            AND idempotency_key = $3
+            AND request_hash = $4
+            AND operation = $5
+            AND result_ref = $6
+            AND result_version = $7
+            AND record_json = $8::jsonb
+            AND committed_at = $9
+          FOR UPDATE`,
+        [
+          record.accountKey,
+          record.productKey,
+          record.idempotencyKey,
+          record.requestHash,
+          record.operation,
+          record.resultRef,
+          record.resultVersion,
+          JSON.stringify(record),
+          record.committedAt,
+        ],
+      );
+      requireReturned(
+        replay,
+        'idempotency_key',
+        record.idempotencyKey,
+        'zoom_preparation_command_idempotency_conflict',
       );
     },
   };
@@ -219,16 +266,18 @@ async function saveVersioned(
 ) {
   const updatedAt = record.updatedAt ?? record.lastHeartbeatAt;
   if (!updatedAt) throw new Error('zoom_preparation_updated_at_required');
-  await client.query(
+  const result = await client.query(
     `INSERT INTO ${table}
        (${keyColumn}, account_key, product_key, version, record_json, updated_at)
      VALUES ($1,$2,$3,$4,$5::jsonb,$6)
      ON CONFLICT (account_key, product_key, ${keyColumn})
      DO UPDATE SET version=EXCLUDED.version, record_json=EXCLUDED.record_json,
        updated_at=EXCLUDED.updated_at
-     WHERE ${table}.version = EXCLUDED.version - 1`,
+     WHERE ${table}.version = EXCLUDED.version - 1
+     RETURNING ${keyColumn}`,
     [id, record.accountKey, record.productKey, record.version, JSON.stringify(record), updatedAt],
   );
+  requireReturned(result, keyColumn, id, 'zoom_preparation_optimistic_conflict');
 }
 
 async function insertImmutable(
@@ -238,11 +287,35 @@ async function insertImmutable(
   id: string,
   record: { accountKey: string; productKey: string },
 ) {
-  await client.query(
+  const result = await client.query(
     `INSERT INTO ${table} (${keyColumn}, account_key, product_key, record_json)
-     VALUES ($1,$2,$3,$4::jsonb) ON CONFLICT DO NOTHING`,
+     VALUES ($1,$2,$3,$4::jsonb)
+     ON CONFLICT (account_key, product_key, ${keyColumn})
+     DO NOTHING
+     RETURNING ${keyColumn}`,
     [id, record.accountKey, record.productKey, JSON.stringify(record)],
   );
+  if (String(result.rows[0]?.[keyColumn] ?? '') === id) return;
+  const replay = await client.query(
+    `SELECT ${keyColumn}
+       FROM ${table}
+      WHERE account_key = $1
+        AND product_key = $2
+        AND ${keyColumn} = $3
+        AND record_json = $4::jsonb
+      FOR UPDATE`,
+    [record.accountKey, record.productKey, id, JSON.stringify(record)],
+  );
+  requireReturned(replay, keyColumn, id, 'zoom_preparation_immutable_evidence_conflict');
+}
+
+function requireReturned(
+  result: ZoomPreparationSqlResult,
+  key: string,
+  expected: string,
+  code: string,
+) {
+  if (String(result.rows[0]?.[key] ?? '') !== expected) throw new Error(code);
 }
 
 function parse<T>(value: unknown): T | null {
