@@ -3,6 +3,7 @@ import type {
   ConsentMutationInput,
   DataRightsRequest,
   DataRightsRequestInput,
+  PrivacyPersistenceScope,
   PrivacyActorContext,
   StudentConsentSubject,
 } from '../../../../../../packages/contracts/src/privacy/index.ts';
@@ -45,7 +46,10 @@ export function authorizePrivacyRoute(
   );
 }
 
-export function createPrivacyService(repository: PrivacyServiceRepository) {
+export function createPrivacyService(
+  repository: PrivacyServiceRepository,
+  trustedScope: PrivacyPersistenceScope,
+) {
   return {
     async recordConsent(input: ConsentMutationInput) {
       const existing = await repository.listConsentEvents(input.subject.student_id);
@@ -73,8 +77,8 @@ export function createPrivacyService(repository: PrivacyServiceRepository) {
       });
     },
 
-    async createRightsRequest(input: DataRightsRequestInput) {
-      const request = createDataRightsRequest(input);
+    async createRightsRequest(input: Omit<DataRightsRequestInput, 'scope'>) {
+      const request = createDataRightsRequest({ ...input, scope: trustedScope });
       const persisted = await repository.createDataRightsRequest(request);
       if (!persisted) throw new Error('privacy_request_write_conflict');
       return request;

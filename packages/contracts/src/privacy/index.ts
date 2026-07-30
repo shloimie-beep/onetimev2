@@ -2,6 +2,7 @@ import type { StudentRelationship } from '../accounts/v21-household-identity.ts'
 import type { JobScope, TransactionalOutboxIntent } from '../jobs/index.ts';
 
 export const PRIVACY_CONTRACT_VERSION = '1.0.0' as const;
+export type PrivacyPersistenceScope = JobScope;
 export const EXPORT_DOWNLOAD_TTL_MS = 15 * 60 * 1000;
 export const EXPORT_PACKAGE_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 export const VERIFIED_ERASURE_DEADLINE_MS = 30 * 24 * 60 * 60 * 1000;
@@ -159,7 +160,7 @@ export interface ProviderCascadeState {
   unknown_effect: boolean;
 }
 
-export interface DataRightsRequest {
+export interface DataRightsRequest extends JobScope {
   request_id: string;
   kind: DataRightsRequestKind;
   subject: DataRightsSubjectScope;
@@ -184,6 +185,7 @@ export interface DataRightsRequest {
 }
 
 export interface DataRightsRequestInput {
+  scope: PrivacyPersistenceScope;
   request_id: string;
   kind: DataRightsRequestKind;
   subject: DataRightsSubjectScope;
@@ -194,7 +196,7 @@ export interface DataRightsRequestInput {
   audit_ref: string;
 }
 
-export interface ExportDownloadGrant {
+export interface ExportDownloadGrant extends JobScope {
   grant_id: string;
   request_id: string;
   subject_binding_hash: string;

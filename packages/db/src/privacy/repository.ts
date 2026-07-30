@@ -86,14 +86,15 @@ export function createPostgresPrivacyRepository(pool: PrivacySqlPool) {
       return execute(pool, async (client) => {
         const result = await client.query(
           `INSERT INTO onetime.data_rights_request
-           (request_id, kind, subject_json, requester_kind, requester_ref,
+           (request_id, product, runtime_tier, verification_environment_id,
+            kind, subject_json, requester_kind, requester_ref,
             requester_household_id, relationship_evidence, recent_password_session_id,
             state, visible_status, requested_categories, excluded_categories,
             legal_exception_codes, provider_cascades, dependent_review_required,
             dependent_review_completed, due_at, completed_at, terminal_reason_code,
             version, audit_refs)
-           VALUES ($1,$2,$3::jsonb,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::jsonb,
-                   $15,$16,$17,$18,$19,$20,$21)
+           VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,
+                   $17::jsonb,$18,$19,$20,$21,$22,$23,$24)
            ON CONFLICT (request_id) DO NOTHING`,
           requestValues(request),
         );
@@ -112,7 +113,11 @@ export function createPostgresPrivacyRepository(pool: PrivacySqlPool) {
                   provider_cascades = $4::jsonb, dependent_review_completed = $5,
                   completed_at = $6, terminal_reason_code = $7, version = $8,
                   audit_refs = $9
-            WHERE request_id = $10 AND version = $11`,
+            WHERE request_id = $10
+              AND product = $11
+              AND runtime_tier = $12
+              AND verification_environment_id = $13
+              AND version = $14`,
           [
             request.state,
             request.visible_status,
@@ -124,6 +129,9 @@ export function createPostgresPrivacyRepository(pool: PrivacySqlPool) {
             request.version,
             request.audit_refs,
             request.request_id,
+            request.product,
+            request.runtime_tier,
+            request.verification_environment_id,
             priorVersion,
           ],
         );
@@ -135,13 +143,17 @@ export function createPostgresPrivacyRepository(pool: PrivacySqlPool) {
       return execute(pool, async (client) => {
         const result = await client.query(
           `INSERT INTO onetime.export_download_grant
-           (grant_id, request_id, subject_binding_hash, token_hash,
+           (grant_id, request_id, product, runtime_tier, verification_environment_id,
+            subject_binding_hash, token_hash,
             initiating_session_id, issued_at, expires_at, used_at, revoked_at, version)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
            ON CONFLICT (grant_id) DO NOTHING`,
           [
             grant.grant_id,
             grant.request_id,
+            grant.product,
+            grant.runtime_tier,
+            grant.verification_environment_id,
             grant.subject_binding_hash,
             grant.token_hash,
             grant.initiating_session_id,
@@ -161,10 +173,22 @@ export function createPostgresPrivacyRepository(pool: PrivacySqlPool) {
         const result = await client.query(
           `UPDATE onetime.export_download_grant
               SET used_at = $1, version = $2
-            WHERE grant_id = $3 AND version = $4
+            WHERE grant_id = $3
+              AND product = $4
+              AND runtime_tier = $5
+              AND verification_environment_id = $6
+              AND version = $7
               AND used_at IS NULL AND revoked_at IS NULL
               AND expires_at > $1`,
-          [grant.used_at, grant.version, grant.grant_id, priorVersion],
+          [
+            grant.used_at,
+            grant.version,
+            grant.grant_id,
+            grant.product,
+            grant.runtime_tier,
+            grant.verification_environment_id,
+            priorVersion,
+          ],
         );
         return (result.rowCount ?? 0) === 1;
       });
@@ -238,6 +262,9 @@ async function execute<T>(
 function requestValues(request: DataRightsRequest): readonly unknown[] {
   return [
     request.request_id,
+    request.product,
+    request.runtime_tier,
+    request.verification_environment_id,
     request.kind,
     JSON.stringify(request.subject),
     request.requester_kind,

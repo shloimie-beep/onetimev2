@@ -1,10 +1,10 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: REVIEW
 
-Resume the bounded P32 privacy-scope persistence compatibility correction only
-after C00 reconciles the atomic claim checkpoint.
+Audit the exact superseding P32 privacy-scope persistence compatibility
+correction.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p32-privacy-data-rights
@@ -22,14 +22,19 @@ Claim checkpoint bindings:
 - claim `26390213-86c7-4085-8de0-1a5cc428b003`
 - lease `0c5215bf-e4c5-49b3-9f99-9c7ed0cf1e8e`
 - READY digest `32b38115f94e6989832318a478adf88480cbe14a3d1975a815b4c14f0873eda4`
+- reconciled claim head `39a578ff9a8ba91c59ebe082dc6611a17c051b79`
+- continuation control `5644d38395e86ea114197eb12415106994bbf3ea`
+- continuation acquisition parent `fe0d60fa2807b02882390df960f3e75517672d11`
 
-Fetch remote refs and require a C00-reconciled continuation against the exact
-claim checkpoint head. Then change only P32-owned privacy repository and
-focused test paths needed to persist explicit trusted `product`,
-`runtime_tier`, and `verification_environment_id` on data-rights request and
-export-download-grant inserts. Preserve the composite request binding. Prove
-isolated-staging and production acceptance plus absent, mismatched, and
-conflicting scope rejection natively.
+Fetch remote refs and audit the exact P32 head descended directly from
+`39a578ff9a8ba91c59ebe082dc6611a17c051b79`. Require exactly ten P32-owned
+privacy TypeScript files plus the P32 runtime triplet. Confirm trusted scope is
+validated and cannot be replaced by caller-conflicting scope, request and grant
+inserts persist all three scope fields, grants inherit request scope, scoped
+updates remain fenced, and the composite database binding is preserved.
 
-Until C00 publishes that continuation: stop. Do not edit product or migration
-bytes, merge, register, inspect providers, deploy, send, or perform effects.
+Rerun the focused 24-test suite, typecheck, focused formatting/lint, secret,
+diff/scope, and native PostgreSQL positive/negative scope proof. Confirm the
+lease release preceded expiry and effects remained `0/0/0`. Stop for C00
+admission; do not merge, register, inspect providers, deploy, send, or perform
+effects.

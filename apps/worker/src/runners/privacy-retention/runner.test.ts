@@ -76,6 +76,9 @@ function work(): RetentionWorkItem {
 
 function approvedRequest(): DataRightsRequest {
   return {
+    product: 'one_time_mishnayos',
+    runtime_tier: 'isolated_staging',
+    verification_environment_id: 'ci',
     request_id: 'request-1',
     kind: 'erasure',
     subject: {

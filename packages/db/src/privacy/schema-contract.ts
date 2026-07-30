@@ -45,6 +45,9 @@ export const PRIVACY_SCHEMA_CONTRACT = {
       purpose: 'versioned verified privacy request and provider-cascade lifecycle',
       required_columns: [
         'request_id',
+        'product',
+        'runtime_tier',
+        'verification_environment_id',
         'kind',
         'subject_json',
         'requester_kind',
@@ -73,6 +76,9 @@ export const PRIVACY_SCHEMA_CONTRACT = {
       required_columns: [
         'grant_id',
         'request_id',
+        'product',
+        'runtime_tier',
+        'verification_environment_id',
         'subject_binding_hash',
         'token_hash',
         'initiating_session_id',
@@ -119,6 +125,8 @@ export const PRIVACY_SCHEMA_CONTRACT = {
     'dependent Student privacy actions bind the current Parent and require separate review for data rights',
     'self-managed Student actions bind the exact Student and linked adult identity',
     'request transitions and versions are optimistic and fail closed',
+    'data-rights requests and download grants persist one exact trusted product, runtime tier, and verification environment binding',
+    'download grants inherit their request scope and preserve the composite request binding',
     'download authorization is hash-only, one-use, initiating-session-bound, and expires after exactly 15 minutes',
     'the primary database stores only independent-ledger receipts and cannot overwrite or delete purge records',
   ],

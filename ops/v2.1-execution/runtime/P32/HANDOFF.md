@@ -1,4 +1,4 @@
-# P32 Privacy Scope Compatibility Claim Handoff
+# P32 Privacy Scope Compatibility Correction Release
 
 ## Identity
 
@@ -8,6 +8,9 @@
 - Resume parent: `f4ae1c03c60917a23a825d46a4d0ec63ff4fc125`
 - Containing control: `9d53cf1c581dcb67e30b2beb62d048a1839f23e2`
 - Sole acquisition parent: `a6bc58cc4a35173fd1606124c0fa651dda2dac64`
+- Reconciled claim head: `39a578ff9a8ba91c59ebe082dc6611a17c051b79`
+- Continuation control: `5644d38395e86ea114197eb12415106994bbf3ea`
+- Continuation acquisition parent: `fe0d60fa2807b02882390df960f3e75517672d11`
 - Claim: `26390213-86c7-4085-8de0-1a5cc428b003`
 - PRIVACY_DATA_RIGHTS lease: `0c5215bf-e4c5-49b3-9f99-9c7ed0cf1e8e`, expiring `2026-07-30T01:23:18Z`
 - READY digest: `32b38115f94e6989832318a478adf88480cbe14a3d1975a815b4c14f0873eda4`
@@ -22,17 +25,17 @@ P32 implements exact dependent and adult-self Student consent authority, immutab
 
 Interface contract `1.0.0` is published for P18 at digest `76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217`, implemented by `888af54911ed583da99408cfcc791b485a728ddd`.
 
-## Current claim phase
+## Completed correction
 
-This checkpoint claims only the bounded privacy-scope persistence compatibility correction. Product, migration, registration, provider, deployment, and control bytes remain untouched. No implementation or implementation-test run was performed before this atomic claim push.
+Data-rights requests now carry a validated explicit trusted `product`, `runtime_tier`, and `verification_environment_id`. The server service supplies that scope after caller input so caller-conflicting scope cannot win. Export grants inherit the exact request scope. Repository request/grant inserts persist all three fields, request and grant updates are scope-fenced, and the database composite request/grant binding remains authoritative. Purge evidence must also match the approved request scope.
 
 ## Remaining work
 
-C00 must first reconcile this exact claim checkpoint. Only after reconciliation may P32 update its owned privacy repositories so `data_rights_request` and `export_download_grant` inserts persist explicit trusted `product`, `runtime_tier`, and `verification_environment_id`, preserve the composite request binding, and receive focused native scope acceptance/rejection coverage.
+Independent and C00 audit must admit the exact superseding correction head. No migration, registration, interface-checkpoint, steward-request, provider, deployment, send, merge, or external-effect work remains authorized here.
 
 ## Exact next action
 
-Stop for C00 reconciliation. Do not begin the compatibility implementation, merge, register, inspect providers, deploy, send, or perform external effects.
+Audit the exact remote correction head against parent `39a578ff9a8ba91c59ebe082dc6611a17c051b79`; do not integrate it before admission.
 
 ## Coverage
 
@@ -41,11 +44,11 @@ Stop for C00 reconciliation. Do not begin the compatibility implementation, merg
 
 ## Changed files and migrations
 
-All implementation paths remain within the seven owned P32 globs plus P32 runtime metadata and structured steward requests. No migration, root barrel, central route/worker composer, package manifest, lockfile, or infrastructure configuration is changed.
+The correction changes ten P32-owned privacy TypeScript files plus the P32 runtime triplet. No migration, root barrel, central composer, package manifest, lockfile, interface checkpoint, steward request, infrastructure configuration, or control file changed.
 
 ## Verification
 
-The claim preflight matched the exact repository, remote task head, containing control and acquisition parent, canonical READY digest, immutable package/task/context/source digests, claim, unexpired lease, exact three-runtime-file ceiling, and zero-effect state.
+Native PGlite PostgreSQL accepted valid isolated-staging and production request/grant pairs and returned exact composite scope readback. It rejected absent scope by NOT NULL, invalid tier/environment binding by CHECK, and mismatched grant/request scope by the composite foreign key; a conflicting request identity/scope returned the repository conflict result. Focused tests passed 24/24, full typecheck passed, focused Prettier/ESLint passed, the 2,562-file secret scan passed, and diff/scope hygiene passed.
 
 ## External effects
 
@@ -57,4 +60,4 @@ No secrets, real identities, child data, private questions/support bodies, media
 
 ## Blockers, deviations, and recovery
 
-No semantic blocker is asserted at claim time. Protocol requires a stop after this first atomic runtime-triplet push until C00 reconciles claim `26390213-86c7-4085-8de0-1a5cc428b003`.
+No blocker remains. The PRIVACY_DATA_RIGHTS lease was released at `2026-07-30T00:41:37Z`, before its `2026-07-30T01:23:18Z` expiry. Stop for independent audit.
