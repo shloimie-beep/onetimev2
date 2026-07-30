@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T09:54:00Z'
-last_heartbeat_at: '2026-07-30T09:09:00Z'
-controller_authorization_sha: 628e83b4a06923448a622322201992076493c779
+lease_expires_at: '2026-07-30T09:59:00Z'
+last_heartbeat_at: '2026-07-30T09:14:00Z'
+controller_authorization_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
 ready_entry_payload_digest: null
-state_based_on_head_sha: 628e83b4a06923448a622322201992076493c779
+state_based_on_head_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently audited and reconciled final I36 release 99fd8c33 with exact sole-parent runtime-triplet scope, no non-runtime drift from original release e2907b40, corrected passed terminal row, empty remaining/out-of-scope arrays, preserved historical/current lint evidence, pair/triplet 7f20095c/679fd2db, released lease, clean remote equality, and effects 0/0/0.
+- Cleared the consumed P31/P20/P17 merge queue, marked exact source finals 839ec12b/75137bf4/7f8a41bc integrated at release 99fd8c33, and unblocked only fresh read-only P18/P21 admission audits; candidate and all external effects remain withheld.
 - Independently reconciled I36 terminal-verification claim 391866bf as the exact sole child of rejected final f83ff0ce with runtime-triplet-only scope, canonical READY 3252e7b6, exact claim/lease/control/task bindings, pair/triplet 7ae5e961/354e39ca, preserved pending result and empty arrays, clean remote equality, and effects 0/0/0.
 - Consumed the final I36 verification-metadata READY and authorized only replacement of the one stale pending result plus derived runtime evidence under unchanged claim f34c38fb and RELEASE_INTEGRATOR lease 994b32cc; every non-runtime byte remains frozen.
 - Rejected I36 final f83ff0ce admission only because one current post-reconciliation verification row still said the completed final commit/push was pending; exact runtime-triplet scope, empty remaining/out-of-scope arrays, preserved historical lint evidence, current zero-finding lint resolution, pair/triplet 0ad39797/d069382c, released lease, clean remote equality, frozen non-runtime bytes, and effects 0/0/0 pass.
@@ -1134,6 +1136,7 @@ verification:
   - I36 metadata claim 3aab6a19: passed sole-parent ancestry, exact runtime-triplet-only scope, canonical READY/control/claim/lease/task bindings, pair/triplet 38d37515/b876dbb7, semantic preservation digests 2b5b2bd4/3224f0f2 for the two stale fields, clean remote equality, consumed READY, and effects 0/0/0
   - I36 rejected final f83ff0ce: passed exact sole-parent runtime-triplet scope, corrected empty remaining/out-of-scope arrays, preserved historical and current lint evidence, pair/triplet 0ad39797/d069382c, released lease, remote equality, non-runtime immutability, and effects 0/0/0; failed only one current verification result still marked pending
   - I36 terminal-verification claim 391866bf: passed sole-parent ancestry, runtime-triplet-only scope, canonical READY/control/claim/lease/task bindings, pair/triplet 7ae5e961/354e39ca, exact pending-result and empty-array preservation, clean remote equality, consumed READY, and effects 0/0/0
+  - I36 final 99fd8c33: passed live remote equality, sole-parent/runtime-triplet scope, no non-runtime drift from e2907b40, exact passed terminal verification row, empty remaining/out-of-scope arrays, preserved historical/current P31 lint evidence, pair/triplet 7f20095c/679fd2db, released lease before expiry, and effects 0/0/0
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

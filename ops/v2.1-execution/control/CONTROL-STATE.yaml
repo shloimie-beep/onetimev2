@@ -15,11 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 628e83b4a06923448a622322201992076493c779
+controller_authorization_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
 next_action: >-
-  I36 terminal-verification claim 391866bf is reconciled. Under unchanged claim f34c38fb and
-  RELEASE_INTEGRATOR lease 994b32cc through 09:47:00Z, change only the I36 runtime triplet: replace the one stale
-  pending verification result with exact passed evidence for f83ff0ce, preserve all other current/historical
-  evidence and empty arrays, recompute terminal manifests, release the lease, push normally, and stop for audit.
-  Every source, merge, migration, request, control-ledger, provider, deployment, send, and effect byte is frozen.
+  I36 release 99fd8c33 is independently audited and reconciled; MERGE is empty and P31/P20/P17 corrected sources
+  are integrated with exact 4/8/14-path ancestry. Perform fresh read-only P18 admission against integrated P17
+  7f8a41bc and fresh read-only P21 correction admission against integrated P20 75137bf4. Issue only exact bounded
+  claim-only READY entries after their dependency, ownership, request, path, lease, and zero-effect gates pass.
+  Candidate remains null; provider inspection/mutation, deployment, sends, migration execution, and effects remain
+  unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

@@ -2200,3 +2200,16 @@ I36 may now replace only the one stale pending verification result with exact
 passed evidence for `f83ff0ce`, update derived runtime evidence, release
 RELEASE_INTEGRATOR lease `994b32cc`, push normally, and stop for final audit.
 Every non-runtime byte remains frozen.
+
+Final I36 release `99fd8c33` is independently audited and reconciled. It is
+the exact runtime-triplet-only child of claim `391866bf`, with no non-runtime
+drift from original release `e2907b40`. The terminal verification is passed,
+both corrected arrays are empty, historical/current P31 lint evidence is
+intact, pair/triplet are `7f20095c`/`679fd2db`, the lease was released before
+expiry, remote equality is clean, and effects remain `0/0/0`.
+
+MERGE is empty. Corrected P31 `839ec12b`, P20 `75137bf4`, and P17 `7f8a41bc`
+are integrated at `99fd8c33`. Next perform only fresh read-only P18 admission
+against integrated P17 and fresh read-only P21 correction admission against
+integrated P20. Do not issue a claim until exact dependency, ownership,
+request, allowlist, lease, and zero-effect gates pass.

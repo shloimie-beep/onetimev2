@@ -1837,3 +1837,13 @@ runtime-triplet-only scope, pair/triplet `0ad39797`/`d069382c`, prior lease
 released before expiry, clean remote equality, frozen non-runtime bytes, and
 effects `0/0/0`. Preserve both empty arrays and all historical/current lint
 evidence, release the new lease, push normally, and stop for final audit.
+
+I36 release `99fd8c33ea023e838d8ee9c993b5de52f4763e7f` is independently
+audited and reconciled. MERGE is empty and corrected P31/P20/P17 sources are
+integrated. Perform fresh read-only P18 admission against exact integrated P17
+`7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c` and fresh read-only P21
+correction admission against exact integrated P20
+`75137bf476b4a1773f29bb41a6a149148df2623d`. Admit only exact bounded
+claim-only work after dependency, ownership, immutable-request, path, writer
+lease, and zero-effect checks pass. Candidate remains null; do not inspect or
+mutate providers, deploy, send, execute a migration, or perform an effect.
