@@ -2,11 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   CANONICAL_ZOOM_MEETING_SETTINGS,
-  ZOOM_BOOTSTRAP_TTL_MS,
   ZOOM_CONSTANT_PARENT_ROUTE,
   ZOOM_CONSTANT_STUDENT_ROUTE,
-  ZOOM_DEVICE_HEARTBEAT_INTERVAL_MS,
-  ZOOM_DEVICE_LEASE_TTL_MS,
   type ZoomStudentPreparationInput,
 } from '../../../../contracts/src/classroom/zoom-preparation/index.ts';
 import type {
@@ -15,19 +12,14 @@ import type {
 } from '../../../../contracts/src/classes/core/index.ts';
 import type { ProviderRegistryBinding } from '../../../../contracts/src/providers/v21-provider-core.ts';
 import {
-  acquireLiveStudentSession,
   buildPreparationPreview,
   buildRosterSnapshot,
   confirmPreparation,
-  consumeLaunchGrant,
   createPreparationDraft,
   createProvisioningPlan,
   deriveStudentJoinState,
   finalizeProvisioning,
-  heartbeatLiveStudentSession,
-  issueLaunchGrant,
   planDisposableCanaryCleanup,
-  revokeLiveStudentSession,
   verifyMeetingReadback,
   verifyRegistrantReadbacks,
   zoomPreparationSha256,
@@ -270,7 +262,7 @@ describe('P17 Zoom preparation acceptance', () => {
     expect(data.registrants.every((registrant) => registrant.state === 'active')).toBe(true);
   });
 
-  it('OTV2-CLASSROOM-071-AC01 exposes constant secure Join Class state and one-use bootstrap', () => {
+  it('OTV2-CLASSROOM-071-AC01 exposes only constant secure Join Class availability', () => {
     const data = providerVerified();
     const readyOccurrence = { ...occurrence, state: 'ready' as const };
     const now = '2026-07-30T15:55:00.000Z';
@@ -313,55 +305,6 @@ describe('P17 Zoom preparation acceptance', () => {
         now,
       }),
     ).toMatchObject({ available: false, safeCode: 'preparation_pending' });
-    const secret = 'opaque-single-use-secret';
-    const grant = issueLaunchGrant({
-      scope,
-      studentId: 'student-1',
-      householdId: 'household-1',
-      studentSessionId: 'session-1',
-      deviceLineageId: 'tablet-1',
-      occurrence: readyOccurrence,
-      registrant: data.registrants[0]!,
-      currentStudentAuthorized: true,
-      grantDigest: zoomPreparationSha256(secret),
-      studentVersion: 3,
-      enrollmentVersion: 2,
-      serviceAccountConsentVersion: 2,
-      recordingParticipationConsentVersion: 3,
-      occurredAt: now,
-    });
-    expect(Date.parse(grant.expiresAt) - Date.parse(grant.issuedAt)).toBe(ZOOM_BOOTSTRAP_TTL_MS);
-    const consumed = consumeLaunchGrant({
-      grant,
-      presentedSecret: secret,
-      currentStudentAuthorized: true,
-      studentSessionId: 'session-1',
-      deviceLineageId: 'tablet-1',
-      sdkBootstrap: {
-        meetingRef: 'opaque-meeting-ref',
-        registrantRef: 'opaque-registrant-ref',
-        sdkSignature: 'ephemeral-signature',
-        displayName: 'Student 1',
-        expiresAt: grant.expiresAt,
-        cacheControl: 'private, no-store',
-        referrerPolicy: 'no-referrer',
-        durable: false,
-      },
-      occurredAt: '2026-07-30T15:55:20.000Z',
-    });
-    expect(consumed.grant.consumedAt).toBeDefined();
-    expect(() =>
-      consumeLaunchGrant({
-        ...consumed,
-        grant: consumed.grant,
-        presentedSecret: secret,
-        currentStudentAuthorized: true,
-        studentSessionId: 'session-1',
-        deviceLineageId: 'tablet-1',
-        sdkBootstrap: consumed.bootstrap,
-        occurredAt: '2026-07-30T15:55:30.000Z',
-      }),
-    ).toThrow('single-use');
   });
 
   it('OTV2-CLASSROOM-072-AC01 builds household reminders with labels and safe app paths only', () => {
@@ -397,114 +340,49 @@ describe('P17 Zoom preparation acceptance', () => {
     expect(prepared().plan.resource.settings.muteUponEntry).toBe(true);
   });
 
-  it('OTV2-CLASSROOM-076-AC01 permits three separate Student tablet leases', () => {
-    const sessions = [1, 2, 3].map((index) =>
-      acquireLiveStudentSession({
+  it('OTV2-CLASSROOM-076-AC01 exposes independent join availability for three Students', () => {
+    const data = providerVerified();
+    const readyOccurrence = { ...occurrence, state: 'ready' as const };
+    const states = data.registrants.map((registrant) =>
+      deriveStudentJoinState({
         scope,
-        existing: null,
-        studentId: `student-${index}`,
-        occurrenceId: occurrence.id,
-        studentSessionId: `session-${index}`,
-        deviceLineageId: `tablet-${index}`,
-        occurredAt: '2026-07-30T15:55:00.000Z',
+        studentId: registrant.studentId,
+        occurrence: readyOccurrence,
+        resource: data.resource,
+        registrant,
+        currentStudentAuthorized: true,
+        now: '2026-07-30T15:55:00.000Z',
       }),
     );
-    expect(sessions.map((result) => result.disposition)).toEqual([
-      'acquired',
-      'acquired',
-      'acquired',
-    ]);
-    expect(ZOOM_DEVICE_HEARTBEAT_INTERVAL_MS).toBe(30_000);
-    expect(
-      Date.parse(sessions[0]!.session.leaseExpiresAt) -
-        Date.parse(sessions[0]!.session.lastHeartbeatAt),
-    ).toBe(ZOOM_DEVICE_LEASE_TTL_MS);
-    expect(
-      heartbeatLiveStudentSession({
-        session: sessions[0]!.session,
-        studentSessionId: 'session-1',
-        deviceLineageId: 'tablet-1',
-        occurredAt: '2026-07-30T15:55:30.000Z',
-      }).leaseExpiresAt,
-    ).toBe('2026-07-30T15:57:00.000Z');
+    expect(states).toHaveLength(3);
+    expect(states.every((state) => state.available && !state.exposesRawZoomUrl)).toBe(true);
   });
 
-  it('OTV2-CLASSROOM-077-AC01 denies sibling/cross-household and second-device joins', () => {
-    const existing = acquireLiveStudentSession({
-      scope,
-      existing: null,
-      studentId: 'student-1',
-      occurrenceId: occurrence.id,
-      studentSessionId: 'session-1',
-      deviceLineageId: 'tablet-1',
-      occurredAt: '2026-07-30T15:55:00.000Z',
-    }).session;
-    expect(() =>
-      acquireLiveStudentSession({
-        scope,
-        existing,
-        studentId: 'student-1',
-        occurrenceId: occurrence.id,
-        studentSessionId: 'sibling-session',
-        deviceLineageId: 'tablet-2',
-        occurredAt: '2026-07-30T15:55:10.000Z',
-      }),
-    ).toThrow('another device');
+  it('OTV2-CLASSROOM-077-AC01 denies cross-Student and cross-scope join availability', () => {
     const data = providerVerified();
-    expect(() =>
-      issueLaunchGrant({
+    const readyOccurrence = { ...occurrence, state: 'ready' as const };
+    expect(
+      deriveStudentJoinState({
         scope,
         studentId: 'student-2',
-        householdId: 'household-2',
-        studentSessionId: 'session-2',
-        deviceLineageId: 'tablet-2',
-        occurrence: { ...occurrence, state: 'ready' },
+        occurrence: readyOccurrence,
+        resource: data.resource,
         registrant: data.registrants[0]!,
         currentStudentAuthorized: true,
-        grantDigest: zoomPreparationSha256('secret'),
-        studentVersion: 3,
-        enrollmentVersion: 2,
-        serviceAccountConsentVersion: 2,
-        recordingParticipationConsentVersion: 3,
-        occurredAt: '2026-07-30T15:55:00.000Z',
+        now: '2026-07-30T15:55:00.000Z',
       }),
-    ).toThrow('required');
-    expect(() =>
-      issueLaunchGrant({
+    ).toMatchObject({ available: false, safeCode: 'registrant_not_ready' });
+    expect(
+      deriveStudentJoinState({
         scope,
         studentId: 'student-1',
-        householdId: 'household-1',
-        studentSessionId: 'session-1',
-        deviceLineageId: 'tablet-1',
-        occurrence: { ...occurrence, id: 'other-occurrence', state: 'ready' },
+        occurrence: { ...readyOccurrence, accountKey: 'other-account' },
+        resource: data.resource,
         registrant: data.registrants[0]!,
         currentStudentAuthorized: true,
-        grantDigest: zoomPreparationSha256('secret'),
-        studentVersion: 3,
-        enrollmentVersion: 2,
-        serviceAccountConsentVersion: 2,
-        recordingParticipationConsentVersion: 3,
-        occurredAt: '2026-07-30T15:55:00.000Z',
+        now: '2026-07-30T15:55:00.000Z',
       }),
-    ).toThrow('required');
-    expect(() =>
-      acquireLiveStudentSession({
-        scope,
-        existing: { ...existing, studentId: 'student-2' },
-        studentId: 'student-1',
-        occurrenceId: occurrence.id,
-        studentSessionId: 'session-1',
-        deviceLineageId: 'tablet-1',
-        occurredAt: '2026-07-30T15:55:10.000Z',
-      }),
-    ).toThrow('cross-bound');
-    expect(() =>
-      revokeLiveStudentSession({
-        actor: { ...actor, role: 'parent' } as unknown as ClassroomAdminActor,
-        session: existing,
-        occurredAt: '2026-07-30T15:55:10.000Z',
-      }),
-    ).toThrow('Admin authority');
+    ).toMatchObject({ available: false, safeCode: 'student_not_authorized' });
   });
 
   it('OTV2-CLASSROOM-079-AC01 isolates disposable canary cleanup from normal classroom', () => {

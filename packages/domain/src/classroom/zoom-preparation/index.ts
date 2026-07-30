@@ -1,19 +1,14 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHash } from 'node:crypto';
 
 import {
   CANONICAL_ZOOM_MEETING_SETTINGS,
-  ZOOM_BOOTSTRAP_TTL_MS,
   ZOOM_CONSTANT_PARENT_ROUTE,
   ZOOM_CONSTANT_STUDENT_ROUTE,
-  ZOOM_DEVICE_LEASE_TTL_MS,
   ZOOM_PREPARATION_AUTOMATIC_LEAD_MS,
   ZOOM_PREPARATION_ERROR_CODES,
   ZOOM_REMINDER_LEAD_MS,
   type ClassroomResource,
   type ConfirmZoomPreparationCommand,
-  type LaunchGrantRecord,
-  type LiveStudentSession,
-  type MeetingSdkBootstrap,
   type OccurrenceRosterSnapshot,
   type PrepareZoomPreviewCommand,
   type StudentJoinState,
@@ -581,186 +576,6 @@ export function deriveStudentJoinState(input: {
   };
 }
 
-export function issueLaunchGrant(input: {
-  scope: ZoomPreparationScope;
-  studentId: string;
-  householdId: string;
-  studentSessionId: string;
-  deviceLineageId: string;
-  occurrence: ClassOccurrenceRecord;
-  registrant: StudentRegistrant;
-  currentStudentAuthorized: boolean;
-  grantDigest: string;
-  studentVersion: number;
-  enrollmentVersion: number;
-  serviceAccountConsentVersion: number;
-  recordingParticipationConsentVersion: number;
-  occurredAt: string;
-}): LaunchGrantRecord {
-  assertSameScope(input.scope, input.occurrence);
-  assertSameScope(input.scope, input.registrant);
-  if (
-    !input.currentStudentAuthorized ||
-    input.registrant.state !== 'active' ||
-    !['ready', 'live'].includes(input.occurrence.state) ||
-    Date.parse(input.occurredAt) < Date.parse(input.occurrence.joinOpensAt) ||
-    Date.parse(input.occurredAt) > Date.parse(input.occurrence.joinClosesAt) ||
-    input.registrant.studentId !== input.studentId ||
-    input.registrant.householdId !== input.householdId ||
-    input.registrant.occurrenceId !== input.occurrence.id ||
-    !SHA256.test(input.grantDigest)
-  ) {
-    fail(
-      'joinDenied',
-      'Current Student, consent, access, occurrence, and registrant are required.',
-    );
-  }
-  return {
-    id: zoomPreparationSha256(
-      `${input.studentId}:${input.occurrence.id}:${input.studentSessionId}:${input.deviceLineageId}:${input.occurredAt}`,
-    ),
-    ...input.scope,
-    studentId: input.studentId,
-    householdId: input.householdId,
-    studentSessionId: safeOpaque(input.studentSessionId),
-    deviceLineageId: safeOpaque(input.deviceLineageId),
-    occurrenceId: input.occurrence.id,
-    registrantId: input.registrant.id,
-    grantDigest: input.grantDigest,
-    issuedAt: input.occurredAt,
-    expiresAt: new Date(Date.parse(input.occurredAt) + ZOOM_BOOTSTRAP_TTL_MS).toISOString(),
-    studentVersion: input.studentVersion,
-    enrollmentVersion: input.enrollmentVersion,
-    serviceAccountConsentVersion: input.serviceAccountConsentVersion,
-    recordingParticipationConsentVersion: input.recordingParticipationConsentVersion,
-    version: 1,
-  };
-}
-
-export function consumeLaunchGrant(input: {
-  grant: LaunchGrantRecord;
-  presentedSecret: string;
-  currentStudentAuthorized: boolean;
-  studentSessionId: string;
-  deviceLineageId: string;
-  sdkBootstrap: MeetingSdkBootstrap;
-  occurredAt: string;
-}): { grant: LaunchGrantRecord; bootstrap: MeetingSdkBootstrap } {
-  if (input.grant.consumedAt || input.grant.revokedAt) {
-    fail('bootstrapReplay', 'Launch grant is single-use.');
-  }
-  if (Date.parse(input.occurredAt) > Date.parse(input.grant.expiresAt)) {
-    fail('bootstrapExpired', 'Launch grant expired.');
-  }
-  const presentedDigest = zoomPreparationSha256(input.presentedSecret);
-  if (
-    !input.currentStudentAuthorized ||
-    input.grant.studentSessionId !== input.studentSessionId ||
-    input.grant.deviceLineageId !== input.deviceLineageId ||
-    !safeDigestEqual(input.grant.grantDigest, presentedDigest)
-  ) {
-    fail('joinDenied', 'Launch grant is not valid for this Student session and device.');
-  }
-  assertEphemeralBootstrap(input.sdkBootstrap, input.grant.expiresAt);
-  return {
-    grant: {
-      ...input.grant,
-      consumedAt: input.occurredAt,
-      version: input.grant.version + 1,
-    },
-    bootstrap: input.sdkBootstrap,
-  };
-}
-
-export function acquireLiveStudentSession(input: {
-  scope: ZoomPreparationScope;
-  existing: LiveStudentSession | null;
-  studentId: string;
-  occurrenceId: string;
-  studentSessionId: string;
-  deviceLineageId: string;
-  occurredAt: string;
-}): { disposition: 'acquired' | 'reconnected'; session: LiveStudentSession } {
-  const now = Date.parse(input.occurredAt);
-  if (
-    input.existing &&
-    (input.existing.accountKey !== input.scope.accountKey ||
-      input.existing.productKey !== input.scope.productKey ||
-      input.existing.studentId !== input.studentId ||
-      input.existing.occurrenceId !== input.occurrenceId)
-  ) {
-    fail(
-      'concurrentDeviceDenied',
-      'Existing live-session record is cross-bound to another scope, Student, or occurrence.',
-    );
-  }
-  if (
-    input.existing?.state === 'active' &&
-    Date.parse(input.existing.leaseExpiresAt) > now &&
-    (input.existing.studentSessionId !== input.studentSessionId ||
-      input.existing.deviceLineageId !== input.deviceLineageId)
-  ) {
-    fail('concurrentDeviceDenied', 'This Student is already live on another device.');
-  }
-  const reconnect =
-    input.existing?.state === 'active' &&
-    input.existing.studentSessionId === input.studentSessionId &&
-    input.existing.deviceLineageId === input.deviceLineageId;
-  const baseVersion = input.existing?.version ?? 0;
-  return {
-    disposition: reconnect ? 'reconnected' : 'acquired',
-    session: {
-      id: input.existing?.id ?? zoomPreparationSha256(`${input.studentId}:${input.occurrenceId}`),
-      ...input.scope,
-      studentId: input.studentId,
-      occurrenceId: input.occurrenceId,
-      studentSessionId: safeOpaque(input.studentSessionId),
-      deviceLineageId: safeOpaque(input.deviceLineageId),
-      state: 'active',
-      leaseExpiresAt: new Date(now + ZOOM_DEVICE_LEASE_TTL_MS).toISOString(),
-      lastHeartbeatAt: input.occurredAt,
-      version: baseVersion + 1,
-    },
-  };
-}
-
-export function heartbeatLiveStudentSession(input: {
-  session: LiveStudentSession;
-  studentSessionId: string;
-  deviceLineageId: string;
-  occurredAt: string;
-}): LiveStudentSession {
-  if (
-    input.session.state !== 'active' ||
-    input.session.studentSessionId !== input.studentSessionId ||
-    input.session.deviceLineageId !== input.deviceLineageId ||
-    Date.parse(input.occurredAt) > Date.parse(input.session.leaseExpiresAt)
-  ) {
-    fail('concurrentDeviceDenied', 'Only the active device lineage may heartbeat.');
-  }
-  return {
-    ...input.session,
-    lastHeartbeatAt: input.occurredAt,
-    leaseExpiresAt: new Date(Date.parse(input.occurredAt) + ZOOM_DEVICE_LEASE_TTL_MS).toISOString(),
-    version: input.session.version + 1,
-  };
-}
-
-export function revokeLiveStudentSession(input: {
-  actor: ZoomPreparationAdminActor;
-  session: LiveStudentSession;
-  occurredAt: string;
-}): LiveStudentSession {
-  assertAdmin(input.actor, input.session);
-  return {
-    ...input.session,
-    state: 'revoked',
-    leaseExpiresAt: input.occurredAt,
-    lastHeartbeatAt: input.occurredAt,
-    version: input.session.version + 1,
-  };
-}
-
 export function planDisposableCanaryCleanup(input: {
   purpose: 'disposable_canary' | 'normal_class';
   providerResourceRefDigest: string;
@@ -910,34 +725,6 @@ function safeClassroomName(value: string) {
     fail('invalidRoster', 'Classroom name is missing or unsafe.');
   }
   return normalized;
-}
-
-function safeOpaque(value: string) {
-  if (!value.trim() || UNSAFE_BEARER.test(value) || /[@?&#]/.test(value)) {
-    fail('joinDenied', 'Session and device identifiers must be opaque.');
-  }
-  return value;
-}
-
-function assertEphemeralBootstrap(value: MeetingSdkBootstrap, grantExpiry: string) {
-  if (
-    !value.meetingRef ||
-    !value.registrantRef ||
-    !value.sdkSignature ||
-    UNSAFE_BEARER.test(value.meetingRef) ||
-    UNSAFE_BEARER.test(value.registrantRef) ||
-    value.expiresAt !== grantExpiry ||
-    value.cacheControl !== 'private, no-store' ||
-    value.referrerPolicy !== 'no-referrer' ||
-    value.durable !== false
-  ) {
-    fail('joinDenied', 'Bootstrap must contain only bounded no-store SDK fields.');
-  }
-}
-
-function safeDigestEqual(left: string, right: string) {
-  if (!SHA256.test(left) || !SHA256.test(right)) return false;
-  return timingSafeEqual(Buffer.from(left, 'hex'), Buffer.from(right, 'hex'));
 }
 
 function canonicalJson(value: unknown): string {

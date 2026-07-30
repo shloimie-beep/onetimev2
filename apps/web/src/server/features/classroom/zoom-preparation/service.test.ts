@@ -31,9 +31,6 @@ class MemoryRepository implements ZoomPreparationRepository {
       listRegistrants: async () => [],
       saveRegistrant: async () => undefined,
       saveProviderOperation: async () => undefined,
-      saveLaunchGrant: async () => undefined,
-      getLiveSession: async () => null,
-      saveLiveSession: async () => undefined,
       getReceipt: async (_scope, key) => this.receipts.get(key) ?? null,
       saveReceipt: async (value) => {
         this.receipts.set(value.idempotencyKey, structuredClone(value));

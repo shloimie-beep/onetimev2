@@ -16,9 +16,6 @@ export const ZOOM_PREPARATION_CONTRACT_VERSION = '2.1.0' as const;
 export const ZOOM_PREPARATION_OPERATION_VERSION = 'OT-ZOOM-PREPARE-1' as const;
 export const ZOOM_PREPARATION_AUTOMATIC_LEAD_MS = 24 * 60 * 60 * 1000;
 export const ZOOM_REMINDER_LEAD_MS = 30 * 60 * 1000;
-export const ZOOM_BOOTSTRAP_TTL_MS = 60 * 1000;
-export const ZOOM_DEVICE_HEARTBEAT_INTERVAL_MS = 30 * 1000;
-export const ZOOM_DEVICE_LEASE_TTL_MS = 90 * 1000;
 export const ZOOM_CONSTANT_STUDENT_ROUTE = '/app/student/classroom' as const;
 export const ZOOM_CONSTANT_PARENT_ROUTE = '/app/parent/classes' as const;
 
@@ -230,49 +227,6 @@ export type StudentJoinState = {
   exposesRawZoomUrl: false;
 };
 
-export type LaunchGrantRecord = ZoomPreparationScope & {
-  id: string;
-  studentId: string;
-  householdId: string;
-  studentSessionId: string;
-  deviceLineageId: string;
-  occurrenceId: string;
-  registrantId: string;
-  grantDigest: string;
-  issuedAt: string;
-  expiresAt: string;
-  consumedAt?: string;
-  revokedAt?: string;
-  studentVersion: number;
-  enrollmentVersion: number;
-  serviceAccountConsentVersion: number;
-  recordingParticipationConsentVersion: number;
-  version: number;
-};
-
-export type LiveStudentSession = ZoomPreparationScope & {
-  id: string;
-  studentId: string;
-  occurrenceId: string;
-  studentSessionId: string;
-  deviceLineageId: string;
-  state: 'active' | 'revoked' | 'expired';
-  leaseExpiresAt: string;
-  lastHeartbeatAt: string;
-  version: number;
-};
-
-export type MeetingSdkBootstrap = {
-  meetingRef: string;
-  registrantRef: string;
-  sdkSignature: string;
-  displayName: string;
-  expiresAt: string;
-  cacheControl: 'private, no-store';
-  referrerPolicy: 'no-referrer';
-  durable: false;
-};
-
 export type PrepareZoomPreviewCommand = {
   actor: ZoomPreparationAdminActor | { role: 'scheduler'; principalId: string };
   scope: ZoomPreparationScope;
@@ -332,13 +286,6 @@ export interface ZoomPreparationUnitOfWork {
   ): Promise<readonly StudentRegistrant[]>;
   saveRegistrant(registrant: StudentRegistrant): Promise<void>;
   saveProviderOperation(operation: ProviderOperation): Promise<void>;
-  saveLaunchGrant(grant: LaunchGrantRecord): Promise<void>;
-  getLiveSession(
-    scope: ZoomPreparationScope,
-    studentId: string,
-    occurrenceId: string,
-  ): Promise<LiveStudentSession | null>;
-  saveLiveSession(session: LiveStudentSession): Promise<void>;
   getReceipt(
     scope: ZoomPreparationScope,
     idempotencyKey: string,
@@ -361,9 +308,6 @@ export const ZOOM_PREPARATION_ERROR_CODES = {
   invalidState: 'zoom_preparation_invalid_state',
   invalidTransition: 'zoom_preparation_invalid_transition',
   staleVersion: 'zoom_preparation_stale_version',
-  bootstrapExpired: 'zoom_preparation_bootstrap_expired',
-  bootstrapReplay: 'zoom_preparation_bootstrap_replay',
-  concurrentDeviceDenied: 'zoom_preparation_concurrent_device_denied',
   joinDenied: 'zoom_preparation_join_denied',
   providerAcceptanceUnknown: 'zoom_preparation_provider_acceptance_unknown',
 } as const;
