@@ -1584,3 +1584,8 @@ P31 may atomically resume from exact head
 `d03dd6a9-384f-4b52-aaaf-3ac5752a36da` for only
 `P30-copy-registration-001`. Change exactly its runtime triplet, push, and stop
 for C00 reconciliation before copy-catalog edits. Keep effects `0/0/0`.
+Continue P31 only under claim `ff4a79d9-158b-4e3f-a150-03b171427749` and
+COPY_CATALOG lease `d03dd6a9-384f-4b52-aaaf-3ac5752a36da`, implementing only
+`P30-copy-registration-001`. Preserve adult-only, current-consent,
+named-approval, exact-digest, and no-token-content gates. Do not configure,
+activate, enroll, or send through providers. Keep effects `0/0/0`.

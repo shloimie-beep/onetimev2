@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T05:11:56Z'
-last_heartbeat_at: '2026-07-30T04:26:56Z'
-controller_authorization_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
+lease_expires_at: '2026-07-30T05:17:21Z'
+last_heartbeat_at: '2026-07-30T04:32:21Z'
+controller_authorization_sha: 30689e76f3697ab11dedab3b77d5bb5cbededde5
 ready_entry_payload_digest: null
-state_based_on_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
+state_based_on_head_sha: 30689e76f3697ab11dedab3b77d5bb5cbededde5
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Reconciled P31 atomic claim eff2434e4ec39af0eeb127f2c46c525a3bed6130 from exact parent ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d and exact runtime-triplet-only scope; authorized only P30-copy-registration-001 under its active COPY_CATALOG lease.
+- Consumed the P31 READY entry and confirmed effects remain 0/0/0 with no provider locks claimed.
 - Verified P30-copy-registration-001 raw request digest 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf, source blob e62dc0f3b9a870608ddb74b6eba66b8d34bbc6af, P30/P31 source ancestry in final release 42068ace, and no effect authority.
 - Authorized P31 atomic claim ff4a79d9-158b-4e3f-a150-03b171427749 under COPY_CATALOG lease d03dd6a9-384f-4b52-aaaf-3ac5752a36da for only the P30 copy-owner request.
 - Reconciled F02 atomic claim ff35555611e7261d1b7b96fc2233eaf82a9f9fdf from exact parent cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 and exact runtime-triplet-only scope; authorized only migrations 2245 through 2249 under claim 0e98de00-4873-41cb-a06f-bd0ace918b89 and the two active writer leases.

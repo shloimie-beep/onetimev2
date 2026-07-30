@@ -1877,3 +1877,10 @@ under claim `ff4a79d9-158b-4e3f-a150-03b171427749` and COPY_CATALOG lease
 `d03dd6a9-384f-4b52-aaaf-3ac5752a36da`. The first push must change only the P31
 runtime triplet. Product edits remain withheld until C00 reconciliation. No
 provider configuration, activation, enrollment, or send is authorized.
+## P31 atomic claim reconciled
+
+P31 claim `eff2434e4ec39af0eeb127f2c46c525a3bed6130` is reconciled from exact
+parent `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` and its runtime-triplet-only
+scope. P31 may implement only `P30-copy-registration-001` under its active
+COPY_CATALOG lease. Provider configuration, activation, enrollment, sends, and
+all external effects remain unauthorized.

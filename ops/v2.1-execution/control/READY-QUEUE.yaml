@@ -2,68 +2,8 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready:
-- task_id: P31
-  status: resume_ready
-  phase: P30_copy_registration_steward
-  branch: codex/v21-p31-email-copy-approval
-  claim_mode: resume_existing
-  state_based_on_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
-  authorized_start_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
-  expected_existing_head: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
-  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
-  task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
-  dependency_heads_and_digests:
-    C00:
-      required_state: operational
-      observed_state: operational
-      observed_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
-      control_state_digest: 53354a4f147c767126201ff664b1f8443a9fb21de2fe014599bd9cefb9a8827e
-    I36:
-      required_state: final_source_release_audited
-      observed_state: final_source_release_audited
-      observed_integration_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
-    P31:
-      required_state: copy_catalog_integrated
-      observed_state: copy_catalog_integrated
-      observed_task_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
-      state_handoff_digest: 6ec2a92d3cc745f0e707961d16dc9c81a177f895ce6eb25d8ec1897ae16ab581
-    P30:
-      required_state: final_integrated
-      observed_state: final_integrated
-      observed_task_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
-    steward_request:
-      request_id: P30-copy-registration-001
-      request_digest: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
-      request_digest_kind: raw_sha256
-      source_task_id: P30
-      source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
-      source_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-copy-registration-001.yaml
-      source_blob_sha: e62dc0f3b9a870608ddb74b6eba66b8d34bbc6af
-      assigned_steward: P31
-      target_checkpoint: P31_next_canonical_copy_registration_checkpoint
-      evaluated_target_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
-  writer_slot_leases:
-  - slot: COPY_CATALOG
-    lease_id: d03dd6a9-384f-4b52-aaaf-3ac5752a36da
-    holder_task_id: P31
-    holder_claim_id: ff4a79d9-158b-4e3f-a150-03b171427749
-    state_based_on_control_head_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
-    lease_issued_at: '2026-07-30T04:26:56Z'
-    lease_expires_at: '2026-07-30T05:56:56Z'
-    phase_scope: P31_P30_copy_registration_atomic_claim_only
-  effect_lock_leases: []
-  claim_id: ff4a79d9-158b-4e3f-a150-03b171427749
-  lease_issued_at: '2026-07-30T04:26:56Z'
-  lease_expires_at: '2026-07-30T05:56:56Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/P31-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: XHIGH
-entry_payload_digests:
-  P31: 53c8b3774408a96350e8050746a2e2894ab65a7c418b7932bb05f5e2f9e375cb
+ready: []
+entry_payload_digests: {}
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.
