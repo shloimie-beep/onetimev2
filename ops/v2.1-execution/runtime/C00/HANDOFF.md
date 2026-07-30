@@ -2040,3 +2040,12 @@ and composite SQL predicates are mandatory; body-selected scope fails closed.
 P20 migration 2246 is already applied and must not be changed or recreated.
 P21 remains withheld until corrected P20 is final, audited, and integrated;
 its mixed `P21-registration-001` remains immutable and unapplied.
+
+P17 claim `7e05a1e3` and P20 claim `0d58c8e4` are independently reconciled as
+exact runtime-triplet-only children of `78af7160` and `3d75b57e`.
+Their state/handoff and triplet digests are P17 `67ed46d7`/`4582e952` and
+P20 `97acf477`/`96aa1603`. Exact claim/READY/lease/dependency bindings,
+preserved source/request bytes, clean remote equality, and effects `0/0/0`
+pass. READY is empty. P17 and P20 may now implement only their explicit
+allowlists under their unchanged claims and leases. P17 must publish only its
+two immutable `-002` successors; P20 must not publish a migration request.

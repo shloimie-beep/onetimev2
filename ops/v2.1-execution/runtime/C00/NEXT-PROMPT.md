@@ -1023,6 +1023,24 @@ stop for independent re-audit. Do not inspect/mutate Telegram or any live
 provider, send, apply a steward request, claim an effect lock, or perform an
 external effect.
 
+P17 claim `7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f` is reconciled.
+Continue only under claim `f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1` and
+ZOOM_PREPARATION lease `0e53a171-263b-41d9-b957-80588027c194`, using only
+the explicit P17 allowlist. Preserve P18's sole launch/bootstrap/live-session/
+attendance ownership; replace `provider_operations` with canonical
+`job_outbox` plus `provider_operation_binding`; limit the schema contract and
+`P17-MIGRATION-002` to five preparation tables; publish only the two exact
+`-002` successor requests; run focused/typecheck/lint/format/YAML/secret/scope
+gates, release the lease, push, and stop for audit. Effects stay `0/0/0`.
+
+P20 claim `0d58c8e4d6ca0263273d540bfd722586d8a1b5d3` is reconciled.
+Continue only under claim `e8c768e8-f603-4d0c-a45b-34b5cd7ea92c` and
+CONTENT_PROCESSING lease `24d0fa6f-30ac-4fc0-af2a-2b495d826063`, changing
+only the five exact correction source paths plus its runtime triplet. Enforce
+composite scope and exact source/seven-artifact/participant/Admin evidence
+with fail-closed replay/conflict tests. Do not edit a migration, publish a new
+P20 request, or touch P21. Run exact gates, release, push, and stop for audit.
+
 P23 residual claim `433cc88b34d99099ca75f64876713406c6e43053` is
 reconciled. Resume it under unchanged claim
 `f7e3fb0e-a8d4-416b-8c79-786a696e2dc4` and lease

@@ -12,13 +12,14 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T07:28:15Z'
-last_heartbeat_at: '2026-07-30T06:43:15Z'
-controller_authorization_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+lease_expires_at: '2026-07-30T07:41:00Z'
+last_heartbeat_at: '2026-07-30T06:56:00Z'
+controller_authorization_sha: 2cb1cb46f37c3178217745876e0f09d694bbebf9
 ready_entry_payload_digest: null
-state_based_on_head_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+state_based_on_head_sha: 2cb1cb46f37c3178217745876e0f09d694bbebf9
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently reconciled P17 claim 7e05a1e3 and P20 claim 0d58c8e4 as exact sole children of their authorized parents with runtime-triplet-only scopes, exact READY/claim/lease/dependency bindings, pair/triplet manifests 67ed46d7/4582e952 and 97acf477/96aa1603, preserved source/request bytes, remote equality, and effects 0/0/0.
 - Admitted only P20's five-source approved-for-publication projection correction for a runtime-triplet atomic claim under canonical READY ba07246d, claim e8c768e8, CONTENT_PROCESSING lease 24d0fa6f, exact composite-scope/source/artifact/participant evidence gates, preserved applied migration 2246, withheld P21, and effects 0/0/0.
 - Independently audited P31 lint-correction final 839ec12b with exact claim/implementation/final ancestry, test-only implementation 4f61ec10, runtime-only final, four-path total scope, corrected test digest b82cb884, full lint with zero findings, typecheck, 3/3 focused tests, released lease, clean remote equality, and effects 0/0/0.
 - Independently reconciled P31 lint-correction atomic claim 9d878d88 as the sole child of d72dda56 with exactly its runtime triplet changed, exact control/READY/claim/lease/lint bindings, preserved source/interface/request bytes, clean remote equality, and effects 0/0/0.
@@ -1100,6 +1101,7 @@ verification:
   - P31 lint-correction final 839ec12b: passed exact two-commit ancestry, test-only implementation, runtime-only final, four-path scope, corrected source digest b82cb884, focused 3/3, workspace typecheck, full lint zero findings, released lease, remote equality, and zero effects
   - P17 collision-correction admission: passed exact P17/P18 ownership boundary, F05/F06 canonical outbox/binding reuse, five preparation-table ceiling, withheld immutable -001 requests, explicit allowed paths, canonical READY digest b141b750, disjoint ZOOM_PREPARATION lease, and zero effect locks
   - P20 publication-projection correction admission: passed exact P20/P21 ancestry and manifests, applied migration/result readback, five-source/three-runtime allowlists and base digests, composite scope and evidence gates, canonical READY ba07246d, disjoint CONTENT_PROCESSING lease, withheld P21, and zero effect locks
+  - P17/P20 atomic claims 7e05a1e3/0d58c8e4: passed exact sole-parent ancestry, runtime-triplet-only scopes, canonical READY/claim/lease/dependency bindings, pair/triplet manifests, preserved source/request bytes, remote equality, empty READY after consumption, and zero effects
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
