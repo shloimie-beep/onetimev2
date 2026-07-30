@@ -12,13 +12,16 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T06:15:40Z'
-last_heartbeat_at: '2026-07-30T05:30:40Z'
-controller_authorization_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
+lease_expires_at: '2026-07-30T06:33:54Z'
+last_heartbeat_at: '2026-07-30T05:48:54Z'
+controller_authorization_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
 ready_entry_payload_digest: null
-state_based_on_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
+state_based_on_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently audited I36 direct-prerequisite release 3cf78740 with exact ordered merge parents acde075e/cb7a700e/5b479ac0, exact 9/12/8 scopes, 32-path claim delta, pair/triplet 3113baf2/5c85deb3, 68 focused passes, typecheck, 80/80 migrations, released lease, clean remote equality, and effects 0/0/0.
+- Cleared the consumed merge queue, mirrored exact migrations 2245 through 2249 with next ordinal 2250, and recorded five F02 migration results plus P28 reminder-routing and P31 copy-registration results as applied and acknowledged using documented canonical sorted-JSON result objects.
+- Recorded the exact-source P31 ESLint finding at tests/unit/communications/copy-catalog.test.ts:143 without altering the admitted source and issued only a runtime-triplet atomic correction READY under digest 23b245aa, claim 7f50cef8, COPY_CATALOG lease 42734cda, and effects 0/0/0.
 - Independently reconciled I36 atomic claim 1b8335f8 as the sole child of release 42068ace with exactly its runtime triplet changed, exact containing-control/acquisition/READY/claim/lease/source bindings, manifest pair 8dd1c8da, triplet f0a9c366, clean remote equality, and effects 0/0/0.
 - Consumed the I36 READY entry and rebound all three ordered merge target CAS fields to exact claim head 1b8335f8 with canonical payloads F02 54cf0dc6, P28 55ca02a5, and P31 066ea448; central steward application and external effects remain withheld.
 - Admitted exact ordered F02 6d16d6eb, P28 a2025a76, and P31 d72dda56 source heads for an I36 runtime-triplet-only atomic claim from integration release 42068ace under READY digest b60c9298, claim ff36a180, and RELEASE_INTEGRATOR lease 0430520f; source merges and effects remain withheld pending reconciliation.
@@ -721,9 +724,15 @@ steward_requests:
 - request_id: P30-copy-registration-001
   request_digest: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
   requesting_task_id: P30
-  status: assigned
+  status: applied
   assigned_steward: P31
   target_checkpoint: P31_next_canonical_copy_registration_checkpoint
+  applied_commit_sha: 5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f
+  result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  result_digest: 209adf83beacba4f3827f2b723a46e8924c8b5f9fb5ad9fbef53c3c7b7295b04
+  acknowledged_by_task: true
+  acknowledgment_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+  acknowledgment_state_handoff_digest: 7e3bf5382afd76cfd71bd31fafaf880715a947bb41bd086dfab04a760225187f
 - request_id: P30-registry-registration-001
   request_digest: 8c6b582f4265cf9f5cd0f51c302ea239c40d1c5ca3bfc27805c15bd699e52644
   requesting_task_id: P30
@@ -751,9 +760,75 @@ steward_requests:
 - request_id: P17-REMINDER-ROUTING-001
   request_digest: c6015bb11b581333946e8e9de6e3676d108ed327d52ee1894f355ab921da14cf
   requesting_task_id: P17
-  status: assigned
+  status: applied
   assigned_steward: P28
   target_checkpoint: P28_next_communication_registration_checkpoint
+  applied_commit_sha: cb7a700e24e67b306d0ecbaf96a7b49351b6fcd9
+  result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  result_digest: c9c59932aaf35ee497bf9d259b1b4feba83b6237cd9c0c2b282d6b1adcf643c2
+  acknowledged_by_task: true
+  acknowledgment_head_sha: a2025a768ae6e69a15ec5605379a9e359cf2deec
+  acknowledgment_state_handoff_digest: f4837e7bccffb21228177091336be85a7a6e8f23ee54df42f223b6202ed8ee0c
+- request_id: P19-MIGRATION-001
+  request_digest: 23a65ab270cac567b8e75bc32ce20e4f79a9bff6ca9f2b857d33910393aeea57
+  requesting_task_id: P19
+  status: applied
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  applied_commit_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  result_digest: 05917f43b91bde1e9defd0f2d7e80129fbea71bf44bcfad03c245629b4c4df0f
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  acknowledgment_state_handoff_digest: de5ebc6b6cb6f1c59e78f34caad30a4e59207d81cbf29cf4fc80fa87f1d495f2
+- request_id: P20-MIGRATION-001
+  request_digest: e9be9aeb464daf586d3cdcdd7f3cd06b8e22cc93e6486d97055b3584853e41a1
+  requesting_task_id: P20
+  status: applied
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  applied_commit_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  result_digest: 0f4260f833f65dab0a093f254585e9647bc98e231d540ae803cd5b60512d8363
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  acknowledgment_state_handoff_digest: de5ebc6b6cb6f1c59e78f34caad30a4e59207d81cbf29cf4fc80fa87f1d495f2
+- request_id: P28-migration-001
+  request_digest: 8dc041076482e515e80fda472f28465f3826aa0629c8e95817136bfcd4dc613f
+  requesting_task_id: P28
+  status: applied
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  applied_commit_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  result_digest: 5292b36f89438ebe6c10efc0e55b3d7a60b295c5c1e2dae29a65e3089f82d44f
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  acknowledgment_state_handoff_digest: de5ebc6b6cb6f1c59e78f34caad30a4e59207d81cbf29cf4fc80fa87f1d495f2
+- request_id: P08-migration-001
+  request_digest: d77c51fb84a06a3e8a3e8a0b9d28f64f1aea5223711afa23fef656e4c2617749
+  requesting_task_id: P08
+  status: applied
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  applied_commit_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  result_digest: 7bf702d9ab82af11eb441e6e6acefb346507ae8c8f850565c776ad2e09fca918
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  acknowledgment_state_handoff_digest: de5ebc6b6cb6f1c59e78f34caad30a4e59207d81cbf29cf4fc80fa87f1d495f2
+- request_id: P09-migration-001
+  request_digest: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
+  requesting_task_id: P09
+  status: applied
+  assigned_steward: F02
+  target_checkpoint: F02_next_migration_checkpoint
+  applied_commit_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  result_digest: 78547f2064da090e0dd0f459a64c0e6a0fe7d032398a52ae9cba49f1c9a4e5e0
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  acknowledgment_state_handoff_digest: de5ebc6b6cb6f1c59e78f34caad30a4e59207d81cbf29cf4fc80fa87f1d495f2
 - request_id: P13-client-route-001
   request_digest: 8ec9bd96e810db78517f385bbbbb05788a4b24eaaff72f3e654a10b3dd4bd0c5
   requesting_task_id: P13
@@ -1014,6 +1089,9 @@ verification:
   - audited eight pending migration duties and admitted only collision-free dependency-ordered F02 ordinals 2245 through 2249; withheld P17, P18, and P21 pending corrected ownership/request semantics
   - audited and admitted P28 only for the integrated P17 reminder-routing request under a fresh COMMUNICATION_FOUNDATION claim with zero effect authority
   - independently audited final source release 42068ace with ordered P29/P30 ancestry, exact 15/14 merge scopes, exact 32-path claim-to-release delta, pair/triplet digests 613dc658/c715a94a, released lease, 70 focused passes, and effects 0/0/0
+  - independently audited I36 direct-prerequisite release 3cf78740 with exact ordered merge ancestry and 9/12/8 first-parent scopes, 32-path claim delta, pair/triplet digests 3113baf2/5c85deb3, 68 focused passes, workspace typecheck, native and pg-mem 80/80 migration replay, released lease, clean remote equality, and effects 0/0/0
+  - migration allocation mirror and canonical steward-result reconciliation: passed allocations 2245 through 2249, next ordinal 2250, seven applied and acknowledged duties with recomputed sorted-JSON result digests, empty merge queue, and zero effects
+  - P31 lint-correction admission: passed exact source finding and file digest, C00/I36/P31 dependency bindings, canonical READY digest 23b245aa, fresh claim 7f50cef8, sole COPY_CATALOG lease 42734cda, runtime-triplet-only atomic-claim scope, and zero effect locks
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

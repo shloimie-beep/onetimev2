@@ -3,8 +3,8 @@ execution_id: OT-V21-PRODUCTION
 semantic_owner: F02
 mechanical_control_writer: C00
 proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-reviewed_latest: 2244_v21_ghl_identity.sql
-next_available_ordinal: 2245
+reviewed_latest: 2249_v21_school_inquiry.sql
+next_available_ordinal: 2250
 never_allocate:
 - 2231
 allocations:
@@ -147,6 +147,71 @@ allocations:
   pg_mem_checksum_sha256: 464bbe61224cd3ab343aa21e5ed88956684171c082703272be0e973cc866bb73
   integrated_merge_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
   integration_release_sha: 36dca3844664657875b7c66a1ff30378b21c5cbb
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2245
+  file: packages/db/migrations/2245_v21_content_ingest.sql
+  task_id: P19
+  request_id: P19-MIGRATION-001
+  purpose: Durable content upload sessions and bounded multipart evidence, checksum-deduplicated original sources, source links, Drive observations, and append-only ingest commands.
+  interface_digest: 23a65ab270cac567b8e75bc32ce20e4f79a9bff6ca9f2b857d33910393aeea57
+  status: allocated
+  checksum_sha256: 3cd620f1efa3b47c4f052fee7b217da9a627e929d2ac328129224ed2e8042a99
+  pg_mem_checksum_sha256: c047ea117ce66a201a60b3c2bb7d5f3096e07c14b832282fd8f7f706455ba3fe
+  integrated_merge_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  integration_release_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2246
+  file: packages/db/migrations/2246_v21_content_processing.sql
+  task_id: P20
+  request_id: P20-MIGRATION-001
+  purpose: Versioned content-processing lifecycle, immutable artifact revisions, idempotent commands, bounded retry state, and append-only capture evidence over canonical ingest sources.
+  interface_digest: e9be9aeb464daf586d3cdcdd7f3cd06b8e22cc93e6486d97055b3584853e41a1
+  status: allocated
+  checksum_sha256: b065b91e0705719b31cb13cfcd609a6144680c59ef48582e1cb8c6e8e1d0f5ba
+  pg_mem_checksum_sha256: e1a468be490ff3204f7a2e20f09a819d8f761c8e40b25efec66f753e55b94405
+  integrated_merge_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  integration_release_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2247
+  file: packages/db/migrations/2247_v21_communication_foundation.sql
+  task_id: P28
+  request_id: P28-migration-001
+  purpose: Adult-only reminder preferences, WhatsApp opt-in evidence, versioned household reminder plans, append-only delivery attempts, governed public-lead plans, and email acquisition state.
+  interface_digest: 8dc041076482e515e80fda472f28465f3826aa0629c8e95817136bfcd4dc613f
+  status: allocated
+  checksum_sha256: f43afa371d0d6f52d43ec0dab3bb0b5927915ae3a6187226f9a5b0285017b04b
+  pg_mem_checksum_sha256: 6a916a88a196439fd23e930c400ceecb667970f7c4000a4b1db21bb7d96d8468
+  integrated_merge_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  integration_release_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2248
+  file: packages/db/migrations/2248_v21_family_signup.sql
+  task_id: P08
+  request_id: P08-migration-001
+  purpose: Global family-signup idempotency, credential isolation, owner binding, fixed free-access projection, separate consent evidence, receipts, and zero-effect outbox intent.
+  interface_digest: d77c51fb84a06a3e8a3e8a0b9d28f64f1aea5223711afa23fef656e4c2617749
+  status: allocated
+  checksum_sha256: e32f62b3494d8ac2f8110cc0e6df02c127d699f69b284abc09ca9db735ede87f
+  pg_mem_checksum_sha256: faba8d6659dc6288cd4df42b5b28f66ae29a6184450279351761a3cb1ac6214a
+  integrated_merge_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  integration_release_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2249
+  file: packages/db/migrations/2249_v21_school_inquiry.sql
+  task_id: P09
+  request_id: P09-migration-001
+  purpose: Email-deduplicated public school inquiries, locked acknowledgment intent evidence, explicit zero-access posture, and separately approved versioned school configurations.
+  interface_digest: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
+  status: allocated
+  checksum_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
+  pg_mem_checksum_sha256: 6666c474a4fbd87c028f59bf0c4863df71b6f8f547aefd7cb98abde4d284d9ce
+  integrated_merge_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+  integration_release_sha: 3cf787409decb5beb84561ef7e37924111d398b6
   replaces_applied_migration: false
   destructive: false
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00

@@ -1945,3 +1945,42 @@ payloads are F02 `54cf0dc6`, P28 `55ca02a5`, and P31 `066ea448`. I36 may
 merge only those exact sources in that order, run the combined gates, release
 the lease, and stop for independent audit. It must not apply any central
 steward request or perform an external effect in this wave.
+
+## Direct-prerequisite integration release reconciled
+
+I36 release `3cf787409decb5beb84561ef7e37924111d398b6` passed independent
+C00 audit. It is the metadata-only child of P31 merge `5b479ac0`; the ordered
+source merges are F02 `acde075e`, P28 `cb7a700e`, and P31 `5b479ac0`, with
+exact first-parent scopes of 9, 12, and 8 paths. The claim-to-release
+inventory is exactly 32 paths. I36 state/handoff digest `3113baf2`, runtime
+triplet digest `5c85deb3`, 68 focused assertions, workspace typecheck, native
+and pg-mem 80/80 migration replay, five checksum pairs, scoped format/YAML/
+secret/diff gates, released lease, clean remote equality, and effects
+`0/0/0` all pass.
+
+Migrations 2245 through 2249 are now mirrored in
+`MIGRATION-ALLOCATIONS.yaml`; the next ordinal is 2250. The P19, P20, P28,
+P08, and P09 migration duties, P17 reminder-routing duty, and P30 copy-
+registration duty are recorded as applied and acknowledged. Every result
+digest is SHA-256 over a recursively key-sorted compact UTF-8 JSON object
+with exactly these fields: `schema_version`, `execution_id`, `request_id`,
+`request_digest`, `requesting_task_id`, `kind`, `status`,
+`assigned_steward`, `target_checkpoint`, `producer_source_head_sha`,
+`evaluated_target_head_sha`, `applied_commit_sha`,
+`result_record_head_sha`, `acknowledged_by_task`,
+`acknowledgment_head_sha`, `acknowledgment_state_handoff_digest`, and
+`external_effect_summary` containing integer `attempted`, `succeeded`, and
+`reconciled`. The result object is not self-hashed and has no floating-point
+values. MERGE is empty.
+
+Full source lint found one error only:
+`tests/unit/communications/copy-catalog.test.ts:143`,
+`@typescript-eslint/no-unused-vars` for `_removedNamedApproval`. I36 did not
+alter the admitted source. P31 has a runtime-triplet-only atomic correction
+READY with digest `23b245aa`, claim `7f50cef8`, and COPY_CATALOG lease
+`42734cda`. Its first push may change only the P31 runtime triplet and must
+stop for C00 reconciliation. After reconciliation, the only permitted product
+edit is removal of that unused test binding without changing assertions, copy
+catalog, named-approval semantics, interface checkpoint, or runtime behavior.
+Candidate, provider inspection/mutation, deployment, activation, enrollment,
+sends, and every external effect remain gated.

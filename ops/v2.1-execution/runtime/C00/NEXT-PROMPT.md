@@ -1631,3 +1631,22 @@ focused, typecheck, YAML, digest, scope, secret, diff, and zero-effect gates.
 Update only I36 runtime metadata to release lease `0430520f`, push, verify
 remote equality, and stop for C00 audit. Do not apply central steward requests,
 inspect providers, deploy, send, or perform an external effect.
+
+I36 direct-prerequisite release
+`3cf787409decb5beb84561ef7e37924111d398b6` is independently audited and
+reconciled. Migrations 2245 through 2249 and the seven direct steward results
+are recorded, MERGE is empty, and all effects remain `0/0/0`.
+
+Resume P31 from exact existing head
+`d72dda5669627695edaf9dbf20f7650c9b5c9ded` under READY digest
+`23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314`,
+claim `7f50cef8-f816-4a32-8f9e-071db09abbc0`, and COPY_CATALOG lease
+`42734cda-47b5-44ec-8d9a-8da7c4f86ed1`. Recompute the exact C00/I36/P31
+bindings, lint-file digest, claim, and lease. The first push must change only
+P31 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, preserve every
+source, test, copy, request, and interface byte, push normally, verify remote
+equality, and stop for C00 reconciliation.
+
+Do not remove `_removedNamedApproval` before C00 consumes READY and reconciles
+the atomic claim. Do not configure, inspect, activate, enroll, or send through
+a provider; do not deploy or perform an external effect.

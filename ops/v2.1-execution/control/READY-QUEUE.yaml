@@ -2,8 +2,64 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: P31
+  status: resume_ready
+  phase: copy_catalog_test_lint_correction
+  branch: codex/v21-p31-email-copy-approval
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
+  authorized_start_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  expected_existing_head: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
+  task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
+      control_state_digest: 630276e18850ddedbdc67ae6e119da9539bb04adc6ecf0f8dd03587568467ed3
+    I36:
+      required_state: direct_prerequisite_release_audited
+      observed_state: direct_prerequisite_release_audited
+      observed_integration_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+      state_handoff_digest: 3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e
+      runtime_triplet_digest: 5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2
+    P31:
+      required_state: direct_prerequisite_integrated_with_lint_correction_pending
+      observed_state: direct_prerequisite_integrated_with_lint_correction_pending
+      observed_task_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+      state_handoff_digest: 7e3bf5382afd76cfd71bd31fafaf880715a947bb41bd086dfab04a760225187f
+      runtime_triplet_digest: f9ced9e2537b39d58b9382d8dc965986f00bd38f3471710a661194ae99e5e47c
+      interface_contract_digest: a759c3db1cd946549d97359a68f394e8f8bd6af5c4c615748993bd901bb27f3a
+    lint_finding:
+      file: tests/unit/communications/copy-catalog.test.ts
+      source_file_digest: a0d18123cf3d5741b57eaf278803563125d34784f33bee357badaed9e2f8c60d
+      line: 143
+      rule: '@typescript-eslint/no-unused-vars'
+      symbol: _removedNamedApproval
+      required_correction: Remove only the unused binding without changing the test assertion, copy catalog, approval semantics, interface checkpoint, or runtime behavior.
+  writer_slot_leases:
+  - slot: COPY_CATALOG
+    lease_id: 42734cda-47b5-44ec-8d9a-8da7c4f86ed1
+    holder_task_id: P31
+    holder_claim_id: 7f50cef8-f816-4a32-8f9e-071db09abbc0
+    state_based_on_control_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
+    lease_issued_at: '2026-07-30T05:48:54Z'
+    lease_expires_at: '2026-07-30T06:48:54Z'
+    phase_scope: P31_copy_catalog_test_lint_correction_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: 7f50cef8-f816-4a32-8f9e-071db09abbc0
+  lease_issued_at: '2026-07-30T05:48:54Z'
+  lease_expires_at: '2026-07-30T06:48:54Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P31-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  P31: 23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

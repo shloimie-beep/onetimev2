@@ -15,11 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
+controller_authorization_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
 next_action: >-
-  I36 atomic claim 1b8335f8 is reconciled. It may merge exact F02 6d16d6eb, P28 a2025a76, and P31 d72dda56 in
-  that order under rebound payloads 54cf0dc6, 55ca02a5, and 066ea448, run combined source gates, release its sole lease,
-  and stop for independent audit. No central steward request may be applied in this ancestry-only wave. P17/P18/P21
-  migration duties remain withheld pending corrected requests. OPS-084 production_broad remains fail-closed pending
-  the approved six-file legal bundle; candidate, providers, deployment, sends, and effects remain unauthorized.
+  Direct-prerequisite release 3cf78740 is audited and reconciled; migrations 2245 through 2249 and seven direct
+  steward results are recorded. P31 may make only a runtime-triplet atomic claim for exact lint finding
+  _removedNamedApproval under READY 23b245aa and COPY_CATALOG lease 42734cda, then stop for C00 reconciliation.
+  P17/P18/P21 migration duties remain withheld pending corrected requests. OPS-084 production_broad remains
+  fail-closed; candidate, provider inspection/mutation, deployment, sends, and effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
