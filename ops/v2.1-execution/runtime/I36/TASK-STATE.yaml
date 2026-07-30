@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+  C00: a58965e989a9dab81d079a8d02afe23aab146fb8
   F02: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
@@ -35,28 +35,52 @@ dependency_heads:
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
-  P21: 83d906221a0f2882cf99a75459e7288a3e30f629
+  P21: 705030f2d5163f95340a19dc42efd0f167259869
 status: ready
-phase: communications_convergence_source_integration_complete
-claimed_by: codex-c00-i36-communications-integration-4e5bbe12
-claim_time: '2026-07-30T12:04:41Z'
-claim_id: 4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5
-lease_id: 5930be35-0702-4318-b3b4-93170a2ab119
-lease_issued_at: '2026-07-30T12:04:41Z'
-lease_expires_at: '2026-07-30T13:34:41Z'
-lease_released_at: '2026-07-30T12:16:13Z'
-last_heartbeat_at: '2026-07-30T12:16:13Z'
-controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
-latest_valid_observed_control_head_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+phase: P21_publication_scope_correction_integrated
+claimed_by: null
+claim_time: null
+claim_id: null
+lease_id: null
+lease_issued_at: null
+lease_expires_at: null
+lease_released_at: null
+last_heartbeat_at: '2026-07-30T13:17:21Z'
+controller_authorization_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
+latest_valid_observed_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
 reconciled_state_based_on_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
 ready_consumed_by_control_head_sha: null
 ready_consumed_state_based_on_control_head_sha: null
 ready_authorization_control_head_sha: null
 ready_entry_state_based_on_control_head_sha: null
 ready_entry_payload_digest: null
-claim_mode: direct_C00_lean_integration
-expected_existing_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
-lease_phase_scope: I36_communications_convergence_source_integration
+claim_mode: direct_C00_controlled_launch_reconciliation
+expected_existing_head_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+lease_phase_scope: null
+P21_publication_scope_correction_integration_binding:
+  containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
+  authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+  source_head_sha: 705030f2d5163f95340a19dc42efd0f167259869
+  implementation_head_sha: 7b51bae186728351ff1cf93b1c02fcba893b1051
+  merge_result_head_sha: 7adeaaa16fd4ed63a0374a36838010f88aeb5aa7
+  source_path_count: 6
+  runtime_path_count: 3
+  total_path_count: 9
+  source_artifact_digest: 1ddfb7f2ddee9b25af0dc1b2352bb440ccf22e4ecfe347b4d67c48bad93d8a7c
+  immutable_requests:
+    P21-MIGRATION-002: aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45
+    P21-registration-001: fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3
+  merge_tree_sha: bad9032edf0954df39abfd3996fb7823e2eef1dd
+  focused_validation:
+    files: 5
+    tests: 17
+    result: passed
+    typecheck: passed
+    diff_check: passed
+  independent_admission: passed
+  migrations_applied: false
+  provider_calls: 0
+  external_effects: 0/0/0
 communications_convergence_source_integration_binding:
   containing_control_head_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
   state_based_on_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515

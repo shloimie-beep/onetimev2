@@ -1,5 +1,31 @@
 # I36 Integration Releases
 
+## Latest controlled-launch reconciliation — P21
+
+P21 publication-scope correction
+`705030f2d5163f95340a19dc42efd0f167259869` was independently admitted and
+merged from exact integration base
+`7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d` at
+`7adeaaa16fd4ed63a0374a36838010f88aeb5aa7`.
+
+The source is exact linear ancestry through implementation
+`7b51bae186728351ff1cf93b1c02fcba893b1051`; its six source/test paths plus
+three P21 runtime paths are the entire delta. Both protected request blobs are
+byte-identical, the source-artifact digest is
+`1ddfb7f2ddee9b25af0dc1b2352bb440ccf22e4ecfe347b4d67c48bad93d8a7c`,
+the merge-tree is clean, 17/17 focused tests pass, workspace typecheck passes,
+and provider/external effects remain `0/0/0`.
+
+F02 final `68e3c527f46da71434be4a1c888b01efc396cef0` was independently rejected and
+was not merged. Native PostgreSQL probes found launch-critical preview,
+idempotency, quarantine-transition, active-session, revocation, and attendance
+projection fencing bypasses. Its tracked migrations 2250–2251 and untracked
+2252 remain quarantined pending one bounded semantic correction.
+
+Next action: publish this terminal integration checkpoint, reconcile P21 and
+the F02 rejection once on control, then record and open the four exclusive
+controlled-launch lanes.
+
 ## Identity
 
 - Branch: `codex/v21-integration`
