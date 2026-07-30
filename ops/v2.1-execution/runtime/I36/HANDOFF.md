@@ -434,3 +434,34 @@ C00 must audit the exact pushed terminal runtime final and reconcile control.
 After that milestone, F02 may receive the corrected 2250-2252 migration batch,
 and communications head `3364c1c31ef12a81abf02cf9f80f7e8008c1778f` may be
 admitted separately after independent validation.
+
+## Communications-convergence integration release
+
+Control `4b22c4704edc8bd21b0e0242ad00debfba67f5c2` authorized one
+phase-level direct C00 integration from exact target
+`c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9` under claim
+`4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5` and sole RELEASE_INTEGRATOR lease
+`5930be35-0702-4318-b3b4-93170a2ab119`.
+
+Exact repository-only communications source
+`3364c1c31ef12a81abf02cf9f80f7e8008c1778f` merged at
+`9a028e7a967221441dfd4d5cf9417eb2885a072f` with exact parents, preserved
+source ancestry, and twenty first-parent paths. The first Windows postmerge
+run passed nine of ten tests and exposed only a CRLF-sensitive text assertion.
+Integrator fix `e423868957f3a3cb9ddf992e39368fceb15661c0` normalized line
+endings in that one admitted test reader without changing communications
+semantics.
+
+The final focused run passed four files and ten tests. HighLevel registry and
+workflow-control projection checks passed. The canonical public Rabbi identity
+is `Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>`, while
+`info@onetimeonetime.com` remains the business/office identity and the old
+`rabbi@` address remains historical data only.
+
+No steward request was applied. No provider was queried or mutated, no
+candidate was frozen, and no deployment, activation, enrollment, charge, DNS
+change, or send occurred. Effects remain `0/0/0`. The lease was released at
+`2026-07-30T12:16:13Z`, before its `2026-07-30T13:34:41Z` expiry.
+
+C00 must audit the exact pushed terminal runtime final and reconcile control
+while F02 completes the already authorized 2250-2252 migration batch.

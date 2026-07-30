@@ -3,29 +3,29 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: STOP
 
-I36 completed the lean P18/P21 source-integration phase. C00 must independently
-audit the pushed terminal runtime final and reconcile control; do not resume
-I36.
+I36 completed the communications-convergence source-integration phase. C00
+must independently audit the pushed terminal runtime final and reconcile
+control; do not resume I36.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Runtime-final parent: `71070dad9c69dff125194ceeddf271021d62304f`
-Authorizing control: `be9a5964cd69fd73a6f42713c96ece75982bd515`
-Claim: `1f77c6ea-f888-4f47-a16c-3b30f8549e6c`
-Integration lease: `6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3`
-Lease released: `2026-07-30T11:59:37Z`
-Lease expiry: `2026-07-30T13:09:12Z`
+Runtime-final parent: `e423868957f3a3cb9ddf992e39368fceb15661c0`
+Authorizing control: `4b22c4704edc8bd21b0e0242ad00debfba67f5c2`
+Claim: `4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5`
+Integration lease: `5930be35-0702-4318-b3b4-93170a2ab119`
+Lease released: `2026-07-30T12:16:13Z`
+Lease expiry: `2026-07-30T13:34:41Z`
 
-P18 `3be7bf4930a02ea5559db057ceedd6bb11a1b543` merged at
-`91ea3ff9ad679ded033e9945d3a3ec48fb8ca554` with four paths. P21
-`83d906221a0f2882cf99a75459e7288a3e30f629` merged at
-`71070dad9c69dff125194ceeddf271021d62304f` with fourteen paths.
+Communications source `3364c1c31ef12a81abf02cf9f80f7e8008c1778f`
+merged at `9a028e7a967221441dfd4d5cf9417eb2885a072f` with twenty paths.
+One admitted test-reader portability correction followed at
+`e423868957f3a3cb9ddf992e39368fceb15661c0`.
 
-Focused postmerge validation passed five files and fifteen tests. The
-execution-package validator passed from an LF-normalized Git archive. No
-steward request was applied; no provider, candidate, deployment, send, or
-external effect occurred. Effects remain `0/0/0`.
+Final focused validation passed four files and ten tests, HighLevel registry
+validation, and workflow-control projection validation. No steward request,
+provider call, candidate, deployment, activation, enrollment, charge, DNS
+change, send, or external effect occurred. Effects remain `0/0/0`.
 
-After C00 reconciliation, authorize F02's corrected 2250-2252 migration batch
-and separately admit communications head
-`3364c1c31ef12a81abf02cf9f80f7e8008c1778f` after independent validation.
+C00 must reconcile this release while F02 completes its already authorized
+2250-2252 migration batch. After F02 integration, continue the bounded shared
+registration batches.

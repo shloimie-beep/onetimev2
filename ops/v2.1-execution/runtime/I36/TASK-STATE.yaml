@@ -8,7 +8,7 @@ package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: be9a5964cd69fd73a6f42713c96ece75982bd515
+  C00: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
   F02: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
@@ -31,32 +31,64 @@ dependency_heads:
   P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
   P29: aa7b363812676afce8ac9ebd13f335e65551bb1f
   P30: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
-  P31: 839ec12bb83317a63f1d064891fb2929a707f3ec
+  P31: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: 83d906221a0f2882cf99a75459e7288a3e30f629
 status: ready
-phase: P18_P21_lean_source_integration_complete
-claimed_by: codex-c00-i36-lean-integration-1f77c6ea
-claim_time: '2026-07-30T11:39:12Z'
-claim_id: 1f77c6ea-f888-4f47-a16c-3b30f8549e6c
-lease_id: 6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3
-lease_issued_at: '2026-07-30T11:39:12Z'
-lease_expires_at: '2026-07-30T13:09:12Z'
-lease_released_at: '2026-07-30T11:59:37Z'
-last_heartbeat_at: '2026-07-30T11:59:37Z'
-controller_authorization_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
-latest_valid_observed_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
-reconciled_state_based_on_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
+phase: communications_convergence_source_integration_complete
+claimed_by: codex-c00-i36-communications-integration-4e5bbe12
+claim_time: '2026-07-30T12:04:41Z'
+claim_id: 4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5
+lease_id: 5930be35-0702-4318-b3b4-93170a2ab119
+lease_issued_at: '2026-07-30T12:04:41Z'
+lease_expires_at: '2026-07-30T13:34:41Z'
+lease_released_at: '2026-07-30T12:16:13Z'
+last_heartbeat_at: '2026-07-30T12:16:13Z'
+controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+latest_valid_observed_control_head_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+reconciled_state_based_on_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
 ready_consumed_by_control_head_sha: null
 ready_consumed_state_based_on_control_head_sha: null
 ready_authorization_control_head_sha: null
 ready_entry_state_based_on_control_head_sha: null
 ready_entry_payload_digest: null
 claim_mode: direct_C00_lean_integration
-expected_existing_head_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
-lease_phase_scope: I36_P18_P21_lean_source_integration
+expected_existing_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
+lease_phase_scope: I36_communications_convergence_source_integration
+communications_convergence_source_integration_binding:
+  containing_control_head_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+  state_based_on_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+  control_state_digest: ab9820237df03486097911b996fcd8dfe7df3bdac9f1353aa3a50ba2b0b08814
+  authorized_start_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
+  claim_id: 4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5
+  lease_id: 5930be35-0702-4318-b3b4-93170a2ab119
+  source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+  source_parent_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+  source_merge_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
+  postmerge_portability_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
+  postmerge_portability_fix_path: tests/unit/highlevel/rabbi-launch-email-design.test.ts
+  source_path_count: 20
+  combined_release_path_count: 23
+  source_path_inventory_digest: b2b6a8c5f3a5a2fbe6718a60648da47a7411613c69737d5943d95a28782c8f57
+  source_manifest_digest: 1d7e5d4da59b0c02578e6e9bff82339e306d7a2811b9028ab36d97f8d624fc04
+  source_tree_sha: 742d1023c280918a374e554786e457e6ee5f3379
+  source_diff_sha256: 3f3f86584c9acecfe65bf5ede7eace680f9664cc181ec032da81628ebb036b99
+  merge_payload_digest: 1d3e1a5852efbaa72ffc8d5a458b11584abcba03d8100438f504d83cef7d7fc7
+  canonical_rabbi_identity: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>
+  focused_validation:
+    initial_result: failed_9_of_10_only_CRLF_sensitive_assertion
+    correction: normalize_CRLF_in_admitted_test_reader
+    final_files: 4
+    final_tests: 10
+    final_result: passed
+    registry_check: passed
+    workflow_projection_check: passed
+  source_head_is_ancestor: true
+  steward_requests_applied: false
+  provider_calls: 0
+  external_effects: 0/0/0
 lean_P18_P21_source_integration_binding:
   containing_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
   state_based_on_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
@@ -254,13 +286,20 @@ merge_result_heads:
   P17_correction_release: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
   P18_lean_release: 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554
   P21_lean_release: 71070dad9c69dff125194ceeddf271021d62304f
-merge_result_head_sha: 71070dad9c69dff125194ceeddf271021d62304f
-merge_parent_target_head_sha: 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554
-merge_parent_source_head_sha: 83d906221a0f2882cf99a75459e7288a3e30f629
-prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: 71070dad9c69dff125194ceeddf271021d62304f
-last_implementation_commit_sha: 71070dad9c69dff125194ceeddf271021d62304f
+  communications_convergence_release: 9a028e7a967221441dfd4d5cf9417eb2885a072f
+  communications_CRLF_portability_fix: e423868957f3a3cb9ddf992e39368fceb15661c0
+merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
+merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
+merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
+state_based_on_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
+last_implementation_commit_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
 completed_steps:
+  - Accepted direct C00 communications integration authority from control 4b22c4704edc8bd21b0e0242ad00debfba67f5c2 at exact integration start c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9 under one phase claim and lease.
+  - Merged exact repository-only communications convergence head 3364c1c31ef12a81abf02cf9f80f7e8008c1778f at 9a028e7a967221441dfd4d5cf9417eb2885a072f with exact parents, preserved ancestry, and twenty-path first-parent scope.
+  - Corrected only the admitted Windows CRLF-sensitive sender-registry test reader at e423868957f3a3cb9ddf992e39368fceb15661c0 after the first postmerge run passed nine of ten tests; no communication, registry, workflow, or provider semantics changed.
+  - Passed the final four-file ten-test communications suite, HighLevel registry validation, workflow-control projection validation, YAML/diff/ancestry/scope gates, and zero-effect checks.
+  - Released sole integration lease 5930be35-0702-4318-b3b4-93170a2ab119 at 2026-07-30T12:16:13Z; no steward request, provider call, deployment, send, enrollment, charge, DNS change, candidate freeze, or external effect occurred.
   - Accepted lean direct C00 integration authority from control be9a5964cd69fd73a6f42713c96ece75982bd515 at exact integration start 99fd8c33ea023e838d8ee9c993b5de52f4763e7f under one phase claim and lease.
   - Merged exact P18 correction 3be7bf4930a02ea5559db057ceedd6bb11a1b543 at 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554 with exact parents and four-path first-parent scope.
   - Merged exact P21 correction 83d906221a0f2882cf99a75459e7288a3e30f629 at 71070dad9c69dff125194ceeddf271021d62304f with exact parents and fourteen-path first-parent scope.
@@ -1206,7 +1245,7 @@ completed_steps:
     No steward or central state was applied, no provider was inspected or
     mutated, and no deployment, send, or external effect occurred.
 remaining_steps: []
-next_action: C00 must audit this exact terminal runtime final and reconcile control; F02 may then receive the corrected 2250-2252 migration batch and communications head 3364c1c31ef12a81abf02cf9f80f7e8008c1778f may be admitted separately after independent validation. No candidate, steward application, provider action, deployment, send, or external effect occurred.
+next_action: C00 must audit this exact terminal communications-integration runtime final and reconcile control while F02 completes the already authorized 2250-2252 migration batch. After the F02 final is integrated, apply the dependency-ordered shared registrations in coherent batches. No candidate, provider action, deployment, send, or external effect occurred.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -1748,6 +1787,16 @@ steward_result_digest_algorithm:
   sibling steward_result_payload_digests map and not in the entry.
 verification:
   commands_run:
+    - command: git merge --no-ff exact communications convergence source
+      result: passed at 9a028e7a967221441dfd4d5cf9417eb2885a072f; exact parents c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9 and 3364c1c31ef12a81abf02cf9f80f7e8008c1778f, source ancestry, and twenty-path first-parent scope
+    - command: initial focused postmerge communications Vitest suite
+      result: failed one of ten only because the admitted test compared LF text against a CRLF Windows checkout; nine tests passed and no communication behavior failed
+    - command: bounded CRLF portability correction and focused communications Vitest rerun
+      result: passed four files and ten tests at exact one-path fix e423868957f3a3cb9ddf992e39368fceb15661c0
+    - command: npm run highlevel:registry:check and npm run highlevel:workflow-control:projection-check
+      result: passed; canonical sender/message/workflow registry and both generated projections match, with human-task workflows active 0 and messages sent 0
+    - command: communications ancestry, exact scope, steward, provider, deployment, send, and effect checks
+      result: passed; exact source ancestor and twenty source paths plus three runtime paths, no steward application or external action, and effects 0/0/0
     - command: ordered git merge --no-ff for exact P18 and P21 lean correction heads
       result: passed; merge heads 91ea3ff9ad679ded033e9945d3a3ec48fb8ca554 and 71070dad9c69dff125194ceeddf271021d62304f have exact two-parent ancestry and four/fourteen-path first-parent scopes
     - command: focused P21 postmerge Vitest suites
