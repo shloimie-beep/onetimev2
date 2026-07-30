@@ -1,29 +1,24 @@
-# F02 Migration Lease B Semantic-Correction Release
+# F02 Lease B Compatibility-Correction Atomic Claim
 
-- Claim parent: `9daa5251acf9b6d2c4c932d9864d894ded2bdd2d`
-- Containing control: `87179bc537935cd316414764ff7ed86c67e0e4e1`
-- Sole control authorization parent: `35704c887c45309eb03506d4f654afd2bfbed84c`
-- Renewal claim: `2002fc61-531d-4b4c-b0c0-c65b3468b8c5`
-- Shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease: `4d52c050-fd00-4240-a029-48d4f27f6820`
-- Released: `2026-07-29T23:33:32Z`, before expiry `2026-07-30T00:39:23Z`
+- Claim parent: `032aeb9cb0c786729ff2c394744ab561eeb3f6c1`
+- Containing control: `9d53cf1c581dcb67e30b2beb62d048a1839f23e2`
+- Sole control acquisition parent: `a6bc58cc4a35173fd1606124c0fa651dda2dac64`
+- READY digest: `5011b9dd7fe5c1883e091b46b097d907d6aaa99669999f60b7554dc225e45134`
+- Claim: `6b1e1632-e3d9-4f87-92b3-8b150a6715d2`
+- Shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease: `31e905c8-d5c2-4e3c-9e98-c2e8f78989ce`
+- Lease expiry: `2026-07-30T01:23:18Z`
 - Effects: `0/0/0`
 
-The exact six forward-only migrations 2239 through 2244 now implement the
-bound P16, P32, P10, P23, P24, and P27 contracts. The semantic correction
-preserves legacy classroom evidence, adds exact scoped privacy and directory
-constraints, enforces notification and support privacy invariants, and derives
-GHL identity scope from authoritative adult/household bindings.
+The prior Lease B release was rejected for one compatibility semantic gate:
+migration 2239 must preserve a sole paused or archived legacy canonical series
+without forcing it to active lifecycle. The correction window must rerun the
+native sole-paused and sole-archived probes plus both complete 75/75 migration
+inventories while preserving protected migrations 2234 through 2238, the
+exact ten-path ceiling, next ordinal 2245, and effects `0/0/0`.
 
-Disposable PGlite PostgreSQL and repository-runner pg-mem both passed all
-75 migrations. Seeded native legacy reconciliation passed 5/5, the combined
-native contract suite passed 19/19, and the pg-mem focused suite passed 5/5.
-All six native/pg-mem checksum pairs match the allocation proposal; next
-available ordinal is 2245 and ordinal 2231 remains forbidden.
+This atomic claim changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. The allocation proposal, migrations, product code, control,
+provider state, and all external systems remain untouched.
 
-Typecheck, lint, production build, YAML, Prettier, secret scan, diff hygiene,
-exact ten-path scope, protected 2234-2238 blobs, and the 200/200 locked package
-Git-byte gate passed. No provider, deployment, send, integration, or external
-effect was attempted.
-
-Stop for independent and C00 audit. I36 integration requires a fresh bounded
-admission, atomic claim reconciliation, and exact merge item.
+Stop for C00 reconciliation. Do not edit SQL or the proposal, merge, register,
+inspect providers, deploy, send, or perform external effects beforehand.

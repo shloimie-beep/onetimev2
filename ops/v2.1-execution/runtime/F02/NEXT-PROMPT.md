@@ -3,22 +3,23 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Audit the exact F02 Migration Lease B semantic-correction release.
+Reconcile the F02 Lease B compatibility-correction atomic claim.
 
-Require claim parent `9daa5251acf9b6d2c4c932d9864d894ded2bdd2d`,
-containing control `87179bc537935cd316414764ff7ed86c67e0e4e1`, sole
-authorization parent `35704c887c45309eb03506d4f654afd2bfbed84c`, renewal claim
-`2002fc61-531d-4b4c-b0c0-c65b3468b8c5`, and shared lease
-`4d52c050-fd00-4240-a029-48d4f27f6820`.
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-f02-schema-state-migrations
+Parent before claim: 032aeb9cb0c786729ff2c394744ab561eeb3f6c1
+Containing control: 9d53cf1c581dcb67e30b2beb62d048a1839f23e2
+Sole acquisition parent: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+READY digest: 5011b9dd7fe5c1883e091b46b097d907d6aaa99669999f60b7554dc225e45134
+Claim: 6b1e1632-e3d9-4f87-92b3-8b150a6715d2
+Shared lease: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
+Lease expiry: 2026-07-30T01:23:18Z
 
-Require an exact ten-path delta containing only migrations 2239 through 2244,
-the allocation proposal, and the F02 runtime triplet. Confirm all six
-normalized-LF/native and repository-runner pg-mem checksum pairs, exact next
-ordinal 2245, forbidden ordinal 2231, and byte-identical protected migrations
-2234 through 2238.
+Require the claim commit to have the sole parent above and change exactly the
+F02 runtime triplet. Confirm the proposal, migrations 2239 through 2244,
+product code, control state, provider state, and external systems are
+byte-identical to the parent.
 
-Rerun complete disposable PGlite and pg-mem 75/75 migration proofs, seeded
-legacy reconciliation, focused native invariants, typecheck, lint, build,
-YAML, raw Git-blob Prettier, 200/200 package Git-byte, secret, scope, diff, and
-zero-effect gates. Confirm both slots were released before expiry. Stop for C00
-admission; do not integrate or perform external effects.
+Verify the new claim and shared lease, canonical READY and dependency digests,
+the exact rejected compatibility gate, and effects `0/0/0`. Stop for C00
+reconciliation. Do not resume SQL or proposal work beforehand.

@@ -155,33 +155,33 @@ migration_lease_B_control:
   requester_content_read: true
   allocation_proposal_read_or_edited: true
   sql_authored: true
-status: ready_for_review
-phase: migration_lease_B_semantic_correction_complete
-claimed_by: codex-f02-lease-b-renewal-2002fc61
-claim_time: '2026-07-29T22:45:04Z'
-claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
-writer_slot_lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
-lease_issued_at: '2026-07-29T22:39:23Z'
-lease_expires_at: '2026-07-30T00:39:23Z'
-last_heartbeat_at: '2026-07-29T23:33:32Z'
-lease_released_at: '2026-07-29T23:33:32Z'
-controller_authorization_sha: 87179bc537935cd316414764ff7ed86c67e0e4e1
-ready_entry_parent_control_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
-state_based_on_control_head_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
-ready_entry_payload_digest: 635c8923ed3aa11f3dbcf11b1195a22235ce150e43284de265b48f1b0f7da8bd
+status: claimed
+phase: migration_lease_B_compatibility_semantic_correction_atomic_claim
+claimed_by: codex-f02-compatibility-6b1e1632
+claim_time: '2026-07-30T00:16:26Z'
+claim_id: 6b1e1632-e3d9-4f87-92b3-8b150a6715d2
+writer_slot_lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
+lease_issued_at: '2026-07-29T23:53:18Z'
+lease_expires_at: '2026-07-30T01:23:18Z'
+last_heartbeat_at: '2026-07-30T00:16:26Z'
+lease_released_at: null
+controller_authorization_sha: 9d53cf1c581dcb67e30b2beb62d048a1839f23e2
+ready_entry_parent_control_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+state_based_on_control_head_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+ready_entry_payload_digest: 5011b9dd7fe5c1883e091b46b097d907d6aaa99669999f60b7554dc225e45134
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
-    lease_issued_at: '2026-07-29T22:39:23Z'
-    lease_expires_at: '2026-07-30T00:39:23Z'
-    released_at: '2026-07-29T23:33:32Z'
+    lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
+    lease_issued_at: '2026-07-29T23:53:18Z'
+    lease_expires_at: '2026-07-30T01:23:18Z'
+    released_at: null
   SCHEMA_CONTRACT:
-    lease_id: 4d52c050-fd00-4240-a029-48d4f27f6820
-    lease_issued_at: '2026-07-29T22:39:23Z'
-    lease_expires_at: '2026-07-30T00:39:23Z'
-    released_at: '2026-07-29T23:33:32Z'
-state_based_on_head_sha: 9daa5251acf9b6d2c4c932d9864d894ded2bdd2d
-last_implementation_commit_sha: 9daa5251acf9b6d2c4c932d9864d894ded2bdd2d
+    lease_id: 31e905c8-d5c2-4e3c-9e98-c2e8f78989ce
+    lease_issued_at: '2026-07-29T23:53:18Z'
+    lease_expires_at: '2026-07-30T01:23:18Z'
+    released_at: null
+state_based_on_head_sha: 032aeb9cb0c786729ff2c394744ab561eeb3f6c1
+last_implementation_commit_sha: 032aeb9cb0c786729ff2c394744ab561eeb3f6c1
 completed_steps:
   - resumed from exact remote head 347f9461cee523341102101355c6f38dbc9418d4 under corrective resume_existing claim 8d0e0d73-4d5d-477e-9bb5-12e2d05a8a78
   - independently verified parent CONTROL-STATE.yaml digest 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215 at 3eb407ef050175d7c21f55f67cf99626f1dd5afd
@@ -244,10 +244,14 @@ completed_steps:
   - Preserved migrations 2234 through 2238 byte-for-byte, passed the 200/200 locked package Git-byte gate, and kept the exact ten-path ceiling.
   - Passed typecheck, lint, production build, YAML, Prettier, secret, checksum, scope, diff, migration, focused probe, protected-blob, and zero-effect gates.
   - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-29T23:33:32Z before lease expiry.
+  - Verified exact compatibility-correction containing control 9d53cf1c, sole acquisition parent a6bc58cc, unchanged local and remote F02 head 032aeb9c, and canonical READY digest 5011b9dd.
+  - Recomputed package, source, task, context, control, F02, and I36 dependency digests; passed the 200/200 locked Git-byte package gate.
+  - Verified exact claim 6b1e1632, shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 31e905c8, fourteen unclaimed provider locks, zero effect locks, and current lease expiry.
+  - Claimed only the F02 runtime triplet for compatibility semantic correction; the allocation proposal, SQL, product, control, providers, and effects were not read for implementation or edited.
 remaining_steps:
-  - An independent auditor and C00 must admit the exact final head before I36 integration.
-  - I36 may integrate only the exact admitted ten-path Lease B result under a fresh bounded claim and merge item.
-next_action: Stop after publishing this Lease B release. Await independent and C00 audit; do not edit SQL, allocate ordinal 2245, register, inspect providers, deploy, send, integrate, or perform external effects.
+  - C00 must reconcile this exact compatibility-correction atomic claim before F02 edits migration 2239 or the allocation proposal.
+  - After reconciliation, preserve a sole paused or archived legacy canonical series without forcing active lifecycle and rerun the required native and complete migration probes.
+next_action: Stop after publishing this compatibility-correction atomic claim. Await C00 reconciliation; do not edit SQL or the proposal, merge, register, inspect providers, deploy, send, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -288,6 +292,10 @@ lease_B_changed_paths:
   - packages/db/migrations/2243_v21_support.sql
   - packages/db/migrations/2244_v21_ghl_identity.sql
   - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+compatibility_semantic_correction_atomic_claim_changed_paths:
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
