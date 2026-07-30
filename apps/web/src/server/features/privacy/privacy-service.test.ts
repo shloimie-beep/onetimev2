@@ -29,35 +29,38 @@ describe('privacy server boundary', () => {
 
   it('persists one consent event and returns idempotent replay without another write', async () => {
     const append = vi.fn().mockResolvedValue(true);
-    const service = createPrivacyService({
-      listConsentEvents: vi
-        .fn()
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([
-          {
-            consent_event_id: 'consent-1',
-            idempotency_key: 'idem-1',
-            canonical_request_hash: HASH,
-            actor_kind: 'adult_self_student',
-            actor_account_or_credential_id: 'credential-1',
-            actor_adult_id: 'adult-1',
-            household_id: 'household-1',
-            student_id: 'student-self',
-            relationship: 'self',
-            parent_authority_attested: false,
-            scope: 'recording_participation',
-            choice: 'granted',
-            policy_versions: policies(),
-            occurred_at: NOW,
-            request_correlation_id: 'request-1',
-            network_evidence_digest: HASH,
-            supersedes_consent_event_id: null,
-            reason_code: 'policy_accepted',
-          },
-        ]),
-      appendConsentEvent: append,
-      createDataRightsRequest: vi.fn(),
-    });
+    const service = createPrivacyService(
+      {
+        listConsentEvents: vi
+          .fn()
+          .mockResolvedValueOnce([])
+          .mockResolvedValueOnce([
+            {
+              consent_event_id: 'consent-1',
+              idempotency_key: 'idem-1',
+              canonical_request_hash: HASH,
+              actor_kind: 'adult_self_student',
+              actor_account_or_credential_id: 'credential-1',
+              actor_adult_id: 'adult-1',
+              household_id: 'household-1',
+              student_id: 'student-self',
+              relationship: 'self',
+              parent_authority_attested: false,
+              scope: 'recording_participation',
+              choice: 'granted',
+              policy_versions: policies(),
+              occurred_at: NOW,
+              request_correlation_id: 'request-1',
+              network_evidence_digest: HASH,
+              supersedes_consent_event_id: null,
+              reason_code: 'policy_accepted',
+            },
+          ]),
+        appendConsentEvent: append,
+        createDataRightsRequest: vi.fn(),
+      },
+      trustedScope(),
+    );
     const input = {
       consent_event_id: 'consent-1',
       idempotency_key: 'idem-1',
@@ -76,6 +79,42 @@ describe('privacy server boundary', () => {
     expect((await service.recordConsent(input)).disposition).toBe('replayed');
     expect(append).toHaveBeenCalledOnce();
   });
+
+  it('overrides any caller-conflicting persistence scope with trusted server scope', async () => {
+    const persist = vi.fn().mockResolvedValue(true);
+    const service = createPrivacyService(
+      {
+        listConsentEvents: vi.fn(),
+        appendConsentEvent: vi.fn(),
+        createDataRightsRequest: persist,
+      },
+      trustedScope(),
+    );
+    await service.createRightsRequest({
+      request_id: 'request-1',
+      kind: 'export',
+      subject: { kind: 'household', household_id: 'household-1' },
+      actor: parentActor(),
+      owner_adult_id: 'adult-1',
+      requested_categories: ['profile'],
+      now: new Date(NOW),
+      audit_ref: 'audit-1',
+      ...({
+        scope: {
+          product: 'one_time_mishnayos',
+          runtime_tier: 'production',
+          verification_environment_id: 'production_broad',
+        },
+      } as object),
+    });
+    expect(persist).toHaveBeenCalledWith(
+      expect.objectContaining({
+        product: 'one_time_mishnayos',
+        runtime_tier: 'isolated_staging',
+        verification_environment_id: 'ci',
+      }),
+    );
+  });
 });
 
 function studentActor(): PrivacyActorContext {
@@ -87,6 +126,26 @@ function studentActor(): PrivacyActorContext {
     household_id: 'household-1',
     recent_password_verified: true,
     session_id: 'session-1',
+  };
+}
+
+function parentActor(): PrivacyActorContext {
+  return {
+    role: 'parent',
+    account_or_credential_id: 'account-1',
+    adult_id: 'adult-1',
+    student_id: null,
+    household_id: 'household-1',
+    recent_password_verified: true,
+    session_id: 'session-1',
+  };
+}
+
+function trustedScope() {
+  return {
+    product: 'one_time_mishnayos' as const,
+    runtime_tier: 'isolated_staging' as const,
+    verification_environment_id: 'ci' as const,
   };
 }
 

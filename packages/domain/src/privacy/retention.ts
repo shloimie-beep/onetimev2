@@ -51,6 +51,16 @@ export function createDeletionPurgeRecord(input: {
       'The independent purge record is written after erasure approval and before deletion.',
     );
   }
+  if (
+    input.approved_request.product !== input.scope.product ||
+    input.approved_request.runtime_tier !== input.scope.runtime_tier ||
+    input.approved_request.verification_environment_id !== input.scope.verification_environment_id
+  ) {
+    throw new PrivacyError(
+      'invalid_contract',
+      'Purge evidence scope must match the approved data-rights request.',
+    );
+  }
   for (const identifier of input.identifiers) {
     assertHash(identifier.hmac_sha256, 'hmac_sha256');
     requiredOpaque(identifier.hmac_key_version, 'hmac_key_version');

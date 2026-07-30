@@ -142,6 +142,40 @@ describe('Student-scoped consent and recording snapshots', () => {
 });
 
 describe('data-rights actor scope and request lifecycle', () => {
+  it('accepts exact isolated-staging and production scope and rejects invalid bindings', () => {
+    const isolated = createDataRightsRequest(rightsInput(parentActor()));
+    expect({
+      product: isolated.product,
+      runtime_tier: isolated.runtime_tier,
+      verification_environment_id: isolated.verification_environment_id,
+    }).toEqual({
+      product: 'one_time_mishnayos',
+      runtime_tier: 'isolated_staging',
+      verification_environment_id: 'ci',
+    });
+
+    const production = createDataRightsRequest({
+      ...rightsInput(parentActor()),
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: 'production',
+        verification_environment_id: 'production_operator_canary',
+      },
+    });
+    expect(production.runtime_tier).toBe('production');
+
+    expect(() =>
+      createDataRightsRequest({
+        ...rightsInput(parentActor()),
+        scope: {
+          product: 'one_time_mishnayos',
+          runtime_tier: 'production',
+          verification_environment_id: 'ci',
+        },
+      }),
+    ).toThrow(/exact product, runtime tier, and environment binding/i);
+  });
+
   it('denies dependent self-service and cross-household requests', () => {
     expect(() =>
       createDataRightsRequest({
@@ -264,6 +298,15 @@ describe('data-rights actor scope and request lifecycle', () => {
       now: NOW,
     });
     expect(new Date(grant.expires_at).getTime() - NOW.getTime()).toBe(15 * 60 * 1000);
+    expect({
+      product: grant.product,
+      runtime_tier: grant.runtime_tier,
+      verification_environment_id: grant.verification_environment_id,
+    }).toEqual({
+      product: completed.product,
+      runtime_tier: completed.runtime_tier,
+      verification_environment_id: completed.verification_environment_id,
+    });
     const used = redeemExportDownloadGrant(grant, {
       expected_version: 1,
       token_hash: HASH_A,
@@ -470,6 +513,11 @@ function studentActor(studentId: string): PrivacyActorContext {
 
 function rightsInput(actor: PrivacyActorContext) {
   return {
+    scope: {
+      product: 'one_time_mishnayos' as const,
+      runtime_tier: 'isolated_staging' as const,
+      verification_environment_id: 'ci' as const,
+    },
     request_id: 'request-1',
     kind: 'export' as const,
     subject: { kind: 'household' as const, household_id: 'household-1' },

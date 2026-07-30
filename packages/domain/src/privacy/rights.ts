@@ -3,6 +3,7 @@ import type {
   DataRightsRequest,
   DataRightsRequestInput,
   ExportDownloadGrant,
+  PrivacyPersistenceScope,
   RequesterVisiblePrivacyStatus,
 } from '../../../contracts/src/privacy/index.ts';
 import {
@@ -36,7 +37,9 @@ export function createDataRightsRequest(input: DataRightsRequestInput): DataRigh
     requester === 'account_owner'
       ? [...PARENT_EXPORT_EXCLUSIONS]
       : ['sibling_data', 'other_participant_data', 'shared_raw_recordings', 'provider_secrets'];
+  const scope = exactPrivacyScope(input.scope);
   return {
+    ...scope,
     request_id: requiredOpaque(input.request_id, 'request_id'),
     kind: input.kind,
     subject: input.subject,
@@ -149,7 +152,9 @@ export function issueExportDownloadGrant(input: {
   }
   assertHash(input.token_hash, 'token_hash');
   assertHash(input.subject_binding_hash, 'subject_binding_hash');
+  const scope = exactPrivacyScope(input.request);
   return {
+    ...scope,
     grant_id: requiredOpaque(input.grant_id, 'grant_id'),
     request_id: input.request.request_id,
     subject_binding_hash: input.subject_binding_hash,
@@ -264,6 +269,31 @@ function assertTransition(
 
 function uniqueSafe(values: readonly string[]): string[] {
   return [...new Set(values.map((value) => requiredOpaque(value, 'category')))].sort();
+}
+
+function exactPrivacyScope(scope: PrivacyPersistenceScope): PrivacyPersistenceScope {
+  const isolatedEnvironments = ['ci', 'provider_sandbox', 'persistent_staging'];
+  const productionEnvironments = [
+    'production_read_only',
+    'production_operator_canary',
+    'production_broad',
+  ];
+  const environmentAllowed =
+    (scope.runtime_tier === 'isolated_staging' &&
+      isolatedEnvironments.includes(scope.verification_environment_id)) ||
+    (scope.runtime_tier === 'production' &&
+      productionEnvironments.includes(scope.verification_environment_id));
+  if (scope.product !== 'one_time_mishnayos' || !environmentAllowed) {
+    throw new PrivacyError(
+      'invalid_contract',
+      'Privacy persistence scope must be an exact product, runtime tier, and environment binding.',
+    );
+  }
+  return {
+    product: scope.product,
+    runtime_tier: scope.runtime_tier,
+    verification_environment_id: scope.verification_environment_id,
+  };
 }
 
 function requiredOpaque(value: string, field: string): string {
