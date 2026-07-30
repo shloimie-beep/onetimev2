@@ -1785,10 +1785,13 @@ only the I36 runtime triplet. The containing control `061edb43`, acquisition
 `6c88e2a7`, source bindings, clean remote equality, and effects `0/0/0` pass.
 
 C00 consumed the READY entry and rebound every ordered merge target to
-`d53c1d22`. Canonical merge payloads are P16
-`db2478fc927af240263baadfa6b79df43f8876cc59d2a1115ad0149056e4fa90`,
-P32 `d0237f000baaa1b47773c5301091c18ad384ab07bc8a0a229e01609dbcb56b96`,
-and F02 `aa58a800cd497a63be8871ec5da065b40a279b0d6082fd7cc65683e087781ed8`.
+`d53c1d22`. A pre-merge readback then safely stopped on a nonexistent P15
+merge-after transcription. The exact live P15 ref and P16 source state both
+bind `c96b8c55c07e5283e762537934a6bf948833700e`; C00 corrected that field
+under acquisition `e25d0b52`. Canonical merge payloads are now P16
+`58695dcb553d55502ba509ea54783b5e78d1edd9094ea9333f6467eca9a7fcf2`,
+P32 `18378a2ea0fae5b91640def9946c8ccf2e54f11c1d879ecbab55fbcf27af5836`,
+and F02 `e85b0073845c7bd7489d8596e5b68ddfe5792a0653ab376bdd69c7fdfa701195`.
 
 I36 may now merge exact P16 `55544f55`, P32 `92a7ee63`, and F02
 `cd2d7c2f` in that order with ancestry preserved. It must verify each

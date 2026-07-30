@@ -16,7 +16,7 @@ items:
   preserve_source_ancestry: true
   required_postmerge_ancestor_sha: 55544f557f5b7aee01d264fba688fc56b971ad4b
   merge_after_heads:
-    P15: c96b8c55da23d8061d5ba6cd14a0b13df2c64cd4
+    P15: c96b8c55c07e5283e762537934a6bf948833700e
     P16_integrated_base: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
   allowed_paths:
   - ops/v2.1-execution/runtime/P16/HANDOFF.md
@@ -29,7 +29,7 @@ items:
     lease_id: 6c88e2a7-e2fc-48be-acae-4b4a5e9839ad
     holder_task_id: I36
     holder_claim_id: d2ba6c12-e7c2-49b1-b4cd-883a1c394adb
-    state_based_on_control_head_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
+    state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
     lease_issued_at: '2026-07-30T01:54:35Z'
     lease_expires_at: '2026-07-30T03:54:35Z'
     phase_scope: P16_P32_F02_compatibility_integration
@@ -43,7 +43,7 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
+  state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
   merge_id: 33382081-0f72-4904-a2a7-cda6cb519eb1
@@ -82,7 +82,7 @@ items:
   source_manifest_digest: dd84d481a27990c20c2ac4044547455b1673c20bc15e729474c34f0c62c6b23b
   interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
   external_effect_summary: *zero_effects
-  state_based_on_control_head_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
+  state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
   merge_id: 92977f14-9d4c-42f5-b574-208e7f67885b
@@ -138,11 +138,11 @@ items:
       native: afee7e1471f1c6c1b84c6570bb32d39cc8f6a1e576c4e5d7064753ef57939418
       pg_mem: 464bbe61224cd3ab343aa21e5ed88956684171c082703272be0e973cc866bb73
   external_effect_summary: *zero_effects
-  state_based_on_control_head_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
+  state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
 item_payload_digests:
-  d9416368-7897-4bf1-8619-619d4af6ba47: db2478fc927af240263baadfa6b79df43f8876cc59d2a1115ad0149056e4fa90
-  33382081-0f72-4904-a2a7-cda6cb519eb1: d0237f000baaa1b47773c5301091c18ad384ab07bc8a0a229e01609dbcb56b96
-  92977f14-9d4c-42f5-b574-208e7f67885b: aa58a800cd497a63be8871ec5da065b40a279b0d6082fd7cc65683e087781ed8
+  d9416368-7897-4bf1-8619-619d4af6ba47: 58695dcb553d55502ba509ea54783b5e78d1edd9094ea9333f6467eca9a7fcf2
+  33382081-0f72-4904-a2a7-cda6cb519eb1: 18378a2ea0fae5b91640def9946c8ccf2e54f11c1d879ecbab55fbcf27af5836
+  92977f14-9d4c-42f5-b574-208e7f67885b: e85b0073845c7bd7489d8596e5b68ddfe5792a0653ab376bdd69c7fdfa701195
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

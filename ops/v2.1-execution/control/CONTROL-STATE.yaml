@@ -15,7 +15,7 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
+controller_authorization_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
 next_action: >-
   I36 atomic claim d53c1d22 is reconciled as the exact runtime-triplet-only child of 1798f31b. Under unchanged
   claim d2ba6c12 and RELEASE_INTEGRATOR lease 6c88e2a7 through 2026-07-30T03:54:35Z, merge exact audited sources
