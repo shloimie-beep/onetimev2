@@ -4,10 +4,10 @@ task_id: P17
 task_packet_digest: 0509dc95a4e0695db4cba7e7ebccd3050176ef06eca3320ba0c190808c34d034
 task_context_digest: 3d3841e11f5a0c6d2ea7b07d7f2f41debd66c1bced78d8c217cacac21b8ce1c6
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
 branch: codex/v21-p17-zoom-preparation
 start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-expected_existing_head: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
+expected_existing_head: 78af71603713b6fc73fe755995bdf56193eb199a
 dependency_heads:
   F05:
     required_state: interface_ready_integrated
@@ -39,30 +39,49 @@ dependency_heads:
     interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
     task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
     task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
-status: ready_for_review
-phase: review
-correction_work_status: completed
-claimed_by: codex-p17-correction-worker-ad77a398
-claim_time: '2026-07-29T00:20:40Z'
-claim_id: ad77a398-b287-4a51-b7cc-25dd147f33de
+collision_correction_binding:
+  I36_release_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  I36_state_handoff_digest: 3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e
+  I36_runtime_triplet_digest: 5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2
+  P17_prior_state_handoff_digest: 2425a48fe92ba7064d3ac5cd4e5b3f361c36b4d50f01efbd8d3ef989644858e4
+  P17_prior_runtime_triplet_digest: 9cad24146268f8be4cee1bc54334dfa00391f55b80c4a8f45c6146471a9178f0
+  P18_owner_head_sha: b9ad947405de53c138561fd47b9d5c65a25f6b8b
+  P18_contract_artifact_digest: de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c
+  authorized_path_count: 11
+  current_request_container_raw_sha256: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
+  required_successor_requests:
+    - P17-MIGRATION-002
+    - P17-SERVER-WORKER-REGISTRATION-002
+status: claimed
+phase: canonical_classroom_ownership_and_provider_outbox_correction_atomic_claim
+correction_work_status: atomic_claim_only
+claimed_by: codex-p17-correction-f7c01bf5
+claim_time: '2026-07-30T06:11:00Z'
+claim_id: f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1
 correction_claim_checkpoint_sha: a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368
 previous_claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
 previous_final_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
-writer_slot_leases:
+prior_writer_slot_leases:
   - slot: ZOOM_PREPARATION
     lease_id: b7211f31-df73-40fa-8281-5765ca37d3b9
     lease_issued_at: '2026-07-29T00:13:59Z'
     lease_expires_at: '2026-07-29T01:13:59Z'
     released_at: '2026-07-29T00:39:05Z'
-lease_expires_at: '2026-07-29T01:13:59Z'
-lease_released_at: '2026-07-29T00:39:05Z'
-last_heartbeat_at: '2026-07-29T00:39:05Z'
-controller_authorization_sha: 0c911664217efe3dbb89b93b6fe29eb9eda2fec3
+writer_slot_leases:
+  - slot: ZOOM_PREPARATION
+    lease_id: 0e53a171-263b-41d9-b957-80588027c194
+    lease_issued_at: '2026-07-30T06:11:00Z'
+    lease_expires_at: '2026-07-30T07:11:00Z'
+    released_at: null
+lease_expires_at: '2026-07-30T07:11:00Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-30T06:47:06Z'
+controller_authorization_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
 continuation_authorization_sha: 268ab601b89573238befe70de7995908925575cc
 continuation_acquisition_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
-ready_entry_state_based_on_control_head_sha: e54ea923a743caf760ef47638a2c8d8a875faf34
-ready_entry_payload_digest: 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf
-state_based_on_head_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
+ready_entry_state_based_on_control_head_sha: 0eb6204622792a6add325f0cb11bc25847701f10
+ready_entry_payload_digest: b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6
+state_based_on_head_sha: 78af71603713b6fc73fe755995bdf56193eb199a
 last_implementation_commit_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
 implementation_artifact_digest: 6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0
 implementation_artifact_digest_algorithm: SHA-256 over exact correction implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the canonical 13 non-runtime P17 product artifacts, with LF separators and no final newline.
@@ -74,6 +93,8 @@ schema_contract_artifact_digest: 908048ef2f7ad13277a00f63f452390480bdc9b065163fd
 steward_request_digest: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
 acceptance_matrix_digest: b3fafe36b3e3aabe9c6a592dcef201629d94847b231d6a9184afa7c861a908a2
 completed_steps:
+  - Atomically claimed only the canonical classroom ownership and provider-outbox correction from exact P17 head 78af71603713b6fc73fe755995bdf56193eb199a under canonical control 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b and READY digest b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6.
+  - Preserved every product, acceptance, migration, existing steward-request, and provider byte; no successor request or external effect was created in the atomic claim.
   - Verified repaired containing control 0c911664217efe3dbb89b93b6fe29eb9eda2fec3 with exact sole parent e54ea923a743caf760ef47638a2c8d8a875faf34 and recomputed ready-entry digest 81174a93e2467a468e4668e59408837b7eb06e34fc192c8be4f88ae591eafccf.
   - Published and stopped at correction claim checkpoint a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368, then resumed only after C00 reconciliation at continuation control 268ab601b89573238befe70de7995908925575cc.
   - Corrected exact enrollment identity binding, confirmed occurrence-version binding, and stable per-occurrence meeting and per-occurrence/Student registrant identities.
@@ -84,10 +105,10 @@ completed_steps:
   - Passed full workspace typecheck, 21 focused tests across four files, focused ESLint and Prettier, repository-wide secret scan over 2723 files, and diff hygiene.
   - Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released the task-local lease in terminal metadata.
 remaining_steps:
-  - C00/I36 must independently review the corrected implementation and refreshed artifact digests.
-  - F02, I36, and P28 must disposition the four existing structured steward requests.
-  - Provider sandbox or production canaries remain prohibited until separate explicit Zoom effect authority and effect locks exist.
-next_action: C00/I36 should review correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc and canonical product digest 6941a60b8cf3565f65642634330177d010bebab8726497f3bb73df44e20b83f0, then disposition the four structured requests without provider effects.
+  - C00 must independently audit and reconcile this exact runtime-triplet-only claim.
+  - Only after C00 reconciliation may P17 change the explicit authorized paths and publish the two immutable successor requests.
+  - Provider inspection and every external effect remain prohibited.
+next_action: Stop for C00 reconciliation before changing any product, acceptance, migration, existing request, successor request, provider, or external-effect byte.
 requirements:
   OTV2-CLASSROOM-068: implementation_ready
   OTV2-CLASSROOM-069: implementation_ready

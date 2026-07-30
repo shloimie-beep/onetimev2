@@ -35,3 +35,14 @@ create meetings or registrants, deliver reminders, issue live bootstrap
 material, deploy, or run provider canaries. F02, I36, and P28 must disposition
 the four existing structured steward requests before any separately authorized
 provider verification.
+
+P17 has made only the authorized runtime-triplet atomic claim from exact
+parent `78af71603713b6fc73fe755995bdf56193eb199a` under canonical control
+`9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`, READY
+`b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6`,
+claim `f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1`, and ZOOM_PREPARATION lease
+`0e53a171-263b-41d9-b957-80588027c194`.
+
+Stop for C00 reconciliation. Do not change a product, acceptance artifact,
+migration, existing or successor request, provider configuration, or external
+effect before C00 consumes READY and reauthorizes the explicit allowlist.

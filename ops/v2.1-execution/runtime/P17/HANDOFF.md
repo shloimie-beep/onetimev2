@@ -73,3 +73,21 @@ and disposition the four existing F02/I36/P28 steward requests.
 
 External-effect authority remained `none`; attempted/succeeded/reconciled
 effects were `0/0/0`. No provider or live canary operation was performed.
+
+## Canonical ownership/provider-outbox correction atomic claim
+
+P17 atomically claimed only the bounded collision correction from exact parent
+`78af71603713b6fc73fe755995bdf56193eb199a` under containing control
+`9d343f5b5990e0d5c38b2dc53f660b7377e2d64b`, READY digest
+`b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6`,
+claim `f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1`, and ZOOM_PREPARATION lease
+`0e53a171-263b-41d9-b957-80588027c194` through
+`2026-07-30T07:11:00Z`.
+
+This claim changes only P17 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. Every product, acceptance, migration, existing request, and
+provider byte remains unchanged. P18 remains sole owner of launch grants,
+Meeting SDK bootstrap issuance/consumption, live Student sessions, attendance,
+and their persistence. P17 receives no provider/effect lock; effects remain
+`0/0/0`. Stop for C00 reconciliation before product edits or successor
+requests.
