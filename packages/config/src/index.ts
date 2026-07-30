@@ -376,7 +376,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
       highLevelCanaryDeliveryKeys.length < 1 ||
       parsed.HIGHLEVEL_CANARY_BUDGET < 1 ||
       !Number.isInteger(parsed.HIGHLEVEL_CANARY_BUDGET) ||
-      parsed.HIGHLEVEL_CANARY_BUDGET > 20 ||
+      parsed.HIGHLEVEL_CANARY_BUDGET > 2 ||
       highLevelCanaryDeliveryKeys.length > parsed.HIGHLEVEL_CANARY_BUDGET)
   ) {
     throw new Error(

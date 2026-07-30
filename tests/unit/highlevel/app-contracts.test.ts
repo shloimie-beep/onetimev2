@@ -169,7 +169,7 @@ describe('HighLevel application contracts', () => {
     ['empty delivery-key allowlist', '', '1'],
     ['zero budget', 'delivery-a', '0'],
     ['fractional budget', 'delivery-a', '1.5'],
-    ['budget above the hard limit', 'delivery-a', '21'],
+    ['budget above the operator-canary hard limit', 'delivery-a,delivery-b,delivery-c', '3'],
     ['budget smaller than the allowlist', 'delivery-a,delivery-b', '1'],
   ])('rejects provider mode with %s', (_case, deliveryKeys, budget) => {
     expect(() =>
