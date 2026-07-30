@@ -10,6 +10,8 @@ import type {
 } from '../../../../contracts/src/classes/core/index.ts';
 import { inTransaction, type DbPool, type Queryable } from '../../index.ts';
 
+const CLASS_REMINDER_MINUTES_BEFORE = 30;
+
 export function createClassroomCoreRepository(pool: DbPool): ClassroomCoreRepository {
   return {
     inTransaction: (run) => inTransaction(pool, (client) => run(createUnit(client))),
@@ -29,21 +31,24 @@ function createUnit(client: Queryable): ClassroomCoreUnitOfWork {
       return result.rows[0] ? mapSeries(result.rows[0] as Record<string, unknown>) : null;
     },
     saveSeries: async (series) => {
+      const reminderLocalTime = classReminderLocalTime(series.localStartTime);
       await client.query(
         `INSERT INTO onetime.class_series
            (class_series_key, account_key, product_key, title, series_state, is_canonical,
             timezone, local_start_time, duration_minutes, recurrence_weekdays,
             recurrence_starts_on, recurrence_ends_on, teacher_profile_key,
-            embedded_classroom_required, recording_enabled, version, created_at, updated_at)
+            embedded_classroom_required, recording_enabled, version, created_at, updated_at,
+            reminder_local_time)
          VALUES
            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::smallint[], $11::date, $12::date,
-            $13, $14, $15, $16, $17, $18)
+            $13, $14, $15, $16, $17, $18, $19)
          ON CONFLICT (account_key, product_key, class_series_key)
          DO UPDATE SET
            title = EXCLUDED.title,
            series_state = EXCLUDED.series_state,
            timezone = EXCLUDED.timezone,
            local_start_time = EXCLUDED.local_start_time,
+           reminder_local_time = EXCLUDED.reminder_local_time,
            duration_minutes = EXCLUDED.duration_minutes,
            recurrence_weekdays = EXCLUDED.recurrence_weekdays,
            recurrence_starts_on = EXCLUDED.recurrence_starts_on,
@@ -72,6 +77,7 @@ function createUnit(client: Queryable): ClassroomCoreUnitOfWork {
           series.version,
           series.createdAt,
           series.updatedAt,
+          reminderLocalTime,
         ],
       );
     },
@@ -86,7 +92,8 @@ function createUnit(client: Queryable): ClassroomCoreUnitOfWork {
       return result.rows[0] ? mapOccurrence(result.rows[0] as Record<string, unknown>) : null;
     },
     saveOccurrence: async (occurrence) => {
-      const values = [
+      const { reminderDueAt, joinableUntil } = occurrencePersistenceTiming(occurrence);
+      const sharedValues = [
         occurrence.id,
         occurrence.accountKey,
         occurrence.productKey,
@@ -99,8 +106,6 @@ function createUnit(client: Queryable): ClassroomCoreUnitOfWork {
         occurrence.state,
         occurrence.scheduleVersion,
         occurrence.version,
-        occurrence.createdAt,
-        occurrence.updatedAt,
       ];
       const updated = await client.query(
         `UPDATE onetime.class_occurrences
@@ -110,23 +115,33 @@ function createUnit(client: Queryable): ClassroomCoreUnitOfWork {
                 scheduled_ends_at = $7,
                 join_opens_at = $8,
                 join_closes_at = $9,
+                reminder_due_at = $14,
+                joinable_until = $15,
                 occurrence_state = $10,
                 schedule_version = $11,
                 version = $12,
-                updated_at = $14
+                updated_at = $13
           WHERE occurrence_key = $1 AND account_key = $2 AND product_key = $3`,
-        values,
+        [...sharedValues, occurrence.updatedAt, reminderDueAt, joinableUntil],
       );
       if (updated.rowCount === 0) {
+        const insertValues = [
+          ...sharedValues,
+          occurrence.createdAt,
+          occurrence.updatedAt,
+          reminderDueAt,
+          joinableUntil,
+        ];
         await client.query(
           `INSERT INTO onetime.class_occurrences
              (occurrence_key, account_key, product_key, class_series_key, local_class_date,
               starts_at, scheduled_ends_at, join_opens_at, join_closes_at, occurrence_state,
-              schedule_version, version, created_at, updated_at)
-           VALUES ($1, $2, $3, $4, $5::date, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+              schedule_version, version, created_at, updated_at, reminder_due_at, joinable_until)
+           VALUES
+             ($1, $2, $3, $4, $5::date, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
            ON CONFLICT (account_key, product_key, class_series_key, local_class_date)
            DO NOTHING`,
-          values,
+          insertValues,
         );
       }
     },
@@ -316,4 +331,51 @@ function dateOnly(value: unknown) {
 
 function instant(value: unknown) {
   return value instanceof Date ? value.toISOString() : new Date(String(value)).toISOString();
+}
+
+function classReminderLocalTime(localStartTime: string) {
+  const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(localStartTime);
+  if (!match) {
+    throw new Error('Class series local start time must be a valid HH:mm value.');
+  }
+  const localStartMinutes = Number(match[1]) * 60 + Number(match[2]);
+  const reminderMinutes = (localStartMinutes - CLASS_REMINDER_MINUTES_BEFORE + 24 * 60) % (24 * 60);
+  return `${String(Math.floor(reminderMinutes / 60)).padStart(2, '0')}:${String(
+    reminderMinutes % 60,
+  ).padStart(2, '0')}`;
+}
+
+function occurrencePersistenceTiming(
+  occurrence: Pick<
+    ClassOccurrenceRecord,
+    'startsAt' | 'scheduledEndsAt' | 'joinOpensAt' | 'joinClosesAt'
+  >,
+) {
+  const startsAt = validInstant(occurrence.startsAt, 'startsAt');
+  const scheduledEndsAt = validInstant(occurrence.scheduledEndsAt, 'scheduledEndsAt');
+  const joinOpensAt = validInstant(occurrence.joinOpensAt, 'joinOpensAt');
+  const joinClosesAt = validInstant(occurrence.joinClosesAt, 'joinClosesAt');
+  if (scheduledEndsAt.getTime() <= startsAt.getTime()) {
+    throw new Error('Class occurrence scheduled end must be after its start.');
+  }
+  if (joinOpensAt.getTime() >= startsAt.getTime()) {
+    throw new Error('Class occurrence join window must open before its start.');
+  }
+  if (joinClosesAt.getTime() < scheduledEndsAt.getTime()) {
+    throw new Error('Class occurrence join window must cover its scheduled end.');
+  }
+  return {
+    reminderDueAt: new Date(
+      startsAt.getTime() - CLASS_REMINDER_MINUTES_BEFORE * 60_000,
+    ).toISOString(),
+    joinableUntil: joinClosesAt.toISOString(),
+  };
+}
+
+function validInstant(value: string, field: string) {
+  const parsed = new Date(value);
+  if (!value || Number.isNaN(parsed.getTime())) {
+    throw new Error(`Class occurrence ${field} must be a valid timestamp.`);
+  }
+  return parsed;
 }
