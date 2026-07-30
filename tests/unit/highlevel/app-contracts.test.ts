@@ -93,6 +93,10 @@ describe('HighLevel application contracts', () => {
 
   it('makes zero adapter and database calls while provider mode is off', async () => {
     const config = loadConfig({ NODE_ENV: 'test', HIGHLEVEL_EVENT_SYNC_MODE: 'disabled' });
+    expect(config.highLevelEventSyncMode).toBe('disabled');
+    expect(config.highLevelCanaryRunId).toBeUndefined();
+    expect(config.highLevelCanaryDeliveryKeys).toEqual([]);
+    expect(config.highLevelCanaryBudget).toBe(0);
     const adapter = new DeterministicFakeHighLevelAdapter();
     const forbiddenPool = new Proxy(
       {},
@@ -143,5 +147,40 @@ describe('HighLevel application contracts', () => {
         HIGHLEVEL_CANARY_BUDGET: '1',
       }),
     ).toThrow(/sufficient positive budget/i);
+  });
+
+  it('parses an exact bounded provider canary contract', () => {
+    const config = loadConfig({
+      NODE_ENV: 'test',
+      HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
+      HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+      HIGHLEVEL_CANARY_RUN_ID: ' canary-run-0001 ',
+      HIGHLEVEL_CANARY_DELIVERY_KEYS: ' delivery-b,delivery-a,delivery-b ',
+      HIGHLEVEL_CANARY_BUDGET: '2',
+    });
+
+    expect(config.highLevelEventSyncMode).toBe('provider');
+    expect(config.highLevelCanaryRunId).toBe('canary-run-0001');
+    expect(config.highLevelCanaryDeliveryKeys).toEqual(['delivery-b', 'delivery-a']);
+    expect(config.highLevelCanaryBudget).toBe(2);
+  });
+
+  it.each([
+    ['empty delivery-key allowlist', '', '1'],
+    ['zero budget', 'delivery-a', '0'],
+    ['fractional budget', 'delivery-a', '1.5'],
+    ['budget above the operator-canary hard limit', 'delivery-a,delivery-b,delivery-c', '3'],
+    ['budget smaller than the allowlist', 'delivery-a,delivery-b', '1'],
+  ])('rejects provider mode with %s', (_case, deliveryKeys, budget) => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
+        HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+        HIGHLEVEL_CANARY_RUN_ID: 'canary-run-0001',
+        HIGHLEVEL_CANARY_DELIVERY_KEYS: deliveryKeys,
+        HIGHLEVEL_CANARY_BUDGET: budget,
+      }),
+    ).toThrow(/exact canary run ID|delivery-key allowlist|sufficient positive budget/i);
   });
 });
