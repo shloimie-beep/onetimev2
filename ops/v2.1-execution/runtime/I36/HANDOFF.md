@@ -240,3 +240,58 @@ occurred. Effects remain `0/0/0`.
 C00 must independently audit the exact pushed atomic-claim head and its sole
 parent, consume READY, and rebind all three expected target heads to the claim
 head before I36 may merge any source. I36 must stop.
+
+## P31/P20/P17 correction-release source integration
+
+C00 reconciled exact atomic claim
+`1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7` at containing control
+`60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19`, whose sole parent is initial
+authorizing control `d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef`.
+
+The exact rebound payloads were independently recomputed before merge:
+
+- P31: `951e354746edcce3df991a046563ca6afa355cf45a5ae5f73fe2f3c2942fd9e4`.
+- P20: `a3c16a42f51ccfaf2864e10c955f9fca039c10ea5746975340ea004c42b35072`.
+- P17: `1017f826bac75dd0dc23d5aa70f495678f53898381f64f13d32ba3b0ef7ef711`.
+
+The ordered ancestry-preserving merge results are:
+
+1. P31 source `839ec12bb83317a63f1d064891fb2929a707f3ec` merged at
+   `e834523855ced654482552a5c5cda16767eb99d2` from atomic claim
+   `1b0df6fa` with exact four-path first-parent scope.
+2. P20 source `75137bf476b4a1773f29bb41a6a149148df2623d` merged at
+   `bb4a13a39cfbe843647793775a8a07285b446d6a` from P31 merge
+   `e8345238` with exact eight-path first-parent scope.
+3. P17 source `7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c` merged at
+   `00ec4f9a4011ab125f1f5c38f3433462398a8da5` from P20 merge
+   `bb4a13a3` with exact fourteen-path first-parent scope.
+
+Every source is an ancestor of the final result, and the combined source delta
+is exactly 26 pairwise-disjoint paths. The terminal I36 runtime triplet makes
+the complete release delta exactly 29 paths.
+
+Verification passed:
+
+- 39 focused assertions across seven P31/P20/P17 files;
+- workspace typecheck;
+- full ESLint with zero findings;
+- normalized-LF raw-Git-blob Prettier across all 26 source paths;
+- merged YAML parsing and repository secret scan across 3084 text files;
+- exact merge parents, ancestry, first-parent scopes, combined scope, and diff
+  hygiene;
+- unchanged migration and control-ledger bytes, 80 migrations through maximum
+  ordinal 2249, and next ordinal 2250.
+
+`P17-MIGRATION-002` and `P17-SERVER-WORKER-REGISTRATION-002` remain immutable
+proposals and unapplied. No central ledger was edited, no provider was
+inspected or mutated, and no deployment, send, migration execution, or external
+effect occurred.
+
+RELEASE_INTEGRATOR lease `dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7` was released
+at `2026-07-30T08:32:46Z`, before its `2026-07-30T09:28:30Z` expiry. Effects
+remain attempted `0`, succeeded `0`, reconciled `0`.
+
+C00 must independently audit the exact pushed metadata release head, its sole
+parent `00ec4f9a4011ab125f1f5c38f3433462398a8da5`, ordered merge ancestry and
+4/8/14 scopes, released lease, I36 pair/triplet, unapplied successor requests,
+and effects `0/0/0`. I36 must stop.

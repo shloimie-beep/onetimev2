@@ -33,35 +33,35 @@ dependency_heads:
   P31: 839ec12bb83317a63f1d064891fb2929a707f3ec
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
-status: claimed
-phase: P31_P20_P17_correction_release_integration_atomic_claim
+status: ready
+phase: P31_P20_P17_correction_release_integration_release
 claimed_by: codex-i36-release-integrator-b3e05cde
 claim_time: '2026-07-30T07:58:30Z'
 claim_id: b3e05cde-c76b-4b54-8a63-9a32624f6a87
 lease_id: dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7
 lease_issued_at: '2026-07-30T07:58:30Z'
 lease_expires_at: '2026-07-30T09:28:30Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-30T08:10:29Z'
-controller_authorization_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
-latest_valid_observed_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
-reconciled_state_based_on_control_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
-ready_consumed_by_control_head_sha: 2718c23f19cc3f76f161a5e4f2562f9d7265f68e
-ready_consumed_state_based_on_control_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
-ready_authorization_control_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
+lease_released_at: '2026-07-30T08:32:46Z'
+last_heartbeat_at: '2026-07-30T08:32:46Z'
+controller_authorization_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+latest_valid_observed_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+reconciled_state_based_on_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
+ready_consumed_by_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+ready_consumed_state_based_on_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
+ready_authorization_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
 ready_entry_state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
 ready_entry_payload_digest: f04fd32379e14f45a60988328b95ad07095463648519f4d8ae642b52542a8dce
 claim_mode: resume_existing
 expected_existing_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
-lease_phase_scope: P31_P20_P17_correction_release_integration_atomic_claim_only
+lease_phase_scope: P31_P20_P17_correction_release_integration
 queued_merge_ids:
   P31: f113d311-f2b6-41cf-ad05-a6db5493ed55
   P20: 655b09bb-c6ae-4003-b3e0-3445f24344a5
   P17: ecc60627-6845-45af-8688-be52383d6084
 queued_merge_item_payload_digests:
-  P31: bcce534a48f64b851623ca9456a12b2be029292298998491ae16d1835800459f
-  P20: b1346d36669d5e921720d9a021ee2f39793fc13a51e9af95df2eb7657d63ccc6
-  P17: 134e70e40b081942f2742f81170497397a37800453c8761221d7a00906e5ceba
+  P31: 951e354746edcce3df991a046563ca6afa355cf45a5ae5f73fe2f3c2942fd9e4
+  P20: a3c16a42f51ccfaf2864e10c955f9fca039c10ea5746975340ea004c42b35072
+  P17: 1017f826bac75dd0dc23d5aa70f495678f53898381f64f13d32ba3b0ef7ef711
 queued_source_heads:
   P31: 839ec12bb83317a63f1d064891fb2929a707f3ec
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
@@ -74,15 +74,16 @@ queued_merge_order:
   - P31
   - P20
   - P17
-queued_expected_target_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+queued_expected_target_head_sha: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
 prior_merge_result_head_sha: 3033f13b06d95f6018113033521131cc4429cff3
 prior_release_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
-merge_authorization_state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
-lease_origin_state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+merge_authorization_state_based_on_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
+lease_origin_state_based_on_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
 source_delta_base_head_sha: null
 correction_release_integration_binding:
-  containing_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
-  state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+  containing_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+  initial_authorizing_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
+  state_based_on_control_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
   C00:
     task_packet_digest: 7c982879f3667c344a4c603b601ae3440bb9d429b45b24a2235c22ac9df2c970
     task_context_digest: ed58d8d92f8cd5ba75cb25dd3b5e801c6f2d7fb33ef58afcd3f507e91008ce96
@@ -91,6 +92,9 @@ correction_release_integration_binding:
     release_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
     state_handoff_digest: 3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e
     runtime_triplet_digest: 5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2
+    atomic_claim_head_sha: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
+    atomic_claim_state_handoff_digest: e4e6b567ec1ba74d2cc34b42286e645a31445ad5189cfa1714ca8ebb97eb68de
+    atomic_claim_runtime_triplet_digest: aadacfe05e3a8d06debc6c7c97d06bd996efc3762cedb084a33d811b407c20f1
   P31:
     head_sha: 839ec12bb83317a63f1d064891fb2929a707f3ec
     source_delta_base_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
@@ -99,7 +103,8 @@ correction_release_integration_binding:
     source_manifest_digest: 59afcf23b99a3b2fb6320b9b4dd8fa03697f9f0c17e537bb8d449c1342043866
     state_handoff_digest: 963d335df4a96cb6fac2f92a66fc24182621da4bd20ee2cf50604a0f76500866
     runtime_triplet_digest: 09aa24a8d2374c9a069be32f791e0eb6bb2dfd78cdb3129219cec68ae2520bac
-    merge_payload_digest: bcce534a48f64b851623ca9456a12b2be029292298998491ae16d1835800459f
+    rebound_merge_payload_digest: 951e354746edcce3df991a046563ca6afa355cf45a5ae5f73fe2f3c2942fd9e4
+    merge_result_head_sha: e834523855ced654482552a5c5cda16767eb99d2
   P20:
     head_sha: 75137bf476b4a1773f29bb41a6a149148df2623d
     source_delta_base_head_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
@@ -108,7 +113,8 @@ correction_release_integration_binding:
     source_manifest_digest: 955f15a7c8f15b9a96931f07ccbaebadc0918b29e928ed10038873174e3990d7
     state_handoff_digest: 66a2b43f8cdc963a447fb60782ac19456a241eefcf3abce49409592a96d31798
     runtime_triplet_digest: 560393879d77e3926ef38786973d8d594c21f45c3e2b51d3b9c1a8d1a7cdd92e
-    merge_payload_digest: b1346d36669d5e921720d9a021ee2f39793fc13a51e9af95df2eb7657d63ccc6
+    rebound_merge_payload_digest: a3c16a42f51ccfaf2864e10c955f9fca039c10ea5746975340ea004c42b35072
+    merge_result_head_sha: bb4a13a39cfbe843647793775a8a07285b446d6a
   P17:
     head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
     source_delta_base_head_sha: 78af71603713b6fc73fe755995bdf56193eb199a
@@ -117,11 +123,14 @@ correction_release_integration_binding:
     source_manifest_digest: a6fc85d308c15d416f156ce6dda4828257ca25b9af9214f41aa875e40f73fd9e
     state_handoff_digest: e91e519f20aeb84fc5d73c8d20c0c83ad086819dfe2f941f97f90b518c169a6d
     runtime_triplet_digest: 084d025d258f2f35b7c5a210800721a3894e1100671f3371b509cfdb6e2ddd64
-    merge_payload_digest: 134e70e40b081942f2742f81170497397a37800453c8761221d7a00906e5ceba
+    rebound_merge_payload_digest: 1017f826bac75dd0dc23d5aa70f495678f53898381f64f13d32ba3b0ef7ef711
+    merge_result_head_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
   combined_source_path_count: 26
+  combined_release_path_count: 29
   pairwise_path_overlap_count: 0
   source_and_request_bytes_preserved_in_atomic_claim: true
   steward_requests_applied_in_atomic_claim: false
+  steward_requests_applied_in_source_wave: false
   external_effects: 0/0/0
 merge_result_heads:
   F06: a9b8404451246246fdcd2ffdde99ee72bb096d2f
@@ -145,13 +154,23 @@ merge_result_heads:
   F02_direct_prerequisite: acde075ecf50e77e57fb3bda82a18509d42345ad
   P28_direct_prerequisite: cb7a700e24e67b306d0ecbaf96a7b49351b6fcd9
   P31_direct_prerequisite: 5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f
-merge_result_head_sha: 5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f
-merge_parent_target_head_sha: cb7a700e24e67b306d0ecbaf96a7b49351b6fcd9
-merge_parent_source_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+  P31_correction_release: e834523855ced654482552a5c5cda16767eb99d2
+  P20_correction_release: bb4a13a39cfbe843647793775a8a07285b446d6a
+  P17_correction_release: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
+merge_result_head_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
+merge_parent_target_head_sha: bb4a13a39cfbe843647793775a8a07285b446d6a
+merge_parent_source_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
 prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
-last_implementation_commit_sha: 5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f
+state_based_on_head_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
+last_implementation_commit_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
 completed_steps:
+  - C00 reconciled exact atomic claim 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7 at control 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19 and rebound canonical P31/P20/P17 merge payloads to 951e354746edcce3df991a046563ca6afa355cf45a5ae5f73fe2f3c2942fd9e4/a3c16a42f51ccfaf2864e10c955f9fca039c10ea5746975340ea004c42b35072/1017f826bac75dd0dc23d5aa70f495678f53898381f64f13d32ba3b0ef7ef711.
+  - Merged exact P31 head 839ec12bb83317a63f1d064891fb2929a707f3ec at e834523855ced654482552a5c5cda16767eb99d2 with exact parents, preserved source ancestry, and four-path first-parent scope.
+  - Merged exact P20 head 75137bf476b4a1773f29bb41a6a149148df2623d at bb4a13a39cfbe843647793775a8a07285b446d6a with exact parents, P31 ancestry, and eight-path first-parent scope.
+  - Merged exact P17 head 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c at 00ec4f9a4011ab125f1f5c38f3433462398a8da5 with exact parents, P31/P20 ancestry, and fourteen-path first-parent scope.
+  - Passed 39 focused assertions across seven P31/P20/P17 files, workspace typecheck, full ESLint with zero findings, normalized-LF raw-Git-blob Prettier across all 26 source paths, YAML parsing, repository secret scan across 3084 text files, exact 26-path source and 29-path release scope, diff hygiene, and zero-effect gates.
+  - Preserved all migration and control-ledger bytes with maximum migration ordinal 2249 and next ordinal 2250; P17-MIGRATION-002 and P17-SERVER-WORKER-REGISTRATION-002 remain immutable proposals and unapplied.
+  - Released sole RELEASE_INTEGRATOR lease dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7 at 2026-07-30T08:32:46Z; no steward, provider, central-ledger, deployment, send, migration-execution, or external effect occurred.
   - F03 independently verified exact I36 release 3cf787409decb5beb84561ef7e37924111d398b6, containing control d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef with sole state-basis parent a38b917f514b65c49d2d75789b8ae50d96985cdc, READY f04fd32379e14f45a60988328b95ad07095463648519f4d8ae642b52542a8dce, I36 pair/triplet 3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e/5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2, ordered P31/P20/P17 payloads, exact 4/8/14-path manifests, active sole lease, and effects 0/0/0.
   - Claimed only the I36 runtime triplet under claim b3e05cde-c76b-4b54-8a63-9a32624f6a87 and RELEASE_INTEGRATOR lease dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7; no source was merged, no steward request was applied, and no provider, deployment, send, or external effect occurred.
   - Verified repository identity shloimie-beep/onetimev2.
@@ -1074,10 +1093,9 @@ completed_steps:
     No steward or central state was applied, no provider was inspected or
     mutated, and no deployment, send, or external effect occurred.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 metadata-only atomic claim.
-  - C00 must independently reconcile the pushed claim, consume READY, and rebind all P31/P20/P17 expected target heads to the exact pushed claim head before any source merge.
-  - No steward request, source merge, provider action, deployment, send, migration execution, or external effect is authorized at this checkpoint.
-next_action: C00 must independently audit and reconcile the exact pushed I36 P31/P20/P17 atomic claim and its sole parent 3cf787409decb5beb84561ef7e37924111d398b6, then rebind all three queue targets; I36 must stop without merging or steward action.
+  - Commit and normally push this exact three-file I36 metadata-only terminal release.
+  - Report the pushed release head, sole parent, ordered merge heads, exact 4/8/14 scopes, release pair/triplet, verification counts, released lease, unapplied successor requests, and effects 0/0/0 to C00, then stop.
+next_action: C00 must independently audit the exact pushed I36 P31/P20/P17 source-integration release head, its sole parent 00ec4f9a4011ab125f1f5c38f3433462398a8da5, ordered merge ancestry and 4/8/14 scopes, released lease, I36 pair/triplet, unapplied P17 successor requests, and effects 0/0/0; I36 must stop.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -2251,6 +2269,24 @@ verification:
       result: passed independently by F03; exact 4/8/14 source scopes and manifests, active sole atomic-claim-only lease, no steward application, and effects 0/0/0
     - command: P31/P20/P17 atomic checkpoint diff, YAML, formatting, and secret verification
       result: passed; only the three I36 runtime files changed, YAML parsed, formatting and diff hygiene passed, no source merged, and no external action occurred
+    - command: fetched reconciled P31/P20/P17 control, integration, and exact source refs
+      result: passed; exact control 60d76e2a, sole parent d4b22e69, atomic claim 1b0df6fa, live lease dbef2b0e, and source heads 839ec12b/75137bf4/7f8a41bc
+    - command: canonical rebound P31/P20/P17 merge-item payload recomputation
+      result: passed; exact digests 951e3547, a3c16a42, and 1017f826
+    - command: exact source fixed-base, path inventory, raw-byte manifest, runtime pair/triplet, lease, order, disjointness, steward, and effect admission
+      result: passed; exact 4/8/14 source scopes and manifests, live sole lease, no steward application, and effects 0/0/0
+    - command: ordered git merge --no-ff for P31, P20, and P17
+      result: passed; exact merge heads e8345238, bb4a13a3, and 00ec4f9a with exact two-parent ancestry and first-parent scopes
+    - command: focused P31/P20/P17 Vitest suites
+      result: passed; seven files and 39 tests
+    - command: npm run typecheck -- --pretty false
+      result: passed
+    - command: npm run lint
+      result: passed with zero findings
+    - command: normalized-LF raw-Git-blob scoped Prettier
+      result: passed across all 26 exact source paths
+    - command: migration and central-ledger immutability, ordinal, YAML, secret, diff, combined-scope, steward, provider, and effect checks
+      result: passed; no migration/control-ledger byte changed, 80 migrations remain through 2249 with next ordinal 2250, six release YAML files parsed, 3084 text files scanned, exact 26-path source and 29-path release scopes, both P17 successor requests unapplied, no external action, and effects 0/0/0
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
