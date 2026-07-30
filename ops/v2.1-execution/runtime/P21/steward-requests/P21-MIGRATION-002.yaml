@@ -1,0 +1,96 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P21-MIGRATION-002
+task_id: P21
+kind: migration
+requirement_ids:
+  - OTV2-CONTENT-087
+  - OTV2-CONTENT-088
+  - OTV2-CONTENT-089
+  - OTV2-CONTENT-090
+  - OTV2-CONTENT-091
+  - OTV2-CONTENT-092
+  - OTV2-CONTENT-194
+  - OTV2-CONTENT-195
+acceptance_case_ids:
+  - OTV2-CONTENT-087-AC01
+  - OTV2-CONTENT-088-AC01
+  - OTV2-CONTENT-089-STUDENT
+  - OTV2-CONTENT-089-PARENT-DENY
+  - OTV2-CONTENT-090-AC01
+  - OTV2-CONTENT-091-AC01
+  - OTV2-CONTENT-092-AC01
+  - OTV2-CONTENT-194-AC01
+  - OTV2-CONTENT-195-AC01
+rationale: >-
+  P21 owns the corrected publication persistence contract, but only F02 may
+  allocate and write a forward-only migration. P21-registration-001 remains
+  immutable, unapplied, superseded, and withheld because it omitted the
+  canonical P20 ApprovedForPublicationProjection composite binding and mixed
+  migration work with I36 registration.
+desired_semantic_change: >-
+  Allocate the next safe migration ordinal and create or extend only P21-owned
+  publication persistence so every aggregate, receipt, outbox intent,
+  occurrence relation, eligibility row, assignment, library projection,
+  protected notice, playback-facts row, and resume is bound to exact
+  account_key, product_key, content_version_id, and the immutable P20 approval
+  projection or its digest. Preserve one atomic publication transaction through
+  the existing F05 job_outbox and F06 provider_operation_binding records.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    Use (account_key, product_key, content_id) as the publication aggregate
+    identity and include both scope fields in every P21 unique key, lookup,
+    foreign key, row policy, and idempotency key.
+  - >-
+    Persist the complete immutable P20 ApprovedForPublicationProjection JSON
+    and projection_digest on approval, publication outbox, Student assignment,
+    and library projection rows; persist the exact projection_digest on
+    receipts, provider completion correlation, eligibility, notices, playback
+    facts, grants where durable, and resume rows.
+  - >-
+    Make content_publication_receipts unique by composite scope, operation, and
+    idempotency_key, with canonical request_hash and approval projection
+    correlation so exact replay converges and changed evidence conflicts.
+  - >-
+    Bind content_publication_outbox to composite scope, content version,
+    publication generation, provider operation, canonical request hash, and
+    approval projection digest. Reuse existing job_outbox and
+    provider_operation_binding; do not create competing provider persistence.
+  - >-
+    Complete the accepted exact job_outbox operation and original pending P21
+    outbox only when scope, product, content/version/generation, operation
+    version, registry/account binding, request hash, approval projection
+    digest, acceptance digest, and reconciliation digest all match.
+  - >-
+    Make governed occurrence, current publication eligibility, assignment,
+    library, notice, playback-facts, and resume reads composite-scoped and
+    fail closed on cross-account, cross-product, stale-version, or
+    cross-projection rows.
+  - >-
+    Insert publication state, assignments, library projections, protected
+    notices, provider/outbox completion, and completion receipt in one
+    transaction; any mismatch or failed insert must roll back all visibility.
+compatibility_assumptions:
+  - P21-registration-001 remains byte-identical, unapplied, superseded, and
+    withheld.
+  - The integrated P20 ApprovedForPublicationProjection repository is the sole
+    approval-evidence authority and its projection digest algorithm is
+    immutable for this contract version.
+  - Existing F05 job_outbox and F06 provider_operation_binding migrations are
+    applied prerequisites and remain immutable.
+  - P21 runtime code never creates, alters, or applies schema.
+verification_performed:
+  - focused P21 domain, repository, service, and two client tests
+  - workspace typecheck
+  - focused lint and formatting
+  - parameterized composite-scope SQL inspection with no runtime DDL
+  - YAML, hash, scope, provider-reference, secret, and diff checks
+conflicts_or_risks:
+  - Do not allocate a migration ordinal from P21 or edit any applied migration.
+  - Do not weaken tenant/product row protection or retain content_id-only or
+    student_id/content_id-only conflict targets.
+  - Do not add account identity to F05 job_outbox by inference; correlate it
+    through the exact scoped P21 outbox and existing product/content fields.
+  - Do not persist provider URLs, browser-transferable credentials, raw
+    provider account references, or child-private data in notices or clients.
+contains_secret_or_private_data: false

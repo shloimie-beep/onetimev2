@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import type {
   ContentApprovalEvidence,
@@ -23,10 +24,14 @@ import {
 } from './lifecycle.ts';
 
 const hash = (digit: string) => digit.repeat(64);
+const scope = {
+  accountKey: 'account_one',
+  productKey: 'one_time_mishnayos' as const,
+};
 const admin: ContentPublicationPrincipal = {
   actorId: 'admin_one',
   role: 'admin',
-  productKey: 'one_time_mishnayos',
+  ...scope,
   householdId: 'admin_scope',
   studentId: null,
   sessionId: null,
@@ -36,7 +41,7 @@ const admin: ContentPublicationPrincipal = {
 const student: ContentPublicationPrincipal = {
   actorId: 'account_student_one',
   role: 'student',
-  productKey: 'one_time_mishnayos',
+  ...scope,
   householdId: 'household_one',
   studentId: 'student_one',
   sessionId: 'student_session_one',
@@ -46,7 +51,7 @@ const student: ContentPublicationPrincipal = {
 const parent: ContentPublicationPrincipal = {
   actorId: 'parent_one',
   role: 'parent',
-  productKey: 'one_time_mishnayos',
+  ...scope,
   householdId: 'household_one',
   studentId: null,
   sessionId: 'parent_session_one',
@@ -85,18 +90,17 @@ describe('P21 publication lifecycle', () => {
     ).toThrow(/different governance/i);
 
     for (const invalid of [
-      { ...approvalEvidence(), contentVersionDigest: hash('f') },
-      { ...approvalEvidence(), participantSnapshotSetDigest: hash('f') },
-      { ...approvalEvidence(), participantReviewState: 'complete', unresolvedParticipantCount: 1 },
-      { ...approvalEvidence(), completedRedactionCount: 1 },
-      { ...approvalEvidence(), redactionReviewDigest: hash('f') },
-      {
-        ...approvalEvidence(),
-        adminAttestation: {
-          ...approvalEvidence().adminAttestation,
-          attestedByAdminId: 'admin_other',
-        },
-      },
+      approvalEvidence({ accountKey: 'account_other' }),
+      approvalEvidence({ productKey: 'one_time_mishnayos', contentVersionId: 'version_other' }),
+      approvalEvidence({ participantSnapshotDigest: hash('f') }),
+      approvalEvidence({ approvedByAdminId: 'admin_other' }),
+      approvalEvidence({ artifacts: approvalEvidence().artifacts.slice(0, 6) }),
+      approvalEvidence({
+        artifacts: approvalEvidence().artifacts.map((artifact, index) =>
+          index === 0 ? { ...artifact, payloadDigest: hash('f') } : artifact,
+        ),
+        projectionDigest: approvalEvidence().projectionDigest,
+      }),
     ]) {
       expect(() =>
         approveContent({
@@ -107,7 +111,7 @@ describe('P21 publication lifecycle', () => {
           evidence: invalid as ContentApprovalEvidence,
           binding: binding(4),
         }),
-      ).toThrow(/evidence is incomplete/i);
+      ).toThrow(ContentPublicationError);
     }
     expect(
       approveContent({
@@ -120,7 +124,12 @@ describe('P21 publication lifecycle', () => {
       }).approval,
     ).toMatchObject({
       approvedByAdminId: 'admin_one',
-      evidence: { participantReviewState: 'complete', unresolvedParticipantCount: 0 },
+      evidence: {
+        accountKey: 'account_one',
+        productKey: 'one_time_mishnayos',
+        contentVersionId: 'content_version_one',
+        projectionDigest: approvalEvidence().projectionDigest,
+      },
     });
   });
 
@@ -387,6 +396,7 @@ describe('P21 publication lifecycle', () => {
 
 function content(overrides: Partial<ContentPublicationRecord> = {}): ContentPublicationRecord {
   return {
+    ...scope,
     contentId: 'content_one',
     contentVersionId: 'content_version_one',
     contentVersionDigest: hash('1'),
@@ -426,24 +436,66 @@ function content(overrides: Partial<ContentPublicationRecord> = {}): ContentPubl
   };
 }
 
-function approvalEvidence(): ContentApprovalEvidence {
-  return {
+function approvalEvidence(
+  overrides: Partial<ContentApprovalEvidence> = {},
+): ContentApprovalEvidence {
+  const { projectionDigest: overriddenDigest, ...coreOverrides } = overrides;
+  const core = {
+    ...scope,
     contentVersionId: 'content_version_one',
-    contentVersionDigest: hash('1'),
-    participantSnapshotSetDigest: hash('2'),
-    participantSetVersion: 'participant_set_v1',
-    participantReviewState: 'complete',
-    unresolvedParticipantCount: 0,
-    requiredRedactionCount: 2,
-    completedRedactionCount: 2,
-    redactionReviewDigest: hash('3'),
-    adminAttestation: {
-      attestationId: 'attestation_one',
-      attestedByAdminId: 'admin_one',
-      attestedAt: '2026-07-29T10:39:00.000Z',
-      inspectedMediaAndMemberVisibleArtifacts: true,
-      requiredRedactionsComplete: true,
-    },
+    sourceId: 'source_one',
+    sourceSha256: hash('1'),
+    sourceObjectVersionId: 'source_object_version_one',
+    participantSnapshotDigest: hash('2'),
+    approvedByAdminId: 'admin_one',
+    approvedAt: '2026-07-29T10:39:00.000Z',
+    artifacts: [
+      {
+        artifactId: 'captions_one',
+        kind: 'captions' as const,
+        revision: 1,
+        payloadDigest: hash('3'),
+      },
+      {
+        artifactId: 'compressed_video_one',
+        kind: 'compressed_video' as const,
+        revision: 1,
+        payloadDigest: hash('4'),
+      },
+      {
+        artifactId: 'knowledge_artifact_one',
+        kind: 'knowledge_artifact' as const,
+        revision: 1,
+        payloadDigest: hash('5'),
+      },
+      {
+        artifactId: 'review_material_one',
+        kind: 'review_material' as const,
+        revision: 1,
+        payloadDigest: hash('6'),
+      },
+      {
+        artifactId: 'transcript_one',
+        kind: 'transcript' as const,
+        revision: 1,
+        payloadDigest: hash('7'),
+      },
+      { artifactId: 'trim_one', kind: 'trim' as const, revision: 1, payloadDigest: hash('8') },
+      {
+        artifactId: 'worksheet_one',
+        kind: 'worksheet' as const,
+        revision: 1,
+        payloadDigest: hash('9'),
+      },
+    ],
+    approvedArtifactSetDigest: hash('a'),
+    sourceEvidenceDigest: hash('b'),
+    ...coreOverrides,
+  };
+  return {
+    ...core,
+    projectionDigest:
+      overriddenDigest ?? createHash('sha256').update(JSON.stringify(core)).digest('hex'),
   };
 }
 
@@ -477,6 +529,7 @@ function publishedContent() {
 
 function relation(occurrenceId: string, occurrenceVersion: number) {
   return {
+    ...scope,
     relationId: `relation_${occurrenceId}`,
     occurrenceId,
     occurrenceVersion,
@@ -487,6 +540,7 @@ function relation(occurrenceId: string, occurrenceVersion: number) {
 
 function canonicalOccurrence(occurrenceId: string, occurrenceVersion: number) {
   return {
+    ...scope,
     occurrenceId,
     occurrenceVersion,
     canonicalSeriesId: 'canonical_series_one',
@@ -511,6 +565,7 @@ function providerReadback(
   canonicalRequestHash: string,
 ): VimeoProviderOperationReadback {
   return {
+    ...scope,
     providerOperationId,
     providerOperationVersion: 3,
     providerOperationState: 'accepted',
@@ -536,6 +591,7 @@ function providerReadback(
     providerReadbackDigest: hash('e'),
     oneTimePublicationReadback: 'ready_to_apply',
     oneTimeReadbackDigest: hash('f'),
+    approvalProjectionDigest: approvalEvidence().projectionDigest,
   };
 }
 
@@ -547,7 +603,7 @@ function providerContext(intent: ContentPublicationOutboxIntent) {
       providerOperationVersion: 3,
       provider: 'vimeo' as const,
       operation: 'publish_private' as const,
-      productKey: 'one_time_mishnayos' as const,
+      ...scope,
       contentId: intent.contentId,
       contentVersionId: intent.contentVersionId,
       publicationGeneration: intent.publicationGeneration,
@@ -559,12 +615,14 @@ function providerContext(intent: ContentPublicationOutboxIntent) {
       providerAccountRefHash: hash('9'),
       providerAcceptanceDigest: hash('d'),
       providerReconciliationDigest: hash('a'),
+      approvalProjectionDigest: approvalEvidence().projectionDigest,
     },
   };
 }
 
 function audience() {
   return {
+    ...scope,
     studentId: 'student_one',
     householdId: 'household_one',
     adultRecipientId: 'adult_one',
@@ -595,12 +653,14 @@ function eligibility(
     accountRevoked: false,
     contentRevoked: false,
     adultRecipientActive: true,
+    approvalProjectionDigest: approvalEvidence().projectionDigest,
     ...overrides,
   };
 }
 
 function assignment(): StudentContentAssignment {
   return {
+    ...scope,
     assignmentId: 'assignment_one',
     assignmentVersion: 1,
     contentId: 'content_one',
@@ -617,11 +677,13 @@ function assignment(): StudentContentAssignment {
     revocationVersion: 10,
     active: true,
     revokedAt: null,
+    approvalEvidence: approvalEvidence(),
   };
 }
 
 function facts(): StudentPlaybackAuthorizationFacts {
   return {
+    ...scope,
     assignmentId: 'assignment_one',
     assignmentVersion: 1,
     studentId: 'student_one',
@@ -643,5 +705,6 @@ function facts(): StudentPlaybackAuthorizationFacts {
     accountRevoked: false,
     contentRevoked: false,
     privacyReviewState: 'clear',
+    approvalProjectionDigest: approvalEvidence().projectionDigest,
   };
 }

@@ -1,11 +1,12 @@
 import type {
   ContentPublicationCommandBinding,
-  ContentApprovalEvidence,
   ContentPublicationOperation,
   ContentPublicationOutboxIntent,
   ContentPublicationPrincipal,
   ContentPublicationReceipt,
   ContentPublicationRepository,
+  ContentPublicationProjectionRepository,
+  ContentPublicationScope,
   GovernedContentOccurrenceRelation,
   StudentPublicationAudience,
   VimeoProviderOperationReadback,
@@ -32,6 +33,7 @@ import {
 
 export function createContentPublicationService(deps: {
   repository: ContentPublicationRepository;
+  approvedProjectionRepository: ContentPublicationProjectionRepository;
   createId: () => string;
 }) {
   return {
@@ -40,24 +42,45 @@ export function createContentPublicationService(deps: {
       contentId: string;
       approvalId: string;
       policyVersion: string;
-      evidence: ContentApprovalEvidence;
       binding: ContentPublicationCommandBinding;
     }) {
-      return mutate({
-        repository: deps.repository,
-        principal: input.principal,
-        contentId: input.contentId,
-        operation: 'approve',
-        binding: input.binding,
-        apply: (record) =>
-          approveContent({
-            principal: input.principal,
-            record,
+      return deps.repository.inTransaction(async (unit) => {
+        assertAdminPublicationPrincipal(input.principal);
+        const scope = principalScope(input.principal);
+        const current = await requiredContent(unit, scope, input.contentId);
+        const evidence =
+          await deps.approvedProjectionRepository.getApprovedForPublicationProjection({
+            ...scope,
+            contentVersionId: current.contentVersionId,
+          });
+        if (!evidence) return approvalUnavailable();
+        const binding = authoritativeBinding(
+          input.binding,
+          'approve',
+          current,
+          {
             approvalId: input.approvalId,
             policyVersion: input.policyVersion,
-            evidence: input.evidence,
-            binding: input.binding,
-          }),
+            evidence,
+          },
+          evidence.projectionDigest,
+        );
+        const priorReceipt = await unit.findReceipt(scope, 'approve', binding.idempotencyKey);
+        if (priorReceipt) {
+          assertReceiptReplay(priorReceipt, 'approve', binding.requestHash, input.contentId);
+          return { record: current, replay: true as const };
+        }
+        const next = approveContent({
+          principal: input.principal,
+          record: current,
+          approvalId: input.approvalId,
+          policyVersion: input.policyVersion,
+          evidence,
+          binding,
+        });
+        await unit.saveContent(next, current.version);
+        await unit.saveReceipt(receipt('approve', next, binding));
+        return { record: next, replay: false as const };
       });
     },
 
@@ -72,11 +95,12 @@ export function createContentPublicationService(deps: {
         contentId: input.contentId,
         operation: 'request_publish',
         binding: input.binding,
-        apply: (record) => {
+        requestPayload: {},
+        apply: (record, binding) => {
           const result = requestPrivatePublication({
             principal: input.principal,
             record,
-            binding: input.binding,
+            binding,
           });
           return { record: result.record, outboxIntent: result.intent };
         },
@@ -84,33 +108,47 @@ export function createContentPublicationService(deps: {
     },
 
     async applyPrivatePublicationReadback(input: {
+      scope: ContentPublicationScope;
       contentId: string;
       readback: VimeoProviderOperationReadback;
-      audience: readonly StudentPublicationAudience[];
+      audience: readonly Omit<StudentPublicationAudience, 'accountKey' | 'productKey'>[];
       binding: ContentPublicationCommandBinding;
     }) {
       return deps.repository.inTransaction(async (unit) => {
-        const current = await requiredContent(unit, input.contentId);
+        const current = await requiredContent(unit, input.scope, input.contentId);
+        const audience = input.audience.map((member) => ({
+          ...member,
+          ...input.scope,
+        }));
+        const binding = authoritativeBinding(input.binding, 'record_published', current, {
+          readback: input.readback,
+          audience,
+        });
         const priorReceipt = await unit.findReceipt(
+          input.scope,
           'record_published',
-          input.binding.idempotencyKey,
+          binding.idempotencyKey,
         );
         if (priorReceipt) {
           assertReceiptReplay(
             priorReceipt,
             'record_published',
-            input.binding.requestHash,
+            binding.requestHash,
             input.contentId,
           );
           return { record: current, replay: true as const };
         }
         const pendingProviderContext = current.pendingProviderOperationId
-          ? await unit.getPendingPublishProviderContext(current.pendingProviderOperationId)
+          ? await unit.getPendingPublishProviderContext(
+              input.scope,
+              current.pendingProviderOperationId,
+            )
           : null;
         if (!pendingProviderContext) return providerConflict();
         const eligibility = await Promise.all(
-          input.audience.map((member) =>
+          audience.map((member) =>
             unit.getCurrentPublicationEligibility(
+              input.scope,
               member.studentId,
               input.contentId,
               member.occurrenceId,
@@ -121,17 +159,15 @@ export function createContentPublicationService(deps: {
         const result = recordPrivatePublication({
           record: current,
           readback: input.readback,
-          audience: input.audience,
+          audience,
           eligibility: eligibility.filter((entry) => entry !== null),
           pendingProviderContext,
-          binding: input.binding,
+          binding,
         });
         await unit.saveContent(result.record, current.version);
         await unit.savePublicationMaterialization(result.materialization);
         await unit.completePublishProviderOperation(result.providerCompletion);
-        await unit.saveReceipt(
-          receipt('record_published', input.contentId, result.record.version, input.binding),
-        );
+        await unit.saveReceipt(receipt('record_published', result.record, binding));
         return { record: result.record, replay: false as const };
       });
     },
@@ -139,41 +175,53 @@ export function createContentPublicationService(deps: {
     attachOccurrence(input: {
       principal: ContentPublicationPrincipal;
       contentId: string;
-      relation: Omit<GovernedContentOccurrenceRelation, 'governedByAdminId' | 'attachedAt'>;
+      relation: Omit<
+        GovernedContentOccurrenceRelation,
+        'governedByAdminId' | 'attachedAt' | 'accountKey' | 'productKey'
+      >;
       binding: ContentPublicationCommandBinding;
     }) {
       return deps.repository.inTransaction(async (unit) => {
         assertAdminPublicationPrincipal(input.principal);
-        const current = await requiredContent(unit, input.contentId);
+        const scope = principalScope(input.principal);
+        const current = await requiredContent(unit, scope, input.contentId);
+        const relation: Omit<
+          GovernedContentOccurrenceRelation,
+          'governedByAdminId' | 'attachedAt'
+        > = {
+          ...input.relation,
+          accountKey: scope.accountKey,
+          productKey: input.principal.productKey,
+        };
+        const binding = authoritativeBinding(input.binding, 'attach_occurrence', current, relation);
         const priorReceipt = await unit.findReceipt(
+          scope,
           'attach_occurrence',
-          input.binding.idempotencyKey,
+          binding.idempotencyKey,
         );
         if (priorReceipt) {
           assertReceiptReplay(
             priorReceipt,
             'attach_occurrence',
-            input.binding.requestHash,
+            binding.requestHash,
             input.contentId,
           );
           return { record: current, replay: true as const };
         }
         const canonicalOccurrence = await unit.getCanonicalGovernedOccurrence(
+          scope,
           input.relation.occurrenceId,
-          input.relation.productKey,
         );
         if (!canonicalOccurrence) return governedOccurrenceUnavailable();
         const next = attachOccurrence({
           principal: input.principal,
           record: current,
-          relation: input.relation,
+          relation,
           canonicalOccurrence,
-          binding: input.binding,
+          binding,
         });
         await unit.saveContent(next, current.version);
-        await unit.saveReceipt(
-          receipt('attach_occurrence', input.contentId, next.version, input.binding),
-        );
+        await unit.saveReceipt(receipt('attach_occurrence', next, binding));
         return { record: next, replay: false as const };
       });
     },
@@ -189,11 +237,12 @@ export function createContentPublicationService(deps: {
         contentId: input.contentId,
         operation: 'unpublish',
         binding: input.binding,
-        apply: (record) => {
+        requestPayload: {},
+        apply: (record, binding) => {
           const result = unpublishContent({
             principal: input.principal,
             record,
-            binding: input.binding,
+            binding,
           });
           return { record: result.record, outboxIntent: result.intent };
         },
@@ -211,11 +260,12 @@ export function createContentPublicationService(deps: {
         contentId: input.contentId,
         operation: 'archive',
         binding: input.binding,
-        apply: (record) => {
+        requestPayload: {},
+        apply: (record, binding) => {
           const result = archiveContent({
             principal: input.principal,
             record,
-            binding: input.binding,
+            binding,
           });
           return result.intent
             ? { record: result.record, outboxIntent: result.intent }
@@ -226,12 +276,13 @@ export function createContentPublicationService(deps: {
 
     playback(input: { principal: ContentPublicationPrincipal; contentId: string; now: Date }) {
       return deps.repository.inTransaction(async (unit) => {
-        const record = await requiredContent(unit, input.contentId);
+        const scope = principalScope(input.principal);
+        const record = await requiredContent(unit, scope, input.contentId);
         const assignment = input.principal.studentId
-          ? await unit.getAssignment(input.principal.studentId, input.contentId)
+          ? await unit.getAssignment(scope, input.principal.studentId, input.contentId)
           : null;
         const facts = input.principal.studentId
-          ? await unit.getPlaybackFacts(input.principal.studentId, input.contentId)
+          ? await unit.getPlaybackFacts(scope, input.principal.studentId, input.contentId)
           : null;
         return authorizeStudentPlayback({
           principal: input.principal,
@@ -246,14 +297,15 @@ export function createContentPublicationService(deps: {
 
     library(input: { principal: ContentPublicationPrincipal; query: string }) {
       return deps.repository.inTransaction(async (unit) => {
-        const published = await unit.listPublishedContent();
+        const scope = principalScope(input.principal);
+        const published = await unit.listPublishedContent(scope);
         const assignmentEntries = await Promise.all(
           published.map(
             async (record) =>
               [
                 record.contentId,
                 input.principal.studentId
-                  ? await unit.getAssignment(input.principal.studentId, record.contentId)
+                  ? await unit.getAssignment(scope, input.principal.studentId, record.contentId)
                   : null,
               ] as const,
           ),
@@ -264,7 +316,7 @@ export function createContentPublicationService(deps: {
               [
                 record.contentId,
                 input.principal.studentId
-                  ? await unit.getPlaybackFacts(input.principal.studentId, record.contentId)
+                  ? await unit.getPlaybackFacts(scope, input.principal.studentId, record.contentId)
                   : null,
               ] as const,
           ),
@@ -275,7 +327,7 @@ export function createContentPublicationService(deps: {
               [
                 record.contentId,
                 input.principal.studentId
-                  ? await unit.getResume(input.principal.studentId, record.contentId)
+                  ? await unit.getResume(scope, input.principal.studentId, record.contentId)
                   : null,
               ] as const,
           ),
@@ -299,27 +351,30 @@ export function createContentPublicationService(deps: {
     }) {
       return deps.repository.inTransaction(async (unit) => {
         const studentId = input.principal.studentId;
-        const record = await requiredContent(unit, input.contentId);
-        const assignment = studentId ? await unit.getAssignment(studentId, input.contentId) : null;
-        const facts = studentId ? await unit.getPlaybackFacts(studentId, input.contentId) : null;
+        const scope = principalScope(input.principal);
+        const record = await requiredContent(unit, scope, input.contentId);
+        const binding = authoritativeBinding(input.binding, 'save_resume', record, {
+          positionMs: input.positionMs,
+        });
+        const assignment = studentId
+          ? await unit.getAssignment(scope, studentId, input.contentId)
+          : null;
+        const facts = studentId
+          ? await unit.getPlaybackFacts(scope, studentId, input.contentId)
+          : null;
         assertStudentContentAccess({
           principal: input.principal,
           record,
           assignment,
           facts,
         });
-        const priorReceipt = await unit.findReceipt('save_resume', input.binding.idempotencyKey);
+        const priorReceipt = await unit.findReceipt(scope, 'save_resume', binding.idempotencyKey);
         if (priorReceipt) {
-          assertReceiptReplay(
-            priorReceipt,
-            'save_resume',
-            input.binding.requestHash,
-            input.contentId,
-          );
+          assertReceiptReplay(priorReceipt, 'save_resume', binding.requestHash, input.contentId);
           if (!studentId) return unavailable();
-          return (await unit.getResume(studentId, input.contentId)) ?? unavailable();
+          return (await unit.getResume(scope, studentId, input.contentId)) ?? unavailable();
         }
-        const existing = studentId ? await unit.getResume(studentId, input.contentId) : null;
+        const existing = studentId ? await unit.getResume(scope, studentId, input.contentId) : null;
         const resume = saveStudentResume({
           principal: input.principal,
           record,
@@ -327,12 +382,10 @@ export function createContentPublicationService(deps: {
           facts,
           existing,
           positionMs: input.positionMs,
-          occurredAt: input.binding.occurredAt,
+          occurredAt: binding.occurredAt,
         });
         await unit.saveResume(resume, existing?.version ?? null);
-        await unit.saveReceipt(
-          receipt('save_resume', input.contentId, record.version, input.binding),
-        );
+        await unit.saveReceipt(receipt('save_resume', record, binding));
         return resume;
       });
     },
@@ -345,7 +398,11 @@ async function mutate(input: {
   contentId: string;
   operation: Exclude<ContentPublicationOperation, 'save_resume'>;
   binding: ContentPublicationCommandBinding;
-  apply: (record: Awaited<ReturnType<typeof requiredContent>>) =>
+  requestPayload: unknown;
+  apply: (
+    record: Awaited<ReturnType<typeof requiredContent>>,
+    binding: ContentPublicationCommandBinding,
+  ) =>
     | Awaited<ReturnType<typeof requiredContent>>
     | {
         record: Awaited<ReturnType<typeof requiredContent>>;
@@ -354,55 +411,97 @@ async function mutate(input: {
 }) {
   return input.repository.inTransaction(async (unit) => {
     assertAdminPublicationPrincipal(input.principal);
-    const current = await requiredContent(unit, input.contentId);
-    const priorReceipt = await unit.findReceipt(input.operation, input.binding.idempotencyKey);
+    const scope = principalScope(input.principal);
+    const current = await requiredContent(unit, scope, input.contentId);
+    const binding = authoritativeBinding(
+      input.binding,
+      input.operation,
+      current,
+      input.requestPayload,
+    );
+    const priorReceipt = await unit.findReceipt(scope, input.operation, binding.idempotencyKey);
     if (priorReceipt) {
-      assertReceiptReplay(
-        priorReceipt,
-        input.operation,
-        input.binding.requestHash,
-        input.contentId,
-      );
+      assertReceiptReplay(priorReceipt, input.operation, binding.requestHash, input.contentId);
       return { record: current, replay: true as const };
     }
-    const applied = input.apply(current);
+    const applied = input.apply(current, binding);
     const next = 'record' in applied ? applied.record : applied;
     await unit.saveContent(next, current.version);
     if ('outboxIntent' in applied) await unit.saveOutboxIntent(applied.outboxIntent);
-    await unit.saveReceipt(receipt(input.operation, input.contentId, next.version, input.binding));
+    await unit.saveReceipt(receipt(input.operation, next, binding));
     return { record: next, replay: false as const };
   });
 }
 
 function receipt(
   operation: ContentPublicationOperation,
-  contentId: string,
-  resultVersion: number,
+  record: Awaited<ReturnType<typeof requiredContent>>,
   binding: ContentPublicationCommandBinding,
 ): ContentPublicationReceipt {
   return {
+    accountKey: record.accountKey,
+    productKey: record.productKey,
     operation,
-    contentId,
-    resultVersion,
+    contentId: record.contentId,
+    resultVersion: record.version,
     idempotencyKey: binding.idempotencyKey,
     requestHash: binding.requestHash,
     committedAt: new Date(binding.occurredAt).toISOString(),
+    approvalProjectionDigest:
+      record.approval?.evidence.projectionDigest ?? record.contentVersionDigest,
   };
 }
 
 async function requiredContent(
   unit: Parameters<Parameters<ContentPublicationRepository['inTransaction']>[0]>[0],
+  scope: ContentPublicationScope,
   contentId: string,
 ) {
-  const record = await unit.getContent(contentId);
+  const record = await unit.getContent(scope, contentId);
   if (!record) return unavailable();
+  if (record.accountKey !== scope.accountKey || record.productKey !== scope.productKey) {
+    return unavailable();
+  }
   return record;
+}
+
+function principalScope(principal: ContentPublicationPrincipal): ContentPublicationScope {
+  return { accountKey: principal.accountKey, productKey: principal.productKey };
+}
+
+function authoritativeBinding(
+  binding: ContentPublicationCommandBinding,
+  operation: ContentPublicationOperation,
+  record: Awaited<ReturnType<typeof requiredContent>>,
+  requestPayload: unknown,
+  approvalProjectionDigest = record.approval?.evidence.projectionDigest ?? null,
+): ContentPublicationCommandBinding {
+  return {
+    ...binding,
+    requestHash: publicationRequestHash({
+      operation,
+      accountKey: record.accountKey,
+      productKey: record.productKey,
+      contentId: record.contentId,
+      contentVersionId: record.contentVersionId,
+      approvalProjectionDigest,
+      expectedVersion: binding.expectedVersion,
+      requestPayload,
+    }),
+  };
 }
 
 function unavailable(): never {
   throw new ContentPublicationError(
     CONTENT_PUBLICATION_ERROR_CODES.unavailable,
     'Content is unavailable.',
+  );
+}
+
+function approvalUnavailable(): never {
+  throw new ContentPublicationError(
+    CONTENT_PUBLICATION_ERROR_CODES.invalidState,
+    'Approved processing evidence is unavailable.',
   );
 }
 

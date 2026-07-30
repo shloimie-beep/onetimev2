@@ -1,0 +1,103 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P21-registration-002
+task_id: P21
+kind: registration
+requirement_ids:
+  - OTV2-CONTENT-087
+  - OTV2-CONTENT-088
+  - OTV2-CONTENT-089
+  - OTV2-CONTENT-090
+  - OTV2-CONTENT-091
+  - OTV2-CONTENT-092
+  - OTV2-CONTENT-194
+  - OTV2-CONTENT-195
+acceptance_case_ids:
+  - OTV2-CONTENT-087-AC01
+  - OTV2-CONTENT-088-AC01
+  - OTV2-CONTENT-089-STUDENT
+  - OTV2-CONTENT-089-PARENT-DENY
+  - OTV2-CONTENT-090-AC01
+  - OTV2-CONTENT-091-AC01
+  - OTV2-CONTENT-092-AC01
+  - OTV2-CONTENT-194-AC01
+  - OTV2-CONTENT-195-AC01
+rationale: >-
+  P21 cannot edit steward-owned root barrels or central server, client, or
+  worker composers. P21-registration-001 remains immutable, unapplied,
+  superseded, and withheld because it allowed caller-submitted approval
+  evidence and combined I36 registration with F02 migration work.
+desired_semantic_change: >-
+  Register the isolated P21 publication service, Admin publication commands,
+  protected Student library/playback/resume routes, and fenced publication
+  worker composition with server-derived composite scope and the integrated
+  P20 ApprovedForPublicationProjection repository as the only approval
+  authority. No request body, worker payload, or client field may supply
+  authoritative account/product scope or approval evidence.
+proposed_symbols_routes_keys_or_dependencies:
+  - >-
+    Export the P21 contract, domain, database, Admin client, Student library
+    client, and server feature seams from their steward-owned central barrels
+    without changing their isolated behavior.
+  - >-
+    Inject ContentProcessingPublicationProjectionRepository into
+    createContentPublicationService and resolve approval by exact server-derived
+    accountKey, productKey, and current contentVersionId. Reject missing,
+    non-approved, stale, malformed, cross-scope, participant-mismatched,
+    artifact-mismatched, digest-mismatched, or Admin-mismatched projections.
+  - >-
+    Remove approval evidence and scope from public Admin command bodies.
+    Derive account/product/Admin identity from authenticated session context,
+    compute canonical request hashes server-side, and preserve exact replay
+    convergence while rejecting an idempotency key reused with changed
+    projection evidence or request semantics.
+  - >-
+    Derive governed occurrence scope from authenticated context and resolve its
+    canonical row in the repository; caller relation fields cannot establish
+    account, product, governance, version, or series authority.
+  - >-
+    Build the internal publication-completion scope and approval projection
+    correlation from the locked original P21 outbox and accepted F05/F06
+    ProviderOperation, not worker-supplied account/product/evidence fields.
+    Apply only a fenced, reconciled, private, available, exactly-one-asset
+    readback.
+  - >-
+    Resolve every audience eligibility row under the trusted composite scope
+    and atomically persist publication, evidence-bound assignments/library
+    projections/notices, ProviderOperation/outbox completion, and receipt.
+  - >-
+    Derive Student, account, product, household, session, and access scope from
+    authentication for library, playback, bootstrap, renewal, media, and
+    resume paths. Revalidate exact approval projection digest and current
+    versions; return neutral no-store denials and only a five-minute same-origin
+    bootstrap.
+  - >-
+    Keep provider asset references and approval evidence server-side. Student
+    clients receive protected internal routes only; adult notices may open the
+    household shell but never a Parent playback route.
+compatibility_assumptions:
+  - P21-registration-001 remains byte-identical, unapplied, superseded, and
+    withheld; P21-MIGRATION-002 is the only corrected migration request.
+  - P20 is already integrated and its typed projection repository is the sole
+    approval-evidence dependency.
+  - F05/F06 fenced operation and exact provider binding remain mandatory; the
+    web process never invokes a provider mutation adapter.
+  - Registration stays fail closed until F02 has independently dispositioned
+    and applied the corrected persistence request.
+verification_performed:
+  - focused P21 domain, repository, service, and two client tests
+  - workspace typecheck
+  - focused lint and formatting
+  - server-derived hash, replay, cross-scope, stale-evidence, rollback, and
+    protected-client regressions
+  - YAML, hash, scope, provider-reference, secret, and diff checks
+conflicts_or_risks:
+  - Do not accept caller/body accountKey, productKey, approval evidence, or
+    approval projection digest as authority.
+  - Do not register a Parent playback path or expose Vimeo/provider references
+    to any client.
+  - Do not apply this registration before the corrected migration and exact
+    P20/F05/F06 prerequisites are present.
+  - Do not inspect or mutate a provider, deploy, send, or perform an external
+    effect from this request.
+contains_secret_or_private_data: false

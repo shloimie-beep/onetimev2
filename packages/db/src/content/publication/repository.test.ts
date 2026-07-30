@@ -4,6 +4,25 @@ import {
   type ContentPublicationSqlClient,
 } from './repository.ts';
 
+const scope = {
+  accountKey: 'account_one',
+  productKey: 'one_time_mishnayos' as const,
+};
+const approvalEvidence = {
+  ...scope,
+  contentVersionId: 'content_version_one',
+  sourceId: 'source_one',
+  sourceSha256: '1'.repeat(64),
+  sourceObjectVersionId: 'source_object_version_one',
+  participantSnapshotDigest: '2'.repeat(64),
+  approvedByAdminId: 'admin_one',
+  approvedAt: '2026-07-29T10:39:00.000Z',
+  artifacts: [],
+  approvedArtifactSetDigest: '3'.repeat(64),
+  sourceEvidenceDigest: '4'.repeat(64),
+  projectionDigest: '5'.repeat(64),
+};
+
 describe('P21 PostgreSQL publication repository', () => {
   it('uses a transaction and parameterized Student-scoped resume insert', async () => {
     const client = new CapturingClient();
@@ -14,6 +33,7 @@ describe('P21 PostgreSQL publication repository', () => {
     await repository.inTransaction((unit) =>
       unit.saveResume(
         {
+          ...scope,
           studentId: 'student_one',
           householdId: 'household_one',
           contentId: 'content_one',
@@ -21,6 +41,7 @@ describe('P21 PostgreSQL publication repository', () => {
           positionMs: 125_000,
           updatedAt: '2026-07-29T10:46:00.000Z',
           version: 1,
+          approvalProjectionDigest: approvalEvidence.projectionDigest,
         },
         null,
       ),
@@ -32,8 +53,12 @@ describe('P21 PostgreSQL publication repository', () => {
       'COMMIT',
     ]);
     const insert = client.queries[1];
-    expect(insert?.text).toContain('ON CONFLICT (student_id, content_id) DO NOTHING');
-    expect(insert?.values?.slice(0, 6)).toEqual([
+    expect(insert?.text).toContain(
+      'ON CONFLICT (account_key, product_key, student_id, content_id) DO NOTHING',
+    );
+    expect(insert?.values?.slice(0, 8)).toEqual([
+      'account_one',
+      'one_time_mishnayos',
       'student_one',
       'household_one',
       'content_one',
@@ -54,6 +79,7 @@ describe('P21 PostgreSQL publication repository', () => {
       repository.inTransaction((unit) =>
         unit.saveContent(
           {
+            ...scope,
             contentId: 'content_one',
             contentVersionId: 'content_version_one',
             contentVersionDigest: '1'.repeat(64),
@@ -78,24 +104,7 @@ describe('P21 PostgreSQL publication repository', () => {
               approvedByAdminId: 'admin_one',
               approvedAt: '2026-07-29T10:40:00.000Z',
               policyVersion: 'content-publication-v1',
-              evidence: {
-                contentVersionId: 'content_version_one',
-                contentVersionDigest: '1'.repeat(64),
-                participantSnapshotSetDigest: '2'.repeat(64),
-                participantSetVersion: 'participant_set_v1',
-                participantReviewState: 'complete',
-                unresolvedParticipantCount: 0,
-                requiredRedactionCount: 1,
-                completedRedactionCount: 1,
-                redactionReviewDigest: '3'.repeat(64),
-                adminAttestation: {
-                  attestationId: 'attestation_one',
-                  attestedByAdminId: 'admin_one',
-                  attestedAt: '2026-07-29T10:39:00.000Z',
-                  inspectedMediaAndMemberVisibleArtifacts: true,
-                  requiredRedactionsComplete: true,
-                },
-              },
+              evidence: approvalEvidence,
             },
             publicationGeneration: 1,
             playbackGrantGeneration: 1,
@@ -107,6 +116,7 @@ describe('P21 PostgreSQL publication repository', () => {
             archivedAt: null,
             occurrenceRelations: [
               {
+                ...scope,
                 relationId: 'relation_one',
                 occurrenceId: 'occurrence_one',
                 occurrenceVersion: 1,
@@ -134,11 +144,13 @@ describe('P21 PostgreSQL publication repository', () => {
 
     await repository.inTransaction((unit) =>
       unit.savePublicationMaterialization({
+        ...scope,
         contentId: 'content_one',
         contentVersionId: 'content_version_one',
         publicationGeneration: 1,
         assignments: [
           {
+            ...scope,
             assignmentId: 'assignment_one',
             assignmentVersion: 1,
             contentId: 'content_one',
@@ -155,10 +167,12 @@ describe('P21 PostgreSQL publication repository', () => {
             revocationVersion: 10,
             active: true,
             revokedAt: null,
+            approvalEvidence,
           },
         ],
         libraryProjections: [
           {
+            ...scope,
             projectionId: 'projection_one',
             assignmentId: 'assignment_one',
             assignmentVersion: 1,
@@ -170,10 +184,12 @@ describe('P21 PostgreSQL publication repository', () => {
             internalRoute: '/app/student/library/content_one',
             active: true,
             createdAt: '2026-07-29T10:44:00.000Z',
+            approvalEvidence,
           },
         ],
         notices: [
           {
+            ...scope,
             noticeId: 'notice_student_one',
             recipientKind: 'student',
             recipientId: 'student_one',
@@ -189,8 +205,10 @@ describe('P21 PostgreSQL publication repository', () => {
             actionPath: '/app/student/library/content_one',
             deliveryState: 'pending',
             createdAt: '2026-07-29T10:44:00.000Z',
+            approvalProjectionDigest: approvalEvidence.projectionDigest,
           },
           {
+            ...scope,
             noticeId: 'notice_adult_one',
             recipientKind: 'adult',
             recipientId: 'adult_one',
@@ -206,8 +224,10 @@ describe('P21 PostgreSQL publication repository', () => {
             actionPath: '/app/parent',
             deliveryState: 'pending',
             createdAt: '2026-07-29T10:44:00.000Z',
+            approvalProjectionDigest: approvalEvidence.projectionDigest,
           },
         ],
+        approvalEvidence,
       }),
     );
 
@@ -227,6 +247,7 @@ describe('P21 PostgreSQL publication repository', () => {
 
     await repository.inTransaction((unit) =>
       unit.completePublishProviderOperation({
+        ...scope,
         providerOperationId: 'provider_operation_one',
         expectedProviderOperationVersion: 3,
         outboxIntentId: 'publish_intent_one',
@@ -241,6 +262,7 @@ describe('P21 PostgreSQL publication repository', () => {
         providerReadbackDigest: 'd'.repeat(64),
         oneTimeReadbackDigest: 'e'.repeat(64),
         completedAt: '2026-07-29T10:44:00.000Z',
+        approvalProjectionDigest: approvalEvidence.projectionDigest,
       }),
     );
 
@@ -249,8 +271,12 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(updates[0]?.text).toContain('onetime.job_outbox');
     expect(updates[0]?.text).toContain("state = 'accepted'");
     expect(updates[0]?.text).toContain("o.state = 'pending'");
+    expect(updates[0]?.text).toContain('o.account_key = $13');
+    expect(updates[0]?.text).toContain('o.approval_projection_digest = $15');
     expect(updates[1]?.text).toContain('onetime.content_publication_outbox');
     expect(updates[1]?.text).toContain("state = 'complete'");
+    expect(updates[1]?.text).toContain('account_key = $10');
+    expect(updates[1]?.text).toContain('approval_projection_digest = $12');
     expect(client.queries[0]?.text).toBe('BEGIN');
     expect(client.queries.at(-1)?.text).toBe('COMMIT');
   });
