@@ -552,3 +552,59 @@ C00 must independently audit the pushed terminal runtime head and its sole
 parent `dd819ae6188a89a38f3339f816afa4b206fd0860`, reconcile control and the
 2253 allocation mirror, and issue a new exact I36 authorization before any
 further merge or shared-state change. I36 must stop.
+
+## Accepted source microbatch 2 release
+
+Containing control `98e7b05c7d256d55fd8a4dbd829230e42303e67e`, based on
+authorizing state `26f29aeb6734948dd8b80ab85a342831defaecc9`, authorized
+the exact three-item microbatch from integration
+`4bc8e7a84039394ffb0584deaccdff19eebaea9b`. Claim
+`77b3e5e2-bc2f-4c74-95c1-6bd61a4884a6` held the sole RELEASE_INTEGRATOR
+lease `3043fafc-a550-487a-9109-76dc7373caff`.
+
+The canonical READY digest
+`e41f28294f2a128ed697634d0d47050c8d04640355c1f71bb491ba9c7f3d1636`
+and all three merge-item payload, source-runtime, source-remote, merge-base,
+and exact-scope bindings were independently reproduced before writing. The
+ancestry-preserving merge sequence is:
+
+1. F04 `a5868a9503d1037890f5f8e250c2afe5131c4331` merged at
+   `98cc221f3b5dcb9d8d4038015dd4d4c96817618d` with exact parents and five
+   first-parent paths.
+2. P09 `a64a0c03edb6ae50023011f470358e9214f1196c` merged at
+   `3f9c699eacc3190fe4d2d38d2e61e85d793ac099` with exact parents and seven
+   first-parent paths.
+3. Lane B/F07 `fc16537da38e82bbd82f3210136145ed44988cd2` merged at
+   `1bedb166fdc18045b4d2630da10e208168c5eb4c` with exact parents and
+   eighteen first-parent paths.
+
+Postmerge verification passed nine focused files and 41 tests with the one
+source-declared native-PostgreSQL case skipped, seven migration-verification
+tests, workspace typecheck, production build, focused ESLint, CRLF-aware
+Prettier across all 28 existing source paths, YAML parsing, secret scan across
+3104 text files, exact scope/ancestry/diff/remote gates, and the seven-case
+landing browser/accessibility suite against the built static production
+artifact. The prior 84-migration inventory and both migration/database-harness
+files remain byte-identical to the authorized start.
+
+The exact normal command
+`npm exec -- playwright test tests/e2e/landing-signup.spec.ts` fails before
+any spec while the shared webServer seeds `e2e_class_occurrence`:
+`QueryError: null value in column "join_opens_at" violates not-null
+constraint`. The same command and error were reproduced in a clean detached
+worktree at exact pre-merge base `4bc8e7a8`; therefore this is an unchanged
+shared-fixture baseline, not a source regression. No shared fixture was
+edited. The seven source-owned landing checks pass against the built static
+artifact.
+
+No central registration, F03/P08 session composition, configuration,
+provider/GHL registry, candidate, deployment, DNS, send, billing, live
+database, or provider action occurred. Effects remain `0/0/0`.
+`F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS` remains open for its separate
+producer correction. The lease was released at `2026-07-30T19:25:16Z`,
+before its `2026-07-30T20:44:51Z` expiry.
+
+C00 must audit the exact pushed terminal runtime head, reproduce the three
+merge parents and 33-path release scope, retain the shared-fixture baseline
+and F04 blocker, reconcile control, and issue a new exact I36 authorization.
+I36 must stop.
