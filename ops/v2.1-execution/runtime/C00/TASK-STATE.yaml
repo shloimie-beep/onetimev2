@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T09:59:00Z'
-last_heartbeat_at: '2026-07-30T09:14:00Z'
-controller_authorization_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
+lease_expires_at: '2026-07-30T10:33:00Z'
+last_heartbeat_at: '2026-07-30T09:48:00Z'
+controller_authorization_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
 ready_entry_payload_digest: null
-state_based_on_head_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
+state_based_on_head_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Fresh read-only P18 admission passed exact four-table ownership, P17 disjointness, runtime/request digests, nine-path ceiling 514fd42b, frozen existing source bytes, free EMBEDDED_CLASSROOM slot, and effects 0/0/0; issued claim-only READY ba3d425b, claim baeb91ef, and lease b84e8273.
+- Fresh read-only P21 admission passed exact integrated P20 composite projection authority, 14-path ceiling 92698702, immutable mixed request digest, two-successor correction, free CONTENT_PUBLICATION slot, and effects 0/0/0; issued integration-adoption claim-only READY ede4095b, claim 9e38d9dd, and lease afe1ac21.
 - Independently audited and reconciled final I36 release 99fd8c33 with exact sole-parent runtime-triplet scope, no non-runtime drift from original release e2907b40, corrected passed terminal row, empty remaining/out-of-scope arrays, preserved historical/current lint evidence, pair/triplet 7f20095c/679fd2db, released lease, clean remote equality, and effects 0/0/0.
 - Cleared the consumed P31/P20/P17 merge queue, marked exact source finals 839ec12b/75137bf4/7f8a41bc integrated at release 99fd8c33, and unblocked only fresh read-only P18/P21 admission audits; candidate and all external effects remain withheld.
 - Independently reconciled I36 terminal-verification claim 391866bf as the exact sole child of rejected final f83ff0ce with runtime-triplet-only scope, canonical READY 3252e7b6, exact claim/lease/control/task bindings, pair/triplet 7ae5e961/354e39ca, preserved pending result and empty arrays, clean remote equality, and effects 0/0/0.
@@ -1137,6 +1139,8 @@ verification:
   - I36 rejected final f83ff0ce: passed exact sole-parent runtime-triplet scope, corrected empty remaining/out-of-scope arrays, preserved historical and current lint evidence, pair/triplet 0ad39797/d069382c, released lease, remote equality, non-runtime immutability, and effects 0/0/0; failed only one current verification result still marked pending
   - I36 terminal-verification claim 391866bf: passed sole-parent ancestry, runtime-triplet-only scope, canonical READY/control/claim/lease/task bindings, pair/triplet 7ae5e961/354e39ca, exact pending-result and empty-array preservation, clean remote equality, consumed READY, and effects 0/0/0
   - I36 final 99fd8c33: passed live remote equality, sole-parent/runtime-triplet scope, no non-runtime drift from e2907b40, exact passed terminal verification row, empty remaining/out-of-scope arrays, preserved historical/current P31 lint evidence, pair/triplet 7f20095c/679fd2db, released lease before expiry, and effects 0/0/0
+  - P18 fresh admission: passed integrated P17 ancestry/disjoint ownership, exact four P18 tables, request raw/canonical digests, nine-path inventory 514fd42b, frozen product bytes absent proven compatibility need, free writer slot, and zero effects
+  - P21 fresh admission: passed integrated P20 ancestry/composite authority, exact adoption base 99fd8c33, immutable mixed request preservation, exact two successors, 14-path inventory 92698702, free writer slot, and zero effects
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

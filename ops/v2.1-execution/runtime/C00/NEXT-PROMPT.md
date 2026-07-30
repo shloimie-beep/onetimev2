@@ -1847,3 +1847,11 @@ correction admission against exact integrated P20
 claim-only work after dependency, ownership, immutable-request, path, writer
 lease, and zero-effect checks pass. Candidate remains null; do not inspect or
 mutate providers, deploy, send, execute a migration, or perform an effect.
+
+P18 may make only its runtime-triplet atomic claim from `b9ad9474` under READY
+`ba3d425b`, claim `baeb91ef`, and EMBEDDED_CLASSROOM lease `b84e8273`.
+P21 must adopt exact integration `99fd8c33` as sole claim parent and change
+only its runtime triplet under READY `ede4095b`, claim `9e38d9dd`, and
+CONTENT_PUBLICATION lease `afe1ac21`. Each must push normally, remote-verify,
+and stop for C00 reconciliation. Do not create successor requests or edit
+source before reconciliation; effects remain `0/0/0`.

@@ -2213,3 +2213,11 @@ are integrated at `99fd8c33`. Next perform only fresh read-only P18 admission
 against integrated P17 and fresh read-only P21 correction admission against
 integrated P20. Do not issue a claim until exact dependency, ownership,
 request, allowlist, lease, and zero-effect gates pass.
+
+Fresh P18 and P21 admissions pass. P18 READY `ba3d425b`, claim `baeb91ef`,
+and EMBEDDED_CLASSROOM lease `b84e8273` authorize only a runtime-triplet claim
+from `b9ad9474`; P21 READY `ede4095b`, claim `9e38d9dd`, and
+CONTENT_PUBLICATION lease `afe1ac21` authorize only a runtime-triplet claim
+whose sole parent is integrated release `99fd8c33`. Both first pushes must stop
+for reconciliation. No successor request, source, provider, migration,
+registration, deployment, send, or effect change is authorized before that.

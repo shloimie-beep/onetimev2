@@ -15,12 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 4dd5749977205516ad94b23a5b628eadd3c8cf7c
+controller_authorization_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
 next_action: >-
-  I36 release 99fd8c33 is independently audited and reconciled; MERGE is empty and P31/P20/P17 corrected sources
-  are integrated with exact 4/8/14-path ancestry. Perform fresh read-only P18 admission against integrated P17
-  7f8a41bc and fresh read-only P21 correction admission against integrated P20 75137bf4. Issue only exact bounded
-  claim-only READY entries after their dependency, ownership, request, path, lease, and zero-effect gates pass.
-  Candidate remains null; provider inspection/mutation, deployment, sends, migration execution, and effects remain
-  unauthorized.
+  P18 and P21 fresh read-only admissions pass. P18 may make only a runtime-triplet claim from b9ad9474 under
+  READY ba3d425b, claim baeb91ef, and EMBEDDED_CLASSROOM lease b84e8273. P21 must adopt exact integrated release
+  99fd8c33 as its claim parent and change only its runtime triplet under READY ede4095b, claim 9e38d9dd, and
+  CONTENT_PUBLICATION lease afe1ac21. Both must push normally and stop for C00 reconciliation before successor
+  requests or source edits. Candidate is null; provider inspection/mutation, deployment, sends, migration or
+  registration application, and effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
