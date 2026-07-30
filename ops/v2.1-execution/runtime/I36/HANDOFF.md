@@ -139,3 +139,56 @@ Effects remain `0/0/0`.
 C00 must independently audit this exact atomic claim and reconcile/consume
 READY with queue targets rebound to the pushed claim head before I36 may merge
 any source. I36 must stop.
+
+## F02/P28/P31 direct-prerequisite source integration
+
+Reconciled containing control
+`2718c23f19cc3f76f161a5e4f2562f9d7265f68e` with sole
+authorization/state-basis parent
+`ee21ee69cae87a77c4ee5519b61490fa2e453c3f` consumed READY for exact atomic
+claim `1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0` and rebound all three queue
+targets to that claim.
+
+The unchanged claim is `ff36a180-ce16-4787-841b-5e10a7aabfec`.
+RELEASE_INTEGRATOR lease `0430520f-6a94-4550-a1ea-f01f8d5173b2`
+was released at `2026-07-30T05:43:58Z`, before its
+`2026-07-30T06:35:30Z` expiry.
+
+The ordered source merges are:
+
+1. F02 source `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`
+   merged at `acde075ecf50e77e57fb3bda82a18509d42345ad` from exact
+   claim `1b8335f8` with rebound payload
+   `54cf0dc63a9ec3df6181224f82104e3c5f7163537cd970704b28abfc6640a597`
+   and exact nine-path first-parent scope.
+2. P28 source `a2025a768ae6e69a15ec5605379a9e359cf2deec`
+   merged at `cb7a700e24e67b306d0ecbaf96a7b49351b6fcd9` from F02
+   merge `acde075e` with rebound payload
+   `55ca02a580f22d764be7fe62dd4e5455a811d423bbbbac4d75b008117c5505ad`
+   and exact twelve-path first-parent scope.
+3. P31 source `d72dda5669627695edaf9dbf20f7650c9b5c9ded`
+   merged at `5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f` from P28
+   merge `cb7a700e` with rebound payload
+   `066ea448b424ada56611b6abdea4a56b49146707a34e0149199a0baca4509626`
+   and exact eight-path first-parent scope.
+
+Every source and declared prerequisite is an ancestor of the final integration
+result. The exact combined source delta is 29 paths.
+
+Focused F02/P28/P31 tests passed 68/68. Workspace typecheck, scoped Prettier,
+YAML parsing, repository secret scan, diff hygiene, source manifests, ordered
+ancestry/scopes, all five native/pg-mem migration checksum pairs, and a full
+80/80 repository-runner migration apply/verify passed.
+
+Full ESLint reports one exact admitted P31 source finding:
+`tests/unit/communications/copy-catalog.test.ts:143` assigns
+`_removedNamedApproval` without using it. I36 preserved the exact authorized
+P31 bytes; C00 will route a separate task-owned lint-only correction.
+
+No steward request or central registry/config/copy state was applied. No
+provider was inspected or mutated, and no deployment, send, or external effect
+occurred. Effects remain `0/0/0`.
+
+C00 must independently audit the pushed metadata release head, its sole parent
+`5b479ac0`, ordered merge ancestry/scopes, released lease, I36 triplet digests,
+the recorded P31 lint finding, and effects `0/0/0`. I36 must stop.

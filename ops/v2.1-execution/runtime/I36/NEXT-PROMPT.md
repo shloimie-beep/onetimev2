@@ -64,3 +64,44 @@ parent, consume READY, and rebind all three expected target heads to the claim
 head. Do not merge F02, P28, or P31 before that reconciliation. Do not apply
 steward requests or central registry/config/copy state, inspect or mutate
 providers, deploy, send, or cause an external effect. Effects remain `0/0/0`.
+
+I36 completed the exact F02/P28/P31 direct-prerequisite source integration and
+released its RELEASE_INTEGRATOR lease. C00 must independently audit the pushed
+release; do not resume I36 from this checkpoint.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Atomic claim: `1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0`
+Reconciled containing control:
+`2718c23f19cc3f76f161a5e4f2562f9d7265f68e`
+Sole control authorization parent:
+`ee21ee69cae87a77c4ee5519b61490fa2e453c3f`
+READY state: consumed
+
+Claim: `ff36a180-ce16-4787-841b-5e10a7aabfec`
+RELEASE_INTEGRATOR lease: `0430520f-6a94-4550-a1ea-f01f8d5173b2`
+Lease released: `2026-07-30T05:43:58Z`
+Lease expiry: `2026-07-30T06:35:30Z`
+Phase scope: `F02_P28_P31_direct_prerequisite_source_integration`
+
+Ordered merges:
+
+- F02 `acde075ecf50e77e57fb3bda82a18509d42345ad` / source
+  `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f` / 9 paths
+- P28 `cb7a700e24e67b306d0ecbaf96a7b49351b6fcd9` / source
+  `a2025a768ae6e69a15ec5605379a9e359cf2deec` / 12 paths
+- P31 `5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f` / source
+  `d72dda5669627695edaf9dbf20f7650c9b5c9ded` / 8 paths
+
+Focused tests passed 68/68. Typecheck, scoped formatting, YAML, secret, diff,
+source-manifest, migration checksum, 80/80 repository-runner migration, exact
+29-path scope, ancestry, and zero-effect gates passed.
+
+Full ESLint has one recorded exact-source P31 finding at
+`tests/unit/communications/copy-catalog.test.ts:143`:
+`_removedNamedApproval` is assigned but unused. Do not amend it in I36; route a
+separate task-owned P31 lint-only correction.
+
+Do not apply steward requests or central registry/config/copy state, inspect or
+mutate providers, deploy, send, or cause an external effect. Effects remain
+`0/0/0`.
