@@ -26,3 +26,15 @@ build, format, YAML, secret, scope, diff, package 200/200, lease release, and
 effects `0/0/0`.
 
 Stop for C00 admission; do not integrate or perform external effects.
+
+After C00 reconciles atomic claim `0e98de00-4873-41cb-a06f-bd0ace918b89`,
+implement only the five authorized migration requests at ordinals 2245 through
+2249. Require containing control
+`85100180449bf234a93f107eb66a1f7bc635b4f0`, claim parent
+`cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911`, READY digest
+`5ab53779afff1e0a2a7ae4759818f9a98c259970298449ae767cee788a12b936`,
+MIGRATION_AUTHORITY lease `7a7c792d-fe4b-4a83-bbd9-7c6448bf1c95`, and
+SCHEMA_CONTRACT lease `b7ddd6c3-8a8e-4c9a-a304-5b4c15390fe1`.
+
+Do not implement P17, P18, or P21 requests. Do not inspect providers, deploy,
+send, or perform external effects. Keep effects at `0/0/0`.
