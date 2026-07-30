@@ -446,6 +446,7 @@ export function acceptHouseholdOwnershipTransfer(input: {
           (session) =>
             session.humanAccountId === input.transfer.outgoingHumanAccountId &&
             session.activeRole === 'parent' &&
+            session.activeHouseholdId === input.household.householdId &&
             session.revokedAt === null,
         )
         .map((session) => session.sessionId),

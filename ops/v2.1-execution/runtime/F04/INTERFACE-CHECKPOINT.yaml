@@ -1,16 +1,18 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: F04
-interface_implementation_head_sha: 81c0ee64072386db41aa5a40243c693762ab493a
+interface_implementation_head_sha: 2834f79b9e45f7c310de037adf07c8ffc7ed50b7
 metadata_commit_sha: derive_from_git_and_record_in_control_registry
 task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
-contract_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
+contract_digest: 79176042f6fef736e27c9280e89d116146c515bf3ab275360f31784fed587e33
 contract_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing semantic_contract_version=<version>
   followed by exact path=<artifact SHA-256> lines sorted lexicographically by
   path, with LF separators and no final newline.
 contract_schema_version: 1
-semantic_contract_version: 1.0.0
+semantic_contract_version: 1.0.1
+supersedes_checkpoint_sha: 4cc95c29c6012174595ba1821e0554aca8572e08
+supersedes_contract_digest: a57837379bfc8210188887ff31937ed7882befe10b80941499dc7ba305e7984d
 state: interface_ready
 exports:
   - path: packages/contracts/src/access/v21-household-authorization.ts
@@ -91,7 +93,7 @@ exports:
       - acceptHouseholdOwnershipTransfer
       - moveSelfStudentBetweenOwnedHouseholds
       - archiveSelfStudentForOwnershipTransfer
-    sha256: c7fce20eeb55f81465d8007dbf144f42b19f8be133f09b278046cfb129f7888b
+    sha256: b58a787621e6379daa98dde87af879c8cc3a08b7646cdd3689fef148a66d337d
 compatibility_invariants:
   - One normalized adult email resolves to one AdultIdentity and one HumanAccount; exact adult memberships are admin, parent, or both.
   - Every adult request carries one explicit server-validated role context; role changes rotate the session and apply the exact Admin or Parent idle/absolute expiry policy.
