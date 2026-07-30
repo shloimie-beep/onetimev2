@@ -2114,3 +2114,19 @@ claim, lease, state-basis, stale-text preservation, sole-parent scope, clean
 remote equality, and effects `0/0/0` pass. READY is empty. P20 and P17 may now
 perform only their explicit runtime metadata corrections, publish
 runtime-triplet-only terminal finals, release their leases, and stop for audit.
+
+Corrected P31 `839ec12b`, P20 `75137bf4`, and P17 `7f8a41bc` finals are
+independently audited and admitted for one ordered I36 source wave. Their
+release-relative inventories/manifests are P31 4 paths `18eacf0d`/`59afcf23`,
+P20 8 paths `d85af47c`/`955f15a7`, and P17 14 paths
+`15429924`/`a6fc85d3`. All pairwise and release-side overlaps are empty,
+merge forecasts are conflict-free, task leases are released, and effects are
+`0/0/0`.
+
+Merge payloads P31 `bcce534a`, P20 `b1346d36`, and P17 `134e70e4` are
+ordered exactly P31 then P20 then P17. I36 READY `f04fd323` binds release
+`3cf78740`, fresh claim `b3e05cde`, and RELEASE_INTEGRATOR lease `dbef2b0e`
+through `2026-07-30T09:28:30Z`. Its first push may change only the I36 runtime
+triplet and must stop for reconciliation. P17's two `-002` files are preserved
+requests only; no migration or registration is applied in this source wave,
+and next migration ordinal remains 2250.

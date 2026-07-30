@@ -1762,3 +1762,15 @@ only its runtime triplet: remove or label superseded old-head instructions,
 mark terminal verification passed, and record exact `-001` dispositions
 without changing request bytes. Recompute manifests, release ZOOM_PREPARATION
 lease `24a593bc`, push, and stop. Both effects remain `0/0/0`.
+
+I36 may atomically claim only its runtime triplet from exact release
+`3cf787409decb5beb84561ef7e37924111d398b6` under READY
+`f04fd32379e14f45a60988328b95ad07095463648519f4d8ae642b52542a8dce`,
+claim `b3e05cde-c76b-4b54-8a63-9a32624f6a87`, and RELEASE_INTEGRATOR
+lease `dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7`. Recompute canonical control,
+release, task, path, source-manifest, merge-payload, claim, and lease bindings.
+The first push changes only I36 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`, preserves all source/runtime/request bytes, pushes normally,
+verifies remote equality, and stops for C00 reconciliation. Do not merge,
+apply either P17 request, allocate migration 2250, inspect a provider, deploy,
+send, or perform an external effect.

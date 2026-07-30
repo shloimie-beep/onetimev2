@@ -15,12 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: e78d750887e2d56dc3c9b19612e4c51d6cbce0b5
+controller_authorization_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
 next_action: >-
-  P20 claim 75abbd84 and P17 claim 8d409a2d are reconciled. P20 may update only its exact stale contract and
-  corrected twelve-artifact digest metadata under claim 162924fc and CONTENT_PROCESSING lease 3da95218. P17 may
-  update only its conflicting old/current runtime instructions, terminal verification status, and exact -001
-  dispositions under claim 023cf8f0 and ZOOM_PREPARATION lease 24a593bc. Both must publish runtime-triplet-only
-  terminal finals and release leases. All non-runtime bytes remain frozen. P18/P21, candidate, providers,
-  deployment, sends, and effects remain unauthorized.
+  P31 final 839ec12b, corrected P20 final 75137bf4, and corrected P17 final 7f8a41bc are independently audited,
+  pairwise disjoint, and queued in that order for I36 source integration. I36 may make only a runtime-triplet
+  atomic claim from release 3cf78740 under READY f04fd323, claim b3e05cde, and RELEASE_INTEGRATOR lease dbef2b0e,
+  then stop for reconciliation. Source merges, steward-request application, P18/P21 admission, candidate,
+  providers, deployment, sends, and effects remain unauthorized before that reconciliation.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

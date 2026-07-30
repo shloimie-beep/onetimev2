@@ -1,8 +1,133 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: f113d311-f2b6-41cf-ad05-a6db5493ed55
+  kind: implementation
+  task_id: P31
+  source_branch: codex/v21-p31-email-copy-approval
+  source_head_sha: 839ec12bb83317a63f1d064891fb2929a707f3ec
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  source_delta_base_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+  required_merge_base_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 839ec12bb83317a63f1d064891fb2929a707f3ec
+  merge_after_heads: {}
+  allowed_paths:
+  - ops/v2.1-execution/runtime/P31/HANDOFF.md
+  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+  - tests/unit/communications/copy-catalog.test.ts
+  writer_slot_leases: &correction_release_integrator_lease
+  - slot: RELEASE_INTEGRATOR
+    lease_id: dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7
+    holder_task_id: I36
+    holder_claim_id: b3e05cde-c76b-4b54-8a63-9a32624f6a87
+    state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+    lease_issued_at: '2026-07-30T07:58:30Z'
+    lease_expires_at: '2026-07-30T09:28:30Z'
+    phase_scope: P31_P20_P17_correction_release_integration
+  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
+  task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
+  state_handoff_digest: 963d335df4a96cb6fac2f92a66fc24182621da4bd20ee2cf50604a0f76500866
+  runtime_triplet_digest: 09aa24a8d2374c9a069be32f791e0eb6bb2dfd78cdb3129219cec68ae2520bac
+  source_path_inventory_digest: 18eacf0d18a1454f60129298321680937e3f07e36fe94e2db7868f81d44e050a
+  source_manifest_digest: 59afcf23b99a3b2fb6320b9b4dd8fa03697f9f0c17e537bb8d449c1342043866
+  corrected_test_blob_sha256: b82cb8841fe138755b1bd59705d3eaf8cb2f4d5af34bd2bd473f1ed1a88b2eba
+  external_effect_summary: &zero_effects
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 655b09bb-c6ae-4003-b3e0-3445f24344a5
+  kind: implementation
+  task_id: P20
+  source_branch: codex/v21-p20-media-processing
+  source_head_sha: 75137bf476b4a1773f29bb41a6a149148df2623d
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  source_delta_base_head_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+  required_merge_base_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 75137bf476b4a1773f29bb41a6a149148df2623d
+  merge_after_heads:
+    P31: 839ec12bb83317a63f1d064891fb2929a707f3ec
+  allowed_paths:
+  - ops/v2.1-execution/runtime/P20/HANDOFF.md
+  - ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P20/TASK-STATE.yaml
+  - packages/contracts/src/content/processing/index.ts
+  - packages/db/src/content/processing/repository.test.ts
+  - packages/db/src/content/processing/repository.ts
+  - packages/domain/src/content/processing/content-processing.acceptance.test.ts
+  - packages/domain/src/content/processing/index.ts
+  writer_slot_leases: *correction_release_integrator_lease
+  task_packet_digest: 5d8898fed74b2ce8b34d6dd67e48c429fe4e4f57ed3e093498cfe0751848ccee
+  task_context_digest: 8d2cc66df60ae692f46d9548bb5fafa6e36ec5f98bb8f139c2e3e5266a835add
+  state_handoff_digest: 66a2b43f8cdc963a447fb60782ac19456a241eefcf3abce49409592a96d31798
+  runtime_triplet_digest: 560393879d77e3926ef38786973d8d594c21f45c3e2b51d3b9c1a8d1a7cdd92e
+  source_path_inventory_digest: d85af47cfc8c5369f3b7cd1b0b820811f62509e6c950ab4711d7561fa206db47
+  source_manifest_digest: 955f15a7c8f15b9a96931f07ccbaebadc0918b29e928ed10038873174e3990d7
+  corrected_five_source_manifest_digest: ac8a6038c4a97a3b9347fd9a29cd9977ba24b3a0bddd294b862ccce65b9efe9c
+  current_contract_blob_sha256: cdeff6161a052fb78b3282c7db336d037c8f553938ed4abc3632bf45b95b7fe9
+  corrected_twelve_artifact_manifest_digest: 9b4cfb269a3869ee86143348b7514ea18053494d034ad75f68f0915afd84c370
+  external_effect_summary: *zero_effects
+  state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: ecc60627-6845-45af-8688-be52383d6084
+  kind: implementation
+  task_id: P17
+  source_branch: codex/v21-p17-zoom-preparation
+  source_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  source_delta_base_head_sha: 78af71603713b6fc73fe755995bdf56193eb199a
+  required_merge_base_sha: 78af71603713b6fc73fe755995bdf56193eb199a
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+  merge_after_heads:
+    P31: 839ec12bb83317a63f1d064891fb2929a707f3ec
+    P20: 75137bf476b4a1773f29bb41a6a149148df2623d
+  allowed_paths:
+  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
+  - apps/worker/src/runners/zoom-preparation/runner.test.ts
+  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/HANDOFF.md
+  - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P17/steward-requests/P17-MIGRATION-002.yaml
+  - ops/v2.1-execution/runtime/P17/steward-requests/P17-SERVER-WORKER-REGISTRATION-002.yaml
+  - packages/contracts/src/classroom/zoom-preparation/index.ts
+  - packages/db/src/classroom/zoom-preparation/repository.test.ts
+  - packages/db/src/classroom/zoom-preparation/repository.ts
+  - packages/db/src/classroom/zoom-preparation/schema-contract.ts
+  - packages/domain/src/classroom/zoom-preparation/index.ts
+  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
+  writer_slot_leases: *correction_release_integrator_lease
+  task_packet_digest: 0509dc95a4e0695db4cba7e7ebccd3050176ef06eca3320ba0c190808c34d034
+  task_context_digest: 3d3841e11f5a0c6d2ea7b07d7f2f41debd66c1bced78d8c217cacac21b8ce1c6
+  state_handoff_digest: e91e519f20aeb84fc5d73c8d20c0c83ad086819dfe2f941f97f90b518c169a6d
+  runtime_triplet_digest: 084d025d258f2f35b7c5a210800721a3894e1100671f3371b509cfdb6e2ddd64
+  source_path_inventory_digest: 154299240bff49009b46fe593e13d097eaeb3f547dbe12243761d51618729a5a
+  source_manifest_digest: a6fc85d308c15d416f156ce6dda4828257ca25b9af9214f41aa875e40f73fd9e
+  canonical_thirteen_product_manifest_digest: c35cf10d10031cf4227faf31c6442bcef9aa41c9a55e6ec24320a7f8c4b4d731
+  P17_MIGRATION_002_raw_sha256: fa9868d91b12a30808f80a5233219011126ea9cde5571380c25058a53b2818c8
+  P17_MIGRATION_002_canonical_sha256: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+  P17_SERVER_WORKER_REGISTRATION_002_raw_sha256: 375142acb5e58ac91c11c83721930f43f5b5bc4e9bc90a027669a80dd933d53a
+  P17_SERVER_WORKER_REGISTRATION_002_canonical_sha256: e90e471bb23f71b85ad321e188e64144d323461805838baff33f46ed4cd4f1b8
+  request_disposition_boundary: preserve_only_no_steward_application_in_source_wave
+  external_effect_summary: *zero_effects
+  state_based_on_control_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
+item_payload_digests:
+  f113d311-f2b6-41cf-ad05-a6db5493ed55: bcce534a48f64b851623ca9456a12b2be029292298998491ae16d1835800459f
+  655b09bb-c6ae-4003-b3e0-3445f24344a5: b1346d36669d5e921720d9a021ee2f39793fc13a51e9af95df2eb7657d63ccc6
+  ecc60627-6845-45af-8688-be52383d6084: 134e70e40b081942f2742f81170497397a37800453c8761221d7a00906e5ceba
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

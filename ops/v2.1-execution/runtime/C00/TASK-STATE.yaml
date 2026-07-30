@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T08:31:00Z'
-last_heartbeat_at: '2026-07-30T07:46:00Z'
-controller_authorization_sha: e78d750887e2d56dc3c9b19612e4c51d6cbce0b5
+lease_expires_at: '2026-07-30T08:43:30Z'
+last_heartbeat_at: '2026-07-30T07:58:30Z'
+controller_authorization_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
 ready_entry_payload_digest: null
-state_based_on_head_sha: e78d750887e2d56dc3c9b19612e4c51d6cbce0b5
+state_based_on_head_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently admitted corrected P31 839ec12b, P20 75137bf4, and P17 7f8a41bc finals after exact runtime-metadata re-audits, with disjoint 4/8/14-path deltas, source manifests 59afcf23/955f15a7/a6fc85d3, released task leases, clean remotes, and effects 0/0/0.
+- Queued only the ordered P31/P20/P17 I36 source wave under canonical merge payloads bcce534a/b1346d36/134e70e4 and issued a runtime-triplet-only I36 READY f04fd323, claim b3e05cde, and RELEASE_INTEGRATOR lease dbef2b0e through 09:28:30Z; source merges and steward application remain withheld pending claim reconciliation.
 - Independently reconciled P20 metadata claim 75abbd84 and P17 metadata claim 8d409a2d as exact sole-parent runtime-triplet-only children, with canonical READY/claim/lease/state bindings, preserved stale text and all non-runtime bytes, pair/triplet ac692e24/df5fb59f and 2457d2ae/a69a2e57, clean remote equality, and effects 0/0/0.
 - Rejected P17 final 506d9024 admission only for conflicting stale runtime handoff/next instructions, one pending-terminal verification line, and false blanket -001 withholding language; implementation semantics, exact fourteen-path scope, all recorded artifact/request digests, 23 focused tests, type/lint/format, released lease, remote equality, and effects 0/0/0 pass.
 - Issued a runtime-triplet-only P17 metadata-correction READY under fresh claim 023cf8f0 and ZOOM_PREPARATION lease 24a593bc through 08:37:15Z; all product, test, acceptance, request, provider, and effect bytes remain frozen.
@@ -1116,6 +1118,7 @@ verification:
   - P18 read-only refresh: passed exact four-table ownership, no P17 competing names, preserved request identities and free EMBEDDED_CLASSROOM slot; withheld until corrected P17 final is audited and integrated
   - P17 rejected final 506d9024: passed exact ancestry/scope, canonical manifests, five-table/P18 ownership and job-outbox/provider-binding semantics, successor request identities, 23/23 focused tests, released lease, remote equality, and zero effects; failed only conflicting stale runtime instructions/status
   - P20/P17 metadata claims 75abbd84/8d409a2d: passed exact sole-parent ancestry, runtime-triplet-only scopes, canonical READY/fresh-claim/lease bindings, preserved stale text and non-runtime bytes, manifest pairs/triplets, remote equality, consumed READY, and zero effects
+  - P31/P20/P17 integration admission: passed exact final ancestry, remote equality, 4/8/14-path inventories, pairwise/release-side disjointness, merge-tree forecasts, artifact/runtime/source manifests, corrected metadata, released task leases, canonical merge/READY payloads, migration ordinal 2250 preservation, no steward application, and zero effects
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
