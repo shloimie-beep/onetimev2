@@ -78,3 +78,36 @@ No blocker. COPY_CATALOG lease `d03dd6a9-384f-4b52-aaaf-3ac5752a36da` was releas
 The exact P31-owned registration and interface checkpoint are ready for
 review. No provider configuration, activation, enrollment, or send is
 authorized.
+
+## Copy-catalog test lint-correction atomic claim
+
+- Claim parent: `d72dda5669627695edaf9dbf20f7650c9b5c9ded`
+- Containing canonical control: `0eb6204622792a6add325f0cb11bc25847701f10`
+- READY state-basis control: `2718c23f19cc3f76f161a5e4f2562f9d7265f68e`
+- READY digest: `23b245aac06c1984c4a52dca9c5a58df201a2c14f67192f28d3552354845b314`
+- Claim: `7f50cef8-f816-4a32-8f9e-071db09abbc0`
+- COPY_CATALOG lease: `42734cda-47b5-44ec-8d9a-8da7c4f86ed1`
+- Lease issued: `2026-07-30T05:48:54Z`
+- Lease expires: `2026-07-30T06:48:54Z`
+- Heartbeat: `2026-07-30T06:14:20Z`
+- I36 release: `3cf787409decb5beb84561ef7e37924111d398b6`
+- I36 state/handoff digest:
+  `3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e`
+- I36 runtime-triplet digest:
+  `5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2`
+- P31 prior state/handoff digest:
+  `7e3bf5382afd76cfd71bd31fafaf880715a947bb41bd086dfab04a760225187f`
+- P31 prior runtime-triplet digest:
+  `f9ced9e2537b39d58b9382d8dc965986f00bd38f3471710a661194ae99e5e47c`
+- Lint source digest:
+  `a0d18123cf3d5741b57eaf278803563125d34784f33bee357badaed9e2f8c60d`
+- Exact finding:
+  `tests/unit/communications/copy-catalog.test.ts:143`
+  `@typescript-eslint/no-unused-vars` for `_removedNamedApproval`
+- Effects: `0/0/0`
+
+Only the P31 runtime triplet changes in this atomic claim. The unused binding
+remains untouched until C00 independently audits and reconciles the pushed
+claim. Product, test, copy, request, interface, and provider bytes remain
+unchanged; no provider configuration, activation, enrollment, send, or other
+external effect is authorized.
