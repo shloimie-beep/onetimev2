@@ -55,29 +55,32 @@ collision_correction_binding:
   required_successor_requests:
     - P17-MIGRATION-002
     - P17-SERVER-WORKER-REGISTRATION-002
-status: claimed
-phase: canonical_classroom_ownership_and_provider_outbox_runtime_metadata_correction_atomic_claim
-correction_work_status: pending_c00_reconciliation
+status: ready_for_review
+phase: canonical_classroom_ownership_and_provider_outbox_runtime_metadata_corrected
+correction_work_status: completed
 claimed_by: codex-p17-metadata-correction-023cf8f0
 claim_time: '2026-07-30T07:37:15Z'
 claim_id: 023cf8f0-4c6b-4224-943e-71c8e7f522d2
-correction_claim_checkpoint_sha: a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368
+correction_claim_checkpoint_sha: 8d409a2d70017a60dc70c54eac3942deaf40eb7d
 previous_claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
 previous_final_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
 prior_writer_slot_leases:
   - slot: ZOOM_PREPARATION
     lease_id: b7211f31-df73-40fa-8281-5765ca37d3b9
+    status: superseded_historical_released
     lease_issued_at: '2026-07-29T00:13:59Z'
     lease_expires_at: '2026-07-29T01:13:59Z'
     released_at: '2026-07-29T00:39:05Z'
   - slot: ZOOM_PREPARATION
     lease_id: 0e53a171-263b-41d9-b957-80588027c194
+    status: superseded_historical_expired
     lease_issued_at: '2026-07-30T06:11:00Z'
     lease_expires_at: '2026-07-30T07:11:00Z'
     released_at: null
     superseded_by_lease_id: 0d08dc64-fb12-4aa5-bf5d-10a3267e18f4
   - slot: ZOOM_PREPARATION
     lease_id: 0d08dc64-fb12-4aa5-bf5d-10a3267e18f4
+    status: superseded_historical_released
     holder_claim_id: e85735a2-4a41-476b-bca2-d1dde009e69d
     state_based_on_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
     lease_issued_at: '2026-07-30T07:01:44Z'
@@ -87,16 +90,18 @@ prior_writer_slot_leases:
 writer_slot_leases:
   - slot: ZOOM_PREPARATION
     lease_id: 24a593bc-5edd-4fe1-8e65-87cbebdfd933
+    status: released
     holder_claim_id: 023cf8f0-4c6b-4224-943e-71c8e7f522d2
     state_based_on_control_head_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
     lease_issued_at: '2026-07-30T07:37:15Z'
     lease_expires_at: '2026-07-30T08:37:15Z'
     phase_scope: P17_canonical_classroom_ownership_and_provider_outbox_runtime_metadata_correction_atomic_claim_only
-    released_at: null
+    released_at: '2026-07-30T07:50:19Z'
 lease_expires_at: '2026-07-30T08:37:15Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-30T07:41:00Z'
+lease_released_at: '2026-07-30T07:50:19Z'
+last_heartbeat_at: '2026-07-30T07:50:19Z'
 controller_authorization_sha: e78d750887e2d56dc3c9b19612e4c51d6cbce0b5
+metadata_correction_reconciliation_control_sha: a38b917f514b65c49d2d75789b8ae50d96985cdc
 claim_checkpoint_sha: 7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f
 claim_reconciliation_control_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 renewal_checkpoint_sha: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
@@ -108,7 +113,9 @@ prior_terminal_state_handoff_manifest_digest: a9a7ded4ad9cf187efa8bff260a1dbc3af
 prior_terminal_runtime_triplet_manifest_digest: 7042ed012fd582f18d9479b87339b8c52c2e03c59050a65600485f2689334d6b
 ready_entry_state_based_on_control_head_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
 ready_entry_payload_digest: e716a27e02a9f92e5214777cb3ba4f6298309d0e8bd6147d12853b3f5119a245
-state_based_on_head_sha: 506d9024fc3280f0f302c04b7d265597117d9936
+metadata_state_based_on_head_sha: 8d409a2d70017a60dc70c54eac3942deaf40eb7d
+state_based_on_head_sha: 178af0c35012828016f395611e3d2f8cb3f88ff8
+current_review_target_sha: 178af0c35012828016f395611e3d2f8cb3f88ff8
 last_implementation_commit_sha: 178af0c35012828016f395611e3d2f8cb3f88ff8
 implementation_artifact_digest: c35cf10d10031cf4227faf31c6442bcef9aa41c9a55e6ec24320a7f8c4b4d731
 implementation_artifact_digest_algorithm: SHA-256 over exact correction implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the canonical 13 non-runtime P17 product artifacts, with LF separators and no final newline.
@@ -129,6 +136,7 @@ successor_request_bindings:
     status: proposed_immutable
 acceptance_matrix_digest: 0573200dc876dc6cbac4892bd3dce027c3d6413a6861dd2d1653efc9616487aa
 completed_steps:
+  - C00 reconciled metadata-correction claim 023cf8f0-4c6b-4224-943e-71c8e7f522d2 at canonical control a38b917f514b65c49d2d75789b8ae50d96985cdc; P17 then corrected only the runtime triplet and released lease 24a593bc-5edd-4fe1-8e65-87cbebdfd933.
   - Recomputed metadata-correction READY digest e716a27e02a9f92e5214777cb3ba4f6298309d0e8bd6147d12853b3f5119a245 from canonical control e78d750887e2d56dc3c9b19612e4c51d6cbce0b5 and verified exact state basis, remote head, prior manifest-form runtime binding, implementation/product/request identities, fresh claim, active lease, and zero effect locks.
   - Atomically claimed only the P17 runtime metadata correction from exact head 506d9024fc3280f0f302c04b7d265597117d9936 while preserving every identified stale instruction/status and every non-runtime byte.
   - C00 reconciled the renewed atomic claim at control 6fec4000f1e31d608f8fc41488a9befab903aae8 before product work began.
@@ -151,13 +159,13 @@ completed_steps:
   - Required exact reconciled registry evidence and canonical-set exclusion for disposable-canary cleanup.
   - Recomputed prepare/confirm request hashes from canonical command bodies before receipt/replay handling.
   - Passed full workspace typecheck, 21 focused tests across four files, focused ESLint and Prettier, repository-wide secret scan over 2723 files, and diff hygiene.
-  - Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released the task-local lease in terminal metadata.
+  - '[superseded historical implementation] Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released its task-local lease; this SHA is not a current review target.'
 remaining_steps:
-  - C00 must independently reconcile this exact runtime-triplet metadata-correction claim.
-  - Only after C00 reconciliation may P17 remove or explicitly label the identified superseded status and instruction text.
-  - Every product, test, acceptance, schema, successor request, existing request, migration, P18, provider, manifest, and lockfile byte remains out of scope.
+  - C00/I36 must independently review only implementation head 178af0c35012828016f395611e3d2f8cb3f88ff8, its exact scope and digests, and its provider-free verification evidence.
+  - F02 must independently disposition immutable proposal P17-MIGRATION-002; I36 must independently disposition immutable proposal P17-SERVER-WORKER-REGISTRATION-002.
+  - Every product, test, acceptance, schema, successor-request, existing-request, migration, P18, provider, manifest, and lockfile byte remains unchanged by this runtime-only correction.
   - Provider inspection and every external effect remain prohibited.
-next_action: Push and report this exact runtime-triplet-only metadata-correction claim, then stop for C00 reconciliation without performing the cleanup.
+next_action: Review only implementation head 178af0c35012828016f395611e3d2f8cb3f88ff8 and independently steward the two immutable -002 proposals without provider effects.
 requirements:
   OTV2-CLASSROOM-068: implementation_ready
   OTV2-CLASSROOM-069: implementation_ready
@@ -204,10 +212,32 @@ steward_requests:
   - P17-REMINDER-ROUTING-001
   - P17-MIGRATION-002
   - P17-SERVER-WORKER-REGISTRATION-002
+request_dispositions:
+  P17-MIGRATION-001:
+    disposition: superseded/withheld
+    bytes_preserved: true
+  P17-SERVER-WORKER-REGISTRATION-001:
+    disposition: superseded/withheld
+    bytes_preserved: true
+  P17-ZOOM-CONFIG-DEPENDENCY-001:
+    disposition: assigned
+    bytes_preserved: true
+  P17-REMINDER-ROUTING-001:
+    disposition: applied/acknowledged
+    bytes_preserved: true
+  P17-MIGRATION-002:
+    disposition: proposed immutable
+    raw_sha256: fa9868d91b12a30808f80a5233219011126ea9cde5571380c25058a53b2818c8
+    canonical_sha256: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+  P17-SERVER-WORKER-REGISTRATION-002:
+    disposition: proposed immutable
+    raw_sha256: 375142acb5e58ac91c11c83721930f43f5b5bc4e9bc90a027669a80dd933d53a
+    canonical_sha256: e90e471bb23f71b85ad321e188e64144d323461805838baff33f46ed4cd4f1b8
+request_container_raw_sha256: 92b34ce0a0030390ede24518e7d7b6304729a1eff3945542f08ce6b5bfe7f444
 verification:
   commands_run:
     - Exact canonical metadata-correction control, parsed READY digest, expected remote head, prior manifest-form runtime triplet, implementation/product/request identities, fresh claim/lease, and zero effect locks (passed).
-    - Exact runtime-triplet-only atomic-claim scope, stale-text preservation, YAML parse, formatting, diff hygiene, sole-parent ancestry, normal push, and remote equality (pending commit).
+    - Exact runtime-triplet-only atomic-claim scope, stale-text preservation, YAML parse, formatting, diff hygiene, sole-parent ancestry, normal push, and remote equality at 8d409a2d70017a60dc70c54eac3942deaf40eb7d (passed).
     - Exact canonical renewal control, renewed claim reconciliation, expected checkpoint, parsed READY digest, claim/lease, preserved request bytes, and zero effect locks (passed).
     - Focused Vitest over domain acceptance, database repository, server service, and worker runner suites (passed, 23 tests across four files).
     - npm run typecheck (passed).
@@ -217,7 +247,7 @@ verification:
     - npm run secret:scan (passed, 2725 repository text files).
     - Exact 11-path implementation scope, forbidden ownership scan, five-table assertion, existing-request byte preservation, and git diff --check (passed).
     - Normal non-force implementation push and remote equality (passed).
-    - Exact runtime-triplet-only terminal scope, YAML parse, formatting, diff hygiene, sole-parent ancestry, normal push, and remote equality (pending terminal commit).
+    - Exact runtime-triplet-only product-terminal scope, YAML parse, formatting, diff hygiene, sole-parent ancestry, normal push, and remote equality at 506d9024fc3280f0f302c04b7d265597117d9936 (passed).
   known_baseline_failures: []
 external_effects:
   authority: none
