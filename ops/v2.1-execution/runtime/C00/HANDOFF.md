@@ -1747,3 +1747,24 @@ reordering, reject malformed sets before persistence, and prove canonical
 Sunday-through-Thursday roundtrip natively through exact migration 2239.
 Run focused/full task gates, release the lease, publish a superseding final,
 and stop for independent audit. No other path or external effect is authorized.
+
+## Ordered compatibility integration admission
+
+P16 final `55544f557f5b7aee01d264fba688fc56b971ad4b` passed its
+independent weekday compatibility audit. Together with audited P32
+`92a7ee6377d9507140def1159a440fbfd1733123` and F02
+`cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911`, it is admitted for the
+ordered P16, P32, F02 compatibility wave from exact integration head
+`1798f31b5f698c80ee2babbd6414e9934745a178`.
+
+I36 READY digest
+`3dcde0501327b105a3e39204e2768276929e867e20f723a623d6c77a03fe9519`
+binds claim `d2ba6c12-e7c2-49b1-b4cd-883a1c394adb` and
+RELEASE_INTEGRATOR lease `6c88e2a7-e2fc-48be-acae-4b4a5e9839ad` through
+`2026-07-30T03:54:35Z`. Merge digests are P16 `bd400c4d`, P32
+`ef8c6f81`, and F02 `dfeea71b`.
+
+The first I36 push must change exactly its runtime triplet and stop. C00 must
+reconcile that claim, consume the READY entry, and rebind all three optimistic
+merge targets before any source merge. Migration/steward application,
+providers, deployment, sends, and external effects remain unauthorized.

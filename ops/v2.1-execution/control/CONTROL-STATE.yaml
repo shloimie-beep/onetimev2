@@ -15,13 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: ae24cef068b50576569eb190695feddc79ddecc6
+controller_authorization_sha: fd2582f7a252cd9b650012a692f30fedda573478
 next_action: >-
-  P16 atomic weekday claim 79c74534 is reconciled under claim ebdca6e9 and CLASSROOM_CORE lease 8c250e39 through
-  2026-07-30T02:31:25Z. P16 may now change exactly packages/db/src/classes/core/repository.ts, its direct test
-  tests/unit/classes/classroom-core-repository.test.ts, and the P16 runtime triplet. Preserve public/domain 0..6
-  semantics; encode Sunday 0 as database 7 and decode 7 back to 0 without reordering; reject malformed sets before
-  persistence; prove the canonical roundtrip natively through migration 2239; run task gates; release the lease;
-  push a superseding final; and stop for independent audit. No migration, contract/domain, interface, steward,
-  registration, merge, provider inspection, deployment, send, or external effect is authorized.
+  Exact independently audited P16 55544f55, P32 92a7ee63, and F02 cd2d7c2f sources are admitted in that order
+  for the bounded I36 compatibility wave from integration head 1798f31b. I36 must first push only its runtime
+  triplet under claim d2ba6c12 and RELEASE_INTEGRATOR lease 6c88e2a7, then stop for C00 reconciliation and exact
+  target-CAS rebind. No source merge, product edit, migration execution, steward application, provider inspection,
+  deployment, send, or external effect is authorized before that reconciliation.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

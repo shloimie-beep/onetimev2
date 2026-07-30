@@ -1,8 +1,148 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: d9416368-7897-4bf1-8619-619d4af6ba47
+  kind: implementation
+  task_id: P16
+  source_branch: codex/v21-p16-class-series-occurrences
+  source_head_sha: 55544f557f5b7aee01d264fba688fc56b971ad4b
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  source_delta_base_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+  required_merge_base_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 55544f557f5b7aee01d264fba688fc56b971ad4b
+  merge_after_heads:
+    P15: c96b8c55da23d8061d5ba6cd14a0b13df2c64cd4
+    P16_integrated_base: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+  allowed_paths:
+  - ops/v2.1-execution/runtime/P16/HANDOFF.md
+  - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
+  - packages/db/src/classes/core/repository.ts
+  - tests/unit/classes/classroom-core-repository.test.ts
+  writer_slot_leases: &release_integrator_lease
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 6c88e2a7-e2fc-48be-acae-4b4a5e9839ad
+    holder_task_id: I36
+    holder_claim_id: d2ba6c12-e7c2-49b1-b4cd-883a1c394adb
+    state_based_on_control_head_sha: fd2582f7a252cd9b650012a692f30fedda573478
+    lease_issued_at: '2026-07-30T01:54:35Z'
+    lease_expires_at: '2026-07-30T03:54:35Z'
+    phase_scope: P16_P32_F02_compatibility_integration_atomic_claim_only
+  task_packet_digest: a2ba866520a2e7fdc2a11f4529634004ad3a56f48944803280f49ada7f15064d
+  state_handoff_digest: cfce4d2d00940ee6c5f7cc3d899ec16653428b472bcd3eff4102a7c80c4bbeb0
+  runtime_triplet_digest: a82f76b13585d798f4f4f9c69b14f695900fce523a933e327cc0ca08ca6d762d
+  source_path_inventory_digest: 4c562fd5a08db4eb5f74816315694268a4451b049b23e1b3ce98d3e7f3599ed8
+  source_manifest_digest: a602363d92adec1dc3589120f4ed8332533e7f8773e5f1d02067f083d12d94ac
+  implementation_artifact_digest: 653d5d123dc78bf5a608947b59d0b4d387d3e8644fb2c5aaca234d99dad66190
+  external_effect_summary: &zero_effects
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: fd2582f7a252cd9b650012a692f30fedda573478
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 33382081-0f72-4904-a2a7-cda6cb519eb1
+  kind: implementation
+  task_id: P32
+  source_branch: codex/v21-p32-privacy-data-rights
+  source_head_sha: 92a7ee6377d9507140def1159a440fbfd1733123
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  source_delta_base_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  required_merge_base_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 92a7ee6377d9507140def1159a440fbfd1733123
+  merge_after_heads:
+    P16: 55544f557f5b7aee01d264fba688fc56b971ad4b
+    P32_integrated_base: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+  allowed_paths:
+  - apps/web/src/server/features/privacy/privacy-service.test.ts
+  - apps/web/src/server/features/privacy/privacy-service.ts
+  - apps/worker/src/runners/privacy-retention/runner.test.ts
+  - ops/v2.1-execution/runtime/P32/HANDOFF.md
+  - ops/v2.1-execution/runtime/P32/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
+  - packages/contracts/src/privacy/index.ts
+  - packages/db/src/privacy/repository.test.ts
+  - packages/db/src/privacy/repository.ts
+  - packages/db/src/privacy/schema-contract.ts
+  - packages/domain/src/privacy/privacy.test.ts
+  - packages/domain/src/privacy/retention.ts
+  - packages/domain/src/privacy/rights.ts
+  writer_slot_leases: *release_integrator_lease
+  task_packet_digest: a34f7c16894fe05938011068def3b84f9ee317748ad46b903c36614dfbdbf89e
+  state_handoff_digest: a10049d8ddf447108212af23e2fde4990123d13433417fe9193f06c63d75f618
+  runtime_triplet_digest: e5f433cc8c6e7065804a92978a920af64c97bbb1039f0afa4063e7f379e53a79
+  source_path_inventory_digest: 8d1ad7b94c13f8e46221de01be4f900cfa2ea7ee61a13886d386e9095d917401
+  source_manifest_digest: dd84d481a27990c20c2ac4044547455b1673c20bc15e729474c34f0c62c6b23b
+  interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
+  external_effect_summary: *zero_effects
+  state_based_on_control_head_sha: fd2582f7a252cd9b650012a692f30fedda573478
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 92977f14-9d4c-42f5-b574-208e7f67885b
+  kind: implementation
+  task_id: F02
+  source_branch: codex/v21-f02-schema-state-migrations
+  source_head_sha: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  source_delta_base_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  required_merge_base_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
+  merge_after_heads:
+    F02_lease_A: e156003b243221f97f938a0aca16164c1dd86d2d
+    P16: 55544f557f5b7aee01d264fba688fc56b971ad4b
+    P32: 92a7ee6377d9507140def1159a440fbfd1733123
+  allowed_paths:
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - packages/db/migrations/2239_v21_classroom_core.sql
+  - packages/db/migrations/2240_v21_privacy_data_rights.sql
+  - packages/db/migrations/2241_v21_admin_directory.sql
+  - packages/db/migrations/2242_v21_student_notifications.sql
+  - packages/db/migrations/2243_v21_support.sql
+  - packages/db/migrations/2244_v21_ghl_identity.sql
+  writer_slot_leases: *release_integrator_lease
+  task_packet_digest: 7f76d84236ea841b14da78486d3c581e9bb5b4fa3406480ce824023120e94d1d
+  state_handoff_digest: caba305d861a603e15ae261428a203fd64eed105b78d93fe71d61d8f42d6083b
+  runtime_triplet_digest: f254a8e502622ece8bff5f72ad8282028d70dc5277cc116735e6a2256bf0321e
+  source_path_inventory_digest: 2f8a060540142de2378b7ed206eaa51f4aaa59a26ee65f08aaf319c1b303c5a6
+  source_manifest_digest: 6d00ab6fcbc106cea417d1748ab2f16abdf62db652ca1d542eaa2dbbc2a53d35b
+  migration_allocations_proposal_digest: 9d6870e93ddc3ab0f314dffb9adfb7464f9e4ed5f0aea6cef4874c0b1d6aef29
+  migration_checksums:
+    2239:
+      native: acdd52511fb2fa738d2a122087c65dbf7ae06879b51bd913095a0c86f63ea111
+      pg_mem: 816a086b5ec6cc0aa6d3c13b8b36e2f75dbc381cb2f60b4f859dba0328be755c
+    2240:
+      native: 1b1627bfbef7c4500d7be7e50d217efdecd97af9f1148b7e6a769cc6ed4f6831
+      pg_mem: 57ad695347870bd33dddc0da65accb396f6beaa9fe7ccd53b192f34585618d84
+    2241:
+      native: a318572247530b1dbbda75a0ba2b0f58b66e8a88156f1ee57874c79216c1d649
+      pg_mem: 7bf7590399cf72f454a07d88745db082d9f76278ca5ddb6c8ea59a66de0404f3
+    2242:
+      native: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+      pg_mem: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+    2243:
+      native: eea46ad8e68e38089de142613850997b6dcd32825a52a849c8aff6089607d6aa
+      pg_mem: 84093ce3212256fe0f2631ec56f1c4d0b7d0fa4ab48b120be06b76a841f0cbeb
+    2244:
+      native: afee7e1471f1c6c1b84c6570bb32d39cc8f6a1e576c4e5d7064753ef57939418
+      pg_mem: 464bbe61224cd3ab343aa21e5ed88956684171c082703272be0e973cc866bb73
+  external_effect_summary: *zero_effects
+  state_based_on_control_head_sha: fd2582f7a252cd9b650012a692f30fedda573478
+item_payload_digests:
+  d9416368-7897-4bf1-8619-619d4af6ba47: bd400c4df739aea39709d9b3b9778137f0c1b873fe66f78a5dcb2e8f2c2a3164
+  33382081-0f72-4904-a2a7-cda6cb519eb1: ef8c6f8179a7e6625749314e5cb3248ef2b02e7d104de34a5b878d47ac4ac532
+  92977f14-9d4c-42f5-b574-208e7f67885b: dfeea71b62080fd3f2eda4e8fa044e033f839f2a116d5b53d0da5ddbf73b015c
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.

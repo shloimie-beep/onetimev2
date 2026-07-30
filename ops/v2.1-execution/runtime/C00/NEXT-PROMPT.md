@@ -1469,3 +1469,21 @@ push a superseding final, remote-verify, and stop for independent audit.
 Do not edit migrations, contracts, domain weekday semantics, interfaces,
 steward requests, registrations, control, integration, providers, deployment,
 sends, or external effects.
+
+Resume I36 from exact integration head
+`1798f31b5f698c80ee2babbd6414e9934745a178` under READY digest
+`3dcde0501327b105a3e39204e2768276929e867e20f723a623d6c77a03fe9519`,
+claim `d2ba6c12-e7c2-49b1-b4cd-883a1c394adb`, and RELEASE_INTEGRATOR
+lease `6c88e2a7-e2fc-48be-acae-4b4a5e9839ad` through
+`2026-07-30T03:54:35Z`.
+
+Fetch and verify the containing control commit, exact READY payload, ordered
+P16/P32/F02 merge items, source heads and canonical digests. The first push
+must change exactly I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`,
+record the claim and lease, preserve all product/migration/steward bytes, push
+normally, remote-verify, and stop for C00 reconciliation.
+
+Do not merge a source, modify product code or SQL, apply steward requests,
+inspect providers, deploy, send, or perform an external effect until C00
+consumes the READY entry and rebinds every merge target to the exact claim
+head.
