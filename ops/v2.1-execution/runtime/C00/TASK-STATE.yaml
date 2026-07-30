@@ -300,7 +300,7 @@ remaining_steps:
 - integrate and independently audit the remaining governed migration leases before consolidated registrations and candidate freeze
 - resolve all remaining non-ancestral review heads and assigned steward duties before candidate freeze
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P16 must fetch the containing control checkpoint, recompute READY digest 15586be27ddf50295c2bfa35d450d5168c78d3f51c9e3cb2976c3f087f388911, and make an atomic first push changing only its runtime triplet under claim ebdca6e9-aa5b-411b-88fd-747089e869ce and CLASSROOM_CORE lease 8c250e39-5c4d-4684-93ba-2ff373a1253a. Product edits remain unauthorized until C00 reconciles that exact claim. F02 and P32 are independently accepted but held from integration. No migration, registration, provider action, deployment, send, or external effect is authorized.
+next_action: P16 must fetch the containing control checkpoint, recompute READY digest bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5, and make an atomic first push changing only its runtime triplet under claim ebdca6e9-aa5b-411b-88fd-747089e869ce and CLASSROOM_CORE lease 8c250e39-5c4d-4684-93ba-2ff373a1253a. Product edits remain unauthorized until C00 reconciles that exact claim. F02 and P32 are independently accepted but held from integration. No migration, registration, provider action, deployment, send, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -308,12 +308,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 0f176d49d59bb46dcc11c2c7be44a271226f4efc
+  current_control_parent_sha: a84c647b2926b782b4b9b4289389d8584293ebbe
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 6c229da4-46d0-4c11-841c-82f8ee8455c7
-      observed_head: 0f176d49d59bb46dcc11c2c7be44a271226f4efc
+      claim_id: 927de189-2f89-45aa-8566-d73e64347ea3
+      observed_head: a84c647b2926b782b4b9b4289389d8584293ebbe
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -977,7 +977,8 @@ verification:
   - independently audited P32 final 92a7ee63, exact 13-path correction scope, trusted product/runtime/environment propagation, composite request/grant persistence and update fencing, native isolated-staging/production positives and all absent/invalid/mismatch/conflict negatives, released lease, and effects 0/0/0
   - independently audited P16 timing final c58ed7d6, exact repository/test/runtime scope, authoritative reminder and joinable timing on insert/update, native 70-migration proof, NOT NULL/no-default omission rejection, released lease, and effects 0/0/0
   - rejected P16 integration pending a separate compatibility correction because native PostgreSQL still rejects the public/domain 0-through-6 weekday representation against migration 2237's ISO 1-through-7 constraint
-  - issued only P16's fresh atomic runtime-triplet claim from c58ed7d6 under canonical READY digest 15586be2, claim ebdca6e9, sole CLASSROOM_CORE lease 8c250e39, and zero effect locks
+  - stopped the first P16 weekday READY before any task edit after detecting its control-state dependency used a working-tree raw digest instead of the required canonical parsed-object digest
+  - rebound the unused claim and lease to acquisition a84c647b with canonical control-state digest c54becb3 and issued corrected READY digest bfbe5b37; P16 remained exactly c58ed7d6, clean, and effects remained zero
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -1710,7 +1710,7 @@ P16's public/domain weekday representation is `0..6`, but migration 2237
 stores ISO `1..7`; native PostgreSQL rejects `[0,2,4]`.
 
 C00 issued canonical READY digest
-`15586be27ddf50295c2bfa35d450d5168c78d3f51c9e3cb2976c3f087f388911`,
+`bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5`,
 claim `ebdca6e9-aa5b-411b-88fd-747089e869ce`, and sole CLASSROOM_CORE
 lease `8c250e39-5c4d-4684-93ba-2ff373a1253a` through
 `2026-07-30T02:31:25Z`. The first P16 push may change only its runtime
@@ -1719,3 +1719,9 @@ After reconciliation, only task-owned repository weekday encode/decode, its
 direct test, and runtime evidence may change. Preserve the `0..6` contract and
 domain semantics; do not edit migrations, contracts, domain roots, interfaces,
 steward requests, registrations, providers, deployment, sends, or effects.
+
+The first published weekday READY was revoked before any P16 edit because its
+control-state dependency used a working-tree raw digest instead of the
+canonical parsed-object digest. P16 remained exactly `c58ed7d6` and clean.
+The corrected READY above binds acquisition `a84c647b`, canonical
+control-state digest `c54becb3`, and payload digest `bfbe5b37`.

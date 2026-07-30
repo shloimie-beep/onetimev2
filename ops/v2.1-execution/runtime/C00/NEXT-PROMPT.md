@@ -1433,7 +1433,7 @@ migration 2237's ISO `1..7` column.
 
 Resume P16 only for an atomic runtime-triplet claim from exact head `c58ed7d6`
 under READY digest
-`15586be27ddf50295c2bfa35d450d5168c78d3f51c9e3cb2976c3f087f388911`,
+`bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5`,
 claim `ebdca6e9-aa5b-411b-88fd-747089e869ce`, and CLASSROOM_CORE lease
 `8c250e39-5c4d-4684-93ba-2ff373a1253a`. The first push must change exactly
 P16 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`; preserve all

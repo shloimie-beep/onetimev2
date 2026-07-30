@@ -20,7 +20,7 @@ next_action: >-
   F02 final cd2d7c2f and P32 final 92a7ee63 passed independent exact-source and native compatibility audits and
   are held for the next ordered I36 integration wave. P16 timing final c58ed7d6 also passed, but native proof exposed
   a separate repository/schema weekday encoding conflict. Only P16's atomic runtime-triplet claim is now authorized
-  from exact head c58ed7d6 under READY digest 15586be2, claim ebdca6e9, and CLASSROOM_CORE lease 8c250e39.
+  from exact head c58ed7d6 under READY digest bfbe5b37, claim ebdca6e9, and CLASSROOM_CORE lease 8c250e39.
   Do not change product code in the first claim push. After C00 reconciliation, route only task-owned repository
   weekday encoding/decoding, its direct test, and runtime evidence. No migration, contract/domain semantic,
   registration, merge, provider inspection, deployment, send, or external effect is authorized.
