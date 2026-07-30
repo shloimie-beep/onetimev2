@@ -7,14 +7,16 @@ package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0e
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
 branch: codex/v21-p09-school-inquiry
 start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
-authorized_start_sha: 088b40476bd5ceeb0af901b6f78a4cb8c556671b
-claim_mode: resume_existing
-expected_existing_head: a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46
+authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+claim_mode: resume_phase_branch_fast_forward
+expected_existing_head: 33a21a45005271f1bbe09c8587df1e52fac1a95a
 rejected_final_head_sha: a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46
 correction_ready_control_sha: 9d2b0015dd8fe3420e6391e460fccb78fd8911fa
 correction_ready_control_parent_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
 dependency_heads:
   P08: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+  P08_corrected_source_terminal: 7ba18b92462bc610895f2eb06ef6addaba531b19
+  I36_authorized_start: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
 dependency_bindings:
   P08:
     required_state: interface_ready_integrated
@@ -27,44 +29,43 @@ dependency_bindings:
     task_packet_digest: f411403a6f3d7f1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
     task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
 status: ready_for_review
-phase: complete
-claimed_by: codex-p09-correction-worker-555a5878
-claim_time: '2026-07-29T11:11:54Z'
-claim_id: 555a5878-9a7f-4486-a6e0-a959dc9ab1a1
-lease_slot: SCHOOL_INQUIRY
-lease_id: 8ca16a74-fa49-4c61-8aa8-b50416b50913
-lease_issued_at: '2026-07-29T11:11:54Z'
-lease_expires_at: '2026-07-29T12:26:54Z'
-lease_phase_scope: P09_atomic_claim_concurrency_optional_acknowledgment_correction_only
-reconciled_resume_scope: P09_concurrency_optional_acknowledgment_correction
+phase: school_inquiry_repository_and_route_correction_complete
+claimed_by: codex-p09-school-route-c18bb60c
+claim_time: '2026-07-30T18:01:13Z'
+claim_id: c18bb60c-98f2-4448-b768-67fcafed9438
+lease_slot: PUBLIC_SIGNUP
+lease_id: 45e4c80f-b3a7-445b-a888-0dbed3c3429e
+lease_issued_at: '2026-07-30T18:01:13Z'
+lease_expires_at: '2026-07-30T20:01:13Z'
+lease_phase_scope: school_inquiry_repository_router_and_focused_tests_only
+reconciled_resume_scope: P09_postgresql_repository_and_exact_v21_route
 heartbeat_interval_minutes: 30
-lease_released_at: '2026-07-29T11:41:43Z'
-last_heartbeat_at: '2026-07-29T11:41:43Z'
-controller_authorization_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
-controller_authorization_parent_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
-claim_reconciled_control_sha: 3fd19332799a28a7efd7cde00712ba8ca091bf14
-claim_reconciled_control_parent_sha: e6a6729bc109816124ef2e7beef5e42aa398b147
+lease_released_at: '2026-07-30T18:31:32Z'
+last_heartbeat_at: '2026-07-30T18:31:32Z'
+controller_authorization_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
+controller_authorization_parent_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+claim_reconciled_control_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
+claim_reconciled_control_parent_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
 atomic_claim_head_sha: 86d5f5ffd046505c4df336ea40dd83c6559d3255
-ready_entry_state_based_on_control_head_sha: b0dc03dc140dd05ab8ae65530cd672c8c10126e5
-ready_entry_payload_digest: 505e68237f3d2d0401e4727b9a8111a330026f994344ca804d83a6692a09f766
+ready_entry_state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+ready_entry_payload_digest: 5ca6d4c6fd4aea17c85584f9fad395ff7eeabfdae64255c7f998eb1357c036d7
 effect_lock_leases: []
-state_based_on_head_sha: a420dd5823c0f7a7dc553fd08991c0e4507b8c24
-last_implementation_commit_sha: a420dd5823c0f7a7dc553fd08991c0e4507b8c24
-implementation_artifact_digest: 1635950b5f6eb1a117912199bdc8b8d2bf36bd5c5397c3388bcbc1990c746a57
+state_based_on_head_sha: 05488497a7ca96841c235118c1e5da0bf9270ca1
+last_implementation_commit_sha: 05488497a7ca96841c235118c1e5da0bf9270ca1
+implementation_artifact_digest: cfd846747005ecfaf86a78ee1f958ddab8b5a252e5f5efe7e06b45014d22398a
 implementation_artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw Git blob SHA-256> for the
-  nine implementation and focused-test artifacts, sorted lexicographically by
+  four repository/route implementation and focused-test artifacts, sorted lexicographically by
   path, with LF separators and no final newline.
 implementation_artifacts:
-  apps/web/src/client/public/school/model.test.ts: 59b0530f6c5878f38ef560c3896439ab34f0705641124244517d80148021941c
-  apps/web/src/client/public/school/model.ts: 720189bcda43043b82d51f9c274d5a80c6a37b251f4e0a724e5bfe709ea7e945
-  apps/web/src/server/features/signup/school/service.test.ts: ccb201e62d30b9d4a2e1f9d2f2a6ae021e0a8c2c219e716ccc888d7806c5294e
-  apps/web/src/server/features/signup/school/service.ts: cdc23237106ad3113116d24c8968064126df0ddc6bb5f294cc51d779c70142a5
-  packages/contracts/src/signup/school/index.ts: 2a95b2d4c203df296c85726ac5a448d0029d30b384998ecc36f25bc20682c6d7
-  packages/contracts/src/signup/school/school-signup.contract.test.ts: 9f49d4ced661268eea3305c95888afb304cf791616a51588b6172a0aed0d3054
-  packages/domain/src/signup/school/index.ts: 608e81c0377adec75860ef9bfbe88bac9939eb4306a4e4c74fa04d775c5deefe
-  packages/domain/src/signup/school/policy.test.ts: 21e747b54f6b87d85fba97f20cb354c94677fb87060e3d442b55cd9e8dfd1779
-  packages/domain/src/signup/school/policy.ts: e14d4475c893b6e9dc02aa3774db586e78ab5e17732e7ff28829e4f09cdfdfe6
+  apps/web/src/server/features/signup/school/router.test.ts: 7a15effd2c19eee98506816bfd4a690bebbabc9f84752e9a0529bd48b28d3317
+  apps/web/src/server/features/signup/school/router.ts: 0d8fe5a05a6ee3dbd95ea3239b1a8b3458508fded330c23a85fa5069a4170c3a
+  packages/db/src/signup/school/repository.test.ts: 45823cb2daee79d656c5908e681260b08929bd6b8aeecf30a46c3cbb7b8bcfe1
+  packages/db/src/signup/school/repository.ts: 71c5cd164d8af9d56c7ee454cdf06a7cf8f96823fbf3f5a59bd7fff72485e56a
+prior_source_checkpoint:
+  implementation_head_sha: a420dd5823c0f7a7dc553fd08991c0e4507b8c24
+  terminal_head_sha: 33a21a45005271f1bbe09c8587df1e52fac1a95a
+  implementation_artifact_digest: 1635950b5f6eb1a117912199bdc8b8d2bf36bd5c5397c3388bcbc1990c746a57
 steward_request_payload_digests:
   P09-migration-001: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
   P09-registration-001: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
@@ -89,76 +90,87 @@ correction_completed:
   - Added direct four-required-field, optional-null, template-digest/drift, and
     concurrent same-email one-lead/one-acknowledgment assertions.
 completed_steps:
-  - Verified and published atomic correction claim
-    86d5f5ffd046505c4df336ea40dd83c6559d3255 from exact rejected final
-    a81e5e98e21eeb1df8d0ff21dd6b948a33a65d46.
-  - Verified C00 reconciliation/control
-    3fd19332799a28a7efd7cde00712ba8ca091bf14 with state-based acquisition
-    e6a6729bc109816124ef2e7beef5e42aa398b147.
-  - Implemented only the enumerated concurrency, optional-field, and approved
-    acknowledgment-template correction in six P09-owned source/test paths.
-  - Passed four focused files and 16 positive/negative assertions, workspace
-    typecheck, focused ESLint and Prettier, exact correction scope, diff
-    hygiene, and secret scan across 2891 repository text files.
-  - Published and remote-verified implementation commit
-    a420dd5823c0f7a7dc553fd08991c0e4507b8c24.
-  - Reproduced all nine implementation artifact hashes, aggregate
-    1635950b5f6eb1a117912199bdc8b8d2bf36bd5c5397c3388bcbc1990c746a57,
-    and unchanged request payload/aggregate digests.
-  - Released claim 555a5878-9a7f-4486-a6e0-a959dc9ab1a1 and SCHOOL_INQUIRY
-    lease 8ca16a74-fa49-4c61-8aa8-b50416b50913 before expiry with zero external
-    effects.
+  - Verified current control 26f29aeb, the exact unexpired P09 READY entry,
+    expected remote branch head 33a21a45, and zero effect locks.
+  - Fast-forwarded the existing branch without rewriting history from
+    33a21a45 to authorized integration c0a1e04b before editing.
+  - Added a concrete PostgreSQL repository backed by immutable migration 2249
+    with transaction-scoped advisory dedupe, one inquiry plus one pending
+    acknowledgment intent, canonical receipt readback, rollback, and
+    optimistic approved-School configuration.
+  - Added a strict task-owned feature descriptor for exact POST
+    /api/v2.1/signup/school-inquiry. The router accepts only the four required
+    fields plus optional phone/note and rejects all extras before submission.
+  - Preserved zero account, household, Student, subscription, access, nurture,
+    inline provider, WhatsApp, campaign, and Stripe effects.
+  - Applied exact immutable migration 2249 in the local database harness with
+    only its marked PostgreSQL trigger block omitted; verified durable replay,
+    rollback, read-only denial, and approved Parent/Student configuration.
+  - Passed five focused files and 26 tests, workspace typecheck, focused
+    ESLint/Prettier, diff hygiene, and secret scan across 3095 repository text
+    files.
+  - Published and remote-verified substantive implementation commit
+    05488497a7ca96841c235118c1e5da0bf9270ca1 with sole parent
+    c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a.
+  - Reproduced all four raw Git-blob artifact hashes and aggregate
+    cfd846747005ecfaf86a78ee1f958ddab8b5a252e5f5efe7e06b45014d22398a.
 remaining_steps:
-  - C00 must independently audit the superseding final remote head, exact
-    claim/implementation ancestry, six-file correction scope, digests,
-    validation evidence, lease release, and zero-effect record.
-  - I36/F02 may separately evaluate the unchanged structured requests only
-    after source admission; P09 did not edit or apply them.
-next_action: Push and remote-verify the final ready-for-review metadata commit, report its exact head to C00, and stop for independent audit.
+  - C00 must independently audit the final remote head, exact c0a1e04b base,
+    seven-path phase scope, artifact digests, validation evidence, and
+    zero-effect record.
+  - I36 must preserve this source ancestry, merge the four implementation
+    paths, and register schoolInquiryFeatureRegistration through the central
+    composer in a separately authorized checkpoint.
+  - Candidate-bound provider acknowledgment/manual-follow-up readback remains
+    for verification; this source phase performed no provider effect.
+next_action: C00 should admit the final source head and authorize I36 to merge the four implementation paths and centrally register schoolInquiryFeatureRegistration.
 requirements:
-  OTV2-SIGNUP-178: correction_implemented_candidate_evidence_pending
-  OTV2-SIGNUP-229: correction_implemented_candidate_evidence_pending
-  OTV2-SCHOOL-200: correction_implemented_candidate_evidence_pending
-  OTV2-SCHOOL-214: correction_implemented_candidate_evidence_pending
+  OTV2-SIGNUP-178: repository_route_implemented_candidate_provider_evidence_pending
+  OTV2-SIGNUP-229: exact_public_route_implemented_candidate_provider_evidence_pending
+  OTV2-SCHOOL-200: approved_configuration_persistence_implemented_candidate_evidence_pending
+  OTV2-SCHOOL-214: protected_absence_preserved_candidate_inventory_pending
 acceptance_cases:
-  OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS: correction_assertions_passed
-  OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY: correction_assertions_passed
-  OTV2-SCHOOL-200-AC01: prior_assertions_preserved
-  OTV2-SCHOOL-214-AC01: prior_assertions_preserved
+  OTV2-SIGNUP-178-SCHOOL-INQUIRY-NO-ACCESS: local_repository_assertions_passed
+  OTV2-SIGNUP-229-PUBLIC-SCHOOL-INQUIRY: exact_route_assertions_passed
+  OTV2-SCHOOL-200-AC01: local_configuration_persistence_assertions_passed
+  OTV2-SCHOOL-214-AC01: prohibited_surface_and_effect_assertions_preserved
 changed_paths:
-  - apps/web/src/server/features/signup/school/service.test.ts
-  - apps/web/src/server/features/signup/school/service.ts
+  - apps/web/src/server/features/signup/school/router.test.ts
+  - apps/web/src/server/features/signup/school/router.ts
   - ops/v2.1-execution/runtime/P09/HANDOFF.md
   - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
-  - packages/contracts/src/signup/school/index.ts
-  - packages/contracts/src/signup/school/school-signup.contract.test.ts
-  - packages/domain/src/signup/school/policy.test.ts
-  - packages/domain/src/signup/school/policy.ts
-migrations: []
+  - packages/db/src/signup/school/repository.test.ts
+  - packages/db/src/signup/school/repository.ts
+migrations:
+  - path: packages/db/migrations/2249_v21_school_inquiry.sql
+    raw_git_blob_sha256: eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914
+    state: immutable_existing_exercised_not_edited
 steward_requests:
   - id: P09-migration-001
     sha256: f6612a8c3b435ca86f8dd8c5ce18ea9a1d91d4c4c0348fb5607eb6681c66b5df
-    state: unchanged_unapplied
+    state: satisfied_upstream_by_immutable_2249_request_unchanged
   - id: P09-registration-001
     sha256: f78ab4076227222509f61b5d430188cbdaee369adf0bd6ebe82703482171fef1
-    state: unchanged_unapplied
+    state: immutable_request_unchanged_source_descriptor_ready_central_application_pending
 verification:
   commands_run:
-    - command: exact correction control, sole parent, claim, lease, branch, and effect-lock verification
-      result: passed
-    - command: focused P09 Vitest
-      result: passed; 4 files and 16 tests
+    - command: exact current control, READY digest, branch, base, lease, and effect-lock verification
+      result: passed; control 26f29aeb, expected head 33a21a45, base c0a1e04b
+    - command: focused P09 repository/router/service/contract/domain Vitest
+      result: passed; 5 files and 26 tests
     - command: npm run typecheck -- --pretty false
       result: passed
-    - command: focused ESLint and Prettier over all P09 TypeScript artifacts
+    - command: focused ESLint and Prettier over the four phase TypeScript artifacts
       result: passed
-    - command: exact six-source/test correction scope and git diff --check
-      result: passed
+    - command: exact immutable 2249 pg-mem application and repository persistence proof
+      result: passed; PostgreSQL-only marked trigger block omitted locally, migration bytes unchanged
+    - command: exact four-source/test implementation scope and git diff --check
+      result: passed; substantive commit sole parent c0a1e04b
     - command: npm run secret:scan
-      result: passed across 2891 repository text files
-    - command: exact Git-blob artifact and unchanged request digest reproduction
-      result: passed; nine-artifact aggregate 1635950b and request aggregate 9229edbd
+      result: passed across 3095 repository text files
+    - command: exact raw Git-blob artifact digest reproduction
+      result: passed; four-artifact aggregate cfd84674
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -166,4 +178,8 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Central composer registration remains I36-owned and was not edited.
+  - No native PostgreSQL binary was installed in this worktree; the local
+    immutable-migration proof used pg-mem, while integration/native migration
+    verification remains an I36 gate.
