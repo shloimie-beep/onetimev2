@@ -1661,6 +1661,10 @@ behavior. Run the focused test, workspace typecheck, full lint, scoped format,
 YAML, secret, scope, and diff gates. Release the lease, publish a superseding
 final, verify remote equality, and stop for C00 audit. Effects remain `0/0/0`.
 
+P31 final `839ec12bb83317a63f1d064891fb2929a707f3ec` is independently
+audited and ready for bounded I36 integration after the current disjoint
+correction lanes finish. Do not reopen its released COPY_CATALOG lease.
+
 P17 may make only its runtime-triplet atomic claim from exact
 `78af71603713b6fc73fe755995bdf56193eb199a` under canonical READY
 `b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6`,
@@ -1670,3 +1674,15 @@ request, allowlist, and lease binding. The first push changes only P17
 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, preserves every product
 and existing request byte, pushes normally, verifies remote equality, and
 stops for C00 reconciliation. Do not edit a migration or inspect a provider.
+
+P20 may make only its runtime-triplet atomic claim from exact
+`3d75b57e91c12ab3e0cad78b1a6a63497838f46f` under canonical READY
+`ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea`,
+claim `e8c768e8-f603-4d0c-a45b-34b5cd7ea92c`, and CONTENT_PROCESSING lease
+`24d0fa6f-30ac-4fc0-af2a-2b495d826063`. Recompute every dependency,
+migration-result, P20/P21, base-manifest, collision, allowlist, and lease
+binding. The first push changes only P20 `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`, preserves all source/migration/request bytes, pushes
+normally, verifies remote equality, and stops for C00 reconciliation. Do not
+edit P21, publish a migration request, inspect a provider, or perform an
+external effect.

@@ -128,8 +128,171 @@ ready:
   prompt_path: ops/v2.1-execution/prompts/P17-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
+- task_id: P20
+  status: resume_ready
+  phase: approved_for_publication_projection_collision_correction
+  branch: codex/v21-p20-media-processing
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+  authorized_start_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  expected_existing_head: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 5d8898fed74b2ce8b34d6dd67e48c429fe4e4f57ed3e093498cfe0751848ccee
+  task_context_digest: 8d2cc66df60ae692f46d9548bb5fafa6e36ec5f98bb8f139c2e3e5266a835add
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+      control_state_digest: f4cf3a46a03e148aa438e8226ddef65cf98ba770e5f914984bbab32541bded41
+    I36:
+      required_state: direct_prerequisite_release_audited
+      observed_state: direct_prerequisite_release_audited
+      observed_integration_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+      release_parent_head_sha: 5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f
+      state_handoff_digest: 3113baf292636ba9be87a7250f468ce599231cbe61815df18efdaf287f04372e
+      runtime_triplet_digest: 5c85deb3125732b7074aba7677a7874093983bc8b19c8f4afbe798372baab0d2
+    P20:
+      required_state: ready_for_review_integrated_with_publication_projection_correction_pending
+      observed_state: ready_for_review
+      integration_ancestry: observed_task_head_is_ancestor_of_release
+      correction_state: pending
+      observed_task_head_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+      atomic_claim_head_sha: 6f894038117ee19d405e528670eb8bf86e8682b2
+      implementation_head_sha: e366ef926d6b2ee3be888eaae9fe2cad08b8a57f
+      state_handoff_digest: 58c61eec73b381b3e6eb758f346e8db0a5af7759faea490d804db8401ef30bd6
+      runtime_triplet_digest: 0e8f4c4366414beb1bdfa9cd6aff3179fee7bcc6fb6f2066dab847f18cf9a2b2
+      implementation_artifact_digest: d58ec3c6e3b3acb0b956525fcf7aeed4ddcafa22b392e5e707c98e079efe6249
+      interface_contract_raw_sha256: cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159
+      schema_contract_raw_sha256: 7486ba836282a8f8caf453033286f5e8f8f57d65c95ae9aa914f644774e53fb9
+    P20_migration:
+      required_state: already_applied_no_new_request
+      observed_state: applied
+      request_id: P20-MIGRATION-001
+      request_digest: e9be9aeb464daf586d3cdcdd7f3cd06b8e22cc93e6486d97055b3584853e41a1
+      kind: migration
+      assigned_steward: F02
+      target_checkpoint: F02_next_migration_checkpoint
+      producer_source_head_sha: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+      evaluated_target_head_sha: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
+      applied_commit_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
+      result_record_head_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+      result_digest: 0f4260f833f65dab0a093f254585e9647bc98e231d540ae803cd5b60512d8363
+      acknowledged_by_task: true
+      acknowledgment_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+      acknowledgment_state_handoff_digest: de5ebc6b6cb6f1c59e78f34caad30a4e59207d81cbf29cf4fc80fa87f1d495f2
+      ordinal: 2246
+      file: packages/db/migrations/2246_v21_content_processing.sql
+      checksum_sha256: b065b91e0705719b31cb13cfcd609a6144680c59ef48582e1cb8c6e8e1d0f5ba
+      pg_mem_checksum_sha256: e1a468be490ff3204f7a2e20f09a819d8f761c8e40b25efec66f753e55b94405
+      replaces_applied_migration: false
+    P21_collision_evidence:
+      required_state: withheld_pending_corrected_P20_projection_final_and_integration
+      observed_state: ready_for_review
+      integration_ancestry: observed_task_head_is_ancestor_of_release
+      collision_correction_state: required_and_withheld
+      rejected_ancestor_head_sha: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
+      residual_atomic_claim_head_sha: cc7e7439ba3567969cb12e3e4b7f0c01af276f93
+      implementation_head_sha: 7878b60fc72a17a7a6aeccc237c44141e2d5ec9b
+      observed_task_head_sha: cecdad0989e861254987970cfa3d222319369f52
+      state_handoff_digest: 35e94dfee5045cd08614ebfd38145dd7c489a26b1e7d9774d917a575197edd09
+      runtime_triplet_digest: 185d1ec301c61c9ec4b6c0d96f850e4eec59978a2f588278be96399823e46915
+      implementation_artifact_digest: 0ed47d3fc00de0f5e2660ebd857cbb128ac8fe70f7ebf7e7390cb4770cd5132d
+      P21_registration_001_raw_sha256: fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3
+      steward_request_aggregate_digest: 3967bfc144214ab517d8df1b2c70a537b1c7fa92aafef019ccfc9f43917d7d81
+      central_request_kind: migration_and_registration
+      central_request_status: assigned
+      central_assigned_steward: F02
+      central_target_checkpoint: F02_next_migration_checkpoint_then_C00_requeues_I36_registration
+      central_acknowledged_by_task: false
+      required_disposition: unapplied_must_remain_immutable_and_withheld
+      required_successor_requests:
+      - P21-MIGRATION-002
+      - P21-registration-002
+  authorized_paths:
+  - packages/contracts/src/content/processing/index.ts
+  - packages/db/src/content/processing/repository.test.ts
+  - packages/db/src/content/processing/repository.ts
+  - packages/domain/src/content/processing/content-processing.acceptance.test.ts
+  - packages/domain/src/content/processing/index.ts
+  - ops/v2.1-execution/runtime/P20/HANDOFF.md
+  - ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P20/TASK-STATE.yaml
+  authorized_path_sets:
+    correction_source_paths:
+    - packages/contracts/src/content/processing/index.ts
+    - packages/db/src/content/processing/repository.test.ts
+    - packages/db/src/content/processing/repository.ts
+    - packages/domain/src/content/processing/content-processing.acceptance.test.ts
+    - packages/domain/src/content/processing/index.ts
+    correction_source_path_inventory_digest: 9a70f8864d7807d5ea26728a5835e10d489f91ed77f28f76f3458629cc3492ef
+    correction_source_base_manifest_digest: eb01ac38bce07dd88f77b1e91d1899878d77edc6c2520a9769eec88ba3d900e8
+    correction_source_base_sha256:
+      packages/contracts/src/content/processing/index.ts: cb557d145186ca9a1b32f19f0dac8410a9fb18bde9cbd4da094f8997cad27159
+      packages/db/src/content/processing/repository.test.ts: d49dcee8b4fe2a4a392b0cad9721f4ed994215d25fe3087e30f779c341e6a781
+      packages/db/src/content/processing/repository.ts: b129967a7b4301791e44437239ec508cc63dfeed32ffa7d2c15b8a6053366fe8
+      packages/domain/src/content/processing/content-processing.acceptance.test.ts: 7da5f15fcd662c4b08481b4dcea870cf1db0772401dfae9f026a921a0c276f29
+      packages/domain/src/content/processing/index.ts: a9184015b2b869cd85f1782c15cc84ff4f3d5e25dafa06a133f001a59ff00d03
+    claim_runtime_paths:
+    - ops/v2.1-execution/runtime/P20/HANDOFF.md
+    - ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md
+    - ops/v2.1-execution/runtime/P20/TASK-STATE.yaml
+    claim_runtime_path_inventory_digest: 1d5eab5b0fbd443ab20c97bb1426ef5e83ad6b142a88cef6be8ac84d4e2b60ee
+    claim_runtime_base_manifest_digest: 0e8f4c4366414beb1bdfa9cd6aff3179fee7bcc6fb6f2066dab847f18cf9a2b2
+    claim_runtime_base_sha256:
+      ops/v2.1-execution/runtime/P20/HANDOFF.md: 7fb16e13f6af26573d80994638e55641b263662266e9fb71070decbbe2ecb4b1
+      ops/v2.1-execution/runtime/P20/NEXT-PROMPT.md: 589bef900635795046bb7e0fa34ed0afa94e92609d6c91d7e7f1e4755ea3da88
+      ops/v2.1-execution/runtime/P20/TASK-STATE.yaml: 37a276fd8d02b8f69c2f8355917b5d559c708a367e18c43e4f0e06b811c33f6f
+  writer_slot_collision_state:
+    observed_at: '2026-07-30T06:30:12Z'
+    active_writer_limit: 8
+    live_or_reserved_writer_count_before_admission: 2
+    projected_live_or_reserved_writer_count_after_admission: 3
+    existing_live_or_reserved_slots:
+    - slot: COPY_CATALOG
+      holder_task_id: P31
+      holder_claim_id: 7f50cef8-f816-4a32-8f9e-071db09abbc0
+      lease_id: 42734cda-47b5-44ec-8d9a-8da7c4f86ed1
+      lease_expires_at: '2026-07-30T06:48:54Z'
+      state: claimed
+    - slot: ZOOM_PREPARATION
+      holder_task_id: P17
+      holder_claim_id: f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1
+      lease_id: 0e53a171-263b-41d9-b957-80588027c194
+      lease_expires_at: '2026-07-30T07:11:00Z'
+      state: ready
+    requested_slot: CONTENT_PROCESSING
+    existing_requested_slot_holders: []
+    collision: false
+  correction_directives:
+  - 'First push: change only the three claim_runtime_paths, record the exact READY payload digest, claim, lease, containing authorization, and zero effects, push normally, and stop for C00 reconciliation.'
+  - 'After reconciliation: change only the five correction_source_paths to add an ApprovedForPublicationProjection keyed by exact accountKey, productKey, and contentVersionId.'
+  - 'Projection evidence: fail closed unless the persisted version is approved and the exact source ID, source SHA-256, source object version, participant snapshot, approving Admin and time, and one latest approved revision of all seven required artifact kinds bind to the same composite scope and deterministic projection digest.'
+  - 'Direct tests: prove deterministic success and exact replay plus rejection of non-approved, missing, duplicate, stale, cross-account, cross-product, cross-version, source-mismatch, artifact-mismatch, and participant-snapshot-mismatch evidence; prove parameterized SQL contains all three composite keys and no body-selected scope.'
+  - 'Migration boundary: P20-MIGRATION-001 is already applied and acknowledged in integration release 3cf787409decb5beb84561ef7e37924111d398b6; do not edit a migration or publish a new P20 migration request.'
+  - 'Dependent P21 boundary: do not change a P21 path or admit P21 until corrected P20 is final, independently audited, and integrated; P21-registration-001 remains immutable and withheld for new P21-MIGRATION-002 and P21-registration-002 successors.'
+  - 'Authority boundary: do not edit runners, services, central composers, registries, configuration, manifests, lockfiles, providers, or control ledgers; do not inspect a provider or perform an external effect.'
+  writer_slot_leases:
+  - slot: CONTENT_PROCESSING
+    lease_id: 24d0fa6f-30ac-4fc0-af2a-2b495d826063
+    holder_task_id: P20
+    holder_claim_id: e8c768e8-f603-4d0c-a45b-34b5cd7ea92c
+    state_based_on_control_head_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+    lease_issued_at: '2026-07-30T06:30:12Z'
+    lease_expires_at: '2026-07-30T07:30:12Z'
+    phase_scope: P20_approved_for_publication_projection_collision_correction_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: e8c768e8-f603-4d0c-a45b-34b5cd7ea92c
+  lease_issued_at: '2026-07-30T06:30:12Z'
+  lease_expires_at: '2026-07-30T07:30:12Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/P20-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
 entry_payload_digests:
   P17: b141b7501dd1862aab3232f939458e6652a6a8d20d7b003e71f6917bac94ada6
+  P20: ba07246d1f3ed1d91828512ed588feca1f0b647928b2afb8b0e132aef3ae86ea
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

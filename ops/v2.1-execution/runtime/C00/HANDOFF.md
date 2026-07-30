@@ -1999,6 +1999,17 @@ preserve every assertion and semantic contract, run focused tests, typecheck,
 full lint, scoped format/YAML/secret/diff gates, release its lease, push, and
 stop for C00 audit.
 
+P31 completed that correction at final
+`839ec12bb83317a63f1d064891fb2929a707f3ec`: claim `9d878d88` leads
+to test-only implementation `4f61ec10` and runtime-only final `839ec12b`.
+The total scope is exactly the test plus its runtime triplet. Corrected test
+digest `b82cb884`, 3/3 focused tests, workspace typecheck, full lint with zero
+findings, scoped formatting/YAML/secret/diff gates, lease release at
+`2026-07-30T06:25:48Z`, remote equality, and effects `0/0/0` pass. The
+assertion, copy catalog, approval semantics, interface, requests, and runtime
+behavior remain unchanged. P31 is ready for a later bounded I36 integration
+wave.
+
 The P17/P18 collision audit confirms P18 remains sole owner of launch grants,
 Meeting SDK bootstrap issuance/consumption, live Student sessions, attendance,
 and their persistence. P17 owns only preparation saga, roster snapshots,
@@ -2015,3 +2026,17 @@ P17 migration and server/worker registration `-001` requests remain immutable,
 assigned, unapplied, and withheld; successor `-002` request digests must be
 computed only from later committed blobs. No provider inspection or effect is
 authorized.
+
+P20 READY digest `ba07246d` binds exact remote `3d75b57e`, integration
+`3cf78740`, claim `e8c768e8`, and CONTENT_PROCESSING lease `24d0fa6f`
+through `2026-07-30T07:30:12Z`, with no effect locks. Its first push changes
+only the P20 runtime triplet and stops for C00 reconciliation. Later authority
+is limited to five exact content-processing contract/domain/repository test
+paths. The correction must derive an approved-for-publication projection from
+exact `{accountKey, productKey, contentVersionId}` scope and bind the approved
+source, all seven latest approved artifact revisions, participant snapshot,
+approving Admin/time, and deterministic projection digest. Typed parameters
+and composite SQL predicates are mandatory; body-selected scope fails closed.
+P20 migration 2246 is already applied and must not be changed or recreated.
+P21 remains withheld until corrected P20 is final, audited, and integrated;
+its mixed `P21-registration-001` remains immutable and unapplied.

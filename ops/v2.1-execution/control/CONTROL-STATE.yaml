@@ -15,11 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 0eb6204622792a6add325f0cb11bc25847701f10
+controller_authorization_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
 next_action: >-
-  P31 atomic claim 9d878d88 is reconciled and may remove only the unused _removedNamedApproval test binding under
-  COPY_CATALOG lease 42734cda, then run its exact gates, release, push, and stop. P17 may make only a runtime-triplet
-  atomic claim under canonical READY b141b750, claim f7c01bf5, and ZOOM_PREPARATION lease 0e53a171, then stop for C00
-  reconciliation. P17/P18/P21 migration duties remain withheld pending corrected requests. OPS-084 production_broad
+  P31 correction final 839ec12b is audited and ready for later I36 integration. P17 may make only a runtime-triplet
+  atomic claim under READY b141b750, claim f7c01bf5, and ZOOM_PREPARATION lease 0e53a171, then stop for reconciliation.
+  P20 may make only a runtime-triplet atomic claim under READY ba07246d, claim e8c768e8, and CONTENT_PROCESSING lease
+  24d0fa6f, then stop for reconciliation. P17/P18/P21 migration duties remain withheld. OPS-084 production_broad
   remains fail-closed; candidate, provider inspection/mutation, deployment, sends, and effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
