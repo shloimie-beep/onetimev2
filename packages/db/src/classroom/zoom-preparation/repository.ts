@@ -1,7 +1,5 @@
 import type {
   ClassroomResource,
-  LaunchGrantRecord,
-  LiveStudentSession,
   OccurrenceRosterSnapshot,
   StudentRegistrant,
   ZoomPreparationCommandReceipt,
@@ -97,45 +95,69 @@ function createUnit(client: ZoomPreparationSqlClient): ZoomPreparationUnitOfWork
         record,
       ),
     saveProviderOperation: async (operation) => {
-      await client.query(
-        `INSERT INTO onetime.provider_operations
-           (job_id, provider_key, operation_type, aggregate_ref, source_version,
-            idempotency_key, canonical_request_hash, operation_state, record_json, updated_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10)
-         ON CONFLICT (job_id) DO NOTHING`,
+      const outbox = await client.query(
+        `INSERT INTO onetime.job_outbox
+           (job_id, operation_type, aggregate_ref, source_version, provider, product,
+            runtime_tier, verification_environment_id, idempotency_key,
+            canonical_request_hash, payload_ref, payload_digest, compensation_for_job_id,
+            state, version, recovery_generation, dispatch_attempts,
+            lifetime_dispatch_attempts, reconciliation_attempts, lease_generation,
+            unknown_effect, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,
+                 'not_started',1,0,0,0,0,0,false,$14,$15)
+         ON CONFLICT (product, runtime_tier, verification_environment_id, idempotency_key)
+         DO UPDATE SET idempotency_key = EXCLUDED.idempotency_key
+           WHERE job_outbox.operation_type = EXCLUDED.operation_type
+             AND job_outbox.aggregate_ref = EXCLUDED.aggregate_ref
+             AND job_outbox.source_version = EXCLUDED.source_version
+             AND job_outbox.provider = EXCLUDED.provider
+             AND job_outbox.canonical_request_hash = EXCLUDED.canonical_request_hash
+             AND job_outbox.payload_digest = EXCLUDED.payload_digest
+             AND job_outbox.compensation_for_job_id IS NOT DISTINCT FROM EXCLUDED.compensation_for_job_id
+         RETURNING job_id`,
         [
           operation.job_id,
-          operation.provider,
           operation.operation_type,
           operation.aggregate_ref,
           operation.source_version,
+          operation.provider,
+          operation.scope.product,
+          operation.scope.runtime_tier,
+          operation.scope.verification_environment_id,
           operation.idempotency_key,
           operation.canonical_request_hash,
-          operation.state,
-          JSON.stringify(operation),
+          operation.payload_ref,
+          operation.payload_digest,
+          operation.compensation_for_job_id,
+          operation.created_at,
           operation.updated_at,
         ],
       );
-    },
-    saveLaunchGrant: (record) =>
-      insertImmutable(client, 'onetime.zoom_launch_grants', 'launch_grant_key', record.id, record),
-    getLiveSession: async (scope, studentId, occurrenceId) => {
-      const result = await client.query(
-        `SELECT record_json FROM onetime.zoom_live_student_sessions
-          WHERE account_key = $1 AND product_key = $2
-            AND student_key = $3 AND occurrence_key = $4 FOR UPDATE`,
-        [scope.accountKey, scope.productKey, studentId, occurrenceId],
+      if (String(outbox.rows[0]?.job_id ?? '') !== operation.job_id) {
+        throw new Error('job_outbox_idempotency_conflict');
+      }
+      const binding = await client.query(
+        `INSERT INTO onetime.provider_operation_binding
+           (job_id, registry_binding_key, provider_account_ref_hash, effect_kind, household_id)
+         VALUES ($1,$2,$3,$4,$5)
+         ON CONFLICT (job_id) DO UPDATE SET job_id = EXCLUDED.job_id
+           WHERE provider_operation_binding.registry_binding_key = EXCLUDED.registry_binding_key
+             AND provider_operation_binding.provider_account_ref_hash = EXCLUDED.provider_account_ref_hash
+             AND provider_operation_binding.effect_kind = EXCLUDED.effect_kind
+             AND provider_operation_binding.household_id IS NOT DISTINCT FROM EXCLUDED.household_id
+         RETURNING job_id`,
+        [
+          operation.job_id,
+          operation.registry_binding_key,
+          operation.provider_account_ref_hash,
+          operation.effect_kind,
+          operation.household_id,
+        ],
       );
-      return parse<LiveStudentSession>(result.rows[0]?.record_json);
+      if (String(binding.rows[0]?.job_id ?? '') !== operation.job_id) {
+        throw new Error('provider_operation_binding_conflict');
+      }
     },
-    saveLiveSession: (record) =>
-      saveVersioned(
-        client,
-        'onetime.zoom_live_student_sessions',
-        'live_session_key',
-        record.id,
-        record,
-      ),
     getReceipt: async (scope, idempotencyKey) => {
       const result = await client.query(
         `SELECT record_json FROM onetime.zoom_preparation_commands
@@ -232,5 +254,4 @@ export type ZoomPreparationSqlSaga = ZoomPreparationSaga;
 export type ZoomPreparationSqlRoster = OccurrenceRosterSnapshot;
 export type ZoomPreparationSqlResource = ClassroomResource;
 export type ZoomPreparationSqlRegistrant = StudentRegistrant;
-export type ZoomPreparationSqlGrant = LaunchGrantRecord;
 export type ZoomPreparationSqlOperation = ProviderOperation;

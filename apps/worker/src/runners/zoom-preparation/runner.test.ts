@@ -168,9 +168,6 @@ class MemoryRepository implements ZoomPreparationRepository {
         this.savedRegistrants.push(value);
       },
       saveProviderOperation: async () => undefined,
-      saveLaunchGrant: async () => undefined,
-      getLiveSession: async () => null,
-      saveLiveSession: async () => undefined,
       getReceipt: async () => null,
       saveReceipt: async () => undefined,
     });

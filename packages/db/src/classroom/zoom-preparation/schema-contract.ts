@@ -1,4 +1,4 @@
-export const ZOOM_PREPARATION_SCHEMA_CONTRACT_VERSION = 'P17-ZOOM-PREPARATION-SCHEMA-001' as const;
+export const ZOOM_PREPARATION_SCHEMA_CONTRACT_VERSION = 'P17-ZOOM-PREPARATION-SCHEMA-002' as const;
 
 export const ZOOM_PREPARATION_SCHEMA_CONTRACT = {
   preparations: {
@@ -31,22 +31,6 @@ export const ZOOM_PREPARATION_SCHEMA_CONTRACT = {
       'at most one current registrant per occurrence and Student',
       'no household-shared registrant or routable Student email',
       'provider reference and technical alias are protected digests',
-    ],
-  },
-  launchGrants: {
-    table: 'onetime.zoom_launch_grants',
-    invariants: [
-      'only a grant digest is stored',
-      'grant expires after 60 seconds and consumption is single-use',
-      'Student, household, app session, device, occurrence, registrant, and authorization versions are bound',
-    ],
-  },
-  liveSessions: {
-    table: 'onetime.zoom_live_student_sessions',
-    invariants: [
-      'one current live device lease per occurrence and Student',
-      'same device/session lineage may reconnect',
-      'lease expiry and Admin revocation are optimistic-version fenced',
     ],
   },
   commands: {
