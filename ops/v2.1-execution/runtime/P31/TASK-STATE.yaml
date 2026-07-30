@@ -7,6 +7,19 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-p31-email-copy-approval
 start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
 dependency_heads:
+  C00:
+    required_state: operational
+    observed_state: operational
+    observed_control_head_sha: a0599de4502994d5028c9b24084b400d48f72f98
+    control_state_digest: 4922ec97a277d94123e82f81b53167b43434b0eca94c6b9f20406c29517ecf2b
+  I36:
+    required_state: final_source_release_audited
+    observed_state: final_source_release_audited
+    observed_integration_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
+  P30:
+    required_state: final_integrated
+    observed_state: final_integrated
+    observed_task_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
   F01:
     required_state: interface_ready_integrated
     observed_state: interface_ready_integrated
@@ -14,25 +27,51 @@ dependency_heads:
     observed_integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
     interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
     interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+steward_request_binding:
+  request_id: P30-copy-registration-001
+  request_digest: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
+  request_digest_kind: raw_sha256
+  source_task_id: P30
+  source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
+  source_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-copy-registration-001.yaml
+  source_blob_sha: e62dc0f3b9a870608ddb74b6eba66b8d34bbc6af
+  target_checkpoint: P31_next_canonical_copy_registration_checkpoint
 status: ready_for_review
-phase: review
-claimed_by: /root/p31_worker2
-claim_time: '2026-07-28T16:44:42Z'
-claim_id: 39538a2e-2d15-44a7-9485-0cba68919b21
-lease_expires_at: '2026-07-28T17:37:00Z'
-last_heartbeat_at: '2026-07-28T16:50:38Z'
-controller_authorization_sha: beb72be5ba1f993c1806e9314146e88f951affdb
-ready_entry_payload_digest: e6623d77ff1fb4db02ec7df38595fa011aa0446b720c4a8f80c5ebaca8493b74
-state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-last_implementation_commit_sha: 0e1f7bc6debb57826420f55f7f5c6e937761fca0
+phase: P30_copy_registration_steward_complete
+claimed_by: codex-p31-copy-ff4a79d9
+claim_time: '2026-07-30T04:26:56Z'
+claim_id: ff4a79d9-158b-4e3f-a150-03b171427749
+writer_slot_lease_id: d03dd6a9-384f-4b52-aaaf-3ac5752a36da
+lease_issued_at: '2026-07-30T04:26:56Z'
+lease_expires_at: '2026-07-30T05:56:56Z'
+last_heartbeat_at: '2026-07-30T04:43:17Z'
+lease_released_at: '2026-07-30T04:43:17Z'
+controller_authorization_sha: 30689e76f3697ab11dedab3b77d5bb5cbededde5
+ready_entry_parent_control_sha: 1b5e5dd662390dd5affc159990a59b3b8d99c127
+state_based_on_control_head_sha: a0599de4502994d5028c9b24084b400d48f72f98
+ready_entry_payload_digest: 53c8b3774408a96350e8050746a2e2894ab65a7c418b7932bb05f5e2f9e375cb
+writer_slot_leases:
+  COPY_CATALOG:
+    lease_id: d03dd6a9-384f-4b52-aaaf-3ac5752a36da
+    lease_issued_at: '2026-07-30T04:26:56Z'
+    lease_expires_at: '2026-07-30T05:56:56Z'
+    released_at: '2026-07-30T04:43:17Z'
+state_based_on_head_sha: 8b3ed597115fe4c11a85f8ab35a1b2feb6f58649
+last_implementation_commit_sha: 8b3ed597115fe4c11a85f8ab35a1b2feb6f58649
 completed_steps:
+  - Atomically claimed P30-copy-registration-001 from exact branch head ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d under C00 authorization 30689e76f3697ab11dedab3b77d5bb5cbededde5.
+  - Verified the exact P30 request blob and raw SHA-256 binding without editing the copy catalog or performing any provider effect.
+  - Verified C00 reconciliation of atomic claim eff2434e4ec39af0eeb127f2c46c525a3bed6130 at control commit a0599de4502994d5028c9b24084b400d48f72f98.
   - Verified remote control head, branch absence, exact authorized start SHA, P31 task/context digests, F01 integrated interface proof, and active COPY_CATALOG lease.
   - Seeded first-claim runtime state for atomic remote branch creation.
   - Implemented the canonical sender/copy catalog, Resend-only token template renderer, GHL adult-only fragments, and digest-bound campaign approval enforcement with current-consent and approval-launch timing semantics.
   - Published the P31 interface checkpoint for P28, P29, and P30.
+  - Authored and registered only OT-15 step 2 and step 3 with their fixed IDs, subjects, day-4/day-9 offsets, exact bodies, required variables, and canonical digests while preserving step 1 unchanged.
+  - Added focused contract coverage for exact registrations, immutable digests, no token-bearing content, current consent, named approval, and fail-closed body/subject/timing drift.
+  - Refreshed the P31 interface checkpoint to semantic contract 1.1.0 and released COPY_CATALOG lease d03dd6a9-384f-4b52-aaaf-3ac5752a36da before expiry.
 remaining_steps:
-  - I36 must integrate this exact interface checkpoint before C00 authorizes P28, P29, or P30 starts that depend on it.
-next_action: Await C00/I36 observation and integration of INTERFACE-CHECKPOINT.yaml; on a C00-issued resume lease, address only a reproduced P31-scoped finding.
+  - C00/I36 must review and integrate interface implementation 8b3ed597115fe4c11a85f8ab35a1b2feb6f58649 before P30 consumes the registrations.
+next_action: Await C00/I36 review and integration of the exact P31 1.1.0 interface checkpoint.
 requirements:
   OTV2-EMAIL-139: implementation_ready
   OTV2-EMAIL-140: implementation_ready
@@ -51,13 +90,31 @@ acceptance_cases:
   OTV2-EMAIL-144-AC01: implementation_ready
   OTV2-EMAIL-145-AC01: implementation_ready
   OTV2-EMAIL-146-AC01: implementation_ready
-changed_paths: []
+changed_paths:
+  - integrations/highlevel/v21/copy/catalog.ts
+  - packages/domain/src/communications/copy/approval.ts
+  - packages/domain/src/communications/copy/catalog.ts
+  - tests/unit/communications/copy-catalog.test.ts
+  - ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P31/HANDOFF.md
+  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
 migrations: []
-steward_requests: []
+steward_requests:
+  - request_id: P30-copy-registration-001
+    source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
+    source_blob_sha: e62dc0f3b9a870608ddb74b6eba66b8d34bbc6af
+    raw_sha256: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
+    disposition: implemented_exactly
 verification:
   commands_run:
     - npm run typecheck (passed)
-    - P31 focused catalog/approval/security boundary assertions via node --import tsx (passed)
+    - npm exec -- vitest run tests/unit/communications/copy-catalog.test.ts --config vitest.unit.config.ts (passed; 3 tests)
+    - npm exec -- prettier --check on P31 product/test/runtime files (passed)
+    - YAML parse of P31 runtime/interface files (passed)
+    - npm run secret:scan (passed)
+    - git diff --check (passed)
+    - P31 owned-path scope audit against eff2434e4ec39af0eeb127f2c46c525a3bed6130 (passed)
   known_baseline_failures: []
 external_effects:
   authority: none
