@@ -1487,3 +1487,23 @@ Do not merge a source, modify product code or SQL, apply steward requests,
 inspect providers, deploy, send, or perform an external effect until C00
 consumes the READY entry and rebinds every merge target to the exact claim
 head.
+
+Resume I36 at exact claim head
+`d53c1d22dfa84806b07c51e599997c7ebc053849`. The READY entry is consumed
+and the three ordered merge targets are rebound. Recompute canonical payloads
+P16 `db2478fc927af240263baadfa6b79df43f8876cc59d2a1115ad0149056e4fa90`,
+P32 `d0237f000baaa1b47773c5301091c18ad384ab07bc8a0a229e01609dbcb56b96`,
+and F02 `aa58a800cd497a63be8871ec5da065b40a279b0d6082fd7cc65683e087781ed8`.
+
+Merge exact source heads P16 `55544f55`, P32 `92a7ee63`, then F02
+`cd2d7c2f` with source ancestry preserved. Verify each merge's parents,
+first-parent allowlist, merge-after dependencies, exact cumulative scope, and
+all source digests. Run combined focused tests, workspace typecheck,
+native/pg-mem 75-migration replay and checksum gates, format/lint/secret/diff
+checks, and effects `0/0/0`. Then update only the I36 runtime triplet to record
+the final evidence and release lease `6c88e2a7-e2fc-48be-acae-4b4a5e9839ad`
+before `2026-07-30T03:54:35Z`; push, remote-verify clean equality, and stop for
+independent audit.
+
+Do not apply steward requests, inspect or mutate providers, deploy, send, or
+perform an external effect.

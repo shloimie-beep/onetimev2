@@ -15,11 +15,12 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
+controller_authorization_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
 next_action: >-
-  Exact independently audited P16 55544f55, P32 92a7ee63, and F02 cd2d7c2f sources are admitted in that order
-  for the bounded I36 compatibility wave from integration head 1798f31b. I36 must first push only its runtime
-  triplet under claim d2ba6c12 and RELEASE_INTEGRATOR lease 6c88e2a7, then stop for C00 reconciliation and exact
-  target-CAS rebind. No source merge, product edit, migration execution, steward application, provider inspection,
-  deployment, send, or external effect is authorized before that reconciliation.
+  I36 atomic claim d53c1d22 is reconciled as the exact runtime-triplet-only child of 1798f31b. Under unchanged
+  claim d2ba6c12 and RELEASE_INTEGRATOR lease 6c88e2a7 through 2026-07-30T03:54:35Z, merge exact audited sources
+  P16 55544f55, P32 92a7ee63, and F02 cd2d7c2f in that order with ancestry preserved. Verify each queued payload,
+  first-parent allowlist, merge-after dependency, and exact target rebind; run combined focused, typecheck,
+  migration, formatting, secret, and zero-effect gates; publish a metadata-only lease release; and stop for
+  independent audit. No steward application, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

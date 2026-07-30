@@ -1775,3 +1775,25 @@ full field-by-field recomputation caught one extra trailing hex character in
 the F02 source manifest. The final entry above binds acquisition `15cdddda`
 and exact recomputed path inventories, raw Git-byte manifests, runtime
 pair/triplet, task/context, READY, and merge payload digests.
+
+## I36 claim reconciliation and merge authorization
+
+I36 claim head `d53c1d22dfa84806b07c51e599997c7ebc053849` is the exact
+sole child of `1798f31b5f698c80ee2babbd6414e9934745a178`; its delta is
+only the I36 runtime triplet. The containing control `061edb43`, acquisition
+`15cdddda`, READY `ac622e74`, claim `d2ba6c12`, RELEASE_INTEGRATOR lease
+`6c88e2a7`, source bindings, clean remote equality, and effects `0/0/0` pass.
+
+C00 consumed the READY entry and rebound every ordered merge target to
+`d53c1d22`. Canonical merge payloads are P16
+`db2478fc927af240263baadfa6b79df43f8876cc59d2a1115ad0149056e4fa90`,
+P32 `d0237f000baaa1b47773c5301091c18ad384ab07bc8a0a229e01609dbcb56b96`,
+and F02 `aa58a800cd497a63be8871ec5da065b40a279b0d6082fd7cc65683e087781ed8`.
+
+I36 may now merge exact P16 `55544f55`, P32 `92a7ee63`, and F02
+`cd2d7c2f` in that order with ancestry preserved. It must verify each
+first-parent allowlist and merge-after dependency; run combined focused,
+typecheck, native/pg-mem migration, formatting, secret, and zero-effect gates;
+publish a metadata-only release before lease expiry `2026-07-30T03:54:35Z`;
+and stop for independent audit. Steward application, providers, deployment,
+sends, and external effects remain unauthorized.

@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-18d2f9ae
-claim_time: '2026-07-30T02:23:40Z'
-claim_id: 18d2f9ae-b23d-4c0e-9b24-8f20bab91b77
-lease_expires_at: '2026-07-30T02:38:40Z'
-last_heartbeat_at: '2026-07-30T02:25:00Z'
-controller_authorization_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
+claimed_by: codex-c00-orchestrator-9674d01e
+claim_time: '2026-07-30T02:41:36Z'
+claim_id: 9674d01e-3a79-4e38-8a16-f152184e4794
+lease_expires_at: '2026-07-30T02:56:36Z'
+last_heartbeat_at: '2026-07-30T02:45:00Z'
+controller_authorization_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
 ready_entry_payload_digest: null
-state_based_on_head_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
+state_based_on_head_sha: fb34ac63041ac2c49e1f34b835bcb186f071e734
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -986,6 +986,8 @@ verification:
   - rebound the unchanged unused I36 claim and lease to acquisition cd7ef277 with exact full P16, P32, and F02 task/context digests and recomputed canonical READY and merge-item payloads
   - stopped the still-unused I36 claim again before any edit when full field-by-field source recomputation found one extra trailing hex character in the F02 source-manifest binding; integration remained 1798f31b and effects 0/0/0
   - rebound the unchanged unused claim to acquisition 15cdddda with every path inventory, raw Git-byte source manifest, state/handoff, runtime triplet, task packet, and task context independently recomputed and exact
+  - independently reconciled I36 atomic claim d53c1d22 as the exact sole child of 1798f31b with only the I36 runtime triplet changed, exact containing-control/acquisition/READY/claim/lease/source bindings, clean remote equality, and effects 0/0/0
+  - consumed the I36 READY entry and rebound all three ordered P16, P32, and F02 merge targets to exact claim head d53c1d22 with canonical payload digests db2478fc, d0237f00, and aa58a800
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
