@@ -113,12 +113,51 @@ describe('P20 content-processing persistence contract', () => {
     expect(queries[0]?.sql).not.toContain(params.contentVersionId);
     expect(queries[0]?.sql).not.toMatch(/\b(?:CREATE|ALTER|DROP|INSERT|UPDATE|DELETE)\b/i);
   });
+
+  it('returns no projection for legacy approved JSON without the source-complete seed evidence', async () => {
+    const legacyVersion = {
+      ...fixtureVersion(),
+      contentId: undefined,
+      state: 'approved',
+      publicationApproval: {
+        evidenceVersion: 'OT-PUBLICATION-APPROVAL-1',
+        participantSnapshotDigest: 'd'.repeat(64),
+        approvedByAdminId: 'admin-1',
+        approvedAt: '2026-07-28T22:10:00.000Z',
+        approvedArtifactSetDigest: 'e'.repeat(64),
+        sourceEvidenceDigest: 'f'.repeat(64),
+      },
+    };
+    const repository = createContentProcessingRepository({
+      connect: async () => ({
+        query: async () => ({
+          rows: [
+            {
+              version_json: legacyVersion,
+              source_json: {},
+              evidence_json: {},
+              artifacts_json: [],
+            },
+          ],
+        }),
+      }),
+    });
+
+    await expect(
+      repository.getApprovedForPublicationProjection({
+        accountKey: legacyVersion.accountKey,
+        productKey: legacyVersion.productKey,
+        contentVersionId: legacyVersion.id,
+      }),
+    ).resolves.toBeNull();
+  });
 });
 
 function fixtureVersion(): ContentProcessingVersion {
   const now = '2026-07-28T22:00:00.000Z';
   return {
     id: 'content-version-1',
+    contentId: 'occurrence-1',
     accountKey: 'account-1',
     productKey: 'one-time',
     sourceId: 'source-1',

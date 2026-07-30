@@ -6,6 +6,7 @@ import {
   OT_TRANSCRIBE_1_OPERATION,
   OT_VIDEO_1_PROFILE,
   type ContentProcessingAdminActor,
+  type ContentParticipantReviewEvidence,
   type ContentProcessingSource,
   type ContentProcessingVersion,
   type ControlledCaptureEvidence,
@@ -192,6 +193,8 @@ function prepared() {
   });
   const output: LearningDraft = {
     title: 'Lesson review',
+    classTopic: 'Berachos',
+    mishnahReferences: ['Berachos 1:1'],
     summary: 'A concise draft summary of the lesson.',
     reviewQuestions: [
       {
@@ -221,6 +224,7 @@ function prepared() {
   });
   const version: ContentProcessingVersion = {
     id: sha('content-version'),
+    contentId: source.occurrenceId!,
     accountKey: source.accountKey,
     productKey: source.productKey,
     sourceId: source.id,
@@ -333,7 +337,8 @@ describe('P20 acceptance contract', () => {
       version: { ...data.version, state: 'needs_review', artifacts },
       expectedVersion: data.version.version,
       privacyReviewConfirmed: true,
-      participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+      captureEvidence,
+      participantReviewEvidence: participantReviewEvidence(data.version),
       occurredAt: '2026-07-28T22:10:00.000Z',
     });
     expect(approved.state).toBe('approved');
@@ -346,11 +351,25 @@ describe('P20 acceptance contract', () => {
     expect(projection).toMatchObject({
       accountKey: actor.accountKey,
       productKey: actor.productKey,
+      contentId: source.occurrenceId,
       contentVersionId: fixture.version.id,
+      contentVersionDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
       sourceId: source.id,
       sourceSha256: source.sha256,
       sourceObjectVersionId: source.objectVersionId,
+      participantSetVersion: 'participant-set-v1',
       participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+      participantReviewState: 'complete',
+      unresolvedParticipantCount: 0,
+      requiredRedactionCount: 2,
+      completedRedactionCount: 2,
+      redactionReviewDigest: sha('redaction-review'),
+      title: 'Lesson review',
+      englishTranscriptText: expect.stringContaining('Today we learn a clear idea.'),
+      classTopic: 'Berachos',
+      mishnahReferences: ['Berachos 1:1'],
+      occurredAt: captureEvidence.capturedAt,
+      durationMs: 3_828_000,
       approvedByAdminId: actor.principalId,
       artifacts: expect.arrayContaining([
         expect.objectContaining({ kind: 'trim' }),
@@ -418,6 +437,103 @@ describe('P20 acceptance contract', () => {
     }
   });
 
+  it('fails closed on legacy seed JSON and incomplete participant, redaction, or library metadata', () => {
+    const fixture = approvedPublicationFixture();
+    const review = fixture.version.publicationApproval!.participantReview;
+    const reviewArtifact = fixture.version.artifacts.find(
+      ({ kind }) => kind === 'review_material',
+    )!;
+    const reviewPayload = reviewArtifact.payload as Record<string, unknown>;
+    const cases = [
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          contentId: undefined,
+        } as unknown as ContentProcessingVersion,
+      },
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          publicationApproval: {
+            ...fixture.version.publicationApproval!,
+            participantReview: undefined,
+          },
+        } as unknown as ContentProcessingVersion,
+      },
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          publicationApproval: {
+            ...fixture.version.publicationApproval!,
+            participantReview: {
+              ...review,
+              participantReviewState: 'pending' as const,
+              unresolvedParticipantCount: 1,
+            },
+          },
+        },
+      },
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          publicationApproval: {
+            ...fixture.version.publicationApproval!,
+            participantReview: {
+              ...review,
+              completedRedactionCount: review.requiredRedactionCount - 1,
+            },
+          },
+        },
+      },
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          publicationApproval: {
+            ...fixture.version.publicationApproval!,
+            contentVersionDigest: 'f'.repeat(64),
+          },
+        },
+      },
+      {
+        ...fixture,
+        version: withArtifactPayload(fixture.version, reviewArtifact.id, {
+          ...reviewPayload,
+          classTopic: '',
+        }),
+      },
+    ];
+    for (const invalid of cases) {
+      expect(() => buildApprovedForPublicationProjection(invalid)).toThrow();
+    }
+  });
+
+  it('rejects approval until the persisted participant review is complete and redactions reconcile', () => {
+    const data = prepared();
+    const artifacts = createDraftArtifacts({ ...data, occurredAt: now });
+    const participantReview = participantReviewEvidence(data.version);
+    expect(() =>
+      approveProcessingVersion({
+        actor,
+        version: { ...data.version, state: 'needs_review', artifacts },
+        expectedVersion: data.version.version,
+        privacyReviewConfirmed: true,
+        captureEvidence,
+        participantReviewEvidence: {
+          ...participantReview,
+          participantReviewState: 'pending',
+          unresolvedParticipantCount: 1,
+          completedRedactionCount: 1,
+        },
+        occurredAt: '2026-07-28T22:10:00.000Z',
+      }),
+    ).toThrow('participant and redaction review evidence');
+  });
+
   it('OTV2-CONTENT-233-OBS-CAPTURE gates local deletion on controlled OBS evidence', () => {
     expect(validateControlledCapture(captureEvidence, source)).toEqual(captureEvidence);
     expect(localCaptureDeletionDecision(captureEvidence, source)).toEqual({
@@ -448,6 +564,7 @@ describe('P20 acceptance contract', () => {
     expect(OT_TRANSCRIBE_1_OPERATION.model).toBe('gpt-4o-transcribe');
     expect(OT_LEARNING_DRAFT_1_OPERATION).toMatchObject({
       model: 'gpt-4.1-mini-2025-04-14',
+      schemaVersion: 'OT-LEARNING-DRAFT-SCHEMA-2',
       strict: true,
       webSearch: false,
       externalTools: false,
@@ -466,7 +583,8 @@ function approvedPublicationFixture() {
     version: { ...data.version, state: 'needs_review', artifacts },
     expectedVersion: data.version.version,
     privacyReviewConfirmed: true,
-    participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+    captureEvidence,
+    participantReviewEvidence: participantReviewEvidence(data.version),
     occurredAt: '2026-07-28T22:10:00.000Z',
   });
   return {
@@ -478,5 +596,46 @@ function approvedPublicationFixture() {
     version,
     source,
     captureEvidence,
+  };
+}
+
+function participantReviewEvidence(
+  version: ContentProcessingVersion,
+): ContentParticipantReviewEvidence {
+  return {
+    evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-1',
+    accountKey: version.accountKey,
+    productKey: version.productKey,
+    contentVersionId: version.id,
+    sourceId: version.sourceId,
+    occurrenceId: version.contentId,
+    participantSetVersion: 'participant-set-v1',
+    participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+    participantReviewState: 'complete',
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount: 2,
+    completedRedactionCount: 2,
+    redactionReviewDigest: sha('redaction-review'),
+    reviewedByAdminId: actor.principalId,
+    reviewedAt: '2026-07-28T22:08:00.000Z',
+  };
+}
+
+function withArtifactPayload(
+  version: ContentProcessingVersion,
+  artifactId: string,
+  payload: unknown,
+): ContentProcessingVersion {
+  return {
+    ...version,
+    artifacts: version.artifacts.map((artifact) =>
+      artifact.id === artifactId
+        ? {
+            ...artifact,
+            payload,
+            payloadDigest: processingSha256(JSON.stringify(payload)),
+          }
+        : artifact,
+    ),
   };
 }

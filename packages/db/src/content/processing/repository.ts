@@ -1,5 +1,4 @@
 import type {
-  ApprovedForPublicationProjection,
   ApprovedForPublicationProjectionParams,
   ContentProcessingCommandReceipt,
   ContentProcessingRepository,
@@ -9,6 +8,7 @@ import type {
   ContentProcessingVersion,
   ControlledCaptureEvidence,
   ProcessingArtifact,
+  SourceCompleteApprovedForPublicationProjection,
 } from '../../../../contracts/src/content/processing/index.ts';
 import {
   buildApprovedForPublicationProjection,
@@ -33,7 +33,7 @@ export function createContentProcessingRepository(
 ): ContentProcessingRepository & {
   getApprovedForPublicationProjection(
     params: ApprovedForPublicationProjectionParams,
-  ): Promise<ApprovedForPublicationProjection | null>;
+  ): Promise<SourceCompleteApprovedForPublicationProjection | null>;
 } {
   return {
     getApprovedForPublicationProjection: async (params) => {
