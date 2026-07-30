@@ -15,11 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: d2f7c554d2e3aa55c0621882b3591fb18a7c8818
+controller_authorization_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
 next_action: >-
-  I36 claim c698da98 is reconciled as the exact runtime-triplet-only child of release 36dca384. Under unchanged claim
-  4ec8712e and RELEASE_INTEGRATOR lease 2ed546f8 through 2026-07-30T05:45:23Z, merge only queued P29 aa7b3638
-  then P30 772d4783 with ancestry preserved and run combined focused, typecheck, lint, format, secret, scope,
-  ancestry, and zero-effect gates. Central steward application, candidate freeze, provider inspection, deployment,
-  sends, and external effects remain unauthorized.
+  Final implementation source release 42068ace is independently audited; all 35 current implementation heads are
+  now ancestors and the merge queue is empty. F02 may atomically claim only safe migrations 2245 through 2249,
+  and P28 may atomically claim only P17 reminder routing. Product edits remain withheld until each exact claim is
+  reconciled. P17/P18/P21 migration duties remain blocked pending corrected requests. Candidate freeze, provider
+  inspection, deployment, sends, and external effects remain unauthorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

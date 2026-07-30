@@ -12,11 +12,11 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T04:25:30Z'
-last_heartbeat_at: '2026-07-30T03:55:30Z'
-controller_authorization_sha: d2f7c554d2e3aa55c0621882b3591fb18a7c8818
+lease_expires_at: '2026-07-30T04:32:00Z'
+last_heartbeat_at: '2026-07-30T04:02:00Z'
+controller_authorization_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
 ready_entry_payload_digest: null
-state_based_on_head_sha: d2f7c554d2e3aa55c0621882b3591fb18a7c8818
+state_based_on_head_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -994,6 +994,9 @@ verification:
   - cleared the consumed merge queue, mirrored migration allocations 2239 through 2244 with next ordinal 2245, and recorded all six exact migration steward results applied and acknowledged without any provider or external effect
   - independently inventoried all 35 ready-for-review source refs against integration 36dca384; 33 exact remote heads are ancestors and only disjoint dependency-valid P29 aa7b3638 and P30 772d4783 remain
   - independently reconciled I36 claim c698da98 as the exact runtime-triplet-only child of release 36dca384 with claim/READY/lease/control bindings, pair digest 48f35adf, triplet digest 8f77c68b, clean remote equality, and effects 0/0/0
+  - audited eight pending migration duties and admitted only collision-free dependency-ordered F02 ordinals 2245 through 2249; withheld P17, P18, and P21 pending corrected ownership/request semantics
+  - audited and admitted P28 only for the integrated P17 reminder-routing request under a fresh COMMUNICATION_FOUNDATION claim with zero effect authority
+  - independently audited final source release 42068ace with ordered P29/P30 ancestry, exact 15/14 merge scopes, exact 32-path claim-to-release delta, pair/triplet digests 613dc658/c715a94a, released lease, 70 focused passes, and effects 0/0/0
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

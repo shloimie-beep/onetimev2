@@ -1553,3 +1553,21 @@ secret, ancestry, scope, and effects `0/0/0` gates. Update only I36 runtime
 metadata to release lease `2ed546f8-d65b-4fe3-b86c-042d441e3015`,
 push, remote-verify, and stop for C00 audit. Do not apply steward requests,
 inspect providers, deploy, send, or perform an external effect.
+
+Final source release `42068ace48fe1a93302ce7d5533e11803b526d5b`
+is independently audited; all 35 implementation heads are ancestors and
+MERGE is empty.
+
+Resume F02 from exact `cd2d7c2f` under READY `5ab53779`, claim `0e98de00`,
+and only the MIGRATION_AUTHORITY/SCHEMA_CONTRACT leases through
+`2026-07-30T06:01:19Z`. Its first push may change only the F02 runtime
+triplet. After C00 reconciliation, it may implement only ordinals 2245–2249
+for P19, P20, P28, P08, and P09 in that dependency order. Do not reserve an
+ordinal for P17, P18, or P21.
+
+Resume P28 from exact `f891f16e` under READY `48da940a`, claim `42599e59`,
+and COMMUNICATION_FOUNDATION lease `ac74a2a9` through
+`2026-07-30T06:01:19Z`. Its first push may change only the P28 runtime
+triplet. After C00 reconciliation, implement only integrated request
+P17-REMINDER-ROUTING-001 within P28-owned additive paths. No provider call,
+send, deployment, or external effect is authorized.

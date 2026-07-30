@@ -1846,3 +1846,17 @@ and effects `0/0/0` pass. C00 consumed READY and rebound both merge targets
 to the exact claim; rebound payloads are P29 `d26853a6` and P30 `e005f5c0`.
 I36 may merge P29 then P30 only, run combined gates, release the lease, and
 stop for audit.
+
+Final source release `42068ace48fe1a93302ce7d5533e11803b526d5b`
+passed independent audit. P29 merge `4f4a11e3` has exact 15-path scope; P30
+merge `3033f13b` has exact 14-path scope; release metadata is an exact I36
+runtime triplet and the claim-to-release delta is 32 paths. State/handoff
+digest `613dc658`, triplet digest `c715a94a`, 70/70 focused tests, typecheck,
+lint, format, YAML, secret, ancestry, scope, released lease, clean remote
+equality, and effects `0/0/0` pass. All 35 implementation heads are now
+ancestors; MERGE is empty.
+
+READY now contains only F02 digest `5ab53779` for safe migrations 2245–2249
+and P28 digest `48da940a` for P17 reminder routing. Both first pushes are
+runtime-triplet-only atomic claims. P17/P18/P21 migration work is withheld
+pending corrected immutable requests and ownership semantics.
