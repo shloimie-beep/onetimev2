@@ -159,9 +159,10 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
     async saveReceipt(receipt) {
       const result = await client.query(
         `INSERT INTO onetime.content_publication_receipts (
-           account_key, product_key, operation, idempotency_key, request_hash, content_id,
+           account_key, product_key, operation, idempotency_key, request_hash,
+           content_id, content_version_id, publication_generation,
            approval_projection_digest, receipt_json, committed_at
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::timestamptz)
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::timestamptz)
          ON CONFLICT (account_key, product_key, operation, idempotency_key) DO NOTHING`,
         [
           receipt.accountKey,
@@ -170,6 +171,8 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
           receipt.idempotencyKey,
           receipt.requestHash,
           receipt.contentId,
+          receipt.contentVersionId,
+          receipt.publicationGeneration,
           receipt.approvalProjectionDigest,
           JSON.stringify(receipt),
           receipt.committedAt,
@@ -186,7 +189,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
            operation, idempotency_key, request_hash, state, intent_json, created_at
          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
                    $14::jsonb, $15::timestamptz)
-         ON CONFLICT (intent_id) DO NOTHING`,
+         ON CONFLICT (account_key, product_key, intent_id) DO NOTHING`,
         [
           intent.intentId,
           intent.accountKey,
@@ -396,7 +399,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
              content_version_id, publication_generation, approval_projection_digest,
              assignment_version, active, assignment_json
            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb)
-           ON CONFLICT (assignment_id) DO NOTHING`,
+           ON CONFLICT (account_key, product_key, assignment_id) DO NOTHING`,
           [
             assignment.assignmentId,
             assignment.accountKey,
@@ -422,7 +425,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
              active, projection_json, created_at
            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
                      $12::jsonb, $13::timestamptz)
-           ON CONFLICT (projection_id) DO NOTHING`,
+           ON CONFLICT (account_key, product_key, projection_id) DO NOTHING`,
           [
             projection.projectionId,
             projection.accountKey,
@@ -449,7 +452,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
              approval_projection_digest, delivery_state, notice_json, created_at
            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
                      $13::jsonb, $14::timestamptz)
-           ON CONFLICT (notice_id) DO NOTHING`,
+           ON CONFLICT (account_key, product_key, notice_id) DO NOTHING`,
           [
             notice.noticeId,
             notice.accountKey,
@@ -535,6 +538,7 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
         resume.studentId,
         resume.householdId,
         resume.contentId,
+        resume.contentVersionId,
         resume.publicationVersion,
         resume.positionMs,
         resume.version,
@@ -546,9 +550,10 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
         const result = await client.query(
           `INSERT INTO onetime.student_content_resume (
              account_key, product_key, student_id, household_id, content_id,
-             publication_version, position_ms, version, approval_projection_digest,
+             content_version_id, publication_version, position_ms, version,
+             approval_projection_digest,
              resume_json, updated_at
-           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::timestamptz)
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb, $12::timestamptz)
            ON CONFLICT (account_key, product_key, student_id, content_id) DO NOTHING`,
           values,
         );
@@ -558,17 +563,18 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       const result = await client.query(
         `UPDATE onetime.student_content_resume
             SET household_id = $4,
-                publication_version = $6,
-                position_ms = $7,
-                version = $8,
-                approval_projection_digest = $9,
-                resume_json = $10::jsonb,
-                updated_at = $11::timestamptz
+                content_version_id = $6,
+                publication_version = $7,
+                position_ms = $8,
+                version = $9,
+                approval_projection_digest = $10,
+                resume_json = $11::jsonb,
+                updated_at = $12::timestamptz
           WHERE account_key = $1
             AND product_key = $2
             AND student_id = $3
             AND content_id = $5
-            AND version = $12`,
+            AND version = $13`,
         [...values, expectedVersion],
       );
       requireOne(result.rowCount, 'student_content_resume_conflict');

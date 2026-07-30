@@ -405,6 +405,7 @@ export function saveStudentResume(input: {
       input.existing.productKey !== input.record.productKey ||
       input.existing.householdId !== input.principal.householdId ||
       input.existing.contentId !== input.record.contentId ||
+      input.existing.contentVersionId !== input.record.contentVersionId ||
       input.existing.approvalProjectionDigest !== input.record.approval?.evidence.projectionDigest)
   ) {
     throw failure('accessDenied', 'Resume state belongs to another Student scope.');
@@ -415,6 +416,7 @@ export function saveStudentResume(input: {
     studentId,
     householdId: input.principal.householdId,
     contentId: input.record.contentId,
+    contentVersionId: input.record.contentVersionId,
     publicationVersion: input.record.version,
     positionMs: input.positionMs,
     updatedAt: validInstant(input.occurredAt),
@@ -468,6 +470,7 @@ export function searchStudentLibrary(input: {
           resume.accountKey === record.accountKey &&
           resume.productKey === record.productKey &&
           resume.householdId === input.principal.householdId &&
+          resume.contentVersionId === record.contentVersionId &&
           resume.publicationVersion === record.version &&
           resume.approvalProjectionDigest === record.approval?.evidence.projectionDigest
             ? resume.positionMs
@@ -481,12 +484,16 @@ export function assertReceiptReplay(
   receipt: ContentPublicationReceipt,
   operation: ContentPublicationReceipt['operation'],
   requestHash: string,
-  contentId: string,
+  record: ContentPublicationRecord,
 ) {
   if (
     receipt.operation !== operation ||
     receipt.requestHash !== requestHash ||
-    receipt.contentId !== contentId
+    receipt.contentId !== record.contentId ||
+    receipt.contentVersionId !== record.contentVersionId ||
+    receipt.publicationGeneration !== record.publicationGeneration ||
+    receipt.approvalProjectionDigest !==
+      (record.approval?.evidence.projectionDigest ?? record.contentVersionDigest)
   ) {
     throw failure('conflict', 'Idempotency key was already used for a different request.');
   }

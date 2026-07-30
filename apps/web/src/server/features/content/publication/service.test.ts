@@ -142,6 +142,30 @@ describe('P21 content publication service', () => {
         binding: command(1, 'approval.key', 'a'),
       }),
     ).resolves.toMatchObject({ replay: true, record: { state: 'approved', version: 2 } });
+    const approvalReceiptKey = 'approve:approval.key';
+    const exactApprovalReceipt = memory.receipts.get(approvalReceiptKey)!;
+    expect(exactApprovalReceipt).toMatchObject({
+      contentVersionId: 'content_version_one',
+      publicationGeneration: 0,
+      approvalProjectionDigest: approvalEvidence().projectionDigest,
+    });
+    for (const mismatch of [
+      { contentVersionId: 'content_version_other' },
+      { publicationGeneration: 1 },
+      { approvalProjectionDigest: hash('9') },
+    ]) {
+      memory.receipts.set(approvalReceiptKey, { ...exactApprovalReceipt, ...mismatch });
+      await expect(
+        service.approve({
+          principal: admin,
+          contentId: 'content_one',
+          approvalId: 'approval_one',
+          policyVersion: 'content-publication-v2',
+          binding: command(1, 'approval.key', 'a'),
+        }),
+      ).rejects.toThrowError(/different request/i);
+    }
+    memory.receipts.set(approvalReceiptKey, exactApprovalReceipt);
     memory.approvedProjection = approvalEvidence({ sourceEvidenceDigest: hash('c') });
     await expect(
       service.approve({

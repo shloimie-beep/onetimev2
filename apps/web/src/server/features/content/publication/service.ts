@@ -67,7 +67,7 @@ export function createContentPublicationService(deps: {
         );
         const priorReceipt = await unit.findReceipt(scope, 'approve', binding.idempotencyKey);
         if (priorReceipt) {
-          assertReceiptReplay(priorReceipt, 'approve', binding.requestHash, input.contentId);
+          assertReceiptReplay(priorReceipt, 'approve', binding.requestHash, current);
           return { record: current, replay: true as const };
         }
         const next = approveContent({
@@ -130,12 +130,7 @@ export function createContentPublicationService(deps: {
           binding.idempotencyKey,
         );
         if (priorReceipt) {
-          assertReceiptReplay(
-            priorReceipt,
-            'record_published',
-            binding.requestHash,
-            input.contentId,
-          );
+          assertReceiptReplay(priorReceipt, 'record_published', binding.requestHash, current);
           return { record: current, replay: true as const };
         }
         const pendingProviderContext = current.pendingProviderOperationId
@@ -200,12 +195,7 @@ export function createContentPublicationService(deps: {
           binding.idempotencyKey,
         );
         if (priorReceipt) {
-          assertReceiptReplay(
-            priorReceipt,
-            'attach_occurrence',
-            binding.requestHash,
-            input.contentId,
-          );
+          assertReceiptReplay(priorReceipt, 'attach_occurrence', binding.requestHash, current);
           return { record: current, replay: true as const };
         }
         const canonicalOccurrence = await unit.getCanonicalGovernedOccurrence(
@@ -370,7 +360,7 @@ export function createContentPublicationService(deps: {
         });
         const priorReceipt = await unit.findReceipt(scope, 'save_resume', binding.idempotencyKey);
         if (priorReceipt) {
-          assertReceiptReplay(priorReceipt, 'save_resume', binding.requestHash, input.contentId);
+          assertReceiptReplay(priorReceipt, 'save_resume', binding.requestHash, record);
           if (!studentId) return unavailable();
           return (await unit.getResume(scope, studentId, input.contentId)) ?? unavailable();
         }
@@ -421,7 +411,7 @@ async function mutate(input: {
     );
     const priorReceipt = await unit.findReceipt(scope, input.operation, binding.idempotencyKey);
     if (priorReceipt) {
-      assertReceiptReplay(priorReceipt, input.operation, binding.requestHash, input.contentId);
+      assertReceiptReplay(priorReceipt, input.operation, binding.requestHash, current);
       return { record: current, replay: true as const };
     }
     const applied = input.apply(current, binding);
@@ -443,6 +433,8 @@ function receipt(
     productKey: record.productKey,
     operation,
     contentId: record.contentId,
+    contentVersionId: record.contentVersionId,
+    publicationGeneration: record.publicationGeneration,
     resultVersion: record.version,
     idempotencyKey: binding.idempotencyKey,
     requestHash: binding.requestHash,
