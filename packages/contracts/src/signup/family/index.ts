@@ -1,6 +1,11 @@
+import {
+  GHL_IDENTITY_CONTRACT_VERSION,
+  type GhlHouseholdProjection,
+  type GhlIdentitySubject,
+} from '../../communications/ghl-identity/index.ts';
 import type { RuntimeTier, VerificationEnvironmentId } from '../../state/index.ts';
 
-export const FAMILY_SIGNUP_CONTRACT_VERSION = '2.0.0' as const;
+export const FAMILY_SIGNUP_CONTRACT_VERSION = '2.1.0' as const;
 export const FAMILY_SIGNUP_OPERATION = 'public_family_signup' as const;
 export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH = 43 as const;
 export const FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH = 128 as const;
@@ -129,6 +134,24 @@ export interface FamilySignupAdultConsentChoices {
   parent_newsletter: boolean;
 }
 
+export interface FamilySignupGhlHandoff {
+  contract_version: '1.0.0';
+  target: 'p27_ghl_identity_sync';
+  target_contract_version: typeof GHL_IDENTITY_CONTRACT_VERSION;
+  operation_id: string;
+  local_commit_id: string;
+  local_commit_state: 'committed';
+  local_result_durable: true;
+  provider_failure_rolls_back_local_result: false;
+  subject: Extract<GhlIdentitySubject, { kind: 'adult' }>;
+  household: GhlHouseholdProjection;
+  provider_readback_required: boolean;
+  provider_effect_authorized: false;
+  message_delivery_authorized: false;
+  billing_effect_authorized: false;
+  student_contact_prohibited: true;
+}
+
 export interface FamilySignupOutboxIntent {
   intent_id: string;
   kind: 'ghl_adult_and_household_sync';
@@ -140,6 +163,7 @@ export interface FamilySignupOutboxIntent {
   dispatch_state: 'ready' | 'identity_review';
   preserve_adult_suppression: true;
   local_commit_required: true;
+  ghl_handoff: FamilySignupGhlHandoff;
 }
 
 export interface FamilySignupResult {
@@ -149,6 +173,8 @@ export interface FamilySignupResult {
   setup_email_required: false;
   provider_effects_completed_inline: 0;
   outbox_intent_ids: readonly string[];
+  ghl_handoff_state: 'ready' | 'readback_required' | 'identity_review' | 'not_applicable';
+  checkout_handoff_state: 'queued' | 'blocked_identity_review' | 'not_applicable';
   safe_message: string;
 }
 
@@ -179,4 +205,7 @@ export const FAMILY_SIGNUP_SECURITY_INVARIANTS = {
   optional_adult_consents_are_separate: true,
   optional_adult_consents_are_never_inferred: true,
   identity_review_blocks_post_expiry_checkout: true,
+  unavailable_provider_evidence_is_not_identity_ambiguity: true,
+  ghl_handoff_is_adult_only_and_non_effecting: true,
+  hosted_checkout_handoff_uses_highlevel_without_direct_stripe_mutation: true,
 } as const;

@@ -8,11 +8,13 @@ import {
   type FamilySignupScope,
 } from '../../../../../../../packages/contracts/src/signup/family/index.ts';
 import {
+  assertFamilySignupPassword,
   assertFamilySignupEnvelope,
   canonicalizeFamilySignupRequest,
   planFamilySignup,
   type CanonicalFamilySignupRequest,
   type ExistingFamilyLocalState,
+  type FamilySignupCommercialBillingPlan,
   type FamilySignupGhlEvidence,
   type FamilySignupRecoveryRecord,
 } from '../../../../../../../packages/domain/src/signup/family/index.ts';
@@ -43,9 +45,12 @@ export interface FamilySignupTransaction {
     password_hash: string;
     receipt: FamilySignupReceipt;
     outbox_intents: readonly FamilySignupOutboxIntent[];
+    commercial_billing: FamilySignupCommercialBillingPlan;
     session_creation_required: boolean;
-    ghl_identity_state: 'unlinked' | 'linked' | 'identity_review';
+    ghl_identity_state: 'unlinked' | 'linked' | 'readback_required' | 'identity_review';
     ghl_contact_ref_hash: string | null;
+    ghl_evidence_status: FamilySignupGhlEvidence['status'];
+    committed_at: string;
   }): Promise<void>;
 }
 
@@ -81,6 +86,7 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
       now: Date;
     }): Promise<FamilySignupResult> {
       assertFamilySignupEnvelope(input.scope, input.command);
+      assertFamilySignupPassword(input.command);
       const passwordFingerprint = await dependencies.fingerprintPasswordForIdempotency(
         input.command.password,
       );
@@ -159,15 +165,21 @@ export function createFamilySignupService(dependencies: FamilySignupServiceDepen
           result: plan.result,
           outbox_intents: plan.outbox_intents,
         };
+        if (!plan.commercial_billing) {
+          throw new Error('family_signup_commercial_plan_missing');
+        }
         await tx.commit({
           request_binding: canonical.request_binding,
           request: canonical.request,
           password_hash: passwordHash,
           receipt,
           outbox_intents: plan.outbox_intents,
+          commercial_billing: plan.commercial_billing,
           session_creation_required: plan.session_write_required,
           ghl_identity_state: plan.ghl_identity_state,
           ghl_contact_ref_hash: plan.ghl_contact_ref_hash,
+          ghl_evidence_status: plan.ghl_evidence_status,
+          committed_at: input.now.toISOString(),
         });
         return plan.result;
       });

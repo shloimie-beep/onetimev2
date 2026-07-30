@@ -28,7 +28,7 @@ describe('P08 family signup contract', () => {
   });
 
   it('keeps the Family form cardless and local-first', () => {
-    expect(FAMILY_SIGNUP_CONTRACT_VERSION).toBe('2.0.0');
+    expect(FAMILY_SIGNUP_CONTRACT_VERSION).toBe('2.1.0');
     expect(FAMILY_SIGNUP_OPERATION).toBe('public_family_signup');
     expect(FAMILY_SIGNUP_IDEMPOTENCY_KEY_MIN_LENGTH).toBe(43);
     expect(FAMILY_SIGNUP_IDEMPOTENCY_KEY_MAX_LENGTH).toBe(128);
@@ -88,6 +88,9 @@ describe('P08 family signup contract', () => {
       optional_adult_consents_are_separate: true,
       optional_adult_consents_are_never_inferred: true,
       identity_review_blocks_post_expiry_checkout: true,
+      unavailable_provider_evidence_is_not_identity_ambiguity: true,
+      ghl_handoff_is_adult_only_and_non_effecting: true,
+      hosted_checkout_handoff_uses_highlevel_without_direct_stripe_mutation: true,
     });
   });
 });
