@@ -1448,3 +1448,24 @@ PostgreSQL after exact migration 2239. Limit the final correction to the P16
 repository, its direct test, and runtime triplet. Do not edit migrations,
 contracts, domain roots, interfaces, steward requests, registrations,
 providers, deployment, sends, or external effects.
+
+P16 atomic weekday claim
+`79c745344e71c3b90a9fd7e569920e63a4d865cf` is reconciled as the exact
+runtime-triplet-only child of `c58ed7d6`. Resume it under unchanged claim
+`ebdca6e9-aa5b-411b-88fd-747089e869ce` and CLASSROOM_CORE lease
+`8c250e39-5c4d-4684-93ba-2ff373a1253a` through
+`2026-07-30T02:31:25Z`.
+
+Change exactly `packages/db/src/classes/core/repository.ts`,
+`tests/unit/classes/classroom-core-repository.test.ts`, and the P16 runtime
+triplet. Preserve public/domain weekdays `0..6`; encode Sunday `0` as database
+`7`, preserve `1..6`, decode database `7` back to Sunday `0` without
+reordering, reject absent/non-integer/out-of-range/duplicate sets before any
+query, and prove canonical `[0,1,2,3,4]` to database `[7,1,2,3,4]` and back
+through native PostgreSQL after exact migration 2239. Run focused tests,
+typecheck, lint, format, secret, diff/scope and native gates, release the lease,
+push a superseding final, remote-verify, and stop for independent audit.
+
+Do not edit migrations, contracts, domain weekday semantics, interfaces,
+steward requests, registrations, control, integration, providers, deployment,
+sends, or external effects.

@@ -1725,3 +1725,25 @@ control-state dependency used a working-tree raw digest instead of the
 canonical parsed-object digest. P16 remained exactly `c58ed7d6` and clean.
 The corrected READY above binds acquisition `a84c647b`, canonical
 control-state digest `c54becb3`, and payload digest `bfbe5b37`.
+
+## P16 weekday claim reconciliation
+
+P16 claim head `79c745344e71c3b90a9fd7e569920e63a4d865cf` passed
+independent reconciliation as the exact sole child of `c58ed7d6`. Its delta is
+exactly the P16 runtime triplet; all product, test, interface, steward-request,
+migration, registration, provider, and effect bytes remain unchanged. The
+corrected control/acquisition, canonical READY and control-state digests,
+claim, sole CLASSROOM_CORE lease, package/task/context, clean remote equality,
+and effects `0/0/0` bindings pass. C00 consumed the READY entry.
+
+Under unchanged claim `ebdca6e9-aa5b-411b-88fd-747089e869ce` and
+CLASSROOM_CORE lease `8c250e39-5c4d-4684-93ba-2ff373a1253a` through
+`2026-07-30T02:31:25Z`, P16 may now change exactly
+`packages/db/src/classes/core/repository.ts`,
+`tests/unit/classes/classroom-core-repository.test.ts`, and its runtime
+triplet. Preserve public/domain weekdays `0..6`; encode Sunday `0` as database
+`7`, preserve `1..6`, decode database `7` back to Sunday `0` without
+reordering, reject malformed sets before persistence, and prove canonical
+Sunday-through-Thursday roundtrip natively through exact migration 2239.
+Run focused/full task gates, release the lease, publish a superseding final,
+and stop for independent audit. No other path or external effect is authorized.

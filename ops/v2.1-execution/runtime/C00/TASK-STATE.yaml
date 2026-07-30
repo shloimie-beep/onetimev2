@@ -294,13 +294,12 @@ completed_steps:
 - issued only an atomic runtime-triplet renewal for the preserved dirty F02 draft under READY digest 635c8923, claim 2002fc61, and shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 4d52c050
 - independently reconciled F02 renewal claim 9daa5251 as an exact runtime-triplet child of 6a5e359c with remote proposal and migrations unchanged, all seven local draft paths byte-preserved, renewed authority exact, and effects zero
 remaining_steps:
-- reconcile P16's exact atomic weekday-encoding claim, then authorize only its task-owned repository conversion, direct test, and runtime evidence
 - independently audit the superseding P16 weekday final before admitting the ordered P16, P32, and F02 compatibility wave to I36
 - integrate and independently audit F02's exact six-migration Lease B release together with the accepted P16/P32 source corrections
 - integrate and independently audit the remaining governed migration leases before consolidated registrations and candidate freeze
 - resolve all remaining non-ancestral review heads and assigned steward duties before candidate freeze
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: P16 must fetch the containing control checkpoint, recompute READY digest bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5, and make an atomic first push changing only its runtime triplet under claim ebdca6e9-aa5b-411b-88fd-747089e869ce and CLASSROOM_CORE lease 8c250e39-5c4d-4684-93ba-2ff373a1253a. Product edits remain unauthorized until C00 reconciles that exact claim. F02 and P32 are independently accepted but held from integration. No migration, registration, provider action, deployment, send, or external effect is authorized.
+next_action: P16 claim 79c745344e71c3b90a9fd7e569920e63a4d865cf is reconciled under claim ebdca6e9-aa5b-411b-88fd-747089e869ce and CLASSROOM_CORE lease 8c250e39-5c4d-4684-93ba-2ff373a1253a through 2026-07-30T02:31:25Z. Change exactly packages/db/src/classes/core/repository.ts, tests/unit/classes/classroom-core-repository.test.ts, and the P16 runtime triplet to translate public/domain weekdays 0..6 to database ISO 1..7 and back without reordering, reject malformed sets before persistence, prove the canonical roundtrip natively through migration 2239, run task gates, release the lease, publish a superseding final, and stop. No migration, contract/domain, interface, steward, registration, provider, deployment, send, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -308,12 +307,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: a84c647b2926b782b4b9b4289389d8584293ebbe
+  current_control_parent_sha: ae24cef068b50576569eb190695feddc79ddecc6
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 927de189-2f89-45aa-8566-d73e64347ea3
-      observed_head: a84c647b2926b782b4b9b4289389d8584293ebbe
+      claim_id: a99f3592-b0ae-4a1f-a42f-a4229f6f6159
+      observed_head: ae24cef068b50576569eb190695feddc79ddecc6
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -402,10 +401,10 @@ orchestration:
     P16:
       branch: codex/v21-p16-class-series-occurrences
       claim_id: ebdca6e9-aa5b-411b-88fd-747089e869ce
-      observed_head: c58ed7d65f46783717901512d249202b2ec46614
+      observed_head: 79c745344e71c3b90a9fd7e569920e63a4d865cf
       authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
       lease_expires_at: '2026-07-30T02:31:25Z'
-      scheduling_state: weekday_encoding_compatibility_atomic_claim_ready
+      scheduling_state: weekday_encoding_compatibility_claim_reconciled_implementation_authorized
     P32:
       branch: codex/v21-p32-privacy-data-rights
       claim_id: null
@@ -979,6 +978,8 @@ verification:
   - rejected P16 integration pending a separate compatibility correction because native PostgreSQL still rejects the public/domain 0-through-6 weekday representation against migration 2237's ISO 1-through-7 constraint
   - stopped the first P16 weekday READY before any task edit after detecting its control-state dependency used a working-tree raw digest instead of the required canonical parsed-object digest
   - rebound the unused claim and lease to acquisition a84c647b with canonical control-state digest c54becb3 and issued corrected READY digest bfbe5b37; P16 remained exactly c58ed7d6, clean, and effects remained zero
+  - independently reconciled P16 weekday claim 79c74534 as the exact sole child of c58ed7d6 with only its runtime triplet changed, corrected control/READY/claim/lease bindings, preserved product/test/interface/steward/migration bytes, clean remote equality, and effects 0/0/0
+  - consumed the corrected P16 READY entry and authorized only repository weekday encode/decode, its direct test, and runtime evidence under the unchanged claim and CLASSROOM_CORE lease
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

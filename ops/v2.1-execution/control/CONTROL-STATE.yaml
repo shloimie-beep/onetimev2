@@ -15,13 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: fe0d60fa2807b02882390df960f3e75517672d11
+controller_authorization_sha: ae24cef068b50576569eb190695feddc79ddecc6
 next_action: >-
-  F02 final cd2d7c2f and P32 final 92a7ee63 passed independent exact-source and native compatibility audits and
-  are held for the next ordered I36 integration wave. P16 timing final c58ed7d6 also passed, but native proof exposed
-  a separate repository/schema weekday encoding conflict. Only P16's atomic runtime-triplet claim is now authorized
-  from exact head c58ed7d6 under READY digest bfbe5b37, claim ebdca6e9, and CLASSROOM_CORE lease 8c250e39.
-  Do not change product code in the first claim push. After C00 reconciliation, route only task-owned repository
-  weekday encoding/decoding, its direct test, and runtime evidence. No migration, contract/domain semantic,
+  P16 atomic weekday claim 79c74534 is reconciled under claim ebdca6e9 and CLASSROOM_CORE lease 8c250e39 through
+  2026-07-30T02:31:25Z. P16 may now change exactly packages/db/src/classes/core/repository.ts, its direct test
+  tests/unit/classes/classroom-core-repository.test.ts, and the P16 runtime triplet. Preserve public/domain 0..6
+  semantics; encode Sunday 0 as database 7 and decode 7 back to 0 without reordering; reject malformed sets before
+  persistence; prove the canonical roundtrip natively through migration 2239; run task gates; release the lease;
+  push a superseding final; and stop for independent audit. No migration, contract/domain, interface, steward,
   registration, merge, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

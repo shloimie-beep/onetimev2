@@ -774,20 +774,21 @@ tasks:
     interface_ready: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
     review: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
     classroom_repository_migration_compatibility_correction: c58ed7d65f46783717901512d249202b2ec46614
+    classroom_repository_weekday_encoding_compatibility_correction: 79c745344e71c3b90a9fd7e569920e63a4d865cf
   authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-  last_known_remote_head: c58ed7d65f46783717901512d249202b2ec46614
+  last_known_remote_head: 79c745344e71c3b90a9fd7e569920e63a4d865cf
   active_claim_id: ebdca6e9-aa5b-411b-88fd-747089e869ce
-  active_writer_id: null
+  active_writer_id: codex-p16-worker-ebdca6e9
   lease_expires_at: '2026-07-30T02:31:25Z'
-  last_heartbeat_at: '2026-07-30T01:01:25Z'
-  controller_authorization_sha: a84c647b2926b782b4b9b4289389d8584293ebbe
-  ready_entry_payload_digest: bfbe5b37da8dd4e6acb36c5d57ea68a365d81fae50a95c53bb738e7e07c70be5
+  last_heartbeat_at: '2026-07-30T01:31:38Z'
+  controller_authorization_sha: ae24cef068b50576569eb190695feddc79ddecc6
+  ready_entry_payload_digest: null
   interface_checkpoint_sha: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
   implementation_head_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: a84c647b2926b782b4b9b4289389d8584293ebbe
+    state: claimed
+    producer_task_id: P16
+    producer_head_sha: 79c745344e71c3b90a9fd7e569920e63a4d865cf
     canonical_candidate_digest: null
     interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
     integration_or_evidence_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
@@ -801,8 +802,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: a84c647b2926b782b4b9b4289389d8584293ebbe
-    transitioned_at: '2026-07-30T01:16:45Z'
+    state_based_on_control_head_sha: ae24cef068b50576569eb190695feddc79ddecc6
+    transitioned_at: '2026-07-30T01:33:16Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P16/status_proof
 - task_id: P17
   status: ready_for_review
