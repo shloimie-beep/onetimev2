@@ -1,45 +1,27 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: STOP
 
-Audit the terminal P18 launch-grant table-collision correction.
+P18 has pushed only a runtime-triplet atomic claim from exact head
+`b9ad947405de53c138561fd47b9d5c65a25f6b8b`.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p18-embedded-classroom
-Authoritative control ref: origin/codex/v21-control
-Task packet: ops/v2.1-execution/tasks/P18.yaml
-Task context: ops/v2.1-execution/contexts/P18-CONTEXT.md
-Task state: ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/P18/HANDOFF.md
+Containing control: `3757ee49b83027d69208f25b0f709d309d5c6c1a`
+State-basis control: `f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0`
+READY:
+`ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811`
+Control-state digest:
+`7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade`
 
-Fetch remote refs and verify that the final P18 branch head is a sole-parent
-child of correction claim checkpoint
-`d315c47ff9e616ef7909c6edce85a226c5e4fbec` and changes exactly:
+Claim: `baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4`
+EMBEDDED_CLASSROOM lease: `b84e8273-7109-435f-93a6-6d35b41678de`
+Lease expires: `2026-07-30T10:46:00Z`
+Phase: `P18_P17_disjoint_ownership_successor_request_correction_atomic_claim_only`
 
-- `packages/db/src/classroom/attendance/repository.ts`
-- `packages/db/src/classroom/attendance/repository.test.ts`
-- `packages/db/src/classroom/attendance/schema-contract.ts`
-- `ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-002.yaml`
-- `ops/v2.1-execution/runtime/P18/TASK-STATE.yaml`
-- `ops/v2.1-execution/runtime/P18/HANDOFF.md`
-- `ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md`
-
-Confirm `ready_for_review`, released lease, claim reconciliation
-`8241e5527b7cfbdf12cdeb0c3916fb259a6a7054`, and exact-request
-reauthorization `01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc`.
-
-Verify correction manifest
-`533b480bb3f7f71c2798a765d63abb3cd1d2200b4be6c5f4b85687ca72b88d51`,
-repository raw digest `fff7c15f…`, schema raw digest `f2437b95…` with version
-`1.0.1`, and `P18-migration-002` raw/canonical digests
-`d1151073…` / `e1423a8a…`. Confirm the repository regression exercises insert,
-load, bootstrap-consume, and reset against only
-`onetime.classroom_launch_grants_v21`.
-
-Confirm the protected legacy migration remains blob `7ee99d11…`, rejected
-`P18-migration-001` remains blob `5975b103…`, and effects remain `0/0/0`.
-P18 is complete and its lease is released. C00 audits and integrates this exact
-head; F02 independently adjudicates `P18-migration-002`. Do not allocate or
-write migration SQL, edit control/integration state, or perform provider/live
-effects.
+C00 must independently audit and reconcile the exact pushed claim before P18
+creates immutable `P18-migration-003` or edits any source. This checkpoint
+preserves every product, test, migration request, registration request,
+control, provider, deployment, send, and effect byte. Effects remain
+attempted `0`, succeeded `0`, reconciled `0`. P18 must stop.

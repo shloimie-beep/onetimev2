@@ -76,3 +76,37 @@ or write migration SQL.
 
 Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider,
 deployment, send, or live effect occurred.
+
+## P17-disjoint ownership successor-request correction atomic claim
+
+Containing control `3757ee49b83027d69208f25b0f709d309d5c6c1a` with
+state-basis control `f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0`
+authorizes only a runtime-triplet claim from exact P18 head
+`b9ad947405de53c138561fd47b9d5c65a25f6b8b`.
+
+READY
+`ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811`
+and state-basis control-state digest
+`7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade`
+were independently recomputed. Claim
+`baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4` is held under sole
+EMBEDDED_CLASSROOM lease `b84e8273-7109-435f-93a6-6d35b41678de` through
+`2026-07-30T10:46:00Z`.
+
+The prior P18 state/handoff pair is
+`442e4126fbeaf9e38a397414945844e2ca07b022aed67d1e9719600ced520669`;
+its runtime triplet is
+`d899d9c249b07c8aed4bd023447f1202d8569b4dcae46015bf2def1d7c75d793`.
+Integrated release `99fd8c33ea023e838d8ee9c993b5de52f4763e7f`
+contains exact P17 `7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c`.
+P18 remains sole owner of its four embedded-classroom tables; P17 owns five
+disjoint preparation tables and reuses only canonical `job_outbox` and
+`provider_operation_binding`.
+
+This checkpoint changes only P18 TASK-STATE, HANDOFF, and NEXT-PROMPT. It does
+not create `P18-migration-003` or edit any product, test, existing request,
+migration, control, provider, deployment, send, or effect byte. Effects remain
+`0/0/0`.
+
+C00 must independently audit and reconcile the exact pushed atomic claim before
+P18 creates the immutable successor request or edits any source. P18 must stop.
