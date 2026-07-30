@@ -2140,3 +2140,23 @@ pass. READY is empty. All merge target CAS fields are rebound to claim head
 P17 `1017f826`. I36 may merge those exact heads in that exact order, but must
 leave both P17 steward requests unapplied and migration ordinal 2250
 unallocated.
+
+I36 release `e2907b40` passes its exact ordered P31/P20/P17 merge ancestry,
+4/8/14-path first-parent scopes, exact 26-source/29-release scope, release
+pair/triplet `5c37f726`/`e2b84825`, 39/39 focused tests, workspace typecheck,
+full lint, unchanged 80 migrations through ordinal 2249, released lease,
+preserved and unapplied P17 successor requests, clean remote equality, and
+effects `0/0/0`. Admission is rejected only because top-level
+`remaining_steps` still says the completed commit/push/report are pending and
+top-level `out_of_scope_findings` still presents the corrected P31 lint issue
+as unresolved.
+
+Fresh I36 metadata-correction claim `27f0fe39` and RELEASE_INTEGRATOR lease
+`745aefd4` run through `2026-07-30T09:47:00Z` under READY `b793c181`. Its
+first push may change only the I36 runtime triplet to record the exact claim
+and lease while preserving the two stale fields, then must stop for C00
+reconciliation. After that, set `remaining_steps: []`, clear or explicitly
+resolve the stale top-level finding, preserve the historical failed lint
+command and later passing run, recompute the terminal pair/triplet, release
+the lease, push, and stop for audit. All source, merge, migration, request,
+control-ledger, provider, deployment, send, and effect bytes remain frozen.

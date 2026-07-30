@@ -2,8 +2,85 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+- task_id: I36
+  status: resume_ready
+  phase: P31_P20_P17_correction_release_runtime_metadata_correction
+  branch: codex/v21-integration
+  claim_mode: resume_existing
+  state_based_on_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+  authorized_start_sha: e2907b4086e65074a49717a840f45d53685b15f3
+  expected_existing_head: e2907b4086e65074a49717a840f45d53685b15f3
+  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
+  task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
+  dependency_heads_and_digests:
+    C00:
+      required_state: operational
+      observed_state: operational
+      observed_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+      control_state_digest: 39d11513c5436660ace30325f84cc70ceca419b180f7584156183612a018eae3
+    I36:
+      required_state: rejected_runtime_metadata_correction_only
+      observed_state: source_release_pass_terminal_runtime_metadata_stale
+      observed_task_head_sha: e2907b4086e65074a49717a840f45d53685b15f3
+      atomic_claim_head_sha: 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7
+      P31_merge_head_sha: e834523855ced654482552a5c5cda16767eb99d2
+      P20_merge_head_sha: bb4a13a39cfbe843647793775a8a07285b446d6a
+      P17_merge_head_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
+      release_state_handoff_digest: 5c37f7266467871e25dfa4a67750e8274cdaf54cf356bd99080064399d1fc66c
+      release_runtime_triplet_digest: e2b848250d5db1a981a9a7bb4be4a2f36a4db8723f2099d872a7c02db4d1882f
+      combined_source_path_count: 26
+      combined_release_path_count: 29
+      stale_remaining_steps:
+      - Commit and normally push this exact three-file I36 metadata-only terminal release.
+      - Report the pushed release head and evidence to C00, then stop.
+      stale_out_of_scope_finding: P31 _removedNamedApproval falsely recorded as unresolved after correction 839ec12b was merged and full lint passed.
+      released_prior_lease_id: dbef2b0e-c3c6-4ed9-a15f-f8fc0ae02dc7
+      released_prior_lease_at: '2026-07-30T08:32:46Z'
+      external_effects: 0/0/0
+    P31:
+      required_state: lint_correction_integrated_and_current_full_lint_passed
+      observed_state: lint_correction_integrated_and_current_full_lint_passed
+      observed_task_head_sha: 839ec12bb83317a63f1d064891fb2929a707f3ec
+      integration_merge_head_sha: e834523855ced654482552a5c5cda16767eb99d2
+      corrected_test_blob_sha256: b82cb8841fe138755b1bd59705d3eaf8cb2f4d5af34bd2bd473f1ed1a88b2eba
+    P17:
+      required_state: successor_requests_preserved_and_unapplied
+      observed_state: successor_requests_preserved_and_unapplied
+      observed_task_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+      P17_MIGRATION_002_raw_sha256: fa9868d91b12a30808f80a5233219011126ea9cde5571380c25058a53b2818c8
+      P17_SERVER_WORKER_REGISTRATION_002_raw_sha256: 375142acb5e58ac91c11c83721930f43f5b5bc4e9bc90a027669a80dd933d53a
+      successor_requests_applied: false
+  authorized_paths:
+  - ops/v2.1-execution/runtime/I36/HANDOFF.md
+  - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+  correction_directives:
+  - 'First push: change only the I36 runtime triplet to record this exact READY digest, fresh claim and lease; preserve both stale top-level fields and every non-runtime byte; push normally, verify remote equality, and stop for C00 reconciliation.'
+  - 'After reconciliation: set top-level remaining_steps to an empty list; preserve the correct C00-audit next_action; set top-level out_of_scope_findings to an empty list or an explicitly resolved historical record stating P31 correction 839ec12b is merged and current full lint passes.'
+  - 'Preserve the historical failed lint verification entry and its later passing run; update companion HANDOFF/NEXT-PROMPT only as needed to bind the superseding terminal metadata and derived pair/triplet.'
+  - 'Do not edit any of the 26 source paths, merge commits, migrations, requests, control ledgers, product or test bytes, providers, deployment, sends, or effects.'
+  writer_slot_leases:
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 745aefd4-8660-4a0b-8d43-852769ced512
+    holder_task_id: I36
+    holder_claim_id: 27f0fe39-785e-4cae-a707-de596a7e8500
+    state_based_on_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+    lease_issued_at: '2026-07-30T08:47:00Z'
+    lease_expires_at: '2026-07-30T09:47:00Z'
+    phase_scope: I36_P31_P20_P17_correction_release_runtime_metadata_correction_atomic_claim_only
+  effect_lock_leases: []
+  claim_id: 27f0fe39-785e-4cae-a707-de596a7e8500
+  lease_issued_at: '2026-07-30T08:47:00Z'
+  lease_expires_at: '2026-07-30T09:47:00Z'
+  heartbeat_interval_minutes: 30
+  prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
+  model: GPT-5.6-SOL
+  reasoning: XHIGH
+entry_payload_digests:
+  I36: b793c1816f3e150ec5b2e1d79b4e317388b0e61dcd92d58a2418ae17c563382d
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

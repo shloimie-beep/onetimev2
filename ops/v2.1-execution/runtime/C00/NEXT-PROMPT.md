@@ -1786,3 +1786,17 @@ YAML/secret/migration/diff/parent/scope gates; publish a runtime-triplet-only
 release final, release the lease, push normally, and stop for audit. Do not
 apply P17 requests, allocate migration 2250, inspect providers, deploy, send,
 or perform effects.
+
+I36 release `e2907b4086e65074a49717a840f45d53685b15f3` passes all code,
+ancestry, scope, test, lint, migration, lease, request, remote, and zero-effect
+gates but is rejected for two stale top-level TASK-STATE fields. Atomically
+claim only its runtime triplet under READY
+`b793c1816f3e150ec5b2e1d79b4e317388b0e61dcd92d58a2418ae17c563382d`,
+fresh claim `27f0fe39-785e-4cae-a707-de596a7e8500`, and RELEASE_INTEGRATOR
+lease `745aefd4-8660-4a0b-8d43-852769ced512` through
+`2026-07-30T09:47:00Z`. Preserve the stale fields on the first push, stop for
+C00 reconciliation, then set `remaining_steps: []` and clear or explicitly
+resolve the stale top-level P31 lint finding while preserving historical
+verification. Recompute runtime evidence, release the lease, push, and stop.
+Do not edit source, merges, migrations, requests, control ledgers, providers,
+deployment, sends, or effects.

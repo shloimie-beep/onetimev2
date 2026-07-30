@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T09:05:00Z'
-last_heartbeat_at: '2026-07-30T08:20:00Z'
-controller_authorization_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
+lease_expires_at: '2026-07-30T09:32:00Z'
+last_heartbeat_at: '2026-07-30T08:47:00Z'
+controller_authorization_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
 ready_entry_payload_digest: null
-state_based_on_head_sha: d4b22e69de04a364e9cd6e7732fbd02b2fb3c2ef
+state_based_on_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Rejected I36 release e2907b40 admission only for two stale top-level TASK-STATE fields: remaining_steps still described the already completed commit/push/report, and out_of_scope_findings still presented the already corrected P31 lint finding as unresolved; exact ancestry, 4/8/14-path scopes, 39/39 focused tests, typecheck, full lint, release pair/triplet 5c37f726/e2b84825, migration ordinal 2250 preservation, released lease, remote equality, and effects 0/0/0 pass.
+- Issued a runtime-triplet-only I36 metadata-correction READY b793c181 under fresh claim 27f0fe39 and RELEASE_INTEGRATOR lease 745aefd4 through 09:47:00Z; all 26 source paths, merge ancestry, migrations, requests, control ledgers, providers, deployment, sends, and effects remain frozen.
 - Independently reconciled I36 claim 1b0df6fa as the exact sole child of release 3cf78740 with runtime-triplet-only scope, canonical READY f04fd323, claim/lease and 4/8/14-path source bindings, claim pair/triplet e4e6b567/aadacfe0, preserved source/request bytes, remote equality, and effects 0/0/0.
 - Consumed I36 READY and rebound all three ordered merge target CAS fields to exact claim head 1b0df6fa with canonical payloads P31 951e3547, P20 a3c16a42, and P17 1017f826; steward application and external effects remain withheld.
 - Independently admitted corrected P31 839ec12b, P20 75137bf4, and P17 7f8a41bc finals after exact runtime-metadata re-audits, with disjoint 4/8/14-path deltas, source manifests 59afcf23/955f15a7/a6fc85d3, released task leases, clean remotes, and effects 0/0/0.
@@ -1122,6 +1124,7 @@ verification:
   - P20/P17 metadata claims 75abbd84/8d409a2d: passed exact sole-parent ancestry, runtime-triplet-only scopes, canonical READY/fresh-claim/lease bindings, preserved stale text and non-runtime bytes, manifest pairs/triplets, remote equality, consumed READY, and zero effects
   - P31/P20/P17 integration admission: passed exact final ancestry, remote equality, 4/8/14-path inventories, pairwise/release-side disjointness, merge-tree forecasts, artifact/runtime/source manifests, corrected metadata, released task leases, canonical merge/READY payloads, migration ordinal 2250 preservation, no steward application, and zero effects
   - I36 claim 1b0df6fa: passed sole-parent/runtime-triplet scope, READY/control/claim/lease/source/merge bindings, claim pair/triplet e4e6b567/aadacfe0, clean remote equality, consumed READY, rebound merge payloads, and zero effects
+  - I36 rejected release e2907b40: passed remote equality, sole-parent terminal release, ordered exact two-parent P31/P20/P17 merges, 4/8/14 scopes, exact 26-source/29-release paths, pair/triplet 5c37f726/e2b84825, preserved and unapplied P17 requests, 80 migrations through 2249 with next 2250, released lease, 39/39 focused tests, typecheck, full lint, and effects 0/0/0; failed only stale top-level remaining_steps and out_of_scope_findings runtime metadata
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
