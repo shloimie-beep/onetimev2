@@ -3,6 +3,32 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
+Current phase boundary: control parent
+`f2b4a9faefdb5f780c9b620fedb413d408d27a19`, integration
+`c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`, candidate null.
+
+Dispatch and reconcile exactly three disjoint writers:
+
+1. I36 consumes MERGE-QUEUE microbatch F02 `26234c47`, P20/P21 `a210c6cb`,
+   P08 `7ba18b92` in that order, preserves ancestry and exact merge bases, then
+   repairs only the four-function pg-mem compatibility harness and its
+   full-inventory regression.
+2. F04 fast-forwards `codex/v21-f04-household-identity` from `54a0ac28` to
+   `c0a1e04b` and implements only the v2.1 adult-session repository plus
+   owner-derived household label under READY claim `ac096257…`.
+3. P09 fast-forwards `codex/v21-p09-school-inquiry` from `33a21a45` to
+   `c0a1e04b` and implements only the PostgreSQL School repository and exact
+   `/api/v2.1/signup/school-inquiry` task-owned router under READY claim
+   `c18bb60c…`.
+
+After those terminals, independently audit and perform one C00 reconciliation.
+Then issue F03 session-runtime correction from the accepted F04 integration,
+queue Lane B/Lane C as the next source microbatch, and continue the producer
+adapter batches before central registration. Do not freeze a candidate while
+the real registration gaps remain. Do not acquire a provider lock, mutate a
+provider, deploy, change DNS, send, enroll, charge, execute a live migration,
+or activate customers.
+
 Continue One Time v2.1 task C00 from its remote checkpoint.
 
 Repository: shloimie-beep/onetimev2

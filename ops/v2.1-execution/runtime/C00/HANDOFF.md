@@ -2419,3 +2419,56 @@ requests byte-identical.
 
 No provider call, send, enrollment, charge, deployment, DNS change, live
 migration execution, candidate freeze, or external effect is authorized.
+# Accepted source microbatch 1 and bounded producer corrections — current handoff
+
+Remote control parent is
+`f2b4a9faefdb5f780c9b620fedb413d408d27a19`; remote integration remains
+clean at `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`; candidate is null.
+
+C00 independently admitted:
+
+- F02 terminal `26234c47e5bc92f4d3392d77d98bc3a758d25189`, exact five paths,
+  forward-only migration 2253, native PostgreSQL/pg-mem 84/84 replay and all
+  required negative probes;
+- P20/P21 terminal `a210c6cb2e0f1ea9901745e131140646e91935f9`,
+  exact twenty-path 27/8 publication projection source;
+- P08 implementation `1550e6682ff1bcacdea260d1b6b80ec231381ded`
+  and terminal `7ba18b92462bc610895f2eb06ef6addaba531b19`,
+  exact corrected Family transaction/session seam and three immutable
+  successor requests;
+- Lane B corrected implementation `0937404a24cb1c880afc1d1a8a555a29936e735b`
+  and terminal `fc16537da38e82bbd82f3210136145ed44988cd2`;
+- Lane C read-only terminal
+  `f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671`.
+
+I36 may now consume exactly three ancestry-preserving merge items, in order
+F02, P20/P21, P08, from exact target `c0a1e04b`, under claim
+`870b6724-6099-4aa1-aa65-219efc121daf` and RELEASE_INTEGRATOR lease
+`4929adfc-2383-4f16-bda9-04287e046333` through
+`2026-07-30T20:01:13Z`. It may additionally edit only
+`packages/db/src/index.ts`, the full-inventory migration-verification test, and
+its runtime triplet to register `btrim`, `length`, `cardinality`, and `md5` in
+pg-mem. No central feature registration or candidate freeze is authorized in
+this checkpoint.
+
+F04 may fast-forward its exact branch from `54a0ac28` to `c0a1e04b` and change
+only its v2.1 household-identity repository/test and runtime triplet under
+claim `ac096257-657d-40ab-88bb-80247126bf6b`. It must create/resolve/revoke
+v2.1 adult sessions without a migration and derive the household label from
+the exact owner adult identity, never from nonexistent
+`v21_households.display_name`.
+
+P09 may fast-forward its exact branch from `33a21a45` to `c0a1e04b` and change
+only its PostgreSQL School repository, task-owned router, focused tests, and
+runtime triplet under claim `c18bb60c-98f2-4448-b768-67fcafed9438`. The exact
+POST route is `/api/v2.1/signup/school-inquiry`; it creates no account, access,
+Student contact, nurture enrollment, WhatsApp send, or provider/billing
+effect.
+
+The I36 audit found zero of twenty-seven non-configuration registration
+requests legally edit-ready under the prior narrow path grant. This is a real
+product-composition gap, not a reason to freeze a candidate. The critical
+sequence is F04 → F03 → P08 → I36 for the Parent session, P09 → I36 for School,
+then Lane B/Lane C and the remaining producer-adapter batches. Legal remains a
+broad-release-only blocker. No provider lock is held and all external effects
+remain `0/0/0`.

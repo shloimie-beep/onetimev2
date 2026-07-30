@@ -985,9 +985,9 @@ items:
   status: assigned
   assigned_steward: F02
   target_checkpoint: F02_content_publication_projection_v2_2253_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+  acknowledgment_state_handoff_digest: 3d8d2efe445ac6c4f65816680ec4d75fcd81cc5136df3f496e3ba278a0ceb79c
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null
@@ -1030,6 +1030,51 @@ items:
   status: assigned
   assigned_steward: I36
   target_checkpoint: I36_next_shared_registration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P08-auth-household-002
+  request_digest: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+  requesting_task_id: P08
+  kind: auth_household_integration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_family_parent_session_checkpoint_after_F04_F03_P08
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P08-config-002
+  request_digest: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+  requesting_task_id: P08
+  kind: configuration_and_shared_tests
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_shared_configuration_checkpoint_2_after_family_session
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P08-registration-002
+  request_digest: 0b0b82567be04624d0facf501dbc9d5fb418d0d86b79462f6220e8d8b56856d3
+  requesting_task_id: P08
+  kind: server_client_worker_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_shared_registration_checkpoint_1_after_family_session
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null

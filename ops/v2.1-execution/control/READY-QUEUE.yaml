@@ -3,216 +3,124 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-- task_id: F02
-  lane: A
+- task_id: F04
+  lane: D-auth
   status: resume_ready
-  phase: content_publication_projection_v2_migration
-  branch: codex/v21-lane1-migration-correction
-  claim_mode: resume_phase_branch
-  state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+  phase: v21_adult_session_and_household_label_correction
+  branch: codex/v21-f04-household-identity
+  claim_mode: resume_phase_branch_fast_forward
+  state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
   authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-  expected_existing_head: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+  expected_existing_head: 54a0ac28b51d271aacab60003451dbcc66ffcac8
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
-  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  task_packet_digest: 8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5
+  task_context_digest: ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367
   dependency_heads_and_digests:
-    C00:
-      required_state: full_production_completion_convergence
-      observed_state: full_production_completion_convergence
-      observed_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-      control_state_digest: d5723b527ff1f48496bbcb8615f7874c1021d56c5792b007595732183ff3c0e4
     I36:
       required_state: current_integration
       observed_state: current_integration
       observed_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-    F02:
-      required_state: prior_semantic_fencing_correction_integrated
-      observed_state: prior_semantic_fencing_correction_integrated
-      observed_task_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
-      integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
-      immutable_2252_checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
-      next_migration_ordinal: 2253
-    P20_P21:
-      required_state: source_complete_projection_checkpoint_pushed
-      observed_state: source_complete_projection_checkpoint_pushed
-      source_implementation_head_sha: 38156528c1c022a0575db71426ce2cc8f2e20ab8
-      checkpoint_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
-      projection_field_count: 27
-      artifact_field_count: 8
-      focused_tests_passed: 42
-    authorized_requests:
-    - request_id: P21-MIGRATION-003
-      request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
-      raw_git_blob_sha256: 4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33
-      source_task_id: P21
-      source_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
-      source_path: ops/v2.1-execution/runtime/P21/steward-requests/P21-MIGRATION-003.yaml
-      ordinal: 2253
-      filename: 2253_v21_content_publication_projection_v2.sql
-    withheld_requests:
-    - P21-MIGRATION-002
-    withheld_reason: P21-MIGRATION-002 and migration 2252 are immutable historical predecessor evidence; only the exact forward-only P21-MIGRATION-003 successor may be implemented.
+    P08:
+      required_state: corrected_family_signup_source_admitted
+      observed_state: corrected_family_signup_source_admitted
+      source_implementation_head_sha: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+      terminal_metadata_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
+      successor_request_id: P08-auth-household-002
+      successor_request_raw_sha256: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
   authorized_paths:
-  - packages/db/migrations/2253_v21_content_publication_projection_v2.sql
-  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/F02/HANDOFF.md
-  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
-  - tests/integration/content/v21-content-publication-projection-v2-migration.test.ts
+  - packages/db/src/accounts/v21-household-identity-repository.ts
+  - packages/db/src/accounts/v21-household-identity-repository.test.ts
+  - ops/v2.1-execution/runtime/F04/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F04/HANDOFF.md
+  - ops/v2.1-execution/runtime/F04/NEXT-PROMPT.md
   correction_directives:
-  - Fast-forward the exact existing F02 phase branch from 39cacd4a to integration c0a1e04b before editing; a head mismatch or non-fast-forward is a collision stop.
-  - Implement only forward-only 2253_v21_content_publication_projection_v2.sql from immutable request P21-MIGRATION-003. Never edit, replace, amend, or reinterpret migration 2252 or P21-MIGRATION-002.
-  - Reconcile the F02 proposal through immutable 2252 and allocate exact ordinal 2253 with request digest 4c102308; C00 will mechanically mirror the proposal only after independent admission.
-  - Use CREATE OR REPLACE functions only for the exact 27-field projection, 8-field artifacts, digest parity, persisted P20 evidence binding, and all five existing validator call sites.
-  - Run fresh native PostgreSQL accept/replay and every requested malformed, stale, reordered, cross-scope, mismatch, and five-guard rejection probe. PGlite alone is insufficient.
-  - This is one complete bounded phase: one normal terminal push is permitted after all checks. Do not stop for a separate claim-only checkpoint unless a collision, expiry, or exact blocker occurs.
-  - Do not integrate, execute against staging or production, backfill, deploy, inspect or mutate providers, send, charge, freeze a candidate, or perform any external effect.
+  - Fast-forward the exact existing F04 branch from 54a0ac28 to integration c0a1e04b before editing; a head mismatch or non-fast-forward is a collision stop.
+  - Add the PostgreSQL v2.1 adult-session repository with create, resolve, and revoke operations against applied migration 2235; never edit or add a migration.
+  - Require exact owner/account/adult/Parent/household/runtime/environment/security-version bindings, active canonical access readback, unrevoked membership and session, and live idle/absolute deadlines.
+  - Persist only domain-separated access and refresh digests. Raw opaque session material stays server-only and must never enter rows, receipts, logs, URLs, or runtime evidence.
+  - Replace the nonexistent v21_households.display_name read with the exact owner v21_adult_identities.display_name join and deterministically derive '<owner> household' or '<owner> school'; household ID remains authoritative.
+  - Run focused repository tests and native PostgreSQL proof against unchanged 2235, then update the F04 runtime triplet once. No provider, deployment, DNS, message, billing, or live-database effect.
   writer_slot_leases:
-  - slot: MIGRATION_AUTHORITY
-    lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
-    holder_task_id: F02
-    holder_claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
-    state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-    lease_issued_at: '2026-07-30T17:03:38Z'
-    lease_expires_at: '2026-07-30T19:03:38Z'
-    phase_scope: forward_only_2253_projection_v2_migration_only
-  - slot: SCHEMA_CONTRACT
-    lease_id: e0a6dd90-820f-4625-9979-e057d0bdad1c
-    holder_task_id: F02
-    holder_claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
-    state_based_on_control_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-    lease_issued_at: '2026-07-30T17:03:38Z'
-    lease_expires_at: '2026-07-30T19:03:38Z'
-    phase_scope: exact_27_8_projection_validator_contract_only
+  - slot: ACCOUNT_HOUSEHOLD_IDENTITY
+    lease_id: ecf3aa70-8429-4846-ab39-c74816547e35
+    holder_task_id: F04
+    holder_claim_id: ac096257-657d-40ab-88bb-80247126bf6b
+    holder_writer_id: codex-f04-session-household-ac096257
+    state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+    lease_issued_at: '2026-07-30T18:01:13Z'
+    lease_expires_at: '2026-07-30T20:01:13Z'
+    phase_scope: v21_adult_session_persistence_and_household_label_only
   effect_lock_leases: []
-  claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
-  lease_issued_at: '2026-07-30T17:03:38Z'
-  lease_expires_at: '2026-07-30T19:03:38Z'
+  claim_id: ac096257-657d-40ab-88bb-80247126bf6b
+  lease_issued_at: '2026-07-30T18:01:13Z'
+  lease_expires_at: '2026-07-30T20:01:13Z'
   heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
+  prompt_path: ops/v2.1-execution/prompts/F04-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
-- task_id: F07
-  co_owner_task_id: P08
-  lane: B
+- task_id: P09
+  lane: D-school
   status: resume_ready
-  phase: full_landing_brand_correction
-  branch: codex/v21-lane3-landing-campaign
-  claim_mode: resume_phase_branch
-  state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+  phase: school_inquiry_repository_and_route_correction
+  branch: codex/v21-p09-school-inquiry
+  claim_mode: resume_phase_branch_fast_forward
+  state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
   authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-  expected_existing_head: 2650c75ea9a5edc222af8c61a6fed433b73ede28
+  expected_existing_head: 33a21a45005271f1bbe09c8587df1e52fac1a95a
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
-  task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
+  task_packet_digest: 191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8
+  task_context_digest: a79a242f32c782ee37ffe345b419a443e5ce22dacec10b2390958456fc8cfece
   dependency_heads_and_digests:
     I36:
       required_state: current_integration
       observed_state: current_integration
-      release_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+      observed_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    F07:
+      required_state: corrected_landing_school_route_contract_admitted
+      observed_state: corrected_landing_school_route_contract_admitted
+      terminal_head_sha: fc16537da38e82bbd82f3210136145ed44988cd2
+      exact_post_route: /api/v2.1/signup/school-inquiry
   authorized_paths:
-  - apps/web/public/assets/fonts/montserrat-OFL.txt
-  - apps/web/public/assets/fonts/montserrat-latin-800.woff2
-  - apps/web/public/assets/hero/landing-hero-desktop.webp
-  - apps/web/public/assets/hero/landing-hero-mobile.webp
-  - apps/web/public/assets/social/mishnayos-made-memorable.png
-  - apps/web/src/client/public/public-entry.ts
-  - packages/brand-system/manifest/one-time-brand.v1.json
-  - packages/brand-system/src/static.ts
-  - packages/brand-system/src/styles/exceptions.json
-  - packages/brand-system/src/styles/public.css
-  - packages/brand-system/src/tokens.css
-  - packages/brand-system/src/tokens.ts
-  - packages/domain/src/landing/content.ts
-  - scripts/build-public-pages.ts
-  - tests/accessibility/ot81-day-one-matrix.spec.ts
-  - tests/e2e/landing-signup.spec.ts
-  - tests/performance/ot81-day-one-performance.spec.ts
-  - tests/performance/public-performance.spec.ts
-  - tests/unit/brand-system/brand-system.test.ts
-  - tests/visual/ops07-visual-matrix.spec.ts
+  - packages/db/src/signup/school/repository.ts
+  - packages/db/src/signup/school/repository.test.ts
+  - apps/web/src/server/features/signup/school/router.ts
+  - apps/web/src/server/features/signup/school/router.test.ts
+  - ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P09/HANDOFF.md
+  - ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md
   correction_directives:
-  - 'Implement the complete public landing composition and exact campaign copy from the current full-production steer; no public deployment.'
-  - 'Preserve product tokens black #090909, yellow #FFD400, cyan #67E8F9, white, and Inter; remove the provisional Montserrat/#FFD21F token drift without changing unrelated product surfaces.'
-  - 'Route JOIN FREE to the compliant /signup Family form, preserve the exact server-synchronized free-period boundary and $67/month state, and include Family versus School, access, device, recording, legal, cancellation/refund, login, and support disclosures.'
-  - 'Run landing build, focused tests, accessibility, asset-reference checks, and 360x800, 390x844, tablet, and desktop screenshots; no fake Zoom screenshot or testimonial.'
+  - Fast-forward the exact existing P09 branch from 33a21a45 to integration c0a1e04b before editing; a head mismatch or non-fast-forward is a collision stop.
+  - Implement the PostgreSQL SchoolSignupRepository and a task-owned feature descriptor for exact POST /api/v2.1/signup/school-inquiry. Do not edit the central composer.
+  - Accept exactly required school_name, contact_first_name, contact_last_name, and email plus optional phone and note; reject extra account, role, access, portal, consent, campaign, and nurture fields before repository access.
+  - Persist one durable inquiry and one acknowledgment/manual-follow-up intent, deduplicate normalized-email retries, create no account/access/subscription, and perform no provider call, Student contact, campaign enrollment, WhatsApp send, or direct Stripe mutation.
+  - Run repository/router/service/contract tests, typecheck and focused lint, then update the P09 runtime triplet once. No deployment, DNS, provider, message, billing, or live-database effect.
   writer_slot_leases:
-  - slot: DESIGN_SYSTEM
-    lease_id: aad71ba0-80e9-4a59-beeb-a4776bca0d85
-    holder_task_id: F07
-    holder_claim_id: d34ee5e7-ad86-49be-ad1e-236592ad3a0b
-    state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
-    lease_issued_at: '2026-07-30T16:25:00Z'
-    lease_expires_at: '2026-07-30T18:25:00Z'
-    phase_scope: public_landing_and_brand_correction_only
+  - slot: PUBLIC_SIGNUP
+    lease_id: 45e4c80f-b3a7-445b-a888-0dbed3c3429e
+    holder_task_id: P09
+    holder_claim_id: c18bb60c-98f2-4448-b768-67fcafed9438
+    holder_writer_id: codex-p09-school-route-c18bb60c
+    state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+    lease_issued_at: '2026-07-30T18:01:13Z'
+    lease_expires_at: '2026-07-30T20:01:13Z'
+    phase_scope: school_inquiry_repository_router_and_focused_tests_only
   effect_lock_leases: []
-  claim_id: d34ee5e7-ad86-49be-ad1e-236592ad3a0b
-  lease_issued_at: '2026-07-30T16:25:00Z'
-  lease_expires_at: '2026-07-30T18:25:00Z'
+  claim_id: c18bb60c-98f2-4448-b768-67fcafed9438
+  lease_issued_at: '2026-07-30T18:01:13Z'
+  lease_expires_at: '2026-07-30T20:01:13Z'
   heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/F07-START-OR-RESUME.md
+  prompt_path: ops/v2.1-execution/prompts/P09-START-OR-RESUME.md
   model: GPT-5.6-SOL
-  reasoning: HIGH
-- task_id: P31
-  lane: C
-  status: resume_ready
-  phase: provider_readback_preflight
-  branch: codex/v21-lane2-ghl-email
-  claim_mode: resume_phase_branch
-  state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
-  authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-  expected_existing_head: 1e9f41a3af58d3385754961861a260d2746a5073
-  package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
-  task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
-  dependency_heads_and_digests:
-    I36:
-      required_state: current_integration
-      observed_state: current_integration
-      release_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-    P31:
-      required_state: communications_integrated
-      observed_state: communications_integrated
-      head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
-  authorized_paths:
-  - ops/v2.1-execution/runtime/P31/PROVIDER-PREFLIGHT-MATRIX.yaml
-  - ops/v2.1-execution/runtime/P31/GHL-WORKFLOW-PREFLIGHT-MATRIX.yaml
-  - ops/v2.1-execution/runtime/P31/AUTHORIZATION-GAPS.yaml
-  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P31/HANDOFF.md
-  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
-  correction_directives:
-  - 'Perform harmless read-only authentication and canonical identity readbacks only; record Connect/Reconnect once and continue independent providers.'
-  - 'Use exact GHL location pBSnOK2nkdxp6gf9Rg3o and accepted sender Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>; reject mismatched or unrelated connector resources as evidence.'
-  - 'Produce one provider matrix, one complete P31/V42 GHL workflow matrix, and one consolidated authorization-gap packet; no provider mutation, send, contact creation, enrollment, charge, deployment, DNS, or effect reservation.'
-  - 'Preserve email as launch channel, zero Student contacts and WhatsApp sends, one guardian email per household, School acknowledgment/manual follow-up only, and the GHL billing boundary.'
-  writer_slot_leases:
-  - slot: COPY_CATALOG
-    lease_id: 43f6f071-e111-489d-b2ed-2c8d6db7f948
-    holder_task_id: P31
-    holder_claim_id: 8e264a4e-d748-4f11-84f1-cfe78869dd18
-    state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
-    lease_issued_at: '2026-07-30T16:25:00Z'
-    lease_expires_at: '2026-07-30T18:25:00Z'
-    phase_scope: read_only_provider_preflight_and_task_runtime_only
-  effect_lock_leases: []
-  claim_id: 8e264a4e-d748-4f11-84f1-cfe78869dd18
-  lease_issued_at: '2026-07-30T16:25:00Z'
-  lease_expires_at: '2026-07-30T18:25:00Z'
-  heartbeat_interval_minutes: 30
-  prompt_path: ops/v2.1-execution/prompts/P31-START-OR-RESUME.md
-  model: GPT-5.6-SOL
-  reasoning: HIGH
+  reasoning: XHIGH
 - task_id: I36
   lane: D
   status: resume_ready
-  phase: shared_registration_checkpoint_1
+  phase: accepted_source_microbatch_1_and_migration_harness
   branch: codex/v21-integration
   claim_mode: resume_existing
-  state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+  state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
   authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
   expected_existing_head: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
@@ -223,53 +131,46 @@ ready:
     C00:
       required_state: full_production_completion_convergence
       observed_state: full_production_completion_convergence
-      observed_control_parent_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
-    F02:
-      required_state: semantic_fencing_correction_integrated
-      observed_state: semantic_fencing_correction_integrated
-      source_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
-      integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+      observed_control_parent_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+    source_microbatch:
+      F02: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+      P20_P21: a210c6cb2e0f1ea9901745e131140646e91935f9
+      P08: 7ba18b92462bc610895f2eb06ef6addaba531b19
+      order: F02_then_P20_P21_then_P08
   authorized_paths:
-  - apps/web/src/client/app/crm-entry.tsx
-  - apps/web/src/client/app/live-entry.tsx
-  - apps/web/src/client/app/portal-entry.tsx
-  - apps/web/src/server/app.ts
-  - apps/web/src/server/features/registry/index.ts
-  - apps/web/src/server/index.ts
-  - apps/worker/src/main/index.ts
-  - packages/contracts/src/index.ts
   - packages/db/src/index.ts
-  - packages/domain/src/index.ts
+  - tests/unit/db/migration-verification.test.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
   correction_directives:
-  - 'Apply only checkpoint 1 server/client/worker registrations and barrels after their exact producer corrections are admitted; preserve every immutable steward request identity and result.'
-  - 'Do not edit F02 migrations or Lane B landing paths; do not apply configuration, provider registry, deployment, branding, or public-asset checkpoints in this claim.'
-  - 'Keep P20 enrichment quarantined until its P21/migration/reload/participant-evidence blockers are corrected and independently admitted.'
-  - 'Run changed-area checks for each admitted source and one workspace-wide merged validation after the complete integration batch; do not freeze a candidate early.'
+  - Consume exactly the three MERGE-QUEUE items in order, preserve each source ancestry, verify each independently populated merge base and exact allowed-path delta, and stop on target drift or scope mismatch.
+  - After F02 lands, reconcile only the exact 2253 proposal/migration identity during this source checkpoint; do not execute any migration against staging or production.
+  - In createMemoryPool register exactly btrim(text), length(text), cardinality(text[]), and md5(text), and add one full-inventory read-only migration verification regression. Do not edit migration bytes.
+  - Do not apply central server/client/worker registrations, configuration checkpoint 2, provider/GHL registries, deployment, branding, or public-asset changes in this claim.
+  - Run the source-focused tests, full pg-mem migration replay, clean native PostgreSQL migration/order/checksum verification, scope/ancestry checks, and one terminal I36 runtime update. Do not freeze a candidate.
   writer_slot_leases:
   - slot: RELEASE_INTEGRATOR
-    lease_id: 16185d00-0770-4ddc-9af0-4cd4dfac51bd
+    lease_id: 4929adfc-2383-4f16-bda9-04287e046333
     holder_task_id: I36
-    holder_claim_id: 3daf5041-0aa0-426b-8ad8-d40ce36e0d85
-    state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
-    lease_issued_at: '2026-07-30T16:25:00Z'
-    lease_expires_at: '2026-07-30T18:25:00Z'
-    phase_scope: shared_registration_checkpoint_1_only
+    holder_claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+    holder_writer_id: codex-i36-source-microbatch-870b6724
+    state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+    lease_issued_at: '2026-07-30T18:01:13Z'
+    lease_expires_at: '2026-07-30T20:01:13Z'
+    phase_scope: accepted_source_microbatch_1_and_migration_harness_only
   effect_lock_leases: []
-  claim_id: 3daf5041-0aa0-426b-8ad8-d40ce36e0d85
-  lease_issued_at: '2026-07-30T16:25:00Z'
-  lease_expires_at: '2026-07-30T18:25:00Z'
+  claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+  lease_issued_at: '2026-07-30T18:01:13Z'
+  lease_expires_at: '2026-07-30T20:01:13Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
 entry_payload_digests:
-  F02: 3145d5b3fe237f0b9f62ae6ff6f5443a7f4f402c4322cc00f0c9d2183a59015f
-  F07: 5c3f77395001c337ea5eb9e8602f5369c77efdbe1dba70c77760e543c8de3fc2
-  P31: 63ac2cf72a6e376b2b58c9b4ecc3cae8a5ea7963541fa7d7fa9171266fc7c670
-  I36: c010024f345d2df9d2d0580cfa69a01f2a2872e34f7690da8117d57680e153f5
+  F04: e78da256b221d8fe55a650246e57210497b6cd00235f67b549049ba0dd127f44
+  P09: 5ca6d4c6fd4aea17c85584f9fad395ff7eeabfdae64255c7f998eb1357c036d7
+  I36: e41f439e29c387a3ad1bba69227559582d0e8b643b64a41ce935c693726fd9ad
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

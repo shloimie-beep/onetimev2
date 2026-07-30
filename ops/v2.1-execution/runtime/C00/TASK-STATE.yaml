@@ -12,11 +12,11 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-30T19:03:38Z'
-last_heartbeat_at: '2026-07-30T17:03:38Z'
-controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+lease_expires_at: '2026-07-30T20:01:13Z'
+last_heartbeat_at: '2026-07-30T18:01:13Z'
+controller_authorization_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
 ready_entry_payload_digest: null
-state_based_on_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+state_based_on_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
@@ -39,12 +39,25 @@ lean_completion_bindings:
     P21_MIGRATION_003_canonical_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
     P21_MIGRATION_003_raw_digest: 4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33
     F02_2253_claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
-    F02_2253_status: resume_ready
+    F02_2253_status: ready_for_review_pending_integration
     P31_provider_preflight_head_sha: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
     P31_provider_preflight_effects: 0/0/0
     F07_landing_implementation_head_sha: 092941f165c35779a987b4e4477cc436a961563e
     F07_landing_checkpoint_head_sha: 97108442bb75f1b30455a8658c2c7ab55f4d9e5f
     F07_landing_effects: 0/0/0
+    F02_2253_terminal_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+    P20_P21_terminal_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
+    P08_implementation_head_sha: 1550e6682ff1bcacdea260d1b6b80ec231381ded
+    P08_terminal_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
+    F07_landing_corrected_implementation_head_sha: 0937404a24cb1c880afc1d1a8a555a29936e735b
+    F07_landing_terminal_head_sha: fc16537da38e82bbd82f3210136145ed44988cd2
+    accepted_source_microbatch_1_expected_target_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    accepted_source_microbatch_1_order: F02_then_P20_P21_then_P08
+    I36_claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+    I36_release_integrator_lease_id: 4929adfc-2383-4f16-bda9-04287e046333
+    F04_claim_id: ac096257-657d-40ab-88bb-80247126bf6b
+    P09_claim_id: c18bb60c-98f2-4448-b768-67fcafed9438
+    active_writer_count_after_control_push: 3
   P21_scope_correction_integration:
     authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
     implementation_head_sha: 7b51bae186728351ff1cf93b1c02fcba893b1051
@@ -151,6 +164,12 @@ lean_completion_bindings:
       - preserve_immutable_P21_MIGRATION_002_and_superseded_registration_001_bytes
     provider_boundary: repository_only_no_provider_call_or_effect
 completed_steps:
+- Independently admitted F02 terminal 26234c47 with exact five-path scope, immutable 2252 preservation, exact forward-only 2253, 84/84 native PostgreSQL and pg-mem replay, all malformed/stale/cross-scope/mismatch/five-guard rejects, clean remote equality, released leases, and effects 0/0/0.
+- Independently admitted corrected P08 implementation 1550e668 and terminal 7ba18b92 with exact fourteen product/request paths plus runtime triplet, semantic contract 2.1.0 source, three raw/canonical immutable successor-request digests, 29 focused tests, native local transaction proof, clean remote equality, and effects 0/0/0.
+- Independently admitted Lane B terminal fc16537d, including exact School payload/route correction and post-boundary CTA semantics, after source-scope review, 5/5 contract/form assertions, clean remote equality, and no provider or deployment effect.
+- Independently admitted Lane C terminal f50d95ba as six read-only runtime paths covering fourteen providers and all V42 workflow cases with exact GHL location, confirmed-versus-unknown identity separation, and effects 0/0/0.
+- Proved the current I36 registration checkpoint is not yet admissible: zero of twenty-seven non-config requests are legally edit-ready under the existing grant, with concrete missing auth/session, School repository/router, job/provider, portal, publication, classroom, support, admin, communications, operations, and retirement adapters; candidate remains null.
+- Issued one three-writer phase boundary: F04 adult-session/household-label correction, P09 School repository/router correction, and ordered I36 source microbatch F02 then P20/P21 then P08 plus the exact four-function pg-mem harness repair.
 - Observed Lane B implementation 092941f1 and runtime checkpoint 97108442 at exact remote equality, exact two-commit ancestry from integration c0a1e04b, authorized landing/brand/test plus F07-runtime scope, reported build/typecheck, 7/7 browser/accessibility, 8/8 responsive captures, 2/2 performance, 4/4 brand assertions, and effects 0/0/0; independent semantic admission remains next.
 - Independently reconciled P20/P21 source-complete implementation 38156528 and its exact four-path successor-request checkpoint a210c6cb; recomputed P21-MIGRATION-003 canonical/raw digests 4c102308/4ab2d70e, confirmed immutable 2252 checksum 7981b9cf, and assigned only forward-only ordinal 2253 to F02 under disjoint migration/schema leases with zero effects.
 - Observed Lane C read-only checkpoint f50d95ba at exact remote equality and six authorized runtime paths with canonical GHL location confirmation, 14-provider/17-workflow/28-case matrices, no lock, and effects 0/0/0; independent artifact admission remains next.

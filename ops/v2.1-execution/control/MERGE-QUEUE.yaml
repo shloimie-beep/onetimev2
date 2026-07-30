@@ -1,8 +1,158 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: a8062c04-f30e-4f4b-98a5-06d35c2fcd15
+    kind: implementation
+    task_id: F02
+    source_branch: codex/v21-lane1-migration-correction
+    source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+    target_branch: codex/v21-integration
+    expected_target_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    source_delta_base_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    required_merge_base_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+    merge_after_heads: {}
+    allowed_paths:
+      - ops/v2.1-execution/runtime/F02/HANDOFF.md
+      - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+      - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+      - packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+    writer_slot_leases:
+      - slot: RELEASE_INTEGRATOR
+        lease_id: 4929adfc-2383-4f16-bda9-04287e046333
+        holder_task_id: I36
+        holder_claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+        holder_writer_id: codex-i36-source-microbatch-870b6724
+        state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+        lease_issued_at: '2026-07-30T18:01:13Z'
+        lease_expires_at: '2026-07-30T20:01:13Z'
+        phase_scope: accepted_source_microbatch_1_and_migration_harness_only
+    task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+    task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+    state_handoff_digest: 3d8d2efe445ac6c4f65816680ec4d75fcd81cc5136df3f496e3ba278a0ceb79c
+    runtime_triplet_digest: ae4c1e11888fba08fe8615f8239722c7fad94d0a0198a8b846dd3d50942c918f
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: 8c477048-274f-443f-aa14-2782d478bf1c
+    kind: implementation
+    task_id: P20_P21
+    source_branch: codex/v21-p20-publication-seed-enrichment
+    source_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
+    target_branch: codex/v21-integration
+    expected_target_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    source_delta_base_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+    required_merge_base_sha: 526f038412d7652451e519fae0f8ef857625029a
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
+    merge_after_heads:
+      F02: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+    allowed_paths:
+      - apps/web/src/client/app/admin/content/publication/model.test.ts
+      - apps/web/src/server/features/content/publication/service.test.ts
+      - apps/web/src/server/features/content/publication/service.ts
+      - apps/worker/src/runners/content-processing/runner.test.ts
+      - apps/worker/src/runners/content-processing/runner.ts
+      - ops/v2.1-execution/runtime/P21/HANDOFF.md
+      - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+      - ops/v2.1-execution/runtime/P21/steward-requests/P21-MIGRATION-003.yaml
+      - packages/contracts/src/content/processing/index.ts
+      - packages/contracts/src/content/publication/index.ts
+      - packages/db/src/content/processing/repository.test.ts
+      - packages/db/src/content/processing/repository.ts
+      - packages/db/src/content/processing/schema-contract.ts
+      - packages/db/src/content/publication/repository.test.ts
+      - packages/db/src/content/publication/repository.ts
+      - packages/domain/src/content/processing/content-processing.acceptance.test.ts
+      - packages/domain/src/content/processing/index.ts
+      - packages/domain/src/content/publication/lifecycle.ts
+      - packages/domain/src/content/publication/publication.test.ts
+    writer_slot_leases:
+      - slot: RELEASE_INTEGRATOR
+        lease_id: 4929adfc-2383-4f16-bda9-04287e046333
+        holder_task_id: I36
+        holder_claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+        holder_writer_id: codex-i36-source-microbatch-870b6724
+        state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+        lease_issued_at: '2026-07-30T18:01:13Z'
+        lease_expires_at: '2026-07-30T20:01:13Z'
+        phase_scope: accepted_source_microbatch_1_and_migration_harness_only
+    task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173ef550
+    task_context_digest: 36e4fb76ff399ae66d3ccd9f4e5851ec31395c247d80a3d7f4392bb8ad30858e
+    state_handoff_digest: fe16a918353885669997ad96e3318a5e37b19997a1d4ed474004668ace98de9d
+    runtime_triplet_digest: 6adba96d7478ddc44850c65b5e7677b17875f15c26fceb69a7a8ab470e965b1a
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: 02efc016-5da3-40c9-8829-b591a0617fd1
+    kind: implementation
+    task_id: P08
+    source_branch: codex/v21-p08-registration-server
+    source_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
+    target_branch: codex/v21-integration
+    expected_target_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    source_delta_base_head_sha: 9cb28a0078e3dfe814cfca34cf93000993416ce8
+    required_merge_base_sha: 9cb28a0078e3dfe814cfca34cf93000993416ce8
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
+    merge_after_heads:
+      F02: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+      P20_P21: a210c6cb2e0f1ea9901745e131140646e91935f9
+    allowed_paths:
+      - apps/web/src/server/features/signup/family/repository.test.ts
+      - apps/web/src/server/features/signup/family/repository.ts
+      - apps/web/src/server/features/signup/family/router.test.ts
+      - apps/web/src/server/features/signup/family/router.ts
+      - apps/web/src/server/features/signup/family/service.test.ts
+      - apps/web/src/server/features/signup/family/service.ts
+      - ops/v2.1-execution/runtime/P08/HANDOFF.md
+      - ops/v2.1-execution/runtime/P08/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P08/TASK-STATE.yaml
+      - ops/v2.1-execution/runtime/P08/steward-requests/P08-auth-household-002.yaml
+      - ops/v2.1-execution/runtime/P08/steward-requests/P08-config-002.yaml
+      - ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-002.yaml
+      - packages/contracts/src/signup/family/family-signup.contract.test.ts
+      - packages/contracts/src/signup/family/index.ts
+      - packages/domain/src/signup/family/index.ts
+      - packages/domain/src/signup/family/policy.test.ts
+      - packages/domain/src/signup/family/policy.ts
+    writer_slot_leases:
+      - slot: RELEASE_INTEGRATOR
+        lease_id: 4929adfc-2383-4f16-bda9-04287e046333
+        holder_task_id: I36
+        holder_claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+        holder_writer_id: codex-i36-source-microbatch-870b6724
+        state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+        lease_issued_at: '2026-07-30T18:01:13Z'
+        lease_expires_at: '2026-07-30T20:01:13Z'
+        phase_scope: accepted_source_microbatch_1_and_migration_harness_only
+    task_packet_digest: f411403a6f3f7d1915bf8a50fe40e50df3388ac3f82d083f9fa51450119864a1
+    task_context_digest: 60f6fc5fdabc94e0e6fb46e6b921e03ea4caec4dd64c7fedf5056b26683ec5bd
+    state_handoff_digest: 4605827ee19b5ce1590a17b7206d8937b9ac11895bb74eb542022910e6ae85e4
+    runtime_triplet_digest: 5ab55a75807c4da97f66feeb8a29f4d56ce24448d887c8707e41da581ec6e21d
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+item_payload_digests:
+  a8062c04-f30e-4f4b-98a5-06d35c2fcd15: 2ca43d1c2ca185807370b942068bac68c9429b81723f606ad4cf3da856affb03
+  8c477048-274f-443f-aa14-2782d478bf1c: 000a9caeb3e1688b708a6bc60463f52b6c0e6291be238661189598af7eac0166
+  02efc016-5da3-40c9-8829-b591a0617fd1: 79bf1eee547f951638630c6c3b22f2cc1056fd8e82d2c028662e331a1c9fe65b
 completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION

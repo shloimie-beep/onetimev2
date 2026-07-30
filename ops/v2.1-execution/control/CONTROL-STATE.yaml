@@ -18,18 +18,19 @@ candidate: null
 active_writer_limit: 4
 controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
 next_action: >-
-  Consume exact F02 successor READY after remote control publication. Fast-forward the F02 phase branch to integration
-  c0a1e04b and implement only forward-only migration 2253 from immutable request P21-MIGRATION-003 at checkpoint
-  a210c6cb. In parallel, independently admit Lane B head 97108442, Lane C head f50d95ba, and the active P08/P20
-  producer checkpoints, then apply the bounded I36 registration checkpoints. Candidate freeze and all provider mutation,
-  deployment, DNS, sends, charges, live migration execution, and customer activation remain gated.
+  Dispatch the three exact disjoint READY entries from this phase boundary. I36 consumes accepted-source microbatch 1 in
+  order F02 26234c47, P20/P21 a210c6cb, then P08 7ba18b92 and repairs only the four-function pg-mem compatibility
+  harness. In parallel F04 completes the v2.1 Parent-session/household-label repository correction and P09 completes the
+  durable School inquiry repository/router. Reconcile that batch before Lane B/Lane C integration or any central
+  registration. Candidate freeze and all provider mutation, deployment, DNS, sends, charges, live migration execution,
+  and customer activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: forward_only_2253_successor_ready
+  status: independently_admitted_pending_integration
   branch: codex/v21-lane1-migration-correction
-  source_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
-  integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+  source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+  expected_integration_parent_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
   successor_request_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
   successor_request_digest: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
   next_migration_ordinal: 2253
@@ -37,25 +38,25 @@ production_completion_lanes:
   provider_effects: prohibited
 - lane: B
   owner: F07_with_P08_public_entry
-  status: checkpoint_pushed_pending_independent_admission
+  status: independently_admitted_pending_next_microbatch
   branch: codex/v21-lane3-landing-campaign
-  implementation_head_sha: 092941f165c35779a987b4e4477cc436a961563e
-  expected_head_sha: 97108442bb75f1b30455a8658c2c7ab55f4d9e5f
+  implementation_head_sha: 0937404a24cb1c880afc1d1a8a555a29936e735b
+  expected_head_sha: fc16537da38e82bbd82f3210136145ed44988cd2
   scope: public_landing_brand_campaign_and_assets_only
   provider_effects: prohibited
 - lane: C
   owner: P31_provider_preflight
-  status: checkpoint_pushed_pending_independent_admission
+  status: independently_admitted_pending_next_microbatch
   branch: codex/v21-lane2-ghl-email
   expected_head_sha: f50d95ba82c7bbf6c21b88bd3ea5a85e116ab671
   scope: canonical_provider_and_GHL_workflow_readback_matrices
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: active_corrections_then_registration
+  status: accepted_source_microbatch_1_ready
   branch: codex/v21-integration
   expected_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-  scope: producer_admission_shared_registration_candidate_and_evidence_aggregation
+  scope: accepted_source_microbatch_1_migration_harness_then_producer_corrections_and_registration
   provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
