@@ -5,8 +5,8 @@ claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
 holder_writer_id: codex-c00-orchestrator-782440c2
 state_based_on_head_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
 claimed_at: '2026-07-30T16:25:00Z'
-last_heartbeat_at: '2026-07-30T18:44:51Z'
-lease_expires_at: '2026-07-30T20:44:51Z'
+last_heartbeat_at: '2026-07-30T19:30:53Z'
+lease_expires_at: '2026-07-30T21:30:53Z'
 released_at: null
 rule: >-
   C00 is serialized by normal fast-forward remote control-branch updates. Every invocation acquires or renews this lease

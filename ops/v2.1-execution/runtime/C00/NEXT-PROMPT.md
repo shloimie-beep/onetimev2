@@ -3,26 +3,42 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest source microbatch 2 instruction
+# Latest producer-correction dispatch
 
 Current control acquisition parent is
-`26f29aeb6734948dd8b80ab85a342831defaecc9`; exact integration target is
-`4bc8e7a84039394ffb0584deaccdff19eebaea9b`; candidate is null.
+`98e7b05c7d256d55fd8a4dbd829230e42303e67e`; exact integration base is
+`8634b2ab15df624576a88b31182ebdc68553ff74`; candidate is null.
 
-I36 consumes only READY `e41f2829...` and the exact MERGE-QUEUE items F04
-`a5868a95`, P09 `a64a0c03`, and F07/Lane B `fc16537d` in that order. Preserve
-all source ancestry and exact 5/7/18-path scopes. Use claim
-`77b3e5e2-bc2f-4c74-95c1-6bd61a4884a6` and RELEASE_INTEGRATOR lease
-`3043fafc-a550-487a-9109-76dc7373caff` through
-`2026-07-30T20:44:51Z`. Outside queued source paths, change only the I36
-runtime triplet. Release the lease, push normally, and stop for C00 audit.
+I36 source microbatch 2 is independently accepted at `8634b2ab`. It preserves
+the ordered F04/P09/F07 source ancestries at `98cc221f`, `3f9c699e`, and
+`1bedb166`, then publishes an exact three-path runtime terminal. The source
+scopes are 5/7/18, state/handoff digest is `08049868...`, triplet digest is
+`09837607...`, the 84-migration tree is unchanged, the integration lease is
+released, and effects are `0/0/0`.
 
-After reconciliation, dispatch disjoint F03 v2.1 host-cookie middleware and
-focused F04 ownership-transfer corrections for schema-correct exact-row-count
-revocation plus transferred-household session scoping. P08 Parent-session and
-P09 School central composition follow those producer gates. Candidate freeze,
-provider effects, deployment, DNS, sends, charges, live migration execution,
-and customer activation remain withheld.
+Dispatch exactly three disjoint READY entries from this control boundary:
+
+1. F02 uses claim `c6e15ead-7f47-46f0-aaea-6fe00cd4338b` and
+   MIGRATION_AUTHORITY lease `203f8836-7958-4791-afb0-764a289a9ac0` only to
+   publish the missing runtime-triplet acknowledgment for the already-proven
+   2250-2252 steward requests. It must not edit migration or product bytes.
+2. F04 uses claim `dba6e4fc-04d0-4245-94e8-cc722e73b013` and
+   ACCOUNT_HOUSEHOLD_IDENTITY lease `9e8691f9-a6c3-4386-9c1e-7aeef8db6578`
+   for exact eight-path ownership-transfer revocation atomicity, row-count,
+   rollback, sibling-household scope, and interface-checkpoint correction.
+3. F03 uses claim `01368f45-d6ea-4816-b70f-4b21ac418a83` and
+   IDENTITY_AUTH_ACCESS lease `343a0e56-33ee-4227-b4ee-d373d1d3f3a9` for the
+   exact five-path Parent host-cookie/session runtime.
+
+All three leases expire `2026-07-30T21:30:53Z`; all effect-lock lists are
+empty. Independently audit the terminals, integrate F02 acknowledgment first,
+F04 second, and F03 third, then bind the real runtime through P08 and the I36
+composer. Before applying P09-registration-001, supply its still-missing
+signed-out GET `/school` and Admin-authorized configuration surface. Do not
+mark that request or broad P08-registration-002 applied from narrow
+session/route composition alone. Candidate freeze, provider effects,
+deployment, DNS, sends, charges, live migration execution, and customer
+activation remain withheld.
 
 # Superseded prior phase instruction
 

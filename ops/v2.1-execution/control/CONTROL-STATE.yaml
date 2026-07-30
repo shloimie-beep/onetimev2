@@ -16,14 +16,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
+controller_authorization_sha: 98e7b05c7d256d55fd8a4dbd829230e42303e67e
 next_action: >-
-  Dispatch I36 accepted-source microbatch 2 from integration 4bc8e7a8 in exact order F04 a5868a95, P09 a64a0c03, then
-  Lane B/F07 fc16537d. Preserve all three source ancestries and edit only the I36 runtime triplet outside queued source
-  paths. After that release, dispatch disjoint F03 v2.1 host-cookie middleware and the focused F04 ownership-transfer
-  revocation-column and household-session-scope corrections before P08 session composition or any central registration.
-  Candidate freeze and all provider mutation, deployment, DNS, sends, charges, live migration execution, and customer
-  activation remain gated.
+  From audited integration 8634b2ab, dispatch three exact disjoint claims: F02 runtime-only acknowledgments for the
+  already-integrated 2250-2252 migration steward requests, F04 ownership-transfer revocation atomicity and
+  transferred-household session scope, and F03 v2.1 Parent host-cookie/session runtime. Integrate F02 acknowledgment
+  first, F04 correction second, and F03 correction third after independent terminal review. Then bind the real runtime
+  through P08 and I36 central composition. Candidate freeze and all provider mutation, deployment, DNS, sends, charges,
+  live migration execution, and customer activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -39,10 +39,12 @@ production_completion_lanes:
   provider_effects: prohibited
 - lane: B
   owner: F07_with_P08_public_entry
-  status: independently_admitted_queued_microbatch_2
+  status: integrated_and_reconciled
   branch: codex/v21-lane3-landing-campaign
   implementation_head_sha: 0937404a24cb1c880afc1d1a8a555a29936e735b
   expected_head_sha: fc16537da38e82bbd82f3210136145ed44988cd2
+  integration_merge_sha: 1bedb166fdc18045b4d2630da10e208168c5eb4c
+  integration_release_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
   scope: public_landing_brand_campaign_and_assets_only
   provider_effects: prohibited
 - lane: C
@@ -54,11 +56,11 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: accepted_source_microbatch_2_ready
+  status: producer_corrections_dispatched
   branch: codex/v21-integration
-  prior_release_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
-  expected_head_sha: 4bc8e7a84039394ffb0584deaccdff19eebaea9b
-  scope: accepted_source_microbatch_2_F04_P09_LaneB_only
+  prior_release_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  expected_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
+  scope: F02_runtime_acknowledgment_F04_transfer_correction_F03_parent_session_runtime
   provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through

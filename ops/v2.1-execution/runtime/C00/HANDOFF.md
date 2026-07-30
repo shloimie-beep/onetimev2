@@ -2514,3 +2514,62 @@ authorize one focused F04 repository/domain correction with exact row-count
 and rollback proof plus a sibling-household regression, in parallel with the
 F03 v2.1 host-cookie middleware correction. Legal remains
 `production_broad` only. No provider lock is held and effects remain `0/0/0`.
+
+# Source microbatch 2 reconciliation and producer-correction dispatch
+
+Control acquisition parent is
+`98e7b05c7d256d55fd8a4dbd829230e42303e67e`; exact remote integration is
+`8634b2ab15df624576a88b31182ebdc68553ff74`; candidate remains null.
+
+C00 independently accepted I36 release `8634b2ab`. It has sole runtime parent
+`1bedb166` and preserves the exact ordered source merges:
+
+- F04 `a5868a95` at `98cc221f`, exact five paths;
+- P09 `a64a0c03` at `3f9c699e`, exact seven paths;
+- F07/Lane B `fc16537d` at `1bedb166`, exact eighteen paths.
+
+The final three-path I36 terminal gives a 33-path release. Its Git-byte
+state/handoff digest is
+`08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044`
+and runtime triplet is
+`098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0`.
+The remote/local/tracking heads match; the 84-migration tree is unchanged;
+the lease was released before expiry; effects are `0/0/0`. Changed-area
+evidence passed 9 files/41 tests, typecheck, production build, migration
+verification, lint/format/YAML/secret/diff gates, and 7/7 static landing
+browser/accessibility tests. The normal shared Playwright server still fails
+before a spec because its unchanged `e2e_class_occurrence` fixture omits
+required `join_opens_at`; the same error reproduces at base `4bc8e7a8`, so no
+fixture edit was made under the narrow integration grant.
+
+The 2250-2252 migration bytes, requests, native proof `39cacd4a`, and merge
+`526f0384` are exact. Their queue results cannot yet be truthfully marked
+applied because the historical F02 runtime bytes still exclude 2252 and do not
+acknowledge the corrected batch. C00 therefore issued only a three-path F02
+runtime acknowledgment claim:
+
+- claim `c6e15ead-7f47-46f0-aaea-6fe00cd4338b`;
+- MIGRATION_AUTHORITY lease
+  `203f8836-7958-4791-afb0-764a289a9ac0`;
+- READY `d8303358cef529777a0ced6ef7463261d0c622fca1ecb12dcd39b552dddf3841`.
+
+Two disjoint product corrections are authorized in parallel:
+
+- F04 claim `dba6e4fc-04d0-4245-94e8-cc722e73b013`, lease
+  `9e8691f9-a6c3-4386-9c1e-7aeef8db6578`, READY
+  `1c8541d27f0e96522bc877ef7b74023b8861168088cbd5457b4ca980e7e07a06`;
+- F03 claim `01368f45-d6ea-4816-b70f-4b21ac418a83`, lease
+  `343a0e56-33ee-4227-b4ee-d373d1d3f3a9`, READY
+  `04208bf0d5d926b5f08387688ffacf4818336feef7636b6dcf651c01c3a945f1`.
+
+All start from exact integration `8634b2ab`, expire
+`2026-07-30T21:30:53Z`, and have no effect authority or effect lock. After
+independent terminal review, integrate F02 acknowledgment, F04, then F03.
+P08 real-session binding and I36 production middleware/composer follow. P09
+central registration also remains open: immutable P09-registration-001
+requires signed-out GET `/school` and an Admin-authorized configuration
+surface in addition to the admitted POST descriptor. Do not over-claim either
+that request or the broader P08-registration-002 request from narrow
+session/route composition. Legal remains a `production_broad`-only gate. No
+provider lock is held and no provider, deployment, DNS, send, charge, live
+migration, or customer effect is authorized.

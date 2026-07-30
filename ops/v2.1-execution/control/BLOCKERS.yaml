@@ -10,9 +10,10 @@ blockers:
   - V43
   - R45
   safe_work_completed: >-
-    Current integration release 4bc8e7a8 was inspected read-only. All six required repository paths are absent, no
-    existing steward request names them, P34 owns only the non-fabricatable gate mechanism, and restricted CI, staging,
-    production-read-only, and operator-canary verification may continue.
+    Audited predecessor release 4bc8e7a8 was inspected read-only and remains an ancestor of current audited integration
+    8634b2ab. All six required repository paths are absent, no existing steward request names them, P34 owns only the
+    non-fabricatable gate mechanism, and restricted CI, staging, production-read-only, and operator-canary verification
+    may continue.
   required_authority_or_input:
   - Exact approved legal/terms-of-service.html
   - Exact approved legal/privacy-notice.html
@@ -75,13 +76,13 @@ blockers:
   - V37
   - R44
   safe_work_completed: >-
-    Corrected P08 source 1550e668/terminal 7ba18b92 are integrated at 4bc8e7a8. F04 terminal a5868a95 independently
-    passes exact Parent-session create/resolve/revoke persistence against unchanged migration 2235 and derives labels
-    from the owner AdultIdentity instead of nonexistent v21_households.display_name. F04 is queued first in source
-    microbatch 2. The active middleware still resolves only legacy sessions, so F03 and then P08/I36 composition remain.
+    Corrected P08 source 1550e668/terminal 7ba18b92 and F04 Parent-session terminal a5868a95 are integration ancestors of
+    audited release 8634b2ab. F04 passes exact create/resolve/revoke persistence against unchanged migration 2235 and
+    owner-derived household labels. The active middleware still resolves only legacy sessions. Exact disjoint F03
+    host-cookie/runtime and F04 transfer-correction claims are now authorized from 8634b2ab with zero external authority.
   required_authority_or_input:
-  - Integrate exact F04 terminal a5868a95
-  - Complete F03 host-cookie runtime using the same resolver, then wire P08 and I36
+  - Complete and integrate the exact F03 host-cookie runtime using the same F04 resolver
+  - Bind that runtime through P08, then install the same resolver in the I36 production middleware/composer
   - Pass real pre/post-expiry Parent-session middleware and inactive-route allowlist verification
   protection: Do not claim signup session establishment from row insertion alone, expose raw token material, rewrite migration 2235, or treat inactive access as an unauthenticated Parent.
   next_check: Re-evaluate after the ordered F04 then F03 then P08 then I36 correction chain.
@@ -98,13 +99,16 @@ blockers:
     Corrected P09 terminal a64a0c03 adds the concrete transactional PostgreSQL repository and task-owned exact POST
     /api/v2.1/signup/school-inquiry descriptor. Independent review passed its exact seven-path scope, 26 focused tests,
     typecheck, durable normalized-email deduplication, one local acknowledgment intent, and zero account, access,
-    Student, nurture, provider, WhatsApp, or Stripe effects. P09 and corrected landing terminal fc16537d are queued in
-    microbatch 2.
+    Student, nurture, provider, WhatsApp, or Stripe effects. P09 and corrected landing terminal fc16537d are exact
+    integration ancestors of audited release 8634b2ab. Immutable request P09-registration-001 also requires signed-out
+    GET /school and an Admin-authorized approved-school configuration surface; neither exists in the admitted P09 source,
+    so the request cannot truthfully be marked applied from central POST registration alone.
   required_authority_or_input:
-  - Integrate exact P09 terminal a64a0c03 and Lane B terminal fc16537d
-  - Register the reviewed descriptor in the next I36 central checkpoint and rerun the static production landing test
+  - Issue a bounded P09 producer correction or exact I36 implementation grant for signed-out GET /school and the
+    Admin-authorized configuration surface
+  - Register the complete reviewed surface in an I36 central checkpoint and rerun the static production landing test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
-  next_check: Re-evaluate after P09 correction admission and I36 route registration.
+  next_check: Re-evaluate after the complete P09 request surface and I36 route registration are independently admitted.
 - blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
   status: open
   scope: controlled_launch_candidate
@@ -116,13 +120,14 @@ blockers:
   - R44
   safe_work_completed: >-
     Independent review of F04 terminal a5868a95 confirmed its bounded Parent-session/label correction and also reproduced
-    a separate defect already present at integration base c0a1e04b and current integration 4bc8e7a8.
+    a separate defect already present at integration base c0a1e04b and audited integration 8634b2ab.
     persistAppliedOwnershipTransfer calls revokeIds with schema-incompatible columns under migration 2235.
     v21_adult_sessions uses revoke_reason; v21_billing_portal_sessions has no reason column and requires the canonical
     revoked state; v21_account_action_tokens uses action_token_id/revoked_at rather than
-    token_id/invalidated_at/invalidation_reason. A nonempty transfer revocation set would roll back.
+    token_id/invalidated_at/invalidation_reason. A nonempty transfer revocation set would roll back. Exact eight-path
+    F04 correction claim dba6e4fc is authorized from 8634b2ab under ACCOUNT_HOUSEHOLD_IDENTITY lease 9e8691f9.
   required_authority_or_input:
-  - After F04 source integration, correct only the existing repository/helper and focused tests against unchanged migration 2235
+  - Complete the exact authorized repository/domain correction and focused tests against unchanged migration 2235
   - Prove exact row counts, full rollback on stale or missing rows, and atomic nonempty adult-session, billing-session,
     and action-token revocation on PostgreSQL, including all three version increments and the adult updated_at advance
   protection: Do not alter migration 2235, weaken ownership-transfer atomicity, omit any revocation set, or treat empty-set tests as production proof.
@@ -140,10 +145,10 @@ blockers:
     Independent review found a second pre-existing transfer defect in the F04 domain logic. Outgoing Parent sessions
     are selected by account, Parent role, and unrevoked state, but not by the transferred household. A transfer can
     therefore revoke a sibling-household session even though locked specification section 4.4 requires independent
-    multi-household access.
+    multi-household access. The same exact eight-path F04 correction claim dba6e4fc is authorized from 8634b2ab.
   required_authority_or_input:
-  - After F04 source integration, require activeHouseholdId to equal the transferred household in both outgoing-session
-    selection and locked-inventory validation
+  - Require activeHouseholdId to equal the transferred household in both outgoing-session selection and locked-inventory
+    validation
   - Add a sibling-household regression proving unrelated sessions remain active through an otherwise successful transfer
   protection: Do not broaden revocation to every Parent session on the account or weaken the locked-inventory equality
     check.
