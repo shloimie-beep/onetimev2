@@ -11,13 +11,13 @@ type QueryCall = {
   values?: readonly unknown[];
 };
 
-function recordingPool() {
+function recordingPool(rowsForSql: (sql: string) => Record<string, unknown>[] = () => []) {
   const calls: QueryCall[] = [];
   const client = {
     query: async (sql: string, values?: readonly unknown[]) => {
       calls.push({ sql, ...(values ? { values } : {}) });
       return {
-        rows: [],
+        rows: rowsForSql(sql),
         rowCount: sql.includes('UPDATE onetime.class_occurrences') ? 0 : 1,
       };
     },
@@ -72,6 +72,28 @@ function occurrence(): ClassOccurrenceRecord {
   };
 }
 
+function databaseSeriesRow(recurrenceWeekdays: number[]) {
+  return {
+    account_key: 'account-1',
+    product_key: 'one-time',
+    class_series_key: 'series-1',
+    title: 'Class series',
+    series_state: 'active',
+    is_canonical: true,
+    timezone: 'Asia/Jerusalem',
+    local_start_time: '19:00:00',
+    duration_minutes: 60,
+    recurrence_weekdays: recurrenceWeekdays,
+    recurrence_starts_on: '2026-08-02',
+    teacher_profile_key: 'teacher-1',
+    embedded_classroom_required: true,
+    recording_enabled: false,
+    version: 1,
+    created_at: '2026-07-28T20:00:00.000Z',
+    updated_at: '2026-07-28T20:00:00.000Z',
+  };
+}
+
 describe('classroom core repository schedule compatibility', () => {
   it('persists a non-null series reminder derived from the local class time', async () => {
     const { calls, pool } = recordingPool();
@@ -83,6 +105,52 @@ describe('classroom core repository schedule compatibility', () => {
     expect(insert?.sql).toContain('reminder_local_time');
     expect(insert?.sql).toContain('reminder_local_time = EXCLUDED.reminder_local_time');
     expect(insert?.values?.[18]).toBe('23:45');
+  });
+
+  it('encodes canonical public weekdays to ISO database weekdays without reordering', async () => {
+    const { calls, pool } = recordingPool();
+    const repository = createClassroomCoreRepository(pool);
+
+    await repository.inTransaction((unit) =>
+      unit.saveSeries({ ...series(), weekdays: [0, 1, 2, 3, 4] }),
+    );
+
+    const insert = calls.find((call) => call.sql.includes('INSERT INTO onetime.class_series'));
+    expect(insert?.values?.[9]).toEqual([7, 1, 2, 3, 4]);
+  });
+
+  it('decodes ISO database weekdays to public weekdays without reordering', async () => {
+    const { pool } = recordingPool((sql) =>
+      sql.includes('FROM onetime.class_series') ? [databaseSeriesRow([7, 1, 2, 3, 4])] : [],
+    );
+    const repository = createClassroomCoreRepository(pool);
+
+    const stored = await repository.inTransaction((unit) =>
+      unit.getSeries({ accountKey: 'account-1', productKey: 'one-time' }, 'series-1'),
+    );
+
+    expect(stored?.weekdays).toEqual([0, 1, 2, 3, 4]);
+  });
+
+  it.each([
+    ['absent', undefined, 'must be an array'],
+    ['non-array', '0,1,2', 'must be an array'],
+    ['empty', [], 'at least one weekday'],
+    ['non-integer', [0, 1.5], 'only integers from 0 through 6'],
+    ['out-of-range', [0, 7], 'only integers from 0 through 6'],
+    ['duplicate', [0, 1, 0], 'must not contain duplicate weekdays'],
+  ])('rejects %s public weekdays before series persistence', async (_case, weekdays, message) => {
+    const { calls, pool } = recordingPool();
+    const repository = createClassroomCoreRepository(pool);
+    const invalidSeries = {
+      ...series(),
+      weekdays,
+    } as unknown as ClassSeriesRecord;
+
+    await expect(
+      repository.inTransaction((unit) => unit.saveSeries(invalidSeries)),
+    ).rejects.toThrow(message);
+    expect(calls.some((call) => call.sql.includes('INSERT INTO onetime.class_series'))).toBe(false);
   });
 
   it('persists occurrence reminder and joinable boundary derived from occurrence timing', async () => {

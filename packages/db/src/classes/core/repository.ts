@@ -32,6 +32,7 @@ function createUnit(client: Queryable): ClassroomCoreUnitOfWork {
     },
     saveSeries: async (series) => {
       const reminderLocalTime = classReminderLocalTime(series.localStartTime);
+      const recurrenceWeekdays = classWeekdaysForPersistence(series.weekdays);
       await client.query(
         `INSERT INTO onetime.class_series
            (class_series_key, account_key, product_key, title, series_state, is_canonical,
@@ -68,7 +69,7 @@ function createUnit(client: Queryable): ClassroomCoreUnitOfWork {
           series.timeZone,
           series.localStartTime,
           series.durationMinutes,
-          series.weekdays,
+          recurrenceWeekdays,
           series.startsOn,
           series.endsOn ?? null,
           series.teacherProfileId,
@@ -253,7 +254,7 @@ function mapSeries(row: Record<string, unknown>): ClassSeriesRecord {
     timeZone: String(row.timezone),
     localStartTime: String(row.local_start_time).slice(0, 5),
     durationMinutes: Number(row.duration_minutes),
-    weekdays: (row.recurrence_weekdays as number[]) ?? [],
+    weekdays: classWeekdaysFromPersistence(row.recurrence_weekdays),
     startsOn: dateOnly(row.recurrence_starts_on),
     ...(row.recurrence_ends_on ? { endsOn: dateOnly(row.recurrence_ends_on) } : {}),
     teacherProfileId: String(row.teacher_profile_key),
@@ -343,6 +344,39 @@ function classReminderLocalTime(localStartTime: string) {
   return `${String(Math.floor(reminderMinutes / 60)).padStart(2, '0')}:${String(
     reminderMinutes % 60,
   ).padStart(2, '0')}`;
+}
+
+function classWeekdaysForPersistence(value: unknown) {
+  return validClassWeekdays(value, 0, 6, 'Class series weekdays').map((weekday) =>
+    weekday === 0 ? 7 : weekday,
+  );
+}
+
+function classWeekdaysFromPersistence(value: unknown) {
+  return validClassWeekdays(value, 1, 7, 'Persisted class series weekdays').map((weekday) =>
+    weekday === 7 ? 0 : weekday,
+  );
+}
+
+function validClassWeekdays(value: unknown, minimum: number, maximum: number, field: string) {
+  if (!Array.isArray(value)) {
+    throw new Error(`${field} must be an array.`);
+  }
+  if (value.length === 0) {
+    throw new Error(`${field} must contain at least one weekday.`);
+  }
+  if (
+    !value.every(
+      (weekday): weekday is number =>
+        Number.isInteger(weekday) && weekday >= minimum && weekday <= maximum,
+    )
+  ) {
+    throw new Error(`${field} must contain only integers from ${minimum} through ${maximum}.`);
+  }
+  if (new Set(value).size !== value.length) {
+    throw new Error(`${field} must not contain duplicate weekdays.`);
+  }
+  return value;
 }
 
 function occurrencePersistenceTiming(
