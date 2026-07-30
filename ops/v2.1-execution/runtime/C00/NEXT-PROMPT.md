@@ -1934,3 +1934,33 @@ Communications is integrated and remotely clean at
 
 Candidate freeze, providers, live database execution, sends, enrollments,
 charges, deployment, DNS, and every external effect remain withheld.
+
+# Latest controlled-launch instruction
+
+Use exact remote integration
+`dd944eee39c314c562171c89c7350a6900ea2e6f`. P21 correction
+`705030f2d5163f95340a19dc42efd0f167259869` is admitted and integrated; do
+not re-audit or re-merge it. F02 `68e3c527` failed native semantic admission
+and must not be merged or executed.
+
+Before any new writer edits, state one short runtime-only table with four
+exclusive lanes:
+
+1. Lane 1 — integration, migrations, candidate, deployment, release manifests,
+   and shared generated outputs.
+2. Lane 2 — GHL/email readback and bounded configuration; no app or landing
+   files.
+3. Lane 3 — landing page, campaign content, and exact Drive asset files.
+4. Lane 4 — read-only launch-critical verification; defects return to owners.
+
+Then run the lanes concurrently. F02 receives one bounded correction covering
+the eleven recorded bypasses and newly admitted 2252. Lane 2 may start exact
+read-only inspection at GHL location `pBSnOK2nkdxp6gf9Rg3o`; acquire the
+provider effect lock only immediately before any later mutation. Lane 3 uses
+the verified Campaign v1 asset manifest and locked hero copy. Lane 4 prepares
+the smallest complete critical journey set.
+
+Legal remains a `production_broad` blocker only. No bulk send, Student contact,
+WhatsApp activation, real-customer charge, live migration, deployment, DNS
+change, or provider mutation may precede its exact dependency, candidate, and
+effect-lock gates.

@@ -1,3 +1,26 @@
+# Controlled-launch convergence — current handoff
+
+Integration is remotely clean at
+`dd944eee39c314c562171c89c7350a6900ea2e6f`. Exact P21 final
+`705030f2d5163f95340a19dc42efd0f167259869` was merged at
+`7adeaaa16fd4ed63a0374a36838010f88aeb5aa7` after two independent
+admissions, exact nine-path scope, byte-identical protected requests, source
+digest `1ddfb7f2…`, 17/17 focused tests, typecheck, and effects `0/0/0`.
+
+F02 final `68e3c527f46da71434be4a1c888b01efc396cef0` is rejected and unmerged.
+Although its mechanical evidence and clean tracked 82/82 replay passed, native
+PostgreSQL reproduced eleven launch-critical semantic bypasses across Zoom
+preparation, quarantine transitions, embedded live-session fencing, revocation,
+and attendance projections. Return it for one bounded correction, then add
+2252 only after the same negative probes fail closed.
+
+The next runtime mode is four exclusive lanes: Lane 1 owns integration,
+migrations, candidate, and release; Lane 2 owns GHL/email provider state; Lane
+3 owns landing/campaign assets; Lane 4 is read-only launch verification.
+Record the short ownership table in runtime coordination, not a new committed
+framework. Legal remains fail-closed only for broad release; controlled pilot
+preparation and operator canaries may continue.
+
 # C00 Handoff
 
 ## Identity

@@ -22,5 +22,26 @@ blockers:
   - Exact legal/legal-policy-manifest.json containing matching hashes, immutable versions, effective dates, named product-owner approval, and named qualified-legal-reviewer credential or firm and approval
   protection: Codex must not draft, infer, approve, substitute, or weaken the legal text or approval record.
   next_check: Re-evaluate only when the exact externally approved six-file bundle is supplied; until then fail production_broad closed.
+- blocker_id: F02-2250-2252-SEMANTIC-FENCING
+  status: open
+  scope: controlled_launch_candidate
+  owner: C00_and_F02
+  affected_tasks:
+  - F02
+  - P17
+  - P18
+  - P21
+  - V43
+  - R45
+  safe_work_completed: >-
+    Exact F02 remote 68e3c527 passed ancestry, six-path scope, request identity, checksums, lease release, and clean
+    tracked 82/82 replay, but was withheld from integration. Native PostgreSQL then reproduced eleven semantic bypasses;
+    no live database or external effect occurred.
+  required_authority_or_input:
+  - One bounded F02/P17/P18 correction for preview and confirmation evidence, exact roster/access versions, request-hash conflict handling, acceptance-unknown exits, active-session and revocation fencing, and immutable attendance-projection scope/evidence
+  - Fresh native negative probes rejecting every reproduced bypass
+  - Clean tracked migration inventory containing corrected 2250, 2251, and newly admitted 2252
+  protection: Do not merge 68e3c527 or execute its migrations against staging or production.
+  next_check: Re-evaluate immediately after the bounded correction final is pushed and independently audited.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.
