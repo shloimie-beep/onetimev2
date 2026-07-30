@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 const repoRoot = process.cwd();
 
 async function readRepoFile(filePath: string) {
-  return readFile(path.join(repoRoot, filePath), 'utf8');
+  return (await readFile(path.join(repoRoot, filePath), 'utf8')).replace(/\r\n/g, '\n');
 }
 
 describe('Rabbi launch email design', () => {
