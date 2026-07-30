@@ -491,3 +491,64 @@ change, or send occurred. Effects remain `0/0/0`. The lease was released at
 
 C00 must audit the exact pushed terminal runtime final and reconcile control
 while F02 completes the already authorized 2250-2252 migration batch.
+
+## Accepted source microbatch 1 and migration-harness release
+
+Control `26f29aeb6734948dd8b80ab85a342831defaecc9`, based on sole parent
+`f2b4a9faefdb5f780c9b620fedb413d408d27a19`, authorized one bounded
+source microbatch from exact integration
+`c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`. Claim
+`870b6724-6099-4aa1-aa65-219efc121daf` held the sole RELEASE_INTEGRATOR
+lease `4929adfc-2383-4f16-bda9-04287e046333`.
+
+The canonical READY digest `e41f439e29c387a3ad1bba69227559582d0e8b643b64a41ce935c693726fd9ad`
+and all three merge-item payload, source-runtime, source-remote, merge-base,
+and exact-scope bindings were independently reproduced before any write.
+The ancestry-preserving merge sequence is:
+
+1. F02 `26234c47e5bc92f4d3392d77d98bc3a758d25189` merged at
+   `131413297b7eb6510a1e12d44337e576406cafae` with exact parents and five
+   first-parent paths.
+2. P20/P21 `a210c6cb2e0f1ea9901745e131140646e91935f9` merged at
+   `4c2d9a6c51ac3106d4f9cf8426d4d35f3fca92ee` with exact parents and
+   twenty first-parent paths.
+3. P08 `7ba18b92462bc610895f2eb06ef6addaba531b19` merged at
+   `e1dce668fb452a4c1892a33ea6d9c37061603aef` with exact parents and
+   seventeen first-parent paths.
+
+Harness implementation `dd819ae6188a89a38f3339f816afa4b206fd0860` changes only
+`packages/db/src/index.ts` and
+`tests/unit/db/migration-verification.test.ts`. It registers the exact
+pg-mem signatures `btrim(text)`, `length(text)`, `cardinality(text[])`, and
+`md5(text)`, and proves that verification of the fully applied repository
+inventory issues only reads and leaves the observed schema and ledger
+unchanged.
+
+Migration 2253 was reconciled from the admitted F02 proposal without changing
+the global control mirror. Immutable 2252 remains SHA-256 `7981b9cf...`.
+Migration 2253 is exact raw Git SHA-256 `b96fae17...`, checkout/native
+SHA-256 `b969f187...`, and repository-runner pg-mem SHA-256 `3d86765f...`.
+The inventory is 84 unique migrations through ordinal 2253, with next ordinal 2254.
+
+Postmerge verification passed thirteen focused files and 78 tests, including
+seven migration-verification tests; workspace typecheck; full ESLint with zero
+findings; focused Prettier; YAML parsing; secret scan across 3100 text files;
+exact queue digests, parents, ancestry, scopes, and remote fencing. A fresh
+isolated localhost PostgreSQL 16.14 cluster applied 84/84, replayed all 84 as
+already applied, and verified with zero pending migrations before being
+stopped. The complete pg-mem first apply and read-only verification also pass
+84/84. A second pg-mem `runMigrations` call still reaches the already recorded
+`CREATE TABLE IF NOT EXISTS onetime.schema_migrations` AST-coverage
+limitation; no admitted migration or newly registered function fails.
+
+P21-MIGRATION-003 and the three P08 successor requests remain immutable
+evidence only and unapplied. No central feature registration, configuration
+checkpoint, provider registry, candidate, deployment, DNS, message, billing,
+live-database, or provider action occurred. Effects remain `0/0/0`. The lease
+was released at `2026-07-30T18:31:38Z`, before its
+`2026-07-30T20:01:13Z` expiry.
+
+C00 must independently audit the pushed terminal runtime head and its sole
+parent `dd819ae6188a89a38f3339f816afa4b206fd0860`, reconcile control and the
+2253 allocation mirror, and issue a new exact I36 authorization before any
+further merge or shared-state change. I36 must stop.

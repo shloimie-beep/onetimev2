@@ -37,26 +37,26 @@ dependency_heads:
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: 705030f2d5163f95340a19dc42efd0f167259869
 status: ready
-phase: P21_publication_scope_correction_integrated
+phase: accepted_source_microbatch_1_and_migration_harness_complete
 claimed_by: null
-claim_time: null
-claim_id: null
-lease_id: null
-lease_issued_at: null
-lease_expires_at: null
-lease_released_at: null
-last_heartbeat_at: '2026-07-30T13:17:21Z'
-controller_authorization_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
-latest_valid_observed_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
-reconciled_state_based_on_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+claim_time: '2026-07-30T18:01:13Z'
+claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+lease_id: 4929adfc-2383-4f16-bda9-04287e046333
+lease_issued_at: '2026-07-30T18:01:13Z'
+lease_expires_at: '2026-07-30T20:01:13Z'
+lease_released_at: '2026-07-30T18:31:38Z'
+last_heartbeat_at: '2026-07-30T18:31:38Z'
+controller_authorization_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
+latest_valid_observed_control_head_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
+reconciled_state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
 ready_consumed_by_control_head_sha: null
 ready_consumed_state_based_on_control_head_sha: null
-ready_authorization_control_head_sha: null
-ready_entry_state_based_on_control_head_sha: null
-ready_entry_payload_digest: null
-claim_mode: direct_C00_controlled_launch_reconciliation
-expected_existing_head_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
-lease_phase_scope: null
+ready_authorization_control_head_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
+ready_entry_state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+ready_entry_payload_digest: e41f439e29c387a3ad1bba69227559582d0e8b643b64a41ce935c693726fd9ad
+claim_mode: resume_existing
+expected_existing_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+lease_phase_scope: accepted_source_microbatch_1_and_migration_harness_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -1268,8 +1268,103 @@ completed_steps:
     0430520f-6a94-4550-a1ea-f01f8d5173b2 at 2026-07-30T05:43:58Z.
     No steward or central state was applied, no provider was inspected or
     mutated, and no deployment, send, or external effect occurred.
+accepted_source_microbatch_1_binding:
+  containing_control_head_sha: 26f29aeb6734948dd8b80ab85a342831defaecc9
+  state_based_on_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+  authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  claim_id: 870b6724-6099-4aa1-aa65-219efc121daf
+  lease_id: 4929adfc-2383-4f16-bda9-04287e046333
+  lease_issued_at: '2026-07-30T18:01:13Z'
+  lease_expires_at: '2026-07-30T20:01:13Z'
+  lease_released_at: '2026-07-30T18:31:38Z'
+  ready_entry_payload_digest: e41f439e29c387a3ad1bba69227559582d0e8b643b64a41ce935c693726fd9ad
+  source_merges:
+    F02:
+      merge_id: a8062c04-f30e-4f4b-98a5-06d35c2fcd15
+      merge_payload_digest: 2ca43d1c2ca185807370b942068bac68c9429b81723f606ad4cf3da856affb03
+      source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
+      source_delta_base_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+      merge_result_head_sha: 131413297b7eb6510a1e12d44337e576406cafae
+      source_path_count: 5
+      state_handoff_digest: 3d8d2efe445ac6c4f65816680ec4d75fcd81cc5136df3f496e3ba278a0ceb79c
+      runtime_triplet_digest: ae4c1e11888fba08fe8615f8239722c7fad94d0a0198a8b846dd3d50942c918f
+    P20_P21:
+      merge_id: 8c477048-274f-443f-aa14-2782d478bf1c
+      merge_payload_digest: 000a9caeb3e1688b708a6bc60463f52b6c0e6291be238661189598af7eac0166
+      source_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
+      source_delta_base_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+      merge_result_head_sha: 4c2d9a6c51ac3106d4f9cf8426d4d35f3fca92ee
+      source_path_count: 20
+      state_handoff_digest: fe16a918353885669997ad96e3318a5e37b19997a1d4ed474004668ace98de9d
+      runtime_triplet_digest: 6adba96d7478ddc44850c65b5e7677b17875f15c26fceb69a7a8ab470e965b1a
+    P08:
+      merge_id: 02efc016-5da3-40c9-8829-b591a0617fd1
+      merge_payload_digest: 79bf1eee547f951638630c6c3b22f2cc1056fd8e82d2c028662e331a1c9fe65b
+      source_head_sha: 7ba18b92462bc610895f2eb06ef6addaba531b19
+      source_delta_base_head_sha: 9cb28a0078e3dfe814cfca34cf93000993416ce8
+      merge_result_head_sha: e1dce668fb452a4c1892a33ea6d9c37061603aef
+      source_path_count: 17
+      state_handoff_digest: 4605827ee19b5ce1590a17b7206d8937b9ac11895bb74eb542022910e6ae85e4
+      runtime_triplet_digest: 5ab55a75807c4da97f66feeb8a29f4d56ce24448d887c8707e41da581ec6e21d
+  migration_2253_reconciliation:
+    proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+    request_id: P21-MIGRATION-003
+    request_canonical_sha256: 4c102308b097a26a1a25b3f37a894ab1222acbbc09421502d77fc0a5d880e4a9
+    request_raw_git_blob_sha256: 4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33
+    ordinal: 2253
+    migration_path: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+    raw_git_blob_sha256: b96fae17a3ab9a13444787f7419366b0cd997e7a2754167b3c759d7074ff2c81
+    native_checkout_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
+    repository_runner_pg_mem_sha256: 3d86765f1f026b891c3f908987980b7de6e431ce004b034e179ba703902fe517
+    prior_2252_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+    migration_file_count: 84
+    maximum_ordinal: 2253
+    next_available_ordinal: 2254
+    global_control_mirror_changed: false
+  pg_mem_harness:
+    source_merge_tip_sha: e1dce668fb452a4c1892a33ea6d9c37061603aef
+    implementation_head_sha: dd819ae6188a89a38f3339f816afa4b206fd0860
+    changed_paths:
+      - packages/db/src/index.ts
+      - tests/unit/db/migration-verification.test.ts
+    exact_registered_functions:
+      - btrim(text)
+      - length(text)
+      - cardinality(text[])
+      - md5(text)
+    full_inventory_first_apply_and_read_only_verify: passed_84_of_84
+    second_run_migrations_pg_mem_replay: known_baseline_ast_coverage_limit
+    native_postgresql_16_14_apply_replay_verify: passed_84_of_84
+  scope:
+    source_path_count: 42
+    harness_path_count: 2
+    preterminal_path_count: 44
+    terminal_runtime_path_count: 3
+    release_path_count: 47
+    central_feature_registrations_applied: false
+    configuration_checkpoint_applied: false
+    provider_registry_applied: false
+    candidate_frozen: false
+  successor_requests_preserved_unapplied:
+    P21-MIGRATION-003: 4ab2d70eff1a64fe70d3f7d2b076c9852dd27374367f9e8b683ed68c4cbd3a33
+    P08-auth-household-002: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+    P08-config-002: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+    P08-registration-002: 0b0b82567be04624d0facf501dbc9d5fb418d0d86b79462f6220e8d8b56856d3
+  focused_validation:
+    files: 13
+    tests: 78
+    result: passed
+    migration_verification_tests: passed_7_of_7
+    typecheck: passed
+    full_lint: passed_zero_findings
+    focused_prettier: passed
+    yaml_parse: passed
+    secret_scan: passed_3100_text_files
+    native_postgresql: passed
+    scope_ancestry_and_digest_checks: passed
+  external_effects: 0/0/0
 remaining_steps: []
-next_action: C00 must audit this exact terminal communications-integration runtime final and reconcile control while F02 completes the already authorized 2250-2252 migration batch. After the F02 final is integrated, apply the dependency-ordered shared registrations in coherent batches. No candidate, provider action, deployment, send, or external effect occurred.
+next_action: C00 must independently audit this exact terminal source-microbatch release, reconcile control and the 2253 allocation mirror, and issue a new exact I36 authorization before any further source merge, central registration, configuration, provider registry, candidate, deployment, or external action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -2486,6 +2581,7 @@ verification:
     - command: post-reconciliation runtime-metadata cleanup, package binding, YAML, formatting, diff, scope, lease-release, push, and remote-equality verification
       result: passed at exact prior final f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5 with sole parent 3aab6a199730ab2ed75f45c234ec8331894cdf6b, exact runtime-triplet-only scope, pair/triplet 0ad397970c536ee4250e041ce0476683c506b7c7eb8e03cebaa3cfb0c3271b4f/d069382c5794395d9f0e51d6d7197d245808d1db1f15d58caf79fbe650ccc3c4, prior lease released at 2026-07-30T08:56:39Z before expiry, clean remote equality, frozen non-runtime bytes, and effects 0/0/0
   known_baseline_failures:
+    - A second runMigrations invocation in pg-mem still hits the pre-existing schema_migrations CREATE TABLE IF NOT EXISTS AST-coverage limitation after the complete first apply. The full 84/84 first apply and read-only verification pass, and native PostgreSQL 16.14 applies, replays, and verifies 84/84.
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
     - Full unit-suite failures remain in unchanged HighLevel, configuration,

@@ -3,27 +3,30 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: CONTINUE
 
-Lane 1 has independently admitted and merged the exact P21 publication-scope
-correction. Publish the terminal integration checkpoint, verify the remote
-head, and reconcile P21 plus the F02 rejection once on control. Then record the
-short runtime-only four-lane ownership table and start the nonoverlapping
-landing, provider-readback, migration-correction, and verification lanes.
+Audit and reconcile the exact accepted-source-microbatch-1 terminal runtime
+release before resuming I36.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Runtime-final parent: `7adeaaa16fd4ed63a0374a36838010f88aeb5aa7`
-Authorizing control: `a58965e989a9dab81d079a8d02afe23aab146fb8`
-Admitted P21 final: `705030f2d5163f95340a19dc42efd0f167259869`
-P21 implementation: `7b51bae186728351ff1cf93b1c02fcba893b1051`
+Runtime-final parent: `dd819ae6188a89a38f3339f816afa4b206fd0860`
+Authorizing control: `26f29aeb6734948dd8b80ab85a342831defaecc9`
+State-basis control: `f2b4a9faefdb5f780c9b620fedb413d408d27a19`
+Claim: `870b6724-6099-4aa1-aa65-219efc121daf`
+Lease: `4929adfc-2383-4f16-bda9-04287e046333`, released before expiry
 
-Admission passed exact ancestry and nine-path scope, protected-request byte
-identity, source-artifact digest reproduction, clean merge-tree, 17/17 focused
-tests, typecheck, and zero-effect checks.
+Exact admitted merge results:
 
-Do not merge F02 `68e3c527`; its native database admission failed. Return it
-for one bounded correction covering the recorded P17/P18 semantic bypasses,
-then admit migrations 2250–2252 only after focused negative probes pass.
+1. F02 `131413297b7eb6510a1e12d44337e576406cafae`
+2. P20/P21 `4c2d9a6c51ac3106d4f9cf8426d4d35f3fca92ee`
+3. P08 `e1dce668fb452a4c1892a33ea6d9c37061603aef`
 
-No provider call, candidate, deployment, activation, enrollment, charge, DNS
-change, send, migration apply, or external effect occurred. Effects remain
-`0/0/0`.
+Harness implementation `dd819ae6` adds only the exact four pg-mem signatures
+and full-inventory read-only verification. Focused tests passed 78/78. Native
+PostgreSQL 16.14 applied, replayed, and verified 84/84 migrations with zero
+pending. Effects are `0/0/0`.
+
+C00 must audit the exact pushed terminal head, consume I36 READY, reconcile
+the source items and the F02 2253 allocation mirror, and then issue a new exact
+READY/lease for the next bounded integration checkpoint. Do not apply central
+feature registrations, configuration, provider registries, candidate state,
+deployment, or external effects from this prompt.
