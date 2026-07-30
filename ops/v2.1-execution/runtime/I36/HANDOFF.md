@@ -322,3 +322,34 @@ is frozen. Effects remain `0/0/0`.
 
 C00 must independently audit and reconcile the exact pushed atomic claim before
 I36 may correct either stale field. I36 must stop.
+
+## Superseding runtime-metadata-corrected final
+
+C00 reconciled atomic claim `3aab6a199730ab2ed75f45c234ec8331894cdf6b`
+at control `505804a1a3ab172229df94512f06c37cf214f270`. Its exact
+state/handoff pair is
+`38d37515f0fdbb01fa6ff1aabe1e6a01fabf2376b137d3eaf5b1c0db3b66fc19`
+and its runtime triplet is
+`b876dbb727989967c57409423b4ad9c00b001069428dfd10a05bc007e607cf68`.
+Claim `27f0fe39-785e-4cae-a707-de596a7e8500` and RELEASE_INTEGRATOR
+lease `745aefd4-8660-4a0b-8d43-852769ced512` remained unchanged.
+
+This runtime-triplet-only final supersedes rejected metadata release
+`e2907b4086e65074a49717a840f45d53685b15f3` and intermediate atomic claim
+`3aab6a199730ab2ed75f45c234ec8331894cdf6b`. Top-level `remaining_steps`
+and `out_of_scope_findings` are now empty.
+
+The historical failed lint verification entry remains historical evidence. P31
+lint correction `839ec12bb83317a63f1d064891fb2929a707f3ec` is integrated at
+`e834523855ced654482552a5c5cda16767eb99d2`, and the later current full
+ESLint run passed with zero findings.
+
+Lease `745aefd4-8660-4a0b-8d43-852769ced512` was released at
+`2026-07-30T08:56:39Z`, before its `2026-07-30T09:47:00Z` expiry. All
+source, merge, migration, P17 request, control, provider, deployment, send, and
+effect bytes remain frozen. Effects remain `0/0/0`.
+
+C00 must independently audit the exact pushed superseding final, its sole
+parent `3aab6a199730ab2ed75f45c234ec8331894cdf6b`, runtime-triplet-only
+scope, current lint evidence, released lease, final pair/triplet, and effects.
+I36 must stop.

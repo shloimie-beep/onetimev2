@@ -34,30 +34,31 @@ dependency_heads:
   P31: 839ec12bb83317a63f1d064891fb2929a707f3ec
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
-status: claimed
-phase: P31_P20_P17_correction_release_runtime_metadata_correction_atomic_claim
+status: ready
+phase: P31_P20_P17_correction_release_runtime_metadata_corrected
 claimed_by: codex-i36-release-integrator-27f0fe39
 claim_time: '2026-07-30T08:47:00Z'
 claim_id: 27f0fe39-785e-4cae-a707-de596a7e8500
 lease_id: 745aefd4-8660-4a0b-8d43-852769ced512
 lease_issued_at: '2026-07-30T08:47:00Z'
 lease_expires_at: '2026-07-30T09:47:00Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-30T08:49:51Z'
-controller_authorization_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
-latest_valid_observed_control_head_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
-reconciled_state_based_on_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
-ready_consumed_by_control_head_sha: null
-ready_consumed_state_based_on_control_head_sha: null
+lease_released_at: '2026-07-30T08:56:39Z'
+last_heartbeat_at: '2026-07-30T08:56:39Z'
+controller_authorization_sha: 505804a1a3ab172229df94512f06c37cf214f270
+latest_valid_observed_control_head_sha: 505804a1a3ab172229df94512f06c37cf214f270
+reconciled_state_based_on_control_head_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
+ready_consumed_by_control_head_sha: 505804a1a3ab172229df94512f06c37cf214f270
+ready_consumed_state_based_on_control_head_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
 ready_authorization_control_head_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
 ready_entry_state_based_on_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
 ready_entry_payload_digest: b793c1816f3e150ec5b2e1d79b4e317388b0e61dcd92d58a2418ae17c563382d
 claim_mode: resume_existing
 expected_existing_head_sha: e2907b4086e65074a49717a840f45d53685b15f3
-lease_phase_scope: I36_P31_P20_P17_correction_release_runtime_metadata_correction_atomic_claim_only
+lease_phase_scope: I36_P31_P20_P17_correction_release_runtime_metadata_correction
 runtime_metadata_correction_binding:
-  containing_control_head_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
-  state_based_on_control_head_sha: 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19
+  containing_control_head_sha: 505804a1a3ab172229df94512f06c37cf214f270
+  initial_authorizing_control_head_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
+  state_based_on_control_head_sha: 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089
   control_state_digest: 39d11513c5436660ace30325f84cc70ceca419b180f7584156183612a018eae3
   ready_entry_payload_digest: b793c1816f3e150ec5b2e1d79b4e317388b0e61dcd92d58a2418ae17c563382d
   authorized_start_sha: e2907b4086e65074a49717a840f45d53685b15f3
@@ -69,9 +70,18 @@ runtime_metadata_correction_binding:
   prior_release_head_sha: e2907b4086e65074a49717a840f45d53685b15f3
   prior_release_state_handoff_digest: 5c37f7266467871e25dfa4a67750e8274cdaf54cf356bd99080064399d1fc66c
   prior_release_runtime_triplet_digest: e2b848250d5db1a981a9a7bb4be4a2f36a4db8723f2099d872a7c02db4d1882f
+  atomic_claim_head_sha: 3aab6a199730ab2ed75f45c234ec8331894cdf6b
+  atomic_claim_state_handoff_digest: 38d37515f0fdbb01fa6ff1aabe1e6a01fabf2376b137d3eaf5b1c0db3b66fc19
+  atomic_claim_runtime_triplet_digest: b876dbb727989967c57409423b4ad9c00b001069428dfd10a05bc007e607cf68
   stale_remaining_steps_semantic_digest: 2b5b2bd4c577e0508ea33a396f13570397974d1f80cc1744cdbd351e544a0d29
   stale_out_of_scope_findings_semantic_digest: 3224f0f29d5cebd553404ab3f0f088df84cf041788df762e3e7bfbf4d30b9810
-  stale_top_level_fields_preserved: true
+  stale_top_level_fields_preserved_in_atomic_claim: true
+  stale_top_level_fields_corrected_after_reconciliation: true
+  supersedes_rejected_release_head_sha: e2907b4086e65074a49717a840f45d53685b15f3
+  supersedes_atomic_claim_head_sha: 3aab6a199730ab2ed75f45c234ec8331894cdf6b
+  P31_lint_correction_head_sha: 839ec12bb83317a63f1d064891fb2929a707f3ec
+  P31_lint_correction_merge_head_sha: e834523855ced654482552a5c5cda16767eb99d2
+  current_full_lint: passed_zero_findings
   non_runtime_bytes_preserved: true
   external_effects: 0/0/0
 queued_merge_ids:
@@ -181,9 +191,13 @@ merge_result_head_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
 merge_parent_target_head_sha: bb4a13a39cfbe843647793775a8a07285b446d6a
 merge_parent_source_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
 prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: e2907b4086e65074a49717a840f45d53685b15f3
+state_based_on_head_sha: 3aab6a199730ab2ed75f45c234ec8331894cdf6b
 last_implementation_commit_sha: 00ec4f9a4011ab125f1f5c38f3433462398a8da5
 completed_steps:
+  - C00 reconciled exact metadata-correction claim 3aab6a199730ab2ed75f45c234ec8331894cdf6b at control 505804a1a3ab172229df94512f06c37cf214f270 with claim pair/triplet 38d37515f0fdbb01fa6ff1aabe1e6a01fabf2376b137d3eaf5b1c0db3b66fc19/b876dbb727989967c57409423b4ad9c00b001069428dfd10a05bc007e607cf68 and unchanged claim/lease.
+  - Corrected only the two stale top-level TASK-STATE fields after reconciliation, preserving the historical failed P31 lint verification entry and the later full-lint zero-finding verification entry.
+  - Recorded P31 lint correction 839ec12bb83317a63f1d064891fb2929a707f3ec as integrated at e834523855ced654482552a5c5cda16767eb99d2, superseding rejected metadata release e2907b4086e65074a49717a840f45d53685b15f3 and intermediate claim 3aab6a199730ab2ed75f45c234ec8331894cdf6b.
+  - Released sole RELEASE_INTEGRATOR lease 745aefd4-8660-4a0b-8d43-852769ced512 at 2026-07-30T08:56:39Z; all source, merge, migration, request, control, provider, deployment, send, and effect bytes remain frozen.
   - Recomputed exact metadata-correction READY b793c1816f3e150ec5b2e1d79b4e317388b0e61dcd92d58a2418ae17c563382d from containing control 7d1a9fffdb7f12ace8f6161232a0ad9c1b749089 and exact state-basis control-state digest 39d11513c5436660ace30325f84cc70ceca419b180f7584156183612a018eae3, with exact task/context/package, release, claim, lease, stale-field, and zero-effect bindings.
   - Claimed only the I36 runtime triplet from exact release e2907b4086e65074a49717a840f45d53685b15f3 under claim 27f0fe39-785e-4cae-a707-de596a7e8500 and sole RELEASE_INTEGRATOR lease 745aefd4-8660-4a0b-8d43-852769ced512 while preserving both stale top-level fields and every non-runtime byte.
   - C00 reconciled exact atomic claim 1b0df6fa15b2ac4a5febe35fee3f18ca9b9457d7 at control 60d76e2a5feb0f7cfcfd56aeaa5ee9ac58664e19 and rebound canonical P31/P20/P17 merge payloads to 951e354746edcce3df991a046563ca6afa355cf45a5ae5f73fe2f3c2942fd9e4/a3c16a42f51ccfaf2864e10c955f9fca039c10ea5746975340ea004c42b35072/1017f826bac75dd0dc23d5aa70f495678f53898381f64f13d32ba3b0ef7ef711.
@@ -1114,10 +1128,8 @@ completed_steps:
     0430520f-6a94-4550-a1ea-f01f8d5173b2 at 2026-07-30T05:43:58Z.
     No steward or central state was applied, no provider was inspected or
     mutated, and no deployment, send, or external effect occurred.
-remaining_steps:
-  - Commit and normally push this exact three-file I36 metadata-only terminal release.
-  - Report the pushed release head, sole parent, ordered merge heads, exact 4/8/14 scopes, release pair/triplet, verification counts, released lease, unapplied successor requests, and effects 0/0/0 to C00, then stop.
-next_action: Push and report this exact I36 runtime-triplet-only metadata-correction claim, then stop for C00 reconciliation without fixing the preserved stale remaining_steps or out_of_scope_findings fields.
+remaining_steps: []
+next_action: C00 must independently audit the exact pushed superseding I36 runtime-metadata-corrected final, its sole parent 3aab6a199730ab2ed75f45c234ec8331894cdf6b, runtime-triplet-only scope, P31 correction 839ec12b integrated at e8345238, current full-lint zero-finding evidence, released lease, final pair/triplet, and effects 0/0/0; I36 must stop.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -2312,7 +2324,9 @@ verification:
     - command: canonical I36 runtime-metadata-correction READY and state-basis control-state digest recomputation
       result: passed; exact containing control 7d1a9fff, sole state-basis parent 60d76e2a, READY b793c181, control-state digest 39d11513, task/context/package bindings, fresh claim/lease, and effects 0/0/0
     - command: runtime-metadata-correction atomic checkpoint scope, stale-field preservation, YAML, formatting, diff, secret, sole-parent, push, and remote-equality verification
-      result: pending exact atomic claim commit and normal push; source, merge, migration, request, control, provider, deployment, send, and effect bytes remain unchanged
+      result: passed at exact claim 3aab6a19; sole parent e2907b40, runtime-triplet-only scope, stale-field semantic digests 2b5b2bd4/3224f0f2, normal push, clean remote equality, and effects 0/0/0
+    - command: post-reconciliation runtime-metadata cleanup, package binding, YAML, formatting, diff, scope, lease-release, push, and remote-equality verification
+      result: pending exact superseding runtime-triplet-only final commit and normal push; every non-runtime byte and effect remains frozen
   known_baseline_failures:
     - HighLevel registry validator generated-count/control assertions remain stale pending P28-registry-projection-001.
     - HighLevel workflow-control current projection and manifest remain stale pending P28-registry-projection-001.
@@ -2328,10 +2342,4 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings:
-  - >-
-    Full ESLint reports one exact admitted P31 source finding at
-    tests/unit/communications/copy-catalog.test.ts:143:
-    _removedNamedApproval is assigned but never used. C00 will issue a
-    separate task-owned P31 lint-only correction; I36 preserved the exact
-    authorized source bytes.
+out_of_scope_findings: []
