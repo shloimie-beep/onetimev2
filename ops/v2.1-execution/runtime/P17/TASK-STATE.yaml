@@ -55,12 +55,12 @@ collision_correction_binding:
   required_successor_requests:
     - P17-MIGRATION-002
     - P17-SERVER-WORKER-REGISTRATION-002
-status: ready_for_review
-phase: canonical_classroom_ownership_and_provider_outbox_correction_complete
-correction_work_status: completed
-claimed_by: codex-p17-correction-e85735a2
-claim_time: '2026-07-30T07:01:44Z'
-claim_id: e85735a2-4a41-476b-bca2-d1dde009e69d
+status: claimed
+phase: canonical_classroom_ownership_and_provider_outbox_runtime_metadata_correction_atomic_claim
+correction_work_status: pending_c00_reconciliation
+claimed_by: codex-p17-metadata-correction-023cf8f0
+claim_time: '2026-07-30T07:37:15Z'
+claim_id: 023cf8f0-4c6b-4224-943e-71c8e7f522d2
 correction_claim_checkpoint_sha: a72f1a0ba08110c2eb3d0f3cb23dd4e7d1a80368
 previous_claim_checkpoint_sha: 25614df1bb41f655ec1458f893a5a044c8729b31
 previous_final_head_sha: 0e6119a491795737e3d7aa079fc3aefa1b5071c2
@@ -76,7 +76,6 @@ prior_writer_slot_leases:
     lease_expires_at: '2026-07-30T07:11:00Z'
     released_at: null
     superseded_by_lease_id: 0d08dc64-fb12-4aa5-bf5d-10a3267e18f4
-writer_slot_leases:
   - slot: ZOOM_PREPARATION
     lease_id: 0d08dc64-fb12-4aa5-bf5d-10a3267e18f4
     holder_claim_id: e85735a2-4a41-476b-bca2-d1dde009e69d
@@ -85,19 +84,31 @@ writer_slot_leases:
     lease_expires_at: '2026-07-30T08:31:44Z'
     phase_scope: P17_canonical_classroom_ownership_and_provider_outbox_correction_renewal_atomic_claim_only
     released_at: '2026-07-30T07:27:44Z'
-lease_expires_at: '2026-07-30T08:31:44Z'
-lease_released_at: '2026-07-30T07:27:44Z'
-last_heartbeat_at: '2026-07-30T07:27:44Z'
-controller_authorization_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
+writer_slot_leases:
+  - slot: ZOOM_PREPARATION
+    lease_id: 24a593bc-5edd-4fe1-8e65-87cbebdfd933
+    holder_claim_id: 023cf8f0-4c6b-4224-943e-71c8e7f522d2
+    state_based_on_control_head_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
+    lease_issued_at: '2026-07-30T07:37:15Z'
+    lease_expires_at: '2026-07-30T08:37:15Z'
+    phase_scope: P17_canonical_classroom_ownership_and_provider_outbox_runtime_metadata_correction_atomic_claim_only
+    released_at: null
+lease_expires_at: '2026-07-30T08:37:15Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-30T07:41:00Z'
+controller_authorization_sha: e78d750887e2d56dc3c9b19612e4c51d6cbce0b5
 claim_checkpoint_sha: 7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f
 claim_reconciliation_control_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 renewal_checkpoint_sha: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
 continuation_authorization_sha: 268ab601b89573238befe70de7995908925575cc
 continuation_acquisition_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
 renewal_continuation_authorization_sha: 6fec4000f1e31d608f8fc41488a9befab903aae8
-ready_entry_state_based_on_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
-ready_entry_payload_digest: 4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb
-state_based_on_head_sha: 178af0c35012828016f395611e3d2f8cb3f88ff8
+metadata_correction_expected_head_sha: 506d9024fc3280f0f302c04b7d265597117d9936
+prior_terminal_state_handoff_manifest_digest: a9a7ded4ad9cf187efa8bff260a1dbc3af08534a63f60a26861095f56a09abd6
+prior_terminal_runtime_triplet_manifest_digest: 7042ed012fd582f18d9479b87339b8c52c2e03c59050a65600485f2689334d6b
+ready_entry_state_based_on_control_head_sha: 9e3eb50afbd1232bc83729f281bd82c12a14ab8e
+ready_entry_payload_digest: e716a27e02a9f92e5214777cb3ba4f6298309d0e8bd6147d12853b3f5119a245
+state_based_on_head_sha: 506d9024fc3280f0f302c04b7d265597117d9936
 last_implementation_commit_sha: 178af0c35012828016f395611e3d2f8cb3f88ff8
 implementation_artifact_digest: c35cf10d10031cf4227faf31c6442bcef9aa41c9a55e6ec24320a7f8c4b4d731
 implementation_artifact_digest_algorithm: SHA-256 over exact correction implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the canonical 13 non-runtime P17 product artifacts, with LF separators and no final newline.
@@ -118,6 +129,8 @@ successor_request_bindings:
     status: proposed_immutable
 acceptance_matrix_digest: 0573200dc876dc6cbac4892bd3dce027c3d6413a6861dd2d1653efc9616487aa
 completed_steps:
+  - Recomputed metadata-correction READY digest e716a27e02a9f92e5214777cb3ba4f6298309d0e8bd6147d12853b3f5119a245 from canonical control e78d750887e2d56dc3c9b19612e4c51d6cbce0b5 and verified exact state basis, remote head, prior manifest-form runtime binding, implementation/product/request identities, fresh claim, active lease, and zero effect locks.
+  - Atomically claimed only the P17 runtime metadata correction from exact head 506d9024fc3280f0f302c04b7d265597117d9936 while preserving every identified stale instruction/status and every non-runtime byte.
   - C00 reconciled the renewed atomic claim at control 6fec4000f1e31d608f8fc41488a9befab903aae8 before product work began.
   - Removed every P17 launch-grant, Meeting SDK bootstrap, live-session, device, Admin reset, attendance contract, domain, unit-of-work, persistence, test, and schema claim while preserving P18 as sole owner.
   - Preserved the preparation saga, roster snapshot, classroom resource, Student registrant, preparation command, join-availability, retry, quarantine, and canonical provider lifecycle surfaces.
@@ -140,11 +153,11 @@ completed_steps:
   - Passed full workspace typecheck, 21 focused tests across four files, focused ESLint and Prettier, repository-wide secret scan over 2723 files, and diff hygiene.
   - Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released the task-local lease in terminal metadata.
 remaining_steps:
-  - C00/I36 must independently review implementation head 178af0c35012828016f395611e3d2f8cb3f88ff8, exact scope, digests, and provider-free gates.
-  - F02 must independently disposition P17-MIGRATION-002; I36 must independently disposition P17-SERVER-WORKER-REGISTRATION-002.
-  - Every existing -001 request remains immutable and withheld.
+  - C00 must independently reconcile this exact runtime-triplet metadata-correction claim.
+  - Only after C00 reconciliation may P17 remove or explicitly label the identified superseded status and instruction text.
+  - Every product, test, acceptance, schema, successor request, existing request, migration, P18, provider, manifest, and lockfile byte remains out of scope.
   - Provider inspection and every external effect remain prohibited.
-next_action: C00/I36 should review exact implementation head 178af0c35012828016f395611e3d2f8cb3f88ff8 and the committed successor request digests, then steward the two -002 requests without provider effects.
+next_action: Push and report this exact runtime-triplet-only metadata-correction claim, then stop for C00 reconciliation without performing the cleanup.
 requirements:
   OTV2-CLASSROOM-068: implementation_ready
   OTV2-CLASSROOM-069: implementation_ready
@@ -193,6 +206,8 @@ steward_requests:
   - P17-SERVER-WORKER-REGISTRATION-002
 verification:
   commands_run:
+    - Exact canonical metadata-correction control, parsed READY digest, expected remote head, prior manifest-form runtime triplet, implementation/product/request identities, fresh claim/lease, and zero effect locks (passed).
+    - Exact runtime-triplet-only atomic-claim scope, stale-text preservation, YAML parse, formatting, diff hygiene, sole-parent ancestry, normal push, and remote equality (pending commit).
     - Exact canonical renewal control, renewed claim reconciliation, expected checkpoint, parsed READY digest, claim/lease, preserved request bytes, and zero effect locks (passed).
     - Focused Vitest over domain acceptance, database repository, server service, and worker runner suites (passed, 23 tests across four files).
     - npm run typecheck (passed).

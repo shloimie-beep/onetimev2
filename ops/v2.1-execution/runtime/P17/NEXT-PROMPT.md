@@ -1,7 +1,7 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: STOP
 
 Review corrected One Time v2.1 task P17 from its exact remote
 ready-for-review checkpoint.
@@ -87,3 +87,15 @@ Disposition only committed successors `P17-MIGRATION-002` and
 and withheld. The renewed lease was released at `2026-07-30T07:27:44Z`.
 External-effect authority is `none`; do not inspect or call Zoom, access
 credentials, deploy, or run provider canaries.
+
+P17 has made only the runtime-triplet metadata-correction atomic claim from
+exact parent `506d9024fc3280f0f302c04b7d265597117d9936` under canonical control
+`e78d750887e2d56dc3c9b19612e4c51d6cbce0b5`, READY
+`e716a27e02a9f92e5214777cb3ba4f6298309d0e8bd6147d12853b3f5119a245`,
+claim `023cf8f0-4c6b-4224-943e-71c8e7f522d2`, and ZOOM_PREPARATION lease
+`24a593bc-5edd-4fe1-8e65-87cbebdfd933` through
+`2026-07-30T08:37:15Z`.
+
+Stop for C00 reconciliation. Do not remove or label stale metadata yet, and do
+not change any product, test, acceptance, schema, request, migration, P18,
+provider, manifest, lockfile, deployment, or external-effect byte.

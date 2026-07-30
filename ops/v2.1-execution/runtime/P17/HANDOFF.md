@@ -177,3 +177,24 @@ The renewed ZOOM_PREPARATION lease
 `0d08dc64-fb12-4aa5-bf5d-10a3267e18f4` was released task-locally at
 `2026-07-30T07:27:44Z`. External-effect authority remained `none`; effects
 were `0/0/0`. No provider inspection or operation occurred.
+
+## Runtime metadata-correction atomic claim
+
+P17 atomically claimed only runtime metadata correction from exact parent
+`506d9024fc3280f0f302c04b7d265597117d9936` under containing control
+`e78d750887e2d56dc3c9b19612e4c51d6cbce0b5`, READY state basis
+`9e3eb50afbd1232bc83729f281bd82c12a14ab8e`, and recomputed READY digest
+`e716a27e02a9f92e5214777cb3ba4f6298309d0e8bd6147d12853b3f5119a245`.
+
+Claim `023cf8f0-4c6b-4224-943e-71c8e7f522d2` holds ZOOM_PREPARATION lease
+`24a593bc-5edd-4fe1-8e65-87cbebdfd933`, issued
+`2026-07-30T07:37:15Z`, expiring `2026-07-30T08:37:15Z`, with heartbeat
+`2026-07-30T07:41:00Z`.
+
+The prior terminal runtime-triplet manifest digest is
+`7042ed012fd582f18d9479b87339b8c52c2e03c59050a65600485f2689334d6b`.
+This first push changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. Every identified stale instruction/status remains present
+and uncleaned; every non-runtime byte, including all existing and successor
+requests, is preserved. Effects remain `0/0/0`. Stop for C00 reconciliation
+before cleanup.
