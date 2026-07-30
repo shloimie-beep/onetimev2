@@ -2137,3 +2137,16 @@ transform, diff hygiene, secret scan, and effects `0/0/0`. Commit, release the
 lease in the terminal metadata, push normally to the exact F02 branch, verify
 local/tracking/live remote equality and a clean worktree, then stop for C00
 independent admission.
+
+# Runtime digest correction for the next integration gate
+
+Use the canonical raw-Git-byte runtime evidence values when constructing the
+next I36 queue:
+
+- F03 `3947c988...`: pair `93ce51b0...`, triplet `211c2ee2...`;
+- F04 `b43c1923...`: pair `8670ae6f...`, triplet `ad82d06d...`.
+
+Do not use `6d9644ad...` or `76976d6a...` as runtime-triplet digests; those
+are separate path-to-blob aggregate values. This correction changes no active
+F02 authority, READY payload, lease, queue, source terminal, provider state,
+candidate, or external effect.

@@ -2620,3 +2620,27 @@ microbatch: corrected F02, F04, F03, then read-only P31 `f50d95ba...`.
 Legal remains a `production_broad`-only gate. No provider lock is held and no
 provider, deployment, DNS, send, charge, live migration, customer, or other
 external effect is authorized.
+
+# Runtime-digest nomenclature correction
+
+The F03/F04 terminal audits originally reported path-to-blob aggregate
+digests under the runtime-triplet label. C00 corrected that metadata
+forward-only without changing either source terminal, claim, queue, lease,
+candidate, provider, or effect state.
+
+The canonical runtime evidence algorithm is SHA-256 over the exact Git bytes
+of `TASK-STATE.yaml` followed by `HANDOFF.md`, and then followed by
+`NEXT-PROMPT.md` for the triplet, with no separator:
+
+- F03 `3947c988...`: state/handoff
+  `93ce51b03f559a923a348f0d3596c83164e79cfeac944c7741db05adf33209dc`;
+  runtime triplet
+  `211c2ee2a7bc981fe6670375a465775e03e2970fd7df9692baf9561f992308ba`;
+- F04 `b43c1923...`: state/handoff
+  `8670ae6fdb20d0b8f2d05857f8f59e28f3c3fd912d3b1fb62bfad6851b74b04f`;
+  runtime triplet
+  `ad82d06db2698c3b640343949b8ba19e45720cc2b5d4db44d55af7808605fa3d`.
+
+The prior `6d9644ad...` and `76976d6a...` values remain valid only as their
+separate path-to-blob aggregate digests. The active F02 READY entry and its
+authorization remain byte-identical.
