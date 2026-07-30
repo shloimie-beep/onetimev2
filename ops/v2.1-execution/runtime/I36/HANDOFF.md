@@ -377,3 +377,30 @@ effects remain `0/0/0`.
 
 C00 must reconcile the exact pushed claim before I36 fixes the pending result.
 I36 must stop.
+
+## Terminal-verification-corrected final
+
+C00 reconciled exact claim `391866bf32150b515159146a329568ce544ade48`
+at control `4dd5749977205516ad94b23a5b628eadd3c8cf7c`. The claim
+state/handoff pair is
+`7ae5e9613bf66cadbc3228d49f39144720c09f05efbc735a6708eacdc16ad6cf`
+and its runtime triplet is
+`354e39ca8702ad1d63dc1d2bc33403c1dbed9b60a2bd023fb94e47dde57f55df`.
+
+The previously stale terminal verification now records passed evidence at exact
+prior final `f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5`, sole parent
+`3aab6a199730ab2ed75f45c234ec8331894cdf6b`, runtime-triplet-only scope,
+pair/triplet
+`0ad397970c536ee4250e041ce0476683c506b7c7eb8e03cebaa3cfb0c3271b4f` /
+`d069382c5794395d9f0e51d6d7197d245808d1db1f15d58caf79fbe650ccc3c4`,
+prior lease release before expiry, clean remote equality, frozen non-runtime
+bytes, and effects `0/0/0`.
+
+Top-level `remaining_steps` and `out_of_scope_findings` remain empty. Historical
+failed and current passed full-lint entries remain intact. New lease
+`994b32cc-4ca9-4b11-88ed-713631a61f33` was released at
+`2026-07-30T09:11:07Z`, before `2026-07-30T09:47:00Z`.
+
+C00 must independently audit the exact pushed corrected final, its sole parent
+`391866bf32150b515159146a329568ce544ade48`, runtime-triplet-only scope,
+final pair/triplet, and effects. I36 must stop.

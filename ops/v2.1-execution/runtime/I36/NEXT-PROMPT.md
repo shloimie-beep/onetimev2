@@ -3,27 +3,28 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: STOP
 
-I36 has pushed only a runtime-triplet terminal-verification metadata-correction
-claim from exact final `f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5`.
+I36 published the terminal-verification-corrected runtime final. C00 must
+independently audit the pushed final; do not resume I36.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Containing control: `628e83b4a06923448a622322201992076493c779`
-Sole state-basis parent: `505804a1a3ab172229df94512f06c37cf214f270`
-READY:
-`3252e7b6e9e35f332e799e0151c14cd097cbc549b2d6c7879227f83268fa6228`
-Control-state digest:
-`c6ba4310c2848b6fa5a72e45cd87f485fe61686d337a3a37260bfbc9fcfe7f2a`
-
+Sole parent: `391866bf32150b515159146a329568ce544ade48`
+Reconciled control: `4dd5749977205516ad94b23a5b628eadd3c8cf7c`
 Claim: `f34c38fb-f977-4c41-ae4b-5343d13c85f7`
-Writer: `codex-i36-release-integrator-f34c38fb`
 RELEASE_INTEGRATOR lease: `994b32cc-4ca9-4b11-88ed-713631a61f33`
-Lease expires: `2026-07-30T09:47:00Z`
+Lease released: `2026-07-30T09:11:07Z`
+Lease expiry: `2026-07-30T09:47:00Z`
 
-The single stale pending post-reconciliation verification result is
-intentionally preserved verbatim. Top-level `remaining_steps` and
-`out_of_scope_findings` remain empty.
+The prior-final verification row now unambiguously passes at
+`f83ff0ce1ffb4ffcabfc8e6fccdbcc63278a61c5`, sole parent
+`3aab6a199730ab2ed75f45c234ec8331894cdf6b`, exact runtime-triplet-only
+scope, pair/triplet
+`0ad397970c536ee4250e041ce0476683c506b7c7eb8e03cebaa3cfb0c3271b4f` /
+`d069382c5794395d9f0e51d6d7197d245808d1db1f15d58caf79fbe650ccc3c4`,
+clean remote equality, frozen non-runtime bytes, and effects `0/0/0`.
 
-C00 must independently reconcile the exact pushed claim before I36 fixes the
-pending result. Do not alter any non-runtime byte or cause an external effect.
-Effects remain `0/0/0`. I36 must stop.
+Top-level `remaining_steps` and `out_of_scope_findings` remain empty. Historical
+failed and current passed lint evidence remain intact. No current terminal
+verification row is pending.
+
+Do not alter non-runtime bytes or cause effects. I36 must stop.
