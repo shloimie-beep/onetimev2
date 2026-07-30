@@ -1,62 +1,46 @@
-# F07 Handoff
+# F07 Lane B production-entry handoff
 
-## Identity
+## Result
 
-- Branch: `codex/v21-f07-design-system-shells`
-- Start SHA: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
-- Implementation SHA before this handoff metadata commit: `80c281b7ae5826ed2c6abe95ba68a033ffa52174`
-- Current handoff commit: derive with `git rev-parse HEAD` after checkout; C00 records the observed remote head in `TASK-REGISTRY.yaml`.
-- Task packet digest: `49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b`
-- Context digest: `db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408`
-- Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- Claim: `fde01134-98bf-440f-9f0b-194e8f3712ca`, held by `codex-f07-worker-fde01134`.
-- Lease expiry: `2026-07-28T16:56:52Z`
-- Containing control head: `af76c4e990f954794de72db639576b3c9dc73ff4`
-- Ready payload digest: `d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f`
+Lane B is `ready_for_review` at corrected implementation commit `0937404a24cb1c880afc1d1a8a555a29936e735b`, whose sole parent is preserved terminal head `97108442bb75f1b30455a8658c2c7ab55f4d9e5f`. Its history retains implementation `092941f165c35779a987b4e4477cc436a961563e` and exact integration ancestor `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`. The branch is `codex/v21-lane3-landing-campaign`. Work consumed claim `d34ee5e7-ad86-49be-ad1e-236592ad3a0b` and DESIGN_SYSTEM lease `aad71ba0-80e9-4a59-beeb-a4776bca0d85` from control transaction `f0ccbdc81e6962add93d0900dd159e24df7cf05f`.
 
-## Completed behavior
+The public landing is now the complete production composition, not a hero-only patch. It uses the exact accepted campaign copy, canonical logo and approved real imagery, Inter, black `#090909`, yellow `#FFD400`, cyan `#67E8F9`, and white. The provisional Montserrat font files, manifest entry, preload, token reference, and exception were removed.
 
-Created the isolated F07 branch from the exact F01-integrated authorization SHA and corrected the claim metadata to the exact containing control head. Verified the exact remote repository, control authorization, ready entry, claim, DESIGN_SYSTEM lease, F01 interface checkpoint, and 200 locked files plus source/task/context digests from immutable Git blobs. Added an additive v2.1 contract that publishes canonical tokens, the exact Admin primary navigation, English date formatting, explained-disabled-control behavior, accessible role shell/navigation/state patterns, and a calendar agenda equivalent. Scoped responsive/reduced-motion CSS is available under the F07-owned v2.1 style root.
+The page covers the Sunday–Thursday 7:00 p.m. Jerusalem schedule with viewer-local conversion, embedded protected live class and protected on-demand library, Family and separate School entry, an adult learning through a separate Student seat, no Student email requirement, device/browser and optional-camera expectations, session/recording expectations, Terms/Privacy/Student Data, cancellation/refund, Member Login, and Support. WhatsApp is explicitly not an active launch channel.
 
-The interface contract is stable at implementation head `a90baae8cf69d6823af6d741161fe0e9e7441321`; `INTERFACE-CHECKPOINT.yaml` records exact symbols, artifact hashes, and combined digest `366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188` (SHA-256 of sorted `path=artifact-sha256` export lines). Every artifact digest was computed from immutable Git blob bytes. I36 must merge the checkpoint before C00 authorizes the listed downstream tasks.
+## Free period and signup seam
 
-## Remaining work
+Display state uses a same-origin server `Date` readback to estimate clock offset and enforces the exact display boundary `2026-09-13T16:24:00.000Z`. Before the boundary, the Family form CTA is exactly `Create my free family account` with helper `No credit card. Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.` At or after the boundary, the CTA is exactly `Create account and continue to checkout`; the `$67/month` hosted-checkout disclosure is rendered separately. Server/domain access and billing enforcement remain authoritative.
 
-C00/I36 must validate and merge the published interface checkpoint before authorizing downstream consumers. Any future worker needs a C00-issued resume lease and should address review/integration feedback only.
+The Family form calls `GET /api/v1/signup/family/bootstrap`, then posts the strict P08 JSON shape to `POST /api/v1/signup/family` with the server-issued idempotency key and `x-csrf-token`. It requests first/last name, adult email, password/confirmation, editable IANA timezone, Terms and Privacy acceptance, and separate optional adult consents. It sends no Student, phone, WhatsApp, card, payment-method, or caller-supplied hash field. The UI truthfully handles P08's `202 session_integration_pending` response and does not claim automatic login.
 
-## Exact next action
+The separate School branch now posts same-origin `POST /api/v2.1/signup/school-inquiry` with exactly four required P09 fields (`school_name`, `contact_first_name`, `contact_last_name`, `email`) and only the two permitted optional fields (`phone`, `note`) when populated. It sends no Family, account, access, role, portal, consent, marketing/newsletter, nurture, attribution, timezone, or caller-generated idempotency field. I36 must apply canonical registration request `P09-registration-001` before or with this client head.
 
-Await C00/I36 interface integration; after a new C00-issued lease, address only review or integration feedback.
-
-## Coverage
-
-- Requirements: all nine assigned requirements are implemented through the shared foundation contract.
-- Acceptance cases: all nine assigned cases are implementation-ready; candidate-bound browser evidence is intentionally deferred to the allowed verification lanes.
-
-## Changed files and migrations
-
-Added the versioned F07 package exports and scoped v2.1 style contract plus F07 runtime persistence. No migration was created, deleted, or edited; central composition was not changed.
+I36 must merge compatible P08 server head `30de59df0555058fc021bc6002a3dffc4e3ea916` and apply the P09 route registration before or with this client head.
 
 ## Verification
 
-- Repository identity, fetched control head, registry/queue identity, F01 dependency, absent F07 remote branch, claim, and lease: passed.
-- Immutable Git-blob verification: 200/200 locked files passed; source/task/context digests matched.
-- `npm run typecheck`: passed after `npm ci` in the isolated clone.
-- `npx vitest run packages/brand-system/src/v21.contract.test.tsx`: passed (3 tests).
-- Focused F07 CSS governance smoke passed; `npm run brand:check` now reports only the pre-existing out-of-scope raw color in `scripts/ops/validate-ot-launch-governance.ts`.
+- `npm run build`: passed, including public/app client builds, static page generation, and typecheck.
+- Focused Prettier and ESLint: passed.
+- P09 contract and public form-model tests: 5/5 passed.
+- `npm run secret:scan`: passed across 3,090 repository text files.
+- Focused production-build Playwright campaign/Family/P09 School/no-JS/accessibility suite: 7/7 passed. The first replay exposed only an ambiguous Family test label selector after the new contact fields; exact selectors were applied and the complete suite then passed.
+- The accessibility/overflow loop passed landing and signup at `360x800`, `390x844`, `768x1024`, and `1440x1000`.
 
-## Final task status
+The prior screenshot hashes belonged to source head `092941f165c35779a987b4e4477cc436a961563e` and remain preserved in Git history; they are not presented as current-byte evidence after the School form correction. No new screenshots or miscellaneous evidence files were committed.
 
-`ready_for_review`. Interface metadata head: `47a2bb6b76225951e0599683499a95f4dc9881be`; implementation head: `a90baae8cf69d6823af6d741161fe0e9e7441321`.
+## Known shared blockers and steward dependencies
 
-## External effects
+The normal Playwright webServer cannot start because the pg-mem harness does not register `btrim(text)`. Direct `createMemoryPool()` plus `runMigrations()` replay fails first in migration `2235_v21_household_identity.sql`; migration 2252's `btrim` calls are all inside its stripped PostgreSQL-only block. The corrected production build passed through an isolated static preview. I36/test-harness ownership should register the missing PostgreSQL function; the blocker is real, but it must not be attributed to migration 2252.
 
-Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`.
+Several tests outside the Lane B path grant still assert the superseded Family `/api/v1/leads` flow, functioning WhatsApp controls, or the old September 11 ticker. Their owners must update them after admission; Lane B did not edit unauthorized paths.
 
-## Security, privacy, and data handling
+`npm run brand:check` still reports the pre-existing raw-color finding in `scripts/ops/validate-ot-launch-governance.ts`; no Lane B changed path is implicated.
 
-No provider call, live effect, secret, customer data, child data, private question, or bearer URL was read or recorded.
+## Effects
 
-## Blockers, deviations, and recovery
+No deployment, provider call, mutation, contact creation, message, enrollment, charge, DNS change, effect lock, or external effect was attempted. Counts: attempted `0`, succeeded `0`, reconciled `0`.
 
-None.
+## Exact next action
+
+I36 independently reviews exact corrected implementation head `0937404a24cb1c880afc1d1a8a555a29936e735b`, confirms strict path ownership, merges P08 head `30de59df0555058fc021bc6002a3dffc4e3ea916`, applies the canonical P09 route registration, then admits this Lane B head non-force.

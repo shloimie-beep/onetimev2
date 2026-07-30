@@ -2,6 +2,7 @@ export const campaign = {
   id: 'free-until-rosh-hashanah-2026',
   timezone: 'Asia/Jerusalem',
   deadlineDate: '2026-09-11',
+  deadlineAt: '2026-09-13T16:24:00.000Z',
   label: 'FREE UNTIL ROSH HASHANAH',
 };
 
@@ -17,7 +18,7 @@ export const landingContent = {
     eyebrow: 'LIVE ONLINE + ON-DEMAND',
     titleLines: ['MISHNAYOS', 'MADE MEMORABLE'],
     supporting: 'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
-    schedule: 'Daily at 7:00 PM Israel time',
+    schedule: 'Sunday–Thursday at 7:00 PM Jerusalem time',
     cta: {
       label: 'JOIN FREE',
       href: '/signup',
@@ -25,16 +26,15 @@ export const landingContent = {
       analyticsPlacement: 'hero',
     },
     note: 'No credit card • Up to three learners per family',
-    // Retained for domain consumers that still read the pre-v2.1 hero contract.
-    kickerLines: ['WORLDWIDE MISHNAH LEARNING', 'LIVE FROM ERETZ YISRAEL'],
-    heading: 'Give your son a love for learning Torah.',
+    kickerLines: ['LIVE ONLINE', 'ON-DEMAND REVIEW'],
+    heading: 'Mishnayos made memorable.',
   },
   receive: {
     heading: 'Everything He Needs to Learn, Review, and Remember',
-    detailLine: 'Live every day at 7:00 p.m. Israel time.',
+    detailLine: 'Live Sunday–Thursday at 7:00 p.m. Jerusalem time.',
     eyebrow: 'A COMPLETE DIGITAL TORAH-LEARNING EXPERIENCE',
     iconLabel: 'Live class',
-    title: 'Live Daily Mishnayos—plus the tools to make it stick.',
+    title: 'Live Mishnayos—plus the tools to make it stick.',
     bullets: [
       {
         lead: 'LIVE EVERY DAY',
@@ -105,11 +105,15 @@ export const landingContent = {
   },
   how: {
     heading: 'How It Works',
-    body: 'Sign up, get the class information, and join the daily 7:00 p.m. live Mishnayos class.',
-    steps: ['Sign up', 'Receive the class information', 'Enjoy the live class'],
+    body: 'Create a Family account, add up to three learner seats, and join live or review securely on demand.',
+    steps: [
+      'Create the adult Family account',
+      'Add separate Student seats',
+      'Join live or review on demand',
+    ],
   },
   who: {
-    heading: 'A Ready-to-Run Mishnayos Class—Wherever Your Son Learns',
+    heading: 'A Ready-to-Run Mishnayos Class—Wherever You Learn',
     audiences: [
       {
         lead: 'FAMILIES',
@@ -126,6 +130,72 @@ export const landingContent = {
       {
         lead: 'LOCAL STUDENTS',
         body: "Join Rabbi Scheller's daily learning community from Ramat Beit Shemesh.",
+      },
+      {
+        lead: 'ADULT LEARNERS',
+        body: 'An adult may learn as a Student by creating a separate Student seat inside the Family account.',
+      },
+    ],
+  },
+  experience: {
+    heading: 'One protected place for live class and review',
+    intro:
+      'The member experience keeps the embedded live class, protected on-demand library, schedules, and progress together after sign-in.',
+    cards: [
+      {
+        title: 'Live class',
+        body: 'Open the protected classroom from your portal at class time. Access details stay inside the signed-in experience.',
+      },
+      {
+        title: 'On-demand library',
+        body: 'Return to approved class recordings and review materials anytime through the protected library.',
+      },
+      {
+        title: 'Family and Student views',
+        body: 'Adults manage access from the Family portal; each learner uses a separate Student seat. Student email is not required.',
+      },
+    ],
+  },
+  participation: {
+    heading: 'What you need for class',
+    bullets: [
+      'Use a current desktop or mobile browser with a stable internet connection and working audio.',
+      'A camera is optional unless the class team gives a specific participation instruction; learners can still follow the lesson without broadcasting video.',
+      'Live sessions are moderated. Class recordings may be made available in the protected library; recording and recognition choices follow the published notices and operator controls.',
+    ],
+  },
+  enrollment: {
+    heading: 'Choose the right entry',
+    family: {
+      title: 'Family',
+      body: 'Create one adult-managed account with up to three learner seats. The adult supplies the account email; Student email is not required.',
+    },
+    school: {
+      title: 'School',
+      body: 'Send a School inquiry for manual follow-up. A School inquiry does not create learner access, enroll an audience, or start messages.',
+    },
+  },
+  access: {
+    heading: 'Free access, then $67/month',
+    before:
+      'Create a Family account without a credit card. Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.',
+    after:
+      'After the free period, continued Family access is $67/month through the secure hosted billing flow. Creating an account does not charge a card.',
+  },
+  assurances: {
+    heading: 'Clear expectations before you join',
+    items: [
+      {
+        title: 'Privacy and Student data',
+        body: 'Review the Privacy Notice, Terms, and Parent/Guardian and Student Data Notice before creating learner seats.',
+      },
+      {
+        title: 'Cancellation and refunds',
+        body: 'Review the Terms for cancellation and refund rules before paid continuation. Billing changes use the hosted account flow.',
+      },
+      {
+        title: 'Login and support',
+        body: 'Existing members can sign in from Member Login. For access or account help, use the Support path; WhatsApp is not an active launch support channel.',
       },
     ],
   },
@@ -176,16 +246,19 @@ export const landingContent = {
       ['Sign Up Now', '/signup'],
       ['Privacy', '/privacy'],
       ['Terms', '/terms'],
+      ['Student Data', '/student-data'],
       ['Member Login', '/login'],
+      ['Support', '/support'],
     ],
   },
 } as const;
 
 export const sharedNav = [
   ['What You Receive', '#receive'],
-  ["What He'll Gain", '#gain'],
+  ['Experience', '#experience'],
   ["Who It's For", '#who'],
   ['How It Works', '#how-it-works'],
+  ['Pricing', '#access'],
   ['Rabbi Scheller', '#rabbi'],
   ['Member Login', '/login'],
 ] as const;

@@ -127,17 +127,13 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
 async function createSyntheticContact(page: Page) {
   await page.goto('/signup');
   const email = `ot81-perf-${Date.now()}@example.test`;
+  await page.getByRole('radio', { name: 'School inquiry' }).check();
   await page.getByLabel('Parent or contact name').fill('OT81 Performance Parent');
   await page.getByLabel('Family or School').fill('OT81 Performance Family');
   await page.getByLabel('Location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
-  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
-  await page.getByLabel('Email class reminders').check();
-  await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await page
-    .getByRole('heading', { name: 'Thank you - we received your Family signup.' })
-    .waitFor();
+  await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
+  await page.getByRole('button', { name: 'Send School inquiry' }).click();
+  await page.getByRole('heading', { name: /received your school inquiry/i }).waitFor();
   await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
   const contactId = await page.evaluate(async (needle) => {
     const response = await fetch('/api/v1/crm/contacts');

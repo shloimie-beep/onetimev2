@@ -10,7 +10,6 @@ import {
 } from '@onetime/brand-system/static';
 import {
   campaign,
-  campaignTicker,
   communicationConsentNotice,
   landingContent,
   legalPolicyMetadata,
@@ -18,7 +17,6 @@ import {
   privacyDataCategories,
   privacyNotice,
   sharedNav,
-  successCopy,
   termsOfUse,
 } from '../packages/domain/src/index.ts';
 import type { LegalDocument, LegalSection } from '../packages/domain/src/legal/index.ts';
@@ -139,7 +137,7 @@ function footer() {
 }
 
 function ticker() {
-  return renderCampaignTicker(campaignTicker(), campaign.deadlineDate);
+  return renderCampaignTicker('FREE ACCESS — CREATE YOUR FAMILY ACCOUNT', campaign.deadlineAt);
 }
 
 function landingPage() {
@@ -210,6 +208,21 @@ function landingPage() {
         `<span><img src="${src}" alt="${escapeHtml(label)}"${mediaSizeAttributes(src)} loading="lazy" decoding="async"></span>`,
     )
     .join('');
+  const experienceCards = landingContent.experience.cards
+    .map(
+      (card) =>
+        `<article><h3>${escapeHtml(card.title)}</h3><p>${escapeHtml(card.body)}</p></article>`,
+    )
+    .join('');
+  const participationItems = landingContent.participation.bullets
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join('');
+  const assuranceCards = landingContent.assurances.items
+    .map(
+      (item) =>
+        `<article><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p></article>`,
+    )
+    .join('');
   const gallerySection = `<section class="section gallery-section" id="world">
     <div class="gallery" data-gallery role="region" aria-roledescription="carousel" aria-label="${escapeHtml(landingContent.gallery.heading)}">
       <h2 id="gallery-heading">${escapeHtml(landingContent.gallery.heading)}</h2>
@@ -236,7 +249,7 @@ function landingPage() {
       <p class="hero-eyebrow">${escapeHtml(landingContent.hero.eyebrow)}</p>
       <h1 id="landing-hero-heading" aria-label="${escapeHtml(landingContent.hero.titleLines.join(' '))}">${landingContent.hero.titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
       <p class="hero-supporting">${escapeHtml(landingContent.hero.supporting)}</p>
-      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
+      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}<span data-local-class-time> Your local class time will appear here.</span></p>
       <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-event="${escapeHtml(landingContent.hero.cta.analyticsEvent)}" data-ot-analytics-destination="${escapeHtml(landingContent.hero.cta.href)}" data-ot-analytics-placement="${escapeHtml(landingContent.hero.cta.analyticsPlacement)}">${escapeHtml(landingContent.hero.cta.label)}</a>
       <p class="hero-note">${escapeHtml(landingContent.hero.note)}</p>
     </div>
@@ -268,6 +281,44 @@ function landingPage() {
     <p>${escapeHtml(landingContent.how.body)}</p>
     <ol>${steps}</ol>
   </section>
+  <section class="section experience" id="experience">
+    <h2>${escapeHtml(landingContent.experience.heading)}</h2>
+    <p class="section-intro">${escapeHtml(landingContent.experience.intro)}</p>
+    <div class="information-grid">${experienceCards}</div>
+  </section>
+  <section class="section participation" id="participation">
+    <h2>${escapeHtml(landingContent.participation.heading)}</h2>
+    <ul class="expectation-list">${participationItems}</ul>
+  </section>
+  <section class="section enrollment" id="enrollment">
+    <h2>${escapeHtml(landingContent.enrollment.heading)}</h2>
+    <div class="information-grid">
+      <article><h3>${escapeHtml(landingContent.enrollment.family.title)}</h3><p>${escapeHtml(landingContent.enrollment.family.body)}</p><a class="text-link" href="/signup?entry=family">Create a Family account</a></article>
+      <article><h3>${escapeHtml(landingContent.enrollment.school.title)}</h3><p>${escapeHtml(landingContent.enrollment.school.body)}</p><a class="text-link" href="/signup?entry=school">Send a School inquiry</a></article>
+    </div>
+  </section>
+  <section class="section access" id="access" data-access-boundary="${escapeHtml(campaign.deadlineAt)}">
+    <h2>${escapeHtml(landingContent.access.heading)}</h2>
+    <div class="access-state" data-before-expiry>
+      <p>${escapeHtml(landingContent.access.before)}</p>
+      <a class="button button-primary" href="/signup?entry=family">Create my free family account</a>
+    </div>
+    <div class="access-state" data-at-or-after-expiry hidden>
+      <p>${escapeHtml(landingContent.access.after)}</p>
+      <a class="button button-primary" href="/signup?entry=family">$67/month — create account</a>
+    </div>
+  </section>
+  <section class="section assurances" id="assurances">
+    <h2>${escapeHtml(landingContent.assurances.heading)}</h2>
+    <div class="information-grid">${assuranceCards}</div>
+    <nav class="assurance-links" aria-label="Account and policy links">
+      <a href="/terms">Terms, cancellation, and refunds</a>
+      <a href="/privacy">Privacy Notice</a>
+      <a href="/student-data">Student Data Notice</a>
+      <a href="/login">Member Login</a>
+      <a href="/support">Support</a>
+    </nav>
+  </section>
   ${gallerySection}
   <section class="section rabbi" id="rabbi">
     <div class="rabbi-bio">
@@ -279,7 +330,7 @@ function landingPage() {
       <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
   </section>
-  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Sign Up Now</a></section>
+  <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup?entry=family">Create my family account</a></section>
 </main>${footer()}`,
     {
       canonicalPath: '/',
@@ -297,34 +348,62 @@ function landingPage() {
 }
 
 function signupPage() {
-  const fallbackSuccess = successCopy('family');
   return pageShell(
     'Sign Up Now | One Time Mishnayos',
     `${header()}<main class="signup-page">
   <section class="signup-intro">
     <h1>Sign Up Now</h1>
-    <p>Join the live daily Mishnayos class and choose how you want to receive class information.</p>
+    <p>Create a Family account for up to three learners, or send a separate School inquiry for manual follow-up.</p>
   </section>
   <section class="signup-shell">
-    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the contact method supplied by the One Time team. Do not send student-sensitive information through this public form.</span></div></noscript>
-    <form class="signup-form" action="/api/v1/leads" method="post" data-signup-form data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
-      <div class="field"><label for="contact_name">Parent or contact name</label><input id="contact_name" name="contact_name" autocomplete="name" required><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
-      <div class="field"><label for="family_or_school">Family or School</label><input id="family_or_school" name="family_or_school" required><small>Do not include student names, ages, medical details, or private learner notes here.</small><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
-      <fieldset><legend>Signing up as</legend><label><input type="radio" name="audience_type" value="family" checked> Family</label><label><input type="radio" name="audience_type" value="school"> School</label></fieldset>
-      <div class="field"><label for="location">Location</label><input id="location" name="location" autocomplete="address-level2" placeholder="City, country, ZIP/postal code, or area" required><small>Type a city, ZIP/postal code, area code, or neighborhood.</small><p tabindex="-1" class="error" data-error-for="location"></p></div>
-      <input id="timezone" name="timezone" type="hidden">
-      <div class="field"><label for="timezone_fallback">Time zone</label><input id="timezone_fallback" name="timezone_fallback" placeholder="America/New_York" hidden disabled><small>Use an IANA time zone such as America/New_York.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
-      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
-      <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><small>Required only if you choose WhatsApp reminders.</small><p tabindex="-1" class="error" data-error-for="phone"></p></div>
-      <fieldset class="service-communications" aria-describedby="service_communications_note"><legend>Required service communications</legend><p id="service_communications_note">By submitting, you ask One Time Mishnayos to respond to this signup. Service messages about signup receipt, account/security, class access, or support may be sent when needed. Optional daily reminders are separate.</p></fieldset>
-      <fieldset class="optional-reminders" aria-describedby="optional_reminders_note"><legend>Optional class reminders</legend><p id="optional_reminders_note">Choose each reminder channel separately. No optional reminders are selected by default.</p><label><input id="email_reminder_consent" name="email_reminder_consent" type="checkbox" value="yes"> Email class reminders</label><label><input id="whatsapp_reminder_consent" name="whatsapp_reminder_consent" type="checkbox" value="yes"> WhatsApp class reminders</label><p class="policy-note">Reminder consent policy version: ${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}. You can stop optional messages by using unsubscribe instructions, replying STOP where supported, or contacting the One Time team.</p></fieldset>
-      <p class="signup-policy-note">By submitting, you agree to the <a href="/terms">Terms</a> and acknowledge the <a href="/privacy">Privacy Notice</a>, including the <a href="/communications-consent">Communication and Reminder Consent</a> and <a href="/student-data">Parent/Guardian and Student Data Notice</a>.</p>
-      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Sign Up Now</button>
+    <noscript><div class="noscript-panel" role="status"><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the Support path. Do not send student-sensitive information through this public form.</span></div></noscript>
+    <form class="signup-form" action="/api/v1/signup/family" method="post" data-signup-form data-access-boundary="${escapeHtml(campaign.deadlineAt)}" data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
+      <fieldset class="entry-choice"><legend>Choose your entry</legend><label><input type="radio" name="classification_choice" value="family" checked> Family account</label><label><input type="radio" name="classification_choice" value="school"> School inquiry</label></fieldset>
+      <section data-family-fields aria-labelledby="family-fields-heading">
+        <h2 id="family-fields-heading">Create the adult Family account</h2>
+        <p class="section-note">One adult account can manage up to three separate learner seats. An adult who wants to learn as a Student must use a separate Student seat. Student email is not required.</p>
+        <div class="field-grid">
+          <div class="field"><label for="first_name">First name</label><input id="first_name" name="first_name" autocomplete="given-name" required><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
+          <div class="field"><label for="last_name">Last name</label><input id="last_name" name="last_name" autocomplete="family-name" required><p tabindex="-1" class="error" data-error-for="last_name"></p></div>
+        </div>
+        <div class="field"><label for="email">Adult account email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
+        <div class="field"><label for="timezone">Time zone</label><input id="timezone" name="timezone" autocomplete="off" placeholder="America/New_York" required><small>Use an IANA time zone. Your browser suggestion remains editable.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
+        <div class="field-grid">
+          <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password"></p></div>
+          <div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="12" required><p tabindex="-1" class="error" data-error-for="password_confirmation"></p></div>
+        </div>
+        <fieldset class="required-acceptances"><legend>Required agreements</legend>
+          <label><input id="terms_accepted" name="terms_accepted" type="checkbox" required><span>I agree to the <a href="/terms">Terms</a>, including cancellation and refund rules.</span></label>
+          <label><input id="privacy_accepted" name="privacy_accepted" type="checkbox" required><span>I acknowledge the <a href="/privacy">Privacy Notice</a> and <a href="/student-data">Student Data Notice</a>.</span></label>
+        </fieldset>
+        <fieldset class="optional-reminders"><legend>Optional adult communications</legend>
+          <p>No optional choice is selected by default. WhatsApp is not an active launch channel.</p>
+          <label><input id="general_marketing_consent" name="general_marketing_consent" type="checkbox"> General marketing</label>
+          <label><input id="parent_newsletter_consent" name="parent_newsletter_consent" type="checkbox"> Parent newsletter</label>
+        </fieldset>
+        <div class="signup-access-state" data-before-expiry><p data-signup-helper>No credit card. Free access ends September 13, 2026 at 7:24 p.m. Jerusalem time.</p></div>
+        <div class="signup-access-state" data-at-or-after-expiry hidden><p>$67/month after account creation through secure hosted checkout. No charge is made by this form.</p></div>
+      </section>
+      <section data-school-fields aria-labelledby="school-fields-heading" hidden>
+        <h2 id="school-fields-heading">Send a School inquiry</h2>
+        <p class="section-note">This is manual follow-up only. It does not create learner access, enroll an existing audience, or start WhatsApp messages.</p>
+        <div class="field"><label for="school_name">School name</label><input id="school_name" name="school_name" autocomplete="organization" required disabled><small>Do not include Student names, ages, medical details, or private learner notes.</small><p tabindex="-1" class="error" data-error-for="school_name"></p></div>
+        <div class="field-grid">
+          <div class="field"><label for="contact_first_name">Contact first name</label><input id="contact_first_name" name="contact_first_name" autocomplete="given-name" required disabled><p tabindex="-1" class="error" data-error-for="contact_first_name"></p></div>
+          <div class="field"><label for="contact_last_name">Contact last name</label><input id="contact_last_name" name="contact_last_name" autocomplete="family-name" required disabled><p tabindex="-1" class="error" data-error-for="contact_last_name"></p></div>
+        </div>
+        <div class="field"><label for="school_email">School contact email</label><input id="school_email" name="email" type="email" autocomplete="email" inputmode="email" required disabled><p tabindex="-1" class="error" data-error-for="email"></p></div>
+        <div class="field"><label for="school_phone">Phone (optional)</label><input id="school_phone" name="phone" type="tel" autocomplete="tel" maxlength="40" disabled><p tabindex="-1" class="error" data-error-for="phone"></p></div>
+        <div class="field"><label for="school_note">Note (optional)</label><input id="school_note" name="note" maxlength="1000" disabled><p tabindex="-1" class="error" data-error-for="note"></p></div>
+        <p class="signup-policy-note">By submitting, you ask the One Time team to respond to this School inquiry and acknowledge the <a href="/privacy">Privacy Notice</a>.</p>
+      </section>
+      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Create my free family account</button>
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
-      <h2 data-success-heading>${escapeHtml(fallbackSuccess.heading)}</h2>
-      <p data-success-body>${escapeHtml(fallbackSuccess.body)}</p>
+      <h2 data-success-heading>Request received</h2>
+      <p data-success-body>We saved your request.</p>
+      <a class="text-link" href="/login">Member Login</a>
     </div>
   </section>
 </main>${footer()}`,
