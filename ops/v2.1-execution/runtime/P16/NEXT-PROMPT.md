@@ -13,18 +13,17 @@ Task context: ops/v2.1-execution/contexts/P16-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P16/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P16/HANDOFF.md
 
-Stop at this atomic claim checkpoint until C00 reconciles its exact pushed head
-and sole parent. The claim is
-`0a4c2e0f-6c3d-4e42-aee8-8bfd27ce5c9d` under CLASSROOM_CORE lease
-`01453191-8f65-4dcd-8559-9045599dae9b`, expiring
-`2026-07-30T01:23:18Z`.
+Fetch remote refs and verify the exact terminal P16 branch head, reconciled C00
+authorization, claim, released lease, package/task/context bindings, artifact
+digest, and effects `0/0/0`. P16 is `ready_for_review`; do not reopen
+implementation without a new exact C00 `resume_ready` entry.
 
-After explicit reconciliation, resume only the bounded classroom repository
-migration-compatibility correction: persist non-null `reminder_local_time` for
-every class-series insert, persist non-null `reminder_due_at` and
-`joinable_until` for every occurrence insert, and prove the exact repository
-paths against native PostgreSQL after migrations through 2239.
-
-Do not implement before reconciliation. Do not edit control or integration,
-apply steward requests, register, inspect providers, deploy, send, or perform
-external effects. Effects remain `0/0/0`.
+Review implementation commit `07475dd776f046f238061217ebc63ed9320c54c8`
+and artifact digest
+`e84eb12e42832288446f756e1933dc887be37839440d738f156373d25ab62b7d`.
+The bounded reminder/joinable compatibility correction and native PostgreSQL
+proof through migration 2239 pass. C00/F02/I36 must separately disposition the
+recorded recurrence-weekday `0..6` contract versus `1..7` schema mismatch; it
+was not changed under this correction's authority. I36 may ancestry-integrate
+the accepted terminal head. No global control edits, steward application,
+provider inspection, deployment, send, or live effects belong on P16.

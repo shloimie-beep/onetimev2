@@ -25,24 +25,24 @@ dependency_heads:
     integration_head_sha: 01cdb992660a1fbc20b204b829d28062fd044679
     interface_implementation_head_sha: ab71afb032b8e004cc655e3e5f5a6b8286aec380
     interface_checkpoint_digest: 2ebe108d2aa39a90908889bf9cf8f96cffb93d296e7ee9614e0d1bb5b351c3eb
-status: claimed
-phase: classroom_repository_migration_compatibility_correction
+status: ready_for_review
+phase: complete
 claimed_by: codex-p16-worker-0a4c2e0f
 claim_time: '2026-07-29T23:53:18Z'
 claim_id: 0a4c2e0f-6c3d-4e42-aee8-8bfd27ce5c9d
 writer_slot_lease_id: 01453191-8f65-4dcd-8559-9045599dae9b
 lease_issued_at: '2026-07-29T23:53:18Z'
 lease_expires_at: '2026-07-30T01:23:18Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-30T00:16:50Z'
-controller_authorization_sha: 9d53cf1c581dcb67e30b2beb62d048a1839f23e2
-state_based_on_control_head_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+lease_released_at: '2026-07-30T00:45:59Z'
+last_heartbeat_at: '2026-07-30T00:45:59Z'
+controller_authorization_sha: 5644d38395e86ea114197eb12415106994bbf3ea
+state_based_on_control_head_sha: fe0d60fa2807b02882390df960f3e75517672d11
 ready_entry_payload_digest: 5a7d1bebc22b55cf415ad4cea51131aee21c880c09792c3c8bd4c064104bf675
-state_based_on_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
-last_implementation_commit_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
+state_based_on_head_sha: be95754a1b331a5e420f9cf755bc190357fe3436
+last_implementation_commit_sha: 07475dd776f046f238061217ebc63ed9320c54c8
 interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
-implementation_artifact_digest: 1fb4658cf45b75fb99b009dad04e5d127d35ffd5c9816bf41a544dd0514e58b4
-implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 15 non-runtime P16 artifacts, with LF separators and no final newline.
+implementation_artifact_digest: e84eb12e42832288446f756e1933dc887be37839440d738f156373d25ab62b7d
+implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 16 non-runtime P16 artifacts, with LF separators and no final newline.
 interface_state_handoff_digest: afd57cbd0cc837caf6b6b007a61269f676f99ee1ea2d7d4edd7f2da65d31714e
 interface_state_handoff_digest_algorithm: SHA-256 over the exact interface-metadata-head Git blobs for HANDOFF.md, NEXT-PROMPT.md, and TASK-STATE.yaml as lexicographically sorted UTF-8 path=sha256 lines, with LF separators and no final newline.
 steward_request_digest: 628fe0cb860057b6dde8b5e214edfe00400ca8f701459993e099e6f923fd34cb
@@ -57,10 +57,16 @@ completed_steps:
   - published terminal ready_for_review metadata with exact implementation, interface, artifact, state/handoff, and steward-request bindings and released the task-local lease
   - verified exact containing control 9d53cf1c581dcb67e30b2beb62d048a1839f23e2, sole acquisition parent a6bc58cc4a35173fd1606124c0fa651dda2dac64, expected remote head 72fca16b3a9cd82c666e293f8bfd7d84c30722a1, canonical READY digest, task/context/package bindings, fresh claim, sole CLASSROOM_CORE lease, empty effect locks, and effects 0/0/0
   - claimed only the P16 runtime triplet for the classroom repository migration-compatibility correction; all product, test, interface, steward-request, control, provider, deployment, send, and effect bytes remain unchanged
+  - verified C00 reconciliation at control head 5644d38395e86ea114197eb12415106994bbf3ea with sole parent fe0d60fa2807b02882390df960f3e75517672d11, exact claim head be95754a1b331a5e420f9cf755bc190357fe3436, unchanged claim and sole lease, and effects 0/0/0
+  - persisted reminder_local_time from the authoritative series local start and reminder_due_at plus joinable_until from authoritative occurrence timing on every P16 repository insert, refreshing the same fields on updates
+  - added repository-boundary validation for absent or invalid schedule timing and direct coverage for midnight reminder wrap, positive occurrence timestamps, and rejection before persistence
+  - passed exact native PGlite PostgreSQL execution of 70 migrations through 2239_v21_classroom_core.sql, positive repository writes, NOT NULL/no-default inspection, omission rejection, and invalid-timing rejection
+  - passed full typecheck, 571 unit assertions across 87 files, focused ESLint and Prettier, secret scan, diff hygiene, artifact digest recomputation, and scope review
+  - published terminal ready_for_review metadata and released the sole CLASSROOM_CORE lease before expiry
 remaining_steps:
-  - C00 must reconcile this exact pushed atomic claim before any product or test correction.
-  - After reconciliation, persist non-null reminder_local_time for every class_series insert, persist non-null reminder_due_at and joinable_until for every class_occurrences insert, and prove the exact repository paths against native PostgreSQL after migrations through 2239.
-next_action: Stop after pushing this triplet-only claim. Await exact C00 reconciliation before reading or editing product/test paths for the bounded classroom repository migration-compatibility correction.
+  - C00 must review the exact pushed terminal head and I36 must ancestry-integrate the accepted P16 correction.
+  - C00/F02/I36 must separately disposition the pre-existing recurrence-weekday numbering mismatch recorded below.
+next_action: C00 should validate the exact terminal P16 head, implementation commit 07475dd776f046f238061217ebc63ed9320c54c8, artifact digest e84eb12e42832288446f756e1933dc887be37839440d738f156373d25ab62b7d, migration-through-2239 proof, released lease, and effects 0/0/0 before I36 ancestry-integration.
 requirements:
   OTV2-CLASSROOM-065: implementation_ready
   OTV2-CLASSROOM-066: implementation_ready
@@ -93,6 +99,7 @@ changed_paths:
   - packages/domain/src/classes/core/index.ts
   - packages/domain/src/classes/core/occurrences.ts
   - packages/domain/src/classes/core/series.ts
+  - tests/unit/classes/classroom-core-repository.test.ts
   - ops/v2.1-execution/runtime/P16/HANDOFF.md
   - ops/v2.1-execution/runtime/P16/INTERFACE-CHECKPOINT.yaml
   - ops/v2.1-execution/runtime/P16/NEXT-PROMPT.md
@@ -118,13 +125,23 @@ verification:
     - canonical recursively key-sorted READY payload recomputation (passed; 2682-byte preimage and digest 5a7d1bebc22b55cf415ad4cea51131aee21c880c09792c3c8bd4c064104bf675)
     - exact prior P16 state/handoff and triplet digest recomputation (passed)
     - task, context, and package-lock raw Git-blob digest verification (passed)
+    - reconciled control 5644d38395e86ea114197eb12415106994bbf3ea, sole parent fe0d60fa2807b02882390df960f3e75517672d11, exact claim head, claim/lease, branch, and zero-effect verification (passed)
+    - focused classroom core repository Vitest suite (passed, 4 tests)
+    - full unit suite (passed, 87 files and 571 tests)
+    - npm run typecheck (passed)
+    - focused ESLint and Prettier over the two correction artifacts (passed)
+    - npm run secret:scan (passed across 2553 repository text files)
+    - native PGlite PostgreSQL execution of 70 migrations through 2239_v21_classroom_core.sql with positive series/occurrence repository writes (passed)
+    - information_schema proof that reminder_local_time, reminder_due_at, and joinable_until are NOT NULL with no defaults; raw omission and repository invalid-input rejection (passed)
+    - exact 16-artifact implementation Git-blob digest derivation, including validation that the same algorithm reproduces the prior 15-artifact digest (passed)
+    - git diff --check, changed-path, migration, registration, interface, steward-request, effect, and branch-scope review (passed)
   known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers:
-  - C00 reconciliation of this atomic triplet-only claim is required before the bounded product/test correction.
+blockers: []
 out_of_scope_findings:
   - Shared migration, root barrel, and central server/client registration changes are captured in STEWARD-REQUESTS.yaml and were not edited by P16.
+  - Migration 2237 constrains class_series.recurrence_weekdays to ISO values 1 through 7, while the existing P16 contract/domain uses 0 through 6 and the canonical schedule is 0,1,2,3,4; the native database rejected that existing representation. The bounded correction did not alter contracts, domain weekday semantics, or F02 migrations and used a schema-valid 1,3,5 proof series solely to exercise the authorized repository timestamp paths.
