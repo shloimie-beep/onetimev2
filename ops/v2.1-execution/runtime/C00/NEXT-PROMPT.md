@@ -2150,3 +2150,60 @@ Do not use `6d9644ad...` or `76976d6a...` as runtime-triplet digests; those
 are separate path-to-blob aggregate values. This correction changes no active
 F02 authority, READY payload, lease, queue, source terminal, provider state,
 candidate, or external effect.
+
+# Latest F02 proposal-authority metadata correction instruction
+
+Consume only F02 READY
+`2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2`
+from exact clean local/tracking/live remote head
+`edacab1ded9498e3ac6156942d0a3ae9fc268aea`, under claim
+`68f6e27a-caa2-4988-842c-7fd8eb0eb9ef`, writer
+`codex-f02-proposal-authority-68f6e27a`, and sole MIGRATION_AUTHORITY lease
+`defa457c-32f6-4618-a237-cde17d3c439a`. The READY parent and controller
+authorization are
+`fbc5d54093f34a823b8ee9f8a7906f65053c25db`. Resolve the exact live remote
+control commit containing this READY entry after C00's normal push and use that
+commit as `containing_control_head_sha`. Stop immediately on branch, ancestry,
+remote, lease, READY-digest, control-head, or path drift.
+
+Change exactly these four paths:
+
+1. `ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml`;
+2. `ops/v2.1-execution/runtime/F02/TASK-STATE.yaml`;
+3. `ops/v2.1-execution/runtime/F02/HANDOFF.md`;
+4. `ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md`.
+
+In the live proposal `authority` block, bind exactly:
+
+- `writer_slot: MIGRATION_AUTHORITY`;
+- `lease_id: defa457c-32f6-4618-a237-cde17d3c439a`;
+- `claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef`;
+- `writer_id: codex-f02-proposal-authority-68f6e27a`;
+- `containing_control_head_sha`: the exact pushed remote control commit that
+  contains READY `2f554b14...`;
+- `ready_entry_parent_control_sha`,
+  `controller_authorization_sha`:
+  `fbc5d54093f34a823b8ee9f8a7906f65053c25db`;
+- `authorized_start_sha`:
+  `edacab1ded9498e3ac6156942d0a3ae9fc268aea`;
+- the granted lease expiry, actual terminal `released_at`, and
+  `audit_status: PASS`.
+
+Remove the stale live projection-v2 claim, dual leases, writer, control, start,
+and release from that live authority block. Do not leave a
+`schema_contract_lease_id` in the new live authority. Preserve the old values
+only as clearly labeled historical evidence in the F02 runtime triplet.
+
+Preserve every allocation row, checksum, authoritative P17 digest, separate
+2250-2252 acknowledgment, proof `39cacd4a...`, merge `526f0384...`, and
+`central_steward_results_applied: false`. Update the F02 TASK/HANDOFF/NEXT
+phase, authority, release, and evidence consistently. Do not edit a migration,
+product file, request, central control file, steward result, provider record,
+deployment file, checksum field, or allocation row.
+
+Validate exact four-path scope, YAML, proposal-authority parity, immutable
+request/migration/checksum/allocation bytes, ancestry, diff hygiene, secret
+scan, effects `0/0/0`, released sole lease, and clean local/tracking/live remote
+equality. Do not rerun product or workspace suites for these metadata-only
+bytes. Commit and push normally to the exact F02 branch, then stop for C00
+independent admission; do not integrate or apply a steward result.

@@ -6,12 +6,12 @@ ready:
 - task_id: F02
   lane: A
   status: resume_ready
-  phase: migration_2251_pgmem_checksum_metadata_correction
+  phase: migration_2251_proposal_authority_metadata_correction
   branch: codex/v21-lane1-migration-correction
   claim_mode: resume_phase_branch_exact_head
-  state_based_on_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-  authorized_start_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
-  expected_existing_head: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+  state_based_on_control_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+  authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+  expected_existing_head: edacab1ded9498e3ac6156942d0a3ae9fc268aea
   package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
   source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
   task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
@@ -23,60 +23,67 @@ ready:
       observed_integration_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
       state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
       runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
-    held_acknowledgment_terminal:
-      head_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
-      disposition: held_not_admissible_pending_exact_metadata_correction
-      state_handoff_digest: c3cd86e54f0142e9a169aa0581a9e332cf37b6332ab0f9f10d69c94cb453083e
-      runtime_triplet_digest: b1d6109ed9f0383720a790f15fb67c0dc1cdff9ffe70b8fb4e45b7b05dc518a8
-    canonical_request_binding:
+    held_checksum_terminal:
+      head_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+      disposition: held_not_admissible_pending_live_proposal_authority_rebind
+      proposal_raw_sha256: 7bba5bf0f78d3e01ab37492675865d74462dedb87869ea090f974c223864d974
+      state_handoff_digest: 96a57f40af0e49b863c0994e4da412c90f4ceb70cdff1e72be4319265ffd39ee
+      runtime_triplet_digest: 945f0cf01094cb2dfc376920bd384b5f803e879f46d088ef4d11fb9ff1425038
+      four_path_aggregate_digest: fa2e7ed037005d013d120fc8cd8f53001ad666934794730d9dc7a5177e3daedc
+    validated_correction_binding:
       request_id: P17-MIGRATION-002
-      malformed_prior_ready_value: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624
       authoritative_request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
-      authoritative_sources:
-      - ops/v2.1-execution/control/STEWARD-QUEUE.yaml
-      - ops/v2.1-execution/control/MIGRATION-ALLOCATIONS.yaml
-      - immutable P17-MIGRATION-002 request bytes
-    migration_2251_binding:
-      implementation_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
-      integration_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
-      migration_path: packages/db/migrations/2251_v21_embedded_classroom.sql
       migration_git_blob: 4bd4afdc152dd47977d7ab0aaeee246d5f75a16f
       migration_normalized_lf_sha256: 525172d9072c930e0178e35ec8a7ddc6b1217b70f17b5e1f1c970228dee43dec
       migration_control_checksum_sha256: 3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9
-      stale_pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
       exact_pg_mem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
+      central_steward_results_applied: false
+    stale_live_proposal_authority:
+      claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
+      migration_authority_lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
+      schema_contract_lease_id: e0a6dd90-820f-4625-9979-e057d0bdad1c
+      writer_id: codex-f02-projection-v2-88a902de
+      containing_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+      authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+      released_at: '2026-07-30T17:44:04Z'
+    required_live_proposal_authority:
+      claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
+      migration_authority_lease_id: defa457c-32f6-4618-a237-cde17d3c439a
+      writer_id: codex-f02-proposal-authority-68f6e27a
+      containing_control_parent_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+      authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
   authorized_paths:
   - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
   correction_directives:
-  - Resume only from exact clean local/tracking/remote F02 head bd17fd6f; stop on branch, ancestry, remote, or path drift.
-  - Replace the stale migration-2251 repository-runner checksum fd4cdaa3 with exact current-blob derivation ee0f9616 in the allocation proposal and every current F02 acknowledgment/inventory field.
-  - Record that the prior c446 READY P17 digest was malformed at 62 hex characters and bind the immutable full 64-character digest ending 624ca; do not change any request identity or bytes.
-  - Update only the proposal plus F02 runtime triplet. Do not edit a migration, product file, request, provider record, deployment file, or control file.
-  - Preserve the three separate 2250-2252 acknowledgments, proof 39cacd4a, merge 526f0384, and explicit central_steward_results_applied false disposition.
-  - Validate exact four-path scope, YAML, derivation from Git blob 4bd4afdc using the packages/db repository-runner transform, immutable request/migration bytes, diff hygiene, secret scan, released lease, clean remote equality, and effects 0/0/0. Do not rerun product or workspace suites for metadata-only bytes.
+  - Resume only from exact clean local/tracking/remote F02 head edacab1d; stop on branch, ancestry, remote, or path drift.
+  - Rebind only the allocation proposal's live authority block to the fresh claim, sole MIGRATION_AUTHORITY lease, writer, exact containing control head, fbc5d540 parent, edacab1d start, expiry, release, and PASS disposition.
+  - Remove the stale projection-v2 claim, dual leases, writer, control, start, and release from the live authority block; preserve them only as explicitly labeled historical evidence in the runtime triplet.
+  - Update only the proposal plus F02 runtime triplet. Preserve every allocation, checksum, P17 request binding, 2250-2252 acknowledgment, proof 39cacd4a, merge 526f0384, and central_steward_results_applied false.
+  - Do not edit a migration, product file, request, provider record, deployment file, control file, checksum field, or allocation row.
+  - Validate exact four-path scope, YAML, proposal authority parity, immutable request/migration/checksum bytes, diff hygiene, secret scan, released lease, clean remote equality, and effects 0/0/0. Do not rerun product or workspace suites for metadata-only bytes.
   writer_slot_leases:
   - slot: MIGRATION_AUTHORITY
-    lease_id: 35b6ed2e-7863-493c-8d5e-dee6850f5110
+    lease_id: defa457c-32f6-4618-a237-cde17d3c439a
     holder_task_id: F02
-    holder_claim_id: 07870f1c-ed37-4637-a92f-708f80fb36df
-    holder_writer_id: codex-f02-2251-checksum-07870f1c
-    state_based_on_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-    lease_issued_at: '2026-07-30T20:10:49Z'
-    lease_expires_at: '2026-07-30T21:40:49Z'
-    phase_scope: migration_2251_pgmem_checksum_metadata_correction_only
+    holder_claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
+    holder_writer_id: codex-f02-proposal-authority-68f6e27a
+    state_based_on_control_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+    lease_issued_at: '2026-07-30T20:55:05Z'
+    lease_expires_at: '2026-07-30T22:25:05Z'
+    phase_scope: migration_2251_proposal_authority_metadata_correction_only
   effect_lock_leases: []
-  claim_id: 07870f1c-ed37-4637-a92f-708f80fb36df
-  lease_issued_at: '2026-07-30T20:10:49Z'
-  lease_expires_at: '2026-07-30T21:40:49Z'
+  claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
+  lease_issued_at: '2026-07-30T20:55:05Z'
+  lease_expires_at: '2026-07-30T22:25:05Z'
   heartbeat_interval_minutes: 30
   prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
   model: GPT-5.6-SOL
   reasoning: XHIGH
 entry_payload_digests:
-  F02: d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82
+  F02: 2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

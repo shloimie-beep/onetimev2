@@ -43,6 +43,25 @@ blockers:
   protection: The historical rejected head 68e3c527 remains diagnostic only; only the corrected final migration bytes may be considered for candidate replay.
   next_check: Revalidate after any later migration or database-byte change and once at candidate freeze.
 - blocker_id: F02-2251-PGMEM-CHECKSUM-METADATA
+  status: closed
+  scope: preintegration_metadata_truth
+  owner: C00_and_F02
+  affected_tasks:
+  - F02
+  - P18
+  - I36
+  safe_work_completed: >-
+    Exact four-path correction terminal edacab1d preserves immutable migration 2251 blob 4bd4afdc, records normalized-LF
+    checksum 525172d9, control checksum 3fdeedcb, and independently rederived repository-runner checksum ee0f9616, and
+    binds the full 64-character P17 request digest ending 624ca. Independent review passed every checksum, immutable
+    request/migration, exact-scope, YAML, diff, secret, remote-equality, and zero-effect gate; no migration, request,
+    product, provider, or external-effect byte changed.
+  required_authority_or_input: []
+  protection: >-
+    Preserve the validated immutable migration/request bytes and all exact checksum fields at edacab1d; do not revive
+    the superseded fd4cdaa3 value or truncate the P17 digest.
+  next_check: Revalidate only after a later migration, request, or checksum-byte change and once at candidate freeze.
+- blocker_id: F02-PROPOSAL-AUTHORITY-METADATA
   status: open
   scope: preintegration_metadata_truth
   owner: C00_and_F02
@@ -51,19 +70,20 @@ blockers:
   - P18
   - I36
   safe_work_completed: >-
-    Independent review held F02 acknowledgment terminal bd17fd6f before integration. Current immutable migration
-    2251 blob 4bd4afdc retains normalized-LF checksum 525172d9 and control checksum 3fdeedcb, but the exact
-    repository-runner transform derives ee0f9616. The recorded fd4cdaa3 checksum belongs to superseded pre-hardening
-    blob 2ed1385c. The same review found c446 READY had truncated the P17 canonical request digest to 62 hex
-    characters; the immutable request, steward queue, and allocation record all bind the correct 64-character value
-    ending 624ca. No migration, request, product, provider, or external-effect byte is implicated.
+    Independent review held exact F02 terminal edacab1d only because its live allocation-proposal authority block still
+    names historical projection-v2 claim 88a902de, dual leases 7de57120/e0a6dd90, writer
+    codex-f02-projection-v2-88a902de, containing control f2b4a9fa, start c0a1e04b, and release
+    2026-07-30T17:44:04Z. Every checksum, request, allocation, acknowledgment, exact-scope, YAML, diff, secret,
+    remote-equality, released-lease, and zero-effect gate otherwise passes. Fresh claim 68f6e27a has sole
+    MIGRATION_AUTHORITY lease defa457c from exact start edacab1d and control parent fbc5d540.
   required_authority_or_input:
-  - Complete the exact four-path F02 proposal/runtime metadata correction from bd17fd6f.
-  - Independently rederive the 2251 repository-runner checksum and full P17 request digest before admission.
+  - Complete the exact four-path proposal-authority/runtime correction from edacab1d.
+  - Independently verify live proposal-authority parity, clean remote equality, released lease, and unchanged validated checksum/request/allocation bytes.
   protection: >-
-    Do not edit migration or request bytes, integrate bd17fd6f, apply a central steward result, or rerun unrelated
-    product suites for this metadata-only correction.
-  next_check: Re-evaluate only after the corrected F02 terminal is pushed with clean remote equality and a released lease.
+    Change only the live proposal authority and its exact F02 runtime evidence. Do not edit migrations, product code,
+    requests, allocations, checksum fields, 2250-2252 acknowledgments, a central steward result, integration, candidate,
+    provider state, or external effects.
+  next_check: Re-evaluate only after the authority-corrected F02 terminal is pushed with clean remote equality and its sole lease released.
 - blocker_id: P20-P21-PUBLICATION-SEED-INTEGRATION
   status: closed
   scope: controlled_launch_candidate

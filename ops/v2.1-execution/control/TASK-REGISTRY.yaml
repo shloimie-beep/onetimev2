@@ -88,7 +88,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F01/status_proof
 - task_id: F02
   status: resume_ready
-  active_phase: migration_2251_pgmem_checksum_metadata_correction
+  active_phase: migration_2251_proposal_authority_metadata_correction
   branch: codex/v21-lane1-migration-correction
   phase_branches:
     contract: codex/v21-f02-schema-state-migrations
@@ -106,6 +106,7 @@ tasks:
     content_publication_projection_v2_migration: codex/v21-lane1-migration-correction
     migration_2250_2252_steward_acknowledgment_checkpoint: codex/v21-lane1-migration-correction
     migration_2251_pgmem_checksum_metadata_correction: codex/v21-lane1-migration-correction
+    migration_2251_proposal_authority_metadata_correction: codex/v21-lane1-migration-correction
     verification: codex/v21-f02-schema-state-migrations
   phase_heads:
     contract: bec1f1834adbde6d6b2cd55acb31541fb9dc134a
@@ -133,28 +134,30 @@ tasks:
     migration_2250_2252_steward_acknowledgment_authorized_start: 8634b2ab15df624576a88b31182ebdc68553ff74
     migration_2250_2252_steward_acknowledgment_held_review: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
     migration_2251_pgmem_checksum_metadata_correction_authorized_start: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+    migration_2251_pgmem_checksum_metadata_correction_held_review: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+    migration_2251_proposal_authority_metadata_correction_authorized_start: edacab1ded9498e3ac6156942d0a3ae9fc268aea
     verification: e4673ff1c2e621e26ac93034be245b280c4da4fa
   authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-  last_known_remote_head: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
-  active_claim_id: 07870f1c-ed37-4637-a92f-708f80fb36df
-  active_writer_id: codex-f02-2251-checksum-07870f1c
-  lease_expires_at: '2026-07-30T21:40:49Z'
+  last_known_remote_head: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+  active_claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
+  active_writer_id: codex-f02-proposal-authority-68f6e27a
+  lease_expires_at: '2026-07-30T22:25:05Z'
   active_writer_leases:
   - slot: MIGRATION_AUTHORITY
-    lease_id: 35b6ed2e-7863-493c-8d5e-dee6850f5110
-    phase_scope: migration_2251_pgmem_checksum_metadata_correction_only
-  last_heartbeat_at: '2026-07-30T20:10:49Z'
-  controller_authorization_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-  ready_entry_payload_digest: d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82
+    lease_id: defa457c-32f6-4618-a237-cde17d3c439a
+    phase_scope: migration_2251_proposal_authority_metadata_correction_only
+  last_heartbeat_at: '2026-07-30T20:55:05Z'
+  controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+  ready_entry_payload_digest: 2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2
   interface_checkpoint_sha: e4673ff1c2e621e26ac93034be245b280c4da4fa
   implementation_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   status_proof:
     state: resume_ready
     producer_task_id: C00
-    producer_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
+    producer_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
     canonical_candidate_digest: null
     interface_checkpoint_digest: c03e01d7e16bdc252b9964f1acfc60d40e772de98776023c20f7589e467b5ccd
-    integration_or_evidence_head_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+    integration_or_evidence_head_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
@@ -165,8 +168,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-    transitioned_at: '2026-07-30T20:10:49Z'
+    state_based_on_control_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+    transitioned_at: '2026-07-30T20:55:05Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F02/status_proof
 - task_id: F03
   status: ready_for_review

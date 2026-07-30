@@ -2644,3 +2644,53 @@ of `TASK-STATE.yaml` followed by `HANDOFF.md`, and then followed by
 The prior `6d9644ad...` and `76976d6a...` values remain valid only as their
 separate path-to-blob aggregate digests. The active F02 READY entry and its
 authorization remain byte-identical.
+
+# F02 proposal-authority metadata hold and correction
+
+Control acquisition parent is
+`fbc5d54093f34a823b8ee9f8a7906f65053c25db`; exact remote integration remains
+`8634b2ab15df624576a88b31182ebdc68553ff74`; candidate remains null.
+
+Root completed and pushed the prior exact four-path checksum correction at F02
+terminal `edacab1ded9498e3ac6156942d0a3ae9fc268aea`. Its proposal raw digest is
+`7bba5bf0f78d3e01ab37492675865d74462dedb87869ea090f974c223864d974`,
+state/handoff digest is
+`96a57f40af0e49b863c0994e4da412c90f4ceb70cdff1e72be4319265ffd39ee`,
+runtime-triplet digest is
+`945f0cf01094cb2dfc376920bd384b5f803e879f46d088ef4d11fb9ff1425038`,
+and exact four-path aggregate is
+`fa2e7ed037005d013d120fc8cd8f53001ad666934794730d9dc7a5177e3daedc`.
+Independent review passed its full P17 request digest, exact migration-2251
+Git-blob/LF/control/repository-runner checksums, allocation and acknowledgment
+preservation, exact scope, YAML, diff, secret scan, released lease, clean
+local/tracking/live equality, and effects `0/0/0`.
+
+Admission is held only because the live proposal `authority` block still names
+historical projection-v2 claim `88a902de-af91-412f-9e38-6e82dac1d3d2`,
+MIGRATION_AUTHORITY lease `7de57120-0ed6-4e9d-8dcd-53cdbdf471b4`,
+SCHEMA_CONTRACT lease `e0a6dd90-820f-4625-9979-e057d0bdad1c`, writer
+`codex-f02-projection-v2-88a902de`, containing control `f2b4a9fa...`, start
+`c0a1e04b...`, and release `2026-07-30T17:44:04Z`.
+
+C00 therefore authorized only the proposal plus F02 runtime triplet from exact
+`edacab1d...` under:
+
+- claim `68f6e27a-caa2-4988-842c-7fd8eb0eb9ef`;
+- sole MIGRATION_AUTHORITY lease
+  `defa457c-32f6-4618-a237-cde17d3c439a`;
+- writer `codex-f02-proposal-authority-68f6e27a`;
+- READY `2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2`.
+
+The correction must rebind only the live authority block and exact runtime
+evidence. It must preserve every allocation, checksum, P17 binding, separate
+2250-2252 acknowledgment, implementation proof `39cacd4a...`, integration
+merge `526f0384...`, and `central_steward_results_applied: false`. No migration,
+product, request, steward-result, integration, candidate, provider, deployment,
+live-database, or external-effect byte is in scope.
+
+After one exact four-path terminal is pushed with its sole lease released and
+independently passes, queue the already admitted terminals in this fixed
+integration order: corrected F02, F04 `b43c1923...`, F03 `3947c988...`, then
+read-only P31 `f50d95ba...`. Legal remains a `production_broad`-only gate. No
+provider lock is held and no provider, DNS, send, charge, live migration,
+customer, or other external effect is authorized.
