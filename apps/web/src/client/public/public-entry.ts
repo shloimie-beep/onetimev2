@@ -1,7 +1,5 @@
 import './styles.css';
 
-import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../../../../../packages/domain/src/legal/policies.ts';
-
 const analyticsTargets = document.querySelectorAll<HTMLElement>('[data-ot-analytics-event]');
 for (const target of analyticsTargets) {
   target.addEventListener('click', () => {
@@ -117,7 +115,7 @@ function renderTimedAccessState() {
       const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]');
       if (submit && !schoolSelected && !submit.disabled) {
         submit.textContent = expired
-          ? '$67/month — create account and continue'
+          ? 'Create account and continue to checkout'
           : 'Create my free family account';
       }
     }
@@ -420,7 +418,6 @@ if (form) {
     expires_at: string;
     writes_allowed: boolean;
   }[] = [];
-  const schoolIdempotencyKey = crypto.randomUUID();
   if (submit) submit.hidden = false;
 
   const setError = (name: string, message: string) => {
@@ -436,21 +433,23 @@ if (form) {
   const setSectionEnabled = (section: HTMLElement | null, enabled: boolean) => {
     if (!section) return;
     section.hidden = !enabled;
-    section.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
-      input.disabled = !enabled;
-    });
+    section
+      .querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')
+      .forEach((field) => {
+        field.disabled = !enabled;
+      });
   };
   const familyButtonCopy = () => {
     const boundary = Date.parse(form.dataset.accessBoundary ?? '');
     return Number.isFinite(boundary) && serverNow().getTime() >= boundary
-      ? '$67/month — create account and continue'
+      ? 'Create account and continue to checkout'
       : 'Create my free family account';
   };
   const syncEntry = () => {
     const family = currentEntry() === 'family';
     setSectionEnabled(familyFields, family);
     setSectionEnabled(schoolFields, !family);
-    if (submit) submit.textContent = family ? familyButtonCopy() : 'Send School inquiry';
+    if (submit) submit.textContent = family ? familyButtonCopy() : 'Send school inquiry';
   };
 
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -542,36 +541,19 @@ if (form) {
           }),
         });
       } else {
-        const emailFollowUp = data.get('school_email_reminder_consent') === 'on';
-        response = await fetch('/api/v1/leads', {
+        const phone = String(data.get('phone') ?? '').trim();
+        const note = String(data.get('note') ?? '').trim();
+        response = await fetch('/api/v2.1/signup/school-inquiry', {
           method: 'POST',
           credentials: 'same-origin',
           headers: { 'content-type': 'application/json', accept: 'application/json' },
           body: JSON.stringify({
-            contact_name: String(data.get('school_contact_name') ?? ''),
-            family_or_school: String(data.get('school_name') ?? ''),
-            audience_type: 'school',
-            location: String(data.get('school_location') ?? ''),
-            timezone: detectedTimezone,
-            browser_timezone: detectedTimezone,
-            email: String(data.get('school_email') ?? ''),
-            phone: '',
-            reminder_preference: emailFollowUp ? 'email' : 'none',
-            reminder_consent: emailFollowUp,
-            consent_context: {
-              policy_version: COMMUNICATION_CONSENT_POLICY_VERSION,
-              purpose: 'school_inquiry_follow_up',
-              source: 'public_signup',
-              channels: emailFollowUp ? ['email'] : [],
-              captured_at: new Date().toISOString(),
-              withdrawal_state: 'not_withdrawn',
-              suppression_state: 'active',
-            },
-            idempotency_key: schoolIdempotencyKey,
-            attribution: {
-              landing_path: '/signup?entry=school',
-              referrer: document.referrer.slice(0, 500),
-            },
+            school_name: String(data.get('school_name') ?? ''),
+            contact_first_name: String(data.get('contact_first_name') ?? ''),
+            contact_last_name: String(data.get('contact_last_name') ?? ''),
+            email: String(data.get('email') ?? ''),
+            ...(phone ? { phone } : {}),
+            ...(note ? { note } : {}),
           }),
         });
       }
@@ -624,7 +606,7 @@ if (form) {
     } finally {
       if (submit) {
         submit.disabled = false;
-        submit.textContent = entry === 'family' ? familyButtonCopy() : 'Send School inquiry';
+        submit.textContent = entry === 'family' ? familyButtonCopy() : 'Send school inquiry';
       }
     }
   });

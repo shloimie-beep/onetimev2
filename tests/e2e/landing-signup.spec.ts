@@ -125,7 +125,7 @@ test('server-synchronized free-period boundary changes countdown, landing, and s
   await expect(page.locator('[data-family-fields] [data-before-expiry]')).toBeHidden();
   await expect(page.locator('[data-family-fields] [data-at-or-after-expiry]')).toBeVisible();
   await expect(
-    page.getByRole('button', { name: '$67/month — create account and continue' }),
+    page.getByRole('button', { name: 'Create account and continue to checkout' }),
   ).toBeVisible();
 });
 
@@ -165,8 +165,8 @@ test('Family submission uses the P08 bootstrap, exact CSRF binding, and no Stude
   await page.goto('/signup?entry=family');
   await expect(page.getByText('Student email is not required.')).toBeVisible();
   await expect(page.getByLabel(/student.*email/i)).toHaveCount(0);
-  await page.getByLabel('First name').fill('Playwright');
-  await page.getByLabel('Last name').fill('Parent');
+  await page.getByLabel('First name', { exact: true }).fill('Playwright');
+  await page.getByLabel('Last name', { exact: true }).fill('Parent');
   await page.getByLabel('Adult account email').fill('family@example.test');
   await page.getByLabel('Password', { exact: true }).fill('StrongPassword!234');
   await page.getByLabel('Confirm password').fill('StrongPassword!234');
@@ -197,7 +197,9 @@ test('Family submission uses the P08 bootstrap, exact CSRF binding, and no Stude
   expect(serialized).not.toMatch(/student|phone|whatsapp|card|payment_method/i);
 });
 
-test('School is a separate manual inquiry and WhatsApp is not offered', async ({ page }) => {
+test('School uses the exact P09 manual-inquiry route and payload with no nurture fields', async ({
+  page,
+}) => {
   await useServerDate(page, '2026-08-01T12:00:00.000Z');
   await page.route('**/api/v1/signup/family/bootstrap', (route) =>
     route.fulfill({
@@ -207,7 +209,7 @@ test('School is a separate manual inquiry and WhatsApp is not offered', async ({
     }),
   );
   let observedPayload: Record<string, unknown> | null = null;
-  await page.route('**/api/v1/leads', async (route) => {
+  await page.route('**/api/v2.1/signup/school-inquiry', async (route) => {
     observedPayload = JSON.parse(route.request().postData() ?? '{}') as Record<string, unknown>;
     await route.fulfill({
       status: 200,
@@ -224,23 +226,23 @@ test('School is a separate manual inquiry and WhatsApp is not offered', async ({
   await page.goto('/signup?entry=school');
   await expect(page.getByRole('heading', { name: 'Send a School inquiry' })).toBeVisible();
   await expect(page.getByLabel(/WhatsApp/i)).toHaveCount(0);
-  await page.getByLabel('Parent or contact name').fill('School Contact');
-  await page.getByLabel('Family or School').fill('Example School');
-  await page.getByLabel('Location').fill('Jerusalem');
+  await page.getByLabel('School name').fill('Example School');
+  await page.getByLabel('Contact first name').fill('School');
+  await page.getByLabel('Contact last name').fill('Contact');
   await page.getByLabel('School contact email').fill('school@example.test');
-  await page.getByRole('button', { name: 'Send School inquiry' }).click();
+  await page.getByLabel('Phone (optional)').fill('+972501234567');
+  await page.getByLabel('Note (optional)').fill('Please contact the adult administrator.');
+  await page.getByRole('button', { name: 'Send school inquiry' }).click();
   await expect(
     page.getByRole('heading', { name: 'Thank you — we received your School inquiry.' }),
   ).toBeVisible();
-  expect(observedPayload).toMatchObject({
-    audience_type: 'school',
-    contact_name: 'School Contact',
-    family_or_school: 'Example School',
-    location: 'Jerusalem',
+  expect(observedPayload).toEqual({
+    school_name: 'Example School',
+    contact_first_name: 'School',
+    contact_last_name: 'Contact',
     email: 'school@example.test',
-    phone: '',
-    reminder_preference: 'none',
-    reminder_consent: false,
+    phone: '+972501234567',
+    note: 'Please contact the adult administrator.',
   });
 });
 

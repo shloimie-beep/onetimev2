@@ -387,11 +387,14 @@ function signupPage() {
       <section data-school-fields aria-labelledby="school-fields-heading" hidden>
         <h2 id="school-fields-heading">Send a School inquiry</h2>
         <p class="section-note">This is manual follow-up only. It does not create learner access, enroll an existing audience, or start WhatsApp messages.</p>
-        <div class="field"><label for="school_contact_name">Parent or contact name</label><input id="school_contact_name" name="school_contact_name" autocomplete="name" required disabled><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
-        <div class="field"><label for="school_name">Family or School</label><input id="school_name" name="school_name" required disabled><small>Do not include Student names, ages, medical details, or private learner notes.</small><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
-        <div class="field"><label for="school_location">Location</label><input id="school_location" name="school_location" autocomplete="address-level2" required disabled><p tabindex="-1" class="error" data-error-for="location"></p></div>
-        <div class="field"><label for="school_email">School contact email</label><input id="school_email" name="school_email" type="email" autocomplete="email" inputmode="email" required disabled><p tabindex="-1" class="error" data-error-for="email"></p></div>
-        <label class="consent"><input id="school_email_reminder_consent" name="school_email_reminder_consent" type="checkbox" disabled> Email follow-up about this inquiry</label>
+        <div class="field"><label for="school_name">School name</label><input id="school_name" name="school_name" autocomplete="organization" required disabled><small>Do not include Student names, ages, medical details, or private learner notes.</small><p tabindex="-1" class="error" data-error-for="school_name"></p></div>
+        <div class="field-grid">
+          <div class="field"><label for="contact_first_name">Contact first name</label><input id="contact_first_name" name="contact_first_name" autocomplete="given-name" required disabled><p tabindex="-1" class="error" data-error-for="contact_first_name"></p></div>
+          <div class="field"><label for="contact_last_name">Contact last name</label><input id="contact_last_name" name="contact_last_name" autocomplete="family-name" required disabled><p tabindex="-1" class="error" data-error-for="contact_last_name"></p></div>
+        </div>
+        <div class="field"><label for="school_email">School contact email</label><input id="school_email" name="email" type="email" autocomplete="email" inputmode="email" required disabled><p tabindex="-1" class="error" data-error-for="email"></p></div>
+        <div class="field"><label for="school_phone">Phone (optional)</label><input id="school_phone" name="phone" type="tel" autocomplete="tel" maxlength="40" disabled><p tabindex="-1" class="error" data-error-for="phone"></p></div>
+        <div class="field"><label for="school_note">Note (optional)</label><input id="school_note" name="note" maxlength="1000" disabled><p tabindex="-1" class="error" data-error-for="note"></p></div>
         <p class="signup-policy-note">By submitting, you ask the One Time team to respond to this School inquiry and acknowledge the <a href="/privacy">Privacy Notice</a>.</p>
       </section>
       <button class="button button-primary" type="submit" data-enhanced-submit hidden>Create my free family account</button>
