@@ -11,19 +11,19 @@ tasks:
   phase_heads:
     bootstrap: 40d5b2e2c32c04500c75c5314acc91266303dc29
   authorized_start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
-  last_known_remote_head: a5851edf70f3c60cc25ece3faf124bedf1629f21
+  last_known_remote_head: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
   active_claim_id: null
   active_writer_id: null
   lease_expires_at: null
-  last_heartbeat_at: '2026-07-30T07:03:19Z'
-  controller_authorization_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+  last_heartbeat_at: '2026-07-30T07:12:00Z'
+  controller_authorization_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
     state: operational
     producer_task_id: C00
-    producer_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+    producer_head_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
@@ -37,8 +37,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
-    transitioned_at: '2026-07-30T07:03:19Z'
+    state_based_on_control_head_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
+    transitioned_at: '2026-07-30T07:12:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/C00/status_proof
 - task_id: F01
   status: ready_for_review
@@ -810,8 +810,8 @@ tasks:
     transitioned_at: '2026-07-30T03:36:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P16/status_proof
 - task_id: P17
-  status: ready
-  active_phase: canonical_classroom_ownership_and_provider_outbox_correction_lease_renewal
+  status: claimed
+  active_phase: canonical_classroom_ownership_and_provider_outbox_correction_renewal_atomic_claim
   branch: codex/v21-p17-zoom-preparation
   phase_branches:
     contract: codex/v21-p17-zoom-preparation
@@ -825,20 +825,21 @@ tasks:
     review: 78af71603713b6fc73fe755995bdf56193eb199a
     canonical_classroom_ownership_and_provider_outbox_correction_atomic_claim: 7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f
     canonical_classroom_ownership_and_provider_outbox_correction_renewal_requested: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
+    canonical_classroom_ownership_and_provider_outbox_correction_renewal_atomic_claim: b9e7b49a2fa8c0ad1281dc262babd457d4f532ac
   authorized_start_sha: 49431959f58f284bdc13ca931acf09f980fc483a
-  last_known_remote_head: 7596a0f1701fb135a4f8d133d1381d0e5ad00af8
+  last_known_remote_head: b9e7b49a2fa8c0ad1281dc262babd457d4f532ac
   active_claim_id: e85735a2-4a41-476b-bca2-d1dde009e69d
-  active_writer_id: null
+  active_writer_id: codex-p17-correction-e85735a2
   lease_expires_at: '2026-07-30T08:31:44Z'
-  last_heartbeat_at: '2026-07-30T07:01:44Z'
-  controller_authorization_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
-  ready_entry_payload_digest: 4574e539ff97699ce610efd5f1062f79d359f3ee297db4ee40e1740c89d859eb
+  last_heartbeat_at: '2026-07-30T07:09:00Z'
+  controller_authorization_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
+  ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: 3560b053a535b2889ea95e1d05ab58bb82b219cc
   status_proof:
-    state: ready
-    producer_task_id: C00
-    producer_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+    state: claimed
+    producer_task_id: P17
+    producer_head_sha: b9e7b49a2fa8c0ad1281dc262babd457d4f532ac
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: b06321b8e4b393fe546bb5251df5115d9b4a0dd3
@@ -852,8 +853,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
-    transitioned_at: '2026-07-30T07:01:44Z'
+    state_based_on_control_head_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
+    transitioned_at: '2026-07-30T07:12:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/P17/status_proof
 - task_id: P18
   status: ready_for_review

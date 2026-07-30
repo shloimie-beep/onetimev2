@@ -1712,3 +1712,14 @@ binding. The first push changes only P20 `TASK-STATE.yaml`, `HANDOFF.md`, and
 normally, verifies remote equality, and stops for C00 reconciliation. Do not
 edit P21, publish a migration request, inspect a provider, or perform an
 external effect.
+
+P17 renewed claim `b9e7b49a2fa8c0ad1281dc262babd457d4f532ac` is reconciled.
+Continue only under fresh claim `e85735a2-4a41-476b-bca2-d1dde009e69d`
+and ZOOM_PREPARATION lease `0d08dc64-fb12-4aa5-bf5d-10a3267e18f4`
+through `2026-07-30T08:31:44Z`, using only the explicit eleven-path
+allowlist. Preserve P18's sole launch/bootstrap/live-session/attendance
+ownership; replace competing provider persistence with canonical `job_outbox`
+plus `provider_operation_binding`; limit P17 to five preparation tables;
+publish only `P17-MIGRATION-002` and
+`P17-SERVER-WORKER-REGISTRATION-002`; run exact gates, release the lease,
+push, and stop for C00 audit. Provider inspection and effects remain forbidden.

@@ -12,13 +12,14 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T07:48:19Z'
-last_heartbeat_at: '2026-07-30T07:03:19Z'
-controller_authorization_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+lease_expires_at: '2026-07-30T07:57:00Z'
+last_heartbeat_at: '2026-07-30T07:12:00Z'
+controller_authorization_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
 ready_entry_payload_digest: null
-state_based_on_head_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
+state_based_on_head_sha: fbc944ab1ec5aa4ca768cff7db76c1da03bac516
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently reconciled renewed P17 claim b9e7b49a as the exact sole child of checkpoint 7596a0f1 with runtime-triplet-only scope, canonical READY 4574e539, fresh claim e85735a2 and lease 0d08dc64 bindings, pair/triplet 794ede72/af7c6342, preserved product/request bytes, remote equality, and effects 0/0/0.
 - Reconciled P17 pre-expiry renewal checkpoint 7596a0f1 as an exact runtime-triplet-only child with pair/triplet f87946bc/9d82cfcc, no product work, preserved requests, and effects 0/0/0; issued fresh renewal READY 4574e539, claim e85735a2, and ZOOM_PREPARATION lease 0d08dc64 through 08:31:44Z.
 - Independently reconciled P17 claim 7e05a1e3 and P20 claim 0d58c8e4 as exact sole children of their authorized parents with runtime-triplet-only scopes, exact READY/claim/lease/dependency bindings, pair/triplet manifests 67ed46d7/4582e952 and 97acf477/96aa1603, preserved source/request bytes, remote equality, and effects 0/0/0.
 - Admitted only P20's five-source approved-for-publication projection correction for a runtime-triplet atomic claim under canonical READY ba07246d, claim e8c768e8, CONTENT_PROCESSING lease 24d0fa6f, exact composite-scope/source/artifact/participant evidence gates, preserved applied migration 2246, withheld P21, and effects 0/0/0.
@@ -1104,6 +1105,7 @@ verification:
   - P20 publication-projection correction admission: passed exact P20/P21 ancestry and manifests, applied migration/result readback, five-source/three-runtime allowlists and base digests, composite scope and evidence gates, canonical READY ba07246d, disjoint CONTENT_PROCESSING lease, withheld P21, and zero effect locks
   - P17/P20 atomic claims 7e05a1e3/0d58c8e4: passed exact sole-parent ancestry, runtime-triplet-only scopes, canonical READY/claim/lease/dependency bindings, pair/triplet manifests, preserved source/request bytes, remote equality, empty READY after consumption, and zero effects
   - P17 pre-expiry checkpoint and renewal admission: passed checkpoint 7596a0f1 sole-parent/runtime-only scope, no product work, pair/triplet f87946bc/9d82cfcc, preserved requests, canonical renewal READY 4574e539, fresh claim/lease, and zero effects
+  - P17 renewal claim b9e7b49a: passed exact sole-parent ancestry, runtime-triplet-only scope, canonical READY/fresh-claim/lease bindings, pair/triplet 794ede72/af7c6342, preserved products/requests, remote equality, consumed READY, and zero effects
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

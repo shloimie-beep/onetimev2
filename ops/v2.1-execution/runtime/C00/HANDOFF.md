@@ -2056,3 +2056,11 @@ unchanged products/requests, remote equality, and effects `0/0/0` pass.
 Renewal READY `4574e539` binds fresh claim `e85735a2` and ZOOM_PREPARATION
 lease `0d08dc64` through `2026-07-30T08:31:44Z`. Its first renewed push may
 change only the P17 runtime triplet and must stop again for C00 reconciliation.
+
+Renewed P17 claim `b9e7b49a` is independently reconciled as the exact
+runtime-triplet-only child of checkpoint `7596a0f1`. Pair/triplet
+`794ede72`/`af7c6342`, canonical READY `4574e539`, fresh claim `e85735a2`,
+ZOOM_PREPARATION lease `0d08dc64`, preserved product/request bytes, clean
+remote equality, and effects `0/0/0` pass. READY is empty. P17 may now
+implement only its explicit eleven-path allowlist, preserving P18 ownership
+and publishing only the exact two immutable `-002` successor requests.
