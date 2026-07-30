@@ -4,6 +4,74 @@ integration_branch: codex/v21-integration
 items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION
+    merge_id: c76a0bf2-89a4-4301-ab0e-f2524061e6e4
+    kind: implementation
+    task_id: P31
+    source_branch: codex/v21-p31-release-communications-convergence
+    source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+    target_branch: codex/v21-integration
+    expected_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
+    source_delta_base_head_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+    required_merge_base_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+    merge_after_heads:
+      P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+      P21: 83d906221a0f2882cf99a75459e7288a3e30f629
+    allowed_paths:
+      - integrations/highlevel/agent-mode/jobs/GHL-UI-24-rabbi-campaign-one-seed-reply-acceptance.json
+      - integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md
+      - integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md
+      - integrations/highlevel/registry/current.json
+      - integrations/highlevel/registry/custom-values.yaml
+      - integrations/highlevel/registry/message-class-registry.yaml
+      - integrations/highlevel/registry/sender-registry.yaml
+      - integrations/highlevel/registry/workflow-registry.yaml
+      - integrations/highlevel/v21/foundation/desired-state.test.ts
+      - integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md
+      - integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md
+      - integrations/highlevel/workflows.yaml
+      - packages/contracts/src/communications/foundation/index.ts
+      - packages/domain/src/communications/copy/catalog.ts
+      - packages/domain/src/communications/workflows/campaigns/campaigns.test.ts
+      - scripts/highlevel/canonical-registry-data.ts
+      - scripts/highlevel/sync-workflow-control-projections.ts
+      - scripts/highlevel/validate-registry.ts
+      - tests/unit/highlevel/rabbi-launch-email-design.test.ts
+      - tests/unit/highlevel/sender-registry-v1-1.test.ts
+    writer_slot_leases:
+      - slot: RELEASE_INTEGRATOR
+        lease_id: 5930be35-0702-4318-b3b4-93170a2ab119
+        holder_task_id: I36
+        holder_claim_id: 4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5
+        holder_writer_id: codex-c00-i36-communications-integration-4e5bbe12
+        state_based_on_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+        lease_issued_at: '2026-07-30T12:04:41Z'
+        lease_expires_at: '2026-07-30T13:34:41Z'
+        phase_scope: communications_convergence_source_integration
+    source_path_count: 20
+    source_path_inventory_digest: b2b6a8c5f3a5a2fbe6718a60648da47a7411613c69737d5943d95a28782c8f57
+    source_manifest_digest: 1d7e5d4da59b0c02578e6e9bff82339e306d7a2811b9028ab36d97f8d624fc04
+    source_tree_sha: 742d1023c280918a374e554786e457e6ee5f3379
+    source_diff_sha256: 3f3f86584c9acecfe65bf5ede7eace680f9664cc181ec032da81628ebb036b99
+    canonical_rabbi_identity: Rabbi Eli Scheller <rabbielischeller@onetimeonetime.com>
+    focused_validation:
+      files: 4
+      tests: 10
+      result: passed
+      registry_check: passed
+      workflow_projection_check: passed
+    provider_boundary: repository_only_no_provider_call_send_publish_or_activation
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+item_payload_digests:
+  c76a0bf2-89a4-4301-ab0e-f2524061e6e4: 1d3e1a5852efbaa72ffc8d5a458b11584abcba03d8100438f504d83cef7d7fc7
+completed_items:
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
     merge_id: 8ca642bf-c535-42bf-9372-cd4648894f99
     kind: implementation
     task_id: P18
@@ -91,7 +159,7 @@ items:
     request_disposition_boundary: preserve_only_no_steward_application_in_source_wave
     external_effect_summary: *zero_effects
     state_based_on_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
-item_payload_digests:
+completed_item_payload_digests:
   8ca642bf-c535-42bf-9372-cd4648894f99: 17a8fb4df87915b48083ab1c264e87a80e0e7f15a8453d62f7845b8bd0232554
   14c6bfb8-03d0-48c6-9b9e-cf4eef20b091: 4030c6f118b74a7b71be13cc31d15c81a2432322f4983aff81bf1a02d271dc1c
 digest_algorithm:

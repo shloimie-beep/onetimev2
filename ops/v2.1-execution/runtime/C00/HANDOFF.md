@@ -2260,3 +2260,38 @@ C00 directly holds I36 claim
 runtime release, and push normally. Do not make a claim-only integration
 commit. Candidate, steward application, providers, deployment, sends, charges,
 DNS, and every external effect remain withheld.
+
+## P18/P21 integration reconciliation and next lean wave
+
+Exact integration release `c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9`
+is pushed and remote-equal. It contains ordered P18 merge `91ea3ff9` and P21
+merge `71070dad`, followed by one sole-parent three-path I36 terminal runtime
+final. The runtime pair/triplet are `ce70507b` / `2543535b`; focused tests
+passed 15/15 and the execution-package validator passed from an LF-normalized
+Git archive. The prior integration lease was released and effects remain
+`0/0/0`.
+
+Repository-only communications convergence
+`3364c1c31ef12a81abf02cf9f80f7e8008c1778f` independently passed exact
+sole-parent and twenty-path scope checks, a clean merge tree against `c19c9077`,
+10/10 focused tests, registry validation, and workflow-projection validation.
+C00 may integrate it only under claim
+`4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5` and RELEASE_INTEGRATOR lease
+`5930be35-0702-4318-b3b4-93170a2ab119` through
+`2026-07-30T13:34:41Z`.
+
+In parallel, F02 may implement exactly:
+
+- `2250_v21_zoom_preparation.sql` for `P17-MIGRATION-002`
+- `2251_v21_embedded_classroom.sql` for `P18-migration-003`
+- `2252_v21_content_publication.sql` for `P21-MIGRATION-002`
+
+F02 uses claim `3469667a-69e2-4c35-afac-5b1dfbbf417d`, MIGRATION_AUTHORITY
+lease `7f2ab8d1-a53f-41da-8143-28da4b62b200`, and SCHEMA_CONTRACT lease
+`9a3469a3-87c6-45b6-824f-c3b886a01b46` through
+`2026-07-30T13:34:41Z`. Its complete phase is capped at the three SQL files,
+the allocation proposal, and the F02 runtime triplet.
+
+No provider call, send, enrollment, charge, deployment, DNS change, live
+migration execution, candidate freeze, or external effect is authorized in
+this wave.

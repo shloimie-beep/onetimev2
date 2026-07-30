@@ -15,13 +15,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
+controller_authorization_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
 next_action: >-
-  P18 final 3be7bf49 and P21 final 83d90622 are independently accepted with exact four-path and fourteen-path deltas,
-  clean merge forecasts, released task leases, and effects 0/0/0. C00 directly holds I36 claim 1f77c6ea and
-  RELEASE_INTEGRATOR lease 6abdf7d4 through 13:09:12Z for only the ordered P18 then P21 source merges and one terminal
-  I36 runtime release. F02 migration application, shared registration application, candidate freeze, providers,
-  deployment, sends, charges, DNS, and every external effect remain withheld until their next exact gates.
+  Exact P18/P21 integration release c19c9077 is remotely reconciled with four-path and fourteen-path source merges,
+  a three-path terminal I36 runtime final, focused 15/15 tests, package validation, released lease, and effects 0/0/0.
+  C00 now holds only communications-integration claim 4e5bbe12 and RELEASE_INTEGRATOR lease 5930be35 through
+  13:34:41Z for exact repository-only head 3364c1c3. In parallel, F02 holds one complete 2250-2252 migration-batch
+  claim 3469667a and exact dual writer leases through 13:34:41Z. Candidate freeze, providers, deployment, sends,
+  charges, DNS, migration execution against a live database, and every external effect remain withheld.
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an

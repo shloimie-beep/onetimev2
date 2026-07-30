@@ -1887,3 +1887,24 @@ checks, release the leases, push, and return heads. C00 independently validates
 and integrates. No provider query/mutation, send, enrollment, charge,
 deployment, DNS, migration application, registration application, or effect is
 authorized.
+
+Integration release `c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9` is now
+reconciled. Merge exact repository-only communications head
+`3364c1c31ef12a81abf02cf9f80f7e8008c1778f` under direct C00 claim
+`4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5` and RELEASE_INTEGRATOR lease
+`5930be35-0702-4318-b3b4-93170a2ab119`, then publish one terminal I36 runtime
+release and stop for audit.
+
+In parallel, F02 may complete one path-coherent 2250-2252 batch from exact
+`6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f` under claim
+`3469667a-69e2-4c35-afac-5b1dfbbf417d` and dual leases
+`7f2ab8d1-a53f-41da-8143-28da4b62b200` /
+`9a3469a3-87c6-45b6-824f-c3b886a01b46` through
+`2026-07-30T13:34:41Z`. Create only `2250_v21_zoom_preparation.sql`,
+`2251_v21_embedded_classroom.sql`, `2252_v21_content_publication.sql`, update
+the allocation proposal and F02 runtime triplet, run focused migration/schema
+checks, release the leases, push normally, and return the exact final.
+
+Do not query or mutate a provider, send, enroll, charge, deploy, change DNS,
+execute migrations against a live database, freeze a candidate, or perform an
+external effect. Effects remain `0/0/0`.
