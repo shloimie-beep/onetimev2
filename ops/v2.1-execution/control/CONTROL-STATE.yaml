@@ -15,12 +15,11 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
+controller_authorization_sha: 28afd2d8d4036c38436fe60ed5730bd11509cb84
 next_action: >-
-  I36 atomic claim d53c1d22 is reconciled as the exact runtime-triplet-only child of 1798f31b. Under unchanged
-  claim d2ba6c12 and RELEASE_INTEGRATOR lease 6c88e2a7 through 2026-07-30T03:54:35Z, merge exact audited sources
-  P16 55544f55, P32 92a7ee63, and F02 cd2d7c2f in that order with ancestry preserved. Verify each queued payload,
-  first-parent allowlist, merge-after dependency, and exact target rebind; run combined focused, typecheck,
-  migration, formatting, secret, and zero-effect gates; publish a metadata-only lease release; and stop for
-  independent audit. No steward application, provider inspection, deployment, send, or external effect is authorized.
+  Audited integration release 36dca384 is complete. The merge and ready queues are empty; migration allocations
+  2239 through 2244 are mirrored as applied evidence with next ordinal 2245; and all six migration steward results
+  are applied and acknowledged. Candidate remains null and provider/effect counters remain zero. Perform a read-only
+  integration-completeness inventory and admit only the next dependency-valid source-only wave. Do not inspect or
+  mutate providers, deploy, send, or perform an external effect before candidate and dependency gates are satisfied.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

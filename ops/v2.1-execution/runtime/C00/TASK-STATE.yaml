@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-21026f47
-claim_time: '2026-07-30T02:51:59Z'
-claim_id: 21026f47-1620-42e0-8ac4-7615db812cc8
-lease_expires_at: '2026-07-30T03:06:59Z'
-last_heartbeat_at: '2026-07-30T02:54:00Z'
-controller_authorization_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
+claimed_by: codex-c00-orchestrator-21d59e33
+claim_time: '2026-07-30T03:19:57Z'
+claim_id: 21d59e33-4f83-4f40-9ba4-921e2e332782
+lease_expires_at: '2026-07-30T03:48:30Z'
+last_heartbeat_at: '2026-07-30T03:36:00Z'
+controller_authorization_sha: 28afd2d8d4036c38436fe60ed5730bd11509cb84
 ready_entry_payload_digest: null
-state_based_on_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
+state_based_on_head_sha: 28afd2d8d4036c38436fe60ed5730bd11509cb84
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -990,6 +990,8 @@ verification:
   - consumed the I36 READY entry and rebound all three ordered P16, P32, and F02 merge targets to exact claim head d53c1d22 with canonical payload digests db2478fc, d0237f00, and aa58a800
   - stopped I36 before the first merge when live source-state and ref readback found the queued P15 merge-after SHA was nonexistent; integration remained clean at d53c1d22 and effects 0/0/0
   - corrected P15 merge-after to exact c96b8c55c07e5283e762537934a6bf948833700e under acquisition e25d0b52 and recomputed canonical P16/P32/F02 payloads 58695dcb/18378a2e/e85b0073
+  - independently audited release 36dca384 with exact runtime triplet, state/handoff and triplet digests, 31-path claim-to-release scope, ordered 5/13/10 source merge scopes, full focused/typecheck/native/pg-mem gates, released integrator lease, and effects 0/0/0
+  - cleared the consumed merge queue, mirrored migration allocations 2239 through 2244 with next ordinal 2245, and recorded all six exact migration steward results applied and acknowledged without any provider or external effect
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

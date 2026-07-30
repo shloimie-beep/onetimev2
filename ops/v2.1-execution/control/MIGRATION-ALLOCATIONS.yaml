@@ -3,8 +3,8 @@ execution_id: OT-V21-PRODUCTION
 semantic_owner: F02
 mechanical_control_writer: C00
 proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-reviewed_latest: 2238_v21_provider_core.sql
-next_available_ordinal: 2239
+reviewed_latest: 2244_v21_ghl_identity.sql
+next_available_ordinal: 2245
 never_allocate:
 - 2231
 allocations:
@@ -69,6 +69,84 @@ allocations:
   pg_mem_checksum_sha256: 58122d190463e293f2554fffca26feda7e755351b464c416bd89a8afbfd9e367
   integrated_merge_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
   integration_release_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2239
+  file: packages/db/migrations/2239_v21_classroom_core.sql
+  task_id: P16
+  request_id: P16-MIGRATION-001
+  purpose: Canonical classroom series, occurrence lifecycle reconciliation, scoped series enrollments, immutable command idempotency, and Jerusalem recurrence backfill.
+  interface_digest: 8f4ba232e503cbf3ac33a634186cc91e8dd15a2f810e26ded5a7bf65c151b5ff
+  status: allocated
+  checksum_sha256: acdd52511fb2fa738d2a122087c65dbf7ae06879b51bd913095a0c86f63ea111
+  pg_mem_checksum_sha256: 816a086b5ec6cc0aa6d3c13b8b36e2f75dbc381cb2f60b4f859dba0328be755c
+  integrated_merge_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+  integration_release_sha: 36dca3844664657875b7c66a1ff30378b21c5cbb
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2240
+  file: packages/db/migrations/2240_v21_privacy_data_rights.sql
+  task_id: P32
+  request_id: P32-migration-001
+  purpose: Append-only privacy consent and recording evidence, versioned data-rights workflows, one-use export grants, retention work, and purge receipts.
+  interface_digest: 6bebda045801b0778fb4d4972bfb079cb44546d6ec27c34f99d2a268d6d2c2a4
+  status: allocated
+  checksum_sha256: 1b1627bfbef7c4500d7be7e50d217efdecd97af9f1148b7e6a769cc6ed4f6831
+  pg_mem_checksum_sha256: 57ad695347870bd33dddc0da65accb396f6beaa9fe7ccd53b192f34585618d84
+  integrated_merge_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+  integration_release_sha: 36dca3844664657875b7c66a1ff30378b21c5cbb
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2241
+  file: packages/db/migrations/2241_v21_admin_directory.sql
+  task_id: P10
+  request_id: P10-MIGRATION-001
+  purpose: Scoped admin directory identity, credential, service-acceptance, canonical enrollment, revocation, ownership-transfer, receipt, and audit evidence.
+  interface_digest: 33dbeedf5fd09e13215129f7d2baa9140e03e6b0372fdabab4d3c032ba6f2dcd
+  status: allocated
+  checksum_sha256: a318572247530b1dbbda75a0ba2b0f58b66e8a88156f1ee57874c79216c1d649
+  pg_mem_checksum_sha256: 7bf7590399cf72f454a07d88745db082d9f76278ca5ddb6c8ea59a66de0404f3
+  integrated_merge_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+  integration_release_sha: 36dca3844664657875b7c66a1ff30378b21c5cbb
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2242
+  file: packages/db/migrations/2242_v21_student_notifications.sql
+  task_id: P23
+  request_id: P23-migration-001
+  purpose: Student notification center records, exact source/version deduplication, current-source precedence, lifecycle timestamps, and sound preferences.
+  interface_digest: e6f899adf23a16969e8cbcdf53d72d636948d70aa4963b0ed1e67cbdd5519524
+  status: allocated
+  checksum_sha256: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+  pg_mem_checksum_sha256: 2e70f0db042e4b9a34cc52dc711da56b226c1d241bbceac51be80ac6b50b2ab1
+  integrated_merge_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+  integration_release_sha: 36dca3844664657875b7c66a1ff30378b21c5cbb
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2243
+  file: packages/db/migrations/2243_v21_support.sql
+  task_id: P24
+  request_id: P24-migration-001
+  purpose: Scoped support tickets, messages, append-only audit, idempotency, requester privacy, and redacted Telegram notification intents.
+  interface_digest: 71065002e827d8b51c6bafc808568eb6940e2527a0ec0c30bd648d49d8bf93f3
+  status: allocated
+  checksum_sha256: eea46ad8e68e38089de142613850997b6dcd32825a52a849c8aff6089607d6aa
+  pg_mem_checksum_sha256: 84093ce3212256fe0f2631ec56f1c4d0b7d0fa4ab48b120be06b76a841f0cbeb
+  integrated_merge_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+  integration_release_sha: 36dca3844664657875b7c66a1ff30378b21c5cbb
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2244
+  file: packages/db/migrations/2244_v21_ghl_identity.sql
+  task_id: P27
+  request_id: P27-migration-001
+  purpose: Transactional GHL identity sync operations, adult-only household projections, protected provider-reference hashes, retry state, and identity-review quarantine.
+  interface_digest: 19f6c2a3f64906f1b95b9228717f5bcf2ca7559a5098c09a10ebf4f5bc2aecc2
+  status: allocated
+  checksum_sha256: afee7e1471f1c6c1b84c6570bb32d39cc8f6a1e576c4e5d7064753ef57939418
+  pg_mem_checksum_sha256: 464bbe61224cd3ab343aa21e5ed88956684171c082703272be0e973cc866bb73
+  integrated_merge_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+  integration_release_sha: 36dca3844664657875b7c66a1ff30378b21c5cbb
   replaces_applied_migration: false
   destructive: false
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00

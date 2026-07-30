@@ -1512,3 +1512,14 @@ Before merging P16, verify its `merge_after_heads.P15` is exact live/source
 dependency `c96b8c55c07e5283e762537934a6bf948833700e` and is an ancestor of
 the integration claim head. Reject any nonexistent, abbreviated, or
 prefix-matched dependency SHA.
+
+Release `36dca3844664657875b7c66a1ff30378b21c5cbb` is independently
+audited and reconciled. MERGE and READY are empty; migrations 2239 through
+2244 and their six steward results are recorded; the next ordinal is 2245.
+
+Next, perform a read-only inventory comparing integration ancestry with all
+ready-for-review source heads and dependency/steward requirements. Admit only
+the next dependency-valid source-only wave through a fresh exact I36 claim and
+lease. Candidate is still null. Do not inspect or mutate providers, deploy,
+send, reserve an effect, or perform any external effect before candidate,
+identity, budget, dependency, and fencing gates are satisfied.

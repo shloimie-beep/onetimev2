@@ -1800,3 +1800,23 @@ typecheck, native/pg-mem migration, formatting, secret, and zero-effect gates;
 publish a metadata-only release before lease expiry `2026-07-30T03:54:35Z`;
 and stop for independent audit. Steward application, providers, deployment,
 sends, and external effects remain unauthorized.
+
+## Compatibility release reconciliation
+
+Integration release `36dca3844664657875b7c66a1ff30378b21c5cbb`
+passed independent audit. Its sole parent is ordered F02 merge
+`1b83575ab6fcba9be7b7f16e6ef44001f07d5623`; its change is exactly
+the I36 runtime triplet; and the claim-to-release scope is the exact 28 source
+paths plus three release paths. Ordered merge scopes are P16 `5`, P32 `13`,
+and F02 `10`. All ancestry, focused, typecheck, native PostgreSQL and pg-mem
+75/75, checksum, lint, format, YAML, secret, and zero-effect gates pass.
+State/handoff digest is
+`e2ddacf063c486f9b21001adcd01dfbdb0ea5a536d60faa3246c0507aa814f52`;
+runtime-triplet digest is
+`6295ec9b52579a7a04e9185d9b509cf4b1de7188a6af4d9edde6e23dd26fd4a7`.
+The integrator lease was released at `2026-07-30T03:04:04Z`.
+
+C00 cleared the consumed merge queue, left READY empty, mirrored exact
+migration allocations 2239 through 2244, and advanced the next ordinal to
+2245. All six migration results are applied and acknowledged. Candidate
+remains null; all 14 provider locks remain unclaimed; effects remain `0/0/0`.
