@@ -103,3 +103,39 @@ and no deployment, send, or external effect occurred.
 C00 must independently audit the pushed metadata release head, its sole parent
 `3033f13b`, ordered merge ancestry/scopes, released lease, I36 triplet digests,
 and effects `0/0/0`. I36 must stop.
+
+## F02/P28/P31 direct-prerequisite atomic claim
+
+Containing control `ee21ee69cae87a77c4ee5519b61490fa2e453c3f`
+with sole acquisition/state-basis parent
+`07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190` authorizes an atomic
+runtime-triplet-only claim from exact release
+`42068ace48fe1a93302ce7d5533e11803b526d5b`.
+
+READY payload
+`b60c929884c5bd974b66c1f02fe56d23fd50cceee35e929b5138a2d3c912bda1`
+was recomputed exactly. Claim `ff36a180-ce16-4787-841b-5e10a7aabfec`
+is held by `codex-i36-release-integrator-ff36a180` under sole
+RELEASE_INTEGRATOR lease `0430520f-6a94-4550-a1ea-f01f8d5173b2`
+through `2026-07-30T06:35:30Z`.
+
+The exact queued order and source bindings are:
+
+1. F02 `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`, base
+   `cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911`, payload
+   `bfb510daf058ad44252e823bf6313a366b4fa949499e2cb5cd2582b31d0ad9e8`.
+2. P28 `a2025a768ae6e69a15ec5605379a9e359cf2deec`, base
+   `f891f16eb13593d0eb3bbe53c076513d12b07c23`, payload
+   `f3e7df0d4f6ec528688aff5e252faddb7b5000841552ebb5e3d3847ab5ef7324`.
+3. P31 `d72dda5669627695edaf9dbf20f7650c9b5c9ded`, base
+   `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d`, payload
+   `f9922704c6683b09949f121955ca19d4c6c707622cdba4b14a37de2cd6f7b8d9`.
+
+This checkpoint changes only the I36 TASK-STATE/HANDOFF/NEXT-PROMPT triplet.
+No source was merged, no steward or central state was applied, no provider was
+inspected or mutated, and no deployment, send, or external effect occurred.
+Effects remain `0/0/0`.
+
+C00 must independently audit this exact atomic claim and reconcile/consume
+READY with queue targets rebound to the pushed claim head before I36 may merge
+any source. I36 must stop.

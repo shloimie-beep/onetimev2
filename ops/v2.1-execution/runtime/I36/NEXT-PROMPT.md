@@ -35,3 +35,32 @@ and zero effects passed.
 Do not apply the committed steward requests, alter central registry/config/copy
 state, inspect or mutate providers, deploy, send, or cause an external effect.
 Effects remain `0/0/0`.
+
+I36 has now pushed only an atomic F02/P28/P31 direct-prerequisite claim from
+exact release `42068ace48fe1a93302ce7d5533e11803b526d5b`.
+
+Containing authorizing control:
+`ee21ee69cae87a77c4ee5519b61490fa2e453c3f`
+Sole acquisition/state-basis parent:
+`07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190`
+READY payload:
+`b60c929884c5bd974b66c1f02fe56d23fd50cceee35e929b5138a2d3c912bda1`
+
+Claim: `ff36a180-ce16-4787-841b-5e10a7aabfec`
+Writer: `codex-i36-release-integrator-ff36a180`
+RELEASE_INTEGRATOR lease: `0430520f-6a94-4550-a1ea-f01f8d5173b2`
+Lease expires: `2026-07-30T06:35:30Z`
+Atomic phase scope:
+`F02_P28_P31_direct_prerequisite_source_integration_atomic_claim_only`
+
+Queued payloads:
+
+- F02 `bfb510daf058ad44252e823bf6313a366b4fa949499e2cb5cd2582b31d0ad9e8`
+- P28 `f3e7df0d4f6ec528688aff5e252faddb7b5000841552ebb5e3d3847ab5ef7324`
+- P31 `f9922704c6683b09949f121955ca19d4c6c707622cdba4b14a37de2cd6f7b8d9`
+
+C00 must independently audit the exact pushed atomic-claim head and its sole
+parent, consume READY, and rebind all three expected target heads to the claim
+head. Do not merge F02, P28, or P31 before that reconciliation. Do not apply
+steward requests or central registry/config/copy state, inspect or mutate
+providers, deploy, send, or cause an external effect. Effects remain `0/0/0`.
