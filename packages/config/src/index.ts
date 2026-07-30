@@ -30,6 +30,18 @@ const optionalTrimmedString = (minimum: number, maximum: number) =>
     z.string().trim().min(minimum).max(maximum).optional(),
   );
 
+function parseUniqueCsv(value: string | undefined) {
+  if (!value) return [];
+  return [
+    ...new Set(
+      value
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean),
+    ),
+  ];
+}
+
 const OT89_LOCAL_ONETIME_KEY_ID = 'ot89-onetime-local';
 const OT89_LOCAL_ONETIME_SECRET = 'ot89-test-secret-do-not-use-local-producer';
 const OT89_LOCAL_BNA_KEY_ID = 'ot89-bna-local';
@@ -256,10 +268,14 @@ const envSchema = z.object({
   ZOOM_HOST_USER_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
+  HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
   HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
   HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
   HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
   HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
+  HIGHLEVEL_CANARY_RUN_ID: optionalTrimmedString(8, 160),
+  HIGHLEVEL_CANARY_DELIVERY_KEYS: optionalTrimmedString(8, 4000),
+  HIGHLEVEL_CANARY_BUDGET: numberFromString.default(0),
   HIGHLEVEL_PROVIDER_TIMEOUT_MS: numberFromString.default(15_000),
   HIGHLEVEL_ROW_LEASE_MS: numberFromString.default(120_000),
   HIGHLEVEL_ACTIONS_MODE: z.enum(['disabled', 'enabled']).default('disabled'),
@@ -344,6 +360,28 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && !runtime.allowsProviderActions) {
     throw new Error('Zoom canary execution is limited to test or isolated_staging.');
+  }
+
+  if (
+    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
+    !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
+  ) {
+    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
+  }
+
+  const highLevelCanaryDeliveryKeys = parseUniqueCsv(parsed.HIGHLEVEL_CANARY_DELIVERY_KEYS);
+  if (
+    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
+    (!parsed.HIGHLEVEL_CANARY_RUN_ID ||
+      highLevelCanaryDeliveryKeys.length < 1 ||
+      parsed.HIGHLEVEL_CANARY_BUDGET < 1 ||
+      !Number.isInteger(parsed.HIGHLEVEL_CANARY_BUDGET) ||
+      parsed.HIGHLEVEL_CANARY_BUDGET > 20 ||
+      highLevelCanaryDeliveryKeys.length > parsed.HIGHLEVEL_CANARY_BUDGET)
+  ) {
+    throw new Error(
+      'HighLevel event sync requires an exact canary run ID, delivery-key allowlist, and sufficient positive budget.',
+    );
   }
 
   if (parsed.HIGHLEVEL_ROW_LEASE_MS <= parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS * 2 + 5_000) {
@@ -630,15 +668,15 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeEventEmailFallback: 'disabled' as 'disabled' | 'resend',
     tishaBavZoomJoinUrl: undefined as string | undefined,
     tishaBavZoomMeetingRefConfigured: false,
-    highLevelEventSyncMode: 'disabled' as 'disabled' | 'mock' | 'provider',
+    highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
     highLevelApiBaseUrl: parsed.HIGHLEVEL_API_BASE_URL,
     highLevelApiVersion: parsed.HIGHLEVEL_API_VERSION,
     highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
     highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
     highLevelTishaBavWorkflowId: undefined as string | undefined,
-    highLevelCanaryRunId: undefined as string | undefined,
-    highLevelCanaryDeliveryKeys: [] as string[],
-    highLevelCanaryBudget: 0,
+    highLevelCanaryRunId: parsed.HIGHLEVEL_CANARY_RUN_ID,
+    highLevelCanaryDeliveryKeys,
+    highLevelCanaryBudget: parsed.HIGHLEVEL_CANARY_BUDGET,
     highLevelProviderTimeoutMs: parsed.HIGHLEVEL_PROVIDER_TIMEOUT_MS,
     highLevelRowLeaseMs: parsed.HIGHLEVEL_ROW_LEASE_MS,
     highLevelActionsMode: parsed.HIGHLEVEL_ACTIONS_MODE,
