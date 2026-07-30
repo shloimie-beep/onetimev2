@@ -8,12 +8,12 @@ branch: codex/v21-lane1-migration-correction
 start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
 dependency_heads:
   C00:
-    required_state: migration_2251_pgmem_checksum_metadata_correction_ready
-    observed_state: migration_2251_pgmem_checksum_metadata_correction_ready
-    observed_control_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
-    authorization_containing_control_head_sha: 4be94c1697b86d0fab8066590be5e62a926798f7
-    controller_authorization_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-    control_state_digest: d3a8e5d59d7a7161cbaa3ebbcbbfc82925bbc21c237e0f8e7eddc405225a77de
+    required_state: migration_2251_proposal_authority_metadata_correction_ready
+    observed_state: migration_2251_proposal_authority_metadata_correction_ready
+    observed_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+    authorization_containing_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+    controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+    control_state_digest: 18bdef4356fc28af9cf1a06d9bd764cbba0e28876d1958cfeb8ee4a0e6dfe379
   I36:
     required_state: accepted_source_microbatch_2_complete
     observed_state: accepted_source_microbatch_2_complete
@@ -21,10 +21,10 @@ dependency_heads:
     state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
     runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
   F02:
-    required_state: held_acknowledgment_terminal_exact
-    observed_state: held_acknowledgment_terminal_exact
-    expected_existing_head_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
-    authorized_start_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+    required_state: held_checksum_correction_terminal_exact
+    observed_state: held_checksum_correction_terminal_exact
+    expected_existing_head_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+    authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
     native_proof_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
     integration_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
     immutable_2252_checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
@@ -407,28 +407,64 @@ migration_2251_pgmem_checksum_metadata_correction:
   exact_repository_runner_pg_mem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
   corrected_occurrence_count: 3
   migration_or_request_bytes_changed: false
+migration_2251_proposal_authority_metadata_correction:
+  disposition: corrected_pending_independent_C00_admission
+  central_steward_results_applied: false
+  authorization_containing_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+  state_based_on_control_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+  authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+  ready_entry_payload_digest: 2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2
+  held_terminal_proposal_raw_sha256: 7bba5bf0f78d3e01ab37492675865d74462dedb87869ea090f974c223864d974
+  held_terminal_state_handoff_digest: 96a57f40af0e49b863c0994e4da412c90f4ceb70cdff1e72be4319265ffd39ee
+  held_terminal_runtime_triplet_digest: 945f0cf01094cb2dfc376920bd384b5f803e879f46d088ef4d11fb9ff1425038
+  held_terminal_four_path_aggregate_digest: fa2e7ed037005d013d120fc8cd8f53001ad666934794730d9dc7a5177e3daedc
+  historical_live_authority:
+    claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
+    migration_authority_lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
+    schema_contract_lease_id: e0a6dd90-820f-4625-9979-e057d0bdad1c
+    writer_id: codex-f02-projection-v2-88a902de
+    containing_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
+    controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+    authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    lease_expires_at: '2026-07-30T19:03:38Z'
+    released_at: '2026-07-30T17:44:04Z'
+  current_live_authority:
+    claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
+    migration_authority_lease_id: defa457c-32f6-4618-a237-cde17d3c439a
+    writer_id: codex-f02-proposal-authority-68f6e27a
+    containing_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+    ready_entry_parent_control_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+    controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+    authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+    lease_expires_at: '2026-07-30T22:25:05Z'
+    released_at: '2026-07-30T21:10:33Z'
+    audit_status: PASS
+  corrected_proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
+  proposal_authority_rebound: true
+  schema_contract_lease_in_live_authority: false
+  allocation_checksum_request_or_migration_bytes_changed: false
 status: ready_for_review
-phase: migration_2251_pgmem_checksum_metadata_correction_complete
-claimed_by: codex-f02-2251-checksum-07870f1c
-claim_time: '2026-07-30T20:10:49Z'
-claim_id: 07870f1c-ed37-4637-a92f-708f80fb36df
-writer_slot_lease_id: 35b6ed2e-7863-493c-8d5e-dee6850f5110
-lease_issued_at: '2026-07-30T20:10:49Z'
-lease_expires_at: '2026-07-30T21:40:49Z'
-last_heartbeat_at: '2026-07-30T20:48:17Z'
-lease_released_at: '2026-07-30T20:48:17Z'
-controller_authorization_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-containing_control_head_sha: 4be94c1697b86d0fab8066590be5e62a926798f7
-ready_entry_parent_control_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-state_based_on_control_head_sha: c44656d40769b28f2d55e6e1041d716175129f4a
-ready_entry_payload_digest: d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82
+phase: migration_2251_proposal_authority_metadata_correction_complete
+claimed_by: codex-f02-proposal-authority-68f6e27a
+claim_time: '2026-07-30T20:55:05Z'
+claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
+writer_slot_lease_id: defa457c-32f6-4618-a237-cde17d3c439a
+lease_issued_at: '2026-07-30T20:55:05Z'
+lease_expires_at: '2026-07-30T22:25:05Z'
+last_heartbeat_at: '2026-07-30T21:10:33Z'
+lease_released_at: '2026-07-30T21:10:33Z'
+controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+containing_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+ready_entry_parent_control_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+state_based_on_control_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+ready_entry_payload_digest: 2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: 35b6ed2e-7863-493c-8d5e-dee6850f5110
-    lease_issued_at: '2026-07-30T20:10:49Z'
-    lease_expires_at: '2026-07-30T21:40:49Z'
-    released_at: '2026-07-30T20:48:17Z'
-state_based_on_head_sha: bd17fd6fc11cc122ea452b131e1107dd0bb88fcc
+    lease_id: defa457c-32f6-4618-a237-cde17d3c439a
+    lease_issued_at: '2026-07-30T20:55:05Z'
+    lease_expires_at: '2026-07-30T22:25:05Z'
+    released_at: '2026-07-30T21:10:33Z'
+state_based_on_head_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
 last_implementation_commit_sha: null
 completed_steps:
   - Verified canonical control c44656d4, controller authorization 98e7b05c, READY digest d8303358, claim c6e15ead, sole MIGRATION_AUTHORITY lease 203f8836, and zero effect locks.
@@ -441,6 +477,9 @@ completed_steps:
   - Recorded the prior C00 READY 62-hex P17 transcription and authoritative immutable 64-hex digest ending 624ca without changing request identity or bytes.
   - Preserved the three separate 2250-2252 producer acknowledgments, native proof 39cacd4a, merge/release 526f0384, and central_steward_results_applied false.
   - Passed exact current-blob repository-runner derivation, immutable P17 canonical digest, four-path scope, YAML, repository Prettier, diff hygiene, secret scan, timely lease release, and effects 0/0/0 without rerunning product or workspace suites.
+  - Verified exact control a7978fb1, parent/controller fbc5d540, READY 2f554b14, exact edacab1d start, claim 68f6e27a, sole MIGRATION_AUTHORITY lease defa457c, and zero effect locks.
+  - Rebound only the live allocation-proposal authority from the historical projection-v2 claim, dual leases, writer, control, start, and release to the exact fresh claim, sole lease, writer, control, start, expiry, release, and PASS disposition.
+  - Preserved every allocation, checksum, authoritative P17 binding, separate 2250-2252 acknowledgment, proof 39cacd4a, merge 526f0384, and central_steward_results_applied false; no product, migration, request, provider, deployment, integration, candidate, or external-effect byte changed.
   - atomically claimed migration lease C from exact remote head cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 under claim 0e98de00-4873-41cb-a06f-bd0ace918b89
   - bound only P19, P20, P28, P08, and P09 requests to ordinals 2245 through 2249; P17, P18, and P21 remain withheld
   - changed only the F02 runtime triplet; no allocation proposal, SQL, provider, deployment, send, or external effect was attempted
@@ -541,8 +580,8 @@ completed_steps:
   - Applied the complete final 84-migration inventory to fresh native PostgreSQL 16.14, replayed migration 2253, and passed the full malformed, stale, reordered, cross-scope, mismatch, and five-guard native rejection probe batch.
   - Applied and verified the complete 84-migration repository pg-mem inventory with harness-only built-in registrations and zero pending migrations.
 remaining_steps:
-  - C00 must independently audit the exact pushed runtime acknowledgment checkpoint, derive its state/handoff digest, and disposition the three central steward results.
-next_action: Stop after publishing the runtime-triplet-only acknowledgment checkpoint. Await independent C00 audit; do not mark steward results applied, edit migrations or proposals, merge, register, inspect providers, deploy, backfill, send, charge, or perform external effects.
+  - C00 must independently audit the exact pushed four-path proposal-authority metadata checkpoint, derive its proposal/state/handoff/runtime digests, and admit it before integration.
+next_action: Stop after publishing the exact four-path proposal-authority metadata checkpoint. Await independent C00 audit; do not mark steward results applied, edit migrations, product or request bytes, merge, register, inspect providers, deploy, backfill, send, charge, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -716,6 +755,9 @@ verification:
     - migration 2251 current Git blob 4bd4afdc, normalized-LF 525172d9, control CRLF 3fdeedcb, and repository-runner pg-mem ee0f9616 checksums independently reproduced
     - exactly three current migration-2251 pg-mem metadata occurrences changed to ee0f9616; fd4cdaa3 remains only as labeled superseded historical evidence
     - exact proposal plus F02 runtime-triplet four-path scope, YAML, repository Prettier, immutable request/migration bytes, diff-check, secret scan across 3104 files, timely lease release, and effects 0/0/0 passed without product or workspace suite execution
+    - proposal-authority correction control a7978fb1, parent/controller fbc5d540, canonical READY 2f554b14, exact edacab1d start, claim 68f6e27a, sole MIGRATION_AUTHORITY lease defa457c, and zero effect locks matched
+    - corrected proposal raw SHA-256 f1c23180 matched; every non-authority proposal object remained canonically exact to edacab1d, the live authority had no schema lease, and historical projection-v2 authority remained labeled only in runtime evidence
+    - exact four-path scope, both YAML parses, four-artifact repository Prettier, diff-check, secret scan across 3104 files, timely sole-lease release, immutable allocation/request/migration/checksum bytes, and effects 0/0/0 passed without product or workspace suite execution
     - corrective containing control head matched d9bb5fd42ad43ccb121d2d749f6176908cac8e9a
     - corrective resume_existing remote head, claim, and both writer leases matched
     - parent CONTROL-STATE.yaml raw SHA-256 matched 0861c69982d233c58efa350b146a12f6174e2244cd757045f60a89acde75d215

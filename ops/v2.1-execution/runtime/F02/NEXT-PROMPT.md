@@ -60,3 +60,46 @@ merge/release `526f0384...`, and
 `central_steward_results_applied: false` to remain exact. Do not apply a
 central result, merge, execute a migration, inspect providers, deploy, send,
 charge, or perform any external effect. Stop for C00 admission.
+
+# Audit the Migration 2251 Proposal-Authority Metadata Correction
+
+Audit the exact successor of held checksum-correction terminal
+`edacab1ded9498e3ac6156942d0a3ae9fc268aea` under authorization-containing
+control `a7978fb1f0d1d9914c3e2b8bd698290226087455`, parent/controller
+`fbc5d54093f34a823b8ee9f8a7906f65053c25db`, READY
+`2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2`,
+claim `68f6e27a-caa2-4988-842c-7fd8eb0eb9ef`, writer
+`codex-f02-proposal-authority-68f6e27a`, and sole MIGRATION_AUTHORITY lease
+`defa457c-32f6-4618-a237-cde17d3c439a`.
+
+Require exactly four changed paths: the F02 allocation proposal and runtime
+triplet. The live proposal `authority` block must bind:
+
+- writer slot `MIGRATION_AUTHORITY`;
+- lease `defa457c-32f6-4618-a237-cde17d3c439a`;
+- claim `68f6e27a-caa2-4988-842c-7fd8eb0eb9ef`;
+- writer `codex-f02-proposal-authority-68f6e27a`;
+- containing control `a7978fb1f0d1d9914c3e2b8bd698290226087455`;
+- READY parent/controller
+  `fbc5d54093f34a823b8ee9f8a7906f65053c25db`;
+- start `edacab1ded9498e3ac6156942d0a3ae9fc268aea`;
+- expiry `2026-07-30T22:25:05Z`, release
+  `2026-07-30T21:10:33Z`, and `audit_status: PASS`.
+
+No `schema_contract_lease_id` may remain in that live block. Historical
+projection-v2 claim `88a902de...`, leases `7de57120...`/`e0a6dd90...`, writer,
+control, start, expiry, and release may appear only under clearly labeled
+historical runtime evidence.
+
+Recompute corrected proposal raw SHA-256
+`f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643`.
+Verify every allocation, checksum, authoritative P17 digest, separate
+2250-2252 acknowledgment, proof `39cacd4a...`, merge `526f0384...`, and
+`central_steward_results_applied: false` against parent `edacab1d...`.
+
+Confirm YAML, repository formatting baseline, diff hygiene, secret scan, timely
+sole-lease release, clean local/tracking/live remote equality, exact
+four-path scope, and effects `0/0/0`. Do not rerun product or workspace suites
+for metadata-only bytes. Do not apply a central result, merge, execute a
+migration, inspect providers, deploy, send, charge, freeze a candidate, or
+perform any external effect. Stop for C00 admission.

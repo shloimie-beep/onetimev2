@@ -3,15 +3,15 @@ execution_id: OT-V21-PRODUCTION
 task_id: F02
 authority:
   writer_slot: MIGRATION_AUTHORITY
-  lease_id: 7de57120-0ed6-4e9d-8dcd-53cdbdf471b4
-  schema_contract_lease_id: e0a6dd90-820f-4625-9979-e057d0bdad1c
-  claim_id: 88a902de-af91-412f-9e38-6e82dac1d3d2
-  writer_id: codex-f02-projection-v2-88a902de
-  containing_control_head_sha: f2b4a9faefdb5f780c9b620fedb413d408d27a19
-  controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
-  authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-  lease_expires_at: '2026-07-30T19:03:38Z'
-  released_at: '2026-07-30T17:44:04Z'
+  lease_id: defa457c-32f6-4618-a237-cde17d3c439a
+  claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
+  writer_id: codex-f02-proposal-authority-68f6e27a
+  containing_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
+  ready_entry_parent_control_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+  controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
+  authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+  lease_expires_at: '2026-07-30T22:25:05Z'
+  released_at: '2026-07-30T21:10:33Z'
   audit_status: PASS
 policy:
   reviewed_latest: 2252_v21_content_publication.sql
