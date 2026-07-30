@@ -1,72 +1,70 @@
-# F04 Adult-Session and Household-Label Correction — Final Handoff
+# F04 Ownership-Transfer Revocation Correction — Final Handoff
 
 ## Exact identity
 
 - Branch: `codex/v21-f04-household-identity`
-- Expected pre-correction remote head:
-  `54a0ac28b51d271aacab60003451dbcc66ffcac8`
-- Authorized integration start:
-  `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`
-- Correction implementation:
-  `dd5ce9ae49e2ef7800657289f7aa5bbc839163c4`
-- Final runtime commit: derive with `git rev-parse HEAD`; C00 records the exact pushed remote head.
-- Substantive control: `26f29aeb6734948dd8b80ab85a342831defaecc9`
-- Claim: `ac096257-657d-40ab-88bb-80247126bf6b`
+- Canonical control: `c44656d40769b28f2d55e6e1041d716175129f4a`
+- READY parent: `98e7b05c7d256d55fd8a4dbd829230e42303e67e`
+- READY digest: `1c8541d27f0e96522bc877ef7b74023b8861168088cbd5457b4ca980e7e07a06`
+- Expected pre-correction task head: `a5868a9503d1037890f5f8e250c2afe5131c4331`
+- Authorized integration start: `8634b2ab15df624576a88b31182ebdc68553ff74`
+- Product commit: `2834f79b9e45f7c310de037adf07c8ffc7ed50b7`
+- Terminal runtime commit: derive with `git rev-parse HEAD`; C00 records the exact pushed remote head.
+- Claim: `dba6e4fc-04d0-4245-94e8-cc722e73b013`
 - Released `ACCOUNT_HOUSEHOLD_IDENTITY` lease:
-  `ecf3aa70-8429-4846-ab39-c74816547e35`
-- Task packet digest: `8129731ba92e32991ceda7c9e729196e82c4d9c8ac2cb8dfbee33a7c169d81f5`
-- Context digest: `ee9e067b17a172c1a9c9886bffa7798e228359c08dbad4d8692b4d36518c1367`
-- Source package digest: `10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
-- READY payload digest:
-  `e78da256b221d8fe55a650246e57210497b6cd00235f67b549049ba0dd127f44`
-- Two-artifact aggregate:
-  `cd88df7415a8ef8643f4553b868dbe12410a93c1045ef32a958e2a43f6def9e9`
+  `9e8691f9-a6c3-4386-9c1e-7aeef8db6578`
 
 ## Completed correction
 
-F04 now provides an atomic PostgreSQL v2.1 Parent-session repository over the
-unchanged migration-2235 table. Creation, access/refresh resolution, and
-revocation bind the exact active AdultIdentity, HumanAccount, unrevoked Parent
-membership, owned active household, product, runtime tier, verification
-environment, security version, current canonical access readback, unrevoked
-session, and live idle/absolute deadlines. Inactive canonical access remains a
-valid authenticated Parent state so downstream routing can enforce the
-specification's restricted billing/support/account allowlist.
+Outgoing Parent sessions are now selected only when their
+`activeHouseholdId` is the transferred household. The regression inventory
+contains a second active Parent session for a sibling household and proves it
+is not revoked.
 
-Repository inputs accept only distinct lowercase SHA-256 access and refresh
-digests. Raw opaque session material is absent from repository inputs, query
-results, errors, logs, URLs, and runtime evidence. Revocation reasons use a
-bounded vocabulary and increment the persisted session version exactly once.
+Transfer persistence now uses fixed migration-2235-compatible SQL:
 
-The household context query no longer reads nonexistent
-`v21_households.display_name`. It joins the exact active owner
-`v21_adult_identities.display_name` and derives `<owner> household` for family
-records or `<owner> school` for school records; the opaque household ID remains
-authoritative.
+- adult sessions set `revoked_at`, canonical `revoke_reason`, `updated_at`, and
+  increment `version`;
+- issued, unused billing sessions set `state = 'revoked'`, `revoked_at`, and
+  increment `version`;
+- unused action tokens use canonical `action_token_id`, set `revoked_at`, and
+  increment `version`.
 
-## Verification
+Each nonempty inventory must contain unique identifiers and update exactly its
+requested count. Missing, stale, used, or already-revoked rows produce
+`stale_version`; the caller transaction therefore rolls back household,
+transfer, session, billing, token, intent, and audit mutations together.
+Public repository symbols and signatures used by F03 are unchanged.
 
-- Focused Vitest: six deterministic repository tests passed.
-- Native PostgreSQL 16: one end-to-end proof passed after applying the exact,
-  unchanged 2234 and 2235 migrations to an isolated disposable database.
-- The native proof covered create, digest-only readback, exact resolution,
-  wrong household, wrong security version, wrong digest, exact idle expiry,
-  revoked membership, one-time revoke, and post-revoke denial.
-- The exact disposable database and role were dropped after the proof.
-- Workspace TypeScript typecheck, focused ESLint, focused Prettier, Git diff
-  hygiene, artifact hashes, and the repository secret scan all passed.
+## Evidence
 
-## Remaining work and exact next action
+- Focused contract/domain/service/repository suite: 25 passed; the three native
+  tests were intentionally skipped without the disposable opt-in.
+- Native PostgreSQL 16.14 repository suite: 14 passed after applying exact,
+  unchanged migrations 2234 and 2235.
+- The native proof covered the successful mixed revocation, exact version and
+  state readbacks, sibling-session preservation, and a late used-action-token
+  failure after earlier writes that fully rolled back.
+- The exact disposable native database and role were removed.
+- TypeScript, focused ESLint, focused Prettier, Git diff hygiene, YAML,
+  interface/digest/immutability checks, and the 3,104-file secret scan passed.
 
-C00 independently audits the exact pushed final for c0a1e04b ancestry, the
-five authorized paths, two-artifact aggregate, focused and native proofs,
-released lease, normal remote equality, and zero effects, then admits the
-correction through I36. Candidate-bound staging/operator verification remains
-outside this source-only phase; no further F04 implementation is authorized.
+Artifact digests:
 
-## External effects
+- repository pair:
+  `a7db7cafefe1202100574dbe88cc82fb4f6b9f0f262d32d5374bdf06e3d4cc91`
+- domain pair:
+  `8d15fa7d8e9516ac42105a34b5f6f5ba654336b4c674a0ed735710da11ea46be`
+- four-file product:
+  `c87d04c097ca12496b602a765634017902994568428af9fc6110d50d245b0a85`
+- interface contract 1.0.1:
+  `79176042f6fef736e27c9280e89d116146c515bf3ab275360f31784fed587e33`
+- runtime triplet: reproduced from the terminal commit and reported to C00.
 
-Attempted `0`, succeeded `0`, reconciled `0`. No provider, deployment, DNS,
-message, billing, migration, registration, or live-database effect occurred.
-The only database mutation was inside an exact disposable local PostgreSQL
-proof database, which was fully removed. No blocker remains.
+## Remaining action
+
+C00 independently verifies the exact pushed terminal head, authorized
+eight-path diff, product ancestry, artifact and runtime digests, interface
+checkpoint 1.0.1, native rollback proof, released lease, and effects `0/0/0`,
+then admits F04 through I36. No additional F04 implementation or any provider
+effect is authorized by this completed source correction.
