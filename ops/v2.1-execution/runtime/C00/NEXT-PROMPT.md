@@ -1935,6 +1935,38 @@ Communications is integrated and remotely clean at
 Candidate freeze, providers, live database execution, sends, enrollments,
 charges, deployment, DNS, and every external effect remain withheld.
 
+# Latest full-production completion instruction
+
+Resume from control parent
+`1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca` and integration
+`c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`. Do not restart discovery,
+re-merge P18/P21/communications, or repeat the F02 audit. F02 correction
+`39cacd4a` is integrated at `526f0384`; the source-complete P20 head
+`12980cb0` is explicitly quarantined pending its coordinated P20/P21/F02
+correction.
+
+Continue in this order:
+
+1. Finish the disjoint P08 server/client registration seam and P20/P21/F02
+   publication-seed correction; independently admit each exact remote head.
+2. Run Lane B from READY `5c3f7739…`. Preserve `#090909`, `#FFD400`,
+   `#67E8F9`, white, and Inter while implementing the complete landing contract.
+3. When a writer slot opens, run Lane C from READY `63ac2cf7…` as read-only
+   provider/GHL preflight. Reject unrelated connector resources and perform no
+   effect.
+4. Consume I36 READY `c010024f…` only after producer admission; apply checkpoint
+   1 server/client/worker registrations and barrels, then the remaining three
+   bounded shared checkpoints under fresh exact control boundaries.
+5. Run one merged workspace verification, freeze one candidate, and continue
+   through V37–V43, R44, deferred proof, V43 Phase B, R45, legal approval,
+   cutover, and observation in the locked sequence.
+
+Candidate freeze, provider mutation, live database migration, sends,
+enrollments, charges, deployment, DNS, and customer activation remain
+withheld. Legal blocks V43’s legal case, R45, customer activation, DNS cutover,
+and broad release—not source correction, staging, read-only checks, or approved
+operator-only canaries.
+
 # Latest controlled-launch instruction
 
 Use exact remote integration

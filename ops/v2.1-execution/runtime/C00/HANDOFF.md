@@ -1,3 +1,35 @@
+# Full production completion convergence — current handoff
+
+Remote control parent is `1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca`;
+remote integration is clean at
+`c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`. All 39 registered v2.1
+branches were fetched. Every registered producer head is an ancestor of that
+integration head. P18 `3be7bf49`, P21 `705030f2`, and communications
+`3364c1c3` are reconciled once and must not be re-created.
+
+F02 correction `39cacd4aeef63ba247902b1fc7051b6bd6ca0f23`
+is integrated at `526f038412d7652451e519fae0f8ef857625029a`.
+Native PostgreSQL/PGlite probes reject the eleven formerly reproduced bypasses,
+54/54 focused assertions pass, migrations 2250–2252 replay, and effects remain
+`0/0/0`. The historical rejected head `68e3c527` remains in ancestry because
+the correction branch aligned to the newer integration tree; only the corrected
+final bytes are admissible.
+
+The current publication-seed enrichment `12980cb0` is quarantined. Independent
+review proved that its enriched projection is incompatible with P21 and
+migration 2252, approved draft rows cannot reload through append-only artifact
+persistence, participant/redaction evidence is caller-fabricatable, and the
+content-version digest omits model/prompt/schema provenance. Empty Mishnah
+references are allowed. Complete one coordinated P20/P21/F02 correction and a
+real database round trip before admission.
+
+Four bounded lanes are published in `CONTROL-STATE.yaml`. Lane A is already
+integrated. Lane B has READY digest `5c3f7739…`; Lane C has read-only READY
+digest `63ac2cf7…`; Lane D has registration READY digest `c010024f…` and must
+remain idle until the active P08/P20 producer corrections are admitted. No
+provider lock is claimed, candidate remains null, and no provider, deployment,
+DNS, send, enrollment, charge, or live migration effect is authorized.
+
 # Controlled-launch convergence — current handoff
 
 Integration is remotely clean at

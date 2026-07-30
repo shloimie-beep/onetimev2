@@ -8,17 +8,32 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: controlled_launch_four_lane_convergence
-claimed_by: codex-c00-orchestrator-2baa2f4b
-claim_time: '2026-07-30T11:04:00Z'
-claim_id: 2baa2f4b-8eed-4b92-a0d8-b1725d8fcfe8
-lease_expires_at: '2026-07-30T15:20:20Z'
-last_heartbeat_at: '2026-07-30T13:20:20Z'
-controller_authorization_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
+phase: full_production_completion_convergence
+claimed_by: codex-c00-orchestrator-782440c2
+claim_time: '2026-07-30T16:25:00Z'
+claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
+lease_expires_at: '2026-07-30T18:25:00Z'
+last_heartbeat_at: '2026-07-30T16:25:00Z'
+controller_authorization_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
 ready_entry_payload_digest: null
-state_based_on_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
+state_based_on_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
+  full_production_completion_convergence:
+    prior_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+    current_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    P18_source_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+    P21_source_head_sha: 705030f2d5163f95340a19dc42efd0f167259869
+    communications_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
+    F02_corrected_source_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+    F02_integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+    HighLevel_config_integration_head_sha: 9cb28a0078e3dfe814cfca34cf93000993416ce8
+    provisional_landing_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    candidate: null
+    provider_locks_claimed: 0
+    external_effects: 0/0/0
+    P20_quarantined_head_sha: 12980cb042b8b62ac4d64bbd1fe5e47b516c0f7d
+    P20_quarantine_reason: coordinated_P20_P21_F02_persistence_and_evidence_correction_required
   P21_scope_correction_integration:
     authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
     implementation_head_sha: 7b51bae186728351ff1cf93b1c02fcba893b1051
@@ -125,6 +140,7 @@ lean_completion_bindings:
       - preserve_immutable_P21_MIGRATION_002_and_superseded_registration_001_bytes
     provider_boundary: repository_only_no_provider_call_or_effect
 completed_steps:
+- Fetched all 39 registered v2.1 branches, verified clean relevant worktrees before the new steer, confirmed every registered producer head is an ancestor of integration c0a1e04b, renewed only the stale C00 lease, reconciled P18/P21/communications/F02, published the four-lane ownership table and three exact ready entries, and preserved candidate/provider/effect gates.
 - Reconciled exact communications integration release 7185d45b with source merge 9a028e7a, sole CRLF-normalization test fix e4238689, terminal three-path I36 release, pair/triplet 5254cd9d/7098b069, independent Windows-CRLF simulation, released lease, clean remote equality, and effects 0/0/0.
 - Stopped F02 before commit when canonical P21-MIGRATION-002 proved incompatible with integrated P21 runtime: global-only conflict targets and a resume contract without contentVersionId would force a noncompliant migration. Preserved 2250/2251 safe work, withheld 2252, and effects remained 0/0/0.
 - Narrowed F02 Lease D to exact migrations 2250-2251 and six total paths under the existing claim and writer leases, with commit withheld until transition-regression and hexadecimal-digest negative probes pass; authorized one seven-path repository-only P21 correction claim 00402ed6 from exact integration 7185d45b.
@@ -462,11 +478,10 @@ completed_steps:
 - issued only an atomic runtime-triplet renewal for the preserved dirty F02 draft under READY digest 635c8923, claim 2002fc61, and shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 4d52c050
 - independently reconciled F02 renewal claim 9daa5251 as an exact runtime-triplet child of 6a5e359c with remote proposal and migrations unchanged, all seven local draft paths byte-preserved, renewed authority exact, and effects zero
 remaining_steps:
-- Record the four exclusive runtime lanes, then run F02 correction, GHL/email readback, landing implementation, and launch-critical verification concurrently.
-- Admit corrected migrations 2250-2252 and batch only launch-required shared registrations into the fewest safe Lane 1 commits.
-- Freeze one exact candidate, deploy staging, reconcile providers under exact locks, and complete the controlled-launch critical journeys.
-- Deploy the production-capable controlled pilot, prove rollback/readback, and keep broad release fail-closed until the legal bundle exists.
-next_action: Record the short runtime-only ownership table and dispatch the disjoint F02 correction, provider-readback, landing, and verification lanes from exact integration dd944eee; no new control framework or provider mutation is authorized by this record.
+- Finish and independently admit the P08 server/client registration seam and the coordinated P20/P21/F02 publication-seed correction.
+- Complete Lane B landing correction and Lane C read-only provider/GHL matrices, then apply the four bounded I36 central checkpoints and run one merged workspace validation.
+- Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
+next_action: Resume the disjoint P08 and P20 corrections while Lane B consumes READY 5c3f7739; start Lane C from READY 63ac2cf7 when a writer slot opens, and keep I36 READY c010024f idle until producer admission. No provider mutation or deployment is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -474,13 +489,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
+  current_control_parent_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 2baa2f4b-8eed-4b92-a0d8-b1725d8fcfe8
-      observed_head: a58965e989a9dab81d079a8d02afe23aab146fb8
-      lease_expires_at: '2026-07-30T15:20:20Z'
+      claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
+      observed_head: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+      lease_expires_at: '2026-07-30T18:25:00Z'
       lease_state: active
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -491,32 +506,32 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: null
-      observed_head: dd944eee39c314c562171c89c7350a6900ea2e6f
-      authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-      lease_expires_at: null
-      scheduling_state: P21_scope_correction_integrated_ready_for_controlled_launch
+      claim_id: 3daf5041-0aa0-426b-8ad8-d40ce36e0d85
+      observed_head: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+      authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+      lease_expires_at: '2026-07-30T18:25:00Z'
+      scheduling_state: shared_registration_checkpoint_1_ready_waiting_for_producer_admission
     F02:
-      branch: codex/v21-f02-schema-state-migrations
+      branch: codex/v21-lane1-migration-correction
       claim_id: null
-      observed_head: 68e3c527f46da71434be4a1c888b01efc396cef0
-      authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
+      observed_head: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+      authorized_start_sha: dd944eee39c314c562171c89c7350a6900ea2e6f
       lease_expires_at: null
-      scheduling_state: rejected_unmerged_bounded_semantic_correction_required
+      scheduling_state: semantic_fencing_correction_integrated_at_526f0384
     F07:
-      branch: codex/v21-f07-design-system-shells
-      claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
-      observed_head: 2c451d7b1f59eece1ae8df505d4eeec19f42e1ef
-      authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-      lease_expires_at: null
-      scheduling_state: ready_for_review_agent_returned
+      branch: codex/v21-lane3-landing-campaign
+      claim_id: d34ee5e7-ad86-49be-ad1e-236592ad3a0b
+      observed_head: 2650c75ea9a5edc222af8c61a6fed433b73ede28
+      authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+      lease_expires_at: '2026-07-30T18:25:00Z'
+      scheduling_state: full_landing_brand_correction_ready
     P31:
-      branch: codex/v21-p31-release-communications-convergence
-      claim_id: null
-      observed_head: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
-      authorized_start_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
-      lease_expires_at: null
-      scheduling_state: repository_only_communications_convergence_integrated_at_7185d45b
+      branch: codex/v21-lane2-ghl-email
+      claim_id: 8e264a4e-d748-4f11-84f1-cfe78869dd18
+      observed_head: 1e9f41a3af58d3385754961861a260d2746a5073
+      authorized_start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+      lease_expires_at: '2026-07-30T18:25:00Z'
+      scheduling_state: read_only_provider_preflight_ready_waiting_for_writer_slot
     P35:
       branch: codex/v21-p35-domain-transition-archive
       claim_id: 9ee0d8f8-944d-47f2-b67a-54cb333cc29d
@@ -1328,5 +1343,5 @@ external_effects:
   reconciled: 0
 blockers:
 - OPS-084-LEGAL-BUNDLE
-- F02-2250-2252-SEMANTIC-FENCING
+- P20-P21-PUBLICATION-SEED-INTEGRATION
 out_of_scope_findings: []

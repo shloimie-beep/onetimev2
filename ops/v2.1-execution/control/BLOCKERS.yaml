@@ -23,7 +23,7 @@ blockers:
   protection: Codex must not draft, infer, approve, substitute, or weaken the legal text or approval record.
   next_check: Re-evaluate only when the exact externally approved six-file bundle is supplied; until then fail production_broad closed.
 - blocker_id: F02-2250-2252-SEMANTIC-FENCING
-  status: open
+  status: closed
   scope: controlled_launch_candidate
   owner: C00_and_F02
   affected_tasks:
@@ -34,14 +34,34 @@ blockers:
   - V43
   - R45
   safe_work_completed: >-
-    Exact F02 remote 68e3c527 passed ancestry, six-path scope, request identity, checksums, lease release, and clean
-    tracked 82/82 replay, but was withheld from integration. Native PostgreSQL then reproduced eleven semantic bypasses;
-    no live database or external effect occurred.
+    Correction 39cacd4a is integrated at 526f0384. Fresh PostgreSQL 18.3/PGlite probes reject the eleven reproduced
+    preview, confirmation, request-hash, acceptance-unknown, active-session, revocation, and attendance-projection
+    bypasses; exact positive rows pass, the provider readback ledger is append-only, 54/54 focused tests pass, tracked
+    migrations 2250-2252 replay, typecheck and secret checks pass, and no live database or external effect occurred.
+  required_authority_or_input: []
+  protection: The historical rejected head 68e3c527 remains diagnostic only; only the corrected final migration bytes may be considered for candidate replay.
+  next_check: Revalidate the final 2252 checksum after the coordinated P20/P21 publication-seed correction and before candidate freeze.
+- blocker_id: P20-P21-PUBLICATION-SEED-INTEGRATION
+  status: open
+  scope: controlled_launch_candidate
+  owner: P20_P21_F02_I36
+  affected_tasks:
+  - P20
+  - P21
+  - F02
+  - I36
+  - V39
+  - R44
+  safe_work_completed: >-
+    Source-complete P20 enrichment head 12980cb0 passed its focused tests and exact eight-file boundary, but independent
+    admission quarantined it before merge. Empty Mishnah references are allowed when none were supplied and approved.
   required_authority_or_input:
-  - One bounded F02/P17/P18 correction for preview and confirmation evidence, exact roster/access versions, request-hash conflict handling, acceptance-unknown exits, active-session and revocation fencing, and immutable attendance-projection scope/evidence
-  - Fresh native negative probes rejecting every reproduced bypass
-  - Clean tracked migration inventory containing corrected 2250, 2251, and newly admitted 2252
-  protection: Do not merge 68e3c527 or execute its migrations against staging or production.
-  next_check: Re-evaluate immediately after the bounded correction final is pushed and independently audited.
+  - Align the enriched P20 projection with P21 types, digest validation, consumer, and persistence
+  - Persist approved artifacts as immutable approved revisions that survive a real repository reload
+  - Bind participant and redaction evidence to canonical persisted roster/provider/detection/Admin evidence
+  - Bind model, operation, prompt, and schema provenance into the immutable content-version digest
+  - Correct migration 2252 through F02 and pass an actual database round-trip plus native PostgreSQL validation
+  protection: Do not merge 12980cb0, freeze a candidate, or claim publication readiness until the coordinated correction is independently admitted.
+  next_check: Re-evaluate the single corrected P20/P21/F02 head set after focused and native database proof.
 rule: One precise blocker per entry with owner, affected tasks, safe work completed, required authority/input, and
   next check.

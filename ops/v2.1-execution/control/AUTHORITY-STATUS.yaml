@@ -18,8 +18,8 @@ authorities:
     fencing_token: not_applicable_source_grant_only
     effect_authority_usable: false
     candidate_binding_status: pending
-    checked_at: '2026-07-29T07:13:45Z'
-    state_based_on_control_head_sha: 6fe3d6cb206e70ef36ef42e705b6d6149b6934fb
+    checked_at: '2026-07-30T16:25:00Z'
+    state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
 entry_schema: templates/AUTHORITY-STATUS-ENTRY.yaml
 revocation_schema: templates/AUTHORITY-REVOCATION-RECORD.yaml
 rule: C00 records externally granted/revoked/expired authority; it does not grant it. Every update binds the known

@@ -3,8 +3,8 @@ execution_id: OT-V21-PRODUCTION
 semantic_owner: F02
 mechanical_control_writer: C00
 proposal_path: ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
-reviewed_latest: 2249_v21_school_inquiry.sql
-next_available_ordinal: 2250
+reviewed_latest: 2252_v21_content_publication.sql
+next_available_ordinal: 2253
 never_allocate:
 - 2231
 allocations:
@@ -212,6 +212,45 @@ allocations:
   pg_mem_checksum_sha256: 6666c474a4fbd87c028f59bf0c4863df71b6f8f547aefd7cb98abde4d284d9ce
   integrated_merge_sha: acde075ecf50e77e57fb3bda82a18509d42345ad
   integration_release_sha: 3cf787409decb5beb84561ef7e37924111d398b6
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2250
+  file: packages/db/migrations/2250_v21_zoom_preparation.sql
+  task_id: P17
+  request_id: P17-MIGRATION-002
+  purpose: Scoped Zoom preparation, immutable roster snapshots, normal-classroom resources and Student registrants, exact request/preview/confirmation fencing, and append-only idempotent preparation commands.
+  interface_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+  status: allocated
+  checksum_sha256: e63ae53369575b77a8f9f86564bd06e9e5fe72cf19b2ad15bfcd177ddbe93b38
+  integrated_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
+  integration_release_sha: 526f038412d7652451e519fae0f8ef857625029a
+  native_postgresql_evidence_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2251
+  file: packages/db/migrations/2251_v21_embedded_classroom.sql
+  task_id: P18
+  request_id: P18-migration-003
+  purpose: Disjoint embedded-classroom launch grants, active-session and revocation fencing, immutable attendance events, and request-bound attendance projections with fixed TTL and lease semantics.
+  interface_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
+  status: allocated
+  checksum_sha256: 3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9
+  integrated_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
+  integration_release_sha: 526f038412d7652451e519fae0f8ef857625029a
+  native_postgresql_evidence_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+  replaces_applied_migration: false
+  destructive: false
+- ordinal: 2252
+  file: packages/db/migrations/2252_v21_content_publication.sql
+  task_id: P21
+  request_id: P21-MIGRATION-002
+  purpose: Composite-scoped publication, approval evidence, provider completion readback, playback authorization, occurrence attachment, and exact content-version resume fencing.
+  interface_digest: aeb2db007026e9ad6286c4daa10a8b1970df6869b4d9eb821e3fe29c6eefc792
+  status: allocated
+  checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
+  integrated_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
+  integration_release_sha: 526f038412d7652451e519fae0f8ef857625029a
+  native_postgresql_evidence_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
   replaces_applied_migration: false
   destructive: false
 rule: F02 is the only semantic allocator and migration-file writer. It pushes a proposal on its task branch; C00

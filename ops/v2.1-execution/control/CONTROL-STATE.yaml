@@ -2,6 +2,7 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 branch: codex/v21-control
 status: operational
+active_phase: full_production_completion_convergence
 bootstrap_phase: operational
 bootstrap_phase_order:
 - package_installed
@@ -15,15 +16,45 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
+controller_authorization_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
 next_action: >-
-  Exact P21 correction 705030f2 is integrated and remotely reconciled at release dd944eee after two independent
-  admissions, clean nine-path scope, byte-identical protected requests, 17/17 focused tests, typecheck, and effects
-  0/0/0. F02 release 68e3c527 is rejected and unmerged after native PostgreSQL reproduced eleven launch-critical
-  preview, idempotency, quarantine-transition, active-session, revocation, and attendance-projection bypasses.
-  Record the short runtime-only four-lane ownership table, return F02 for one bounded correction, and start disjoint
-  landing, provider-readback, and launch-verification work. Candidate freeze, provider mutation, deployment, sends,
-  charges, DNS, and live migration execution remain gated; read-only provider inspection may now proceed.
+  Continue from exact integration c0a1e04b. F02 semantic-fencing correction 39cacd4a is integrated at 526f0384 and
+  passed focused tests, native PostgreSQL probes, tracked migration replay, typecheck, and zero-effect review. The
+  communications source 3364c1c3, P18 3be7bf49, and P21 705030f2 are verified ancestors. Finish the active P08 server
+  registration seam and the coordinated P20/P21 publication-seed correction; complete the full landing correction
+  under locked product tokens; produce read-only provider/GHL matrices; then apply the four bounded I36 registration,
+  configuration, provider-registry, and deployment/asset checkpoints. Candidate freeze and all provider mutation,
+  deployment, DNS, sends, charges, live migration execution, and customer activation remain gated.
+production_completion_lanes:
+- lane: A
+  owner: F02
+  status: completed_integrated
+  branch: codex/v21-lane1-migration-correction
+  source_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
+  integration_head_sha: 526f038412d7652451e519fae0f8ef857625029a
+  scope: migrations_2250_2252_and_exact_F02_P17_P18_P21_semantic_fencing
+  provider_effects: prohibited
+- lane: B
+  owner: F07_with_P08_public_entry
+  status: ready
+  branch: codex/v21-lane3-landing-campaign
+  expected_head_sha: 2650c75ea9a5edc222af8c61a6fed433b73ede28
+  scope: public_landing_brand_campaign_and_assets_only
+  provider_effects: prohibited
+- lane: C
+  owner: P31_provider_preflight
+  status: ready_read_only
+  branch: codex/v21-lane2-ghl-email
+  expected_head_sha: 1e9f41a3af58d3385754961861a260d2746a5073
+  scope: canonical_provider_and_GHL_workflow_readback_matrices
+  provider_effects: prohibited_until_candidate_authority_and_exact_lock
+- lane: D
+  owner: I36
+  status: active_corrections_then_registration
+  branch: codex/v21-integration
+  expected_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+  scope: producer_admission_shared_registration_candidate_and_evidence_aggregation
+  provider_effects: prohibited
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
