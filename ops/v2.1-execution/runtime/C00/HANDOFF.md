@@ -1921,3 +1921,15 @@ from release `42068ace`, under a fresh atomic RELEASE_INTEGRATOR claim. Do not
 mark any steward result applied in the source-integration wave. Candidate,
 provider inspection/mutation, deployment, activation, enrollment, sends, and
 all external effects remain gated.
+
+I36 READY digest `b60c929884c5bd974b66c1f02fe56d23fd50cceee35e929b5138a2d3c912bda1`
+binds exact integration release `42068ace`, claim
+`ff36a180-ce16-4787-841b-5e10a7aabfec`, and RELEASE_INTEGRATOR lease
+`0430520f-6a94-4550-a1ea-f01f8d5173b2` through
+`2026-07-30T06:35:30Z`. Ordered merge payloads are F02 `bfb510da`, P28
+`f3e7df0d`, and P31 `f9922704`.
+
+The first I36 push must change exactly its runtime triplet, preserve every
+product, migration, request, and source-task byte, push normally, remote-verify,
+and stop for C00 reconciliation. No source merge or external effect is yet
+authorized.

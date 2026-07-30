@@ -1607,3 +1607,15 @@ and exact 9/12/8-path allowlists. Run combined migrations, focused tests,
 typecheck, YAML, scope, digest, secret, and zero-effect gates; release the
 integrator lease and stop for independent audit. Do not apply central steward
 requests during this ancestry-only wave.
+
+Resume I36 from exact release `42068ace48fe1a93302ce7d5533e11803b526d5b`
+under READY digest
+`b60c929884c5bd974b66c1f02fe56d23fd50cceee35e929b5138a2d3c912bda1`,
+claim `ff36a180-ce16-4787-841b-5e10a7aabfec`, and RELEASE_INTEGRATOR lease
+`0430520f-6a94-4550-a1ea-f01f8d5173b2` through
+`2026-07-30T06:35:30Z`. Recompute the exact C00/I36/F02/P28/P31 dependency
+bindings and merge payloads F02 `bfb510da`, P28 `f3e7df0d`, and P31
+`f9922704`. Make only a runtime-triplet atomic claim, push normally, verify
+remote equality, and stop. Do not merge a source, apply a steward request,
+inspect a provider, deploy, send, or perform an external effect before C00
+consumes READY and rebinds all three target CAS fields to the exact claim head.

@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T05:44:02Z'
-last_heartbeat_at: '2026-07-30T04:59:02Z'
-controller_authorization_sha: 3f7403ca5b2601560478d0a12fef4b5418149309
+lease_expires_at: '2026-07-30T05:50:30Z'
+last_heartbeat_at: '2026-07-30T05:05:30Z'
+controller_authorization_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
 ready_entry_payload_digest: null
-state_based_on_head_sha: 3f7403ca5b2601560478d0a12fef4b5418149309
+state_based_on_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Admitted exact ordered F02 6d16d6eb, P28 a2025a76, and P31 d72dda56 source heads for an I36 runtime-triplet-only atomic claim from integration release 42068ace under READY digest b60c9298, claim ff36a180, and RELEASE_INTEGRATOR lease 0430520f; source merges and effects remain withheld pending reconciliation.
+- Independently recomputed all three merge bases, exact 9/12/8-path inventories, raw Git-byte manifests, manifest-form state/handoff and runtime-triplet digests, task/context identities, artifact/proposal bindings, canonical READY/merge payload digests, and zero-effect records.
 - Independently audited F02 Lease C final 6d16d6eb as the sole child of its reconciled claim, exact nine-path scope, five forward-only migrations 2245 through 2249, normalized/native and repository-runner checksum pairs, next ordinal 2250, released dual leases, and effects 0/0/0.
 - Independently reconciled P28 final a2025a76 and implementation 7a37ef5b with exact twelve-path scope, immutable P17 reminder-routing request, semantic digest f00013bb, 47 focused assertions, released lease, and effects 0/0/0.
 - Independently reconciled P31 final d72dda56 and implementation 8b3ed597 with exact eight-path scope, exact OT-15 step 2/3 copy digests, interface 1.1.0 digest a759c3db, focused/typecheck gates, released lease, and effects 0/0/0.

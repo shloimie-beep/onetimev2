@@ -1,8 +1,141 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 3053ccc6-4872-4c34-a271-18292cb3cf4e
+  kind: implementation
+  task_id: F02
+  source_branch: codex/v21-f02-schema-state-migrations
+  source_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
+  source_delta_base_head_sha: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
+  required_merge_base_sha: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+  merge_after_heads:
+    P19: 306c26cfcb84672eb5e593d1bee847a0f3e01243
+    P20: 3d75b57e91c12ab3e0cad78b1a6a63497838f46f
+    P28: f891f16eb13593d0eb3bbe53c076513d12b07c23
+    P08: e15a7af6cde557ff7f0fbbd55c12244780ca2321
+    P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
+  allowed_paths:
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - packages/db/migrations/2245_v21_content_ingest.sql
+  - packages/db/migrations/2246_v21_content_processing.sql
+  - packages/db/migrations/2247_v21_communication_foundation.sql
+  - packages/db/migrations/2248_v21_family_signup.sql
+  - packages/db/migrations/2249_v21_school_inquiry.sql
+  writer_slot_leases: &direct_prerequisite_integrator_lease
+  - slot: RELEASE_INTEGRATOR
+    lease_id: 0430520f-6a94-4550-a1ea-f01f8d5173b2
+    holder_task_id: I36
+    holder_claim_id: ff36a180-ce16-4787-841b-5e10a7aabfec
+    state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+    lease_issued_at: '2026-07-30T05:05:30Z'
+    lease_expires_at: '2026-07-30T06:35:30Z'
+    phase_scope: F02_P28_P31_direct_prerequisite_source_integration
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  state_handoff_digest: de5ebc6b6cb6f1c59e78f34caad30a4e59207d81cbf29cf4fc80fa87f1d495f2
+  runtime_triplet_digest: ae858c4264c669eba57debcddf24b583ec738c8b3e20b928166746e23877db8b
+  source_path_inventory_digest: 9202690b8a933f6bb97538f3b8e0d75388a7262c1169147ae7d0b5726af2d880
+  source_manifest_digest: fee9bc9f16d3a28d5a912a80758233ca874f68329d1a06a345344e6d90fb43a0
+  migration_allocation_proposal_digest: f407e7fa6d0c29d7eb70c9016489bb43957a646853ead111cc3079d62e25c8b3
+  external_effect_summary: &zero_effects
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: a7f135ed-0470-44c9-8bcf-f558346fa42a
+  kind: implementation
+  task_id: P28
+  source_branch: codex/v21-p28-communication-foundation
+  source_head_sha: a2025a768ae6e69a15ec5605379a9e359cf2deec
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
+  source_delta_base_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
+  required_merge_base_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: a2025a768ae6e69a15ec5605379a9e359cf2deec
+  merge_after_heads:
+    F02: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
+    F06: ce061ca5b208cfb2a41e0c2f439a7a4b91e8ca57
+    P17: 78af71603713b6fc73fe755995bdf56193eb199a
+    P27: e1933d640657835cde17ee23381399f5539fe3cd
+    P31: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  allowed_paths:
+  - apps/worker/src/runners/communications-foundation/index.ts
+  - apps/worker/src/runners/communications-foundation/reminder-routing.test.ts
+  - apps/worker/src/runners/communications-foundation/reminder-routing.ts
+  - apps/worker/src/runners/communications-foundation/runner.ts
+  - ops/v2.1-execution/runtime/P28/HANDOFF.md
+  - ops/v2.1-execution/runtime/P28/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P28/TASK-STATE.yaml
+  - packages/contracts/src/communications/foundation/index.ts
+  - packages/domain/src/communications/foundation/class-reminder.test.ts
+  - packages/domain/src/communications/foundation/class-reminder.ts
+  - packages/domain/src/communications/foundation/errors.ts
+  - packages/domain/src/communications/foundation/index.ts
+  writer_slot_leases: *direct_prerequisite_integrator_lease
+  task_packet_digest: 3fd5a9c080e3a7695a415dc6fc289d095ad662d6ccfa598910f73014cf38c823
+  task_context_digest: 96152f74273391337a3c6b8dd576829e7ddf9467cc867fb3b35ec4cf2c3cc18c
+  state_handoff_digest: f4837e7bccffb21228177091336be85a7a6e8f23ee54df42f223b6202ed8ee0c
+  runtime_triplet_digest: fc84d94cc2b4a7091f5ca54195da48f7444fb3480fc05f33473db924804873af
+  source_path_inventory_digest: 6d3a94c70603034fa688ea104eb19ef8abb57ad4785196a41347da77ff432cc4
+  source_manifest_digest: 7c6e16c610f908f8cbf4c318edf8ac53a8cc67aedcc2001cbd2e9be17d9a966f
+  interface_artifact_digest: b3ec5642dea691cd81b08814d76cd3544f73b1a094333ab4d8b4ceb48f2735ea
+  interface_contract_digest: f00013bbb46413c973276ef3454ef3b406e21d780349dbfcdccc004120cb1612
+  external_effect_summary: *zero_effects
+  state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+- schema_version: 1
+  execution_id: OT-V21-PRODUCTION
+  merge_id: 9fd355d1-289d-4f0f-846c-9ad89e5230dd
+  kind: implementation
+  task_id: P31
+  source_branch: codex/v21-p31-email-copy-approval
+  source_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+  target_branch: codex/v21-integration
+  expected_target_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
+  source_delta_base_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  required_merge_base_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
+  preserve_source_ancestry: true
+  required_postmerge_ancestor_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
+  merge_after_heads:
+    F01: fa9e5c92231c4b92340d07945cc91d76c85bd444
+    P28: a2025a768ae6e69a15ec5605379a9e359cf2deec
+    P30: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
+  allowed_paths:
+  - integrations/highlevel/v21/copy/catalog.ts
+  - ops/v2.1-execution/runtime/P31/HANDOFF.md
+  - ops/v2.1-execution/runtime/P31/INTERFACE-CHECKPOINT.yaml
+  - ops/v2.1-execution/runtime/P31/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P31/TASK-STATE.yaml
+  - packages/domain/src/communications/copy/approval.ts
+  - packages/domain/src/communications/copy/catalog.ts
+  - tests/unit/communications/copy-catalog.test.ts
+  writer_slot_leases: *direct_prerequisite_integrator_lease
+  task_packet_digest: bd03248c56abc9ea91dfbff449ec76dac0996fcd0eb336dccca28b96f184c374
+  task_context_digest: c0a24633dbad28172a423203bfb228fa190faedd442fe5457925ad3fc6fa7342
+  state_handoff_digest: 7e3bf5382afd76cfd71bd31fafaf880715a947bb41bd086dfab04a760225187f
+  runtime_triplet_digest: f9ced9e2537b39d58b9382d8dc965986f00bd38f3471710a661194ae99e5e47c
+  source_path_inventory_digest: 67cbd98daf369be7ab558c86dfaf526c88775f01b2cc57032982aaed4f6817df
+  source_manifest_digest: 6a340b94239b06364e6a8efd18f793e7bcad7b5964ca071d2e69048529cbd341
+  interface_artifact_digest: 4d88e548edc7a2fb5e9d3d375c60ba29bf4e928779a1941fe3d113ea7a588758
+  interface_contract_digest: a759c3db1cd946549d97359a68f394e8f8bd6af5c4c615748993bd901bb27f3a
+  external_effect_summary: *zero_effects
+  state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+item_payload_digests:
+  3053ccc6-4872-4c34-a271-18292cb3cf4e: bfb510daf058ad44252e823bf6313a366b4fa949499e2cb5cd2582b31d0ad9e8
+  a7f135ed-0470-44c9-8bcf-f558346fa42a: f3e7df0d4f6ec528688aff5e252faddb7b5000841552ebb5e3d3847ab5ef7324
+  9fd355d1-289d-4f0f-846c-9ad89e5230dd: f9922704c6683b09949f121955ca19d4c6c707622cdba4b14a37de2cd6f7b8d9
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
