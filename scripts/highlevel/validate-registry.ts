@@ -178,9 +178,7 @@ async function main() {
   );
   record(
     'workflow semantic-overlap check',
-    current.business_workflows.every((workflow) => !['OT-11', 'OT-12'].includes(workflow.key)) &&
-      current.bot_action_workflows.length === botActionWorkflows.length &&
-      current.business_workflows.length === businessWorkflows.length,
+    workflowClassificationsMatchCanonicalSource(current),
     `business=${current.business_workflows.length}, bot_actions=${current.bot_action_workflows.length}`,
   );
   record(
@@ -357,8 +355,9 @@ function workflowSenderDependenciesExist(current: CurrentRegistry) {
 
 function workflowControlIsValid(current: CurrentRegistry) {
   const canonical = [...current.business_workflows, ...current.bot_action_workflows];
+  const expectedCanonical = [...businessWorkflows, ...botActionWorkflows];
   const allowedStates = new Set<string>(workflowControlStates);
-  const ids = canonical.map((workflow) => workflow.ghlId);
+  const ids = canonical.map((workflow) => workflow.ghlId).filter(Boolean);
   const orders = canonical.map((workflow) => workflow.displayOrder);
   const folders = new Set(flattenFolderPaths(workflowFolderTree));
   return (
@@ -375,11 +374,19 @@ function workflowControlIsValid(current: CurrentRegistry) {
     current.workflow_control.unknownWorkflowPolicy.quarantineFolder === '99 - Deprecated' &&
     current.workflow_control.unknownWorkflowPolicy.quarantineOnlyWhenSafeAndAuthorized === true &&
     current.workflow_control.unknownWorkflowPolicy.silentlyDelete === false &&
-    canonical.length === 19 &&
-    canonical.filter((asset) => asset.asset_kind === 'workflow').length === 18 &&
-    canonical.filter((asset) => asset.asset_kind === 'email_marketing_campaign').length === 1 &&
-    campaignAssets.length === 1 &&
-    ids.every(Boolean) &&
+    canonical.length === expectedCanonical.length &&
+    canonical.filter((asset) => asset.asset_kind === 'workflow').length ===
+      expectedCanonical.filter((asset) => asset.asset_kind === 'workflow').length &&
+    canonical.filter((asset) => asset.asset_kind === 'email_marketing_campaign').length ===
+      expectedCanonical.filter((asset) => asset.asset_kind === 'email_marketing_campaign').length &&
+    campaignAssets.length ===
+      expectedCanonical.filter((asset) => asset.asset_kind === 'email_marketing_campaign').length &&
+    JSON.stringify(canonical.map((workflow) => workflow.key)) ===
+      JSON.stringify(expectedCanonical.map((workflow) => workflow.key)) &&
+    JSON.stringify(canonical) === JSON.stringify(expectedCanonical) &&
+    canonical.every((workflow) =>
+      workflow.observedStatus === 'MISSING' ? !workflow.ghlId : Boolean(workflow.ghlId),
+    ) &&
     duplicates(ids).length === 0 &&
     duplicates(orders.map(String)).length === 0 &&
     canonical.every(
@@ -400,12 +407,23 @@ function workflowControlIsValid(current: CurrentRegistry) {
         Boolean(workflow.canary.result) &&
         workflow.evidence.length > 0,
     ) &&
-    canonical.find((workflow) => workflow.key === 'OT-E01')?.observedStatus === 'ACTIVE_TESTED' &&
     canonical.find((workflow) => workflow.key === 'OT-C01')?.asset_kind ===
       'email_marketing_campaign' &&
-    canonical.find((workflow) => workflow.key === 'OT-C01')?.audienceReadback?.sends === 0 &&
-    canonical.find((workflow) => workflow.key === 'OT-07')?.observedStatus === 'DRAFT_SHELL' &&
-    canonical.find((workflow) => workflow.key === 'OT-08')?.observedStatus === 'DRAFT_SHELL'
+    canonical.find((workflow) => workflow.key === 'OT-C01')?.audienceReadback?.sends === 0
+  );
+}
+
+function workflowClassificationsMatchCanonicalSource(current: CurrentRegistry) {
+  const actualBusinessKeys = current.business_workflows.map((workflow) => workflow.key);
+  const actualBotActionKeys = current.bot_action_workflows.map((workflow) => workflow.key);
+  const actualDeprecatedKeys = current.deprecated_workflows.map((workflow) => workflow.key);
+  const allActualKeys = [...actualBusinessKeys, ...actualBotActionKeys, ...actualDeprecatedKeys];
+  return (
+    JSON.stringify(actualBusinessKeys) ===
+      JSON.stringify(businessWorkflows.map((workflow) => workflow.key)) &&
+    JSON.stringify(actualBotActionKeys) ===
+      JSON.stringify(botActionWorkflows.map((workflow) => workflow.key)) &&
+    duplicates(allActualKeys).length === 0
   );
 }
 
@@ -424,6 +442,7 @@ function senderCustomValuesExist(current: CurrentRegistry) {
     'One Time Rabbi Campaign Phase 2 From',
     'One Time Rabbi Personal Sender Name',
     'One Time Rabbi Personal From',
+    'One Time Rabbi Reply-To',
     'One Time Office Sender Name',
     'One Time Office From',
     'One Time Brand Sender Name',

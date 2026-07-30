@@ -15,7 +15,8 @@ export type CommunicationSubject =
   | { kind: 'adult'; adult_id: string; household_id: string | null }
   | { kind: 'student'; student_id: string; household_id: string };
 
-export type CommunicationSenderKey = 'rabbi_campaign' | 'office' | 'brand' | 'security_resend';
+export type CommunicationSenderKey =
+  'rabbi_campaign' | 'rabbi_personal' | 'office' | 'brand' | 'security_resend';
 
 export interface CommunicationSenderProfile {
   key: CommunicationSenderKey;
@@ -28,9 +29,16 @@ export interface CommunicationSenderProfile {
 export const COMMUNICATION_SENDER_PROFILES = {
   rabbi_campaign: {
     key: 'rabbi_campaign',
-    display_name: 'Rabbi Eli Scheller | One Time Mishnayos',
-    from_email: 'rabbi@onetimeonetime.com',
-    reply_to_email: 'info@onetimeonetime.com',
+    display_name: 'Rabbi Eli Scheller',
+    from_email: 'rabbielischeller@onetimeonetime.com',
+    reply_to_email: 'rabbielischeller@onetimeonetime.com',
+    transport: 'GHL',
+  },
+  rabbi_personal: {
+    key: 'rabbi_personal',
+    display_name: 'Rabbi Eli Scheller',
+    from_email: 'rabbielischeller@onetimeonetime.com',
+    reply_to_email: 'rabbielischeller@onetimeonetime.com',
     transport: 'GHL',
   },
   office: {

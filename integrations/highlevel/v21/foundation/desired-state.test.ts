@@ -12,8 +12,14 @@ describe('P28 GHL desired-state generation contract', () => {
       'OT-B01': { purpose: 'public_website_lead_capture', executable: true },
     });
     expect(state.senders.rabbi_campaign).toMatchObject({
-      from_email: 'rabbi@onetimeonetime.com',
-      reply_to_email: 'info@onetimeonetime.com',
+      display_name: 'Rabbi Eli Scheller',
+      from_email: 'rabbielischeller@onetimeonetime.com',
+      reply_to_email: 'rabbielischeller@onetimeonetime.com',
+    });
+    expect(state.senders.rabbi_personal).toMatchObject({
+      display_name: 'Rabbi Eli Scheller',
+      from_email: 'rabbielischeller@onetimeonetime.com',
+      reply_to_email: 'rabbielischeller@onetimeonetime.com',
     });
     expect(state.senders.office).toMatchObject({
       from_email: 'info@onetimeonetime.com',
