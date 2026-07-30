@@ -11,6 +11,9 @@ authorized start `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`, claim
 `3469667a-69e2-4c35-afac-5b1dfbbf417d`, MIGRATION_AUTHORITY lease
 `7f2ab8d1-a53f-41da-8143-28da4b62b200`, and SCHEMA_CONTRACT lease
 `9a3469a3-87c6-45b6-824f-c3b886a01b46`.
+Require implementation checkpoint
+`7a828767e68807a5b16c0b71a65218553a121856` and dual-lease release at
+`2026-07-30T12:58:26Z`.
 
 Require the exact six-path committed delta: migrations 2250 and 2251, the
 allocation proposal, and the F02 runtime triplet. Confirm only

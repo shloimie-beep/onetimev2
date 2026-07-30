@@ -11,8 +11,8 @@ authority:
   controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
   authorized_start_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
   lease_expires_at: '2026-07-30T13:34:41Z'
-  released_at: null
-  audit_status: IN_PROGRESS
+  released_at: '2026-07-30T12:58:26Z'
+  audit_status: PASS
 policy:
   reviewed_latest: 2233_zoom_class_occurrence_resources.sql
   first_new_ordinal: 2234

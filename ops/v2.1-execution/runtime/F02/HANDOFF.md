@@ -79,15 +79,17 @@ passed all Lease C migrations.
 Stop for independent and C00 audit. Do not merge, allocate ordinal 2250,
 register, inspect providers, deploy, send, or perform external effects.
 
-# F02 Migration Lease D1 Implementation Checkpoint
+# F02 Migration Lease D1 Release
 
 - Pushed split control: `4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4`
 - Sole control parent/controller: `4b22c4704edc8bd21b0e0242ad00debfba67f5c2`
 - Authorized start: `6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f`
+- Implementation checkpoint: `7a828767e68807a5b16c0b71a65218553a121856`
 - Claim: `3469667a-69e2-4c35-afac-5b1dfbbf417d`
 - MIGRATION_AUTHORITY lease: `7f2ab8d1-a53f-41da-8143-28da4b62b200`
 - SCHEMA_CONTRACT lease: `9a3469a3-87c6-45b6-824f-c3b886a01b46`
 - Lease expiry: `2026-07-30T13:34:41Z`
+- Released: `2026-07-30T12:58:26Z`
 - Effects: `0/0/0`
 
 Implemented only the authorized corrected P17 and P18 migration requests as
@@ -111,7 +113,10 @@ nonempty audit evidence, correction interval structure, and lowercase-hex
 digests.
 
 The exact committed batch is six paths: migrations 2250 and 2251, the
-allocation proposal, and the F02 runtime triplet. A terminal runtime-only
-release commit must record the implementation checkpoint SHA, release both
-writer leases before expiry, confirm the remote head, and stop for
-independent/C00 audit.
+allocation proposal, and the F02 runtime triplet. Typecheck, lint, YAML,
+repository Prettier, checksum, secret, diff, exact scope, release, and zero
+effects passed.
+
+Both writer leases were released before expiry. Stop for independent and C00
+audit. Do not commit draft 2252, merge, allocate ordinal 2252, register,
+inspect providers, deploy, send, or perform external effects.

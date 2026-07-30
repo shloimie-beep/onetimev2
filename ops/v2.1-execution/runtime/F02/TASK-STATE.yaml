@@ -265,16 +265,16 @@ migration_lease_D1_control:
     file: packages/db/migrations/2252_v21_content_publication.sql
     status: preserved_untracked_not_committed
     reason: P21 composite-scope and content-version contract correction requires separate authority
-status: implementation_complete_pending_release
-phase: migration_lease_D1_2250_2251
+status: ready_for_review
+phase: migration_lease_D1_2250_2251_complete
 claimed_by: codex-f02-migration-batch-3469667a
 claim_time: '2026-07-30T12:04:41Z'
 claim_id: 3469667a-69e2-4c35-afac-5b1dfbbf417d
 writer_slot_lease_id: 7f2ab8d1-a53f-41da-8143-28da4b62b200
 lease_issued_at: '2026-07-30T12:04:41Z'
 lease_expires_at: '2026-07-30T13:34:41Z'
-last_heartbeat_at: '2026-07-30T12:38:49Z'
-lease_released_at: null
+last_heartbeat_at: '2026-07-30T12:58:26Z'
+lease_released_at: '2026-07-30T12:58:26Z'
 controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
 ready_entry_parent_control_sha: null
 state_based_on_control_head_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
@@ -284,14 +284,14 @@ writer_slot_leases:
     lease_id: 7f2ab8d1-a53f-41da-8143-28da4b62b200
     lease_issued_at: '2026-07-30T12:04:41Z'
     lease_expires_at: '2026-07-30T13:34:41Z'
-    released_at: null
+    released_at: '2026-07-30T12:58:26Z'
   SCHEMA_CONTRACT:
     lease_id: 9a3469a3-87c6-45b6-824f-c3b886a01b46
     lease_issued_at: '2026-07-30T12:04:41Z'
     lease_expires_at: '2026-07-30T13:34:41Z'
-    released_at: null
-state_based_on_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
-last_implementation_commit_sha: null
+    released_at: '2026-07-30T12:58:26Z'
+state_based_on_head_sha: 7a828767e68807a5b16c0b71a65218553a121856
+last_implementation_commit_sha: 7a828767e68807a5b16c0b71a65218553a121856
 completed_steps:
   - atomically claimed migration lease C from exact remote head cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 under claim 0e98de00-4873-41cb-a06f-bd0ace918b89
   - bound only P19, P20, P28, P08, and P09 requests to ordinals 2245 through 2249; P17, P18, and P21 remain withheld
@@ -383,10 +383,13 @@ completed_steps:
   - Preserved existing migrations and request bytes, created exactly five P17 and four P18 persistence tables, reused canonical job_outbox/provider_operation_binding authority, and excluded the preserved untracked 2252 P21 draft.
   - Passed complete disposable PGlite PostgreSQL and repository-runner pg-mem migration inventories 82/82 with zero pending migrations and all nine new owned tables queryable.
   - Passed 26/26 P17 fail-closed missing-key/optional-reference probes and 35/35 focused native D1 semantic probes for confirmation/scope immutability, state/quarantine fencing, one-use grants, monotonic live-session leases, audited corrections, interval structure, and lowercase-hex digests.
+  - Committed the exact six-path implementation checkpoint as 7a828767e68807a5b16c0b71a65218553a121856 while preserving draft 2252 untracked.
+  - Passed final typecheck, lint, YAML, repository Prettier, normalized/native and runner checksum, secret, diff, exact staged-scope, and zero-effect gates.
+  - Released both MIGRATION_AUTHORITY and SCHEMA_CONTRACT slots at 2026-07-30T12:58:26Z before lease expiry.
 remaining_steps:
-  - Commit the verified six-path Lease D1 implementation checkpoint while excluding the preserved untracked 2252 draft.
-  - Record the checkpoint SHA, terminal verification, dual-lease release, final runtime handoff, and remote equality in a release commit before lease expiry.
-next_action: Complete the bounded Lease D1 checkpoint and terminal release metadata; do not broaden scope, commit 2252, merge, register, inspect providers, deploy, send, or perform external effects.
+  - An independent auditor and C00 must audit and admit the exact Lease D1 result head before I36 integration.
+  - P21 migration correction remains separately gated; draft 2252 is not part of this result.
+next_action: Stop after publishing the Lease D1 release. Await independent and C00 audit; do not commit 2252, merge, allocate ordinal 2252, register, inspect providers, deploy, send, or perform external effects.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -590,6 +593,8 @@ verification:
     - native fail-closed P17 missing-key and optional-provider-reference probes passed 26/26
     - focused native Lease D1 semantic probes passed 35/35 for immutable confirmation/scope, legal state/quarantine transitions, one-use grants, session generation/heartbeat/state fencing, nonempty audit evidence, correction interval structure, and lowercase-hex digests
     - exact five/four P17/P18 table ownership passed with shared job_outbox/provider_operation_binding reuse, no provider_operations table, and preserved untracked 2252 excluded from commit
+    - final typecheck, lint, YAML, repository Prettier, exact checksum pairs, secret scan, diff hygiene, exact six-path implementation scope, and effects 0/0/0 passed
+    - both shared writer slots were released at 2026-07-30T12:58:26Z before expiry
   known_baseline_failures:
     - pg-mem replay of the pre-existing schema_migrations CREATE TABLE IF NOT EXISTS statement hits a known planner/AST coverage limitation after a clean complete first apply; no failure originated in migrations 2235-2238
     - focused integration suites use a pg-mem setup that does not register the pre-existing btrim(text) dependency required by migration 2235; failure occurs before migrations 2245-2249
