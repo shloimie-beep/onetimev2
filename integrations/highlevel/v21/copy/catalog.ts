@@ -3,8 +3,9 @@ import {
   type CanonicalCopyMessage,
   type SenderKey,
 } from '../../../../packages/domain/src/communications/copy/catalog.ts';
+import { canonicalContentDigest } from '../../../../packages/domain/src/communications/copy/approval.ts';
 
-export const GHL_COPY_FRAGMENT_VERSION = '1.0.0';
+export const GHL_COPY_FRAGMENT_VERSION = '1.1.0';
 
 export type GhlCopyFragment = Readonly<{
   id: string;
@@ -17,6 +18,9 @@ export type GhlCopyFragment = Readonly<{
   requiresExactAdminApproval: boolean;
   requiresCurrentConsent: boolean;
   launchTiming: 'event' | 'approval_launch' | 'weekly_household_local';
+  daysAfterApprovalLaunch?: number;
+  requiredVariables: readonly string[];
+  contentDigest: string;
   adultOnly: true;
   tokenBearing: false;
 }>;
@@ -37,6 +41,11 @@ function asGhlFragment(message: CanonicalCopyMessage): GhlCopyFragment {
     requiresExactAdminApproval: message.requiresApproval,
     requiresCurrentConsent: message.requiresCurrentConsent,
     launchTiming: message.launchTiming,
+    ...(message.daysAfterApprovalLaunch === undefined
+      ? {}
+      : { daysAfterApprovalLaunch: message.daysAfterApprovalLaunch }),
+    requiredVariables: message.requiredVariables,
+    contentDigest: canonicalContentDigest(message),
     adultOnly: true,
     tokenBearing: false,
   };

@@ -1,4 +1,4 @@
-export const COPY_CATALOG_SEMANTIC_VERSION = '1.0.0';
+export const COPY_CATALOG_SEMANTIC_VERSION = '1.1.0';
 
 export type CopyProvider = 'resend' | 'ghl';
 export type SenderKey = 'rabbi_campaign' | 'office' | 'security_resend';
@@ -24,6 +24,7 @@ export type CanonicalCopyMessage = Readonly<{
   requiresApproval: boolean;
   requiresCurrentConsent: boolean;
   launchTiming: 'event' | 'approval_launch' | 'weekly_household_local';
+  daysAfterApprovalLaunch?: number;
   tokenBearing: boolean;
   requiredVariables: readonly string[];
 }>;
@@ -189,6 +190,38 @@ export const CANONICAL_COPY_CATALOG: readonly CanonicalCopyMessage[] = [
     launchTiming: 'approval_launch',
     tokenBearing: false,
     requiredVariables: ['contact.first_name', 'campaign.body'],
+  },
+  {
+    id: 'ghl.former_member_reactivation.step_2.v1',
+    workflowId: 'OT-15',
+    provider: 'ghl',
+    sender: 'rabbi_campaign',
+    audience: 'former_adult',
+    subject: 'A separate Student portal for live class and recordings',
+    body: `${RABBI_GREETING}\n\nOne Time Mishnayos now gives each Student a separate portal for Rabbi Eli's live class and recording library.\n\nYour Student signs in with their own username and password to join the daily class and open recordings. You manage the account and Student access from the Parent Dashboard.\n\nI would be happy to have your family learning with us again.\n\n${RABBI_SIGNOFF}`,
+    ctaLabel: 'Open One Time',
+    requiresApproval: true,
+    requiresCurrentConsent: true,
+    launchTiming: 'approval_launch',
+    daysAfterApprovalLaunch: 4,
+    tokenBearing: false,
+    requiredVariables: ['contact.first_name'],
+  },
+  {
+    id: 'ghl.former_member_reactivation.step_3.v1',
+    workflowId: 'OT-15',
+    provider: 'ghl',
+    sender: 'rabbi_campaign',
+    audience: 'former_adult',
+    subject: 'Come back free until September 13',
+    body: `${RABBI_GREETING}\n\nYou can come back to One Time Mishnayos free until September 13, 2026 at 7:24 p.m. Jerusalem time.\n\nNo card is required, and you will not be charged automatically. Create a Parent account, then add up to three Student accounts for Rabbi Eli's live class and recordings.\n\nI hope you will join us again.\n\n${RABBI_SIGNOFF}`,
+    ctaLabel: 'Come back to One Time',
+    requiresApproval: true,
+    requiresCurrentConsent: true,
+    launchTiming: 'approval_launch',
+    daysAfterApprovalLaunch: 9,
+    tokenBearing: false,
+    requiredVariables: ['contact.first_name'],
   },
   {
     id: 'ghl.legacy_member_migration.step_1.v1',

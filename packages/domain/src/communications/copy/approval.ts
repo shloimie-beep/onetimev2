@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import type { CanonicalCopyMessage, SenderIdentity } from './catalog.ts';
 
-export const CAMPAIGN_APPROVAL_SEMANTIC_VERSION = '1.0.0';
+export const CAMPAIGN_APPROVAL_SEMANTIC_VERSION = '1.1.0';
 
 export type CampaignApprovalInput = Readonly<{
   message: CanonicalCopyMessage;
@@ -46,6 +46,9 @@ export function canonicalContentDigest(message: CanonicalCopyMessage): string {
     tokenBearing: message.tokenBearing,
     requiresCurrentConsent: message.requiresCurrentConsent,
     launchTiming: message.launchTiming,
+    ...(message.daysAfterApprovalLaunch === undefined
+      ? {}
+      : { daysAfterApprovalLaunch: message.daysAfterApprovalLaunch }),
     workflowId: message.workflowId,
   });
   return createHash('sha256').update(canonical, 'utf8').digest('hex');
