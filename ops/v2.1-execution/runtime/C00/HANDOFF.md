@@ -2295,3 +2295,37 @@ the allocation proposal, and the F02 runtime triplet.
 No provider call, send, enrollment, charge, deployment, DNS change, live
 migration execution, candidate freeze, or external effect is authorized in
 this wave.
+
+# P21 Scope-Correction Split
+
+Communications integration is complete at exact remote head
+`7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d`. Source merge `9a028e7a`, the
+sole CRLF-normalization test fix `e4238689`, and the terminal I36 runtime
+release passed focused 10/10, registry/projection validation, independent
+Windows-CRLF simulation, clean remote equality, and effects `0/0/0`.
+
+F02 correctly stopped before commit because immutable `P21-MIGRATION-002`
+cannot be satisfied by integrated P21 runtime `83d90622`: the repository still
+requires global-only conflict targets and `StudentContentResume` omits exact
+`contentVersionId`. Migration 2252 remains withheld.
+
+F02 may now harden, prove, commit, and push only migrations 2250 and 2251, its
+allocation proposal, and runtime triplet under unchanged claim
+`3469667a-69e2-4c35-afac-5b1dfbbf417d` and unchanged dual leases. The exact
+phase ceiling is six paths; draft 2252 must remain uncommitted. Before commit,
+native negative probes must reject confirmed-preview evidence mutation,
+consumed/revoked grant reset, live-session generation/heartbeat/state
+regression, and malformed canonical digests.
+
+P21 may correct only four source files—its publication contract, lifecycle,
+database repository, and repository test—plus its runtime triplet from exact
+integration `7185d45b`, under claim
+`00402ed6-57b7-4aed-92fa-a558ae11aef1` through
+`2026-07-30T14:08:49Z`. The correction must use composite-scoped P21-owned
+unique/conflict targets, add exact content-version/generation/projection
+binding to receipts and exact content-version binding to resumes, preserve
+provider completion correlation, and leave immutable migration/registration
+requests byte-identical.
+
+No provider call, send, enrollment, charge, deployment, DNS change, live
+migration execution, candidate freeze, or external effect is authorized.

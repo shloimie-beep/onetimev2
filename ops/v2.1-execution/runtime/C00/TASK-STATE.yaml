@@ -8,15 +8,15 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: communications_integration_and_F02_migration_batch
+phase: P21_scope_correction_and_F02_D1
 claimed_by: codex-c00-orchestrator-2baa2f4b
 claim_time: '2026-07-30T11:04:00Z'
 claim_id: 2baa2f4b-8eed-4b92-a0d8-b1725d8fcfe8
-lease_expires_at: '2026-07-30T14:04:41Z'
-last_heartbeat_at: '2026-07-30T12:04:41Z'
-controller_authorization_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+lease_expires_at: '2026-07-30T14:38:49Z'
+last_heartbeat_at: '2026-07-30T12:38:49Z'
+controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
 ready_entry_payload_digest: null
-state_based_on_head_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+state_based_on_head_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   P18_P21_integration:
@@ -43,7 +43,13 @@ lean_completion_bindings:
     claim_id: 4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5
     lease_id: 5930be35-0702-4318-b3b4-93170a2ab119
     lease_expires_at: '2026-07-30T13:34:41Z'
-    independent_validation: 4_files_10_tests_registry_projection_and_clean_merge_tree_passed
+    source_merge_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
+    CRLF_test_normalization_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
+    final_head_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+    I36_state_handoff_digest: 5254cd9d5369d9f6125bc0bbc3a1b4719f3a7872f0597fc8eb1c4b63f1f748d2
+    I36_runtime_triplet_digest: 7098b069fd7cf095cf748d639756204ea2a03d2a325e62b447808ce5564f7fab
+    lease_released_at: '2026-07-30T12:16:13Z'
+    independent_validation: 4_files_10_tests_registry_projection_clean_merge_tree_and_CRLF_simulation_passed
     provider_boundary: repository_only
     external_effects: 0/0/0
   F02_migration_batch:
@@ -55,14 +61,48 @@ lean_completion_bindings:
     allocation:
       2250: P17-MIGRATION-002
       2251: P18-migration-003
-      2252: P21-MIGRATION-002
+      2252: P21-MIGRATION-002_withheld_pending_runtime_scope_correction
     exact_files:
       - packages/db/migrations/2250_v21_zoom_preparation.sql
       - packages/db/migrations/2251_v21_embedded_classroom.sql
-      - packages/db/migrations/2252_v21_content_publication.sql
-    path_ceiling: 7
+    path_ceiling: 6
+    required_negative_gates:
+      - confirmed_zoom_preview_evidence_is_immutable
+      - consumed_or_revoked_launch_grant_cannot_reset
+      - live_session_generation_heartbeat_and_state_cannot_regress
+      - canonical_request_and_evidence_digests_are_lowercase_hex
+    narrowing_reason: >-
+      Canonical P21-MIGRATION-002 requires composite-scoped unique/conflict keys and exact content-version binding
+      on resume rows, while integrated P21 head 83d90622 still requires global-only conflict targets and omits
+      StudentContentResume.contentVersionId. Migration 2252 cannot be certified without a bounded P21 source fix.
     provider_boundary: no_live_database_or_provider_effect
+  P21_scope_correction:
+    authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+    branch: codex/v21-p21-publication-scope-correction
+    claim_id: 00402ed6-57b7-4aed-92fa-a558ae11aef1
+    writer_id: codex-p21-publication-scope-correction-00402ed6
+    lease_expires_at: '2026-07-30T14:08:49Z'
+    exact_source_files:
+      - packages/contracts/src/content/publication/index.ts
+      - packages/domain/src/content/publication/lifecycle.ts
+      - packages/db/src/content/publication/repository.ts
+      - packages/db/src/content/publication/repository.test.ts
+    runtime_files:
+      - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+      - ops/v2.1-execution/runtime/P21/HANDOFF.md
+      - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
+    path_ceiling: 7
+    required_corrections:
+      - composite_scope_in_all_P21_owned_unique_and_conflict_targets
+      - exact_content_version_generation_and_projection_on_receipt_contract_domain_and_repository
+      - exact_content_version_id_on_resume_contract_domain_and_repository
+      - preserve_composite_scoped_provider_completion_correlation
+      - preserve_immutable_P21_MIGRATION_002_and_superseded_registration_001_bytes
+    provider_boundary: repository_only_no_provider_call_or_effect
 completed_steps:
+- Reconciled exact communications integration release 7185d45b with source merge 9a028e7a, sole CRLF-normalization test fix e4238689, terminal three-path I36 release, pair/triplet 5254cd9d/7098b069, independent Windows-CRLF simulation, released lease, clean remote equality, and effects 0/0/0.
+- Stopped F02 before commit when canonical P21-MIGRATION-002 proved incompatible with integrated P21 runtime: global-only conflict targets and a resume contract without contentVersionId would force a noncompliant migration. Preserved 2250/2251 safe work, withheld 2252, and effects remained 0/0/0.
+- Narrowed F02 Lease D to exact migrations 2250-2251 and six total paths under the existing claim and writer leases, with commit withheld until transition-regression and hexadecimal-digest negative probes pass; authorized one seven-path repository-only P21 correction claim 00402ed6 from exact integration 7185d45b.
 - Reconciled exact integration release c19c9077 with P18 merge 91ea3ff9, P21 merge 71070dad, sole-parent three-path I36 runtime final, pair/triplet ce70507b/2543535b, clean remote equality, focused 15/15, LF-normalized package validator pass, released lease, and effects 0/0/0.
 - Independently admitted repository-only communications head 3364c1c3 with exact sole parent 99fd8c33, twenty-path inventory b2b6a8c5, manifest 1d7e5d4d, clean merge tree against c19c9077, 10/10 focused tests, registry/projection checks, no mutation-call finding, and effects 0/0/0.
 - Authorized one direct communications integration claim 4e5bbe12 and RELEASE_INTEGRATOR lease 5930be35, plus one complete disjoint F02 2250-2252 migration-batch claim 3469667a with exact dual writer leases; no claim-only commits or provider effects are required.
@@ -397,10 +437,11 @@ completed_steps:
 - issued only an atomic runtime-triplet renewal for the preserved dirty F02 draft under READY digest 635c8923, claim 2002fc61, and shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 4d52c050
 - independently reconciled F02 renewal claim 9daa5251 as an exact runtime-triplet child of 6a5e359c with remote proposal and migrations unchanged, all seven local draft paths byte-preserved, renewed authority exact, and effects zero
 remaining_steps:
-- C00 merges exact communications head 3364c1c3 and publishes one terminal I36 runtime release while F02 completes exact migrations 2250 through 2252 on its disjoint branch.
-- After F02 integration, I36 applies dependency-ordered shared registrations in coherent batches and verifies that every corrected request is applied exactly once.
+- F02 hardens and proves migrations 2250-2251 against confirmed-preview mutation, consumed-grant reset, session-lease regression, and malformed digests before publishing exact allocation/runtime evidence; P21 corrects composite conflict targets and resume content-version binding on a disjoint repository-only branch.
+- C00 independently audits and integrates the safe F02 pair and corrected P21 source, then F02 completes migration 2252 under a fresh exact gate.
+- I36 applies the three passive root-barrel registrations, then only fail-closed dependency-complete server/client/worker composition batches.
 - Freeze one exact candidate and execute V37-V43 in machine-readable parallel shards, followed by R44, deferred V43 cases, and R45; derive exact provider/effect authorities only at their applicable candidate gates.
-next_action: C00 merges exact repository-only communications head 3364c1c3 into c19c9077 and writes one terminal I36 runtime release under claim 4e5bbe12 and lease 5930be35 while F02 implements only the exact 2250-2252 batch under claim 3469667a. Candidate, provider mutations, live migration execution, sends, enrollments, charges, deployment, DNS, and every external effect remain withheld.
+next_action: F02 first makes the required transition and digest negative probes pass, then commits and pushes only migrations 2250-2251 plus allocation/runtime evidence under claim 3469667a while P21 applies the four-file scope/resume correction plus runtime triplet under claim 00402ed6. Candidate, provider mutations, live migration execution, sends, enrollments, charges, deployment, DNS, and every external effect remain withheld.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -408,13 +449,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+  current_control_parent_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
       claim_id: 2baa2f4b-8eed-4b92-a0d8-b1725d8fcfe8
-      observed_head: be9a5964cd69fd73a6f42713c96ece75982bd515
-      lease_expires_at: '2026-07-30T14:04:41Z'
+      observed_head: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+      lease_expires_at: '2026-07-30T14:38:49Z'
       lease_state: active
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -425,18 +466,18 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: 4e5bbe12-d283-40c4-bfaa-3d6a2d0aabd5
-      observed_head: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
+      claim_id: null
+      observed_head: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
       authorized_start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
-      lease_expires_at: '2026-07-30T13:34:41Z'
-      scheduling_state: communications_convergence_source_integration_authorized_to_C00
+      lease_expires_at: null
+      scheduling_state: communications_convergence_integrated_ready_for_review
     F02:
       branch: codex/v21-f02-schema-state-migrations
       claim_id: 3469667a-69e2-4c35-afac-5b1dfbbf417d
       observed_head: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
       lease_expires_at: '2026-07-30T13:34:41Z'
-      scheduling_state: migrations_2250_2252_authorized_as_one_batch
+      scheduling_state: migrations_2250_2251_only_authorized_2252_withheld
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -450,7 +491,7 @@ orchestration:
       observed_head: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
       authorized_start_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
       lease_expires_at: null
-      scheduling_state: repository_only_communications_convergence_ready_for_integration
+      scheduling_state: repository_only_communications_convergence_integrated_at_7185d45b
     P35:
       branch: codex/v21-p35-domain-transition-archive
       claim_id: 9ee0d8f8-944d-47f2-b67a-54cb333cc29d
@@ -529,12 +570,12 @@ orchestration:
       lease_expires_at: null
       scheduling_state: accepted_queued_for_lean_source_integration
     P21:
-      branch: codex/v21-p21-content-publication
-      claim_id: null
-      observed_head: 83d906221a0f2882cf99a75459e7288a3e30f629
-      authorized_start_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
-      lease_expires_at: null
-      scheduling_state: accepted_queued_for_lean_source_integration
+      branch: codex/v21-p21-publication-scope-correction
+      claim_id: 00402ed6-57b7-4aed-92fa-a558ae11aef1
+      observed_head: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+      authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+      lease_expires_at: '2026-07-30T14:08:49Z'
+      scheduling_state: publication_scope_keys_and_resume_binding_correction_claimed
     P19:
       branch: codex/v21-p19-content-ingest
       claim_id: de624026-ff9a-4c35-ad02-bc6c1f28a3dc
@@ -999,11 +1040,11 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: ab9820237df03486097911b996fcd8dfe7df3bdac9f1353aa3a50ba2b0b08814
-    control_lease: d3640f1fddd271dc3ff19019c5ea51907db435328fab156cb8293e81f801d4d3
-    task_registry: 3e26c46476287a71a2d887c442d88f1efd9e3eafe9e07b521beaf0023e54a046
+    control_state: dd456b3e4eac66d0cc7f183f120dccb69417db76a22446e09a15cb76452a341c
+    control_lease: 407bd0525ae03facf8d4fe70d5d2d163e5b57edeb3fe2ecc92d70715f456716e
+    task_registry: 5847f50e92902af926f59e134d053a522e6eb4cbf4418642e5e3e71f05aa6267
     ready_queue: 84f7e3ca967d5c383fae8b671082b3d90d167efa80ab690012dedb888c1a6707
-    merge_queue: 6a101e9664216c2b190ac795fe4938e34816f0c4ca5594bfa266a052593e404c
+    merge_queue: 2c7b4157f856d27ddcc82cc3e77b7c015523533d050987668bf959c4dc463d20
     steward_queue: c74b0f80fae7f3489415d634b3d8e35a0d73095c71fdeb1cae8e3eb3f2660696
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
     authority_status: f31d2fe9888390ec29d2c1884533f45d6cb35c40cdfd23da3976f0eaff716a50

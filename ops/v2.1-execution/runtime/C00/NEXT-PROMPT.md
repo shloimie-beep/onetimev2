@@ -1908,3 +1908,28 @@ checks, release the leases, push normally, and return the exact final.
 Do not query or mutate a provider, send, enroll, charge, deploy, change DNS,
 execute migrations against a live database, freeze a candidate, or perform an
 external effect. Effects remain `0/0/0`.
+
+Communications is integrated and remotely clean at
+`7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d`. Supersede the preceding complete
+2250-2252 instruction with this narrower wave:
+
+1. F02 first makes native negative probes reject confirmed-preview evidence
+   mutation, consumed/revoked grant reset, live-session
+   generation/heartbeat/state regression, and malformed canonical digests.
+   It then commits and pushes only `2250_v21_zoom_preparation.sql`,
+   `2251_v21_embedded_classroom.sql`, its allocation proposal, and runtime
+   triplet under existing claim `3469667a` and existing dual leases. Do not
+   commit draft 2252.
+2. P21 starts at exact `7185d45b` on
+   `codex/v21-p21-publication-scope-correction` under claim `00402ed6`.
+   Change only the publication contract, lifecycle, database repository,
+   repository test, and runtime triplet. Replace global-only P21-owned
+   conflict targets with composite scope, add exact content-version/generation/
+   projection binding to receipts, and add exact `contentVersionId` to resume
+   contract/domain/persistence. Preserve immutable request bytes and perform
+   no provider effect.
+3. Independently audit and integrate both finals, then authorize migration
+   2252 under a fresh exact F02 gate.
+
+Candidate freeze, providers, live database execution, sends, enrollments,
+charges, deployment, DNS, and every external effect remain withheld.

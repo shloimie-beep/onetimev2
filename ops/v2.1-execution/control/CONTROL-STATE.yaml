@@ -15,14 +15,16 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: be9a5964cd69fd73a6f42713c96ece75982bd515
+controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
 next_action: >-
-  Exact P18/P21 integration release c19c9077 is remotely reconciled with four-path and fourteen-path source merges,
-  a three-path terminal I36 runtime final, focused 15/15 tests, package validation, released lease, and effects 0/0/0.
-  C00 now holds only communications-integration claim 4e5bbe12 and RELEASE_INTEGRATOR lease 5930be35 through
-  13:34:41Z for exact repository-only head 3364c1c3. In parallel, F02 holds one complete 2250-2252 migration-batch
-  claim 3469667a and exact dual writer leases through 13:34:41Z. Candidate freeze, providers, deployment, sends,
-  charges, DNS, migration execution against a live database, and every external effect remain withheld.
+  Exact communications integration release 7185d45b is remotely reconciled with source merge 9a028e7a, the sole
+  CRLF-normalization test fix e4238689, a three-path terminal I36 runtime final, focused 10/10 tests, registry and
+  projection checks, released lease, and effects 0/0/0. F02 Lease D found a genuine pre-commit P21 contract mismatch:
+  global-only conflict keys and a resume row without exact content-version binding. F02 is narrowed to migrations
+  2250-2251 under existing claim 3469667a and dual leases, with commit withheld until negative transition probes reject
+  confirmed-preview mutation, consumed-grant reset, and live-session lease regression. P21 correction claim 00402ed6
+  is bounded to four source files plus its runtime triplet. Migration 2252, candidate freeze, providers, deployment,
+  sends, charges, DNS, live database execution, and every external effect remain withheld until their exact gates pass.
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
   release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
