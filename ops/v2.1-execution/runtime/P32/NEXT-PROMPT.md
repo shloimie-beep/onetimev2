@@ -1,9 +1,10 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: REVIEW
+MODE: START_OR_RESUME
 
-Review completed One Time v2.1 task P32 from its terminal checkpoint.
+Resume the bounded P32 privacy-scope persistence compatibility correction only
+after C00 reconciles the atomic claim checkpoint.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p32-privacy-data-rights
@@ -13,14 +14,22 @@ Task context: ops/v2.1-execution/contexts/P32-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P32/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P32/HANDOFF.md
 
-Fetch remote refs. Derive the containing control commit from
-`origin/codex/v21-control`, read this task's exact registry and ready/resume
-entry from that remote ref, verify its expected branch head, canonical entry
-payload digest, the `ready` or `resume_ready` lease/claim appropriate to the
-registered claim mode, package/task/context/dependency digests, and reject a
-live foreign lease or non-fast-forward collision. Then check out the exact task
-branch, read task state, interface checkpoint, handoff, and steward requests.
-Validate the exact implementation and interface hashes without restarting the
-task. C00/I36 should integrate the checkpoint and adjudicate steward requests;
-any implementation change requires a new C00-issued resume lease and a newly
-published interface digest.
+Claim checkpoint bindings:
+
+- resume parent `f4ae1c03c60917a23a825d46a4d0ec63ff4fc125`
+- containing control `9d53cf1c581dcb67e30b2beb62d048a1839f23e2`
+- acquisition parent `a6bc58cc4a35173fd1606124c0fa651dda2dac64`
+- claim `26390213-86c7-4085-8de0-1a5cc428b003`
+- lease `0c5215bf-e4c5-49b3-9f99-9c7ed0cf1e8e`
+- READY digest `32b38115f94e6989832318a478adf88480cbe14a3d1975a815b4c14f0873eda4`
+
+Fetch remote refs and require a C00-reconciled continuation against the exact
+claim checkpoint head. Then change only P32-owned privacy repository and
+focused test paths needed to persist explicit trusted `product`,
+`runtime_tier`, and `verification_environment_id` on data-rights request and
+export-download-grant inserts. Preserve the composite request binding. Prove
+isolated-staging and production acceptance plus absent, mismatched, and
+conflicting scope rejection natively.
+
+Until C00 publishes that continuation: stop. Do not edit product or migration
+bytes, merge, register, inspect providers, deploy, send, or perform effects.

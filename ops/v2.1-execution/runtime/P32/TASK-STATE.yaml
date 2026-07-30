@@ -42,23 +42,25 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: ready_for_review
-phase: review
-claimed_by: codex-p32-worker-a9e4c442
-claim_time: '2026-07-28T20:18:13Z'
-claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
+status: claimed
+phase: privacy_scope_persistence_compatibility_correction
+claimed_by: codex-p32-scope-compat-7ebeb986
+claim_time: '2026-07-30T00:23:04Z'
+claim_id: 26390213-86c7-4085-8de0-1a5cc428b003
 writer_slot_leases:
   - slot: PRIVACY_DATA_RIGHTS
-    lease_id: 45817ce0-ad6f-444e-9c4b-35082a29879b
-    lease_expires_at: '2026-07-28T21:06:46Z'
-    released_at: '2026-07-28T20:43:29Z'
-lease_expires_at: '2026-07-28T21:06:46Z'
-last_heartbeat_at: '2026-07-28T20:43:29Z'
-lease_released_at: '2026-07-28T20:43:29Z'
-controller_authorization_sha: d234126ca7be31def06c939ac1886406936987dc
-ready_entry_parent_control_sha: c468c40c2d39e7eae60e46f4e9e7e0dc43e9c0fb
-ready_entry_payload_digest: 3c4b0c6a594701c8f5962dcd7dccf40d0cf6c854fcd5f6442d275af1751ab93e
-state_based_on_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
+    lease_id: 0c5215bf-e4c5-49b3-9f99-9c7ed0cf1e8e
+    lease_issued_at: '2026-07-29T23:53:18Z'
+    lease_expires_at: '2026-07-30T01:23:18Z'
+    released_at: null
+lease_expires_at: '2026-07-30T01:23:18Z'
+last_heartbeat_at: '2026-07-30T00:23:04Z'
+lease_released_at: null
+controller_authorization_sha: 9d53cf1c581dcb67e30b2beb62d048a1839f23e2
+ready_entry_parent_control_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+state_based_on_control_head_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
+ready_entry_payload_digest: 32b38115f94e6989832318a478adf88480cbe14a3d1975a815b4c14f0873eda4
+state_based_on_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
 last_implementation_commit_sha: 888af54911ed583da99408cfcc791b485a728ddd
 interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
 completed_steps:
@@ -72,8 +74,12 @@ completed_steps:
   - Passed 21 focused assertions, full typecheck, focused lint/format, and diff checks.
   - Published the exact semantic interface checkpoint for P18.
   - Re-ran final task-owned verification and released the PRIVACY_DATA_RIGHTS writer-slot lease.
-remaining_steps: []
-next_action: C00/I36 should validate and integrate the exact P32 interface checkpoint, adjudicate the three steward requests, and authorize P18 from the resulting integration head.
+  - Resumed from exact remote head f4ae1c03c60917a23a825d46a4d0ec63ff4fc125 under claim 26390213-86c7-4085-8de0-1a5cc428b003 and lease 0c5215bf-e4c5-49b3-9f99-9c7ed0cf1e8e.
+  - Verified containing control 9d53cf1c581dcb67e30b2beb62d048a1839f23e2, sole acquisition parent a6bc58cc4a35173fd1606124c0fa651dda2dac64, canonical READY digest, immutable package/task/context/source digests, exact branch head, and zero effects.
+remaining_steps:
+  - C00 must reconcile this exact atomic claim checkpoint before any repository compatibility correction begins.
+  - After reconciliation, persist explicit trusted product, runtime tier, and verification environment scope on data-rights request and export-grant inserts, then prove native acceptance and rejection branches.
+next_action: Stop after the exact runtime-triplet claim push and await C00 reconciliation; do not edit product bytes or begin implementation under the atomic-claim-only lease.
 requirements:
   OTV2-CONSENT-189: implementation_ready
   OTV2-PRIVACY-212: implementation_ready
@@ -135,6 +141,9 @@ verification:
     - focused ESLint over all P32 TypeScript artifacts
     - focused Prettier write/check over all P32 TypeScript/YAML artifacts
     - git diff --check
+    - fetched origin and matched exact control, acquisition-parent, task-branch, claim, and lease identities
+    - recomputed package, source-package, task, context, and canonical P32 READY digests
+    - verified the claim delta contains only the P32 runtime triplet and preserves all product bytes
   known_baseline_failures: []
 external_effects:
   authority: none
