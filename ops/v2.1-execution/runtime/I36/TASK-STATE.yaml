@@ -40,26 +40,26 @@ dependency_heads:
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: 705030f2d5163f95340a19dc42efd0f167259869
 status: ready
-phase: accepted_source_microbatch_3_F02_F04_F03_P31_complete
+phase: family_parent_session_composition_complete_pending_C00_reconciliation
 claimed_by: null
-claim_time: '2026-07-30T21:22:48Z'
-claim_id: f7ed3c6a-683b-4971-9e5e-2a65398c74c2
-lease_id: 3cd4b328-dfc0-4ed5-8a70-f9a0c125d20c
-lease_issued_at: '2026-07-30T21:22:48Z'
-lease_expires_at: '2026-07-30T23:22:48Z'
-lease_released_at: '2026-07-30T21:44:52Z'
-last_heartbeat_at: '2026-07-30T21:44:52Z'
-controller_authorization_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-latest_valid_observed_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
-reconciled_state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-ready_consumed_by_control_head_sha: null
-ready_consumed_state_based_on_control_head_sha: null
-ready_authorization_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
-ready_entry_state_based_on_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-ready_entry_payload_digest: a87a97b243b076b7ed7bfc10152ca373f187c76808a83d14acde72c86bc95801
+claim_time: '2026-07-30T21:58:04Z'
+claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
+lease_id: 1af50c79-1fb7-42b7-96e4-a29d8d8873f5
+lease_issued_at: '2026-07-30T21:58:04Z'
+lease_expires_at: '2026-07-30T23:58:04Z'
+lease_released_at: '2026-07-30T22:50:00Z'
+last_heartbeat_at: '2026-07-30T22:50:00Z'
+controller_authorization_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+latest_valid_observed_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+reconciled_state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+ready_consumed_by_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+ready_consumed_state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+ready_authorization_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+ready_entry_state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+ready_entry_payload_digest: 09952344b45d7b9f63419a5e5b167a6d49bbc9f5edb15d90283b81361dbd3257
 claim_mode: resume_existing
-expected_existing_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-lease_phase_scope: accepted_source_microbatch_3_F02_F04_F03_P31_only
+expected_existing_head_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+lease_phase_scope: family_parent_session_composition_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -319,8 +319,8 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-last_implementation_commit_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
+state_based_on_head_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+last_implementation_commit_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
 completed_steps:
   - Accepted direct C00 communications integration authority from control 4b22c4704edc8bd21b0e0242ad00debfba67f5c2 at exact integration start c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9 under one phase claim and lease.
   - Merged exact repository-only communications convergence head 3364c1c31ef12a81abf02cf9f80f7e8008c1778f at 9a028e7a967221441dfd4d5cf9417eb2885a072f with exact parents, preserved ancestry, and twenty-path first-parent scope.
@@ -1523,11 +1523,100 @@ accepted_source_microbatch_3_binding:
     provider_preflight_evidence: passed_14_providers_6_read_17_workflows_9_cross_rows_28_V42_ids_plus_Tickets_147
     independent_admission: passed
   external_effects: 0/0/0
+family_parent_session_composition_binding:
+  containing_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+  state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+  authorized_start_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+  claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
+  lease_id: 1af50c79-1fb7-42b7-96e4-a29d8d8873f5
+  lease_issued_at: '2026-07-30T21:58:04Z'
+  lease_expires_at: '2026-07-30T23:58:04Z'
+  lease_released_at: '2026-07-30T22:50:00Z'
+  ready_entry_payload_digest: 09952344b45d7b9f63419a5e5b167a6d49bbc9f5edb15d90283b81361dbd3257
+  request_result:
+    request_id: P08-auth-household-002
+    request_raw_sha256: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+    local_disposition: applied_pending_C00_reconciliation
+    central_steward_queue_changed: false
+    requirements:
+      - OTV2-SIGNUP-177
+      - OTV2-SIGNUP-213
+      - OTV2-SIGNUP-228
+    acceptance_cases:
+      - OTV2-SIGNUP-177-AC01
+      - OTV2-SIGNUP-213-AC01
+      - OTV2-SIGNUP-228-BEFORE-EXPIRY
+      - OTV2-SIGNUP-228-AT-AND-AFTER-EXPIRY
+  composition:
+    production_runtime: one_PostgreSQL_v2_1_adult_session_runtime
+    runtime_inputs:
+      - existing_pool
+      - config_authCsrfSecret
+      - existing_clock
+    same_runtime_injected_into:
+      - centrally_bound_P08_family_router
+      - Parent_shell_middleware
+    explicit_unbound_P08_registration_replaced: true
+    host_cookie_present_behavior: v2_1_only_without_legacy_fallback
+    host_cookie_absent_behavior: explicit_otcrm_session_compatibility
+    guarded_routes:
+      - /app/parent
+      - /app/parent/**
+      - /select-household
+    denied_response: no_store_403_before_shell_or_data
+    inactive_access_behavior: exact_F03_allowlist_only
+    raw_browser_tokens_persisted: false
+    test_only_runtime_injection_seam: true
+    recovery_capable_post_commit_boundary_preserved: true
+    cross_transaction_atomicity_claimed: false
+  residual_limitations:
+    signup_and_session_creation_atomicity: >-
+      P08 identity, credential, household, and access persistence commits before
+      session establishment; a failed session write remains recoverable through
+      P08's existing retryable post-commit session-recovery path, but the two
+      transactions are not atomic.
+    legacy_parent_API_surface: >-
+      This checkpoint composes the v2.1 host-cookie runtime into the Parent app
+      shell routes only. Existing legacy Parent API handlers that still call
+      sessionFromRequest remain otcrm_session-bound until a separately
+      authorized API-wide v2.1 middleware conversion.
+  successor_requests_preserved_unapplied:
+    P08-config-002: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+    P08-registration-002: 0b0b82567be04624d0facf501dbc9d5fb418d0d86b79462f6220e8d8b56856d3
+  scope:
+    product_path_count: 1
+    test_path_count: 1
+    terminal_runtime_path_count: 3
+    release_path_count: 5
+    F03_F04_P08_source_bytes_changed: false
+    migration_bytes_changed: false
+    central_control_or_steward_queue_bytes_changed: false
+    configuration_checkpoint_applied: false
+    broad_P08_registration_applied: false
+    provider_or_GHL_registry_applied: false
+    provider_lock_claimed: false
+    candidate_frozen: false
+  focused_validation:
+    real_composition: passed_1_file_1_test
+    P08_F03_F04_regressions: passed_5_files_37_tests_3_native_postgresql_tests_skipped
+    workspace_typecheck: passed
+    changed_typescript_eslint: passed_zero_findings_2_files
+    focused_prettier: passed_2_of_2
+    secret_scan: passed_3110_text_files
+    diff_check: passed
+    baseline_portal_auth_reproduction: >-
+      Three failures across two files reproduced unchanged at exact base
+      524563f07b3bb8544db989982dc55d4bc86a1999: legacy viewer role
+      unavailable, missing production PROTECTED_PAYLOAD_ENCRYPTION_KEY test
+      fixture, and stale login email-link-confirm markup expectation.
+  external_effects: 0/0/0
 remaining_steps: []
-next_action: C00 must independently audit this exact accepted-source-microbatch-3 terminal release, reproduce its four ordered merge parents and 26-path release scope, confirm the exact control-specific four-item authorization, preserve source and migration immutability plus effects 0/0/0, reconcile control, and issue a new exact I36 authorization before any further source merge, central registration, configuration, provider registry, candidate, deployment, or external action.
+next_action: C00 must independently audit the exact pushed five-path family Parent-session composition release, reconcile only P08-auth-household-002 from the recorded proof, preserve P08-config-002 and P08-registration-002 unapplied plus effects 0/0/0, and issue a new exact authorization before any broader Parent API conversion, configuration, registration, provider, candidate, deployment, or external action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
+  - apps/web/src/server/app.ts
+  - tests/integration/accounts/v21-family-parent-session-composition.test.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md

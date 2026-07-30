@@ -120,6 +120,7 @@ import type {
   PortalActorContext,
   PortalCapability,
 } from '../../../../packages/contracts/src/portals/index.ts';
+import { AUTH_SESSION_COOKIE } from '../../../../packages/contracts/src/identity/auth/index.ts';
 import {
   CrmDuplicateError,
   CrmVersionConflictError,
@@ -277,6 +278,15 @@ import { registerOpsRoutes } from './ops-routes.ts';
 import { createContactOperationsRouter } from './features/contact-operations/router.ts';
 import { createAdminDirectoryRouter } from './features/admin-directory/router.ts';
 import {
+  authorizeV21ParentRoute,
+  createPostgresV21AdultSessionRuntime,
+  type V21AdultSessionRuntime,
+} from './features/auth/v21-adult-session.ts';
+import {
+  createFamilySignupRouter,
+  familySignupFeatureRegistration,
+} from './features/signup/family/router.ts';
+import {
   installServerFeatureRouters,
   type ServerFeatureRegistration,
 } from './features/registry/index.ts';
@@ -290,6 +300,7 @@ type AppDeps = {
   zoomAdminProvider?: ZoomAdminProviderPort;
   zoomClassOccurrenceProvider?: ZoomClassOccurrenceProvider;
   featureRegistrations?: readonly ServerFeatureRegistration[];
+  v21AdultSessionRuntime?: V21AdultSessionRuntime;
   /** @deprecated Retained only so historical test harnesses compile; no demo route is registered. */
   learningDeliveryDemoReportPath?: string;
 };
@@ -365,8 +376,33 @@ export function createApp({
   contentFactoryJobNotifier,
   zoomAdminProvider,
   zoomClassOccurrenceProvider,
-  featureRegistrations = [],
+  featureRegistrations,
+  v21AdultSessionRuntime: injectedV21AdultSessionRuntime,
 }: AppDeps) {
+  const v21AdultSessionRuntime =
+    injectedV21AdultSessionRuntime ??
+    createPostgresV21AdultSessionRuntime({
+      db: pool,
+      hmacSecret: config.authCsrfSecret,
+      ...(clock ? { clock } : {}),
+    });
+  const centrallyBoundFamilySignupRegistration: ServerFeatureRegistration = {
+    ...familySignupFeatureRegistration,
+    createRouter: ({ config: featureConfig, pool: featurePool, clock: featureClock }) =>
+      createFamilySignupRouter({
+        config: featureConfig,
+        pool: featurePool,
+        ...(featureClock ? { clock: featureClock } : {}),
+        sessionEstablisher: v21AdultSessionRuntime,
+      }),
+  };
+  const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
+    featureRegistrations ?? [familySignupFeatureRegistration]
+  ).map((registration) =>
+    registration.featureId === familySignupFeatureRegistration.featureId
+      ? centrallyBoundFamilySignupRegistration
+      : registration,
+  );
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
   app.set('etag', false);
@@ -519,7 +555,7 @@ export function createApp({
       distDir,
       ...(clock ? { clock } : {}),
     },
-    registrations: featureRegistrations,
+    registrations: centrallyBoundFeatureRegistrations,
   });
 
   registerOpsRoutes({
@@ -912,16 +948,18 @@ export function createApp({
     await sendAppHtml(res, distDir, 'live', config);
   });
 
-  app.get(/^\/app\/parent(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
-    await serveProtectedAppShell(req, res, {
+  const serveParentAppShell = async (req: RequestWithTrace, res: Response) => {
+    await serveV21CompatibleParentAppShell(req, res, {
       pool,
       config,
       distDir,
-      appPage: 'parent',
-      allowedRoles: ['parent'],
       fallbackPath: '/app/parent',
+      v21AdultSessionRuntime,
+      ...(clock ? { clock } : {}),
     });
-  });
+  };
+  app.get(/^\/app\/parent(?:\/.*)?$/, serveParentAppShell);
+  app.get('/select-household', serveParentAppShell);
 
   app.get(/^\/app\/student(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     await serveProtectedAppShell(req, res, {
@@ -3952,6 +3990,51 @@ async function serveProtectedAppShell(
   await sendAppHtml(res, input.distDir, input.appPage, input.config);
 }
 
+async function serveV21CompatibleParentAppShell(
+  req: RequestWithTrace,
+  res: Response,
+  input: {
+    pool: DbPool;
+    config: AppConfig;
+    distDir: string;
+    fallbackPath: string;
+    v21AdultSessionRuntime: V21AdultSessionRuntime;
+    clock?: (() => Date) | undefined;
+  },
+) {
+  const cookieHeader = req.header('cookie');
+  if (!cookieHeaderHasName(cookieHeader, AUTH_SESSION_COOKIE.name)) {
+    await serveProtectedAppShell(req, res, {
+      pool: input.pool,
+      config: input.config,
+      distDir: input.distDir,
+      appPage: 'parent',
+      allowedRoles: ['parent'],
+      fallbackPath: input.fallbackPath,
+    });
+    return;
+  }
+
+  const context = await input.v21AdultSessionRuntime.resolveCookieHeader({
+    cookie_header: cookieHeader,
+    ...(input.clock ? { now: input.clock() } : {}),
+  });
+  const authorization = context
+    ? authorizeV21ParentRoute({
+        context,
+        requested_path: req.originalUrl,
+      })
+    : null;
+  if (!context || !authorization?.allowed) {
+    setPrivateNoStore(res);
+    res.status(403).type('html').send(forbiddenAppHtml('parent'));
+    return;
+  }
+
+  setPrivateNoStore(res);
+  await sendAppHtml(res, input.distDir, 'parent', input.config);
+}
+
 async function sendAppHtml(
   res: Response,
   distDir: string,
@@ -4566,6 +4649,14 @@ function getCookie(req: Request, name: string) {
     if (rawName === name) return decodeURIComponent(rawValue.join('='));
   }
   return undefined;
+}
+
+function cookieHeaderHasName(header: string | undefined, name: string) {
+  if (!header) return false;
+  return header.split(';').some((part) => {
+    const separator = part.indexOf('=');
+    return separator >= 0 && part.slice(0, separator).trim() === name;
+  });
 }
 
 function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, csrfToken: string) {

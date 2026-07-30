@@ -673,3 +673,78 @@ merge parents and exact 26-path release scope, reconcile all four queue items,
 and issue a new exact authorization before further integration, central
 registration, provider work, candidate freeze, deployment, or external
 effect. I36 must stop.
+
+## Family Parent-session composition release
+
+Containing control `90e70b07e5b10a16342e80c4f8b537a8ea21263c`, based on
+controller/state-basis head
+`1d0fb443cde2ab992215a52f09c35ae56a97458f`, authorized one exact
+composition checkpoint from clean integration
+`524563f07b3bb8544db989982dc55d4bc86a1999`. Claim
+`2e5c6cef-5e9d-4462-92a4-41510ac24959` held the sole SERVER_COMPOSER
+lease `1af50c79-1fb7-42b7-96e4-a29d8d8873f5`; canonical READY was
+`09952344b45d7b9f63419a5e5b167a6d49bbc9f5edb15d90283b81361dbd3257`.
+
+The server composer now constructs exactly one production PostgreSQL v2.1
+adult-session runtime from the existing pool, `config.authCsrfSecret`, and
+clock. It injects that same runtime into the centrally bound P08 Family router
+and the Parent shell middleware. An explicit optional runtime dependency is a
+test seam only; the omitted/default production path always constructs the
+PostgreSQL runtime.
+
+When `__Host-onetime-session` is present, `/app/parent`, every descendant, and
+`/select-household` resolve and authorize only through the v2.1 runtime.
+Malformed, wrong-household, stale-security-version, idle-expired,
+absolute-expired, revoked, and route-denied contexts return private
+`no-store` 403 before the Parent shell or data is served. The exact F03
+inactive allowlist remains authoritative. The legacy `otcrm_session`
+compatibility path is used only when the host cookie name is absent; a bad
+host cookie can never fall back to a valid legacy cookie.
+
+The real composition test drives the default central P08 registration without
+an explicit registration array. It submits Family signup one second before
+the locked cutoff and exactly at the cutoff, verifies 201/free and
+202/inactive results, host-cookie establishment, digest-only persistence,
+exact household readback, Parent and household-selection routes, inactive
+allowed and denied paths, and wrong-household, security-version, expiry, and
+revocation failures. It also proves legacy-only compatibility and the
+host-cookie-present no-fallback rule.
+
+Verification passed:
+
+- the new real composition test: one file, one test;
+- existing P08/F03/F04 suites: five files, 37 passed and three declared
+  native-PostgreSQL skips;
+- workspace typecheck;
+- changed-file ESLint with zero findings;
+- focused Prettier;
+- secret scan across 3,110 repository text files; and
+- diff hygiene and exact five-path scope.
+
+The selected legacy portal/auth integration run still has three failures
+across two files. All three reproduced unchanged in a clean detached worktree
+at exact base `524563f0`: a legacy viewer role returns 403, the production
+auth harness omits `PROTECTED_PAYLOAD_ENCRYPTION_KEY`, and a login-page test
+expects retired email-link-confirm markup. They are not I36 regressions, and
+no out-of-scope fixture was edited.
+
+Only `P08-auth-household-002` is locally applied by this exact checkpoint,
+pending C00 queue reconciliation. `P08-config-002` and broad
+`P08-registration-002` remain assigned and unapplied. No F03, F04, P08,
+migration, control-ledger, provider, registry, candidate, deployment, DNS,
+send, billing, or customer state changed. Effects remain attempted `0`,
+succeeded `0`, reconciled `0`.
+
+Two limitations remain explicit. P08 commits account and household state
+before session creation; the recovery-capable retry boundary is preserved,
+but cross-transaction atomicity is not claimed. This checkpoint converts the
+Parent app shell routes, not every legacy Parent API handler; handlers still
+using `sessionFromRequest` remain `otcrm_session`-bound until a separately
+authorized API-wide conversion.
+
+The SERVER_COMPOSER lease was released at `2026-07-30T22:50:00Z`, before its
+`2026-07-30T23:58:04Z` expiry. C00 must audit the exact pushed five-path
+release, reconcile only `P08-auth-household-002`, preserve the two successor
+requests and effects `0/0/0`, and issue new exact authority before any broader
+Parent API conversion, configuration, registration, provider work, candidate
+freeze, deployment, or external effect. I36 must stop.
