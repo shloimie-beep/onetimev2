@@ -39,7 +39,7 @@ test.describe('OT81 integrated 30-sample performance matrix', () => {
         await page.goto('/');
         await page
           .getByRole('heading', {
-            name: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+            name: 'MISHNAYOS MADE MEMORABLE',
           })
           .waitFor();
       }),

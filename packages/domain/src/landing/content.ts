@@ -7,14 +7,23 @@ export const campaign = {
 
 export const landingContent = {
   seo: {
-    title: 'Worldwide Mishnah Learning Live from Eretz Yisrael | One Time Mishnayos',
-    description:
-      'A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and steady progress.',
+    title: 'Mishnayos Made Memorable | One Time Mishnayos',
+    description: 'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
     canonical: 'https://join.onetimeonetime.com/',
-    ogTitle: 'Worldwide Mishnah Learning Live from Eretz Yisrael',
-    ogDescription: 'Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.',
+    ogTitle: 'Mishnayos Made Memorable',
+    ogDescription: 'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
   },
   hero: {
+    eyebrow: 'LIVE ONLINE + ON-DEMAND',
+    titleLines: ['MISHNAYOS', 'MADE MEMORABLE'],
+    supporting: 'Join Rabbi Eli Scheller live from anywhere, then review every class anytime.',
+    schedule: 'Daily at 7:00 PM Israel time',
+    cta: {
+      label: 'JOIN FREE',
+      href: '/signup',
+    },
+    note: 'No credit card • Up to three learners per family.',
+    // Retained for domain consumers that still read the pre-v2.1 hero contract.
     kickerLines: ['WORLDWIDE MISHNAH LEARNING', 'LIVE FROM ERETZ YISRAEL'],
     heading: 'Give your son a love for learning Torah.',
   },

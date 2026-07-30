@@ -26,6 +26,9 @@ import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
+const landingHeroDesktopImage = '/assets/hero/landing-hero-desktop.webp';
+const landingHeroMobileImage = '/assets/hero/landing-hero-mobile.webp';
+const landingSocialImage = '/assets/social/mishnayos-made-memorable.png';
 const tishaBavDesktopImage = '/assets/events/tisha-bav-2026/tisha%20beav(1).png';
 const tishaBavMobileImage = '/assets/events/tisha-bav-2026/tishea%20beav%20mobile(1).png';
 const tishaBavSocialImage = '/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png';
@@ -35,6 +38,9 @@ const tishaBavAppleTouchIcon =
 
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
+  [landingHeroDesktopImage, [1920, 1080]],
+  [landingHeroMobileImage, [1080, 1920]],
+  [landingSocialImage, [1200, 630]],
   ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
   ['/assets/students/smiley-kid.png', [337, 600]],
   ['/assets/outcomes/clarity-class.webp', [945, 2048]],
@@ -225,11 +231,14 @@ function landingPage() {
     landingContent.seo.title,
     `${header()}${ticker()}
 <main class="landing-page">
-  <section class="hero">
+  <section class="hero" aria-labelledby="landing-hero-heading">
     <div class="hero-inner">
-      <h1 aria-label="${escapeHtml(landingContent.hero.kickerLines.join(' / '))}">${landingContent.hero.kickerLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
-      <p class="hero-supporting">${escapeHtml(landingContent.hero.heading)}</p>
-      <a class="button button-primary hero-cta" href="/signup">Sign Up Now</a>
+      <p class="hero-eyebrow">${escapeHtml(landingContent.hero.eyebrow)}</p>
+      <h1 id="landing-hero-heading" aria-label="${escapeHtml(landingContent.hero.titleLines.join(' '))}">${landingContent.hero.titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</h1>
+      <p class="hero-supporting">${escapeHtml(landingContent.hero.supporting)}</p>
+      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
+      <a class="button button-primary hero-cta" href="${escapeHtml(landingContent.hero.cta.href)}">${escapeHtml(landingContent.hero.cta.label)}</a>
+      <p class="hero-note">${escapeHtml(landingContent.hero.note)}</p>
     </div>
   </section>
   <section class="section receive" id="receive">
@@ -272,6 +281,18 @@ function landingPage() {
   </section>
   <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Sign Up Now</a></section>
 </main>${footer()}`,
+    {
+      canonicalPath: '/',
+      ogTitle: landingContent.seo.ogTitle,
+      ogDescription: landingContent.seo.ogDescription,
+      ogImage: publicCanonicalUrl(landingSocialImage),
+      ogImageSecureUrl: publicCanonicalUrl(landingSocialImage),
+      ogImageType: 'image/png',
+      ogImageWidth: 1200,
+      ogImageHeight: 630,
+      ogImageAlt: 'Mishnayos Made Memorable with Rabbi Eli Scheller',
+      twitterImage: publicCanonicalUrl(landingSocialImage),
+    },
   );
 }
 
