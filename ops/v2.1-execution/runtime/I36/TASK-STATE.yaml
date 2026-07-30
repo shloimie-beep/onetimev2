@@ -7,7 +7,7 @@ spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f13
 branch: codex/v21-integration
 start_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 dependency_heads:
-  C00: 15cddddabd145da14b99e29b251f50a39c0a90c9
+  C00: e25d0b521ada437c6e19236bfb7aaf59f0579889
   F06: 9a426ccaa294ca1f54ece20ea2a37c7ef9de1ef7
   P14: 3393169e2284d65ff0a970d797aa1f83ebf9d895
   P16: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
@@ -27,33 +27,35 @@ dependency_heads:
   P23: 32f3a4649632c5768b46430c13b4cb2a3546cfc3
   P11: 15660c1115d9d8066651573100acd8acaaac574e
   P09: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-status: claimed
-phase: integration
+status: ready
+phase: release
 claimed_by: codex-i36-release-integrator-d2ba6c12
 claim_time: '2026-07-30T01:54:35Z'
 claim_id: d2ba6c12-e7c2-49b1-b4cd-883a1c394adb
 lease_id: 6c88e2a7-e2fc-48be-acae-4b4a5e9839ad
 lease_issued_at: '2026-07-30T01:54:35Z'
 lease_expires_at: '2026-07-30T03:54:35Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-30T02:29:27Z'
-controller_authorization_sha: 061edb43af223773874a36c0ca1b4f48165ab6e3
-latest_valid_observed_control_head_sha: 061edb43af223773874a36c0ca1b4f48165ab6e3
-reconciled_state_based_on_control_head_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
+lease_released_at: '2026-07-30T03:04:04Z'
+last_heartbeat_at: '2026-07-30T03:04:04Z'
+controller_authorization_sha: 7bce3ea3a8976f2a4eb8dd713c4bfc96bcd3939a
+latest_valid_observed_control_head_sha: 7bce3ea3a8976f2a4eb8dd713c4bfc96bcd3939a
+reconciled_state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
+ready_consumed_by_control_head_sha: 7bce3ea3a8976f2a4eb8dd713c4bfc96bcd3939a
+ready_consumed_state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
 ready_authorization_control_head_sha: 061edb43af223773874a36c0ca1b4f48165ab6e3
 ready_entry_state_based_on_control_head_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
 ready_entry_payload_digest: ac622e744953504c52a7250aadcf75ba4b2b73126c42c4a0c6e2463a470500c9
 claim_mode: resume_existing
-expected_existing_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
-lease_phase_scope: P16_P32_F02_compatibility_integration_atomic_claim_only
+expected_existing_head_sha: d53c1d22dfa84806b07c51e599997c7ebc053849
+lease_phase_scope: P16_P32_F02_compatibility_integration
 queued_merge_ids:
   P16: d9416368-7897-4bf1-8619-619d4af6ba47
   P32: 33382081-0f72-4904-a2a7-cda6cb519eb1
   F02: 92977f14-9d4c-42f5-b574-208e7f67885b
 queued_merge_item_payload_digests:
-  P16: ed66b040353720ec945dc5595afd26ee70a6a1a866fc487683765c542415f324
-  P32: 3f4bbb741cb52ae8a437a6e8400e7670c08700e7dd71af0149f6482f78794d2e
-  F02: f1a0838c6a6a51dc2e6f3562516e5fe456b1fd13fdc0a864d571deca67b902a1
+  P16: 58695dcb553d55502ba509ea54783b5e78d1edd9094ea9333f6467eca9a7fcf2
+  P32: 18378a2ea0fae5b91640def9946c8ccf2e54f11c1d879ecbab55fbcf27af5836
+  F02: e85b0073845c7bd7489d8596e5b68ddfe5792a0653ab376bdd69c7fdfa701195
 queued_source_heads:
   P16: 55544f557f5b7aee01d264fba688fc56b971ad4b
   P32: 92a7ee6377d9507140def1159a440fbfd1733123
@@ -66,20 +68,20 @@ queued_merge_order:
   - P16
   - P32
   - F02
-queued_expected_target_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+queued_expected_target_head_sha: d53c1d22dfa84806b07c51e599997c7ebc053849
 prior_merge_result_head_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
-prior_release_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
-merge_authorization_state_based_on_control_head_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
-lease_origin_state_based_on_control_head_sha: 15cddddabd145da14b99e29b251f50a39c0a90c9
+prior_release_head_sha: d53c1d22dfa84806b07c51e599997c7ebc053849
+merge_authorization_state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
+lease_origin_state_based_on_control_head_sha: e25d0b521ada437c6e19236bfb7aaf59f0579889
 source_delta_base_head_sha: null
 merge_result_heads:
   F06: a9b8404451246246fdcd2ffdde99ee72bb096d2f
   F07: 64c70e49737d94d2f327f2bff0215791bdf69dc7
-  P16: 66c8a987ea227dce08612bfe0ac81e758e028b42
+  P16: 44100afb13c58506a18b0612ebce07113caff47e
   P35: 3655909a3ccbfb2d9b319c45c3a6ad945dffbafb
   P19: ddaf57fe28542b5c29085cd0e49f867eacf7eceb
   P27: adef153c0f5b2f691a2a2250fbf9b09240511cf6
-  P32: 1661f31ec7a0b44c72333b1dfb4225f2474a2f2e
+  P32: f53a0592438df77f3d34d0e7b67e90d9924dbcdf
   P17: c23dd73be235d2b48637003722b061e4b132c09f
   P21: 33190a506cd40551ada7aa18e7af0c7457c835ba
   P24: 5da986554cc70e39bc2006e936058ba86be62024
@@ -88,12 +90,13 @@ merge_result_heads:
   P20: a0a050a4cc43e46cdcb11670cd85ec3607699f3e
   P18_correction: b7be954952298ed1817cbffc4363608410da33a7
   F02_lease_A: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
-merge_result_head_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
-merge_parent_target_head_sha: 1badb3430d171182da2e43314e286b594c2df538
-merge_parent_source_head_sha: e156003b243221f97f938a0aca16164c1dd86d2d
+  F02_compatibility: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+merge_result_head_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+merge_parent_target_head_sha: f53a0592438df77f3d34d0e7b67e90d9924dbcdf
+merge_parent_source_head_sha: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
 prior_postmerge_integrator_fix_head_sha: c9e63ad339eafcec23697f6c317d873faf5532a8
-state_based_on_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
-last_implementation_commit_sha: 8d1405b4f6f5014364620bac0a2b5729c60aa2ac
+state_based_on_head_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
+last_implementation_commit_sha: 1b83575ab6fcba9be7b7f16e6ef44001f07d5623
 completed_steps:
   - Verified repository identity shloimie-beep/onetimev2.
   - Verified the exact remote control, bootstrap integration, and queued F01 heads.
@@ -923,12 +926,35 @@ completed_steps:
     d2ba6c12-e7c2-49b1-b4cd-883a1c394adb and RELEASE_INTEGRATOR lease
     6c88e2a7-e2fc-48be-acae-4b4a5e9839ad; no source was merged and no product,
     SQL, steward, control, provider, deployment, send, or effect state changed.
+  - Verified final corrected control
+    7bce3ea3a8976f2a4eb8dd713c4bfc96bcd3939a with sole acquisition and
+    state-basis parent e25d0b521ada437c6e19236bfb7aaf59f0579889,
+    consumed READY state, exact reconciled claim target d53c1d22, final
+    canonical queue payloads, valid merge-after identities, and effects 0/0/0.
+  - Merged P16 55544f557f5b7aee01d264fba688fc56b971ad4b at
+    44100afb13c58506a18b0612ebce07113caff47e with exact parents and five-path
+    first-parent allowlist, then P32 92a7ee6377d9507140def1159a440fbfd1733123
+    at f53a0592438df77f3d34d0e7b67e90d9924dbcdf with exact parents and
+    thirteen-path allowlist.
+  - Merged F02 cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 at
+    1b83575ab6fcba9be7b7f16e6ef44001f07d5623 with exact parents and ten-path
+    allowlist; every source and merge-after dependency is an ancestor.
+  - Passed 36/36 focused P16/P32 compatibility assertions, native PGlite and
+    pg-mem full 75/75 migration inventories through 2244, six native/pg-mem
+    checksum pairs, compatibility table probes, and zero pending migrations.
+  - Passed workspace typecheck, full ESLint, raw Git-byte focused Prettier,
+    YAML, diff hygiene, 200/200 locked and 15/15 source-package Git-byte
+    manifests, package structure/coverage counts, repository secret scan, and
+    exact 28-path combined merge scope.
+  - Released sole RELEASE_INTEGRATOR lease
+    6c88e2a7-e2fc-48be-acae-4b4a5e9839ad at 2026-07-30T03:04:04Z with no
+    steward or central allocation/registration application, provider access,
+    deployment, send, external database apply, or external effect.
 remaining_steps:
-  - Commit and normally push this exact three-file I36 compatibility-wave
-    atomic claim.
-  - Report the exact pushed claim head, sole parent, changed paths, and I36
-    state/handoff and runtime-triplet digests to C00, then stop.
-next_action: C00 must audit and reconcile the exact pushed I36 P16/P32/F02 compatibility-wave atomic claim head and its sole parent, consume the READY entry, and rebind all optimistic merge targets before I36 may merge any source.
+  - Commit and normally push this exact three-file I36 metadata-only release.
+  - Report the exact pushed release head, sole parent, ordered merge heads,
+    exact release paths, and I36 digests to C00, then stop.
+next_action: C00 must independently audit the exact pushed I36 compatibility release head, its sole parent 1b83575ab6fcba9be7b7f16e6ef44001f07d5623, ordered merge ancestry and scopes, released lease, I36 triplet digests, and effects 0/0/0; I36 must stop.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
