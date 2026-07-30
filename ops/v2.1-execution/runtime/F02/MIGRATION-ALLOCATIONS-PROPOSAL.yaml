@@ -199,7 +199,7 @@ allocations:
     replaces_applied_migration: false
     destructive: false
     checksum_sha256: 3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9
-    pg_mem_checksum_sha256: fd4cdaa3797aae5bc15ea3ea0ec9e64cd40824aa205bc189e17611aa28b67654
+    pg_mem_checksum_sha256: ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36
   - ordinal: 2252
     file: packages/db/migrations/2252_v21_content_publication.sql
     owner_task_id: P21

@@ -214,3 +214,51 @@ audit the pushed sole-parent checkpoint, compute its exact `TASK-STATE.yaml` +
 Stop. Do not mark steward results applied, edit migration or proposal bytes,
 merge, inspect providers, deploy, backfill, send, charge, or perform external
 effects.
+
+# F02 Migration 2251 pg-mem Checksum Metadata Correction
+
+- Authorization-containing control:
+  `4be94c1697b86d0fab8066590be5e62a926798f7`
+- Subsequent control-only runtime-digest correction:
+  `fbc5d54093f34a823b8ee9f8a7906f65053c25db`
+- Controller authorization:
+  `c44656d40769b28f2d55e6e1041d716175129f4a`
+- Authorized/expected F02 start:
+  `bd17fd6fc11cc122ea452b131e1107dd0bb88fcc`
+- READY:
+  `d2e9a20bb40a9df079193425dbbcd3d8ab1acc6b3b66e21a9d41e1d001013c82`
+- Claim: `07870f1c-ed37-4637-a92f-708f80fb36df`
+- MIGRATION_AUTHORITY lease:
+  `35b6ed2e-7863-493c-8d5e-dee6850f5110`
+- Lease expiry: `2026-07-30T21:40:49Z`
+- Released: `2026-07-30T20:48:17Z`
+- Effects: `0/0/0`
+
+Independent review held `bd17fd6f` only because the prior C00 READY
+transcribed `P17-MIGRATION-002` as the malformed 62-hex value
+`e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624`
+and F02 recorded migration 2251's repository-runner pg-mem checksum from a
+superseded pre-hardening blob.
+
+This correction changes exactly the allocation proposal plus the F02 runtime
+triplet. The three current migration-2251 metadata occurrences now bind:
+
+- immutable Git blob `4bd4afdc152dd47977d7ab0aaeee246d5f75a16f`;
+- normalized-LF checksum
+  `525172d9072c930e0178e35ec8a7ddc6b1217b70f17b5e1f1c970228dee43dec`;
+- control checksum
+  `3fdeedcb1f4be0b606644a742ed44fadb792aab551ca0d7359af3f758ad174f9`;
+- exact repository-runner pg-mem checksum
+  `ee0f961687e25ccd60e700d8a58cd9e11e71de1187e68fe517d684992eccdf36`.
+
+The authoritative immutable P17 request digest remains
+`e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca`.
+The separate 2250-2252 acknowledgments, native proof `39cacd4a...`,
+merge/release `526f0384...`, and
+`central_steward_results_applied: false` are preserved. No migration,
+request, product, provider, deployment, live database, send, charge, or other
+external-effect byte changed.
+
+C00 must independently rederive the current checksum, verify the exact
+four-path terminal and released lease, and admit it before any integration or
+central steward-result disposition.
