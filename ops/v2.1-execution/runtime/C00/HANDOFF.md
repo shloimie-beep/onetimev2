@@ -1933,3 +1933,15 @@ The first I36 push must change exactly its runtime triplet, preserve every
 product, migration, request, and source-task byte, push normally, remote-verify,
 and stop for C00 reconciliation. No source merge or external effect is yet
 authorized.
+
+I36 claim `1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0` is independently
+reconciled as the exact runtime-triplet-only child of release `42068ace`.
+Claim, containing control `ee21ee69`, acquisition `07a1fa98`, READY
+`b60c9298`, lease `0430520f`, pair digest `8dd1c8da`, triplet digest
+`f0a9c366`, clean remote equality, and effects `0/0/0` pass.
+
+C00 consumed READY and rebound all three targets to the exact claim. Rebound
+payloads are F02 `54cf0dc6`, P28 `55ca02a5`, and P31 `066ea448`. I36 may
+merge only those exact sources in that order, run the combined gates, release
+the lease, and stop for independent audit. It must not apply any central
+steward request or perform an external effect in this wave.

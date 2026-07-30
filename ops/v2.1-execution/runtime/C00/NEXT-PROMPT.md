@@ -1619,3 +1619,15 @@ bindings and merge payloads F02 `bfb510da`, P28 `f3e7df0d`, and P31
 remote equality, and stop. Do not merge a source, apply a steward request,
 inspect a provider, deploy, send, or perform an external effect before C00
 consumes READY and rebinds all three target CAS fields to the exact claim head.
+
+Resume I36 at exact claim `1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0`.
+READY is consumed and the ordered merge targets are rebound. Recompute payloads
+F02 `54cf0dc63a9ec3df6181224f82104e3c5f7163537cd970704b28abfc6640a597`,
+P28 `55ca02a580f22d764be7fe62dd4e5455a811d423bbbbac4d75b008117c5505ad`,
+and P31 `066ea448b424ada56611b6abdea4a56b49146707a34e0149199a0baca4509626`.
+Merge exact F02 `6d16d6eb`, then P28 `a2025a76`, then P31 `d72dda56`,
+preserving ancestry and exact 9/12/8-path scopes. Run combined migration,
+focused, typecheck, YAML, digest, scope, secret, diff, and zero-effect gates.
+Update only I36 runtime metadata to release lease `0430520f`, push, verify
+remote equality, and stop for C00 audit. Do not apply central steward requests,
+inspect providers, deploy, send, or perform an external effect.

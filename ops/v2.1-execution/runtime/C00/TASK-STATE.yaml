@@ -12,13 +12,15 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T05:50:30Z'
-last_heartbeat_at: '2026-07-30T05:05:30Z'
-controller_authorization_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+lease_expires_at: '2026-07-30T06:15:40Z'
+last_heartbeat_at: '2026-07-30T05:30:40Z'
+controller_authorization_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
 ready_entry_payload_digest: null
-state_based_on_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+state_based_on_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Independently reconciled I36 atomic claim 1b8335f8 as the sole child of release 42068ace with exactly its runtime triplet changed, exact containing-control/acquisition/READY/claim/lease/source bindings, manifest pair 8dd1c8da, triplet f0a9c366, clean remote equality, and effects 0/0/0.
+- Consumed the I36 READY entry and rebound all three ordered merge target CAS fields to exact claim head 1b8335f8 with canonical payloads F02 54cf0dc6, P28 55ca02a5, and P31 066ea448; central steward application and external effects remain withheld.
 - Admitted exact ordered F02 6d16d6eb, P28 a2025a76, and P31 d72dda56 source heads for an I36 runtime-triplet-only atomic claim from integration release 42068ace under READY digest b60c9298, claim ff36a180, and RELEASE_INTEGRATOR lease 0430520f; source merges and effects remain withheld pending reconciliation.
 - Independently recomputed all three merge bases, exact 9/12/8-path inventories, raw Git-byte manifests, manifest-form state/handoff and runtime-triplet digests, task/context identities, artifact/proposal bindings, canonical READY/merge payload digests, and zero-effect records.
 - Independently audited F02 Lease C final 6d16d6eb as the sole child of its reconciled claim, exact nine-path scope, five forward-only migrations 2245 through 2249, normalized/native and repository-runner checksum pairs, next ordinal 2250, released dual leases, and effects 0/0/0.

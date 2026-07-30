@@ -10,7 +10,7 @@ items:
   source_branch: codex/v21-f02-schema-state-migrations
   source_head_sha: 6d16d6eb2c901c58cc4d0c2bb3298b5543af3d9f
   target_branch: codex/v21-integration
-  expected_target_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
+  expected_target_head_sha: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
   source_delta_base_head_sha: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
   required_merge_base_sha: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
   preserve_source_ancestry: true
@@ -36,7 +36,7 @@ items:
     lease_id: 0430520f-6a94-4550-a1ea-f01f8d5173b2
     holder_task_id: I36
     holder_claim_id: ff36a180-ce16-4787-841b-5e10a7aabfec
-    state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+    state_based_on_control_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
     lease_issued_at: '2026-07-30T05:05:30Z'
     lease_expires_at: '2026-07-30T06:35:30Z'
     phase_scope: F02_P28_P31_direct_prerequisite_source_integration
@@ -51,7 +51,7 @@ items:
     attempted: 0
     succeeded: 0
     reconciled: 0
-  state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+  state_based_on_control_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
   merge_id: a7f135ed-0470-44c9-8bcf-f558346fa42a
@@ -60,7 +60,7 @@ items:
   source_branch: codex/v21-p28-communication-foundation
   source_head_sha: a2025a768ae6e69a15ec5605379a9e359cf2deec
   target_branch: codex/v21-integration
-  expected_target_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
+  expected_target_head_sha: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
   source_delta_base_head_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
   required_merge_base_sha: f891f16eb13593d0eb3bbe53c076513d12b07c23
   preserve_source_ancestry: true
@@ -94,7 +94,7 @@ items:
   interface_artifact_digest: b3ec5642dea691cd81b08814d76cd3544f73b1a094333ab4d8b4ceb48f2735ea
   interface_contract_digest: f00013bbb46413c973276ef3454ef3b406e21d780349dbfcdccc004120cb1612
   external_effect_summary: *zero_effects
-  state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+  state_based_on_control_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
 - schema_version: 1
   execution_id: OT-V21-PRODUCTION
   merge_id: 9fd355d1-289d-4f0f-846c-9ad89e5230dd
@@ -103,7 +103,7 @@ items:
   source_branch: codex/v21-p31-email-copy-approval
   source_head_sha: d72dda5669627695edaf9dbf20f7650c9b5c9ded
   target_branch: codex/v21-integration
-  expected_target_head_sha: 42068ace48fe1a93302ce7d5533e11803b526d5b
+  expected_target_head_sha: 1b8335f8bdad4bc4ac1aa65838314faa7d65ebd0
   source_delta_base_head_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
   required_merge_base_sha: ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d
   preserve_source_ancestry: true
@@ -131,11 +131,11 @@ items:
   interface_artifact_digest: 4d88e548edc7a2fb5e9d3d375c60ba29bf4e928779a1941fe3d113ea7a588758
   interface_contract_digest: a759c3db1cd946549d97359a68f394e8f8bd6af5c4c615748993bd901bb27f3a
   external_effect_summary: *zero_effects
-  state_based_on_control_head_sha: 07a1fa98b39a6b7d8eec8aec0ff9c60df4a25190
+  state_based_on_control_head_sha: ee21ee69cae87a77c4ee5519b61490fa2e453c3f
 item_payload_digests:
-  3053ccc6-4872-4c34-a271-18292cb3cf4e: bfb510daf058ad44252e823bf6313a366b4fa949499e2cb5cd2582b31d0ad9e8
-  a7f135ed-0470-44c9-8bcf-f558346fa42a: f3e7df0d4f6ec528688aff5e252faddb7b5000841552ebb5e3d3847ab5ef7324
-  9fd355d1-289d-4f0f-846c-9ad89e5230dd: f9922704c6683b09949f121955ca19d4c6c707622cdba4b14a37de2cd6f7b8d9
+  3053ccc6-4872-4c34-a271-18292cb3cf4e: 54cf0dc63a9ec3df6181224f82104e3c5f7163537cd970704b28abfc6640a597
+  a7f135ed-0470-44c9-8bcf-f558346fa42a: 55ca02a580f22d764be7fe62dd4e5455a811d423bbbbac4d75b008117c5505ad
+  9fd355d1-289d-4f0f-846c-9ad89e5230dd: 066ea448b424ada56611b6abdea4a56b49146707a34e0149199a0baca4509626
 digest_algorithm: For each merge item, parse to a data object, serialize as UTF-8 JSON with recursively sorted keys,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest is stored
   only in this sibling map. I36 derives the containing control commit from the fetched remote ref.
