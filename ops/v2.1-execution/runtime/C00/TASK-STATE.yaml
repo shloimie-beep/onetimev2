@@ -12,13 +12,16 @@ phase: complete
 claimed_by: codex-c00-orchestrator-3acbac75
 claim_time: '2026-07-30T03:45:23Z'
 claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
-lease_expires_at: '2026-07-30T04:32:00Z'
-last_heartbeat_at: '2026-07-30T04:02:00Z'
-controller_authorization_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
+lease_expires_at: '2026-07-30T05:08:06Z'
+last_heartbeat_at: '2026-07-30T04:23:06Z'
+controller_authorization_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
 ready_entry_payload_digest: null
-state_based_on_head_sha: fe95eacb2a958ba043cc9f89c1c27e09e20b9324
+state_based_on_head_sha: 85100180449bf234a93f107eb66a1f7bc635b4f0
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
+- Reconciled F02 atomic claim ff35555611e7261d1b7b96fc2233eaf82a9f9fdf from exact parent cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911 and exact runtime-triplet-only scope; authorized only migrations 2245 through 2249 under claim 0e98de00-4873-41cb-a06f-bd0ace918b89 and the two active writer leases.
+- Reconciled P28 atomic claim 79ba5cc8f903f9b88319681ae57fe959c4d11a1a from exact parent f891f16eb13593d0eb3bbe53c076513d12b07c23 and exact runtime-triplet-only scope; authorized only P17 reminder routing under claim 42599e59-5e65-4269-b3d1-d10632342be6.
+- Consumed both READY entries, preserved P17/P18/P21 migration-request withholding, and confirmed effects remain 0/0/0 with no provider locks claimed.
 - verified PR #130 head and reviewed source branch
 - verified delivery ZIP structure and all 214 delivery checksums
 - installed the complete execution package

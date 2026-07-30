@@ -1571,3 +1571,10 @@ and COMMUNICATION_FOUNDATION lease `ac74a2a9` through
 triplet. After C00 reconciliation, implement only integrated request
 P17-REMINDER-ROUTING-001 within P28-owned additive paths. No provider call,
 send, deployment, or external effect is authorized.
+Continue F02 only under claim `0e98de00-4873-41cb-a06f-bd0ace918b89` and its
+MIGRATION_AUTHORITY/SCHEMA_CONTRACT leases, implementing only migrations 2245
+through 2249. Continue P28 only under claim
+`42599e59-5e65-4269-b3d1-d10632342be6` and its COMMUNICATION_FOUNDATION lease,
+implementing only P17 reminder routing. P17/P18/P21 migration duties remain
+withheld. Keep provider inspection, deployment, sends, and all effects blocked
+until candidate gates are satisfied.

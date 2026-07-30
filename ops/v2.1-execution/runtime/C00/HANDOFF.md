@@ -1860,3 +1860,11 @@ READY now contains only F02 digest `5ab53779` for safe migrations 2245–2249
 and P28 digest `48da940a` for P17 reminder routing. Both first pushes are
 runtime-triplet-only atomic claims. P17/P18/P21 migration work is withheld
 pending corrected immutable requests and ownership semantics.
+## Atomic steward claims reconciled
+
+F02 claim `ff35555611e7261d1b7b96fc2233eaf82a9f9fdf` and P28 claim
+`79ba5cc8f903f9b88319681ae57fe959c4d11a1a` are reconciled from their exact
+authorized parents and runtime-triplet-only scopes. F02 may implement only
+migrations 2245 through 2249. P28 may implement only P17 reminder routing.
+P17/P18/P21 migration requests remain withheld. Effects remain `0/0/0`; no
+provider inspection or mutation is authorized before candidate gates.
