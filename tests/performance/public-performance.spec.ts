@@ -42,17 +42,13 @@ test('authenticated CRM list and detail stay within request and usability budget
   await page.goto('/signup');
   const email = `perf-${Date.now()}@example.test`;
   const contactName = `Perf Parent ${Date.now()}`;
+  await page.getByRole('radio', { name: 'School inquiry' }).check();
   await page.getByLabel('Parent or contact name').fill(contactName);
   await page.getByLabel('Family or School').fill('Perf Family');
   await page.getByLabel('Location').fill('Jerusalem');
-  await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
-  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
-  await page.getByLabel('Email class reminders').check();
-  await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await page
-    .getByRole('heading', { name: 'Thank you - we received your Family signup.' })
-    .waitFor();
+  await page.getByRole('textbox', { name: 'School contact email' }).fill(email);
+  await page.getByRole('button', { name: 'Send School inquiry' }).click();
+  await page.getByRole('heading', { name: /received your school inquiry/i }).waitFor();
 
   const apiRequests: string[] = [];
   page.on('request', (request) => {
