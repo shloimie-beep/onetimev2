@@ -1636,3 +1636,33 @@ against the bound semantic blockers, then finalize its runtime triplet within
 the same ten-path ceiling. SQL must stabilize before checksum regeneration.
 All native/disposable 75/75, focused semantic, repository, package, secret,
 scope, formatting, lease-release, and zero-effect gates must be rerun.
+
+## F02 Lease B compatibility-audit rejection and correction routing
+
+F02 final `032aeb9cb0c786729ff2c394744ab561eeb3f6c1` passed the
+independent mechanical audit, including exact ten-path scope, protected
+migrations 2234-2238, all six native/pg-mem checksum pairs, 75/75 fresh replay,
+package and secret gates, released writer slots, and effects `0/0/0`. It failed
+the independent exact-source semantic audit and is not admitted or queued.
+
+Native probes reproduced three committed compatibility blockers. P16 final
+`72fca16b` omits required reminder timing from series and occurrence inserts.
+P32 final `f4ae1c03` omits explicit product/runtime-tier/environment scope from
+data-rights-request and export-grant inserts. Migration 2239 promotes a sole
+paused or archived legacy series to active while selecting the canonical row.
+
+C00 issued three disjoint claim-only resumes from exact remote heads:
+
+- F02 claim `6b1e1632-e3d9-4f87-92b3-8b150a6715d2` with shared
+  MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease
+  `31e905c8-d5c2-4e3c-9e98-c2e8f78989ce`.
+- P16 claim `0a4c2e0f-6c3d-4e42-aee8-8bfd27ce5c9d` with CLASSROOM_CORE
+  lease `01453191-8f65-4dcd-8559-9045599dae9b`.
+- P32 claim `26390213-86c7-4085-8de0-1a5cc428b003` with
+  PRIVACY_DATA_RIGHTS lease `0c5215bf-e4c5-49b3-9f99-9c7ed0cf1e8e`.
+
+All three leases expire `2026-07-30T01:23:18Z`. Each first push may change
+only that task's runtime triplet, must preserve product/SQL bytes, push
+normally, remote-verify, and stop for C00 reconciliation. No merge,
+registration, provider inspection, deployment, send, or external effect is
+authorized.

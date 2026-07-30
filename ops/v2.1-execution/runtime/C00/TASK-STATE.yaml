@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-2b5764ce
-claim_time: '2026-07-29T22:49:16Z'
-claim_id: 2b5764ce-89ec-4a54-843d-0320d6624b8a
-lease_expires_at: '2026-07-29T23:04:16Z'
-last_heartbeat_at: '2026-07-29T22:51:00Z'
-controller_authorization_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
+claimed_by: codex-c00-orchestrator-407e49c3
+claim_time: '2026-07-29T23:53:18Z'
+claim_id: 407e49c3-1ea6-45a6-83ef-f58beea2c72d
+lease_expires_at: '2026-07-30T00:08:18Z'
+last_heartbeat_at: '2026-07-29T23:54:05Z'
+controller_authorization_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
 ready_entry_payload_digest: null
-state_based_on_head_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
+state_based_on_head_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -768,10 +768,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: cda0f0117773ec7917c0206deabecd29ddf3b7ce520d2c27631ed03591a5b52a
-    control_lease: 94c824e6ec663c8e10551cf71c2f3d5d3fda421a8c63655257466c2cb8d1b5f0
-    task_registry: 27529e4cf3a45f65e318d9b2b63e34721dc5125e90d8712b62b4867bf37c7ca3
-    ready_queue: 84f7e3ca967d5c383fae8b671082b3d90d167efa80ab690012dedb888c1a6707
+    control_state: fb954f31832a419295974ad8b04081385eb084712bed57b7edce9b8bceb9e209
+    control_lease: 9550a184531abe38a36aad018ac9cca2e18cc87b4830e60eab231826021ec483
+    task_registry: e4cbf34ad2a46064657db2ee29de21d73f4e76f13391c57e0ea16db35064f46c
+    ready_queue: d156bf06964476931b9baecd2e9d8f5bd21e83e8b75d9f860e6a6108132a3262
     merge_queue: 1f0af4cea2ae82f11c76eab0180d3ef071c3869b65d8f453dd073c4801ba4cad
     steward_queue: 1264d4293cfdac277b19fcf0e7c546ed80d6f68045f95158f7e04f5b1994e814
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -966,6 +966,9 @@ verification:
   - F02 Lease B atomic claim 6a5e359c: passed sole-parent ancestry, exact runtime-triplet delta, unchanged proposal blob and migration tree, exact claim/authorization/READY/writer-lease bindings, clean remote state, and zero effects; consumed and reconciled
   - F02 Lease B first-draft stop and renewal: passed unchanged remote 6a5e359c, exact ten-path dirty scope, byte-identical 2234-2238, independent semantic FAIL preserved as correction gates, canonical renewal READY digest 635c8923, fresh claim/lease, and zero effects
   - F02 Lease B renewal claim 9daa5251: passed sole-parent ancestry, exact runtime-triplet commit, unchanged remote proposal and migration tree, seven local draft paths byte-preserved, exact renewed bindings, and zero effects; consumed and reconciled
+  - F02 final 032aeb9c mechanical audit: passed exact remote CAS and ten-path scope, protected 2234-2238 blobs, six native/pg-mem checksum pairs, 75/75 disposable replay, package, formatting, YAML, secret, lease-release, and effects 0/0/0 gates
+  - F02 final 032aeb9c exact-source semantic audit: rejected because committed P16 repository inserts omit required reminder timing, committed P32 privacy inserts omit exact product/runtime/environment scope, and migration 2239 promotes sole paused/archived legacy evidence to active
+  - contained rejected F02 release before integration and issued disjoint claim-only correction entries for F02, P16, and P32 from exact heads 032aeb9c, 72fca16b, and f4ae1c03 under fresh migration/schema, classroom-core, and privacy-data-rights leases with zero effect locks
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -1388,3 +1388,20 @@ package, YAML, secret, diff, scope, lease-release, and zero-effect gates.
 Push the final normally and stop for independent audit. Do not edit another
 path, apply registration, inspect providers, deploy, send, or perform an
 external effect.
+
+F02 final `032aeb9cb0c786729ff2c394744ab561eeb3f6c1` is rejected
+and must not be integrated. Resume F02, P16, and P32 only for their exact
+atomic runtime-triplet claims from heads `032aeb9c`, `72fca16b`, and
+`f4ae1c03` under the three READY entries issued from acquisition
+`a6bc58cc4a35173fd1606124c0fa651dda2dac64`. Each worker must fetch the
+containing control commit, verify its canonical READY digest, claim and lease,
+change exactly `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, push
+normally, remote-verify, and stop for C00 reconciliation.
+
+Do not correct SQL or product code in the first push. After C00 reconciles all
+three claims, route only: migration 2239 canonical-selection lifecycle
+preservation to F02; authoritative series/occurrence reminder-time persistence
+to P16; and explicit trusted product/runtime-tier/verification-environment
+persistence plus composite binding to P32. Require native positive and
+negative compatibility probes, task tests, typecheck, scope/format/secret
+gates, released leases, and effects `0/0/0` before any re-admission.

@@ -15,13 +15,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 8
-controller_authorization_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
+controller_authorization_sha: a6bc58cc4a35173fd1606124c0fa651dda2dac64
 next_action: >-
-  F02 renewal claim 9daa5251 is reconciled under claim 2002fc61 and shared MIGRATION_AUTHORITY / SCHEMA_CONTRACT
-  lease 4d52c050. F02 may now correct only the seven preserved draft paths against the seven bound semantic blockers,
-  then finalize its runtime triplet within the same ten-path ceiling. It must stabilize SQL before regenerating
-  native and pg-mem checksums; rerun native and disposable 75/75 migration proof, focused semantic probes,
-  typecheck, lint, build, format, package, YAML, secret, diff, scope, and effects gates; release both slots; push;
-  and stop for independent audit. No other path, registration, provider inspection, deployment, send, or external
-  effect is authorized.
+  F02 release 032aeb9c passed mechanical audit but failed exact-source semantic admission and is not queued for
+  integration. F02, P16, and P32 may each publish only an atomic runtime-triplet correction claim from exact heads
+  032aeb9c, 72fca16b, and f4ae1c03 under fresh disjoint claims and writer leases, then stop for C00 reconciliation.
+  The bounded corrections are canonical paused/archived preservation in 2239, complete legacy reminder-time
+  persistence in P16 repository inserts, and explicit product/runtime-tier/verification-environment persistence in
+  P32 privacy repositories. No product or SQL correction is authorized before claim reconciliation; no merge,
+  registration, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
