@@ -1800,3 +1800,14 @@ resolve the stale top-level P31 lint finding while preserving historical
 verification. Recompute runtime evidence, release the lease, push, and stop.
 Do not edit source, merges, migrations, requests, control ledgers, providers,
 deployment, sends, or effects.
+
+I36 metadata claim `3aab6a199730ab2ed75f45c234ec8331894cdf6b` is
+reconciled. Continue only under claim
+`27f0fe39-785e-4cae-a707-de596a7e8500` and RELEASE_INTEGRATOR lease
+`745aefd4-8660-4a0b-8d43-852769ced512` through
+`2026-07-30T09:47:00Z`. Change only the I36 runtime triplet: set top-level
+`remaining_steps: []`, clear or explicitly resolve the obsolete top-level P31
+lint finding, preserve the historical failed verification and later passing
+full lint, rederive pair/triplet evidence, release the lease, push normally,
+and stop for independent audit. All source, merge, migration, request,
+control-ledger, provider, deployment, send, and effect bytes remain frozen.

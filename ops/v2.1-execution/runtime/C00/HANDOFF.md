@@ -2160,3 +2160,17 @@ resolve the stale top-level finding, preserve the historical failed lint
 command and later passing run, recompute the terminal pair/triplet, release
 the lease, push, and stop for audit. All source, merge, migration, request,
 control-ledger, provider, deployment, send, and effect bytes remain frozen.
+
+I36 metadata claim `3aab6a19` is independently reconciled as the exact
+runtime-triplet-only child of rejected release `e2907b40`. Claim pair/triplet
+`38d37515`/`b876dbb7`, READY `b793c181`, control-state digest `39d11513`,
+exact claim/lease/task bindings, preserved stale-field semantic digests
+`2b5b2bd4`/`3224f0f2`, clean remote equality, and effects `0/0/0` pass.
+READY is empty.
+
+I36 may now change only its runtime triplet under unchanged claim `27f0fe39`
+and RELEASE_INTEGRATOR lease `745aefd4`: set top-level
+`remaining_steps: []`, clear or explicitly resolve top-level
+`out_of_scope_findings`, preserve the historical failed lint command and later
+passing run, update derived terminal evidence, release the lease, push, and
+stop for audit. Every non-runtime byte remains frozen.
