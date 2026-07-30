@@ -3,49 +3,47 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-P21 is stopped at a runtime-triplet-only composite-projection correction claim
-on branch `codex/v21-p21-content-publication`.
+P21 completed the P20 `ApprovedForPublicationProjection` composite-binding
+correction under unchanged claim
+`9e38d9dd-8293-451d-9335-ddb466e7234e`, substantive control
+`246990489b99575c3ded7af18ab22571d2fcb3a6`, and implementation
+`7e2a269e564507b560fa07d826169ff670dfba36`.
 
-The atomic claim must be the sole child of adopted integration release
-`99fd8c33ea023e838d8ee9c993b5de52f4763e7f`, which contains exact prior P21
-`cecdad0989e861254987970cfa3d222319369f52` and integrated corrected P20
-`75137bf476b4a1773f29bb41a6a149148df2623d`.
+The exact authorized 14 paths bind approval, publication outbox/provider
+correlation, atomic Student materialization, playback, library, and resume to
+server-derived account/product/content-version scope and immutable P20
+projection evidence. Exact replay converges; missing, non-approved, stale,
+malformed, changed, Admin-mismatched, or cross-scope evidence conflicts or
+fails closed.
 
-Authorization is bound to:
+Verification passed:
 
-- containing control:
-  `3757ee49b83027d69208f25b0f709d309d5c6c1a`
-- READY state basis:
-  `f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0`
-- canonical control-state digest:
-  `7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade`
-- READY:
-  `ede4095b8ab517b3fe734208e14dfef82527f0f52a2b21409361acf4e0ef724b`
-- claim:
-  `9e38d9dd-8293-451d-9335-ddb466e7234e`
-- `CONTENT_PUBLICATION` lease:
-  `afe1ac21-bafb-475b-967a-28bdb9bcda66`, expiring
-  `2026-07-30T10:46:00Z`
+- five focused files and 15 tests;
+- workspace typecheck;
+- focused ESLint and Prettier;
+- YAML, composite SQL, provider-reference, secret, scope, hash, and diff gates;
+- 17-artifact aggregate
+  `fabbd6499db0639f130c6ba7385d0e9b2b9b0b2d995e498b72a74f60cddff04c`.
 
-This first push changes only the P21 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. C00 must:
+Exactly two immutable corrected proposals exist:
 
-1. verify the pushed head has sole parent `99fd8c33`;
-2. verify the delta is exactly the P21 runtime triplet;
-3. recompute the state/handoff and runtime-triplet digests;
-4. verify exact READY, claim, lease, task/context/package/request/path bindings,
-   preserved non-runtime bytes, and effects `0/0/0`; and
-5. reconcile the claim before authorizing any source, test, or successor-request
-   change.
+- `P21-MIGRATION-002`
+  `aab270cb40f12885ea89acbdc4308e0d1ffa9cf89ae48d7e0cca6c5445985a45`
+- `P21-registration-002`
+  `af851f718e99945fed2d9b805a93fa20a0cea815a42ce33f2c22fda8c52ac45d`
 
-After reconciliation, follow only the exact canonical READY directives and
-14-path inventory
-`92698702ddafb76e5ea660ae0ce7fa1314b02dba86b5fe35be839b76003f5c61`.
-Consume P20 `ApprovedForPublicationProjection` through server-derived composite
-scope, preserve immutable mixed `P21-registration-001` byte-identically as
-superseded/withheld, and publish exactly `P21-MIGRATION-002` and
-`P21-registration-002`.
+`P21-registration-001` remains byte-identical, unapplied, superseded, and
+withheld at raw digest
+`fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3`.
+No migration ordinal or SQL was created and no registration was applied.
 
-Do not create either successor before reconciliation. Do not edit P20, allocate
-a migration ordinal, write or apply SQL, apply registration, inspect or mutate
-a provider, deploy, send, or perform any external effect.
+The rebound `CONTENT_PUBLICATION` lease
+`eb2c3340-baa7-493c-afc1-bcb050911bb4` was released before its
+`2026-07-30T12:04:00Z` expiry. Effects remain `0/0/0`; no provider query or
+mutation, send, enrollment, charge, deployment, DNS, migration application, or
+registration application occurred.
+
+Next action: C00 independently audits the exact pushed final, normal remote
+equality, 14-path scope, preserved P20 and immutable `-001` bytes, hashes,
+focused gates, released lease, and zero effects. Do not continue P21 product
+work or apply either successor proposal without new authority.
