@@ -1523,3 +1523,18 @@ the next dependency-valid source-only wave through a fresh exact I36 claim and
 lease. Candidate is still null. Do not inspect or mutate providers, deploy,
 send, reserve an effect, or perform any external effect before candidate,
 identity, budget, dependency, and fencing gates are satisfied.
+
+Resume I36 from exact release
+`36dca3844664657875b7c66a1ff30378b21c5cbb` under READY digest
+`25dc83c569bb1e5a6a8f2196c4b9f9e01371d9268593360cc0560468f964a7b9`,
+claim `4ec8712e-8ed3-4164-8774-c03c67748ec4`, and RELEASE_INTEGRATOR
+lease `2ed546f8-d65b-4fe3-b86c-042d441e3015` through
+`2026-07-30T05:45:23Z`.
+
+Fetch and recompute the exact READY entry plus P29 merge digest `f1294fce`
+and P30 digest `81d29fd0`. The first push must change only I36
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`, preserve every
+product/steward byte, push normally, remote-verify, and stop for C00
+reconciliation. Do not merge, apply a steward request, inspect providers,
+deploy, send, or perform an external effect before C00 consumes READY and
+rebinds both targets to the exact claim head.

@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: complete
-claimed_by: codex-c00-orchestrator-21d59e33
-claim_time: '2026-07-30T03:19:57Z'
-claim_id: 21d59e33-4f83-4f40-9ba4-921e2e332782
-lease_expires_at: '2026-07-30T03:48:30Z'
-last_heartbeat_at: '2026-07-30T03:36:00Z'
-controller_authorization_sha: 28afd2d8d4036c38436fe60ed5730bd11509cb84
+claimed_by: codex-c00-orchestrator-3acbac75
+claim_time: '2026-07-30T03:45:23Z'
+claim_id: 3acbac75-59ee-42a1-96cd-44ec5c7f0e06
+lease_expires_at: '2026-07-30T04:15:23Z'
+last_heartbeat_at: '2026-07-30T03:45:23Z'
+controller_authorization_sha: a7a07aded9146cdb5f6360a7aae099c04203ee8b
 ready_entry_payload_digest: null
-state_based_on_head_sha: 28afd2d8d4036c38436fe60ed5730bd11509cb84
+state_based_on_head_sha: a7a07aded9146cdb5f6360a7aae099c04203ee8b
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 completed_steps:
 - verified PR #130 head and reviewed source branch
@@ -992,6 +992,7 @@ verification:
   - corrected P15 merge-after to exact c96b8c55c07e5283e762537934a6bf948833700e under acquisition e25d0b52 and recomputed canonical P16/P32/F02 payloads 58695dcb/18378a2e/e85b0073
   - independently audited release 36dca384 with exact runtime triplet, state/handoff and triplet digests, 31-path claim-to-release scope, ordered 5/13/10 source merge scopes, full focused/typecheck/native/pg-mem gates, released integrator lease, and effects 0/0/0
   - cleared the consumed merge queue, mirrored migration allocations 2239 through 2244 with next ordinal 2245, and recorded all six exact migration steward results applied and acknowledged without any provider or external effect
+  - independently inventoried all 35 ready-for-review source refs against integration 36dca384; 33 exact remote heads are ancestors and only disjoint dependency-valid P29 aa7b3638 and P30 772d4783 remain
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

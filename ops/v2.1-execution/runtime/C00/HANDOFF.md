@@ -1820,3 +1820,20 @@ C00 cleared the consumed merge queue, left READY empty, mirrored exact
 migration allocations 2239 through 2244, and advanced the next ordinal to
 2245. All six migration results are applied and acknowledged. Candidate
 remains null; all 14 provider locks remain unclaimed; effects remain `0/0/0`.
+
+## Final source-only wave admission
+
+Read-only remote inventory against release `36dca384` found all 35 task heads
+exactly equal their remote refs. Thirty-three are ancestors. Only P29
+`aa7b363812676afce8ac9ebd13f335e65551bb1f` and P30
+`772d4783f82b7eb89a5c98d897601b444cd3c2f4` remain; both have merge base
+`49431959`, satisfied P28/P31 dependencies, disjoint exact 15-path and 14-path
+deltas, no overlap with the release delta, and no read-only merge-tree
+conflicts.
+
+I36 READY digest `25dc83c5` binds claim `4ec8712e`, RELEASE_INTEGRATOR
+lease `2ed546f8` through `2026-07-30T05:45:23Z`, exact release `36dca384`,
+and merge payloads P29 `f1294fce` then P30 `81d29fd0`. The first I36 push
+must change exactly its runtime triplet and stop for C00 reconciliation.
+Central steward application and all provider/external effects remain
+unauthorized.
