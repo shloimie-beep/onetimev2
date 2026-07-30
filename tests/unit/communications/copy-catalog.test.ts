@@ -140,8 +140,8 @@ describe('P31 OT-15 canonical copy registration', () => {
     const missingNamedApprovalInput = approvalInput(canonical, approvedContentDigest, {
       currentConsentVerified: false,
     });
-    const { namedAdminApproval: _removedNamedApproval, ...missingNamedApprovalAndConsent } =
-      missingNamedApprovalInput;
+    const missingNamedApprovalAndConsent = { ...missingNamedApprovalInput };
+    delete missingNamedApprovalAndConsent.namedAdminApproval;
     expect(evaluateCampaignApproval(missingNamedApprovalAndConsent)).toMatchObject({
       allowed: false,
       reasons: expect.arrayContaining([
