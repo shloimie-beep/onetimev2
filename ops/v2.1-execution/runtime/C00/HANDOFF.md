@@ -2317,11 +2317,12 @@ native negative probes must reject confirmed-preview evidence mutation,
 consumed/revoked grant reset, live-session generation/heartbeat/state
 regression, and malformed canonical digests.
 
-P21 may correct only four source files—its publication contract, lifecycle,
-database repository, and repository test—plus its runtime triplet from exact
+P21 may correct only six source files: its publication contract, lifecycle,
+database repository, repository test, sole web receipt constructor, and focused
+service test, plus its runtime triplet from exact
 integration `7185d45b`, under claim
 `00402ed6-57b7-4aed-92fa-a558ae11aef1` through
-`2026-07-30T14:08:49Z`. The correction must use composite-scoped P21-owned
+`2026-07-30T14:23:56Z`. The correction must use composite-scoped P21-owned
 unique/conflict targets, add exact content-version/generation/projection
 binding to receipts and exact content-version binding to resumes, preserve
 provider completion correlation, and leave immutable migration/registration

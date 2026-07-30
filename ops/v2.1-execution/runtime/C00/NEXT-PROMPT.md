@@ -1923,7 +1923,8 @@ Communications is integrated and remotely clean at
 2. P21 starts at exact `7185d45b` on
    `codex/v21-p21-publication-scope-correction` under claim `00402ed6`.
    Change only the publication contract, lifecycle, database repository,
-   repository test, and runtime triplet. Replace global-only P21-owned
+   repository test, sole web receipt constructor, focused service test, and
+   runtime triplet. Replace global-only P21-owned
    conflict targets with composite scope, add exact content-version/generation/
    projection binding to receipts, and add exact `contentVersionId` to resume
    contract/domain/persistence. Preserve immutable request bytes and perform

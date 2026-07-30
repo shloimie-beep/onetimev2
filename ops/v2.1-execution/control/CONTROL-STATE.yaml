@@ -15,7 +15,7 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+controller_authorization_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
 next_action: >-
   Exact communications integration release 7185d45b is remotely reconciled with source merge 9a028e7a, the sole
   CRLF-normalization test fix e4238689, a three-path terminal I36 runtime final, focused 10/10 tests, registry and
@@ -23,7 +23,8 @@ next_action: >-
   global-only conflict keys and a resume row without exact content-version binding. F02 is narrowed to migrations
   2250-2251 under existing claim 3469667a and dual leases, with commit withheld until negative transition probes reject
   confirmed-preview mutation, consumed-grant reset, and live-session lease regression. P21 correction claim 00402ed6
-  is bounded to four source files plus its runtime triplet. Migration 2252, candidate freeze, providers, deployment,
+  is bounded to six source files plus its runtime triplet, including the sole receipt constructor and its focused test.
+  Migration 2252, candidate freeze, providers, deployment,
   sends, charges, DNS, live database execution, and every external effect remain withheld until their exact gates pass.
 authority_note: >-
   Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through

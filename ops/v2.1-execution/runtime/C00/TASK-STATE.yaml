@@ -12,11 +12,11 @@ phase: P21_scope_correction_and_F02_D1
 claimed_by: codex-c00-orchestrator-2baa2f4b
 claim_time: '2026-07-30T11:04:00Z'
 claim_id: 2baa2f4b-8eed-4b92-a0d8-b1725d8fcfe8
-lease_expires_at: '2026-07-30T14:38:49Z'
-last_heartbeat_at: '2026-07-30T12:38:49Z'
-controller_authorization_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+lease_expires_at: '2026-07-30T14:53:56Z'
+last_heartbeat_at: '2026-07-30T12:53:56Z'
+controller_authorization_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
 ready_entry_payload_digest: null
-state_based_on_head_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
+state_based_on_head_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   P18_P21_integration:
@@ -81,20 +81,22 @@ lean_completion_bindings:
     branch: codex/v21-p21-publication-scope-correction
     claim_id: 00402ed6-57b7-4aed-92fa-a558ae11aef1
     writer_id: codex-p21-publication-scope-correction-00402ed6
-    lease_expires_at: '2026-07-30T14:08:49Z'
+    lease_expires_at: '2026-07-30T14:23:56Z'
     exact_source_files:
       - packages/contracts/src/content/publication/index.ts
       - packages/domain/src/content/publication/lifecycle.ts
       - packages/db/src/content/publication/repository.ts
       - packages/db/src/content/publication/repository.test.ts
+      - apps/web/src/server/features/content/publication/service.ts
+      - apps/web/src/server/features/content/publication/service.test.ts
     runtime_files:
       - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
       - ops/v2.1-execution/runtime/P21/HANDOFF.md
       - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
-    path_ceiling: 7
+    path_ceiling: 9
     required_corrections:
       - composite_scope_in_all_P21_owned_unique_and_conflict_targets
-      - exact_content_version_generation_and_projection_on_receipt_contract_domain_and_repository
+      - exact_content_version_generation_and_projection_on_receipt_contract_constructor_test_and_repository
       - exact_content_version_id_on_resume_contract_domain_and_repository
       - preserve_composite_scoped_provider_completion_correlation
       - preserve_immutable_P21_MIGRATION_002_and_superseded_registration_001_bytes
@@ -1040,9 +1042,9 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: dd456b3e4eac66d0cc7f183f120dccb69417db76a22446e09a15cb76452a341c
-    control_lease: 407bd0525ae03facf8d4fe70d5d2d163e5b57edeb3fe2ecc92d70715f456716e
-    task_registry: 5847f50e92902af926f59e134d053a522e6eb4cbf4418642e5e3e71f05aa6267
+    control_state: ae2389b8ef76a19f4c2eeff1e725da0bdd035437922b5b1edce4f339bfe37e30
+    control_lease: 14873aa8e810e444383503bd466170ba7f71601a1ff9ecd4eef708611c12f62c
+    task_registry: 1e9ac6d73b5fe8e16c69b92cc5476cda0330accafa01681e5d5bfe822b165da0
     ready_queue: 84f7e3ca967d5c383fae8b671082b3d90d167efa80ab690012dedb888c1a6707
     merge_queue: 2c7b4157f856d27ddcc82cc3e77b7c015523533d050987668bf959c4dc463d20
     steward_queue: c74b0f80fae7f3489415d634b3d8e35a0d73095c71fdeb1cae8e3eb3f2660696
