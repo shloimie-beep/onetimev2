@@ -3,18 +3,26 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-Audit the exact F02 Lease A canonical-format release.
+Audit the exact F02 Lease B compatibility-semantic correction release.
 
-Require sole parent `e669c0e85d0bdf2bc72f2f8a9ff3646c0a6a1df6`,
-containing control `974985a321b71ad05d491b8c981ece5e38bed52c`, sole
-acquisition `c9b0f526907d62f782ef3d44a752a9467d03e986`, claim
-`7acb5991-7704-4a6f-b590-020e47824876`, and shared lease
-`bf42793b-2731-43aa-8e88-c246c87d70bb`.
+Require sole parent `24c327eaf06fc502d167d2d5863c5fbb05db5a2c`,
+containing continuation control
+`5644d38395e86ea114197eb12415106994bbf3ea`, sole acquisition parent
+`fe0d60fa2807b02882390df960f3e75517672d11`, claim
+`6b1e1632-e3d9-4f87-92b3-8b150a6715d2`, and shared lease
+`31e905c8-d5c2-4e3c-9e98-c2e8f78989ce`.
 
-Require an exact four-path delta containing only the proposal and F02 runtime
-triplet. Run repository Prettier through its API over the raw canonical Git
-blob bytes; do not use Windows `git archive`, which converts text to CRLF.
-Also run YAML parsing, package Git-byte validation, secret scan, and diff/scope gates.
-Confirm native and pg-mem checksum pairs are unchanged, SQL 2235 through 2238
-is byte-identical, both slots released before expiry, and effects remain
-`0/0/0`. Stop for C00 admission; do not integrate or perform external effects.
+Require an exact five-path delta: migration 2239, the allocation proposal, and
+the F02 runtime triplet. Confirm migration 2239 preserves sole paused and sole
+archived canonical lifecycle, prefers active in multi-row scopes, and enforces
+one canonical per account/product independent of lifecycle.
+
+Rerun direct native lifecycle probes and complete disposable PGlite and pg-mem
+75/75 inventories. Confirm checksum pair
+`acdd52511fb2fa738d2a122087c65dbf7ae06879b51bd913095a0c86f63ea111` /
+`816a086b5ec6cc0aa6d3c13b8b36e2f75dbc381cb2f60b4f859dba0328be755c`,
+protected 2234-2238 and 2240-2244 bytes, next ordinal 2245, typecheck, lint,
+build, format, YAML, secret, scope, diff, package 200/200, lease release, and
+effects `0/0/0`.
+
+Stop for C00 admission; do not integrate or perform external effects.
