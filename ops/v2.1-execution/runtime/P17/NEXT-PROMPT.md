@@ -1,7 +1,7 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: START_OR_RESUME
+MODE: STOP
 
 Review corrected One Time v2.1 task P17 from its exact remote
 ready-for-review checkpoint.
@@ -46,3 +46,14 @@ claim `f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1`, and ZOOM_PREPARATION lease
 Stop for C00 reconciliation. Do not change a product, acceptance artifact,
 migration, existing or successor request, provider configuration, or external
 effect before C00 consumes READY and reauthorizes the explicit allowlist.
+
+C00 reconciled the atomic claim at control
+`a5851edf70f3c60cc25ece3faf124bedf1629f21`, but that authority reached P17 at
+`2026-07-30T06:59:20Z`, too late to complete and gate the eleven-path
+correction before the mandatory renewal checkpoint. This runtime-triplet-only
+checkpoint has status `renewal_requested`; no correction work was started and
+all product and request bytes remain unchanged.
+
+Stop pending a renewed claim and ZOOM_PREPARATION lease. Do not resume under
+lease `0e53a171-263b-41d9-b957-80588027c194` after its
+`2026-07-30T07:11:00Z` expiry.

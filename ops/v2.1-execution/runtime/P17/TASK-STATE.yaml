@@ -52,9 +52,9 @@ collision_correction_binding:
   required_successor_requests:
     - P17-MIGRATION-002
     - P17-SERVER-WORKER-REGISTRATION-002
-status: claimed
-phase: canonical_classroom_ownership_and_provider_outbox_correction_atomic_claim
-correction_work_status: atomic_claim_only
+status: renewal_requested
+phase: canonical_classroom_ownership_and_provider_outbox_correction_renewal_checkpoint
+correction_work_status: not_started_lease_window_insufficient
 claimed_by: codex-p17-correction-f7c01bf5
 claim_time: '2026-07-30T06:11:00Z'
 claim_id: f7c01bf5-d289-48fc-bf32-cec1c1c1d6a1
@@ -75,8 +75,10 @@ writer_slot_leases:
     released_at: null
 lease_expires_at: '2026-07-30T07:11:00Z'
 lease_released_at: null
-last_heartbeat_at: '2026-07-30T06:47:06Z'
+last_heartbeat_at: '2026-07-30T07:00:00Z'
 controller_authorization_sha: 9d343f5b5990e0d5c38b2dc53f660b7377e2d64b
+claim_checkpoint_sha: 7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f
+claim_reconciliation_control_sha: a5851edf70f3c60cc25ece3faf124bedf1629f21
 continuation_authorization_sha: 268ab601b89573238befe70de7995908925575cc
 continuation_acquisition_sha: 5b0356cc30baf4062e50664f9749ebcf97f9d7f4
 ready_entry_state_based_on_control_head_sha: 0eb6204622792a6add325f0cb11bc25847701f10
@@ -105,10 +107,10 @@ completed_steps:
   - Passed full workspace typecheck, 21 focused tests across four files, focused ESLint and Prettier, repository-wide secret scan over 2723 files, and diff hygiene.
   - Published correction implementation head 3560b053a535b2889ea95e1d05ab58bb82b219cc by normal non-force update and released the task-local lease in terminal metadata.
 remaining_steps:
-  - C00 must independently audit and reconcile this exact runtime-triplet-only claim.
-  - Only after C00 reconciliation may P17 change the explicit authorized paths and publish the two immutable successor requests.
+  - C00 must issue a renewed P17 claim and ZOOM_PREPARATION lease before any product or successor-request work begins.
+  - Under renewed authority, implement and fully gate only the exact 11-path canonical ownership/provider-outbox correction.
   - Provider inspection and every external effect remain prohibited.
-next_action: Stop for C00 reconciliation before changing any product, acceptance, migration, existing request, successor request, provider, or external-effect byte.
+next_action: Push and report this pre-expiry runtime-triplet-only renewal checkpoint, then stop without changing any product or request byte.
 requirements:
   OTV2-CLASSROOM-068: implementation_ready
   OTV2-CLASSROOM-069: implementation_ready
@@ -132,16 +134,9 @@ acceptance_cases:
   OTV2-CLASSROOM-079-AC01: implementation_ready
   OTV2-CLASSROOM-188-AC01: implementation_ready
 changed_paths:
-  - apps/web/src/server/features/classroom/zoom-preparation/service.test.ts
-  - apps/web/src/server/features/classroom/zoom-preparation/service.ts
-  - apps/worker/src/runners/zoom-preparation/runner.test.ts
-  - apps/worker/src/runners/zoom-preparation/runner.ts
-  - ops/v2.1-execution/runtime/P17/ACCEPTANCE-MATRIX.md
+  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P17/HANDOFF.md
   - ops/v2.1-execution/runtime/P17/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P17/TASK-STATE.yaml
-  - packages/domain/src/classroom/zoom-preparation/index.ts
-  - packages/domain/src/classroom/zoom-preparation/zoom-preparation.acceptance.test.ts
 migrations: []
 steward_requests:
   - P17-MIGRATION-001
@@ -150,15 +145,8 @@ steward_requests:
   - P17-REMINDER-ROUTING-001
 verification:
   commands_run:
-    - Exact repaired control/parent, canonical ready digest, claim checkpoint, dependency ancestry, correction lease, and zero effect-lock verification (passed).
-    - npm run typecheck (passed).
-    - Focused Vitest over domain acceptance, database, server service, and worker runner suites (passed, 21 tests across four files).
-    - Focused ESLint over all six corrected TypeScript artifacts (passed).
-    - Focused Prettier over all corrected artifacts and acceptance evidence (passed).
-    - npm run secret:scan (passed, 2723 repository text files).
-    - git diff --check (passed).
-    - Exact canonical 13-product-artifact, seven-file correction checkpoint, six-file correction product, and named artifact digest recomputation (passed).
-    - Normal non-force remote update of immutable correction implementation checkpoint (passed).
+    - Exact remote claim checkpoint 7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f and C00 reconciliation control a5851edf70f3c60cc25ece3faf124bedf1629f21 (passed).
+    - Exact runtime-triplet-only renewal scope, YAML parse, formatting, diff hygiene, and normal non-force remote update (pending commit).
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -167,5 +155,6 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - No contract, database, migration, steward-request, shared runtime, provider configuration, manifest, lockfile, or communication-composer path changed during correction.
+  - The reconciled implementation authority arrived at 2026-07-30T06:59:20Z, too late to implement and fully gate eleven paths before the mandatory 2026-07-30T07:05:00Z renewal checkpoint.
+  - No product, acceptance, migration, existing or successor request, shared runtime, provider configuration, manifest, lockfile, P18, or control path changed in this renewal checkpoint.
   - No Zoom/provider request, credential access, account mutation, meeting/registrant creation, reminder delivery, bootstrap issuance, deployment, or canary was performed.

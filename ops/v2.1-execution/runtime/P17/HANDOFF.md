@@ -91,3 +91,19 @@ Meeting SDK bootstrap issuance/consumption, live Student sessions, attendance,
 and their persistence. P17 receives no provider/effect lock; effects remain
 `0/0/0`. Stop for C00 reconciliation before product edits or successor
 requests.
+
+## Pre-expiry renewal checkpoint
+
+C00 reconciled claim checkpoint
+`7e05a1e38f605a9be3cb29d5d2e768e5d2dc348f` at control
+`a5851edf70f3c60cc25ece3faf124bedf1629f21`. That authority reached this
+worktree at `2026-07-30T06:59:20Z`, leaving insufficient time to implement and
+fully gate eleven paths before the mandatory `2026-07-30T07:05:00Z`
+checkpoint.
+
+P17 therefore requests renewal before lease expiry. This bounded checkpoint
+changes only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`; every
+product, acceptance, migration, existing request, and successor-request byte
+remains unchanged. Correction work was not started. The last heartbeat is
+`2026-07-30T07:00:00Z`, effects remain `0/0/0`, and P17 stops pending a renewed
+claim and ZOOM_PREPARATION lease.
