@@ -1423,3 +1423,28 @@ focused tests, typecheck, formatting, secret/diff/scope gates, release its
 lease before expiry, push a superseding final, remote-verify, and stop for
 independent audit. Do not merge, register, inspect providers, deploy, send, or
 perform an external effect.
+
+F02 `cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911` and P32
+`92a7ee6377d9507140def1159a440fbfd1733123` have passed independent
+compatibility audits and are held for ordered integration. P16 timing final
+`c58ed7d65f46783717901512d249202b2ec46614` passed its authorized audit,
+but the repository still passes public/domain weekdays `0..6` directly to
+migration 2237's ISO `1..7` column.
+
+Resume P16 only for an atomic runtime-triplet claim from exact head `c58ed7d6`
+under READY digest
+`15586be27ddf50295c2bfa35d450d5168c78d3f51c9e3cb2976c3f087f388911`,
+claim `ebdca6e9-aa5b-411b-88fd-747089e869ce`, and CLASSROOM_CORE lease
+`8c250e39-5c4d-4684-93ba-2ff373a1253a`. The first push must change exactly
+P16 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`; preserve all
+product/test bytes; push normally; remote-verify; and stop for C00
+reconciliation.
+
+After reconciliation, encode Sunday `0` as database `7`, preserve weekdays
+`1..6`, decode database `7` back to public/domain `0`, preserve array order,
+reject absent/non-integer/out-of-range/duplicate values before persistence,
+and prove canonical Sunday-through-Thursday roundtrip through native
+PostgreSQL after exact migration 2239. Limit the final correction to the P16
+repository, its direct test, and runtime triplet. Do not edit migrations,
+contracts, domain roots, interfaces, steward requests, registrations,
+providers, deployment, sends, or external effects.

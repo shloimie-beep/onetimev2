@@ -2,8 +2,60 @@ schema_version: 1
 execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
-ready: []
-entry_payload_digests: {}
+ready:
+  - task_id: P16
+    status: resume_ready
+    phase: classroom_repository_weekday_encoding_compatibility_correction
+    branch: codex/v21-p16-class-series-occurrences
+    claim_mode: resume_existing
+    state_based_on_control_head_sha: 0f176d49d59bb46dcc11c2c7be44a271226f4efc
+    authorized_start_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+    expected_existing_head: c58ed7d65f46783717901512d249202b2ec46614
+    package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
+    source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+    task_packet_digest: a2ba86653705892d62ad19fddcf14a5c519ffb3c6f130d3919de0f5a971f427e
+    task_context_digest: 1df1eaa480ed68aa93538ae2dbd8a52864bbe728248f79b20b54e2de4b5e95a0
+    dependency_heads_and_digests:
+      C00:
+        required_state: operational
+        observed_state: operational
+        observed_control_head_sha: 0f176d49d59bb46dcc11c2c7be44a271226f4efc
+        control_state_digest: cb0b66286c318d5e60cad5b412ef56161023ea586d43843c17fcb58fb5260f25
+      I36:
+        required_state: F02_lease_A_released
+        observed_state: F02_lease_A_released
+        observed_integration_head_sha: 1798f31b5f698c80ee2babbd6414e9934745a178
+      P16:
+        required_state: reminder_timing_passed_weekday_encoding_rejected
+        observed_state: reminder_timing_passed_weekday_encoding_rejected
+        observed_task_head_sha: c58ed7d65f46783717901512d249202b2ec46614
+        state_handoff_digest: 1f79b1fef48fd06ae4e44f8a94402b78c5e2e1e59b13e5b13ad0c4ae8ed79b78
+        triplet_digest: eae37dfe8a406d8907765654ace96c261423c663bd0e762711b98e089b12dd1b
+        rejected_semantic_gates:
+          - preserve the public and domain weekday convention 0 through 6 while persisting migration 2237's ISO 1 through 7 representation
+          - encode Sunday 0 as 7 and Monday through Saturday 1 through 6 unchanged on write, then decode 7 back to 0 on read without changing weekday order
+          - prove canonical Sunday through Thursday roundtrip 0,1,2,3,4 to database 7,1,2,3,4 and back through the exact repository
+          - reject absent, non-integer, out-of-range, or duplicate weekdays before persistence without an unsafe database default
+          - rerun native PostgreSQL through exact migration 2239 plus focused tests, typecheck, lint, format, secret, diff, scope, released-lease, and zero-effect gates
+    writer_slot_leases:
+      - slot: CLASSROOM_CORE
+        lease_id: 8c250e39-5c4d-4684-93ba-2ff373a1253a
+        holder_task_id: P16
+        holder_claim_id: ebdca6e9-aa5b-411b-88fd-747089e869ce
+        state_based_on_control_head_sha: 0f176d49d59bb46dcc11c2c7be44a271226f4efc
+        lease_issued_at: '2026-07-30T01:01:25Z'
+        lease_expires_at: '2026-07-30T02:31:25Z'
+        phase_scope: P16_classroom_repository_weekday_encoding_compatibility_atomic_claim_only
+    effect_lock_leases: []
+    claim_id: ebdca6e9-aa5b-411b-88fd-747089e869ce
+    lease_issued_at: '2026-07-30T01:01:25Z'
+    lease_expires_at: '2026-07-30T02:31:25Z'
+    heartbeat_interval_minutes: 30
+    prompt_path: ops/v2.1-execution/prompts/P16-START-OR-RESUME.md
+    model: GPT-5.6-SOL
+    reasoning: XHIGH
+entry_payload_digests:
+  P16: 15586be27ddf50295c2bfa35d450d5168c78d3f51c9e3cb2976c3f087f388911
 digest_algorithm: For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively,
   separators ',' and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives
   in this sibling map, never inside the entry.

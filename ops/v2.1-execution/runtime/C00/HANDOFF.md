@@ -1688,3 +1688,34 @@ tests/runtime evidence. Each must prove the exact positive and negative native
 compatibility boundary, run task gates, release its lease, publish a
 superseding final, and stop for independent audit. No merge, registration,
 provider inspection, deployment, send, or external effect is authorized.
+
+## Compatibility finals and P16 weekday correction routing
+
+F02 final `cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911` and P32 final
+`92a7ee6377d9507140def1159a440fbfd1733123` passed independent
+exact-source and native compatibility audits. F02 preserves paused and
+archived canonical lifecycle while enforcing one canonical per scope; its
+five-path correction, 2239 checksum pair, protected migrations, 75/75 native
+and pg-mem runs, released shared leases, and effects `0/0/0` pass. P32 carries
+trusted product/runtime/environment scope into requests and grants, persists
+and fences the exact composite binding, passes isolated-staging and production
+positives plus absent/invalid/mismatched/conflicting negatives, releases its
+lease, and records effects `0/0/0`. Both are held for ordered integration.
+
+P16 timing final `c58ed7d65f46783717901512d249202b2ec46614` also passes its
+exact repository/test/runtime scope, native migration-through-2239 proof,
+authoritative reminder and joinable timing, omission/invalid rejection,
+released lease, and effects `0/0/0`. That audit exposed a separate blocker:
+P16's public/domain weekday representation is `0..6`, but migration 2237
+stores ISO `1..7`; native PostgreSQL rejects `[0,2,4]`.
+
+C00 issued canonical READY digest
+`15586be27ddf50295c2bfa35d450d5168c78d3f51c9e3cb2976c3f087f388911`,
+claim `ebdca6e9-aa5b-411b-88fd-747089e869ce`, and sole CLASSROOM_CORE
+lease `8c250e39-5c4d-4684-93ba-2ff373a1253a` through
+`2026-07-30T02:31:25Z`. The first P16 push may change only its runtime
+triplet and must stop for reconciliation. Product changes remain unauthorized.
+After reconciliation, only task-owned repository weekday encode/decode, its
+direct test, and runtime evidence may change. Preserve the `0..6` contract and
+domain semantics; do not edit migrations, contracts, domain roots, interfaces,
+steward requests, registrations, providers, deployment, sends, or effects.

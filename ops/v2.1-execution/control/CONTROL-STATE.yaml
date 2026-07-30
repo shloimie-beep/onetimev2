@@ -17,11 +17,11 @@ candidate: null
 active_writer_limit: 8
 controller_authorization_sha: fe0d60fa2807b02882390df960f3e75517672d11
 next_action: >-
-  Exact atomic claims F02 24c327ea, P16 be95754a, and P32 39a578ff are reconciled and their READY entries consumed.
-  F02 may correct only migration 2239 canonical promotion plus its proposal/runtime evidence; P16 may correct only
-  task-owned class-series/occurrence repository reminder-time persistence plus direct tests/runtime evidence; P32
-  may correct only task-owned explicit trusted privacy scope propagation/persistence plus direct tests/runtime
-  evidence. Each must run native positive/negative compatibility proof and task gates, release its writer lease,
-  push a superseding final, and stop for independent audit. No merge, registration, provider inspection,
-  deployment, send, or external effect is authorized.
+  F02 final cd2d7c2f and P32 final 92a7ee63 passed independent exact-source and native compatibility audits and
+  are held for the next ordered I36 integration wave. P16 timing final c58ed7d6 also passed, but native proof exposed
+  a separate repository/schema weekday encoding conflict. Only P16's atomic runtime-triplet claim is now authorized
+  from exact head c58ed7d6 under READY digest 15586be2, claim ebdca6e9, and CLASSROOM_CORE lease 8c250e39.
+  Do not change product code in the first claim push. After C00 reconciliation, route only task-owned repository
+  weekday encoding/decoding, its direct test, and runtime evidence. No migration, contract/domain semantic,
+  registration, merge, provider inspection, deployment, send, or external effect is authorized.
 authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.

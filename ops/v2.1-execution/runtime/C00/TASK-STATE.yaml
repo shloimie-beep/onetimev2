@@ -294,11 +294,13 @@ completed_steps:
 - issued only an atomic runtime-triplet renewal for the preserved dirty F02 draft under READY digest 635c8923, claim 2002fc61, and shared MIGRATION_AUTHORITY/SCHEMA_CONTRACT lease 4d52c050
 - independently reconciled F02 renewal claim 9daa5251 as an exact runtime-triplet child of 6a5e359c with remote proposal and migrations unchanged, all seven local draft paths byte-preserved, renewed authority exact, and effects zero
 remaining_steps:
-- independently audit and integrate F02's exact six-migration Lease B release after it finishes the authorized ten-path implementation
+- reconcile P16's exact atomic weekday-encoding claim, then authorize only its task-owned repository conversion, direct test, and runtime evidence
+- independently audit the superseding P16 weekday final before admitting the ordered P16, P32, and F02 compatibility wave to I36
+- integrate and independently audit F02's exact six-migration Lease B release together with the accepted P16/P32 source corrections
 - integrate and independently audit the remaining governed migration leases before consolidated registrations and candidate freeze
 - resolve all remaining non-ancestral review heads and assigned steward duties before candidate freeze
 - derive exact candidate-, task-, provider-, fixture-, operation-, budget-, lock-, and fencing-bound effect authorities only after applicable gates pass
-next_action: F02 renewal claim 9daa5251 is reconciled under claim 2002fc61 and shared lease 4d52c050. It may correct only the seven preserved draft paths against the bound semantic blockers, finalize the runtime triplet within the ten-path ceiling, stabilize SQL before regenerating checksums, rerun all native/disposable 75/75, focused, repository, package, secret, scope, and zero-effect gates, release both slots, push, and stop for independent audit. No registration, provider action, deployment, send, or external effect is authorized.
+next_action: P16 must fetch the containing control checkpoint, recompute READY digest 15586be27ddf50295c2bfa35d450d5168c78d3f51c9e3cb2976c3f087f388911, and make an atomic first push changing only its runtime triplet under claim ebdca6e9-aa5b-411b-88fd-747089e869ce and CLASSROOM_CORE lease 8c250e39-5c4d-4684-93ba-2ff373a1253a. Product edits remain unauthorized until C00 reconciles that exact claim. F02 and P32 are independently accepted but held from integration. No migration, registration, provider action, deployment, send, or external effect is authorized.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -306,12 +308,12 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 35704c887c45309eb03506d4f654afd2bfbed84c
+  current_control_parent_sha: 0f176d49d59bb46dcc11c2c7be44a271226f4efc
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 2b5764ce-89ec-4a54-843d-0320d6624b8a
-      observed_head: 35704c887c45309eb03506d4f654afd2bfbed84c
+      claim_id: 6c229da4-46d0-4c11-841c-82f8ee8455c7
+      observed_head: 0f176d49d59bb46dcc11c2c7be44a271226f4efc
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -329,11 +331,11 @@ orchestration:
       scheduling_state: ready_F02_lease_A_released
     F02:
       branch: codex/v21-f02-schema-state-migrations
-      claim_id: 2002fc61-531d-4b4c-b0c0-c65b3468b8c5
-      observed_head: 9daa5251acf9b6d2c4c932d9864d894ded2bdd2d
+      claim_id: null
+      observed_head: cd2d7c2fe3bfeb250c320bc02c9bfebb3bd04911
       authorized_start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-      lease_expires_at: '2026-07-30T00:39:23Z'
-      scheduling_state: Lease_B_semantic_correction_claimed_implementation_authorized
+      lease_expires_at: null
+      scheduling_state: compatibility_final_independently_accepted_held_for_ordered_integration
     F07:
       branch: codex/v21-f07-design-system-shells
       claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
@@ -399,18 +401,18 @@ orchestration:
       scheduling_state: ready_for_review_interface_queued
     P16:
       branch: codex/v21-p16-class-series-occurrences
-      claim_id: afd00130-7e98-4428-b9ef-303b50815189
-      observed_head: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
+      claim_id: ebdca6e9-aa5b-411b-88fd-747089e869ce
+      observed_head: c58ed7d65f46783717901512d249202b2ec46614
       authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
-      lease_expires_at: null
-      scheduling_state: ready_for_review_interface_queued
+      lease_expires_at: '2026-07-30T02:31:25Z'
+      scheduling_state: weekday_encoding_compatibility_atomic_claim_ready
     P32:
       branch: codex/v21-p32-privacy-data-rights
-      claim_id: a9e4c442-46dd-4bdd-851e-8e2d21c4ad66
-      observed_head: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
+      claim_id: null
+      observed_head: 92a7ee6377d9507140def1159a440fbfd1733123
       authorized_start_sha: 01cdb992660a1fbc20b204b829d28062fd044679
       lease_expires_at: null
-      scheduling_state: ready_for_review_interface_integrated_at_c4d042e9
+      scheduling_state: compatibility_final_independently_accepted_held_for_ordered_integration
     P27:
       branch: codex/v21-p27-ghl-identity
       claim_id: 83580db4-4a47-44d0-8d6d-83969ae7ccf5
@@ -971,6 +973,11 @@ verification:
   - contained rejected F02 release before integration and issued disjoint claim-only correction entries for F02, P16, and P32 from exact heads 032aeb9c, 72fca16b, and f4ae1c03 under fresh migration/schema, classroom-core, and privacy-data-rights leases with zero effect locks
   - independently reconciled F02 24c327ea, P16 be95754a, and P32 39a578ff as exact sole children of their rejected heads with only each task's runtime triplet changed, exact control/READY/claim/lease bindings, preserved product/SQL bytes, and effects 0/0/0
   - consumed all three READY entries and authorized only the bounded F02 canonical-lifecycle, P16 reminder-time persistence, and P32 explicit trusted-scope compatibility corrections under unchanged disjoint leases
+  - independently audited F02 final cd2d7c2f, exact five-path correction scope, lifecycle-preserving canonical selection, frozen 2239 checksum pair, protected 2234-2238 and 2240-2244 bytes, native and pg-mem 75/75, released shared leases, and effects 0/0/0
+  - independently audited P32 final 92a7ee63, exact 13-path correction scope, trusted product/runtime/environment propagation, composite request/grant persistence and update fencing, native isolated-staging/production positives and all absent/invalid/mismatch/conflict negatives, released lease, and effects 0/0/0
+  - independently audited P16 timing final c58ed7d6, exact repository/test/runtime scope, authoritative reminder and joinable timing on insert/update, native 70-migration proof, NOT NULL/no-default omission rejection, released lease, and effects 0/0/0
+  - rejected P16 integration pending a separate compatibility correction because native PostgreSQL still rejects the public/domain 0-through-6 weekday representation against migration 2237's ISO 1-through-7 constraint
+  - issued only P16's fresh atomic runtime-triplet claim from c58ed7d6 under canonical READY digest 15586be2, claim ebdca6e9, sole CLASSROOM_CORE lease 8c250e39, and zero effect locks
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
