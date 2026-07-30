@@ -6,6 +6,7 @@ import {
   CONTENT_PROCESSING_MAX_ATTEMPTS,
   CONTENT_PROCESSING_MAX_BYTES,
   CONTENT_PROCESSING_STREAM_CHUNK_BYTES,
+  CONTENT_REDACTION_ACTIONS,
   CONTENT_VERSION_DIGEST_VERSION,
   OT_LEARNING_DRAFT_1_OPERATION,
   OT_LEARNING_DRAFT_JSON_SCHEMA,
@@ -15,8 +16,12 @@ import {
   type ApprovedForPublicationArtifact,
   type ApprovedForPublicationProjectionParams,
   type CaptionCue,
+  type ContentParticipantAdminReview,
   type ContentProcessingAdminActor,
   type ContentParticipantReviewEvidence,
+  type ContentParticipantReviewInput,
+  type ContentParticipantReviewSourceEvidence,
+  type ContentRedactionAction,
   type ContentProcessingSource,
   type ContentProcessingVersion,
   type ControlledCaptureEvidence,
@@ -33,6 +38,7 @@ import {
   type TrimSelection,
 } from '../../../../contracts/src/content/processing/index.ts';
 import type { ManagedObjectReadback } from '../../../../contracts/src/content/ingest/index.ts';
+import type { RecordingParticipantSnapshot } from '../../../../contracts/src/privacy/index.ts';
 
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const MAX_AUDIO_SEGMENT_MS = 20 * 60 * 1000;
@@ -615,13 +621,48 @@ export function editDraftArtifact(input: {
   };
 }
 
+export function recordContentParticipantReview(input: {
+  actor: ContentProcessingAdminActor;
+  version: ContentProcessingVersion;
+  recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
+  participantReviews: readonly ContentParticipantReviewInput[];
+  occurredAt: string;
+}): ContentProcessingVersion {
+  assertAdmin(input.actor, input.version);
+  if (input.version.state !== 'needs_review') {
+    fail('invalidState', 'Participant review can be recorded only on a reviewable version.');
+  }
+  const reviewArtifact = input.version.artifacts.find(({ kind }) => kind === 'review_material');
+  const reviewPayload = objectRecord(reviewArtifact?.payload);
+  if (!reviewArtifact || !reviewPayload || reviewArtifact.status !== 'draft') {
+    fail('invalidState', 'A persisted draft review artifact is required.');
+  }
+  const participantReview = buildParticipantReviewSourceEvidence({
+    version: input.version,
+    recordingParticipantSnapshots: input.recordingParticipantSnapshots,
+    participantReviews: input.participantReviews,
+    reviewedByAdminId: input.actor.principalId,
+    reviewedAt: input.occurredAt,
+  });
+  return editDraftArtifact({
+    actor: input.actor,
+    version: input.version,
+    artifactId: reviewArtifact.id,
+    payload: {
+      ...reviewPayload,
+      participantReview,
+    },
+    occurredAt: input.occurredAt,
+  });
+}
+
 export function approveProcessingVersion(input: {
   actor: ContentProcessingAdminActor;
   version: ContentProcessingVersion;
   expectedVersion: number;
   privacyReviewConfirmed: boolean;
   captureEvidence: ControlledCaptureEvidence;
-  participantReviewEvidence: ContentParticipantReviewEvidence;
+  recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
   occurredAt: string;
 }): ContentProcessingVersion {
   assertAdmin(input.actor, input.version);
@@ -634,18 +675,23 @@ export function approveProcessingVersion(input: {
   ) {
     fail('invalidState', 'Exact-version Admin privacy review is required for approval.');
   }
-  assertParticipantReviewEvidence({
-    review: input.participantReviewEvidence,
+  const participantReview = participantReviewEvidenceFromArtifacts({
     version: input.version,
     captureEvidence: input.captureEvidence,
+    recordingParticipantSnapshots: input.recordingParticipantSnapshots,
     approvedByAdminId: input.actor.principalId,
     approvedAt: input.occurredAt,
   });
   const artifacts = input.version.artifacts.map((artifact) => ({
     ...artifact,
+    id: processingSha256(
+      `${input.version.id}:${artifact.kind}:${artifact.revision + 1}:approved:${artifact.payloadDigest}:${input.actor.principalId}:${input.occurredAt}`,
+    ),
+    revision: artifact.revision + 1,
     status: 'approved' as const,
     approvedByAdminId: input.actor.principalId,
     approvedAt: input.occurredAt,
+    createdAt: input.occurredAt,
     updatedAt: input.occurredAt,
   }));
   const approvedVersion = { ...input.version, artifacts };
@@ -662,7 +708,7 @@ export function approveProcessingVersion(input: {
     sourceObjectVersionId: input.version.sourceObjectVersionId,
     contentId: input.version.contentId,
     captureEvidence: input.captureEvidence,
-    participantReview: input.participantReviewEvidence,
+    participantReview,
   });
   const contentVersionDigest = publicationContentVersionDigest({
     version: approvedVersion,
@@ -676,7 +722,7 @@ export function approveProcessingVersion(input: {
     publicationApproval: {
       evidenceVersion: 'OT-PUBLICATION-APPROVAL-1',
       participantSnapshotDigest: input.captureEvidence.consentedParticipantSnapshotDigest,
-      participantReview: { ...input.participantReviewEvidence },
+      participantReview,
       approvedByAdminId: input.actor.principalId,
       approvedAt: input.occurredAt,
       approvedArtifactSetDigest,
@@ -694,8 +740,9 @@ export function buildApprovedForPublicationProjection(input: {
   version: ContentProcessingVersion;
   source: ContentProcessingSource;
   captureEvidence: ControlledCaptureEvidence;
+  recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
 }): SourceCompleteApprovedForPublicationProjection {
-  const { params, version, source, captureEvidence } = input;
+  const { params, version, source, captureEvidence, recordingParticipantSnapshots } = input;
   const approval = version.publicationApproval;
   const participantReview = approval?.participantReview;
   if (
@@ -731,6 +778,7 @@ export function buildApprovedForPublicationProjection(input: {
     review: participantReview,
     version,
     captureEvidence,
+    recordingParticipantSnapshots,
     approvedByAdminId: approval.approvedByAdminId,
     approvedAt: approval.approvedAt,
   });
@@ -834,6 +882,71 @@ function learningMetadata(): Partial<ProcessingArtifact> {
   };
 }
 
+function hasExpectedPublicationArtifactMetadata(
+  artifact: ProcessingArtifact,
+  version: ContentProcessingVersion,
+) {
+  const expected: Record<
+    ProcessingArtifact['kind'],
+    {
+      model: string | null;
+      operationVersion: string | null;
+      promptVersion: string | null;
+      schemaVersion: string | null;
+    }
+  > = {
+    trim: {
+      model: null,
+      operationVersion: version.trim.trimVersion,
+      promptVersion: null,
+      schemaVersion: null,
+    },
+    compressed_video: {
+      model: null,
+      operationVersion: OT_VIDEO_1_PROFILE.version,
+      promptVersion: null,
+      schemaVersion: null,
+    },
+    transcript: {
+      model: OT_TRANSCRIBE_1_OPERATION.model,
+      operationVersion: OT_TRANSCRIBE_1_OPERATION.contractVersion,
+      promptVersion: OT_TRANSCRIBE_1_OPERATION.promptTemplateDigestVersion,
+      schemaVersion: null,
+    },
+    captions: {
+      model: OT_TRANSCRIBE_1_OPERATION.model,
+      operationVersion: OT_TRANSCRIBE_1_OPERATION.contractVersion,
+      promptVersion: null,
+      schemaVersion: null,
+    },
+    review_material: {
+      model: OT_LEARNING_DRAFT_1_OPERATION.model,
+      operationVersion: OT_LEARNING_DRAFT_1_OPERATION.contractVersion,
+      promptVersion: OT_LEARNING_DRAFT_1_OPERATION.promptTemplateDigestVersion,
+      schemaVersion: OT_LEARNING_DRAFT_1_OPERATION.schemaVersion,
+    },
+    worksheet: {
+      model: OT_LEARNING_DRAFT_1_OPERATION.model,
+      operationVersion: OT_LEARNING_DRAFT_1_OPERATION.contractVersion,
+      promptVersion: OT_LEARNING_DRAFT_1_OPERATION.promptTemplateDigestVersion,
+      schemaVersion: OT_LEARNING_DRAFT_1_OPERATION.schemaVersion,
+    },
+    knowledge_artifact: {
+      model: OT_LEARNING_DRAFT_1_OPERATION.model,
+      operationVersion: OT_LEARNING_DRAFT_1_OPERATION.contractVersion,
+      promptVersion: OT_LEARNING_DRAFT_1_OPERATION.promptTemplateDigestVersion,
+      schemaVersion: OT_LEARNING_DRAFT_1_OPERATION.schemaVersion,
+    },
+  };
+  const metadata = expected[artifact.kind];
+  return (
+    (artifact.model ?? null) === metadata.model &&
+    (artifact.operationVersion ?? null) === metadata.operationVersion &&
+    (artifact.promptVersion ?? null) === metadata.promptVersion &&
+    (artifact.schemaVersion ?? null) === metadata.schemaVersion
+  );
+}
+
 const REQUIRED_PUBLICATION_ARTIFACT_KINDS: readonly ProcessingArtifact['kind'][] = [
   'trim',
   'compressed_video',
@@ -889,7 +1002,8 @@ function approvedPublicationArtifacts(
         !Number.isSafeInteger(artifact.revision) ||
         artifact.revision < 1 ||
         !SHA256_PATTERN.test(artifact.payloadDigest) ||
-        processingSha256(JSON.stringify(artifact.payload)) !== artifact.payloadDigest,
+        processingSha256(JSON.stringify(artifact.payload)) !== artifact.payloadDigest ||
+        !hasExpectedPublicationArtifactMetadata(artifact, version),
     )
   ) {
     fail('invalidState', 'Latest approved artifacts do not match the composite publication scope.');
@@ -1011,12 +1125,27 @@ function approvedPublicationArtifacts(
     fail('invalidState', 'Approved video duration and derivative evidence are incomplete.');
   }
   return {
-    artifacts: artifacts.map(({ id, kind, revision, payloadDigest }) => ({
-      artifactId: id,
-      kind,
-      revision,
-      payloadDigest,
-    })),
+    artifacts: artifacts.map(
+      ({
+        id,
+        kind,
+        revision,
+        payloadDigest,
+        model,
+        operationVersion,
+        promptVersion,
+        schemaVersion,
+      }) => ({
+        artifactId: id,
+        kind,
+        revision,
+        payloadDigest,
+        model: model ?? null,
+        operationVersion: operationVersion ?? null,
+        promptVersion: promptVersion ?? null,
+        schemaVersion: schemaVersion ?? null,
+      }),
+    ),
     seed: {
       title,
       englishTranscriptText: transcriptText.join('\n'),
@@ -1038,6 +1167,10 @@ function publicationArtifactSetDigest(artifacts: readonly ProcessingArtifact[]) 
             kind,
             revision,
             payloadDigest,
+            model,
+            operationVersion,
+            promptVersion,
+            schemaVersion,
             sourceId,
             sourceSha256,
             sourceObjectVersionId,
@@ -1048,6 +1181,10 @@ function publicationArtifactSetDigest(artifacts: readonly ProcessingArtifact[]) 
             kind,
             revision,
             payloadDigest,
+            model: model ?? null,
+            operationVersion: operationVersion ?? null,
+            promptVersion: promptVersion ?? null,
+            schemaVersion: schemaVersion ?? null,
             sourceId,
             sourceSha256,
             sourceObjectVersionId,
@@ -1109,6 +1246,9 @@ function publicationSourceEvidenceDigest(input: {
         redactionReviewDigest: input.participantReview.redactionReviewDigest,
         reviewedByAdminId: input.participantReview.reviewedByAdminId,
         reviewedAt: input.participantReview.reviewedAt,
+        sourceEvidence: canonicalParticipantReviewSourceEvidence(
+          input.participantReview.sourceEvidence,
+        ),
       },
     }),
   );
@@ -1153,22 +1293,77 @@ function publicationContentVersionDigest(input: {
   );
 }
 
-function assertParticipantReviewEvidence(input: {
-  review: ContentParticipantReviewEvidence;
+export function recordingParticipantSnapshotSetDigest(
+  snapshots: readonly RecordingParticipantSnapshot[],
+) {
+  return processingSha256(JSON.stringify(canonicalRecordingParticipantSnapshots(snapshots)));
+}
+
+function buildParticipantReviewSourceEvidence(input: {
+  version: ContentProcessingVersion;
+  recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
+  participantReviews: readonly ContentParticipantReviewInput[];
+  reviewedByAdminId: string;
+  reviewedAt: string;
+}): ContentParticipantReviewSourceEvidence {
+  const snapshots = validatedRecordingParticipantSnapshots({
+    version: input.version,
+    snapshots: input.recordingParticipantSnapshots,
+    reviewedAt: input.reviewedAt,
+  });
+  if (
+    !exactIdentifier(input.reviewedByAdminId) ||
+    !Number.isFinite(Date.parse(input.reviewedAt)) ||
+    input.participantReviews.length !== snapshots.length
+  ) {
+    participantEvidenceFailure();
+  }
+  const reviewBySnapshotId = new Map(
+    input.participantReviews.map((review) => [review.recordingParticipantSnapshotId, review]),
+  );
+  if (reviewBySnapshotId.size !== snapshots.length) participantEvidenceFailure();
+  const transcriptSegmentIds = exactTranscriptSegmentIds(input.version);
+  const participantReviews = snapshots.map((snapshot) => {
+    const review = reviewBySnapshotId.get(snapshot.snapshot_id);
+    if (!review || review.studentId !== snapshot.student_id) participantEvidenceFailure();
+    return canonicalParticipantAdminReview({
+      review,
+      snapshot,
+      transcriptSegmentIds,
+      outputDurationMs: input.version.trim.outputDurationMs,
+      reviewedByAdminId: input.reviewedByAdminId,
+      reviewedAt: input.reviewedAt,
+    });
+  });
+  return {
+    evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-SOURCE-1',
+    occurrenceId: input.version.contentId,
+    recordingParticipantSnapshotSetDigest: recordingParticipantSnapshotSetDigest(snapshots),
+    recordingParticipantSnapshotIds: snapshots.map(({ snapshot_id }) => snapshot_id),
+    participantReviews,
+  };
+}
+
+function participantReviewEvidenceFromArtifacts(input: {
   version: ContentProcessingVersion;
   captureEvidence: ControlledCaptureEvidence;
+  recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
   approvedByAdminId: string;
   approvedAt: string;
-}) {
-  const { review, version, captureEvidence } = input;
+}): ContentParticipantReviewEvidence {
+  const sourceEvidence = persistedParticipantReviewSourceEvidence({
+    version: input.version,
+    recordingParticipantSnapshots: input.recordingParticipantSnapshots,
+    approvedByAdminId: input.approvedByAdminId,
+    approvedAt: input.approvedAt,
+  });
+  const { captureEvidence, version } = input;
   const capturedAt = Date.parse(captureEvidence.capturedAt);
   const uploadedAt = Date.parse(captureEvidence.uploadConfirmedAt);
-  const reviewedAt = Date.parse(review.reviewedAt);
+  const reviewedAt = Date.parse(sourceEvidence.participantReviews[0]?.reviewedAt ?? '');
   const approvedAt = Date.parse(input.approvedAt);
   if (
-    typeof version.contentId !== 'string' ||
-    !version.contentId.trim() ||
-    version.contentId !== version.contentId.trim() ||
+    !exactIdentifier(version.contentId) ||
     captureEvidence.evidenceVersion !== 'OT-OBS-CAPTURE-1' ||
     captureEvidence.captureMethod !== 'obs' ||
     captureEvidence.zoomCloudRecordingDisabled !== true ||
@@ -1177,30 +1372,12 @@ function assertParticipantReviewEvidence(input: {
     captureEvidence.sourceId !== version.sourceId ||
     captureEvidence.linkedIngestSourceId !== version.sourceId ||
     captureEvidence.occurrenceId !== version.contentId ||
-    typeof captureEvidence.accountOwnerConsentVersion !== 'string' ||
-    !captureEvidence.accountOwnerConsentVersion.trim() ||
-    typeof captureEvidence.durableChecksumReadbackReceiptId !== 'string' ||
-    !captureEvidence.durableChecksumReadbackReceiptId.trim() ||
+    !exactIdentifier(captureEvidence.accountOwnerConsentVersion) ||
+    !exactIdentifier(captureEvidence.durableChecksumReadbackReceiptId) ||
     !SHA256_PATTERN.test(captureEvidence.consentedParticipantSnapshotDigest) ||
-    review.evidenceVersion !== 'OT-CONTENT-PARTICIPANT-REVIEW-1' ||
-    review.accountKey !== version.accountKey ||
-    review.productKey !== version.productKey ||
-    review.contentVersionId !== version.id ||
-    review.sourceId !== version.sourceId ||
-    review.occurrenceId !== version.contentId ||
-    typeof review.participantSetVersion !== 'string' ||
-    !review.participantSetVersion.trim() ||
-    review.participantSetVersion !== review.participantSetVersion.trim() ||
-    review.participantSnapshotDigest !== captureEvidence.consentedParticipantSnapshotDigest ||
-    review.participantReviewState !== 'complete' ||
-    review.unresolvedParticipantCount !== 0 ||
-    !Number.isSafeInteger(review.requiredRedactionCount) ||
-    review.requiredRedactionCount < 0 ||
-    !Number.isSafeInteger(review.completedRedactionCount) ||
-    review.completedRedactionCount < 0 ||
-    review.completedRedactionCount !== review.requiredRedactionCount ||
-    !SHA256_PATTERN.test(review.redactionReviewDigest) ||
-    review.reviewedByAdminId !== input.approvedByAdminId ||
+    sourceEvidence.occurrenceId !== version.contentId ||
+    sourceEvidence.recordingParticipantSnapshotSetDigest !==
+      captureEvidence.consentedParticipantSnapshotDigest ||
     !Number.isFinite(capturedAt) ||
     !Number.isFinite(uploadedAt) ||
     !Number.isFinite(reviewedAt) ||
@@ -1210,11 +1387,452 @@ function assertParticipantReviewEvidence(input: {
     reviewedAt < uploadedAt ||
     approvedAt < reviewedAt
   ) {
-    fail(
-      'invalidState',
-      'Complete source-bound participant and redaction review evidence is required.',
-    );
+    participantEvidenceFailure();
   }
+  const requiredRedactionCount = sourceEvidence.participantReviews.reduce(
+    (sum, review) => sum + review.requiredRedactionActions.length,
+    0,
+  );
+  const completedRedactionCount = sourceEvidence.participantReviews.reduce(
+    (sum, review) => sum + review.completedRedactionActions.length,
+    0,
+  );
+  if (requiredRedactionCount !== completedRedactionCount) participantEvidenceFailure();
+  const participantSetVersion = processingSha256(
+    JSON.stringify(canonicalParticipantReviewSourceEvidence(sourceEvidence)),
+  );
+  const redactionReviewDigest = processingSha256(
+    JSON.stringify({
+      evidenceVersion: 'OT-CONTENT-REDACTION-REVIEW-1',
+      sourceEvidence: canonicalParticipantReviewSourceEvidence(sourceEvidence),
+      requiredRedactionCount,
+      completedRedactionCount,
+    }),
+  );
+  return {
+    evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-1',
+    accountKey: version.accountKey,
+    productKey: version.productKey,
+    contentVersionId: version.id,
+    sourceId: version.sourceId,
+    occurrenceId: version.contentId,
+    participantSetVersion,
+    participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+    participantReviewState: 'complete',
+    unresolvedParticipantCount: 0,
+    requiredRedactionCount,
+    completedRedactionCount,
+    redactionReviewDigest,
+    reviewedByAdminId: input.approvedByAdminId,
+    reviewedAt: sourceEvidence.participantReviews[0]!.reviewedAt,
+    sourceEvidence,
+  };
+}
+
+function assertParticipantReviewEvidence(input: {
+  review: ContentParticipantReviewEvidence;
+  version: ContentProcessingVersion;
+  captureEvidence: ControlledCaptureEvidence;
+  recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
+  approvedByAdminId: string;
+  approvedAt: string;
+}) {
+  const expected = participantReviewEvidenceFromArtifacts(input);
+  const review = input.review;
+  if (
+    review.evidenceVersion !== expected.evidenceVersion ||
+    review.accountKey !== expected.accountKey ||
+    review.productKey !== expected.productKey ||
+    review.contentVersionId !== expected.contentVersionId ||
+    review.sourceId !== expected.sourceId ||
+    review.occurrenceId !== expected.occurrenceId ||
+    review.participantSetVersion !== expected.participantSetVersion ||
+    review.participantSnapshotDigest !== expected.participantSnapshotDigest ||
+    review.participantReviewState !== expected.participantReviewState ||
+    review.unresolvedParticipantCount !== expected.unresolvedParticipantCount ||
+    review.requiredRedactionCount !== expected.requiredRedactionCount ||
+    review.completedRedactionCount !== expected.completedRedactionCount ||
+    review.redactionReviewDigest !== expected.redactionReviewDigest ||
+    review.reviewedByAdminId !== expected.reviewedByAdminId ||
+    review.reviewedAt !== expected.reviewedAt ||
+    !sameParticipantReviewSourceEvidence(review.sourceEvidence, expected.sourceEvidence)
+  ) {
+    participantEvidenceFailure();
+  }
+}
+
+function persistedParticipantReviewSourceEvidence(input: {
+  version: ContentProcessingVersion;
+  recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[];
+  approvedByAdminId: string;
+  approvedAt: string;
+}) {
+  const reviewArtifact = input.version.artifacts.find(({ kind }) => kind === 'review_material');
+  const payload = objectRecord(reviewArtifact?.payload);
+  const persisted = objectRecord(payload?.participantReview);
+  if (
+    !reviewArtifact ||
+    !persisted ||
+    persisted.evidenceVersion !== 'OT-CONTENT-PARTICIPANT-REVIEW-SOURCE-1' ||
+    persisted.occurrenceId !== input.version.contentId ||
+    !Array.isArray(persisted.recordingParticipantSnapshotIds) ||
+    !Array.isArray(persisted.participantReviews) ||
+    !SHA256_PATTERN.test(String(persisted.recordingParticipantSnapshotSetDigest ?? ''))
+  ) {
+    participantEvidenceFailure();
+  }
+  const rawReviews = persisted.participantReviews.map((value) => {
+    const review = objectRecord(value);
+    const detection = objectRecord(review?.detection);
+    if (
+      !review ||
+      !detection ||
+      !Array.isArray(detection.mediaIntervals) ||
+      !Array.isArray(detection.transcriptSegmentIds) ||
+      review.reviewedByAdminId !== input.approvedByAdminId ||
+      !Number.isFinite(Date.parse(String(review.reviewedAt ?? ''))) ||
+      Date.parse(String(review.reviewedAt)) > Date.parse(input.approvedAt)
+    ) {
+      participantEvidenceFailure();
+    }
+    return {
+      input: {
+        studentId: review.studentId,
+        recordingParticipantSnapshotId: review.recordingParticipantSnapshotId,
+        detection: {
+          detectorVersion: detection.detectorVersion,
+          mediaIntervals: detection.mediaIntervals,
+          transcriptSegmentIds: detection.transcriptSegmentIds,
+        },
+        presenceDecision: review.presenceDecision,
+        requiredRedactionActions: review.requiredRedactionActions,
+        completedRedactionActions: review.completedRedactionActions,
+      } as ContentParticipantReviewInput,
+      detectionEvidenceDigest: detection.detectionEvidenceDigest,
+      reviewedAt: review.reviewedAt as string,
+    };
+  });
+  const reviewedAt = rawReviews[0]?.reviewedAt;
+  if (
+    !reviewedAt ||
+    rawReviews.some(({ reviewedAt: itemReviewedAt }) => itemReviewedAt !== reviewedAt)
+  ) {
+    participantEvidenceFailure();
+  }
+  const normalized = buildParticipantReviewSourceEvidence({
+    version: input.version,
+    recordingParticipantSnapshots: input.recordingParticipantSnapshots,
+    participantReviews: rawReviews.map(({ input: review }) => review),
+    reviewedByAdminId: input.approvedByAdminId,
+    reviewedAt,
+  });
+  if (
+    persisted.recordingParticipantSnapshotSetDigest !==
+      normalized.recordingParticipantSnapshotSetDigest ||
+    !sameStringArray(
+      persisted.recordingParticipantSnapshotIds,
+      normalized.recordingParticipantSnapshotIds,
+    ) ||
+    rawReviews.some(
+      ({ detectionEvidenceDigest }, index) =>
+        detectionEvidenceDigest !==
+        normalized.participantReviews[index]?.detection.detectionEvidenceDigest,
+    )
+  ) {
+    participantEvidenceFailure();
+  }
+  return normalized;
+}
+
+function validatedRecordingParticipantSnapshots(input: {
+  version: ContentProcessingVersion;
+  snapshots: readonly RecordingParticipantSnapshot[];
+  reviewedAt: string;
+}) {
+  if (
+    !Array.isArray(input.snapshots) ||
+    input.snapshots.some(
+      (snapshot) =>
+        !objectRecord(snapshot) || !Array.isArray(objectRecord(snapshot)?.capture_intervals),
+    )
+  ) {
+    participantEvidenceFailure();
+  }
+  const snapshots = canonicalRecordingParticipantSnapshots(input.snapshots);
+  const seenSnapshotIds = new Set<string>();
+  const seenStudentIds = new Set<string>();
+  const reviewedAt = Date.parse(input.reviewedAt);
+  if (snapshots.length < 1 || !Number.isFinite(reviewedAt)) participantEvidenceFailure();
+  for (const snapshot of snapshots) {
+    let priorEndedAt = Number.NEGATIVE_INFINITY;
+    if (
+      !exactIdentifier(snapshot.snapshot_id) ||
+      !exactIdentifier(snapshot.student_id) ||
+      !exactIdentifier(snapshot.household_id) ||
+      snapshot.occurrence_id !== input.version.contentId ||
+      !['self', 'dependent'].includes(snapshot.relationship) ||
+      !exactIdentifier(snapshot.service_consent_event_id) ||
+      !exactIdentifier(snapshot.recording_consent_event_id) ||
+      !['allowed', 'anonymous', 'withdrawn'].includes(snapshot.recognition_state) ||
+      snapshot.notice_state !== 'visible_and_verbal_confirmed' ||
+      snapshot.evidence_source !== 'roster_and_join_readback' ||
+      !exactIdentifier(snapshot.audit_ref) ||
+      !Number.isFinite(Date.parse(snapshot.created_at)) ||
+      Date.parse(snapshot.created_at) > reviewedAt ||
+      ![
+        snapshot.student_lifecycle_version,
+        snapshot.enrollment_version,
+        snapshot.access_version,
+        snapshot.session_version,
+      ].every((version) => Number.isSafeInteger(version) && version > 0) ||
+      !Array.isArray(snapshot.capture_intervals) ||
+      snapshot.capture_intervals.length < 1 ||
+      seenSnapshotIds.has(snapshot.snapshot_id) ||
+      seenStudentIds.has(snapshot.student_id)
+    ) {
+      participantEvidenceFailure();
+    }
+    seenSnapshotIds.add(snapshot.snapshot_id);
+    seenStudentIds.add(snapshot.student_id);
+    for (const interval of snapshot.capture_intervals) {
+      const startedAt = Date.parse(interval.started_at);
+      const endedAt = interval.ended_at === null ? reviewedAt : Date.parse(interval.ended_at);
+      if (
+        !Number.isFinite(startedAt) ||
+        !Number.isFinite(endedAt) ||
+        endedAt < startedAt ||
+        startedAt < priorEndedAt
+      ) {
+        participantEvidenceFailure();
+      }
+      priorEndedAt = endedAt;
+    }
+  }
+  return snapshots;
+}
+
+function canonicalRecordingParticipantSnapshots(
+  snapshots: readonly RecordingParticipantSnapshot[],
+): readonly RecordingParticipantSnapshot[] {
+  return [...snapshots]
+    .sort(
+      (left, right) =>
+        left.student_id.localeCompare(right.student_id) ||
+        left.snapshot_id.localeCompare(right.snapshot_id),
+    )
+    .map((snapshot) => ({
+      snapshot_id: snapshot.snapshot_id,
+      occurrence_id: snapshot.occurrence_id,
+      student_id: snapshot.student_id,
+      household_id: snapshot.household_id,
+      relationship: snapshot.relationship,
+      capture_intervals: [...snapshot.capture_intervals]
+        .sort(
+          (left, right) =>
+            left.started_at.localeCompare(right.started_at) ||
+            String(left.ended_at).localeCompare(String(right.ended_at)),
+        )
+        .map(({ started_at, ended_at }) => ({ started_at, ended_at })),
+      service_consent_event_id: snapshot.service_consent_event_id,
+      recording_consent_event_id: snapshot.recording_consent_event_id,
+      member_recognition_event_id: snapshot.member_recognition_event_id,
+      recognition_state: snapshot.recognition_state,
+      notice_state: snapshot.notice_state,
+      student_lifecycle_version: snapshot.student_lifecycle_version,
+      enrollment_version: snapshot.enrollment_version,
+      access_version: snapshot.access_version,
+      session_version: snapshot.session_version,
+      evidence_source: snapshot.evidence_source,
+      created_at: snapshot.created_at,
+      audit_ref: snapshot.audit_ref,
+    }));
+}
+
+function canonicalParticipantAdminReview(input: {
+  review: ContentParticipantReviewInput;
+  snapshot: RecordingParticipantSnapshot;
+  transcriptSegmentIds: ReadonlySet<string>;
+  outputDurationMs: number;
+  reviewedByAdminId: string;
+  reviewedAt: string;
+}): ContentParticipantAdminReview {
+  const { review } = input;
+  if (
+    !exactIdentifier(review.studentId) ||
+    !exactIdentifier(review.recordingParticipantSnapshotId) ||
+    review.studentId !== input.snapshot.student_id ||
+    review.recordingParticipantSnapshotId !== input.snapshot.snapshot_id ||
+    !review.detection ||
+    !exactIdentifier(review.detection.detectorVersion) ||
+    !Array.isArray(review.detection.mediaIntervals) ||
+    !Array.isArray(review.detection.transcriptSegmentIds) ||
+    !Array.isArray(review.requiredRedactionActions) ||
+    !Array.isArray(review.completedRedactionActions) ||
+    !['confirmed_present', 'confirmed_not_present'].includes(review.presenceDecision)
+  ) {
+    participantEvidenceFailure();
+  }
+  const mediaIntervals = [...review.detection.mediaIntervals]
+    .sort(
+      (left, right) =>
+        left.startedAtMs - right.startedAtMs ||
+        left.endedAtMs - right.endedAtMs ||
+        left.kind.localeCompare(right.kind),
+    )
+    .map(({ startedAtMs, endedAtMs, kind }) => ({ startedAtMs, endedAtMs, kind }));
+  if (
+    mediaIntervals.some(
+      ({ startedAtMs, endedAtMs, kind }) =>
+        !Number.isSafeInteger(startedAtMs) ||
+        !Number.isSafeInteger(endedAtMs) ||
+        startedAtMs < 0 ||
+        endedAtMs <= startedAtMs ||
+        endedAtMs > input.outputDurationMs ||
+        !['image', 'voice'].includes(kind),
+    ) ||
+    new Set(
+      mediaIntervals.map(
+        ({ startedAtMs, endedAtMs, kind }) => `${startedAtMs}:${endedAtMs}:${kind}`,
+      ),
+    ).size !== mediaIntervals.length
+  ) {
+    participantEvidenceFailure();
+  }
+  const transcriptSegmentIds = [...review.detection.transcriptSegmentIds].sort();
+  if (
+    transcriptSegmentIds.some(
+      (segmentId) =>
+        !exactIdentifier(segmentId) ||
+        !SHA256_PATTERN.test(segmentId) ||
+        !input.transcriptSegmentIds.has(segmentId),
+    ) ||
+    new Set(transcriptSegmentIds).size !== transcriptSegmentIds.length
+  ) {
+    participantEvidenceFailure();
+  }
+  const requiredRedactionActions = canonicalRedactionActions(review.requiredRedactionActions);
+  const completedRedactionActions = canonicalRedactionActions(review.completedRedactionActions);
+  if (
+    completedRedactionActions.some((action) => !requiredRedactionActions.includes(action)) ||
+    (review.presenceDecision === 'confirmed_not_present' &&
+      (mediaIntervals.length > 0 ||
+        transcriptSegmentIds.length > 0 ||
+        requiredRedactionActions.length > 0 ||
+        completedRedactionActions.length > 0)) ||
+    (review.presenceDecision === 'confirmed_present' &&
+      mediaIntervals.length === 0 &&
+      transcriptSegmentIds.length === 0)
+  ) {
+    participantEvidenceFailure();
+  }
+  const detection = {
+    detectorVersion: review.detection.detectorVersion,
+    mediaIntervals,
+    transcriptSegmentIds,
+  };
+  return {
+    studentId: review.studentId,
+    recordingParticipantSnapshotId: review.recordingParticipantSnapshotId,
+    detection: {
+      ...detection,
+      detectionEvidenceDigest: processingSha256(JSON.stringify(detection)),
+    },
+    presenceDecision: review.presenceDecision,
+    requiredRedactionActions,
+    completedRedactionActions,
+    reviewedByAdminId: input.reviewedByAdminId,
+    reviewedAt: input.reviewedAt,
+  };
+}
+
+function canonicalRedactionActions(
+  value: readonly ContentRedactionAction[],
+): readonly ContentRedactionAction[] {
+  if (
+    value.some((action) => !CONTENT_REDACTION_ACTIONS.includes(action as ContentRedactionAction)) ||
+    new Set(value).size !== value.length
+  ) {
+    participantEvidenceFailure();
+  }
+  return [...value].sort(
+    (left, right) =>
+      CONTENT_REDACTION_ACTIONS.indexOf(left) - CONTENT_REDACTION_ACTIONS.indexOf(right),
+  );
+}
+
+function exactTranscriptSegmentIds(version: ContentProcessingVersion) {
+  const artifact = version.artifacts.find(({ kind }) => kind === 'transcript');
+  const transcript = objectRecord(artifact?.payload);
+  if (!artifact || !transcript || !Array.isArray(transcript.segments)) {
+    participantEvidenceFailure();
+  }
+  const ids = transcript.segments.map((value) => objectRecord(value)?.segmentId);
+  if (
+    ids.some((value) => typeof value !== 'string' || !SHA256_PATTERN.test(value)) ||
+    new Set(ids).size !== ids.length
+  ) {
+    participantEvidenceFailure();
+  }
+  return new Set(ids as string[]);
+}
+
+function canonicalParticipantReviewSourceEvidence(
+  evidence: ContentParticipantReviewSourceEvidence,
+) {
+  return {
+    evidenceVersion: evidence.evidenceVersion,
+    occurrenceId: evidence.occurrenceId,
+    recordingParticipantSnapshotSetDigest: evidence.recordingParticipantSnapshotSetDigest,
+    recordingParticipantSnapshotIds: [...evidence.recordingParticipantSnapshotIds],
+    participantReviews: evidence.participantReviews.map((review) => ({
+      studentId: review.studentId,
+      recordingParticipantSnapshotId: review.recordingParticipantSnapshotId,
+      detection: {
+        detectorVersion: review.detection.detectorVersion,
+        mediaIntervals: review.detection.mediaIntervals.map(({ startedAtMs, endedAtMs, kind }) => ({
+          startedAtMs,
+          endedAtMs,
+          kind,
+        })),
+        transcriptSegmentIds: [...review.detection.transcriptSegmentIds],
+        detectionEvidenceDigest: review.detection.detectionEvidenceDigest,
+      },
+      presenceDecision: review.presenceDecision,
+      requiredRedactionActions: [...review.requiredRedactionActions],
+      completedRedactionActions: [...review.completedRedactionActions],
+      reviewedByAdminId: review.reviewedByAdminId,
+      reviewedAt: review.reviewedAt,
+    })),
+  };
+}
+
+function sameParticipantReviewSourceEvidence(
+  left: ContentParticipantReviewSourceEvidence,
+  right: ContentParticipantReviewSourceEvidence,
+) {
+  try {
+    return (
+      JSON.stringify(canonicalParticipantReviewSourceEvidence(left)) ===
+      JSON.stringify(canonicalParticipantReviewSourceEvidence(right))
+    );
+  } catch {
+    return false;
+  }
+}
+
+function sameStringArray(left: readonly unknown[], right: readonly string[]) {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+function exactIdentifier(value: unknown): value is string {
+  return typeof value === 'string' && Boolean(value.trim()) && value === value.trim();
+}
+
+function participantEvidenceFailure(): never {
+  fail(
+    'invalidState',
+    'Complete source-bound participant and redaction review evidence is required.',
+  );
 }
 
 function objectRecord(value: unknown): Record<string, unknown> | null {

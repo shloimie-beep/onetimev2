@@ -135,6 +135,50 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       return result.rows[0]?.record_json ?? null;
     },
 
+    async registerContent(record) {
+      const inserted = await client.query<ContentRow>(
+        `INSERT INTO onetime.content_publications (
+           account_key, product_key, content_id, content_version_id,
+           content_version_digest, version, state, publication_generation,
+           playback_grant_generation, occurred_at, record_json, updated_at
+         ) VALUES (
+           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10::timestamptz,
+           $11::jsonb, $12::timestamptz
+         )
+         ON CONFLICT (account_key, product_key, content_id) DO NOTHING
+         RETURNING record_json`,
+        [
+          record.accountKey,
+          record.productKey,
+          record.contentId,
+          record.contentVersionId,
+          record.contentVersionDigest,
+          record.version,
+          record.state,
+          record.publicationGeneration,
+          record.playbackGrantGeneration,
+          record.occurredAt,
+          JSON.stringify(record),
+          record.updatedAt,
+        ],
+      );
+      const created = inserted.rows[0]?.record_json;
+      if (created) return { record: created, inserted: true };
+      const existing = await client.query<ContentRow>(
+        `SELECT record_json
+           FROM onetime.content_publications
+          WHERE account_key = $1
+            AND product_key = $2
+            AND content_id = $3
+          LIMIT 1
+          FOR UPDATE`,
+        [record.accountKey, record.productKey, record.contentId],
+      );
+      const persisted = existing.rows[0]?.record_json;
+      if (!persisted) throw new Error('content_publication_registration_conflict');
+      return { record: persisted, inserted: false };
+    },
+
     async saveContent(record, expectedVersion) {
       const result = await client.query(
         `UPDATE onetime.content_publications

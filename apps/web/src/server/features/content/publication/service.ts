@@ -18,11 +18,13 @@ import {
   archiveContent,
   approveContent,
   assertAdminPublicationPrincipal,
+  assertRegisteredProjectionReplay,
   assertReceiptReplay,
   assertStudentContentAccess,
   attachOccurrence,
   authorizeStudentPlayback,
   createContentPublicationProviderOperation,
+  createReviewReadyContentFromProjection,
   recordPrivatePublication,
   recordPrivateRevocation,
   requestPrivatePublication,
@@ -45,6 +47,44 @@ export function createContentPublicationService(deps: {
   createId: () => string;
 }) {
   return {
+    async registerApprovedProjection(input: {
+      principal: ContentPublicationPrincipal;
+      contentVersionId: string;
+    }) {
+      assertAdminPublicationPrincipal(input.principal);
+      const scope = principalScope(input.principal);
+      const evidence = await deps.approvedProjectionRepository.getApprovedForPublicationProjection({
+        ...scope,
+        contentVersionId: input.contentVersionId,
+      });
+      if (
+        !evidence ||
+        evidence.accountKey !== scope.accountKey ||
+        evidence.productKey !== scope.productKey ||
+        evidence.contentVersionId !== input.contentVersionId
+      ) {
+        return approvalUnavailable();
+      }
+      return deps.repository.inTransaction(async (unit) => {
+        const canonicalOccurrence = await unit.getCanonicalGovernedOccurrence(
+          scope,
+          evidence.contentId,
+        );
+        if (!canonicalOccurrence) return governedOccurrenceUnavailable();
+        const proposed = createReviewReadyContentFromProjection({
+          principal: input.principal,
+          evidence,
+          canonicalOccurrence,
+        });
+        const registration = await unit.registerContent(proposed);
+        assertRegisteredProjectionReplay(registration.record, evidence, canonicalOccurrence);
+        return {
+          record: registration.record,
+          replay: !registration.inserted,
+        };
+      });
+    },
+
     approve(input: {
       principal: ContentPublicationPrincipal;
       contentId: string;

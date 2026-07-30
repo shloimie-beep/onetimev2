@@ -5,8 +5,8 @@ import {
   OT_LEARNING_DRAFT_1_OPERATION,
   OT_TRANSCRIBE_1_OPERATION,
   OT_VIDEO_1_PROFILE,
+  type ContentParticipantReviewInput,
   type ContentProcessingAdminActor,
-  type ContentParticipantReviewEvidence,
   type ContentProcessingSource,
   type ContentProcessingVersion,
   type ControlledCaptureEvidence,
@@ -16,6 +16,7 @@ import {
   type ProcessingStoragePolicyReadback,
 } from '../../../../contracts/src/content/processing/index.ts';
 import type { ManagedObjectReadback } from '../../../../contracts/src/content/ingest/index.ts';
+import type { RecordingParticipantSnapshot } from '../../../../contracts/src/privacy/index.ts';
 import { digestBoundedMediaStream } from '../../../../../scripts/media/v21/streaming-media.ts';
 import {
   approveProcessingVersion,
@@ -26,6 +27,8 @@ import {
   editDraftArtifact,
   localCaptureDeletionDecision,
   processingSha256,
+  recordContentParticipantReview,
+  recordingParticipantSnapshotSetDigest,
   registeredLearningSchemaDigest,
   selectTrim,
   validateControlledCapture,
@@ -39,7 +42,7 @@ const now = '2026-07-28T22:00:00.000Z';
 const sha = (value: string) => processingSha256(value);
 const actor: ContentProcessingAdminActor = {
   accountKey: 'account-1',
-  productKey: 'one-time',
+  productKey: 'one_time_mishnayos',
   principalId: 'admin-1',
   role: 'admin',
 };
@@ -120,6 +123,33 @@ const probe: MediaProbeReadback = {
   videoStreamCount: 1,
   audioStreamCount: 1,
 };
+const recordingParticipantSnapshots: readonly RecordingParticipantSnapshot[] = [
+  {
+    snapshot_id: 'snapshot-1',
+    occurrence_id: source.occurrenceId!,
+    student_id: 'student-1',
+    household_id: 'household-1',
+    relationship: 'dependent',
+    capture_intervals: [
+      {
+        started_at: '2026-07-28T10:00:00.000Z',
+        ended_at: '2026-07-28T11:04:00.000Z',
+      },
+    ],
+    service_consent_event_id: 'service-consent-1',
+    recording_consent_event_id: 'recording-consent-1',
+    member_recognition_event_id: 'recognition-consent-1',
+    recognition_state: 'allowed',
+    notice_state: 'visible_and_verbal_confirmed',
+    student_lifecycle_version: 1,
+    enrollment_version: 2,
+    access_version: 3,
+    session_version: 4,
+    evidence_source: 'roster_and_join_readback',
+    created_at: '2026-07-28T20:00:00.000Z',
+    audit_ref: 'audit-participant-snapshot-1',
+  },
+];
 const captureEvidence: ControlledCaptureEvidence = {
   evidenceVersion: 'OT-OBS-CAPTURE-1',
   sourceId: source.id,
@@ -128,7 +158,9 @@ const captureEvidence: ControlledCaptureEvidence = {
   zoomCloudRecordingDisabled: true,
   controlledEncryptedDevice: true,
   accountOwnerConsentVersion: 'CONSENT-2026-01',
-  consentedParticipantSnapshotDigest: sha('participant-snapshot'),
+  consentedParticipantSnapshotDigest: recordingParticipantSnapshotSetDigest(
+    recordingParticipantSnapshots,
+  ),
   recordingNotice: 'visible_and_verbal',
   capturedAt: '2026-07-28T10:00:00.000Z',
   uploadConfirmedAt: '2026-07-28T20:00:00.000Z',
@@ -136,7 +168,7 @@ const captureEvidence: ControlledCaptureEvidence = {
   linkedIngestSourceId: source.id,
 };
 
-function prepared() {
+function prepared(mishnahReferences: readonly string[] = ['Berachos 1:1']) {
   const trim = selectTrim({
     sourceDurationMs: probe.durationMs,
     startMs: 12_000,
@@ -194,7 +226,7 @@ function prepared() {
   const output: LearningDraft = {
     title: 'Lesson review',
     classTopic: 'Berachos',
-    mishnahReferences: ['Berachos 1:1'],
+    mishnahReferences,
     summary: 'A concise draft summary of the lesson.',
     reviewQuestions: [
       {
@@ -332,17 +364,24 @@ describe('P20 acceptance contract', () => {
     const artifacts = createDraftArtifacts({ ...data, occurredAt: now });
     expect(artifacts).toHaveLength(7);
     expect(new Set(artifacts.map((artifact) => artifact.status))).toEqual(new Set(['draft']));
+    const reviewed = versionWithParticipantReview(data, artifacts);
     const approved = approveProcessingVersion({
       actor,
-      version: { ...data.version, state: 'needs_review', artifacts },
-      expectedVersion: data.version.version,
+      version: reviewed,
+      expectedVersion: reviewed.version,
       privacyReviewConfirmed: true,
       captureEvidence,
-      participantReviewEvidence: participantReviewEvidence(data.version),
+      recordingParticipantSnapshots,
       occurredAt: '2026-07-28T22:10:00.000Z',
     });
     expect(approved.state).toBe('approved');
     expect(approved.artifacts.every((artifact) => artifact.status === 'approved')).toBe(true);
+    expect(approved.artifacts.map(({ id }) => id)).not.toEqual(
+      reviewed.artifacts.map(({ id }) => id),
+    );
+    expect(approved.artifacts.map(({ revision }) => revision)).toEqual(
+      reviewed.artifacts.map(({ revision }) => revision + 1),
+    );
   });
 
   it('builds one deterministic composite approved-for-publication projection and exact replay', () => {
@@ -357,13 +396,13 @@ describe('P20 acceptance contract', () => {
       sourceId: source.id,
       sourceSha256: source.sha256,
       sourceObjectVersionId: source.objectVersionId,
-      participantSetVersion: 'participant-set-v1',
+      participantSetVersion: expect.stringMatching(/^[a-f0-9]{64}$/),
       participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
       participantReviewState: 'complete',
       unresolvedParticipantCount: 0,
       requiredRedactionCount: 2,
       completedRedactionCount: 2,
-      redactionReviewDigest: sha('redaction-review'),
+      redactionReviewDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
       title: 'Lesson review',
       englishTranscriptText: expect.stringContaining('Today we learn a clear idea.'),
       classTopic: 'Berachos',
@@ -379,6 +418,11 @@ describe('P20 acceptance contract', () => {
     expect(projection.artifacts).toHaveLength(7);
     expect(projection.projectionDigest).toMatch(/^[a-f0-9]{64}$/);
     expect(buildApprovedForPublicationProjection(fixture)).toEqual(projection);
+  });
+
+  it('publishes a source-complete seed when there are no Mishnah references', () => {
+    const fixture = approvedPublicationFixture([]);
+    expect(buildApprovedForPublicationProjection(fixture).mishnahReferences).toEqual([]);
   });
 
   it('fails closed on nonapproved, missing, duplicate, stale, cross-scope, source, artifact, and participant evidence', () => {
@@ -430,6 +474,13 @@ describe('P20 acceptance contract', () => {
           ...fixture.captureEvidence,
           consentedParticipantSnapshotDigest: sha('other-participants'),
         },
+      },
+      {
+        ...fixture,
+        recordingParticipantSnapshots: fixture.recordingParticipantSnapshots.map((snapshot) => ({
+          ...snapshot,
+          audit_ref: 'different-persisted-audit-evidence',
+        })),
       },
     ];
     for (const invalid of cases) {
@@ -515,23 +566,61 @@ describe('P20 acceptance contract', () => {
   it('rejects approval until the persisted participant review is complete and redactions reconcile', () => {
     const data = prepared();
     const artifacts = createDraftArtifacts({ ...data, occurredAt: now });
-    const participantReview = participantReviewEvidence(data.version);
+    const reviewed = versionWithParticipantReview(data, artifacts, ['cut']);
     expect(() =>
       approveProcessingVersion({
         actor,
-        version: { ...data.version, state: 'needs_review', artifacts },
-        expectedVersion: data.version.version,
+        version: reviewed,
+        expectedVersion: reviewed.version,
         privacyReviewConfirmed: true,
         captureEvidence,
-        participantReviewEvidence: {
-          ...participantReview,
-          participantReviewState: 'pending',
-          unresolvedParticipantCount: 1,
-          completedRedactionCount: 1,
-        },
+        recordingParticipantSnapshots,
         occurredAt: '2026-07-28T22:10:00.000Z',
       }),
     ).toThrow('participant and redaction review evidence');
+
+    const complete = versionWithParticipantReview(data, artifacts);
+    const reviewArtifact = complete.artifacts.find(({ kind }) => kind === 'review_material')!;
+    const payload = structuredClone(reviewArtifact.payload) as {
+      participantReview: {
+        participantReviews: Array<{
+          detection: { detectionEvidenceDigest: string };
+        }>;
+      };
+    };
+    payload.participantReview.participantReviews[0]!.detection.detectionEvidenceDigest = 'f'.repeat(
+      64,
+    );
+    const tampered = withArtifactPayload(complete, reviewArtifact.id, payload);
+    expect(() =>
+      approveProcessingVersion({
+        actor,
+        version: tampered,
+        expectedVersion: tampered.version,
+        privacyReviewConfirmed: true,
+        captureEvidence,
+        recordingParticipantSnapshots,
+        occurredAt: '2026-07-28T22:10:00.000Z',
+      }),
+    ).toThrow('participant and redaction review evidence');
+  });
+
+  it('binds model, operation, prompt, and schema provenance into approval digests', () => {
+    const fixture = approvedPublicationFixture();
+    for (const [field, value] of [
+      ['model', 'other-model'],
+      ['operationVersion', 'OTHER-OPERATION-1'],
+      ['promptVersion', 'OTHER-PROMPT-1'],
+      ['schemaVersion', 'OTHER-SCHEMA-1'],
+    ] as const) {
+      const version = {
+        ...fixture.version,
+        artifacts: fixture.version.artifacts.map((artifact) =>
+          artifact.kind === 'review_material' ? { ...artifact, [field]: value } : artifact,
+        ),
+      };
+      expect(() => buildApprovedForPublicationProjection({ ...fixture, version })).toThrow();
+    }
   });
 
   it('OTV2-CONTENT-233-OBS-CAPTURE gates local deletion on controlled OBS evidence', () => {
@@ -575,16 +664,17 @@ describe('P20 acceptance contract', () => {
   });
 });
 
-function approvedPublicationFixture() {
-  const data = prepared();
+function approvedPublicationFixture(mishnahReferences?: readonly string[]) {
+  const data = prepared(mishnahReferences);
   const artifacts = createDraftArtifacts({ ...data, occurredAt: now });
+  const reviewed = versionWithParticipantReview(data, artifacts);
   const version = approveProcessingVersion({
     actor,
-    version: { ...data.version, state: 'needs_review', artifacts },
-    expectedVersion: data.version.version,
+    version: reviewed,
+    expectedVersion: reviewed.version,
     privacyReviewConfirmed: true,
     captureEvidence,
-    participantReviewEvidence: participantReviewEvidence(data.version),
+    recordingParticipantSnapshots,
     occurredAt: '2026-07-28T22:10:00.000Z',
   });
   return {
@@ -596,29 +686,39 @@ function approvedPublicationFixture() {
     version,
     source,
     captureEvidence,
+    recordingParticipantSnapshots,
   };
 }
 
-function participantReviewEvidence(
-  version: ContentProcessingVersion,
-): ContentParticipantReviewEvidence {
-  return {
-    evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-1',
-    accountKey: version.accountKey,
-    productKey: version.productKey,
-    contentVersionId: version.id,
-    sourceId: version.sourceId,
-    occurrenceId: version.contentId,
-    participantSetVersion: 'participant-set-v1',
-    participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
-    participantReviewState: 'complete',
-    unresolvedParticipantCount: 0,
-    requiredRedactionCount: 2,
-    completedRedactionCount: 2,
-    redactionReviewDigest: sha('redaction-review'),
-    reviewedByAdminId: actor.principalId,
-    reviewedAt: '2026-07-28T22:08:00.000Z',
-  };
+function versionWithParticipantReview(
+  data: ReturnType<typeof prepared>,
+  artifacts: ReturnType<typeof createDraftArtifacts>,
+  completedRedactionActions: ContentParticipantReviewInput['completedRedactionActions'] = [
+    'cut',
+    'mute',
+  ],
+) {
+  const participantReviews: readonly ContentParticipantReviewInput[] = [
+    {
+      studentId: recordingParticipantSnapshots[0]!.student_id,
+      recordingParticipantSnapshotId: recordingParticipantSnapshots[0]!.snapshot_id,
+      detection: {
+        detectorVersion: 'OT-PARTICIPANT-DETECT-1',
+        mediaIntervals: [{ startedAtMs: 1_000, endedAtMs: 2_000, kind: 'voice' }],
+        transcriptSegmentIds: [data.transcript.segments[0]!.segmentId],
+      },
+      presenceDecision: 'confirmed_present',
+      requiredRedactionActions: ['cut', 'mute'],
+      completedRedactionActions,
+    },
+  ];
+  return recordContentParticipantReview({
+    actor,
+    version: { ...data.version, state: 'needs_review', artifacts },
+    recordingParticipantSnapshots,
+    participantReviews,
+    occurredAt: '2026-07-28T22:08:00.000Z',
+  });
 }
 
 function withArtifactPayload(

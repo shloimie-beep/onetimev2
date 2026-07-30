@@ -139,6 +139,15 @@ export type ProcessingArtifactKind =
   | 'worksheet'
   | 'knowledge_artifact';
 
+export const CONTENT_REDACTION_ACTIONS = [
+  'cut',
+  'mute',
+  'blur',
+  'transcript_redaction',
+  'worksheet_redaction',
+] as const;
+export type ContentRedactionAction = (typeof CONTENT_REDACTION_ACTIONS)[number];
+
 export type MediaProbeReadback = {
   probeVersion: 'OT-FFPROBE-1';
   readable: boolean;
@@ -348,6 +357,36 @@ export type ContentPublicationApprovalEvidence = {
   contentVersionDigest: string;
 };
 
+export type ContentParticipantDetectionEvidence = {
+  detectorVersion: string;
+  mediaIntervals: readonly {
+    startedAtMs: number;
+    endedAtMs: number;
+    kind: 'image' | 'voice';
+  }[];
+  transcriptSegmentIds: readonly string[];
+  detectionEvidenceDigest: string;
+};
+
+export type ContentParticipantAdminReview = {
+  studentId: string;
+  recordingParticipantSnapshotId: string;
+  detection: ContentParticipantDetectionEvidence;
+  presenceDecision: 'confirmed_present' | 'confirmed_not_present';
+  requiredRedactionActions: readonly ContentRedactionAction[];
+  completedRedactionActions: readonly ContentRedactionAction[];
+  reviewedByAdminId: string;
+  reviewedAt: string;
+};
+
+export type ContentParticipantReviewSourceEvidence = {
+  evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-SOURCE-1';
+  occurrenceId: string;
+  recordingParticipantSnapshotSetDigest: string;
+  recordingParticipantSnapshotIds: readonly string[];
+  participantReviews: readonly ContentParticipantAdminReview[];
+};
+
 export type ContentParticipantReviewEvidence = ContentProcessingScope & {
   evidenceVersion: 'OT-CONTENT-PARTICIPANT-REVIEW-1';
   contentVersionId: string;
@@ -362,6 +401,7 @@ export type ContentParticipantReviewEvidence = ContentProcessingScope & {
   redactionReviewDigest: string;
   reviewedByAdminId: string;
   reviewedAt: string;
+  sourceEvidence: ContentParticipantReviewSourceEvidence;
 };
 
 export type ContentProcessingVersion = ContentProcessingScope & {
@@ -389,11 +429,24 @@ export type ApprovedForPublicationProjectionParams = ContentProcessingScope & {
   contentVersionId: string;
 };
 
+export type ContentParticipantReviewInput = {
+  studentId: string;
+  recordingParticipantSnapshotId: string;
+  detection: Omit<ContentParticipantDetectionEvidence, 'detectionEvidenceDigest'>;
+  presenceDecision: ContentParticipantAdminReview['presenceDecision'];
+  requiredRedactionActions: readonly ContentRedactionAction[];
+  completedRedactionActions: readonly ContentRedactionAction[];
+};
+
 export type ApprovedForPublicationArtifact = {
   artifactId: string;
   kind: ProcessingArtifactKind;
   revision: number;
   payloadDigest: string;
+  model: string | null;
+  operationVersion: string | null;
+  promptVersion: string | null;
+  schemaVersion: string | null;
 };
 
 export type ApprovedForPublicationProjection = ContentProcessingScope & {
@@ -464,7 +517,7 @@ export interface ContentProcessingRepository {
 export interface ContentProcessingPublicationProjectionRepository {
   getApprovedForPublicationProjection(
     params: ApprovedForPublicationProjectionParams,
-  ): Promise<ApprovedForPublicationProjection | null>;
+  ): Promise<SourceCompleteApprovedForPublicationProjection | null>;
 }
 
 export const CONTENT_PROCESSING_ERROR_CODES = {
