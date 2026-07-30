@@ -14,14 +14,15 @@ reviewed_head: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
-active_writer_limit: 8
-controller_authorization_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
+active_writer_limit: 4
+controller_authorization_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
 next_action: >-
-  P18 claim 9b10ef41 and P21 claim d3ee9a2b are reconciled as exact runtime-triplet-only children of b9ad9474
-  and integrated release 99fd8c33. P18 may complete its single migration-003 successor plus runtime evidence under
-  claim baeb91ef and rebound EMBEDDED_CLASSROOM lease 39d6a728. P21 may complete its bounded authoritative
-  publication-binding correction, two immutable successor requests, focused tests, and runtime evidence under claim
-  9e38d9dd and rebound CONTENT_PUBLICATION lease eb2c3340. Their scopes remain disjoint, product/provider effects stay
-  zero, C00 alone integrates final heads, and candidate freeze remains withheld until both corrections and required
-  shared registrations are clean.
-authority_note: Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an external effect.
+  P18 final 3be7bf49 and P21 final 83d90622 are independently accepted with exact four-path and fourteen-path deltas,
+  clean merge forecasts, released task leases, and effects 0/0/0. C00 directly holds I36 claim 1f77c6ea and
+  RELEASE_INTEGRATOR lease 6abdf7d4 through 13:09:12Z for only the ordered P18 then P21 source merges and one terminal
+  I36 runtime release. F02 migration application, shared registration application, candidate freeze, providers,
+  deployment, sends, charges, DNS, and every external effect remain withheld until their next exact gates.
+authority_note: >-
+  Only C00 updates this global control state. Source grant ot-v21-production-source-grant-20260729 is active through
+  release completion or 2026-08-05T07:13:45Z, whichever comes first, but is not itself usable to reserve or perform an
+  external effect.

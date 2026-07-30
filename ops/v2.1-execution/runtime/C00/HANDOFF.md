@@ -1817,8 +1817,7 @@ runtime-triplet digest is
 The integrator lease was released at `2026-07-30T03:04:04Z`.
 
 C00 cleared the consumed merge queue, left READY empty, mirrored exact
-migration allocations 2239 through 2244, and advanced the next ordinal to
-2245. All six migration results are applied and acknowledged. Candidate
+migration allocations 2239 through 2244, and advanced the next ordinal to 2245. All six migration results are applied and acknowledged. Candidate
 remains null; all 14 provider locks remain unclaimed; effects remain `0/0/0`.
 
 ## Final source-only wave admission
@@ -1860,6 +1859,7 @@ READY now contains only F02 digest `5ab53779` for safe migrations 2245–2249
 and P28 digest `48da940a` for P17 reminder routing. Both first pushes are
 runtime-triplet-only atomic claims. P17/P18/P21 migration work is withheld
 pending corrected immutable requests and ownership semantics.
+
 ## Atomic steward claims reconciled
 
 F02 claim `ff35555611e7261d1b7b96fc2233eaf82a9f9fdf` and P28 claim
@@ -1868,6 +1868,7 @@ authorized parents and runtime-triplet-only scopes. F02 may implement only
 migrations 2245 through 2249. P28 may implement only P17 reminder routing.
 P17/P18/P21 migration requests remain withheld. Effects remain `0/0/0`; no
 provider inspection or mutation is authorized before candidate gates.
+
 ## P31 copy registration admitted for atomic claim
 
 P31 may atomically claim only `P30-copy-registration-001` from exact source
@@ -1877,6 +1878,7 @@ under claim `ff4a79d9-158b-4e3f-a150-03b171427749` and COPY_CATALOG lease
 `d03dd6a9-384f-4b52-aaaf-3ac5752a36da`. The first push must change only the P31
 runtime triplet. Product edits remain withheld until C00 reconciliation. No
 provider configuration, activation, enrollment, or send is authorized.
+
 ## P31 atomic claim reconciled
 
 P31 claim `eff2434e4ec39af0eeb127f2c46c525a3bed6130` is reconciled from exact
@@ -1884,6 +1886,7 @@ parent `ba811b3b2682ab46de1859334f5aa4ad5d7f5f0d` and its runtime-triplet-only
 scope. P31 may implement only `P30-copy-registration-001` under its active
 COPY_CATALOG lease. Provider configuration, activation, enrollment, sends, and
 all external effects remain unauthorized.
+
 ## Central-duty audit and legal release blocker
 
 All 38 I36-assigned requests from 24 source heads are immutable at release
@@ -2233,3 +2236,27 @@ time and may complete only its exact authorized publication source/tests, two
 successor requests, and final runtime triplet. Both run focused gates, release
 their phase leases, push normally, and return exact heads; C00 alone integrates.
 Candidate and every live effect remain withheld.
+
+P18 final `3be7bf4930a02ea5559db057ceedd6bb11a1b543` and P21 final
+`83d906221a0f2882cf99a75459e7288a3e30f629` are independently accepted.
+P18 is exactly four request/runtime paths with collision-free
+`P18-migration-003`; P21 is exactly fourteen paths with server-derived
+account/product/content-version scope, immutable P20 approval evidence, two
+corrected successors, and an independent 15/15 focused replay. Both task
+leases were released, remote equality is exact, merge forecasts are clean, and
+effects remain `0/0/0`.
+
+The stale P17/P18/P21 predecessor requests are rejected and withheld without
+application. Only corrected P17-MIGRATION-002, P18-migration-003, and
+P21-MIGRATION-002 are assigned to F02. Corrected P17 and P21 registration
+successors remain assigned to I36 with valid P18-registration-001, but
+activation waits for the applicable F02 migrations.
+
+C00 directly holds I36 claim
+`1f77c6ea-f888-4f47-a16c-3b30f8549e6c` and RELEASE_INTEGRATOR lease
+`6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3` through
+`2026-07-30T13:09:12Z`. Merge exact P18 then P21 into integration
+`99fd8c33`, verify ancestry and focused behavior, publish one terminal I36
+runtime release, and push normally. Do not make a claim-only integration
+commit. Candidate, steward application, providers, deployment, sends, charges,
+DNS, and every external effect remain withheld.

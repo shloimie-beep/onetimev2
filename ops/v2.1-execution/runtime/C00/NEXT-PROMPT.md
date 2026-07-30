@@ -240,6 +240,22 @@ verification, refreshed runtime proof, and lease release. No provider effects,
 shared-path edits, migrations, manifest/lockfile changes, or fake fallbacks are
 authorized.
 
+Exact P18 final `3be7bf4930a02ea5559db057ceedd6bb11a1b543` and P21 final
+`83d906221a0f2882cf99a75459e7288a3e30f629` are accepted and queued in that
+order from exact integration `99fd8c33ea023e838d8ee9c993b5de52f4763e7f`.
+C00 is the direct integration writer under I36 claim
+`1f77c6ea-f888-4f47-a16c-3b30f8549e6c` and RELEASE_INTEGRATOR lease
+`6abdf7d4-e6fb-4cce-8e06-2dbd5064dde3` through
+`2026-07-30T13:09:12Z`.
+
+Perform only the two ordered source merges, preserve both source heads as
+ancestors, run the focused P21 five-file test set and exact scope/ancestry
+checks, update the I36 runtime triplet once with terminal release evidence,
+release the lease, and push normally. Do not add a claim-only integration
+commit. Do not apply migrations or shared registrations, freeze a candidate,
+inspect or mutate a provider, deploy, send, enroll, charge, change DNS, or
+perform any external effect.
+
 P08 interface `b7601c002d2c37d0ef7760c328015f9a8d590893` and P33
 interface `8c8dee4e1c8ab95ddab31d10cf17741a6cce6966` have passed independent
 lineage, scope, artifact-hash, canonical-digest, verification, and zero-effect

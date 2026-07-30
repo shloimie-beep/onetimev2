@@ -30,7 +30,10 @@ items:
   result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
   evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
   result_digest: a86c6296a8a9acb6e94b52fa0e33a86be682a7d54061ff7d6640e1616c214f3a
-  rejection_reason: The immutable request names three HTML paths that do not exist at the authorized target while retired Tisha event assets remain outside its exact assigned path list; full application would require scope expansion, and partial application would not satisfy the requested public-bundle retirement semantics.
+  rejection_reason: >-
+    The immutable request names three HTML paths that do not exist at the authorized target while retired Tisha event
+    assets remain outside its exact assigned path list; full application would require scope expansion, and partial
+    application would not satisfy the requested public-bundle retirement semantics.
 - request_id: F01-config-retirement-003
   request_digest: b26b5b4be82553859353a52ebd0a6588c97f1e748b908c7fefad09d872f86575
   requesting_task_id: F01
@@ -45,7 +48,10 @@ items:
   result_record_head_sha: 1976033cfdae1beb249642f0e28f6824b0fcbb8b
   evaluated_target_head_sha: 91349fc1fa9a474ae31cf408ae0364aa10520385
   result_digest: a55f5be6369a8b2952a4a1eaa3961d94cc48f2117a3d5ad61ae2d7884585dd0f
-  rejection_reason: The immutable request assumes F01's unmerged protectedPayloadEncryptionKey compatibility state, but that prerequisite is absent from the authorized integration target; applying it would synthesize unqueued F01 implementation rather than perform an exact central steward change.
+  rejection_reason: >-
+    The immutable request assumes F01's unmerged protectedPayloadEncryptionKey compatibility state, but that
+    prerequisite is absent from the authorized integration target; applying it would synthesize unqueued F01
+    implementation rather than perform an exact central steward change.
 - request_id: P35-route-registration-001
   request_digest: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
   requesting_task_id: P35
@@ -390,9 +396,30 @@ items:
   result_record_head_sha: 0d3da54f911d446f86601b21700e26d1cfc57da5
   evaluated_target_head_sha: f947c01f6047f129b18dcf7a13e992eef10a9fe3
   result_digest: null
-  rejection_reason: The immutable request requires creating onetime.classroom_launch_grants, but applied migration 2002_ot88_zoom_learner_classroom.sql already owns that exact table with a materially different non-null schema. Recreating, mutating, renaming, backfilling, or writing the legacy table would exceed the request and weaken protected invariants. P18 must publish a new immutable request for onetime.classroom_launch_grants_v21.
+  rejection_reason: >-
+    The immutable request requires creating onetime.classroom_launch_grants, but applied migration
+    2002_ot88_zoom_learner_classroom.sql already owns that exact table with a materially different non-null schema.
+    Recreating, mutating, renaming, backfilling, or writing the legacy table would exceed the request and weaken
+    protected invariants. P18 must publish a new immutable request for onetime.classroom_launch_grants_v21.
 - request_id: P18-migration-002
   request_digest: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
+  requesting_task_id: P18
+  kind: migration
+  status: rejected
+  assigned_steward: F02
+  target_checkpoint: superseded_withheld_by_P18-migration-003
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+  acknowledgment_state_handoff_digest: 64ec8ac24c4fa58e38b049e99f0ec6ff9aeaf4639858098e718afa0ef3fa1a19
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: >-
+    Immutable request is superseded and withheld because it overlaps P17 preparation ownership; only collision-free
+    successor P18-migration-003 may be considered.
+- request_id: P18-migration-003
+  request_digest: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
   requesting_task_id: P18
   kind: migration
   status: assigned
@@ -412,7 +439,7 @@ items:
   kind: registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_next_shared_registration_checkpoint
+  target_checkpoint: I36_next_shared_registration_checkpoint_after_F02_P18_migration_003
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
@@ -605,6 +632,23 @@ items:
   request_digest: 5c2aebcc34431f28956506660468c26834d87310fe6da2284502fc9597f01aaf
   requesting_task_id: P17
   kind: migration
+  status: rejected
+  assigned_steward: F02
+  target_checkpoint: superseded_withheld_by_P17-MIGRATION-002
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+  acknowledgment_state_handoff_digest: e91e519f20aeb84fc5d73c8d20c0c83ad086819dfe2f941f97f90b518c169a6d
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: >-
+    Immutable request is superseded and withheld because it collides with P18-owned embedded-classroom tables; only
+    five-table successor P17-MIGRATION-002 may be considered.
+- request_id: P17-MIGRATION-002
+  request_digest: e4aed5ae31c5143deb230aa3a9e76f6bca0fd6857d22a4bec7e815f3b78624ca
+  requesting_task_id: P17
+  kind: migration
   status: assigned
   assigned_steward: F02
   target_checkpoint: F02_next_migration_checkpoint
@@ -620,9 +664,24 @@ items:
   request_digest: 80814c6321445a1b1150bd58d420f9eb8a5095a9e1cb2f0e2c80f9f86a61f089
   requesting_task_id: P17
   kind: registration
+  status: rejected
+  assigned_steward: I36
+  target_checkpoint: superseded_withheld_by_P17-SERVER-WORKER-REGISTRATION-002
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
+  acknowledgment_state_handoff_digest: e91e519f20aeb84fc5d73c8d20c0c83ad086819dfe2f941f97f90b518c169a6d
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: Immutable request is superseded and withheld by the corrected server/worker registration successor.
+- request_id: P17-SERVER-WORKER-REGISTRATION-002
+  request_digest: e90e471bb23f71b85ad321e188e64144d323461805838baff33f46ed4cd4f1b8
+  requesting_task_id: P17
+  kind: registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_next_shared_registration_checkpoint
+  target_checkpoint: I36_next_shared_registration_checkpoint_after_F02_P17_MIGRATION_002
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
@@ -887,12 +946,45 @@ items:
   result_digest: null
   rejection_reason: null
 - request_id: P21-registration-001
-  request_digest: fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3
+  request_digest: b47894b8827ba9e098725355215dda28b408f8668ab5cc3ad8d0a47019d3b61a
   requesting_task_id: P21
   kind: migration_and_registration
+  status: rejected
+  assigned_steward: F02
+  target_checkpoint: superseded_withheld_by_P21-MIGRATION-002_and_P21-registration-002
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 83d906221a0f2882cf99a75459e7288a3e30f629
+  acknowledgment_state_handoff_digest: dbe70d1239167fc754584fbde0d601d611539afa31b847f799e119faa8914e5c
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: >-
+    Immutable mixed request is superseded and withheld because it combines F02 migration work with I36 registration and
+    allows caller-supplied approval authority; only the two exact corrected successors may be considered. The prior raw
+    request digest remains fb372a6d329ddde76952f5637e351ba2990e15589e9c37f957e06e4eedf9bdf3.
+- request_id: P21-MIGRATION-002
+  request_digest: aeb2db007026e9ad6286c4daa10a8b1970df6869b4d9eb821e3fe29c6eefc792
+  requesting_task_id: P21
+  kind: migration
   status: assigned
   assigned_steward: F02
-  target_checkpoint: F02_next_migration_checkpoint_then_C00_requeues_I36_registration
+  target_checkpoint: F02_next_migration_checkpoint
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P21-registration-002
+  request_digest: 63ee368f245772ca72043c301c7a7ea370fcbed86f511f3a157b2a3bb0d717f0
+  requesting_task_id: P21
+  kind: registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_next_shared_registration_checkpoint_after_F02_P21_MIGRATION_002
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
@@ -947,6 +1039,7 @@ entry_schema:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
-rule: A task pushes the immutable request on its own branch. C00 records its digest and lifecycle here, assigns
-  the exact steward/checkpoint, and records the steward result. The requester must acknowledge the applied/rejected
-  result before task completion.
+rule: >-
+  A task pushes the immutable request on its own branch. C00 records its digest and lifecycle here, assigns the exact
+  steward/checkpoint, and records the steward result. The requester must acknowledge the applied/rejected result before
+  task completion.
