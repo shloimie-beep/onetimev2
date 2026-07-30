@@ -41,3 +41,15 @@ effects passed.
 No steward or central allocation/registration was applied. Do not inspect or
 mutate providers, deploy, send, or cause an external effect. Effects remain
 `0/0/0`.
+
+Atomic claim only: containing control
+`d2f7c554d2e3aa55c0621882b3591fb18a7c8818`, acquisition
+`a7a07aded9146cdb5f6360a7aae099c04203ee8b`, release
+`36dca3844664657875b7c66a1ff30378b21c5cbb`, READY
+`25dc83c569bb1e5a6a8f2196c4b9f9e01371d9268593360cc0560468f964a7b9`,
+claim `4ec8712e-8ed3-4164-8774-c03c67748ec4`, and lease
+`2ed546f8-d65b-4fe3-b86c-042d441e3015`.
+
+Do not merge P29 or P30 until C00 reconciles this exact runtime-triplet-only
+claim, consumes READY, and rebinds both expected targets. Do not apply steward
+requests, inspect providers, deploy, send, or perform an external effect.

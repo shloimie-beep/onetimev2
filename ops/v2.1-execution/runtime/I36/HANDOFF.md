@@ -65,3 +65,22 @@ released lease, I36 triplet digests, and effects `0/0/0`. I36 must stop.
 ## Effects
 
 Authority none; attempted/succeeded/reconciled `0/0/0`.
+
+## P29/P30 atomic claim
+
+Containing control `d2f7c554d2e3aa55c0621882b3591fb18a7c8818`
+with sole parent `a7a07aded9146cdb5f6360a7aae099c04203ee8b`
+authorizes an atomic runtime-triplet-only claim from exact release
+`36dca3844664657875b7c66a1ff30378b21c5cbb`.
+
+READY digest `25dc83c569bb1e5a6a8f2196c4b9f9e01371d9268593360cc0560468f964a7b9`
+binds claim `4ec8712e-8ed3-4164-8774-c03c67748ec4` and
+RELEASE_INTEGRATOR lease `2ed546f8-d65b-4fe3-b86c-042d441e3015`
+through `2026-07-30T05:45:23Z`. Queued source payloads are P29
+`f1294fce31816562ef31e836603b0e52bded62171acd09840b1fd4937a600878`
+and P30
+`81d29fd049e72b51ad9cb70bd3d0daa1cad08e905f99bdc9c3e034c20c89b5b1`.
+
+This checkpoint changes only the I36 runtime triplet. No source was merged,
+no steward request was applied, and effects remain `0/0/0`. Stop for C00
+reconciliation and target rebinding.
