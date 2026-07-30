@@ -319,6 +319,15 @@ export type ProcessingArtifact = ContentProcessingScope & {
   updatedAt: string;
 };
 
+export type ContentPublicationApprovalEvidence = {
+  evidenceVersion: 'OT-PUBLICATION-APPROVAL-1';
+  participantSnapshotDigest: string;
+  approvedByAdminId: string;
+  approvedAt: string;
+  approvedArtifactSetDigest: string;
+  sourceEvidenceDigest: string;
+};
+
 export type ContentProcessingVersion = ContentProcessingScope & {
   id: string;
   sourceId: string;
@@ -331,11 +340,37 @@ export type ContentProcessingVersion = ContentProcessingScope & {
   trim: TrimSelection;
   transcodePlan: TranscodePlan;
   artifacts: readonly ProcessingArtifact[];
+  publicationApproval?: ContentPublicationApprovalEvidence;
   lastSafeErrorCode?: string;
   retryAt?: string;
   version: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type ApprovedForPublicationProjectionParams = ContentProcessingScope & {
+  contentVersionId: string;
+};
+
+export type ApprovedForPublicationArtifact = {
+  artifactId: string;
+  kind: ProcessingArtifactKind;
+  revision: number;
+  payloadDigest: string;
+};
+
+export type ApprovedForPublicationProjection = ContentProcessingScope & {
+  contentVersionId: string;
+  sourceId: string;
+  sourceSha256: string;
+  sourceObjectVersionId: string;
+  participantSnapshotDigest: string;
+  approvedByAdminId: string;
+  approvedAt: string;
+  artifacts: readonly ApprovedForPublicationArtifact[];
+  approvedArtifactSetDigest: string;
+  sourceEvidenceDigest: string;
+  projectionDigest: string;
 };
 
 export type ContentProcessingCommandReceipt = ContentProcessingScope & {
@@ -367,6 +402,12 @@ export interface ContentProcessingUnitOfWork {
 
 export interface ContentProcessingRepository {
   inTransaction<T>(run: (unit: ContentProcessingUnitOfWork) => Promise<T>): Promise<T>;
+}
+
+export interface ContentProcessingPublicationProjectionRepository {
+  getApprovedForPublicationProjection(
+    params: ApprovedForPublicationProjectionParams,
+  ): Promise<ApprovedForPublicationProjection | null>;
 }
 
 export const CONTENT_PROCESSING_ERROR_CODES = {

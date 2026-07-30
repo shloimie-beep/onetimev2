@@ -10,6 +10,9 @@ import {
   OT_TRANSCRIBE_1_OPERATION,
   OT_VIDEO_1_PROFILE,
   type AudioSegmentPlan,
+  type ApprovedForPublicationArtifact,
+  type ApprovedForPublicationProjection,
+  type ApprovedForPublicationProjectionParams,
   type CaptionCue,
   type ContentProcessingAdminActor,
   type ContentProcessingSource,
@@ -602,18 +605,105 @@ export function approveProcessingVersion(input: {
   ) {
     fail('invalidState', 'Exact-version Admin privacy review is required for approval.');
   }
+  const artifacts = input.version.artifacts.map((artifact) => ({
+    ...artifact,
+    status: 'approved' as const,
+    approvedByAdminId: input.actor.principalId,
+    approvedAt: input.occurredAt,
+    updatedAt: input.occurredAt,
+  }));
+  const approvedArtifactSetDigest = publicationArtifactSetDigest(artifacts);
+  const sourceEvidenceDigest = publicationSourceEvidenceDigest({
+    params: {
+      accountKey: input.version.accountKey,
+      productKey: input.version.productKey,
+      contentVersionId: input.version.id,
+    },
+    sourceId: input.version.sourceId,
+    sourceSha256: input.version.sourceSha256,
+    sourceObjectVersionId: input.version.sourceObjectVersionId,
+    participantSnapshotDigest: input.participantSnapshotDigest,
+  });
   return {
     ...input.version,
     state: 'approved',
-    artifacts: input.version.artifacts.map((artifact) => ({
-      ...artifact,
-      status: 'approved',
+    artifacts,
+    publicationApproval: {
+      evidenceVersion: 'OT-PUBLICATION-APPROVAL-1',
+      participantSnapshotDigest: input.participantSnapshotDigest,
       approvedByAdminId: input.actor.principalId,
       approvedAt: input.occurredAt,
-      updatedAt: input.occurredAt,
-    })),
+      approvedArtifactSetDigest,
+      sourceEvidenceDigest,
+    },
     version: input.version.version + 1,
     updatedAt: input.occurredAt,
+  };
+}
+
+export function buildApprovedForPublicationProjection(input: {
+  params: ApprovedForPublicationProjectionParams;
+  version: ContentProcessingVersion;
+  source: ContentProcessingSource;
+  captureEvidence: ControlledCaptureEvidence;
+}): ApprovedForPublicationProjection {
+  const { params, version, source, captureEvidence } = input;
+  const approval = version.publicationApproval;
+  if (
+    version.state !== 'approved' ||
+    !approval ||
+    version.accountKey !== params.accountKey ||
+    version.productKey !== params.productKey ||
+    version.id !== params.contentVersionId ||
+    source.accountKey !== params.accountKey ||
+    source.productKey !== params.productKey ||
+    source.id !== version.sourceId ||
+    source.sha256 !== version.sourceSha256 ||
+    source.objectVersionId !== version.sourceObjectVersionId ||
+    captureEvidence.sourceId !== source.id ||
+    captureEvidence.linkedIngestSourceId !== source.id ||
+    captureEvidence.consentedParticipantSnapshotDigest !== approval.participantSnapshotDigest ||
+    !approval.approvedByAdminId.trim() ||
+    !Number.isFinite(Date.parse(approval.approvedAt))
+  ) {
+    fail(
+      'invalidState',
+      'Approved publication evidence does not match the composite source scope.',
+    );
+  }
+  validateControlledCapture(captureEvidence, source);
+  const artifacts = latestApprovedPublicationArtifacts(version);
+  const approvedArtifactSetDigest = publicationArtifactSetDigest(version.artifacts);
+  const sourceEvidenceDigest = publicationSourceEvidenceDigest({
+    params,
+    sourceId: source.id,
+    sourceSha256: source.sha256,
+    sourceObjectVersionId: source.objectVersionId,
+    participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+  });
+  if (
+    approvedArtifactSetDigest !== approval.approvedArtifactSetDigest ||
+    sourceEvidenceDigest !== approval.sourceEvidenceDigest
+  ) {
+    fail('invalidState', 'Persisted publication approval evidence is stale or mismatched.');
+  }
+  const core = {
+    accountKey: params.accountKey,
+    productKey: params.productKey,
+    contentVersionId: params.contentVersionId,
+    sourceId: source.id,
+    sourceSha256: source.sha256,
+    sourceObjectVersionId: source.objectVersionId,
+    participantSnapshotDigest: approval.participantSnapshotDigest,
+    approvedByAdminId: approval.approvedByAdminId,
+    approvedAt: approval.approvedAt,
+    artifacts,
+    approvedArtifactSetDigest,
+    sourceEvidenceDigest,
+  };
+  return {
+    ...core,
+    projectionDigest: processingSha256(JSON.stringify(core)),
   };
 }
 
@@ -654,6 +744,107 @@ function learningMetadata(): Partial<ProcessingArtifact> {
     promptVersion: OT_LEARNING_DRAFT_1_OPERATION.promptTemplateDigestVersion,
     schemaVersion: OT_LEARNING_DRAFT_1_OPERATION.schemaVersion,
   };
+}
+
+const REQUIRED_PUBLICATION_ARTIFACT_KINDS: readonly ProcessingArtifact['kind'][] = [
+  'trim',
+  'compressed_video',
+  'transcript',
+  'captions',
+  'review_material',
+  'worksheet',
+  'knowledge_artifact',
+];
+
+function latestApprovedPublicationArtifacts(
+  version: ContentProcessingVersion,
+): readonly ApprovedForPublicationArtifact[] {
+  if (version.artifacts.length !== REQUIRED_PUBLICATION_ARTIFACT_KINDS.length) {
+    fail('invalidState', 'Exactly one latest revision of every publication artifact is required.');
+  }
+  const artifacts = [...version.artifacts].sort((left, right) =>
+    left.kind.localeCompare(right.kind),
+  );
+  if (
+    new Set(artifacts.map(({ kind }) => kind)).size !==
+      REQUIRED_PUBLICATION_ARTIFACT_KINDS.length ||
+    REQUIRED_PUBLICATION_ARTIFACT_KINDS.some(
+      (kind) => !artifacts.some((item) => item.kind === kind),
+    ) ||
+    artifacts.some(
+      (artifact) =>
+        artifact.accountKey !== version.accountKey ||
+        artifact.productKey !== version.productKey ||
+        artifact.contentVersionId !== version.id ||
+        artifact.sourceId !== version.sourceId ||
+        artifact.sourceSha256 !== version.sourceSha256 ||
+        artifact.sourceObjectVersionId !== version.sourceObjectVersionId ||
+        artifact.status !== 'approved' ||
+        artifact.approvedByAdminId !== version.publicationApproval?.approvedByAdminId ||
+        artifact.approvedAt !== version.publicationApproval?.approvedAt ||
+        !SHA256_PATTERN.test(artifact.payloadDigest),
+    )
+  ) {
+    fail('invalidState', 'Latest approved artifacts do not match the composite publication scope.');
+  }
+  return artifacts.map(({ id, kind, revision, payloadDigest }) => ({
+    artifactId: id,
+    kind,
+    revision,
+    payloadDigest,
+  }));
+}
+
+function publicationArtifactSetDigest(artifacts: readonly ProcessingArtifact[]) {
+  return processingSha256(
+    JSON.stringify(
+      [...artifacts]
+        .sort((left, right) => left.kind.localeCompare(right.kind))
+        .map(
+          ({
+            id,
+            kind,
+            revision,
+            payloadDigest,
+            sourceId,
+            sourceSha256,
+            sourceObjectVersionId,
+            approvedByAdminId,
+            approvedAt,
+          }) => ({
+            artifactId: id,
+            kind,
+            revision,
+            payloadDigest,
+            sourceId,
+            sourceSha256,
+            sourceObjectVersionId,
+            approvedByAdminId,
+            approvedAt,
+          }),
+        ),
+    ),
+  );
+}
+
+function publicationSourceEvidenceDigest(input: {
+  params: ApprovedForPublicationProjectionParams;
+  sourceId: string;
+  sourceSha256: string;
+  sourceObjectVersionId: string;
+  participantSnapshotDigest: string;
+}) {
+  return processingSha256(
+    JSON.stringify({
+      accountKey: input.params.accountKey,
+      productKey: input.params.productKey,
+      contentVersionId: input.params.contentVersionId,
+      sourceId: input.sourceId,
+      sourceSha256: input.sourceSha256,
+      sourceObjectVersionId: input.sourceObjectVersionId,
+      participantSnapshotDigest: input.participantSnapshotDigest,
+    }),
+  );
 }
 
 function assertAdmin(actor: ContentProcessingAdminActor, version: ContentProcessingVersion) {

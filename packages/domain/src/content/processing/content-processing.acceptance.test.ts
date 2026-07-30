@@ -18,6 +18,7 @@ import type { ManagedObjectReadback } from '../../../../contracts/src/content/in
 import { digestBoundedMediaStream } from '../../../../../scripts/media/v21/streaming-media.ts';
 import {
   approveProcessingVersion,
+  buildApprovedForPublicationProjection,
   buildAudioSegmentPlan,
   buildTranscodePlan,
   createDraftArtifacts,
@@ -339,6 +340,84 @@ describe('P20 acceptance contract', () => {
     expect(approved.artifacts.every((artifact) => artifact.status === 'approved')).toBe(true);
   });
 
+  it('builds one deterministic composite approved-for-publication projection and exact replay', () => {
+    const fixture = approvedPublicationFixture();
+    const projection = buildApprovedForPublicationProjection(fixture);
+    expect(projection).toMatchObject({
+      accountKey: actor.accountKey,
+      productKey: actor.productKey,
+      contentVersionId: fixture.version.id,
+      sourceId: source.id,
+      sourceSha256: source.sha256,
+      sourceObjectVersionId: source.objectVersionId,
+      participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+      approvedByAdminId: actor.principalId,
+      artifacts: expect.arrayContaining([
+        expect.objectContaining({ kind: 'trim' }),
+        expect.objectContaining({ kind: 'knowledge_artifact' }),
+      ]),
+    });
+    expect(projection.artifacts).toHaveLength(7);
+    expect(projection.projectionDigest).toMatch(/^[a-f0-9]{64}$/);
+    expect(buildApprovedForPublicationProjection(fixture)).toEqual(projection);
+  });
+
+  it('fails closed on nonapproved, missing, duplicate, stale, cross-scope, source, artifact, and participant evidence', () => {
+    const fixture = approvedPublicationFixture();
+    const artifact = fixture.version.artifacts[0]!;
+    const cases = [
+      {
+        ...fixture,
+        version: { ...fixture.version, state: 'needs_review' as const },
+      },
+      {
+        ...fixture,
+        version: { ...fixture.version, artifacts: fixture.version.artifacts.slice(1) },
+      },
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          artifacts: [...fixture.version.artifacts, { ...artifact, id: 'duplicate-artifact' }],
+        },
+      },
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          publicationApproval: {
+            ...fixture.version.publicationApproval!,
+            approvedArtifactSetDigest: 'f'.repeat(64),
+          },
+        },
+      },
+      { ...fixture, params: { ...fixture.params, accountKey: 'other-account' } },
+      { ...fixture, params: { ...fixture.params, productKey: 'other-product' } },
+      { ...fixture, params: { ...fixture.params, contentVersionId: 'other-version' } },
+      { ...fixture, source: { ...fixture.source, sha256: sha('other-source') } },
+      {
+        ...fixture,
+        version: {
+          ...fixture.version,
+          artifacts: [
+            { ...artifact, sourceObjectVersionId: 'other-object-version' },
+            ...fixture.version.artifacts.slice(1),
+          ],
+        },
+      },
+      {
+        ...fixture,
+        captureEvidence: {
+          ...fixture.captureEvidence,
+          consentedParticipantSnapshotDigest: sha('other-participants'),
+        },
+      },
+    ];
+    for (const invalid of cases) {
+      expect(() => buildApprovedForPublicationProjection(invalid)).toThrow();
+    }
+  });
+
   it('OTV2-CONTENT-233-OBS-CAPTURE gates local deletion on controlled OBS evidence', () => {
     expect(validateControlledCapture(captureEvidence, source)).toEqual(captureEvidence);
     expect(localCaptureDeletionDecision(captureEvidence, source)).toEqual({
@@ -378,3 +457,26 @@ describe('P20 acceptance contract', () => {
     expect(data.transcodePlan.profile).toEqual(OT_VIDEO_1_PROFILE);
   });
 });
+
+function approvedPublicationFixture() {
+  const data = prepared();
+  const artifacts = createDraftArtifacts({ ...data, occurredAt: now });
+  const version = approveProcessingVersion({
+    actor,
+    version: { ...data.version, state: 'needs_review', artifacts },
+    expectedVersion: data.version.version,
+    privacyReviewConfirmed: true,
+    participantSnapshotDigest: captureEvidence.consentedParticipantSnapshotDigest,
+    occurredAt: '2026-07-28T22:10:00.000Z',
+  });
+  return {
+    params: {
+      accountKey: version.accountKey,
+      productKey: version.productKey,
+      contentVersionId: version.id,
+    },
+    version,
+    source,
+    captureEvidence,
+  };
+}
