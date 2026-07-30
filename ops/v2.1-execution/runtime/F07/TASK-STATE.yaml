@@ -1,86 +1,80 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 task_id: F07
+co_owner_task_id: P08
 task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
 task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-branch: codex/v21-f07-design-system-shells
-start_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-dependency_heads:
-  F01:
-    required_state: interface_ready_integrated
-    observed_task_head_sha: fa9e5c92231c4b92340d07945cc91d76c85bd444
-    observed_integration_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-    interface_implementation_head_sha: bb7664c44444bf1704d9f63e5c19a15381f2f0b0
-    interface_checkpoint_digest: 2cce2c949811016c8e59b315830a454398d6b73d43380944fa2a76eb79bb8713
+branch: codex/v21-lane3-landing-campaign
+start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+previous_phase_head_sha: 2650c75ea9a5edc222af8c61a6fed433b73ede28
+implementation_commit_sha: 092941f165c35779a987b4e4477cc436a961563e
+controller_authorization_sha: f0ccbdc81e6962add93d0900dd159e24df7cf05f
+state_based_on_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
+ready_entry_payload_digest: 5c3f77395001c337ea5eb9e8602f5369c77efdbe1dba70c77760e543c8de3fc2
 status: ready_for_review
-phase: review
-claimed_by: codex-f07-worker-fde01134
-claim_time: '2026-07-28T16:07:21Z'
-claim_id: fde01134-98bf-440f-9f0b-194e8f3712ca
-lease_expires_at: '2026-07-28T16:56:52Z'
-last_heartbeat_at: '2026-07-28T16:25:00Z'
-controller_authorization_sha: af76c4e990f954794de72db639576b3c9dc73ff4
-ready_entry_payload_digest: d4e47e74d85994342c752c1d89287009ac48a8888cc9882781d89683cc93ce1f
-state_based_on_head_sha: 80c281b7ae5826ed2c6abe95ba68a033ffa52174
-last_implementation_commit_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
+phase: full_landing_brand_correction_complete
+claimed_by: codex-lane-b-f07-d34ee5e7
+claim_id: d34ee5e7-ad86-49be-ad1e-236592ad3a0b
+lease_issued_at: '2026-07-30T16:25:00Z'
+lease_expires_at: '2026-07-30T18:25:00Z'
+writer_slot:
+  slot: DESIGN_SYSTEM
+  lease_id: aad71ba0-80e9-4a59-beeb-a4776bca0d85
+  phase_scope: public_landing_and_brand_correction_only
+dependency_heads:
+  I36:
+    required_integration_head_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
+    observed: true
+  P08:
+    compatible_unmerged_server_head_sha: 30de59df0555058fc021bc6002a3dffc4e3ea916
+    client_contract_implemented: true
+    merge_required_by: I36
 completed_steps:
-  - Verified repository identity, remote control authorization, queue digest, dependency integration state, and unexpired F07 claim/lease.
-  - Verified LOCKED-SHA256SUMS (200/200) and source/task/context digests against immutable Git blob bytes.
-  - Added the additive v2.1 design-system contract, accessible role shell/navigation/state/calendar primitives, and scoped responsive CSS under F07-owned paths.
-  - Passed v2.1 contract tests, focused CSS governance smoke, and TypeScript validation; published the interface checkpoint for I36 integration.
-  - Recomputed interface artifact and combined digests from exact Git blob bytes after formatting; checkpoint now points at the current implementation head.
-  - Completed task-owned verification and prepared the F07 branch for review.
+  - Fast-forwarded the clean phase branch from 2650c75e to exact integration c0a1e04b without reset, rebase, force, or discarded work.
+  - Implemented the complete public campaign composition with exact hero copy, Sunday–Thursday schedule, viewer-local conversion, protected live/library experience, participation expectations, Family/School entry, adult-as-Student seat rule, policies, cancellation/refund, login, and support.
+  - Implemented server-Date-offset free-period display at exact boundary 2026-09-13T16:24:00Z, with pre-boundary free CTA/helper and at-or-after-boundary $67/month continuation state.
+  - Replaced the legacy Family lead submission with the P08 bootstrap/idempotency/same-origin CSRF contract while preserving School as a separate manual inquiry and making no automatic-login claim.
+  - Removed the provisional Montserrat font registration/assets and restored Inter plus exact landing/signup black #090909, yellow #FFD400, cyan #67E8F9, and white tokens.
+  - Preserved canonical logo and approved real imagery, explicit dimensions/srcset/alt text, CTA analytics, keyboard/focus behavior, no-JS content, reduced motion, and the 1200x630 social derivative.
+  - Passed compile, typecheck, focused lint/format, brand unit, secret scan, public performance, focused browser, accessibility, and responsive visual verification.
 remaining_steps:
-  - C00/I36 must validate and merge the published interface checkpoint before authorizing downstream consumers.
-next_action: Await C00/I36 interface integration; after a new C00-issued lease, address only review or integration feedback.
-requirements:
-  OTV2-UX-158: implemented
-  OTV2-UX-159: implemented
-  OTV2-UX-160: implemented
-  OTV2-UX-161: implemented
-  OTV2-UX-162: implemented
-  OTV2-UX-163: implemented
-  OTV2-UX-164: implemented
-  OTV2-UX-165: implemented
-  OTV2-UX-204: implemented
-acceptance_cases:
-  OTV2-UX-158-AC01: implementation_ready
-  OTV2-UX-159-AC01: implementation_ready
-  OTV2-UX-160-AC01: implementation_ready
-  OTV2-UX-161-AC01: implementation_ready
-  OTV2-UX-162-AC01: implementation_ready
-  OTV2-UX-163-AC01: implementation_ready
-  OTV2-UX-164-AC01: implementation_ready
-  OTV2-UX-165-AC01: implementation_ready
-  OTV2-UX-204-AC01: implementation_ready
-changed_paths:
-  - ops/v2.1-execution/runtime/F07/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/F07/HANDOFF.md
-  - ops/v2.1-execution/runtime/F07/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/F07/INTERFACE-CHECKPOINT.yaml
-  - packages/brand-system/package.json
-  - packages/brand-system/src/index.ts
-  - packages/brand-system/src/react.tsx
-  - packages/brand-system/src/react-v21.tsx
-  - packages/brand-system/src/v21.ts
-  - apps/web/src/client/styles/v21/design-system.css
-migrations: []
-steward_requests: []
+  - I36 must independently review and merge exact head 092941f165c35779a987b4e4477cc436a961563e after merging compatible P08 server head 30de59df0555058fc021bc6002a3dffc4e3ea916.
+  - The shared test-server owner must register PostgreSQL btrim in pg-mem or exclude PostgreSQL-only migration 2252 from the memory harness before the normal Playwright webServer can start.
+  - Owners of stale out-of-scope suites must replace old lead-form, WhatsApp-launch, and September 11 ticker assertions with the accepted Family/School and exact-boundary contract.
+next_action: I36 independently reviews and admits exact Lane B head 092941f165c35779a987b4e4477cc436a961563e after P08 server admission.
 verification:
-  commands_run:
-    - Remote identity, exact control head, registry/queue claim, and F01 integration contract read-only verification: passed.
-    - LOCKED-SHA256SUMS immutable Git-blob verification: 200/200 passed; source/task/context digests matched ready entry.
-    - npm run typecheck: passed after npm ci.
-    - npx vitest run packages/brand-system/src/v21.contract.test.tsx: passed (3 tests).
-    - F07 CSS token/typography governance smoke: passed.
-    - npm run brand:check: F07 paths passed; out-of-scope baseline raw-color finding remains in scripts/ops/validate-ot-launch-governance.ts.
+  build: passed
+  typecheck: passed
+  focused_eslint: passed
+  focused_prettier: passed
+  brand_unit: 4_of_4_passed
+  secret_scan: passed_3090_files
+  focused_browser_and_accessibility: 7_of_7_passed
+  responsive_visual_matrix: 8_of_8_passed
+  public_performance: 2_of_2_passed
+  asset_dimensions:
+    landing_desktop: 1920x1080_webp
+    landing_mobile: 1080x1920_webp
+    social: 1200x630_png
   known_baseline_failures:
-    - npm run brand:check reports a pre-existing raw UI color in scripts/ops/validate-ot-launch-governance.ts outside F07-owned paths.
+    - npm run brand:check reports the pre-existing raw-color finding in scripts/ops/validate-ot-launch-governance.ts outside authorized Lane B paths.
+    - Normal Playwright webServer startup fails before tests because pg-mem lacks btrim(text) required by integrated migration 2252; static production-build browser verification passed.
+responsive_screenshot_hashes:
+  landing_360x800: 2069D706C635518719B0066D796F7D1FDFB809CAC06396988D54CE6ECB2AFD3D
+  landing_390x844: 5CD857E9FAA7109484EAE666328A117E9415D44BB99047ABCDA2DDDA920B3910
+  landing_768x1024: FB1EF740502FF6EBB24229DB7132E79CD3B3E465F4180C7B0D199C6F482905A9
+  landing_1440x1000: 2C7333C6F202D511605D6C11B386B2553D1D96E5AF068C9695303551A2F15A7D
+  signup_360x800: E4AF31F32CFD619A6FEC9894A4D28045F4DE1B1297F2B60EEEB417732F9F9079
+  signup_390x844: 9D08F85FA1806818AC8B5C847B5427C5A7C3FCCDAC7CA525C6627BA5ADF55C3E
+  signup_768x1024: B84FB8BD02C19953708E9E947DCD98EA9CB373561AE14D2F342AE21932758EE0
+  signup_1440x1000: 6FBC13EEA9868C0DF24A08529345ABF39F799A3B1CDB0616F3FB206D883E2F39
 external_effects:
-  authority: none
+  authority: none_required
   attempted: 0
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Integrated migration 2252 prevents the memory Playwright harness from starting because pg-mem lacks btrim(text).
+  - Stale tests outside the Lane B path grant still require the removed WhatsApp controls, legacy /api/v1/leads Family flow, or September 11 ticker behavior.
