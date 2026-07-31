@@ -748,3 +748,36 @@ release, reconcile only `P08-auth-household-002`, preserve the two successor
 requests and effects `0/0/0`, and issue new exact authority before any broader
 Parent API conversion, configuration, registration, provider work, candidate
 freeze, deployment, or external effect. I36 must stop.
+
+## Parent auth/client successor renewal checkpoint
+
+I36 checkpointed the in-progress successor at implementation commit
+`5285a71e34fdb5fe7701a05aac0f31e2950360bc`, based on authorized start
+`a5a2ad94b77eaf596930609d4d5abe4fa672439b`. Historical authority is claim
+`ef14f276-f6a2-45a5-b35d-d45d37572ca5`, writer
+`codex-i36-parent-session-successor-ef14f276`, and lease
+`21315060-463e-49a8-a246-20057483ec20` across SERVER_COMPOSER,
+CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY.
+The lease was released at `2026-07-31T00:54:34Z`, before its
+`2026-07-31T01:18:02Z` expiry, because a same-ID extension is invalid.
+
+The exact checkpoint contains ten authorized product/test paths plus this
+runtime triplet. Workspace typecheck passed, all twelve adult-session unit
+tests passed, focused Prettier passed, and `git diff --check` passed. Native
+PostgreSQL and browser terminal reruns are deliberately pending a fresh
+claim/lease; this is not a release-ready or candidate-ready assertion.
+
+The checkpoint includes substantial v2.1 credential login, session lifecycle,
+Parent client isolation, continuation hardening, cardinality enforcement, and
+native-proof work. Six security closeout items remain: finish/prove
+linearizable pre-Argon reservations; finish/prove invalid-versus-unavailable
+session propagation; prove invalid-CSRF retryability and outcome-dependent
+cookie clearing; propagate unverified password-upgrade cleanup as
+recovery-required; complete/read back redacted logout audit evidence; and run
+the real Parent bundle through reload/logout while proving zero legacy API
+calls.
+
+No provider, customer, migration, candidate, deployment, DNS, send, billing,
+or other external effect occurred. Effects remain `0/0/0`. C00 must verify
+the exact pushed renewal checkpoint and issue a fresh claim and new lease
+against that remote head before I36 resumes those six bounded items.

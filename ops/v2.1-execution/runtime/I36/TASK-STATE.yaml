@@ -39,17 +39,17 @@ dependency_heads:
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: 705030f2d5163f95340a19dc42efd0f167259869
-status: ready
-phase: family_parent_session_composition_complete_pending_C00_reconciliation
-claimed_by: null
-claim_time: '2026-07-30T21:58:04Z'
-claim_id: 2e5c6cef-5e9d-4462-92a4-41510ac24959
-lease_id: 1af50c79-1fb7-42b7-96e4-a29d8d8873f5
-lease_issued_at: '2026-07-30T21:58:04Z'
-lease_expires_at: '2026-07-30T23:58:04Z'
-lease_released_at: '2026-07-30T22:50:00Z'
-last_heartbeat_at: '2026-07-30T22:50:00Z'
-controller_authorization_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
+status: renewal_requested
+phase: parent_session_auth_client_successor_renewal_requested
+claimed_by: codex-i36-parent-session-successor-ef14f276
+claim_time: '2026-07-30T23:18:02Z'
+claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+lease_id: 21315060-463e-49a8-a246-20057483ec20
+lease_issued_at: '2026-07-30T23:18:02Z'
+lease_expires_at: '2026-07-31T01:18:02Z'
+lease_released_at: '2026-07-31T00:54:34Z'
+last_heartbeat_at: '2026-07-31T00:54:34Z'
+controller_authorization_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
 latest_valid_observed_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
 reconciled_state_based_on_control_head_sha: 1d0fb443cde2ab992215a52f09c35ae56a97458f
 ready_consumed_by_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
@@ -319,8 +319,8 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
-last_implementation_commit_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
+state_based_on_head_sha: 5285a71e34fdb5fe7701a05aac0f31e2950360bc
+last_implementation_commit_sha: 5285a71e34fdb5fe7701a05aac0f31e2950360bc
 completed_steps:
   - Accepted direct C00 communications integration authority from control 4b22c4704edc8bd21b0e0242ad00debfba67f5c2 at exact integration start c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9 under one phase claim and lease.
   - Merged exact repository-only communications convergence head 3364c1c31ef12a81abf02cf9f80f7e8008c1778f at 9a028e7a967221441dfd4d5cf9417eb2885a072f with exact parents, preserved ancestry, and twenty-path first-parent scope.
@@ -2844,5 +2844,43 @@ external_effects:
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+blockers:
+  - A fresh C00 claim and new lease are required before completing the six in-progress security closeout items and terminal validation.
 out_of_scope_findings: []
+renewal_checkpoint:
+  checkpointed_at: '2026-07-31T00:54:34Z'
+  authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+  implementation_checkpoint_sha: 5285a71e34fdb5fe7701a05aac0f31e2950360bc
+  containing_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
+  state_basis_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+  ready_entry_payload_digest: 9da7b8a521b2ff8f4da4cd502c3903fceb8b7f4fcce938cdf24a3ec7051656b2
+  historical_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+  historical_writer_id: codex-i36-parent-session-successor-ef14f276
+  historical_lease_id: 21315060-463e-49a8-a246-20057483ec20
+  historical_writer_slots:
+    - SERVER_COMPOSER
+    - CLIENT_COMPOSER
+    - IDENTITY_AUTH_ACCESS
+    - ACCOUNT_HOUSEHOLD_IDENTITY
+  checkpoint_scope:
+    product_and_test_paths: 10
+    runtime_paths: 3
+    total_paths: 13
+  bounded_validation:
+    typecheck: passed
+    adult_session_unit_tests: 12_passed
+    prettier: passed_on_10_product_and_test_paths
+    diff_check: passed
+    terminal_native_and_browser_validation: pending_fresh_lease
+  unfinished_security_closeout:
+    - Complete and prove linearizable pre-Argon login reservations, release on non-credential outcomes, and retain only invalid-credential attempts.
+    - Complete invalid-versus-unavailable propagation through login preflight, bootstrap, and Parent shell without clearing valid cookies on repository outage.
+    - Prove invalid CSRF leaves browser credentials intact and verified logout clears only after exact revocation.
+    - Prove post-establishment password-upgrade cleanup reports recovery_required whenever revoke/readback is not verified.
+    - Complete logout redacted audit insertion/readback and native session-plus-audit proof.
+    - Run the real Parent bundle E2E through reload/logout and prove zero legacy session, dashboard, contact, or shell calls.
+  safe_next_action: >-
+    C00 verifies the pushed renewal checkpoint and issues a fresh claim and new
+    lease against its exact remote head; I36 then resumes only the six listed
+    security closeout items, runs native PostgreSQL, changed-area, build,
+    lint/format/secret, and browser validation, and writes a terminal triplet.
