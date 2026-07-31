@@ -16,14 +16,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
+controller_authorization_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
 next_action: >-
-  I36 closeout checkpoint 88955780 preserves passing product semantics but is held on two stale top-level runtime
-  authority fields. Its first renewed push may change only the I36 runtime triplet to bind READY d0b0dea5, fresh
-  claim 8d8f5bb9, and lease 49ae7724, set expected_existing_head_sha to 88955780 and lease_phase_scope to the exact
-  renewal-atomic-claim scope, then push and stop for C00 reconciliation. Product/test bytes and completed gates must
-  remain frozen. Candidate freeze, providers, deployment, DNS, sends, charges, live migrations, and customers remain
-  gated.
+  I36 atomic claim 2e62d79d is independently reconciled. Under unchanged claim 8d8f5bb9 and live four-slot lease
+  49ae7724 through 04:21:40Z, the same worker may run only the seven pending native PostgreSQL, Chromium, build, lint,
+  format, secret, and exact scope/ancestry/immutable validation gates. Product/test bytes and completed evidence are
+  frozen; any discovered defect requires a stop and new bounded correction authority. At terminal, release all four
+  slots together, update only the I36 runtime triplet, push, and stop for C00 audit. Candidate freeze, providers,
+  deployment, DNS, sends, charges, live migrations, and customers remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -63,7 +63,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: parent_session_successor_security_closeout_checkpoint_metadata_hold_fresh_claim_dispatched
+  status: parent_session_successor_atomic_claim_reconciled_terminal_validation_active
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -76,7 +76,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 889557800bb3344392f9defc4f6e38d4c049cd0f
+  expected_head_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
   successor_authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
   renewal_checkpoint_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
   renewal_checkpoint_implementation_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
@@ -100,13 +100,26 @@ production_completion_lanes:
   security_closeout_renewal_checkpoint_runtime_triplet_digest: b6b90fc4be7e9505a6b4cc6fd555bfcf98a5c7e441b33ead6385b890c1478f73
   security_closeout_renewal_checkpoint_manifest_digest: fe094bde8ea6ed52377616d813735f6972911f800c3a60c82313b445c6254090
   security_closeout_renewal_checkpoint_metadata_status: held_two_stale_top_level_authority_fields
+  terminal_validation_renewal_atomic_claim_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
+  terminal_validation_renewal_atomic_claim_parent_sha: 889557800bb3344392f9defc4f6e38d4c049cd0f
+  terminal_validation_renewal_atomic_claim_tree_sha: 230851be2611cf6c9834df3dedd559661d3af710
+  terminal_validation_renewal_atomic_claim_path_count: 3
+  terminal_validation_renewal_atomic_claim_state_raw_sha256: d2b75602c80e86e0f98f97192fe96470bfe67363eeb79598e4c653c416384a50
+  terminal_validation_renewal_atomic_claim_handoff_raw_sha256: 281b224aee9d4a2be9720718ff4e55d61eff32d6067c3c16d1a8e999f5039843
+  terminal_validation_renewal_atomic_claim_next_raw_sha256: 1970062d41a930df0eb25b20cc50a0b5285f338d4df9b1090de73d3ec730e159
+  terminal_validation_renewal_atomic_claim_state_handoff_digest: 532f323c4666a64067c63ae61ab235f0c8b64d8e74a75cd2632b650ff51ae098
+  terminal_validation_renewal_atomic_claim_runtime_triplet_digest: c6969ad0ef975e6f764b4ac04f42474d738d041499a152dd468fa1b17079d393
+  terminal_validation_renewal_atomic_claim_manifest_pair_digest: da9161710f328cca26970be513dc955d130828b4e836a493aa29dcad6a8066b0
+  terminal_validation_renewal_atomic_claim_manifest_triplet_digest: 3a8753b73cedbdbc041a7347c446aea8cdc1f00ca2e51b55d788365563cb4939
+  terminal_validation_renewal_atomic_claim_state_basis_classification: historical_safe_inherited_runtime_lineage
+  terminal_validation_renewal_atomic_claim_status: independently_reconciled
   historical_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
   historical_writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
   prior_claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
   prior_writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
   claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
   writer_lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-  active_phase_scope: parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only
+  active_phase_scope: parent_session_auth_client_successor_terminal_validation_only
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 authority_note: >-

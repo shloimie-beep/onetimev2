@@ -3,7 +3,53 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 terminal-validation renewal atomic claim
+# Latest I36 terminal-validation-only authorization
+
+Resume only from exact clean local/tracking/live remote
+`2e62d79d0122360155dd10da9c2b2c13892eff89`, the exact
+runtime-triplet-only child of
+`889557800bb3344392f9defc4f6e38d4c049cd0f`, under unchanged:
+
+- claim `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`;
+- writer `codex-i36-parent-session-successor-8d8f5bb9`;
+- shared task-bound lease `49ae7724-b77a-4cc5-81f6-d16b6e1f5457`;
+- SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+  ACCOUNT_HOUSEHOLD_IDENTITY slots;
+- lease expiry `2026-07-31T04:21:40Z`;
+- exact phase
+  `parent_session_auth_client_successor_terminal_validation_only`.
+
+Do not change any product/test byte. Run only these pending terminal gates:
+
+1. Disposable native PostgreSQL 18.4 session, revocation, cleanup,
+   redacted-audit, simultaneous greater-than-five same-budget reservation,
+   exact bucket readback, and release verification through the production
+   repository path.
+2. Real Chromium Parent reload/logout proof with zero legacy session,
+   dashboard, contact, or shell API calls.
+3. Production build.
+4. Changed-file lint.
+5. Focused product formatting.
+6. Repository secret scan.
+7. Exact authorized-scope, diff-hygiene, ancestry, and immutable-product-blob
+   verification.
+
+Workspace typecheck, 26 focused auth/repository assertions, and three pg-mem
+composition assertions already passed; preserve that evidence without
+rerunning it merely for this transition. Keep disposable PostgreSQL session
+51752 alive until root C00 completes its independent native rerun.
+
+If any terminal gate fails because product behavior is defective, stop and
+return the exact failure; do not edit product code under validation-only
+authority. Otherwise update exactly the I36 runtime triplet with honest gate
+evidence, release all four slots together, commit and push normally, verify
+local/tracking/live equality and a clean worktree, then stop for C00 audit.
+
+Do not edit a migration or steward result, freeze a candidate, inspect or
+mutate a provider, claim a provider lock, deploy, change DNS, execute a live
+migration, send, charge, activate a customer, or perform any external effect.
+
+# Superseded I36 terminal-validation renewal atomic claim
 
 Resume only from exact clean local/tracking/live remote
 `889557800bb3344392f9defc4f6e38d4c049cd0f`. Verify the live control branch

@@ -12,16 +12,16 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-31T04:21:40Z'
-last_heartbeat_at: '2026-07-31T02:21:40Z'
-controller_authorization_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
+lease_expires_at: '2026-07-31T04:58:00Z'
+last_heartbeat_at: '2026-07-31T02:58:00Z'
+controller_authorization_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
 ready_entry_payload_digest: null
-state_based_on_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
+state_based_on_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
     prior_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
-    current_integration_head_sha: 889557800bb3344392f9defc4f6e38d4c049cd0f
+    current_integration_head_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
     P18_source_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
     P21_source_head_sha: 705030f2d5163f95340a19dc42efd0f167259869
     communications_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
@@ -240,7 +240,20 @@ lean_completion_bindings:
     parent_session_auth_client_successor_terminal_validation_renewal_writer_lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
     parent_session_auth_client_successor_terminal_validation_renewal_ready_entry_payload_digest: d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695
     parent_session_auth_client_successor_terminal_validation_renewal_expiry: '2026-07-31T04:21:40Z'
-    parent_session_auth_client_successor_active_phase_scope: parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_parent_sha: 889557800bb3344392f9defc4f6e38d4c049cd0f
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_tree_sha: 230851be2611cf6c9834df3dedd559661d3af710
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_path_count: 3
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_state_raw_sha256: d2b75602c80e86e0f98f97192fe96470bfe67363eeb79598e4c653c416384a50
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_handoff_raw_sha256: 281b224aee9d4a2be9720718ff4e55d61eff32d6067c3c16d1a8e999f5039843
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_next_raw_sha256: 1970062d41a930df0eb25b20cc50a0b5285f338d4df9b1090de73d3ec730e159
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_state_handoff_digest: 532f323c4666a64067c63ae61ab235f0c8b64d8e74a75cd2632b650ff51ae098
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_runtime_triplet_digest: c6969ad0ef975e6f764b4ac04f42474d738d041499a152dd468fa1b17079d393
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_manifest_pair_digest: da9161710f328cca26970be513dc955d130828b4e836a493aa29dcad6a8066b0
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_manifest_triplet_digest: 3a8753b73cedbdbc041a7347c446aea8cdc1f00ca2e51b55d788365563cb4939
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_state_basis_classification: historical_safe_inherited_runtime_lineage
+    parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_status: independently_reconciled
+    parent_session_auth_client_successor_active_phase_scope: parent_session_auth_client_successor_terminal_validation_only
     missing_steward_requests_ingested:
     - P12-registration-001
     - P22-migration-001
@@ -370,6 +383,7 @@ lean_completion_bindings:
       - preserve_immutable_P21_MIGRATION_002_and_superseded_registration_001_bytes
     provider_boundary: repository_only_no_provider_call_or_effect
 completed_steps:
+- independently reconciled I36 terminal-validation renewal atomic claim 2e62d79d as the exact runtime-triplet-only child of 88955780 with tree 230851be, corrected active expected-head and phase fields, canonical pair/triplet 532f323c/c6969ad0, manifest pair/triplet da916171/3a8753b7, all ten product/test blobs and completed gates preserved, live unreleased four-slot lease, clean remote equality, and effects 0/0/0; authorized only the seven pending terminal validation gates with product semantics frozen
 - independently audited I36 security-closeout checkpoint 88955780 as exact sole child of 2e7cd5be with four product/test paths plus its runtime triplet, passing closeout semantics, typecheck, 26 focused assertions, three pg-mem composition assertions, timely four-slot release, clean remote equality, and effects 0/0/0; held only the stale top-level expected_existing_head_sha and lease_phase_scope, then issued fresh runtime-triplet-only READY d0b0dea5, claim 8d8f5bb9, and lease 49ae7724
 - independently reconciled I36 runtime-metadata correction 2e7cd5be as the exact runtime-triplet-only child of 0389fe34 with tree d38090ed, corrected fourteen-step remaining work and mandatory C00 stop, canonical pair/triplet c6175993/424482a1, manifest pair/triplet a039a62c/725c41e9, preserved ten product/test blobs, clean remote equality, and effects 0/0/0; authorized only the six exact security closeouts plus eight terminal gates under the unchanged claim and four-slot lease
 - mechanically reconciled I36 fresh-claim checkpoint 0389fe34 as the exact sole child of 0d834c0c with only its runtime triplet, fresh f0a73d35/READY/claim/writer/four-slot lease bindings, canonical pair/triplet f4ce12d6/430c4ede, preserved product bytes, clean remote equality, and effects 0/0/0; held product authorization because canonical top-level next_action remained stale and remaining_steps was empty, so only a runtime-triplet metadata correction is authorized
@@ -751,18 +765,20 @@ completed_steps:
 - independently preflighted migration gaps: P22 requires currently authorizable 2254; P12 requires a new immutable distinct-name persistence request before 2255; P09/P10 require a new joint School-seat authority convergence request before 2256
 - authorized one exact I36 v2.1 Parent auth/client lifecycle successor from a5a2ad94 under fresh claim ef14f276, task-bound four-slot lease 21315060, and an exact ten-product/test plus runtime-triplet path ceiling; no migration, steward result, candidate, provider, deployment, or effect is authorized
 remaining_steps:
-- Reconcile I36's fresh runtime-triplet-only terminal-validation renewal claim from 88955780 after it corrects the two stale top-level authority fields, then finish and independently reconcile the pending native PostgreSQL, Chromium, build, lint, format, secret, scope, ancestry, and immutable-product gates without changing product semantics.
+- Finish and independently reconcile I36's seven pending native PostgreSQL, Chromium, build, lint, format, secret, and exact scope/ancestry/immutable-product validation gates without changing product semantics.
 - Create and admit exact immutable P12 persistence and P09/P10 School-seat convergence correction requests, then run the forward-only F02 2254-2256 migration batch with fresh native proof.
 - Operationalize P12's concrete PostgreSQL repository/router/forms and Student-creation journey before applying P12/P08 shared registration or closing the P08 blocker.
 - Complete P09's signed-out GET /school and Admin configuration surface after School-seat authority converges; do not over-claim P08-registration-002 or P09-registration-001.
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Push this renewal authority boundary. I36's first renewed push from exact
-  889557800bb3344392f9defc4f6e38d4c049cd0f may change only its runtime triplet to bind READY d0b0dea5, fresh
-  claim 8d8f5bb9, writer codex-i36-parent-session-successor-8d8f5bb9, and four-slot lease 49ae7724 through
-  2026-07-31T04:21:40Z; correct top-level expected_existing_head_sha and lease_phase_scope, preserve all ten
-  product/test blobs and completed validation, push, verify remote equality, and stop for C00 reconciliation.
+  Push this atomic-claim reconciliation and terminal-validation authorization.
+  Under unchanged claim 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee, writer
+  codex-i36-parent-session-successor-8d8f5bb9, and shared four-slot lease
+  49ae7724-b77a-4cc5-81f6-d16b6e1f5457 through 2026-07-31T04:21:40Z, I36 may run only the seven pending native
+  PostgreSQL, Chromium, build, lint, format, secret, and exact scope/ancestry/immutable gates. Product/test bytes are
+  frozen. It must release all four slots together at terminal, update only its runtime triplet, push normally, and
+  stop for independent C00 audit.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -770,13 +786,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
+  current_control_parent_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
       claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-      observed_head: 11d05d1f5d05d8817139c26890b78b1aadd8faad
-      lease_expires_at: '2026-07-31T04:21:40Z'
+      observed_head: 52793910c1a8d899ae4cffc50a63bcb38a137090
+      lease_expires_at: '2026-07-31T04:58:00Z'
       lease_state: active
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -788,10 +804,10 @@ orchestration:
     I36:
       branch: codex/v21-integration
       claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
-      observed_head: 889557800bb3344392f9defc4f6e38d4c049cd0f
+      observed_head: 2e62d79d0122360155dd10da9c2b2c13892eff89
       authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
       lease_expires_at: '2026-07-31T04:21:40Z'
-      scheduling_state: parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_ready
+      scheduling_state: parent_session_auth_client_successor_terminal_validation_only
     F02:
       branch: codex/v21-lane1-migration-correction
       claim_id: null
@@ -1368,10 +1384,10 @@ steward_requests:
   target_checkpoint: I36_next_shared_registration_checkpoint
 verification:
   control_digests:
-    control_state: 3226298e22ac351144ca72a2d832ba6817723f254e79bc0654b83cbe1eaf9511
-    control_lease: 8599b35e3a266baa70824de11d52c444e841e37924bbe61a3be4d34f5f43bc49
-    task_registry: 5136df2e947387e4fa525f26c92efdffa2e39a2e634b23ec572f387b5c5e8859
-    ready_queue: c80c8727ac16b4995bd28e943c3a4c6c7b03989bebeeb93e1b3118aff91caeef
+    control_state: 7a8b36a958fb0c120dc0865f70cf6f2c869c77d0051c87ff2332e187ca1144d5
+    control_lease: 774569ba44f224e18a962e8e5f4b442c55031e8dff44f4cf79a1227e4bef4446
+    task_registry: 1c59adbc3d833fd049d3193d87f5a0482cdb9c1a2fa27f4f63dcdc3eecf5b13e
+    ready_queue: 84f7e3ca967d5c383fae8b671082b3d90d167efa80ab690012dedb888c1a6707
     merge_queue: 3572f290fb841651f61b053a4267e89e790f2730a1d4a18f5aa738ea60c4194e
     steward_queue: d39fed2fca7591b616ff383a7f949ac25c6222e0c93fa7af4c5dbb4ca87b1cc7
     provider_locks: fa1327414d1261c064963c156a5c80ed2a3ef5824e9706353bfce0303dbe1ef8
@@ -1649,6 +1665,7 @@ verification:
   - I36 fresh-claim checkpoint 0389fe34: passed exact sole-parent ancestry, runtime-triplet-only scope, f0a73d35/READY/fresh-claim/four-slot lease bindings, canonical pair/triplet f4ce12d6/430c4ede, preserved product/test bytes, remote equality, and effects 0/0/0; held on stale canonical top-level next_action plus empty remaining_steps and authorized only a runtime-triplet metadata correction
   - I36 runtime-metadata correction 2e7cd5be: passed exact sole-parent runtime-triplet scope, corrected fourteen-step remaining work and mandatory stop, canonical pair/triplet c6175993/424482a1, manifest pair/triplet a039a62c/725c41e9, preserved product/test bytes, clean remote equality, unchanged claim/four-slot lease, and effects 0/0/0; six exact security closeouts plus eight terminal gates are active
   - I36 security-closeout checkpoint 88955780: exact seven-path sole child of 2e7cd5be with product/test semantics passed, canonical pair/triplet 49f21085/b6b90fc4, manifest pair/triplet e5cf98d5/ea5b29fc, typecheck, 26 focused plus three pg-mem composition passes, timely four-slot release, remote equality, and effects 0/0/0; held only two stale top-level authority fields and issued fresh runtime-triplet-only renewal authority
+  - I36 terminal-validation renewal atomic claim 2e62d79d: passed exact sole-parent runtime-triplet scope, corrected expected-head and atomic phase, canonical pair/triplet 532f323c/c6969ad0, manifest pair/triplet da916171/3a8753b7, fresh control/READY/claim/writer/live four-slot lease bindings, preserved ten product/test blobs and completed gates, no terminal reruns, clean remote equality, historical-safe state-basis classification, and effects 0/0/0; seven terminal gates are active with product bytes frozen
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

@@ -1,5 +1,41 @@
 # Parent auth/client successor — current handoff
 
+I36 terminal-validation renewal atomic claim
+`2e62d79d0122360155dd10da9c2b2c13892eff89` is the exact clean
+remote-equal runtime-triplet-only child of
+`889557800bb3344392f9defc4f6e38d4c049cd0f`, with tree `230851be`.
+Canonical raw-concat pair/triplet are `532f323c`/`c6969ad0`; path-manifest
+pair/triplet are `da916171`/`3a8753b7`. The active expected-head and phase
+fields are corrected, all ten product/test blobs and completed evidence are
+preserved, no terminal gate was rerun, the disposable PostgreSQL session
+remains alive, and effects remain `0/0/0`. The inherited top-level
+`state_based_on_head_sha` is independently classified as historical-safe
+runtime lineage, not active authority.
+
+Under unchanged claim `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`, writer
+`codex-i36-parent-session-successor-8d8f5bb9`, and shared four-slot lease
+`49ae7724-b77a-4cc5-81f6-d16b6e1f5457` through
+`2026-07-31T04:21:40Z`, I36 may now run only the pending terminal gates:
+native PostgreSQL 18.4 concurrency/readback, real Chromium Parent
+reload/logout isolation, production build, changed-file lint, product
+formatting, repository secret scan, and exact scope/diff/ancestry/immutable
+checks. Workspace typecheck and focused closeout tests already passed and
+must not be rerun merely for this authority transition.
+
+Product/test bytes are frozen. If a gate discovers a product defect, I36 must
+stop and return the exact failure for a new bounded correction; it must not
+edit product code under validation-only authority. At an honest terminal it
+must update only the I36 runtime triplet, release SERVER_COMPOSER,
+CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY
+together, push normally, verify local/tracking/live equality, and stop for C00
+audit.
+
+Candidate is null, all provider locks remain unclaimed, and no migration,
+steward application, provider, deployment, DNS, send, charge, customer, or
+other external effect is authorized.
+
+## Superseded terminal-validation renewal atomic claim
+
 I36 security-closeout checkpoint
 `889557800bb3344392f9defc4f6e38d4c049cd0f` is the exact clean
 remote-equal seven-path child of `2e7cd5be686285ec9506bece9e0761040f881fa5`.
