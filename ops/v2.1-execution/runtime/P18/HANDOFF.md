@@ -66,3 +66,28 @@ ESLint/Prettier pass. Effects remain `0/0/0`.
 The exact next action is to push this implementation checkpoint, run terminal
 hygiene and scope/digest checks, release the lease in the runtime triplet, and
 push the ready-for-review final.
+
+## Terminal ready-for-review checkpoint
+
+- Atomic claim head: `8c48f3218c8e10aeab542fb478e87f13433f12c6`
+- Implementation head: `633e3805150e9a4f4b8cce76d4304454bbb85d94`
+- Terminal metadata head: derive with `git rev-parse HEAD`; C00 records the
+  observed remote head.
+- Source manifest:
+  `0bcc3c44d3516bb20b9a6fb9b3400e1c8c87528444b57832d7c11c4bf170ab88`
+- Lease released: `2026-07-31T10:58:50Z`, before
+  `2026-07-31T12:20:00Z` expiry.
+
+Terminal verification passed 29 focused assertions in three files, workspace
+typecheck, focused ESLint and Prettier, YAML parsing, diff hygiene, secret scan
+across 3,110 repository text files, all 200 locked-manifest entries, exact
+eight-path scope, no forbidden delta, and unchanged migration tree
+`040376c25e645b048afeb8e08d230a3084ab8566`.
+
+Effects remain attempted `0`, succeeded `0`, reconciled `0`. No control,
+migration, composer, config, barrel, steward request, integration, candidate,
+provider, deployment, DNS, send, charge, or customer state changed.
+
+C00 independently audits the exact pushed final. I36 later supplies the
+server-owned adapter that derives account, class, household, and assigned Admin
+bindings from canonical records before invoking P22. P18 must stop.

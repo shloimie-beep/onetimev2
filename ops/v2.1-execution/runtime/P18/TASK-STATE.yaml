@@ -24,8 +24,8 @@ dependency_heads:
     required_state: accepted_callback_consumer_contract
     source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
     server_registration_request_raw_sha256: f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516
-status: claimed
-phase: P18_postcommit_attendance_projection_callback_implementation_verified
+status: ready_for_review
+phase: P18_postcommit_attendance_projection_callback_complete
 claimed_by: codex-p18-projection-callback-267308b4
 claim_time: '2026-07-31T10:47:41Z'
 claim_id: 267308b4-66fa-4910-8597-00999c58a856
@@ -33,27 +33,37 @@ writer_slot: EMBEDDED_CLASSROOM
 writer_slot_lease_id: 94b15518-5638-4025-89b1-eabd2d4da07a
 lease_issued_at: '2026-07-31T10:20:00Z'
 lease_expires_at: '2026-07-31T12:20:00Z'
-last_heartbeat_at: '2026-07-31T10:56:59Z'
-lease_released_at: null
+last_heartbeat_at: '2026-07-31T10:58:50Z'
+lease_released_at: '2026-07-31T10:58:50Z'
 controller_authorization_sha: ddd36a461481504219ac663cf464417eb2e6658b
 state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
 ready_entry_payload_digest: 565882ee24deefdc5bc3e242e62548867596e4573a9e6ee7961991c66aa4b47d
 authorized_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
+atomic_claim_head_sha: 8c48f3218c8e10aeab542fb478e87f13433f12c6
+last_implementation_commit_sha: 633e3805150e9a4f4b8cce76d4304454bbb85d94
+source_manifest_digest: 0bcc3c44d3516bb20b9a6fb9b3400e1c8c87528444b57832d7c11c4bf170ab88
+source_artifact_digests:
+  contract_raw_sha256: 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5
+  repository_test_raw_sha256: 0bd98ece8c5e79564f7ad42f3c19fd02886ea29fba9b06839a67c0d8839038e4
+  repository_raw_sha256: 90b960551595394f572af0d4a4a51fbcbe530875fbb3fae31b63e8b3ae6b2f72
+  attendance_domain_raw_sha256: cc370853d3b039cb391733c7a36ad3f8cc8f82be45db64dff806b7cc824f80da
+  attendance_domain_test_raw_sha256: 2213d0b81ff1cadb49c8f6bc48502578e07ffe82dd41834d2485548e30083857
 completed_steps:
   - Fetched and verified live control ddd36a461481504219ac663cf464417eb2e6658b and exact integration, P18, and P22 task refs.
   - Verified the exact unexpired claim, sole EMBEDDED_CLASSROOM lease, absent target remote branch, clean exact start SHA, package/task/context/prompt/source digests, locked manifest, and eight-path ceiling.
   - Created the exact remote task branch at runtime-triplet-only atomic claim head 8c48f3218c8e10aeab542fb478e87f13433f12c6.
   - Implemented the mandatory server-owned AttendanceProjectionChangePort callback after COMMIT, exact replay repair without a projection write, conflict/stale rollback without callback, deterministic correction ordering, and P22-compatible metadata/binding validation.
   - Passed 25 focused repository/domain assertions, workspace typecheck, and focused ESLint and Prettier.
+  - Pushed exact eight-path implementation checkpoint 633e3805150e9a4f4b8cce76d4304454bbb85d94.
+  - Passed 29 focused assertions across repository, domain, and server service plus workspace typecheck, focused ESLint/Prettier, YAML, diff, secret, locked-manifest, unchanged migration-tree, forbidden-delta, and exact eight-path checks.
+  - Released sole EMBEDDED_CLASSROOM lease 94b15518-5638-4025-89b1-eabd2d4da07a at 2026-07-31T10:58:50Z before expiry with effects 0/0/0.
 remaining_steps:
-  - Push this exact eight-path implementation checkpoint.
-  - Run final YAML, diff, secret, migration-inventory, exact-scope, digest, and equality checks.
-  - Release the lease in the terminal runtime triplet, commit, push, and verify local/tracking/live equality.
-next_action: Push this verified implementation checkpoint, run terminal hygiene and exact-scope checks, then release the exact lease in the P18 runtime triplet and push the ready-for-review final.
+  - C00 independently audits this exact ready-for-review final and I36 composes the server-owned P18-to-P22 adapter without weakening the callback contract.
+next_action: C00 audits the exact pushed final; I36 later derives account/class/household/Admin bindings only from canonical server records before invoking P22. P18 must stop.
 requirements:
-  OTV2-CLASSROOM-078: correction_in_progress
+  OTV2-CLASSROOM-078: implementation_verified
 acceptance_cases:
-  OTV2-CLASSROOM-078-AC01: correction_in_progress
+  OTV2-CLASSROOM-078-AC01: task_owned_assertions_passed
 changed_paths:
   - ops/v2.1-execution/runtime/P18/HANDOFF.md
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
@@ -70,3 +80,14 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings: []
+verification:
+  focused_tests: 29_passed_0_failed
+  typecheck: passed
+  focused_eslint: passed
+  focused_prettier: passed
+  yaml: passed
+  diff_check: passed
+  secret_scan: 3110_text_files_passed
+  locked_manifest: 200_entries_passed
+  migration_tree: unchanged_040376c25e645b048afeb8e08d230a3084ab8566
+  exact_scope: 8_paths_passed
