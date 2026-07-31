@@ -1,61 +1,39 @@
-MODEL: GPT-5.6-SOL
-REASONING: XHIGH
-SERVICE TIER: PRIORITY
-MODE: INDEPENDENT_REVIEW
+# P09 Next Prompt — Review and Integrate the Concrete Correction
 
-Independently audit the final P09 School-inquiry PostgreSQL repository and
-exact public route.
+Review the tip of `codex/v21-p09-school-inquiry-concrete` as one substantive
+merge terminal. Verify its exact parents are, in order:
 
-Repository: shloimie-beep/onetimev2
-Branch: codex/v21-p09-school-inquiry
-Current control authorization: 26f29aeb6734948dd8b80ab85a342831defaecc9
-Expected pre-resume head: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-Authorized integration base: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-Substantive implementation: 05488497a7ca96841c235118c1e5da0bf9270ca1
-Claim: c18bb60c-98f2-4448-b768-67fcafed9438
-PUBLIC_SIGNUP lease: 45e4c80f-b3a7-445b-a888-0dbed3c3429e
-Lease released task-locally at 2026-07-30T18:31:32Z before expiry
+1. `ae3ced8a9daa11044d4278968c14cb6baa12a480`
+2. `d9a4ce8082a028be81e234999deb43f659072a6d`
 
-Task state: ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
-Handoff: ops/v2.1-execution/runtime/P09/HANDOFF.md
+Confirm the cumulative first-parent delta is exactly the 18 authored paths plus
+the required byte-identical carried `P09-migration-002` recorded in
+`TASK-STATE.yaml`; the public School-inquiry `router.ts` and `router.test.ts`
+remain unchanged; `P09-migration-002` has Git blob
+`75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1`; and
+`P09-registration-001` remains Git blob
+`042bb0b080703002a1743e725daa9deb3b590796`.
 
-Reproduce:
+The focused P09 verification passed 7 files and 36 tests. Review the new Admin
+router, canonical request binding, durable current and superseded-version
+replay/mismatch behavior, optimistic create/update/readback,
+`production_read_only` pre-denial, canonical migration-2256 repository SQL,
+and explicit zero-effect result. Verify amended control
+`321fd3482d5ee54bbad19d97205b54845d0d0aac`, READY digest
+`6c1e0bd137ee03d0d816ee21cf2a23322a71ed485373b9b1e165533aee3a1be1`,
+exact-scope SELECT-only history access, and zero production history mutation.
+Do not request native PostgreSQL or broad-suite repetition in this P09 lane.
 
-- exact fast-forward ancestry 33a21a45 -> c0a1e04b -> 05488497;
-- four implementation paths plus the terminal P09 runtime triplet;
-- four-artifact raw Git-blob aggregate
-  `cfd846747005ecfaf86a78ee1f958ddab8b5a252e5f5efe7e06b45014d22398a`;
-- immutable migration 2249 raw Git-blob SHA-256
-  `eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914`;
-- five focused files / 26 tests, workspace typecheck, focused lint/format,
-  exact scope/diff hygiene, and secret scan.
+Disposition exactly these new immutable successors:
 
-Adversarially prove:
+- `P09-server-registration-002`
+- `P09-client-route-002`
+- `P09-barrel-export-002`
 
-- one normalized-email key produces one durable inquiry and one pending
-  acknowledgment intent, replay reads the exact winner, canonical drift fails
-  closed, and a partial acknowledgment failure rolls the inquiry back;
-- the repository persists only adult manual follow-up and no account, login,
-  household, Student, subscription, access, nurture, provider identity, or
-  inline provider effect;
-- the acknowledgment binds exact workflow/template/version/sender/subject/body
-  and content digest, with no UI success-copy substitution;
-- the task-owned feature descriptor mounts exact
-  `POST /api/v2.1/signup/school-inquiry`;
-- required fields are exactly school name, contact first/last name, and email;
-  phone/note alone are optional; every extra account/role/access/portal/
-  consent/campaign/nurture/Student/WhatsApp/Stripe field fails before
-  submission;
-- `production_read_only` cannot write; and
-- approved-School updates remain Admin-approved optimistic Parent/Student
-  configuration with no School role, portal, bulk roster, or automated
-  nurture.
+Apply accepted successors only in the existing I36 shared-registration lane.
+Do not revive `P09-registration-001`, rewrite `P09-migration-002`, add a School
+role/portal/roster, or edit migration 2256. After composition, I36 must run its
+touched-graph typecheck/build/static signed-out `/school` test.
 
-Do not edit or apply a migration, central composer, config, landing path,
-provider registry, integration/control state, deployment, or DNS in this
-source review. Do not inspect/mutate providers or send an acknowledgment.
-Effects remain `0/0/0`.
-
-If source admission passes, C00 should authorize I36 to preserve source
-ancestry, merge the four implementation paths, and centrally register
-`schoolInquiryFeatureRegistration`.
+If the terminal and three successors pass review, admit the terminal to
+integration and leave P09 stopped. External effects remain `0/0/0`.

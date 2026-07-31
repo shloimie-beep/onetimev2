@@ -4,9 +4,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { DbPool } from '../../index.ts';
 import { createSchoolSignupService } from '../../../../../apps/web/src/server/features/signup/school/service.ts';
 import {
-  APPROVED_SCHOOL_CONFIGURATION_OPERATION,
   SCHOOL_INQUIRY_ACKNOWLEDGMENT_CONTENT_DIGEST,
   SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
+  type ApprovedSchoolConfigurationCommand,
   type SchoolInquiryCommand,
   type SchoolSignupScope,
 } from '../../../../contracts/src/signup/school/index.ts';
@@ -118,77 +118,142 @@ describe('P09 PostgreSQL School-signup repository', () => {
     await expect(count(pool, 'school_inquiry_acknowledgments_v21')).resolves.toBe(1);
   });
 
-  it('updates only an already approved Parent/Student configuration with optimistic versioning', async () => {
+  it('creates, reads back, and exactly replays only canonical approved-School authority', async () => {
     const pool = await schoolDatabase();
-    await pool.query(`
-      INSERT INTO onetime.v21_adult_identities
-        (adult_id, product_key, runtime_tier, verification_environment_id)
-      VALUES
-        ('adult-manager-1','one_time_mishnayos','isolated_staging','ci');
-      INSERT INTO onetime.v21_households
-        (household_id, product_key, runtime_tier, verification_environment_id)
-      VALUES
-        ('household-1','one_time_mishnayos','isolated_staging','ci');
-    `);
-    await pool.query(
-      `INSERT INTO onetime.approved_school_configurations_v21
-         (approved_school_id, product, runtime_tier, verification_environment_id,
-          operation, approval_state, adult_account_manager_id, household_id,
-          seat_allowance, price_minor_units, currency, billing_starts_at,
-          terms_reference, configuration_version)
-       VALUES
-         ('approved-school-1','one_time_mishnayos','isolated_staging','ci',
-          $1,'approved','adult-manager-1','household-1',10,50000,'USD',
-          '2026-08-01T00:00:00.000Z','terms/old',3)`,
-      [APPROVED_SCHOOL_CONFIGURATION_OPERATION],
-    );
     const service = createSchoolSignupService({
       repository: createPostgresSchoolSignupRepository(pool),
       allocateLeadId: () => 'unused',
     });
+    const command = approvedSchoolCommand();
+    const first = await service.configureApprovedSchool({
+      actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+      authorized_at: '2026-07-31T14:00:00.000Z',
+      command,
+    });
+    const replay = await service.configureApprovedSchool({
+      actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+      authorized_at: '2026-07-31T15:00:00.000Z',
+      command,
+    });
 
-    await expect(
-      service.configureApprovedSchool({
-        actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
-        command: {
-          approved_school_id: 'approved-school-1',
-          adult_account_manager_id: 'adult-manager-1',
-          household_id: 'household-1',
-          seat_allowance: 75,
-          price_minor_units: 125_000,
-          currency: 'USD',
-          billing_starts_at: '2026-09-01T00:00:00.000Z',
-          terms_reference: 'terms/school-2026-v1',
-          expected_configuration_version: 3,
-        },
-      }),
-    ).resolves.toMatchObject({
-      configuration_version: 4,
-      account_model: 'parent_student',
-      adult_account_manager_role: 'parent',
-      student_account_role: 'student',
-      school_role_created: false,
-      school_portal_created: false,
-      bulk_roster_created: false,
-      automated_nurture_created: false,
+    expect(first).toMatchObject({
+      disposition: 'created',
+      configuration: {
+        expected_prior_version: 0,
+        configuration_version: 1,
+        account_model: 'parent_student',
+        school_role_created: false,
+        school_portal_created: false,
+        bulk_roster_created: false,
+        automated_nurture_created: false,
+      },
+      provider_effects_completed_inline: 0,
+    });
+    expect(replay).toMatchObject({
+      disposition: 'replayed',
+      configuration: first.configuration,
     });
     await expect(
       pool.query(
-        `SELECT configuration_version, seat_allowance, price_minor_units,
-                adult_account_manager_id, household_id
-           FROM onetime.approved_school_configurations_v21`,
+        `SELECT configuration_version, expected_prior_version, seat_allowance,
+                price_minor_units, adult_account_manager_id, household_id,
+                immutable_contract_reference, idempotency_key, canonical_request_hash
+           FROM onetime.approved_school_configuration_authority_v21`,
       ),
     ).resolves.toMatchObject({
       rows: [
         {
-          configuration_version: 4,
+          configuration_version: 1,
+          expected_prior_version: 0,
           seat_allowance: 75,
           price_minor_units: 125000,
           adult_account_manager_id: 'adult-manager-1',
           household_id: 'household-1',
+          immutable_contract_reference: 'contract/school-1',
+          idempotency_key: 'school-config-1',
         },
       ],
     });
+  });
+
+  it('permits one optimistic update winner and rejects replay mismatch and stale version', async () => {
+    const pool = await schoolDatabase();
+    const service = createSchoolSignupService({
+      repository: createPostgresSchoolSignupRepository(pool),
+      allocateLeadId: () => 'unused',
+    });
+    const originalCommand = approvedSchoolCommand();
+    await service.configureApprovedSchool({
+      actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+      authorized_at: '2026-07-31T14:00:00.000Z',
+      command: originalCommand,
+    });
+    await snapshotApprovedSchoolHistory(pool);
+    await expect(
+      service.configureApprovedSchool({
+        actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+        authorized_at: '2026-07-31T14:01:00.000Z',
+        command: approvedSchoolCommand({ seat_allowance: 76 }),
+      }),
+    ).rejects.toThrow('school_configuration_mismatch');
+
+    const update = approvedSchoolCommand({
+      idempotency_key: 'school-config-2',
+      audit_ref: 'approved-school:school-config-2',
+      expected_configuration_version: 1,
+      seat_allowance: 80,
+    });
+    await expect(
+      service.configureApprovedSchool({
+        actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+        authorized_at: '2026-07-31T15:00:00.000Z',
+        command: update,
+      }),
+    ).resolves.toMatchObject({
+      disposition: 'updated',
+      configuration: { expected_prior_version: 1, configuration_version: 2 },
+    });
+    await expect(
+      service.configureApprovedSchool({
+        actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+        authorized_at: '2026-07-31T15:00:30.000Z',
+        command: originalCommand,
+      }),
+    ).resolves.toMatchObject({
+      disposition: 'replayed',
+      configuration: { configuration_version: 1, seat_allowance: 75 },
+    });
+    await expect(
+      service.configureApprovedSchool({
+        actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+        authorized_at: '2026-07-31T15:00:45.000Z',
+        command: { ...originalCommand, price_minor_units: 125_001 },
+      }),
+    ).rejects.toThrow('school_configuration_mismatch');
+    await expect(
+      service.configureApprovedSchool({
+        actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+        authorized_at: '2026-07-31T15:01:00.000Z',
+        command: approvedSchoolCommand({
+          idempotency_key: 'school-config-stale',
+          audit_ref: 'approved-school:school-config-stale',
+          expected_configuration_version: 1,
+        }),
+      }),
+    ).rejects.toThrow('school_configuration_mismatch');
+    const readback = await pool.query(
+      `SELECT COUNT(*)::int AS count, configuration_version, seat_allowance
+         FROM onetime.approved_school_configuration_authority_v21
+        GROUP BY configuration_version, seat_allowance`,
+    );
+    expect(readback.rows).toEqual([{ count: 1, configuration_version: 2, seat_allowance: 80 }]);
+    const repositorySource = await readFile(new URL('./repository.ts', import.meta.url), 'utf8');
+    expect(repositorySource).toContain(
+      'FROM onetime.approved_school_configuration_history_v21 AS history',
+    );
+    expect(repositorySource).not.toMatch(
+      /(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+onetime\.approved_school_configuration_history_v21/iu,
+    );
   });
 
   it('rejects writes in production_read_only before inserting durable state', async () => {
@@ -223,9 +288,52 @@ function command(): SchoolInquiryCommand {
   };
 }
 
+function approvedSchoolCommand(
+  overrides: Partial<ApprovedSchoolConfigurationCommand> = {},
+): ApprovedSchoolConfigurationCommand {
+  return {
+    approved_school_id: 'approved-school-1',
+    adult_account_manager_id: 'adult-manager-1',
+    household_id: 'household-1',
+    seat_allowance: 75,
+    price_minor_units: 125_000,
+    currency: 'USD',
+    billing_starts_at: '2026-09-01T00:00:00.000Z',
+    terms_reference: 'terms/school-2026-v1',
+    immutable_contract_reference: 'contract/school-1',
+    authorization_reason: 'Approved contractual School terms',
+    idempotency_key: 'school-config-1',
+    expected_configuration_version: 0,
+    audit_ref: 'approved-school:school-config-1',
+    ...overrides,
+  };
+}
+
 async function count(pool: DbPool, table: string): Promise<number> {
   const result = await pool.query(`SELECT COUNT(*)::int AS count FROM onetime.${table}`);
   return Number(result.rows[0]?.count);
+}
+
+async function snapshotApprovedSchoolHistory(pool: DbPool): Promise<void> {
+  await pool.query(`
+    INSERT INTO onetime.approved_school_configuration_history_v21 (
+      product_key, runtime_tier, verification_environment_id,
+      approved_school_id, household_id, adult_account_manager_id,
+      seat_allowance, price_minor_units, currency, billing_starts_at,
+      terms_reference, immutable_contract_reference, authorization_reason,
+      authorized_by_human_account_id, authorized_at, idempotency_key,
+      canonical_request_hash, expected_prior_version, configuration_version,
+      audit_ref, committed_at
+    )
+    SELECT product_key, runtime_tier, verification_environment_id,
+           approved_school_id, household_id, adult_account_manager_id,
+           seat_allowance, price_minor_units, currency, billing_starts_at,
+           terms_reference, immutable_contract_reference, authorization_reason,
+           authorized_by_human_account_id, authorized_at, idempotency_key,
+           canonical_request_hash, expected_prior_version, configuration_version,
+           audit_ref, updated_at
+      FROM onetime.approved_school_configuration_authority_v21
+  `);
 }
 
 async function schoolDatabase(): Promise<DbPool> {
@@ -268,6 +376,62 @@ async function schoolDatabase(): Promise<DbPool> {
       runtime_tier text NOT NULL,
       verification_environment_id text NOT NULL,
       PRIMARY KEY (household_id, product_key, runtime_tier, verification_environment_id)
+    );
+
+    CREATE TABLE onetime.approved_school_configuration_authority_v21 (
+      product_key text NOT NULL,
+      runtime_tier text NOT NULL,
+      verification_environment_id text NOT NULL,
+      approved_school_id text NOT NULL,
+      household_id text NOT NULL,
+      adult_account_manager_id text NOT NULL,
+      seat_allowance integer NOT NULL,
+      price_minor_units bigint NOT NULL,
+      currency text NOT NULL,
+      billing_starts_at timestamptz NOT NULL,
+      terms_reference text NOT NULL,
+      immutable_contract_reference text NOT NULL,
+      authorization_reason text NOT NULL,
+      authorized_by_human_account_id text NOT NULL,
+      authorized_at timestamptz NOT NULL,
+      idempotency_key text NOT NULL,
+      canonical_request_hash text NOT NULL,
+      expected_prior_version bigint NOT NULL,
+      configuration_version bigint NOT NULL,
+      audit_ref text NOT NULL,
+      created_at timestamptz NOT NULL,
+      updated_at timestamptz NOT NULL,
+      PRIMARY KEY (product_key, runtime_tier, verification_environment_id, approved_school_id),
+      UNIQUE (product_key, runtime_tier, verification_environment_id, idempotency_key)
+    );
+
+    CREATE TABLE onetime.approved_school_configuration_history_v21 (
+      product_key text NOT NULL,
+      runtime_tier text NOT NULL,
+      verification_environment_id text NOT NULL,
+      approved_school_id text NOT NULL,
+      household_id text NOT NULL,
+      adult_account_manager_id text NOT NULL,
+      seat_allowance integer NOT NULL,
+      price_minor_units bigint NOT NULL,
+      currency text NOT NULL,
+      billing_starts_at timestamptz NOT NULL,
+      terms_reference text NOT NULL,
+      immutable_contract_reference text NOT NULL,
+      authorization_reason text NOT NULL,
+      authorized_by_human_account_id text NOT NULL,
+      authorized_at timestamptz NOT NULL,
+      idempotency_key text NOT NULL,
+      canonical_request_hash text NOT NULL,
+      expected_prior_version bigint NOT NULL,
+      configuration_version bigint NOT NULL,
+      audit_ref text NOT NULL,
+      committed_at timestamptz NOT NULL,
+      PRIMARY KEY (
+        product_key, runtime_tier, verification_environment_id,
+        approved_school_id, configuration_version
+      ),
+      UNIQUE (product_key, runtime_tier, verification_environment_id, idempotency_key)
     );
   `);
   const migration = await readFile(

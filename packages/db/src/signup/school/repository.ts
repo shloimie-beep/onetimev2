@@ -68,6 +68,10 @@ export class PostgresSchoolSignupTransaction {
         normalizedEmail: string;
       }
     | undefined;
+  private approvedSchoolIdempotencyLock:
+    { scope: SchoolSignupScope; idempotencyKey: string } | undefined;
+  private approvedSchoolAggregateLock:
+    { scope: SchoolSignupScope; approvedSchoolId: string } | undefined;
 
   constructor(private readonly db: SchoolSignupSqlClient) {}
 
@@ -202,47 +206,69 @@ export class PostgresSchoolSignupTransaction {
     return { disposition: 'created', receipt: input.receipt };
   }
 
+  async findApprovedSchoolByIdempotencyKey(input: {
+    scope: SchoolSignupScope;
+    operation: typeof APPROVED_SCHOOL_CONFIGURATION_OPERATION;
+    idempotency_key: string;
+  }): Promise<ApprovedSchoolRecord | null> {
+    if (this.approvedSchoolIdempotencyLock) {
+      throw sequenceError('An approved School transaction may lock only one idempotency key.');
+    }
+    await advisoryLock(
+      this.db,
+      [
+        'approved-school-idempotency',
+        input.scope.product,
+        input.scope.runtime_tier,
+        input.scope.verification_environment_id,
+        input.idempotency_key,
+      ].join(':'),
+    );
+    this.approvedSchoolIdempotencyLock = {
+      scope: { ...input.scope },
+      idempotencyKey: input.idempotency_key,
+    };
+    const durableReplay = await loadApprovedSchoolHistory(this.db, {
+      scope: input.scope,
+      idempotency_key: input.idempotency_key,
+    });
+    if (durableReplay) return durableReplay;
+    return loadApprovedSchool(this.db, {
+      scope: input.scope,
+      where: 'idempotency_key',
+      value: input.idempotency_key,
+      forUpdate: false,
+    });
+  }
+
   async readApprovedSchoolForUpdate(input: {
     scope: SchoolSignupScope;
     operation: typeof APPROVED_SCHOOL_CONFIGURATION_OPERATION;
     approved_school_id: string;
   }): Promise<ApprovedSchoolRecord | null> {
-    const result = await this.db.query(
-      `SELECT approved_school_id, product, runtime_tier,
-              verification_environment_id, operation, approval_state,
-              adult_account_manager_id, household_id, configuration_version
-         FROM onetime.approved_school_configurations_v21
-        WHERE product = $1
-          AND runtime_tier = $2
-          AND verification_environment_id = $3
-          AND operation = $4
-          AND approved_school_id = $5
-        FOR UPDATE`,
+    if (this.approvedSchoolAggregateLock) {
+      throw sequenceError('An approved School transaction may lock only one aggregate.');
+    }
+    await advisoryLock(
+      this.db,
       [
+        'approved-school-aggregate',
         input.scope.product,
         input.scope.runtime_tier,
         input.scope.verification_environment_id,
-        input.operation,
         input.approved_school_id,
-      ],
+      ].join(':'),
     );
-    if (result.rowCount === 0) return null;
-    if (result.rowCount !== 1) {
-      throw invariant('An approved School key resolved to more than one configuration.');
-    }
-    const row = result.rows[0];
-    if (!row) throw invariant('The approved School row was missing.');
-    return {
-      scope: storedScope(row),
-      approved_school_id: requiredText(row.approved_school_id, 'approved_school_id'),
-      approval_state: enumText(row.approval_state, ['approved', 'pending', 'rejected', 'archived']),
-      adult_account_manager_id: requiredText(
-        row.adult_account_manager_id,
-        'adult_account_manager_id',
-      ),
-      household_id: requiredText(row.household_id, 'household_id'),
-      configuration_version: positiveInteger(row.configuration_version, 'configuration_version'),
+    this.approvedSchoolAggregateLock = {
+      scope: { ...input.scope },
+      approvedSchoolId: input.approved_school_id,
     };
+    return loadApprovedSchool(this.db, {
+      scope: input.scope,
+      where: 'approved_school_id',
+      value: input.approved_school_id,
+      forUpdate: true,
+    });
   }
 
   async commitApprovedSchoolConfiguration(input: {
@@ -256,46 +282,69 @@ export class PostgresSchoolSignupTransaction {
         'Approved School configuration cannot write in production_read_only.',
       );
     }
-    if (!sameScope(input.scope, input.configuration.scope)) {
+    if (!sameScope(input.scope, input.configuration.request_binding.scope)) {
       throw invariant('The approved School configuration changed its runtime scope.');
     }
-    const result = await this.db.query(
-      `UPDATE onetime.approved_school_configurations_v21
-          SET adult_account_manager_id = $1,
-              household_id = $2,
-              seat_allowance = $3,
-              price_minor_units = $4,
-              currency = $5,
-              billing_starts_at = $6,
-              terms_reference = $7,
-              configuration_version = $8
-        WHERE product = $9
-          AND runtime_tier = $10
-          AND verification_environment_id = $11
-          AND operation = $12
-          AND approved_school_id = $13
-          AND approval_state = 'approved'
-          AND configuration_version = $14`,
-      [
-        input.configuration.adult_account_manager_id,
-        input.configuration.household_id,
-        input.configuration.seat_allowance,
-        input.configuration.price_minor_units,
-        input.configuration.currency,
-        input.configuration.billing_starts_at,
-        input.configuration.terms_reference,
-        input.configuration.configuration_version,
-        input.scope.product,
-        input.scope.runtime_tier,
-        input.scope.verification_environment_id,
-        input.operation,
-        input.configuration.approved_school_id,
-        input.configuration.configuration_version - 1,
-      ],
-    );
+    this.assertApprovedSchoolLocks(input.configuration);
+    const record = input.configuration;
+    const values = approvedSchoolValues(record);
+    const result =
+      record.expected_prior_version === 0
+        ? await this.db.query(
+            `INSERT INTO onetime.approved_school_configuration_authority_v21
+               (product_key, runtime_tier, verification_environment_id,
+                approved_school_id, household_id, adult_account_manager_id,
+                seat_allowance, price_minor_units, currency, billing_starts_at,
+                terms_reference, immutable_contract_reference, authorization_reason,
+                authorized_by_human_account_id, authorized_at, idempotency_key,
+                canonical_request_hash, expected_prior_version, configuration_version,
+                audit_ref, created_at, updated_at)
+             VALUES
+               ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
+            values,
+          )
+        : await this.db.query(
+            `UPDATE onetime.approved_school_configuration_authority_v21
+                SET adult_account_manager_id = $6,
+                    seat_allowance = $7,
+                    price_minor_units = $8,
+                    currency = $9,
+                    billing_starts_at = $10,
+                    terms_reference = $11,
+                    authorization_reason = $13,
+                    authorized_by_human_account_id = $14,
+                    authorized_at = $15,
+                    idempotency_key = $16,
+                    canonical_request_hash = $17,
+                    expected_prior_version = $18,
+                    configuration_version = $19,
+                    audit_ref = $20,
+                    updated_at = $22
+              WHERE product_key = $1
+                AND runtime_tier = $2
+                AND verification_environment_id = $3
+                AND approved_school_id = $4
+                AND household_id = $5
+                AND immutable_contract_reference = $12
+                AND configuration_version = $18`,
+            values,
+          );
     if (result.rowCount !== 1) {
       throw invariant('The approved School optimistic configuration write did not commit.');
     }
+  }
+
+  async readApprovedSchool(input: {
+    scope: SchoolSignupScope;
+    operation: typeof APPROVED_SCHOOL_CONFIGURATION_OPERATION;
+    approved_school_id: string;
+  }): Promise<ApprovedSchoolRecord | null> {
+    return loadApprovedSchool(this.db, {
+      scope: input.scope,
+      where: 'approved_school_id',
+      value: input.approved_school_id,
+      forUpdate: false,
+    });
   }
 
   private assertInquiryLock(binding: SchoolInquiryRequestBinding): void {
@@ -311,6 +360,182 @@ export class PostgresSchoolSignupTransaction {
       );
     }
   }
+
+  private assertApprovedSchoolLocks(configuration: ApprovedSchoolConfiguration): void {
+    const idempotency = this.approvedSchoolIdempotencyLock;
+    const aggregate = this.approvedSchoolAggregateLock;
+    if (
+      !idempotency ||
+      !aggregate ||
+      idempotency.idempotencyKey !== configuration.request_binding.idempotency_key ||
+      aggregate.approvedSchoolId !== configuration.approved_school_id ||
+      !sameScope(idempotency.scope, configuration.request_binding.scope) ||
+      !sameScope(aggregate.scope, configuration.request_binding.scope)
+    ) {
+      throw sequenceError(
+        'The approved School write was not preceded by its exact idempotency and aggregate locks.',
+      );
+    }
+  }
+}
+
+async function loadApprovedSchoolHistory(
+  db: SchoolSignupSqlClient,
+  input: { scope: SchoolSignupScope; idempotency_key: string },
+): Promise<ApprovedSchoolRecord | null> {
+  const result = await db.query(
+    `SELECT history.product_key,
+            history.runtime_tier,
+            history.verification_environment_id,
+            history.approved_school_id,
+            history.household_id,
+            history.adult_account_manager_id,
+            history.seat_allowance,
+            history.price_minor_units,
+            history.currency,
+            history.billing_starts_at,
+            history.terms_reference,
+            history.immutable_contract_reference,
+            history.authorization_reason,
+            history.authorized_by_human_account_id,
+            history.authorized_at,
+            history.idempotency_key,
+            history.canonical_request_hash,
+            history.expected_prior_version,
+            history.configuration_version,
+            history.audit_ref,
+            authority.created_at,
+            history.committed_at AS updated_at
+       FROM onetime.approved_school_configuration_history_v21 AS history
+       JOIN onetime.approved_school_configuration_authority_v21 AS authority
+         ON authority.product_key = history.product_key
+        AND authority.runtime_tier = history.runtime_tier
+        AND authority.verification_environment_id = history.verification_environment_id
+        AND authority.approved_school_id = history.approved_school_id
+      WHERE history.product_key = $1
+        AND history.runtime_tier = $2
+        AND history.verification_environment_id = $3
+        AND history.idempotency_key = $4`,
+    [
+      input.scope.product,
+      input.scope.runtime_tier,
+      input.scope.verification_environment_id,
+      input.idempotency_key,
+    ],
+  );
+  if (result.rowCount === 0) return null;
+  if (result.rowCount !== 1) {
+    throw invariant('An approved School replay key resolved to more than one committed version.');
+  }
+  const row = result.rows[0];
+  if (!row) throw invariant('The approved School replay history row was missing.');
+  return storedApprovedSchool(row);
+}
+
+async function loadApprovedSchool(
+  db: SchoolSignupSqlClient,
+  input: {
+    scope: SchoolSignupScope;
+    where: 'approved_school_id' | 'idempotency_key';
+    value: string;
+    forUpdate: boolean;
+  },
+): Promise<ApprovedSchoolRecord | null> {
+  const result = await db.query(
+    `SELECT product_key, runtime_tier, verification_environment_id,
+            approved_school_id, household_id, adult_account_manager_id,
+            seat_allowance, price_minor_units, currency, billing_starts_at,
+            terms_reference, immutable_contract_reference, authorization_reason,
+            authorized_by_human_account_id, authorized_at, idempotency_key,
+            canonical_request_hash, expected_prior_version, configuration_version,
+            audit_ref, created_at, updated_at
+       FROM onetime.approved_school_configuration_authority_v21
+      WHERE product_key = $1
+        AND runtime_tier = $2
+        AND verification_environment_id = $3
+        AND ${input.where} = $4${input.forUpdate ? '\n      FOR UPDATE' : ''}`,
+    [
+      input.scope.product,
+      input.scope.runtime_tier,
+      input.scope.verification_environment_id,
+      input.value,
+    ],
+  );
+  if (result.rowCount === 0) return null;
+  if (result.rowCount !== 1) {
+    throw invariant('An approved School key resolved to more than one configuration.');
+  }
+  const row = result.rows[0];
+  if (!row) throw invariant('The approved School row was missing.');
+  return storedApprovedSchool(row);
+}
+
+function storedApprovedSchool(row: SqlRow): ApprovedSchoolRecord {
+  const scope = storedScope({ ...row, product: row.product_key });
+  return {
+    request_binding: {
+      scope,
+      operation: APPROVED_SCHOOL_CONFIGURATION_OPERATION,
+      idempotency_key: requiredText(row.idempotency_key, 'idempotency_key'),
+      canonical_request_hash: lowerSha256(row.canonical_request_hash, 'canonical_request_hash'),
+    },
+    approved_school_id: requiredText(row.approved_school_id, 'approved_school_id'),
+    household_id: requiredText(row.household_id, 'household_id'),
+    adult_account_manager_id: requiredText(
+      row.adult_account_manager_id,
+      'adult_account_manager_id',
+    ),
+    seat_allowance: positiveInteger(row.seat_allowance, 'seat_allowance'),
+    price_minor_units: nonNegativeInteger(row.price_minor_units, 'price_minor_units'),
+    currency: enumText(row.currency, ['USD']),
+    billing_starts_at: storedTimestamp(row.billing_starts_at, 'billing_starts_at'),
+    terms_reference: requiredText(row.terms_reference, 'terms_reference'),
+    immutable_contract_reference: requiredText(
+      row.immutable_contract_reference,
+      'immutable_contract_reference',
+    ),
+    authorization_reason: requiredText(row.authorization_reason, 'authorization_reason'),
+    authorized_by_human_account_id: requiredText(
+      row.authorized_by_human_account_id,
+      'authorized_by_human_account_id',
+    ),
+    authorized_at: storedTimestamp(row.authorized_at, 'authorized_at'),
+    expected_prior_version: nonNegativeInteger(
+      row.expected_prior_version,
+      'expected_prior_version',
+    ),
+    configuration_version: positiveInteger(row.configuration_version, 'configuration_version'),
+    audit_ref: requiredText(row.audit_ref, 'audit_ref'),
+    created_at: storedTimestamp(row.created_at, 'created_at'),
+    updated_at: storedTimestamp(row.updated_at, 'updated_at'),
+  };
+}
+
+function approvedSchoolValues(configuration: ApprovedSchoolConfiguration): readonly unknown[] {
+  return [
+    configuration.request_binding.scope.product,
+    configuration.request_binding.scope.runtime_tier,
+    configuration.request_binding.scope.verification_environment_id,
+    configuration.approved_school_id,
+    configuration.household_id,
+    configuration.adult_account_manager_id,
+    configuration.seat_allowance,
+    configuration.price_minor_units,
+    configuration.currency,
+    configuration.billing_starts_at,
+    configuration.terms_reference,
+    configuration.immutable_contract_reference,
+    configuration.authorization_reason,
+    configuration.authorized_by_human_account_id,
+    configuration.authorized_at,
+    configuration.request_binding.idempotency_key,
+    configuration.request_binding.canonical_request_hash,
+    configuration.expected_prior_version,
+    configuration.configuration_version,
+    configuration.audit_ref,
+    configuration.created_at,
+    configuration.updated_at,
+  ];
 }
 
 async function loadInquiry(
@@ -635,6 +860,25 @@ function positiveInteger(value: unknown, field: string): number {
     throw invariant(`The persisted ${field} is invalid.`);
   }
   return parsed;
+}
+
+function nonNegativeInteger(value: unknown, field: string): number {
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) {
+    throw invariant(`The persisted ${field} is invalid.`);
+  }
+  return parsed;
+}
+
+function storedTimestamp(value: unknown, field: string): string {
+  if (typeof value !== 'string' && !(value instanceof Date)) {
+    throw invariant(`The persisted ${field} is invalid.`);
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.valueOf())) {
+    throw invariant(`The persisted ${field} is invalid.`);
+  }
+  return parsed.toISOString();
 }
 
 function enumText<const Values extends readonly string[]>(

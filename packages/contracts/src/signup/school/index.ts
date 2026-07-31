@@ -1,6 +1,6 @@
 import type { RuntimeTier, VerificationEnvironmentId } from '../../state/index.ts';
 
-export const SCHOOL_SIGNUP_CONTRACT_VERSION = '2.0.0' as const;
+export const SCHOOL_SIGNUP_CONTRACT_VERSION = '2.1.0' as const;
 export const SCHOOL_INQUIRY_OPERATION = 'public_school_inquiry' as const;
 export const APPROVED_SCHOOL_CONFIGURATION_OPERATION =
   'admin_approved_school_configuration' as const;
@@ -157,7 +157,11 @@ export const APPROVED_SCHOOL_CONFIGURATION_FIELDS = [
   'currency',
   'billing_starts_at',
   'terms_reference',
+  'immutable_contract_reference',
+  'authorization_reason',
+  'idempotency_key',
   'expected_configuration_version',
+  'audit_ref',
 ] as const;
 
 export interface ApprovedSchoolConfigurationCommand {
@@ -169,20 +173,28 @@ export interface ApprovedSchoolConfigurationCommand {
   currency: 'USD';
   billing_starts_at: string;
   terms_reference: string;
+  immutable_contract_reference: string;
+  authorization_reason: string;
+  idempotency_key: string;
   expected_configuration_version: number;
+  audit_ref: string;
+}
+
+export interface ApprovedSchoolConfigurationAuthorization {
+  scope: SchoolSignupScope;
+  authorized_by_human_account_id: string;
+  authorized_at: string;
+}
+
+export interface ApprovedSchoolConfigurationRequestBinding {
+  scope: SchoolSignupScope;
+  operation: typeof APPROVED_SCHOOL_CONFIGURATION_OPERATION;
+  idempotency_key: string;
+  canonical_request_hash: string;
 }
 
 export interface ApprovedSchoolRecord {
-  scope: SchoolSignupScope;
-  approved_school_id: string;
-  approval_state: 'approved' | 'pending' | 'rejected' | 'archived';
-  adult_account_manager_id: string;
-  household_id: string;
-  configuration_version: number;
-}
-
-export interface ApprovedSchoolConfiguration {
-  scope: SchoolSignupScope;
+  request_binding: ApprovedSchoolConfigurationRequestBinding;
   approved_school_id: string;
   adult_account_manager_id: string;
   household_id: string;
@@ -191,7 +203,18 @@ export interface ApprovedSchoolConfiguration {
   currency: 'USD';
   billing_starts_at: string;
   terms_reference: string;
+  immutable_contract_reference: string;
+  authorization_reason: string;
+  authorized_by_human_account_id: string;
+  authorized_at: string;
+  expected_prior_version: number;
   configuration_version: number;
+  audit_ref: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ApprovedSchoolConfiguration extends ApprovedSchoolRecord {
   account_model: typeof APPROVED_SCHOOL_EXPERIENCE.account_model;
   adult_account_manager_role: typeof APPROVED_SCHOOL_EXPERIENCE.adult_account_manager_role;
   student_account_role: typeof APPROVED_SCHOOL_EXPERIENCE.student_account_role;
@@ -199,6 +222,18 @@ export interface ApprovedSchoolConfiguration {
   school_portal_created: false;
   bulk_roster_created: false;
   automated_nurture_created: false;
+}
+
+export interface ApprovedSchoolConfigurationResult {
+  disposition: 'created' | 'updated' | 'replayed';
+  configuration: ApprovedSchoolConfiguration;
+  provider_effects_completed_inline: 0;
+  product_accounts_created: 0;
+  households_created: 0;
+  student_accounts_created: 0;
+  access_grants_created: 0;
+  subscriptions_created: 0;
+  nurture_workflow_intent_ids: readonly [];
 }
 
 export const SCHOOL_SECURITY_INVARIANTS = {

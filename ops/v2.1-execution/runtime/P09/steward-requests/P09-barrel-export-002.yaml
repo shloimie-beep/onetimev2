@@ -1,0 +1,43 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P09-barrel-export-002
+task_id: P09
+kind: barrel_export
+requirement_ids:
+  - OTV2-SIGNUP-178
+  - OTV2-SIGNUP-229
+  - OTV2-SCHOOL-200
+  - OTV2-SCHOOL-214
+acceptance_case_ids:
+  - OTV2-SCHOOL-200-AC01
+  - OTV2-SCHOOL-214-AC01
+rationale: >-
+  Central package barrels are steward-owned and must expose only the corrected
+  registration-neutral P09 contract and domain School submodules.
+desired_semantic_change: >-
+  Export packages/contracts/src/signup/school and
+  packages/domain/src/signup/school from their appropriate central package
+  barrels. Export only the School inquiry and approved-School contract types,
+  constants, validation, canonicalization, replay/readback checks, and policy
+  functions already public from those submodules. Do not export the database
+  repository, migration details, credentials, secret values, provider
+  identities or actions, a School authorization role, a School portal, roster
+  functionality, or central route-composition internals.
+proposed_symbols_routes_keys_or_dependencies:
+  - packages/contracts/src/signup/school
+  - packages/domain/src/signup/school
+  - SCHOOL_SIGNUP_CONTRACT_VERSION
+  - canonicalizeApprovedSchoolConfiguration
+  - planApprovedSchoolConfiguration
+  - validateApprovedSchoolConfigurationReplay
+  - validateApprovedSchoolConfigurationReadback
+compatibility_assumptions:
+  - Existing consumers import only the public contract and pure domain policy surface.
+  - Concrete server and client composition remains in the separate registration requests.
+verification_performed:
+  - Verified the requested exports are limited to the P09 contract and domain School submodules.
+  - Verified no repository, migration, provider, credential, secret, School-role, portal, or roster export is requested.
+conflicts_or_risks:
+  - Do not export repository construction or persistence internals through the contract or domain barrels.
+  - Do not introduce a School role, School portal, provider integration, or migration dependency in central barrels.
+contains_secret_or_private_data: false

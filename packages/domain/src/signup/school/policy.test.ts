@@ -10,9 +10,12 @@ import {
   SCHOOL_INQUIRY_ACKNOWLEDGMENT_TEMPLATE,
 } from '../../../../contracts/src/signup/school/index.ts';
 import {
+  canonicalizeApprovedSchoolConfiguration,
   canonicalizeSchoolInquiry,
   planApprovedSchoolConfiguration,
   planSchoolInquiry,
+  validateApprovedSchoolConfigurationReadback,
+  validateApprovedSchoolConfigurationReplay,
 } from './policy.ts';
 
 const scope: SchoolSignupScope = {
@@ -174,9 +177,9 @@ describe('P09 School inquiry and approved-school policy', () => {
   });
 
   it('configures explicit approved-school allowance and terms on Parent/Student accounts', () => {
+    const canonical = canonicalConfiguration();
     const configuration = planApprovedSchoolConfiguration({
-      actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
-      command: configurationCommand(),
+      canonical,
       approved_school: approvedSchool(),
     });
     expect(configuration).toMatchObject({
@@ -185,6 +188,9 @@ describe('P09 School inquiry and approved-school policy', () => {
       currency: 'USD',
       terms_reference: 'terms/school-2026-v1',
       configuration_version: 4,
+      expected_prior_version: 3,
+      authorized_by_human_account_id: 'admin-1',
+      audit_ref: 'approved-school:school-config-4',
       account_model: 'parent_student',
       adult_account_manager_role: 'parent',
       student_account_role: 'student',
@@ -196,50 +202,96 @@ describe('P09 School inquiry and approved-school policy', () => {
   });
 
   it('fails closed on role, approval, scope, identity, and configuration-version mismatches', () => {
-    const base = {
-      actor: { ...scope, role: 'admin' as const, human_account_id: 'admin-1' },
-      command: configurationCommand(),
-      approved_school: approvedSchool(),
-    };
-    for (const invalid of [
-      { ...base, actor: { ...base.actor, role: 'parent' as const } },
-      {
-        ...base,
-        approved_school: { ...approvedSchool(), approval_state: 'pending' as const },
-      },
-      {
-        ...base,
-        approved_school: {
-          ...approvedSchool(),
-          scope: { ...scope, verification_environment_id: 'provider_sandbox' as const },
+    expect(() =>
+      canonicalizeApprovedSchoolConfiguration({
+        actor: { ...scope, role: 'parent', human_account_id: 'parent-1' },
+        authorized_at: '2026-07-31T14:00:00.000Z',
+        command: configurationCommand(),
+      }),
+    ).toThrow('school_configuration_denied');
+    expect(() =>
+      canonicalizeApprovedSchoolConfiguration({
+        actor: {
+          product: 'one_time_mishnayos',
+          runtime_tier: 'production',
+          verification_environment_id: 'production_read_only',
+          role: 'admin',
+          human_account_id: 'admin-1',
         },
-      },
-      {
-        ...base,
-        command: { ...configurationCommand(), household_id: 'different-household' },
-      },
-      {
-        ...base,
-        command: { ...configurationCommand(), expected_configuration_version: 2 },
-      },
+        authorized_at: '2026-07-31T14:00:00.000Z',
+        command: configurationCommand(),
+      }),
+    ).toThrow('school_configuration_denied');
+    for (const command of [
+      { ...configurationCommand(), household_id: 'different-household' },
+      { ...configurationCommand(), expected_configuration_version: 2 },
+      { ...configurationCommand(), immutable_contract_reference: 'contract/different' },
     ]) {
-      expect(() => planApprovedSchoolConfiguration(invalid)).toThrow(/configuration/u);
+      expect(() =>
+        planApprovedSchoolConfiguration({
+          canonical: canonicalConfiguration(command),
+          approved_school: approvedSchool(),
+        }),
+      ).toThrow('school_configuration_mismatch');
     }
+  });
+
+  it('creates version one, accepts exact replay, and rejects a reused key with another hash', () => {
+    const canonical = canonicalConfiguration({ expected_configuration_version: 0 });
+    const created = planApprovedSchoolConfiguration({ canonical, approved_school: null });
+    expect(created).toMatchObject({
+      expected_prior_version: 0,
+      configuration_version: 1,
+      created_at: '2026-07-31T14:00:00.000Z',
+      updated_at: '2026-07-31T14:00:00.000Z',
+    });
+    expect(validateApprovedSchoolConfigurationReadback(created, recordOf(created))).toEqual(
+      created,
+    );
+    expect(validateApprovedSchoolConfigurationReplay(canonical, recordOf(created))).toEqual(
+      created,
+    );
+    const mismatch = canonicalConfiguration({
+      expected_configuration_version: 0,
+      seat_allowance: 76,
+    });
+    expect(() => validateApprovedSchoolConfigurationReplay(mismatch, recordOf(created))).toThrow(
+      'school_configuration_mismatch',
+    );
   });
 });
 
 function approvedSchool(): ApprovedSchoolRecord {
   return {
-    scope,
+    request_binding: {
+      scope,
+      operation: 'admin_approved_school_configuration',
+      idempotency_key: 'school-config-3',
+      canonical_request_hash: 'a'.repeat(64),
+    },
     approved_school_id: 'approved-school-1',
-    approval_state: 'approved',
     adult_account_manager_id: 'adult-manager-1',
     household_id: 'household-1',
+    seat_allowance: 50,
+    price_minor_units: 100_000,
+    currency: 'USD',
+    billing_starts_at: '2026-08-01T00:00:00.000Z',
+    terms_reference: 'terms/school-2025-v1',
+    immutable_contract_reference: 'contract/school-1',
+    authorization_reason: 'Initial approval',
+    authorized_by_human_account_id: 'admin-1',
+    authorized_at: '2026-07-01T00:00:00.000Z',
+    expected_prior_version: 2,
     configuration_version: 3,
+    audit_ref: 'approved-school:school-config-3',
+    created_at: '2026-06-01T00:00:00.000Z',
+    updated_at: '2026-07-01T00:00:00.000Z',
   };
 }
 
-function configurationCommand(): ApprovedSchoolConfigurationCommand {
+function configurationCommand(
+  overrides: Partial<ApprovedSchoolConfigurationCommand> = {},
+): ApprovedSchoolConfigurationCommand {
   return {
     approved_school_id: 'approved-school-1',
     adult_account_manager_id: 'adult-manager-1',
@@ -249,6 +301,42 @@ function configurationCommand(): ApprovedSchoolConfigurationCommand {
     currency: 'USD',
     billing_starts_at: '2026-09-01T00:00:00.000Z',
     terms_reference: 'terms/school-2026-v1',
+    immutable_contract_reference: 'contract/school-1',
+    authorization_reason: 'Renewed approved School terms',
+    idempotency_key: 'school-config-4',
     expected_configuration_version: 3,
+    audit_ref: 'approved-school:school-config-4',
+    ...overrides,
+  };
+}
+
+function canonicalConfiguration(overrides: Partial<ApprovedSchoolConfigurationCommand> = {}) {
+  return canonicalizeApprovedSchoolConfiguration({
+    actor: { ...scope, role: 'admin', human_account_id: 'admin-1' },
+    authorized_at: '2026-07-31T14:00:00.000Z',
+    command: configurationCommand(overrides),
+  });
+}
+
+function recordOf(configuration: ReturnType<typeof planApprovedSchoolConfiguration>) {
+  return {
+    request_binding: configuration.request_binding,
+    approved_school_id: configuration.approved_school_id,
+    adult_account_manager_id: configuration.adult_account_manager_id,
+    household_id: configuration.household_id,
+    seat_allowance: configuration.seat_allowance,
+    price_minor_units: configuration.price_minor_units,
+    currency: configuration.currency,
+    billing_starts_at: configuration.billing_starts_at,
+    terms_reference: configuration.terms_reference,
+    immutable_contract_reference: configuration.immutable_contract_reference,
+    authorization_reason: configuration.authorization_reason,
+    authorized_by_human_account_id: configuration.authorized_by_human_account_id,
+    authorized_at: configuration.authorized_at,
+    expected_prior_version: configuration.expected_prior_version,
+    configuration_version: configuration.configuration_version,
+    audit_ref: configuration.audit_ref,
+    created_at: configuration.created_at,
+    updated_at: configuration.updated_at,
   };
 }
