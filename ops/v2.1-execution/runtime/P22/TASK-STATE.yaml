@@ -40,8 +40,8 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: claimed
-phase: P22_learning_engagement_authority_successor_product_and_request_correction
+status: ready_for_review
+phase: complete
 claim_mode: resume_existing_branch
 claimed_by: codex-p22-authority-successor-renewal-d8a3ff1d
 claim_time: '2026-07-31T06:27:22Z'
@@ -51,19 +51,24 @@ writer_slot_leases:
     lease_id: 706d5e11-9ba4-4a1b-83b8-4beba9779aeb
     lease_issued_at: '2026-07-31T06:20:00Z'
     lease_expires_at: '2026-07-31T08:20:00Z'
+    released_at: '2026-07-31T07:56:00Z'
     state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
     phase_scope: P22_learning_engagement_authority_successor_renewal_atomic_claim_only
 lease_expires_at: '2026-07-31T08:20:00Z'
-last_heartbeat_at: '2026-07-31T07:36:00Z'
+lease_released_at: '2026-07-31T07:56:00Z'
+last_heartbeat_at: '2026-07-31T07:56:00Z'
 controller_authorization_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
 resume_containing_control_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
 reconciled_control_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
 ready_entry_state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
 ready_entry_payload_digest: fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be
-state_based_on_head_sha: 9723a32f028db1791048549d9661d64bf36bc644
-last_implementation_commit_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
-implementation_artifact_digest: 2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967
+state_based_on_head_sha: 5c7439fa6bc7600fb62e6eac5b118affeba7704a
+last_implementation_commit_sha: 5c7439fa6bc7600fb62e6eac5b118affeba7704a
+implementation_artifact_digest: 2271b1e71d05f32c48d0e9a13e6b79a9819d0ffcb5d0c7748fb64a25ae8e3b98
 completed_steps:
+  - Completed the authorized successor correction at implementation head 5c7439fa6bc7600fb62e6eac5b118affeba7704a and released the task-local LEARNING_ENGAGEMENT lease.
+  - Passed 34 focused domain/service/repository assertions, focused ESLint and Prettier, exact 16-path scope, diff hygiene, five successor-request schema/count validation, immutable predecessor blob/raw-hash proof, and zero-effect checks.
+  - Added durable event-driven badge projection for ordinary attendance, question recognition, and review events; source-event replay repairs a failed post-commit projection while exact digest replay remains no-write.
   - Added deterministic transition, recognition, and review event identities; fixed ledger SQL arity and identity mapping; and retained append-only atomic ordering.
   - Added the seventh persisted badge projection with per-family evidence digests/audit references, immutable rule version, unawarded initial state, durable ordinary awards, and audited Admin-only revoke/restore fields.
   - Bound canonical review proof to the exactly-one approved review_material artifact on the occurrence-keyed publication, governed occurrence, class series, and content aggregate; documented the fail-closed upstream content-state writer dependency.
@@ -101,9 +106,9 @@ completed_steps:
   - Bound the rolling approvedQuestionCount timestamp to the first approved_for_class or published transition, never an earlier private answer and never refreshed by later publication.
   - Added service-layer negative assertions proving cross-class question and attendance attempts perform no repository save; eleven focused assertions pass.
 remaining_steps:
-  - Finish the remaining live-review authority checks, validate all five successor requests, and preserve both immutable predecessor requests.
-  - Run the requested final gates, update terminal runtime evidence, release the lease, and push.
-next_action: Continue the post-heartbeat authority review, then complete terminal verification under the same unexpired lease.
+  - I36 must disposition the five exact -002 successor requests and provide the fail-closed canonical content-state writer/populator before registering the review-material proof seam.
+  - C00 must review this terminal branch; the two immutable predecessor requests remain evidence only and must not be applied.
+next_action: C00 should review implementation head 5c7439fa6bc7600fb62e6eac5b118affeba7704a and I36 should disposition the five exact successor requests without reviving either immutable predecessor.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -141,10 +146,18 @@ changed_paths:
   - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P22/HANDOFF.md
   - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-barrel-export-002.yaml
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-002.yaml
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-002.yaml
+  - ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-002.yaml
 migrations: []
 steward_requests:
-  - P22-migration-001
-  - P22-registration-001
+  - P22-barrel-export-002
+  - P22-client-route-002
+  - P22-config-key-002
+  - P22-migration-002
+  - P22-server-registration-002
 verification:
   commands_run:
     - command: exact fetched control and task-branch head verification
@@ -162,10 +175,18 @@ verification:
     - command: renewal atomic-claim YAML, exact three-path diff, diff hygiene, and repository secret scan
       result: passed; runtime YAML parsed, only the P22 runtime triplet changed, git diff check passed, and secret scan passed across 2748 text files
     - command: focused P22 domain, service, and repository Vitest suites
-      result: passed; 3 files and 20 tests cover four-scope isolation, append-only plans, replay/conflict/stale rollback, canonical reads, safe names/aliases, consent ordering, and mutation removal
+      result: passed; 3 files and 34 tests cover four-scope isolation, append-only plans, replay repair/conflict/stale rollback, persisted badges, canonical reads, safe names/aliases, consent ordering, and mutation removal
+    - command: five -002 steward request schema and traceability validation
+      result: passed; all five parse, match the closed schema, carry 11 unique requirements, and carry only the 10 canonical AC01 cases
+    - command: immutable predecessor hash and exact path ceiling verification
+      result: passed; migration-001 blob/raw SHA 527b85c9/e6c02f0e and registration-001 e9d71903/bdaad580; claim-to-implementation delta is exactly the authorized 16 paths
+    - command: focused ESLint, Prettier, and git diff hygiene
+      result: passed
     - command: workspace typecheck
       result: baseline blocked; no P22 diagnostic, existing Stripe Status widening and missing Playwright dependency diagnostics remain
-  known_baseline_failures: []
+  known_baseline_failures:
+    - pre-existing Stripe SDK Status widening diagnostic
+    - pre-existing missing Playwright dependency and related browser-harness implicit-any diagnostics
 external_effects:
   authority: none
   attempted: 0
@@ -173,4 +194,4 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - Substantive product/test/request work is intentionally deferred until C00 reconciles this exact pushed renewal atomic-claim head.
+  - Canonical content aggregate state population keyed by content_publications.content_id remains an I36 fail-closed integration dependency; no non-test writer was found.
