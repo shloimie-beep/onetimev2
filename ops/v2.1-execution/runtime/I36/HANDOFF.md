@@ -752,7 +752,7 @@ freeze, deployment, or external effect. I36 must stop.
 ## Parent auth/client successor renewal checkpoint
 
 I36 checkpointed the in-progress successor at implementation commit
-`5285a71e34fdb5fe7701a05aac0f31e2950360bc`, based on authorized start
+`5285a71e86ebf80bab3332f6cc3490a380bc7890`, based on authorized start
 `a5a2ad94b77eaf596930609d4d5abe4fa672439b`. Historical authority is claim
 `ef14f276-f6a2-45a5-b35d-d45d37572ca5`, writer
 `codex-i36-parent-session-successor-ef14f276`, and lease

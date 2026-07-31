@@ -319,8 +319,8 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 5285a71e34fdb5fe7701a05aac0f31e2950360bc
-last_implementation_commit_sha: 5285a71e34fdb5fe7701a05aac0f31e2950360bc
+state_based_on_head_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
+last_implementation_commit_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
 completed_steps:
   - Accepted direct C00 communications integration authority from control 4b22c4704edc8bd21b0e0242ad00debfba67f5c2 at exact integration start c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9 under one phase claim and lease.
   - Merged exact repository-only communications convergence head 3364c1c31ef12a81abf02cf9f80f7e8008c1778f at 9a028e7a967221441dfd4d5cf9417eb2885a072f with exact parents, preserved ancestry, and twenty-path first-parent scope.
@@ -2850,7 +2850,7 @@ out_of_scope_findings: []
 renewal_checkpoint:
   checkpointed_at: '2026-07-31T00:54:34Z'
   authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
-  implementation_checkpoint_sha: 5285a71e34fdb5fe7701a05aac0f31e2950360bc
+  implementation_checkpoint_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
   containing_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
   state_basis_control_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
   ready_entry_payload_digest: 9da7b8a521b2ff8f4da4cd502c3903fceb8b7f4fcce938cdf24a3ec7051656b2
