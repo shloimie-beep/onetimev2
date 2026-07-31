@@ -1,61 +1,51 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: INDEPENDENT_REVIEW
+MODE: START_OR_RESUME
 
-Independently audit the final P09 School-inquiry PostgreSQL repository and
-exact public route.
+Resume P09 only after C00 independently reconciles the exact pushed
+school-seat authority convergence atomic-claim head and publishes a separate
+exact authorization.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p09-school-inquiry
-Current control authorization: 26f29aeb6734948dd8b80ab85a342831defaecc9
-Expected pre-resume head: 33a21a45005271f1bbe09c8587df1e52fac1a95a
-Authorized integration base: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
-Substantive implementation: 05488497a7ca96841c235118c1e5da0bf9270ca1
-Claim: c18bb60c-98f2-4448-b768-67fcafed9438
-PUBLIC_SIGNUP lease: 45e4c80f-b3a7-445b-a888-0dbed3c3429e
-Lease released task-locally at 2026-07-30T18:31:32Z before expiry
+Pre-claim head: a64a0c03edb6ae50023011f470358e9214f1196c
+Pushed control authorization: fdcba89094f6b8f9460db3d41f3602be2d476990
+READY state basis: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+Authorized integration head: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+READY digest: 3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c
+Claim: 129aacb2-3e46-484f-94c1-1b2122b62950
+Writer: codex-p09-seat-convergence-129aacb2
+SCHOOL_INQUIRY lease: 5238d22d-51eb-4f74-9cec-a0bf337cc72f
+Lease expiry: 2026-07-31T05:48:00Z
+Phase scope: P09_P10_school_seat_authority_convergence_request_atomic_claim_only
+Effect locks: none
 
 Task state: ops/v2.1-execution/runtime/P09/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P09/HANDOFF.md
 
-Reproduce:
+First read the exact remote P09 head and C00 reconciliation. The atomic-claim
+head is the sole-child checkpoint of `a64a0c03…`; derive it from the remote and
+do not assume authority from this prompt alone.
 
-- exact fast-forward ancestry 33a21a45 -> c0a1e04b -> 05488497;
-- four implementation paths plus the terminal P09 runtime triplet;
-- four-artifact raw Git-blob aggregate
-  `cfd846747005ecfaf86a78ee1f958ddab8b5a252e5f5efe7e06b45014d22398a`;
-- immutable migration 2249 raw Git-blob SHA-256
-  `eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914`;
-- five focused files / 26 tests, workspace typecheck, focused lint/format,
-  exact scope/diff hygiene, and secret scan.
+No latent request authority exists. Until C00 publishes a separate READY bound
+to the exact pushed claim head:
 
-Adversarially prove:
+- do not create `P09-migration-002`;
+- do not allocate an ordinal or write SQL;
+- do not edit product, test, P10, shared-control, provider, candidate,
+  deployment, DNS, or billing files;
+- do not apply or acknowledge a request; and
+- do not inspect or mutate a provider or perform an external effect.
 
-- one normalized-email key produces one durable inquiry and one pending
-  acknowledgment intent, replay reads the exact winner, canonical drift fails
-  closed, and a partial acknowledgment failure rolls the inquiry back;
-- the repository persists only adult manual follow-up and no account, login,
-  household, Student, subscription, access, nurture, provider identity, or
-  inline provider effect;
-- the acknowledgment binds exact workflow/template/version/sender/subject/body
-  and content digest, with no UI success-copy substitution;
-- the task-owned feature descriptor mounts exact
-  `POST /api/v2.1/signup/school-inquiry`;
-- required fields are exactly school name, contact first/last name, and email;
-  phone/note alone are optional; every extra account/role/access/portal/
-  consent/campaign/nurture/Student/WhatsApp/Stripe field fails before
-  submission;
-- `production_read_only` cannot write; and
-- approved-School updates remain Admin-approved optimistic Parent/Student
-  configuration with no School role, portal, bulk roster, or automated
-  nurture.
+If a later exact C00 authorization is present, its request-only scope must
+preserve `P09-migration-001` and `P10-MIGRATION-001` as immutable predecessor
+evidence and converge only their overlapping approved-School seat/config
+semantics into one fully scoped, optimistic-versioned authority. It must carry
+household, adult account manager, seat allowance, price, USD currency, billing
+start, terms, immutable contract reference, reason, authorizer, authorized
+time, and audit/version evidence. Family remains exactly three seats.
+Contradictory predecessor rows must stop or quarantine, never silently win.
 
-Do not edit or apply a migration, central composer, config, landing path,
-provider registry, integration/control state, deployment, or DNS in this
-source review. Do not inspect/mutate providers or send an acknowledgment.
-Effects remain `0/0/0`.
-
-If source admission passes, C00 should authorize I36 to preserve source
-ancestry, merge the four implementation paths, and centrally register
-`schoolInquiryFeatureRegistration`.
+P10 remains pending and receives no READY in this phase. Effects remain
+attempted `0`, succeeded `0`, reconciled `0`.

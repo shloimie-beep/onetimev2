@@ -1,113 +1,86 @@
-# P09 School Inquiry Repository and Route — Ready for Review
+# P09 School-Seat Authority Convergence — Atomic Claim
 
 ## Exact identity
 
 - Branch: `codex/v21-p09-school-inquiry`
-- Current control authorization:
-  `26f29aeb6734948dd8b80ab85a342831defaecc9`
-- READY state base: `f2b4a9faefdb5f780c9b620fedb413d408d27a19`
-- Expected pre-resume branch head:
-  `33a21a45005271f1bbe09c8587df1e52fac1a95a`
-- Authorized integration base:
-  `c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a`
-- Substantive implementation:
-  `05488497a7ca96841c235118c1e5da0bf9270ca1`
-- Substantive parent: exact authorized integration base `c0a1e04b`
-- Claim: `c18bb60c-98f2-4448-b768-67fcafed9438`
-- PUBLIC_SIGNUP lease:
-  `45e4c80f-b3a7-445b-a888-0dbed3c3429e`
-- Lease released task-locally at `2026-07-30T18:31:32Z`, before
-  `2026-07-30T20:01:13Z` expiry.
-- Final metadata head: derive with `git rev-parse HEAD`; C00 records the exact
-  remote value after independent readback.
+- Pre-claim local/tracking/live head:
+  `a64a0c03edb6ae50023011f470358e9214f1196c`
+- Pushed control authorization:
+  `fdcba89094f6b8f9460db3d41f3602be2d476990`
+- READY state basis:
+  `ce71f41af1c70f689db9b3346ae5dfc643a1344f`
+- Authorized integration head:
+  `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`
+- Canonical READY digest:
+  `3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c`
+- Claim: `129aacb2-3e46-484f-94c1-1b2122b62950`
+- Writer: `codex-p09-seat-convergence-129aacb2`
+- SCHOOL_INQUIRY lease:
+  `5238d22d-51eb-4f74-9cec-a0bf337cc72f`
+- Lease issued `2026-07-31T03:48:00Z`; expires
+  `2026-07-31T05:48:00Z`.
+- Phase scope:
+  `P09_P10_school_seat_authority_convergence_request_atomic_claim_only`
+- Effect locks: none.
 
-## Implemented behavior
+The exact atomic-claim commit is derived with `git rev-parse HEAD` after this
+runtime checkpoint is committed. It is intentionally not amended into its own
+contents; C00 must read and bind the pushed remote head.
 
-The branch now contains a concrete PostgreSQL School-signup repository. It
-uses a transaction-scoped advisory lock over the exact
-product/runtime/environment/operation/normalized-email key, then reads or
-atomically creates one `school_inquiries_v21` record and one
-`school_inquiry_acknowledgments_v21` intent. The normalized-email unique key
-and `ON CONFLICT ... DO NOTHING` recovery preserve one durable winner; replay
-returns that exact receipt and canonical drift fails closed.
+## Complete READY readback
 
-The repository reconstructs the receipt from durable rows and rejects any
-drift in:
+The fetched remote control entry was recomputed from its canonical recursively
+sorted JSON payload and matched its sibling digest exactly. Task packet
+`191ac9febfbd715a7d97c3a882305ec0ea332023f95f74f3be254265bcdbcbe8`,
+context
+`a79a242f32c782ee37ffe345b419a443e5ce22dacec10b2390958456fc8cfece`,
+package lock
+`fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2`,
+and source package
+`10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e`
+all match the issued READY.
 
-- request scope, operation, normalized email, or canonical request digest;
-- adult-only manual-follow-up state;
-- zero account, login, household, Student, subscription, access, nurture, and
-  provider-identity effects; or
-- the locked `OT-01.school_acknowledgment` version `2.1.0`, sender `office`,
-  approved subject/body, and content digest
-  `ee97274c3fbe2bae470da87aa15b7049fddc2677dc794dc5e94a42e78b7de4fb`.
+Dependency readback is exact:
 
-Approved-School configuration uses the existing Parent/Student model. It reads
-the exact approved row `FOR UPDATE` and commits only an optimistic
-version-step update. It creates no School role, portal, bulk roster, or
-automated nurture.
+- I36 terminal is `d89a0f38…`, with sole parent `2e62d79d…`, tree
+  `56dc54f5…`, state/handoff digest `8c1a2e89…`, runtime-triplet digest
+  `163295a6…`, released lease, and effects `0/0/0`.
+- P09 source head is `a64a0c03…`, is an ancestor of `d89a0f38…`, and binds
+  the prior immutable `P09-migration-001` raw digest `f6612a8c…`.
+- P10 remains at `5fccc345…`, binds immutable `P10-MIGRATION-001` digest
+  `33dbeedf…` and Git blob `6470da05…`, and receives no READY.
+- Immutable schema predecessors 2241 and 2249 match the READY raw digests and
+  Git blobs.
 
-The task-owned feature descriptor mounts exactly:
+## Claim-only boundary
 
-`POST /api/v2.1/signup/school-inquiry`
+This checkpoint records only the READY, fresh claim/writer, active lease,
+dependency readback, and mandatory C00 stop. It changes exactly:
 
-Its strict payload accepts required `school_name`, `contact_first_name`,
-`contact_last_name`, and `email`, plus only optional `phone` and `note`.
-Account, role, access, portal, consent, campaign, nurture, Student, WhatsApp,
-Stripe, and arbitrary extra fields fail before service/repository submission.
-`production_read_only` fails before submission. The successful response claims
-only a committed local inquiry, pending acknowledgment intent, and manual
-follow-up; inline provider effects remain zero.
+- `ops/v2.1-execution/runtime/P09/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/P09/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P09/NEXT-PROMPT.md`
 
-## Scope
+It does not create `P09-migration-002`, allocate an ordinal, write SQL, edit
+product code, mutate P10 or shared control, apply or acknowledge a request,
+integrate, freeze a candidate, inspect or mutate a provider, deploy, send,
+charge, or perform any external effect. The prior implementation, tests,
+`P09-migration-001`, `P09-registration-001`, migration 2249, and P10 bytes are
+unchanged.
 
-The substantive commit adds exactly four authorized paths:
+This READY grants no latent later request authority. Only a separate C00
+control commit that reconciles the exact pushed claim head may authorize the
+request-only phase.
 
-- `apps/web/src/server/features/signup/school/router.ts`
-- `apps/web/src/server/features/signup/school/router.test.ts`
-- `packages/db/src/signup/school/repository.ts`
-- `packages/db/src/signup/school/repository.test.ts`
+## Exact next action
 
-The terminal commit changes only the P09 runtime triplet. No central composer,
-config, landing page, migration, integration/control file, provider registry,
-worker, deployment, DNS, billing, or other task path changed.
-
-The descriptor is intentionally not centrally installed here. I36 owns that
-separate registration checkpoint.
-
-## Verification
-
-- Five focused files: 26/26 tests passed.
-- The repository harness applies the exact immutable
-  `2249_v21_school_inquiry.sql` bytes after omitting only its explicitly marked
-  PostgreSQL trigger block for pg-mem.
-- Durable inquiry/acknowledgment replay, canonical conflict, transactional
-  rollback, `production_read_only`, and optimistic approved-School
-  configuration all passed locally.
-- Existing service, domain, and contract tests remain green, including the
-  concurrent same-email winner behavior.
-- Workspace typecheck passed.
-- Focused ESLint and Prettier passed.
-- Secret scan passed across 3,095 repository text files.
-- Exact scope and diff hygiene passed.
-- Four-artifact raw Git-blob aggregate:
-  `cfd846747005ecfaf86a78ee1f958ddab8b5a252e5f5efe7e06b45014d22398a`.
-- Immutable migration 2249 raw Git-blob SHA-256:
-  `eb5a6ba248ebcd080b1a17b8eec0ca0ee0f4c2d79c5d440e6f6c16d1dfebf914`.
-
-No native PostgreSQL binary is installed in this worktree. I36's native
-migration verification remains the candidate gate; no migration bytes were
-changed.
+C00 must independently verify the pushed head has sole parent `a64a0c03…`,
+exactly the P09 runtime triplet, the issued claim/lease/bindings, preserved
+product/request/P10 bytes, and effects `0/0/0`. P09 then remains stopped until
+C00 issues a separate exact authorization.
 
 ## External effects
 
 Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider
-inspection or mutation, message or acknowledgment send, Student contact,
-campaign enrollment, WhatsApp action, Stripe action, migration execution
-outside the local ephemeral harness, deployment, or DNS action occurred.
-
-## Exact next action
-
-C00 should independently audit the final remote head and authorize I36 to
-preserve this ancestry, merge the four implementation paths, and centrally
-register `schoolInquiryFeatureRegistration`.
+inspection or mutation, message, enrollment, migration application, deployment,
+DNS, billing, or other live effect occurred.
