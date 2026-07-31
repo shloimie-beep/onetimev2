@@ -32,8 +32,8 @@ rationale: >-
   isolation. The corrected schema contract instead limits P22 persistence to
   its engagement projections and append-only evidence.
 desired_semantic_change: >-
-  Allocate the next safe forward-only migration only after steward review.
-  Bind the migration to exact schema contract identity
+  Apply exact forward-only migration ordinal 2254 only after I36 admission;
+  do not renumber or allocate a successor ordinal. Bind the migration to exact schema contract identity
   P22-LEARNING-ENGAGEMENT-SCHEMA-002.
   Create four-dimension-fenced P22 question projection, append-only question
   transition ledger, append-only recognition ledger, announcements,
@@ -80,7 +80,7 @@ compatibility_assumptions:
     Migration 2254 creates no view, foreign key, trigger, index, or other
     database object that references actual_name or display_name changes
     introduced later by P12 migration 2255.
-  - F02 chooses the ordinal and authors SQL; P22 allocates no ordinal.
+  - I36/F02 applies exact migration 2254 only after admission and authors the SQL; P22 does not apply it.
 verification_performed:
   - Verified P22-LEARNING-ENGAGEMENT-SCHEMA-002 excludes P22 attendance, consent, and name tables.
   - Verified repository DML targets only the seven requested P22-owned structures.

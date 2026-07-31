@@ -204,14 +204,17 @@ export function createLearningEngagementService(input: {
       correction?: { family: BadgeFamily; auditRef: string; reason: string },
     ) {
       const actor = isLearningActor(context) ? context : null;
-      const projectionContext = actor ? null : (context as LearningProjectionChangeContext);
-      if (
-        actor
-          ? !actor.classIds.includes(classId)
-          : projectionContext.kind !== 'canonical_attendance_projection_change' ||
-            projectionContext.classId !== classId
-      ) {
+      if (actor && !actor.classIds.includes(classId)) {
         denied('Badge reads require assignment to the requested class.');
+      }
+      if (!actor) {
+        const projectionContext = context as LearningProjectionChangeContext;
+        if (
+          projectionContext.kind !== 'canonical_attendance_projection_change' ||
+          projectionContext.classId !== classId
+        ) {
+          denied('Badge reads require an exact canonical projection-change context.');
+        }
       }
       if (correction && actor?.role !== 'admin') {
         denied('Only an assigned Admin may apply a badge correction.');

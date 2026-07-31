@@ -50,7 +50,7 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
       'append-only Student completion and reasoned Admin revoke/restore event ledger; UPDATE and DELETE are rejected',
       'review_event_id is immutable and equals idempotency_key plus the review suffix',
       'event_action, completion_source, audit_ref, publication_audit_ref, and monotonic event_sequence are immutable',
-      'effective completion is the latest append sequence per scoped Student and Admin-published review item',
+      'the latest append sequence per scoped Student, class, household, and Admin-published review item remains canonical history even when revoked',
       'authenticated Student ingestion is idempotent by scoped key and canonical request hash',
     ],
   },
@@ -75,6 +75,9 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
       'P22 exposes no attendance or consent mutation',
       'attendance is accepted only through canonical account, Student, class, and enrollment joins',
       'streaks use completed in-enrollment scheduled occurrences and fail closed without coverage',
+      'ordinary committed attendance projection changes use an internal class-bound context; only corrections carry an Admin actor and audited reason',
+      'review-material reads are class-bound and occur only after exact roster authorization',
+      'Student and Parent badge responses expose only key, family, and level',
     ],
   },
 } as const;

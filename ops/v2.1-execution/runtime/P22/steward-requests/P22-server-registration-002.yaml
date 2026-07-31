@@ -39,12 +39,19 @@ desired_semantic_change: >-
   Admin-published review proof from the exactly-one approved review_material
   artifact on the occurrence-keyed content publication, and the server-side
   alias HMAC key. Bind every committed canonical P18 attendance-projection
-  change to recalculateBadgesAfterAttendanceProjectionChange: ordinary
-  attendance changes invoke non-revoking recalculation so Consistency can be
-  earned, while reasoned Admin corrections invoke audited correction mode.
+  change to recalculateBadgesAfterAttendanceProjectionChange: ordinary changes
+  use the internal canonical_attendance_projection_change context and invoke
+  non-revoking recalculation so Consistency can be earned; they must not
+  fabricate an Admin actor. Reasoned Admin corrections use audited correction
+  mode, and their audit reference, reason, and Admin actor must exactly match
+  the matching latest canonical attendance source event.
   Source-event exact replay must re-invoke the digest-idempotent badge
   recalculation: an already-complete projection writes nothing, while a prior
-  post-commit projection failure is repaired.
+  post-commit projection failure is repaired. Replaying an older exact
+  correction after a successor is idempotent and must not overwrite the newer
+  projection or fail. Authorize roster membership before reading a review
+  artifact, and pass the exact class to LearningReviewItemReadPort so a
+  cross-class caller receives no record/correction oracle.
   Expose no
   attendance record or correction route and no recognition-consent mutation route.
 proposed_symbols_routes_keys_or_dependencies:

@@ -4,6 +4,7 @@ import type {
   LearningEngagementRepository,
   LearningQuestion,
   QuestionMutation,
+  ReviewCompletion,
 } from '../../../../../../packages/contracts/src/learning/index.ts';
 import { createLearningEngagementService } from './service.ts';
 
@@ -282,7 +283,7 @@ describe('P22 learning service', () => {
     await expect(instance.badges(parent, 'student-1', 'class-a')).resolves.toEqual([
       { key: 'consistency:1', family: 'consistency', level: 'I' },
     ]);
-    expect(awards).toHaveBeenCalledOnce();
+    expect(awards).toHaveBeenCalledTimes(2);
     expect(facts).not.toHaveBeenCalled();
     expect(apply).not.toHaveBeenCalled();
   });
@@ -523,10 +524,11 @@ describe('P22 learning service', () => {
       publicationAuditRef: 'revision-1',
       completedAt: '2026-07-01T10:00:00.000Z',
     };
-    let correction: typeof original | undefined;
+    let correction: ReviewCompletion | undefined;
+    const successor: { current: ReviewCompletion | undefined } = { current: undefined };
     const applyReview = vi.fn<LearningEngagementRepository['applyReviewCompletion']>(
       async (completion) => {
-        correction = completion as typeof original;
+        correction = completion;
         return { completion, replay: false };
       },
     );
@@ -539,7 +541,9 @@ describe('P22 learning service', () => {
         applyReviewCompletion: applyReview,
         applyBadgeRecalculation: applyBadge,
         listReviewCompletionEvents: async () =>
-          correction ? [original, correction] : [original],
+          correction
+            ? [original, correction, ...(successor.current ? [successor.current] : [])]
+            : [original],
         listReviewCompletions: async () => (correction ? [correction] : [original]),
       }),
       attendance: {
@@ -589,6 +593,24 @@ describe('P22 learning service', () => {
     await expect(instance.correctReviewCompletion(command)).resolves.toMatchObject({
       replay: true,
       completion: { action: 'revoked' },
+    });
+    expect(applyReview).toHaveBeenCalledOnce();
+    expect(applyBadge).toHaveBeenCalledTimes(2);
+
+    successor.current = {
+      ...correction!,
+      eventId: 'restore-2:review',
+      action: 'restored',
+      sequence: 3,
+      idempotencyKey: 'restore-2',
+      requestHash: 'successor-hash',
+      auditRef: 'audit-restore-2',
+      reason: 'Successor evidence restores completion',
+      completedAt: '2026-07-04T10:00:00.000Z',
+    };
+    await expect(instance.correctReviewCompletion(command)).resolves.toMatchObject({
+      replay: true,
+      completion: { eventId: 'revoke-1:review' },
     });
     expect(applyReview).toHaveBeenCalledOnce();
     expect(applyBadge).toHaveBeenCalledTimes(2);
