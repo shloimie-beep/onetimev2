@@ -16,20 +16,21 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
+controller_authorization_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 next_action: >-
-  P22 terminal a5ebe504 is held, not admitted: independent review reproduced one P1 and eight P2 correctness/privacy
-  gaps despite 34 focused passes. Consume READY e49a160d from exact clean head a5ebe504 under claim 4fde7d30 and sole
-  LEARNING_ENGAGEMENT lease e0f2587b to correct only the exact 16 authorized paths. In parallel, consume P21 READY
-  84a38457 from clean head 705030f2, adopt integration d89a0f38, and implement the exact nine-path canonical content
-  aggregate-state writer under claim 06848315 and sole CONTENT_PUBLICATION lease 030212ad. Both workers must push one
-  bounded terminal, release their task lease, preserve null candidate and effects 0/0/0, and stop for independent C00
-  review. No SQL migration, steward application, integration, provider effect, deployment, DNS, send, charge, or
-  customer activation is authorized.
+  P22 terminal 7730bcc2 is held, not admitted: independent review reproduced two P2 correction-identity/replay defects
+  despite 40 focused passes and otherwise-green gates. Consume READY 1566b95c from exact clean head 7730bcc2 under claim
+  61df7589 and sole LEARNING_ENGAGEMENT lease 0ae4f2d7 to change only eight authorized service/contract/repository/runtime
+  paths. Bind correction recalculation to immutable canonical source identities; a verified latest event may repair,
+  while a verified older exact event after a successor succeeds with zero writes. In parallel, P21 continues unchanged
+  under READY 84a38457, claim 06848315, and CONTENT_PUBLICATION lease 030212ad. Both workers must release their task lease,
+  preserve null candidate and effects 0/0/0, push one bounded terminal, and stop for independent C00 review. No SQL
+  migration, steward application, integration, provider effect, deployment, DNS, send, charge, or customer activation
+  is authorized.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: held_pending_corrected_P22_learning_engagement_terminal
+  status: held_pending_P22_canonical_correction_identity_terminal
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   admitted_acknowledgment_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
@@ -198,7 +199,7 @@ production_completion_lanes:
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
+  state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
   authorized_start_integration_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
@@ -206,8 +207,10 @@ successor_dispatch:
   P22_renewal_atomic_claim_reconciled_at: '2026-07-31T06:31:00Z'
   P22_terminal_held_at: '2026-07-31T08:08:00Z'
   P21_P22_correction_dispatch_issued_at: '2026-07-31T08:08:00Z'
-  lease_issued_at: '2026-07-31T08:08:00Z'
-  lease_expires_at: '2026-07-31T10:08:00Z'
+  P22_residual_terminal_held_at: '2026-07-31T08:55:00Z'
+  P22_identity_fix_dispatch_issued_at: '2026-07-31T08:55:00Z'
+  lease_issued_at: '2026-07-31T08:55:00Z'
+  lease_expires_at: '2026-07-31T10:55:00Z'
   ready_queue_published: true
   F02:
     status: blocked
@@ -244,7 +247,7 @@ successor_dispatch:
     lease_released_at: '2026-07-31T04:51:04Z'
   P22:
     status: resume_ready
-    phase: P22_terminal_residual_correctness_privacy_correction
+    phase: P22_canonical_correction_identity_and_old_replay_fix
     atomic_claim_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
     atomic_claim_parent_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
     atomic_claim_tree_sha: 439392091838230e2b03cbbd49ab1517939bb404
@@ -330,6 +333,21 @@ successor_dispatch:
     correction_writer_id: codex-p22-terminal-correction-4fde7d30
     correction_writer_lease_id: e0f2587b-0d2e-4900-966d-56b0fae8dee0
     correction_writer_lease_expires_at: '2026-07-31T10:08:00Z'
+    correction_writer_lease_released_at: '2026-07-31T08:43:00Z'
+    residual_terminal_head_sha: 7730bcc2977d4e1317e7af0757be95afc0e9f47e
+    residual_terminal_parent_sha: d08c113f859c69691110aea8f1621e6f2b1082ba
+    residual_terminal_tree_sha: 22ab9d135f36ea01630b9cbafc613f3bcb04c724
+    residual_terminal_implementation_head_sha: d08c113f859c69691110aea8f1621e6f2b1082ba
+    residual_terminal_implementation_artifact_digest: fcb3f82bcaea5b510e837280bcd3c779794265fb360972cfafc9e5742f0470c5
+    residual_terminal_state_handoff_digest: 84a487f031b962be589624dfba02bba45c461cb57dd36fe76ff1136a936a2059
+    residual_terminal_runtime_triplet_digest: bff30c6c43e812c99e28743737507d61e495d104ab74a7c09e65ff1b1fd46349
+    residual_terminal_review_status: held_two_P2_canonical_source_identity_and_old_attendance_replay
+    identity_fix_ready_entry_payload_digest: 1566b95c9919c7e932c0765979881ac660dfea0120486035dfc5adb1faf322ea
+    identity_fix_authorized_path_inventory_digest: 6147f86796ca9b6201a55d8b70721adeb9a67d80330ffc7e9806e2831be5ce16
+    identity_fix_claim_id: 61df7589-d694-4647-842c-ba2b02ec1911
+    identity_fix_writer_id: codex-p22-attendance-replay-61df7589
+    identity_fix_writer_lease_id: 0ae4f2d7-c79c-4933-9d5e-c6d7c799a246
+    identity_fix_writer_lease_expires_at: '2026-07-31T10:55:00Z'
     effect_locks: []
     external_effects: 0/0/0
   P21:

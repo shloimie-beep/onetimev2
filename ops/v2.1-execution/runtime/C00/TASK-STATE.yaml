@@ -12,11 +12,11 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-31T10:08:00Z'
-last_heartbeat_at: '2026-07-31T08:08:00Z'
-controller_authorization_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
+lease_expires_at: '2026-07-31T10:55:00Z'
+last_heartbeat_at: '2026-07-31T08:55:00Z'
+controller_authorization_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 ready_entry_payload_digest: null
-state_based_on_head_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
+state_based_on_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
@@ -160,6 +160,18 @@ lean_completion_bindings:
     P22_residual_correction_ready_entry_payload_digest: e49a160d367d64be1f158009d21918fd68c3d63ad2ba2c91edf9abe89f39304c
     P22_residual_correction_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
     P22_residual_correction_lease_expires_at: '2026-07-31T10:08:00Z'
+    P22_residual_terminal_head_sha: 7730bcc2977d4e1317e7af0757be95afc0e9f47e
+    P22_residual_terminal_implementation_head_sha: d08c113f859c69691110aea8f1621e6f2b1082ba
+    P22_residual_terminal_state_handoff_digest: 84a487f031b962be589624dfba02bba45c461cb57dd36fe76ff1136a936a2059
+    P22_residual_terminal_runtime_triplet_digest: bff30c6c43e812c99e28743737507d61e495d104ab74a7c09e65ff1b1fd46349
+    P22_residual_terminal_lease_released_at: '2026-07-31T08:43:00Z'
+    P22_residual_terminal_review_status: two_P2_canonical_source_identity_and_old_attendance_replay
+    P22_identity_fix_claim_id: 61df7589-d694-4647-842c-ba2b02ec1911
+    P22_identity_fix_writer_id: codex-p22-attendance-replay-61df7589
+    P22_identity_fix_lease_id: 0ae4f2d7-c79c-4933-9d5e-c6d7c799a246
+    P22_identity_fix_ready_entry_payload_digest: 1566b95c9919c7e932c0765979881ac660dfea0120486035dfc5adb1faf322ea
+    P22_identity_fix_path_inventory_digest: 6147f86796ca9b6201a55d8b70721adeb9a67d80330ffc7e9806e2831be5ce16
+    P22_identity_fix_lease_expires_at: '2026-07-31T10:55:00Z'
     P21_content_state_writer_claim_id: 06848315-08fd-40aa-8ff1-3c5cda4c42e4
     P21_content_state_writer_writer_id: codex-p21-content-state-writer-06848315
     P21_content_state_writer_lease_id: 030212ad-7da5-4877-b29b-85de75a4380c
@@ -953,10 +965,11 @@ completed_steps:
   - independently reconciled P22 renewal checkpoint ef3eb135 as the exact sole runtime-triplet child of 7988604c with canonical raw/pair/triplet/path evidence, unchanged product/request bytes, clean live remote equality, renewal_requested heartbeat 06:13:53Z, fresh claim d8a3ff1d and LEARNING_ENGAGEMENT lease 706d5e11, runtime-only atomic scope, and effects 0/0/0
   - independently reconciled P22 renewal atomic claim 9723a32f as the exact sole runtime-triplet child of ef3eb135 with canonical READY fb370deb, fresh claim/writer/lease bindings, raw/pair/triplet/path evidence, unchanged product/request bytes, clean live remote equality, consumed READY, direct exact-16-path continuation authority, and effects 0/0/0
   - held P22 terminal a5ebe504 after independent review reproduced one P1 and eight P2 correctness/privacy gaps; recorded exact 16-path scope, 34 focused passes, immutable predecessors, released prior lease, clean remote equality, and effects 0/0/0; dispatched one exact residual correction and the disjoint nine-path P21 canonical content-state writer in the same fenced phase
+  - held P22 residual terminal 7730bcc2 after independent review reproduced two remaining P2s despite 40 focused passes; independently verified clean live equality, exact authorized ceiling, immutable request bytes, released lease, lint/format/diff/secret/request gates, and effects 0/0/0; dispatched one exact eight-path canonical source-identity and old-attendance-replay fix while leaving P21 authority unchanged
 remaining_steps:
 - >-
-  Run and independently admit the exact 16-path P22 residual correction from held terminal a5ebe504, closing the one P1,
-  eight P2, and reviewed P3 cleanup without expanding scope or applying any successor request.
+  Run and independently admit the exact eight-path P22 canonical correction-identity and old-replay fix from held terminal
+  7730bcc2, closing the two remaining P2s without changing any steward request or applying shared work.
 - >-
   Run and independently admit the exact nine-path P21 canonical content-state writer from integration d89a0f38,
   including schema-valid registration-003; integrate the writer before P21/P22 server registrations.
@@ -966,12 +979,12 @@ remaining_steps:
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Push this exact control phase and verify remote equality. Then run two disjoint workers: P22 from exact head a5ebe504
-  under READY e49a160d, claim 4fde7d30, and LEARNING_ENGAGEMENT lease e0f2587b; P21 from exact head 705030f2, adopting
-  integration d89a0f38 under READY 84a38457, claim 06848315, and CONTENT_PUBLICATION lease 030212ad. Each changes only
-  its exact authorized paths, releases its lease, pushes one bounded terminal, and stops for independent C00 review.
-  Candidate, SQL migration/allocation/application, shared registration, providers, deployment, DNS, sends, charges,
-  customer activation, and every external effect remain prohibited.
+  Push this exact control phase and verify remote equality. Then run P22 from exact head 7730bcc2 under READY 1566b95c,
+  claim 61df7589, and LEARNING_ENGAGEMENT lease 0ae4f2d7 across only eight authorized paths. P21 continues unchanged
+  under READY 84a38457, claim 06848315, and CONTENT_PUBLICATION lease 030212ad. Each releases its lease, pushes one
+  bounded terminal, and stops for independent C00 review. Candidate, SQL migration/allocation/application, steward
+  application, shared registration, providers, deployment, DNS, sends, charges, customer activation, and every external
+  effect remain prohibited.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -979,13 +992,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
+  current_control_parent_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
       claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-      observed_head: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
-      lease_expires_at: '2026-07-31T10:08:00Z'
+      observed_head: c22354f184f046a1cb817e0c9cd415aec7c37449
+      lease_expires_at: '2026-07-31T10:55:00Z'
       lease_state: active
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -1192,11 +1205,11 @@ orchestration:
       scheduling_state: ready_for_review_full_integrated_at_cecc1c0d
     P22:
       branch: codex/v21-p22-learning-engagement
-      claim_id: 4fde7d30-26be-4792-8406-da4ab8d6cd80
-      observed_head: a5ebe504b464f0ad140f3ab235d682ae79b54822
-      authorized_start_sha: a5ebe504b464f0ad140f3ab235d682ae79b54822
-      lease_expires_at: '2026-07-31T10:08:00Z'
-      scheduling_state: resume_ready_exact_16_path_terminal_residual_correction
+      claim_id: 61df7589-d694-4647-842c-ba2b02ec1911
+      observed_head: 7730bcc2977d4e1317e7af0757be95afc0e9f47e
+      authorized_start_sha: 7730bcc2977d4e1317e7af0757be95afc0e9f47e
+      lease_expires_at: '2026-07-31T10:55:00Z'
+      scheduling_state: resume_ready_exact_8_path_canonical_correction_identity_and_old_replay_fix
     P23:
       branch: codex/v21-p23-student-notifications
       claim_id: null

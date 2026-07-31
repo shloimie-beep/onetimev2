@@ -3433,3 +3433,47 @@ locks remain empty and effects remain `0/0/0`. No migration SQL, allocation,
 steward application, integration, provider action, deployment, DNS, send,
 charge, or customer activation is authorized. The legal bundle still gates
 only `production_broad`.
+
+# P22 residual terminal held; exact identity/replay fix dispatched
+
+P22 pushed residual terminal `7730bcc2977d4e1317e7af0757be95afc0e9f47e`
+over implementation `d08c113f859c69691110aea8f1621e6f2b1082ba`.
+Local, tracking, and live heads are equal; the worktree is clean; the
+cumulative delta remains within the exact 16-path ceiling; 40 focused tests,
+focused lint/format/diff, request validation, immutable-predecessor checks,
+and the 2,754-file secret scan pass. LEARNING_ENGAGEMENT lease
+`e0f2587b-0d2e-4900-966d-56b0fae8dee0` was released at
+`2026-07-31T08:43:00Z`; effects remain `0/0/0`.
+
+Canonical TASK/HANDOFF/NEXT raw SHA-256 values are
+`5cd6db7ae085fc4726e53ad4c0816f2019f237cd2c32c02b31247461da95a59a`,
+`d2875becf53684742058a1245d66b6d7c6c546efac83e81272b7e177673a70b7`,
+and `6d666cc402722605a6dcc80ff7f9566d4d38db369fa8130769b28bc70f29dca1`.
+TASK+HANDOFF is
+`84a487f031b962be589624dfba02bba45c461cb57dd36fe76ff1136a936a2059`;
+the runtime triplet is
+`bff30c6c43e812c99e28743737507d61e495d104ab74a7c09e65ff1b1fd46349`.
+
+Independent review holds admission on exactly two P2s. Older exact P18
+attendance-correction replay still compares only with the latest projection
+metadata and fails after a successor, contrary to the accepted successor
+request. Family correction matching also lacks an immutable originating-event
+identity, so identical actor/reason/audit text from another aggregate can
+satisfy the match. No other P1/P2 was found.
+
+C00 therefore publishes exact-eight-path READY
+`1566b95c9919c7e932c0765979881ac660dfea0120486035dfc5adb1faf322ea`,
+claim `61df7589-d694-4647-842c-ba2b02ec1911`, writer
+`codex-p22-attendance-replay-61df7589`, and sole LEARNING_ENGAGEMENT lease
+`0ae4f2d7-c79c-4933-9d5e-c6d7c799a246` through
+`2026-07-31T10:55:00Z`. The worker must bind attendance, question-recognition,
+and review corrections to verified immutable canonical source identities.
+A verified latest event may repair projection state; a verified older exact
+event after a successor must succeed with zero writes and no overwrite.
+Unknown, mismatched, or cross-aggregate identities fail closed.
+
+P21 continues unchanged under READY `84a38457…`, claim `06848315…`, and
+CONTENT_PUBLICATION lease `030212ad…`. Candidate remains null; effect locks
+remain empty; no steward request is applied. No migration, integration,
+provider action, deployment, DNS, send, charge, customer activation, or other
+external effect is authorized.

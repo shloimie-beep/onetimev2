@@ -183,21 +183,19 @@ blockers:
   - R44
   safe_work_completed: >-
     F02 terminal 22ada24a preserved migration 2251 as the sole attendance write authority, wrote no SQL or allocation,
-    released both leases before expiry, and recorded effects 0/0/0. P22 terminal a5ebe504, implementation 5c7439fa,
-    changed exactly the authorized 16 paths, preserved both predecessor requests, passed 34 focused tests and scoped
-    static/secret/request gates, released lease 706d5e11 at 2026-07-31T07:56:00Z, and recorded effects 0/0/0. Independent
-    terminal review held admission after reproducing one P1 and eight P2 findings: latest revoked review evidence is
-    excluded before badge recalculation; ordinary P18 callbacks require a fabricated Admin; correction actor/reason
-    metadata is not source-bound; older exact correction replay fails after a successor; review proof is cross-class
-    probeable; badge GET leaks persistence/audit internals; idempotency normalization is inconsistent; repository badge
-    semantics are unproved; and the client request retains incorrect approved/published leaderboard wording.
+    released both leases before expiry, and recorded effects 0/0/0. P22 residual terminal 7730bcc2, implementation
+    d08c113f, remained within the authorized 16 paths, preserved both predecessor requests, passed 40 focused tests and
+    scoped lint/format/diff/secret/request gates, released lease e0f2587b at 2026-07-31T08:43:00Z, and recorded effects
+    0/0/0. Independent terminal review closed the prior P1/eight-P2 set except two P2s: older exact attendance-correction
+    replay still fails after a successor, and family correction authorization is not bound to an immutable originating
+    event identity, allowing identical actor/reason/audit text from another aggregate to satisfy the match.
   required_authority_or_input:
-  - Complete the exact 16-path residual correctness/privacy correction under the fresh P22 claim and sole
-    LEARNING_ENGAGEMENT lease; preserve both immutable predecessor requests and effects 0/0/0
-  - Prove latest-revoked recalculation, internal ordinary attendance context, canonical correction metadata binding,
-    old-correction replay after successor, class-bound review proof, privacy-safe badge DTO, canonical idempotency,
-    persisted badge semantics, and corrected approved/published client request wording
-  - Independently review the corrected terminal and admit all five successor requests only if every P1/P2 is closed
+  - Complete the exact eight-path canonical correction-identity and old-replay fix under claim 61df7589 and sole
+    LEARNING_ENGAGEMENT lease 0ae4f2d7; preserve every P22 request byte and effects 0/0/0
+  - Bind attendance, question-recognition, and review corrections to verified immutable canonical source identities;
+    reject unknown/mismatched/cross-aggregate identities, repair only from a verified latest event, and make a verified
+    older exact attendance correction after a successor succeed with zero writes and no overwrite
+  - Independently review the new terminal and admit all five successor requests only if both remaining P2s are closed
   - After independent P22 admission, apply only the corrected migration successor as forward-only migration 2254
     through F02 with clean native PostgreSQL replay and focused positive/negative proof
   - Apply the remaining four corrected shared requests through their exact I36 checkpoints and re-run merged registration checks
@@ -205,7 +203,7 @@ blockers:
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
     provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-  next_check: Re-evaluate only after the fresh exact-16-path P22 correction terminal passes independent review.
+  next_check: Re-evaluate only after the exact-eight-path P22 identity/replay correction terminal passes independent review.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

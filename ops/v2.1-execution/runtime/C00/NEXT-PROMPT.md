@@ -2945,3 +2945,55 @@ steward result, edit shared registration/configuration/barrels, integrate,
 freeze a candidate, inspect or mutate a provider, deploy, change DNS, send,
 charge, activate a customer, or perform any external effect. Legal gates only
 `production_broad`.
+
+# Current instruction: close P22 canonical correction identity and old replay
+
+Resolve the exact pushed control commit containing this instruction from
+control basis `c22354f184f046a1cb817e0c9cd415aec7c37449`. Verify clean
+local/tracking/live P22 head
+`7730bcc2977d4e1317e7af0757be95afc0e9f47e`, READY
+`1566b95c9919c7e932c0765979881ac660dfea0120486035dfc5adb1faf322ea`,
+claim `61df7589-d694-4647-842c-ba2b02ec1911`, writer
+`codex-p22-attendance-replay-61df7589`, and sole LEARNING_ENGAGEMENT lease
+`0ae4f2d7-c79c-4933-9d5e-c6d7c799a246` through
+`2026-07-31T10:55:00Z`.
+
+Change exactly these eight paths:
+
+- `apps/web/src/server/features/learning/service.test.ts`
+- `apps/web/src/server/features/learning/service.ts`
+- `ops/v2.1-execution/runtime/P22/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P22/TASK-STATE.yaml`
+- `packages/contracts/src/learning/index.ts`
+- `packages/db/src/learning/repository.test.ts`
+- `packages/db/src/learning/repository.ts`
+
+Their newline-joined inventory digest is
+`6147f86796ca9b6201a55d8b70721adeb9a67d80330ffc7e9806e2831be5ce16`.
+Preserve every P22 steward request byte-for-byte.
+
+Carry opaque immutable server-derived source identity through audited badge
+correction callbacks: canonical P18 source-event identity/digest for
+attendance, recognition event ID for questions, and review event ID plus
+aggregate key for reviews. Verify identity through canonical reads and bind
+exact scope, Student, class, family, audit reference, reason, correcting
+Admin, and aggregate. Never accept a caller-provided current/replay flag.
+
+Unknown identities and all metadata or aggregate mismatches fail closed. A
+verified latest source event may run audited recalculation and repair a prior
+post-commit failure. A verified older exact event after a successor returns
+idempotent success without writing or overwriting the newer projection. Add
+focused proof for latest replay repair, old-after-successor zero-write success,
+forged identity denial, metadata mismatch denial, and two events sharing
+actor/reason/audit text but having distinct identities. Re-run the existing 40
+focused assertions, focused lint/format/typecheck-delta, exact scope, diff,
+request-byte, and secret gates.
+
+Update the P22 runtime triplet truthfully, release the lease, push one normal
+terminal commit without force, verify live equality and a clean worktree, then
+stop for independent C00 review. P21 continues under its existing authority.
+Do not write SQL, allocate/apply a migration, apply a steward result, edit
+shared registration/configuration/barrels, integrate, freeze a candidate,
+inspect or mutate a provider, deploy, change DNS, send, charge, activate a
+customer, or perform any external effect.
