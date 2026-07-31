@@ -2602,3 +2602,55 @@ Do not add P08/P09 composition or shared registration, apply a steward result,
 edit a migration or database harness, freeze a candidate, inspect or mutate a
 provider, claim a provider lock, deploy, change DNS, migrate a live database,
 send, charge, or activate a customer.
+
+# Current instruction: claim the F02, P12, and P09 successor work atomically
+
+Use exact pushed control parent
+`ce71f41af1c70f689db9b3346ae5dfc643a1344f` and exact integrated I36 terminal
+`d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`. Consume only the three READY
+entries below, from exact clean local/tracking/live task heads, before their
+shared expiry `2026-07-31T05:48:00Z`:
+
+1. F02 READY
+   `d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce`,
+   claim `8041cc43-6a31-443b-87be-ef663f767c80`, writer
+   `codex-f02-migration-2254-8041cc43`, MIGRATION_AUTHORITY lease
+   `55139366-ce78-4536-8cd3-33c08a1aba38`, SCHEMA_CONTRACT lease
+   `0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`, start
+   `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20`;
+2. P12 READY
+   `86d690e8c86c758daef88ce47ac315a753372ab36d83aa7b5cad2c7017ee561b`,
+   claim `dc54e616-260b-4a71-a8e9-f114832ef58f`, writer
+   `codex-p12-name-request-dc54e616`, PARENT_HOUSEHOLD_UI lease
+   `a0982333-1f59-4949-be55-1ded851cc663`, start
+   `4bc6f15c8beffb28dc845d976a62b9c4915a11dc`;
+3. P09 READY
+   `3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c`,
+   claim `129aacb2-3e46-484f-94c1-1b2122b62950`, writer
+   `codex-p09-seat-convergence-129aacb2`, SCHOOL_INQUIRY lease
+   `5238d22d-51eb-4f74-9cec-a0bf337cc72f`, start
+   `a64a0c03edb6ae50023011f470358e9214f1196c`.
+
+For each task, first resolve the exact pushed control commit containing its
+READY entry, verify its task/context/source/package/control-state and
+integration bindings, change exactly that task's runtime TASK-STATE,
+HANDOFF, and NEXT-PROMPT, commit and push normally, verify exact
+local/tracking/live equality, and stop. Do not create the migration or request
+document in this first atomic-claim commit.
+
+On F02, preserve untracked `.codex-lane1-pglite.mjs` exactly at 1,597 bytes and
+SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`;
+never stage, stash, clean, move, delete, or ignore it, and use only an explicit
+three-file staging allowlist.
+
+After all three pushed claims, C00 must independently reconcile exact ancestry,
+three-path scope, READY/control/claim/lease parity, canonical pair/triplet
+digests, source immutability, released-or-live lease truth, remote equality,
+and effects `0/0/0`. Only then may C00 authorize F02 migration 2254, the P12
+request-only successor, and the P09 request-only successor. P10 receives no
+READY now and remains pending the P09 terminal and later C00 admission.
+
+Candidate freezing, provider locks or effects, deployment, DNS, live database
+migration, sends, charges, activation, and broad production remain withheld.
+The legal bundle gates only `production_broad`.

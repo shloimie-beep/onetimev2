@@ -3041,3 +3041,60 @@ provider effect, freeze a candidate, deploy, change DNS, send, charge, or
 activate a customer. In parallel, only read-only preflight for P09's missing
 signed-out GET `/school` and Admin-authorized configuration surface is allowed.
 Legal remains a `production_broad`-only gate.
+
+# I36 terminal reconciliation and three-way atomic-claim dispatch
+
+From exact control basis
+`ce71f41af1c70f689db9b3346ae5dfc643a1344f`, C00 independently reconciled
+I36 terminal `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9` as the sole child of
+`2e62d79d0122360155dd10da9c2b2c13892eff89`, with exact tree
+`56dc54f5aa494c36a767313097e94e8489c9d624`. The terminal changes only the
+three deterministic Prettier outputs and the I36 runtime triplet. Canonical
+state/HANDOFF and runtime-triplet digests are
+`8c1a2e892f3fb1b7e1e26af0449ea5a355476590b9bbd8077fdb13082af9ac70`
+and
+`163295a655e22421e633e2dbf371f5b04dae4cc821ea03b81beec9a540bc3acd`.
+Worker and independent C00 evidence passed typecheck, focused suites, native
+PostgreSQL 18.4 lifecycle and six-way concurrency, Chromium Parent
+reload/logout, production build, all-ten lint and formatting, secret, YAML,
+scope, hash, ancestry, and remote-equality gates. All four I36 leases were
+released at `2026-07-31T03:31:32Z`; effects remain `0/0/0`.
+
+C00 issued three disjoint READY entries, each expiring
+`2026-07-31T05:48:00Z`, and authorized only a first runtime-triplet atomic
+claim:
+
+- F02: READY
+  `d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce`,
+  claim `8041cc43-6a31-443b-87be-ef663f767c80`, MIGRATION_AUTHORITY lease
+  `55139366-ce78-4536-8cd3-33c08a1aba38`, SCHEMA_CONTRACT lease
+  `0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`, and exact start
+  `9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20`;
+- P12: READY
+  `86d690e8c86c758daef88ce47ac315a753372ab36d83aa7b5cad2c7017ee561b`,
+  claim `dc54e616-260b-4a71-a8e9-f114832ef58f`,
+  PARENT_HOUSEHOLD_UI lease
+  `a0982333-1f59-4949-be55-1ded851cc663`, and exact start
+  `4bc6f15c8beffb28dc845d976a62b9c4915a11dc`;
+- P09: READY
+  `3e3462d65c63269f5623251cbb4f65b0808b20b11fc37c12a38ebf616798cc0c`,
+  claim `129aacb2-3e46-484f-94c1-1b2122b62950`, SCHOOL_INQUIRY lease
+  `5238d22d-51eb-4f74-9cec-a0bf337cc72f`, and exact start
+  `a64a0c03edb6ae50023011f470358e9214f1196c`.
+
+Each worker must publish only its runtime triplet, verify exact
+local/tracking/live equality, and stop. Migration 2254, both successor request
+documents, product work, integration, and steward application remain withheld
+until C00 reconciles those atomic claims. P10 receives no READY and remains
+pending P09 terminal reconciliation and later C00 admission.
+
+F02 has one protected pre-existing untracked scratch helper,
+`.codex-lane1-pglite.mjs`, 1,597 bytes with SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+It must remain byte-identical and untracked; stage only the three explicit
+runtime files.
+
+Candidate remains null, all 14 provider locks remain unclaimed, and external
+effects remain `0/0/0`. No provider, deployment, DNS, live-migration, send,
+charge, activation, or legal-bundle action is authorized by this dispatch.
+Legal continues to gate only `production_broad`.
