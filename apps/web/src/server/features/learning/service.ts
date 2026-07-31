@@ -1,8 +1,9 @@
 import { createHash } from 'node:crypto';
 import type {
   AnnouncementRead,
+  AttendanceCorrectionSource,
   AttendanceRecord,
-  BadgeFamily,
+  BadgeCorrection,
   CorrectReviewCompletionCommand,
   CorrectQuestionRecognitionCommand,
   LearningActor,
@@ -120,12 +121,17 @@ export function createLearningEngagementService(input: {
               family: 'curious_learner',
               auditRef: trustedCommand.auditRef,
               reason: trustedCommand.reason,
+              sourceIdentity: {
+                kind: 'question_recognition',
+                eventId: latestRecognition.eventId,
+              },
             },
           );
         }
         return { question: current, replay: true, effects: planned.effects };
       }
       if (!planned.mutation) throw new Error('learning_recognition_plan_missing');
+      if (!planned.mutation.recognition) throw new Error('learning_recognition_plan_missing_event');
       const persisted = await input.repository.applyQuestionMutation(planned.mutation);
       await service.recalculateBadgeProjection(
         trustedCommand.actor,
@@ -135,6 +141,10 @@ export function createLearningEngagementService(input: {
           family: 'curious_learner',
           auditRef: trustedCommand.auditRef,
           reason: trustedCommand.reason,
+          sourceIdentity: {
+            kind: 'question_recognition',
+            eventId: planned.mutation.recognition.eventId,
+          },
         },
       );
       return {
@@ -201,7 +211,7 @@ export function createLearningEngagementService(input: {
       context: LearningActor | LearningProjectionChangeContext,
       studentId: string,
       classId: string,
-      correction?: { family: BadgeFamily; auditRef: string; reason: string },
+      correction?: BadgeCorrection,
     ) {
       const actor = isLearningActor(context) ? context : null;
       if (actor && !actor.classIds.includes(classId)) {
@@ -238,17 +248,24 @@ export function createLearningEngagementService(input: {
       ) {
         denied('The Student is outside the canonical class enrollment.');
       }
-      const [attendance, schedule, questionRecognitionFacts, reviews] = await Promise.all([
-        input.attendance.listAttendance(context),
-        input.attendance.listScheduledOccurrenceCoverage(
-          context,
-          classId,
-          new Date(0).toISOString(),
-          asOf,
-        ),
-        input.repository.listQuestionRecognitionFacts(context, classId, studentId),
-        input.repository.listReviewCompletions(context),
-      ]);
+      const [attendance, schedule, questionRecognitionFacts, reviews, attendanceCorrectionSource] =
+        await Promise.all([
+          input.attendance.listAttendance(context),
+          input.attendance.listScheduledOccurrenceCoverage(
+            context,
+            classId,
+            new Date(0).toISOString(),
+            asOf,
+          ),
+          input.repository.listQuestionRecognitionFacts(context, classId, studentId),
+          input.repository.listReviewCompletions(context),
+          correction?.sourceIdentity.kind === 'attendance'
+            ? input.attendance.getAttendanceCorrectionSource(
+                context,
+                correction.sourceIdentity.eventId,
+              )
+            : Promise.resolve(null),
+        ]);
       const visibleAttendance = actor ? attendanceVisibleTo(actor, attendance) : attendance;
       const scheduledOccurrenceIds = schedule
         .filter(
@@ -294,6 +311,7 @@ export function createLearningEngagementService(input: {
             occurrenceId: event.occurrenceId,
             present: event.present,
             correctionAuditRef: event.correctionAuditRef,
+            correctionEventId: event.correctionEventId ?? null,
             correctionSourceDigest: event.correctionSourceDigest,
             correctionReason: event.correctionReason,
             correctedBy: event.correctedBy,
@@ -302,6 +320,7 @@ export function createLearningEngagementService(input: {
         questions: questionRecognitionFacts
           .map((fact) => ({
             questionId: fact.questionId,
+            latestEventId: fact.latestEventId ?? null,
             eligible: fact.eligible,
             latestSequence: fact.latestSequence,
             latestAuditRef: fact.latestAuditRef,
@@ -313,6 +332,8 @@ export function createLearningEngagementService(input: {
         reviews: badgeInput.reviews
           .map((event) => ({
             reviewItemId: event.reviewItemId,
+            eventId: event.eventId,
+            aggregateKey: reviewAggregateKey(event),
             sequence: event.sequence,
             action: event.action,
             auditRef: event.auditRef,
@@ -349,18 +370,28 @@ export function createLearningEngagementService(input: {
           badgeInput.reviews.flatMap((event) => [event.auditRef, event.publicationAuditRef]),
         ),
       } as const;
-      if (
-        correction &&
-        (!actor ||
-          !canonicalCorrectionMatches(
-            correction,
-            actor.principalId,
-            badgeInput.attendance,
-            questionRecognitionFacts,
-            badgeInput.reviews,
-          ))
-      ) {
-        denied('Badge correction requires matching latest canonical source evidence.');
+      if (correction) {
+        const correctionStatus = actor
+          ? canonicalCorrectionStatus(
+              correction,
+              actor,
+              studentId,
+              classId,
+              learner.householdId,
+              attendanceCorrectionSource,
+              badgeInput.attendance,
+              questionRecognitionFacts,
+              badgeInput.reviews,
+            )
+          : 'invalid';
+        if (correctionStatus === 'invalid') {
+          denied('Badge correction requires exact canonical source identity and metadata.');
+        }
+        if (correctionStatus === 'older') {
+          return (await input.repository.listBadgeAwardProjections(context, classId, studentId))
+            .filter((award) => award.state === 'awarded')
+            .map(publicBadge);
+        }
       }
       const persisted = await input.repository.applyBadgeRecalculation({
         scope: scopeOf(context),
@@ -499,6 +530,11 @@ export function createLearningEngagementService(input: {
               family: 'review_ready',
               auditRef: trustedCommand.auditRef,
               reason: trustedCommand.reason,
+              sourceIdentity: {
+                kind: 'review_completion',
+                eventId: replay.eventId,
+                aggregateKey: reviewAggregateKey(replay),
+              },
             },
           );
         }
@@ -532,6 +568,11 @@ export function createLearningEngagementService(input: {
           family: 'review_ready',
           auditRef: trustedCommand.auditRef,
           reason: trustedCommand.reason,
+          sourceIdentity: {
+            kind: 'review_completion',
+            eventId: persisted.completion.eventId,
+            aggregateKey: reviewAggregateKey(persisted.completion),
+          },
         },
       );
       return persisted;
@@ -540,7 +581,11 @@ export function createLearningEngagementService(input: {
       context: LearningActor | LearningProjectionChangeContext,
       studentId: string,
       classId: string,
-      correction?: { auditRef: string; reason: string },
+      correction?: {
+        auditRef: string;
+        reason: string;
+        sourceIdentity: { kind: 'attendance'; eventId: string };
+      },
     ) {
       if (correction) {
         assertCanonicalCorrectionReason(correction.reason);
@@ -567,6 +612,7 @@ export function createLearningEngagementService(input: {
               family: 'consistency',
               auditRef: correction.auditRef,
               reason: correction.reason,
+              sourceIdentity: correction.sourceIdentity,
             }
           : undefined,
       );
@@ -677,36 +723,115 @@ function isLearningActor(
   return 'role' in value;
 }
 
-function canonicalCorrectionMatches(
-  correction: { family: BadgeFamily; auditRef: string; reason: string },
-  actorId: string,
+function canonicalCorrectionStatus(
+  correction: BadgeCorrection,
+  actor: LearningActor,
+  studentId: string,
+  classId: string,
+  householdId: string,
+  attendanceSource: AttendanceCorrectionSource | null,
   attendance: readonly AttendanceRecord[],
   questions: readonly QuestionRecognitionFact[],
   reviews: readonly ReviewCompletion[],
-) {
+): 'latest' | 'older' | 'invalid' {
+  if (actor.role !== 'admin') return 'invalid';
   if (correction.family === 'consistency') {
+    if (
+      correction.sourceIdentity.kind !== 'attendance' ||
+      !attendanceSource ||
+      attendanceSource.eventId !== correction.sourceIdentity.eventId ||
+      !sameScope(actor, attendanceSource) ||
+      attendanceSource.studentId !== studentId ||
+      attendanceSource.classId !== classId ||
+      attendanceSource.householdId !== householdId ||
+      attendanceSource.auditRef !== correction.auditRef ||
+      attendanceSource.reason !== correction.reason ||
+      attendanceSource.correctedByAdminId !== actor.principalId
+    ) {
+      return 'invalid';
+    }
+    if (!attendanceSource.isLatestForAggregate) return 'older';
     return attendance.some(
       (event) =>
-        event.correctionAuditRef === correction.auditRef &&
-        event.correctionReason === correction.reason &&
-        event.correctedBy === actorId,
-    );
+        event.occurrenceId === attendanceSource.occurrenceId &&
+        event.studentId === studentId &&
+        event.classId === classId &&
+        event.householdId === householdId &&
+        event.correctionEventId === attendanceSource.eventId &&
+        event.correctionSourceDigest === attendanceSource.sourceDigest &&
+        event.correctionAuditRef === attendanceSource.auditRef &&
+        event.correctionReason === attendanceSource.reason &&
+        event.correctedBy === actor.principalId,
+    )
+      ? 'latest'
+      : 'invalid';
   }
   if (correction.family === 'curious_learner') {
     return questions.some(
       (fact) =>
+        correction.sourceIdentity.kind === 'question_recognition' &&
+        sameScope(actor, fact) &&
+        fact.latestEventId === correction.sourceIdentity.eventId &&
+        fact.studentId === studentId &&
+        fact.classId === classId &&
+        fact.householdId === householdId &&
         fact.latestSource === 'admin_correction' &&
         fact.latestAuditRef === correction.auditRef &&
         fact.latestReason === correction.reason &&
-        fact.latestActorId === actorId,
-    );
+        fact.latestActorId === actor.principalId,
+    )
+      ? 'latest'
+      : 'invalid';
   }
   return reviews.some(
     (event) =>
+      correction.sourceIdentity.kind === 'review_completion' &&
+      sameScope(actor, event) &&
+      event.eventId === correction.sourceIdentity.eventId &&
+      reviewAggregateKey(event) === correction.sourceIdentity.aggregateKey &&
+      event.studentId === studentId &&
+      event.classId === classId &&
+      event.householdId === householdId &&
       event.source === 'admin_correction' &&
       event.auditRef === correction.auditRef &&
       event.reason === correction.reason &&
-      event.completedBy === actorId,
+      event.completedBy === actor.principalId,
+  )
+    ? 'latest'
+    : 'invalid';
+}
+
+function reviewAggregateKey(
+  event: Pick<
+    ReviewCompletion,
+    | 'accountKey'
+    | 'productKey'
+    | 'runtimeTier'
+    | 'verificationEnvironmentId'
+    | 'reviewItemId'
+    | 'studentId'
+    | 'classId'
+    | 'householdId'
+  >,
+) {
+  return digest({
+    accountKey: event.accountKey,
+    productKey: event.productKey,
+    runtimeTier: event.runtimeTier,
+    verificationEnvironmentId: event.verificationEnvironmentId,
+    reviewItemId: event.reviewItemId,
+    studentId: event.studentId,
+    classId: event.classId,
+    householdId: event.householdId,
+  });
+}
+
+function sameScope(left: LearningScope, right: LearningScope) {
+  return (
+    left.accountKey === right.accountKey &&
+    left.productKey === right.productKey &&
+    left.runtimeTier === right.runtimeTier &&
+    left.verificationEnvironmentId === right.verificationEnvironmentId
   );
 }
 

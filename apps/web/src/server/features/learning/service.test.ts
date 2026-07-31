@@ -1,6 +1,10 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import type {
+  AttendanceCorrectionSource,
+  AttendanceRecord,
   LearningActor,
+  LearningAttendanceReadPort,
   LearningEngagementRepository,
   LearningQuestion,
   QuestionMutation,
@@ -33,6 +37,89 @@ const classBQuestion: LearningQuestion = {
   submittedAt: '2026-07-01T10:00:00.000Z',
   updatedAt: '2026-07-01T10:00:00.000Z',
 };
+
+const learner = {
+  ...scope,
+  studentId: 'student-1',
+  householdId: 'household-1',
+  classId: 'class-a',
+  enrollmentId: 'enrollment-1',
+  actualName: 'Student One',
+  displayName: null,
+};
+
+function correctedAttendance(overrides: Partial<AttendanceRecord> = {}): AttendanceRecord {
+  return {
+    ...scope,
+    occurrenceId: 'occurrence-1',
+    classId: 'class-a',
+    studentId: 'student-1',
+    householdId: 'household-1',
+    enrollmentId: 'enrollment-1',
+    identityBindingVerified: true,
+    segmentIds: [],
+    minutes: 45,
+    present: true,
+    occurredAt: '2026-07-01T10:00:00.000Z',
+    correctedAt: '2026-07-03T10:00:00.000Z',
+    correctionReason: 'Canonical attendance correction',
+    correctedBy: 'admin-a',
+    correctionAuditRef: 'audit-attendance-1',
+    correctionEventId: 'attendance-correction-1',
+    correctionSourceDigest: 'a'.repeat(64),
+    ...overrides,
+  };
+}
+
+function attendanceCorrectionSource(
+  overrides: Partial<AttendanceCorrectionSource> = {},
+): AttendanceCorrectionSource {
+  return {
+    ...scope,
+    eventId: 'attendance-correction-1',
+    sourceDigest: 'a'.repeat(64),
+    occurrenceId: 'occurrence-1',
+    classId: 'class-a',
+    studentId: 'student-1',
+    householdId: 'household-1',
+    auditRef: 'audit-attendance-1',
+    reason: 'Canonical attendance correction',
+    correctedByAdminId: 'admin-a',
+    isLatestForAggregate: true,
+    ...overrides,
+  };
+}
+
+function reviewAggregateIdentity(event: ReviewCompletion) {
+  return createHash('sha256')
+    .update(
+      JSON.stringify({
+        accountKey: event.accountKey,
+        classId: event.classId,
+        householdId: event.householdId,
+        productKey: event.productKey,
+        reviewItemId: event.reviewItemId,
+        runtimeTier: event.runtimeTier,
+        studentId: event.studentId,
+        verificationEnvironmentId: event.verificationEnvironmentId,
+      }),
+    )
+    .digest('hex');
+}
+
+function correctionService(
+  repo: LearningEngagementRepository,
+  attendance: LearningAttendanceReadPort,
+) {
+  return createLearningEngagementService({
+    repository: repo,
+    attendance,
+    identity: { listLearners: async () => [learner] },
+    recognitionConsent: { listRecognitionConsent: async () => [] },
+    reviewItems: { getAdminPublishedReviewItem: async () => null },
+    aliasHmacKey: 'test-only-hmac-key',
+  });
+}
 
 function repository(
   overrides: Partial<LearningEngagementRepository> = {},
@@ -86,6 +173,7 @@ function service(repo: LearningEngagementRepository) {
     repository: repo,
     attendance: {
       listAttendance: async () => [],
+      getAttendanceCorrectionSource: async () => null,
       listScheduledOccurrenceCoverage: async () => [],
     },
     identity: { listLearners: async () => [] },
@@ -243,6 +331,7 @@ describe('P22 learning service', () => {
       }),
       attendance: {
         listAttendance: vi.fn(),
+        getAttendanceCorrectionSource: vi.fn(),
         listScheduledOccurrenceCoverage: vi.fn(),
       },
       identity: {
@@ -307,6 +396,7 @@ describe('P22 learning service', () => {
             eligible: false,
             qualifiedAt: '2026-07-01T10:00:00.000Z',
             approvedAt: null,
+            latestEventId: 'disable-1:recognition',
             latestSequence: 2,
             latestSource: 'admin_correction',
             latestAuditRef: 'audit-disable-1',
@@ -317,6 +407,7 @@ describe('P22 learning service', () => {
       }),
       attendance: {
         listAttendance: async () => [],
+        getAttendanceCorrectionSource: async () => null,
         listScheduledOccurrenceCoverage: async () => [],
       },
       identity: {
@@ -340,6 +431,10 @@ describe('P22 learning service', () => {
       family: 'curious_learner',
       auditRef: 'audit-disable-1',
       reason: 'Question was duplicated',
+      sourceIdentity: {
+        kind: 'question_recognition',
+        eventId: 'disable-1:recognition',
+      },
     });
     expect(apply).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -358,8 +453,23 @@ describe('P22 learning service', () => {
         family: 'curious_learner',
         auditRef: 'audit-disable-1',
         reason: 'A different reason',
+        sourceIdentity: {
+          kind: 'question_recognition',
+          eventId: 'disable-1:recognition',
+        },
       }),
-    ).rejects.toThrow(/latest canonical source evidence/);
+    ).rejects.toThrow(/exact canonical source identity and metadata/);
+    await expect(
+      instance.recalculateBadgeProjection(admin, 'student-1', 'class-a', {
+        family: 'curious_learner',
+        auditRef: 'audit-disable-1',
+        reason: 'Question was duplicated',
+        sourceIdentity: {
+          kind: 'question_recognition',
+          eventId: 'forged-recognition-event',
+        },
+      }),
+    ).rejects.toThrow(/exact canonical source identity and metadata/);
     expect(apply).toHaveBeenCalledOnce();
   });
 
@@ -391,6 +501,7 @@ describe('P22 learning service', () => {
             correctionAuditRef: null,
             correctionSourceDigest: null,
           })),
+        getAttendanceCorrectionSource: async () => null,
         listScheduledOccurrenceCoverage: async () =>
           occurrenceIds.map((occurrenceId, index) => ({
             ...scope,
@@ -442,6 +553,176 @@ describe('P22 learning service', () => {
     );
   });
 
+  it('repairs a failed latest attendance-correction projection from its immutable source event', async () => {
+    const apply = vi
+      .fn<LearningEngagementRepository['applyBadgeRecalculation']>()
+      .mockRejectedValueOnce(new Error('badge_projection_temporarily_unavailable'))
+      .mockResolvedValue({ awards: [], replay: false });
+    const source = attendanceCorrectionSource();
+    const getSource = vi.fn(async () => source);
+    const instance = correctionService(repository({ applyBadgeRecalculation: apply }), {
+      listAttendance: async () => [correctedAttendance()],
+      getAttendanceCorrectionSource: getSource,
+      listScheduledOccurrenceCoverage: async () => [
+        {
+          ...scope,
+          occurrenceId: 'occurrence-1',
+          classId: 'class-a',
+          studentId: 'student-1',
+          enrollmentId: 'enrollment-1',
+          identityBindingVerified: true,
+          occurredAt: '2026-07-01T10:00:00.000Z',
+        },
+      ],
+    });
+    const correction = {
+      auditRef: source.auditRef,
+      reason: source.reason,
+      sourceIdentity: { kind: 'attendance' as const, eventId: source.eventId },
+    };
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(
+        admin,
+        'student-1',
+        'class-a',
+        correction,
+      ),
+    ).rejects.toThrow(/badge_projection_temporarily_unavailable/);
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(
+        admin,
+        'student-1',
+        'class-a',
+        correction,
+      ),
+    ).resolves.toEqual([]);
+    expect(getSource).toHaveBeenCalledWith(
+      expect.objectContaining(scope),
+      'attendance-correction-1',
+    );
+    expect(apply).toHaveBeenCalledTimes(2);
+  });
+
+  it('no-write succeeds for a verified older attendance correction when a same-metadata successor exists', async () => {
+    const apply = vi.fn<LearningEngagementRepository['applyBadgeRecalculation']>(async () => ({
+      awards: [],
+      replay: false,
+    }));
+    const listAwards = vi.fn<LearningEngagementRepository['listBadgeAwardProjections']>(
+      async () => [],
+    );
+    const oldSource = attendanceCorrectionSource({
+      eventId: 'attendance-correction-old',
+      sourceDigest: 'a'.repeat(64),
+      isLatestForAggregate: false,
+    });
+    const successorSource = attendanceCorrectionSource({
+      eventId: 'attendance-correction-successor',
+      sourceDigest: 'b'.repeat(64),
+      isLatestForAggregate: true,
+    });
+    const getSource = vi.fn(async (_scope, eventId: string) =>
+      eventId === oldSource.eventId
+        ? oldSource
+        : eventId === successorSource.eventId
+          ? successorSource
+          : null,
+    );
+    const instance = correctionService(
+      repository({
+        applyBadgeRecalculation: apply,
+        listBadgeAwardProjections: listAwards,
+      }),
+      {
+        listAttendance: async () => [
+          correctedAttendance({
+            correctionEventId: successorSource.eventId,
+            correctionSourceDigest: successorSource.sourceDigest,
+          }),
+        ],
+        getAttendanceCorrectionSource: getSource,
+        listScheduledOccurrenceCoverage: async () => [],
+      },
+    );
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a', {
+        auditRef: oldSource.auditRef,
+        reason: oldSource.reason,
+        sourceIdentity: { kind: 'attendance', eventId: oldSource.eventId },
+      }),
+    ).resolves.toEqual([]);
+    expect(listAwards).toHaveBeenCalledOnce();
+    expect(apply).not.toHaveBeenCalled();
+
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a', {
+        auditRef: successorSource.auditRef,
+        reason: successorSource.reason,
+        sourceIdentity: { kind: 'attendance', eventId: successorSource.eventId },
+      }),
+    ).resolves.toEqual([]);
+    expect(apply).toHaveBeenCalledOnce();
+  });
+
+  it('denies unknown, metadata-mismatched, and cross-aggregate attendance identities without writes', async () => {
+    const apply = vi.fn<LearningEngagementRepository['applyBadgeRecalculation']>();
+    const canonical = attendanceCorrectionSource();
+    const crossAggregate = attendanceCorrectionSource({
+      eventId: 'attendance-correction-cross-student',
+      studentId: 'student-2',
+      householdId: 'household-2',
+    });
+    const digestMismatch = attendanceCorrectionSource({
+      eventId: 'attendance-correction-digest-mismatch',
+      sourceDigest: 'c'.repeat(64),
+    });
+    const getSource = vi.fn(async (_scope, eventId: string) => {
+      if (eventId === canonical.eventId) return canonical;
+      if (eventId === crossAggregate.eventId) return crossAggregate;
+      if (eventId === digestMismatch.eventId) return digestMismatch;
+      return null;
+    });
+    const instance = correctionService(repository({ applyBadgeRecalculation: apply }), {
+      listAttendance: async () => [
+        correctedAttendance({
+          correctionEventId: digestMismatch.eventId,
+          correctionSourceDigest: 'd'.repeat(64),
+        }),
+      ],
+      getAttendanceCorrectionSource: getSource,
+      listScheduledOccurrenceCoverage: async () => [],
+    });
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a', {
+        auditRef: canonical.auditRef,
+        reason: canonical.reason,
+        sourceIdentity: { kind: 'attendance', eventId: 'forged-event' },
+      }),
+    ).rejects.toThrow(/exact canonical source identity and metadata/);
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a', {
+        auditRef: canonical.auditRef,
+        reason: 'Different canonical reason',
+        sourceIdentity: { kind: 'attendance', eventId: canonical.eventId },
+      }),
+    ).rejects.toThrow(/exact canonical source identity and metadata/);
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a', {
+        auditRef: crossAggregate.auditRef,
+        reason: crossAggregate.reason,
+        sourceIdentity: { kind: 'attendance', eventId: crossAggregate.eventId },
+      }),
+    ).rejects.toThrow(/exact canonical source identity and metadata/);
+    await expect(
+      instance.recalculateBadgesAfterAttendanceProjectionChange(admin, 'student-1', 'class-a', {
+        auditRef: digestMismatch.auditRef,
+        reason: digestMismatch.reason,
+        sourceIdentity: { kind: 'attendance', eventId: digestMismatch.eventId },
+      }),
+    ).rejects.toThrow(/exact canonical source identity and metadata/);
+    expect(apply).not.toHaveBeenCalled();
+  });
+
   it('repairs a failed post-commit badge recalculation on exact source-event replay', async () => {
     let committedTransition: QuestionMutation['transition'] | undefined;
     const applyQuestion = vi.fn<LearningEngagementRepository['applyQuestionMutation']>(
@@ -466,6 +747,7 @@ describe('P22 learning service', () => {
       }),
       attendance: {
         listAttendance: async () => [],
+        getAttendanceCorrectionSource: async () => null,
         listScheduledOccurrenceCoverage: async () => [],
       },
       identity: {
@@ -526,6 +808,7 @@ describe('P22 learning service', () => {
     };
     let correction: ReviewCompletion | undefined;
     const successor: { current: ReviewCompletion | undefined } = { current: undefined };
+    const otherAggregate: { current: ReviewCompletion | undefined } = { current: undefined };
     const applyReview = vi.fn<LearningEngagementRepository['applyReviewCompletion']>(
       async (completion) => {
         correction = completion;
@@ -544,10 +827,14 @@ describe('P22 learning service', () => {
           correction
             ? [original, correction, ...(successor.current ? [successor.current] : [])]
             : [original],
-        listReviewCompletions: async () => (correction ? [correction] : [original]),
+        listReviewCompletions: async () =>
+          correction
+            ? [correction, ...(otherAggregate.current ? [otherAggregate.current] : [])]
+            : [original],
       }),
       attendance: {
         listAttendance: async () => [],
+        getAttendanceCorrectionSource: async () => null,
         listScheduledOccurrenceCoverage: async () => [],
       },
       identity: {
@@ -596,6 +883,26 @@ describe('P22 learning service', () => {
     });
     expect(applyReview).toHaveBeenCalledOnce();
     expect(applyBadge).toHaveBeenCalledTimes(2);
+    otherAggregate.current = {
+      ...correction!,
+      eventId: 'revoke-other-aggregate:review',
+      reviewItemId: 'review-2',
+      idempotencyKey: 'revoke-other-aggregate',
+      requestHash: 'other-aggregate-hash',
+    };
+    await expect(
+      instance.recalculateBadgeProjection(admin, 'student-1', 'class-a', {
+        family: 'review_ready',
+        auditRef: 'audit-revoke-1',
+        reason: 'Completion was recorded in error',
+        sourceIdentity: {
+          kind: 'review_completion',
+          eventId: 'revoke-1:review',
+          aggregateKey: reviewAggregateIdentity(otherAggregate.current),
+        },
+      }),
+    ).rejects.toThrow(/exact canonical source identity and metadata/);
+    expect(applyBadge).toHaveBeenCalledTimes(2);
 
     successor.current = {
       ...correction!,
@@ -623,6 +930,7 @@ describe('P22 learning service', () => {
       repository: repository({ listReviewCompletionEvents: history }),
       attendance: {
         listAttendance: async () => [],
+        getAttendanceCorrectionSource: async () => null,
         listScheduledOccurrenceCoverage: async () => [],
       },
       identity: { listLearners: async () => [] },
@@ -675,6 +983,7 @@ describe('P22 learning service', () => {
       repository: repository({ applyReviewCompletion: apply }),
       attendance: {
         listAttendance: async () => [],
+        getAttendanceCorrectionSource: async () => null,
         listScheduledOccurrenceCoverage: async () => [],
       },
       identity: {
@@ -711,6 +1020,7 @@ describe('P22 learning service', () => {
       repository: repository({ applyReviewCompletion: apply }),
       attendance: {
         listAttendance: async () => [],
+        getAttendanceCorrectionSource: async () => null,
         listScheduledOccurrenceCoverage: async () => [],
       },
       identity: { listLearners: async () => [] },

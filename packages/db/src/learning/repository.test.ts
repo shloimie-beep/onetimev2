@@ -6,7 +6,10 @@ import type {
   LearningBadgeAwardProjection,
   QuestionMutation,
 } from '../../../contracts/src/learning/index.ts';
-import { createLearningEngagementRepository } from './repository.ts';
+import {
+  createLearningCanonicalReadPorts,
+  createLearningEngagementRepository,
+} from './repository.ts';
 
 const source = readFileSync(new URL('./repository.ts', import.meta.url), 'utf8');
 const recognitionFactQuery = source.slice(
@@ -221,12 +224,76 @@ describe('P22 PostgreSQL repository', () => {
     expect(source).toContain('listScheduledOccurrenceCoverage');
     expect(source).toContain('occurrence.starts_at >= enrollment.effective_at');
     expect(recognitionFactQuery).toContain('question.learner_key, question.household_key');
+    expect(recognitionFactQuery).toContain('recognition.recognition_event_id');
     expect(recognitionFactQuery).toContain("event.to_state IN ('approved_for_class', 'published')");
     expect(recognitionFactQuery).toContain('qualification.qualified_at, approval.approved_at');
     expect(source).toContain('AND class_key = $7 AND household_key = $8');
     expect(source).toContain(
       "attendance.reconciliation_state IN (\n                'provisional', 'provider_verified', 'provider_mismatch', 'admin_corrected'",
     );
+    expect(source).toContain('correction.attendance_event_id AS correction_event_id');
+  });
+
+  it('resolves an immutable attendance correction identity and derives latest status canonically', async () => {
+    const fake = pool([
+      () => ({
+        rows: [
+          {
+            account_key: scope.accountKey,
+            product_key: scope.productKey,
+            runtime_tier: scope.runtimeTier,
+            verification_environment_id: scope.verificationEnvironmentId,
+            attendance_event_id: 'attendance-correction-1',
+            source_event_ref_digest: 'a'.repeat(64),
+            occurrence_id: 'occurrence-1',
+            class_key: 'class-a',
+            student_id: 'student-1',
+            household_key: 'household-1',
+            audit_ref: 'audit-attendance-1',
+            correction_reason: 'Canonical attendance correction',
+            correction_admin_id: 'admin-1',
+            is_latest_for_aggregate: false,
+          },
+        ],
+        rowCount: 1,
+      }),
+    ]);
+    await expect(
+      createLearningCanonicalReadPorts(
+        fake.value as never,
+      ).attendance.getAttendanceCorrectionSource(scope, 'attendance-correction-1'),
+    ).resolves.toEqual({
+      ...scope,
+      eventId: 'attendance-correction-1',
+      sourceDigest: 'a'.repeat(64),
+      occurrenceId: 'occurrence-1',
+      classId: 'class-a',
+      studentId: 'student-1',
+      householdId: 'household-1',
+      auditRef: 'audit-attendance-1',
+      reason: 'Canonical attendance correction',
+      correctedByAdminId: 'admin-1',
+      isLatestForAggregate: false,
+    });
+    expect(fake.parameters[0]).toEqual([...Object.values(scope), 'attendance-correction-1']);
+    expect(fake.sql[0]).toContain('event.attendance_event_id = $5');
+    expect(fake.sql[0]).toContain('NOT EXISTS');
+    expect(fake.sql[0]).toContain("successor.source = 'admin_correction'");
+    expect(fake.sql[0]).toContain("successor.event_kind = 'manual_correction'");
+    expect(fake.sql[0]).toContain('successor.attendance_event_id > event.attendance_event_id');
+    expect(fake.sql[0]).toContain("event.source = 'admin_correction'");
+
+    const ambiguous = pool([
+      () => ({
+        rows: [{ attendance_event_id: 'attendance-correction-1' }, { attendance_event_id: 'x' }],
+        rowCount: 2,
+      }),
+    ]);
+    await expect(
+      createLearningCanonicalReadPorts(
+        ambiguous.value as never,
+      ).attendance.getAttendanceCorrectionSource(scope, 'attendance-correction-1'),
+    ).resolves.toBeNull();
   });
 
   it('proves review publication from the canonical occurrence and approved review artifact', () => {

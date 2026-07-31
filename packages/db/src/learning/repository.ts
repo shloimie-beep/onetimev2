@@ -1,5 +1,6 @@
 import type {
   AnnouncementRead,
+  AttendanceCorrectionSource,
   AttendanceRecord,
   BadgeProjectionRecalculation,
   CanonicalLearnerIdentity,
@@ -55,6 +56,7 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
                   student.product_key, student.runtime_tier,
                   student.verification_environment_id,
                   correction.audit_ref AS correction_audit_ref,
+                  correction.attendance_event_id AS correction_event_id,
                   correction.source_event_ref_digest AS correction_source_digest
              FROM onetime.classroom_attendance_projection_v21 AS attendance
              JOIN onetime.class_occurrences AS occurrence
@@ -80,7 +82,8 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
                   attendance.verification_environment_id
               AND student.state = 'active'
              LEFT JOIN LATERAL (
-               SELECT event.audit_ref, event.source_event_ref_digest
+               SELECT event.attendance_event_id, event.audit_ref,
+                      event.source_event_ref_digest
                  FROM onetime.classroom_attendance_events_v21 AS event
                 WHERE event.product = attendance.product
                   AND event.runtime_tier = attendance.runtime_tier
@@ -112,6 +115,72 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
           scopeValues(scope),
         );
         return result.rows.map((row) => mapAttendance(row as Record<string, unknown>));
+      },
+      getAttendanceCorrectionSource: async (scope, eventId) => {
+        const result = await pool.query(
+          `SELECT occurrence.account_key, occurrence.product_key,
+                  event.runtime_tier, event.verification_environment_id,
+                  event.attendance_event_id, event.source_event_ref_digest,
+                  event.occurrence_id, occurrence.class_series_key AS class_key,
+                  event.student_id, enrollment.household_key,
+                  event.audit_ref, event.correction_reason,
+                  event.correction_admin_id,
+                  NOT EXISTS (
+                    SELECT 1
+                      FROM onetime.classroom_attendance_events_v21 AS successor
+                     WHERE successor.product = event.product
+                       AND successor.runtime_tier = event.runtime_tier
+                       AND successor.verification_environment_id =
+                           event.verification_environment_id
+                       AND successor.occurrence_id = event.occurrence_id
+                       AND successor.student_id = event.student_id
+                       AND successor.source = 'admin_correction'
+                       AND successor.event_kind = 'manual_correction'
+                       AND (
+                         successor.observed_at > event.observed_at
+                         OR (
+                           successor.observed_at = event.observed_at
+                           AND successor.attendance_event_id > event.attendance_event_id
+                         )
+                       )
+                  ) AS is_latest_for_aggregate
+             FROM onetime.classroom_attendance_events_v21 AS event
+             JOIN onetime.class_occurrences AS occurrence
+               ON occurrence.occurrence_key = event.occurrence_id
+              AND occurrence.product_key = event.product
+             JOIN onetime.class_series_enrollments AS enrollment
+               ON enrollment.account_key = occurrence.account_key
+              AND enrollment.product_key = occurrence.product_key
+              AND enrollment.class_series_key = occurrence.class_series_key
+              AND enrollment.learner_key = event.student_id
+              AND enrollment.enrollment_state = 'active'
+              AND occurrence.starts_at >= enrollment.effective_at
+              AND (
+                enrollment.revoked_at IS NULL
+                OR occurrence.starts_at < enrollment.revoked_at
+              )
+             JOIN onetime.v21_student_profiles AS student
+               ON student.student_id = event.student_id
+              AND student.household_id = enrollment.household_key
+              AND student.product_key = event.product
+              AND student.runtime_tier = event.runtime_tier
+              AND student.verification_environment_id =
+                  event.verification_environment_id
+              AND student.state = 'active'
+            WHERE occurrence.account_key = $1
+              AND event.product = $2
+              AND event.runtime_tier = $3
+              AND event.verification_environment_id = $4
+              AND event.attendance_event_id = $5
+              AND event.source = 'admin_correction'
+              AND event.event_kind = 'manual_correction'
+              AND event.audit_ref IS NOT NULL
+              AND event.correction_reason IS NOT NULL
+              AND event.correction_admin_id IS NOT NULL`,
+          [...scopeValues(scope), eventId],
+        );
+        if (result.rows.length !== 1) return null;
+        return mapAttendanceCorrectionSource(result.rows[0] as Record<string, unknown>);
       },
       listScheduledOccurrenceCoverage: async (scope, classId, windowStartsAt, windowEndsAt) => {
         const result = await pool.query(
@@ -372,12 +441,13 @@ function createUnit(
                 question.question_key, question.learner_key, question.household_key,
                 question.class_key,
                 question.question_state, COALESCE(recognition.eligible, FALSE) AS eligible,
-                recognition.recognition_sequence, recognition.event_source,
+                recognition.recognition_event_id, recognition.recognition_sequence,
+                recognition.event_source,
                 recognition.audit_ref, recognition.reason, recognition.actor_key,
                 qualification.qualified_at, approval.approved_at
            FROM onetime.learning_question_projection AS question
            LEFT JOIN LATERAL (
-             SELECT event.eligible, event.recognition_sequence,
+             SELECT event.recognition_event_id, event.eligible, event.recognition_sequence,
                     event.event_source, event.audit_ref, event.reason,
                     event.actor_key
                FROM onetime.learning_question_recognition_ledger AS event
@@ -987,6 +1057,7 @@ function mapQuestionRecognitionFact(row: Record<string, unknown>): QuestionRecog
     eligible: Boolean(row.eligible),
     qualifiedAt: nullableInstant(row.qualified_at),
     approvedAt: nullableInstant(row.approved_at),
+    latestEventId: nullableString(row.recognition_event_id),
     latestSequence:
       row.recognition_sequence === null || row.recognition_sequence === undefined
         ? null
@@ -995,6 +1066,22 @@ function mapQuestionRecognitionFact(row: Record<string, unknown>): QuestionRecog
     latestAuditRef: nullableString(row.audit_ref),
     latestReason: nullableString(row.reason),
     latestActorId: nullableString(row.actor_key),
+  };
+}
+
+function mapAttendanceCorrectionSource(row: Record<string, unknown>): AttendanceCorrectionSource {
+  return {
+    ...scope(row),
+    eventId: String(row.attendance_event_id),
+    sourceDigest: String(row.source_event_ref_digest),
+    occurrenceId: String(row.occurrence_id),
+    classId: String(row.class_key),
+    studentId: String(row.student_id),
+    householdId: String(row.household_key),
+    auditRef: String(row.audit_ref),
+    reason: String(row.correction_reason),
+    correctedByAdminId: String(row.correction_admin_id),
+    isLatestForAggregate: Boolean(row.is_latest_for_aggregate),
   };
 }
 
@@ -1222,6 +1309,7 @@ function mapAttendance(row: Record<string, unknown>): AttendanceRecord {
     correctionReason: nullableString(row.manual_correction_reason),
     correctedBy: nullableString(row.correction_admin_id),
     correctionAuditRef: nullableString(row.correction_audit_ref),
+    correctionEventId: nullableString(row.correction_event_id),
     correctionSourceDigest: nullableString(row.correction_source_digest),
   };
 }

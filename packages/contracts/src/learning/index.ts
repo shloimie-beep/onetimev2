@@ -123,6 +123,7 @@ export type QuestionRecognitionFact = LearningScope & {
   eligible: boolean;
   qualifiedAt: string | null;
   approvedAt: string | null;
+  latestEventId?: string | null;
   latestSequence: number | null;
   latestSource: QuestionRecognitionLedgerEntry['source'] | null;
   latestAuditRef: string | null;
@@ -207,7 +208,21 @@ export type AttendanceRecord = LearningScope & {
   correctionReason: string | null;
   correctedBy: string | null;
   correctionAuditRef: string | null;
+  correctionEventId?: string | null;
   correctionSourceDigest: string | null;
+};
+
+export type AttendanceCorrectionSource = LearningScope & {
+  eventId: string;
+  sourceDigest: string;
+  occurrenceId: string;
+  classId: string;
+  studentId: string;
+  householdId: string;
+  auditRef: string;
+  reason: string;
+  correctedByAdminId: string;
+  isLatestForAggregate: boolean;
 };
 
 export type ScheduledOccurrenceCoverage = LearningScope & {
@@ -270,6 +285,30 @@ export type CorrectReviewCompletionCommand = {
 
 export type BadgeFamily = 'consistency' | 'curious_learner' | 'review_ready';
 export type BadgeLevel = 'I' | 'II' | 'III';
+
+export type BadgeCorrection =
+  | {
+      family: 'consistency';
+      auditRef: string;
+      reason: string;
+      sourceIdentity: { kind: 'attendance'; eventId: string };
+    }
+  | {
+      family: 'curious_learner';
+      auditRef: string;
+      reason: string;
+      sourceIdentity: { kind: 'question_recognition'; eventId: string };
+    }
+  | {
+      family: 'review_ready';
+      auditRef: string;
+      reason: string;
+      sourceIdentity: {
+        kind: 'review_completion';
+        eventId: string;
+        aggregateKey: string;
+      };
+    };
 
 export type LearningBadgeAward = {
   key: `${BadgeFamily}:${1 | 2 | 3}`;
@@ -428,6 +467,10 @@ export interface LearningEngagementRepository {
 
 export interface LearningAttendanceReadPort {
   listAttendance(scope: LearningScope): Promise<readonly AttendanceRecord[]>;
+  getAttendanceCorrectionSource(
+    scope: LearningScope,
+    eventId: string,
+  ): Promise<AttendanceCorrectionSource | null>;
   listScheduledOccurrenceCoverage(
     scope: LearningScope,
     classId: string,
