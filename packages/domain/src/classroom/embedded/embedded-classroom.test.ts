@@ -290,6 +290,48 @@ describe('embedded classroom domain', () => {
     expect(result.manual_correction_reason).toBe('higher event identity wins');
   });
 
+  it('orders adversarial punctuation and Unicode event IDs by canonical UTF-8 bytes', () => {
+    const correction = (id: string, reason: string, joinedAt: string) =>
+      ({
+        ...event(
+          id,
+          'admin_correction',
+          'manual_correction',
+          '2026-07-28T18:05:00.000Z',
+          `admin-${id}`,
+        ),
+        correction_intervals: [
+          {
+            joined_at: joinedAt,
+            left_at: '2026-07-28T18:00:00.000Z',
+          },
+        ],
+        correction_reason: reason,
+        correction_admin_id: 'admin-1',
+        audit_ref: `audit-${id}`,
+      }) satisfies AttendanceEvent;
+
+    const adversarialIds: readonly (readonly [string, string])[] = [
+      ['correction_underscore', 'correction-hyphen'],
+      ['correction-ä', 'correction-z'],
+    ];
+    for (const [higherId, lowerId] of adversarialIds) {
+      const result = reconcileAttendance({
+        events: [
+          correction(higherId, `${higherId} wins`, '2026-07-28T17:00:00.000Z'),
+          correction(lowerId, `${lowerId} loses`, '2026-07-28T17:30:00.000Z'),
+        ],
+        scheduled_start_at: '2026-07-28T17:00:00.000Z',
+        scheduled_end_at: '2026-07-28T18:00:00.000Z',
+        prior_projection: null,
+        now: new Date('2026-07-28T18:06:00.000Z'),
+      });
+
+      expect(result.manual_correction_reason).toBe(`${higherId} wins`);
+      expect(result.total_connected_minutes).toBe(60);
+    }
+  });
+
   it('rejects correction metadata that P22 would normalize or refuse', () => {
     const correction = {
       ...event(

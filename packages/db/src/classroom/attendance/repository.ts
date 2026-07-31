@@ -228,14 +228,20 @@ export function createPostgresEmbeddedClassroomRepository(
         changes = await withTransaction(pool, async (client) => {
           assertAttendanceAppendInput(input);
           const persisted = [];
-          let wroteEvent = false;
+          const insertedChanges: AttendanceProjectionChange[] = [];
           for (const event of input.events) {
             const result = await appendEvent(client, event);
             assertProjectionBinding(input.next_projection, result.change);
             persisted.push(result.change);
-            wroteEvent ||= result.disposition === 'inserted';
+            if (result.disposition === 'inserted') insertedChanges.push(result.change);
           }
-          if (wroteEvent) {
+          if (insertedChanges.length > 0) {
+            const latestCorrection = await loadLatestCorrection(client, input.next_projection);
+            assertProjectionCorrectionAuthority(
+              input.next_projection,
+              latestCorrection,
+              insertedChanges,
+            );
             await persistProjection(client, input.prior_projection, input.next_projection);
           }
           return persisted;
@@ -461,6 +467,49 @@ function assertProjectionCorrectionMetadata(projection: AttendanceProjection): v
   }
 }
 
+function assertProjectionCorrectionAuthority(
+  projection: AttendanceProjection,
+  latestCorrection: AttendanceProjectionChange | null,
+  insertedChanges: readonly AttendanceProjectionChange[],
+): void {
+  if (latestCorrection === null) {
+    if (projection.reconciliation_state === 'admin_corrected') {
+      throw new Error('attendance_projection_correction_authority_invalid');
+    }
+    return;
+  }
+  if (
+    projection.reconciliation_state !== 'admin_corrected' ||
+    projection.manual_correction_reason !== latestCorrection.correction_reason ||
+    projection.correction_admin_id !== latestCorrection.correction_admin_id
+  ) {
+    throw new Error('attendance_projection_correction_authority_invalid');
+  }
+  for (const change of insertedChanges) {
+    if (change.correction_reason !== null && !sameProjectionChange(change, latestCorrection)) {
+      throw new Error('attendance_projection_correction_authority_invalid');
+    }
+  }
+}
+
+function sameProjectionChange(
+  left: AttendanceProjectionChange,
+  right: AttendanceProjectionChange,
+): boolean {
+  return (
+    left.scope.product === right.scope.product &&
+    left.scope.runtime_tier === right.scope.runtime_tier &&
+    left.scope.verification_environment_id === right.scope.verification_environment_id &&
+    left.occurrence_id === right.occurrence_id &&
+    left.student_id === right.student_id &&
+    left.source_attendance_event_id === right.source_attendance_event_id &&
+    left.source_event_ref_digest === right.source_event_ref_digest &&
+    left.correction_audit_ref === right.correction_audit_ref &&
+    left.correction_reason === right.correction_reason &&
+    left.correction_admin_id === right.correction_admin_id
+  );
+}
+
 function assertCanonicalCorrectionMetadata(
   reason: string | null,
   adminId: string | null,
@@ -562,6 +611,31 @@ function requiredString(value: unknown): string {
   return value;
 }
 
+async function loadLatestCorrection(
+  client: EmbeddedClassroomSqlClient,
+  projection: AttendanceProjection,
+): Promise<AttendanceProjectionChange | null> {
+  const latest = await client.query(
+    `SELECT attendance_event_id, product, runtime_tier,
+            verification_environment_id, occurrence_id, student_id,
+            source, event_kind, source_event_ref_digest, correction_reason,
+            correction_admin_id, audit_ref
+       FROM onetime.classroom_attendance_events_v21
+      WHERE product = $1
+        AND runtime_tier = $2
+        AND verification_environment_id = $3
+        AND occurrence_id = $4
+        AND student_id = $5
+        AND source = 'admin_correction'
+        AND event_kind = 'manual_correction'
+      ORDER BY observed_at DESC, convert_to(attendance_event_id, 'UTF8') DESC
+      LIMIT 1
+      FOR SHARE`,
+    projectionValues(projection).slice(0, 5),
+  );
+  return latest.rows[0] === undefined ? null : mapAttendanceProjectionChange(latest.rows[0]);
+}
+
 async function persistProjection(
   client: EmbeddedClassroomSqlClient,
   prior: AttendanceProjection | null,
@@ -581,7 +655,7 @@ async function persistProjection(
        RETURNING occurrence_id`,
       values,
     );
-    if (inserted.rowCount !== 1 && !(await projectionMatches(client, next))) throw STALE;
+    if (inserted.rowCount !== 1) throw STALE;
     return;
   }
   const updated = await client.query(
@@ -607,37 +681,7 @@ async function persistProjection(
       RETURNING occurrence_id`,
     [...values, prior.version],
   );
-  if (updated.rowCount !== 1 && !(await projectionMatches(client, next))) throw STALE;
-}
-
-async function projectionMatches(
-  client: EmbeddedClassroomSqlClient,
-  projection: AttendanceProjection,
-): Promise<boolean> {
-  const matched = await client.query(
-    `SELECT occurrence_id
-       FROM onetime.classroom_attendance_projection_v21
-      WHERE product = $1
-        AND runtime_tier = $2
-        AND verification_environment_id = $3
-        AND occurrence_id = $4
-        AND student_id = $5
-        AND first_joined_at IS NOT DISTINCT FROM $6::timestamptz
-        AND last_left_at IS NOT DISTINCT FROM $7::timestamptz
-        AND total_connected_minutes = $8
-        AND attendance_percentage = $9
-        AND reconnect_count = $10
-        AND late = $11
-        AND reconciliation_state = $12
-        AND manual_correction_reason IS NOT DISTINCT FROM $13
-        AND correction_admin_id IS NOT DISTINCT FROM $14
-        AND source_event_count = $15
-        AND version = $16
-        AND updated_at = $17::timestamptz
-      FOR SHARE`,
-    projectionValues(projection),
-  );
-  return matched.rows[0]?.occurrence_id === projection.occurrence_id;
+  if (updated.rowCount !== 1) throw STALE;
 }
 
 async function withTransaction<T>(

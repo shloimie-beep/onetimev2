@@ -279,8 +279,20 @@ function emptyProjection(prior: AttendanceProjection | null, now: Date): Attenda
 function compareEvent(left: AttendanceEvent, right: AttendanceEvent): number {
   return (
     instant(left.observed_at) - instant(right.observed_at) ||
-    left.attendance_event_id.localeCompare(right.attendance_event_id)
+    compareUtf8(left.attendance_event_id, right.attendance_event_id)
   );
+}
+
+function compareUtf8(left: string, right: string): number {
+  const encoder = new TextEncoder();
+  const leftBytes = encoder.encode(left);
+  const rightBytes = encoder.encode(right);
+  const sharedLength = Math.min(leftBytes.length, rightBytes.length);
+  for (let index = 0; index < sharedLength; index += 1) {
+    const difference = leftBytes[index]! - rightBytes[index]!;
+    if (difference !== 0) return difference;
+  }
+  return leftBytes.length - rightBytes.length;
 }
 
 function instant(value: string): number {
