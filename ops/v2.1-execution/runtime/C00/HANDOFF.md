@@ -3525,3 +3525,56 @@ the exact P18 callback seam, and ordered integration.
 Candidate remains null; effect locks remain empty; no steward request is
 applied. No migration, integration, provider action, deployment, DNS, send,
 charge, customer activation, or other external effect is authorized.
+
+# P21 admitted; ordered source and P18 callback lanes dispatched
+
+P21 terminal `c11dec418fa3de896e96c348f87928c92c9f86b9`, sole parent
+`3250bb761aa0d6fb84db77f637bc05eb5f1c444d`, and tree
+`36fbc30a09ce783d205c42c80e6925e8e9c6db68` are independently accepted.
+Root and two independent reviewers reproduced clean local/tracking/live
+equality, exact eight-path correction scope, immutable registration-003,
+31/31 focused tests, workspace typecheck, focused lint/format, YAML/schema,
+diff, static no-direct-DML, and 3,111-file secret gates with no P1/P2/P3.
+The implementation artifact is
+`0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97`;
+the released CONTENT_PUBLICATION lease ended at `2026-07-31T09:53:09Z`;
+effects remain `0/0/0`.
+
+The earlier C00 authorized-path digest `5b93f48f...` is retained as a
+historical derivation typo. The exact eight-path LF/no-final-newline digest is
+`d3a605c5bd24812fc87d3795b76f3b1ee92eca60f3a4595434df747d32593829`.
+The nine-path source delta, including registration-003, is bound by inventory
+`c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8`
+and manifest
+`f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585`.
+PGlite supplied valid embedded SQL/trigger behavioral evidence, but it is not
+a native PostgreSQL server; true native-server replay remains a mandatory
+merged/candidate gate before freeze.
+
+C00 consumed P21 READY and created one source-only I36 microbatch from
+integration `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`. I36 must preserve
+ancestry and merge exact P21 `c11dec41` first, then exact P22 `347a08b2`,
+under claim `f7a26569-d4d1-4b42-9d5c-7b98377bd235`, writer
+`codex-i36-p21-p22-source-f7a26569`, and sole RELEASE_INTEGRATOR lease
+`5e0cd656-e4eb-492d-88d8-50c792fa1a20` through
+`2026-07-31T12:20:00Z`. I36 may directly change only its runtime triplet and
+must not apply a steward request.
+
+In parallel, C00 dispatched the disjoint exact-eight-path P18 post-commit
+attendance-projection callback correction from the same integration head on
+`codex/v21-p18-attendance-projection-callback`, claim
+`267308b4-66fa-4910-8597-00999c58a856`, writer
+`codex-p18-projection-callback-267308b4`, and EMBEDDED_CLASSROOM lease
+`94b15518-5638-4025-89b1-eabd2d4da07a` through
+`2026-07-31T12:20:00Z`. The callback runs only after commit, exact and older
+replay can repair/reinvoke it without rewriting attendance, and changed or
+genuinely stale writes invoke no callback.
+
+Immutable P21-registration-002, P22-migration-001, and
+P22-registration-001 are acknowledged rejected/superseded without deleting
+their blobs. Six exact successors are assigned with dependency-bound
+checkpoints; P22 server registration waits for P21-registration-003, P22
+barrel/config, the integrated P18 callback, and migration 2254. Candidate
+remains null; effect locks remain empty; no SQL authoring/application, shared
+registration, provider action, deployment, DNS, send, charge, customer
+activation, or other external effect is authorized.

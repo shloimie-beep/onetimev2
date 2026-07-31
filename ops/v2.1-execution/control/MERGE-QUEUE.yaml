@@ -1,8 +1,112 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: 5ac7ed54-f75c-4aed-a87a-63478c046480
+    kind: implementation
+    task_id: P21
+    source_branch: codex/v21-p21-publication-scope-correction
+    source_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+    target_branch: codex/v21-integration
+    expected_target_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    source_delta_base_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    required_merge_base_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+    merge_after_heads: {}
+    allowed_paths:
+      - apps/web/src/server/features/content/publication/service.test.ts
+      - apps/web/src/server/features/content/publication/service.ts
+      - ops/v2.1-execution/runtime/P21/HANDOFF.md
+      - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
+      - ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-003.yaml
+      - packages/contracts/src/content/publication/index.ts
+      - packages/db/src/content/publication/repository.test.ts
+      - packages/db/src/content/publication/repository.ts
+    writer_slot_leases: &p21_p22_source_integrator_lease
+      - slot: RELEASE_INTEGRATOR
+        lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
+        holder_task_id: I36
+        holder_claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
+        holder_writer_id: codex-i36-p21-p22-source-f7a26569
+        state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+        lease_issued_at: '2026-07-31T10:20:00Z'
+        lease_expires_at: '2026-07-31T12:20:00Z'
+        phase_scope: P21_then_P22_accepted_source_microbatch_only
+    task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173ef550
+    task_context_digest: 36e4fb76ff399ae66d3ccd9f4e5851ec31395c247d80a3d7f4392bb8ad30858e
+    implementation_artifact_digest: 0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97
+    state_handoff_digest: fa87392335a078543f3e8a03498aa47286ec887267e0757148f01f03a72cd061
+    runtime_triplet_digest: c02721665ea11e69306a5234155fad0c611eb037cf96f93c550608f7278a917c
+    source_path_count: 9
+    source_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
+    source_manifest_digest: f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585
+    source_tree_sha: 36fbc30a09ce783d205c42c80e6925e8e9c6db68
+    task_state_raw_sha256: 4b2a4e2b8b925e9703ee9ee8d0221811af7ee5643ee6fb28f9f049dd4f3064e7
+    handoff_raw_sha256: 3ab0d6b1e20a8d4b55e77b45ffa8e706bdfc045d226d82c119082a27cfcc02fd
+    next_prompt_raw_sha256: 83e741e4e71c8b6fee1f5b936227b7ad25e69ded7f64b41f330ec605ab6d6960
+    registration_003_raw_sha256: 0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16
+    request_disposition_boundary: preserve_only_no_steward_application_in_source_microbatch
+    native_postgresql_server_gate: required_before_candidate_freeze
+    external_effect_summary: &p21_p22_zero_effects
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: 7711d813-f37e-4506-965c-ed594be07235
+    kind: implementation
+    task_id: P22
+    source_branch: codex/v21-p22-learning-engagement
+    source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+    target_branch: codex/v21-integration
+    expected_target_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    source_delta_base_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+    required_merge_base_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+    merge_after_heads:
+      P21: c11dec418fa3de896e96c348f87928c92c9f86b9
+    allowed_paths:
+      - apps/web/src/server/features/learning/service.test.ts
+      - apps/web/src/server/features/learning/service.ts
+      - ops/v2.1-execution/runtime/P22/HANDOFF.md
+      - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
+      - ops/v2.1-execution/runtime/P22/steward-requests/P22-barrel-export-002.yaml
+      - ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-002.yaml
+      - ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml
+      - ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-002.yaml
+      - ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-002.yaml
+      - packages/contracts/src/learning/index.ts
+      - packages/db/src/learning/repository.test.ts
+      - packages/db/src/learning/repository.ts
+      - packages/db/src/learning/schema-contract.ts
+      - packages/domain/src/learning/engagement.test.ts
+      - packages/domain/src/learning/engagement.ts
+    writer_slot_leases: *p21_p22_source_integrator_lease
+    task_packet_digest: dd6bab06cbc8c26a46acf457d2824baad33a6710d8fb2ac45c9587d814551c84
+    task_context_digest: b47e2ff16b99fa3f485c34c1ed95fe5aa1cf0cb7a129f75190674a14a9cb2cbc
+    implementation_artifact_digest: 19a33cf409f66b99071b4686613ed495b76ef4b9eaed8d344b2beb67446ef18b
+    state_handoff_digest: 98218f029aa918a32da8cc4f64e864d3b3b9504989c04f14817f17158d9d1f4a
+    runtime_triplet_digest: f626461d904cb202b1a4d4f20b891f79c9f14d32c8a0309ad91fe930dd454060
+    source_path_count: 16
+    source_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
+    source_manifest_digest: 86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea
+    source_tree_sha: b19318f1a06b7795687c74caabba8c0f4b6623e4
+    task_state_raw_sha256: c272cdd4895f10305382878b7eea3195d5b9ebfb9703847e10c803c7eeddd1a2
+    handoff_raw_sha256: 375ee71b6fd6bbdd617647a1c41282e2d30892cc2d41140121eda2032d03bddc
+    next_prompt_raw_sha256: 3cfbb283c791dd2d10fa432414deaff16c623e13af7e63c1238bf8109fd906d8
+    request_disposition_boundary: preserve_only_no_steward_application_in_source_microbatch
+    external_effect_summary: *p21_p22_zero_effects
+    state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+item_payload_digests:
+  5ac7ed54-f75c-4aed-a87a-63478c046480: a14e9343278833e48657fc6cf428a968fc1293d243097d908ac70dd562bc324d
+  7711d813-f37e-4506-965c-ed594be07235: db8d1e7841f7343f8d1a0a6d8d82e42268e11cb27fb6413dec1cf7fe61c7e8d1
 completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION

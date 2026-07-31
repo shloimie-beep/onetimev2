@@ -997,17 +997,20 @@ items:
   request_digest: 63ee368f245772ca72043c301c7a7ea370fcbed86f511f3a157b2a3bb0d717f0
   requesting_task_id: P21
   kind: registration
-  status: assigned
+  status: rejected
   assigned_steward: I36
-  target_checkpoint: I36_next_shared_registration_checkpoint_after_F02_P21_MIGRATION_002
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  target_checkpoint: superseded_withheld_by_P21-registration-003
+  acknowledged_by_task: true
+  acknowledgment_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+  acknowledgment_state_handoff_digest: fa87392335a078543f3e8a03498aa47286ec887267e0757148f01f03a72cd061
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null
   result_digest: null
-  rejection_reason: null
+  rejection_reason: >-
+    Immutable registration-002 is superseded and withheld because registration-003 binds integrated migration 2253,
+    source-derived scope, the canonical content event writer, and schema-valid acceptance identifiers. The prior raw
+    request digest remains af851f718e99945fed2d9b805a93fa20a0cea815a42ce33f2c22fda8c52ac45d.
 - request_id: P24-migration-001
   request_digest: 71065002e827d8b51c6bafc808568eb6940e2527a0ec0c30bd648d49d8bf93f3
   requesting_task_id: P24
@@ -1102,9 +1105,46 @@ items:
   request_digest: e6c02f0e0fe7bd412e86e642ce7d041b550fd9952cad46c7f8eff3c9a4e0ea28
   requesting_task_id: P22
   kind: migration
-  status: assigned
+  status: rejected
   assigned_steward: F02
-  target_checkpoint: held_pending_P22-migration-002_after_product_authority_successor
+  target_checkpoint: superseded_withheld_by_P22-migration-002
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+  acknowledgment_state_handoff_digest: 98218f029aa918a32da8cc4f64e864d3b3b9504989c04f14817f17158d9d1f4a
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: >-
+    Immutable migration-001 is superseded and withheld because it would create competing attendance and consent write
+    authorities beside migration 2251 and omits four-dimensional isolation. Its immutable Git blob remains
+    527b85c93f77e1609ee020b4f4576a7aa6db016e; only corrected successor P22-migration-002 may be authored as forward-only
+    migration 2254.
+- request_id: P22-registration-001
+  request_digest: bdaad58058ce9b3dba2c34c4e1898de2a8eb6f4343ce42510091a56a3374ffee
+  requesting_task_id: P22
+  kind: registration
+  status: rejected
+  assigned_steward: I36
+  target_checkpoint: superseded_withheld_by_split_P22_002_successors
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+  acknowledgment_state_handoff_digest: 98218f029aa918a32da8cc4f64e864d3b3b9504989c04f14817f17158d9d1f4a
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: >-
+    Immutable registration-001 is superseded and withheld because corrected central work is split into exact barrel,
+    client-route, config-key, and server-registration successors with explicit migration, P21-writer, and P18-callback
+    dependencies. Its immutable Git blob remains e9d71903d611218bd284ea76d5728d8ef288568d.
+- request_id: P21-registration-003
+  request_digest: ae1578783fbe71cbea7bab582eba29ffb84a736366f555c6c428b68ec52ccc82
+  requesting_task_id: P21
+  kind: server_feature_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P21_server_registration_after_P21_source_integration_before_P22_server_registration
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
@@ -1113,13 +1153,73 @@ items:
   evaluated_target_head_sha: null
   result_digest: null
   rejection_reason: null
-- request_id: P22-registration-001
-  request_digest: bdaad58058ce9b3dba2c34c4e1898de2a8eb6f4343ce42510091a56a3374ffee
+- request_id: P22-barrel-export-002
+  request_digest: 63fed12e43f8f6434bf6cd9d0a423957230cbd374a728239f5619a3edb1523df
   requesting_task_id: P22
-  kind: registration
+  kind: barrel_export
   status: assigned
   assigned_steward: I36
-  target_checkpoint: held_pending_schema_valid_P22_shared-registration_successors
+  target_checkpoint: I36_P22_barrel_checkpoint_after_P22_source_integration
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-client-route-002
+  request_digest: 95989c81c058107a97e7243676abf24b0a401381e79141bc26920047346ccf64
+  requesting_task_id: P22
+  kind: client_route_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P22_client_route_after_source_barrel_and_server_registration
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-config-key-002
+  request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+  requesting_task_id: P22
+  kind: config_key
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P22_server_only_config_after_source_integration
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-migration-002
+  request_digest: c44539cb6ef8960de256aee6ab2881734fc888b63e14a0cd78bec20eaf72f468
+  requesting_task_id: P22
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_forward_migration_2254_after_P21_then_P22_source_integration
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P22-server-registration-002
+  request_digest: 9cac829ad7441f3772e587a50bb30c984807b93e1df89db41948b5e3490700dc
+  requesting_task_id: P22
+  kind: server_feature_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_P22_server_registration_after_P21-registration-003_P22_barrel_and_config_P18_callback_and_2254
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null

@@ -16,20 +16,20 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
+controller_authorization_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
 next_action: >-
-  P22 terminal 347a08b2 is independently accepted with 44/44 focused tests and no P1/P2, but waits for P21 and ordered
-  integration; its lease is released and READY is consumed. P21 terminal 3250bb76 is held, not admitted: independent
-  review found one P1 pre-approval archive failure and one P2 late registration-replay failure. Consume P21 READY
-  ccad2b56 from exact clean head 3250bb76 under claim cbec9b83 and sole CONTENT_PUBLICATION lease f03e8f5d; change only
-  eight authorized service/contract/repository/runtime paths and preserve registration-003 byte-for-byte. Release the
-  task lease, preserve null candidate and effects 0/0/0, push one bounded terminal, and stop for independent C00 review.
-  No SQL migration, steward application, integration, provider effect, deployment, DNS, send, charge, or customer
-  activation is authorized.
+  P21 terminal c11dec41 is independently accepted with 31/31 focused tests and no P1/P2/P3; its exact eight-path digest
+  is d3a605c5 and the prior 5b93f48f value is a recorded C00 derivation typo. P22 terminal 347a08b2 remains independently
+  accepted. Run I36 from integration d89a0f38 under claim f7a26569 and the sole RELEASE_INTEGRATOR lease 5e0cd656,
+  preserving ancestry and merging P21 then P22 only. In parallel, run the disjoint exact-eight-path P18 post-commit
+  attendance-projection callback correction from d89a0f38 under claim 267308b4 and EMBEDDED_CLASSROOM lease 94b15518.
+  Both workers record effects 0/0/0, release their leases, push one bounded terminal, and stop. No SQL authoring,
+  steward application, candidate freeze, provider effect, deployment, DNS, send, charge, or customer activation is
+  authorized. True native PostgreSQL-server replay remains mandatory before candidate freeze.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: held_pending_P21_writer_and_ordered_P22_source_integration
+  status: held_pending_ordered_P21_P22_source_integration
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   admitted_acknowledgment_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
@@ -92,7 +92,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: parent_session_auth_client_successor_terminal_validation_complete
+  status: P21_then_P22_accepted_source_microbatch_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -192,13 +192,22 @@ production_completion_lanes:
   prior_writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
   terminal_validation_claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
   terminal_validation_writer_lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-  claim_id: null
-  writer_lease_id: null
-  active_phase_scope: parent_session_auth_client_successor_terminal_validation_complete
-  scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
+  P21_P22_source_microbatch_control_parent_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+  P21_source_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+  P21_source_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
+  P21_source_manifest_digest: f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585
+  P22_source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+  P22_source_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
+  P22_source_manifest_digest: 86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea
+  P21_P22_source_path_collisions: 0
+  claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
+  writer_lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
+  writer_lease_expires_at: '2026-07-31T12:20:00Z'
+  active_phase_scope: P21_then_P22_accepted_source_microbatch_only
+  scope: ancestry_preserving_P21_then_P22_source_only_plus_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
+  state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
   authorized_start_integration_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
@@ -210,19 +219,21 @@ successor_dispatch:
   P22_identity_fix_dispatch_issued_at: '2026-07-31T08:55:00Z'
   P22_identity_fix_terminal_accepted_at: '2026-07-31T09:20:00Z'
   P21_terminal_held_and_replay_archive_fix_dispatched_at: '2026-07-31T09:18:00Z'
-  lease_issued_at: '2026-07-31T09:18:00Z'
-  lease_expires_at: '2026-07-31T11:18:00Z'
+  P21_replay_archive_fix_terminal_accepted_at: '2026-07-31T10:20:00Z'
+  P21_P22_source_microbatch_and_P18_callback_dispatched_at: '2026-07-31T10:20:00Z'
+  lease_issued_at: '2026-07-31T10:20:00Z'
+  lease_expires_at: '2026-07-31T12:20:00Z'
   ready_queue_published: true
   F02:
     status: blocked
-    phase: migration_2254_waiting_P21_and_ordered_source_integration
+    phase: migration_2254_waiting_ordered_P21_P22_source_integration
     terminal_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
     terminal_parent_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
     terminal_tree_sha: b3b180af78cdcf2ef3354507362e625e8b2d4e2f
     terminal_state_handoff_digest: 85521b85e692a2fb28d4013e49b87ab71e276bd3cb13e4f73dbc0d611a3a3733
     terminal_runtime_triplet_digest: b0f6ba3cfc0bcc2b7345152253f5552dc921f44fe90c186765d0e5de17e81973
     leases_released_at: '2026-07-31T04:48:40Z'
-    held_reason: P22_product_and_schema_valid_successors_required_before_migration_2254
+    held_reason: ordered_P21_P22_source_release_required_before_migration_2254
   P12:
     status: ready_for_review
     phase: P12_distinct_actual_name_display_name_migration_request_complete
@@ -246,8 +257,37 @@ successor_dispatch:
     request_git_blob: 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
     terminal_runtime_triplet_digest: e05fc349529b75cf820db40066b677764136360e2f1d1807982205cda7702e99
     lease_released_at: '2026-07-31T04:51:04Z'
+  I36:
+    status: resume_ready
+    phase: P21_then_P22_accepted_source_microbatch
+    branch: codex/v21-integration
+    expected_existing_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
+    writer_id: codex-i36-p21-p22-source-f7a26569
+    writer_lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
+    writer_lease_expires_at: '2026-07-31T12:20:00Z'
+    merge_order: P21_then_P22
+    exact_source_path_counts: 9_plus_16
+    source_path_collisions: 0
+    effect_locks: []
+    external_effects: 0/0/0
+  P18:
+    status: ready
+    phase: P18_postcommit_attendance_projection_callback
+    branch: codex/v21-p18-attendance-projection-callback
+    authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    accepted_predecessor_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
+    claim_id: 267308b4-66fa-4910-8597-00999c58a856
+    writer_id: codex-p18-projection-callback-267308b4
+    writer_lease_id: 94b15518-5638-4025-89b1-eabd2d4da07a
+    writer_lease_expires_at: '2026-07-31T12:20:00Z'
+    authorized_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
+    exact_path_ceiling: 8
+    shared_request_reused: P22-server-registration-002
+    effect_locks: []
+    external_effects: 0/0/0
   P22:
-    status: independently_accepted_waiting_P21_and_ordered_integration
+    status: independently_accepted_waiting_ordered_source_integration
     phase: review_complete
     atomic_claim_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
     atomic_claim_parent_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
@@ -362,18 +402,18 @@ successor_dispatch:
     identity_fix_focused_tests_passed: 44
     identity_fix_independent_review_status: passed_no_P1_or_P2
     identity_fix_present_steward_request_count: 7
-    downstream_hold: P21_writer_then_P18_callback_seam_then_F02_2254_and_I36_registration
+    downstream_hold: ordered_source_release_then_P18_callback_seam_then_F02_2254_and_I36_registration
     effect_locks: []
     external_effects: 0/0/0
   P21:
-    status: resume_ready
-    phase: P21_canonical_writer_replay_and_preapproval_archive_fix
+    status: independently_accepted_waiting_ordered_source_integration
+    phase: review_complete
     branch: codex/v21-p21-publication-scope-correction
-    expected_existing_head_sha: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
-    expected_existing_parent_sha: e4e4ef86a1ba1cd4ada1950fab13691809d7441b
-    expected_existing_tree_sha: eb1086b6c8ef50724f46e6a0482d7000a065d592
-    implementation_head_sha: e4e4ef86a1ba1cd4ada1950fab13691809d7441b
-    implementation_artifact_digest: d325f64aa8dd6bb0b92f36c27c3dc0bf748cf3885722f347b185032cfec0f32d
+    terminal_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+    terminal_parent_sha: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
+    terminal_tree_sha: 36fbc30a09ce783d205c42c80e6925e8e9c6db68
+    implementation_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+    implementation_artifact_digest: 0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97
     integrated_migration_2253_path: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
     integrated_migration_2253_raw_sha256: b96fae17a3ab9a13444787f7419366b0cd997e7a2754167b3c759d7074ff2c81
     held_terminal_review_status: one_P1_preapproval_archive_one_P2_late_registration_replay
@@ -383,11 +423,23 @@ successor_dispatch:
     prior_writer_lease_id: 030212ad-7da5-4877-b29b-85de75a4380c
     prior_writer_lease_released_at: '2026-07-31T09:00:00Z'
     ready_entry_payload_digest: ccad2b56eb4b33fc7a35cfc61625dad9d9de14863823d1c0e96242924306fec5
-    claim_id: cbec9b83-9d44-4d00-a797-fed83be43059
-    writer_id: codex-p21-replay-archive-cbec9b83
-    writer_lease_id: f03e8f5d-10fc-40f1-8720-e39086b4a799
-    writer_lease_expires_at: '2026-07-31T11:18:00Z'
-    authorized_path_inventory_digest: 5b93f48fdc9d709b450316ac4423f5077d39a253ca317424263433eb444e6b19
+    correction_claim_id: cbec9b83-9d44-4d00-a797-fed83be43059
+    correction_writer_id: codex-p21-replay-archive-cbec9b83
+    correction_writer_lease_id: f03e8f5d-10fc-40f1-8720-e39086b4a799
+    correction_writer_lease_expires_at: '2026-07-31T11:18:00Z'
+    correction_writer_lease_released_at: '2026-07-31T09:53:09Z'
+    dispatched_authorized_path_inventory_digest_typo: 5b93f48fdc9d709b450316ac4423f5077d39a253ca317424263433eb444e6b19
+    reproduced_authorized_path_inventory_digest: d3a605c5bd24812fc87d3795b76f3b1ee92eca60f3a4595434df747d32593829
+    source_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
+    source_manifest_digest: f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585
+    terminal_task_raw_sha256: 4b2a4e2b8b925e9703ee9ee8d0221811af7ee5643ee6fb28f9f049dd4f3064e7
+    terminal_handoff_raw_sha256: 3ab0d6b1e20a8d4b55e77b45ffa8e706bdfc045d226d82c119082a27cfcc02fd
+    terminal_next_raw_sha256: 83e741e4e71c8b6fee1f5b936227b7ad25e69ded7f64b41f330ec605ab6d6960
+    terminal_state_handoff_digest: fa87392335a078543f3e8a03498aa47286ec887267e0757148f01f03a72cd061
+    terminal_runtime_triplet_digest: c02721665ea11e69306a5234155fad0c611eb037cf96f93c550608f7278a917c
+    independent_review_status: passed_no_P1_P2_or_P3
+    PGlite_behavioral_proof: passed_not_native_server
+    native_postgresql_server_gate: required_before_candidate_freeze
     exact_path_ceiling: 8
     registration_successor: P21-registration-003
     registration_successor_raw_sha256: 0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16

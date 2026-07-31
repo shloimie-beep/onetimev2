@@ -3050,3 +3050,81 @@ admitted and waits for P21 plus ordered source/callback integration. Do not
 write SQL, allocate/apply a migration, edit or apply registration-003,
 integrate, freeze a candidate, inspect or mutate a provider, deploy, change
 DNS, send, charge, activate a customer, or perform any external effect.
+
+# Current instruction: integrate P21/P22 source and build the P18 callback seam
+
+Resolve the exact pushed control commit containing this instruction from
+control basis `0a2e8c390d48da157be35a2f9d06f876a70b5e62`. Fetch and verify
+live control, integration, P21, and P22 remote equality before either worker
+writes. Candidate must remain null and effect locks must remain empty.
+
+I36 consumes its exact READY entry under claim
+`f7a26569-d4d1-4b42-9d5c-7b98377bd235`, writer
+`codex-i36-p21-p22-source-f7a26569`, and sole RELEASE_INTEGRATOR lease
+`5e0cd656-e4eb-492d-88d8-50c792fa1a20` through
+`2026-07-31T12:20:00Z`. Start from exact integration
+`d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`. Consume exactly two
+MERGE-QUEUE entries:
+
+1. Merge P21 `c11dec418fa3de896e96c348f87928c92c9f86b9` first, preserving
+   ancestry. Its source delta is exactly nine paths, inventory
+   `c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8`,
+   and manifest
+   `f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585`.
+2. Merge P22 `347a08b29b801de0a74b242d962c42a886dcd717` second, preserving
+   ancestry from required base `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`.
+   Its source delta is exactly sixteen paths, inventory
+   `d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3`,
+   and manifest
+   `86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea`.
+
+The two path sets have zero overlap. Do not cherry-pick, squash, apply a
+steward request, edit producer source, or perform central composition. Run
+changed-area P21/P22 tests, workspace typecheck, focused lint/format,
+unchanged migration inventory, YAML, scope, ancestry, request-byte, diff, and
+secret gates. Update only the I36 runtime triplet after both merges, record
+effects `0/0/0`, release the lease, push one terminal, verify live equality,
+and stop for C00 review.
+
+P18 runs concurrently on new branch
+`codex/v21-p18-attendance-projection-callback` from exact integration
+`d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`, claim
+`267308b4-66fa-4910-8597-00999c58a856`, writer
+`codex-p18-projection-callback-267308b4`, and EMBEDDED_CLASSROOM lease
+`94b15518-5638-4025-89b1-eabd2d4da07a` through
+`2026-07-31T12:20:00Z`. Change exactly:
+
+- `ops/v2.1-execution/runtime/P18/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P18/TASK-STATE.yaml`
+- `packages/contracts/src/classroom/embedded/index.ts`
+- `packages/db/src/classroom/attendance/repository.test.ts`
+- `packages/db/src/classroom/attendance/repository.ts`
+- `packages/domain/src/classroom/embedded/attendance.ts`
+- `packages/domain/src/classroom/embedded/embedded-classroom.test.ts`
+
+The exact path digest is
+`1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a`.
+Inject one mandatory attendance-projection-change port. Invoke it only after
+COMMIT; callback failure propagates without rolling back committed attendance.
+Exact source-event replay and an older exact event after a successor are
+no-write success paths that re-invoke the callback. Changed replay or a
+genuinely stale new write rolls back and invokes no callback. Emit only the
+server-owned three-dimensional P18 `JobScope` plus immutable occurrence,
+Student, event ID/source digest, and exact correction audit/reason/Admin
+fields; no caller-supplied scope, account, class, household, role,
+source-event identity, or correction identity is accepted. The later I36
+adapter derives P22 account/class/household bindings from canonical server
+records. Order correction history ASC by observed time then event ID and take
+the final row, equivalently DESC/DESC LIMIT 1.
+
+Prove commit-before-callback ordering, repair after callback failure, older
+successor replay, stale/conflict no-callback, exact correction payload,
+equal-timestamp deterministic selection, invalid metadata failure, focused
+typecheck/lint/format/YAML/diff/secret gates, and effects `0/0/0`. Update only
+the exact eight paths, release the lease, push one bounded terminal, verify
+live equality, and stop for independent C00 review.
+
+Neither lane may author or apply SQL, apply a steward result, freeze a
+candidate, inspect or mutate a provider, deploy, change DNS, send, charge,
+activate a customer, or perform any external effect.

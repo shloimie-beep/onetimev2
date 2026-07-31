@@ -3,10 +3,10 @@ execution_id: OT-V21-PRODUCTION
 status: active
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
 holder_writer_id: codex-c00-orchestrator-782440c2
-state_based_on_head_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
+state_based_on_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
 claimed_at: '2026-07-30T16:25:00Z'
-last_heartbeat_at: '2026-07-31T09:18:00Z'
-lease_expires_at: '2026-07-31T11:18:00Z'
+last_heartbeat_at: '2026-07-31T10:20:00Z'
+lease_expires_at: '2026-07-31T12:20:00Z'
 released_at: null
 rule: >-
   C00 is serialized by normal fast-forward remote control-branch updates. Every invocation acquires or renews this lease
