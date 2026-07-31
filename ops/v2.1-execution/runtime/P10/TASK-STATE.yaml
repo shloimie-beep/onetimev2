@@ -39,31 +39,48 @@ dependency_heads:
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
 status: ready_for_review
-phase: complete
-claim_mode: resume_existing_branch
-claimed_by: codex-p10-worker-cd15a4ba
-claim_time: '2026-07-29T02:20:00Z'
-claim_id: cd15a4ba-db91-44ff-b522-f111fbcd9a0d
+phase: review
+claim_mode: resume_existing
+claimed_by: codex-p10-seat-ack-e057d59f
+claim_time: '2026-07-31T05:06:00Z'
+claim_id: e057d59f-2c37-4685-9bb4-ce407670caa4
 writer_slot_leases:
   - slot: ADMIN_DIRECTORY
-    lease_id: f7660370-d954-4ee3-8513-4069bef54025
-    lease_issued_at: '2026-07-29T02:12:48Z'
-    lease_expires_at: '2026-07-29T03:12:48Z'
-lease_expires_at: '2026-07-29T03:12:48Z'
-lease_released_at: '2026-07-29T02:38:56Z'
-last_heartbeat_at: '2026-07-29T02:38:56Z'
-controller_authorization_sha: 04ebe46bc1cff1223bdade3379457cf774c0dce1
-reconciled_containing_controller_sha: 802b522f2a5ff0613bdba6cb754cb2eeb340537f
-latest_observed_control_sha: 9184bcfdb7e983a4f03733624d2d5f98455c7ea3
-continuation_control_parent_sha: 81f10c6535db733cc0505b43f37fe5a3e7887934
-ready_entry_state_based_on_control_head_sha: 765ad933964ce0019895c2133ff10a491b7938a2
-ready_entry_payload_digest: e7b8877ba11a9299d1421888420f4c7eac111275496ede7cc4a1e98469597f5b
-state_based_on_head_sha: da5576d3f675b90a5db812d293801f9f5fa17d38
-claim_checkpoint_parent_sha: 551d483e9678336655546eef6002a7a7daf9d4da
+    lease_id: 215bd21b-fe00-4a12-a4b2-37959ed4b5d5
+    lease_issued_at: '2026-07-31T05:06:00Z'
+    lease_expires_at: '2026-07-31T07:06:00Z'
+    lease_released_at: '2026-07-31T05:42:30Z'
+lease_expires_at: '2026-07-31T07:06:00Z'
+lease_released_at: '2026-07-31T05:42:30Z'
+last_heartbeat_at: '2026-07-31T05:42:30Z'
+controller_authorization_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+latest_observed_control_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
+authorized_integration_evidence_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+ready_entry_state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+ready_entry_payload_digest: b3beba3c354d96e99bcf2ac3d97295087116f29149b9ff2a5146c0300c84a018
+state_based_on_head_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+acknowledgment_parent_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
 last_implementation_commit_sha: da5576d3f675b90a5db812d293801f9f5fa17d38
 implementation_artifact_digest: 07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873
 implementation_artifact_digest_algorithm: SHA-256 over exact implementation-head Git blobs as lexicographically sorted UTF-8 path=sha256 lines for the 10 non-runtime P10 artifacts, with LF separators and no final newline.
 steward_request_digest: 0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea
+steward_request_git_blob: 6470da05b25a4afc1436fcde646d08da88caf457
+school_seat_authority_convergence_acknowledgment:
+  disposition: producer_acknowledged_pending_C00_reconciliation
+  scope: approved_School_seat_and_configuration_authority_only
+  successor_request_id: P09-migration-002
+  successor_request_path: ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml
+  successor_request_raw_sha256: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+  successor_request_canonical_payload_sha256: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+  successor_request_git_blob: 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
+  supersedes_overlapping_authority_from:
+    - P09-migration-001
+    - P10-MIGRATION-001
+  preserves:
+    - P09-migration-001 School inquiry, adult manual-follow-up, and acknowledgment semantics
+    - P10 identity, credential, enrollment, revocation, ownership-transfer, receipt, audit, and registration semantics
+    - P10 product, SQL, request, integration, and implementation bytes
+  acknowledged_by_task: true
 completed_steps:
   - Verified reconciled containing controller 802b522f2a5ff0613bdba6cb754cb2eeb340537f, its sole parent/acquisition 81f10c6535db733cc0505b43f37fe5a3e7887934, exact claim head 6ec92d288e4ed511449e5061d21a2dfb49c1abae, bounded correction authorization, live ADMIN_DIRECTORY lease, and zero effect authority.
   - Verified later control-only orchestration lease commit 9184bcfdb7e983a4f03733624d2d5f98455c7ea3 has sole parent 802b522f2a5ff0613bdba6cb754cb2eeb340537f and leaves the exact P10 claim, lease, and correction scope unchanged.
@@ -92,11 +109,13 @@ completed_steps:
   - Implemented the accessible F07 Admin directory workspace with adult, household, Student, ownership-transfer, credential-reset, lifecycle, empty, and error controls.
   - Passed full workspace typecheck and lint, 12 focused assertions, focused Prettier, diff hygiene, repository-wide secret scan, and provider-effect inventory.
   - Pushed exact implementation head 3abb4bb96929400838f0270586c5c459c8c6f9ed and derived its 10-artifact and steward-request Git-blob digests.
-remaining_steps:
-  - I36 must independently review and integrate exact corrected implementation head da5576d3f675b90a5db812d293801f9f5fa17d38.
-  - I36 must disposition the refreshed P10 migration and registration steward requests, including the current-enrollment and exhaustive ownership-effect repository ports, without weakening the bounded correction.
-  - Candidate-bound persistent-staging and production-operator-canary evidence remains with the assigned verification and release lanes.
-next_action: I36 should review and integrate corrected implementation head da5576d3f675b90a5db812d293801f9f5fa17d38, verify artifact digest 07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873, and disposition steward digest 0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea.
+  - Verified live control head 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73, exact task head 5fccc34507ae9c5dbc609e234ab559576ab3a445, ready-entry digest b3beba3c354d96e99bcf2ac3d97295087116f29149b9ff2a5146c0300c84a018, claim e057d59f-2c37-4685-9bb4-ce407670caa4, and ADMIN_DIRECTORY lease 215bd21b-fe00-4a12-a4b2-37959ed4b5d5.
+  - Independently read back P09-migration-002 Git blob 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1 and matched raw SHA-256 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62; the live control binds canonical payload SHA-256 d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb.
+  - Acknowledged only that P09-migration-002 supersedes the overlapping approved-School seat/configuration authority from P09-migration-001 and P10-MIGRATION-001.
+  - Preserved implementation digest 07d90e33e041eed1e3cdfd02e2fbf8b31c13e5f8fa188e7edffcd57fbc581873 and exact STEWARD-REQUESTS raw/blob identities 0bb00ea1993634956d0bedba776b4eb2b20d32aec9f18b88edeb7e2823143aea / 6470da05b25a4afc1436fcde646d08da88caf457.
+  - Changed exactly the P10 runtime triplet, released the ADMIN_DIRECTORY lease task-locally, and performed zero external effects.
+remaining_steps: []
+next_action: C00 should reconcile this exact P10 approved-School seat/configuration authority acknowledgment and retain the existing P10 implementation and non-overlapping steward semantics byte-for-byte.
 requirements:
   OTV2-ADMIN-022: implementation_ready
   OTV2-ADMIN-023: implementation_ready
@@ -144,6 +163,10 @@ verification:
     - npm run secret:scan (passed across 2719 repository text files).
     - Exact prior-digest reproduction plus refreshed ten-artifact implementation and steward-request Git-blob digest derivation (passed).
     - Exact reconciled controller, acquisition, claim head, bounded scope, active writer lease, later non-semantic control advance, and zero effect authority verification (passed).
+    - Exact live control/task heads, ready-entry digest, current claim/writer/lease, authorized integration evidence, and zero-effect authority verification (passed).
+    - P09-migration-002 Git blob and raw SHA-256 readback plus live-control canonical payload binding (passed).
+    - P10 STEWARD-REQUESTS Git blob and raw SHA-256 readback (passed; unchanged).
+    - Runtime-only scope inspection (passed; exactly TASK-STATE.yaml, HANDOFF.md, and NEXT-PROMPT.md).
     - npm run typecheck -- --pretty false (passed).
     - npm run lint -- --quiet (passed).
     - npx vitest run packages/domain/src/admin-directory/admin-directory.test.ts apps/web/src/server/features/admin/directory/service.test.ts apps/web/src/client/app/admin/directory/AdminDirectoryWorkspace.test.tsx (passed; 3 files, 18 tests).
