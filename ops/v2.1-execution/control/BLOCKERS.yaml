@@ -105,7 +105,7 @@ blockers:
 - blocker_id: P08-FAMILY-PARENT-SESSION-COMPOSITION
   status: open
   scope: controlled_launch_candidate
-  owner: F04_F03_P08_P12_I36
+  owner: P12_F02_P08_I36
   affected_tasks:
   - F04
   - F03
@@ -113,23 +113,22 @@ blockers:
   - P12
   - I36
   - V37
+  - V40
   - R44
   safe_work_completed: >-
-    Corrected P08 terminal 7ba18b92, F04 transfer terminal b43c1923, and F03 host-cookie/runtime terminal 3947c988 are
-    exact ancestors of independently audited integration a5a2ad94 at ordered merges e1dce668, 303ae3a7, and 78283a2e.
-    I36 partial checkpoint a5a2ad94 is a clean pushed sole-child of 524563f0 with exact five-path scope and released
-    lease. It correctly shares one production v2.1 session runtime across Family signup and the Parent shell, enforces
-    host-cookie-first no-fallback authorization, and passes the focused shell-composition proof plus changed-area
-    typecheck/lint/format/secret gates. Independent code audit classifies it only as an accepted server-shell partial:
-    client bootstrap, credential login, fresh CSRF, logout/revocation, invalid-cookie recovery, safe continuation,
-    truthful household selection, native production-repository proof, and durable P12 Student management remain open.
+    Corrected P08 7ba18b92, F04 b43c1923, and F03 3947c988 are exact integration ancestors. I36 terminal d89a0f38
+    completed the v2.1 Parent auth/client lifecycle with credential login, CSRF bootstrap, logout/revocation,
+    invalid-cookie recovery, safe continuation, sole-household routing, native PostgreSQL lifecycle/concurrency proof,
+    real Chromium reload/logout coverage, build, typecheck, format, lint, and effects 0/0/0. P12 terminal
+    9ada912c created immutable P12-migration-001 at raw digest
+    6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17; C00 admitted it to F02 without applying it.
   required_authority_or_input:
-  - Execute and independently reconcile the exact I36 v2.1 auth/client lifecycle successor from a5a2ad94 with credential
-    login, CSRF bootstrap, logout/revocation, invalid-cookie clearing, safe continue_to, sole-household redirect, and
-    native production-repository proof
-  - Create and admit an immutable P12 forward-migration request preserving distinct actual_name and optional
-    display_name, then implement its forward migration, concrete PostgreSQL repository/router/forms, service-account
-    acceptance, canonical enrollment, audit/idempotency, and persistent Student-creation browser proof
+  - After the P22 migration-2254 authority correction, apply exact P12-migration-001 as forward-only migration 2255
+    through F02 with native PostgreSQL proof
+  - Implement the P12 concrete PostgreSQL repository/router/forms, service-account acceptance, canonical enrollment,
+    audit/idempotency, and persistent Student-creation browser proof
+  - Replace immutable legacy-kind P12-registration-001 with schema-valid P12 server, client, and barrel successors
+    before any I36 shared registration
   - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
     stale-security, expired, revoked, no-legacy-fallback, and Student create/manage verification
   protection: >-
@@ -137,14 +136,16 @@ blockers:
     session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
     multi-household selector, or treat inactive access as an unauthenticated Parent.
   next_check: >-
-    Re-evaluate after the exact auth/client successor and later P12 persistence/route/browser checkpoint both pass.
-    Preserve the recovery-capable post-commit session boundary without claiming stricter cross-transaction atomicity.
+    Re-evaluate after forward-only migration 2255 and the P12 persistence/route/browser checkpoint pass. Preserve the
+    recovery-capable post-commit session boundary without claiming stricter cross-transaction atomicity.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
   status: open
   scope: controlled_launch_candidate
-  owner: P09_I36
+  owner: P09_P10_F02_I36
   affected_tasks:
   - P09
+  - P10
+  - F02
   - F07
   - I36
   - V37
@@ -153,15 +154,53 @@ blockers:
     /api/v2.1/signup/school-inquiry descriptor. Independent review passed its exact seven-path scope, 26 focused tests,
     typecheck, durable normalized-email deduplication, one local acknowledgment intent, and zero account, access,
     Student, nurture, provider, WhatsApp, or Stripe effects. P09 and corrected landing terminal fc16537d are exact
-    integration ancestors of independently audited release 524563f0. Immutable request P09-registration-001 also requires signed-out
-    GET /school and an Admin-authorized approved-school configuration surface; neither exists in the admitted P09 source,
-    so the request cannot truthfully be marked applied from central POST registration alone.
+    integration ancestors of independently audited release 524563f0. P09 terminal d9a4ce80 created immutable
+    P09-migration-002 at raw/canonical digests 538d6509/d9958a9d to converge the overlapping P09/P10 approved-School
+    seat/configuration authority; C00 admitted it to F02 and dispatched only a bounded P10 metadata acknowledgment.
+    Immutable request P09-registration-001 also requires signed-out GET /school and an Admin-authorized approved-school
+    configuration surface; neither exists in the admitted P09 source, so the request cannot truthfully be marked
+    applied from central POST registration alone.
   required_authority_or_input:
-  - Issue a bounded P09 producer correction or exact I36 implementation grant for signed-out GET /school and the
-    Admin-authorized configuration surface
+  - Complete and admit the exact P10 acknowledgment of P09-migration-002, then apply the request as forward-only
+    migration 2256 through F02 with native PostgreSQL proof
+  - Issue a bounded P09 producer correction for signed-out GET /school and the Admin-authorized configuration surface
+  - Replace immutable P09-registration-001 with schema-valid split shared requests; preserve its requirement IDs and
+    omit, without inventing replacements for, its two malformed non-ACNN acceptance IDs
   - Register the complete reviewed surface in an I36 central checkpoint and rerun the static production landing test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
   next_check: Re-evaluate after the complete P09 request surface and I36 route registration are independently admitted.
+- blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
+  status: open
+  scope: controlled_launch_candidate
+  owner: P22_F02_C00_I36
+  affected_tasks:
+  - P22
+  - F02
+  - P12
+  - I36
+  - V37
+  - V40
+  - R44
+  safe_work_completed: >-
+    F02 terminal 22ada24a preserved migration 2251 as the sole attendance write authority, wrote no SQL or allocation,
+    released both leases before expiry, and recorded effects 0/0/0. Independent preflight proved immutable
+    P22-migration-001 would create a competing writable attendance authority and omits product/runtime-tier and
+    verification-environment isolation. Both immutable predecessor requests carry two malformed acceptance IDs, and
+    P22-registration-001 additionally combines four shared-change classes under legacy kind registration. Both
+    predecessor requests remain preserved, assigned, unapplied, and held at successor-specific checkpoints.
+  required_authority_or_input:
+  - Complete the P22 runtime-only atomic claim, then separately authorize and implement the exact eight product/test
+    paths plus five schema-valid migration, server, client, config, and barrel successor requests
+  - Preserve migration 2251 as sole attendance authority; add runtime-tier and verification-environment isolation,
+    P12 actual/display-name dependency, append-only question-transition audit, and append-only recognition-consent audit
+  - After independent P22 admission, apply only the corrected migration successor as forward-only migration 2254
+    through F02 with clean native PostgreSQL replay and focused positive/negative proof
+  - Apply the remaining four corrected shared requests through their exact I36 checkpoints and re-run merged registration checks
+  protection: >-
+    Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
+    name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
+    provider, deployment, DNS, live-database, send, charge, or customer activation gates.
+  next_check: Re-evaluate after the P22 atomic claim is reconciled and the exact 16-path correction terminal is independently admitted.
 - blocker_id: F04-OWNERSHIP-TRANSFER-REVOCATION-COLUMNS
   status: closed
   scope: controlled_launch_candidate

@@ -1104,7 +1104,7 @@ items:
   kind: migration
   status: assigned
   assigned_steward: F02
-  target_checkpoint: F02_next_bounded_P22_migration_checkpoint
+  target_checkpoint: held_pending_P22-migration-002_after_product_authority_successor
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
@@ -1119,7 +1119,37 @@ items:
   kind: registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_P22_registration_after_migration_2254
+  target_checkpoint: held_pending_schema_valid_P22_shared-registration_successors
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P12-migration-001
+  request_digest: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
+  requesting_task_id: P12
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_forward_migration_2255_after_P22_2254
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P09-migration-002
+  request_digest: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+  requesting_task_id: P09
+  kind: migration
+  status: assigned
+  assigned_steward: F02
+  target_checkpoint: F02_forward_migration_2256_after_P10_authority_acknowledgment
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null

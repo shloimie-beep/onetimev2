@@ -2704,3 +2704,40 @@ authority. No worker may integrate, apply or acknowledge a steward result,
 freeze a candidate, claim a provider/effect lock, deploy, change DNS, run a
 live database migration, send, charge, activate a customer, or perform any
 external effect. Legal gates only `production_broad`.
+
+# Current instruction: run P22 atomic claim and P10 narrow acknowledgment
+
+Resolve the exact pushed control commit containing this instruction from state
+basis `cc90f922663405d883a798db8d4278ef803bb7cb`. Verify exact READY digests,
+claims, writers, task-bound leases, branch heads, dependency evidence, null
+candidate, empty effect locks, and effects `0/0/0`.
+
+Run these two disjoint tasks concurrently:
+
+1. P22 from exact clean local/tracking/live head
+   `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`, READY
+   `49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051`, claim
+   `a54f8667-d95d-415c-89ac-a6ac824775aa`, writer
+   `codex-p22-authority-successor-a54f8667`, and LEARNING_ENGAGEMENT lease
+   `d20c0e9b-03a0-4ca1-a555-394fad6b2df2`: change exactly the P22 runtime
+   TASK-STATE, HANDOFF, and NEXT-PROMPT. Record the claim and the later exact
+   16-path boundary, push the sole-parent three-path checkpoint, verify
+   local/tracking/live equality, and stop. Do not edit product, tests, either
+   predecessor request, SQL, allocations, shared files, control, or
+   integration.
+2. P10 from exact clean local/tracking/live head
+   `5fccc34507ae9c5dbc609e234ab559576ab3a445`, READY
+   `b3beba3c354d96e99bcf2ac3d97295087116f29149b9ff2a5146c0300c84a018`, claim
+   `e057d59f-2c37-4685-9bb4-ce407670caa4`, writer
+   `codex-p10-seat-ack-e057d59f`, and ADMIN_DIRECTORY lease
+   `215bd21b-fe00-4a12-a4b2-37959ed4b5d5`: change exactly the P10 runtime
+   triplet. Acknowledge only that immutable `P09-migration-002` is the future
+   authority for the overlapping approved-School seat/configuration
+   semantics; preserve every unrelated P10 byte and semantic. Release the
+   lease, push, verify local/tracking/live equality, and stop.
+
+C00 must independently reconcile both pushed heads before authorizing P22
+product/request work or any F02 migration. No worker may apply a steward
+result, integrate, freeze a candidate, inspect or mutate a provider, deploy,
+change DNS, run a live database migration, send, charge, activate a customer,
+or perform any external effect. Legal gates only `production_broad`.

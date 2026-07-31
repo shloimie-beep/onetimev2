@@ -3156,3 +3156,67 @@ Candidate remains null, all 14 provider locks remain unclaimed, and effects
 remain `0/0/0`. No integration, steward-result application, live database,
 provider, deployment, DNS, send, charge, activation, or legal-bundle effect is
 authorized. Legal continues to gate only `production_broad`.
+
+# Terminal request reconciliation and two bounded follow-ups
+
+From exact control parent
+`cc90f922663405d883a798db8d4278ef803bb7cb`, C00 independently reconciled:
+
+- F02 held terminal `22ada24a0ade35e406b9d1b55cb65f396ea2162b`,
+  sole parent `4007334f36c0a87b3289cb99f4a9d2f25eeda2a9`, tree
+  `b3b180af78cdcf2ef3354507362e625e8b2d4e2f`, state/HANDOFF
+  `85521b85e692a2fb28d4013e49b87ab71e276bd3cb13e4f73dbc0d611a3a3733`,
+  triplet `b0f6ba3cfc0bcc2b7345152253f5552dc921f44fe90c186765d0e5de17e81973`,
+  and both leases released at `2026-07-31T04:48:40Z`;
+- P12 request terminal `9ada912c3238421e661f89e590c07c042dd6424b`,
+  with immutable `P12-migration-001` raw SHA-256
+  `6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17`,
+  Git blob `92c1765089dc227f44e852857a404ab11a0e7fe2`, and lease released at
+  `2026-07-31T04:52:40Z`;
+- P09 request terminal `d9a4ce8082a028be81e234999deb43f659072a6d`,
+  with immutable `P09-migration-002` raw/canonical SHA-256
+  `538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62` /
+  `d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb`,
+  Git blob `75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1`, and lease released at
+  `2026-07-31T04:51:04Z`.
+
+C00 registered both new migration requests as assigned and unapplied. The
+legacy P22 requests remain assigned but held at successor-specific
+checkpoints; neither may be applied. `P22-migration-001` conflicts with
+migration 2251's sole attendance-write authority, and both P22 predecessors
+carry malformed non-ACNN acceptance IDs. `P22-registration-001` additionally
+uses a legacy composite kind.
+
+Two disjoint follow-ups are published through `2026-07-31T07:06:00Z`:
+
+- P22 READY `49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051`, claim
+  `a54f8667-d95d-415c-89ac-a6ac824775aa`, writer
+  `codex-p22-authority-successor-a54f8667`, LEARNING_ENGAGEMENT lease
+  `d20c0e9b-03a0-4ca1-a555-394fad6b2df2`, exact existing head
+  `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`, and runtime-triplet-only
+  first push;
+- P10 READY `b3beba3c354d96e99bcf2ac3d97295087116f29149b9ff2a5146c0300c84a018`, claim
+  `e057d59f-2c37-4685-9bb4-ce407670caa4`, writer
+  `codex-p10-seat-ack-e057d59f`, ADMIN_DIRECTORY lease
+  `215bd21b-fe00-4a12-a4b2-37959ed4b5d5`, exact existing head
+  `5fccc34507ae9c5dbc609e234ab559576ab3a445`, and direct
+  runtime-triplet-only acknowledgment.
+
+P22 must stop after its atomic claim. A separate C00 phase is required before
+the exact 16-path correction: eight product/test paths, five schema-valid
+successor requests, and the P22 runtime triplet. That later correction must
+preserve migration 2251 as sole attendance authority, use full
+account/product/runtime/environment scope, reuse canonical consent events,
+use P12 `actual_name`/nullable `display_name` without parsing, and make
+question-transition and recognition history append-only.
+
+P10 may acknowledge only that `P09-migration-002` supersedes the overlapping
+approved-School seat/configuration authority. It must preserve all other P10
+product, request, credential, enrollment, revocation, ownership-transfer,
+receipt, and audit bytes and semantics.
+
+Candidate remains null, all 14 provider locks remain unclaimed, and effects
+remain `0/0/0`. No SQL, migration allocation or application, steward result,
+integration, candidate, provider, deployment, DNS, send, charge, customer
+activation, or external effect is authorized. Legal continues to gate only
+`production_broad`.
