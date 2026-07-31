@@ -1092,12 +1092,83 @@ items:
   result_digest: null
   rejection_reason: null
 - request_id: P12-registration-001
-  request_digest: 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733
+  request_digest: e78602d05b0df02dafb8b7f20c4386235400d053d9ce4f3732fe5c8a4366353f
   requesting_task_id: P12
   kind: registration
+  status: rejected
+  assigned_steward: I36
+  target_checkpoint: superseded_withheld_by_split_P12_successors
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+  acknowledgment_state_handoff_digest: f959f8617737840dbb4fd12a0a704d3e84f24cfbe98ba75ac1dab039f704e920
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: >-
+    Immutable P12-registration-001 is superseded and withheld because it combines server, client, and barrel ownership
+    and predates the accepted concrete PostgreSQL and semantic 1.2.0 interface. Its canonical digest is
+    e78602d05b0df02dafb8b7f20c4386235400d053d9ce4f3732fe5c8a4366353f, normalized Git-byte SHA-256 is
+    501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733, and Git blob is
+    7983fff71f952990f01dad4a1ff13e91a979e222. Only the split server/client -002 and barrel -003 successors may be
+    dispositioned after ordered P12-then-P09 source integration.
+- request_id: P12-server-registration-002
+  request_digest: 1d3d64921721c91d57d0d81d6252f2d4b8af82212afd6c5e076168c7ed787939
+  requesting_task_id: P12
+  kind: server_feature_registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_parent_household_registration_after_auth_client_and_P12_persistence
+  target_checkpoint: I36_batch_A_P12_server_after_source_microbatch_barrel_and_P08_auth
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P12-client-route-002
+  request_digest: 49021ac11df00c4f485f88661b4e5d6ca2c30c033269161e40a62adf458f1802
+  requesting_task_id: P12
+  kind: client_route_registration
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_batch_A_P12_client_after_server_registration
+  acknowledged_by_task: false
+  acknowledgment_head_sha: null
+  acknowledgment_state_handoff_digest: null
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: null
+- request_id: P12-barrel-export-002
+  request_digest: f51cc97e84e695726c846141a343f06e956514f361a140f38d66b7196f0ddda0
+  requesting_task_id: P12
+  kind: barrel_export
+  status: rejected
+  assigned_steward: I36
+  target_checkpoint: superseded_withheld_by_P12-barrel-export-003
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+  acknowledgment_state_handoff_digest: f959f8617737840dbb4fd12a0a704d3e84f24cfbe98ba75ac1dab039f704e920
+  applied_commit_sha: null
+  result_record_head_sha: null
+  evaluated_target_head_sha: null
+  result_digest: null
+  rejection_reason: >-
+    Immutable P12-barrel-export-002 binds semantic interface 1.1.0 and is superseded only by schema-valid
+    P12-barrel-export-003 for accepted interface 1.2.0. Its canonical digest is
+    f51cc97e84e695726c846141a343f06e956514f361a140f38d66b7196f0ddda0, normalized Git-byte SHA-256 is
+    2a82d0963bff76d05e9290f8648c232468fb1d9f0078c958657bb44e1621322d, and Git blob is
+    04188b65b51f6f1421779523443838ee57f36a51. It must never be edited or applied.
+- request_id: P12-barrel-export-003
+  request_digest: acd1cbb6689896bb2ab0c3cd26457dd013e93fbfd8c398e60fa1368a9ad0286b
+  requesting_task_id: P12
+  kind: barrel_export
+  status: assigned
+  assigned_steward: I36
+  target_checkpoint: I36_batch_A_P12_barrel_1_2_0_after_source_microbatch
   acknowledged_by_task: false
   acknowledgment_head_sha: null
   acknowledgment_state_handoff_digest: null
