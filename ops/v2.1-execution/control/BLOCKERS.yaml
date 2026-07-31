@@ -143,7 +143,7 @@ blockers:
     three declared native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease,
     and recorded effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2.
   required_authority_or_input:
-  - Complete repository-safe Batches B and C, then apply admitted P12 server/client -002 plus barrel -003 during
+  - Batch B is independently accepted; complete repository-safe Batch C, then apply admitted P12 server/client -002 plus barrel -003 during
     dependency-ordered Batch A; never apply either superseded predecessor
   - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
     stale-security, expired, revoked, no-legacy-fallback, and Student create/manage verification
@@ -152,7 +152,7 @@ blockers:
     session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
     multi-household selector, or treat inactive access as an unauthenticated Parent.
   next_check: >-
-    Re-evaluate after Batch B/C and Batch A shared registration, then after the mounted persistence/route/browser
+    Re-evaluate after Batch C and Batch A shared registration, then after the mounted persistence/route/browser
     checkpoint. Preserve the recovery-capable post-commit session boundary without claiming stricter cross-transaction
     atomicity.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
@@ -193,10 +193,10 @@ blockers:
     native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease, and recorded
     effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2.
   required_authority_or_input:
-  - Complete repository-safe Batches B and C, then apply the three admitted P09 split successors during Batch A and
+  - Batch B is independently accepted; complete repository-safe Batch C, then apply the three admitted P09 split successors during Batch A and
     rerun the focused static production /school test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
-  next_check: Re-evaluate after Batch B/C and dependency-ordered Batch A route registration.
+  next_check: Re-evaluate after Batch C and dependency-ordered Batch A route registration.
 - blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
   status: open
   scope: controlled_launch_candidate
@@ -225,9 +225,11 @@ blockers:
     and effects 0/0/0. I36 release ae3ced8a merged F02 then P18 with exact ancestry, 18 release paths, unchanged protected
     migrations, repeated native PostgreSQL 18.4 apply/replay/ledger 87/87, released lease, effects 0/0/0, and one
     independent review with no P1/P2 discrepancy. C00 recorded migrations 2254-2256 as integrated and their exact
-    successor requests as applied.
+    successor requests as applied. I36 Batch B terminal 8c5b08cc is independently accepted with exact six-path scope,
+    P08-config-002 fully applied, the repository-safe P22 server-only key prerequisite present without a value,
+    48/48 focused assertions, zero changed-path type diagnostics, both leases released, and effects 0/0/0.
   required_authority_or_input:
-  - Apply the remaining corrected shared requests through exact I36 batches B, C, A, then D and re-run merged
+  - Apply the remaining corrected shared requests through exact I36 batches C, A, then D and re-run merged
     registration checks
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display

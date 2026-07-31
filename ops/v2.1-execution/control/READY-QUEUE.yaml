@@ -5,12 +5,12 @@ status: operational
 ready:
   - task_id: I36
     status: ready
-    phase: batch_B_configuration_dependencies_and_shared_tests
+    phase: batch_C_repository_provider_highlevel_communications_workflow_registries
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-    authorized_start_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
-    expected_existing_head: 288d5883d4e5a4e298efa8659609b42f87d190d4
+    state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+    authorized_start_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+    expected_existing_head: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,144 +19,131 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-        control_state_canonical_digest: c3f2aab1d850dc87e656a111b8f6d82cdbe6e03567f544370ea4c6d23520c079
+        observed_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+        control_state_canonical_digest: 0d847203bb57c715e8069db9be0ad022468ce20ac0631264acfb960e7e41c81e
       I36:
-        required_state: P12_P09_source_microbatch_independently_accepted
-        observed_state: P12_P09_source_microbatch_independently_accepted
-        remote_integration_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
-        terminal_parent_sha: 8ab92f4b2ee26bd3838d6793b7c29d357f66c3a5
-        terminal_tree_sha: d1ad8f7fa293450bd380f9a7b249b59e82d0d9d9
-        terminal_state_handoff_digest: 3bec58d05fc142a079f4a9aadfe28144c03ee9fe53406be3a82ff0a4affef572
-        terminal_runtime_triplet_digest: a47fc1645bc6728ea9cd2b2b44e50e48c87125cc6a3f6b09ef9ec3ea6daf126d
-        terminal_triplet_manifest_digest: e790e30469a110f683f342d12ea2370de4d76407cb42420dd0026efd3db7792b
-        combined_source_path_inventory_digest: 914134026094df5aec87c1d78f5c0b965ef8e3ba2f14a48f5e298a65b8869d31
-        combined_source_manifest_digest: 4da1a34b941441463527bdc4274b04273e770cbf5bc555e21cdd6b7d312f7e4e
+        required_state: batch_B_independently_accepted
+        observed_state: batch_B_independently_accepted
+        remote_integration_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+        terminal_parent_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+        terminal_tree_sha: 291671cdcd0b8cf23ed3e891ea2c1056b7ec15d2
+        terminal_state_handoff_digest: 95b1f84875d1447fc15a5de6213385b4b00d9198f3b331987413902c6ca26162
+        terminal_runtime_triplet_digest: 38d867a9f83bc31e8af9dd5fbf11687c0646b972d1efc4e25d027567719c049c
+        terminal_triplet_manifest_digest: 62ac5e4e74fa80dddd19b27230c66ab36e108b6ef9fc778f1a391ffad2689fb1
+        product_manifest_digest: 6e61d2c285e88b694f57361b8702e6a28c4ce5490b3e62e98812f4eba4dcc1ad
+        product_diff_sha256: b6e39d52f400a5e88b1a95ede125f1b0a6ff8a85a563876c23dd14d280421a3d
         independent_review: passed_no_P1_or_P2
-        focused_merged_tests: 67_passed_3_declared_native_skips
-        changed_workspace_typecheck: zero_P12_or_P09_diagnostics_four_unchanged_baselines
-        lease_released_at: '2026-07-31T17:23:20Z'
+        focused_tests: 48_passed
+        changed_workspace_typecheck: zero_changed_path_diagnostics_four_unchanged_baselines
+        leases_released_at: '2026-07-31T18:09:01Z'
         external_effects: 0/0/0
-      P08:
-        required_state: family_parent_session_composition_complete
-        observed_state: family_parent_session_composition_complete
-        integration_prerequisite_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-        config_request_id: P08-config-002
-        config_request_digest: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
-      P22:
-        required_state: source_and_migration_prerequisites_integrated
-        observed_state: source_and_migration_prerequisites_integrated
-        source_integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
-        migration_integration_release_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
-        config_request_id: P22-config-key-002
-        config_request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+      P28:
+        required_state: canonical_workflow_registry_source_integrated
+        observed_state: canonical_workflow_registry_source_integrated
+        source_head_sha: a2025a768ae6e69a15ec5605379a9e359cf2deec
+      P29:
+        required_state: core_lifecycle_source_integrated
+        observed_state: core_lifecycle_source_integrated
+        source_head_sha: aa7b363812676afce8ac9ebd13f335e65551bb1f
+      P30:
+        required_state: campaigns_source_and_copy_prerequisite_integrated
+        observed_state: campaigns_source_and_copy_prerequisite_integrated
+        source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
+        copy_registration_applied_commit_sha: 5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f
     immutable_request_bindings:
-      P32-config-001:
-        request_digest: 005106774e3ad414f885d04f72b90000bc42a07c65f41edbf4fa85db0f2d6309
-        source_path: ops/v2.1-execution/runtime/P32/steward-requests/P32-config-001.yaml
-        digest_kind: canonical_request_object_sha256
-      P19-CONFIG-DEPENDENCY-001:
-        request_digest: 8896d9023f42ce6f8a424dd1a81faf05938cfa6d03751bb2fc066a81c3c41165
-        source_path: ops/v2.1-execution/runtime/P19/STEWARD-REQUESTS.yaml
-        digest_kind: canonical_named_request_subobject_sha256
-      P20-RUNTIME-CONFIG-001:
-        request_digest: 1436bbe841665fff24c54e6a8f2372410850ec9e763f4c323c6266b222b2302b
-        source_path: ops/v2.1-execution/runtime/P20/STEWARD-REQUESTS.yaml
-        digest_kind: canonical_named_request_subobject_sha256
-      P20-PINNED-MEDIA-RUNTIME-001:
-        request_digest: 651b8177e3d227e63f7562824d07a04f5261c9277e3e36929b6881ce2168434f
-        source_path: ops/v2.1-execution/runtime/P20/STEWARD-REQUESTS.yaml
-        digest_kind: canonical_named_request_subobject_sha256
-      P29-config-001:
-        request_digest: 10eb53f6f54fd3d8a7e32ea48452205c1b7c55a98f67f8e81ec434b83e50da0e
-        source_path: ops/v2.1-execution/runtime/P29/steward-requests/P29-config-001.yaml
+      P28-registry-projection-001:
+        request_digest: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
+        source_path: ops/v2.1-execution/runtime/P28/steward-requests/P28-registry-projection-001.yaml
         digest_kind: raw_git_blob_sha256
-      P17-ZOOM-CONFIG-DEPENDENCY-001:
-        request_digest: a3ccccdd574875fab0dfe7da4fb0f269be41b55b4dafb8485ba76cdfbfbaab9d
-        source_path: ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
-        digest_kind: canonical_named_request_subobject_sha256
-      P33-config-001:
-        request_digest: bc972db8b48aaf69b61a5b82511532dd8f0ad675ea1fdeb01a1671ecac35cbb6
-        source_path: ops/v2.1-execution/runtime/P33/steward-requests/P33-config-001.yaml
+        prior_stale_queue_digest: 62631c04bab8af8b09dcdd23087e9731cff0c23668d4c9f2f5cc21bb0980dfcf
+      P29-registry-projection-001:
+        request_digest: e42a3ef91712ae0852c4dfe516c260ba7112eeec2737668087af3d15816c5919
+        source_path: ops/v2.1-execution/runtime/P29/steward-requests/P29-registry-projection-001.yaml
         digest_kind: raw_git_blob_sha256
-      P08-config-002:
-        request_digest: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
-        source_path: ops/v2.1-execution/runtime/P08/steward-requests/P08-config-002.yaml
+      P30-registry-registration-001:
+        request_digest: 8c6b582f4265cf9f5cd0f51c302ea239c40d1c5ca3bfc27805c15bd699e52644
+        source_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml
         digest_kind: raw_git_blob_sha256
-      P22-config-key-002:
-        request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
-        source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml
-        digest_kind: canonical_request_object_sha256
     request_digest_semantics: >-
-      Reproduce each request with its explicit digest_kind. Canonical request digests use recursively key-sorted compact
-      JSON with UTF-8, separators ',' and ':', ensure_ascii=false, and no floating-point values.
+      Raw Git-blob SHA-256 means SHA-256 of the exact LF Git object bytes at the authorized integration head. The prior
+      P28 queue digest is preserved only as stale evidence and grants no authority.
     authorized_paths:
-      - .env.example
+      - integrations/highlevel/registry/current.json
+      - integrations/highlevel/registry/message-class-registry.yaml
+      - integrations/highlevel/registry/workflow-registry.yaml
+      - integrations/highlevel/v21/foundation/desired-state.test.ts
+      - integrations/highlevel/v21/foundation/desired-state.ts
+      - integrations/highlevel/v21/foundation/registry-source.test.ts
+      - integrations/highlevel/workflows.yaml
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-      - package-lock.json
-      - package.json
-      - packages/config/src/index.ts
-      - tests/unit/config/runtime-classification.test.ts
-    authorized_path_count: 8
-    authorized_path_inventory_digest: fd8fb3d465366b655d884013eaee18057d8dcd14624eb88f371016c078b112c3
+      - packages/domain/src/communications/foundation/foundation.test.ts
+      - packages/domain/src/communications/foundation/workflow-fragment.ts
+      - scripts/highlevel/canonical-registry-data.ts
+      - scripts/highlevel/sync-workflow-control-projections.ts
+      - scripts/highlevel/validate-registry.ts
+      - scripts/highlevel/workflow-control-registry.ts
+      - scripts/highlevel/workflow-registry-source.ts
+    authorized_path_count: 17
+    authorized_path_inventory_digest: 59b418baa0e9067255dacd65bb8ce4e31144ce12330eb9a501526da89ba70ce7
     correction_directives:
       - >-
-        Process exactly the nine immutable Batch B request IDs bound above. First reproduce each queue digest from the
-        exact Git bytes at integration 288d5883, then classify each request as applicable, already_satisfied,
-        superseded, invalid_or_rejected, or blocked_by_a_later_exact_gate. Preserve one immutable disposition per
-        request in the single terminal runtime triplet.
+        Reproduce the canonical READY digest and all three immutable request digests from exact Git bytes before editing.
+        Apply one dependency-ordered repository-only Batch C terminal: P28 projection reconciliation first, P29 core
+        lifecycle fragment registration second, and the repository-safe P30 campaign registry prerequisite third.
       - >-
-        Apply only complete, repository-safe configuration, dependency, lockfile, and shared-config-test semantics that
-        fit the eight exact authorized paths. Never guess a deployment path, provider account, bucket, KMS key, Drive
-        folder, Zoom app, HighLevel location, OpenAI project, secret value, binary provenance, or live runtime identity.
-        Do not mark a request applied if any required semantic remains incomplete; record the exact blocking later gate.
+        For P28, preserve workflow-registry.yaml as the canonical source, authorize OT-14 under torah_newsletter and
+        OT-15 under warm_enrollment_campaign, regenerate projections only through the canonical generator, and update
+        exact validator assertions. Preserve empty provider IDs and BLOCKED or DRAFT_WAITING_EXTERNAL truth.
       - >-
-        Batch B may create no provider or infrastructure effect and may not inspect or mutate S3, KMS, Drive, Zoom,
-        HighLevel, OpenAI, Railway, DNS, deployment, customer, billing, message, or candidate state. Provider and
-        workflow registries remain for Batch C; server/client/worker/routes/barrels remain for Batch A; deployment,
-        branding, and public assets remain for Batch D.
+        For P29, register the exact twelve-key core lifecycle fragment, admit only canonical OT-02A and OT-02B syntax,
+        preserve exact sender, message-class, trigger, approval, audience, suppression, copy, cadence, exit, and billing
+        projection semantics, and keep every activation or broad audience gate fail-closed.
       - >-
-        Validate only changed bytes: lockfile/package consistency for dependency changes, focused configuration and
-        request tests, changed-package formatting/lint/typecheck, and the relevant changed package build. Do not run
-        another repository-wide audit, native PostgreSQL replay, full canonical suite, browser matrix, or unrelated
-        provider test. If a required representative fixture or exact identity is absent, record that request blocked
-        rather than synthesizing evidence.
+        P30-registry-registration-001 remains blocked_by_a_later_exact_gate overall because runOt16Checkpoint belongs to
+        Batch A worker composition. Apply only its complete repository-safe registry/fragment prerequisite within the
+        exact paths above, preserve provider and activation blockers, and record the remaining Batch A gate without
+        marking the mixed request fully applied.
       - >-
-        Update the I36 runtime triplet once, release both writer-slot leases, push one normal terminal, verify
-        local/tracking/live equality and a clean worktree, then stop for one independent Batch B review. No candidate
-        freeze, provider effect, deployment, DNS change, send, charge, customer activation, or other external effect is
-        authorized.
+        This authority permits no provider or infrastructure inspection or mutation, workflow publication or
+        activation, enrollment, send, contact creation, Student contact, WhatsApp action, billing or customer mutation,
+        candidate action, deployment, DNS change, or external effect. No effect lock is issued.
+      - >-
+        Validate only changed bytes: focused registry, projection, foundation, P29, and P30 assertions; canonical
+        projection/registry checks; changed-file format, lint, typecheck, and relevant build if a changed package has one.
+        Do not run a repository-wide audit, native PostgreSQL replay, browser matrix, provider test, or full canonical
+        suite. Update the I36 runtime triplet once, release both leases, push one terminal, prove clean
+        local/tracking/live equality, and stop for one independent review.
     writer_slot_leases:
-      - slot: CONFIG_DEPS
-        lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
+      - slot: GHL_REGISTRY
+        lease_id: 381fddd0-1ac8-4172-a64e-8148bd207312
         holder_task_id: I36
-        holder_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
-        holder_writer_id: codex-i36-batch-b-995fe313
-        state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-        lease_issued_at: '2026-07-31T17:40:18Z'
-        lease_expires_at: '2026-07-31T21:40:18Z'
-        phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
+        holder_claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
+        holder_writer_id: codex-i36-batch-c-3cb0bfbd
+        state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+        lease_issued_at: '2026-07-31T18:25:00Z'
+        lease_expires_at: '2026-07-31T22:25:00Z'
+        phase_scope: batch_C_repository_provider_highlevel_communications_workflow_registries_only
       - slot: RELEASE_INTEGRATOR
-        lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
+        lease_id: 8f15ef5c-8157-4571-8f72-476869626cf2
         holder_task_id: I36
-        holder_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
-        holder_writer_id: codex-i36-batch-b-995fe313
-        state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-        lease_issued_at: '2026-07-31T17:40:18Z'
-        lease_expires_at: '2026-07-31T21:40:18Z'
-        phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
+        holder_claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
+        holder_writer_id: codex-i36-batch-c-3cb0bfbd
+        state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+        lease_issued_at: '2026-07-31T18:25:00Z'
+        lease_expires_at: '2026-07-31T22:25:00Z'
+        phase_scope: batch_C_repository_provider_highlevel_communications_workflow_registries_only
     effect_lock_leases: []
-    claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
-    lease_issued_at: '2026-07-31T17:40:18Z'
-    lease_expires_at: '2026-07-31T21:40:18Z'
+    claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
+    lease_issued_at: '2026-07-31T18:25:00Z'
+    lease_expires_at: '2026-07-31T22:25:00Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
+  I36: 0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,
