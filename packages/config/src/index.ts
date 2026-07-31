@@ -30,6 +30,11 @@ const optionalTrimmedString = (minimum: number, maximum: number) =>
     z.string().trim().min(minimum).max(maximum).optional(),
   );
 
+const optionalNonblankString = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  z.string().trim().min(1).optional(),
+);
+
 function parseUniqueCsv(value: string | undefined) {
   if (!value) return [];
   return [
@@ -58,6 +63,31 @@ const OT89_KNOWN_TEST_VALUES = new Set([
 const deliveryEnvironmentSchema = z.enum(['local', 'test', 'isolated_staging', 'production']);
 
 export type OneTimeRuntimeEnvironment = z.infer<typeof deliveryEnvironmentSchema>;
+
+export const ONE_TIME_VERIFICATION_ENVIRONMENTS = [
+  'ci',
+  'provider_sandbox',
+  'persistent_staging',
+  'production_read_only',
+  'production_operator_canary',
+  'production_broad',
+] as const;
+
+const oneTimeVerificationEnvironmentSchema = z.enum(ONE_TIME_VERIFICATION_ENVIRONMENTS);
+
+export type OneTimeVerificationEnvironment = z.infer<typeof oneTimeVerificationEnvironmentSchema>;
+export type OneTimeRuntimeTier = 'isolated_staging' | 'production';
+
+export const ONE_TIME_VERIFICATION_RUNTIME_TIER: Readonly<
+  Record<OneTimeVerificationEnvironment, OneTimeRuntimeTier>
+> = {
+  ci: 'isolated_staging',
+  provider_sandbox: 'isolated_staging',
+  persistent_staging: 'isolated_staging',
+  production_read_only: 'production',
+  production_operator_canary: 'production',
+  production_broad: 'production',
+};
 
 export const CURRENT_APPLICATION_ROLES = ['admin', 'parent', 'student'] as const;
 export type CurrentApplicationRole = (typeof CURRENT_APPLICATION_ROLES)[number];
@@ -182,6 +212,11 @@ const envSchema = z.object({
   ONE_TIME_RUNTIME_ENVIRONMENT: z
     .enum(['local', 'test', 'isolated_staging', 'production'])
     .optional(),
+  ONE_TIME_VERIFICATION_ENVIRONMENT_ID: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    oneTimeVerificationEnvironmentSchema.optional(),
+  ),
+  LEARNING_ALIAS_HMAC_KEY: optionalNonblankString,
   DELIVERY_PROVIDER_MODE: z.enum(['sink', 'mock', 'provider']).default('sink'),
   DELIVERY_PROVIDER_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
   DELIVERY_STAGING_CANARY_PROOF: optionalTrimmedString(8, 160),
@@ -331,6 +366,24 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
 
   const oneTimeRuntimeEnvironment = runtime.environment;
+  const oneTimeVerificationEnvironmentId =
+    parsed.ONE_TIME_VERIFICATION_ENVIRONMENT_ID ??
+    (oneTimeRuntimeEnvironment === 'production'
+      ? 'production_read_only'
+      : oneTimeRuntimeEnvironment === 'isolated_staging'
+        ? 'persistent_staging'
+        : 'ci');
+  const oneTimeRuntimeTier = ONE_TIME_VERIFICATION_RUNTIME_TIER[oneTimeVerificationEnvironmentId];
+  const expectedOneTimeRuntimeTier: OneTimeRuntimeTier = runtime.isProductionRuntime
+    ? 'production'
+    : 'isolated_staging';
+  if (oneTimeRuntimeTier !== expectedOneTimeRuntimeTier) {
+    throw new Error(
+      `ONE_TIME_VERIFICATION_ENVIRONMENT_ID=${oneTimeVerificationEnvironmentId} does not match runtime ${oneTimeRuntimeEnvironment}.`,
+    );
+  }
+  const oneTimeVerificationWritesAllowed =
+    oneTimeVerificationEnvironmentId !== 'production_read_only';
   if (
     parsed.ONE_TIME_RABBI_GHL_REPLY_MODE === 'synthetic' &&
     !['test', 'isolated_staging'].includes(oneTimeRuntimeEnvironment)
@@ -563,6 +616,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     lifecycleDeliveryKeyConfigured: Boolean(parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY),
     outboxTransportMode: parsed.OUTBOX_TRANSPORT_MODE,
     oneTimeRuntimeEnvironment,
+    oneTimeRuntimeTier,
+    oneTimeVerificationEnvironmentId,
+    oneTimeVerificationWritesAllowed,
+    learningAliasHmacKey: parsed.LEARNING_ALIAS_HMAC_KEY,
+    learningAliasHmacKeyConfigured: Boolean(parsed.LEARNING_ALIAS_HMAC_KEY),
     deliveryProviderMode: parsed.DELIVERY_PROVIDER_MODE,
     deliveryProviderAuthorizationId: parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID,
     deliveryStagingCanaryProof: parsed.DELIVERY_STAGING_CANARY_PROOF,

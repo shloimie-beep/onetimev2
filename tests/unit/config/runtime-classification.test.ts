@@ -9,7 +9,7 @@ type NodeEnvironment = 'development' | 'test' | 'production';
 
 const productionSecrets = {
   AUTH_CSRF_SECRET: 'production-runtime-classification-csrf-secret',
-  MFA_SECRET_ENCRYPTION_KEY: 'production-runtime-classification-mfa-key',
+  PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'production-runtime-classification-payload-key',
 };
 
 const allowedTuples = [
@@ -108,13 +108,13 @@ describe('canonical runtime classification', () => {
     expect(() => loadConfig({ NODE_ENV: 'production' })).toThrow(/AUTH_CSRF_SECRET/i);
     expect(() =>
       loadConfig({ NODE_ENV: 'production', AUTH_CSRF_SECRET: productionSecrets.AUTH_CSRF_SECRET }),
-    ).toThrow(/MFA_SECRET_ENCRYPTION_KEY/i);
+    ).toThrow(/PROTECTED_PAYLOAD_ENCRYPTION_KEY/i);
 
     const production = loadConfig({ NODE_ENV: 'production', ...productionSecrets });
     expect(production).toMatchObject({
       isProduction: true,
       authCsrfSecret: productionSecrets.AUTH_CSRF_SECRET,
-      mfaSecretEncryptionKey: productionSecrets.MFA_SECRET_ENCRYPTION_KEY,
+      mfaSecretEncryptionKey: productionSecrets.PROTECTED_PAYLOAD_ENCRYPTION_KEY,
       lifecycleDeliveryKey: undefined,
       liveClassObsBridgeToken: undefined,
       ot89SupportHmacKeyId: '',
@@ -162,13 +162,13 @@ describe('canonical runtime classification', () => {
     expect(
       loadConfig({ NODE_ENV: 'test', RUN_MIGRATIONS_ON_STARTUP: 'true' }).runMigrationsOnStartup,
     ).toBe(true);
-    expect(() =>
+    expect(
       loadConfig({
         NODE_ENV: 'production',
         ...productionSecrets,
         LEARNING_DELIVERY_DEMO_ENABLED: 'true',
-      }),
-    ).toThrow(/demo is forbidden in production/i);
+      }).learningDeliveryDemoEnabled,
+    ).toBe(false);
     expect(() =>
       loadConfig({
         NODE_ENV: 'production',
@@ -185,5 +185,98 @@ describe('canonical runtime classification', () => {
         DELIVERY_PROVIDER_MODE: 'provider',
       }).runtime.allowsProviderActions,
     ).toBe(true);
+  });
+
+  it('derives fail-safe verification defaults for every runtime class', () => {
+    expect(loadConfig({ NODE_ENV: 'development' })).toMatchObject({
+      oneTimeRuntimeTier: 'isolated_staging',
+      oneTimeVerificationEnvironmentId: 'ci',
+      oneTimeVerificationWritesAllowed: true,
+    });
+    expect(loadConfig({ NODE_ENV: 'test' })).toMatchObject({
+      oneTimeRuntimeTier: 'isolated_staging',
+      oneTimeVerificationEnvironmentId: 'ci',
+      oneTimeVerificationWritesAllowed: true,
+    });
+    expect(
+      loadConfig({
+        NODE_ENV: 'development',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      }),
+    ).toMatchObject({
+      oneTimeRuntimeTier: 'isolated_staging',
+      oneTimeVerificationEnvironmentId: 'persistent_staging',
+      oneTimeVerificationWritesAllowed: true,
+    });
+    expect(loadConfig({ NODE_ENV: 'production', ...productionSecrets })).toMatchObject({
+      oneTimeRuntimeTier: 'production',
+      oneTimeVerificationEnvironmentId: 'production_read_only',
+      oneTimeVerificationWritesAllowed: false,
+    });
+  });
+
+  it('accepts only explicit same-tier verification environments', () => {
+    expect(
+      loadConfig({
+        NODE_ENV: 'production',
+        ...productionSecrets,
+        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_operator_canary',
+      }),
+    ).toMatchObject({
+      oneTimeRuntimeTier: 'production',
+      oneTimeVerificationEnvironmentId: 'production_operator_canary',
+      oneTimeVerificationWritesAllowed: true,
+    });
+    expect(
+      loadConfig({
+        NODE_ENV: 'development',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'provider_sandbox',
+      }),
+    ).toMatchObject({
+      oneTimeRuntimeTier: 'isolated_staging',
+      oneTimeVerificationEnvironmentId: 'provider_sandbox',
+      oneTimeVerificationWritesAllowed: true,
+    });
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'production',
+        ...productionSecrets,
+        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'ci',
+      }),
+    ).toThrow(/does not match runtime production/i);
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'development',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'production_read_only',
+      }),
+    ).toThrow(/does not match runtime isolated_staging/i);
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'development',
+        ONE_TIME_VERIFICATION_ENVIRONMENT_ID: 'unknown',
+      }),
+    ).toThrow(/ONE_TIME_VERIFICATION_ENVIRONMENT_ID/i);
+  });
+
+  it('exposes only a configured nonblank server-side learning alias HMAC key', () => {
+    expect(loadConfig({ NODE_ENV: 'development' })).toMatchObject({
+      learningAliasHmacKey: undefined,
+      learningAliasHmacKeyConfigured: false,
+    });
+    expect(
+      loadConfig({
+        NODE_ENV: 'development',
+        LEARNING_ALIAS_HMAC_KEY: 'server-only-learning-alias-hmac-key',
+      }),
+    ).toMatchObject({
+      learningAliasHmacKey: 'server-only-learning-alias-hmac-key',
+      learningAliasHmacKeyConfigured: true,
+    });
+    expect(loadConfig({ NODE_ENV: 'development', LEARNING_ALIAS_HMAC_KEY: '   ' })).toMatchObject({
+      learningAliasHmacKey: undefined,
+      learningAliasHmacKeyConfigured: false,
+    });
   });
 });

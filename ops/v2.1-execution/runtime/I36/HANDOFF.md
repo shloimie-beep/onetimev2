@@ -1199,3 +1199,67 @@ I36 must stop after the exact runtime-triplet terminal commit is normally
 pushed with clean local/tracking/live equality. C00 must independently audit
 and consume all three merge items before issuing the next B-then-C-then-A-then-D
 microbatch authority.
+
+## Batch B configuration, dependency, and shared-test terminal
+
+Live control `951e9d846e805d9d01ef1ad41973e41fefb8573e`, based on
+`3c4a3aafb55ebe4745aa865733612172c9fad436`, authorized Batch B from exact
+integration head `288d5883d4e5a4e298efa8659609b42f87d190d4`. Canonical READY digest
+`b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800`
+and all nine immutable request digests reproduced from exact Git bytes by
+their declared digest kinds.
+
+P08-config-002 is `applicable` and fully applied. Central config now defines
+the exact six verification environments, maps them strictly to isolated
+staging or production, selects deterministic fail-safe defaults, rejects
+unknown and cross-tier values, and exposes the validated runtime tier,
+environment ID, and writes-allowed projection. The existing P08 router reads
+those central fields and rejects `production_read_only` before service access.
+
+P22-config-key-002 remains `blocked_by_a_later_exact_gate` overall, although
+its complete repository-safe prerequisite is present: blank-normalized,
+server-only `LEARNING_ALIAS_HMAC_KEY` config, configured-state projection,
+example declaration, and tests. Batch A must require and inject the key in the
+central P22 service composer; Batch D must bind and read back the protected
+secret. No value was supplied or exposed.
+
+The other seven requests remain `blocked_by_a_later_exact_gate`, with their
+exact gates recorded in TASK-STATE: P32 needs Batch D immutable cross-boundary
+storage/KMS/role infrastructure; P19 needs Batch C canonical S3/Drive adapters
+and Batch D deployment binding; P20 runtime needs Batch C S3/OpenAI identities
+and Batch D secret readback; P20 media needs Batch D pinned binary provenance,
+runtime-image authority, and representative fixture proof; P29 needs Batch C
+HighLevel/workflow/approval bindings; P17 needs Batch C canonical Zoom app,
+account, host, origin, and settings readback; and P33 needs a frozen candidate
+plus Batch A/C observation adapters before Batch D identity injection. No
+request was marked applied while required semantics remained incomplete.
+
+Exactly three product/shared paths changed: `.env.example`,
+`packages/config/src/index.ts`, and
+`tests/unit/config/runtime-classification.test.ts`. The product manifest digest
+is `6e61d2c285e88b694f57361b8702e6a28c4ce5490b3e62e98812f4eba4dcc1ad`.
+`package.json` and `package-lock.json` are byte-identical to the authorized
+start because the blocked requests lack exact adapters, identities, runtime
+image, binary provenance, and fixtures; no unused or guessed dependency was
+added.
+
+Verification passed: three focused files and 48 tests; zero ESLint findings;
+Prettier and diff hygiene; direct ESM runtime import/readback; and zero changed-
+path workspace type diagnostics. The only four workspace typecheck diagnostics
+are the unchanged documented Stripe and three Playwright-harness baselines. The
+shared config test also received two narrow baseline repairs for the current
+`PROTECTED_PAYLOAD_ENCRYPTION_KEY` surface and retired demo input behavior.
+
+Claim `995fe313-efa9-4e5f-b4f6-eeadc9b50d6d`, CONFIG_DEPS lease
+`e75d8901-0b96-4ec7-b64e-724cfdbcd7a1`, and RELEASE_INTEGRATOR lease
+`eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84` were released at
+`2026-07-31T18:09:01Z`, before the `2026-07-31T21:40:18Z` expiry. There was no
+provider or infrastructure inspection, shared registration, candidate action,
+deployment, DNS change, send, charge, customer activation, or external effect.
+Effects remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must stop after the single terminal is normally pushed with clean
+local/tracking/live equality. C00 must independently audit the nine immutable
+dispositions, exact six-path release scope, dependency non-change, validations,
+both released leases, and zero effects before separately authorizing Batch C,
+then Batch A, then Batch D.

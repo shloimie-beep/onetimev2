@@ -1,7 +1,65 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_P12_P09_SOURCE_MICROBATCH_TERMINAL_AUDIT
+MODE: PAUSE_FOR_C00_BATCH_B_CONFIGURATION_DEPENDENCIES_SHARED_TESTS_TERMINAL_AUDIT
+
+Audit the exact pushed I36 Batch B configuration, dependency-disposition, and
+shared-test terminal. Do not perform provider/registry, central composer,
+candidate, infrastructure, deployment, DNS, or external successor work from
+this prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start: `288d5883d4e5a4e298efa8659609b42f87d190d4`
+Containing control: `951e9d846e805d9d01ef1ad41973e41fefb8573e`
+Authority/control basis: `3c4a3aafb55ebe4745aa865733612172c9fad436`
+READY: `b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800`
+Claim: `995fe313-efa9-4e5f-b4f6-eeadc9b50d6d`
+Writer: `codex-i36-batch-b-995fe313`
+CONFIG_DEPS lease: `e75d8901-0b96-4ec7-b64e-724cfdbcd7a1`
+RELEASE_INTEGRATOR lease: `eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84`
+Lease issued: `2026-07-31T17:40:18Z`
+Lease expiry: `2026-07-31T21:40:18Z`
+Lease release: `2026-07-31T18:09:01Z`
+Effects: `0/0/0`
+
+Reproduce all nine immutable request digests from exact Git bytes by their
+declared digest kinds and audit the one disposition recorded for each. Confirm
+P08-config-002 is the sole `applicable`, fully applied request. Confirm the exact
+six-value verification vocabulary, deterministic fail-safe defaults, strict
+runtime-tier matching, `production_read_only` write denial, existing P08 central
+field consumption, and shared tests.
+
+Confirm P22-config-key-002 remains `blocked_by_a_later_exact_gate` overall while
+its repository-safe prerequisite is complete: blank-normalized server-only
+config parsing and configured-state projection, with no secret value committed
+or exposed. Batch A must inject it into the P22 service composer and Batch D must
+bind/read back the protected deployment secret.
+
+Confirm P32, P19, both P20 requests, P29, P17, and P33 each remain
+`blocked_by_a_later_exact_gate` for the exact infrastructure, provider registry,
+runtime-image/binary provenance, adapter, candidate-freeze, or deployment gate
+recorded in TASK-STATE. Confirm no incomplete request was marked applied and no
+unused or guessed dependency was added.
+
+Confirm exactly six changed paths, all within the eight-path authorization:
+three product/shared paths and the I36 runtime triplet. Confirm `package.json`
+and `package-lock.json` are byte-identical to the authorized start and the
+three-path product manifest digest is
+`6e61d2c285e88b694f57361b8702e6a28c4ce5490b3e62e98812f4eba4dcc1ad`.
+
+Confirm 48/48 focused tests, zero focused ESLint findings, Prettier, diff
+hygiene, direct ESM runtime import/readback, and zero changed-path workspace
+type diagnostics with exactly four unchanged Stripe/Playwright baselines.
+Confirm both leases were released before expiry, local/tracking/live integration
+refs equal the terminal head, and no provider/infra inspection, registration,
+candidate action, deployment, DNS change, send, charge, customer activation, or
+external effect occurred.
+
+C00 must independently consume and reconcile this terminal before issuing
+separate Batch C authority, followed by Batch A and then Batch D. Stop.
+
+## Historical audit target: P12 then P09 source microbatch
 
 Audit the exact pushed I36 P12-then-P09 source microbatch and its bounded P12
 type-contract closure. Do not perform steward, registration, SQL, candidate,

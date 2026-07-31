@@ -40,24 +40,24 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: P12_P09_source_microbatch_type_contract_closure_complete
-claimed_by: codex-i36-p12-p09-source-586989e0
-claim_time: '2026-07-31T16:23:33Z'
-claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
-lease_issued_at: '2026-07-31T16:23:33Z'
-lease_expires_at: '2026-07-31T18:23:33Z'
-lease_released_at: '2026-07-31T17:23:20Z'
-last_heartbeat_at: '2026-07-31T17:23:20Z'
-controller_authorization_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-latest_valid_observed_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-reconciled_state_based_on_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-ready_authorization_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-ready_entry_state_based_on_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-ready_entry_payload_digest: c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380
-claim_mode: resume_existing_no_claim_only_commit
-expected_existing_head_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
-lease_phase_scope: P12_then_P09_source_microbatch_only
+phase: batch_B_configuration_dependencies_and_shared_tests_complete
+claimed_by: codex-i36-batch-b-995fe313
+claim_time: '2026-07-31T17:40:18Z'
+claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
+lease_issued_at: '2026-07-31T17:40:18Z'
+lease_expires_at: '2026-07-31T21:40:18Z'
+lease_released_at: '2026-07-31T18:09:01Z'
+last_heartbeat_at: '2026-07-31T18:09:01Z'
+controller_authorization_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+latest_valid_observed_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+reconciled_state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+ready_authorization_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+ready_entry_state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+ready_entry_payload_digest: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
+claim_mode: new
+expected_existing_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+lease_phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -3552,3 +3552,183 @@ P12_P09_source_microbatch_terminal:
     independently audit and consume all three merge items, then continue I36
     in the prescribed B then C then A then D order. No successor action is
     authorized from this terminal.
+batch_B_configuration_dependencies_and_shared_tests_terminal:
+  containing_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+  state_basis_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+  exact_authorized_start_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+  ready_entry_payload_digest: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
+  claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+  writer_id: codex-i36-batch-b-995fe313
+  lease_issued_at: '2026-07-31T17:40:18Z'
+  lease_expires_at: '2026-07-31T21:40:18Z'
+  lease_released_at: '2026-07-31T18:09:01Z'
+  last_heartbeat_at: '2026-07-31T18:09:01Z'
+  writer_slot_leases_released:
+    - slot: CONFIG_DEPS
+      lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
+    - slot: RELEASE_INTEGRATOR
+      lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
+  authorized_scope:
+    path_count: 8
+    path_inventory_digest: fd8fb3d465366b655d884013eaee18057d8dcd14624eb88f371016c078b112c3
+    changed_product_paths: 3
+    changed_runtime_paths: 3
+    package_or_lock_paths_changed: 0
+  immutable_request_dispositions:
+    P32-config-001:
+      request_digest: 005106774e3ad414f885d04f72b90000bc42a07c65f41edbf4fa85db0f2d6309
+      digest_kind: canonical_request_object_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: none
+      later_exact_gate: >-
+        Batch D infrastructure authority must supply registered independent
+        primary and replica object stores, Object Lock, KMS and role identities,
+        retention, replication, readback, and restore-auditor evidence. Batch B
+        may not inspect or invent those identities.
+    P19-CONFIG-DEPENDENCY-001:
+      request_digest: 8896d9023f42ce6f8a424dd1a81faf05938cfa6d03751bb2fc066a81c3c41165
+      digest_kind: canonical_named_request_subobject_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: no_unused_dependency_added
+      later_exact_gate: >-
+        Batch C must bind the canonical S3, Drive, service-identity, adapter,
+        and recovery-journal registry entries, followed by Batch D deployment
+        secret/config and live readiness readback. Exact SDK use and identities
+        are not yet present, so dependency pins cannot be truthfully selected.
+    P20-RUNTIME-CONFIG-001:
+      request_digest: 1436bbe841665fff24c54e6a8f2372410850ec9e763f4c323c6266b222b2302b
+      digest_kind: canonical_named_request_subobject_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: none
+      later_exact_gate: >-
+        Batch C provider-registry authority must bind exact S3 and OpenAI
+        project/model/request/schema identities, and Batch D must bind protected
+        deployment references and read back the deployed runtime.
+    P20-PINNED-MEDIA-RUNTIME-001:
+      request_digest: 651b8177e3d227e63f7562824d07a04f5261c9277e3e36929b6881ce2168434f
+      digest_kind: canonical_named_request_subobject_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: no_unused_dependency_added
+      later_exact_gate: >-
+        Batch D must authorize the runtime-image path and supply reviewed ffmpeg
+        and ffprobe provenance, version, checksums, license/vulnerability review,
+        deployment architecture, and the representative 3-5 GiB fixture proof.
+    P29-config-001:
+      request_digest: 10eb53f6f54fd3d8a7e32ea48452205c1b7c55a98f67f8e81ec434b83e50da0e
+      digest_kind: raw_git_blob_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: >-
+        The shared verification-environment vocabulary required by this request
+        is now available, but the request remains incomplete overall.
+      later_exact_gate: >-
+        Batch C must register and read back the canonical HighLevel location,
+        provider client, approval store, workflow/durable-job route, suppression,
+        and billing-projection bindings. Batch B provider inspection was forbidden.
+    P17-ZOOM-CONFIG-DEPENDENCY-001:
+      request_digest: a3ccccdd574875fab0dfe7da4fb0f269be41b55b4dafb8485ba76cdfbfbaab9d
+      digest_kind: canonical_named_request_subobject_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: no_unused_dependency_added
+      later_exact_gate: >-
+        Batch C must register and read back the exact Zoom Server-to-Server OAuth
+        app, Meeting SDK app, account, host, origin, capability, and setting
+        identities before dependencies or protected runtime references are bound.
+    P33-config-001:
+      request_digest: bc972db8b48aaf69b61a5b82511532dd8f0ad675ea1fdeb01a1671ecac35cbb6
+      digest_kind: raw_git_blob_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: >-
+        The separate runtime-tier and verification-environment vocabulary is now
+        available, but the candidate-specific request remains incomplete overall.
+      later_exact_gate: >-
+        The exact candidate must be frozen and Batch A/C must register read-only
+        database, migration, queue, worker, heartbeat, and provider-observation
+        adapters before Batch D can inject and verify immutable artifact/config
+        identity. No candidate identity existed in Batch B.
+    P08-config-002:
+      request_digest: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+      digest_kind: raw_git_blob_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Added the exact six-value vocabulary, deterministic fail-safe defaults,
+        strict same-tier validation, runtime-tier and writes-allowed projection,
+        environment example, and shared tests. The existing family router consumes
+        these central fields and rejects production_read_only before service access.
+      later_exact_gate: none
+    P22-config-key-002:
+      request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+      digest_kind: canonical_request_object_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: >-
+        Added blank-normalized server-only LEARNING_ALIAS_HMAC_KEY parsing,
+        configured-state projection, environment example, and shared config tests.
+        No value was supplied, exposed, logged, or committed.
+      later_exact_gate: >-
+        Batch A central server-composer authority must require the key when the P22
+        runtime is enabled and inject it into createLearningEngagementService.
+        Deployment secret binding/readback remains a later Batch D gate.
+  product_artifact:
+    paths:
+      - path: .env.example
+        raw_sha256: 37f0cb501d137dfc827138b16dd4a200a0cc464f8820de5e49efa069890f858a
+      - path: packages/config/src/index.ts
+        raw_sha256: ee58896e07d230020a798a61a8f8fcd6a74058804551f659ec1387bd4eddb69d
+      - path: tests/unit/config/runtime-classification.test.ts
+        raw_sha256: 933e150fce0d7807f56da7811121a20221bb14ec48a0e6582f293e4c39ab7042
+    canonical_json_path_inventory_digest: bc789bdad421abe544f626e430abb0841f558eb259156499582a93a0c0b0d370
+    canonical_json_manifest_digest: 6e61d2c285e88b694f57361b8702e6a28c4ce5490b3e62e98812f4eba4dcc1ad
+    git_diff_sha256: b6e39d52f400a5e88b1a95ede125f1b0a6ff8a85a563876c23dd14d280421a3d
+  dependency_disposition:
+    package_json_changed: false
+    package_lock_changed: false
+    rationale: >-
+      None of the blocked dependency requests has an exact authorized adapter,
+      binary provenance, provider identity, runtime image, or representative
+      fixture yet. Adding unused or guessed dependencies would be incomplete.
+    package_json_raw_sha256: 58fa140360d1bad4b1409be373efc5af6f09f8b3885064bb6bdd8b04498e5b0a
+    package_lock_raw_sha256: 663a103d358bcb373f913ad29c340d59bba30edafdcb5ac4a8c74ff7d8ac9cdb
+  shared_test_baseline_corrections:
+    - >-
+      Updated the stale production fixture to the current canonical
+      PROTECTED_PAYLOAD_ENCRYPTION_KEY surface.
+    - >-
+      Updated the retired LEARNING_DELIVERY_DEMO_ENABLED expectation to verify
+      that the obsolete input is ignored and the feature remains disabled.
+  completed_validation:
+    canonical_ready_digest: passed_b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
+    immutable_request_digests: passed_all_nine_by_declared_digest_kind
+    exact_authorized_scope: passed_6_of_8_paths_changed
+    package_and_lock_consistency: passed_both_byte_identical_to_authorized_start
+    focused_vitest: passed_3_files_48_tests
+    focused_eslint: passed_zero_findings_2_typescript_files
+    focused_prettier: passed_2_typescript_files
+    config_esm_runtime_import_probe: passed
+    changed_workspace_typecheck: passed_zero_changed_path_diagnostics
+    unchanged_typecheck_baselines: exact_4_in_stripe_and_three_playwright_harnesses
+    relevant_changed_package_build: not_applicable_config_package_has_no_build_script
+    diff_check: passed
+    terminal_task_state_yaml_parse: passed
+    terminal_runtime_triplet_prettier: passed
+  migration_or_SQL_change: false
+  shared_registration_or_steward_application: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Stop after one normal terminal commit is pushed and clean local, tracking,
+    and live integration equality is proved. C00 must independently audit all
+    nine immutable dispositions, exact scope, validation, both released leases,
+    and zero effects. Continue only with separately authorized Batch C, then
+    Batch A, then Batch D; do not infer successor authority from this terminal.
