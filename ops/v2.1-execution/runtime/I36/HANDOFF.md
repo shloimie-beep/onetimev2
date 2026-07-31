@@ -979,3 +979,45 @@ must independently audit the exact sole parent, six-path scope, formatted
 blob IDs, complete terminal evidence, simultaneous lease release, runtime
 digests, preserved PostgreSQL listener, and zero effects before any candidate
 or external action.
+
+## P21/P22 source microbatch resume atomic claim
+
+Live control `ddd36a461481504219ac663cf464417eb2e6658b`, based on
+controller/state-basis head
+`0a2e8c390d48da157be35a2f9d06f876a70b5e62`, publishes canonical READY
+`102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89`
+for exact clean local/tracking/live integration parent
+`d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`.
+
+This runtime-triplet-only checkpoint consumes claim
+`f7a26569-d4d1-4b42-9d5c-7b98377bd235`, writer
+`codex-i36-p21-p22-source-f7a26569`, and the sole RELEASE_INTEGRATOR lease
+`5e0cd656-e4eb-492d-88d8-50c792fa1a20`. The lease was issued at
+`2026-07-31T10:20:00Z`, expires at `2026-07-31T12:20:00Z`, is scoped only to
+`P21_then_P22_accepted_source_microbatch_only`, and remains live and
+unreleased.
+
+Admission preflight passed without a source merge: the exact remote P21 and
+P22 terminal heads, parents, trees, required fixed bases, 9/16 path
+inventories, zero collisions, source manifests, implementation artifacts,
+runtime pair/triplet digests, immutable request bytes, task/context/prompt
+bindings, 200/200 locked files, canonical READY/item payloads, repository
+identity, and effects `0/0/0` all matched the live queue. P21 item digest is
+`a14e9343278833e48657fc6cf428a968fc1293d243097d908ac70dd562bc324d`;
+P22 item digest is
+`db8d1e7841f7343f8d1a0a6d8d82e42268e11cb27fb6413dec1cf7fe61c7e8d1`.
+
+The mandatory resume checkpoint moves integration away from the queued
+`d89a0f38...` target CAS. Therefore neither
+`c11dec418fa3de896e96c348f87928c92c9f86b9` nor
+`347a08b29b801de0a74b242d962c42a886dcd717` was merged. No producer source,
+migration, steward request, shared registration, control branch, provider,
+candidate, deployment, DNS, send, charge, customer, or other external state
+changed. Effects remain attempted `0`, succeeded `0`, reconciled `0`.
+
+I36 must stop after a normal push and clean local/tracking/live equality. C00
+must independently verify the exact sole parent, three-path scope, authority,
+queue identities, runtime raw/pair/triplet digests, live unreleased lease, and
+zero effects; consume READY; and publish descendant control with both P21/P22
+expected-target CAS fields rebound to this exact claim head under the same
+claim and lease before either ordered merge may begin.

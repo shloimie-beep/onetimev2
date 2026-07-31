@@ -1,56 +1,46 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_TERMINAL_COMPLETION_AUDIT
+MODE: PAUSE_FOR_C00_P21_P22_CAS_REBIND
 
-Audit the exact pushed I36 Parent auth/client terminal completion. Do not
-perform candidate, provider, deployment, or other successor work from this
-prompt.
+Audit and consume the exact pushed I36 P21/P22 source-microbatch resume claim
+checkpoint. Do not merge either source head from the stale queue target and do
+not perform candidate, steward, provider, deployment, or external work.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Exact terminal parent: `2e62d79d0122360155dd10da9c2b2c13892eff89`
-Containing control: `ce71f41af1c70f689db9b3346ae5dfc643a1344f`
-Authority/control basis: `e621f71396b7d0a42eaead5b443eef03fadf84f2`
-Claim: `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`
-Writer: `codex-i36-parent-session-successor-8d8f5bb9`
-Shared lease: `49ae7724-b77a-4cc5-81f6-d16b6e1f5457`
-Lease issued: `2026-07-31T02:21:40Z`
-Lease expiry: `2026-07-31T04:21:40Z`
-Lease release: `2026-07-31T03:31:32Z`
-Terminal phase:
-`parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation`
+Exact claim-checkpoint parent: `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`
+Containing control: `ddd36a461481504219ac663cf464417eb2e6658b`
+Authority/control basis: `0a2e8c390d48da157be35a2f9d06f876a70b5e62`
+Canonical READY: `102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89`
+Claim: `f7a26569-d4d1-4b42-9d5c-7b98377bd235`
+Writer: `codex-i36-p21-p22-source-f7a26569`
+RELEASE_INTEGRATOR lease: `5e0cd656-e4eb-492d-88d8-50c792fa1a20`
+Lease issued: `2026-07-31T10:20:00Z`
+Lease expiry: `2026-07-31T12:20:00Z`
+Lease release: none; lease remains live
+Lease phase: `P21_then_P22_accepted_source_microbatch_only`
 
-Confirm all four slots—SERVER_COMPOSER, CLIENT_COMPOSER,
-IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY—were released together
-before expiry.
+Confirm the checkpoint has the sole parent above and changes exactly:
 
-The terminal checkpoint must change exactly:
-
-- `apps/web/src/server/app.ts`
-- `apps/web/src/server/features/auth/v21-adult-session.test.ts`
-- `tests/integration/accounts/v21-family-parent-session-composition.test.ts`
 - `ops/v2.1-execution/runtime/I36/TASK-STATE.yaml`
 - `ops/v2.1-execution/runtime/I36/HANDOFF.md`
 - `ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md`
 
-Confirm the three product/test outputs match the exact raw SHA-256 and Git
-blob IDs authorized by control `ce71f41a`, and confirm the other seven
-authorized product/test paths are byte-identical to parent `2e62d79d`.
+Confirm no P21/P22 source merge occurred, all product/test/migration/steward,
+control, provider, candidate, deployment, and external bytes/state are
+unchanged, the lease is unreleased and unexpired, effects are `0/0/0`, and
+local/tracking/live integration refs are equal at the pushed claim head.
 
-Confirm workspace typecheck; focused auth/repository and pg-mem composition
-tests; native PostgreSQL 18.4 lifecycle and six-way concurrent reservation,
-exact bucket readback, successful release, and ineligible preservation; real
-Chromium Parent reload/logout with zero legacy calls; production client/pages
-build; all-ten configured Prettier; all-ten changed-file ESLint; repository
-secret scan; YAML/diff/scope/ancestry/immutable gates; and effects `0/0/0`.
+Confirm P21 terminal `c11dec418fa3de896e96c348f87928c92c9f86b9` and
+P22 terminal `347a08b29b801de0a74b242d962c42a886dcd717` remain exact live remote
+source heads. Confirm canonical merge-item digests
+`a14e9343278833e48657fc6cf428a968fc1293d243097d908ac70dd562bc324d`
+and `db8d1e7841f7343f8d1a0a6d8d82e42268e11cb27fb6413dec1cf7fe61c7e8d1`.
 
-Confirm the existing PostgreSQL listener was preserved and not stopped. The
-original wrapper/session identifier 51752 was absent at final readback, while
-the PostgreSQL listener remained live under PID 8156. Confirm only the exact
-owned disposable test schema was cleaned after successful verification.
-
-Confirm the sole parent, exact six-path inventory, runtime digests, normal
-push, clean local/tracking/live remote equality, simultaneous slot release,
-and zero external effects. Only after C00 reconciles the exact pushed terminal
-head may it authorize any candidate or external successor action. Stop.
+C00 must consume the current READY and publish descendant control that rebinds
+both P21 and P22 `expected_target_head_sha` CAS fields to the exact verified
+claim-checkpoint head while preserving the same claim, lease, source heads,
+fixed source bases, order, scopes, digests, zero effects, and prohibitions.
+Only after that descendant authorization is live may I36 merge P21 first and
+P22 second. Stop after reconciliation/rebind.

@@ -22,7 +22,7 @@ dependency_heads:
   P10: 5fccc34507ae9c5dbc609e234ab559576ab3a445
   P33: 295c125ec6ed3ea41382e5ea44db6f6be1b98933
   P12: 4bc6f15c8beffb28dc845d976a62b9c4915a11dc
-  P22: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+  P22: 347a08b29b801de0a74b242d962c42a886dcd717
   P34: 17f41c6b78bf6bedf1beb0803f855b2d4f01294a
   P13: a9d641e6da6a08c805f34d3f827816fcd8c6138a
   P25: 0979e151f80900cea75edecabe8967ce382d168d
@@ -38,28 +38,28 @@ dependency_heads:
   P20: 75137bf476b4a1773f29bb41a6a149148df2623d
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
-  P21: 705030f2d5163f95340a19dc42efd0f167259869
-status: ready_for_review
-phase: parent_session_auth_client_successor_terminal_validation_complete
-claimed_by: codex-i36-parent-session-successor-8d8f5bb9
-claim_time: '2026-07-31T02:21:40Z'
-claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
-lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-lease_issued_at: '2026-07-31T02:21:40Z'
-lease_expires_at: '2026-07-31T04:21:40Z'
-lease_released_at: '2026-07-31T03:31:32Z'
-last_heartbeat_at: '2026-07-31T03:31:32Z'
-controller_authorization_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
-latest_valid_observed_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
-reconciled_state_based_on_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
-ready_consumed_by_control_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
-ready_consumed_state_based_on_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
-ready_authorization_control_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
-ready_entry_state_based_on_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
-ready_entry_payload_digest: d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695
+  P21: c11dec418fa3de896e96c348f87928c92c9f86b9
+status: claimed
+phase: P21_then_P22_accepted_source_microbatch_resume_atomic_claim_only
+claimed_by: codex-i36-p21-p22-source-f7a26569
+claim_time: '2026-07-31T10:20:00Z'
+claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
+lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
+lease_issued_at: '2026-07-31T10:20:00Z'
+lease_expires_at: '2026-07-31T12:20:00Z'
+lease_released_at: null
+last_heartbeat_at: '2026-07-31T10:51:37Z'
+controller_authorization_sha: ddd36a461481504219ac663cf464417eb2e6658b
+latest_valid_observed_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
+reconciled_state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+ready_consumed_by_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
+ready_consumed_state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+ready_authorization_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
+ready_entry_state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+ready_entry_payload_digest: 102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89
 claim_mode: resume_existing
-expected_existing_head_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
-lease_phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
+expected_existing_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+lease_phase_scope: P21_then_P22_accepted_source_microbatch_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -1610,19 +1610,18 @@ family_parent_session_composition_binding:
       unavailable, missing production PROTECTED_PAYLOAD_ENCRYPTION_KEY test
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
-remaining_steps: []
+remaining_steps:
+  - C00 must independently verify this exact runtime-triplet-only resume claim checkpoint and consume READY.
+  - C00 must rebind both P21 and P22 merge-item expected-target CAS fields from d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9 to this verified claim head under the unchanged claim and lease.
+  - Only a descendant live control authorization may resume the ordered P21-then-P22 source merges and terminal validations.
 next_action: >-
-  STOP. C00 must independently audit the exact pushed six-path terminal
-  checkpoint, its sole parent 2e62d79d0122360155dd10da9c2b2c13892eff89,
-  controller-bound formatted blobs, complete terminal evidence, simultaneous
-  four-slot release, clean remote equality, and effects 0/0/0 before any
-  candidate, provider, deployment, or other successor action.
+  STOP. C00 must independently audit and consume this exact runtime-triplet-only
+  claim checkpoint, then rebind both queued P21/P22 expected-target CAS fields
+  to its verified head under the unchanged claim and RELEASE_INTEGRATOR lease.
+  Do not merge either source head under the stale d89a0f38 target.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
-  - apps/web/src/server/app.ts
-  - apps/web/src/server/features/auth/v21-adult-session.test.ts
-  - tests/integration/accounts/v21-family-parent-session-composition.test.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
@@ -3173,3 +3172,76 @@ terminal_validation_completion_checkpoint:
     parent, controller-bound blobs, terminal evidence, simultaneous slot
     release, exact scope, runtime digests, fixture preservation, and zero
     effects before any candidate or external action.
+P21_P22_source_microbatch_resume_atomic_claim_checkpoint:
+  containing_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
+  state_basis_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+  control_state_raw_sha256: 273c9346d7038120c43c0031d5e60def88baa4def1102c6564202d8f72d1313a
+  exact_parent_integration_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+  ready_entry_payload_digest: 102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89
+  claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
+  writer_id: codex-i36-p21-p22-source-f7a26569
+  lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
+  lease_issued_at: '2026-07-31T10:20:00Z'
+  lease_expires_at: '2026-07-31T12:20:00Z'
+  lease_released_at: null
+  last_heartbeat_at: '2026-07-31T10:51:37Z'
+  lease_phase_scope: P21_then_P22_accepted_source_microbatch_only
+  writer_slots:
+    - RELEASE_INTEGRATOR
+  queued_items:
+    P21:
+      merge_id: 5ac7ed54-f75c-4aed-a87a-63478c046480
+      merge_payload_digest: a14e9343278833e48657fc6cf428a968fc1293d243097d908ac70dd562bc324d
+      source_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+      source_delta_base_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+      source_tree_sha: 36fbc30a09ce783d205c42c80e6925e8e9c6db68
+      source_path_count: 9
+      source_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
+      source_manifest_digest: f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585
+      implementation_artifact_digest: 0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97
+      state_handoff_digest: fa87392335a078543f3e8a03498aa47286ec887267e0757148f01f03a72cd061
+      runtime_triplet_digest: c02721665ea11e69306a5234155fad0c611eb037cf96f93c550608f7278a917c
+    P22:
+      merge_id: 7711d813-f37e-4506-965c-ed594be07235
+      merge_payload_digest: db8d1e7841f7343f8d1a0a6d8d82e42268e11cb27fb6413dec1cf7fe61c7e8d1
+      source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+      source_delta_base_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+      source_tree_sha: b19318f1a06b7795687c74caabba8c0f4b6623e4
+      source_path_count: 16
+      source_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
+      source_manifest_digest: 86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea
+      implementation_artifact_digest: 19a33cf409f66b99071b4686613ed495b76ef4b9eaed8d344b2beb67446ef18b
+      state_handoff_digest: 98218f029aa918a32da8cc4f64e864d3b3b9504989c04f14817f17158d9d1f4a
+      runtime_triplet_digest: f626461d904cb202b1a4d4f20b891f79c9f14d32c8a0309ad91fe930dd454060
+  completed_admission_preflight:
+    live_control_and_control_worktree_equal: ddd36a461481504219ac663cf464417eb2e6658b
+    local_tracking_live_integration_equal: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    ready_and_merge_payload_digests: passed
+    locked_manifest: passed_200_of_200
+    task_context_prompt_and_source_package_digests: passed
+    source_remote_heads_parents_trees_bases_paths_manifests_and_runtime_digests: passed
+    P21_P22_path_collision_count: 0
+    lease_live_at_checkpoint: true
+  atomic_claim_metadata_validation:
+    task_state_yaml_parse: passed
+    runtime_triplet_prettier: passed
+    repository_secret_scan: passed_3110_text_files
+    diff_check: passed
+    exact_three_path_scope: passed
+    P21_source_ancestor: false
+    P22_source_ancestor: false
+  claim_checkpoint_scope:
+    runtime_paths: 3
+    source_merges_performed: 0
+    product_or_test_bytes_changed: false
+    migration_bytes_changed: false
+    control_or_steward_bytes_changed: false
+    provider_or_candidate_action: false
+  validation_rerun_during_atomic_claim: false
+  external_effects: 0/0/0
+  safe_next_action: >-
+    Stop after pushing this exact runtime-triplet-only resume claim checkpoint.
+    C00 must independently verify its sole parent, scope, authority, queue
+    bindings, live unreleased lease, runtime digests, clean remote equality,
+    and effects 0/0/0, then consume READY and rebind both merge-item target CAS
+    fields before either source merge may begin.
