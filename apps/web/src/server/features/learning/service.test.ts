@@ -1,118 +1,122 @@
 import { describe, expect, it, vi } from 'vitest';
 import type {
-  AttendanceRecord,
   LearningActor,
   LearningEngagementRepository,
+  LearningQuestion,
 } from '../../../../../../packages/contracts/src/learning/index.ts';
-import { submitQuestion } from '../../../../../../packages/domain/src/learning/engagement.ts';
 import { createLearningEngagementService } from './service.ts';
 
-const scope = { accountKey: 'account-1', productKey: 'one-time' };
-const classAAdmin: LearningActor = {
+const scope = {
+  accountKey: 'account-1',
+  productKey: 'one_time_mishnayos',
+  runtimeTier: 'isolated_staging',
+  verificationEnvironmentId: 'ci',
+};
+const admin: LearningActor = {
   ...scope,
-  principalId: 'admin-class-a',
   role: 'admin',
+  principalId: 'admin-a',
   classIds: ['class-a'],
 };
-const classBStudent: LearningActor = {
+const classBQuestion: LearningQuestion = {
   ...scope,
-  principalId: 'student-class-b',
-  role: 'student',
+  id: 'question-b',
   studentId: 'student-b',
   householdId: 'household-b',
-  classIds: ['class-b'],
+  classId: 'class-b',
+  body: 'Class B question',
+  answer: null,
+  state: 'submitted',
+  version: 1,
+  submittedAt: '2026-07-01T10:00:00.000Z',
+  updatedAt: '2026-07-01T10:00:00.000Z',
 };
 
 function repository(
-  overrides: Partial<LearningEngagementRepository>,
+  overrides: Partial<LearningEngagementRepository> = {},
 ): LearningEngagementRepository {
   return {
     getQuestion: async () => null,
-    saveQuestion: async () => undefined,
+    getQuestionHistory: async () => ({ transitions: [], recognitions: [] }),
+    applyQuestionMutation: async (mutation) => ({
+      question: mutation.projection,
+      replay: false,
+    }),
     listQuestions: async () => [],
+    listQuestionTransitions: async () => [],
+    listQuestionRecognitions: async () => [],
     saveAnnouncement: async () => undefined,
     listAnnouncements: async () => [],
     saveAnnouncementRead: async () => undefined,
     listAnnouncementReads: async () => [],
-    getAttendance: async () => null,
-    saveAttendance: async () => undefined,
-    listAttendance: async () => [],
     listReviewCompletions: async () => [],
-    listRecognitionConsents: async () => [],
-    listLeaderboardLearners: async () => [],
     ...overrides,
   };
 }
 
-describe('P22 learning service class mutation fences', () => {
-  it('does not persist a direct cross-class question transition', async () => {
-    const question = submitQuestion({
-      actor: classBStudent,
-      id: 'question-b',
-      classId: 'class-b',
-      body: 'A class B question',
-      occurredAt: '2026-07-01T10:00:00.000Z',
-    }).question;
-    const saveQuestion = vi.fn<LearningEngagementRepository['saveQuestion']>();
-    const service = createLearningEngagementService({
-      repository: repository({
-        getQuestion: async () => question,
-        saveQuestion,
-      }),
-      aliasSecret: 'test-only-secret',
-    });
+function service(repo: LearningEngagementRepository) {
+  return createLearningEngagementService({
+    repository: repo,
+    attendance: { listAttendance: async () => [] },
+    identity: { listLearners: async () => [] },
+    recognitionConsent: { listRecognitionConsent: async () => [] },
+    aliasHmacKey: 'test-only-hmac-key',
+  });
+}
 
+describe('P22 learning service', () => {
+  it('performs question changes only through the atomic mutation port', async () => {
+    const apply = vi.fn<LearningEngagementRepository['applyQuestionMutation']>(
+      async (mutation) => ({ question: mutation.projection, replay: false }),
+    );
+    const result = await service(repository({ applyQuestionMutation: apply })).submitQuestion({
+      actor: {
+        ...scope,
+        role: 'student',
+        principalId: 'login-1',
+        studentId: 'student-1',
+        householdId: 'household-1',
+        classIds: ['class-a'],
+      },
+      id: 'question-1',
+      classId: 'class-a',
+      body: 'Why?',
+      idempotencyKey: 'submit-1',
+      requestHash: 'hash-submit-1',
+      occurredAt: '2026-07-01T10:00:00.000Z',
+    });
+    expect(result.replay).toBe(false);
+    expect(apply).toHaveBeenCalledOnce();
+  });
+
+  it('denies cross-class mutation before any repository write', async () => {
+    const apply = vi.fn<LearningEngagementRepository['applyQuestionMutation']>();
+    const instance = service(
+      repository({
+        getQuestion: async () => classBQuestion,
+        applyQuestionMutation: apply,
+      }),
+    );
     await expect(
-      service.transitionQuestion({
-        actor: classAAdmin,
-        questionId: question.id,
+      instance.transitionQuestion({
+        actor: admin,
+        questionId: classBQuestion.id,
         to: 'answered_private',
-        answer: 'This write must not happen.',
-        expectedVersion: question.version,
-        idempotencyKey: 'cross-class-question',
-        requestHash: 'hash-cross-class-question',
+        answer: 'No write',
+        expectedVersion: 1,
+        idempotencyKey: 'cross-class',
+        requestHash: 'hash-cross-class',
         occurredAt: '2026-07-02T10:00:00.000Z',
       }),
     ).rejects.toThrow(/assignment to this class/);
-    expect(saveQuestion).not.toHaveBeenCalled();
+    expect(apply).not.toHaveBeenCalled();
   });
 
-  it('does not persist a direct cross-class attendance correction', async () => {
-    const attendance: AttendanceRecord = {
-      ...scope,
-      occurrenceId: 'occurrence-b',
-      classId: 'class-b',
-      studentId: 'student-b',
-      householdId: 'household-b',
-      segmentIds: ['segment-b'],
-      minutes: 45,
-      present: true,
-      occurredAt: '2026-07-01T10:00:00.000Z',
-      correctedAt: null,
-      correctionReason: null,
-      correctedBy: null,
-    };
-    const saveAttendance = vi.fn<LearningEngagementRepository['saveAttendance']>();
-    const service = createLearningEngagementService({
-      repository: repository({
-        getAttendance: async () => attendance,
-        saveAttendance,
-      }),
-      aliasSecret: 'test-only-secret',
-    });
-
-    await expect(
-      service.correctAttendance(
-        classAAdmin,
-        { occurrenceId: attendance.occurrenceId, studentId: attendance.studentId },
-        {
-          minutes: 30,
-          present: true,
-          reason: 'Attempted cross-class correction.',
-          occurredAt: '2026-07-02T10:00:00.000Z',
-        },
-      ),
-    ).rejects.toThrow(/assignment to this class/);
-    expect(saveAttendance).not.toHaveBeenCalled();
+  it('has read-only attendance and consent seams with no mutation methods', () => {
+    const instance = service(repository()) as unknown as Record<string, unknown>;
+    expect(instance.attendance).toBeTypeOf('function');
+    expect(instance.recordAttendance).toBeUndefined();
+    expect(instance.correctAttendance).toBeUndefined();
+    expect(instance.setRecognitionConsent).toBeUndefined();
   });
 });

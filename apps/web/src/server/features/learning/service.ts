@@ -1,9 +1,11 @@
 import type {
   AnnouncementRead,
-  AttendanceSegment,
   CorrectQuestionRecognitionCommand,
   LearningActor,
+  LearningAttendanceReadPort,
   LearningEngagementRepository,
+  LearningIdentityReadPort,
+  LearningRecognitionConsentReadPort,
   LearningScope,
   SubmitQuestionCommand,
   TransitionQuestionCommand,
@@ -15,10 +17,8 @@ import {
   attendanceVisibleTo,
   buildLeaderboard,
   calculateBadges,
-  correctAttendance,
   correctQuestionRecognition,
   createAnnouncement,
-  mergeAttendance,
   publishedQuestionsVisibleTo,
   questionsVisibleTo,
   submitQuestion,
@@ -27,77 +27,69 @@ import {
 
 export function createLearningEngagementService(input: {
   repository: LearningEngagementRepository;
-  aliasSecret: string;
+  attendance: LearningAttendanceReadPort;
+  identity: LearningIdentityReadPort;
+  recognitionConsent: LearningRecognitionConsentReadPort;
+  aliasHmacKey: string;
   clock?: () => Date;
 }) {
   const now = input.clock ?? (() => new Date());
   return {
     async submitQuestion(command: SubmitQuestionCommand) {
-      const result = submitQuestion(command);
-      await input.repository.saveQuestion(result.question);
-      return result;
+      const planned = submitQuestion(command);
+      if (!planned.mutation) throw new Error('learning_submit_plan_missing');
+      const persisted = await input.repository.applyQuestionMutation(planned.mutation);
+      return { ...persisted, effects: planned.effects };
     },
     async transitionQuestion(command: TransitionQuestionCommand) {
       const current = await requireQuestion(input.repository, command.actor, command.questionId);
-      const result = transitionQuestion(current, command);
-      if (!result.replay) await input.repository.saveQuestion(result.question);
-      return result;
+      const history = await input.repository.getQuestionHistory(command.actor, command.questionId);
+      const planned = transitionQuestion(current, history, command);
+      if (planned.replay) return { question: current, replay: true, effects: planned.effects };
+      if (!planned.mutation) throw new Error('learning_transition_plan_missing');
+      return {
+        ...(await input.repository.applyQuestionMutation(planned.mutation)),
+        effects: planned.effects,
+      };
     },
     async correctQuestionRecognition(command: CorrectQuestionRecognitionCommand) {
       const current = await requireQuestion(input.repository, command.actor, command.questionId);
-      const result = correctQuestionRecognition(current, command);
-      if (!result.replay) await input.repository.saveQuestion(result.question);
-      return result;
+      const history = await input.repository.getQuestionHistory(command.actor, command.questionId);
+      const planned = correctQuestionRecognition(current, history, command);
+      if (planned.replay) return { question: current, replay: true, effects: planned.effects };
+      if (!planned.mutation) throw new Error('learning_recognition_plan_missing');
+      return {
+        ...(await input.repository.applyQuestionMutation(planned.mutation)),
+        effects: planned.effects,
+      };
     },
     async questions(actor: LearningActor) {
       return questionsVisibleTo(actor, await input.repository.listQuestions(actor));
     },
     async publishedClassQuestions(actor: LearningActor, classId: string) {
-      return publishedQuestionsVisibleTo(
-        actor,
-        await input.repository.listQuestions(actor),
-        classId,
-      );
-    },
-    async recordAttendance(actor: LearningActor, segment: AttendanceSegment) {
-      requireAdminScope(actor, segment);
-      const current = await input.repository.getAttendance(
-        actor,
-        segment.occurrenceId,
-        segment.studentId,
-      );
-      const merged = mergeAttendance(current, segment);
-      if (merged !== current) await input.repository.saveAttendance(merged);
-      return merged;
-    },
-    async correctAttendance(
-      actor: LearningActor,
-      key: { occurrenceId: string; studentId: string },
-      correction: { minutes: number; present: boolean; reason: string; occurredAt: string },
-    ) {
-      const current = await input.repository.getAttendance(actor, key.occurrenceId, key.studentId);
-      if (!current) throw notFound();
-      const corrected = correctAttendance(actor, current, correction);
-      await input.repository.saveAttendance(corrected);
-      return corrected;
+      const [questions, transitions] = await Promise.all([
+        input.repository.listQuestions(actor),
+        input.repository.listQuestionTransitions(actor),
+      ]);
+      return publishedQuestionsVisibleTo(actor, questions, transitions, classId);
     },
     async attendance(actor: LearningActor) {
-      return attendanceVisibleTo(actor, await input.repository.listAttendance(actor));
+      return attendanceVisibleTo(actor, await input.attendance.listAttendance(actor));
     },
     async badges(
       actor: LearningActor,
       studentId: string,
       scheduledOccurrenceIds: readonly string[],
     ) {
-      const [attendance, questions, reviews] = await Promise.all([
-        input.repository.listAttendance(actor),
+      const [attendance, questions, recognitions, reviews] = await Promise.all([
+        input.attendance.listAttendance(actor),
         input.repository.listQuestions(actor),
+        input.repository.listQuestionRecognitions(actor),
         input.repository.listReviewCompletions(actor),
       ]);
       const visibleAttendance = attendanceVisibleTo(actor, attendance);
-      if (actor.role === 'student' && actor.studentId !== studentId) {
-        throw new LearningError(LEARNING_ERROR_CODES.accessDenied, 'Student badge scope mismatch.');
-      }
+      if (actor.role === 'student' && actor.studentId !== studentId)
+        denied('Student badge scope mismatch.');
       if (
         actor.role === 'parent' &&
         !visibleAttendance.some(
@@ -105,16 +97,14 @@ export function createLearningEngagementService(input: {
             record.studentId === studentId && actor.householdIds.includes(record.householdId),
         )
       ) {
-        throw new LearningError(
-          LEARNING_ERROR_CODES.accessDenied,
-          'The Student is outside this household.',
-        );
+        denied('The Student is outside this household.');
       }
       return calculateBadges({
         studentId,
         scheduledOccurrenceIds,
         attendance: visibleAttendance,
         questions,
+        recognitions,
         reviews,
       });
     },
@@ -144,8 +134,7 @@ export function createLearningEngagementService(input: {
       );
       if (!visible.some((announcement) => announcement.id === announcementId)) throw notFound();
       const read = {
-        accountKey: actor.accountKey,
-        productKey: actor.productKey,
+        ...scopeOf(actor),
         announcementId,
         principalId: actor.principalId,
         readAt: now().toISOString(),
@@ -154,21 +143,26 @@ export function createLearningEngagementService(input: {
       return read;
     },
     async leaderboard(actor: LearningActor, classId: string) {
-      const [learners, attendance, questions, consents] = await Promise.all([
-        input.repository.listLeaderboardLearners(actor, classId),
-        input.repository.listAttendance(actor),
-        input.repository.listQuestions(actor),
-        input.repository.listRecognitionConsents(actor),
-      ]);
+      const [learners, attendance, questions, transitions, recognitions, consents] =
+        await Promise.all([
+          input.identity.listLearners(actor, classId),
+          input.attendance.listAttendance(actor),
+          input.repository.listQuestions(actor),
+          input.repository.listQuestionTransitions(actor),
+          input.repository.listQuestionRecognitions(actor),
+          input.recognitionConsent.listRecognitionConsent(actor, classId),
+        ]);
       return buildLeaderboard({
         actor,
         classId,
         learners,
         attendance,
         questions,
+        transitions,
+        recognitions,
         consents,
         asOf: now().toISOString(),
-        aliasSecret: input.aliasSecret,
+        aliasHmacKey: input.aliasHmacKey,
       });
     },
   };
@@ -184,18 +178,17 @@ async function requireQuestion(
   return question;
 }
 
-function requireAdminScope(actor: LearningActor, target: LearningScope & { classId: string }) {
-  if (
-    actor.role !== 'admin' ||
-    actor.accountKey !== target.accountKey ||
-    actor.productKey !== target.productKey ||
-    !actor.classIds.includes(target.classId)
-  ) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.accessDenied,
-      'Admin learning scope and class assignment are required.',
-    );
-  }
+function scopeOf(scope: LearningScope): LearningScope {
+  return {
+    accountKey: scope.accountKey,
+    productKey: scope.productKey,
+    runtimeTier: scope.runtimeTier,
+    verificationEnvironmentId: scope.verificationEnvironmentId,
+  };
+}
+
+function denied(message: string): never {
+  throw new LearningError(LEARNING_ERROR_CODES.accessDenied, message);
 }
 
 function notFound() {

@@ -1,9 +1,11 @@
-export const LEARNING_ENGAGEMENT_CONTRACT_VERSION = '2.1.0' as const;
+export const LEARNING_ENGAGEMENT_CONTRACT_VERSION = '2.1.1' as const;
 export const LEARNING_ROLLING_WINDOW_DAYS = 30 as const;
 
 export type LearningScope = {
   accountKey: string;
   productKey: string;
+  runtimeTier: string;
+  verificationEnvironmentId: string;
 };
 
 type LearningPrincipal = LearningScope & {
@@ -23,16 +25,6 @@ export type LearningActor =
 export type QuestionState =
   'submitted' | 'answered_private' | 'approved_for_class' | 'published' | 'closed' | 'declined';
 
-export type QuestionTransitionAudit = {
-  idempotencyKey: string;
-  requestHash: string;
-  actorId: string;
-  from: QuestionState;
-  to: QuestionState;
-  reason: string | null;
-  occurredAt: string;
-};
-
 export type LearningQuestion = LearningScope & {
   id: string;
   studentId: string;
@@ -41,13 +33,48 @@ export type LearningQuestion = LearningScope & {
   body: string;
   answer: string | null;
   state: QuestionState;
-  recognitionEligible: boolean;
-  recognitionOccurredAt: string | null;
-  recognitionCorrectionReason: string | null;
   version: number;
   submittedAt: string;
   updatedAt: string;
-  transitions: readonly QuestionTransitionAudit[];
+};
+
+export type QuestionTransitionLedgerEntry = LearningScope & {
+  questionId: string;
+  idempotencyKey: string;
+  requestHash: string;
+  actorId: string;
+  from: QuestionState | null;
+  to: QuestionState;
+  reason: string | null;
+  occurredAt: string;
+};
+
+export type QuestionRecognitionLedgerEntry = LearningScope & {
+  questionId: string;
+  idempotencyKey: string;
+  requestHash: string;
+  actorId: string;
+  action: 'qualified' | 'correction_enabled' | 'correction_disabled';
+  eligible: boolean;
+  reason: string | null;
+  occurredAt: string;
+};
+
+export type QuestionHistory = {
+  transitions: readonly QuestionTransitionLedgerEntry[];
+  recognitions: readonly QuestionRecognitionLedgerEntry[];
+};
+
+export type QuestionMutation = {
+  projection: LearningQuestion;
+  expectedVersion: number;
+  transition: QuestionTransitionLedgerEntry;
+  recognition: QuestionRecognitionLedgerEntry | null;
+};
+
+export type QuestionMutationResult = {
+  question: LearningQuestion;
+  replay: boolean;
 };
 
 export type PublishedClassQuestion = {
@@ -63,6 +90,8 @@ export type SubmitQuestionCommand = {
   id: string;
   classId: string;
   body: string;
+  idempotencyKey: string;
+  requestHash: string;
   occurredAt: string;
 };
 
@@ -111,21 +140,17 @@ export type AnnouncementRead = LearningScope & {
   readAt: string;
 };
 
-export type AttendanceSegment = LearningScope & {
-  occurrenceId: string;
-  classId: string;
-  studentId: string;
-  householdId: string;
-  segmentId: string;
-  minutes: number;
-  occurredAt: string;
-};
-
+/**
+ * Read-only compatibility projection of P18 migration 2251. P22 owns no
+ * attendance table, writer, correction command, or attendance event.
+ */
 export type AttendanceRecord = LearningScope & {
   occurrenceId: string;
   classId: string;
   studentId: string;
   householdId: string;
+  enrollmentId: string;
+  identityBindingVerified: true;
   segmentIds: readonly string[];
   minutes: number;
   present: boolean;
@@ -156,25 +181,26 @@ export type LearningBadgeAward = {
   sourceKeys: readonly string[];
 };
 
-export type RecognitionConsent = LearningScope & {
+export type CanonicalRecognitionConsent = LearningScope & {
+  consentEventId: string;
   studentId: string;
-  optedIn: boolean;
-  version: number;
-  changedAt: string;
-  changedBy: string;
+  choice: 'granted' | 'declined' | 'withdrawn';
+  occurredAt: string;
 };
 
-export type LeaderboardLearner = LearningScope & {
+export type CanonicalLearnerIdentity = LearningScope & {
   studentId: string;
   householdId: string;
   classId: string;
-  firstName: string;
-  lastName: string;
-  currentAttendanceStreak: number;
+  enrollmentId: string;
+  actualName: string;
+  displayName: string | null;
 };
 
 export type LeaderboardEntry = {
   rank: number;
+  entryKey: string;
+  /** Compatibility key for the existing client; this is never a canonical Student ID. */
   studentId: string;
   displayName: string;
   value: number;
@@ -193,21 +219,13 @@ export type LearningLeaderboard = LearningScope & {
   public: false;
 };
 
-export type LearningEffectPlan = {
-  createStudentGhlContact: false;
-  publishPublicLeaderboard: false;
-  createRedeemableReward: false;
-  sendPeerMessage: false;
-  externalEffects: 0;
-};
-
-export const NO_LEARNING_EXTERNAL_EFFECTS: LearningEffectPlan = {
+export const NO_LEARNING_EXTERNAL_EFFECTS = {
   createStudentGhlContact: false,
   publishPublicLeaderboard: false,
   createRedeemableReward: false,
   sendPeerMessage: false,
   externalEffects: 0,
-};
+} as const;
 
 export const LEARNING_ERROR_CODES = {
   accessDenied: 'learning_access_denied',
@@ -221,8 +239,13 @@ export const LEARNING_ERROR_CODES = {
 
 export interface LearningEngagementRepository {
   getQuestion(scope: LearningScope, questionId: string): Promise<LearningQuestion | null>;
-  saveQuestion(question: LearningQuestion): Promise<void>;
+  getQuestionHistory(scope: LearningScope, questionId: string): Promise<QuestionHistory>;
+  applyQuestionMutation(mutation: QuestionMutation): Promise<QuestionMutationResult>;
   listQuestions(scope: LearningScope): Promise<readonly LearningQuestion[]>;
+  listQuestionTransitions(scope: LearningScope): Promise<readonly QuestionTransitionLedgerEntry[]>;
+  listQuestionRecognitions(
+    scope: LearningScope,
+  ): Promise<readonly QuestionRecognitionLedgerEntry[]>;
   saveAnnouncement(announcement: LearningAnnouncement): Promise<void>;
   listAnnouncements(scope: LearningScope): Promise<readonly LearningAnnouncement[]>;
   saveAnnouncementRead(read: AnnouncementRead): Promise<void>;
@@ -230,17 +253,20 @@ export interface LearningEngagementRepository {
     scope: LearningScope,
     principalId: string,
   ): Promise<readonly AnnouncementRead[]>;
-  getAttendance(
-    scope: LearningScope,
-    occurrenceId: string,
-    studentId: string,
-  ): Promise<AttendanceRecord | null>;
-  saveAttendance(record: AttendanceRecord): Promise<void>;
-  listAttendance(scope: LearningScope): Promise<readonly AttendanceRecord[]>;
   listReviewCompletions(scope: LearningScope): Promise<readonly ReviewCompletion[]>;
-  listRecognitionConsents(scope: LearningScope): Promise<readonly RecognitionConsent[]>;
-  listLeaderboardLearners(
+}
+
+export interface LearningAttendanceReadPort {
+  listAttendance(scope: LearningScope): Promise<readonly AttendanceRecord[]>;
+}
+
+export interface LearningIdentityReadPort {
+  listLearners(scope: LearningScope, classId: string): Promise<readonly CanonicalLearnerIdentity[]>;
+}
+
+export interface LearningRecognitionConsentReadPort {
+  listRecognitionConsent(
     scope: LearningScope,
     classId: string,
-  ): Promise<readonly LeaderboardLearner[]>;
+  ): Promise<readonly CanonicalRecognitionConsent[]>;
 }

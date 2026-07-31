@@ -2,10 +2,10 @@ import { createHmac } from 'node:crypto';
 import type {
   AnnouncementAudience,
   AttendanceRecord,
-  AttendanceSegment,
+  CanonicalLearnerIdentity,
+  CanonicalRecognitionConsent,
   CorrectQuestionRecognitionCommand,
   LeaderboardEntry,
-  LeaderboardLearner,
   LearningActor,
   LearningAnnouncement,
   LearningBadgeAward,
@@ -13,8 +13,11 @@ import type {
   LearningQuestion,
   LearningScope,
   PublishedClassQuestion,
+  QuestionHistory,
+  QuestionMutation,
+  QuestionRecognitionLedgerEntry,
   QuestionState,
-  RecognitionConsent,
+  QuestionTransitionLedgerEntry,
   ReviewCompletion,
   SubmitQuestionCommand,
   TransitionQuestionCommand,
@@ -43,99 +46,90 @@ const QUESTION_TRANSITIONS: Record<QuestionState, readonly QuestionState[]> = {
   closed: [],
   declined: [],
 };
-
-const QUALIFYING_QUESTION_STATES = new Set<QuestionState>([
+const QUALIFYING_STATES = new Set<QuestionState>([
   'answered_private',
   'approved_for_class',
   'published',
 ]);
 
-export function submitQuestion(command: SubmitQuestionCommand): {
-  question: LearningQuestion;
+export type PlannedQuestionMutation = {
+  mutation: QuestionMutation | null;
+  replay: boolean;
   effects: typeof NO_LEARNING_EXTERNAL_EFFECTS;
-} {
+};
+
+export function submitQuestion(command: SubmitQuestionCommand): PlannedQuestionMutation {
   if (command.actor.role !== 'student' || !command.actor.classIds.includes(command.classId)) {
     denied('Only the enrolled Student may submit a private class question.');
   }
-  const body = command.body.trim();
-  if (body.length < 2 || body.length > 4_000) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      'Question text must contain 2 to 4,000 characters.',
-    );
-  }
+  const body = requiredText(command.body, 'Question text', 4_000);
+  if (body.length < 2) invalid('Question text must contain 2 to 4,000 characters.');
+  const projection: LearningQuestion = {
+    ...scopeOf(command.actor),
+    id: command.id,
+    studentId: command.actor.studentId,
+    householdId: command.actor.householdId,
+    classId: command.classId,
+    body,
+    answer: null,
+    state: 'submitted',
+    version: 1,
+    submittedAt: command.occurredAt,
+    updatedAt: command.occurredAt,
+  };
   return {
-    question: {
-      accountKey: command.actor.accountKey,
-      productKey: command.actor.productKey,
-      id: command.id,
-      studentId: command.actor.studentId,
-      householdId: command.actor.householdId,
-      classId: command.classId,
-      body,
-      answer: null,
-      state: 'submitted',
-      recognitionEligible: false,
-      recognitionOccurredAt: null,
-      recognitionCorrectionReason: null,
-      version: 1,
-      submittedAt: command.occurredAt,
-      updatedAt: command.occurredAt,
-      transitions: [],
+    mutation: {
+      projection,
+      expectedVersion: 0,
+      transition: transitionEntry(projection, command, null, 'submitted', null),
+      recognition: null,
     },
+    replay: false,
     effects: NO_LEARNING_EXTERNAL_EFFECTS,
   };
 }
 
 export function transitionQuestion(
   current: LearningQuestion,
+  history: QuestionHistory,
   command: TransitionQuestionCommand,
-): { question: LearningQuestion; replay: boolean; effects: typeof NO_LEARNING_EXTERNAL_EFFECTS } {
+): PlannedQuestionMutation {
   requireAdmin(command.actor, current);
-  const replay = findReplay(current, command.idempotencyKey, command.requestHash);
-  if (replay) return { question: current, replay: true, effects: NO_LEARNING_EXTERNAL_EFFECTS };
-  if (current.version !== command.expectedVersion) {
-    throw new LearningError(LEARNING_ERROR_CODES.staleVersion, 'Reload the question and retry.');
+  if (isReplay(history.transitions, command.idempotencyKey, command.requestHash)) {
+    return { mutation: null, replay: true, effects: NO_LEARNING_EXTERNAL_EFFECTS };
   }
+  if (current.version !== command.expectedVersion) stale();
   if (!QUESTION_TRANSITIONS[current.state].includes(command.to)) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      `Question cannot transition from ${current.state} to ${command.to}.`,
-    );
+    invalid(`Question cannot transition from ${current.state} to ${command.to}.`);
   }
   const answer = command.answer?.trim();
   if (command.to === 'answered_private' && !answer && !current.answer) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      'A private answer is required for answered_private.',
-    );
+    invalid('A private answer is required for answered_private.');
   }
+  const projection: LearningQuestion = {
+    ...current,
+    state: command.to,
+    answer: answer || current.answer,
+    version: current.version + 1,
+    updatedAt: command.occurredAt,
+  };
   const firstQualification =
-    !current.recognitionEligible && QUALIFYING_QUESTION_STATES.has(command.to);
+    QUALIFYING_STATES.has(command.to) &&
+    !history.recognitions.some((entry) => entry.action === 'qualified');
   return {
-    question: {
-      ...current,
-      state: command.to,
-      answer: answer || current.answer,
-      recognitionEligible: firstQualification || current.recognitionEligible,
-      recognitionOccurredAt: firstQualification
-        ? command.occurredAt
-        : current.recognitionOccurredAt,
-      recognitionCorrectionReason: firstQualification ? null : current.recognitionCorrectionReason,
-      version: current.version + 1,
-      updatedAt: command.occurredAt,
-      transitions: [
-        ...current.transitions,
-        {
-          idempotencyKey: command.idempotencyKey,
-          requestHash: command.requestHash,
-          actorId: command.actor.principalId,
-          from: current.state,
-          to: command.to,
-          reason: command.reason?.trim() || null,
-          occurredAt: command.occurredAt,
-        },
-      ],
+    mutation: {
+      projection,
+      expectedVersion: command.expectedVersion,
+      transition: transitionEntry(
+        current,
+        command,
+        current.state,
+        command.to,
+        command.reason?.trim() || null,
+      ),
+      recognition: firstQualification
+        ? recognitionEntry(current, command, 'qualified', true, null)
+        : null,
     },
     replay: false,
     effects: NO_LEARNING_EXTERNAL_EFFECTS,
@@ -144,44 +138,42 @@ export function transitionQuestion(
 
 export function correctQuestionRecognition(
   current: LearningQuestion,
+  history: QuestionHistory,
   command: CorrectQuestionRecognitionCommand,
-): { question: LearningQuestion; replay: boolean } {
+): PlannedQuestionMutation {
   requireAdmin(command.actor, current);
-  const replay = findReplay(current, command.idempotencyKey, command.requestHash);
-  if (replay) return { question: current, replay: true };
-  if (current.version !== command.expectedVersion) {
-    throw new LearningError(LEARNING_ERROR_CODES.staleVersion, 'Reload the question and retry.');
+  if (isReplay(history.transitions, command.idempotencyKey, command.requestHash)) {
+    return { mutation: null, replay: true, effects: NO_LEARNING_EXTERNAL_EFFECTS };
   }
-  if (command.reason.trim().length < 3) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      'An audited correction reason is required.',
-    );
-  }
+  if (current.version !== command.expectedVersion) stale();
+  const reason = command.reason.trim();
+  if (reason.length < 3) invalid('An audited correction reason is required.');
+  const projection = {
+    ...current,
+    version: current.version + 1,
+    updatedAt: command.occurredAt,
+  };
   return {
-    question: {
-      ...current,
-      recognitionEligible: command.eligible,
-      recognitionOccurredAt: command.eligible
-        ? (current.recognitionOccurredAt ?? command.occurredAt)
-        : null,
-      recognitionCorrectionReason: command.reason.trim(),
-      version: current.version + 1,
-      updatedAt: command.occurredAt,
-      transitions: [
-        ...current.transitions,
-        {
-          idempotencyKey: command.idempotencyKey,
-          requestHash: command.requestHash,
-          actorId: command.actor.principalId,
-          from: current.state,
-          to: current.state,
-          reason: `recognition:${command.eligible ? 'restore' : 'remove'}:${command.reason.trim()}`,
-          occurredAt: command.occurredAt,
-        },
-      ],
+    mutation: {
+      projection,
+      expectedVersion: command.expectedVersion,
+      transition: transitionEntry(
+        current,
+        command,
+        current.state,
+        current.state,
+        `recognition_correction:${reason}`,
+      ),
+      recognition: recognitionEntry(
+        current,
+        command,
+        command.eligible ? 'correction_enabled' : 'correction_disabled',
+        command.eligible,
+        reason,
+      ),
     },
     replay: false,
+    effects: NO_LEARNING_EXTERNAL_EFFECTS,
   };
 }
 
@@ -208,6 +200,7 @@ export function questionsVisibleTo(
 export function publishedQuestionsVisibleTo(
   actor: LearningActor,
   questions: readonly LearningQuestion[],
+  transitions: readonly QuestionTransitionLedgerEntry[],
   classId: string,
 ): readonly PublishedClassQuestion[] {
   if ((actor.role !== 'student' && actor.role !== 'admin') || !actor.classIds.includes(classId)) {
@@ -226,87 +219,31 @@ export function publishedQuestionsVisibleTo(
       question: question.body,
       answer: question.answer,
       publishedAt:
-        [...question.transitions].reverse().find((transition) => transition.to === 'published')
-          ?.occurredAt ?? question.updatedAt,
+        transitions
+          .filter(
+            (entry) =>
+              sameScope(question, entry) &&
+              entry.questionId === question.id &&
+              entry.to === 'published',
+          )
+          .sort(compareOccurred)[0]?.occurredAt ?? question.updatedAt,
     }));
-}
-
-export function mergeAttendance(
-  current: AttendanceRecord | null,
-  segment: AttendanceSegment,
-): AttendanceRecord {
-  if (segment.minutes < 0 || !Number.isInteger(segment.minutes)) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      'Attendance minutes must be a nonnegative integer.',
-    );
-  }
-  if (!current) {
-    return {
-      ...scopeOf(segment),
-      occurrenceId: segment.occurrenceId,
-      classId: segment.classId,
-      studentId: segment.studentId,
-      householdId: segment.householdId,
-      segmentIds: [segment.segmentId],
-      minutes: segment.minutes,
-      present: segment.minutes > 0,
-      occurredAt: segment.occurredAt,
-      correctedAt: null,
-      correctionReason: null,
-      correctedBy: null,
-    };
-  }
-  assertSameStudent(current, segment);
-  if (current.segmentIds.includes(segment.segmentId)) return current;
-  return {
-    ...current,
-    segmentIds: [...current.segmentIds, segment.segmentId],
-    minutes: current.minutes + segment.minutes,
-    present: current.present || segment.minutes > 0,
-  };
-}
-
-export function correctAttendance(
-  actor: LearningActor,
-  current: AttendanceRecord,
-  correction: { minutes: number; present: boolean; reason: string; occurredAt: string },
-): AttendanceRecord {
-  requireAdmin(actor, current);
-  if (!Number.isInteger(correction.minutes) || correction.minutes < 0) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      'Corrected minutes must be a nonnegative integer.',
-    );
-  }
-  if (correction.reason.trim().length < 3) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      'Manual attendance corrections require an audit reason.',
-    );
-  }
-  return {
-    ...current,
-    minutes: correction.minutes,
-    present: correction.present,
-    correctedAt: correction.occurredAt,
-    correctionReason: correction.reason.trim(),
-    correctedBy: actor.principalId,
-  };
 }
 
 export function attendanceVisibleTo(
   actor: LearningActor,
   records: readonly AttendanceRecord[],
 ): readonly AttendanceRecord[] {
-  const scoped = records.filter((record) => sameScope(actor, record));
+  const valid = records.filter((record) => canonicalAttendanceMatches(actor, record));
   if (actor.role === 'admin') {
-    return scoped.filter((record) => actor.classIds.includes(record.classId));
+    return valid.filter((record) => actor.classIds.includes(record.classId));
   }
   if (actor.role === 'student') {
-    return scoped.filter((record) => record.studentId === actor.studentId);
+    return valid.filter(
+      (record) => record.studentId === actor.studentId && record.householdId === actor.householdId,
+    );
   }
-  return scoped.filter((record) => actor.householdIds.includes(record.householdId));
+  return valid.filter((record) => actor.householdIds.includes(record.householdId));
 }
 
 export function calculateBadges(input: {
@@ -314,6 +251,7 @@ export function calculateBadges(input: {
   scheduledOccurrenceIds: readonly string[];
   attendance: readonly AttendanceRecord[];
   questions: readonly LearningQuestion[];
+  recognitions: readonly QuestionRecognitionLedgerEntry[];
   reviews: readonly ReviewCompletion[];
 }): readonly LearningBadgeAward[] {
   const presentIds = new Set(
@@ -330,7 +268,9 @@ export function calculateBadges(input: {
     ...new Set(
       input.questions
         .filter(
-          (question) => question.studentId === input.studentId && question.recognitionEligible,
+          (question) =>
+            question.studentId === input.studentId &&
+            recognitionEligible(question.id, input.recognitions),
         )
         .map((question) => question.id),
     ),
@@ -359,7 +299,10 @@ export function createAnnouncement(input: {
   expiresAt?: string;
 }): LearningAnnouncement {
   if (input.actor.role !== 'admin') denied('Only an Admin may publish an announcement.');
-  validateAudience(input.actor, input.audience);
+  if (!validAudience(input.audience)) invalid('Unknown announcement audience.');
+  if (input.audience.kind === 'class' && !input.actor.classIds.includes(input.audience.classId)) {
+    denied('The Admin is not assigned to the announcement class.');
+  }
   return {
     ...scopeOf(input.actor),
     id: input.id,
@@ -381,6 +324,7 @@ export function announcementsVisibleTo(
   return announcements.filter(
     (announcement) =>
       sameScope(actor, announcement) &&
+      validAudience(announcement.audience) &&
       (!announcement.expiresAt || Date.parse(announcement.expiresAt) > now) &&
       audienceMatches(actor, announcement.audience),
   );
@@ -389,12 +333,14 @@ export function announcementsVisibleTo(
 export function buildLeaderboard(input: {
   actor: LearningActor;
   classId: string;
-  learners: readonly LeaderboardLearner[];
+  learners: readonly CanonicalLearnerIdentity[];
   attendance: readonly AttendanceRecord[];
   questions: readonly LearningQuestion[];
-  consents: readonly RecognitionConsent[];
+  transitions: readonly QuestionTransitionLedgerEntry[];
+  recognitions: readonly QuestionRecognitionLedgerEntry[];
+  consents: readonly CanonicalRecognitionConsent[];
   asOf: string;
-  aliasSecret: string;
+  aliasHmacKey: string;
 }): LearningLeaderboard {
   if (
     (input.actor.role !== 'student' && input.actor.role !== 'admin') ||
@@ -407,20 +353,12 @@ export function buildLeaderboard(input: {
   const windowStarts = new Date(windowEnds);
   windowStarts.setUTCDate(windowStarts.getUTCDate() - LEARNING_ROLLING_WINDOW_DAYS);
   const learners = input.learners.filter(
-    (learner) =>
-      sameScope(input.actor, learner) &&
-      learner.classId === input.classId &&
-      learner.classId === input.classId,
+    (learner) => sameScope(input.actor, learner) && learner.classId === input.classId,
   );
-  const consentByStudent = new Map(
-    input.consents
-      .filter((consent) => sameScope(input.actor, consent))
-      .map((consent) => [consent.studentId, consent.optedIn]),
-  );
+  const consents = latestConsent(input.consents.filter((event) => sameScope(input.actor, event)));
   const attendanceCount = new Map<string, number>();
-  for (const record of input.attendance) {
+  for (const record of attendanceVisibleTo(input.actor, input.attendance)) {
     if (
-      sameScope(input.actor, record) &&
       record.classId === input.classId &&
       record.present &&
       inWindow(record.occurredAt, windowStarts, windowEnds)
@@ -430,14 +368,14 @@ export function buildLeaderboard(input: {
   }
   const approvedQuestionCount = new Map<string, number>();
   for (const question of input.questions) {
-    const leaderboardQualifiedAt = firstLeaderboardQualificationAt(question);
+    const qualifiedAt = firstApprovalAt(question, input.transitions);
     if (
       sameScope(input.actor, question) &&
       question.classId === input.classId &&
-      question.recognitionEligible &&
       (question.state === 'approved_for_class' || question.state === 'published') &&
-      leaderboardQualifiedAt &&
-      inWindow(leaderboardQualifiedAt, windowStarts, windowEnds)
+      recognitionEligible(question.id, input.recognitions) &&
+      qualifiedAt &&
+      inWindow(qualifiedAt, windowStarts, windowEnds)
     ) {
       approvedQuestionCount.set(
         question.studentId,
@@ -445,26 +383,29 @@ export function buildLeaderboard(input: {
       );
     }
   }
-  const name = (learner: LeaderboardLearner) =>
-    leaderboardName({
-      actor: viewer,
-      learner,
-      recognitionOptedIn: consentByStudent.get(learner.studentId) ?? false,
-      aliasSecret: input.aliasSecret,
-    });
+  const streak = new Map(
+    learners.map((learner) => [
+      learner.studentId,
+      currentStreak(
+        input.attendance.filter(
+          (row) => row.studentId === learner.studentId && row.classId === input.classId,
+        ),
+      ),
+    ]),
+  );
+  const label = (learner: CanonicalLearnerIdentity) =>
+    leaderboardLabel(viewer, learner, consents.get(learner.studentId), input.aliasHmacKey);
+  const entry = (learner: CanonicalLearnerIdentity) =>
+    opaqueKey('entry', input.aliasHmacKey, learner);
   return {
     ...scopeOf(input.actor),
     classId: input.classId,
     windowStartsAt: windowStarts.toISOString(),
     windowEndsAt: windowEnds.toISOString(),
     categories: {
-      attendanceCount: rank(learners, attendanceCount, name),
-      currentAttendanceStreak: rank(
-        learners,
-        new Map(learners.map((learner) => [learner.studentId, learner.currentAttendanceStreak])),
-        name,
-      ),
-      approvedQuestionCount: rank(learners, approvedQuestionCount, name),
+      attendanceCount: rank(learners, attendanceCount, label, entry),
+      currentAttendanceStreak: rank(learners, streak, label, entry),
+      approvedQuestionCount: rank(learners, approvedQuestionCount, label, entry),
     },
     combinedScore: null,
     public: false,
@@ -478,34 +419,125 @@ export function assertPeerMessagingUnavailable(): never {
   );
 }
 
-function leaderboardName(input: {
-  actor: Extract<LearningActor, { role: 'admin' | 'student' }>;
-  learner: LeaderboardLearner;
-  recognitionOptedIn: boolean;
-  aliasSecret: string;
-}) {
-  if (input.actor.role === 'admin') {
-    return `${input.learner.firstName} ${input.learner.lastName}`.trim();
+function transitionEntry(
+  question: LearningQuestion,
+  command: {
+    actor: LearningActor;
+    idempotencyKey: string;
+    requestHash: string;
+    occurredAt: string;
+  },
+  from: QuestionState | null,
+  to: QuestionState,
+  reason: string | null,
+): QuestionTransitionLedgerEntry {
+  return {
+    ...scopeOf(question),
+    questionId: question.id,
+    idempotencyKey: command.idempotencyKey,
+    requestHash: command.requestHash,
+    actorId: command.actor.principalId,
+    from,
+    to,
+    reason,
+    occurredAt: command.occurredAt,
+  };
+}
+
+function recognitionEntry(
+  question: LearningQuestion,
+  command: CorrectQuestionRecognitionCommand | TransitionQuestionCommand,
+  action: QuestionRecognitionLedgerEntry['action'],
+  eligible: boolean,
+  reason: string | null,
+): QuestionRecognitionLedgerEntry {
+  return {
+    ...scopeOf(question),
+    questionId: question.id,
+    idempotencyKey: command.idempotencyKey,
+    requestHash: command.requestHash,
+    actorId: command.actor.principalId,
+    action,
+    eligible,
+    reason,
+    occurredAt: command.occurredAt,
+  };
+}
+
+function isReplay(entries: readonly QuestionTransitionLedgerEntry[], key: string, hash: string) {
+  const existing = entries.find((entry) => entry.idempotencyKey === key);
+  if (!existing) return false;
+  if (existing.requestHash !== hash) {
+    throw new LearningError(
+      LEARNING_ERROR_CODES.conflict,
+      'This scoped idempotency key was used with a different request hash.',
+    );
   }
-  if (input.actor.studentId === input.learner.studentId) return 'You';
-  if (input.recognitionOptedIn) {
-    const initial = [...input.learner.lastName.trim()][0];
-    return `${input.learner.firstName.trim()}${initial ? ` ${initial}.` : ''}`;
+  return true;
+}
+
+function recognitionEligible(
+  questionId: string,
+  entries: readonly QuestionRecognitionLedgerEntry[],
+) {
+  return (
+    entries.filter((entry) => entry.questionId === questionId).sort(compareOccurred)[0]?.eligible ??
+    false
+  );
+}
+
+function latestConsent(events: readonly CanonicalRecognitionConsent[]) {
+  const result = new Map<string, CanonicalRecognitionConsent>();
+  for (const event of [...events].sort(compareOccurred).reverse()) {
+    result.set(event.studentId, event);
   }
-  const token = createHmac('sha256', input.aliasSecret)
-    .update(
-      `${input.learner.accountKey}:${input.learner.productKey}:${input.learner.classId}:${input.learner.studentId}`,
+  return result;
+}
+
+function firstApprovalAt(
+  question: LearningQuestion,
+  entries: readonly QuestionTransitionLedgerEntry[],
+) {
+  return entries
+    .filter(
+      (entry) =>
+        sameScope(question, entry) &&
+        entry.questionId === question.id &&
+        (entry.to === 'approved_for_class' || entry.to === 'published'),
     )
-    .digest('hex')
-    .slice(0, 6)
-    .toUpperCase();
-  return `Anonymous Student • ${token}`;
+    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))[0]?.occurredAt;
+}
+
+function leaderboardLabel(
+  actor: Extract<LearningActor, { role: 'admin' | 'student' }>,
+  learner: CanonicalLearnerIdentity,
+  consent: CanonicalRecognitionConsent | undefined,
+  key: string,
+) {
+  if (actor.role === 'admin') return learner.actualName;
+  if (actor.studentId === learner.studentId) return 'You';
+  if (consent?.choice === 'granted' && learner.displayName !== null) return learner.displayName;
+  return `Anonymous Student • ${opaqueKey('alias', key, learner).slice(0, 8).toUpperCase()}`;
+}
+
+function opaqueKey(domain: 'alias' | 'entry', key: string, learner: CanonicalLearnerIdentity) {
+  const values = [
+    learner.accountKey,
+    learner.productKey,
+    learner.runtimeTier,
+    learner.verificationEnvironmentId,
+    learner.classId,
+    learner.studentId,
+  ];
+  const encoded = values.map((value) => `${Buffer.byteLength(value, 'utf8')}:${value}`).join('|');
+  return createHmac('sha256', key).update(`${domain}|${encoded}`, 'utf8').digest('hex');
 }
 
 function rank(
-  learners: readonly LeaderboardLearner[],
+  learners: readonly CanonicalLearnerIdentity[],
   values: ReadonlyMap<string, number>,
-  name: (learner: LeaderboardLearner) => string,
+  label: (learner: CanonicalLearnerIdentity) => string,
+  entryKey: (learner: CanonicalLearnerIdentity) => string,
 ): readonly LeaderboardEntry[] {
   const sorted = learners
     .map((learner) => ({ learner, value: values.get(learner.studentId) ?? 0 }))
@@ -516,17 +548,22 @@ function rank(
   let previousValue: number | null = null;
   let previousRank = 0;
   return sorted.map(({ learner, value }, index) => {
-    const entryRank = previousValue === value ? previousRank : index + 1;
+    const rank = previousValue === value ? previousRank : index + 1;
     previousValue = value;
-    previousRank = entryRank;
-    return { rank: entryRank, studentId: learner.studentId, displayName: name(learner), value };
+    previousRank = rank;
+    const opaque = entryKey(learner);
+    return { rank, entryKey: opaque, studentId: opaque, displayName: label(learner), value };
   });
 }
 
-function firstLeaderboardQualificationAt(question: LearningQuestion) {
-  return question.transitions.find(
-    (transition) => transition.to === 'approved_for_class' || transition.to === 'published',
-  )?.occurredAt;
+function currentStreak(records: readonly AttendanceRecord[]) {
+  return [...records]
+    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
+    .findIndex((record) => !record.present) === -1
+    ? records.filter((record) => record.present).length
+    : [...records]
+        .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
+        .findIndex((record) => !record.present);
 }
 
 function awards(
@@ -551,34 +588,39 @@ function awards(
   );
 }
 
-function findReplay(current: LearningQuestion, key: string, hash: string) {
-  const existing = current.transitions.find((transition) => transition.idempotencyKey === key);
-  if (!existing) return false;
-  if (existing.requestHash !== hash) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.conflict,
-      'This idempotency key was already used for a different question change.',
-    );
-  }
-  return true;
-}
-
-function validateAudience(
-  actor: Extract<LearningActor, { role: 'admin' }>,
-  audience: AnnouncementAudience,
-) {
-  if (audience.kind === 'class' && !actor.classIds.includes(audience.classId)) {
-    denied('The Admin is not assigned to the announcement class.');
-  }
+function validAudience(value: unknown): value is AnnouncementAudience {
+  if (!value || typeof value !== 'object') return false;
+  const audience = value as Record<string, unknown>;
+  if (audience.kind === 'program') return Object.keys(audience).length === 1;
+  if (audience.kind === 'class') return typeof audience.classId === 'string';
+  if (audience.kind === 'parent') return typeof audience.householdId === 'string';
+  if (audience.kind === 'student') return typeof audience.studentId === 'string';
+  return false;
 }
 
 function audienceMatches(actor: LearningActor, audience: AnnouncementAudience) {
-  if (actor.role === 'admin') return true;
-  if (audience.kind === 'program') return true;
-  if (audience.kind === 'class') return actor.classIds.includes(audience.classId);
-  if (audience.kind === 'student')
-    return actor.role === 'student' && actor.studentId === audience.studentId;
-  return actor.role === 'parent' && actor.householdIds.includes(audience.householdId);
+  switch (audience.kind) {
+    case 'program':
+      return true;
+    case 'class':
+      return actor.classIds.includes(audience.classId);
+    case 'student':
+      return actor.role === 'student' && actor.studentId === audience.studentId;
+    case 'parent':
+      return actor.role === 'parent' && actor.householdIds.includes(audience.householdId);
+    default:
+      return false;
+  }
+}
+
+function canonicalAttendanceMatches(scope: LearningScope, record: AttendanceRecord) {
+  return (
+    record.identityBindingVerified === true &&
+    record.enrollmentId.length > 0 &&
+    record.studentId.length > 0 &&
+    record.classId.length > 0 &&
+    sameScope(scope, record)
+  );
 }
 
 function requireAdmin(actor: LearningActor, record: LearningScope & { classId: string }) {
@@ -591,24 +633,32 @@ function requireAdmin(actor: LearningActor, record: LearningScope & { classId: s
   }
 }
 
-function assertSameStudent(current: AttendanceRecord, segment: AttendanceSegment) {
-  if (
-    !sameScope(current, segment) ||
-    current.occurrenceId !== segment.occurrenceId ||
-    current.studentId !== segment.studentId ||
-    current.householdId !== segment.householdId ||
-    current.classId !== segment.classId
-  ) {
-    denied('Attendance reconnect segments must remain within one Student occurrence.');
-  }
-}
-
 function sameScope(left: LearningScope, right: LearningScope) {
-  return left.accountKey === right.accountKey && left.productKey === right.productKey;
+  return (
+    left.accountKey === right.accountKey &&
+    left.productKey === right.productKey &&
+    left.runtimeTier === right.runtimeTier &&
+    left.verificationEnvironmentId === right.verificationEnvironmentId
+  );
 }
 
 function scopeOf(value: LearningScope): LearningScope {
-  return { accountKey: value.accountKey, productKey: value.productKey };
+  return {
+    accountKey: value.accountKey,
+    productKey: value.productKey,
+    runtimeTier: value.runtimeTier,
+    verificationEnvironmentId: value.verificationEnvironmentId,
+  };
+}
+
+function compareOccurred(
+  left: { occurredAt: string; [key: string]: unknown },
+  right: { occurredAt: string; [key: string]: unknown },
+) {
+  return (
+    right.occurredAt.localeCompare(left.occurredAt) ||
+    JSON.stringify(right).localeCompare(JSON.stringify(left))
+  );
 }
 
 function inWindow(value: string, start: Date, end: Date) {
@@ -619,12 +669,17 @@ function inWindow(value: string, start: Date, end: Date) {
 function requiredText(value: string, label: string, maximum: number) {
   const normalized = value.trim();
   if (!normalized || normalized.length > maximum) {
-    throw new LearningError(
-      LEARNING_ERROR_CODES.invalidTransition,
-      `${label} must contain 1 to ${maximum} characters.`,
-    );
+    invalid(`${label} must contain 1 to ${maximum} characters.`);
   }
   return normalized;
+}
+
+function invalid(message: string): never {
+  throw new LearningError(LEARNING_ERROR_CODES.invalidTransition, message);
+}
+
+function stale(): never {
+  throw new LearningError(LEARNING_ERROR_CODES.staleVersion, 'Reload the question and retry.');
 }
 
 function denied(message: string): never {
