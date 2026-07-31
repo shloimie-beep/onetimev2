@@ -78,6 +78,7 @@ export function createContentPublicationService(deps: {
         });
         const registration = await unit.registerContent(proposed);
         assertRegisteredProjectionReplay(registration.record, evidence, canonicalOccurrence);
+        await unit.bootstrapCanonicalContentState(registration.record);
         return {
           record: registration.record,
           replay: !registration.inserted,
@@ -127,6 +128,17 @@ export function createContentPublicationService(deps: {
           binding,
         });
         await unit.saveContent(next, current.version);
+        await unit.appendCanonicalContentStateTransition({
+          record: next,
+          operation: 'approve',
+          previousState: current.state,
+          nextState: next.state,
+          actorKind: 'admin',
+          actorKey: input.principal.actorId,
+          idempotencyKey: binding.idempotencyKey,
+          requestHash: binding.requestHash,
+          occurredAt: binding.occurredAt,
+        });
         await unit.saveReceipt(receipt('approve', next, binding));
         return { record: next, replay: false as const };
       });
@@ -255,6 +267,17 @@ export function createContentPublicationService(deps: {
         await unit.saveContent(result.record, current.version);
         await unit.savePublicationMaterialization(result.materialization);
         await unit.completeProviderOperation(result.providerCompletion);
+        await unit.appendCanonicalContentStateTransition({
+          record: result.record,
+          operation: 'record_published',
+          previousState: current.state,
+          nextState: result.record.state,
+          actorKind: 'reconciler',
+          actorKey: 'content-publication-vimeo-readback',
+          idempotencyKey: binding.idempotencyKey,
+          requestHash: binding.requestHash,
+          occurredAt: binding.occurredAt,
+        });
         await unit.saveReceipt(receipt('record_published', result.record, binding));
         return { record: result.record, replay: false as const };
       });
@@ -601,6 +624,17 @@ async function mutate(input: {
     }
     await unit.saveContent(next, current.version);
     if ('outboxIntent' in applied) await unit.saveOutboxIntent(applied.outboxIntent);
+    await unit.appendCanonicalContentStateTransition({
+      record: next,
+      operation: input.operation,
+      previousState: current.state,
+      nextState: next.state,
+      actorKind: 'admin',
+      actorKey: input.principal.actorId,
+      idempotencyKey: binding.idempotencyKey,
+      requestHash: binding.requestHash,
+      occurredAt: binding.occurredAt,
+    });
     await unit.saveReceipt(receipt(input.operation, next, binding));
     return { record: next, replay: false as const };
   });

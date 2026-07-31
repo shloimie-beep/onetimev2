@@ -5,9 +5,9 @@ task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173e
 task_context_digest: 36e4fb76ff399ae66d3ccd9f4e5851ec31395c247d80a3d7f4392bb8ad30858e
 prompt_digest: 81b77db37a7ecd71e39c86b6cb700acafac66c05aec0a6c16b6f03a4d1b415df
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-package_lock_digest: 3d13585587ab64d063c09dd8ef37b2ffe1c40034d3f8dddf93299092a0ea8e4a
-branch: codex/v21-p20-publication-seed-enrichment
-start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+package_lock_digest: fc85161d4691d63e5511201c066df6106bb22daf980d57bef05f4de73174848b
+branch: codex/v21-p21-publication-scope-correction
+start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
 dependency_heads:
   F05:
     required_state: interface_ready_integrated
@@ -39,17 +39,27 @@ dependency_heads:
     interface_checkpoint_digest: 1a9b86f0d39cc0e3999973fc988d9c2d00c302ccad13a50857c14c7d5e2f03e1
     task_packet_digest: f35e796992e80fd947064e343a2088a069cc1a4e1e5be2719d0bbf4ced7cfac7
     task_context_digest: 0f7110208e474961ca0473b7725d54d4d399e691ab55da4fe7bba0c1ae745978
-status: implementation_complete_steward_successor_pending
-phase: P21_source_complete_projection_migration_successor_checkpoint
-claim_mode: controller_authorized_correction
-claimed_by: codex-p21-publication-scope-correction-00402ed6
-claim_time: '2026-07-30T12:38:49Z'
-claim_id: 00402ed6-57b7-4aed-92fa-a558ae11aef1
-expected_existing_head: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
+status: in_progress
+phase: P21_canonical_content_state_writer
+claim_mode: adopt_integration
+claimed_by: codex-p21-content-state-writer-06848315
+claim_time: '2026-07-31T07:38:00Z'
+claim_id: 06848315-08fd-40aa-8ff1-3c5cda4c42e4
+expected_existing_head: 705030f2d5163f95340a19dc42efd0f167259869
 rejected_final_head_sha: 29d3b94b5efb98ed9d8dcefa2f438aa2e9f546af
 prior_correction_claim_head_sha: 355d7b126fe2db7b2e8061f86585d724866998a6
 residual_correction_claim_head_sha: cc7e7439ba3567969cb12e3e4b7f0c01af276f93
 writer_slot_leases:
+  - slot: CONTENT_PUBLICATION
+    lease_id: 030212ad-7da5-4877-b29b-85de75a4380c
+    holder_task_id: P21
+    holder_claim_id: 06848315-08fd-40aa-8ff1-3c5cda4c42e4
+    lease_issued_at: '2026-07-31T07:38:00Z'
+    lease_expires_at: '2026-07-31T10:08:00Z'
+    state_based_on_control_head_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
+    phase_scope: P21_canonical_content_state_writer
+    lease_released_at: null
+    state: active
   - slot: CONTENT_PUBLICATION
     lease_id: 31423c6c-74ef-43cc-b3a8-75b425568619
     holder_task_id: P21
@@ -101,10 +111,10 @@ writer_slot_leases:
     lease_released_at: '2026-07-30T11:31:00Z'
     state: released
 effect_lock_leases: []
-lease_expires_at: '2026-07-30T14:23:56Z'
+lease_expires_at: '2026-07-31T10:08:00Z'
 lease_released_at: null
-last_heartbeat_at: '2026-07-30T12:53:56Z'
-controller_authorization_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4
+last_heartbeat_at: '2026-07-31T08:36:00Z'
+controller_authorization_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 controller_authorization_parent_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
 claim_reconciled_control_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
 claim_reconciled_control_parent_sha: 4ea98556cd03ccc0df1a5286d61ee3cfdbfb82b4

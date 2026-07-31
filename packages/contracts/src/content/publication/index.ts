@@ -21,6 +21,31 @@ export const CONTENT_PUBLICATION_STATES = [
 ] as const;
 export type ContentPublicationState = (typeof CONTENT_PUBLICATION_STATES)[number];
 
+export type CanonicalContentStateActorKind = 'admin' | 'worker' | 'reconciler';
+export type CanonicalContentStateOperation =
+  | 'approve'
+  | 'request_publish'
+  | 'record_published'
+  | 'unpublish'
+  | 'archive';
+
+export interface CanonicalContentStateTransitionCommand {
+  record: ContentPublicationRecord;
+  operation: CanonicalContentStateOperation;
+  previousState: ContentPublicationState;
+  nextState: ContentPublicationState;
+  actorKind: CanonicalContentStateActorKind;
+  actorKey: string;
+  idempotencyKey: string;
+  requestHash: string;
+  occurredAt: string;
+}
+
+export interface CanonicalContentStateTransitionResult {
+  replay: boolean;
+  resultingVersion: number;
+}
+
 export type ContentPublicationScope = Pick<
   SourceCompleteApprovedForPublicationProjection,
   'accountKey' | 'productKey'
@@ -441,6 +466,12 @@ export interface ContentPublicationUnitOfWork {
   registerContent(
     record: ContentPublicationRecord,
   ): Promise<{ record: ContentPublicationRecord; inserted: boolean }>;
+  bootstrapCanonicalContentState(
+    record: ContentPublicationRecord,
+  ): Promise<CanonicalContentStateTransitionResult>;
+  appendCanonicalContentStateTransition(
+    command: CanonicalContentStateTransitionCommand,
+  ): Promise<CanonicalContentStateTransitionResult>;
   saveContent(record: ContentPublicationRecord, expectedVersion: number): Promise<void>;
   findReceipt(
     scope: ContentPublicationScope,
