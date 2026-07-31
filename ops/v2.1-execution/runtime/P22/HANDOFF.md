@@ -1,63 +1,51 @@
-# P22 Renewal-Requested Handoff
+# P22 Renewal Atomic-Claim Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p22-learning-engagement`
 - Exact existing head/parent:
-  `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`
+  `ef3eb1356ebff095f3ba3b08afd0e54216844ed1`
 - Containing controller:
-  `8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73`
-- Controller state basis:
-  `cc90f922663405d883a798db8d4278ef803bb7cb`
+  `1fe3b53d26e9ae4dcc349f22318195dabdd804a8`
+- Controller parent/state basis:
+  `2d82c15a7af7284cacb7688b8a719da8f4f530a8`
 - Authorized integration/evidence SHA:
   `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`
 - READY digest:
-  `49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051`
+  `fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be`
 - Claim:
-  `a54f8667-d95d-415c-89ac-a6ac824775aa`
+  `d8a3ff1d-edfd-4327-9047-3788d765f7bd`
 - Writer:
-  `codex-p22-authority-successor-a54f8667`
+  `codex-p22-authority-successor-renewal-d8a3ff1d`
 - LEARNING_ENGAGEMENT lease:
-  `d20c0e9b-03a0-4ca1-a555-394fad6b2df2`
+  `706d5e11-9ba4-4a1b-83b8-4beba9779aeb`
 - Lease issued / expiry:
-  `2026-07-31T05:06:00Z` / `2026-07-31T07:06:00Z`
-- Phase scope:
-  `P22_learning_engagement_authority_successor_atomic_claim_only`
+  `2026-07-31T06:20:00Z` / `2026-07-31T08:20:00Z`
+- Phase:
+  `P22_learning_engagement_authority_successor_renewal_atomic_claim_only`
 - This checkpoint head: derive with `git rev-parse HEAD`; C00 records the
   observed pushed remote head.
 
-## Claim verification
+## Verification and preservation
 
-The fetched controller and P22 remote branch matched the dispatch exactly. The
-canonical P22 READY payload recomputed to the recorded digest and binds the
-exact existing head, branch, claim, writer, sole writer lease, authorized
-integration/evidence SHA, locked task/context/package inputs, and zero effect
-locks.
+The canonical READY payload recomputed exactly and binds the fresh claim,
+writer, sole lease, expected P22 head, and authorized integration/evidence
+SHA. Local, tracking, and live remote P22 heads were clean and equal before
+this checkpoint.
 
-## Preserved implementation and steward state
-
-No product, test, migration, registration, or successor-request work was
-performed. The corrected implementation remains
-`459e9187500477312a69542fc2b1e7d2fc552dd3` with artifact digest
-`2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967`.
-The immutable `P22-migration-001` and `P22-registration-001` request bytes are
-unchanged. This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md` in the P22 runtime directory.
+This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md`. Every product, test, predecessor request, successor-request
+absence, migration, registration, and shared byte is preserved. External
+effects remain `0/0/0`.
 
 ## Next action
 
-C00 reconciled atomic claim
-`7988604c2e37850aa51dbfc31138398468dd1493` at control
-`2d82c15a7af7284cacb7688b8a719da8f4f530a8`. This continuation reproduced
-the exact 16-path inventory and product-base manifest, verified every committed
-base product hash, and completed read-only seam analysis. No product, test, or
-request byte changed.
-
-Push this three-runtime-file `renewal_requested` checkpoint, then stop all
-writes. Resume the substantive exact-16-path correction only after C00
-publishes a fresh lease against the exact pushed head.
+Push and report this exact renewal atomic claim, then stop. The prior 16-path
+substantive ceiling is not authorized by this READY entry. Substantive work may
+resume only after C00 reconciles the exact pushed head and separately issues
+continuation authority.
 
 ## Effects
 
 Authority none; attempted/succeeded/reconciled `0/0/0`. The
-LEARNING_ENGAGEMENT lease remains held pending C00 renewal.
+LEARNING_ENGAGEMENT lease remains held for C00 reconciliation.

@@ -40,30 +40,32 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: renewal_requested
-phase: renewal_requested
+status: claimed
+phase: P22_learning_engagement_authority_successor_renewal_atomic_claim_only
 claim_mode: resume_existing_branch
-claimed_by: codex-p22-authority-successor-a54f8667
-claim_time: '2026-07-31T05:39:21Z'
-claim_id: a54f8667-d95d-415c-89ac-a6ac824775aa
+claimed_by: codex-p22-authority-successor-renewal-d8a3ff1d
+claim_time: '2026-07-31T06:27:22Z'
+claim_id: d8a3ff1d-edfd-4327-9047-3788d765f7bd
 writer_slot_leases:
   - slot: LEARNING_ENGAGEMENT
-    lease_id: d20c0e9b-03a0-4ca1-a555-394fad6b2df2
-    lease_issued_at: '2026-07-31T05:06:00Z'
-    lease_expires_at: '2026-07-31T07:06:00Z'
-    state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
-    phase_scope: P22_learning_engagement_authority_successor_atomic_claim_only
-lease_expires_at: '2026-07-31T07:06:00Z'
-last_heartbeat_at: '2026-07-31T06:13:53Z'
-controller_authorization_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
-resume_containing_control_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
-reconciled_control_sha: ddef233830979fd2a0e2d3a146bdd389b23a9c84
-ready_entry_state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
-ready_entry_payload_digest: 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051
-state_based_on_head_sha: 7988604c2e37850aa51dbfc31138398468dd1493
+    lease_id: 706d5e11-9ba4-4a1b-83b8-4beba9779aeb
+    lease_issued_at: '2026-07-31T06:20:00Z'
+    lease_expires_at: '2026-07-31T08:20:00Z'
+    state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
+    phase_scope: P22_learning_engagement_authority_successor_renewal_atomic_claim_only
+lease_expires_at: '2026-07-31T08:20:00Z'
+last_heartbeat_at: '2026-07-31T06:27:22Z'
+controller_authorization_sha: 1fe3b53d26e9ae4dcc349f22318195dabdd804a8
+resume_containing_control_sha: 1fe3b53d26e9ae4dcc349f22318195dabdd804a8
+reconciled_control_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
+ready_entry_state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
+ready_entry_payload_digest: fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be
+state_based_on_head_sha: ef3eb1356ebff095f3ba3b08afd0e54216844ed1
 last_implementation_commit_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
 implementation_artifact_digest: 2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967
 completed_steps:
+  - Fetched renewal control 1fe3b53d26e9ae4dcc349f22318195dabdd804a8 and recomputed exact READY digest fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be.
+  - Verified exact clean local/tracking/live P22 head ef3eb1356ebff095f3ba3b08afd0e54216844ed1, fresh claim d8a3ff1d-edfd-4327-9047-3788d765f7bd, writer codex-p22-authority-successor-renewal-d8a3ff1d, sole LEARNING_ENGAGEMENT lease 706d5e11-9ba4-4a1b-83b8-4beba9779aeb, and authorized integration/evidence SHA d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9.
   - C00 reconciled atomic claim 7988604c2e37850aa51dbfc31138398468dd1493 at control 2d82c15a7af7284cacb7688b8a719da8f4f530a8 and authorized the exact 16-path substantive correction ceiling.
   - Reproduced authorized path-inventory digest d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3, product-base manifest 8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4, all seven existing raw product hashes, and the authorized absent repository test.
   - Completed read-only inspection of the P22 artifacts and canonical P18 attendance, P12 identity, privacy consent, and steward-request seams; no product, test, or request byte changed.
@@ -88,9 +90,9 @@ completed_steps:
   - Bound the rolling approvedQuestionCount timestamp to the first approved_for_class or published transition, never an earlier private answer and never refreshed by later publication.
   - Added service-layer negative assertions proving cross-class question and attendance attempts perform no repository save; eleven focused assertions pass.
 remaining_steps:
-  - Obtain a C00-issued fresh resume lease against this exact renewal checkpoint.
-  - Resume the substantive exact-16-path correction only under that fresh lease.
-next_action: Push this renewal_requested runtime checkpoint, stop all writes, and resume substantive exact-16-path correction only after C00 issues a fresh resume lease against its exact head.
+  - Push and report this exact three-file renewal atomic claim.
+  - Stop before substantive correction and await C00 reconciliation of the exact pushed head.
+next_action: Push and report this renewal atomic claim, then stop until C00 reconciles its exact remote head and separately authorizes substantive work.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -136,6 +138,10 @@ verification:
       result: passed before commit; only the three P22 runtime files changed
     - command: substantive authority, 16-path inventory, product-base manifest, and raw Git-blob verification
       result: passed; control 2d82c15a, inventory d153ca70, manifest 8077e667, seven exact product hashes, and authorized repository test absence
+    - command: renewal control/head/READY/claim/lease validation
+      result: passed; control 1fe3b53d, expected head ef3eb135, READY fb370deb, claim d8a3ff1d, writer renewal-d8a3ff1d, sole lease 706d5e11, and authorized SHA d89a0f38
+    - command: renewal atomic-claim YAML, exact three-path diff, diff hygiene, and repository secret scan
+      result: passed; runtime YAML parsed, only the P22 runtime triplet changed, git diff check passed, and secret scan passed across 2748 text files
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -144,5 +150,4 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - Product and successor-request work is intentionally deferred until C00 reconciles this exact pushed atomic claim head.
-  - Substantive edits are paused pending a fresh C00-issued resume lease.
+  - Substantive product/test/request work is intentionally deferred until C00 reconciles this exact pushed renewal atomic-claim head.
