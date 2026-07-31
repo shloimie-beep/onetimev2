@@ -8,34 +8,43 @@ branch: codex/v21-lane1-migration-correction
 start_sha: c0a1e04b8f3ffcaa65b8c6c2a1ec64edf7c1346a
 dependency_heads:
   C00:
-    required_state: migration_2251_proposal_authority_metadata_correction_ready
-    observed_state: migration_2251_proposal_authority_metadata_correction_ready
-    observed_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-    authorization_containing_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-    controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
-    control_state_digest: 18bdef4356fc28af9cf1a06d9bd764cbba0e28876d1958cfeb8ee4a0e6dfe379
+    required_state: full_production_completion_convergence
+    observed_state: full_production_completion_convergence
+    observed_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+    authorization_containing_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+    controller_authorization_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+    control_state_digest: be3b28e705a4aad7ca1d471272548d6f637b65d57cd101e2c9189e1623ecd3cd
   I36:
-    required_state: accepted_source_microbatch_2_complete
-    observed_state: accepted_source_microbatch_2_complete
-    observed_integration_head_sha: 8634b2ab15df624576a88b31182ebdc68553ff74
-    state_handoff_digest: 08049868c8645e2cc2d2ccf24c20c437317a19d32c07f26e8fa4f239ed49c044
-    runtime_triplet_digest: 098376075fa8dcec752ed0783ac7d3277ce0ad938ef321597207784f962d8ac0
+    required_state: parent_session_auth_client_successor_terminal_validation_complete
+    observed_state: parent_session_auth_client_successor_terminal_validation_complete
+    observed_integration_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    terminal_parent_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
+    terminal_tree_sha: 56dc54f5aa494c36a767313097e94e8489c9d624
+    state_handoff_digest: 8c1a2e892f3fb1b7e1e26af0449ea5a355476590b9bbd8077fdb13082af9ac70
+    runtime_triplet_digest: 163295a655e22421e633e2dbf371f5b04dae4cc821ea03b81beec9a540bc3acd
+    lease_released_at: '2026-07-31T03:31:32Z'
+    external_effects: 0/0/0
   F02:
-    required_state: held_checksum_correction_terminal_exact
-    observed_state: held_checksum_correction_terminal_exact
-    expected_existing_head_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
-    authorized_start_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
-    native_proof_head_sha: 39cacd4aeef63ba247902b1fc7051b6bd6ca0f23
-    integration_merge_sha: 526f038412d7652451e519fae0f8ef857625029a
-    immutable_2252_checksum_sha256: 7981b9cf9805ec9bfba7005e7688034bacb90f5e730d0e593c43202c68afeafc
-  P20_P21:
-    required_state: source_complete_projection_checkpoint_pushed
-    observed_state: source_complete_projection_checkpoint_pushed
-    source_implementation_head_sha: 38156528c1c022a0575db71426ce2cc8f2e20ab8
-    checkpoint_head_sha: a210c6cb2e0f1ea9901745e131140646e91935f9
-    projection_field_count: 27
-    artifact_field_count: 8
-    focused_tests_passed: 42
+    required_state: migration_2251_proposal_authority_metadata_correction_complete
+    observed_state: migration_2251_proposal_authority_metadata_correction_complete
+    expected_existing_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+    authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    state_handoff_digest: e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616
+    runtime_triplet_digest: 4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9
+    allocation_proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
+    allocation_proposal_git_blob: d7c35dd21ffb5f688346d624627a58708be68a7c
+    next_migration_ordinal: 2254
+    immutable_2253_checksum_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
+    source_is_ancestor_of_authorized_start: true
+  P22:
+    required_state: source_integrated_request_assigned
+    observed_state: source_integrated_request_assigned
+    observed_task_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+    request_id: P22-migration-001
+    request_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-001.yaml
+    request_raw_sha256: e6c02f0e0fe7bd412e86e642ce7d041b550fd9952cad46c7f8eff3c9a4e0ea28
+    request_git_blob: 527b85c93f77e1609ee020b4f4576a7aa6db016e
+    source_is_ancestor_of_authorized_start: true
 migration_lease_A_plan_bindings:
   F04:
     observed_task_head_sha: 54a0ac28b51d271aacab60003451dbcc66ffcac8
@@ -443,30 +452,202 @@ migration_2251_proposal_authority_metadata_correction:
   proposal_authority_rebound: true
   schema_contract_lease_in_live_authority: false
   allocation_checksum_request_or_migration_bytes_changed: false
-status: ready_for_review
-phase: migration_2251_proposal_authority_metadata_correction_complete
-claimed_by: codex-f02-proposal-authority-68f6e27a
-claim_time: '2026-07-30T20:55:05Z'
-claim_id: 68f6e27a-caa2-4988-842c-7fd8eb0eb9ef
-writer_slot_lease_id: defa457c-32f6-4618-a237-cde17d3c439a
-lease_issued_at: '2026-07-30T20:55:05Z'
-lease_expires_at: '2026-07-30T22:25:05Z'
-last_heartbeat_at: '2026-07-30T21:10:33Z'
-lease_released_at: '2026-07-30T21:10:33Z'
-controller_authorization_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
-containing_control_head_sha: a7978fb1f0d1d9914c3e2b8bd698290226087455
-ready_entry_parent_control_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
-state_based_on_control_head_sha: fbc5d54093f34a823b8ee9f8a7906f65053c25db
-ready_entry_payload_digest: 2f554b14dffc14b4128dfef22d162c42248c7b5a2afd9cd290d79068b6a3eaf2
+migration_2254_P22_learning_engagement_atomic_claim:
+  disposition: claimed_pending_C00_reconciliation
+  containing_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+  state_based_on_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
+  authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+  expected_existing_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+  ready_entry_payload_digest: d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce
+  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  control_state_raw_sha256: be3b28e705a4aad7ca1d471272548d6f637b65d57cd101e2c9189e1623ecd3cd
+  prior_state_handoff_digest: e0b2ede55c202a8701905fbf7468f1a33ff09ae3a9f4fec5f5926a018f107616
+  prior_runtime_triplet_digest: 4059e319ef6bf2fc82f0a7243c20b461060e63d0b16525777b5cc81fa38075b9
+  P22_request:
+    source_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+    request_id: P22-migration-001
+    request_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-001.yaml
+    request_raw_sha256: e6c02f0e0fe7bd412e86e642ce7d041b550fd9952cad46c7f8eff3c9a4e0ea28
+    request_git_blob: 527b85c93f77e1609ee020b4f4576a7aa6db016e
+  allocation_baseline:
+    proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
+    proposal_git_blob: d7c35dd21ffb5f688346d624627a58708be68a7c
+    next_migration_ordinal: 2254
+    immutable_2253_checksum_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
+  protected_preexisting_untracked_helper:
+    path: .codex-lane1-pglite.mjs
+    bytes: 1597
+    raw_sha256: 11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17
+    disposition: preserved_untracked_excluded_from_commit
+  authorized_first_checkpoint_paths:
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  request_body_read_for_implementation: false
+  allocation_proposal_read_or_edited_for_implementation: false
+  sql_authored: false
+  later_migration_authority_latent: false
+  effect_lock_leases: []
+migration_2254_P22_learning_engagement_hold_control:
+  containing_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+  state_based_on_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+  expected_existing_head_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
+  ready_queue_state: empty
+  prior_atomic_claim_ready_digest: d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce
+  claim_id: 8041cc43-6a31-443b-87be-ef663f767c80
+  writer_id: codex-f02-migration-2254-8041cc43
+  migration_authority_lease_id: 55139366-ce78-4536-8cd3-33c08a1aba38
+  schema_contract_lease_id: 0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49
+  lease_expires_at: '2026-07-31T05:48:00Z'
+  disposition: held_not_admissible
+  required_successor_request: pending_new_immutable_P22_successor
+  external_effects: 0/0/0
+migration_2254_2256_P22_P12_P09_atomic_claim:
+  disposition: claimed_pending_C00_reconciliation
+  containing_control_head_sha: 864298e32e693599a804a5b152739de4ae17ee2b
+  state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+  controller_authorization_sha: 52cb53061527b1df9b95029bcf211fe258609368
+  authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+  expected_existing_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+  ready_entry_payload_digest: 8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21
+  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+  task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+  task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+  control_state_raw_sha256: f9aa2f7d8c738609afdda326b0a220959f9d07bfee2a59fe26bab70ca02a7009
+  dependency_bindings:
+    I36:
+      required_state: P21_then_P22_accepted_source_microbatch_complete
+      observed_state: P21_then_P22_accepted_source_microbatch_complete
+      terminal_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+      terminal_parent_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
+      terminal_tree_sha: 722151c1fc3db6b6d4eacb0390696efcfea3ce37
+      state_handoff_digest: 0d80a22c7b33acbae256cae4909451139aab0ceb512241e31bc9838c2773034f
+      runtime_triplet_digest: 8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5
+      lease_released_at: '2026-07-31T11:09:17Z'
+      external_effects: 0/0/0
+    F02:
+      required_state: migration_2254_2256_claim_predecessor_held
+      observed_state: migration_2254_2256_claim_predecessor_held
+      terminal_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+      terminal_parent_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
+      terminal_tree_sha: b3b180af78cdcf2ef3354507362e625e8b2d4e2f
+      state_handoff_digest: 85521b85e692a2fb28d4013e49b87ab71e276bd3cb13e4f73dbc0d611a3a3733
+      runtime_triplet_digest: b0f6ba3cfc0bcc2b7345152253f5552dc921f44fe90c186765d0e5de17e81973
+      prior_leases_released_at: '2026-07-31T04:48:40Z'
+    P22_migration_002:
+      source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+      request_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-002.yaml
+      request_raw_sha256: 0c00dcd09a8da6342d5dcd3865a3942fa07fbc5f618c2ed3030e70a21449116b
+      request_canonical_sha256: c44539cb6ef8960de256aee6ab2881734fc888b63e14a0cd78bec20eaf72f468
+      request_git_blob: b896e50b13b5fa0bfe16e477674e08b5aac72078
+      ordinal: 2254
+      filename: 2254_v21_learning_engagement.sql
+    P12_migration_001:
+      source_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
+      request_path: ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml
+      request_raw_sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
+      request_canonical_sha256: 9148d7bc0fe4d39d8afa90d55f25fac8f7bf253c10842bab65f5b25a00f699f4
+      request_git_blob: 92c1765089dc227f44e852857a404ab11a0e7fe2
+      ordinal: 2255
+      filename: 2255_v21_student_actual_name.sql
+    P09_migration_002:
+      source_head_sha: d9a4ce8082a028be81e234999deb43f659072a6d
+      request_path: ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml
+      request_raw_sha256: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+      request_canonical_sha256: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+      request_git_blob: 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
+      ordinal: 2256
+      filename: 2256_v21_approved_school_configuration_authority.sql
+    P10:
+      required_state: P09_migration_002_authority_acknowledged
+      observed_state: P09_migration_002_authority_acknowledged
+      terminal_head_sha: b5dd0edbd5504f091bc1666a87a4b2956b6a3c9a
+      terminal_parent_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+      terminal_tree_sha: e886d9169a4b0465d76c045e1bde109e45a1b4e9
+      state_handoff_digest: e920c9ae99f7f0e11a595ff5f1f7639b5f70efd898f7d0c4b86fe0a3f8416a17
+      runtime_triplet_digest: 0c117c03f1ac7f7a247583b5312e55d059f8b0f8e3a40e068adf718a8298e319
+      lease_released_at: '2026-07-31T05:42:30Z'
+      external_effects: 0/0/0
+  allocation_baseline:
+    proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
+    proposal_git_blob: d7c35dd21ffb5f688346d624627a58708be68a7c
+    next_migration_ordinal: 2254
+    protected_migration_range: 2234-2253
+  protected_preexisting_untracked_helper:
+    path: .codex-lane1-pglite.mjs
+    bytes: 1597
+    raw_sha256: 11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17
+    disposition: preserved_untracked_excluded_from_commit
+  authorized_first_checkpoint_paths:
+    - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+    - ops/v2.1-execution/runtime/F02/HANDOFF.md
+    - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+  claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+  writer_id: codex-f02-migrations-2254-2256-41a5ba44
+  lease_issued_at: '2026-07-31T11:28:40Z'
+  lease_expires_at: '2026-07-31T13:28:40Z'
+  writer_slot_leases:
+    MIGRATION_AUTHORITY:
+      lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
+      phase_scope: F02_migration_2254_2256_atomic_claim_only
+    SCHEMA_CONTRACT:
+      lease_id: 2c7b6d40-ea5f-423a-a000-a043d2bd6f7a
+      phase_scope: F02_migration_2254_2256_atomic_claim_only
+  effect_lock_leases: []
+  request_bodies_read_for_implementation: false
+  allocation_proposal_read_or_edited_for_implementation: false
+  sql_authored: false
+  later_migration_authority_latent: false
+  external_effects: 0/0/0
+status: claimed
+phase: migration_2254_2256_P22_P12_P09_atomic_claim_only
+claimed_by: codex-f02-migrations-2254-2256-41a5ba44
+claim_time: '2026-07-31T12:00:46Z'
+claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+writer_slot_lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
+lease_issued_at: '2026-07-31T11:28:40Z'
+lease_expires_at: '2026-07-31T13:28:40Z'
+last_heartbeat_at: '2026-07-31T12:00:46Z'
+lease_released_at: null
+controller_authorization_sha: 52cb53061527b1df9b95029bcf211fe258609368
+containing_control_head_sha: 864298e32e693599a804a5b152739de4ae17ee2b
+ready_entry_parent_control_sha: 52cb53061527b1df9b95029bcf211fe258609368
+state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+ready_entry_payload_digest: 8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21
 writer_slot_leases:
   MIGRATION_AUTHORITY:
-    lease_id: defa457c-32f6-4618-a237-cde17d3c439a
-    lease_issued_at: '2026-07-30T20:55:05Z'
-    lease_expires_at: '2026-07-30T22:25:05Z'
-    released_at: '2026-07-30T21:10:33Z'
-state_based_on_head_sha: edacab1ded9498e3ac6156942d0a3ae9fc268aea
+    lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
+    lease_issued_at: '2026-07-31T11:28:40Z'
+    lease_expires_at: '2026-07-31T13:28:40Z'
+    phase_scope: F02_migration_2254_2256_atomic_claim_only
+    released_at: null
+  SCHEMA_CONTRACT:
+    lease_id: 2c7b6d40-ea5f-423a-a000-a043d2bd6f7a
+    lease_issued_at: '2026-07-31T11:28:40Z'
+    lease_expires_at: '2026-07-31T13:28:40Z'
+    phase_scope: F02_migration_2254_2256_atomic_claim_only
+    released_at: null
+state_based_on_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
 last_implementation_commit_sha: null
 completed_steps:
+  - Verified live containing control 864298e3 with sole READY parent/controller 52cb5306, exact local/tracking/live F02 head 22ada24a, and authorized integration start 392cc119.
+  - Independently reproduced canonical READY digest 8abdeb3c, C00/I36/F02/P10 ancestry and runtime digests, and all P22/P12/P09 request raw, canonical, and Git-blob bindings without reading request bodies for implementation.
+  - Verified LOCKED-SHA256SUMS.txt 200/200 and source-spec/SHA256SUMS.txt 15/15 from exact Git bytes, with exact task/context/source/proposal bindings.
+  - Claimed only the F02 runtime triplet under claim 41a5ba44, writer codex-f02-migrations-2254-2256-41a5ba44, and the bounded MIGRATION_AUTHORITY and SCHEMA_CONTRACT leases through 2026-07-31T13:28:40Z.
+  - Preserved the allocation proposal, migrations 2234 through 2253, and protected untracked .codex-lane1-pglite.mjs; no SQL, product, shared-control, provider, deployment, send, charge, or external-effect byte was changed.
+  - Verified live control cc90f922, state basis fdcba890, empty READY, exact clean local/tracking/live F02 head 4007334f, unchanged claim 8041cc43, writer codex-f02-migration-2254-8041cc43, and both writer leases active through 2026-07-31T05:48:00Z.
+  - Reviewed immutable P22-migration-001, its integrated schema contract and repository, canonical migration 2251, migrations 2251/2253, the allocation proposal, and the migration harness without editing any implementation artifact.
+  - Held migration 2254 as not admissible because the requested writable learning-attendance aggregate would compete with canonical 2251 attendance authority, P22 lacks runtime-tier and verification-environment isolation, required actual-name semantics are unavailable, and question-transition plus recognition-consent audit history is not immutable.
+  - Required a new immutable P22 successor request that preserves migration 2251 as the sole attendance write authority, adds full isolation, binds available name semantics, and requires append-only transition and consent audit before any migration-2254 allocation or SQL.
+  - Released MIGRATION_AUTHORITY lease 55139366 and SCHEMA_CONTRACT lease 0669b0a0 at 2026-07-31T04:48:40Z before expiry with effects 0/0/0.
+  - Verified exact containing control fdcba890, sole parent/controller ce71f41a, remote F02 head 9754f2ae, authorized integration start d89a0f38, canonical READY d2273539, claim 8041cc43, both writer leases, and zero effect locks.
+  - Independently reproduced the prior F02 state/handoff and runtime-triplet raw-concatenation digests e0b2ede5 and 4059e319, the P22 request raw/blob bindings, the proposal raw/blob baseline, and F02 ancestry to the authorized start.
+  - Preserved pre-existing untracked .codex-lane1-pglite.mjs at exactly 1597 bytes and SHA-256 11117a91 while excluding it from staging and the checkpoint.
+  - Claimed only the exact F02 runtime triplet; no request body, proposal, SQL, product, shared control, provider, deployment, send, charge, or external effect was read for implementation or changed.
   - Verified canonical control c44656d4, controller authorization 98e7b05c, READY digest d8303358, claim c6e15ead, sole MIGRATION_AUTHORITY lease 203f8836, and zero effect locks.
   - Fetched and verified the exact remote F02 head 26234c47 and integration head 8634b2ab, then fast-forwarded without branch, ancestry, or path drift before editing.
   - Independently recomputed the three immutable request raw and canonical digests at exact producer source heads 7f8a41bc, 3be7bf49, and 705030f2.
@@ -580,8 +761,9 @@ completed_steps:
   - Applied the complete final 84-migration inventory to fresh native PostgreSQL 16.14, replayed migration 2253, and passed the full malformed, stale, reordered, cross-scope, mismatch, and five-guard native rejection probe batch.
   - Applied and verified the complete 84-migration repository pg-mem inventory with harness-only built-in registrations and zero pending migrations.
 remaining_steps:
-  - C00 must independently audit the exact pushed four-path proposal-authority metadata checkpoint, derive its proposal/state/handoff/runtime digests, and admit it before integration.
-next_action: Stop after publishing the exact four-path proposal-authority metadata checkpoint. Await independent C00 audit; do not mark steward results applied, edit migrations, product or request bytes, merge, register, inspect providers, deploy, backfill, send, charge, or perform external effects.
+  - C00 must independently audit and reconcile this exact sole-parent migration-2254-2256 runtime-triplet claim checkpoint.
+  - Only a later exact descendant C00 control continuation may authorize the disposable integration merge, proposal allocation, or SQL implementation for ordinals 2254 through 2256.
+next_action: Stop after pushing the exact migration-2254-2256 runtime-triplet claim checkpoint. Await C00 reconciliation; no migration, proposal, SQL, product, shared-control, integration, provider, candidate, or effect authority is latent.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -611,6 +793,14 @@ lease_B_atomic_claim_changed_paths:
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
 lease_B_renewal_atomic_claim_changed_paths:
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+migration_2254_P22_learning_engagement_atomic_claim_changed_paths:
+  - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/F02/HANDOFF.md
+  - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+migration_2254_2256_P22_P12_P09_atomic_claim_changed_paths:
   - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/F02/HANDOFF.md
   - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
@@ -745,6 +935,19 @@ migrations:
 steward_requests: []
 verification:
   commands_run:
+    - live containing control 864298e3, READY parent/controller 52cb5306, exact local/tracking/live F02 head 22ada24a, integration 392cc119, claim 41a5ba44, writer codex-f02-migrations-2254-2256-41a5ba44, and both active leases through 2026-07-31T13:28:40Z matched
+    - canonical F02 READY payload digest 8abdeb3c and C00/I36/F02/P10 ancestry plus state/handoff/runtime-triplet digests independently matched
+    - immutable P22-migration-002, P12-migration-001, and P09-migration-002 raw, canonical, Git-blob, ordinal, and filename bindings matched without request-body reads for implementation
+    - LOCKED-SHA256SUMS.txt 200/200 and source-spec/SHA256SUMS.txt 15/15 exact Git-byte checks passed; task, context, source, proposal, and protected-helper identities matched
+    - live control cc90f922 with state basis fdcba890, empty READY, exact local/tracking/live F02 head 4007334f, claim 8041cc43, writer codex-f02-migration-2254-8041cc43, and both active leases through 2026-07-31T05:48:00Z matched
+    - immutable P22-migration-001, integrated P22 schema/repository, canonical 2251 attendance migration/repository, migrations 2251/2253, allocation proposal, and migration harness were reviewed read-only
+    - canonical 2251 remained the sole admissible attendance write authority; P22 runtime/environment isolation, name semantics, and immutable transition/consent audit prerequisites were absent
+    - exact F02 runtime-triplet scope, YAML, repository Prettier, diff hygiene, secret scan, released dual leases, protected helper bytes, clean remote equality, and effects 0/0/0 passed without product or migration execution
+    - exact live local/tracking/remote F02 head 9754f2ae and containing control fdcba890 with sole parent ce71f41a matched
+    - canonical F02 READY payload digest d2273539, source/task/context/control/proposal/P22 bindings, and F02-to-authorized-start ancestry independently matched
+    - prior F02 raw-concatenation state/handoff e0b2ede5 and runtime-triplet 4059e319 digests independently reproduced from exact Git bytes
+    - tracked worktree and index were clean; protected untracked helper remained exactly 1597 bytes with SHA-256 11117a91
+    - claim 8041cc43, writer codex-f02-migration-2254-8041cc43, dual active leases through 2026-07-31T05:48:00Z, zero effect locks, and effects 0/0/0 matched
     - canonical control c44656d4, READY d8303358, claim c6e15ead, lease 203f8836, and no-effect authority matched
     - exact remote F02 26234c47 and integration 8634b2ab heads matched and fast-forward ancestry passed
     - P17, P18, and P21 request Git blobs, raw digests, canonical digests, and producer source heads matched independently
