@@ -436,3 +436,54 @@ at exactly 1597 bytes and SHA-256
 Stop for independent C00 reconciliation. No proposal, SQL, integration,
 provider, candidate, or effect authority is latent; a later descendant C00
 control continuation is mandatory.
+
+# F02 Migrations 2254-2256 P22/P12/P09 Terminal
+
+- Continuation control: `30229697371eedd735123eb89fd063e8f7c2689e`
+- Subsequent non-authority control: `4105c365a90ecb27fb930077ecaf02a9125edb38`
+- Parent/controller: `70b12ea370e8430bc80c0943231af98a3f5e6265`
+- Authorized integration start: `392cc119b2df65f9bd38da8c4db36113f1add967`
+- Reconciled claim checkpoint: `216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e`
+- Disposable merge: `b46ff339ab3d79b06547d387795e95951a200263`
+- Merge parents: `392cc119b2df65f9bd38da8c4db36113f1add967`,
+  `216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e`
+- Claim: `41a5ba44-435f-454f-b157-c6059d4bbc37`
+- Writer: `codex-f02-migrations-2254-2256-41a5ba44`
+- MIGRATION_AUTHORITY lease: `c741bc95-8fc2-4d4f-aaff-a76295580468`
+- SCHEMA_CONTRACT lease: `2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`
+- Lease expiry: `2026-07-31T13:28:40Z`
+- Lease release: `2026-07-31T12:49:27Z`
+- Authorized inventory digest:
+  `a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966`
+- Effects: `0/0/0`
+
+The exact seven-path continuation allocated and authored only migrations 2254,
+2255, and 2256 plus the allocation proposal and F02 runtime triplet. Migration
+2254 creates the seven four-dimension-fenced P22 engagement structures while
+preserving migration 2251 as the sole attendance write authority. Migration
+2255 adds required Unicode-nonblank `actual_name` by exact legacy copy and
+makes `display_name` nullable but nonblank when present. Migration 2256 creates
+one exact-scope approved-School authority, append-only history and quarantine,
+and read-only compatibility evidence for the overlapping 2241/2249 tables.
+The later control descendant `4105c365...` changed P18 evidence only and
+explicitly carried this exact F02 authority forward without changing its
+claim, leases, expiry, scope, path digest, integration start, or expected head.
+
+Native PostgreSQL 18.4 applied all 87 migrations to a fresh disposable
+database, replayed all 87, and verified all 87 ledger checksums. Focused probes
+passed exact replay/conflict, four-dimension isolation, optimistic concurrency,
+append-only and monotonic ledger fences, badge no-write replay, Unicode name
+rejection, School predecessor read-only behavior, School concurrent one-winner
+behavior, and whole-transaction rollback. The database was stopped and removed;
+no persistent database or provider operation occurred.
+
+Migrations 2234-2253 and every immutable request remain byte-identical. The
+protected untracked `.codex-lane1-pglite.mjs` remains excluded at 1597 bytes
+and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+C00 must independently verify and decide admission of the pushed terminal.
+This handoff does not apply a central steward result, merge the shared
+integration branch, freeze a candidate, inspect or mutate a provider, deploy,
+backfill a persistent database, send, charge, activate a customer, or perform
+any external effect.

@@ -224,3 +224,50 @@ local/tracking/live equality, active lease bindings, and effects `0/0/0`.
 Stop for C00 reconciliation. No request-body, proposal, SQL, migration,
 product, shared-control, provider, deployment, send, charge, or external-effect
 authority is latent; a later descendant C00 control continuation is mandatory.
+
+# Audit the Migrations 2254-2256 P22/P12/P09 Terminal
+
+Audit the exact pushed F02 successor produced under continuation control
+`30229697371eedd735123eb89fd063e8f7c2689e`, parent/controller
+`70b12ea370e8430bc80c0943231af98a3f5e6265`, authorized integration start
+`392cc119b2df65f9bd38da8c4db36113f1add967`, reconciled claim checkpoint
+`216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e`, claim
+`41a5ba44-435f-454f-b157-c6059d4bbc37`, writer
+`codex-f02-migrations-2254-2256-41a5ba44`, MIGRATION_AUTHORITY lease
+`c741bc95-8fc2-4d4f-aaff-a76295580468`, and SCHEMA_CONTRACT lease
+`2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`.
+
+Also verify subsequent control descendant
+`4105c365a90ecb27fb930077ecaf02a9125edb38` changed P18 evidence only,
+explicitly continued F02, and preserved every F02 authority binding.
+
+Require the ancestry-preserving disposable merge
+`b46ff339ab3d79b06547d387795e95951a200263` with parents `392cc119...` and
+`216c983b...`. Require exactly the seven authorized paths whose sorted path
+inventory digest is
+`a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966`:
+the allocation proposal, F02 runtime triplet, and migrations 2254-2256. Verify
+migrations 2234-2253 and all immutable request bytes remain exact.
+
+For migration 2254 require request `P22-migration-002`, canonical digest
+`c44539cb6ef8960de256aee6ab2881734fc888b63e14a0cd78bec20eaf72f468`,
+normalized-LF/native checksum `9c4a0dcc...`, repository-runner checksum
+`a3726955...`, and Git blob `0eba3e01...`. For migration 2255 require request
+`P12-migration-001`, canonical digest `9148d7bc...`, checksum `7f647a55...`,
+runner checksum `692a563b...`, and Git blob `2dd2aa59...`. For migration 2256
+require request `P09-migration-002`, canonical digest `d9958a9d...`, checksum
+`7caffcc1...`, runner checksum `7ade2f5e...`, and Git blob `db0e8e46...`.
+
+Require a fresh native PostgreSQL 18.4 transactional apply, replay, and ledger
+result of 87/87, plus the recorded positive/negative, four-dimension isolation,
+idempotency, optimistic-concurrency, immutable/monotonic-ledger, Unicode-name,
+predecessor-compatibility, and rollback probes. Confirm proposal next ordinal
+2257, exact checksum metadata, YAML, repository formatting, diff hygiene,
+secret scan, 200/200 locked and 15/15 source manifests, timely release of both
+leases before `2026-07-31T13:28:40Z`, protected helper identity, clean
+local/tracking/live equality, and effects `0/0/0`.
+
+Do not apply a central steward result, merge to shared integration, execute a
+persistent or shared database migration, inspect or mutate providers, deploy,
+backfill, send, charge, activate a customer, freeze a candidate, or perform any
+external effect. Stop for independent C00 admission.
