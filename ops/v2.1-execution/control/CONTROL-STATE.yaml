@@ -16,14 +16,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+controller_authorization_sha: f66edb4d0728b90374e56da13dbd9853657d349c
 next_action: >-
-  Hold Batch A terminal 3ea1a32e only for its independently reproduced product-manifest P2. Under one fresh
-  RELEASE_INTEGRATOR lease, I36 may change only its runtime triplet to replace the stale checkout-byte .env.example hash
-  with the exact Git-blob hash and recompute the canonical product manifest, state-handoff, and triplet evidence. Preserve
-  all product/test bytes, other hashes, request dispositions, validation truth, released prior leases, and zero effects.
-  Push one correction terminal, prove clean equality, and stop for one focused independent review. Candidate, provider,
-  deployment, DNS, billing, contact, send, activation, and every external effect remain prohibited.
+  Execute exact repository-only Batch D request P35-route-registration-001 from independently accepted corrected Batch A
+  terminal 460ba42d. Under one bounded RELEASE_INTEGRATOR lease, mount the accepted domain-transition registration before
+  historical Tisha B'Av routes, retire active page/form/join/client/build surfaces, preserve archived source assets and
+  evidence, and prove 410/no-write plus no generated public HTML. Change only the exact seven product/test paths and I36
+  runtime triplet, run changed-byte validation, push one terminal, and stop for one independent review. Candidate,
+  provider, deployment, DNS, billing, contact, send, activation, cleanup, and every external effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -118,7 +118,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: Batch_A_product_semantics_passed_evidence_manifest_correction_dispatched
+  status: Batch_A_independently_accepted_Batch_D_P35_route_retirement_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -131,7 +131,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+  expected_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -175,13 +175,31 @@ production_completion_lanes:
   Batch_A_release_path_inventory_digest: c3ae777b130405f3d34fe4d2a9b08aaca119f4dc4cf5cf1264ec4c785343bdc3
   Batch_A_declared_product_manifest_digest: 18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb
   Batch_A_exact_product_manifest_digest: 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
-  Batch_A_review_status: held_one_P2_evidence_manifest_only_no_other_P1_or_P2
+  Batch_A_initial_review_status: held_one_P2_evidence_manifest_only_no_other_P1_or_P2
   Batch_A_prior_leases_released_at: '2026-07-31T20:15:30Z'
   Batch_A_external_effects: 0/0/0
   Batch_A_evidence_correction_claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
   Batch_A_evidence_correction_RELEASE_INTEGRATOR_lease_id: ac7fa58f-ef5f-4d02-be59-676259f10a35
   Batch_A_evidence_correction_lease_expires_at: '2026-07-31T22:30:37Z'
   Batch_A_evidence_correction_ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
+  Batch_A_corrected_terminal_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+  Batch_A_corrected_terminal_parent_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+  Batch_A_corrected_terminal_tree_sha: f25984877d0f5e03931ca7bdab3b9fc088f46bd3
+  Batch_A_corrected_terminal_timestamp: '2026-07-31T23:49:34+03:00'
+  Batch_A_corrected_state_handoff_digest: d1fcd9bef863e0c00178c29e598227c91f3371ed7cc88e205c59f5d9ddf02555
+  Batch_A_corrected_runtime_triplet_digest: 6d84071c1d1c6a9f3d5251026aae97783356d9c9965e6bf77a4394bf1673b653
+  Batch_A_correction_lease_released_at: '2026-07-31T20:45:09Z'
+  Batch_A_independent_correction_review: passed_no_P1_or_P2
+  Batch_A_accepted_at: '2026-07-31T20:53:07Z'
+  Batch_D_claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
+  Batch_D_RELEASE_INTEGRATOR_lease_id: 595bc994-56d3-4805-9e86-cf7bccc805ca
+  Batch_D_lease_expires_at: '2026-08-01T00:53:07Z'
+  Batch_D_ready_entry_payload_digest: a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9
+  Batch_D_request_count: 1
+  Batch_D_product_path_count: 7
+  Batch_D_product_path_inventory_digest: e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20
+  Batch_D_release_path_count: 10
+  Batch_D_release_path_inventory_digest: e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   P21_P22_source_atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
@@ -363,8 +381,8 @@ production_completion_lanes:
   scope: ancestry_preserving_P21_then_P22_source_only_plus_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-  authorized_start_integration_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+  state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+  authorized_start_integration_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
   P22_renewal_checkpoint_reconciled_at: '2026-07-31T06:20:00Z'
@@ -399,8 +417,10 @@ successor_dispatch:
   I36_Batch_C_terminal_accepted_at: '2026-07-31T19:11:17Z'
   I36_Batch_A_dispatched_at: '2026-07-31T19:11:17Z'
   I36_Batch_A_terminal_held_and_evidence_correction_dispatched_at: '2026-07-31T20:30:37Z'
-  lease_issued_at: '2026-07-31T20:30:37Z'
-  lease_expires_at: '2026-07-31T22:30:37Z'
+  I36_Batch_A_corrected_terminal_accepted_at: '2026-07-31T20:53:07Z'
+  I36_Batch_D_P35_route_retirement_dispatched_at: '2026-07-31T20:53:07Z'
+  lease_issued_at: '2026-07-31T20:53:07Z'
+  lease_expires_at: '2026-08-01T00:53:07Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
@@ -591,11 +611,11 @@ successor_dispatch:
     effect_locks: []
     external_effects: 0/0/0
   I36:
-    status: resume_ready
-    phase: batch_A_terminal_evidence_manifest_correction
+    status: ready
+    phase: batch_D_P35_retired_surface_route_and_public_build_cleanup
     branch: codex/v21-integration
-    expected_existing_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
-    remote_integration_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+    expected_existing_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+    remote_integration_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -612,11 +632,14 @@ successor_dispatch:
     Batch_A_prior_claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
     Batch_A_prior_ready_entry_payload_digest: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
     Batch_A_prior_leases_released_at: '2026-07-31T20:15:30Z'
-    claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
-    writer_id: codex-i36-batch-a-evidence-be576814
-    RELEASE_INTEGRATOR_lease_id: ac7fa58f-ef5f-4d02-be59-676259f10a35
-    writer_lease_expires_at: '2026-07-31T22:30:37Z'
-    ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
+    Batch_A_correction_claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
+    Batch_A_correction_ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
+    Batch_A_correction_lease_released_at: '2026-07-31T20:45:09Z'
+    claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
+    writer_id: codex-i36-batch-d-p35-eb0bd2af
+    RELEASE_INTEGRATOR_lease_id: 595bc994-56d3-4805-9e86-cf7bccc805ca
+    writer_lease_expires_at: '2026-08-01T00:53:07Z'
+    ready_entry_payload_digest: a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9
     P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
     P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
     held_local_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
@@ -624,13 +647,25 @@ successor_dispatch:
     merged_typecheck_status: passed_zero_P12_or_P09_diagnostics_four_unchanged_baselines
     P21_source_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
     P22_source_merge_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
-    terminal_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
-    terminal_parent_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
-    terminal_tree_sha: ca1fea5a6ae54128cd0117d949e3176176c047bc
-    terminal_review_status: held_one_P2_evidence_manifest_only_no_other_P1_or_P2
+    product_terminal_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+    product_terminal_parent_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+    product_terminal_tree_sha: ca1fea5a6ae54128cd0117d949e3176176c047bc
     terminal_declared_product_manifest_digest: 18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb
     terminal_exact_product_manifest_digest: 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
-    terminal_lease_released_at: '2026-07-31T20:15:30Z'
+    product_terminal_lease_released_at: '2026-07-31T20:15:30Z'
+    terminal_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+    terminal_parent_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+    terminal_tree_sha: f25984877d0f5e03931ca7bdab3b9fc088f46bd3
+    terminal_state_handoff_digest: d1fcd9bef863e0c00178c29e598227c91f3371ed7cc88e205c59f5d9ddf02555
+    terminal_runtime_triplet_digest: 6d84071c1d1c6a9f3d5251026aae97783356d9c9965e6bf77a4394bf1673b653
+    terminal_review_status: passed_no_P1_or_P2
+    terminal_lease_released_at: '2026-07-31T20:45:09Z'
+    Batch_D_request_id: P35-route-registration-001
+    Batch_D_request_raw_sha256: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
+    Batch_D_product_path_count: 7
+    Batch_D_product_path_inventory_digest: e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20
+    Batch_D_release_path_count: 10
+    Batch_D_release_path_inventory_digest: e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82
     merge_order: P12_then_P09
     P12_merge_id: f7c7150d-190c-4e29-a89e-618f625e36ee
     P09_merge_id: 3475d18d-e67d-4690-b456-fe88527d9bb1

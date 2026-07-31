@@ -4,13 +4,13 @@ generated_by: C00
 status: operational
 ready:
   - task_id: I36
-    status: resume_ready
-    phase: batch_A_terminal_evidence_manifest_correction
+    status: ready
+    phase: batch_D_P35_retired_surface_route_and_public_build_cleanup
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-    authorized_start_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
-    expected_existing_head: 3ea1a32ef971947ab10c129e1de74b54e7311834
+    state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+    authorized_start_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+    expected_existing_head: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,79 +19,103 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-        control_state_canonical_digest: 142eedc7fe3c57ea05ecafd78555c82194bc5e591528df255f459309eebfd685
+        observed_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+        control_state_canonical_digest: dc7a061433b8986d842186d6c417a46450b9cc911c404c82b00aa7959147189b
       I36:
-        required_state: batch_A_product_semantics_passed_evidence_manifest_held
-        observed_state: batch_A_product_semantics_passed_evidence_manifest_held
-        terminal_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
-        terminal_parent_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
-        terminal_tree_sha: ca1fea5a6ae54128cd0117d949e3176176c047bc
-        terminal_timestamp: '2026-07-31T23:20:18+03:00'
-        prior_ready_entry_payload_digest: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
-        changed_product_path_count: 16
-        changed_runtime_path_count: 3
-        total_changed_path_count: 19
-        changed_product_path_inventory_digest: fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4
-        release_path_inventory_digest: c3ae777b130405f3d34fe4d2a9b08aaca119f4dc4cf5cf1264ec4c785343bdc3
-        declared_env_example_raw_sha256: 810adf00e3d62127689d7423cc03e79664e09f5013d51b5b62c76c88a4ded661
-        exact_git_env_example_raw_sha256: 726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955
-        declared_product_manifest_digest: 18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb
-        exact_git_product_manifest_digest: 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
-        independent_review: held_one_P2_evidence_manifest_only_no_other_P1_or_P2
-        behavioral_validation: passed
-        all_other_product_hashes: passed_15_of_15
-        immutable_request_dispositions: passed_14_of_14
-        leases_released_at: '2026-07-31T20:15:30Z'
+        required_state: batch_A_corrected_terminal_independently_passed
+        observed_state: batch_A_corrected_terminal_independently_passed
+        corrected_terminal_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+        corrected_terminal_parent_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+        corrected_terminal_tree_sha: f25984877d0f5e03931ca7bdab3b9fc088f46bd3
+        corrected_terminal_timestamp: '2026-07-31T23:49:34+03:00'
+        corrected_state_handoff_digest: d1fcd9bef863e0c00178c29e598227c91f3371ed7cc88e205c59f5d9ddf02555
+        corrected_runtime_triplet_digest: 6d84071c1d1c6a9f3d5251026aae97783356d9c9965e6bf77a4394bf1673b653
+        product_terminal_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+        product_terminal_tree_sha: ca1fea5a6ae54128cd0117d949e3176176c047bc
+        product_path_count: 16
+        product_path_inventory_digest: fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4
+        exact_product_manifest_digest: 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
+        independent_review: passed_no_P1_or_P2
+        prior_five_leases_released_at: '2026-07-31T20:15:30Z'
+        correction_lease_released_at: '2026-07-31T20:45:09Z'
         external_effects: 0/0/0
+      P35:
+        required_state: source_implementation_and_domain_transition_policy_integrated
+        observed_state: source_implementation_and_domain_transition_policy_integrated
+        immutable_request_id: P35-route-registration-001
+        immutable_request_raw_git_blob_sha256: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
+        immutable_request_source_path: ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
+    request_bindings:
+      P35-route-registration-001:
+        request_digest: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
+        source_path: ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
+        digest_kind: raw_git_blob_sha256
     authorized_paths:
+      - apps/web/src/client/public/public-entry.ts
+      - apps/web/src/server/app.ts
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-    authorized_path_count: 3
-    authorized_path_inventory_digest: f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176
+      - scripts/build-public-pages.ts
+      - scripts/v21-migration/verify-domain-transition.ts
+      - tests/e2e/tisha-bav-funnel.spec.ts
+      - tests/integration/tisha-bav-event-funnel.test.ts
+      - tests/unit/tisha-bav-public-copy.test.ts
+    authorized_path_count: 10
+    authorized_path_inventory_digest: e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82
+    product_path_count: 7
+    product_path_inventory_digest: e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20
+    authorized_product_preimages:
+      apps/web/src/client/public/public-entry.ts: e3c20439b0cfc1c4646f4a546ec88b31aafe0bd06410efc4416d45ad75d99646
+      apps/web/src/server/app.ts: a4f0cc569a17e5d473b082b48e9124d5679d523b0124b1c56cb55cca32d8e4c7
+      scripts/build-public-pages.ts: e69659e4a01039f65f07be738001f2a29d84a475440cc60016f576b7a47e3518
+      scripts/v21-migration/verify-domain-transition.ts: 1eb43e28f09bffc6edb5603a92bacde70bc0ddfa83c3a7831f6c868570eff190
+      tests/e2e/tisha-bav-funnel.spec.ts: 524e0dfd9dc497c03d966f08912416c8a8062227810b11c8c08495fb6155c654
+      tests/integration/tisha-bav-event-funnel.test.ts: 6fcf691582937fd0ac28908026a3edf475d68dbbb841935c414ac5edaa86d719
+      tests/unit/tisha-bav-public-copy.test.ts: a0c5dff85fd42e8c4d9774ac180714a72032b9267a58b5e785861ef6f6126a55
     correction_directives:
       - >-
-        Change only the I36 runtime triplet. In the Batch A terminal product artifact, replace the stale checkout-byte
-        .env.example raw SHA-256 with exact Git-blob SHA-256
-        726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955 and replace the stale product manifest with
-        17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014.
+        Apply only immutable request P35-route-registration-001. Mount the accepted domainTransitionFeatureRegistration
+        before every historical Tisha B'Av route. Retire the active landing, live, register, join, redirect, client hook,
+        and public-page generation surfaces while preserving the accepted 410 ended-event/no-write policy.
       - >-
-        Reproduce the corrected product manifest as SHA-256 of compact UTF-8 JSON for the sorted sixteen-element array
-        of objects shaped exactly {"path":<POSIX path>,"sha256":<exact Git-blob SHA-256>}. Preserve all other fifteen
-        product hashes, both path inventories, product/test bytes, behavior, request dispositions, and validation truth.
+        Remove generated tisha-bav.html and tisha-bav-live.html output and every active client registration/join hook.
+        Prove the retired page and API paths return the accepted 410 behavior without repository, cookie, contact,
+        enrollment, message, or provider writes. Prove retired asset request paths are not publicly served.
       - >-
-        Update HANDOFF and NEXT-PROMPT consistently, recompute exact raw task/handoff/next, state-handoff, and runtime
-        triplet digests from Git bytes, and record that the prior product terminal is held only for this P2 evidence
-        correction. Do not rerun product tests or rewrite accepted product bytes.
+        Preserve all historical migrations, archived source assets, archive manifests, provider evidence, and immutable
+        steward-request bytes. Do not delete or rewrite Tisha B'Av archive material, provider assets, or historical data.
       - >-
-        Validate YAML, exact three-path scope, corrected Git-blob and canonical manifest reproduction, immutable product
-        tree and parent ancestry, diff hygiene, and clean local/tracking/live equality. Release the fresh
-        RELEASE_INTEGRATOR lease, push one normal correction terminal, record effects 0/0/0, and stop for one focused
-        independent review.
+        Run validation matched to these source bytes only: focused P35/domain-transition and retired-surface unit,
+        integration, and seed-free browser assertions; changed-package format, lint, and typecheck; the relevant public
+        page and web production builds; exact path/preimage/diff/ancestry checks. Do not run a repository-wide audit.
       - >-
-        Do not edit application, test, config, migration, steward-request, control, candidate, provider, deployment, DNS,
-        billing, contact, send, or activation state. No effect lock is issued.
+        Update the I36 runtime triplet once at terminal, record the exact immutable request disposition, release the one
+        phase lease, push one normal terminal, prove clean local/tracking/live equality, and stop for one independent
+        review.
+      - >-
+        This repository-only phase authorizes no candidate freeze, deployment, DNS, provider inspection or mutation,
+        contact creation, enrollment, send, billing action, cleanup, or other external effect. No effect lock is issued.
     writer_slot_leases:
       - slot: RELEASE_INTEGRATOR
-        lease_id: ac7fa58f-ef5f-4d02-be59-676259f10a35
+        lease_id: 595bc994-56d3-4805-9e86-cf7bccc805ca
         holder_task_id: I36
-        holder_claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
-        holder_writer_id: codex-i36-batch-a-evidence-be576814
-        state_based_on_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-        lease_issued_at: '2026-07-31T20:30:37Z'
-        lease_expires_at: '2026-07-31T22:30:37Z'
-        phase_scope: batch_A_terminal_evidence_manifest_correction_only
+        holder_claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
+        holder_writer_id: codex-i36-batch-d-p35-eb0bd2af
+        state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+        lease_issued_at: '2026-07-31T20:53:07Z'
+        lease_expires_at: '2026-08-01T00:53:07Z'
+        phase_scope: batch_D_exact_P35_route_retirement_ten_path_terminal_only
     effect_lock_leases: []
-    claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
-    lease_issued_at: '2026-07-31T20:30:37Z'
-    lease_expires_at: '2026-07-31T22:30:37Z'
+    claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
+    lease_issued_at: '2026-07-31T20:53:07Z'
+    lease_expires_at: '2026-08-01T00:53:07Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
+  I36: a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,
