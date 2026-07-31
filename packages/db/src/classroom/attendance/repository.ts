@@ -1,5 +1,7 @@
 import type {
   AttendanceEvent,
+  AttendanceProjectionChange,
+  AttendanceProjectionChangePort,
   AttendanceProjection,
   CommitBootstrapInput,
   EmbeddedClassroomRepository,
@@ -30,6 +32,7 @@ const STALE = new Error('embedded_classroom_stale_write');
 
 export function createPostgresEmbeddedClassroomRepository(
   pool: EmbeddedClassroomSqlPool,
+  projectionChanges: AttendanceProjectionChangePort,
 ): EmbeddedClassroomRepository {
   return {
     async insertLaunchGrant(grant) {
@@ -220,18 +223,31 @@ export function createPostgresEmbeddedClassroomRepository(
     },
 
     async appendAttendance(input) {
+      let changes: readonly AttendanceProjectionChange[];
       try {
-        return await withTransaction(pool, async (client) => {
+        changes = await withTransaction(pool, async (client) => {
+          assertAttendanceAppendInput(input);
+          const persisted = [];
+          let wroteEvent = false;
           for (const event of input.events) {
-            await appendEvent(client, event);
+            const result = await appendEvent(client, event);
+            assertProjectionBinding(input.next_projection, result.change);
+            persisted.push(result.change);
+            wroteEvent ||= result.disposition === 'inserted';
           }
-          await persistProjection(client, input.prior_projection, input.next_projection);
-          return true;
+          if (wroteEvent) {
+            await persistProjection(client, input.prior_projection, input.next_projection);
+          }
+          return persisted;
         });
       } catch (error) {
         if (error === STALE) return false;
         throw error;
       }
+      for (const change of changes) {
+        await projectionChanges.onAttendanceProjectionChange(change);
+      }
+      return true;
     },
   };
 }
@@ -286,7 +302,10 @@ async function persistBootstrapSession(
 async function appendEvent(
   client: EmbeddedClassroomSqlClient,
   event: AttendanceEvent,
-): Promise<void> {
+): Promise<{
+  disposition: 'inserted' | 'replayed';
+  change: AttendanceProjectionChange;
+}> {
   const inserted = await client.query(
     `INSERT INTO onetime.classroom_attendance_events_v21
        (attendance_event_id, product, runtime_tier, verification_environment_id,
@@ -297,7 +316,10 @@ async function appendEvent(
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::timestamptz,$10,$11,$12,$13,
              $14::jsonb,$15,$16,$17)
      ON CONFLICT DO NOTHING
-     RETURNING attendance_event_id`,
+     RETURNING attendance_event_id, product, runtime_tier,
+               verification_environment_id, occurrence_id, student_id,
+               source, event_kind, source_event_ref_digest, correction_reason,
+               correction_admin_id, audit_ref`,
     [
       event.attendance_event_id,
       event.scope.product,
@@ -318,9 +340,17 @@ async function appendEvent(
       event.audit_ref,
     ],
   );
-  if (inserted.rows[0]?.attendance_event_id === event.attendance_event_id) return;
+  if (inserted.rows[0]?.attendance_event_id === event.attendance_event_id) {
+    return {
+      disposition: 'inserted',
+      change: mapAttendanceProjectionChange(inserted.rows[0]),
+    };
+  }
   const replay = await client.query(
-    `SELECT attendance_event_id
+    `SELECT attendance_event_id, product, runtime_tier,
+            verification_environment_id, occurrence_id, student_id,
+            source, event_kind, source_event_ref_digest, correction_reason,
+            correction_admin_id, audit_ref
        FROM onetime.classroom_attendance_events_v21
       WHERE product = $2
         AND runtime_tier = $3
@@ -363,6 +393,173 @@ async function appendEvent(
   if (replay.rows[0]?.attendance_event_id !== event.attendance_event_id) {
     throw new Error('attendance_event_idempotency_conflict');
   }
+  return {
+    disposition: 'replayed',
+    change: mapAttendanceProjectionChange(replay.rows[0]),
+  };
+}
+
+function assertAttendanceAppendInput(
+  input: Parameters<EmbeddedClassroomRepository['appendAttendance']>[0],
+): void {
+  if (input.events.length === 0) throw new Error('attendance_source_event_required');
+  assertProjectionCorrectionMetadata(input.next_projection);
+  if (input.prior_projection !== null) {
+    assertProjectionBinding(input.next_projection, input.prior_projection);
+  }
+  for (const event of input.events) {
+    assertEventMetadata(event);
+    assertProjectionBinding(input.next_projection, event);
+  }
+}
+
+function assertEventMetadata(
+  event: Pick<
+    AttendanceEvent,
+    | 'source'
+    | 'event_kind'
+    | 'source_event_ref_digest'
+    | 'correction_intervals'
+    | 'correction_reason'
+    | 'correction_admin_id'
+    | 'audit_ref'
+  >,
+): void {
+  if (!/^[a-f0-9]{64}$/.test(event.source_event_ref_digest)) {
+    throw new Error('attendance_source_event_digest_invalid');
+  }
+  const isCorrection =
+    event.source === 'admin_correction' && event.event_kind === 'manual_correction';
+  if (isCorrection) {
+    assertCanonicalCorrectionMetadata(
+      event.correction_reason,
+      event.correction_admin_id,
+      event.audit_ref,
+    );
+    return;
+  }
+  if (
+    event.source === 'admin_correction' ||
+    event.event_kind === 'manual_correction' ||
+    event.correction_intervals.length > 0 ||
+    event.correction_reason !== null ||
+    event.correction_admin_id !== null ||
+    event.audit_ref !== null
+  ) {
+    throw new Error('attendance_correction_metadata_invalid');
+  }
+}
+
+function assertProjectionCorrectionMetadata(projection: AttendanceProjection): void {
+  if (projection.reconciliation_state === 'admin_corrected') {
+    assertCanonicalCorrectionReason(projection.manual_correction_reason);
+    assertCanonicalIdentity(projection.correction_admin_id);
+    return;
+  }
+  if (projection.manual_correction_reason !== null || projection.correction_admin_id !== null) {
+    throw new Error('attendance_projection_correction_metadata_invalid');
+  }
+}
+
+function assertCanonicalCorrectionMetadata(
+  reason: string | null,
+  adminId: string | null,
+  auditRef: string | null,
+): void {
+  assertCanonicalCorrectionReason(reason);
+  assertCanonicalIdentity(adminId);
+  assertCanonicalIdentity(auditRef);
+}
+
+function assertCanonicalCorrectionReason(reason: string | null): void {
+  if (reason === null || reason.trim() !== reason || reason.length < 3 || reason.length > 1_000) {
+    throw new Error('attendance_correction_metadata_invalid');
+  }
+}
+
+function assertCanonicalIdentity(value: string | null): void {
+  if (value === null || value.trim() !== value || value.length === 0 || value.length > 512) {
+    throw new Error('attendance_correction_metadata_invalid');
+  }
+}
+
+function assertProjectionBinding(
+  projection: Pick<AttendanceProjection, 'scope' | 'occurrence_id' | 'student_id'>,
+  source: Pick<AttendanceProjection, 'scope' | 'occurrence_id' | 'student_id'>,
+): void {
+  if (
+    projection.occurrence_id !== source.occurrence_id ||
+    projection.student_id !== source.student_id ||
+    projection.scope.product !== source.scope.product ||
+    projection.scope.runtime_tier !== source.scope.runtime_tier ||
+    projection.scope.verification_environment_id !== source.scope.verification_environment_id
+  ) {
+    throw new Error('attendance_projection_event_binding_invalid');
+  }
+}
+
+function mapAttendanceProjectionChange(row: SqlRow): AttendanceProjectionChange {
+  assertEventMetadata({
+    source: requiredEventSource(row.source),
+    event_kind: requiredEventKind(row.event_kind),
+    source_event_ref_digest: requiredString(row.source_event_ref_digest),
+    correction_intervals: [],
+    correction_reason: nullableString(row.correction_reason),
+    correction_admin_id: nullableString(row.correction_admin_id),
+    audit_ref: nullableString(row.audit_ref),
+  });
+  return {
+    scope: mapAttendanceChangeScope(row),
+    occurrence_id: requiredString(row.occurrence_id),
+    student_id: requiredString(row.student_id),
+    source_attendance_event_id: requiredString(row.attendance_event_id),
+    source_event_ref_digest: requiredString(row.source_event_ref_digest),
+    correction_audit_ref: nullableString(row.audit_ref),
+    correction_reason: nullableString(row.correction_reason),
+    correction_admin_id: nullableString(row.correction_admin_id),
+  };
+}
+
+function mapAttendanceChangeScope(row: SqlRow): JobScope {
+  const product = requiredString(row.product);
+  const runtimeTier = requiredString(row.runtime_tier);
+  const environment = requiredString(row.verification_environment_id);
+  const environmentMatchesRuntime =
+    (runtimeTier === 'isolated_staging' &&
+      (environment === 'ci' ||
+        environment === 'provider_sandbox' ||
+        environment === 'persistent_staging')) ||
+    (runtimeTier === 'production' &&
+      (environment === 'production_read_only' ||
+        environment === 'production_operator_canary' ||
+        environment === 'production_broad'));
+  if (product !== 'one_time_mishnayos' || !environmentMatchesRuntime) {
+    throw new Error('attendance_projection_change_scope_invalid');
+  }
+  return {
+    product,
+    runtime_tier: runtimeTier,
+    verification_environment_id: environment,
+  };
+}
+
+function requiredEventSource(value: unknown): AttendanceEvent['source'] {
+  if (value === 'zoom_provider' || value === 'embedded_client' || value === 'admin_correction') {
+    return value;
+  }
+  throw new Error('attendance_source_invalid');
+}
+
+function requiredEventKind(value: unknown): AttendanceEvent['event_kind'] {
+  if (value === 'joined' || value === 'left' || value === 'manual_correction') return value;
+  throw new Error('attendance_event_kind_invalid');
+}
+
+function requiredString(value: unknown): string {
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new Error('attendance_projection_change_identity_invalid');
+  }
+  return value;
 }
 
 async function persistProjection(

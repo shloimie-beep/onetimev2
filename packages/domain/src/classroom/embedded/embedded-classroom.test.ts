@@ -246,6 +246,74 @@ describe('embedded classroom domain', () => {
     expect(result.source_event_count).toBe(3);
     expect(result.manual_correction_reason).toBe('verified_operator_correction');
   });
+
+  it('uses attendance event ID as the deterministic final correction tie-breaker', () => {
+    const correction = (id: string, reason: string, joinedAt: string) =>
+      ({
+        ...event(
+          id,
+          'admin_correction',
+          'manual_correction',
+          '2026-07-28T18:05:00.000Z',
+          `admin-${id}`,
+        ),
+        correction_intervals: [
+          {
+            joined_at: joinedAt,
+            left_at: '2026-07-28T18:00:00.000Z',
+          },
+        ],
+        correction_reason: reason,
+        correction_admin_id: 'admin-1',
+        audit_ref: `audit-${id}`,
+      }) satisfies AttendanceEvent;
+    const higherId = correction(
+      'correction-b',
+      'higher event identity wins',
+      '2026-07-28T17:00:00.000Z',
+    );
+    const lowerId = correction(
+      'correction-a',
+      'lower event identity loses',
+      '2026-07-28T17:30:00.000Z',
+    );
+
+    const result = reconcileAttendance({
+      events: [higherId, lowerId],
+      scheduled_start_at: '2026-07-28T17:00:00.000Z',
+      scheduled_end_at: '2026-07-28T18:00:00.000Z',
+      prior_projection: null,
+      now: new Date('2026-07-28T18:06:00.000Z'),
+    });
+
+    expect(result.total_connected_minutes).toBe(60);
+    expect(result.manual_correction_reason).toBe('higher event identity wins');
+  });
+
+  it('rejects correction metadata that P22 would normalize or refuse', () => {
+    const correction = {
+      ...event(
+        'correction-invalid',
+        'admin_correction',
+        'manual_correction',
+        '2026-07-28T18:05:00.000Z',
+        'admin',
+      ),
+      correction_reason: ' invalid surrounding whitespace ',
+      correction_admin_id: 'admin-1',
+      audit_ref: 'audit-correction-invalid',
+    } satisfies AttendanceEvent;
+
+    expect(() =>
+      reconcileAttendance({
+        events: [correction],
+        scheduled_start_at: '2026-07-28T17:00:00.000Z',
+        scheduled_end_at: '2026-07-28T18:00:00.000Z',
+        prior_projection: null,
+        now: new Date('2026-07-28T18:06:00.000Z'),
+      }),
+    ).toThrow('Attendance correction metadata must be canonical and P22-compatible.');
+  });
 });
 
 function joinContext(patch: Partial<EmbeddedJoinContext> = {}): EmbeddedJoinContext {

@@ -18,7 +18,7 @@ describe('Postgres embedded classroom repository', () => {
       rows: [{ grant_id: 'grant-1' }],
       rowCount: 1,
     });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
     await expect(repository.insertLaunchGrant(grant())).resolves.toBe('inserted');
     expectLaunchGrantV21Sql(query.mock.calls[0]?.[0]);
   });
@@ -28,7 +28,7 @@ describe('Postgres embedded classroom repository', () => {
       .fn()
       .mockResolvedValueOnce({ rows: [], rowCount: 0 })
       .mockResolvedValueOnce({ rows: [{ grant_id: 'grant-1' }], rowCount: 1 });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
 
     await expect(repository.insertLaunchGrant(grant())).resolves.toBe('replayed');
     expect(String(query.mock.calls[0]?.[0])).toContain('ON CONFLICT DO NOTHING');
@@ -41,7 +41,7 @@ describe('Postgres embedded classroom repository', () => {
       .fn()
       .mockResolvedValueOnce({ rows: [], rowCount: 0 })
       .mockResolvedValueOnce({ rows: [], rowCount: 0 });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
 
     await expect(repository.insertLaunchGrant(grant())).rejects.toThrow(
       'embedded_launch_grant_idempotency_conflict',
@@ -50,7 +50,7 @@ describe('Postgres embedded classroom repository', () => {
 
   it('loads a launch grant only by exact environment scope and digest', async () => {
     const query = vi.fn().mockResolvedValue({ rows: [], rowCount: 0 });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
     await expect(
       repository.loadLaunchGrant({
         scope: grant().scope,
@@ -74,7 +74,7 @@ describe('Postgres embedded classroom repository', () => {
       .mockResolvedValueOnce({ rows: [{ grant_id: 'grant-1' }], rowCount: 1 })
       .mockResolvedValueOnce({ rows: [{ live_session_id: 'live-1' }], rowCount: 1 })
       .mockResolvedValueOnce({ rows: [], rowCount: null });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
     const priorGrant = grant();
     const result = await repository.commitBootstrap({
       prior_grant: priorGrant,
@@ -102,7 +102,7 @@ describe('Postgres embedded classroom repository', () => {
       .mockResolvedValueOnce({ rows: [], rowCount: null })
       .mockResolvedValueOnce({ rows: [], rowCount: 0 })
       .mockResolvedValueOnce({ rows: [], rowCount: null });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
     const priorGrant = grant();
     await expect(
       repository.commitBootstrap({
@@ -130,7 +130,7 @@ describe('Postgres embedded classroom repository', () => {
       .mockResolvedValueOnce({ rows: [{ grant_id: 'grant-1' }], rowCount: 1 })
       .mockResolvedValueOnce({ rows: [{ live_session_id: 'live-2' }], rowCount: 1 })
       .mockResolvedValueOnce({ rows: [], rowCount: null });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
     const priorGrant = grant();
     const priorSession = {
       ...session(),
@@ -177,7 +177,7 @@ describe('Postgres embedded classroom repository', () => {
       .mockResolvedValueOnce({ rows: [{ live_session_id: 'live-1' }], rowCount: 1 })
       .mockResolvedValueOnce({ rows: [], rowCount: 2 })
       .mockResolvedValueOnce({ rows: [], rowCount: null });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const repository = createRepository(query);
     const prior = session();
     const next = {
       ...prior,
@@ -203,16 +203,17 @@ describe('Postgres embedded classroom repository', () => {
     expectLaunchGrantV21Sql(query.mock.calls[2]?.[0]);
   });
 
-  it('treats exact attendance event and projection replays as success', async () => {
+  it('commits a new attendance projection before invoking the mandatory callback', async () => {
     const query = vi
       .fn()
       .mockResolvedValueOnce({ rows: [], rowCount: null })
-      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
-      .mockResolvedValueOnce({ rows: [{ attendance_event_id: 'attendance-1' }], rowCount: 1 })
-      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [storedEventRow()], rowCount: 1 })
       .mockResolvedValueOnce({ rows: [{ occurrence_id: 'occurrence-1' }], rowCount: 1 })
       .mockResolvedValueOnce({ rows: [], rowCount: null });
-    const repository = createPostgresEmbeddedClassroomRepository(pool(query));
+    const onChange = vi.fn(async () => {
+      expect(query.mock.calls.at(-1)?.[0]).toBe('COMMIT');
+    });
+    const repository = createRepository(query, onChange);
 
     await expect(
       repository.appendAttendance({
@@ -224,11 +225,207 @@ describe('Postgres embedded classroom repository', () => {
     expect(query.mock.calls.map((call) => call[0])).toEqual([
       'BEGIN',
       expect.stringContaining('ON CONFLICT DO NOTHING'),
-      expect.stringContaining('source_event_ref_digest = $12'),
       expect.stringContaining('INSERT INTO onetime.classroom_attendance_projection_v21'),
-      expect.stringContaining('source_event_count = $15'),
       'COMMIT',
     ]);
+    expect(onChange).toHaveBeenCalledWith({
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: 'isolated_staging',
+        verification_environment_id: 'ci',
+      },
+      occurrence_id: 'occurrence-1',
+      student_id: 'student-1',
+      source_attendance_event_id: 'attendance-1',
+      source_event_ref_digest: HASH,
+      correction_audit_ref: null,
+      correction_reason: null,
+      correction_admin_id: null,
+    });
+  });
+
+  it('propagates callback failure after commit and exact replay repairs the callback only', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [storedEventRow()], rowCount: 1 })
+      .mockResolvedValueOnce({ rows: [{ occurrence_id: 'occurrence-1' }], rowCount: 1 })
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [storedEventRow()], rowCount: 1 })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const onChange = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('projection_callback_unavailable'))
+      .mockResolvedValueOnce(undefined);
+    const repository = createRepository(query, onChange);
+    const input = {
+      events: [attendanceEvent()],
+      prior_projection: null,
+      next_projection: attendanceProjection(),
+    };
+
+    await expect(repository.appendAttendance(input)).rejects.toThrow(
+      'projection_callback_unavailable',
+    );
+    await expect(repository.appendAttendance(input)).resolves.toBe(true);
+    expect(query.mock.calls.map((call) => call[0])).toEqual([
+      'BEGIN',
+      expect.stringContaining('INSERT INTO onetime.classroom_attendance_events_v21'),
+      expect.stringContaining('INSERT INTO onetime.classroom_attendance_projection_v21'),
+      'COMMIT',
+      'BEGIN',
+      expect.stringContaining('INSERT INTO onetime.classroom_attendance_events_v21'),
+      expect.stringContaining('source_event_ref_digest = $12'),
+      'COMMIT',
+    ]);
+    expect(onChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('replays an older exact event after a successor with no write and invokes the callback', async () => {
+    const older = { ...attendanceEvent(), attendance_event_id: 'attendance-older' };
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [storedEventRow(older)], rowCount: 1 })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const onChange = vi.fn(async () => undefined);
+    const repository = createRepository(query, onChange);
+
+    await expect(
+      repository.appendAttendance({
+        events: [older],
+        prior_projection: { ...attendanceProjection(), version: 3, source_event_count: 3 },
+        next_projection: attendanceProjection(),
+      }),
+    ).resolves.toBe(true);
+    expect(query.mock.calls.map((call) => call[0])).toEqual([
+      'BEGIN',
+      expect.stringContaining('ON CONFLICT DO NOTHING'),
+      expect.stringContaining('FOR SHARE'),
+      'COMMIT',
+    ]);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ source_attendance_event_id: 'attendance-older' }),
+    );
+  });
+
+  it('rolls back a changed replay and invokes no callback', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const onChange = vi.fn(async () => undefined);
+    const repository = createRepository(query, onChange);
+
+    await expect(
+      repository.appendAttendance({
+        events: [attendanceEvent()],
+        prior_projection: null,
+        next_projection: attendanceProjection(),
+      }),
+    ).rejects.toThrow('attendance_event_idempotency_conflict');
+    expect(query.mock.calls.at(-1)?.[0]).toBe('ROLLBACK');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('rolls back a genuinely stale new write and invokes no callback', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [storedEventRow()], rowCount: 1 })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const onChange = vi.fn(async () => undefined);
+    const repository = createRepository(query, onChange);
+
+    await expect(
+      repository.appendAttendance({
+        events: [attendanceEvent()],
+        prior_projection: { ...attendanceProjection(), version: 1 },
+        next_projection: { ...attendanceProjection(), version: 2 },
+      }),
+    ).resolves.toBe(false);
+    expect(query.mock.calls.at(-1)?.[0]).toBe('ROLLBACK');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('emits only server-owned P18 identity and exact correction metadata', async () => {
+    const correction = attendanceCorrectionEvent();
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [storedEventRow(correction)], rowCount: 1 })
+      .mockResolvedValueOnce({ rows: [{ occurrence_id: 'occurrence-1' }], rowCount: 1 })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const onChange = vi.fn(async () => undefined);
+    const repository = createRepository(query, onChange);
+
+    await expect(
+      repository.appendAttendance({
+        events: [correction],
+        prior_projection: null,
+        next_projection: correctedAttendanceProjection(),
+      }),
+    ).resolves.toBe(true);
+    expect(onChange).toHaveBeenCalledWith({
+      scope: {
+        product: 'one_time_mishnayos',
+        runtime_tier: 'isolated_staging',
+        verification_environment_id: 'ci',
+      },
+      occurrence_id: 'occurrence-1',
+      student_id: 'student-1',
+      source_attendance_event_id: 'attendance-correction-1',
+      source_event_ref_digest: HASH,
+      correction_audit_ref: 'audit-correction-1',
+      correction_reason: 'verified operator correction',
+      correction_admin_id: 'admin-1',
+    });
+  });
+
+  it('rejects noncanonical P22 correction metadata before commit and callback', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const onChange = vi.fn(async () => undefined);
+    const repository = createRepository(query, onChange);
+    const invalid = { ...attendanceCorrectionEvent(), correction_reason: ' no ' };
+
+    await expect(
+      repository.appendAttendance({
+        events: [invalid],
+        prior_projection: null,
+        next_projection: correctedAttendanceProjection(),
+      }),
+    ).rejects.toThrow('attendance_correction_metadata_invalid');
+    expect(query.mock.calls.map((call) => call[0])).toEqual(['BEGIN', 'ROLLBACK']);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('rejects a changed immutable projection/event binding before commit and callback', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
+    const onChange = vi.fn(async () => undefined);
+    const repository = createRepository(query, onChange);
+
+    await expect(
+      repository.appendAttendance({
+        events: [attendanceEvent()],
+        prior_projection: null,
+        next_projection: { ...attendanceProjection(), student_id: 'student-other' },
+      }),
+    ).rejects.toThrow('attendance_projection_event_binding_invalid');
+    expect(query.mock.calls.map((call) => call[0])).toEqual(['BEGIN', 'ROLLBACK']);
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
 
@@ -240,6 +437,15 @@ function expectLaunchGrantV21Sql(sql: unknown): void {
 function pool(query: ReturnType<typeof vi.fn>) {
   const client: EmbeddedClassroomSqlClient = { query, release: vi.fn() };
   return { connect: vi.fn().mockResolvedValue(client) };
+}
+
+function createRepository(
+  query: ReturnType<typeof vi.fn>,
+  onAttendanceProjectionChange = vi.fn(async () => undefined),
+) {
+  return createPostgresEmbeddedClassroomRepository(pool(query), {
+    onAttendanceProjectionChange,
+  });
 }
 
 function grant(): LaunchGrantRecord {
@@ -310,6 +516,42 @@ function attendanceEvent(): AttendanceEvent {
   };
 }
 
+function attendanceCorrectionEvent(): AttendanceEvent {
+  return {
+    ...attendanceEvent(),
+    attendance_event_id: 'attendance-correction-1',
+    source: 'admin_correction',
+    event_kind: 'manual_correction',
+    observed_at: '2026-07-28T18:05:00.000Z',
+    correction_intervals: [
+      {
+        joined_at: '2026-07-28T17:00:00.000Z',
+        left_at: '2026-07-28T18:00:00.000Z',
+      },
+    ],
+    correction_reason: 'verified operator correction',
+    correction_admin_id: 'admin-1',
+    audit_ref: 'audit-correction-1',
+  };
+}
+
+function storedEventRow(event = attendanceEvent()) {
+  return {
+    attendance_event_id: event.attendance_event_id,
+    product: event.scope.product,
+    runtime_tier: event.scope.runtime_tier,
+    verification_environment_id: event.scope.verification_environment_id,
+    occurrence_id: event.occurrence_id,
+    student_id: event.student_id,
+    source: event.source,
+    event_kind: event.event_kind,
+    source_event_ref_digest: event.source_event_ref_digest,
+    correction_reason: event.correction_reason,
+    correction_admin_id: event.correction_admin_id,
+    audit_ref: event.audit_ref,
+  };
+}
+
 function attendanceProjection(): AttendanceProjection {
   return {
     scope: grant().scope,
@@ -327,5 +569,14 @@ function attendanceProjection(): AttendanceProjection {
     source_event_count: 1,
     version: 1,
     updated_at: '2026-07-28T17:00:30.000Z',
+  };
+}
+
+function correctedAttendanceProjection(): AttendanceProjection {
+  return {
+    ...attendanceProjection(),
+    reconciliation_state: 'admin_corrected',
+    manual_correction_reason: 'verified operator correction',
+    correction_admin_id: 'admin-1',
   };
 }

@@ -199,6 +199,50 @@ function assertOneSubject(events: readonly AttendanceEvent[]): void {
         'Attendance source reference must be a digest.',
       );
     }
+    assertCorrectionMetadata(event);
+  }
+}
+
+function assertCorrectionMetadata(event: AttendanceEvent): void {
+  const isCorrection =
+    event.source === 'admin_correction' && event.event_kind === 'manual_correction';
+  const reason = event.correction_reason;
+  const adminId = event.correction_admin_id;
+  const auditRef = event.audit_ref;
+  if (isCorrection) {
+    if (
+      reason === null ||
+      reason.trim() !== reason ||
+      reason.length < 3 ||
+      reason.length > 1_000 ||
+      adminId === null ||
+      adminId.trim() !== adminId ||
+      adminId.length === 0 ||
+      adminId.length > 512 ||
+      auditRef === null ||
+      auditRef.trim() !== auditRef ||
+      auditRef.length === 0 ||
+      auditRef.length > 512
+    ) {
+      throw new EmbeddedClassroomError(
+        'invalid_contract',
+        'Attendance correction metadata must be canonical and P22-compatible.',
+      );
+    }
+    return;
+  }
+  if (
+    event.source === 'admin_correction' ||
+    event.event_kind === 'manual_correction' ||
+    event.correction_intervals.length > 0 ||
+    reason !== null ||
+    adminId !== null ||
+    auditRef !== null
+  ) {
+    throw new EmbeddedClassroomError(
+      'invalid_contract',
+      'Only an audited Admin correction may carry attendance correction metadata.',
+    );
   }
 }
 
@@ -233,7 +277,10 @@ function emptyProjection(prior: AttendanceProjection | null, now: Date): Attenda
 }
 
 function compareEvent(left: AttendanceEvent, right: AttendanceEvent): number {
-  return instant(left.observed_at) - instant(right.observed_at);
+  return (
+    instant(left.observed_at) - instant(right.observed_at) ||
+    left.attendance_event_id.localeCompare(right.attendance_event_id)
+  );
 }
 
 function instant(value: string): number {

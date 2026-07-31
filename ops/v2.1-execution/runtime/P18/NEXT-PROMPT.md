@@ -16,14 +16,13 @@ READY digest: `565882ee24deefdc5bc3e242e62548867596e4573a9e6ee7961991c66aa4b47d`
 Eight-path ceiling digest:
 `1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a`
 
-Verify the remote branch equals the local atomic claim checkpoint. Implement
-only the exact live READY correction in the five authorized source/test files.
-Keep every scope/account/class/household/role/source/correction identity
-server-owned; do not edit control, migrations, composers, config, barrels,
-steward requests, integration, candidate, provider, deployment, DNS, send,
-charge, or customer state.
+Verify the remote branch contains atomic claim head
+`8c48f3218c8e10aeab542fb478e87f13433f12c6` and the subsequent exact
+eight-path implementation checkpoint. Do not change implementation semantics
+unless a focused check reproduces an in-scope failure.
 
-Run focused tests, workspace typecheck, focused lint/format, YAML, diff,
-secret, migration-inventory, and exact-scope checks. Release the lease in the
-P18 runtime triplet, commit, push normally, and verify local/tracking/live
-equality. Effects must remain `0/0/0`.
+Run the remaining YAML, diff, secret, migration-inventory, exact-scope, digest,
+and equality checks. Release lease
+`94b15518-5638-4025-89b1-eabd2d4da07a` only in the P18 runtime triplet,
+commit, push normally, and verify local/tracking/live equality. Effects must
+remain `0/0/0`.

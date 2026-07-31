@@ -25,7 +25,7 @@ dependency_heads:
     source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
     server_registration_request_raw_sha256: f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516
 status: claimed
-phase: P18_postcommit_attendance_projection_callback_atomic_claim
+phase: P18_postcommit_attendance_projection_callback_implementation_verified
 claimed_by: codex-p18-projection-callback-267308b4
 claim_time: '2026-07-31T10:47:41Z'
 claim_id: 267308b4-66fa-4910-8597-00999c58a856
@@ -33,7 +33,7 @@ writer_slot: EMBEDDED_CLASSROOM
 writer_slot_lease_id: 94b15518-5638-4025-89b1-eabd2d4da07a
 lease_issued_at: '2026-07-31T10:20:00Z'
 lease_expires_at: '2026-07-31T12:20:00Z'
-last_heartbeat_at: '2026-07-31T10:47:41Z'
+last_heartbeat_at: '2026-07-31T10:56:59Z'
 lease_released_at: null
 controller_authorization_sha: ddd36a461481504219ac663cf464417eb2e6658b
 state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
@@ -42,11 +42,14 @@ authorized_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52
 completed_steps:
   - Fetched and verified live control ddd36a461481504219ac663cf464417eb2e6658b and exact integration, P18, and P22 task refs.
   - Verified the exact unexpired claim, sole EMBEDDED_CLASSROOM lease, absent target remote branch, clean exact start SHA, package/task/context/prompt/source digests, locked manifest, and eight-path ceiling.
+  - Created the exact remote task branch at runtime-triplet-only atomic claim head 8c48f3218c8e10aeab542fb478e87f13433f12c6.
+  - Implemented the mandatory server-owned AttendanceProjectionChangePort callback after COMMIT, exact replay repair without a projection write, conflict/stale rollback without callback, deterministic correction ordering, and P22-compatible metadata/binding validation.
+  - Passed 25 focused repository/domain assertions, workspace typecheck, and focused ESLint and Prettier.
 remaining_steps:
-  - Atomically create the remote branch at this runtime-triplet-only claim checkpoint.
-  - Implement and verify the mandatory post-COMMIT attendance projection callback and replay/correction invariants.
+  - Push this exact eight-path implementation checkpoint.
+  - Run final YAML, diff, secret, migration-inventory, exact-scope, digest, and equality checks.
   - Release the lease in the terminal runtime triplet, commit, push, and verify local/tracking/live equality.
-next_action: Push this sole-parent runtime-triplet claim checkpoint, then implement the narrower live READY correction without editing control or any path outside the exact eight-path ceiling.
+next_action: Push this verified implementation checkpoint, run terminal hygiene and exact-scope checks, then release the exact lease in the P18 runtime triplet and push the ready-for-review final.
 requirements:
   OTV2-CLASSROOM-078: correction_in_progress
 acceptance_cases:
@@ -55,6 +58,11 @@ changed_paths:
   - ops/v2.1-execution/runtime/P18/HANDOFF.md
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
+  - packages/contracts/src/classroom/embedded/index.ts
+  - packages/db/src/classroom/attendance/repository.test.ts
+  - packages/db/src/classroom/attendance/repository.ts
+  - packages/domain/src/classroom/embedded/attendance.ts
+  - packages/domain/src/classroom/embedded/embedded-classroom.test.ts
 external_effects:
   authority: none
   attempted: 0

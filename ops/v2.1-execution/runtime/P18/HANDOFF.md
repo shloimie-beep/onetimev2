@@ -36,3 +36,33 @@ deterministic correction ordering, and pre-COMMIT P22-compatible validation.
 ## External effects
 
 Authority `none`; attempted `0`, succeeded `0`, reconciled `0`.
+
+## Implementation checkpoint
+
+Atomic claim head `8c48f3218c8e10aeab542fb478e87f13433f12c6` created the
+remote branch before source work. The five authorized source/test paths now
+implement the complete correction:
+
+- `AttendanceProjectionChangePort` is a mandatory PostgreSQL factory
+  dependency and receives only the three-dimensional P18 scope, occurrence,
+  Student, stored source event ID/digest, and stored correction
+  audit/reason/Admin fields or null.
+- PostgreSQL `RETURNING` or an exact `FOR SHARE` replay read supplies callback
+  identity; request-only account, class, household, role, source, and
+  correction identity cannot enter the payload.
+- New evidence writes its projection and commits before callback. Callback
+  failure propagates after commit; exact replay performs no projection write,
+  commits, and re-invokes the callback.
+- Changed replay and genuinely stale new evidence roll back and invoke no
+  callback. An older exact event after a successor remains a no-write callback
+  success.
+- Correction history uses observed time ascending, then attendance event ID
+  ascending, and the final row. Canonical reason/audit/Admin metadata and exact
+  projection/event binding are validated before commit.
+
+Focused repository/domain tests pass 25/25. Workspace typecheck and focused
+ESLint/Prettier pass. Effects remain `0/0/0`.
+
+The exact next action is to push this implementation checkpoint, run terminal
+hygiene and scope/digest checks, release the lease in the runtime triplet, and
+push the ready-for-review final.
