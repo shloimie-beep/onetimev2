@@ -1,34 +1,36 @@
 MODEL: GPT-5.6-SOL
-REASONING: HIGH
+REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: REVIEW
+MODE: START_OR_RESUME
 
-Review corrected One Time v2.1 task P22 at terminal `ready_for_review`.
+Resume P22 only after C00 has consumed the exact atomic authority-successor
+claim head and issued separate substantive authority.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-p22-learning-engagement
-Corrected implementation head: 459e9187500477312a69542fc2b1e7d2fc552dd3
+Expected pre-claim head: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+Authorized integration/evidence SHA: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
 Task packet: ops/v2.1-execution/tasks/P22.yaml
 Task context: ops/v2.1-execution/contexts/P22-CONTEXT.md
 Task state: ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
 Handoff: ops/v2.1-execution/runtime/P22/HANDOFF.md
 
-Fetch remote refs and derive the final metadata head from the P22 branch. Verify
-reconciled control ddef233830979fd2a0e2d3a146bdd389b23a9c84, correction
-claim e2ac53ae-128f-4d0c-b9a2-e74d05858f29, and corrected artifact digest
-2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967.
+Atomic claim authority binds containing controller
+8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73, controller state basis
+cc90f922663405d883a798db8d4278ef803bb7cb, READY digest
+49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051,
+claim a54f8667-d95d-415c-89ac-a6ac824775aa, writer
+codex-p22-authority-successor-a54f8667, and sole LEARNING_ENGAGEMENT lease
+d20c0e9b-03a0-4ca1-a555-394fad6b2df2 expiring
+2026-07-31T07:06:00Z.
 
-Review these exact corrections:
+Before any further write, fetch remote refs and verify C00 consumed the exact
+pushed claim head, local and remote equal it, the lease remains valid, and no
+foreign writer or path collision exists. Continue only under the exact new
+READY phase and path ceiling C00 publishes.
 
-1. Admin question and attendance mutations require account/product scope and
-   assignment to the record's class.
-2. Published class questions expose only the five sanitized projection fields
-   to authenticated Admin/Student members assigned to the exact class.
-3. approvedQuestionCount counts only approved_for_class/published, while
-   answered_private still qualifies Curious recognition exactly once. Its
-   rolling timestamp is first approval/publication, and publication never
-   refreshes an earlier approval.
-
-The LEARNING_ENGAGEMENT lease is released. Do not resume task-local writes
-without fresh C00 authority. I36/F02 may fulfill P22-registration-001 and
-P22-migration-001. No external effect is authorized.
+This atomic checkpoint authorizes no product, test, migration, registration,
+successor-request, provider, deployment, DNS, live database, send, charge, or
+external-effect work. Preserve migration 2251 as the sole attendance write
+authority and preserve immutable P22-migration-001 and P22-registration-001
+byte-for-byte unless later authority explicitly says otherwise.

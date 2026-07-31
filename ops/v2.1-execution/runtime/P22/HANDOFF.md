@@ -1,66 +1,56 @@
-# P22 Corrected Ready-for-Review Handoff
+# P22 Atomic Authority-Successor Claim Handoff
 
 ## Identity
 
 - Branch: `codex/v21-p22-learning-engagement`
-- Correction claim checkpoint:
-  `0430569088aeb4f244e5540dddf778b72525bc64`
-- Corrected implementation SHA before this metadata commit:
-  `459e9187500477312a69542fc2b1e7d2fc552dd3`
-- Corrected implementation artifact digest:
-  `2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967`
-- Reconciled containing control:
-  `ddef233830979fd2a0e2d3a146bdd389b23a9c84`
-- Claim: `e2ac53ae-128f-4d0c-b9a2-e74d05858f29`
+- Exact existing head/parent:
+  `4d1b6dfc31d2b46f6cd530792816953d2a767fc2`
+- Containing controller:
+  `8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73`
+- Controller state basis:
+  `cc90f922663405d883a798db8d4278ef803bb7cb`
+- Authorized integration/evidence SHA:
+  `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`
+- READY digest:
+  `49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051`
+- Claim:
+  `a54f8667-d95d-415c-89ac-a6ac824775aa`
+- Writer:
+  `codex-p22-authority-successor-a54f8667`
 - LEARNING_ENGAGEMENT lease:
-  `9fd6a3b7-decc-454a-9a2e-953aaaebfe63`, released at
-  `2026-07-29T04:18:18Z` for terminal `ready_for_review`.
+  `d20c0e9b-03a0-4ca1-a555-394fad6b2df2`
+- Lease issued / expiry:
+  `2026-07-31T05:06:00Z` / `2026-07-31T07:06:00Z`
+- Phase scope:
+  `P22_learning_engagement_authority_successor_atomic_claim_only`
+- This checkpoint head: derive with `git rev-parse HEAD`; C00 records the
+  observed pushed remote head.
 
-## Correction completed
+## Claim verification
 
-Admin question transitions, recognition corrections, attendance recording, and
-attendance corrections now require assignment to the record's exact class in
-addition to account/product scope. Direct cross-class mutation tests fail
-closed.
+The fetched controller and P22 remote branch matched the dispatch exactly. The
+canonical P22 READY payload recomputed to the recorded digest and binds the
+exact existing head, branch, claim, writer, sole writer lease, authorized
+integration/evidence SHA, locked task/context/package inputs, and zero effect
+locks.
 
-Class members receive a sanitized published-question projection containing
-only `questionId`, `classId`, approved question text, answer, and
-`publishedAt`. It exposes no Student, household, recognition, transition, or
-private moderation metadata and denies cross-class reads.
+## Preserved implementation and steward state
 
-`approvedQuestionCount` now counts only `approved_for_class` and `published`
-questions. First `answered_private` or approval still produces exactly one
-Curious Learner recognition event, and later approval/publication remains
-deduplicated. The rolling-window timestamp is the first transition to
-`approved_for_class` or `published`: an earlier private answer does not
-backdate leaderboard eligibility, and later publication does not refresh an
-old approval into the window.
-
-## Verification
-
-- Focused Vitest: 11/11 passed across domain and service, including direct
-  cross-class question mutation, attendance correction, no-repository-save,
-  publication projection, and leaderboard state/time-basis tests.
-- Full workspace typecheck passed.
-- Focused ESLint and Prettier passed.
-- `git diff --check` passed.
-- Repository secret scan passed across 2,748 text files.
-
-## Scope and steward work
-
-The correction changes only the learning contract, domain/test, server service,
-`P22-registration-001`, and the three P22 runtime files.
-`P22-registration-001` now explicitly requests class-assigned registration of
-the sanitized projection. No migration, central composer, root barrel,
-manifest, lockfile, provider registry, or foreign runtime path changed.
-
-## Effects
-
-External authority is none; attempted/succeeded/reconciled `0/0/0`. No live or
-provider effect occurred.
+No product, test, migration, registration, or successor-request work was
+performed. The corrected implementation remains
+`459e9187500477312a69542fc2b1e7d2fc552dd3` with artifact digest
+`2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967`.
+The immutable `P22-migration-001` and `P22-registration-001` request bytes are
+unchanged. This checkpoint changes only `TASK-STATE.yaml`, `HANDOFF.md`, and
+`NEXT-PROMPT.md` in the P22 runtime directory.
 
 ## Next action
 
-Review corrected implementation `459e9187`, then fulfill
-`P22-migration-001` and `P22-registration-001` without weakening the corrected
-class or publication boundaries.
+Push and report this exact sole-parent atomic claim, then stop. Product and
+successor-request work may begin only after C00 consumes the exact pushed claim
+head and explicitly resumes P22 under separate authority.
+
+## Effects
+
+Authority none; attempted/succeeded/reconciled `0/0/0`. The
+LEARNING_ENGAGEMENT lease remains held for C00 reconciliation.

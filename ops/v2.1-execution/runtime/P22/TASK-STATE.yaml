@@ -40,33 +40,32 @@ dependency_heads:
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
     task_packet_digest: 49f22b90f9dad8292f306513e6b1f009d3dfa489091efdc83672109018fa943b
     task_context_digest: db8e35e981fa83a06a032d425761e4cf96d5ba287f271bc922472a2b9fef6408
-status: ready_for_review
-phase: review
+status: claimed
+phase: P22_learning_engagement_authority_successor_atomic_claim_only
 claim_mode: resume_existing_branch
-claimed_by: codex-p22-worker-e2ac53ae
-claim_time: '2026-07-29T04:05:39Z'
-claim_id: e2ac53ae-128f-4d0c-b9a2-e74d05858f29
-claim_released_at: '2026-07-29T04:18:18Z'
+claimed_by: codex-p22-authority-successor-a54f8667
+claim_time: '2026-07-31T05:39:21Z'
+claim_id: a54f8667-d95d-415c-89ac-a6ac824775aa
 writer_slot_leases:
   - slot: LEARNING_ENGAGEMENT
-    lease_id: 9fd6a3b7-decc-454a-9a2e-953aaaebfe63
-    lease_issued_at: '2026-07-29T04:00:52Z'
-    lease_expires_at: '2026-07-29T05:00:52Z'
-    state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
-    phase_scope: class_authorization_publication_and_leaderboard_correction_claim_only
-    released_at: '2026-07-29T04:18:18Z'
-    release_reason: terminal_ready_for_review
-lease_expires_at: '2026-07-29T05:00:52Z'
-last_heartbeat_at: '2026-07-29T04:18:18Z'
-controller_authorization_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
-resume_containing_control_sha: 71df400bd85cdca40b4eb0e01fc749f362e3d0e8
+    lease_id: d20c0e9b-03a0-4ca1-a555-394fad6b2df2
+    lease_issued_at: '2026-07-31T05:06:00Z'
+    lease_expires_at: '2026-07-31T07:06:00Z'
+    state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+    phase_scope: P22_learning_engagement_authority_successor_atomic_claim_only
+lease_expires_at: '2026-07-31T07:06:00Z'
+last_heartbeat_at: '2026-07-31T05:39:21Z'
+controller_authorization_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
+resume_containing_control_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
 reconciled_control_sha: ddef233830979fd2a0e2d3a146bdd389b23a9c84
-ready_entry_state_based_on_control_head_sha: 36451ec88e05bb64be0b27b8bc148166b6fe9837
-ready_entry_payload_digest: 40bb6fd8a17894f529f881d087427047427db54f573bc1cd5cfe36dc6000a2a0
-state_based_on_head_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
+ready_entry_state_based_on_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+ready_entry_payload_digest: 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051
+state_based_on_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
 last_implementation_commit_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
 implementation_artifact_digest: 2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967
 completed_steps:
+  - Fetched control 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73 and verified the P22 READY payload digest 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051, claim a54f8667-d95d-415c-89ac-a6ac824775aa, writer codex-p22-authority-successor-a54f8667, and sole LEARNING_ENGAGEMENT lease d20c0e9b-03a0-4ca1-a555-394fad6b2df2.
+  - Verified local and remote P22 head 4d1b6dfc31d2b46f6cd530792816953d2a767fc2 and authorized integration/evidence SHA d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9 before this claim-only checkpoint.
   - Verified reconciled control ddef233830979fd2a0e2d3a146bdd389b23a9c84 records exact correction claim head 0430569088aeb4f244e5540dddf778b72525bc64, claim, branch, and sole unexpired lease.
   - Fetched containing correction control 71df400bd85cdca40b4eb0e01fc749f362e3d0e8 and verified its sole parent/acquisition 36451ec88e05bb64be0b27b8bc148166b6fe9837.
   - Verified exact existing local/remote P22 head cad7259304253eff531307fecfc9de298fac1a34, resume claim e2ac53ae-128f-4d0c-b9a2-e74d05858f29, ready digest 40bb6fd8a17894f529f881d087427047427db54f573bc1cd5cfe36dc6000a2a0, and sole LEARNING_ENGAGEMENT lease 9fd6a3b7-decc-454a-9a2e-953aaaebfe63.
@@ -86,9 +85,9 @@ completed_steps:
   - Bound the rolling approvedQuestionCount timestamp to the first approved_for_class or published transition, never an earlier private answer and never refreshed by later publication.
   - Added service-layer negative assertions proving cross-class question and attendance attempts perform no repository save; eleven focused assertions pass.
 remaining_steps:
-  - I36/F02 review and fulfill P22-migration-001 and the corrected P22-registration-001 before candidate integration.
-  - Candidate-bound staging and production evidence remains with downstream verification tasks.
-next_action: Review correction implementation 459e9187 and fulfill the two structured steward requests without semantic weakening.
+  - Push and report this exact three-file atomic authority-successor claim.
+  - Stop before product or successor-request work and await C00 reconciliation of the exact remote claim head.
+next_action: Push and report the atomic authority-successor claim, then stop until C00 consumes its exact remote head and explicitly resumes P22.
 requirements:
   OTV2-LEARNING-093: implementation_verified
   OTV2-LEARNING-094: implementation_verified
@@ -115,12 +114,6 @@ acceptance_cases:
   OTV2-LEARNING-238-QUESTION-DEDUPE: task_owned_assertions_passed
   OTV2-LEARNING-238-RECOGNITION-CONSENT: task_owned_assertions_passed
 changed_paths:
-  - apps/web/src/server/features/learning/service.test.ts
-  - apps/web/src/server/features/learning/service.ts
-  - packages/contracts/src/learning/index.ts
-  - packages/domain/src/learning/engagement.ts
-  - packages/domain/src/learning/engagement.test.ts
-  - ops/v2.1-execution/runtime/P22/steward-requests/P22-registration-001.yaml
   - ops/v2.1-execution/runtime/P22/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/P22/HANDOFF.md
   - ops/v2.1-execution/runtime/P22/NEXT-PROMPT.md
@@ -130,20 +123,14 @@ steward_requests:
   - P22-registration-001
 verification:
   commands_run:
-    - command: correction authorization and reconciled-control verification
-      result: passed; claim head 04305690 consumed by control ddef2338 with unchanged claim/lease
-    - command: npx vitest run packages/domain/src/learning/engagement.test.ts
-      result: passed together with server suite; eleven focused assertions including direct cross-class denials, no-save proofs, sanitized projection, and first-approval rolling-window calculation
-    - command: npm run typecheck
-      result: passed
-    - command: focused ESLint over corrected P22 TypeScript artifacts
-      result: passed
-    - command: focused Prettier over corrected P22 TypeScript/YAML artifacts
-      result: passed
-    - command: git diff --check
-      result: passed
-    - command: npm run secret:scan
-      result: passed across 2748 repository text files
+    - command: exact fetched control and task-branch head verification
+      result: passed; control 8b4d83ae and local/remote P22 head 4d1b6dfc match the dispatch
+    - command: canonical P22 READY payload digest recomputation
+      result: passed; computed and recorded digest both equal 49d6cfb5f77707dfae008065588d720bc32093e83aad982e8c0d71861cb40051
+    - command: claim, writer, sole lease, and authorized integration/evidence verification
+      result: passed; claim a54f8667, writer codex-p22-authority-successor-a54f8667, lease d20c0e9b, zero effect locks, and authorized SHA d89a0f38
+    - command: exact claim-only changed-path verification
+      result: passed before commit; only the three P22 runtime files changed
   known_baseline_failures: []
 external_effects:
   authority: none
@@ -151,4 +138,5 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers: []
-out_of_scope_findings: []
+out_of_scope_findings:
+  - Product and successor-request work is intentionally deferred until C00 reconciles this exact pushed atomic claim head.
