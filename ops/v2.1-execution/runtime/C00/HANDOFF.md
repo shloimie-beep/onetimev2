@@ -3642,3 +3642,31 @@ the containing checkpoint releases the controller lease at
 `2026-07-31T11:48:14Z`. Candidate remains null, provider locks remain
 unclaimed, effect locks remain empty, and no provider, deployment, DNS, send,
 charge, customer, or other external effect occurred.
+
+# F02 claim reconciled and seven-path migration continuation
+
+C00 independently accepted F02 claim checkpoint
+`216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e`, its sole parent
+`22ada24a0ade35e406b9d1b55cb65f396ea2162b`, and tree
+`e6c2981e94b9bf70c5ac4c9db72868b1c8f8433d`. Local, tracking, and live
+remote heads matched. The delta is exactly the F02 runtime triplet.
+
+Raw TASK, HANDOFF, and NEXT digests are `bb4569c9...`, `2b4a97c6...`, and
+`dd85fd20...`; raw-concatenation state/HANDOFF and runtime-triplet digests are
+`465135de885cdffa051d1e73f4c8ff293c452f5155228f80dac9f920da6b8a64`
+and `3d7d96e0ea0e3e169126c753e4b68005d4141ae31fa678b24d9e5d3f1384c537`.
+The three-path inventory, pair manifest, and triplet manifest are
+`8600be3f05604753011c7130e71afdcb2e7e748a34f218eabbff1e0348f05397`,
+`4791a595e0a3fa1b2adb53106fc3df236ee2b6e42ed5c819b529da3b7290cf70`,
+and `149c4b0c633ca71e1bdddc775ce19bb9c42820cc725d18194e00ef4a6046450a`.
+Canonical READY `8abdeb3c...`, proposal raw/blob `f1c23180...`/`d7c35dd2...`,
+migrations 2234-2253, request identities, and the protected 1,597-byte helper
+all matched; effects remain `0/0/0`.
+
+Acquisition-only control `70b12ea370e8430bc80c0943231af98a3f5e6265`
+authorizes direct continuation under the same claim `41a5ba44...`, writer,
+MIGRATION_AUTHORITY lease `c741bc95...`, and SCHEMA_CONTRACT lease
+`2c7b6d40...`. F02 may change only its proposal, runtime triplet, and
+migrations 2254-2256. P18 READY and its canonical digest remain unchanged.
+Candidate, provider, deployment, DNS, send, charge, customer, and external
+effect authority remain absent.

@@ -3199,3 +3199,48 @@ reconciles that claim and publishes a descendant continuation.
 Neither worker may apply a steward result, integrate, freeze a candidate,
 inspect or mutate a provider, deploy, change DNS, send, charge, activate a
 customer, or perform any external effect.
+
+# Current instruction: continue F02 migrations 2254-2256
+
+Resolve descendant control authorization
+`70b12ea370e8430bc80c0943231af98a3f5e6265` and exact reconciled F02 claim
+head `216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e`. Continue the same claim
+`41a5ba44-435f-454f-b157-c6059d4bbc37`, writer
+`codex-f02-migrations-2254-2256-41a5ba44`, MIGRATION_AUTHORITY lease
+`c741bc95-8fc2-4d4f-aaff-a76295580468`, and SCHEMA_CONTRACT lease
+`2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`, expiring
+`2026-07-31T13:28:40Z`.
+
+Create a disposable worktree from exact integration
+`392cc119b2df65f9bd38da8c4db36113f1add967`, merge exact claim head
+`216c983b...` as the second parent, and continue the existing F02 branch as a
+fast-forward descendant. Change exactly these seven paths:
+
+- `ops/v2.1-execution/runtime/F02/HANDOFF.md`
+- `ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml`
+- `ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/F02/TASK-STATE.yaml`
+- `packages/db/migrations/2254_v21_learning_engagement.sql`
+- `packages/db/migrations/2255_v21_student_actual_name.sql`
+- `packages/db/migrations/2256_v21_approved_school_configuration_authority.sql`
+
+The seven-path inventory digest is
+`a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966`.
+Allocate 2254 to immutable `P22-migration-002` raw/canonical/blob
+`0c00dcd0...`/`c44539cb...`/`b896e50b...`; 2255 to
+`P12-migration-001` `6f76b024...`/`9148d7bc...`/`92c17650...`; and 2256 to
+`P09-migration-002` `538d6509...`/`d9958a9d...`/`75cd8bb2...`.
+
+Preserve migrations 2234-2253 byte-for-byte and preserve the untracked
+`.codex-lane1-pglite.mjs` at 1,597 bytes with SHA-256 `11117a91...`. Apply
+all 87 migrations to a fresh disposable native PostgreSQL server, replay all
+87 as already applied, and run focused positive, negative, isolation,
+idempotency, concurrency, immutable-ledger, rollback, YAML, format, diff,
+secret, manifest, exact-scope, and zero-effect gates. PGlite is supplementary
+only. Do not touch a persistent/shared/staging/production database.
+
+Do not edit product or producer-request bytes, apply a central steward result,
+integrate, freeze a candidate, claim a provider/effect lock, inspect or mutate
+a provider, deploy, change DNS, send, charge, activate a customer, or perform
+an external effect. Release both leases, push one bounded terminal, and stop
+for independent C00 audit.

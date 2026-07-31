@@ -16,18 +16,19 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 52cb53061527b1df9b95029bcf211fe258609368
+controller_authorization_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
 next_action: >-
-  Dispatch P18 from held terminal e61aaeb3 under fresh claim 2ed4aaa7 for the exact seven-path stale-authority,
-  projection-write, and locale-independent ordering correction. Concurrently dispatch F02 from held terminal 22ada24a
-  under fresh claim 41a5ba44 for its exact runtime-triplet-only claim checkpoint; after C00 independently reconciles
-  that checkpoint, continue the same F02 claim from integration 392cc119 for migrations 2254 through 2256 and native
-  PostgreSQL proof. Candidate freeze, steward application, provider effects, deployment, DNS, sends, charges, customer
-  activation, and every external effect remain prohibited.
+  Continue F02 under reconciled claim 41a5ba44 and its existing MIGRATION_AUTHORITY and SCHEMA_CONTRACT leases. In a
+  disposable worktree rooted at integration 392cc119, merge claim checkpoint 216c983b as the second parent, then author
+  only the allocation proposal, migrations 2254 through 2256, and the F02 runtime triplet. Preserve migrations
+  2234-2253 and the protected untracked helper; require a fresh native PostgreSQL apply, replay, and focused probes.
+  P18 remains independently active under its disjoint READY while C00 audits its eventual terminal. Candidate freeze,
+  steward application, provider effects, deployment, DNS, sends, charges, customer activation, and every external
+  effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
-  status: atomic_claim_ready
+  status: claimed_substantive_migrations_authorized
   branch: codex/v21-lane1-migration-correction
   source_head_sha: 26234c47e5bc92f4d3392d77d98bc3a758d25189
   admitted_acknowledgment_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
@@ -62,12 +63,23 @@ production_completion_lanes:
   terminal_state_handoff_digest: 85521b85e692a2fb28d4013e49b87ab71e276bd3cb13e4f73dbc0d611a3a3733
   terminal_runtime_triplet_digest: b0f6ba3cfc0bcc2b7345152253f5552dc921f44fe90c186765d0e5de17e81973
   terminal_leases_released_at: '2026-07-31T04:48:40Z'
-  active_phase_scope: migration_2254_2256_P22_P12_P09_atomic_claim_only
-  scope: exact_F02_runtime_triplet_first_push_only_then_C00_reconciliation
+  successor_atomic_claim_head_sha: 216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e
+  successor_atomic_claim_parent_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+  successor_atomic_claim_tree_sha: e6c2981e94b9bf70c5ac4c9db72868b1c8f8433d
+  successor_atomic_claim_task_raw_sha256: bb4569c90cf57a4cd6d805328727ba73f305775c0c234cf44f219831e72f8399
+  successor_atomic_claim_handoff_raw_sha256: 2b4a97c61e66f041e0a64ebd5d53a74ada3ec2c990a6328862c2cebd655884d9
+  successor_atomic_claim_next_raw_sha256: dd85fd2011f54ce2fe256cb8fef87dabc66130d2e4acfe07413f4e0fef2d06d1
+  successor_atomic_claim_state_handoff_digest: 465135de885cdffa051d1e73f4c8ff293c452f5155228f80dac9f920da6b8a64
+  successor_atomic_claim_runtime_triplet_digest: 3d7d96e0ea0e3e169126c753e4b68005d4141ae31fa678b24d9e5d3f1384c537
+  successor_atomic_claim_path_inventory_digest: 8600be3f05604753011c7130e71afdcb2e7e748a34f218eabbff1e0348f05397
+  successor_atomic_claim_pair_manifest_digest: 4791a595e0a3fa1b2adb53106fc3df236ee2b6e42ed5c819b529da3b7290cf70
+  successor_atomic_claim_triplet_manifest_digest: 149c4b0c633ca71e1bdddc775ce19bb9c42820cc725d18194e00ef4a6046450a
+  active_phase_scope: migration_2254_2256_P22_P12_P09
+  scope: exact_seven_path_proposal_three_migrations_and_F02_runtime_triplet
   conflict_gate: >-
-    The ordered P21/P22 source release is complete at integration 392cc119. F02 must first push only its runtime
-    triplet under the fresh claim; proposal and SQL authority remain withheld until C00 independently reconciles that
-    checkpoint.
+    C00 independently reconciled the exact runtime-triplet claim checkpoint at 216c983b. Proposal and SQL authority are
+    now bounded to the recorded seven paths under the same claim and leases; no other file, steward application,
+    persistent database, candidate, provider, deployment, or external effect is authorized.
   successor_authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
   expected_existing_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
   successor_claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
@@ -243,7 +255,7 @@ production_completion_lanes:
   scope: ancestry_preserving_P21_then_P22_source_only_plus_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+  state_based_on_control_head_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
   authorized_start_integration_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
@@ -260,12 +272,13 @@ successor_dispatch:
   P21_P22_source_atomic_claim_reconciled_at: '2026-07-31T10:57:00Z'
   P21_P22_source_microbatch_terminal_reconciled_at: '2026-07-31T11:28:40Z'
   P18_successor_and_F02_atomic_claim_dispatched_at: '2026-07-31T11:28:40Z'
+  F02_atomic_claim_reconciled_at: '2026-07-31T12:16:00Z'
   lease_issued_at: '2026-07-31T11:28:40Z'
   lease_expires_at: '2026-07-31T13:28:40Z'
   ready_queue_published: true
   F02:
-    status: atomic_claim_ready
-    phase: migration_2254_2256_P22_P12_P09_atomic_claim_only
+    status: claimed
+    phase: migration_2254_2256_P22_P12_P09
     branch: codex/v21-lane1-migration-correction
     authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
     expected_existing_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
@@ -282,7 +295,27 @@ successor_dispatch:
     writer_lease_expires_at: '2026-07-31T13:28:40Z'
     ready_entry_payload_digest: 8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21
     authorized_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
-    first_push_scope: exact_F02_runtime_triplet_only
+    claim_checkpoint_head_sha: 216c983bbdfffc5e3e09f4fa69e5fe5f3d46415e
+    claim_checkpoint_parent_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+    claim_checkpoint_tree_sha: e6c2981e94b9bf70c5ac4c9db72868b1c8f8433d
+    claim_checkpoint_task_raw_sha256: bb4569c90cf57a4cd6d805328727ba73f305775c0c234cf44f219831e72f8399
+    claim_checkpoint_handoff_raw_sha256: 2b4a97c61e66f041e0a64ebd5d53a74ada3ec2c990a6328862c2cebd655884d9
+    claim_checkpoint_next_raw_sha256: dd85fd2011f54ce2fe256cb8fef87dabc66130d2e4acfe07413f4e0fef2d06d1
+    claim_checkpoint_state_handoff_digest: 465135de885cdffa051d1e73f4c8ff293c452f5155228f80dac9f920da6b8a64
+    claim_checkpoint_runtime_triplet_digest: 3d7d96e0ea0e3e169126c753e4b68005d4141ae31fa678b24d9e5d3f1384c537
+    claim_checkpoint_path_inventory_digest: 8600be3f05604753011c7130e71afdcb2e7e748a34f218eabbff1e0348f05397
+    claim_checkpoint_pair_manifest_digest: 4791a595e0a3fa1b2adb53106fc3df236ee2b6e42ed5c819b529da3b7290cf70
+    claim_checkpoint_triplet_manifest_digest: 149c4b0c633ca71e1bdddc775ce19bb9c42820cc725d18194e00ef4a6046450a
+    claim_checkpoint_scope: exact_F02_runtime_triplet_only
+    continuation_scope: exact_seven_paths
+    authorized_paths:
+      - ops/v2.1-execution/runtime/F02/HANDOFF.md
+      - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+      - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+      - packages/db/migrations/2254_v21_learning_engagement.sql
+      - packages/db/migrations/2255_v21_student_actual_name.sql
+      - packages/db/migrations/2256_v21_approved_school_configuration_authority.sql
     migration_plan:
       2254:
         request_id: P22-migration-002
