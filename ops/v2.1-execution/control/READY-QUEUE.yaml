@@ -5,12 +5,12 @@ status: operational
 ready:
   - task_id: I36
     status: ready
-    phase: batch_C_repository_provider_highlevel_communications_workflow_registries
+    phase: batch_A_server_client_routes_barrels_and_candidate_safe_policy_binding
     branch: codex/v21-integration
     claim_mode: new
-    state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-    authorized_start_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
-    expected_existing_head: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+    state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+    authorized_start_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+    expected_existing_head: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,131 +19,219 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-        control_state_canonical_digest: 0d847203bb57c715e8069db9be0ad022468ce20ac0631264acfb960e7e41c81e
+        observed_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+        control_state_canonical_digest: b8f24b470f017c5e7a5f4e817d7f2be800685104e6ea29ffbb0a1975ed187c8e
       I36:
-        required_state: batch_B_independently_accepted
-        observed_state: batch_B_independently_accepted
-        remote_integration_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
-        terminal_parent_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
-        terminal_tree_sha: 291671cdcd0b8cf23ed3e891ea2c1056b7ec15d2
-        terminal_state_handoff_digest: 95b1f84875d1447fc15a5de6213385b4b00d9198f3b331987413902c6ca26162
-        terminal_runtime_triplet_digest: 38d867a9f83bc31e8af9dd5fbf11687c0646b972d1efc4e25d027567719c049c
-        terminal_triplet_manifest_digest: 62ac5e4e74fa80dddd19b27230c66ab36e108b6ef9fc778f1a391ffad2689fb1
-        product_manifest_digest: 6e61d2c285e88b694f57361b8702e6a28c4ce5490b3e62e98812f4eba4dcc1ad
-        product_diff_sha256: b6e39d52f400a5e88b1a95ede125f1b0a6ff8a85a563876c23dd14d280421a3d
+        required_state: batch_C_independently_accepted
+        observed_state: batch_C_independently_accepted
+        remote_integration_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+        terminal_parent_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+        terminal_tree_sha: 00fb6d27c9453e5ab417e0c800f345262a5f1a49
+        terminal_state_handoff_digest: fd1dc34adc49529542e8c15e48e9dad2047bc88ecc3fd5bfcdfbedf732d219b8
+        terminal_runtime_triplet_digest: 2424b3c350beace08fce98444d1ac619548023766f6770d4ec8980bd59a85c92
+        terminal_triplet_manifest_digest: 7be63ed81edc3a12adfa76e4e6cad686b12c1f2f2f1907b8d4ae0b9943c651f8
+        product_manifest_digest: 43daa144d54ef17eaca127ea198788b4eec63e8f13e18580e036afaa426260bb
+        canonical_workflow_source_sha256: 06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339
         independent_review: passed_no_P1_or_P2
-        focused_tests: 48_passed
+        focused_tests: 87_passed
         changed_workspace_typecheck: zero_changed_path_diagnostics_four_unchanged_baselines
-        leases_released_at: '2026-07-31T18:09:01Z'
+        leases_released_at: '2026-07-31T18:52:05Z'
         external_effects: 0/0/0
-      P28:
-        required_state: canonical_workflow_registry_source_integrated
-        observed_state: canonical_workflow_registry_source_integrated
-        source_head_sha: a2025a768ae6e69a15ec5605379a9e359cf2deec
-      P29:
-        required_state: core_lifecycle_source_integrated
-        observed_state: core_lifecycle_source_integrated
-        source_head_sha: aa7b363812676afce8ac9ebd13f335e65551bb1f
-      P30:
-        required_state: campaigns_source_and_copy_prerequisite_integrated
-        observed_state: campaigns_source_and_copy_prerequisite_integrated
-        source_head_sha: 772d4783f82b7eb89a5c98d897601b444cd3c2f4
-        copy_registration_applied_commit_sha: 5b479ac0b682889ecc3bcf1b3f33aebcbd605d8f
+      P08:
+        required_state: authenticated_family_session_source_and_config_integrated
+        observed_state: authenticated_family_session_source_and_config_integrated
+        integration_ancestor_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+      P12:
+        required_state: source_migration_and_type_contract_closure_integrated
+        observed_state: source_migration_and_type_contract_closure_integrated
+        source_head_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
+        type_contract_source_head_sha: 3ad55dc1de45bb11ec7ead886d88af9f592f2c18
+      P09:
+        required_state: source_and_migration_integrated
+        observed_state: source_and_migration_integrated
+        source_head_sha: ce8df6e6d612dc935cb204fb7f7803489e90d740
+      P21_P22:
+        required_state: ordered_source_and_migrations_integrated
+        observed_state: ordered_source_and_migrations_integrated
+        source_microbatch_terminal_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
     immutable_request_bindings:
-      P28-registry-projection-001:
-        request_digest: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
-        source_path: ops/v2.1-execution/runtime/P28/steward-requests/P28-registry-projection-001.yaml
+      P08-auth-household-002:
+        request_digest: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+        source_path: ops/v2.1-execution/runtime/P08/steward-requests/P08-auth-household-002.yaml
         digest_kind: raw_git_blob_sha256
-        prior_stale_queue_digest: 62631c04bab8af8b09dcdd23087e9731cff0c23668d4c9f2f5cc21bb0980dfcf
-      P29-registry-projection-001:
-        request_digest: e42a3ef91712ae0852c4dfe516c260ba7112eeec2737668087af3d15816c5919
-        source_path: ops/v2.1-execution/runtime/P29/steward-requests/P29-registry-projection-001.yaml
+      P08-registration-001:
+        request_digest: 5958df286bf5a8213b4431709084b7fabe05ae8d6fdb1c2aa08d97db4f35409c
+        source_path: ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-001.yaml
         digest_kind: raw_git_blob_sha256
-      P30-registry-registration-001:
-        request_digest: 8c6b582f4265cf9f5cd0f51c302ea239c40d1c5ca3bfc27805c15bd699e52644
-        source_path: ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml
+      P08-registration-002:
+        request_digest: 0b0b82567be04624d0facf501dbc9d5fb418d0d86b79462f6220e8d8b56856d3
+        source_path: ops/v2.1-execution/runtime/P08/steward-requests/P08-registration-002.yaml
         digest_kind: raw_git_blob_sha256
+      P12-barrel-export-003:
+        request_digest: acd1cbb6689896bb2ab0c3cd26457dd013e93fbfd8c398e60fa1368a9ad0286b
+        source_path: ops/v2.1-execution/runtime/P12/steward-requests/P12-barrel-export-003.yaml
+        digest_kind: canonical_request_object_sha256
+      P12-server-registration-002:
+        request_digest: 1d3d64921721c91d57d0d81d6252f2d4b8af82212afd6c5e076168c7ed787939
+        source_path: ops/v2.1-execution/runtime/P12/steward-requests/P12-server-registration-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P12-client-route-002:
+        request_digest: 49021ac11df00c4f485f88661b4e5d6ca2c30c033269161e40a62adf458f1802
+        source_path: ops/v2.1-execution/runtime/P12/steward-requests/P12-client-route-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P09-barrel-export-002:
+        request_digest: 3a03a600a9872f05e48024d46306ef3f02d4d55ae37d3d6a0860279fe18c9fac
+        source_path: ops/v2.1-execution/runtime/P09/steward-requests/P09-barrel-export-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P09-server-registration-002:
+        request_digest: 1333935868c346eb3f2cd8eee1be49bdbfff9fe0ac94e350b32a9e606b7ba05a
+        source_path: ops/v2.1-execution/runtime/P09/steward-requests/P09-server-registration-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P09-client-route-002:
+        request_digest: 965fbeccfd9c29ae35fc4066dd406c057ba25b3e50e58d3b8faf1ecf88608695
+        source_path: ops/v2.1-execution/runtime/P09/steward-requests/P09-client-route-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P21-registration-003:
+        request_digest: ae1578783fbe71cbea7bab582eba29ffb84a736366f555c6c428b68ec52ccc82
+        source_path: ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-003.yaml
+        digest_kind: canonical_request_object_sha256
+      P22-barrel-export-002:
+        request_digest: 63fed12e43f8f6434bf6cd9d0a423957230cbd374a728239f5619a3edb1523df
+        source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-barrel-export-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P22-config-key-002:
+        request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+        source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P22-server-registration-002:
+        request_digest: 9cac829ad7441f3772e587a50bb30c984807b93e1df89db41948b5e3490700dc
+        source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-server-registration-002.yaml
+        digest_kind: canonical_request_object_sha256
+      P22-client-route-002:
+        request_digest: 95989c81c058107a97e7243676abf24b0a401381e79141bc26920047346ccf64
+        source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-client-route-002.yaml
+        digest_kind: canonical_request_object_sha256
     request_digest_semantics: >-
-      Raw Git-blob SHA-256 means SHA-256 of the exact LF Git object bytes at the authorized integration head. The prior
-      P28 queue digest is preserved only as stale evidence and grants no authority.
+      Reproduce every binding from exact Git bytes at the authorized integration head. Raw Git-blob SHA-256 hashes the
+      exact LF Git object bytes. Canonical request-object SHA-256 parses the YAML request object and hashes recursively
+      key-sorted compact UTF-8 JSON with separators ',' and ':', ensure_ascii=false, and no floating-point values.
     authorized_paths:
-      - integrations/highlevel/registry/current.json
-      - integrations/highlevel/registry/message-class-registry.yaml
-      - integrations/highlevel/registry/workflow-registry.yaml
-      - integrations/highlevel/v21/foundation/desired-state.test.ts
-      - integrations/highlevel/v21/foundation/desired-state.ts
-      - integrations/highlevel/v21/foundation/registry-source.test.ts
-      - integrations/highlevel/workflows.yaml
+      - .env.example
+      - apps/web/src/client/app/portal-entry.tsx
+      - apps/web/src/client/app/router/registry.ts
+      - apps/web/src/client/public/public-entry.ts
+      - apps/web/src/server/app.ts
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-      - packages/domain/src/communications/foundation/foundation.test.ts
-      - packages/domain/src/communications/foundation/workflow-fragment.ts
-      - scripts/highlevel/canonical-registry-data.ts
-      - scripts/highlevel/sync-workflow-control-projections.ts
-      - scripts/highlevel/validate-registry.ts
-      - scripts/highlevel/workflow-control-registry.ts
-      - scripts/highlevel/workflow-registry-source.ts
-    authorized_path_count: 17
-    authorized_path_inventory_digest: 59b418baa0e9067255dacd65bb8ce4e31144ce12330eb9a501526da89ba70ce7
+      - packages/config/src/index.ts
+      - packages/contracts/src/index.ts
+      - packages/contracts/src/portals/index.ts
+      - packages/db/src/index.ts
+      - packages/domain/src/index.ts
+      - scripts/build-public-pages.ts
+      - tests/e2e/landing-signup.spec.ts
+      - tests/integration/accounts/v21-family-parent-session-composition.test.ts
+      - tests/integration/admin-information-architecture-ui-contract.test.ts
+      - tests/integration/portals/portal-mount.test.ts
+      - tests/integration/public-metadata-runtime.test.ts
+      - tests/unit/config/runtime-classification.test.ts
+    authorized_path_count: 20
+    authorized_path_inventory_digest: 5c0744bb94b1d0173c9ce484db0064caa8e15d7e56375e34f9d175781825d6e2
+    product_path_count: 17
+    product_path_inventory_digest: bfe3ae0af6935db21ad476ff20b05139923b702004f04fae1a95206590671de4
     correction_directives:
       - >-
-        Reproduce the canonical READY digest and all three immutable request digests from exact Git bytes before editing.
-        Apply one dependency-ordered repository-only Batch C terminal: P28 projection reconciliation first, P29 core
-        lifecycle fragment registration second, and the repository-safe P30 campaign registry prerequisite third.
+        Reproduce the canonical READY digest and all fourteen immutable request digests from exact Git bytes before
+        editing. Apply one dependency-ordered repository-only Batch A terminal across only the exact paths above:
+        barrels and registration-neutral P22 first, fail-closed P12 config second, P12 server composition third,
+        longest-specific client matching and P12 workspace fourth, P09 public and protected Admin server routes fifth,
+        real generated and served signed-out /school sixth, then focused validation and one I36 runtime-triplet update.
       - >-
-        For P28, preserve workflow-registry.yaml as the canonical source, authorize OT-14 under torah_newsletter and
-        OT-15 under warm_enrollment_campaign, regenerate projections only through the canonical generator, and update
-        exact validator assertions. Preserve empty provider IDs and BLOCKED or DRAFT_WAITING_EXTERNAL truth.
+        P12 configuration must expose optional blank PARENT_STUDENT_SERVICE_ACCOUNT_VERSION and
+        PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE values, trim them, and require both or neither. Never invent
+        legal copy, a version, URI, or placeholder. When the exact pair is absent or partial, do not construct the write
+        repository and return the generic no-store unavailable response; only a later exact approved pair may enable it.
       - >-
-        For P29, register the exact twelve-key core lifecycle fragment, admit only canonical OT-02A and OT-02B syntax,
-        preserve exact sender, message-class, trigger, approval, audience, suppression, copy, cadence, exit, and billing
-        projection semantics, and keep every activation or broad audience gate fail-closed.
+        Apply P12 barrel-export-003, server-registration-002, and client-route-002 within that fail-closed boundary.
+        Apply P09 barrel-export-002, server-registration-002, and client-route-002 completely, including the real
+        signed-out /school artifact. Keep the public School route and protected Admin route composed in the same
+        apps/web/src/server/app.ts pass and preserve more-specific route matching before generic workspace matching.
       - >-
-        P30-registry-registration-001 remains blocked_by_a_later_exact_gate overall because runOt16Checkpoint belongs to
-        Batch A worker composition. Apply only its complete repository-safe registry/fragment prerequisite within the
-        exact paths above, preserve provider and activation blockers, and record the remaining Batch A gate without
-        marking the mixed request fully applied.
+        P08-auth-household-002 is satisfied only after the P12 mount plus merged browser and persistence verification.
+        P08-registration-001 is superseded by that authenticated-family successor. P08-registration-002 remains mixed:
+        family server/client composition may be satisfied here, but provider and billing worker composition stays
+        later-gated. Record exact immutable dispositions at the terminal; never overstate a partial request as applied.
       - >-
-        This authority permits no provider or infrastructure inspection or mutation, workflow publication or
-        activation, enrollment, send, contact creation, Student contact, WhatsApp action, billing or customer mutation,
-        candidate action, deployment, DNS change, or external effect. No effect lock is issued.
+        P21-registration-003 remains path-incomplete and requires a corrected successor. P22-barrel-export-002 may be
+        applied, and its config prerequisite is already repository-present, but P22 server-registration-002 and
+        client-route-002 remain path-incomplete and later-gated. P30-registry-registration-001 remains blocked at durable
+        job adapters; do not touch P21/P22 server composition or P30 worker composition in this batch.
       - >-
-        Validate only changed bytes: focused registry, projection, foundation, P29, and P30 assertions; canonical
-        projection/registry checks; changed-file format, lint, typecheck, and relevant build if a changed package has one.
-        Do not run a repository-wide audit, native PostgreSQL replay, browser matrix, provider test, or full canonical
-        suite. Update the I36 runtime triplet once, release both leases, push one terminal, prove clean
-        local/tracking/live equality, and stop for one independent review.
+        This authority permits no provider or infrastructure inspection or mutation, publication, activation,
+        enrollment, send, contact creation, Student contact, WhatsApp action, billing or customer mutation, candidate
+        action, deployment, DNS change, or external effect. No effect lock is issued.
+      - >-
+        Validate only changed bytes with focused unit, integration, and browser assertions plus changed-file format,
+        lint, typecheck, and relevant build. Do not run a repository-wide audit, provider test, or full canonical suite.
+        Update the I36 runtime triplet once, release all five writer leases, push one terminal, prove clean
+        local/tracking/live equality, and stop for one independent terminal review.
     writer_slot_leases:
-      - slot: GHL_REGISTRY
-        lease_id: 381fddd0-1ac8-4172-a64e-8148bd207312
+      - slot: BARREL_REGISTRAR
+        lease_id: c9c7ba40-4433-4955-9db3-bf84619d492c
         holder_task_id: I36
-        holder_claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
-        holder_writer_id: codex-i36-batch-c-3cb0bfbd
-        state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-        lease_issued_at: '2026-07-31T18:25:00Z'
-        lease_expires_at: '2026-07-31T22:25:00Z'
-        phase_scope: batch_C_repository_provider_highlevel_communications_workflow_registries_only
+        holder_claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+        holder_writer_id: codex-i36-batch-a-b5a4907b
+        state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+        lease_issued_at: '2026-07-31T19:11:17Z'
+        lease_expires_at: '2026-08-01T01:11:17Z'
+        phase_scope: batch_A_exact_barrel_registration_only
+      - slot: CONFIG_DEPS
+        lease_id: 759a291e-2b36-46a5-882c-e4e25f984c45
+        holder_task_id: I36
+        holder_claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+        holder_writer_id: codex-i36-batch-a-b5a4907b
+        state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+        lease_issued_at: '2026-07-31T19:11:17Z'
+        lease_expires_at: '2026-08-01T01:11:17Z'
+        phase_scope: batch_A_candidate_safe_configuration_only
+      - slot: SERVER_COMPOSER
+        lease_id: cf656271-cc6b-4ad8-9d56-3eb4117751bd
+        holder_task_id: I36
+        holder_claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+        holder_writer_id: codex-i36-batch-a-b5a4907b
+        state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+        lease_issued_at: '2026-07-31T19:11:17Z'
+        lease_expires_at: '2026-08-01T01:11:17Z'
+        phase_scope: batch_A_P12_then_P09_server_composition_only
+      - slot: CLIENT_COMPOSER
+        lease_id: 0ed016e6-f69b-4e6f-b612-307e1b2e9390
+        holder_task_id: I36
+        holder_claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+        holder_writer_id: codex-i36-batch-a-b5a4907b
+        state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+        lease_issued_at: '2026-07-31T19:11:17Z'
+        lease_expires_at: '2026-08-01T01:11:17Z'
+        phase_scope: batch_A_longest_specific_client_and_public_route_composition_only
       - slot: RELEASE_INTEGRATOR
-        lease_id: 8f15ef5c-8157-4571-8f72-476869626cf2
+        lease_id: acf323b0-539a-4669-93cd-982f0f8495ce
         holder_task_id: I36
-        holder_claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
-        holder_writer_id: codex-i36-batch-c-3cb0bfbd
-        state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-        lease_issued_at: '2026-07-31T18:25:00Z'
-        lease_expires_at: '2026-07-31T22:25:00Z'
-        phase_scope: batch_C_repository_provider_highlevel_communications_workflow_registries_only
+        holder_claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+        holder_writer_id: codex-i36-batch-a-b5a4907b
+        state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+        lease_issued_at: '2026-07-31T19:11:17Z'
+        lease_expires_at: '2026-08-01T01:11:17Z'
+        phase_scope: batch_A_exact_twenty_path_terminal_only
     effect_lock_leases: []
-    claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
-    lease_issued_at: '2026-07-31T18:25:00Z'
-    lease_expires_at: '2026-07-31T22:25:00Z'
+    claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+    lease_issued_at: '2026-07-31T19:11:17Z'
+    lease_expires_at: '2026-08-01T01:11:17Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
+  I36: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

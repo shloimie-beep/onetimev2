@@ -482,16 +482,16 @@ items:
   request_digest: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
   requesting_task_id: P28
   kind: registration
-  status: assigned
+  status: applied
   assigned_steward: I36
-  target_checkpoint: I36_next_registry_projection_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  target_checkpoint: I36_Batch_C_repository_registry_terminal
+  acknowledged_by_task: true
+  acknowledgment_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  acknowledgment_state_handoff_digest: fd1dc34adc49529542e8c15e48e9dad2047bc88ecc3fd5bfcdfbedf732d219b8
+  applied_commit_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  result_record_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  evaluated_target_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+  result_digest: 479413531bfc1688ef2ff682e52894ae29cdbe91799624eb0f4fb2a20954fe27
   rejection_reason: null
 - request_id: P20-MIGRATION-001
   request_digest: e9be9aeb464daf586d3cdcdd7f3cd06b8e22cc93e6486d97055b3584853e41a1
@@ -587,16 +587,16 @@ items:
   request_digest: e42a3ef91712ae0852c4dfe516c260ba7112eeec2737668087af3d15816c5919
   requesting_task_id: P29
   kind: registration
-  status: assigned
+  status: applied
   assigned_steward: I36
-  target_checkpoint: I36_next_registry_projection_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
-  applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  target_checkpoint: I36_Batch_C_repository_registry_terminal
+  acknowledged_by_task: true
+  acknowledgment_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  acknowledgment_state_handoff_digest: fd1dc34adc49529542e8c15e48e9dad2047bc88ecc3fd5bfcdfbedf732d219b8
+  applied_commit_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  result_record_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  evaluated_target_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+  result_digest: d2f668abf2d40069b37eeb3a52e8ce51ec4117488ee43f390add1ba9ab4aa2cc
   rejection_reason: null
 - request_id: P30-copy-registration-001
   request_digest: 0fbfef8bc01adcbc6d683be66afc59ceb5e2981d69756edb5d2089f9d1dbc9cf
@@ -619,14 +619,14 @@ items:
   kind: registration
   status: assigned
   assigned_steward: I36
-  target_checkpoint: I36_next_shared_registration_checkpoint
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  target_checkpoint: I36_Batch_A_corrected_durable_worker_successor
+  acknowledged_by_task: true
+  acknowledgment_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  acknowledgment_state_handoff_digest: fd1dc34adc49529542e8c15e48e9dad2047bc88ecc3fd5bfcdfbedf732d219b8
   applied_commit_sha: null
-  result_record_head_sha: null
-  evaluated_target_head_sha: null
-  result_digest: null
+  result_record_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  evaluated_target_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+  result_digest: af407588fdaaa6ce65fe2428c6555f848bb592606c4d089e375efd0b001a74aa
   rejection_reason: null
 - request_id: P17-MIGRATION-001
   request_digest: 5c2aebcc34431f28956506660468c26834d87310fe6da2284502fc9597f01aaf

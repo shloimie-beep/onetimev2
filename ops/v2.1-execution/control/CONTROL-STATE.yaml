@@ -16,16 +16,15 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+controller_authorization_sha: 234a7c99d1c10075381749920d857f32c4c55c54
 next_action: >-
-  Execute exact repository-only I36 Batch C from independently accepted Batch B terminal 8c5b08cc under fresh
-  GHL_REGISTRY and RELEASE_INTEGRATOR leases. Reconcile P28 projections first, register the exact P29 lifecycle fragment
-  second, and apply only the repository-safe P30 campaign-registry prerequisite third. Preserve empty provider IDs,
-  blocked or draft provider truth, activation and broad-audience gates, and the later Batch A worker-composer residue.
-  Run only changed-byte registry/projection/foundation checks, update I36's runtime triplet once, release both leases,
-  push one terminal, and stop for one independent review. Batches A then D remain successors. Provider inspection or
-  mutation, publication, activation, enrollment, send, contact creation, candidate action, deployment, DNS, charge,
-  customer activation, and every external effect remain prohibited.
+  Execute exact repository-only I36 Batch A from independently accepted Batch C terminal b0cc23a0 under the five
+  bounded writer leases. Apply barrels first, fail-closed P12 policy binding second, P12 server then longest-specific
+  client composition third, and P09 public/protected server plus real signed-out /school composition fourth. Preserve
+  the later-gated P21/P22 server and P30 worker boundaries, never invent the legal evidence pair, run only changed-byte
+  focused validation, update I36's runtime triplet once, release all leases, push one terminal, and stop for one
+  independent review. Provider inspection or mutation, candidate action, deployment, DNS, billing, contact creation,
+  send, activation, and every external effect remain prohibited.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -120,7 +119,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: Batch_B_independently_accepted_Batch_C_dispatched
+  status: Batch_C_independently_accepted_Batch_A_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -133,7 +132,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+  expected_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
   Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
   Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
   Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
@@ -151,6 +150,22 @@ production_completion_lanes:
   Batch_C_lease_expires_at: '2026-07-31T22:25:00Z'
   Batch_C_ready_entry_payload_digest: 0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
   Batch_C_request_count: 3
+  Batch_C_lease_released_at: '2026-07-31T18:52:05Z'
+  Batch_C_terminal_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  Batch_C_terminal_parent_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+  Batch_C_terminal_tree_sha: 00fb6d27c9453e5ab417e0c800f345262a5f1a49
+  Batch_C_terminal_timestamp: '2026-07-31T21:55:05+03:00'
+  Batch_C_independent_review: passed_no_P1_or_P2
+  Batch_C_external_effects: 0/0/0
+  Batch_A_claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+  Batch_A_BARREL_REGISTRAR_lease_id: c9c7ba40-4433-4955-9db3-bf84619d492c
+  Batch_A_CONFIG_DEPS_lease_id: 759a291e-2b36-46a5-882c-e4e25f984c45
+  Batch_A_SERVER_COMPOSER_lease_id: cf656271-cc6b-4ad8-9d56-3eb4117751bd
+  Batch_A_CLIENT_COMPOSER_lease_id: 0ed016e6-f69b-4e6f-b612-307e1b2e9390
+  Batch_A_RELEASE_INTEGRATOR_lease_id: acf323b0-539a-4669-93cd-982f0f8495ce
+  Batch_A_lease_expires_at: '2026-08-01T01:11:17Z'
+  Batch_A_ready_entry_payload_digest: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
+  Batch_A_request_count: 14
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   P21_P22_source_atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
@@ -332,8 +347,8 @@ production_completion_lanes:
   scope: ancestry_preserving_P21_then_P22_source_only_plus_I36_runtime_triplet
   provider_effects: prohibited
 successor_dispatch:
-  state_based_on_control_head_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
-  authorized_start_integration_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+  state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+  authorized_start_integration_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
   terminal_claims_reconciled_at: '2026-07-31T05:06:00Z'
   P22_atomic_and_P10_terminal_reconciled_at: '2026-07-31T05:50:50Z'
   P22_renewal_checkpoint_reconciled_at: '2026-07-31T06:20:00Z'
@@ -365,8 +380,10 @@ successor_dispatch:
   P12_integration_type_contract_correction_dispatched_at: '2026-07-31T16:49:03Z'
   P12_integration_type_contract_correction_accepted_at: '2026-07-31T17:11:15Z'
   I36_type_contract_closure_dispatched_at: '2026-07-31T17:11:15Z'
-  lease_issued_at: '2026-07-31T16:23:33Z'
-  lease_expires_at: '2026-07-31T18:23:33Z'
+  I36_Batch_C_terminal_accepted_at: '2026-07-31T19:11:17Z'
+  I36_Batch_A_dispatched_at: '2026-07-31T19:11:17Z'
+  lease_issued_at: '2026-07-31T19:11:17Z'
+  lease_expires_at: '2026-08-01T01:11:17Z'
   ready_queue_published: true
   F02:
     status: integrated_and_reconciled
@@ -558,10 +575,10 @@ successor_dispatch:
     external_effects: 0/0/0
   I36:
     status: ready
-    phase: batch_C_repository_provider_highlevel_communications_workflow_registries
+    phase: batch_A_server_client_routes_barrels_and_candidate_safe_policy_binding
     branch: codex/v21-integration
-    expected_existing_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
-    remote_integration_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+    expected_existing_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+    remote_integration_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -575,12 +592,15 @@ successor_dispatch:
     prior_writer_id: codex-i36-p12-p09-source-586989e0
     prior_writer_lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
     prior_writer_lease_released_at: '2026-07-31T17:23:20Z'
-    claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
-    writer_id: codex-i36-batch-c-3cb0bfbd
-    GHL_REGISTRY_lease_id: 381fddd0-1ac8-4172-a64e-8148bd207312
-    RELEASE_INTEGRATOR_lease_id: 8f15ef5c-8157-4571-8f72-476869626cf2
-    writer_lease_expires_at: '2026-07-31T22:25:00Z'
-    ready_entry_payload_digest: 0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
+    claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+    writer_id: codex-i36-batch-a-b5a4907b
+    BARREL_REGISTRAR_lease_id: c9c7ba40-4433-4955-9db3-bf84619d492c
+    CONFIG_DEPS_lease_id: 759a291e-2b36-46a5-882c-e4e25f984c45
+    SERVER_COMPOSER_lease_id: cf656271-cc6b-4ad8-9d56-3eb4117751bd
+    CLIENT_COMPOSER_lease_id: 0ed016e6-f69b-4e6f-b612-307e1b2e9390
+    RELEASE_INTEGRATOR_lease_id: acf323b0-539a-4669-93cd-982f0f8495ce
+    writer_lease_expires_at: '2026-08-01T01:11:17Z'
+    ready_entry_payload_digest: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
     P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
     P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
     held_local_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
@@ -588,13 +608,13 @@ successor_dispatch:
     merged_typecheck_status: passed_zero_P12_or_P09_diagnostics_four_unchanged_baselines
     P21_source_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
     P22_source_merge_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
-    terminal_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
-    terminal_parent_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
-    terminal_tree_sha: 291671cdcd0b8cf23ed3e891ea2c1056b7ec15d2
-    terminal_state_handoff_digest: 95b1f84875d1447fc15a5de6213385b4b00d9198f3b331987413902c6ca26162
-    terminal_runtime_triplet_digest: 38d867a9f83bc31e8af9dd5fbf11687c0646b972d1efc4e25d027567719c049c
-    terminal_triplet_manifest_digest: 62ac5e4e74fa80dddd19b27230c66ab36e108b6ef9fc778f1a391ffad2689fb1
-    terminal_lease_released_at: '2026-07-31T18:09:01Z'
+    terminal_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+    terminal_parent_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+    terminal_tree_sha: 00fb6d27c9453e5ab417e0c800f345262a5f1a49
+    terminal_state_handoff_digest: fd1dc34adc49529542e8c15e48e9dad2047bc88ecc3fd5bfcdfbedf732d219b8
+    terminal_runtime_triplet_digest: 2424b3c350beace08fce98444d1ac619548023766f6770d4ec8980bd59a85c92
+    terminal_triplet_manifest_digest: 7be63ed81edc3a12adfa76e4e6cad686b12c1f2f2f1907b8d4ae0b9943c651f8
+    terminal_lease_released_at: '2026-07-31T18:52:05Z'
     merge_order: P12_then_P09
     P12_merge_id: f7c7150d-190c-4e29-a89e-618f625e36ee
     P09_merge_id: 3475d18d-e67d-4690-b456-fe88527d9bb1
@@ -671,7 +691,48 @@ successor_dispatch:
       P28_reproducible_raw_git_blob_sha256: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
     Batch_C_authorized_path_count: 17
     Batch_C_authorized_path_inventory_digest: 59b418baa0e9067255dacd65bb8ce4e31144ce12330eb9a501526da89ba70ce7
+    Batch_C_request_dispositions:
+      P28-registry-projection-001: applied
+      P29-registry-projection-001: applied
+      P30-registry-registration-001: blocked_by_a_later_exact_gate_repository_safe_prerequisite_applied
+    Batch_C_result_record_digests:
+      P28-registry-projection-001: 479413531bfc1688ef2ff682e52894ae29cdbe91799624eb0f4fb2a20954fe27
+      P29-registry-projection-001: d2f668abf2d40069b37eeb3a52e8ce51ec4117488ee43f390add1ba9ab4aa2cc
+      P30-registry-registration-001: af407588fdaaa6ce65fe2428c6555f848bb592606c4d089e375efd0b001a74aa
+    Batch_C_terminal_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+    Batch_C_terminal_parent_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+    Batch_C_terminal_tree_sha: 00fb6d27c9453e5ab417e0c800f345262a5f1a49
+    Batch_C_product_manifest_digest: 43daa144d54ef17eaca127ea198788b4eec63e8f13e18580e036afaa426260bb
+    Batch_C_canonical_workflow_source_sha256: 06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339
+    Batch_C_state_handoff_digest: fd1dc34adc49529542e8c15e48e9dad2047bc88ecc3fd5bfcdfbedf732d219b8
+    Batch_C_runtime_triplet_digest: 2424b3c350beace08fce98444d1ac619548023766f6770d4ec8980bd59a85c92
+    Batch_C_triplet_manifest_digest: 7be63ed81edc3a12adfa76e4e6cad686b12c1f2f2f1907b8d4ae0b9943c651f8
+    Batch_C_focused_tests: 87_passed
+    Batch_C_changed_typecheck: zero_changed_path_diagnostics_four_unchanged_baselines
+    Batch_C_independent_review: passed_no_P1_or_P2
+    Batch_C_leases_released_at: '2026-07-31T18:52:05Z'
     Batch_C_provider_boundary: repository_only_no_provider_inspection_mutation_publication_activation_enrollment_or_send
+    Batch_A_request_digests:
+      P08-auth-household-002: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+      P08-registration-001: 5958df286bf5a8213b4431709084b7fabe05ae8d6fdb1c2aa08d97db4f35409c
+      P08-registration-002: 0b0b82567be04624d0facf501dbc9d5fb418d0d86b79462f6220e8d8b56856d3
+      P12-barrel-export-003: acd1cbb6689896bb2ab0c3cd26457dd013e93fbfd8c398e60fa1368a9ad0286b
+      P12-server-registration-002: 1d3d64921721c91d57d0d81d6252f2d4b8af82212afd6c5e076168c7ed787939
+      P12-client-route-002: 49021ac11df00c4f485f88661b4e5d6ca2c30c033269161e40a62adf458f1802
+      P09-barrel-export-002: 3a03a600a9872f05e48024d46306ef3f02d4d55ae37d3d6a0860279fe18c9fac
+      P09-server-registration-002: 1333935868c346eb3f2cd8eee1be49bdbfff9fe0ac94e350b32a9e606b7ba05a
+      P09-client-route-002: 965fbeccfd9c29ae35fc4066dd406c057ba25b3e50e58d3b8faf1ecf88608695
+      P21-registration-003: ae1578783fbe71cbea7bab582eba29ffb84a736366f555c6c428b68ec52ccc82
+      P22-barrel-export-002: 63fed12e43f8f6434bf6cd9d0a423957230cbd374a728239f5619a3edb1523df
+      P22-config-key-002: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+      P22-server-registration-002: 9cac829ad7441f3772e587a50bb30c984807b93e1df89db41948b5e3490700dc
+      P22-client-route-002: 95989c81c058107a97e7243676abf24b0a401381e79141bc26920047346ccf64
+    Batch_A_request_count: 14
+    Batch_A_product_path_count: 17
+    Batch_A_product_path_inventory_digest: bfe3ae0af6935db21ad476ff20b05139923b702004f04fae1a95206590671de4
+    Batch_A_authorized_path_count: 20
+    Batch_A_authorized_path_inventory_digest: 5c0744bb94b1d0173c9ce484db0064caa8e15d7e56375e34f9d175781825d6e2
+    Batch_A_provider_boundary: repository_only_no_provider_or_infrastructure_inspection_or_effect
     effect_locks: []
     external_effects: 0/0/0
   P18:
