@@ -40,24 +40,24 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: batch_B_configuration_dependencies_and_shared_tests_complete
-claimed_by: codex-i36-batch-b-995fe313
-claim_time: '2026-07-31T17:40:18Z'
-claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
-lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
-lease_issued_at: '2026-07-31T17:40:18Z'
-lease_expires_at: '2026-07-31T21:40:18Z'
-lease_released_at: '2026-07-31T18:09:01Z'
-last_heartbeat_at: '2026-07-31T18:09:01Z'
-controller_authorization_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-latest_valid_observed_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-reconciled_state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-ready_authorization_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-ready_entry_state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
-ready_entry_payload_digest: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
+phase: batch_C_repository_provider_highlevel_communications_workflow_registries_complete
+claimed_by: codex-i36-batch-c-3cb0bfbd
+claim_time: '2026-07-31T18:25:00Z'
+claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
+lease_id: 8f15ef5c-8157-4571-8f72-476869626cf2
+lease_issued_at: '2026-07-31T18:25:00Z'
+lease_expires_at: '2026-07-31T22:25:00Z'
+lease_released_at: '2026-07-31T18:52:05Z'
+last_heartbeat_at: '2026-07-31T18:52:05Z'
+controller_authorization_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+latest_valid_observed_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+reconciled_state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+ready_authorization_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+ready_entry_state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+ready_entry_payload_digest: 0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
 claim_mode: new
-expected_existing_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
-lease_phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
+expected_existing_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+lease_phase_scope: batch_C_repository_provider_highlevel_communications_workflow_registries_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -3732,3 +3732,148 @@ batch_B_configuration_dependencies_and_shared_tests_terminal:
     nine immutable dispositions, exact scope, validation, both released leases,
     and zero effects. Continue only with separately authorized Batch C, then
     Batch A, then Batch D; do not infer successor authority from this terminal.
+batch_C_repository_provider_highlevel_communications_workflow_registries_terminal:
+  containing_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+  state_basis_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
+  exact_authorized_start_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
+  ready_entry_payload_digest: 0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
+  claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
+  writer_id: codex-i36-batch-c-3cb0bfbd
+  lease_issued_at: '2026-07-31T18:25:00Z'
+  lease_expires_at: '2026-07-31T22:25:00Z'
+  lease_released_at: '2026-07-31T18:52:05Z'
+  last_heartbeat_at: '2026-07-31T18:52:05Z'
+  writer_slot_leases_released:
+    - slot: GHL_REGISTRY
+      lease_id: 381fddd0-1ac8-4172-a64e-8148bd207312
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 8f15ef5c-8157-4571-8f72-476869626cf2
+  authorized_scope:
+    path_count: 17
+    path_inventory_digest: 59b418baa0e9067255dacd65bb8ce4e31144ce12330eb9a501526da89ba70ce7
+    changed_product_paths: 9
+    changed_runtime_paths: 3
+    total_changed_paths: 12
+  immutable_request_dispositions:
+    P28-registry-projection-001:
+      request_digest: e937075bbf330a19c8b002d2e190f1be0f47da02760e56d228e1a4c93e380867
+      digest_kind: raw_git_blob_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Preserved workflow-registry.yaml as the canonical source; confirmed the
+        exact OT-11, OT-12, OT-14, OT-15, and OT-B01 identities, states, empty
+        provider IDs, senders, and message classes; added exact validator/source
+        assertions; and regenerated current.json and workflows.yaml only through
+        the canonical generator. message-class-registry.yaml was already exact and
+        remains byte-identical, including OT-14 under torah_newsletter and OT-15
+        under warm_enrollment_campaign.
+      later_exact_gate: none
+    P29-registry-projection-001:
+      request_digest: e42a3ef91712ae0852c4dfe516c260ba7112eeec2737668087af3d15816c5919
+      digest_kind: raw_git_blob_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Registered the exact p29-core-lifecycle-v1 fragment by default from the
+        integrated twelve-key CORE_WORKFLOW_DEFINITIONS, reconciled every key to
+        canonical registry name, sender, message class, trigger, and desired
+        state, and preserved the complete approval, audience, suppression, copy,
+        cadence, exit, billing-projection, and zero-effect semantics. Fragment
+        validation now admits only canonical OT-02A and OT-02B split keys beyond
+        the existing numeric vocabulary and rejects arbitrary suffix variants.
+      later_exact_gate: none
+    P30-registry-registration-001:
+      request_digest: 8c6b582f4265cf9f5cd0f51c302ea239c40d1c5ca3bfc27805c15bd699e52644
+      digest_kind: raw_git_blob_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: >-
+        Completed the repository-safe prerequisite by registering the exact
+        P30-campaigns-v1 fragment for OT-14, OT-15, and OT-16 by default; validated
+        canonical registry, sender, copy, checkpoint, price, empty provider-ID,
+        DRAFT_WAITING_EXTERNAL, and MISSING truth; removed only stale
+        fragment-pending wording; regenerated projections canonically; and kept
+        every provider, copy/audience approval, readback, canary, activation,
+        enrollment, and send blocker fail-closed.
+      later_exact_gate: >-
+        Batch A must compose runOt16Checkpoint behind the real durable adult-only
+        worker job boundary with repository, suppression, eligibility, and email
+        adapters. The runner exists and its six direct assertions pass, but the
+        central worker runner registry is still empty and is outside Batch C paths.
+      source_owned_fragment_note: >-
+        P29-core-lifecycle.yaml and P30-campaigns.yaml were intentionally not
+        edited because they are outside the seventeen authorized paths. Their
+        request-era registration markers remain historical source-owned evidence;
+        the accepted domain definitions, canonical copy catalog, and canonical
+        registry provide the live repository registration inputs.
+  repository_truth:
+    canonical_workflow_source_sha256: 06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339
+    provider_id_map_unchanged: true
+    exact_empty_provider_ids:
+      - OT-11
+      - OT-12
+      - OT-14
+      - OT-15
+      - OT-16
+      - OT-B01
+    workflow_publications: 0
+    activations: 0
+    enrollments: 0
+    messages_sent: 0
+    contacts_created: 0
+    student_contacts: 0
+    whatsapp_actions: 0
+  product_artifact:
+    paths:
+      - path: integrations/highlevel/registry/current.json
+        raw_sha256: da675fabdf5fff2b5cb472d1e48353fb169e49bd3fa711504e08b46c1b0a4097
+      - path: integrations/highlevel/registry/workflow-registry.yaml
+        raw_sha256: 06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339
+      - path: integrations/highlevel/v21/foundation/desired-state.test.ts
+        raw_sha256: c828e55ad65c27f1e409a1686ca92108cc615c75436d2bfa24204101ec7f6f3d
+      - path: integrations/highlevel/v21/foundation/desired-state.ts
+        raw_sha256: 77a16c061d54f1e92024416f711493d38d341aff72b2303ee2a4636a89bbe09b
+      - path: integrations/highlevel/v21/foundation/registry-source.test.ts
+        raw_sha256: 8ce7b68c2de276ef8880540211eb040c62740f77e7da84c7f3723238e909b686
+      - path: integrations/highlevel/workflows.yaml
+        raw_sha256: 387c7ed84656065bfd2edea7d85109a17bc01d7a861d2d3b73a73d4bba9089fb
+      - path: packages/domain/src/communications/foundation/foundation.test.ts
+        raw_sha256: 5e8284c229a70565746838eda2fff632db496195608b601c0076dc8d5ccc1e7c
+      - path: packages/domain/src/communications/foundation/workflow-fragment.ts
+        raw_sha256: f4a3438aace6f57482271b439f259f3208f6f735fba6b9d9927cb4f697a3e3c4
+      - path: scripts/highlevel/validate-registry.ts
+        raw_sha256: 69408f475d4cb85fa9fa7124938d9ca4e98bc65e630a0cdecddbd74f9b1612e8
+    canonical_json_path_inventory_digest: 80ee47172e6b34cd29051d84d417975e6441cf822dd4ea70e9ca2cfb24c1d21a
+    canonical_json_manifest_digest: 43daa144d54ef17eaca127ea198788b4eec63e8f13e18580e036afaa426260bb
+    git_diff_sha256: c0d1518a00c436133fb49d59520bb6db1a0ee16ebf6a7e39d6b46074bfdcf866
+  completed_validation:
+    canonical_ready_digest: passed_0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
+    immutable_request_digests: passed_all_three_raw_git_blobs
+    focused_foundation_P28_P29_P30_vitest: passed_5_files_81_tests
+    focused_P30_runner_vitest: passed_1_file_6_tests
+    canonical_projection_check: passed
+    canonical_registry_check: passed_including_v21_exact_identity_resolution
+    focused_eslint: passed_zero_findings_6_typescript_files
+    focused_prettier: passed_9_product_paths
+    changed_workspace_typecheck: passed_zero_changed_path_diagnostics
+    unchanged_typecheck_baselines: exact_4_in_stripe_and_three_playwright_harnesses
+    relevant_changed_package_build: not_applicable_no_changed_package_has_a_build_script
+    diff_check: passed
+    exact_authorized_scope: passed_12_of_17_paths_changed
+    terminal_task_state_yaml_parse: passed
+    terminal_runtime_triplet_prettier: passed
+  migration_or_SQL_change: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Stop after one normal terminal commit is pushed and clean local, tracking,
+    and live integration equality is proved. C00 must independently audit all
+    three dispositions, exact generated projections, P30's preserved Batch A
+    worker-composition gate, twelve-path release scope, both released leases,
+    and zero effects before separately authorizing Batch A. No successor action
+    is authorized by this terminal.

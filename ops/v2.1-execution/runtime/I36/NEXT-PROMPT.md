@@ -1,7 +1,61 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_BATCH_B_CONFIGURATION_DEPENDENCIES_SHARED_TESTS_TERMINAL_AUDIT
+MODE: PAUSE_FOR_C00_BATCH_C_REPOSITORY_WORKFLOW_REGISTRY_TERMINAL_AUDIT
+
+Audit the exact pushed I36 repository-only Batch C workflow-registry terminal.
+Do not perform provider inspection/mutation, publication, activation,
+enrollment, send, contact, worker composition, candidate, deployment, DNS, or
+external successor work from this prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start: `8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898`
+Containing control: `234a7c99d1c10075381749920d857f32c4c55c54`
+Authority/control basis: `951e9d846e805d9d01ef1ad41973e41fefb8573e`
+READY: `0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518`
+Claim: `3cb0bfbd-53e8-47c9-b7a0-528a88501d92`
+Writer: `codex-i36-batch-c-3cb0bfbd`
+GHL_REGISTRY lease: `381fddd0-1ac8-4172-a64e-8148bd207312`
+RELEASE_INTEGRATOR lease: `8f15ef5c-8157-4571-8f72-476869626cf2`
+Lease issued: `2026-07-31T18:25:00Z`
+Lease expiry: `2026-07-31T22:25:00Z`
+Lease release: `2026-07-31T18:52:05Z`
+Effects: `0/0/0`
+
+Reproduce READY and the three exact raw Git request digests. Confirm P28 and
+P29 are `applicable` and fully applied: exact P28 identity/message-class/state
+assertions, canonical generator-only projections, exact twelve-key P29 default
+fragment registration, canonical registry parity, and OT-02A/OT-02B-only split
+syntax.
+
+Confirm P30 remains `blocked_by_a_later_exact_gate` overall while its complete
+repository-safe prerequisite is applied: exact OT-14/OT-15/OT-16 fragment
+registration, canonical copy/sender/checkpoint/price validation, empty provider
+IDs, DRAFT_WAITING_EXTERNAL/MISSING truth, and retained provider/approval/
+readback/canary/activation/enrollment/send blockers. Confirm Batch A still must
+compose `runOt16Checkpoint` behind the central durable adult-only worker job with
+real repository, suppression, eligibility, and email adapters.
+
+Confirm exactly twelve changed paths, all within the seventeen-path authority:
+nine product paths plus the I36 runtime triplet. Confirm the projections were
+generated from source SHA-256
+`06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339`
+and the product manifest is
+`43daa144d54ef17eaca127ea198788b4eec63e8f13e18580e036afaa426260bb`.
+Confirm the provider-ID map is unchanged and no source-owned P29/P30 fragment
+YAML outside authority was edited.
+
+Confirm 81/81 focused foundation/P28/P29/P30 tests, 6/6 P30 runner tests,
+canonical projection and registry checks, ESLint, Prettier, diff hygiene, and
+zero changed-path type diagnostics with exactly four unchanged baselines.
+Confirm both leases were released before expiry, local/tracking/live refs equal
+the terminal head, and no provider or external effect occurred.
+
+C00 must independently consume and reconcile this terminal before issuing
+separate Batch A authority. Stop.
+
+## Historical audit target: Batch B configuration and dependencies
 
 Audit the exact pushed I36 Batch B configuration, dependency-disposition, and
 shared-test terminal. Do not perform provider/registry, central composer,

@@ -14,6 +14,8 @@ const requiredApprovalGates: readonly WorkflowApprovalGate[] = [
   'suppression',
 ];
 
+const canonicalWorkflowKeyPattern = /^OT-(?:02[AB]|0[1-9]|1[0-6])$/;
+
 export function validateWorkflowFragment(fragment: CommunicationWorkflowFragment) {
   const keys = new Set<string>();
   const valid =
@@ -28,7 +30,7 @@ export function validateWorkflowFragment(fragment: CommunicationWorkflowFragment
       keys.add(workflow.workflow_key);
       return (
         unique &&
-        /^OT-(?:0[1-9]|1[0-6])$/.test(workflow.workflow_key) &&
+        canonicalWorkflowKeyPattern.test(workflow.workflow_key) &&
         workflow.subject === 'adult_only' &&
         workflow.email_required &&
         workflow.whatsapp_state === 'dormant' &&

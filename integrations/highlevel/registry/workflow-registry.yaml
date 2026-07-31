@@ -884,7 +884,7 @@ business_workflows:
     desiredStatus: 'DRAFT_WAITING_EXTERNAL'
     observedStatus: 'MISSING'
     exactOrderedTriggers:
-      - 'Await the reviewed P30 workflow fragment, exact audience/copy digests, and explicit Rabbi/Admin approval.'
+      - 'Require the registered P30 workflow fragment, exact audience/copy digests, and explicit Rabbi/Admin approval.'
       - 'At Thursday 12:00 household local time, recheck adult ownership, newsletter permission, dedupe, and every suppression gate.'
     exactOrderedActions:
       - 'Render the approved Rabbi note, recap, schedule, recording/review, approved question highlight, and one CTA.'
@@ -900,7 +900,7 @@ business_workflows:
       result: 'not_run'
       reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
       detail: 'P28 authorizes no provider canary; P30 realization and release-verification authority are pending.'
-    blocker: 'P30 workflow fragment, provider identity, exact copy/audience approvals, and release-verification canary are pending.'
+    blocker: 'Provider identity, exact copy/audience approvals, and release-verification canary are pending.'
     evidence:
       - 'integrations/highlevel/v21/foundation/desired-state.ts'
       - 'packages/contracts/src/communications/foundation/index.ts'
@@ -950,7 +950,7 @@ business_workflows:
     desiredStatus: 'DRAFT_WAITING_EXTERNAL'
     observedStatus: 'MISSING'
     exactOrderedTriggers:
-      - 'Await the reviewed P30 workflow fragment and exact segment/copy approval.'
+      - 'Require the registered P30 workflow fragment and exact segment/copy approval.'
       - 'Enter only a currently permitted former/canceled adult who is neither active Parent nor School.'
     exactOrderedActions:
       - 'Send canonical step 1 ghl.former_member_reactivation.step_1.v1 at approval launch through rabbi_campaign.'
@@ -982,7 +982,7 @@ business_workflows:
       result: 'not_run'
       reference: 'ops/v2.1-execution/runtime/P28/HANDOFF.md'
       detail: 'P28 authorizes no provider canary; P30 realization and release-verification authority are pending.'
-    blocker: 'P30 workflow fragment, provider identity, exact segment/copy approvals, and save/reopen readback are pending.'
+    blocker: 'Provider identity, exact segment/copy approvals, and save/reopen readback are pending.'
     evidence:
       - 'integrations/highlevel/v21/foundation/desired-state.ts'
       - 'packages/contracts/src/communications/foundation/index.ts'
@@ -1066,7 +1066,7 @@ business_workflows:
       result: 'not_run'
       reference: 'ops/v2.1-execution/runtime/P30/steward-requests/P30-registry-registration-001.yaml'
       detail: 'Repository registration authorizes no provider canary, activation, enrollment, or send.'
-    blocker: 'Provider workflow identity, dedicated provider build packet, exact save/reopen readback, and separate effect authority are absent.'
+    blocker: 'Batch A durable runOt16Checkpoint worker composition, provider workflow identity, dedicated provider build packet, exact save/reopen readback, and separate effect authority are absent.'
     evidence:
       - 'integrations/highlevel/v21/workflow-fragments/P30-campaigns.yaml'
       - 'packages/domain/src/communications/workflows/campaigns/definitions.ts'

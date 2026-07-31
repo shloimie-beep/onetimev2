@@ -305,4 +305,48 @@ describe('P28 website bot and workflow registry', () => {
       expect.objectContaining({ code: 'invalid_workflow_fragment' }),
     );
   });
+
+  it('admits only the canonical OT-02A and OT-02B split-key syntax', () => {
+    const fragmentFor = (workflowKey: string): CommunicationWorkflowFragment => ({
+      contract_version: '1.0.0',
+      owner_task: 'P29',
+      fragment_id: `p29-${workflowKey}`,
+      workflows: [
+        {
+          workflow_key: workflowKey,
+          canonical_name: workflowKey,
+          purpose: 'adult lifecycle',
+          subject: 'adult_only',
+          sender_key: 'rabbi_campaign',
+          message_purpose: 'marketing',
+          trigger: 'verified event',
+          ordered_steps: ['recheck suppression', 'send email'],
+          exit_conditions: ['complete'],
+          idempotency_scope: 'event + adult',
+          approval_gates: [
+            'registry_identity',
+            'sender',
+            'audience',
+            'consent',
+            'copy',
+            'suppression',
+          ],
+          requires_send_time_suppression_recheck: true,
+          email_required: true,
+          whatsapp_state: 'dormant',
+          student_contact_prohibited: true,
+        },
+      ],
+    });
+
+    for (const key of ['OT-02A', 'OT-02B']) {
+      const fragment = fragmentFor(key);
+      expect(validateWorkflowFragment(fragment)).toBe(fragment);
+    }
+    for (const key of ['OT-02C', 'OT-2A', 'OT-02AB', 'OT-17']) {
+      expect(() => validateWorkflowFragment(fragmentFor(key))).toThrowError(
+        expect.objectContaining({ code: 'invalid_workflow_fragment' }),
+      );
+    }
+  });
 });

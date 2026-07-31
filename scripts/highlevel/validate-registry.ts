@@ -182,6 +182,11 @@ async function main() {
     `business=${current.business_workflows.length}, bot_actions=${current.bot_action_workflows.length}`,
   );
   record(
+    'v2.1 canonical workflow identity resolution',
+    v21CanonicalWorkflowIdentitiesAreExact(current),
+    'OT-11 retired/BLOCKED; OT-12 adult support; OT-14 newsletter; OT-15 reactivation; OT-B01 website lead capture',
+  );
+  record(
     'stale bot reference check',
     current.prompts.filter((prompt) => prompt.prompt_id === 'OT-A1' && prompt.status === 'active')
       .length === 1,
@@ -425,6 +430,84 @@ function workflowClassificationsMatchCanonicalSource(current: CurrentRegistry) {
       JSON.stringify(botActionWorkflows.map((workflow) => workflow.key)) &&
     duplicates(allActualKeys).length === 0
   );
+}
+
+function v21CanonicalWorkflowIdentitiesAreExact(current: CurrentRegistry) {
+  const expected: Record<
+    string,
+    {
+      canonicalName: string;
+      objectType: RegistryWorkflow['objectType'];
+      desiredStatus: RegistryWorkflow['desiredStatus'];
+      observedStatus: RegistryWorkflow['observedStatus'];
+      messageClass: string;
+      senderKey: RegistryWorkflow['senderKey'];
+    }
+  > = {
+    'OT-11': {
+      canonicalName: 'OT-11 Retired / Reserved',
+      objectType: 'deprecated_workflow',
+      desiredStatus: 'BLOCKED',
+      observedStatus: 'MISSING',
+      messageClass: 'support_acknowledgement',
+      senderKey: 'brand',
+    },
+    'OT-12': {
+      canonicalName: 'OT-12 Adult Support Intake',
+      objectType: 'business_workflow',
+      desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+      observedStatus: 'MISSING',
+      messageClass: 'support_reply',
+      senderKey: 'office',
+    },
+    'OT-14': {
+      canonicalName: 'OT-14 Parent Newsletter',
+      objectType: 'business_workflow',
+      desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+      observedStatus: 'MISSING',
+      messageClass: 'torah_newsletter',
+      senderKey: 'rabbi_campaign',
+    },
+    'OT-15': {
+      canonicalName: 'OT-15 Former Member Reactivation',
+      objectType: 'business_workflow',
+      desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+      observedStatus: 'MISSING',
+      messageClass: 'warm_enrollment_campaign',
+      senderKey: 'rabbi_campaign',
+    },
+    'OT-B01': {
+      canonicalName: 'OT-B01 Website Lead-Capture Bot',
+      objectType: 'bot_action_workflow',
+      desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+      observedStatus: 'MISSING',
+      messageClass: 'signup_confirmation',
+      senderKey: 'brand',
+    },
+  };
+  const records = [
+    ...current.business_workflows,
+    ...current.bot_action_workflows,
+    ...current.deprecated_workflows,
+  ];
+  const messageClassByKey = new Map(
+    current.message_classes.map((messageClass) => [messageClass.key, messageClass]),
+  );
+  return Object.entries(expected).every(([key, identity]) => {
+    const matches = records.filter((workflow) => workflow.key === key);
+    const workflow = matches[0];
+    return (
+      matches.length === 1 &&
+      workflow?.canonicalName === identity.canonicalName &&
+      workflow.objectType === identity.objectType &&
+      workflow.desiredStatus === identity.desiredStatus &&
+      workflow.observedStatus === identity.observedStatus &&
+      workflow.messageClass === identity.messageClass &&
+      workflow.senderKey === identity.senderKey &&
+      workflow.ghlId === '' &&
+      messageClassByKey.get(identity.messageClass)?.allowedWorkflows.includes(key) === true
+    );
+  });
 }
 
 function flattenFolderPaths(folders: typeof workflowFolderTree, parent = ''): string[] {

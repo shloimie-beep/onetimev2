@@ -1263,3 +1263,58 @@ local/tracking/live equality. C00 must independently audit the nine immutable
 dispositions, exact six-path release scope, dependency non-change, validations,
 both released leases, and zero effects before separately authorizing Batch C,
 then Batch A, then Batch D.
+
+## Batch C repository workflow-registry terminal
+
+Live control `234a7c99d1c10075381749920d857f32c4c55c54`, based on
+`951e9d846e805d9d01ef1ad41973e41fefb8573e`, authorized repository-only
+Batch C from exact integration head `8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898`.
+Canonical READY `0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518`
+and exact raw Git request digests P28 `e937075b...`, P29 `e42a3ef9...`, and
+P30 `8c6b582f...` reproduced before editing.
+
+P28-registry-projection-001 and P29-registry-projection-001 are `applicable`
+and fully applied. P28 exact identity, state, sender, message-class, and empty-ID
+assertions now cover OT-11, OT-12, OT-14, OT-15, and OT-B01. The message-class
+registry was already exact and remains byte-identical. P29's exact twelve-key
+core lifecycle fragment is registered by default and reconciled to the canonical
+registry. Fragment validation admits only the exact OT-02A and OT-02B split keys,
+with arbitrary variants rejected.
+
+P30-registry-registration-001 remains `blocked_by_a_later_exact_gate` overall.
+Its complete repository-safe prerequisite is applied: the exact three-key P30
+fragment is registered by default, copy/sender/checkpoint/price and fail-closed
+registry truth are validated, stale fragment-pending wording was removed, and
+the canonical projections were regenerated. Batch A must still compose
+`runOt16Checkpoint` through the central durable adult-only worker boundary with
+real adapters; the runner exists and passes its six direct tests, while the
+central runner registry is still empty. No mixed request was falsely marked
+fully applied.
+
+Exactly nine product paths and the three I36 runtime paths changed. Generated
+`current.json` and `workflows.yaml` were written only by the canonical projection
+generator from source SHA-256
+`06d1ee3b125f7d0893994e9c55b075bc387034606f38e74ef074532a86dd0339`.
+The nine-path product manifest is
+`43daa144d54ef17eaca127ea198788b4eec63e8f13e18580e036afaa426260bb`.
+The full provider-ID map is unchanged; OT-11, OT-12, OT-14, OT-15, OT-16, and
+OT-B01 remain empty, with DRAFT/BLOCKED/MISSING truth preserved.
+
+Verification passed: 81 focused foundation/P28/P29/P30 assertions, six direct
+P30 runner assertions, canonical projection and registry checks, zero ESLint
+findings, Prettier, diff hygiene, and zero changed-path workspace type
+diagnostics. The only four workspace diagnostics are the unchanged documented
+Stripe and three Playwright-harness baselines.
+
+Claim `3cb0bfbd-53e8-47c9-b7a0-528a88501d92`, GHL_REGISTRY lease
+`381fddd0-1ac8-4172-a64e-8148bd207312`, and RELEASE_INTEGRATOR lease
+`8f15ef5c-8157-4571-8f72-476869626cf2` were released at
+`2026-07-31T18:52:05Z`, before the `2026-07-31T22:25:00Z` expiry. No provider
+inspection or mutation, publication, activation, enrollment, send, contact,
+Student contact, WhatsApp action, billing/customer mutation, candidate action,
+deployment, DNS change, or external effect occurred. Effects remain `0/0/0`.
+
+I36 must stop after the single terminal is normally pushed with clean
+local/tracking/live equality. C00 must independently audit the three immutable
+dispositions, canonical generation, exact twelve-path scope, P30's preserved
+Batch A gate, both released leases, and zero effects before issuing Batch A.

@@ -18,6 +18,9 @@ describe('P28 canonical workflow registry source', () => {
         canonicalName: 'OT-11 Retired / Reserved',
         objectType: 'deprecated_workflow',
         desiredStatus: 'BLOCKED',
+        observedStatus: 'MISSING',
+        messageClass: 'support_acknowledgement',
+        senderKey: 'brand',
         ghlId: '',
       }),
     ]);
@@ -25,6 +28,10 @@ describe('P28 canonical workflow registry source', () => {
       expect.objectContaining({
         canonicalName: 'OT-12 Adult Support Intake',
         objectType: 'business_workflow',
+        desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+        observedStatus: 'MISSING',
+        messageClass: 'support_reply',
+        senderKey: 'office',
         ghlId: '',
       }),
     ]);
@@ -32,6 +39,10 @@ describe('P28 canonical workflow registry source', () => {
       expect.objectContaining({
         canonicalName: 'OT-14 Parent Newsletter',
         objectType: 'business_workflow',
+        desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+        observedStatus: 'MISSING',
+        messageClass: 'torah_newsletter',
+        senderKey: 'rabbi_campaign',
         ghlId: '',
       }),
     ]);
@@ -39,6 +50,10 @@ describe('P28 canonical workflow registry source', () => {
       expect.objectContaining({
         canonicalName: 'OT-15 Former Member Reactivation',
         objectType: 'business_workflow',
+        desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+        observedStatus: 'MISSING',
+        messageClass: 'warm_enrollment_campaign',
+        senderKey: 'rabbi_campaign',
         ghlId: '',
       }),
     ]);
@@ -46,6 +61,10 @@ describe('P28 canonical workflow registry source', () => {
       expect.objectContaining({
         canonicalName: 'OT-B01 Website Lead-Capture Bot',
         objectType: 'bot_action_workflow',
+        desiredStatus: 'DRAFT_WAITING_EXTERNAL',
+        observedStatus: 'MISSING',
+        messageClass: 'signup_confirmation',
+        senderKey: 'brand',
         ghlId: '',
       }),
     ]);
