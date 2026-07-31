@@ -78,7 +78,7 @@ export function createContentPublicationService(deps: {
         });
         const registration = await unit.registerContent(proposed);
         assertRegisteredProjectionReplay(registration.record, evidence, canonicalOccurrence);
-        await unit.bootstrapCanonicalContentState(registration.record);
+        await unit.bootstrapCanonicalContentState(registration.record, evidence);
         return {
           record: registration.record,
           replay: !registration.inserted,
@@ -203,6 +203,8 @@ export function createContentPublicationService(deps: {
               )
             : null;
         if (!pendingProviderContext) return providerConflict();
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         return { pendingProviderContext };
       });
       if ('replayResult' in prepared) return prepared.replayResult;
@@ -245,6 +247,8 @@ export function createContentPublicationService(deps: {
         ) {
           return providerConflict();
         }
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         const eligibility = await Promise.all(
           audience.map((member) =>
             unit.getCurrentPublicationEligibility(
@@ -312,6 +316,8 @@ export function createContentPublicationService(deps: {
               )
             : null;
         if (!pendingProviderContext) return providerConflict();
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         return { pendingProviderContext };
       });
       if ('replayResult' in prepared) return prepared.replayResult;
@@ -349,6 +355,8 @@ export function createContentPublicationService(deps: {
         ) {
           return providerConflict();
         }
+        const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+        assertProviderExecutionScope(executionScope, pendingProviderContext.executionScope);
         const result = recordPrivateRevocation({
           record: current,
           observation,
@@ -585,7 +593,7 @@ async function mutate(input: {
   vimeoProviderBinding: ProviderRegistryBinding;
   principal: ContentPublicationPrincipal;
   contentId: string;
-  operation: Exclude<ContentPublicationOperation, 'save_resume'>;
+  operation: 'request_publish' | 'unpublish' | 'archive';
   binding: ContentPublicationCommandBinding;
   requestPayload: unknown;
   apply: (
@@ -613,6 +621,8 @@ async function mutate(input: {
       assertReceiptReplay(priorReceipt, input.operation, binding.requestHash, current);
       return { record: current, replay: true as const };
     }
+    const executionScope = await unit.resolveCanonicalContentExecutionScope(current);
+    assertProviderExecutionScope(executionScope, input.vimeoProviderBinding.scope);
     const applied = input.apply(current, binding);
     const next = 'record' in applied ? applied.record : applied;
     if ('outboxIntent' in applied) {
@@ -676,6 +686,20 @@ async function requiredContent(
 
 function principalScope(principal: ContentPublicationPrincipal): ContentPublicationScope {
   return { accountKey: principal.accountKey, productKey: principal.productKey };
+}
+
+function assertProviderExecutionScope(
+  expected: ProviderRegistryBinding['scope'],
+  actual: ProviderRegistryBinding['scope'] | undefined,
+) {
+  if (
+    !actual ||
+    actual.product !== expected.product ||
+    actual.runtime_tier !== expected.runtime_tier ||
+    actual.verification_environment_id !== expected.verification_environment_id
+  ) {
+    return providerConflict();
+  }
 }
 
 function authoritativeBinding(

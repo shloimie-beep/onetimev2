@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import type {
+  CanonicalContentStateTransitionCommand,
   ContentApprovalEvidence,
   ContentPublicationMaterialization,
   ContentPublicationOutboxIntent,
@@ -21,6 +22,7 @@ import type {
   VimeoContentPublicationObservation,
   VimeoContentPublicationReadbackAdapter,
 } from '../../../../../../../packages/contracts/src/content/publication/index.ts';
+import type { JobScope } from '../../../../../../../packages/contracts/src/jobs/index.ts';
 import { ContentPublicationError } from '../../../../../../../packages/domain/src/content/publication/index.ts';
 import type {
   ProviderOperation,
@@ -418,6 +420,7 @@ describe('P21 content publication service', () => {
   it('fails closed for stale approval evidence, ambiguous readback, and assignment versions', async () => {
     const memory = new MemoryPublicationRepository();
     memory.records.set('content_one', draft());
+    await memory.bootstrapCanonicalContentState(draft(), approvalEvidence());
     const service = createContentPublicationService({
       repository: memory,
       approvedProjectionRepository: memory,
@@ -804,7 +807,23 @@ class MemoryPublicationRepository
 {
   approvedProjection: ContentApprovalEvidence | null = approvalEvidence();
   failProviderCompletion = false;
+  failCanonicalOperation: CanonicalContentStateTransitionCommand['operation'] | null = null;
+  executionScope: JobScope = { ...vimeoProviderBinding.scope };
   readonly records = new Map<string, ContentPublicationRecord>();
+  readonly canonicalStates = new Map<
+    string,
+    { state: ContentPublicationRecord['state']; version: number; scope: JobScope }
+  >();
+  readonly canonicalEvents: Array<{
+    operation: CanonicalContentStateTransitionCommand['operation'] | 'bootstrap';
+    previousState: ContentPublicationRecord['state'] | null;
+    nextState: ContentPublicationRecord['state'];
+    expectedVersion: number;
+    actorKind: string;
+    actorKey: string;
+    idempotencyKey: string;
+    requestHash: string;
+  }> = [];
   readonly assignments = new Map<string, StudentContentAssignment>();
   readonly playbackFacts = new Map<string, StudentPlaybackAuthorizationFacts>();
   readonly materializations: ContentPublicationMaterialization[] = [];
@@ -818,6 +837,7 @@ class MemoryPublicationRepository
     {
       intent: ContentPublicationOutboxIntent;
       providerOperation: ContentPublicationProviderOperation;
+      executionScope: JobScope;
     }
   >();
   readonly completedProviderOperations = new Set<string>();
@@ -839,6 +859,8 @@ class MemoryPublicationRepository
   async inTransaction<T>(work: (unit: ContentPublicationUnitOfWork) => Promise<T>) {
     const snapshot = {
       records: new Map(this.records),
+      canonicalStates: new Map(this.canonicalStates),
+      canonicalEvents: [...this.canonicalEvents],
       assignments: new Map(this.assignments),
       playbackFacts: new Map(this.playbackFacts),
       materializations: [...this.materializations],
@@ -854,6 +876,8 @@ class MemoryPublicationRepository
       return await work(this);
     } catch (error) {
       restoreMap(this.records, snapshot.records);
+      restoreMap(this.canonicalStates, snapshot.canonicalStates);
+      this.canonicalEvents.splice(0, this.canonicalEvents.length, ...snapshot.canonicalEvents);
       restoreMap(this.assignments, snapshot.assignments);
       restoreMap(this.playbackFacts, snapshot.playbackFacts);
       this.materializations.splice(0, this.materializations.length, ...snapshot.materializations);
@@ -895,6 +919,118 @@ class MemoryPublicationRepository
     if (existing) return { record: existing, inserted: false };
     this.records.set(record.contentId, record);
     return { record, inserted: true };
+  }
+
+  async bootstrapCanonicalContentState(
+    record: ContentPublicationRecord,
+    evidence: ContentApprovalEvidence,
+  ) {
+    if (
+      record.state !== 'needs_review' ||
+      evidence.accountKey !== record.accountKey ||
+      evidence.productKey !== record.productKey ||
+      evidence.contentId !== record.contentId ||
+      evidence.contentVersionId !== record.contentVersionId ||
+      evidence.contentVersionDigest !== record.contentVersionDigest
+    ) {
+      throw new Error('canonical_bootstrap_binding_conflict');
+    }
+    const current = this.canonicalStates.get(record.contentId);
+    if (current) {
+      if (
+        current.state !== 'needs_review' ||
+        current.version !== 4 ||
+        JSON.stringify(current.scope) !== JSON.stringify(this.executionScope) ||
+        this.canonicalEvents.length !== 4 ||
+        this.canonicalEvents.some(
+          (event, index) =>
+            event.operation !== 'bootstrap' ||
+            event.expectedVersion !== index ||
+            event.requestHash !== evidence.projectionDigest,
+        )
+      ) {
+        throw new Error('canonical_bootstrap_replay_conflict');
+      }
+      return { replay: true, resultingVersion: 4 };
+    }
+    const states = ['received', 'validating', 'processing', 'needs_review'] as const;
+    states.forEach((nextState, index) => {
+      this.canonicalEvents.push({
+        operation: 'bootstrap',
+        previousState: index === 0 ? null : states[index - 1]!,
+        nextState,
+        expectedVersion: index,
+        actorKind: 'reconciler',
+        actorKey: 'content-publication-bootstrap',
+        idempotencyKey: `content:bootstrap:${index + 1}:${nextState}`,
+        requestHash: evidence.projectionDigest,
+      });
+    });
+    this.canonicalStates.set(record.contentId, {
+      state: 'needs_review',
+      version: 4,
+      scope: { ...this.executionScope },
+    });
+    return { replay: false, resultingVersion: 4 };
+  }
+
+  async resolveCanonicalContentExecutionScope(record: ContentPublicationRecord) {
+    const evidence = record.approval?.evidence;
+    if (
+      !evidence ||
+      evidence.accountKey !== record.accountKey ||
+      evidence.productKey !== record.productKey ||
+      evidence.contentId !== record.contentId ||
+      evidence.contentVersionId !== record.contentVersionId ||
+      evidence.contentVersionDigest !== record.contentVersionDigest
+    ) {
+      throw new Error('canonical_source_scope_unavailable');
+    }
+    return { ...this.executionScope };
+  }
+
+  async appendCanonicalContentStateTransition(command: CanonicalContentStateTransitionCommand) {
+    if (this.failCanonicalOperation === command.operation) {
+      throw new Error(`forced_canonical_${command.operation}_failure`);
+    }
+    const current = this.canonicalStates.get(command.record.contentId);
+    if (!current || JSON.stringify(current.scope) !== JSON.stringify(this.executionScope)) {
+      throw new Error('canonical_state_scope_conflict');
+    }
+    const idempotencyKey = `content:${command.operation}:${command.idempotencyKey}`;
+    const prior = this.canonicalEvents.find((event) => event.idempotencyKey === idempotencyKey);
+    if (prior) {
+      if (
+        prior.operation !== command.operation ||
+        prior.previousState !== command.previousState ||
+        prior.nextState !== command.nextState ||
+        prior.actorKind !== command.actorKind ||
+        prior.actorKey !== command.actorKey ||
+        prior.requestHash !== command.requestHash
+      ) {
+        throw new Error('canonical_state_idempotency_conflict');
+      }
+      return { replay: true, resultingVersion: prior.expectedVersion + 1 };
+    }
+    if (current.state !== command.previousState) {
+      throw new Error('canonical_state_transition_conflict');
+    }
+    this.canonicalEvents.push({
+      operation: command.operation,
+      previousState: command.previousState,
+      nextState: command.nextState,
+      expectedVersion: current.version,
+      actorKind: command.actorKind,
+      actorKey: command.actorKey,
+      idempotencyKey,
+      requestHash: command.requestHash,
+    });
+    this.canonicalStates.set(command.record.contentId, {
+      ...current,
+      state: command.nextState,
+      version: current.version + 1,
+    });
+    return { replay: false, resultingVersion: current.version + 1 };
   }
 
   async saveContent(record: ContentPublicationRecord, expectedVersion: number) {
@@ -947,6 +1083,7 @@ class MemoryPublicationRepository
     });
     this.providerContexts.set(providerOperationId, {
       intent,
+      executionScope: { ...operation.scope },
       providerOperation: {
         accountKey: intent.accountKey,
         providerOperationId,

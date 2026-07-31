@@ -2,6 +2,7 @@ import type {
   ApprovedForPublicationProjectionParams,
   SourceCompleteApprovedForPublicationProjection,
 } from '../processing/index.ts';
+import type { JobScope } from '../../jobs/index.ts';
 import type { ProviderOperation } from '../../providers/v21-provider-core.ts';
 
 export const CONTENT_PUBLICATION_CONTRACT_VERSION = '2.1.0';
@@ -311,6 +312,7 @@ export interface ContentPublicationProviderOperation extends ContentPublicationS
 export interface PendingContentPublicationProviderContext {
   intent: ContentPublicationOutboxIntent;
   providerOperation: ContentPublicationProviderOperation;
+  executionScope?: JobScope;
 }
 
 export interface ContentPublicationProviderCompletion extends ContentPublicationScope {
@@ -468,7 +470,9 @@ export interface ContentPublicationUnitOfWork {
   ): Promise<{ record: ContentPublicationRecord; inserted: boolean }>;
   bootstrapCanonicalContentState(
     record: ContentPublicationRecord,
+    evidence: ContentApprovalEvidence,
   ): Promise<CanonicalContentStateTransitionResult>;
+  resolveCanonicalContentExecutionScope(record: ContentPublicationRecord): Promise<JobScope>;
   appendCanonicalContentStateTransition(
     command: CanonicalContentStateTransitionCommand,
   ): Promise<CanonicalContentStateTransitionResult>;

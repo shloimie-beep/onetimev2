@@ -113,7 +113,7 @@ writer_slot_leases:
 effect_lock_leases: []
 lease_expires_at: '2026-07-31T10:08:00Z'
 lease_released_at: null
-last_heartbeat_at: '2026-07-31T08:36:00Z'
+last_heartbeat_at: '2026-07-31T08:46:00Z'
 controller_authorization_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
 controller_authorization_parent_sha: 4b22c4704edc8bd21b0e0242ad00debfba67f5c2
 claim_reconciled_control_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
