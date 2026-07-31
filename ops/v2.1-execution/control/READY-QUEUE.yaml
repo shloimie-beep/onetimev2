@@ -4,13 +4,13 @@ generated_by: C00
 status: operational
 ready:
   - task_id: I36
-    status: resume_ready
-    phase: P12_P09_source_microbatch_type_contract_closure
+    status: ready
+    phase: batch_B_configuration_dependencies_and_shared_tests
     branch: codex/v21-integration
-    claim_mode: resume_existing
-    state_based_on_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-    authorized_start_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
-    expected_existing_head: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
+    claim_mode: new
+    state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+    authorized_start_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+    expected_existing_head: 288d5883d4e5a4e298efa8659609b42f87d190d4
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
@@ -19,85 +19,144 @@ ready:
       C00:
         required_state: immediate_lean_completion_mode
         observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-        control_state_canonical_digest: 7faf724635bd31050702c0eb4095dff05285d35a141cb57b1bc44edb0219ca90
+        observed_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+        control_state_canonical_digest: c3f2aab1d850dc87e656a111b8f6d82cdbe6e03567f544370ea4c6d23520c079
       I36:
-        required_state: source_microbatch_local_merges_held_for_test_contract_correction
-        observed_state: source_microbatch_local_merges_held_for_test_contract_correction
-        remote_integration_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
-        P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
-        P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
-        held_local_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
-        claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-        release_integrator_lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
+        required_state: P12_P09_source_microbatch_independently_accepted
+        observed_state: P12_P09_source_microbatch_independently_accepted
+        remote_integration_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+        terminal_parent_sha: 8ab92f4b2ee26bd3838d6793b7c29d357f66c3a5
+        terminal_tree_sha: d1ad8f7fa293450bd380f9a7b249b59e82d0d9d9
+        terminal_state_handoff_digest: 3bec58d05fc142a079f4a9aadfe28144c03ee9fe53406be3a82ff0a4affef572
+        terminal_runtime_triplet_digest: a47fc1645bc6728ea9cd2b2b44e50e48c87125cc6a3f6b09ef9ec3ea6daf126d
+        terminal_triplet_manifest_digest: e790e30469a110f683f342d12ea2370de4d76407cb42420dd0026efd3db7792b
+        combined_source_path_inventory_digest: 914134026094df5aec87c1d78f5c0b965ef8e3ba2f14a48f5e298a65b8869d31
+        combined_source_manifest_digest: 4da1a34b941441463527bdc4274b04273e770cbf5bc555e21cdd6b7d312f7e4e
+        independent_review: passed_no_P1_or_P2
         focused_merged_tests: 67_passed_3_declared_native_skips
-        relevant_web_builds: passed
+        changed_workspace_typecheck: zero_P12_or_P09_diagnostics_four_unchanged_baselines
+        lease_released_at: '2026-07-31T17:23:20Z'
         external_effects: 0/0/0
-      P12:
-        required_state: type_contract_correction_review_passed
-        observed_state: type_contract_correction_review_passed
-        observed_task_head_sha: 3ad55dc1de45bb11ec7ead886d88af9f592f2c18
-        terminal_parent_sha: 71fb96d60ea08e5947681e1ea1c704606ff215cc
-        terminal_tree_sha: a933e9bf2de853001ce11ac802fe4be69e0ede0c
-        source_path_inventory_digest: 2301a50c11726d06a901b65fe86f67f79d0d9f4a3918d44a32c63426d81d8656
-        source_manifest_digest: 551050c82f71398e7a5808b94ca03977d051f31b1577df2367e50b24915c7272
-        state_handoff_digest: fd3a2665013fc2fb0f948d8e67d021d89b184c01bc991d60cef8b0d8719db324
-        runtime_triplet_digest: 4478f4e0dd45fda62402b782a483f91fff2446d1983ac58ea5c467bc79c0e505
-        interface_version: 1.2.0
-        interface_digest: f9c323080c32925864f780fb05981850644ba3a91a2303fa3f282bc7461378d9
-        independent_review: passed_no_P1_or_P2
-        lease_released_at: '2026-07-31T17:03:32Z'
-        external_effects: 0/0/0
-      P09:
-        required_state: already_merged_locally
-        observed_state: already_merged_locally
-        observed_task_head_sha: ce8df6e6d612dc935cb204fb7f7803489e90d740
-        local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
-        independent_review: passed_no_P1_or_P2
-        external_effects: 0/0/0
+      P08:
+        required_state: family_parent_session_composition_complete
+        observed_state: family_parent_session_composition_complete
+        integration_prerequisite_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+        config_request_id: P08-config-002
+        config_request_digest: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+      P22:
+        required_state: source_and_migration_prerequisites_integrated
+        observed_state: source_and_migration_prerequisites_integrated
+        source_integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+        migration_integration_release_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+        config_request_id: P22-config-key-002
+        config_request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+    immutable_request_bindings:
+      P32-config-001:
+        request_digest: 005106774e3ad414f885d04f72b90000bc42a07c65f41edbf4fa85db0f2d6309
+        source_path: ops/v2.1-execution/runtime/P32/steward-requests/P32-config-001.yaml
+        digest_kind: canonical_request_object_sha256
+      P19-CONFIG-DEPENDENCY-001:
+        request_digest: 8896d9023f42ce6f8a424dd1a81faf05938cfa6d03751bb2fc066a81c3c41165
+        source_path: ops/v2.1-execution/runtime/P19/STEWARD-REQUESTS.yaml
+        digest_kind: canonical_named_request_subobject_sha256
+      P20-RUNTIME-CONFIG-001:
+        request_digest: 1436bbe841665fff24c54e6a8f2372410850ec9e763f4c323c6266b222b2302b
+        source_path: ops/v2.1-execution/runtime/P20/STEWARD-REQUESTS.yaml
+        digest_kind: canonical_named_request_subobject_sha256
+      P20-PINNED-MEDIA-RUNTIME-001:
+        request_digest: 651b8177e3d227e63f7562824d07a04f5261c9277e3e36929b6881ce2168434f
+        source_path: ops/v2.1-execution/runtime/P20/STEWARD-REQUESTS.yaml
+        digest_kind: canonical_named_request_subobject_sha256
+      P29-config-001:
+        request_digest: 10eb53f6f54fd3d8a7e32ea48452205c1b7c55a98f67f8e81ec434b83e50da0e
+        source_path: ops/v2.1-execution/runtime/P29/steward-requests/P29-config-001.yaml
+        digest_kind: raw_git_blob_sha256
+      P17-ZOOM-CONFIG-DEPENDENCY-001:
+        request_digest: a3ccccdd574875fab0dfe7da4fb0f269be41b55b4dafb8485ba76cdfbfbaab9d
+        source_path: ops/v2.1-execution/runtime/P17/STEWARD-REQUESTS.yaml
+        digest_kind: canonical_named_request_subobject_sha256
+      P33-config-001:
+        request_digest: bc972db8b48aaf69b61a5b82511532dd8f0ad675ea1fdeb01a1671ecac35cbb6
+        source_path: ops/v2.1-execution/runtime/P33/steward-requests/P33-config-001.yaml
+        digest_kind: raw_git_blob_sha256
+      P08-config-002:
+        request_digest: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+        source_path: ops/v2.1-execution/runtime/P08/steward-requests/P08-config-002.yaml
+        digest_kind: raw_git_blob_sha256
+      P22-config-key-002:
+        request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+        source_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-config-key-002.yaml
+        digest_kind: canonical_request_object_sha256
+    request_digest_semantics: >-
+      Reproduce each request with its explicit digest_kind. Canonical request digests use recursively key-sorted compact
+      JSON with UTF-8, separators ',' and ':', ensure_ascii=false, and no floating-point values.
     authorized_paths:
+      - .env.example
       - ops/v2.1-execution/runtime/I36/HANDOFF.md
       - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+      - package-lock.json
+      - package.json
+      - packages/config/src/index.ts
+      - tests/unit/config/runtime-classification.test.ts
+    authorized_path_count: 8
+    authorized_path_inventory_digest: fd8fb3d465366b655d884013eaee18057d8dcd14624eb88f371016c078b112c3
     correction_directives:
       - >-
-        Starting from the exact held local head 08e26cfd, consume only correction MERGE item
-        d188c42e-a9e7-4f9e-a0a4-3436d266fcf4 and merge P12 child 3ad55dc1 as the second parent. Preserve ancestry for
-        P12 71fb96d6, P09 ce8df6e6 and correction 3ad55dc1. Required merge base is 71fb96d6 and forecast tree is
-        ea56dee09fe9dfb5ad65b826f14684e2577821c3. Do not discard or rebuild the two safe local merges.
+        Process exactly the nine immutable Batch B request IDs bound above. First reproduce each queue digest from the
+        exact Git bytes at integration 288d5883, then classify each request as applicable, already_satisfied,
+        superseded, invalid_or_rejected, or blocked_by_a_later_exact_gate. Preserve one immutable disposition per
+        request in the single terminal runtime triplet.
       - >-
-        This remains the same source-only microbatch. Preserve every steward request byte and do not apply shared
-        server/client/worker registrations, routes, barrels, configuration, lockfiles, provider/workflow registries,
-        deployment, branding or public assets.
+        Apply only complete, repository-safe configuration, dependency, lockfile, and shared-config-test semantics that
+        fit the eight exact authorized paths. Never guess a deployment path, provider account, bucket, KMS key, Drive
+        folder, Zoom app, HighLevel location, OpenAI project, secret value, binary provenance, or live runtime identity.
+        Do not mark a request applied if any required semantic remains incomplete; record the exact blocking later gate.
       - >-
-        Rerun the merged P12/P09 focused suite, changed-workspace typecheck proving zero P12/P09 diagnostics, and exact
-        changed-file lint/format. Reuse the already-passed relevant web builds because this child changes tests/runtime
-        metadata only. Do not repeat a repository-wide audit, full canonical suite, native PostgreSQL or unrelated build.
+        Batch B may create no provider or infrastructure effect and may not inspect or mutate S3, KMS, Drive, Zoom,
+        HighLevel, OpenAI, Railway, DNS, deployment, customer, billing, message, or candidate state. Provider and
+        workflow registries remain for Batch C; server/client/worker/routes/barrels remain for Batch A; deployment,
+        branding, and public assets remain for Batch D.
       - >-
-        Update the I36 runtime triplet once, mark all three source items consumed, release the existing lease, push one
-        normal terminal, verify live equality and a clean worktree, then stop for one independent microbatch review.
-        No provider inspection or effect, database write, candidate freeze, deployment, DNS change, send, charge,
-        customer activation or other external effect is authorized.
+        Validate only changed bytes: lockfile/package consistency for dependency changes, focused configuration and
+        request tests, changed-package formatting/lint/typecheck, and the relevant changed package build. Do not run
+        another repository-wide audit, native PostgreSQL replay, full canonical suite, browser matrix, or unrelated
+        provider test. If a required representative fixture or exact identity is absent, record that request blocked
+        rather than synthesizing evidence.
+      - >-
+        Update the I36 runtime triplet once, release both writer-slot leases, push one normal terminal, verify
+        local/tracking/live equality and a clean worktree, then stop for one independent Batch B review. No candidate
+        freeze, provider effect, deployment, DNS change, send, charge, customer activation, or other external effect is
+        authorized.
     writer_slot_leases:
-      - slot: RELEASE_INTEGRATOR
-        lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
+      - slot: CONFIG_DEPS
+        lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
         holder_task_id: I36
-        holder_claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-        holder_writer_id: codex-i36-p12-p09-source-586989e0
-        state_based_on_control_head_sha: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
-        lease_issued_at: '2026-07-31T16:23:33Z'
-        lease_expires_at: '2026-07-31T18:23:33Z'
-        phase_scope: P12_then_P09_source_microbatch_only
+        holder_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+        holder_writer_id: codex-i36-batch-b-995fe313
+        state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+        lease_issued_at: '2026-07-31T17:40:18Z'
+        lease_expires_at: '2026-07-31T21:40:18Z'
+        phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
+      - slot: RELEASE_INTEGRATOR
+        lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
+        holder_task_id: I36
+        holder_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+        holder_writer_id: codex-i36-batch-b-995fe313
+        state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+        lease_issued_at: '2026-07-31T17:40:18Z'
+        lease_expires_at: '2026-07-31T21:40:18Z'
+        phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
     effect_lock_leases: []
-    claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-    lease_issued_at: '2026-07-31T16:23:33Z'
-    lease_expires_at: '2026-07-31T18:23:33Z'
+    claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+    lease_issued_at: '2026-07-31T17:40:18Z'
+    lease_expires_at: '2026-07-31T21:40:18Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380
+  I36: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

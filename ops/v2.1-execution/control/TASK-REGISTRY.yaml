@@ -29,23 +29,24 @@ tasks:
     P12_acceptance_P12_P09_source_microbatch_dispatch_authorized_start: f8d9059b53d0e62cefa0bdb3bced312f3d2e3dd5
     I36_type_contract_failure_P12_correction_dispatch_authorized_start: f0d144154927a47bffd7939d815a510fbed3adf2
     P12_type_contract_acceptance_I36_closure_dispatch_authorized_start: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
+    I36_source_microbatch_acceptance_Batch_B_dispatch_authorized_start: 3c4a3aafb55ebe4745aa865733612172c9fad436
   authorized_start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
-  last_known_remote_head: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-  active_claim_id: f8f5fd2d-6b87-475c-923f-b7d498377d03
-  active_writer_id: codex-c00-p12-type-contract-admission-f8f5fd2d
-  lease_expires_at: '2026-07-31T17:11:15Z'
-  last_heartbeat_at: '2026-07-31T17:11:15Z'
-  controller_authorization_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
+  last_known_remote_head: 3c4a3aafb55ebe4745aa865733612172c9fad436
+  active_claim_id: 8460d688-f365-4c27-8ad0-daddbacebb22
+  active_writer_id: codex-c00-i36-batch-b-dispatch-8460d688
+  lease_expires_at: '2026-07-31T17:40:18Z'
+  last_heartbeat_at: '2026-07-31T17:40:18Z'
+  controller_authorization_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
     state: operational
     producer_task_id: C00
-    producer_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
+    producer_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    integration_or_evidence_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
@@ -56,8 +57,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-    transitioned_at: '2026-07-31T17:11:15Z'
+    state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+    transitioned_at: '2026-07-31T17:40:18Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/C00/status_proof
 - task_id: F01
   status: ready_for_review
@@ -442,8 +443,8 @@ tasks:
     transitioned_at: '2026-07-30T19:30:53Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
-  status: claimed
-  active_phase: P12_P09_source_microbatch_type_contract_closure
+  status: ready
+  active_phase: batch_B_configuration_dependencies_and_shared_tests
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
@@ -507,39 +508,45 @@ tasks:
     P12_then_P09_source_microbatch_P12_local_merge: a6929cdddbde5282f37c10a60a5cc602cff44866
     P12_then_P09_source_microbatch_P09_local_merge: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
     P12_type_contract_closure_authorized_start: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
+    P12_type_contract_closure_merge: 8ab92f4b2ee26bd3838d6793b7c29d357f66c3a5
+    P12_then_P09_source_microbatch_release: 288d5883d4e5a4e298efa8659609b42f87d190d4
+    batch_B_configuration_dependencies_authorized_start: 288d5883d4e5a4e298efa8659609b42f87d190d4
   authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-  last_known_remote_head: ae3ced8a9daa11044d4278968c14cb6baa12a480
-  active_claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-  active_writer_id: codex-i36-p12-p09-source-586989e0
-  lease_expires_at: '2026-07-31T18:23:33Z'
+  last_known_remote_head: 288d5883d4e5a4e298efa8659609b42f87d190d4
+  active_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+  active_writer_id: codex-i36-batch-b-995fe313
+  lease_expires_at: '2026-07-31T21:40:18Z'
   active_writer_leases:
+    - slot: CONFIG_DEPS
+      lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
+      phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
     - slot: RELEASE_INTEGRATOR
-      lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
-      phase_scope: P12_then_P09_source_microbatch_only
-  last_heartbeat_at: '2026-07-31T17:11:15Z'
-  controller_authorization_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-  ready_entry_payload_digest: c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380
+      lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
+      phase_scope: batch_B_configuration_dependencies_and_shared_tests_only
+  last_heartbeat_at: '2026-07-31T17:40:18Z'
+  controller_authorization_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+  ready_entry_payload_digest: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
   interface_checkpoint_sha: null
-  implementation_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+  implementation_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
   status_proof:
-    state: claimed
+    state: ready
     producer_task_id: C00
-    producer_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
+    producer_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
-    integration_or_evidence_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    integration_or_evidence_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
     candidate_manifest_digest: null
     result_index_digest: null
     case_counts:
-      expected: 3
+      expected: 9
       passed: 0
       failed: 0
       blocked: 0
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-    transitioned_at: '2026-07-31T17:11:15Z'
+    state_based_on_control_head_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
+    transitioned_at: '2026-07-31T17:40:18Z'
     proof_record_location: 'ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof'
 - task_id: P08
   status: ready_for_review

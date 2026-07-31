@@ -1,7 +1,8 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items:
+items: []
+completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION
     merge_id: f7c7150d-190c-4e29-a89e-618f625e36ee
@@ -179,11 +180,6 @@ items:
       succeeded: 0
       reconciled: 0
     state_based_on_control_head_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
-item_payload_digests:
-  f7c7150d-190c-4e29-a89e-618f625e36ee: 3c7fd98bf1b92ac78a92122e5a291565e8cb84d227a1b4683030a07ba42a0c08
-  3475d18d-e67d-4690-b456-fe88527d9bb1: 375db3de4a419cbf557d63c0aae1696b1a205972a5d511b9164c7c7e666d3a4d
-  d188c42e-a9e7-4f9e-a0a4-3436d266fcf4: 980815f9eaf8c437d78963d4650670e97dae27a10ee2785735fe92efc032ac61
-completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION
     merge_id: 81343d98-4027-4984-aa22-667bac140d4d
@@ -943,6 +939,9 @@ completed_items:
     external_effect_summary: *zero_effects
     state_based_on_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
 completed_item_payload_digests:
+  f7c7150d-190c-4e29-a89e-618f625e36ee: 3c7fd98bf1b92ac78a92122e5a291565e8cb84d227a1b4683030a07ba42a0c08
+  3475d18d-e67d-4690-b456-fe88527d9bb1: 375db3de4a419cbf557d63c0aae1696b1a205972a5d511b9164c7c7e666d3a4d
+  d188c42e-a9e7-4f9e-a0a4-3436d266fcf4: 980815f9eaf8c437d78963d4650670e97dae27a10ee2785735fe92efc032ac61
   81343d98-4027-4984-aa22-667bac140d4d: e173c6b19150ed26b0bccbda36dcdd94b7111044b2476985042d3960611006b3
   417ab877-7cdc-4244-8e40-bc268325a4de: e83044cbb1f6b381da07521e6fd36c17418e1d820cbf371805a3feb4cab3c2ee
   5ac7ed54-f75c-4aed-a87a-63478c046480: a3f43e06f433e03b22c59154c278993c1f5149c153f58fde6628b6ef95b1b824

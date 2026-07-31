@@ -139,10 +139,12 @@ blockers:
     defect, shared-path application, remote integration push, or external effect occurred. P12 terminal 3ad55dc1 then
     passed one independent review: exact six-path scope, 19/19 focused assertions, zero P12/P09 type diagnostics, released
     lease and effects 0/0/0. C00 admitted only this child as correction merge d188c42e atop held local head 08e26cfd.
+    I36 then preserved the ordered P12/P09/correction ancestry at terminal 288d5883, passed 67 focused assertions with
+    three declared native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease,
+    and recorded effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2.
   required_authority_or_input:
-  - Complete correction merge d188c42e atop held I36 head 08e26cfd and terminalize the ancestry-preserving source microbatch
-  - Apply admitted P12 server/client -002 plus barrel -003 during dependency-ordered Batch A; never apply either
-    superseded predecessor
+  - Complete repository-safe Batches B and C, then apply admitted P12 server/client -002 plus barrel -003 during
+    dependency-ordered Batch A; never apply either superseded predecessor
   - Pass real signup, reload, logout, re-login, pre/post-expiry, household, inactive-route, wrong-household,
     stale-security, expired, revoked, no-legacy-fallback, and Student create/manage verification
   protection: >-
@@ -150,9 +152,9 @@ blockers:
     session establishment from row insertion alone, expose raw token material, rewrite migrations 2235/2241, fabricate a
     multi-household selector, or treat inactive access as an unauthenticated Parent.
   next_check: >-
-    Re-evaluate after ordered P12/P09 source integration, then after Batch A shared registration and the mounted
-    persistence/route/browser checkpoint. Preserve the recovery-capable post-commit session boundary without claiming
-    stricter cross-transaction atomicity.
+    Re-evaluate after Batch B/C and Batch A shared registration, then after the mounted persistence/route/browser
+    checkpoint. Preserve the recovery-capable post-commit session boundary without claiming stricter cross-transaction
+    atomicity.
 - blocker_id: P09-SCHOOL-INQUIRY-ROUTE-COMPOSITION
   status: open
   scope: controlled_launch_candidate
@@ -187,11 +189,14 @@ blockers:
     assigned and unapplied. I36's clean local source merges passed all 67 focused assertions and relevant web builds but
     were held before terminal/push for three P12 test-only type-contract errors. Accepted P12 child 3ad55dc1 corrects
     those exact fixtures and is now the sole authorized third merge; no P09 or shared byte changes.
+    I36 terminal 288d5883 then preserved all ordered source ancestry, passed 67 focused assertions with three declared
+    native skips, zero P12/P09 type diagnostics, exact changed-file static checks, released its lease, and recorded
+    effects 0/0/0. One independent review passed the exact 40-source/43-release-path terminal with no P1/P2.
   required_authority_or_input:
-  - Merge accepted P12 child 3ad55dc1 and terminalize the held ancestry-preserving I36 source microbatch
-  - Apply the three admitted P09 split successors in dependency order and rerun the focused static production /school test
+  - Complete repository-safe Batches B and C, then apply the three admitted P09 split successors during Batch A and
+    rerun the focused static production /school test
   protection: School inquiry must create no product account, access, Student contact, nurture enrollment, WhatsApp send, or direct provider/billing mutation.
-  next_check: Re-evaluate after ordered P12-then-P09 source integration and dependency-ordered I36 route registration.
+  next_check: Re-evaluate after Batch B/C and dependency-ordered Batch A route registration.
 - blocker_id: P22-LEARNING-ENGAGEMENT-AUTHORITY-CONVERGENCE
   status: open
   scope: controlled_launch_candidate
@@ -222,7 +227,7 @@ blockers:
     independent review with no P1/P2 discrepancy. C00 recorded migrations 2254-2256 as integrated and their exact
     successor requests as applied.
   required_authority_or_input:
-  - Apply the remaining dependency-ordered corrected shared requests through exact I36 batches A-D and re-run merged
+  - Apply the remaining corrected shared requests through exact I36 batches B, C, A, then D and re-run merged
     registration checks
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display

@@ -16,15 +16,15 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 5c0c6c958a25ef313cb623bcfc3928899e5279ac
+controller_authorization_sha: 3c4a3aafb55ebe4745aa865733612172c9fad436
 next_action: >-
-  Resume I36 from exact held local head 08e26cfd under its existing claim and RELEASE_INTEGRATOR lease. Consume only
-  correction MERGE item d188c42e and merge independently accepted P12 child 3ad55dc1 as the second parent, preserving
-  the existing P12 71fb96d6 and P09 ce8df6e6 ancestry and forecast tree ea56dee0. Preserve every steward request and
-  shared path byte. Rerun the merged P12/P09 focused suite, changed-workspace typecheck with zero P12/P09 diagnostics,
-  and exact changed-file static checks; reuse the already-passed relevant web builds because the child is test/runtime
-  metadata only. Update I36's runtime triplet once, release the lease, push one terminal, and stop for one independent
-  review. Candidate freeze, provider effect, deployment, DNS change, send, charge, customer activation, and every
+  Execute exact I36 Batch B from accepted integration 288d5883 under fresh CONFIG_DEPS and RELEASE_INTEGRATOR leases.
+  Reproduce and classify exactly nine immutable configuration, dependency, lockfile, and shared-config-test requests;
+  apply only complete repository-safe semantics within the eight authorized paths and record exact immutable
+  dispositions for anything already satisfied, superseded, invalid, or blocked by a later provider, deployment, fixture,
+  or identity gate. Run only changed-byte validation, update I36's runtime triplet once, release both leases, push one
+  terminal, and stop for one independent review. Batches C, A, and D remain ordered successors. Candidate freeze,
+  provider or infrastructure inspection/mutation, deployment, DNS change, send, charge, customer activation, and every
   external effect remain prohibited.
 production_completion_lanes:
 - lane: A
@@ -120,7 +120,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: P12_P09_source_microbatch_type_contract_closure_ready
+  status: P12_P09_source_microbatch_accepted_Batch_B_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -133,7 +133,13 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+  expected_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+  Batch_B_claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+  Batch_B_CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
+  Batch_B_RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
+  Batch_B_lease_expires_at: '2026-07-31T21:40:18Z'
+  Batch_B_ready_entry_payload_digest: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
+  Batch_B_request_count: 9
   P21_P22_source_atomic_claim_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
   P21_P22_source_atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
   P21_P22_source_atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
@@ -540,11 +546,11 @@ successor_dispatch:
     effect_locks: []
     external_effects: 0/0/0
   I36:
-    status: claimed
-    phase: P12_P09_source_microbatch_type_contract_closure
+    status: ready
+    phase: batch_B_configuration_dependencies_and_shared_tests
     branch: codex/v21-integration
-    expected_existing_head_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
-    remote_integration_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
+    expected_existing_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+    remote_integration_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
     atomic_claim_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     atomic_claim_tree_sha: a3f5578ff5bc108f16480444e7adc66112337268
     atomic_claim_state_handoff_digest: bc8f2247c7fc64a63b4445d75cfeee4047de6a24d3671f14d3a537c8d90f986e
@@ -554,24 +560,30 @@ successor_dispatch:
     terminal_claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
     terminal_writer_id: codex-i36-p21-p22-source-f7a26569
     terminal_writer_lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
-    claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
-    writer_id: codex-i36-p12-p09-source-586989e0
-    writer_lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
-    writer_lease_expires_at: '2026-07-31T18:23:33Z'
-    ready_entry_payload_digest: c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380
+    prior_claim_id: 586989e0-52cd-4470-9ba3-ebb5689f5f14
+    prior_writer_id: codex-i36-p12-p09-source-586989e0
+    prior_writer_lease_id: 04dfa82c-4b04-4083-8255-1b78f20f59ff
+    prior_writer_lease_released_at: '2026-07-31T17:23:20Z'
+    claim_id: 995fe313-efa9-4e5f-b4f6-eeadc9b50d6d
+    writer_id: codex-i36-batch-b-995fe313
+    CONFIG_DEPS_lease_id: e75d8901-0b96-4ec7-b64e-724cfdbcd7a1
+    RELEASE_INTEGRATOR_lease_id: eafaecb9-82b6-4e99-bbc3-0d9ad8d92b84
+    writer_lease_expires_at: '2026-07-31T21:40:18Z'
+    ready_entry_payload_digest: b753f0efbc69518c8286d1e37cf7e9bf120ee6e755d05f601faae1e9f82b7800
     P12_local_merge_sha: a6929cdddbde5282f37c10a60a5cc602cff44866
     P09_local_merge_sha: 08e26cfd9958da54b3fff95942d81f08ac7a5e09
     held_local_tree_sha: 7bc370097d3e19d8bb762e13f118e35e920ba758
     focused_merged_tests: 67_passed_3_declared_native_skips
-    merged_typecheck_status: P12_correction_accepted_pending_exact_child_merge
+    merged_typecheck_status: passed_zero_P12_or_P09_diagnostics_four_unchanged_baselines
     P21_source_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
     P22_source_merge_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
-    terminal_head_sha: ae3ced8a9daa11044d4278968c14cb6baa12a480
-    terminal_parent_sha: 4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3
-    terminal_tree_sha: 2501433f286dba71778d1abe2e60f0fa10de57f9
-    terminal_state_handoff_digest: 78347417eb67dcda7f85a5b90b071a2e87ec327cb9c9aa7cc8fb4568bdd847b3
-    terminal_runtime_triplet_digest: 58ea62cafb749e83836d1afc91b8c170c4ed85236e23de26f118e601ae5666ba
-    terminal_lease_released_at: '2026-07-31T13:38:40Z'
+    terminal_head_sha: 288d5883d4e5a4e298efa8659609b42f87d190d4
+    terminal_parent_sha: 8ab92f4b2ee26bd3838d6793b7c29d357f66c3a5
+    terminal_tree_sha: d1ad8f7fa293450bd380f9a7b249b59e82d0d9d9
+    terminal_state_handoff_digest: 3bec58d05fc142a079f4a9aadfe28144c03ee9fe53406be3a82ff0a4affef572
+    terminal_runtime_triplet_digest: a47fc1645bc6728ea9cd2b2b44e50e48c87125cc6a3f6b09ef9ec3ea6daf126d
+    terminal_triplet_manifest_digest: e790e30469a110f683f342d12ea2370de4d76407cb42420dd0026efd3db7792b
+    terminal_lease_released_at: '2026-07-31T17:23:20Z'
     merge_order: P12_then_P09
     P12_merge_id: f7c7150d-190c-4e29-a89e-618f625e36ee
     P09_merge_id: 3475d18d-e67d-4690-b456-fe88527d9bb1
@@ -597,12 +609,28 @@ successor_dispatch:
     F02_P18_forecast_conflicts: 0
     F02_source_merge_sha: 614c723681cff39db2ebd8988017d4b389d1adc1
     P18_source_merge_sha: 4efab9fe2e9d6f34850e93b0ea434d3ed00dd8b3
-    release_path_count: 18
-    release_path_inventory_digest: 72dbd80d1f7101d04951bdddbeaa96e55c7d727eee8ea949e803500c41913ede
-    release_manifest_digest: 47522b81ffe6a9a66db64dadd510ebea7c78f5054adbf6337dc27383643fcec8
-    release_diff_sha256: 0615e3d92347d3b134d35f5f21d9031b712a829b8fb762d33ec319c708a5a1dc
+    release_path_count: 43
+    release_path_inventory_digest: d08ed515e0392b7c969061f3c56e44a51c002b6d943c977cfc8802b2bff7e8da
+    release_manifest_digest: 7a8105510cec15bf54f7b1556c73b9860fed1c3f230adc2b4792c283c7ad06bb
+    release_diff_sha256: 9fe5cf57367738ff3317aa1f66d98eb74601c09ac9577d7c0e45d7558a52cd48
+    combined_source_path_count: 40
+    combined_source_path_inventory_digest: 914134026094df5aec87c1d78f5c0b965ef8e3ba2f14a48f5e298a65b8869d31
+    combined_source_manifest_digest: 4da1a34b941441463527bdc4274b04273e770cbf5bc555e21cdd6b7d312f7e4e
+    combined_source_diff_sha256: 5f5b2c2bd8cdb909cfed5bf9399aca79129776330ab010601c4c1ed00fa90301
     independent_review: passed_no_P1_or_P2
     native_postgresql_18_4: passed_87_of_87_apply_replay_and_ledger
+    Batch_B_request_digests:
+      P32-config-001: 005106774e3ad414f885d04f72b90000bc42a07c65f41edbf4fa85db0f2d6309
+      P19-CONFIG-DEPENDENCY-001: 8896d9023f42ce6f8a424dd1a81faf05938cfa6d03751bb2fc066a81c3c41165
+      P20-RUNTIME-CONFIG-001: 1436bbe841665fff24c54e6a8f2372410850ec9e763f4c323c6266b222b2302b
+      P20-PINNED-MEDIA-RUNTIME-001: 651b8177e3d227e63f7562824d07a04f5261c9277e3e36929b6881ce2168434f
+      P29-config-001: 10eb53f6f54fd3d8a7e32ea48452205c1b7c55a98f67f8e81ec434b83e50da0e
+      P17-ZOOM-CONFIG-DEPENDENCY-001: a3ccccdd574875fab0dfe7da4fb0f269be41b55b4dafb8485ba76cdfbfbaab9d
+      P33-config-001: bc972db8b48aaf69b61a5b82511532dd8f0ad675ea1fdeb01a1671ecac35cbb6
+      P08-config-002: 88fcdc20555bcf044455cebf30fbad4e91af89432ee7dd6768114c0d4de24b19
+      P22-config-key-002: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+    Batch_B_request_count: 9
+    Batch_B_provider_boundary: repository_only_no_provider_or_infrastructure_inspection_or_effect
     effect_locks: []
     external_effects: 0/0/0
   P18:
