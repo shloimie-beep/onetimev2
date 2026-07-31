@@ -199,6 +199,50 @@ function assertOneSubject(events: readonly AttendanceEvent[]): void {
         'Attendance source reference must be a digest.',
       );
     }
+    assertCorrectionMetadata(event);
+  }
+}
+
+function assertCorrectionMetadata(event: AttendanceEvent): void {
+  const isCorrection =
+    event.source === 'admin_correction' && event.event_kind === 'manual_correction';
+  const reason = event.correction_reason;
+  const adminId = event.correction_admin_id;
+  const auditRef = event.audit_ref;
+  if (isCorrection) {
+    if (
+      reason === null ||
+      reason.trim() !== reason ||
+      reason.length < 3 ||
+      reason.length > 1_000 ||
+      adminId === null ||
+      adminId.trim() !== adminId ||
+      adminId.length === 0 ||
+      adminId.length > 512 ||
+      auditRef === null ||
+      auditRef.trim() !== auditRef ||
+      auditRef.length === 0 ||
+      auditRef.length > 512
+    ) {
+      throw new EmbeddedClassroomError(
+        'invalid_contract',
+        'Attendance correction metadata must be canonical and P22-compatible.',
+      );
+    }
+    return;
+  }
+  if (
+    event.source === 'admin_correction' ||
+    event.event_kind === 'manual_correction' ||
+    event.correction_intervals.length > 0 ||
+    reason !== null ||
+    adminId !== null ||
+    auditRef !== null
+  ) {
+    throw new EmbeddedClassroomError(
+      'invalid_contract',
+      'Only an audited Admin correction may carry attendance correction metadata.',
+    );
   }
 }
 
@@ -233,7 +277,22 @@ function emptyProjection(prior: AttendanceProjection | null, now: Date): Attenda
 }
 
 function compareEvent(left: AttendanceEvent, right: AttendanceEvent): number {
-  return instant(left.observed_at) - instant(right.observed_at);
+  return (
+    instant(left.observed_at) - instant(right.observed_at) ||
+    compareUtf8(left.attendance_event_id, right.attendance_event_id)
+  );
+}
+
+function compareUtf8(left: string, right: string): number {
+  const encoder = new TextEncoder();
+  const leftBytes = encoder.encode(left);
+  const rightBytes = encoder.encode(right);
+  const sharedLength = Math.min(leftBytes.length, rightBytes.length);
+  for (let index = 0; index < sharedLength; index += 1) {
+    const difference = leftBytes[index]! - rightBytes[index]!;
+    if (difference !== 0) return difference;
+  }
+  return leftBytes.length - rightBytes.length;
 }
 
 function instant(value: string): number {

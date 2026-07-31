@@ -215,6 +215,21 @@ export interface AttendanceProjection {
   updated_at: string;
 }
 
+export interface AttendanceProjectionChange {
+  readonly scope: Readonly<JobScope>;
+  readonly occurrence_id: string;
+  readonly student_id: string;
+  readonly source_attendance_event_id: string;
+  readonly source_event_ref_digest: string;
+  readonly correction_audit_ref: string | null;
+  readonly correction_reason: string | null;
+  readonly correction_admin_id: string | null;
+}
+
+export interface AttendanceProjectionChangePort {
+  onAttendanceProjectionChange(change: AttendanceProjectionChange): Promise<void>;
+}
+
 export interface CommitBootstrapInput {
   prior_grant: LaunchGrantRecord;
   next_grant: LaunchGrantRecord;

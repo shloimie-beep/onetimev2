@@ -5,266 +5,78 @@ task_packet_digest: e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bba
 task_context_digest: 2385ac5d0555d75318577964ad92b850c55e8bc770127454e65afe776648142d
 package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-branch: codex/v21-p18-embedded-classroom
-start_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
+prompt_digest: 4961cde1f9eb8ff32b68e8144dbe243c5f7f42e8c1922bbab24c39d82650d469
+branch: codex/v21-p18-attendance-projection-callback
+start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+correction_base_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+evidence_count_correction_parent_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
 dependency_heads:
-  F05:
-    required_state: interface_ready_integrated
-    task_head_sha: 9174d845e1c04916e2f1884cfadfaef624ac6862
-    integration_head_sha: 9782a4164662b8059a557c0969de9c35f54d0cf7
-    interface_source_head_sha: 0656380bcfc50cc464dcea7588448dc724049599
-    interface_implementation_head_sha: 1ade14c52e42e59bb8fd1d1de776b91406c45f15
-    interface_checkpoint_digest: fd17c478bfc851dcb434b8e0c2750701605b80dfdf880833a6a2993e8fad6329
-  P16:
-    required_state: interface_ready_integrated
-    task_head_sha: 72fca16b3a9cd82c666e293f8bfd7d84c30722a1
-    integration_head_sha: 9ba92b070eedfa3756eff4f78fd328de72507a96
-    interface_source_head_sha: 418ffcc5cbf78643b40b89dbc5da64ea04806f6e
-    interface_implementation_head_sha: 46b5c39aceb6006376903750cfc268b35bbaccdd
-    interface_checkpoint_digest: 95c177d54a429dbcba604d9903c0edcb9aa6051f73e168f853d2b8fd4e377d68
-  P32:
-    required_state: interface_ready_integrated
-    task_head_sha: f4ae1c03c60917a23a825d46a4d0ec63ff4fc125
-    integration_head_sha: c4d042e94b3f7e779fd6bfd41127dd9576854805
-    interface_source_head_sha: 6a33944a75e717041b2f951134459769b8fc2617
-    interface_implementation_head_sha: 888af54911ed583da99408cfcc791b485a728ddd
-    interface_checkpoint_digest: 76d0858798dbb7a14c93666ab9f0c647107d380464ec2d6b582657865eecf217
+  C00:
+    required_state: immediate_lean_completion_mode
+    observed_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+    state_basis_control_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+    control_state_raw_sha256: 618b4540026b3eab5f7a14b04edad39a07662cd5de19f53fba7665df93706851
+  I36:
+    required_state: P21_then_P22_accepted_source_microbatch_complete
+    terminal_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    terminal_tree_sha: 722151c1fc3db6b6d4eacb0390696efcfea3ce37
+    runtime_triplet_digest: 8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5
+  P18_prior_callback:
+    required_state: independently_rejected_preserved_evidence
+    terminal_head_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+    implementation_head_sha: 633e3805150e9a4f4b8cce76d4304454bbb85d94
+    atomic_claim_head_sha: 8c48f3218c8e10aeab542fb478e87f13433f12c6
+    source_manifest_digest: 0bcc3c44d3516bb20b9a6fb9b3400e1c8c87528444b57832d7c11c4bf170ab88
+  P22:
+    required_state: callback_consumer_source_integrated
+    source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+    integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    server_registration_request_raw_sha256: f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516
 status: ready_for_review
-phase: P18_P17_disjoint_ownership_successor_request_correction_complete
-completed_correction_phase: launch_grant_table_collision_correction
-claimed_by: codex-p18-successor-correction-baeb91ef
-claim_time: '2026-07-30T09:46:00Z'
-claim_id: baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4
-writer_slot_lease_id: 39d6a728-0cde-43e6-9a3f-693c1b07ab4c
-lease_issued_at: '2026-07-30T11:04:00Z'
-lease_expires_at: '2026-07-30T12:04:00Z'
-last_heartbeat_at: '2026-07-30T11:08:08Z'
-lease_released_at: '2026-07-30T11:08:08Z'
-controller_authorization_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
-acquisition_parent_control_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
-state_based_on_control_head_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
-ready_entry_payload_digest: ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811
-reconciled_claim_head_sha: 9b10ef41d65c39bd33d673d0849f0106e13296d2
-reconciled_claim_control_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
-prior_reconciled_claim_head_sha: d315c47ff9e616ef7909c6edce85a226c5e4fbec
-prior_reconciled_claim_control_sha: 8241e5527b7cfbdf12cdeb0c3916fb259a6a7054
-prior_request_reauthorization_sha: 01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc
-state_based_on_head_sha: b9ad947405de53c138561fd47b9d5c65a25f6b8b
-last_implementation_commit_sha: 7163c2a2fda6d4f8105895ceb62f97db1f8ee56a
-implementation_manifest_digest: b4048000148bb93a9e3debbe4ed933dcc1732f2bbf0f8e0f20dc19530b56f4ba
-contract_artifact_digest: de3daf2b85b15b31c4bd230599ba48e714bdf2ff4c47683854e8962fd671255c
-correction_manifest_digest: 533b480bb3f7f71c2798a765d63abb3cd1d2200b4be6c5f4b85687ca72b88d51
-correction_artifact_digests:
-  repository_raw_sha256: fff7c15fe9144c00da6a8515b5f319ba88df241f4558de2a89239b990676135b
-  repository_test_raw_sha256: b2bcc9fd7e8106b0c0450efd47bc6d6cc3427c3ae3bc5d8e6b66ba7746119ef3
-  schema_contract_raw_sha256: f2437b9533afc0d8b7453fb4ac8e8c02ff3eee91aff910c768e5ec10ada5de71
-  schema_contract_version: 1.0.1
-  migration_request_raw_sha256: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
-  migration_request_canonical_queue_sha256: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
-successor_request_correction_binding:
-  containing_control_head_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
-  state_based_on_control_head_sha: f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0
-  control_state_digest: 7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade
-  ready_entry_payload_digest: ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811
-  authorized_start_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
-  expected_existing_head_sha: b9ad947405de53c138561fd47b9d5c65a25f6b8b
-  package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
-  source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-  task_packet_digest: e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bbaa1b2
-  task_context_digest: 2385ac5d0555d75318577964ad92b850c55e8bc770127454e65afe776648142d
-  prior_state_raw_sha256: b25519660cb3558913f5ffd06f97652f42daf05fde5cad72139043118b9e616f
-  prior_handoff_raw_sha256: 4be7fcf0b8265e5f48c5313520eaff9a0054953c0a5d98e8ba1ce1fb9a628b38
-  prior_state_handoff_digest: 442e4126fbeaf9e38a397414945844e2ca07b022aed67d1e9719600ced520669
-  prior_runtime_triplet_digest: d899d9c249b07c8aed4bd023447f1202d8569b4dcae46015bf2def1d7c75d793
-  authorized_path_inventory_digest: 514fd42be9e493d6c436784db2709b930c6af3b89247a34ebc3505e6ca0533f5
-  integrated_release_head_sha: 99fd8c33ea023e838d8ee9c993b5de52f4763e7f
-  integrated_P17_head_sha: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
-  P18_table_ownership:
-    - onetime.classroom_launch_grants_v21
-    - onetime.live_student_classroom_sessions
-    - onetime.classroom_attendance_events_v21
-    - onetime.classroom_attendance_projection_v21
-  P17_preparation_table_count: 5
-  P17_canonical_outbox_and_binding_only: true
-  migration_001_raw_sha256: acb6ed1d81e05e338875ada7309629d418dafa4b06ee555037e40988b7b7ff1a
-  migration_001_canonical_sha256: de071ac6050df478768e588a6d6986dc2fec4cf0dd06377ab3b17dc92990de0e
-  migration_002_raw_sha256: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
-  migration_002_canonical_sha256: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
-  registration_001_raw_sha256: 1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0
-  registration_001_canonical_sha256: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
-  product_test_request_bytes_preserved: true
-  external_effects: 0/0/0
-substantive_correction_binding:
-  reconciliation_control_head_sha: 246990489b99575c3ded7af18ab22571d2fcb3a6
-  reconciliation_control_parent_sha: 3757ee49b83027d69208f25b0f709d309d5c6c1a
-  claim_checkpoint_head_sha: 9b10ef41d65c39bd33d673d0849f0106e13296d2
-  claim_state_raw_sha256: 8d0a89c657fab02c8c64a603d61b100df7e1b58a7abb5b76f88727912d73b566
-  claim_handoff_raw_sha256: fd3f668d468fde1c893c2390dca3e43dea90a9cabe4de1426b3f0970a67bf02a
-  claim_state_handoff_digest: 4655004bf0494d4561934e3ee33359e2625b34eb784c8a6ce6fcf8e3c385cdb1
-  claim_runtime_triplet_digest: c02dd015e5cc637ffb4a0c79559ee575d9b23e5bb76e0bffa931b45fddc894ed
-  rebound_writer_slot_lease_id: 39d6a728-0cde-43e6-9a3f-693c1b07ab4c
-  rebound_lease_issued_at: '2026-07-30T11:04:00Z'
-  rebound_lease_expires_at: '2026-07-30T12:04:00Z'
-  rebound_lease_released_at: '2026-07-30T11:08:08Z'
-  correction_path_inventory_digest: bc7d137af343a7a8bb71e411ad4dc1b42d36fd1320d5168bc15a3bd49c9b1c7d
-  migration_003_raw_sha256: 20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9
-  migration_003_canonical_sha256: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
-  repository_raw_sha256: fff7c15fe9144c00da6a8515b5f319ba88df241f4558de2a89239b990676135b
-  repository_test_raw_sha256: b2bcc9fd7e8106b0c0450efd47bc6d6cc3427c3ae3bc5d8e6b66ba7746119ef3
-  schema_contract_raw_sha256: f2437b9533afc0d8b7453fb4ac8e8c02ff3eee91aff910c768e5ec10ada5de71
-  launch_grant_raw_sha256: b7245798c1f49dd7e375f061fc8c7f593ec7cb1923c2de6da6e0bd3e9277131e
-  live_session_raw_sha256: ed93f86cd1f364de90054b9dc1812ff881565afe8aa274893bc92447505ba3f2
-  existing_request_and_source_bytes_preserved: true
-  migration_003_is_sole_successor: true
-  source_compatibility_change_required: false
-  external_effects: 0/0/0
+phase: P18_attendance_projection_callback_evidence_count_correction_complete
+claimed_by: codex-p18-evidence-count-1904184a
+claim_time: '2026-07-31T12:26:10Z'
+claim_id: 1904184a-8dbd-4876-b7bd-3715ed4272c0
+writer_slot: EMBEDDED_CLASSROOM
+writer_slot_lease_id: 8700aa39-5041-4aa8-bf35-398cb86ba6f6
+lease_issued_at: '2026-07-31T12:26:10Z'
+lease_expires_at: '2026-07-31T14:26:10Z'
+last_heartbeat_at: '2026-07-31T12:38:56Z'
+lease_released_at: '2026-07-31T12:38:56Z'
+controller_authorization_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+state_based_on_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+ready_entry_payload_digest: 0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb
+authorized_path_inventory_digest: a1faaf0d274b87576b567dcd9aa305184598dd8c7bd9d44dd526fc97cd7b76f8
+correction_terminal_head_sha: derive_with_git_rev_parse_HEAD
+source_manifest_digest: 1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340
+source_artifact_digests:
+  contract_raw_sha256: 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5
+  repository_test_raw_sha256: ea3bbcdbdbc64b3864c3c2cd9b28d5f669b61860370acc14cc4208923c56af00
+  repository_raw_sha256: 6d162518c7e0f94ef65953796993ad7a9b929dccca47dd309a55afe16940babb
+  attendance_domain_raw_sha256: 5a039941ae54f528ed0d68981626ef4515850be97953cd5adbce3c95676dccf2
+  attendance_domain_test_raw_sha256: 23ab9aec4a811a2baf9905e58fb233ebf8c2087277b1ab98ca845113c5320d3c
 completed_steps:
-  - C00 reconciled exact runtime-triplet claim 9b10ef41d65c39bd33d673d0849f0106e13296d2 at control 246990489b99575c3ded7af18ab22571d2fcb3a6 and rebound the unchanged claim to sole EMBEDDED_CLASSROOM lease 39d6a728-0cde-43e6-9a3f-693c1b07ab4c.
-  - Confirmed no P18 source compatibility change is required after exact P17 integration; all five conditional source/test artifacts remain byte-identical.
-  - Created immutable P18-migration-003 as the complete successor to immutable withheld migration-002, preserved rejected migration-001 and registration-001 byte-identically, and requested exactly the four P18-owned tables with explicit disjoint P17 and canonical outbox/binding reuse boundaries.
-  - Passed focused YAML, formatting, raw/canonical request digest, exact scope, protected-byte, ownership, runtime-manifest, diff-hygiene, clean-push, remote-equality, and zero-effect checks.
-  - Released sole EMBEDDED_CLASSROOM lease 39d6a728-0cde-43e6-9a3f-693c1b07ab4c at 2026-07-30T11:08:08Z before its 2026-07-30T12:04:00Z expiry.
-  - Recomputed exact P18 READY ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811 from containing control 3757ee49b83027d69208f25b0f709d309d5c6c1a and state-basis control f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0 with control-state digest 7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade.
-  - Verified exact task, context, package, runtime, request, ownership, dependency, path-ceiling, fresh claim, sole EMBEDDED_CLASSROOM lease, and zero-effect bindings.
-  - Claimed only the P18 runtime triplet from exact head b9ad947405de53c138561fd47b9d5c65a25f6b8b; every product, test, migration request, registration request, control, provider, deployment, send, and effect byte remains unchanged.
-  - Verified repository identity, exact containing control authority e847dd790ae2f99ae526b0edcbd41897474c8f18, and exact authorized integration start.
-  - Verified the ready/registry branch, canonical ready digest, claim, sole live EMBEDDED_CLASSROOM lease, and zero effect locks.
-  - Verified all 200 locked blobs plus package-lock, source-package, task, context, and prompt digests.
-  - Verified exact F05/P16/P32 implementation and integration ancestry, all three canonical contract preimages, and every exported dependency artifact hash.
-  - Created the isolated P18 branch from exact authorized start 9ba92b070eedfa3756eff4f78fd328de72507a96.
-  - Published the exact sole-parent three-file atomic P18 claim checkpoint 9b37f4a0a123299b0b278ffeaa7b83c763155e3b.
-  - Implemented exact join-window, current-consent, Student/session/household, access, enrollment, registrant, and revocation authorization.
-  - Implemented digest-only 60-second single-use launch grants and a no-store, no-referrer, raw-URL-free Meeting SDK bootstrap boundary.
-  - Implemented one live Student session with 30-second heartbeat, 90-second lease, same-lineage reconnect, second-device denial, expiry reacquisition, and audited Admin reset.
-  - Implemented append-only attendance evidence with provider precedence, overlap-safe reconnect merging, mismatch state, capped percentage, and append-only Admin correction.
-  - Implemented parameterized PostgreSQL persistence and atomic grant/session and Admin-reset transactions without runtime schema creation.
-  - Implemented Student camera guidance, recording disclosure/indicator, safe denial copy, and heartbeat view model.
-  - Published immutable migration and central-registration steward requests.
-  - Passed full typecheck, 17 focused assertions, focused lint/format, exact source-scope, digest, and diff checks.
-  - Released the EMBEDDED_CLASSROOM lease in task-local terminal metadata.
-  - Re-fetched and verified the exact remote control authorization, sole acquisition parent, expected existing P18 head, canonical READY payload, and live sole-writer lease.
-  - Re-verified every entry-bound digest, the applied-table collision, both protected legacy blobs, and zero provider/live effect locks.
-  - Claimed only the P18 runtime triplet for the authorized launch-grant table collision correction; no repository, schema, test, migration, or steward-request correction was edited.
-  - C00 reconciled the exact atomic claim head under the unchanged claim and EMBEDDED_CLASSROOM lease.
-  - Replaced every launch-grant insert, load, bootstrap-consume, and reset SQL reference with onetime.classroom_launch_grants_v21.
-  - Added an explicit regression proving all four launch-grant SQL operations use only the collision-free v2.1 table and reject the protected legacy table.
-  - Advanced the embedded-classroom schema contract to version 1.0.1 and the collision-free launch-grant table binding.
-  - Published immutable P18-migration-002 without allocating an ordinal, writing migration SQL, or claiming a migration was applied or executed.
-  - Obtained bounded C00 reauthorization for the exact inspected 4616-byte P18-migration-002 preimage; the unreproducible prior request digest pair is superseded.
-  - Preserved the applied legacy migration and rejected P18-migration-001 at their exact protected Git blobs.
-  - Passed four focused files with 18 assertions, full typecheck, focused ESLint and Prettier, repository-wide secret scan, and exact path/digest/YAML/blob checks.
-  - Released the EMBEDDED_CLASSROOM lease in task-local terminal metadata after correction verification.
+  - Fetched and verified live control 864298e32e693599a804a5b152739de4ae17ee2b, exact resume head e61aaeb384201f267b528e01c780f38cfc0c984d, repository identity, branch, clean starting state, claim, writer, and sole EMBEDDED_CLASSROOM lease.
+  - Revalidated at later live control 70b12ea370e8430bc80c0943231af98a3f5e6265 that the P18 canonical READY, claim, lease, expected head, and seven-path inventory remained byte-semantically unchanged before terminal commit.
+  - Independently reproduced canonical READY digest 862362d871eec64d5ad47b3399dad9672649cef2fe3cf70ed24432028322e1e7 and LF-joined exact seven-path inventory digest e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b.
+  - Required every newly inserted attendance event to advance the versioned projection exactly once; a zero-row projection mutation now rolls back the event and invokes no callback, while an exact replay remains a no-write callback repair.
+  - Queried the deterministic latest stored Admin correction before projection persistence and COMMIT, using observed time then canonical UTF-8 event-ID bytes; bound correction state, reason, Admin, audit, digest, and immutable event identity, and rejected older, different, hidden, or unprovable authority.
+  - Replaced locale-sensitive ordering with explicit UTF-8 byte ordering identical to PostgreSQL convert_to(..., 'UTF8') ordering and added punctuation and Unicode reversal counterexamples.
+  - Preserved mandatory port injection, DB-derived immutable callback payload, COMMIT-before-callback, callback-failure replay repair, older exact replay, all migration/steward bytes, and contract raw SHA-256 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5.
+  - Passed the exact 35 relevant focused assertions: repository 21, domain 10, and server callback contract 4; prior product-terminal typecheck, focused ESLint/Prettier, YAML, diff, secret, locked/source manifests, exact scope, forbidden-delta, and migration-tree evidence remains preserved.
+  - Reproduced the exact prior terminal raw hashes and authoritative raw-byte concatenation digests, then corrected only the runtime evidence count under canonical READY 0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb without rerunning product validation.
+  - Released sole EMBEDDED_CLASSROOM lease 8700aa39-5041-4aa8-bf35-398cb86ba6f6 at 2026-07-31T12:38:56Z before expiry with effects 0/0/0.
 remaining_steps:
-  - C00 must independently audit and integrate this exact four-path successor-request correction final.
-  - F02 must independently adjudicate only immutable P18-migration-003; migration-001 remains rejected and migration-002 remains superseded and withheld.
-  - I36 must independently disposition the byte-identical P18-registration-001 request.
-  - Candidate-bound provider-sandbox and production-operator proof remains for verification waves.
-next_action: C00 audits and integrates this exact P18 final, then F02 adjudicates only P18-migration-003 and I36 independently handles the preserved registration request; P18 must stop.
+  - C00 independently audits the exact pushed three-runtime-path evidence-count correction terminal and records its Git head.
+next_action: Stop after normal push and verified local/tracking/live equality; C00 audits the exact metadata-only terminal before any integration or external action.
 requirements:
-  OTV2-CLASSROOM-073: implementation_verified
-  OTV2-CLASSROOM-075: implementation_verified
   OTV2-CLASSROOM-078: implementation_verified
-  OTV2-CLASSROOM-187: implementation_verified
-  OTV2-CLASSROOM-232: implementation_verified
 acceptance_cases:
-  OTV2-CLASSROOM-073-AC01: task_owned_assertions_passed
-  OTV2-CLASSROOM-075-AC01: task_owned_assertions_passed
-  OTV2-CLASSROOM-078-AC01: task_owned_assertions_passed
-  OTV2-CLASSROOM-187-AC01: task_owned_assertions_passed
-  OTV2-CLASSROOM-232-TIMING: task_owned_assertions_passed
-  OTV2-CLASSROOM-232-BOOTSTRAP-LEASE: task_owned_assertions_passed
+  OTV2-CLASSROOM-078-AC01: 35_relevant_task_owned_assertions_passed
 changed_paths:
-  - apps/web/src/client/app/student/classroom/index.ts
-  - apps/web/src/client/app/student/classroom/view-model.test.ts
-  - apps/web/src/client/app/student/classroom/view-model.ts
-  - apps/web/src/server/features/classroom/embedded/index.ts
-  - apps/web/src/server/features/classroom/embedded/service.test.ts
-  - apps/web/src/server/features/classroom/embedded/service.ts
-  - packages/contracts/src/classroom/embedded/index.ts
-  - packages/db/src/classroom/attendance/index.ts
-  - packages/db/src/classroom/attendance/repository.test.ts
-  - packages/db/src/classroom/attendance/repository.ts
-  - packages/db/src/classroom/attendance/schema-contract.ts
-  - packages/domain/src/classroom/embedded/attendance.ts
-  - packages/domain/src/classroom/embedded/embedded-classroom.test.ts
-  - packages/domain/src/classroom/embedded/errors.ts
-  - packages/domain/src/classroom/embedded/index.ts
-  - packages/domain/src/classroom/embedded/join-policy.ts
-  - packages/domain/src/classroom/embedded/launch-grant.ts
-  - packages/domain/src/classroom/embedded/live-session.ts
-  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P18/HANDOFF.md
-  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-001.yaml
-  - ops/v2.1-execution/runtime/P18/steward-requests/P18-registration-001.yaml
-atomic_claim_changed_paths:
-  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P18/HANDOFF.md
-  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
-current_claim_changed_paths:
-  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P18/HANDOFF.md
-  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
-current_correction_changed_paths:
   - ops/v2.1-execution/runtime/P18/HANDOFF.md
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-003.yaml
-authorized_successor_correction_paths:
-  - ops/v2.1-execution/runtime/P18/HANDOFF.md
-  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
-  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-003.yaml
-  - packages/db/src/classroom/attendance/repository.ts
-  - packages/db/src/classroom/attendance/repository.test.ts
-  - packages/db/src/classroom/attendance/schema-contract.ts
-  - packages/domain/src/classroom/embedded/launch-grant.ts
-  - packages/domain/src/classroom/embedded/live-session.ts
-correction_changed_paths:
-  - packages/db/src/classroom/attendance/repository.ts
-  - packages/db/src/classroom/attendance/repository.test.ts
-  - packages/db/src/classroom/attendance/schema-contract.ts
-  - ops/v2.1-execution/runtime/P18/steward-requests/P18-migration-002.yaml
-  - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P18/HANDOFF.md
-  - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
-migrations: []
-steward_requests:
-  - request_id: P18-migration-001
-    sha256: acb6ed1d81e05e338875ada7309629d418dafa4b06ee555037e40988b7b7ff1a
-    disposition: rejected_immutable_legacy_table_collision
-  - request_id: P18-migration-002
-    sha256: d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed
-    canonical_queue_sha256: e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d
-    disposition: superseded_immutable_withheld_by_P18-migration-003
-  - request_id: P18-migration-003
-    sha256: 20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9
-    canonical_queue_sha256: a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960
-    disposition: proposed_immutable_pending_F02_adjudication
-  - request_id: P18-registration-001
-    sha256: 1157f31a58d51047b73a2ee8e757da4428d08708bc29fa7b31818b722ac098b0
-    canonical_queue_sha256: 3e5cfa4b78e3224c3b5ee55257b32c121d448e69fe6479b208c225277b5a917c
-verification:
-  commands_run:
-    - Exact remote/control/integration/branch/claim/lease/effect-lock verification passed.
-    - Locked Git blob and entry-bound digest verification passed for 200 locked blobs plus package/task/context/prompt/source-package digests.
-    - F05/P16/P32 dependency ancestry, three canonical contract digests, and 27 exported artifact hashes passed.
-    - npm run typecheck passed.
-    - Focused Vitest passed 4 files and 17 assertions.
-    - Focused ESLint passed 18 TypeScript artifacts.
-    - Focused Prettier passed 23 TypeScript, YAML, and Markdown artifacts.
-    - Exact 23-path normalized-owned-scope inventory passed.
-    - Implementation manifest, contract artifact, and steward-request digests passed.
-    - git diff --check and clean-tree source verification passed.
-    - C00 claim reconciliation 8241e5527b7cfbdf12cdeb0c3916fb259a6a7054 and bounded exact-request reauthorization 01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc passed.
-    - Focused Vitest passed 4 files and 18 assertions after the collision correction.
-    - npm run typecheck passed after the collision correction.
-    - Focused ESLint and Prettier passed all four correction source/request artifacts.
-    - npm run secret:scan passed across 2669 repository text files.
-    - Exact seven-path diff, correction manifest, repository/schema/request digests, YAML parsing, protected-blob preservation, and git diff --check passed.
-    - Exact reconciliation control, claim checkpoint, rebound lease, four-path ceiling, disjoint P17/P18 ownership, and zero-effect bindings passed.
-    - P18-migration-003 YAML, raw/canonical digest, exact four-table request, immutable predecessor/registration preservation, conditional source-byte preservation, focused Prettier, runtime manifests, and diff hygiene passed.
-  known_baseline_failures: []
 external_effects:
   authority: none
   attempted: 0
@@ -272,3 +84,23 @@ external_effects:
   reconciled: 0
 blockers: []
 out_of_scope_findings: []
+verification:
+  focused_tests: 35_passed_0_failed
+  focused_suite_counts:
+    repository: 21
+    domain: 10
+    server_callback_contract: 4
+    total: 35
+  current_validation_mode: metadata_only_per_immediate_lean_steer
+  tests_rerun_for_metadata_correction: false
+  typecheck: preserved_from_product_terminal_not_rerun
+  focused_eslint: preserved_from_product_terminal_not_rerun
+  focused_prettier: preserved_from_product_terminal_not_rerun
+  yaml: current_metadata_correction_passed
+  diff_check: current_exact_three_path_scope_passed
+  secret_scan: 3110_text_files_passed_product_terminal_not_rerun
+  locked_manifest: 200_entries_passed_product_terminal_not_rerun
+  source_manifest: 15_entries_passed_product_terminal_not_rerun
+  migration_tree: preserved_040376c25e645b048afeb8e08d230a3084ab8566_not_rerun
+  contract_raw_sha256: 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5
+  exact_scope: 3_runtime_paths_passed

@@ -1,149 +1,72 @@
-# P18 Collision-Correction Handoff
+# P18 Attendance Projection Callback Correction Handoff
 
 ## Identity
 
-- Branch: `codex/v21-p18-embedded-classroom`
-- Correction parent: `d315c47ff9e616ef7909c6edce85a226c5e4fbec`
-- Final correction head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
-- Claim: `61b4324b-03b7-4d7a-a658-6c3a3091fb80`
-- EMBEDDED_CLASSROOM lease: `65bbf2a3-564f-407d-aa21-ba572f5fd1fe`
-- Lease released: `2026-07-29T16:56:37Z`
-- Claim reconciliation: `8241e5527b7cfbdf12cdeb0c3916fb259a6a7054`
-- Exact-request reauthorization: `01e2b7c694563caa29826f8dc0bbb76ee0b4a9cc`
-- Reauthorization sole parent: `2c8b4872938d6f0db50ef7f1dba89a0d660a4975`
-- Correction manifest: `533b480bb3f7f71c2798a765d63abb3cd1d2200b4be6c5f4b85687ca72b88d51`
+- Branch: `codex/v21-p18-attendance-projection-callback`
+- Product-correction terminal and exact metadata parent: `abc2be5b19f5539a4e3bcea55886f5ff12d5de64`
+- Product-correction parent: `e61aaeb384201f267b528e01c780f38cfc0c984d`
+- Containing control: `4105c365a90ecb27fb930077ecaf02a9125edb38`
+- READY state basis/acquisition: `3a94de302ae0f7784dd5b5e47e850df4babde74c`
+- Claim: `1904184a-8dbd-4876-b7bd-3715ed4272c0`
+- Writer: `codex-p18-evidence-count-1904184a`
+- EMBEDDED_CLASSROOM lease: `8700aa39-5041-4aa8-bf35-398cb86ba6f6`
+- Lease released: `2026-07-31T12:38:56Z`, before `2026-07-31T14:26:10Z`
+- READY digest: `0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb`
+- Exact three-path inventory digest: `a1faaf0d274b87576b567dcd9aa305184598dd8c7bd9d44dd526fc97cd7b76f8`
+- Terminal head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
 
-## Corrected behavior
+## Correction completed
 
-Every launch-grant repository statement now uses only
-`onetime.classroom_launch_grants_v21`: insert, exact-scope load,
-bootstrap-consume, and Admin-reset revocation. The focused database regression
-invokes all four operations, requires the `_v21` table in each SQL statement,
-and rejects the unversioned legacy-table spelling.
+Every newly inserted attendance event now requires an exact one-row versioned
+projection advance. Projection inserts or updates returning zero rows roll the
+new event back and invoke no callback, even if all requested projection bytes
+already exist. Exact event replay still performs no projection write, commits,
+and re-invokes the callback, including an older exact correction after a newer
+successor.
 
-The schema contract is version `1.0.1` and binds `launch_grants` to the same
-collision-free table. No other runtime persistence contract changed.
+Before projection persistence and COMMIT, the repository queries the latest
+stored Admin correction for the exact scope, occurrence, and Student. It orders
+by `observed_at` then UTF-8 bytes of `attendance_event_id`, validates the
+DB-derived immutable correction event, and binds exact correction state,
+reason, Admin, audit reference, source digest, and event identity. Older newly
+inserted corrections, different metadata, hidden correction state, and
+unprovable authority roll back with no callback.
 
-## Immutable replacement request
+Domain correction and connection ordering now compares raw UTF-8 bytes without
+locale state. PostgreSQL uses the identical
+`convert_to(attendance_event_id, 'UTF8')` boundary. Tests cover punctuation and
+Unicode pairs whose default locale ordering reverses the canonical order.
 
-`P18-migration-002` requests a forward-only, F02-owned migration for the
-collision-free v2.1 launch-grant table and the previously requested session and
-attendance structures. It does not allocate a migration ordinal, contain SQL,
-or claim any migration was written, applied, or executed.
+## Preserved behavior and scope
 
-- Raw SHA-256: `d1151073dc979a91ab7697b12b711a468795016bfe9b83e8d77203bc6a19a5ed`
-- Canonical queue SHA-256: `e1423a8acc4c53835f3b8ce0414deb0f21bad7d2f66ad8f3277c51f0ac5df54d`
-- Exact bytes: `4616`, UTF-8 LF with trailing LF
+The mandatory callback port, DB-derived server-owned payload,
+COMMIT-before-callback order, callback-failure replay repair, exact replay,
+P22-compatible correction metadata, and immutable projection/event scope are
+preserved. The embedded-classroom contract remains byte-identical at raw
+SHA-256 `005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5`.
+No contract, migration, steward request, composer, config, barrel, integration,
+candidate, provider, deployment, DNS, send, charge, or customer state changed.
 
-C00 independently inspected and reauthorized this exact preimage. The earlier
-unreproducible `3f8df8d4…` / `435d1d7a…` pair is superseded and is not claimed.
+The source artifact manifest is
+`1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340`.
+The terminal delta is exactly the four authorized product/test paths and P18
+runtime triplet.
 
-## Correction artifact digests
+## Verification and evidence-count correction
 
-- Repository: `fff7c15fe9144c00da6a8515b5f319ba88df241f4558de2a89239b990676135b`
-- Repository regression: `b2bcc9fd7e8106b0c0450efd47bc6d6cc3427c3ae3bc5d8e6b66ba7746119ef3`
-- Schema contract: `f2437b9533afc0d8b7453fb4ac8e8c02ff3eee91aff910c768e5ec10ada5de71`
-
-The correction manifest is SHA-256 of recursively key-sorted compact JSON
-mapping the four non-runtime correction paths to these exact raw digests.
-
-## Protected evidence
-
-- Applied migration `packages/db/migrations/2002_ot88_zoom_learner_classroom.sql`
-  remains Git blob `7ee99d1174e557eb0978e4258fc511da1b4ab445`.
-- Rejected `P18-migration-001.yaml` remains Git blob
-  `5975b103568459c48771330f0f287b25e7b5199b`.
-
-Neither protected artifact was edited, and the correction performs no create,
-alter, rename, backfill, read, or write against the legacy table.
-
-## Verification
-
-- Focused Vitest: four files, 18 assertions, passed.
-- Full TypeScript typecheck: passed.
-- Focused ESLint and Prettier: passed.
-- Repository secret scan: 2,669 text files, passed.
-- Exact seven-path inventory, raw/canonical digests, YAML parsing,
-  protected-blob checks, and `git diff --check`: passed.
+- Exact relevant focused total: 35 passed, 0 failed: repository 21, domain 10,
+  and server callback contract 4.
+- This final continuation used metadata-only validation per immediate lean steer:
+  YAML, raw/pair/triplet digests, exact three-path scope, ancestry, expected
+  head, and local/tracking/live equality. Tests, typecheck, lint, native DB,
+  full suite, and secret scan were not rerun.
+- All product/test, contract, migration, request, config, composer, barrel,
+  integration, candidate, provider, and external-effect bytes are preserved
+  from `abc2be5b19f5539a4e3bcea55886f5ff12d5de64`.
+- Effects: attempted `0`, succeeded `0`, reconciled `0`.
 
 ## Exact next action
 
-C00 audits and integrates this exact remote `ready_for_review` head. F02 then
-independently adjudicates `P18-migration-002`; P18 must not allocate an ordinal
-or write migration SQL.
-
-## External effects
-
-Authority `none`; attempted `0`, succeeded `0`, reconciled `0`. No provider,
-deployment, send, or live effect occurred.
-
-## P17-disjoint ownership successor-request correction atomic claim
-
-Containing control `3757ee49b83027d69208f25b0f709d309d5c6c1a` with
-state-basis control `f295f2f55d9fda6208ef1c8dfb9c97ea2ca475a0`
-authorizes only a runtime-triplet claim from exact P18 head
-`b9ad947405de53c138561fd47b9d5c65a25f6b8b`.
-
-READY
-`ba3d425b483be5fa9ad663b5cbf192e1bdc1fb8f44ac2cbc4b285a3533d1a811`
-and state-basis control-state digest
-`7dfb873efe7246f60aa267e2b0c92858bc72edff5a2d2aab742b4e34b7449ade`
-were independently recomputed. Claim
-`baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4` is held under sole
-EMBEDDED_CLASSROOM lease `b84e8273-7109-435f-93a6-6d35b41678de` through
-`2026-07-30T10:46:00Z`.
-
-The prior P18 state/handoff pair is
-`442e4126fbeaf9e38a397414945844e2ca07b022aed67d1e9719600ced520669`;
-its runtime triplet is
-`d899d9c249b07c8aed4bd023447f1202d8569b4dcae46015bf2def1d7c75d793`.
-Integrated release `99fd8c33ea023e838d8ee9c993b5de52f4763e7f`
-contains exact P17 `7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c`.
-P18 remains sole owner of its four embedded-classroom tables; P17 owns five
-disjoint preparation tables and reuses only canonical `job_outbox` and
-`provider_operation_binding`.
-
-This checkpoint changes only P18 TASK-STATE, HANDOFF, and NEXT-PROMPT. It does
-not create `P18-migration-003` or edit any product, test, existing request,
-migration, control, provider, deployment, send, or effect byte. Effects remain
-`0/0/0`.
-
-C00 must independently audit and reconcile the exact pushed atomic claim before
-P18 creates the immutable successor request or edits any source. P18 must stop.
-
-## P17-disjoint ownership successor-request correction final
-
-C00 reconciled exact claim checkpoint
-`9b10ef41d65c39bd33d673d0849f0106e13296d2` at control
-`246990489b99575c3ded7af18ab22571d2fcb3a6`. The unchanged claim
-`baeb91ef-3ce9-460c-8a6f-4c8eb40b8ff4` continued under sole rebound
-EMBEDDED_CLASSROOM lease `39d6a728-0cde-43e6-9a3f-693c1b07ab4c`.
-
-P18 published only immutable `P18-migration-003` plus this runtime triplet.
-The request:
-
-- has raw SHA-256
-  `20b26c98023d739510e06411186428d8ddd2a7317eca13d64c747fba882b25d9`;
-- has canonical queue SHA-256
-  `a7fea38033ff31b691fb065d124bf4d71e0900ea3dd2fbc0bd481cefd00b1960`;
-- completely supersedes and withholds immutable `P18-migration-002`;
-- never revives or edits rejected immutable `P18-migration-001`;
-- requests exactly P18's four owned tables and no P17 table;
-- reuses, but does not create or alter, canonical `job_outbox` and
-  `provider_operation_binding`;
-- allocates no ordinal, contains no SQL, and claims no application or execution.
-
-Exact integrated P17 `7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c`
-retains its five disjoint preparation tables. No source incompatibility was
-found, so all five conditional source/test artifacts remain byte-identical.
-`P18-registration-001`, migration-001, and migration-002 also remain
-byte-identical.
-
-Lease `39d6a728-0cde-43e6-9a3f-693c1b07ab4c` was released at
-`2026-07-30T11:08:08Z`, before its `2026-07-30T12:04:00Z` expiry. No
-provider, migration, registration, deployment, send, or external effect
-occurred. Effects remain `0/0/0`.
-
-C00 must independently audit and integrate the exact pushed four-path final.
-F02 then adjudicates only immutable `P18-migration-003`; I36 independently
-handles the preserved registration request. P18 must stop.
+C00 independently audits the exact pushed terminal, its sole parent, three-path
+scope, corrected count/component evidence, raw-byte composite digests, released
+lease, clean remote equality, and effects `0/0/0`. P18 must stop.
