@@ -16,15 +16,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+controller_authorization_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
 next_action: >-
-  Execute one exact I36 Parent auth/client successor from independently audited partial integration a5a2ad94 under
-  claim ef14f276 and lease 21315060. Add v2.1 credential login, fresh CSRF bootstrap, exact logout/revocation and
-  invalid-cookie recovery, sole-household selection redirect, verified same-origin signup continuation, a v2-specific
-  Parent client boot, and native production-repository proof across only the authorized paths. Keep
-  P08-auth-household-002 assigned and the P08 blocker open until later P12 persistence/routes/forms and browser proof
-  pass. Candidate freeze, provider locks/mutations, deployment, DNS, sends, charges, live migration execution, and
-  customer activation remain gated.
+  I36 renewal checkpoint 0d834c0c is independently safe. Its first renewed push may change only the I36 runtime
+  triplet to bind fresh claim 5deb22c5 and task-bound lease 87280cec, then must stop for C00 reconciliation. Only after
+  that reconciliation may the same worker finish the six bounded auth-security closeout items and terminal
+  native/browser validation within the unchanged thirteen-path ceiling. P08/P12 results remain assigned and
+  unapplied. Candidate freeze, provider locks/mutations, deployment, DNS, sends, charges, live migration execution,
+  and customer activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -64,7 +63,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: family_parent_session_partial_reconciled_successor_dispatched
+  status: parent_session_successor_renewal_checkpoint_reconciled_fresh_claim_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -77,10 +76,16 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+  expected_head_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
   successor_authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
-  claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
-  writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
+  renewal_checkpoint_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
+  renewal_checkpoint_implementation_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
+  renewal_checkpoint_tree_sha: 14ab1f2be8a545153ad37d9d4893d50c836e659d
+  renewal_checkpoint_path_count: 13
+  prior_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+  prior_writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
+  claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
+  writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 authority_note: >-

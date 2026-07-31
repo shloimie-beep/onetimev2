@@ -3,7 +3,43 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 Parent auth/client successor dispatch
+# Latest I36 Parent auth/client successor renewal dispatch
+
+Use only final clean pushed integration
+`0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857`, a normal three-commit
+descendant of authorized start `a5a2ad94b77eaf596930609d4d5abe4fa672439b`.
+Do not bind transient head `7e15e703`; final `0d834c0c` corrects its
+implementation-SHA typo across the full I36 runtime triplet.
+
+First renewed push only:
+
+- READY `010c6e951a95840de997ec93136b5ba1f28468b8fc35498ab008a81457cc5c1f`;
+- fresh claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`;
+- fresh shared four-slot lease `87280cec-f71e-4dbd-91dd-38f54d0c7b93`;
+- writer `codex-i36-parent-session-successor-5deb22c5`;
+- control state basis `50ebdcdb345bf13bd76d9af013c25855bc369836`;
+- expiry `2026-07-31T02:28:50Z`.
+
+Change exactly the I36 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`
+to bind that fresh authority, mark the historical lease superseded, preserve
+all ten product/test blobs, effects `0/0/0`, and the safe next action. Commit,
+push normally, verify local/tracking/live equality, and stop for C00
+reconciliation. Do not resume product editing in this first push.
+
+Only after C00 reconciles the runtime-only claim may the same worker finish
+the six recorded security closeouts: linearizable pre-Argon reservations;
+invalid-versus-unavailable propagation; invalid-CSRF credential preservation
+and outcome-dependent logout clearing; recovery-required cleanup propagation;
+redacted logout audit/readback; and real Parent-bundle isolation across
+reload/logout. Then run native PostgreSQL plus changed-area, browser, build,
+typecheck, lint/format, secret, scope, ancestry, and diff gates; release all
+four slots together; push; and stop for terminal audit.
+
+No migration, steward application, provider inspection or mutation, provider
+lock, candidate freeze, deployment, DNS, live database effect, send, charge,
+customer activation, or other external effect is authorized.
+
+# Superseded I36 Parent auth/client successor dispatch
 
 Control acquisition parent is
 `90e70b07e5b10a16342e80c4f8b537a8ea21263c`; exact clean pushed integration

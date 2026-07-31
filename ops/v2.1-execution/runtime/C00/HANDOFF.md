@@ -1,5 +1,40 @@
 # Parent auth/client successor — current handoff
 
+Control parent `50ebdcdb345bf13bd76d9af013c25855bc369836` independently
+reconciles final I36 renewal checkpoint
+`0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857`. Bind only that final
+head: transient `7e15e703` contained a corrected implementation-SHA typo and
+is not an authorization target.
+
+The final checkpoint is a clean, remote-equal, normal three-commit descendant
+of authorized start `a5a2ad94`. It has parent `7e15e703`, tree `14ab1f2b`,
+exactly ten product/test paths plus the I36 runtime triplet, state/handoff
+digest `be219af9`, runtime-triplet digest `629639e5`, and effects `0/0/0`.
+The historical claim `ef14f276` and lease `21315060` were released at
+`2026-07-31T00:54:34Z`, before expiry. Bounded checkpoint validation passed
+workspace typecheck, 12 adult-session unit tests, focused formatting, diff
+hygiene, and YAML parsing; native PostgreSQL, real-browser, build, lint, and
+secret terminal gates remain honestly pending.
+
+C00 issued fresh claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared task-bound lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93` for SERVER_COMPOSER,
+CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY through
+`2026-07-31T02:28:50Z`. Canonical renewal READY is
+`010c6e951a95840de997ec93136b5ba1f28468b8fc35498ab008a81457cc5c1f`.
+The first renewed push may change only the I36 runtime triplet to bind the
+fresh authority and must stop for C00 reconciliation. Product/security
+editing resumes only after that claim checkpoint is accepted.
+
+The later resumed phase remains limited to the six recorded security
+closeouts and terminal validation within the unchanged thirteen-path ceiling.
+P08/P12 results remain assigned and unapplied. Candidate is null, all provider
+locks remain unclaimed, and no migration, steward application, provider,
+deployment, DNS, send, charge, customer, or other external effect is
+authorized.
+
+## Superseded Parent auth/client successor handoff
+
 Control basis is exact pushed `90e70b07e5b10a16342e80c4f8b537a8ea21263c`;
 integration is exact clean pushed
 `a5a2ad94b77eaf596930609d4d5abe4fa672439b`; candidate remains null.

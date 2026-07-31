@@ -12,16 +12,16 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-31T02:18:02Z'
-last_heartbeat_at: '2026-07-30T23:18:02Z'
-controller_authorization_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+lease_expires_at: '2026-07-31T02:58:50Z'
+last_heartbeat_at: '2026-07-31T00:58:50Z'
+controller_authorization_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
 ready_entry_payload_digest: null
-state_based_on_head_sha: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
+state_based_on_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
     prior_control_head_sha: 1b33b5d92a3cb59d64232050ffbe4eccfeb3d4ca
-    current_integration_head_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+    current_integration_head_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
     P18_source_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
     P21_source_head_sha: 705030f2d5163f95340a19dc42efd0f167259869
     communications_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
@@ -181,6 +181,23 @@ lean_completion_bindings:
     parent_session_auth_client_successor_writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
     parent_session_auth_client_successor_ready_entry_payload_digest: 9da7b8a521b2ff8f4da4cd502c3903fceb8b7f4fcce938cdf24a3ec7051656b2
     parent_session_auth_client_successor_scope: exact_ten_product_test_paths_plus_I36_runtime_triplet
+    parent_session_auth_client_successor_renewal_checkpoint_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
+    parent_session_auth_client_successor_renewal_checkpoint_parent_sha: 7e15e703db68ec3a021d579c7dac6007d6df1544
+    parent_session_auth_client_successor_renewal_implementation_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
+    parent_session_auth_client_successor_renewal_tree_sha: 14ab1f2be8a545153ad37d9d4893d50c836e659d
+    parent_session_auth_client_successor_renewal_path_count: 13
+    parent_session_auth_client_successor_renewal_state_handoff_digest: be219af996c1b665d7852110718b46ecaaeb9c5f6d607fdf8d661b8d7c6ac0f7
+    parent_session_auth_client_successor_renewal_runtime_triplet_digest: 629639e5a0a0babacb8a9e368edcddfd73e3ca34403ab8387c53a0061851a3b6
+    parent_session_auth_client_successor_renewal_path_inventory_digest: 3b86e3ac22167df1ba2ebf13766a1de51b974f65d6ae1deb29ca0a46451f6199
+    parent_session_auth_client_successor_renewal_raw_manifest_digest: 39b8dae9aca452e8408a51bd83503796e8f939ff436eee47b8542845503cfb09
+    parent_session_auth_client_successor_renewal_prior_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+    parent_session_auth_client_successor_renewal_prior_lease_id: 21315060-463e-49a8-a246-20057483ec20
+    parent_session_auth_client_successor_renewal_claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
+    parent_session_auth_client_successor_renewal_writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
+    parent_session_auth_client_successor_renewal_ready_entry_payload_digest: 010c6e951a95840de997ec93136b5ba1f28468b8fc35498ab008a81457cc5c1f
+    parent_session_auth_client_successor_renewal_expiry: '2026-07-31T02:28:50Z'
+    parent_session_auth_client_successor_renewal_first_push_scope: I36_runtime_triplet_only_then_stop
+    parent_session_auth_client_successor_renewal_effects: 0/0/0
     missing_steward_requests_ingested:
     - P12-registration-001
     - P22-migration-001
@@ -310,6 +327,7 @@ lean_completion_bindings:
       - preserve_immutable_P21_MIGRATION_002_and_superseded_registration_001_bytes
     provider_boundary: repository_only_no_provider_call_or_effect
 completed_steps:
+- independently reconciled I36 renewal checkpoint 0d834c0c as a clean remote-equal three-commit descendant of a5a2ad94 with exact 13-path authority, typecheck, 12 adult-session tests, focused format/diff/YAML proof, timely old-lease release, state/handoff be219af9, runtime triplet 629639e5, and effects 0/0/0; issued fresh runtime-triplet-only claim 5deb22c5 and four-slot lease 87280cec through 02:28:50Z
 - Independently admitted F02 terminal 26234c47 with exact five-path scope, immutable 2252 preservation, exact forward-only 2253, 84/84 native PostgreSQL and pg-mem replay, all malformed/stale/cross-scope/mismatch/five-guard rejects, clean remote equality, released leases, and effects 0/0/0.
 - Independently admitted corrected P08 implementation 1550e668 and terminal 7ba18b92 with exact fourteen product/request paths plus runtime triplet, semantic contract 2.1.0 source, three raw/canonical immutable successor-request digests, 29 focused tests, native local transaction proof, clean remote equality, and effects 0/0/0.
 - Independently admitted Lane B terminal fc16537d, including exact School payload/route correction and post-boundary CTA semantics, after source-scope review, 5/5 contract/form assertions, clean remote equality, and no provider or deployment effect.
@@ -687,15 +705,15 @@ completed_steps:
 - independently preflighted migration gaps: P22 requires currently authorizable 2254; P12 requires a new immutable distinct-name persistence request before 2255; P09/P10 require a new joint School-seat authority convergence request before 2256
 - authorized one exact I36 v2.1 Parent auth/client lifecycle successor from a5a2ad94 under fresh claim ef14f276, task-bound four-slot lease 21315060, and an exact ten-product/test plus runtime-triplet path ceiling; no migration, steward result, candidate, provider, deployment, or effect is authorized
 remaining_steps:
-- Execute and independently reconcile the exact I36 v2.1 Parent auth/client lifecycle successor from a5a2ad94.
+- Reconcile I36's fresh runtime-triplet-only renewal claim from exact checkpoint 0d834c0c, then finish and independently reconcile the six bounded auth-security closeout items plus native PostgreSQL and real-browser terminal proof.
 - Create and admit exact immutable P12 persistence and P09/P10 School-seat convergence correction requests, then run the forward-only F02 2254-2256 migration batch with fresh native proof.
 - Operationalize P12's concrete PostgreSQL repository/router/forms and Student-creation journey before applying P12/P08 shared registration or closing the P08 blocker.
 - Complete P09's signed-out GET /school and Admin configuration surface after School-seat authority converges; do not over-claim P08-registration-002 or P09-registration-001.
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
-next_action: Push this reconciled partial-control boundary, execute only the exact I36 v2.1 auth/client lifecycle
-  successor from a5a2ad94 under READY and four task-bound writer slots, then stop for independent reconciliation. Keep
-  every P08/P12 result unapplied and perform no migration, provider mutation, candidate freeze, or deployment.
+next_action: Push this renewal authority boundary. I36's first renewed push may change only its runtime triplet to
+  bind the fresh claim and lease from exact checkpoint 0d834c0c, then must stop for C00 reconciliation. Keep every
+  P08/P12 result unapplied and perform no migration, provider mutation, candidate freeze, or deployment.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -720,11 +738,11 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
-      observed_head: a5a2ad94b77eaf596930609d4d5abe4fa672439b
+      claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
+      observed_head: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
       authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
-      lease_expires_at: '2026-07-31T01:18:02Z'
-      scheduling_state: parent_session_auth_client_successor_ready
+      lease_expires_at: '2026-07-31T02:28:50Z'
+      scheduling_state: parent_session_auth_client_successor_renewal_atomic_claim_ready
     F02:
       branch: codex/v21-lane1-migration-correction
       claim_id: null
@@ -1578,6 +1596,7 @@ verification:
   - source microbatch 3 control validation: passed all 12 parsed YAML documents, 46 unique registry tasks, canonical I36 READY a87a97b2, four exact active MERGE payload digests d220ad71/71b96026/9aa91c8b/e6fcb0d8, all nine historical completed MERGE digests, one sole RELEASE_INTEGRATOR writer, zero effect locks, 14 unclaimed provider locks, null candidate, effects 0/0/0, 11/11 normalized control digests, exact nine-path diff, diff-check, and secret scan across 2423 files; scoped Prettier reproduced the known baseline on all nine touched control/runtime files
   - source microbatch 3 reconciliation and I36 Parent-session composition dispatch: passed all 12 parsed YAML documents, 46 unique registry tasks, empty active and 13 exact completed MERGE items, canonical READY 09952344 with exact two-product-path plus runtime-triplet scope, sole non-controller I36 SERVER_COMPOSER writer, C00 lease mirror, exact three open blockers and both F04 blockers closed, 14 unclaimed provider locks, null candidate, effects 0/0/0, 11/11 normalized control digests, protected control-byte immutability, exact nine-path diff, diff-check, and secret scan across 2423 files; scoped Prettier reproduced the same seven-file known baseline failures and the same two passing documents, so no formatting regression or broad rewrite was introduced
   - I36 server-shell partial reconciliation and auth/client successor dispatch: passed all 12 parsed YAML documents, 46 unique registry tasks, 35/35 producer implementation-head ancestry to a5a2ad94, 74 unique steward requests including three exact newly ingested raw digests, canonical READY 9da7b8a5 mirrored in queue/registry/runtime, empty active MERGE queue, one unique non-controller writer across four task-bound slots, 14 unclaimed provider locks, null candidate, effects 0/0/0, 11/11 normalized control digests with five protected files byte-identical, exact nine-path diff, diff-check, and secret scan; P08/P12 results remain assigned and unapplied
+  - I36 successor renewal checkpoint and fresh-claim dispatch: passed final-head-only 0d834c0c remote equality, normal three-commit ancestry from a5a2ad94, exact 13 authorized paths, tree 14ab1f2b, path/raw manifests, runtime renewal_requested pause state, pre-expiry release at 00:54:34Z, typecheck, 12 adult-session tests, focused format/diff/YAML evidence, fresh claim/lease consistency, null candidate, no effect locks, and effects 0/0/0
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:
