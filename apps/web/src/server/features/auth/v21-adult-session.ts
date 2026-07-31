@@ -114,7 +114,14 @@ export type V21AdultLoginOutcome =
   | {
       handled: true;
       authenticated: false;
-      failure: 'invalid_credentials' | 'unavailable' | 'recovery_required';
+      failure: 'invalid_credentials';
+      budget_disposition: 'retain' | 'release';
+      session_mutated?: true;
+    }
+  | {
+      handled: true;
+      authenticated: false;
+      failure: 'unavailable' | 'recovery_required';
       session_mutated?: true;
     }
   | {
@@ -373,7 +380,6 @@ export function createV21AdultSessionRuntime(
         const proof = verifyAuthPasswordWithUpgrade(password, identity?.passwordHash ?? '');
         if (!identity) return { handled: false };
         if (
-          !proof.valid ||
           identity.adultState !== 'active' ||
           identity.humanAccountId === null ||
           identity.accountState !== 'active' ||
@@ -389,6 +395,15 @@ export function createV21AdultSessionRuntime(
             handled: true,
             authenticated: false,
             failure: 'invalid_credentials',
+            budget_disposition: 'release',
+          };
+        }
+        if (!proof.valid) {
+          return {
+            handled: true,
+            authenticated: false,
+            failure: 'invalid_credentials',
+            budget_disposition: 'retain',
           };
         }
         const humanAccountId = identity.humanAccountId;

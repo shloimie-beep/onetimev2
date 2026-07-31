@@ -419,6 +419,69 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     await expect(rejected.resolve.mock.results.at(-1)?.value).resolves.toBeNull();
   });
 
+  it('retains a login budget only for a wrong password on an otherwise eligible credential', async () => {
+    const wrongPassword = repositoryHarness();
+    wrongPassword.findLoginIdentity.mockResolvedValueOnce(loginIdentity());
+    const wrongPasswordRuntime = createV21AdultSessionRuntime({
+      repository: wrongPassword.repository,
+      hmacSecret,
+    });
+    await expect(
+      wrongPasswordRuntime.login({
+        scope: establishmentInput().scope,
+        email: 'parent@example.test',
+        password: 'definitely not the password',
+        now,
+      }),
+    ).resolves.toEqual({
+      handled: true,
+      authenticated: false,
+      failure: 'invalid_credentials',
+      budget_disposition: 'retain',
+    });
+
+    for (const identity of [
+      loginIdentity({ accountState: 'archived' }),
+      loginIdentity({ activeOwnedHouseholdCount: 2 }),
+      loginIdentity({ credentialState: 'reset_required' }),
+    ]) {
+      const ineligible = repositoryHarness();
+      ineligible.findLoginIdentity.mockResolvedValueOnce(identity);
+      const runtime = createV21AdultSessionRuntime({
+        repository: ineligible.repository,
+        hmacSecret,
+      });
+      await expect(
+        runtime.login({
+          scope: establishmentInput().scope,
+          email: 'parent@example.test',
+          password: 'correct horse battery staple',
+          now,
+        }),
+      ).resolves.toEqual({
+        handled: true,
+        authenticated: false,
+        failure: 'invalid_credentials',
+        budget_disposition: 'release',
+      });
+    }
+
+    const disappeared = repositoryHarness();
+    disappeared.findLoginIdentity.mockResolvedValueOnce(null);
+    const disappearedRuntime = createV21AdultSessionRuntime({
+      repository: disappeared.repository,
+      hmacSecret,
+    });
+    await expect(
+      disappearedRuntime.login({
+        scope: establishmentInput().scope,
+        email: 'parent@example.test',
+        password: 'correct horse battery staple',
+        now,
+      }),
+    ).resolves.toEqual({ handled: false });
+  });
+
   it('classifies repository failure as unavailable instead of a credential failure', async () => {
     const harness = repositoryHarness();
     harness.findLoginIdentity.mockRejectedValueOnce(new Error('database unavailable'));
@@ -439,6 +502,44 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
       authenticated: false,
       failure: 'unavailable',
     });
+  });
+
+  it('reports recovery_required whenever password-upgrade cleanup is not exactly verified', async () => {
+    const password = 'correct horse battery staple';
+    const passwordHash = outdatedPasswordHash(password);
+    for (const cleanup of ['revoke_false', 'live_readback', 'revoke_throws'] as const) {
+      const harness = repositoryHarness();
+      harness.findLoginIdentity.mockResolvedValue(
+        loginIdentity({ passwordHash, credentialVersion: 4 }),
+      );
+      harness.upgradeCredentialPasswordHash.mockResolvedValueOnce(false);
+      if (cleanup === 'revoke_false') {
+        harness.revoke.mockResolvedValueOnce(false);
+      } else if (cleanup === 'revoke_throws') {
+        harness.revoke.mockRejectedValueOnce(new Error('database unavailable'));
+      }
+      const runtime = createV21AdultSessionRuntime({
+        repository: harness.repository,
+        hmacSecret,
+        randomBytes: deterministicRandom(),
+      });
+
+      await expect(
+        runtime.login({
+          scope: establishmentInput().scope,
+          email: 'parent@example.test',
+          password,
+          now,
+        }),
+      ).resolves.toEqual({
+        handled: true,
+        authenticated: false,
+        failure: 'recovery_required',
+      });
+      expect(harness.revoke).toHaveBeenCalledWith(
+        expect.objectContaining({ reason: 'explicit_revocation' }),
+      );
+    }
   });
 
   it('uses signup-compatible NFKC email normalization before v2 identity recognition', async () => {
@@ -505,6 +606,52 @@ describe('F03 v2.1 Parent host-cookie session runtime', () => {
     ).resolves.toEqual({
       revoked: false,
       reason: 'revocation_unverified',
+    });
+  });
+
+  it('preserves an invalid-CSRF session for an exact valid-CSRF logout retry', async () => {
+    const harness = repositoryHarness();
+    const runtime = createV21AdultSessionRuntime({
+      repository: harness.repository,
+      hmacSecret,
+      randomBytes: deterministicRandom(),
+    });
+    const established = await runtime.establish(establishmentInput());
+    if (!established.established) throw new Error('Expected an established session.');
+    const cookie = hostCookie(established.browser_session_token);
+    const bootstrap = await runtime.bootstrapCookieHeader({ cookie_header: cookie, now });
+    if (bootstrap.status !== 'resolved') throw new Error('Expected a resolved bootstrap.');
+    const revokeCallsBeforeInvalidCsrf = harness.revoke.mock.calls.length;
+
+    await expect(
+      runtime.logoutCookieHeader({
+        cookie_header: cookie,
+        csrf_token: `${bootstrap.csrf_token.slice(0, -1)}x`,
+        now,
+      }),
+    ).resolves.toEqual({ revoked: false, reason: 'invalid_csrf' });
+    expect(harness.revoke).toHaveBeenCalledTimes(revokeCallsBeforeInvalidCsrf);
+    await expect(runtime.bootstrapCookieHeader({ cookie_header: cookie, now })).resolves.toMatchObject(
+      { status: 'resolved' },
+    );
+
+    let revoked = false;
+    harness.revoke.mockImplementation(async () => {
+      revoked = true;
+      return true;
+    });
+    harness.resolve.mockImplementation(async () =>
+      revoked ? null : sessionResult(harness.lastCreate()),
+    );
+    await expect(
+      runtime.logoutCookieHeader({
+        cookie_header: cookie,
+        csrf_token: bootstrap.csrf_token,
+        now,
+      }),
+    ).resolves.toEqual({ revoked: true });
+    await expect(runtime.bootstrapCookieHeader({ cookie_header: cookie, now })).resolves.toEqual({
+      status: 'invalid',
     });
   });
 

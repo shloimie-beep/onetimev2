@@ -43,6 +43,7 @@ let distDir: string;
 let server: ReturnType<ReturnType<typeof createApp>['listen']>;
 let baseUrl: string;
 let now: Date;
+let repositoryUnavailable: boolean;
 
 beforeEach(async () => {
   config = loadConfig({
@@ -64,8 +65,10 @@ beforeEach(async () => {
     'utf8',
   );
   now = new Date('2026-09-13T16:23:59.000Z');
+  repositoryUnavailable = false;
+  const repository = createDbBackedTestAdultSessionRepository(pool);
   const v21AdultSessionRuntime = createV21AdultSessionRuntime({
-    repository: createDbBackedTestAdultSessionRepository(pool),
+    repository: availabilityGuardedRepository(repository, () => repositoryUnavailable),
     hmacSecret: config.authCsrfSecret,
     clock: () => new Date(now),
   });
@@ -92,6 +95,25 @@ afterEach(async () => {
   if (pool) await pool.end();
   if (distDir) await rm(distDir, { recursive: true, force: true });
 });
+
+function availabilityGuardedRepository(
+  repository: V21AdultSessionRepository,
+  unavailable: () => boolean,
+): V21AdultSessionRepository {
+  const guard =
+    <Input, Output>(run: (input: Input) => Promise<Output>) =>
+    async (input: Input) => {
+      if (unavailable()) throw new Error('simulated adult-session repository outage');
+      return run(input);
+    };
+  return {
+    create: guard(repository.create),
+    resolve: guard(repository.resolve),
+    revoke: guard(repository.revoke),
+    findLoginIdentity: guard(repository.findLoginIdentity),
+    upgradeCredentialPasswordHash: guard(repository.upgradeCredentialPasswordHash),
+  };
+}
 
 describe('I36 central Family-signup and Parent-session composition', () => {
   it('binds real P08 signup to one fail-closed v2.1 Parent middleware runtime', async () => {
@@ -225,7 +247,196 @@ describe('I36 central Family-signup and Parent-session composition', () => {
       403,
     );
   });
+
+  it('keeps outage cookies retryable and clears only after exact CSRF-bound logout', async () => {
+    const signup = await submitFamily('retryable-session-parent@example.test', 'Retryable', 'Parent');
+    const firstBootstrapResponse = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    const firstBootstrap = (await firstBootstrapResponse.json()) as { csrf_token: string };
+    expect(firstBootstrapResponse.status).toBe(200);
+    const outageLoginBinding = await loginCsrfBinding();
+
+    repositoryUnavailable = true;
+    const unavailableBootstrap = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    expect(unavailableBootstrap.status).toBe(503);
+    expect(unavailableBootstrap.headers.getSetCookie()).toEqual([]);
+    const unavailableShell = await fetch(`${baseUrl}/app/parent`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    expect(unavailableShell.status).toBe(503);
+    expect(unavailableShell.headers.getSetCookie()).toEqual([]);
+    const unavailableLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        cookie: `${signup.hostCookie}; ${outageLoginBinding.cookie}`,
+      },
+      body: JSON.stringify({
+        identifier: 'retryable-session-parent@example.test',
+        password: 'correct horse battery staple',
+        csrf_token: outageLoginBinding.token,
+      }),
+    });
+    expect(unavailableLogin.status).toBe(503);
+    expect(unavailableLogin.headers.getSetCookie()).toEqual([]);
+    repositoryUnavailable = false;
+
+    const recoveredBootstrapResponse = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    const recoveredBootstrap = (await recoveredBootstrapResponse.json()) as { csrf_token: string };
+    expect(recoveredBootstrapResponse.status).toBe(200);
+
+    const invalidCsrfLogout = await fetch(`${baseUrl}/api/v2.1/auth/logout`, {
+      method: 'POST',
+      headers: {
+        cookie: signup.hostCookie,
+        'x-csrf-token': `${recoveredBootstrap.csrf_token.slice(0, -1)}x`,
+      },
+    });
+    expect(invalidCsrfLogout.status).toBe(403);
+    expect(invalidCsrfLogout.headers.getSetCookie()).toEqual([]);
+    const stillLive = await pool.query(
+      `SELECT revoked_at
+         FROM onetime.v21_adult_sessions
+        WHERE human_account_id = $1`,
+      [signup.projection.human_account_id],
+    );
+    expect(stillLive.rows[0]?.revoked_at).toBeNull();
+
+    const retryBootstrapResponse = await fetch(`${baseUrl}/api/v2.1/auth/session`, {
+      headers: { cookie: signup.hostCookie },
+    });
+    const retryBootstrap = (await retryBootstrapResponse.json()) as { csrf_token: string };
+    expect(retryBootstrapResponse.status).toBe(200);
+    const validLogout = await fetch(`${baseUrl}/api/v2.1/auth/logout`, {
+      method: 'POST',
+      headers: {
+        cookie: signup.hostCookie,
+        'x-csrf-token': retryBootstrap.csrf_token,
+        'user-agent': 'I36 redaction proof',
+      },
+    });
+    expect(validLogout.status).toBe(200);
+    expect(validLogout.headers.getSetCookie()).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('otcrm_session='),
+        expect.stringContaining('otcrm_csrf='),
+        expect.stringContaining('__Host-onetime-session='),
+      ]),
+    );
+    const audit = await pool.query(
+      `SELECT user_key, event_type, success, reason, ip_hash, user_agent_hash, metadata
+         FROM onetime.auth_audit_events
+        WHERE event_type = 'logout_succeeded'
+        ORDER BY created_at DESC
+        LIMIT 1`,
+    );
+    expect(audit.rows[0]).toMatchObject({
+      user_key: null,
+      event_type: 'logout_succeeded',
+      success: true,
+      reason: null,
+      ip_hash: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      user_agent_hash: expect.stringMatching(/^[a-f0-9]{64}$/u),
+      metadata: { session_model: 'v21' },
+    });
+    expect(JSON.stringify(audit.rows[0])).not.toContain('I36 redaction proof');
+    expect(JSON.stringify(audit.rows[0])).not.toContain(firstBootstrap.csrf_token);
+    expect(JSON.stringify(audit.rows[0])).not.toContain(signup.browserToken);
+  });
+
+  it('retains only invalid-credential reservations and releases successful or ineligible attempts', async () => {
+    const denied = await submitFamily('budget-denied-parent@example.test', 'Budget', 'Denied');
+    const loginBinding = await loginCsrfBinding();
+    const attempts = await Promise.all(
+      Array.from({ length: 6 }, () =>
+        fetch(`${baseUrl}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', cookie: loginBinding.cookie },
+          body: JSON.stringify({
+            identifier: 'budget-denied-parent@example.test',
+            password: 'wrong password value',
+            csrf_token: loginBinding.token,
+          }),
+        }),
+      ),
+    );
+    expect(attempts.filter((response) => response.status === 401)).toHaveLength(5);
+    expect(attempts.filter((response) => response.status === 429)).toHaveLength(1);
+    await expectLoginBudgetCounts([5]);
+
+    const accepted = await submitFamily('budget-success-parent@example.test', 'Budget', 'Success');
+    const acceptedBinding = await loginCsrfBinding();
+    const acceptedLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: acceptedBinding.cookie },
+      body: JSON.stringify({
+        identifier: 'budget-success-parent@example.test',
+        password: 'correct horse battery staple',
+        csrf_token: acceptedBinding.token,
+      }),
+    });
+    expect(acceptedLogin.status).toBe(200);
+    await expectLoginBudgetCounts([0, 5]);
+
+    await pool.query(
+      `UPDATE onetime.v21_human_accounts
+          SET state = 'archived',
+              archived_at = now()
+        WHERE human_account_id = $1`,
+      [accepted.projection.human_account_id],
+    );
+    const archivedBinding = await loginCsrfBinding();
+    const archivedLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: archivedBinding.cookie },
+      body: JSON.stringify({
+        identifier: 'budget-success-parent@example.test',
+        password: 'correct horse battery staple',
+        csrf_token: archivedBinding.token,
+      }),
+    });
+    expect(archivedLogin.status).toBe(401);
+    await expectLoginBudgetCounts([0, 5]);
+
+    expect(denied.projection.human_account_id).not.toBe(accepted.projection.human_account_id);
+  });
 });
+
+async function loginCsrfBinding() {
+  const loginPage = await fetch(`${baseUrl}/login`);
+  const cookie = loginPage.headers
+    .getSetCookie()
+    .find((value) => value.startsWith('otcrm_csrf='))
+    ?.split(';')[0];
+  const html = await loginPage.text();
+  const token = /name="csrf_token" value="([^"]+)"/u.exec(html)?.[1];
+  if (!cookie || !token) throw new Error('missing login CSRF binding');
+  return { cookie, token };
+}
+
+async function expectLoginBudgetCounts(expectedAccountIpCounts: number[]) {
+  const result = await pool.query(
+    `SELECT scope, count
+       FROM onetime.rate_limit_buckets
+      WHERE scope IN ('login_account_ip', 'login_ip', 'login_account_product', 'login_global')
+      ORDER BY scope, count`,
+  );
+  const byScope = new Map<string, number[]>();
+  for (const row of result.rows) {
+    const counts = byScope.get(String(row.scope)) ?? [];
+    counts.push(Number(row.count));
+    byScope.set(String(row.scope), counts);
+  }
+  expect(byScope.get('login_account_ip')).toEqual(expectedAccountIpCounts);
+  expect(byScope.get('login_ip')).toEqual([5]);
+  expect(byScope.get('login_account_product')).toEqual([5]);
+  expect(byScope.get('login_global')).toEqual([5]);
+}
 
 const nativeDatabaseUrl = process.env.I36_NATIVE_DATABASE_URL;
 const nativeProofEnabled =
@@ -416,6 +627,27 @@ describe.runIf(nativeProofEnabled)(
           revoke_reason: 'adult_logout',
           revoked_at: expect.any(Date),
         });
+        const logoutAudit = await nativePool.query(
+          `SELECT user_key, event_type, success, reason, ip_hash, user_agent_hash, metadata
+             FROM onetime.auth_audit_events
+            WHERE event_type = 'logout_succeeded'
+            ORDER BY created_at DESC
+            LIMIT 1`,
+        );
+        expect(logoutAudit.rows[0]).toMatchObject({
+          user_key: null,
+          event_type: 'logout_succeeded',
+          success: true,
+          reason: null,
+          ip_hash: expect.stringMatching(/^[a-f0-9]{64}$/u),
+          user_agent_hash: expect.stringMatching(/^[a-f0-9]{64}$/u),
+          metadata: { session_model: 'v21' },
+        });
+        const nativeBrowserToken = decodeURIComponent(
+          signup.hostCookie.slice(signup.hostCookie.indexOf('=') + 1),
+        );
+        expect(JSON.stringify(logoutAudit.rows[0])).not.toContain(nativeBrowserToken);
+        expect(JSON.stringify(logoutAudit.rows[0])).not.toContain(secondBootstrap.csrf_token);
         const revokedReplay = await fetch(`${nativeBaseUrl}/api/v2.1/auth/session`, {
           headers: { cookie: signup.hostCookie },
         });

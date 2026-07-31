@@ -854,3 +854,41 @@ independently reconcile its sole parent, correction control, exact three-path
 scope, unchanged authority, phase scope, heartbeat, corrected canonical
 fields, preserved blobs, pair/triplet digests, clean remote equality, and zero
 effects before any product or test work resumes.
+
+## Parent auth/client successor security-closeout renewal checkpoint
+
+I36 preserved the bounded successor closeout implementation from exact remote
+parent `2e7cd5be686285ec9506bece9e0761040f881fa5` under control
+`11d05d1f5d05d8817139c26890b78b1aadd8faad`, claim
+`5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93`.
+
+Four authorized product/test paths complete transactional pre-Argon login
+reservations, exact release readback, retention only for a wrong password on an
+otherwise eligible credential, outage-cookie retryability, invalid-CSRF
+preservation, recovery-required password-upgrade cleanup, and exact redacted
+logout-audit readback. Workspace typecheck passed. Focused auth/repository
+tests passed 26 assertions with three declared native skips. The I36 pg-mem
+composition suite passed three assertions with one declared native skip,
+including six concurrent wrong-password requests yielding exactly five 401s
+and one 429, successful and ineligible release accounting, outage recovery,
+CSRF retry, and audit redaction.
+
+This is not a terminal release assertion. Native PostgreSQL 18.4 proof of
+simultaneous greater-than-five same-budget reservations and exact bucket
+readback/release remains pending, as do the real Chromium Parent reload/logout
+proof, production build, changed-file lint, focused formatting, repository
+secret scan, and final scope/diff/ancestry/immutable gates.
+
+All four writer slots—SERVER_COMPOSER, CLIENT_COMPOSER,
+IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY—were released together
+at `2026-07-31T02:13:49Z`, before the `2026-07-31T02:28:50Z` expiry. The
+already-running disposable PostgreSQL process was not stopped. No provider
+call, customer mutation, migration, steward application, candidate action,
+deployment, DNS change, send, charge, cleanup, or other external effect
+occurred. Effects remain `0/0/0`.
+
+C00 must audit the exact pushed renewal checkpoint and issue a fresh claim and
+new lease against its remote head before I36 resumes any pending terminal gate.
+I36 must stop.

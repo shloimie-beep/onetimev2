@@ -39,18 +39,18 @@ dependency_heads:
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: 705030f2d5163f95340a19dc42efd0f167259869
-status: claimed
-phase: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
+status: renewal_requested
+phase: parent_session_auth_client_successor_security_closeout_renewal_checkpoint
 claimed_by: codex-i36-parent-session-successor-5deb22c5
 claim_time: '2026-07-31T00:58:50Z'
 claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
 lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
 lease_issued_at: '2026-07-31T00:58:50Z'
 lease_expires_at: '2026-07-31T02:28:50Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-31T01:23:30Z'
-controller_authorization_sha: b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff
-latest_valid_observed_control_head_sha: b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff
+lease_released_at: '2026-07-31T02:13:49Z'
+last_heartbeat_at: '2026-07-31T02:13:49Z'
+controller_authorization_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
+latest_valid_observed_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
 reconciled_state_based_on_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
 ready_consumed_by_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
 ready_consumed_state_based_on_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
@@ -1611,32 +1611,27 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - Complete and prove linearizable pre-Argon login reservations with exact release accounting, releasing all non-credential outcomes and retaining only invalid-credential attempts.
-  - Complete invalid-versus-unavailable session propagation through login preflight, bootstrap, and Parent shell without clearing valid cookies during repository outage.
-  - Prove invalid-CSRF retryability preserves browser credentials and verified logout clears cookies only after exact revocation.
-  - Propagate recovery_required for every post-establishment password-upgrade cleanup whose revoke and readback are not verified.
-  - Complete redacted v2 logout audit insertion and exact readback proof.
-  - Run the real Parent bundle through reload and logout while proving zero legacy Parent session, dashboard, contact, or shell API calls.
-  - Pass terminal native PostgreSQL session, revocation, cleanup, and redacted-audit verification.
+  - Under a fresh claim and lease, pass terminal native PostgreSQL 18.4 session,
+    revocation, cleanup, redacted-audit, simultaneous greater-than-five
+    same-budget reservation, and exact bucket readback/release verification.
   - Pass terminal real-browser Parent reload and logout verification.
   - Pass the production build.
-  - Pass workspace typecheck.
   - Pass changed-file lint with zero findings.
   - Pass focused formatting checks.
   - Pass the repository secret scan without exposing credential material.
   - Pass exact authorized-scope, diff-hygiene, and immutable-product-blob gates.
 next_action: >-
-  STOP. C00 must independently reconcile the exact runtime-metadata-correction
-  checkpoint against parent 0389fe344f27bcd44c1640e7f6ebcb90d485b213,
-  correction control b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff, the
-  unchanged fresh claim and lease, exact three-runtime-path scope, corrected
-  canonical remaining_steps and next_action fields, preserved ten product/test
-  blobs, clean remote equality, and effects 0/0/0 before any product or test
-  work resumes.
+  STOP. C00 must audit this pushed renewal_requested checkpoint, confirm all
+  four writer slots were released together at 2026-07-31T02:13:49Z, and issue
+  a fresh claim and new lease against its exact remote head before I36 resumes
+  the pending native PostgreSQL, browser, build, lint, format, secret, and
+  scope gates.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
   - apps/web/src/server/app.ts
+  - apps/web/src/server/features/auth/v21-adult-session.test.ts
+  - apps/web/src/server/features/auth/v21-adult-session.ts
   - tests/integration/accounts/v21-family-parent-session-composition.test.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
@@ -2866,7 +2861,9 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - C00 must reconcile this runtime-metadata-correction-only checkpoint before I36 resumes product or test work.
+  - The shared lease has been released before expiry; C00 must reconcile this
+    renewal_requested checkpoint and issue a fresh claim and lease before the
+    remaining terminal gates run.
 out_of_scope_findings: []
 renewal_checkpoint:
   checkpointed_at: '2026-07-31T00:54:34Z'
@@ -2976,3 +2973,42 @@ runtime_metadata_correction_checkpoint:
     authority, phase scope, heartbeat, corrected canonical fields, preserved
     product/test blobs, pair/triplet digests, clean remote equality, and effects
     0/0/0 before any product or test work resumes.
+successor_security_closeout_renewal_checkpoint:
+  authorizing_control_head_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
+  exact_parent_integration_head_sha: 2e7cd5be686285ec9506bece9e0761040f881fa5
+  claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
+  writer_id: codex-i36-parent-session-successor-5deb22c5
+  lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
+  lease_issued_at: '2026-07-31T00:58:50Z'
+  lease_expires_at: '2026-07-31T02:28:50Z'
+  lease_released_at: '2026-07-31T02:13:49Z'
+  writer_slots_released_together:
+    - SERVER_COMPOSER
+    - CLIENT_COMPOSER
+    - IDENTITY_AUTH_ACCESS
+    - ACCOUNT_HOUSEHOLD_IDENTITY
+  checkpoint_scope:
+    product_and_test_paths: 4
+    runtime_paths: 3
+    total_paths: 7
+  completed_validation:
+    workspace_typecheck: passed
+    focused_auth_and_repository_tests: 26_passed_3_declared_native_skips
+    pg_mem_composition: 3_passed_1_declared_native_skip
+    diff_check: passed
+  pending_terminal_validation:
+    native_postgresql_18_4_concurrent_reservation_and_exact_readback: pending_fresh_lease
+    real_chromium_parent_reload_logout_zero_legacy_calls: pending_fresh_lease
+    production_build: pending_fresh_lease
+    changed_file_lint: pending_fresh_lease
+    focused_format: pending_fresh_lease
+    repository_secret_scan: pending_fresh_lease
+    exact_scope_diff_ancestry_and_immutable_checks: pending_fresh_lease
+  destructive_cleanup: none
+  postgres_stopped: false
+  external_effects: 0/0/0
+  safe_next_action: >-
+    Stop after pushing this exact seven-path renewal checkpoint. C00 must
+    independently verify the parent, authorized scope, passed and pending gates,
+    simultaneous release of all four slots before expiry, clean remote equality,
+    and effects 0/0/0 before issuing fresh authority.

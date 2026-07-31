@@ -1,12 +1,17 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { isDeepStrictEqual } from 'node:util';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { z, ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
-import type { DbPool } from '../../../../packages/db/src/index.ts';
+import {
+  inTransaction,
+  type DbPool,
+  type Queryable,
+} from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createZoomClassOccurrenceRepository } from '../../../../packages/db/src/classroom/zoom-occurrence-repository.ts';
@@ -1160,15 +1165,35 @@ export function createApp({
           return;
         }
         if (!v21Login.handled || !v21Login.authenticated) {
+          const releaseReservation =
+            !v21Login.handled ||
+            v21Login.failure !== 'invalid_credentials' ||
+            v21Login.budget_disposition === 'release';
+          if (releaseReservation) {
+            try {
+              await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
+            } catch {
+              if (v21Login.handled && v21Login.session_mutated) {
+                clearAuthCookies(res, config);
+              }
+              res
+                .status(503)
+                .json(
+                  publicError(
+                    v21Login.handled && v21Login.failure === 'recovery_required'
+                      ? 'SESSION_RECOVERY_REQUIRED'
+                      : 'SERVER_ERROR',
+                    'Login is unavailable right now.',
+                    req.traceId,
+                  ),
+                );
+              return;
+            }
+          }
           if (
             v21Login.handled &&
             (v21Login.failure === 'unavailable' || v21Login.failure === 'recovery_required')
           ) {
-            try {
-              await releaseV21LoginReservations(pool, reservation.reservations, attemptNow);
-            } catch {
-              // The response remains fail-closed and does not classify this as a bad credential.
-            }
             if (v21Login.session_mutated) {
               clearAuthCookies(res, config);
             }
@@ -5125,7 +5150,7 @@ async function insertV21AuthAudit(
     ],
   );
   const readback = await pool.query(
-    `SELECT event_type, success, reason, ip_hash, user_agent_hash
+    `SELECT user_key, event_type, success, reason, ip_hash, user_agent_hash, metadata
        FROM onetime.auth_audit_events
       WHERE event_key = $1
         AND account_key = $2
@@ -5136,11 +5161,13 @@ async function insertV21AuthAudit(
   const row = readback.rows[0];
   if (
     readback.rowCount !== 1 ||
+    (row?.user_key ?? null) !== (event.userKey ?? null) ||
     row?.event_type !== event.eventType ||
     row?.success !== event.success ||
     (row?.reason ?? null) !== (event.reason ?? null) ||
     (row?.ip_hash ?? null) !== ipHash ||
-    (row?.user_agent_hash ?? null) !== userAgentHash
+    (row?.user_agent_hash ?? null) !== userAgentHash ||
+    !isDeepStrictEqual(row?.metadata ?? {}, event.metadata ?? {})
   ) {
     throw new Error('The v2.1 auth-audit event failed exact redacted readback.');
   }
@@ -5173,14 +5200,19 @@ async function reserveV21LoginAttempt(input: {
   budgets: V21LoginBudget[];
   now: Date;
 }): Promise<V21LoginAttemptReservation> {
-  const reservations: V21LoginReservation[] = [];
-  try {
+  return inTransaction(input.pool, async (db) => {
+    const reservations: V21LoginReservation[] = [];
+    const reservationKeys = new Set<string>();
     for (const budget of input.budgets) {
       if (budget.limit <= 0) continue;
       const key = v21LoginBudgetKey(input.config, budget);
+      if (reservationKeys.has(key)) {
+        throw new Error('The login-attempt reservation contained a duplicate budget key.');
+      }
+      reservationKeys.add(key);
       const resetAt = new Date(input.now.getTime() + budget.windowMs);
       const expiresAt = new Date(resetAt.getTime() + budget.windowMs);
-      const result = await input.pool.query(
+      const result = await db.query(
         `INSERT INTO onetime.rate_limit_buckets
            (budget_key, account_key, product_key, scope, count, reset_at, expires_at)
          VALUES ($1,$2,$3,$4,1,$5,$6)
@@ -5217,7 +5249,7 @@ async function reserveV21LoginAttempt(input: {
       }
       reservations.push({ key, resetAt: reservedResetAt });
       if (Number(row?.count ?? 0) <= budget.limit) continue;
-      await releaseV21LoginReservations(input.pool, reservations, input.now);
+      await releaseV21LoginReservations(db, reservations, input.now);
       return {
         allowed: false,
         reservations: [],
@@ -5229,20 +5261,11 @@ async function reserveV21LoginAttempt(input: {
       };
     }
     return { allowed: true, reservations };
-  } catch (error) {
-    if (reservations.length > 0) {
-      try {
-        await releaseV21LoginReservations(input.pool, reservations, input.now);
-      } catch {
-        // The caller still fails closed when reservation rollback cannot be verified.
-      }
-    }
-    throw error;
-  }
+  });
 }
 
 async function releaseV21LoginReservations(
-  pool: DbPool,
+  db: Queryable,
   reservations: readonly V21LoginReservation[],
   now: Date,
 ): Promise<void> {
@@ -5253,13 +5276,35 @@ async function releaseV21LoginReservations(
     const keyParameter = index * 2 + 2;
     return `(budget_key = $${keyParameter} AND reset_at = $${keyParameter + 1})`;
   });
-  await pool.query(
+  const result = await db.query(
     `UPDATE onetime.rate_limit_buckets
         SET count = GREATEST(count - 1, 0),
             updated_at = $1
-      WHERE ${predicates.join(' OR ')}`,
+      WHERE ${predicates.join(' OR ')}
+      RETURNING budget_key, count, reset_at`,
     values,
   );
+  if (result.rowCount !== reservations.length) {
+    throw new Error('The login-attempt reservation release did not match every exact budget.');
+  }
+  const released = new Map(
+    result.rows.map((row) => [
+      String(row.budget_key),
+      { count: Number(row.count), resetAt: new Date(String(row.reset_at)) },
+    ]),
+  );
+  for (const reservation of reservations) {
+    const row = released.get(reservation.key);
+    if (
+      !row ||
+      !Number.isSafeInteger(row.count) ||
+      row.count < 0 ||
+      !Number.isFinite(row.resetAt.getTime()) ||
+      row.resetAt.getTime() !== reservation.resetAt.getTime()
+    ) {
+      throw new Error('The login-attempt reservation release failed exact readback.');
+    }
+  }
 }
 
 function v21LoginBudgetKey(config: AppConfig, budget: V21LoginBudget): string {
