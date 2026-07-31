@@ -40,24 +40,24 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: batch_C_repository_provider_highlevel_communications_workflow_registries_complete
-claimed_by: codex-i36-batch-c-3cb0bfbd
-claim_time: '2026-07-31T18:25:00Z'
-claim_id: 3cb0bfbd-53e8-47c9-b7a0-528a88501d92
-lease_id: 8f15ef5c-8157-4571-8f72-476869626cf2
-lease_issued_at: '2026-07-31T18:25:00Z'
-lease_expires_at: '2026-07-31T22:25:00Z'
-lease_released_at: '2026-07-31T18:52:05Z'
-last_heartbeat_at: '2026-07-31T18:52:05Z'
-controller_authorization_sha: 234a7c99d1c10075381749920d857f32c4c55c54
-latest_valid_observed_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
-reconciled_state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-ready_authorization_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
-ready_entry_state_based_on_control_head_sha: 951e9d846e805d9d01ef1ad41973e41fefb8573e
-ready_entry_payload_digest: 0fbdb33b23552940cb6a860cfa7138435865623b8290e238a6a20b10c576d518
+phase: batch_A_server_client_routes_barrels_and_candidate_safe_policy_binding_complete
+claimed_by: codex-i36-batch-a-b5a4907b
+claim_time: '2026-07-31T19:11:17Z'
+claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+lease_id: acf323b0-539a-4669-93cd-982f0f8495ce
+lease_issued_at: '2026-07-31T19:11:17Z'
+lease_expires_at: '2026-08-01T01:11:17Z'
+lease_released_at: '2026-07-31T20:15:30Z'
+last_heartbeat_at: '2026-07-31T20:15:30Z'
+controller_authorization_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+latest_valid_observed_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+reconciled_state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+ready_authorization_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+ready_entry_state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+ready_entry_payload_digest: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
 claim_mode: new
-expected_existing_head_sha: 8c5b08ccb7cae95f90ccbb33fcd62a0f1e0c0898
-lease_phase_scope: batch_C_repository_provider_highlevel_communications_workflow_registries_only
+expected_existing_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+lease_phase_scope: batch_A_server_client_routes_barrels_and_candidate_safe_policy_binding_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -320,6 +320,11 @@ prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c
 state_based_on_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
 last_implementation_commit_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
 completed_steps:
+  - Accepted exact repository-only Batch A authority from live control 44b9bc6d745810d74ca093d19f46806d8f58e077, state basis 234a7c99d1c10075381749920d857f32c4c55c54, READY bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d, and integration start b0cc23a05cb2f2f0ef4ee8860352320c18a8e450 under one claim and five bounded writer leases.
+  - Reproduced all fourteen immutable request digests, applied the exact P12 and P09 barrel/server/client composition, satisfied the authenticated-family P08 successor, and applied only the registration-neutral P22 barrel while preserving every later-gated P08 provider/billing, P21, P22 server/client, and P30 worker boundary.
+  - Added the fail-closed P12 legal-evidence configuration pair without values or placeholders, real Parent household persistence/session/workspace composition, exact active-admin legacy bridge for the approved-School Admin route, and the real six-field signed-out School inquiry page with longest-specific client routing.
+  - Passed focused P12/P09/P22/config/integration/browser validation, scoped ESLint and Prettier, both web builds, central barrel runtime readback, diff hygiene, and zero changed-path type diagnostics; exactly four unchanged Stripe/Playwright workspace diagnostics remain documented.
+  - Released BARREL_REGISTRAR c9c7ba40-4433-4955-9db3-bf84619d492c, CONFIG_DEPS 759a291e-2b36-46a5-882c-e4e25f984c45, SERVER_COMPOSER cf656271-cc6b-4ad8-9d56-3eb4117751bd, CLIENT_COMPOSER 0ed016e6-f69b-4e6f-b612-307e1b2e9390, and RELEASE_INTEGRATOR acf323b0-539a-4669-93cd-982f0f8495ce at 2026-07-31T20:15:30Z; no provider, infrastructure, candidate, deployment, DNS, billing, contact, send, activation, or external effect occurred.
   - Accepted direct C00 communications integration authority from control 4b22c4704edc8bd21b0e0242ad00debfba67f5c2 at exact integration start c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9 under one phase claim and lease.
   - Merged exact repository-only communications convergence head 3364c1c31ef12a81abf02cf9f80f7e8008c1778f at 9a028e7a967221441dfd4d5cf9417eb2885a072f with exact parents, preserved ancestry, and twenty-path first-parent scope.
   - Corrected only the admitted Windows CRLF-sensitive sender-registry test reader at e423868957f3a3cb9ddf992e39368fceb15661c0 after the first postmerge run passed nine of ten tests; no communication, registry, workflow, or provider semantics changed.
@@ -1609,14 +1614,15 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently audit the exact pushed terminal, consume both merge items, and reconcile the released lease and effects 0/0/0.
-  - Native PostgreSQL-server replay remains a hard downstream gate before candidate freeze.
-  - Any steward application, shared registration, SQL, candidate, provider, deployment, or external successor requires new exact authority.
+  - C00 must independently audit the exact pushed Batch A terminal, reconcile all fourteen request dispositions, all five released leases, the exact nineteen-path release, and effects 0/0/0.
+  - P08 provider and billing-worker composition, corrected P21 registration, P22 server/client service composition and protected-secret injection, and the P30 durable adult-only worker boundary remain later-gated.
+  - Candidate freeze, native PostgreSQL-server replay, provider or infrastructure inspection, deployment, DNS, billing, contact, send, activation, and every external successor action require separate exact authority.
 next_action: >-
-  STOP. C00 must independently audit the exact pushed P21-then-P22 terminal,
-  its ordered two-parent merge ancestry, exact 25-source-path plus three-runtime
-  release scope, completed validation, released RELEASE_INTEGRATOR lease, clean
-  remote equality, and effects 0/0/0 before any successor action.
+  STOP. C00 must independently audit the exact pushed Batch A terminal, all
+  fourteen immutable dispositions, the exact sixteen-product-path plus
+  three-runtime-path release, focused validation and documented unchanged
+  baselines, all five released leases, clean remote equality, and effects 0/0/0
+  before separately authorizing any successor action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -3877,3 +3883,256 @@ batch_C_repository_provider_highlevel_communications_workflow_registries_termina
     worker-composition gate, twelve-path release scope, both released leases,
     and zero effects before separately authorizing Batch A. No successor action
     is authorized by this terminal.
+batch_A_server_client_routes_barrels_and_candidate_safe_policy_terminal:
+  containing_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+  state_basis_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
+  exact_authorized_start_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+  ready_entry_payload_digest: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
+  claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
+  writer_id: codex-i36-batch-a-b5a4907b
+  lease_issued_at: '2026-07-31T19:11:17Z'
+  lease_expires_at: '2026-08-01T01:11:17Z'
+  lease_released_at: '2026-07-31T20:15:30Z'
+  last_heartbeat_at: '2026-07-31T20:15:30Z'
+  writer_slot_leases_released:
+    - slot: BARREL_REGISTRAR
+      lease_id: c9c7ba40-4433-4955-9db3-bf84619d492c
+    - slot: CONFIG_DEPS
+      lease_id: 759a291e-2b36-46a5-882c-e4e25f984c45
+    - slot: SERVER_COMPOSER
+      lease_id: cf656271-cc6b-4ad8-9d56-3eb4117751bd
+    - slot: CLIENT_COMPOSER
+      lease_id: 0ed016e6-f69b-4e6f-b612-307e1b2e9390
+    - slot: RELEASE_INTEGRATOR
+      lease_id: acf323b0-539a-4669-93cd-982f0f8495ce
+  effect_lock_leases: []
+  authorized_scope:
+    authorized_product_path_count: 17
+    authorized_product_path_inventory_digest: bfe3ae0af6935db21ad476ff20b05139923b702004f04fae1a95206590671de4
+    authorized_total_path_count: 20
+    authorized_total_path_inventory_digest: 5c0744bb94b1d0173c9ce484db0064caa8e15d7e56375e34f9d175781825d6e2
+    changed_product_path_count: 16
+    unchanged_authorized_product_path: tests/integration/admin-information-architecture-ui-contract.test.ts
+    changed_runtime_path_count: 3
+    total_changed_path_count: 19
+    changed_product_path_inventory_digest: fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4
+    release_path_inventory_digest: c3ae777b130405f3d34fe4d2a9b08aaca119f4dc4cf5cf1264ec4c785343bdc3
+  immutable_request_dispositions:
+    P08-auth-household-002:
+      request_digest: 600bdc4618a4812ea2ad0cfcdd6074b9ce69d99124991e8be7b21a5c5ed731fc
+      digest_kind: raw_git_blob_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Satisfied the authenticated-family successor only after the real P12
+        Parent mount, canonical v2.1 session binding, persistence integration,
+        and focused browser proof were all present together.
+      later_exact_gate: none
+    P08-registration-001:
+      request_digest: 5958df286bf5a8213b4431709084b7fabe05ae8d6fdb1c2aa08d97db4f35409c
+      digest_kind: raw_git_blob_sha256
+      classification: superseded
+      fully_applied: false
+      repository_action: >-
+        Applied no obsolete registration shell; the authenticated-family
+        successor represented by P08-auth-household-002 is the canonical path.
+      later_exact_gate: none_superseded
+    P08-registration-002:
+      request_digest: 0b0b82567be04624d0facf501dbc9d5fb418d0d86b79462f6220e8d8b56856d3
+      digest_kind: raw_git_blob_sha256
+      classification: mixed_partial_later_gate
+      fully_applied: false
+      repository_safe_portion_applied: true
+      repository_action: >-
+        Completed only the authorized Family server/client composition. No
+        provider or billing worker was composed or invoked.
+      later_exact_gate: >-
+        Provider and GHL-managed billing worker composition require separate
+        exact adapter, identity, effect-lock, and external-effect authority.
+    P12-barrel-export-003:
+      request_digest: acd1cbb6689896bb2ab0c3cd26457dd013e93fbfd8c398e60fa1368a9ad0286b
+      digest_kind: canonical_request_object_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Registered the accepted Parent household contracts and domain aggregate
+        from the canonical central barrels without producer-source edits.
+      later_exact_gate: none
+    P12-server-registration-002:
+      request_digest: 1d3d64921721c91d57d0d81d6252f2d4b8af82212afd6c5e076168c7ed787939
+      digest_kind: canonical_request_object_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Mounted the real repository, service, authenticated Parent router, UUID
+        Student IDs, Argon2id password hashing, domain-separated request HMAC,
+        and fail-closed policy boundary in the central server composer.
+      later_exact_gate: none
+    P12-client-route-002:
+      request_digest: 49021ac11df00c4f485f88661b4e5d6ca2c30c033269161e40a62adf458f1802
+      digest_kind: canonical_request_object_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Mounted the real Parent household workspace, overview and Student
+        routes, and longest-specific exact/new/student matching before the
+        generic Parent workspace route.
+      later_exact_gate: none
+    P09-barrel-export-002:
+      request_digest: 3a03a600a9872f05e48024d46306ef3f02d4d55ae37d3d6a0860279fe18c9fac
+      digest_kind: canonical_request_object_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Registered the accepted School inquiry contracts and policy from the
+        canonical central barrels without producer-source edits.
+      later_exact_gate: none
+    P09-server-registration-002:
+      request_digest: 1333935868c346eb3f2cd8eee1be49bdbfff9fe0ac94e350b32a9e606b7ba05a
+      digest_kind: canonical_request_object_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Mounted the public inquiry route and protected approved-School Admin
+        router with same-origin CSRF, exact active v2.1 Admin readback, and an
+        exact active legacy-Admin login bridge that excludes Parent membership.
+      later_exact_gate: none
+    P09-client-route-002:
+      request_digest: 965fbeccfd9c29ae35fc4066dd406c057ba25b3e50e58d3b8faf1ecf88608695
+      digest_kind: canonical_request_object_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Generated and served the real signed-out /school page with exactly the
+        four required and two optional inquiry fields, canonical CTA/success
+        copy, and no account, access, subscription, role, or roster surface.
+      later_exact_gate: none
+    P21-registration-003:
+      request_digest: ae1578783fbe71cbea7bab582eba29ffb84a736366f555c6c428b68ec52ccc82
+      digest_kind: canonical_request_object_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: none_paths_incomplete_and_untouched
+      later_exact_gate: corrected_successor_with_complete_server_and_client_paths
+    P22-barrel-export-002:
+      request_digest: 63fed12e43f8f6434bf6cd9d0a423957230cbd374a728239f5619a3edb1523df
+      digest_kind: canonical_request_object_sha256
+      classification: applicable
+      fully_applied: true
+      repository_action: >-
+        Applied only registration-neutral central contract, repository/read-port,
+        schema-contract, and domain learning exports.
+      later_exact_gate: none
+    P22-config-key-002:
+      request_digest: 6d6801ca9fc5ba9e3281a703ac6945191482538c818f82d107c3e4a1e644e78c
+      digest_kind: canonical_request_object_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_prerequisite_preexisting: true
+      repository_action: >-
+        Preserved the already integrated blank-normalized protected-key config
+        prerequisite; no value was supplied, displayed, copied, or committed.
+      later_exact_gate: >-
+        A corrected complete P22 central service-composer successor must inject
+        the key, followed by Batch D protected-secret binding and live readback.
+    P22-server-registration-002:
+      request_digest: 9cac829ad7441f3772e587a50bb30c984807b93e1df89db41948b5e3490700dc
+      digest_kind: canonical_request_object_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: none_paths_incomplete_and_untouched
+      later_exact_gate: corrected_successor_with_complete_server_composer_and_adapters
+    P22-client-route-002:
+      request_digest: 95989c81c058107a97e7243676abf24b0a401381e79141bc26920047346ccf64
+      digest_kind: canonical_request_object_sha256
+      classification: blocked_by_a_later_exact_gate
+      fully_applied: false
+      repository_action: none_paths_incomplete_and_untouched
+      later_exact_gate: corrected_successor_with_complete_client_paths_and_server_dependency
+  retained_non_batch_request_gate:
+    P30-registry-registration-001: >-
+      Still blocked at the durable adult-only job boundary with real repository,
+      suppression, eligibility, and email adapters; no worker path was touched.
+  candidate_safe_policy:
+    version_key: PARENT_STUDENT_SERVICE_ACCOUNT_VERSION
+    evidence_reference_key: PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE
+    exact_pair_values_present: false
+    partial_pair_rejected: true
+    blank_normalized_and_trimmed: true
+    write_repository_constructed_without_pair: false
+    unconfigured_response: generic_no_store_503
+    invented_legal_copy_or_placeholder: false
+  product_artifact:
+    paths:
+      - path: .env.example
+        raw_sha256: 810adf00e3d62127689d7423cc03e79664e09f5013d51b5b62c76c88a4ded661
+      - path: apps/web/src/client/app/portal-entry.tsx
+        raw_sha256: 68d5b8d773bd3b07391f29b2bcd608b10be06302723aced268a9023989a81b84
+      - path: apps/web/src/client/app/router/registry.ts
+        raw_sha256: 4cebfef5087e513685c5305d30c848deb69089ea2214839a0bc81136e756ba4f
+      - path: apps/web/src/client/public/public-entry.ts
+        raw_sha256: e3c20439b0cfc1c4646f4a546ec88b31aafe0bd06410efc4416d45ad75d99646
+      - path: apps/web/src/server/app.ts
+        raw_sha256: a4f0cc569a17e5d473b082b48e9124d5679d523b0124b1c56cb55cca32d8e4c7
+      - path: packages/config/src/index.ts
+        raw_sha256: 4efa23b957f36be8680edd86c72c70b228be7a144b204f038060dfcdd040a76a
+      - path: packages/contracts/src/index.ts
+        raw_sha256: 4627b66e744d503c7b7b1b1846c7f1dd38cc1c527fa5653be253d7131eaa87fd
+      - path: packages/contracts/src/portals/index.ts
+        raw_sha256: 2fae40f744e8e0dadad3adbe5189abf0a671416b93be4d2b6cd3b1a09044eee8
+      - path: packages/db/src/index.ts
+        raw_sha256: a06a997e8ca7deeff7d6d7cebad185000e2e02d6bf89a19907b83f44e23dada4
+      - path: packages/domain/src/index.ts
+        raw_sha256: 4b6931ada42d68023ff716dfd6bb776553d31757ca80e0ab791513a1c2f62419
+      - path: scripts/build-public-pages.ts
+        raw_sha256: e69659e4a01039f65f07be738001f2a29d84a475440cc60016f576b7a47e3518
+      - path: tests/e2e/landing-signup.spec.ts
+        raw_sha256: 0adea1c28b72fe234df8311b731f2da6352d486b8eacaee972c1e479c5523bde
+      - path: tests/integration/accounts/v21-family-parent-session-composition.test.ts
+        raw_sha256: 299e590dbebf9b823bd8d5d975be2235594e37da943a2c32ab36718bb68adc01
+      - path: tests/integration/portals/portal-mount.test.ts
+        raw_sha256: 553419bbaa69232533d0774ed7c1ec9d8e9c523d7f99b82fdf56da310968bccf
+      - path: tests/integration/public-metadata-runtime.test.ts
+        raw_sha256: d9e2bf43b8fc42a4c5b9337db423ef65883e38456a9d7f0bcca3bd547ddd399d
+      - path: tests/unit/config/runtime-classification.test.ts
+        raw_sha256: b3d5c2575189e6f61f3c586cd50992cdd0559b73c8f04eadc37150c0fe8f1bf0
+    canonical_json_path_inventory_digest: fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4
+    canonical_json_manifest_digest: 18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb
+  completed_validation:
+    canonical_ready_digest: passed_bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
+    immutable_request_digests: passed_all_fourteen_by_declared_digest_kind
+    focused_P12_P09_module_vitest: passed_11_files_65_tests_3_declared_skips
+    focused_P22_behavior_vitest: passed_32_of_32
+    combined_composition_integration_vitest: passed_3_files_10_tests_1_declared_skip
+    focused_config_vitest: passed_26_of_26
+    seed_free_landing_signup_playwright: passed_9_of_9
+    scoped_eslint: passed_zero_findings_15_typescript_files
+    scoped_prettier: passed_15_typescript_files
+    central_barrel_runtime_readback: passed_9_of_9_symbols
+    web_client_build: passed
+    public_pages_build: passed
+    changed_workspace_typecheck: passed_zero_changed_path_diagnostics
+    unchanged_typecheck_baselines: exact_4_in_stripe_and_three_playwright_harnesses
+    diff_check: passed
+    exact_authorized_scope: passed_19_of_20_paths_changed
+    wider_P22_probe: >-
+      108 passed, 3 declared skips, and 1 unchanged Windows-CRLF static-source
+      assertion in untouched packages/db/src/learning/repository.test.ts.
+    standard_playwright_harness_baseline: >-
+      The unchanged tests/support/test-server.ts occurrence seed lacks the newly
+      required join_opens_at field and fails before tests; the bounded seed-free
+      replacement completed all nine browser assertions.
+  migration_or_SQL_change: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Stop after one normal terminal commit is pushed and clean local, tracking,
+    and live integration equality is proved. C00 must independently audit all
+    fourteen dispositions, exact nineteen-path scope, validation and unchanged
+    baselines, all five released leases, and zero effects before authorizing any
+    later-gated composition, candidate, provider, or release action.

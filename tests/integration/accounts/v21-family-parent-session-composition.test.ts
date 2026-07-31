@@ -53,6 +53,9 @@ beforeEach(async () => {
     COMMIT_SHA: 'test',
     OUTBOX_TRANSPORT_MODE: 'sink',
     AUTH_CSRF_SECRET: 'v21-family-parent-composition-test-secret',
+    PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: 'test-only-parent-student-service-v1',
+    PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE:
+      'test-only-evidence/parent-student-service-v1',
   });
   const memoryPool = createMemoryPool();
   await runMigrations(memoryPool);
@@ -132,6 +135,25 @@ describe('I36 central Family-signup and Parent-session composition', () => {
     expect(preExpiry.projection.access_state).toBe('free');
     await expectParentShell(preExpiry.hostCookie, '/app/parent', 200);
     await expectParentShell(preExpiry.hostCookie, '/select-household', 200);
+    const household = await fetch(`${baseUrl}/api/app/parent/household`, {
+      headers: { cookie: preExpiry.hostCookie },
+    });
+    expect(household.status, await household.clone().text()).toBe(200);
+    await expect(household.json()).resolves.toMatchObject({
+      success: true,
+      data: {
+        snapshot: {
+          contract_version: '1.2.0',
+          household_id: preExpiry.projection.household_id,
+          access_state: 'free',
+          student_allowance: 3,
+          active_student_count: 0,
+          can_manage_students: true,
+          students: [],
+        },
+        csrf_token: expect.stringMatching(/^c1\./u),
+      },
+    });
     await expectDigestOnlySessionPersistence(preExpiry);
 
     now = new Date('2026-09-13T16:24:00.000Z');

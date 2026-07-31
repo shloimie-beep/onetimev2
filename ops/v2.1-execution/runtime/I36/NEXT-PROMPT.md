@@ -1,6 +1,89 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_BATCH_A_SHARED_COMPOSITION_TERMINAL_AUDIT
+
+Audit the exact pushed I36 repository-only Batch A shared-composition terminal.
+Do not perform provider or infrastructure inspection/mutation, candidate work,
+deployment, DNS, billing, contact creation, send, activation, or any external
+successor action from this prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent: `b0cc23a05cb2f2f0ef4ee8860352320c18a8e450`
+Containing control: `44b9bc6d745810d74ca093d19f46806d8f58e077`
+Authority/control basis: `234a7c99d1c10075381749920d857f32c4c55c54`
+READY: `bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d`
+Claim: `b5a4907b-7915-4b7f-beda-34d58a6ff2a9`
+Writer: `codex-i36-batch-a-b5a4907b`
+BARREL_REGISTRAR lease: `c9c7ba40-4433-4955-9db3-bf84619d492c`
+CONFIG_DEPS lease: `759a291e-2b36-46a5-882c-e4e25f984c45`
+SERVER_COMPOSER lease: `cf656271-cc6b-4ad8-9d56-3eb4117751bd`
+CLIENT_COMPOSER lease: `0ed016e6-f69b-4e6f-b612-307e1b2e9390`
+RELEASE_INTEGRATOR lease: `acf323b0-539a-4669-93cd-982f0f8495ce`
+Lease issued: `2026-07-31T19:11:17Z`
+Lease expiry: `2026-08-01T01:11:17Z`
+Lease release: `2026-07-31T20:15:30Z`
+Effects: `0/0/0`
+
+Reproduce READY and all fourteen immutable request digests by their declared
+digest kinds. Confirm P12 barrel/server/client and P09 barrel/server/client are
+`applicable` and fully applied; P08-auth-household-002 is satisfied only by the
+complete authenticated Parent successor; P08-registration-001 is superseded;
+and P08-registration-002 remains mixed with only Family composition applied.
+
+Confirm the P12 policy pair is optional, blank-normalized, trimmed, and
+both-or-neither. Confirm no legal version, URI, value, or placeholder is
+invented; no write repository is constructed without the exact pair; and the
+unconfigured response is generic and no-store. Confirm the central composer
+uses the real repository/service/session, UUID Student IDs, Argon2id hashing,
+and a domain-separated request HMAC when configured.
+
+Confirm the real signed-out `/school` artifact has exactly four required and
+two optional inquiry fields, canonical CTA/success behavior, and no account,
+access, subscription, role, or roster surface. Confirm the protected
+approved-School Admin router requires same-origin CSRF and exact active v2.1
+Admin readback. Confirm its legacy login bridge requires the same active legacy
+Admin and active v2.1 Admin identity and refuses identities with active Parent
+membership.
+
+Confirm P22-barrel-export-002 alone is fully applied. P22-config-key-002 keeps
+its already integrated repository prerequisite but remains later-gated for
+central injection and protected-secret readback. P21-registration-003 and P22
+server/client remain path-incomplete and untouched. P30 remains blocked at its
+durable adult-only job and real adapters. No producer source or worker path was
+edited.
+
+Confirm exactly nineteen changed paths within the twenty-path authority:
+sixteen product paths plus the I36 runtime triplet. Confirm the only unchanged
+authorized path is
+`tests/integration/admin-information-architecture-ui-contract.test.ts`, the
+product path-inventory digest is
+`fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4`,
+the product manifest is
+`18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb`,
+and the release path-inventory digest is
+`c3ae777b130405f3d34fe4d2a9b08aaca119f4dc4cf5cf1264ec4c785343bdc3`.
+
+Confirm 65 P12/P09 tests with three declared skips, 32/32 P22 behavior tests,
+10 combined integrations with one declared skip, 26/26 config tests, 9/9
+seed-free browser tests, scoped ESLint and Prettier, both web builds, nine-symbol
+central barrel readback, diff hygiene, and zero changed-path workspace type
+diagnostics with exactly four unchanged Stripe/Playwright baselines. Treat the
+wider P22 CRLF assertion and stale standard browser occurrence seed as unchanged
+baseline evidence, not changed-path failures.
+
+Confirm all five leases were released before expiry, local/tracking/live refs
+equal the pushed terminal, the worktree is clean, and no provider,
+infrastructure, candidate, deployment, DNS, billing, contact, send, activation,
+or external effect occurred. C00 must independently consume and reconcile this
+terminal before any later-gated successor authority. Stop.
+
+---
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_BATCH_C_REPOSITORY_WORKFLOW_REGISTRY_TERMINAL_AUDIT
 
 Audit the exact pushed I36 repository-only Batch C workflow-registry terminal.

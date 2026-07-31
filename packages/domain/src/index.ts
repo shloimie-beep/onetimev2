@@ -643,3 +643,6 @@ export {
   type AdminLearner,
   type AdminUser,
 } from './admin-directory/service.ts';
+export * from './learning/engagement.ts';
+export * from './portals/parent-household/index.ts';
+export * from './signup/school/index.ts';

@@ -25,6 +25,7 @@ describe('runtime public metadata origin', () => {
     distDir = await mkdtemp(path.join(tmpdir(), 'ot-runtime-metadata-'));
     await writeHtml(distDir, 'index.html');
     await writeHtml(distDir, 'signup.html');
+    await writeHtml(distDir, 'school.html');
     await writeHtml(distDir, '404.html');
     const config = loadConfig({
       NODE_ENV: 'test',
@@ -36,12 +37,16 @@ describe('runtime public metadata origin', () => {
 
     const root = await fetch(`${baseUrl}/`);
     const signup = await fetch(`${baseUrl}/signup`);
+    const school = await fetch(`${baseUrl}/school`);
 
     await expect(root.text()).resolves.toContain(
       '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/">',
     );
     await expect(signup.text()).resolves.toContain(
       '<meta property="og:url" content="https://ot99-web-staging.up.railway.app/signup">',
+    );
+    await expect(school.text()).resolves.toContain(
+      '<link rel="canonical" href="https://ot99-web-staging.up.railway.app/school">',
     );
   });
 
@@ -57,7 +62,7 @@ describe('runtime public metadata origin', () => {
       PUBLIC_BASE_URL: 'https://ot99-web-staging.up.railway.app',
       COMMIT_SHA: '0123456789abcdef0123456789abcdef01234567',
       AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-static-cache-proof',
-      MFA_SECRET_ENCRYPTION_KEY: 'test-only-32-byte-mfa-key-static',
+      PROTECTED_PAYLOAD_ENCRYPTION_KEY: 'test-only-32-byte-payload-key-static',
     });
     pool = createMemoryPool();
     server = await listenForTest(createApp({ config, pool, distDir }));

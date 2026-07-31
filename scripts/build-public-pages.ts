@@ -20,6 +20,7 @@ import {
   termsOfUse,
 } from '../packages/domain/src/index.ts';
 import type { LegalDocument, LegalSection } from '../packages/domain/src/legal/index.ts';
+import { schoolInquiryFormModel } from '../apps/web/src/client/public/school/model.ts';
 import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
@@ -294,7 +295,7 @@ function landingPage() {
     <h2>${escapeHtml(landingContent.enrollment.heading)}</h2>
     <div class="information-grid">
       <article><h3>${escapeHtml(landingContent.enrollment.family.title)}</h3><p>${escapeHtml(landingContent.enrollment.family.body)}</p><a class="text-link" href="/signup?entry=family">Create a Family account</a></article>
-      <article><h3>${escapeHtml(landingContent.enrollment.school.title)}</h3><p>${escapeHtml(landingContent.enrollment.school.body)}</p><a class="text-link" href="/signup?entry=school">Send a School inquiry</a></article>
+      <article><h3>${escapeHtml(landingContent.enrollment.school.title)}</h3><p>${escapeHtml(landingContent.enrollment.school.body)}</p><a class="text-link" href="/school">Send a School inquiry</a></article>
     </div>
   </section>
   <section class="section access" id="access" data-access-boundary="${escapeHtml(campaign.deadlineAt)}">
@@ -408,6 +409,77 @@ function signupPage() {
   </section>
 </main>${footer()}`,
     { canonicalPath: '/signup' },
+  );
+}
+
+function schoolPage() {
+  const model = schoolInquiryFormModel();
+  const required = new Set<string>(model.required_fields);
+  const descriptors: Record<
+    (typeof model.fields)[number],
+    { label: string; type: string; autocomplete: string; help?: string }
+  > = {
+    school_name: {
+      label: 'School name',
+      type: 'text',
+      autocomplete: 'organization',
+      help: 'Do not include Student names, ages, medical details, or private learner notes.',
+    },
+    contact_first_name: {
+      label: 'Contact first name',
+      type: 'text',
+      autocomplete: 'given-name',
+    },
+    contact_last_name: {
+      label: 'Contact last name',
+      type: 'text',
+      autocomplete: 'family-name',
+    },
+    email: { label: 'School contact email', type: 'email', autocomplete: 'email' },
+    phone: { label: 'Phone (optional)', type: 'tel', autocomplete: 'tel' },
+    note: { label: 'Note (optional)', type: 'text', autocomplete: 'off' },
+  };
+  const fields = model.fields
+    .map((name) => {
+      const descriptor = descriptors[name];
+      const requiredAttribute = required.has(name) ? ' required' : '';
+      const lengthAttribute =
+        name === 'phone' ? ' maxlength="40"' : name === 'note' ? ' maxlength="1000"' : '';
+      return `<div class="field">
+        <label for="school_${escapeHtml(name)}">${escapeHtml(descriptor.label)}</label>
+        <input id="school_${escapeHtml(name)}" name="${escapeHtml(name)}" type="${escapeHtml(descriptor.type)}" autocomplete="${escapeHtml(descriptor.autocomplete)}"${requiredAttribute}${lengthAttribute}>
+        ${descriptor.help ? `<small>${escapeHtml(descriptor.help)}</small>` : ''}
+        <p tabindex="-1" class="error" data-error-for="${escapeHtml(name)}"></p>
+      </div>`;
+    })
+    .join('');
+
+  return pageShell(
+    'School Inquiry | One Time Mishnayos',
+    `${header()}<main class="signup-page school-inquiry-page">
+  <section class="signup-shell" aria-labelledby="school-inquiry-title">
+    <p class="eyebrow">For School administrators</p>
+    <h1 id="school-inquiry-title">Send a School inquiry</h1>
+    <p>Ask the One Time team to follow up personally about School pricing, Student seats, and setup.</p>
+    <p class="section-note">This inquiry creates no account, access, subscription, credentials, nurture enrollment, School role, portal, roster, or provider effect.</p>
+    <form action="${escapeHtml(model.submission.endpoint)}" method="post" data-signup-form data-signup-entry="school" novalidate>
+      <section data-school-fields aria-label="School inquiry details">
+        ${fields}
+      </section>
+      <button class="button button-primary" type="submit">${escapeHtml(model.cta)}</button>
+      <p class="form-status" role="status" data-form-status></p>
+    </form>
+    <div class="success-panel" data-success-panel hidden tabindex="-1">
+      <h2 data-success-heading>Thank you â€” we received your School inquiry.</h2>
+      <p data-success-body>${escapeHtml(model.success)}</p>
+    </div>
+  </section>
+</main>${footer()}`,
+    {
+      canonicalPath: model.route,
+      description:
+        'Send a manual-follow-up School inquiry to the One Time Mishnayos team without creating an account or access.',
+    },
   );
 }
 
@@ -633,6 +705,7 @@ await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
+await writeFile(path.join(outDir, 'school.html'), schoolPage());
 await writeFile(path.join(outDir, 'tisha-bav.html'), tishaBavLandingPage());
 await writeFile(path.join(outDir, 'tisha-bav-live.html'), tishaBavLivePage());
 await writeFile(

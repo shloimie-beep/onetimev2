@@ -279,4 +279,46 @@ describe('canonical runtime classification', () => {
       learningAliasHmacKeyConfigured: false,
     });
   });
+
+  it('enables Parent Student management only with the exact trimmed policy pair', () => {
+    expect(loadConfig({ NODE_ENV: 'development' })).toMatchObject({
+      parentStudentServiceAccountVersion: undefined,
+      parentStudentServiceAccountEvidenceReference: undefined,
+      parentStudentServiceAccountPolicyConfigured: false,
+    });
+    expect(
+      loadConfig({
+        NODE_ENV: 'development',
+        PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: '  parent-student-service-v1  ',
+        PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE: '  evidence/parent-student-v1  ',
+      }),
+    ).toMatchObject({
+      parentStudentServiceAccountVersion: 'parent-student-service-v1',
+      parentStudentServiceAccountEvidenceReference: 'evidence/parent-student-v1',
+      parentStudentServiceAccountPolicyConfigured: true,
+    });
+    expect(
+      loadConfig({
+        NODE_ENV: 'development',
+        PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: '   ',
+        PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE: '   ',
+      }),
+    ).toMatchObject({
+      parentStudentServiceAccountVersion: undefined,
+      parentStudentServiceAccountEvidenceReference: undefined,
+      parentStudentServiceAccountPolicyConfigured: false,
+    });
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'development',
+        PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: 'parent-student-service-v1',
+      }),
+    ).toThrow(/must be configured together/i);
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'development',
+        PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE: 'evidence/parent-student-v1',
+      }),
+    ).toThrow(/must be configured together/i);
+  });
 });

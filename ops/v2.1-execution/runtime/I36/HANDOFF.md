@@ -1,5 +1,72 @@
 # I36 Integration Releases
 
+## Current terminal — Batch A shared composition
+
+Live control `44b9bc6d745810d74ca093d19f46806d8f58e077`, based on
+`234a7c99d1c10075381749920d857f32c4c55c54`, authorized the repository-only
+Batch A terminal from exact integration head
+`b0cc23a05cb2f2f0ef4ee8860352320c18a8e450`. READY
+`bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d`
+and all fourteen immutable request digests reproduced before editing.
+
+P12's accepted barrels, central server registration, and longest-specific
+client routes are fully composed. Parent Student policy remains fail closed:
+the optional version/evidence pair is blank-normalized, trimmed, required as a
+pair, and has no invented value or placeholder. Without the exact approved
+pair the write repository is not constructed and the API returns a generic
+no-store 503. With the pair, the central composer uses the real repository,
+service, canonical v2.1 Parent session, UUID Student IDs, Argon2id password
+hashing, and a domain-separated request HMAC.
+
+P09's accepted barrels, public inquiry route, protected approved-School Admin
+route, and signed-out `/school` artifact are fully composed. The page has
+exactly four required and two optional inquiry fields and no account, access,
+subscription, role, or roster surface. The protected Admin route requires
+same-origin CSRF plus exact active v2.1 Admin readback. A narrow bridge permits
+only an active legacy Admin with the same active v2.1 Admin identity and no
+active Parent membership to obtain the canonical Admin session.
+
+P08-auth-household-002 is satisfied by the composed P12 mount, persistence,
+session, and browser proof. P08-registration-001 is superseded.
+P08-registration-002 remains mixed: Family composition is present, while its
+provider and billing workers remain later-gated. P22's registration-neutral
+barrel is applied; its protected-key prerequisite was already present. P21 and
+P22 server/client successors and the P30 durable worker remain blocked and
+untouched.
+
+Exactly sixteen product paths and the I36 runtime triplet changed, for nineteen
+of twenty authorized paths. The unchanged authorized path is
+`tests/integration/admin-information-architecture-ui-contract.test.ts`. The
+product path-inventory digest is
+`fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4`
+and the product manifest digest is
+`18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb`.
+
+Verification is complete: P12/P09 modules passed 65 tests with three declared
+skips; P22 behavior passed 32/32; the combined composition integrations passed
+10 tests with one declared skip; config passed 26/26; seed-free Playwright
+passed 9/9; scoped ESLint, Prettier, both web builds, central barrel readback,
+and diff hygiene passed. Workspace typecheck has zero changed-path diagnostics
+and exactly four unchanged Stripe/Playwright diagnostics. The wider P22 probe's
+sole failure is an unchanged CRLF static-source assertion in an untouched test;
+the standard browser harness's unchanged seed lacks `join_opens_at`, while the
+bounded seed-free browser run passed all nine assertions.
+
+Claim `b5a4907b-7915-4b7f-beda-34d58a6ff2a9` and leases BARREL_REGISTRAR
+`c9c7ba40-4433-4955-9db3-bf84619d492c`, CONFIG_DEPS
+`759a291e-2b36-46a5-882c-e4e25f984c45`, SERVER_COMPOSER
+`cf656271-cc6b-4ad8-9d56-3eb4117751bd`, CLIENT_COMPOSER
+`0ed016e6-f69b-4e6f-b612-307e1b2e9390`, and RELEASE_INTEGRATOR
+`acf323b0-539a-4669-93cd-982f0f8495ce` were released at
+`2026-07-31T20:15:30Z`, before expiry. No provider or infrastructure
+inspection, candidate action, deployment, DNS, billing, contact, send,
+activation, or external effect occurred; effects remain `0/0/0`.
+
+I36 must stop after the one terminal commit is normally pushed with clean
+local/tracking/live equality. C00 must independently audit all fourteen
+dispositions, the exact nineteen-path release, focused verification, five
+released leases, and zero effects before separately authorizing any successor.
+
 ## Latest controlled-launch reconciliation — P21
 
 P21 publication-scope correction

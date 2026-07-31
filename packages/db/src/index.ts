@@ -58,6 +58,64 @@ export function createMemoryPool(): DbPool {
     returns: DataType.text,
     implementation: (value: string) => createHash('md5').update(value).digest('hex'),
   });
+  db.public.registerFunction({
+    name: 'jsonb_typeof',
+    args: [DataType.jsonb],
+    returns: DataType.text,
+    allowNullArguments: true,
+    implementation: (value: unknown) => {
+      if (value === null) return 'null';
+      if (Array.isArray(value)) return 'array';
+      if (typeof value === 'object') return 'object';
+      if (typeof value === 'string') return 'string';
+      if (typeof value === 'number') return 'number';
+      if (typeof value === 'boolean') return 'boolean';
+      return null;
+    },
+  });
+  const buildJsonObject = (...values: unknown[]) => {
+    const result: Record<string, unknown> = {};
+    for (let index = 0; index < values.length; index += 2) {
+      result[String(values[index])] = values[index + 1];
+    }
+    return result;
+  };
+  db.public.registerFunction({
+    name: 'jsonb_build_object',
+    args: [
+      DataType.text,
+      DataType.text,
+      DataType.text,
+      DataType.integer,
+      DataType.text,
+      DataType.bigint,
+      DataType.text,
+      DataType.text,
+      DataType.text,
+      DataType.timestamptz,
+      DataType.text,
+      DataType.text,
+      DataType.text,
+      DataType.bigint,
+    ],
+    returns: DataType.jsonb,
+    implementation: buildJsonObject,
+  });
+  db.public.registerFunction({
+    name: 'jsonb_build_object',
+    args: [
+      DataType.text,
+      DataType.integer,
+      DataType.text,
+      DataType.text,
+      DataType.text,
+      DataType.text,
+      DataType.text,
+      DataType.timestamptz,
+    ],
+    returns: DataType.jsonb,
+    implementation: buildJsonObject,
+  });
   const adapter = db.adapters.createPg();
   const pool = new adapter.Pool() as DbPool & { __memory?: boolean };
   pool.__memory = true;
@@ -396,3 +454,13 @@ function stripPostgresOnlyBlocks(sql: string) {
     '-- postgres-only migration block skipped by pg-mem tests',
   );
 }
+
+export {
+  createLearningCanonicalReadPorts,
+  createLearningEngagementRepository,
+} from './learning/repository.ts';
+export {
+  LEARNING_ENGAGEMENT_EXCLUDED_TABLES,
+  LEARNING_ENGAGEMENT_REQUIRED_SCHEMA,
+  LEARNING_ENGAGEMENT_SCHEMA_CONTRACT_VERSION,
+} from './learning/schema-contract.ts';

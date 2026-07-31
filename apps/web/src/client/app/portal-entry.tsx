@@ -18,6 +18,7 @@ import {
   type StudentPortalSection,
 } from '../features/portals/PortalFeatures.js';
 import { ParentClientRoot, StudentClientRoot, resolveCurrentClientRoute } from './router/index.js';
+import { ParentHouseholdWorkspace, type ParentHouseholdView } from './parent/household/index.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
@@ -526,7 +527,13 @@ function PortalApp() {
           id: 'v21-parent-overview',
           label: 'Overview',
           href: '/app/parent',
-          current: true,
+          current: location.pathname === '/app/parent',
+        },
+        {
+          id: 'v21-parent-students',
+          label: 'Students',
+          href: '/app/parent/students',
+          current: location.pathname.startsWith('/app/parent/students'),
         },
       ];
     }
@@ -581,7 +588,7 @@ function PortalApp() {
     >
       {portalRole === 'parent' ? (
         v21ParentSession ? (
-          <V21ParentBootstrap session={v21ParentSession} />
+          <ParentHouseholdWorkspace view={parentHouseholdViewFromLocation(location.pathname)} />
         ) : parentAccessShell?.mode === 'paused' ? (
           <ParentPausedShell
             displayName={parentAccessShell.display_name}
@@ -701,45 +708,6 @@ function PortalApp() {
         onSubmitStudentAccessConfirm={() => void submitStudentAccessConfirm()}
       />
     </AppShell>
-  );
-}
-
-function V21ParentBootstrap({ session }: { session: V21ApiSession }) {
-  const household = session.parent_context.household;
-  const accessLabel =
-    household.access_state === 'inactive'
-      ? 'Learning access is inactive'
-      : household.access_state === 'free'
-        ? 'Free learning access is active'
-        : household.access_state === 'grace'
-          ? 'Learning access is in its grace period'
-          : 'Learning access is active';
-  return (
-    <section className="ot-portal-feature" aria-labelledby="v21-parent-title">
-      <div className="ot-panel">
-        <p className="ot-eyebrow">Parent account</p>
-        <h2 id="v21-parent-title">{household.display_name}</h2>
-        <p>{accessLabel}.</p>
-        <dl className="ot-mini-metrics">
-          <div>
-            <dt>Signed in as</dt>
-            <dd>{session.user.email}</dd>
-          </div>
-          <div>
-            <dt>Household</dt>
-            <dd>{household.classification === 'family' ? 'Family' : 'School'}</dd>
-          </div>
-          <div>
-            <dt>Session</dt>
-            <dd>Secure and active</dd>
-          </div>
-        </dl>
-        <p className="ot-muted">
-          Learner, class, billing, and support tools will appear here only after their v2.1
-          registrations are complete.
-        </p>
-      </div>
-    </section>
   );
 }
 
@@ -1392,6 +1360,15 @@ function portalRoleFromLocation(pathname: string): 'parent' | 'student' {
   if (route?.shell === 'parent') return 'parent';
   if (route?.shell === 'student') return 'student';
   throw new Error(`No current Parent or Student route is registered for "${pathname}".`);
+}
+
+function parentHouseholdViewFromLocation(pathname: string): ParentHouseholdView {
+  if (pathname === '/app/parent/students/new') return { kind: 'create' };
+  const studentMatch = /^\/app\/parent\/students\/([^/]+)$/u.exec(pathname);
+  if (studentMatch?.[1]) {
+    return { kind: 'student', student_id: decodeURIComponent(studentMatch[1]) };
+  }
+  return { kind: 'overview' };
 }
 
 function isPortalSection(

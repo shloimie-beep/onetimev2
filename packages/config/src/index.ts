@@ -217,6 +217,8 @@ const envSchema = z.object({
     oneTimeVerificationEnvironmentSchema.optional(),
   ),
   LEARNING_ALIAS_HMAC_KEY: optionalNonblankString,
+  PARENT_STUDENT_SERVICE_ACCOUNT_VERSION: optionalNonblankString,
+  PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE: optionalNonblankString,
   DELIVERY_PROVIDER_MODE: z.enum(['sink', 'mock', 'provider']).default('sink'),
   DELIVERY_PROVIDER_AUTHORIZATION_ID: optionalTrimmedString(8, 160),
   DELIVERY_STAGING_CANARY_PROOF: optionalTrimmedString(8, 160),
@@ -344,6 +346,18 @@ export type AppConfig = ReturnType<typeof loadConfig>;
 
 export function loadConfig(source: NodeJS.ProcessEnv) {
   const parsed = envSchema.parse(source);
+  const parentStudentServiceAccountPolicyConfigured = Boolean(
+    parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION &&
+    parsed.PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE,
+  );
+  if (
+    Boolean(parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION) !==
+    Boolean(parsed.PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE)
+  ) {
+    throw new Error(
+      'PARENT_STUDENT_SERVICE_ACCOUNT_VERSION and PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE must be configured together.',
+    );
+  }
   const runtime = classifyRuntime({
     nodeEnv: parsed.NODE_ENV,
     deliveryEnvironment: parsed.DELIVERY_ENVIRONMENT,
@@ -621,6 +635,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeVerificationWritesAllowed,
     learningAliasHmacKey: parsed.LEARNING_ALIAS_HMAC_KEY,
     learningAliasHmacKeyConfigured: Boolean(parsed.LEARNING_ALIAS_HMAC_KEY),
+    parentStudentServiceAccountVersion: parsed.PARENT_STUDENT_SERVICE_ACCOUNT_VERSION,
+    parentStudentServiceAccountEvidenceReference:
+      parsed.PARENT_STUDENT_SERVICE_ACCOUNT_EVIDENCE_REFERENCE,
+    parentStudentServiceAccountPolicyConfigured,
     deliveryProviderMode: parsed.DELIVERY_PROVIDER_MODE,
     deliveryProviderAuthorizationId: parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID,
     deliveryStagingCanaryProof: parsed.DELIVERY_STAGING_CANARY_PROOF,

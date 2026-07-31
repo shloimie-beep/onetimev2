@@ -56,7 +56,7 @@ test('public landing implements the complete accepted campaign contract', async 
   );
   await expect(page.getByRole('link', { name: 'Send a School inquiry' })).toHaveAttribute(
     'href',
-    '/signup?entry=school',
+    '/school',
   );
   await expect(page.getByRole('heading', { name: 'Free access, then $67/month' })).toBeVisible();
   await expect(page.locator('[data-before-expiry]')).toContainText(
@@ -311,6 +311,30 @@ test('the real Parent bundle keeps a v2.1 session isolated from every legacy Par
       }),
     });
   });
+  await page.route('**/api/app/parent/household', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: {
+          snapshot: {
+            contract_version: '1.2.0',
+            household_id: 'household_parent_bundle',
+            display_name: 'Bundle Parent family',
+            access_state: 'free',
+            student_allowance: 3,
+            active_student_count: 0,
+            available_student_seats: 3,
+            can_manage_students: true,
+            revision: 1,
+            students: [],
+          },
+          csrf_token: `c1.${'d'.repeat(43)}.${'e'.repeat(43)}`,
+        },
+      }),
+    }),
+  );
   await page.route('**/api/v2.1/auth/logout', async (route) => {
     logoutCalls += 1;
     expect(route.request().headers()['x-csrf-token']).toBe(
@@ -332,7 +356,7 @@ test('the real Parent bundle keeps a v2.1 session isolated from every legacy Par
 
   await page.goto('/app/parent');
   await expect(page.getByRole('heading', { name: 'Bundle Parent family' })).toBeVisible();
-  await expect(page.getByText('Free learning access is active.')).toBeVisible();
+  await expect(page.getByText('0 of 3 active Student seats used')).toBeVisible();
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Bundle Parent family' })).toBeVisible();
   expect(bootstrapCalls).toBe(2);
@@ -348,13 +372,11 @@ test('School uses the exact P09 manual-inquiry route and payload with no nurture
   page,
 }) => {
   await useServerDate(page, '2026-08-01T12:00:00.000Z');
-  await page.route('**/api/v1/signup/family/bootstrap', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(bootstrap),
-    }),
-  );
+  let familyBootstrapCalls = 0;
+  await page.route('**/api/v1/signup/family/bootstrap', (route) => {
+    familyBootstrapCalls += 1;
+    return route.fulfill({ status: 500, contentType: 'application/json', body: '{}' });
+  });
   let observedPayload: Record<string, unknown> | null = null;
   await page.route('**/api/v2.1/signup/school-inquiry', async (route) => {
     observedPayload = JSON.parse(route.request().postData() ?? '{}') as Record<string, unknown>;
@@ -370,9 +392,10 @@ test('School uses the exact P09 manual-inquiry route and payload with no nurture
       }),
     });
   });
-  await page.goto('/signup?entry=school');
+  await page.goto('/school');
   await expect(page.getByRole('heading', { name: 'Send a School inquiry' })).toBeVisible();
   await expect(page.getByLabel(/WhatsApp/i)).toHaveCount(0);
+  await expect(page.locator('[data-school-fields] input')).toHaveCount(6);
   await page.getByLabel('School name').fill('Example School');
   await page.getByLabel('Contact first name').fill('School');
   await page.getByLabel('Contact last name').fill('Contact');
@@ -391,6 +414,7 @@ test('School uses the exact P09 manual-inquiry route and payload with no nurture
     phone: '+972501234567',
     note: 'Please contact the adult administrator.',
   });
+  expect(familyBootstrapCalls).toBe(0);
 });
 
 test('campaign remains useful without JavaScript and honors reduced motion and mobile reflow', async ({

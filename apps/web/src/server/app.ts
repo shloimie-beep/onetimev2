@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { isDeepStrictEqual } from 'node:util';
 import path from 'node:path';
@@ -15,6 +15,7 @@ import { createGamificationRepository } from '../../../../packages/db/src/gamifi
 import { createLiveClassRepository } from '../../../../packages/db/src/live-class/repository.ts';
 import { createZoomAdminTestResourceRepository } from '../../../../packages/db/src/live-class/zoom-admin-repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
+import { createPostgresSchoolSignupRepository } from '../../../../packages/db/src/signup/school/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
 import {
@@ -122,6 +123,7 @@ import type {
   PortalCapability,
 } from '../../../../packages/contracts/src/portals/index.ts';
 import { AUTH_SESSION_COOKIE } from '../../../../packages/contracts/src/identity/auth/index.ts';
+import type { SchoolSignupScope } from '../../../../packages/contracts/src/signup/school/index.ts';
 import {
   CrmDuplicateError,
   CrmVersionConflictError,
@@ -245,6 +247,7 @@ import {
   planProviderCanary,
 } from '../../../../packages/domain/src/providers/control-center.ts';
 import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
+import { hashAuthPassword } from '../../../../packages/domain/src/auth/policy.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
   parseOt87StripeTestBillingConfig,
@@ -289,6 +292,17 @@ import {
   familySignupFeatureRegistration,
   resolveFamilySignupScope,
 } from './features/signup/family/router.ts';
+import {
+  resolveSchoolSignupScope,
+  schoolInquiryFeatureRegistration,
+} from './features/signup/school/router.ts';
+import { createApprovedSchoolAdminRouter } from './features/signup/school/approved-school-router.ts';
+import { createSchoolSignupService } from './features/signup/school/service.ts';
+import {
+  createParentHouseholdRouter,
+  createParentHouseholdService,
+  createPostgresParentHouseholdRepository,
+} from './features/portals/parent-household/index.ts';
 import { clearSessionCookieHeader, sessionCookieHeader } from './features/auth/http-security.ts';
 import {
   installServerFeatureRouters,
@@ -311,6 +325,8 @@ type AppDeps = {
 
 const SESSION_COOKIE = 'otcrm_session';
 const CSRF_COOKIE = 'otcrm_csrf';
+const PARENT_STUDENT_PASSWORD_FINGERPRINT_DOMAIN =
+  'one-time-parent-student-password-idempotency-v1';
 type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
 const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
   (tokenType) => tokenType !== 'password_reset',
@@ -401,7 +417,7 @@ export function createApp({
       }),
   };
   const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
-    featureRegistrations ?? [familySignupFeatureRegistration]
+    featureRegistrations ?? [familySignupFeatureRegistration, schoolInquiryFeatureRegistration]
   ).map((registration) =>
     registration.featureId === familySignupFeatureRegistration.featureId
       ? centrallyBoundFamilySignupRegistration
@@ -561,6 +577,83 @@ export function createApp({
     },
     registrations: centrallyBoundFeatureRegistrations,
   });
+
+  const parentStudentServiceAccountVersion = config.parentStudentServiceAccountVersion;
+  const parentStudentServiceAccountEvidenceReference =
+    config.parentStudentServiceAccountEvidenceReference;
+  if (parentStudentServiceAccountVersion && parentStudentServiceAccountEvidenceReference) {
+    const parentHouseholdRepository = createPostgresParentHouseholdRepository(pool, {
+      acceptedServiceAccountVersion: parentStudentServiceAccountVersion,
+      immutableEvidenceReference: parentStudentServiceAccountEvidenceReference,
+      ...(clock ? { clock } : {}),
+    });
+    const parentHouseholdService = createParentHouseholdService({
+      repository: parentHouseholdRepository,
+      passwords: { hash: async (password) => hashAuthPassword(password) },
+      ids: { nextStudentId: () => `student_${randomUUID()}` },
+    });
+    app.use(
+      '/api/app/parent',
+      createParentHouseholdRouter({
+        service: parentHouseholdService,
+        sessions: v21AdultSessionRuntime,
+        fingerprintPasswordForIdempotency: async (password) =>
+          createHmac('sha256', config.authCsrfSecret)
+            .update(PARENT_STUDENT_PASSWORD_FINGERPRINT_DOMAIN, 'utf8')
+            .update('\0', 'utf8')
+            .update(password, 'utf8')
+            .digest('hex'),
+        ...(clock ? { clock } : {}),
+      }),
+    );
+  } else {
+    app.use('/api/app/parent', (_req, res) => {
+      setPrivateNoStore(res);
+      res.status(503).json({
+        success: false,
+        code: 'PARENT_HOUSEHOLD_UNAVAILABLE',
+        message: 'Parent access is temporarily unavailable.',
+      });
+    });
+  }
+
+  const schoolRuntimeBinding = resolveSchoolSignupScope(config);
+  const approvedSchoolService = createSchoolSignupService({
+    repository: createPostgresSchoolSignupRepository(pool),
+    allocateLeadId: () => `school-lead-${randomUUID()}`,
+  });
+  app.use(
+    '/api/v2.1/admin/approved-schools',
+    createApprovedSchoolAdminRouter({
+      runtimeBinding: schoolRuntimeBinding,
+      resolveSession: (req) =>
+        approvedSchoolAdminSessionFromRequest(req, pool, config, schoolRuntimeBinding),
+      verifyCsrf: async (req, approvedSession) => {
+        if (!isSameOriginPost(req, config)) return false;
+        const session = await sessionFromRequest(req, pool, config);
+        if (!session || session.user.role !== 'admin') return false;
+        const readback = await approvedSchoolAdminSessionFromRequest(
+          req,
+          pool,
+          config,
+          schoolRuntimeBinding,
+        );
+        if (
+          readback?.role !== 'admin' ||
+          readback.human_account_id !== approvedSession.human_account_id
+        ) {
+          return false;
+        }
+        return verifySessionCsrf({
+          pool,
+          sessionKey: session.session_key,
+          csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+        });
+      },
+      now: () => (clock ? clock() : new Date()).toISOString(),
+      configurator: approvedSchoolService,
+    }),
+  );
 
   registerOpsRoutes({
     app,
@@ -1067,15 +1160,27 @@ export function createApp({
           .json(publicError('SERVER_ERROR', 'Login is unavailable right now.', req.traceId));
         return;
       }
-      if (v21Recognition.status === 'recognized') {
-        const identifierHash = stableKey('login_identifier', [v21Recognition.normalized_email]);
+      const recognizedV21ParentLogin =
+        v21Recognition.status === 'recognized' &&
+        !(await isApprovedSchoolLegacyAdminLoginBridge(
+          pool,
+          config,
+          v21Scope,
+          v21Recognition.normalized_email,
+        ))
+          ? v21Recognition
+          : null;
+      if (recognizedV21ParentLogin) {
+        const identifierHash = stableKey('login_identifier', [
+          recognizedV21ParentLogin.normalized_email,
+        ]);
         const attemptNow = clock ? clock() : new Date();
         const attemptIp = req.ip ?? 'unknown';
         const v21LoginBudgets = [
           {
             scope: 'login_account_ip',
             subject: stableKey('login_account_ip_subject', [
-              v21Recognition.normalized_email,
+              recognizedV21ParentLogin.normalized_email,
               attemptIp,
             ]),
             limit: 5,
@@ -4148,6 +4253,7 @@ function publicHtmlFileForPath(pathname: string) {
   if (pathname.startsWith('/app/content/')) return 'app/content.html';
   const staticPages = new Set([
     '/signup',
+    '/school',
     '/login',
     '/privacy',
     '/terms',
@@ -4209,6 +4315,108 @@ function rewriteAppAssetUrls(html: string, config: AppConfig) {
     (_match, quote: string, assetPath: string) =>
       `${quote}/assets/${assetPath}?v=${assetVersion}${quote}`,
   );
+}
+
+async function isApprovedSchoolLegacyAdminLoginBridge(
+  pool: DbPool,
+  config: AppConfig,
+  runtimeBinding: SchoolSignupScope,
+  normalizedEmail: string,
+) {
+  const result = await pool.query(
+    `SELECT account.human_account_id
+       FROM onetime.v21_adult_identities AS adult
+       JOIN onetime.v21_human_accounts AS account
+         ON account.adult_id = adult.adult_id
+        AND account.product_key = adult.product_key
+        AND account.runtime_tier = adult.runtime_tier
+        AND account.verification_environment_id = adult.verification_environment_id
+       JOIN onetime.v21_human_account_role_memberships AS membership
+         ON membership.human_account_id = account.human_account_id
+        AND membership.product_key = account.product_key
+        AND membership.runtime_tier = account.runtime_tier
+        AND membership.verification_environment_id = account.verification_environment_id
+       AND membership.role = 'admin'
+        AND membership.revoked_at IS NULL
+       LEFT JOIN onetime.v21_human_account_role_memberships AS parent_membership
+         ON parent_membership.human_account_id = account.human_account_id
+        AND parent_membership.product_key = account.product_key
+        AND parent_membership.runtime_tier = account.runtime_tier
+        AND parent_membership.verification_environment_id =
+            account.verification_environment_id
+        AND parent_membership.role = 'parent'
+        AND parent_membership.revoked_at IS NULL
+       JOIN onetime.account_users AS legacy
+         ON legacy.account_key = $5
+        AND legacy.product_key = $6
+        AND legacy.email_normalized = adult.normalized_email
+        AND legacy.role = 'admin'
+        AND legacy.status = 'active'
+      WHERE adult.normalized_email = $1
+        AND adult.product_key = $2
+        AND adult.runtime_tier = $3
+        AND adult.verification_environment_id = $4
+        AND adult.state = 'active'
+        AND account.state = 'active'
+        AND parent_membership.human_account_id IS NULL
+      LIMIT 2`,
+    [
+      normalizedEmail,
+      runtimeBinding.product,
+      runtimeBinding.runtime_tier,
+      runtimeBinding.verification_environment_id,
+      config.accountKey,
+      config.productKey,
+    ],
+  );
+  return result.rowCount === 1 && typeof result.rows[0]?.human_account_id === 'string';
+}
+
+async function approvedSchoolAdminSessionFromRequest(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+  runtimeBinding: SchoolSignupScope,
+) {
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return null;
+  if (session.user.role !== 'admin') {
+    return {
+      human_account_id: session.user.user_key,
+      role: session.user.role === 'student' ? ('student' as const) : ('parent' as const),
+    };
+  }
+  const result = await pool.query(
+    `SELECT account.human_account_id
+       FROM onetime.v21_adult_identities AS adult
+       JOIN onetime.v21_human_accounts AS account
+         ON account.adult_id = adult.adult_id
+        AND account.product_key = adult.product_key
+        AND account.runtime_tier = adult.runtime_tier
+        AND account.verification_environment_id = adult.verification_environment_id
+       JOIN onetime.v21_human_account_role_memberships AS membership
+         ON membership.human_account_id = account.human_account_id
+        AND membership.product_key = account.product_key
+        AND membership.runtime_tier = account.runtime_tier
+        AND membership.verification_environment_id = account.verification_environment_id
+        AND membership.role = 'admin'
+        AND membership.revoked_at IS NULL
+      WHERE adult.normalized_email = $1
+        AND adult.product_key = $2
+        AND adult.runtime_tier = $3
+        AND adult.verification_environment_id = $4
+        AND adult.state = 'active'
+        AND account.state = 'active'
+      LIMIT 2`,
+    [
+      session.user.email.trim().toLowerCase(),
+      runtimeBinding.product,
+      runtimeBinding.runtime_tier,
+      runtimeBinding.verification_environment_id,
+    ],
+  );
+  if (result.rowCount !== 1 || typeof result.rows[0]?.human_account_id !== 'string') return null;
+  return { human_account_id: result.rows[0].human_account_id, role: 'admin' as const };
 }
 
 function publicMetadataUrl(publicBaseUrl: string, canonicalPath: string) {

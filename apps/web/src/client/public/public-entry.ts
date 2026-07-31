@@ -1,4 +1,7 @@
 import './styles.css';
+import { schoolInquiryFormModel } from './school/model.js';
+
+const schoolInquiryModel = schoolInquiryFormModel();
 
 const analyticsTargets = document.querySelectorAll<HTMLElement>('[data-ot-analytics-event]');
 for (const target of analyticsTargets) {
@@ -412,6 +415,7 @@ if (form) {
   const entryChoices = [
     ...form.querySelectorAll<HTMLInputElement>('input[name="classification_choice"]'),
   ];
+  const schoolOnly = form.dataset.signupEntry === 'school';
   const familyBootstrap: {
     idempotency_key: string;
     csrf_token: string;
@@ -429,7 +433,9 @@ if (form) {
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
   const currentEntry = () =>
-    entryChoices.find((choice) => choice.checked)?.value === 'school' ? 'school' : 'family';
+    schoolOnly || entryChoices.find((choice) => choice.checked)?.value === 'school'
+      ? 'school'
+      : 'family';
   const setSectionEnabled = (section: HTMLElement | null, enabled: boolean) => {
     if (!section) return;
     section.hidden = !enabled;
@@ -449,7 +455,7 @@ if (form) {
     const family = currentEntry() === 'family';
     setSectionEnabled(familyFields, family);
     setSectionEnabled(schoolFields, !family);
-    if (submit) submit.textContent = family ? familyButtonCopy() : 'Send school inquiry';
+    if (submit) submit.textContent = family ? familyButtonCopy() : schoolInquiryModel.cta;
   };
 
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -480,10 +486,12 @@ if (form) {
     familyBootstrap.splice(0, familyBootstrap.length, json);
     return json;
   };
-  void loadFamilyBootstrap().catch(() => {
-    if (status)
-      status.textContent = 'Secure Family signup is still loading. You can retry shortly.';
-  });
+  if (!schoolOnly) {
+    void loadFamilyBootstrap().catch(() => {
+      if (status)
+        status.textContent = 'Secure Family signup is still loading. You can retry shortly.';
+    });
+  }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -606,8 +614,9 @@ if (form) {
               ? typeof json.message === 'string'
                 ? json.message
                 : 'Automatic sign-in is not available yet. Use Member Login when session setup is available.'
-              : (typeof json.message === 'object' && json.message.body) ||
-                'The One Time team will review it and follow up personally.';
+              : typeof json.message === 'string'
+                ? json.message
+                : (json.message?.body ?? schoolInquiryModel.success);
         }
         success.focus();
       }
@@ -619,7 +628,7 @@ if (form) {
     } finally {
       if (submit) {
         submit.disabled = false;
-        submit.textContent = entry === 'family' ? familyButtonCopy() : 'Send school inquiry';
+        submit.textContent = entry === 'family' ? familyButtonCopy() : schoolInquiryModel.cta;
       }
     }
   });

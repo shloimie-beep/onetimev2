@@ -36,14 +36,13 @@ export function createClientRouteRegistry(
         (route) =>
           matchesPath(route, pathname) && (role === undefined || route.roles.includes(role)),
       );
-      if (matches.length > 1) {
-        throw new Error(
-          `Ambiguous client route "${pathname}" matched ${matches
-            .map((route) => route.routeId)
-            .join(', ')}.`,
-        );
-      }
-      return matches[0] ?? null;
+      return (
+        matches.sort(
+          (left, right) =>
+            right.pathname.length - left.pathname.length ||
+            Number(right.match === 'exact') - Number(left.match === 'exact'),
+        )[0] ?? null
+      );
     },
   });
 }
@@ -55,6 +54,30 @@ export const CURRENT_CLIENT_ROUTES = createClientRouteRegistry([
     shell: 'live',
     roles: ['admin'],
     pathname: '/app/live-console',
+    match: 'prefix',
+  },
+  {
+    routeId: 'onetime.parent.household.students-new',
+    contractVersion: CLIENT_ROUTER_CONTRACT_VERSION,
+    shell: 'parent',
+    roles: ['parent'],
+    pathname: '/app/parent/students/new',
+    match: 'exact',
+  },
+  {
+    routeId: 'onetime.parent.household.students',
+    contractVersion: CLIENT_ROUTER_CONTRACT_VERSION,
+    shell: 'parent',
+    roles: ['parent'],
+    pathname: '/app/parent/students',
+    match: 'exact',
+  },
+  {
+    routeId: 'onetime.parent.household.student',
+    contractVersion: CLIENT_ROUTER_CONTRACT_VERSION,
+    shell: 'parent',
+    roles: ['parent'],
+    pathname: '/app/parent/students',
     match: 'prefix',
   },
   {

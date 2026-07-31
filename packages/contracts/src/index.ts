@@ -8,6 +8,8 @@ export * from './social/index.ts';
 export * from './accounts/index.ts';
 export * from './gamification/index.ts';
 export * from './portals/index.ts';
+export * from './learning/index.ts';
+export * from './signup/school/index.ts';
 export * from './dashboard/index.ts';
 export * from './billing/index.ts';
 export * from './access/index.ts';

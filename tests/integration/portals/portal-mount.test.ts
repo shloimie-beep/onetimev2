@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
+import { resolveCurrentClientRoute } from '../../../apps/web/src/client/app/router/registry.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { createAccountUser } from '../../../packages/domain/src/index.ts';
@@ -44,11 +45,12 @@ beforeEach(async () => {
   await createAccountUser({
     pool,
     config,
-    email: 'viewer@example.test',
-    password: 'ViewerPass!234',
-    displayName: 'Viewer User',
-    role: 'viewer',
+    email: 'admin@example.test',
+    password: 'AdminPass!234',
+    displayName: 'Admin User',
+    role: 'admin',
   });
+  await seedV21AdminIdentity();
   await seedPortalRecords();
 });
 
@@ -58,6 +60,60 @@ afterEach(async () => {
 });
 
 describe('OT-71 mounted parent and student portals', () => {
+  it('resolves the longest exact Parent household route before the generic Parent shell', () => {
+    expect(resolveCurrentClientRoute('/app/parent', 'parent')?.routeId).toBe(
+      'onetime.parent.portal',
+    );
+    expect(resolveCurrentClientRoute('/app/parent/students', 'parent')?.routeId).toBe(
+      'onetime.parent.household.students',
+    );
+    expect(resolveCurrentClientRoute('/app/parent/students/new', 'parent')?.routeId).toBe(
+      'onetime.parent.household.students-new',
+    );
+    expect(resolveCurrentClientRoute('/app/parent/students/student-1', 'parent')?.routeId).toBe(
+      'onetime.parent.household.student',
+    );
+  });
+
+  it('mounts the public School inquiry and keeps unconfigured Parent Student policy fail closed', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir }));
+    try {
+      const unavailableParent = await fetch(`${server.baseUrl}/api/app/parent/household`);
+      expect(unavailableParent.status).toBe(503);
+      expect(unavailableParent.headers.get('cache-control')).toContain('no-store');
+      await expect(unavailableParent.json()).resolves.toEqual({
+        success: false,
+        code: 'PARENT_HOUSEHOLD_UNAVAILABLE',
+        message: 'Parent access is temporarily unavailable.',
+      });
+
+      const school = await fetch(`${server.baseUrl}/api/v2.1/signup/school-inquiry`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          school_name: 'Portal mount School',
+          contact_first_name: 'School',
+          contact_last_name: 'Administrator',
+          email: 'portal-mount-school@example.test',
+        }),
+      });
+      expect(school.status, await school.clone().text()).toBe(201);
+      await expect(school.json()).resolves.toMatchObject({
+        success: true,
+        code: 'SCHOOL_INQUIRY_ACCEPTED',
+        provider_effects_completed_inline: 0,
+        product_accounts_created: 0,
+        households_created: 0,
+        student_accounts_created: 0,
+        subscriptions_created: 0,
+        access_grants_created: 0,
+        nurture_workflow_intent_ids: [],
+      });
+    } finally {
+      await server.close();
+    }
+  });
+
   it('mounts parent shell and APIs through canonical parent sessions only', async () => {
     const server = await listenForTest(createApp({ config, pool, distDir }));
     try {
@@ -236,11 +292,20 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(resetTokens.rows[0]?.consumed_at).toBeNull();
       expect(JSON.stringify(resetTokens.rows)).not.toContain('Mishnah54321');
 
-      const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');
+      const admin = await loginAs(server.baseUrl, 'admin@example.test', 'AdminPass!234');
       const denied = await fetch(`${server.baseUrl}/api/v1/portals/parent/dashboard`, {
-        headers: { cookie: viewer.cookies },
+        headers: { cookie: admin.cookies },
       });
       expect(denied.status).toBe(403);
+      const approvedSchoolRead = await fetch(
+        `${server.baseUrl}/api/v2.1/admin/approved-schools/missing-school`,
+        { headers: { cookie: admin.cookies } },
+      );
+      expect(approvedSchoolRead.status).toBe(404);
+      await expect(approvedSchoolRead.json()).resolves.toMatchObject({
+        success: false,
+        code: 'APPROVED_SCHOOL_NOT_FOUND',
+      });
     } finally {
       await server.close();
     }
@@ -350,6 +415,34 @@ describe('OT-71 mounted parent and student portals', () => {
     }
   });
 });
+
+async function seedV21AdminIdentity() {
+  const now = new Date('2026-07-31T12:00:00.000Z');
+  await pool.query(
+    `INSERT INTO onetime.v21_adult_identities
+       (adult_id, normalized_email, display_name, state, version, product_key,
+        runtime_tier, verification_environment_id, created_at, updated_at)
+     VALUES ('adult_portal_admin', 'admin@example.test', 'Admin User', 'active', 1,
+             'one_time_mishnayos', 'isolated_staging', 'ci', $1, $1)`,
+    [now],
+  );
+  await pool.query(
+    `INSERT INTO onetime.v21_human_accounts
+       (human_account_id, adult_id, state, security_version, version, product_key,
+        runtime_tier, verification_environment_id, created_at, updated_at)
+     VALUES ('human_portal_admin', 'adult_portal_admin', 'active', 1, 1,
+             'one_time_mishnayos', 'isolated_staging', 'ci', $1, $1)`,
+    [now],
+  );
+  await pool.query(
+    `INSERT INTO onetime.v21_human_account_role_memberships
+       (human_account_id, role, granted_at, granted_reason, product_key,
+        runtime_tier, verification_environment_id)
+     VALUES ('human_portal_admin', 'admin', $1, 'I36 central registration proof',
+             'one_time_mishnayos', 'isolated_staging', 'ci')`,
+    [now],
+  );
+}
 
 async function seedPortalRecords() {
   await pool.query(

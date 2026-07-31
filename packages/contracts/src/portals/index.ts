@@ -1,4 +1,6 @@
 import { z } from 'zod';
+
+export * from './parent-household/index.ts';
 import { gamificationSummarySchema } from '../gamification/index.ts';
 import { contentFactoryPortalProjectionSchema } from '../content/content-factory.ts';
 import { sameOriginPathSchema } from '../content/pipeline.ts';
