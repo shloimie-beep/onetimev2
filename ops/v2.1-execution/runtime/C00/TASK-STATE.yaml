@@ -12,16 +12,16 @@ phase: full_production_completion_convergence
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-31T10:57:00Z'
-last_heartbeat_at: '2026-07-31T10:57:00Z'
-controller_authorization_sha: ddd36a461481504219ac663cf464417eb2e6658b
+lease_expires_at: '2026-07-31T11:48:14Z'
+last_heartbeat_at: '2026-07-31T11:48:14Z'
+controller_authorization_sha: 52cb53061527b1df9b95029bcf211fe258609368
 ready_entry_payload_digest: null
-state_based_on_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
+state_based_on_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 lean_completion_bindings:
   full_production_completion_convergence:
     prior_control_head_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
-    current_integration_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    current_integration_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
     I36_parent_session_terminal_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     I36_parent_session_terminal_parent_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
     I36_parent_session_terminal_tree_sha: 56dc54f5aa494c36a767313097e94e8489c9d624
@@ -635,7 +635,38 @@ lean_completion_bindings:
       - preserve_composite_scoped_provider_completion_correlation
       - preserve_immutable_P21_MIGRATION_002_and_superseded_registration_001_bytes
     provider_boundary: repository_only_no_provider_call_or_effect
+  current_P21_P22_terminal_and_successor_dispatch:
+    control_acquisition_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+    current_integration_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    I36_terminal_parent_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
+    I36_terminal_tree_sha: 722151c1fc3db6b6d4eacb0390696efcfea3ce37
+    I36_P21_merge_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
+    I36_P22_merge_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
+    I36_terminal_state_handoff_digest: 0d80a22c7b33acbae256cae4909451139aab0ceb512241e31bc9838c2773034f
+    I36_terminal_runtime_triplet_digest: 8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5
+    I36_terminal_lease_released_at: '2026-07-31T11:09:17Z'
+    P18_held_terminal_head_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+    P18_held_terminal_parent_sha: 633e3805150e9a4f4b8cce76d4304454bbb85d94
+    P18_held_terminal_tree_sha: 3782d2e0206e910eafb068ca7dc3888ed0fa0d17
+    P18_held_review: two_P1_one_P2
+    P18_successor_claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
+    P18_successor_lease_id: 89692d9a-5b1f-47b3-8b41-c96286936deb
+    P18_ready_entry_payload_digest: 862362d871eec64d5ad47b3399dad9672649cef2fe3cf70ed24432028322e1e7
+    P18_authorized_path_inventory_digest: e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b
+    F02_held_terminal_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+    F02_successor_claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+    F02_migration_authority_lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
+    F02_schema_contract_lease_id: 2c7b6d40-ea5f-423a-a000-a043d2bd6f7a
+    F02_ready_entry_payload_digest: 8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21
+    F02_authorized_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
+    F02_first_push_boundary: exact_runtime_triplet_only_then_stop_for_C00_reconciliation
+    candidate: null
+    provider_boundary: no_provider_or_external_effect
 completed_steps:
+- final control validation parsed all 11 canonical control YAML files plus C00 TASK-STATE, preserved 46 unique tasks, reproduced both READY and all 15 completed MERGE canonical payload digests, preserved 82 unique steward requests, 11 unique blockers with five open, next migration ordinal 2254, null candidate, 14 unclaimed provider locks, three disjoint worker slots, released C00 lease, exact nine-path diff, diff-check, and a 2,423-file secret scan; scoped Prettier reproduced the same six-file inherited baseline while CONTROL-LEASE, READY-QUEUE, and C00 NEXT-PROMPT pass
+- independently accepted I36 terminal 392cc119 with exact ordered P21/P22 ancestry, 25-source/28-release-path scope, canonical terminal pair/triplet evidence, released integrator lease, clean remote equality, merged checks passing, and effects 0/0/0; consumed both merge items into immutable completed history
+- held P18 terminal e61aaeb3 after independent review found two P1 and one P2 defects despite 29 focused passes; preserved the rejected head and issued exact seven-path successor claim 2ed4aaa7 with EMBEDDED_CLASSROOM lease 89692d9a
+- dispatched F02 claim 41a5ba44 from held head 22ada24a against integration 392cc119 for an exact runtime-triplet-only first checkpoint under MIGRATION_AUTHORITY c741bc95 and SCHEMA_CONTRACT 2c7b6d40; proposal and SQL authority remain withheld until C00 reconciliation
 - independently reproduced I36's terminal formatting hold at exact 2e62d79d: all ten paths passed repository-configured Prettier at 2e7cd5be, while exact current app.ts, adult-session.test.ts, and Parent composition test fail; computed deterministic formatted raw hashes e7359091/36dd959d/8a249afa and Git blobs f94f9e8e/347c7998/bf5e6f34 with byte deltas -7/0/+25, preserved passed native-lifecycle/build/lint/secret evidence, and authorized only those three mechanical outputs plus remaining changed-source and terminal gates
 - independently reconciled I36 terminal-validation renewal atomic claim 2e62d79d as the exact runtime-triplet-only child of 88955780 with tree 230851be, corrected active expected-head and phase fields, canonical pair/triplet 532f323c/c6969ad0, manifest pair/triplet da916171/3a8753b7, all ten product/test blobs and completed gates preserved, live unreleased four-slot lease, clean remote equality, and effects 0/0/0; authorized only the seven pending terminal validation gates with product semantics frozen
 - independently audited I36 security-closeout checkpoint 88955780 as exact sole child of 2e7cd5be with four product/test paths plus its runtime triplet, passing closeout semantics, typecheck, 26 focused assertions, three pg-mem composition assertions, timely four-slot release, clean remote equality, and effects 0/0/0; held only the stale top-level expected_existing_head_sha and lease_phase_scope, then issued fresh runtime-triplet-only READY d0b0dea5, claim 8d8f5bb9, and lease 49ae7724
@@ -1037,22 +1068,21 @@ completed_steps:
   - consumed only the I36 READY entry, preserved P18 READY unchanged, and rebound both ordered P21/P22 merge targets to exact claim head b87901e8 with canonical payload digests a3f43e06/c7084c74
 remaining_steps:
 - >-
-  Complete and independently reconcile the exact I36 P21-then-P22 source microbatch and the disjoint P18 post-commit
-  attendance-projection callback correction without applying any shared request.
+  Complete and independently reconcile the exact P18 seven-path callback correction and F02 runtime-triplet claim
+  checkpoint, then issue only the descendant F02 migration continuation under the same reconciled claim and leases.
 - >-
-  From the resulting integration release, route only P22-migration-002 to F02 as migration 2254, then batch P12 2255 and
-  P09/P10 2256 with clean native PostgreSQL-server replay and exact positive/negative proof.
-- Route only P22-migration-002 to F02 for forward-only migration 2254 with native proof, then P12-migration-001 as 2255 and P09-migration-002 as 2256 in dependency order.
+  Author P22-migration-002 as 2254, P12-migration-001 as 2255, and P09-migration-002 as 2256 in exact dependency order
+  with clean native PostgreSQL-server apply/replay and focused positive/negative proof.
 - Operationalize P12's concrete PostgreSQL repository/router/forms and Student-creation journey before applying P12/P08 shared registration or closing the P08 blocker.
 - Complete P09's signed-out GET /school and Admin configuration surface after School-seat authority converges; do not over-claim P08-registration-002 or P09-registration-001.
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Resume I36 from exact reconciled claim head b87901e8 under claim f7a26569 and sole RELEASE_INTEGRATOR lease 5e0cd656.
-  Consume only the rebound P21 then P22 merge items, preserve both source heads as ancestry, update only the I36 runtime
-  triplet after validation, release the lease, push one terminal, and stop. P18 continues independently under its
-  unchanged exact-eight-path READY authority. Candidate, SQL authoring/application, shared registration, providers,
-  deployment, DNS, sends, charges, customer activation, and every external effect remain prohibited.
+  Run P18 from exact held head e61aaeb3 under claim 2ed4aaa7 for its substantive seven-path correction. Concurrently
+  run F02 from exact held head 22ada24a under claim 41a5ba44 for exactly its runtime-triplet-only atomic claim, push,
+  and stop. C00 then independently reconciles the F02 claim before permitting proposal or SQL bytes. Candidate, shared
+  registration, providers, deployment, DNS, sends, charges, customer activation, and every external effect remain
+  prohibited.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -1060,13 +1090,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: ddd36a461481504219ac663cf464417eb2e6658b
+  current_control_parent_sha: 52cb53061527b1df9b95029bcf211fe258609368
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
       claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-      observed_head: ddd36a461481504219ac663cf464417eb2e6658b
-      lease_expires_at: '2026-07-31T10:57:00Z'
+      observed_head: 52cb53061527b1df9b95029bcf211fe258609368
+      lease_expires_at: '2026-07-31T11:48:14Z'
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -1077,18 +1107,18 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
-      observed_head: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
-      authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-      lease_expires_at: '2026-07-31T12:20:00Z'
-      scheduling_state: claim_reconciled_P21_then_P22_accepted_source_microbatch_rebound
-    F02:
-      branch: codex/v21-lane1-migration-correction
       claim_id: null
-      observed_head: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+      observed_head: 392cc119b2df65f9bd38da8c4db36113f1add967
       authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
       lease_expires_at: null
-      scheduling_state: blocked_pending_P22_learning_engagement_authority_successor
+      scheduling_state: P21_then_P22_source_microbatch_complete_and_reconciled
+    F02:
+      branch: codex/v21-lane1-migration-correction
+      claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+      observed_head: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+      authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+      lease_expires_at: '2026-07-31T13:28:40Z'
+      scheduling_state: resume_ready_exact_runtime_triplet_claim_only
     F07:
       branch: codex/v21-lane3-landing-campaign
       claim_id: null
@@ -1175,18 +1205,18 @@ orchestration:
       scheduling_state: ready_for_review_interface_integrated_at_972fa435
     P18:
       branch: codex/v21-p18-attendance-projection-callback
-      claim_id: 267308b4-66fa-4910-8597-00999c58a856
-      observed_head: null
-      authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-      lease_expires_at: '2026-07-31T12:20:00Z'
-      scheduling_state: ready_exact_eight_path_postcommit_projection_callback
+      claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
+      observed_head: e61aaeb384201f267b528e01c780f38cfc0c984d
+      authorized_start_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+      lease_expires_at: '2026-07-31T13:28:40Z'
+      scheduling_state: resume_ready_exact_seven_path_stale_authority_ordering_correction
     P21:
       branch: codex/v21-p21-publication-scope-correction
       claim_id: null
       observed_head: c11dec418fa3de896e96c348f87928c92c9f86b9
       authorized_start_sha: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
       lease_expires_at: null
-      scheduling_state: independently_accepted_waiting_ordered_source_integration
+      scheduling_state: independently_accepted_and_integrated_at_f5172829_released_at_392cc119
     P19:
       branch: codex/v21-p19-content-ingest
       claim_id: de624026-ff9a-4c35-ad02-bc6c1f28a3dc
@@ -1277,7 +1307,7 @@ orchestration:
       observed_head: 347a08b29b801de0a74b242d962c42a886dcd717
       authorized_start_sha: 7730bcc2977d4e1317e7af0757be95afc0e9f47e
       lease_expires_at: null
-      scheduling_state: independently_accepted_waiting_ordered_source_integration
+      scheduling_state: independently_accepted_and_integrated_at_70c48e60_released_at_392cc119
     P23:
       branch: codex/v21-p23-student-notifications
       claim_id: null

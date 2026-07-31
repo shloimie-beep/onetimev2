@@ -3598,3 +3598,47 @@ ancestry, update only its runtime triplet after bounded validation, release its
 lease, push one terminal, and stop. No steward request, SQL, candidate,
 provider, deployment, DNS, send, charge, customer activation, or external
 effect is authorized.
+
+# I36 source release accepted; P18 correction and F02 claim dispatched
+
+I36 terminal `392cc119b2df65f9bd38da8c4db36113f1add967`, sole parent
+`70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7`, and tree
+`722151c1fc3db6b6d4eacb0390696efcfea3ce37` are independently accepted.
+P21 merged at `f5172829a0df0af9fa9790cb5b88427ed3ccadc4`, then P22 at
+`70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7`. The exact source/release
+scopes are 25/28 paths, combined source inventory
+`1d7c540a0ecad753cca3f0fd11aed191ff20bd929d7e6d2a103eae9d1790b848`;
+the terminal state/HANDOFF and runtime-triplet digests are
+`0d80a22c7b33acbae256cae4909451139aab0ceb512241e31bc9838c2773034f`
+and `8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5`.
+The integrator lease was released at `2026-07-31T11:09:17Z`; effects are
+`0/0/0`. Both consumed merge entries now reside unchanged in completed
+history.
+
+P18 terminal `e61aaeb384201f267b528e01c780f38cfc0c984d`, parent
+`633e3805150e9a4f4b8cce76d4304454bbb85d94`, and tree
+`3782d2e0206e910eafb068ca7dc3888ed0fa0d17` are preserved as rejected
+evidence. Independent review held two P1 findings—zero-row projection
+acceptance for newly inserted evidence and unbound latest correction
+authority—and one P2 locale-sensitive event ordering defect. C00 issued
+fresh claim `2ed4aaa7-37d2-4862-b9cb-6a85365088fa`, writer
+`codex-p18-callback-correction-2ed4aaa7`, EMBEDDED_CLASSROOM lease
+`89692d9a-5b1f-47b3-8b41-c96286936deb`, and exact seven-path inventory
+`e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b`.
+
+F02 held terminal `22ada24a0ade35e406b9d1b55cb65f396ea2162b` is dispatched from
+integration `392cc119...` under claim
+`41a5ba44-435f-454f-b157-c6059d4bbc37`, writer
+`codex-f02-migrations-2254-2256-41a5ba44`, MIGRATION_AUTHORITY lease
+`c741bc95-8fc2-4d4f-aaff-a76295580468`, and SCHEMA_CONTRACT lease
+`2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`. The first push may change exactly
+the F02 runtime triplet and must stop for C00 reconciliation. Only a later
+descendant control checkpoint may authorize the proposal and forward-only
+2254 P22, 2255 P12, and 2256 P09 migration bytes plus clean native PostgreSQL
+apply/replay.
+
+C00 acquisition head is `52cb53061527b1df9b95029bcf211fe258609368`;
+the containing checkpoint releases the controller lease at
+`2026-07-31T11:48:14Z`. Candidate remains null, provider locks remain
+unclaimed, effect locks remain empty, and no provider, deployment, DNS, send,
+charge, customer, or other external effect occurred.

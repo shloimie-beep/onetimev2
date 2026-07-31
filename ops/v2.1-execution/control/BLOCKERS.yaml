@@ -189,19 +189,23 @@ blockers:
     independent review reproduced clean local/tracking/live equality, exact scope, 44/44 focused tests, static/request
     gates, older attendance no-write replay, latest repair, and no P1/P2; effects remain 0/0/0. P21 terminal c11dec41
     is independently accepted with 31/31 focused tests and no P1/P2/P3. Its PGlite proof is valid embedded SQL/trigger
-    evidence, while native PostgreSQL-server replay remains mandatory before candidate freeze. I36 ordered source
-    integration and the disjoint exact-eight-path P18 post-commit callback correction are now fenced and dispatched.
+    evidence, while native PostgreSQL-server replay remains mandatory before candidate freeze. I36 integrated P21 then
+    P22 and released terminal 392cc119 with exact 25-source/28-release-path evidence, all merged checks passing, and
+    effects 0/0/0. P18 terminal e61aaeb3 is preserved as rejected evidence for two P1 and one P2 findings; a fresh
+    exact-seven-path successor is dispatched under claim 2ed4aaa7. F02 is independently runnable from 392cc119 and is
+    dispatched under claim 41a5ba44 for the required runtime-triplet-only claim checkpoint before migrations 2254
+    through 2256.
   required_authority_or_input:
-  - Integrate accepted P21 then P22 source under the sole RELEASE_INTEGRATOR lease before any shared registration
-  - Complete and independently admit the exact P18 committed-attendance-projection callback seam required by P22 server registration
-  - After the ordered source-integration gate, apply only the corrected P22 migration successor as
-    forward-only migration 2254 through F02 with clean native PostgreSQL replay and focused positive/negative proof
+  - Complete and independently admit the exact P18 committed-attendance-projection callback correction required by P22 server registration
+  - Reconcile the F02 runtime claim, then apply P22, P12, and P09 migration successors as forward-only migrations
+    2254 through 2256 with clean native PostgreSQL replay and focused positive/negative proof; this migration work is
+    independent of the P18 correction and may run concurrently
   - Apply the remaining four corrected shared requests through their exact I36 checkpoints and re-run merged registration checks
   protection: >-
     Do not apply P22-migration-001 or P22-registration-001, create a second attendance write authority, parse a display
     name into identity fields, mutate audit history, write SQL before the successor is admitted, or advance candidate,
     provider, deployment, DNS, live-database, send, charge, or customer activation gates.
-  next_check: Re-evaluate after ordered P21/P22 source integration, P18 callback admission, and migration 2254 native proof.
+  next_check: Re-evaluate after P18 callback admission, F02 migration 2254-2256 native proof, and I36 shared registration.
 - blocker_id: P21-CANONICAL-CONTENT-STATE-WRITER
   status: open
   scope: controlled_launch_candidate

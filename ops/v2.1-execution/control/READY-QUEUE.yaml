@@ -4,13 +4,13 @@ generated_by: C00
 status: operational
 ready:
   - task_id: P18
-    status: ready
-    phase: P18_postcommit_attendance_projection_callback
+    status: resume_ready
+    phase: P18_attendance_projection_callback_stale_authority_ordering_correction
     branch: codex/v21-p18-attendance-projection-callback
-    claim_mode: create_new_branch
-    state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-    authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-    expected_existing_head: null
+    claim_mode: resume_existing
+    state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+    authorized_start_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+    expected_existing_head: e61aaeb384201f267b528e01c780f38cfc0c984d
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bbaa1b2
@@ -20,74 +20,232 @@ ready:
       C00:
         required_state: full_production_completion_convergence
         observed_state: full_production_completion_convergence
-        observed_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-        control_state_raw_sha256: 273c9346d7038120c43c0031d5e60def88baa4def1102c6564202d8f72d1313a
+        observed_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+        control_state_raw_sha256: f9aa2f7d8c738609afdda326b0a220959f9d07bfee2a59fe26bab70ca02a7009
       I36:
-        required_state: current_integration_with_P18_and_migration_2251
-        observed_state: current_integration_with_P18_and_migration_2251
-        release_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-      P18:
-        required_state: accepted_attendance_authority_ancestor
-        observed_state: accepted_attendance_authority_ancestor
-        accepted_source_head_sha: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
-        accepted_integration_ancestor: true
+        required_state: P21_then_P22_accepted_source_microbatch_complete
+        observed_state: P21_then_P22_accepted_source_microbatch_complete
+        terminal_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+        terminal_parent_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
+        terminal_tree_sha: 722151c1fc3db6b6d4eacb0390696efcfea3ce37
+        state_handoff_digest: 0d80a22c7b33acbae256cae4909451139aab0ceb512241e31bc9838c2773034f
+        runtime_triplet_digest: 8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5
+        lease_released_at: '2026-07-31T11:09:17Z'
+        external_effects: 0/0/0
+      P18_prior_callback:
+        required_state: independently_rejected_preserved_evidence
+        observed_state: independently_rejected_preserved_evidence
+        terminal_head_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+        terminal_parent_sha: 633e3805150e9a4f4b8cce76d4304454bbb85d94
+        terminal_tree_sha: 3782d2e0206e910eafb068ca7dc3888ed0fa0d17
+        atomic_claim_head_sha: 8c48f3218c8e10aeab542fb478e87f13433f12c6
+        source_manifest_digest: 0bcc3c44d3516bb20b9a6fb9b3400e1c8c87528444b57832d7c11c4bf170ab88
+        task_state_raw_sha256: 292506b7edcd763745c4457632edf1995640042cb4a04a18b4371fd67badf3a5
+        handoff_raw_sha256: d4f61b8d554b1ba2942647eb68dc437cf279e9747375a6923f90e0182c82d1a2
+        next_prompt_raw_sha256: 12b491ce5c9e90dbb40536c20681a3f9ddb0f1f7ae069389fc7f3f273324da9e
+        prior_ready_entry_payload_digest: 565882ee24deefdc5bc3e242e62548867596e4573a9e6ee7961991c66aa4b47d
+        prior_lease_released_at: '2026-07-31T10:58:50Z'
+        focused_tests: passed_29_of_29
+        mechanical_scope_and_static_gates: passed
+        review_disposition: held_two_P1_one_P2
+        external_effects: 0/0/0
       P22:
-        required_state: accepted_callback_consumer_contract
-        observed_state: accepted_callback_consumer_contract
+        required_state: callback_consumer_source_integrated
+        observed_state: callback_consumer_source_integrated
         source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+        integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
         server_registration_request_raw_sha256: f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516
     authorized_paths:
       - ops/v2.1-execution/runtime/P18/HANDOFF.md
       - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-      - packages/contracts/src/classroom/embedded/index.ts
       - packages/db/src/classroom/attendance/repository.test.ts
       - packages/db/src/classroom/attendance/repository.ts
       - packages/domain/src/classroom/embedded/attendance.ts
       - packages/domain/src/classroom/embedded/embedded-classroom.test.ts
-    authorized_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
+    authorized_path_inventory_digest: e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b
     correction_directives:
       - >-
-        Add one mandatory AttendanceProjectionChangePort to the P18 PostgreSQL repository factory. Invoke it only after
-        COMMIT; propagate callback failure without rolling back committed attendance so exact replay can repair projection.
+        A newly inserted attendance event must require a successful versioned projection advance. A zero-row
+        projection write may be accepted only for a proven exact no-write replay; identical projection bytes must
+        never allow stale new evidence to commit or invoke the callback.
       - >-
-        Exact source-event replay, including an older exact event after a successor, must be classified as no-write success
-        and re-invoke the callback. Changed replay or a genuinely stale new write must roll back and invoke no callback.
+        Before COMMIT, query and bind the projection correction reason, correcting Admin, immutable source event,
+        and correction state to the deterministic latest stored correction. Older, different, or unprovable
+        correction authority must roll back with no callback.
       - >-
-        Emit only immutable P18 identity: server-owned three-dimensional JobScope, occurrence, Student, source event
-        id/digest, and exact correction audit/reason/Admin fields or null. Never accept caller-supplied scope, account,
-        class, household, role, source-event identity, or correction identity. The later I36 adapter must derive the P22
-        account/class/household bindings from canonical server records before invoking P22.
+        Replace localeCompare and default-locale ordering with one explicit locale-independent canonical event-ID
+        order that is identical in the domain and PostgreSQL query/seek boundary. Add adversarial punctuation and
+        Unicode counterexamples that would reverse under locale-sensitive comparison.
       - >-
-        Order correction history by observed_at ASC then attendance_event_id ASC and take the final row (equivalently
-        DESC/DESC LIMIT 1), so the highest timestamp and then highest event ID wins. Validate P22-compatible correction
-        metadata and immutable projection/event binding before COMMIT.
+        Preserve the stable callback contract, commit-before-callback order, callback-failure replay repair, exact
+        older-event no-write replay, immutable server-owned payload, all migration and steward-request bytes, and
+        contract raw SHA-256 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5.
       - >-
-        Prove commit-before-callback ordering, callback-failure replay repair, older-successor replay, stale/conflict
-        no-callback, exact correction payload, equal-timestamp ordering, invalid metadata failure, and effects 0/0/0.
+        Run the focused repository/domain suites plus scoped typecheck, lint, format, YAML, exact-scope, diff, and
+        secret gates. Update only the seven authorized paths, release the lease, push one bounded terminal, and
+        record effects 0/0/0.
       - >-
-        Change exactly the eight authorized paths. Do not edit a migration, central composer, config, barrel, steward
-        request, integration branch, candidate, provider, deployment, DNS, send, charge, or customer state.
+        Do not edit a contract, migration, steward request, central composer, config, barrel, integration branch,
+        candidate, provider, deployment, DNS, send, charge, or customer state.
     writer_slot_leases:
       - slot: EMBEDDED_CLASSROOM
-        lease_id: 94b15518-5638-4025-89b1-eabd2d4da07a
+        lease_id: 89692d9a-5b1f-47b3-8b41-c96286936deb
         holder_task_id: P18
-        holder_claim_id: 267308b4-66fa-4910-8597-00999c58a856
-        holder_writer_id: codex-p18-projection-callback-267308b4
-        state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-        lease_issued_at: '2026-07-31T10:20:00Z'
-        lease_expires_at: '2026-07-31T12:20:00Z'
-        phase_scope: P18_postcommit_attendance_projection_callback_only
+        holder_claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
+        holder_writer_id: codex-p18-callback-correction-2ed4aaa7
+        state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+        lease_issued_at: '2026-07-31T11:28:40Z'
+        lease_expires_at: '2026-07-31T13:28:40Z'
+        phase_scope: P18_attendance_projection_callback_stale_authority_ordering_correction_only
     effect_lock_leases: []
-    claim_id: 267308b4-66fa-4910-8597-00999c58a856
-    lease_issued_at: '2026-07-31T10:20:00Z'
-    lease_expires_at: '2026-07-31T12:20:00Z'
+    claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
+    lease_issued_at: '2026-07-31T11:28:40Z'
+    lease_expires_at: '2026-07-31T13:28:40Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/P18-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
+  - task_id: F02
+    lane: A
+    status: resume_ready
+    phase: migration_2254_2256_P22_P12_P09_atomic_claim_only
+    branch: codex/v21-lane1-migration-correction
+    claim_mode: resume_existing
+    state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+    authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    expected_existing_head: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+    package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
+    source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
+    task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+    task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+    dependency_heads_and_digests:
+      C00:
+        required_state: full_production_completion_convergence
+        observed_state: full_production_completion_convergence
+        observed_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+        control_state_raw_sha256: f9aa2f7d8c738609afdda326b0a220959f9d07bfee2a59fe26bab70ca02a7009
+      I36:
+        required_state: P21_then_P22_accepted_source_microbatch_complete
+        observed_state: P21_then_P22_accepted_source_microbatch_complete
+        terminal_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+        terminal_parent_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
+        terminal_tree_sha: 722151c1fc3db6b6d4eacb0390696efcfea3ce37
+        state_handoff_digest: 0d80a22c7b33acbae256cae4909451139aab0ceb512241e31bc9838c2773034f
+        runtime_triplet_digest: 8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5
+        lease_released_at: '2026-07-31T11:09:17Z'
+        external_effects: 0/0/0
+      F02:
+        required_state: migration_2254_2256_claim_predecessor_held
+        observed_state: migration_2254_2256_claim_predecessor_held
+        terminal_head_sha: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+        terminal_parent_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
+        terminal_tree_sha: b3b180af78cdcf2ef3354507362e625e8b2d4e2f
+        state_handoff_digest: 85521b85e692a2fb28d4013e49b87ab71e276bd3cb13e4f73dbc0d611a3a3733
+        runtime_triplet_digest: b0f6ba3cfc0bcc2b7345152253f5552dc921f44fe90c186765d0e5de17e81973
+        allocation_proposal_raw_sha256: f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643
+        allocation_proposal_git_blob: d7c35dd21ffb5f688346d624627a58708be68a7c
+        next_migration_ordinal: 2254
+        prior_leases_released_at: '2026-07-31T04:48:40Z'
+      P22_migration_002:
+        source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+        request_path: ops/v2.1-execution/runtime/P22/steward-requests/P22-migration-002.yaml
+        request_raw_sha256: 0c00dcd09a8da6342d5dcd3865a3942fa07fbc5f618c2ed3030e70a21449116b
+        request_canonical_sha256: c44539cb6ef8960de256aee6ab2881734fc888b63e14a0cd78bec20eaf72f468
+        request_git_blob: b896e50b13b5fa0bfe16e477674e08b5aac72078
+        ordinal: 2254
+        filename: 2254_v21_learning_engagement.sql
+      P12_migration_001:
+        source_head_sha: 9ada912c3238421e661f89e590c07c042dd6424b
+        request_path: ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml
+        request_raw_sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
+        request_canonical_sha256: 9148d7bc0fe4d39d8afa90d55f25fac8f7bf253c10842bab65f5b25a00f699f4
+        request_git_blob: 92c1765089dc227f44e852857a404ab11a0e7fe2
+        ordinal: 2255
+        filename: 2255_v21_student_actual_name.sql
+      P09_migration_002:
+        source_head_sha: d9a4ce8082a028be81e234999deb43f659072a6d
+        request_path: ops/v2.1-execution/runtime/P09/steward-requests/P09-migration-002.yaml
+        request_raw_sha256: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+        request_canonical_sha256: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+        request_git_blob: 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
+        ordinal: 2256
+        filename: 2256_v21_approved_school_configuration_authority.sql
+      P10:
+        required_state: P09_migration_002_authority_acknowledged
+        observed_state: P09_migration_002_authority_acknowledged
+        terminal_head_sha: b5dd0edbd5504f091bc1666a87a4b2956b6a3c9a
+        terminal_parent_sha: 5fccc34507ae9c5dbc609e234ab559576ab3a445
+        terminal_tree_sha: e886d9169a4b0465d76c045e1bde109e45a1b4e9
+        state_handoff_digest: e920c9ae99f7f0e11a595ff5f1f7639b5f70efd898f7d0c4b86fe0a3f8416a17
+        runtime_triplet_digest: 0c117c03f1ac7f7a247583b5312e55d059f8b0f8e3a40e068adf718a8298e319
+        request_raw_sha256: 538d6509a5170efc5c164f577d2054005edcd74c17d95e6128cb84ecb37c1a62
+        request_canonical_sha256: d9958a9def7fa6d41f5c457a20ff44df8ba265f532e76dd397532ccfcf570dbb
+        request_git_blob: 75cd8bb242eaaa59d7ebb215ea4d8881fb5354e1
+        lease_released_at: '2026-07-31T05:42:30Z'
+        external_effects: 0/0/0
+    authorized_paths:
+      - ops/v2.1-execution/runtime/F02/HANDOFF.md
+      - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+      - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+      - packages/db/migrations/2254_v21_learning_engagement.sql
+      - packages/db/migrations/2255_v21_student_actual_name.sql
+      - packages/db/migrations/2256_v21_approved_school_configuration_authority.sql
+    authorized_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
+    correction_directives:
+      - >-
+        First push only: change exactly the F02 runtime triplet to record this READY, fresh claim, writer, and both
+        leases. Preserve the proposal, every migration byte, and the protected untracked
+        .codex-lane1-pglite.mjs; push normally and stop for C00 reconciliation.
+      - >-
+        This READY grants no latent product, proposal, or SQL authority after the claim checkpoint. C00 must
+        independently reconcile the exact three-runtime-path claim and issue a descendant control continuation before
+        any migration or proposal byte changes.
+      - >-
+        On later exact continuation under the same claim and leases, create a disposable worktree from integration
+        392cc119b2df65f9bd38da8c4db36113f1add967, merge the fresh F02 claim head as the second parent, and author only
+        migrations 2254, 2255, and 2256 plus the proposal and F02 runtime triplet.
+      - >-
+        Preserve migrations 2234 through 2253 byte-for-byte. Allocate 2254 to P22-migration-002, 2255 to
+        P12-migration-001, and 2256 to P09-migration-002 in that exact order; do not apply a central steward result.
+      - >-
+        Apply all 87 migrations to a fresh native PostgreSQL server, rerun all 87 as already applied, and run focused
+        positive, negative, isolation, idempotency, concurrency, immutable-ledger, and rollback probes. PGlite is only
+        supplementary. Touch no persistent, shared, staging, or production database.
+      - >-
+        Do not edit a producer request or product source, apply a steward result, integrate, freeze a candidate, claim
+        a provider lock, deploy, change DNS, send, charge, activate a customer, or perform any external effect.
+    writer_slot_leases:
+      - slot: MIGRATION_AUTHORITY
+        lease_id: c741bc95-8fc2-4d4f-aaff-a76295580468
+        holder_task_id: F02
+        holder_claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+        holder_writer_id: codex-f02-migrations-2254-2256-41a5ba44
+        state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+        lease_issued_at: '2026-07-31T11:28:40Z'
+        lease_expires_at: '2026-07-31T13:28:40Z'
+        phase_scope: F02_migration_2254_2256_atomic_claim_only
+      - slot: SCHEMA_CONTRACT
+        lease_id: 2c7b6d40-ea5f-423a-a000-a043d2bd6f7a
+        holder_task_id: F02
+        holder_claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+        holder_writer_id: codex-f02-migrations-2254-2256-41a5ba44
+        state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
+        lease_issued_at: '2026-07-31T11:28:40Z'
+        lease_expires_at: '2026-07-31T13:28:40Z'
+        phase_scope: F02_migration_2254_2256_atomic_claim_only
+    effect_lock_leases: []
+    claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
+    lease_issued_at: '2026-07-31T11:28:40Z'
+    lease_expires_at: '2026-07-31T13:28:40Z'
+    heartbeat_interval_minutes: 30
+    prompt_path: ops/v2.1-execution/prompts/F02-START-OR-RESUME.md
+    model: GPT-5.6-SOL
+    reasoning: XHIGH
 entry_payload_digests:
-  P18: 565882ee24deefdc5bc3e242e62548867596e4573a9e6ee7961991c66aa4b47d
+  P18: 862362d871eec64d5ad47b3399dad9672649cef2fe3cf70ed24432028322e1e7
+  F02: 8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

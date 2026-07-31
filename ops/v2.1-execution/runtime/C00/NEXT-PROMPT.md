@@ -3158,3 +3158,44 @@ live equality, and stop for independent C00 review.
 Neither lane may author or apply SQL, apply a steward result, freeze a
 candidate, inspect or mutate a provider, deploy, change DNS, send, charge,
 activate a customer, or perform any external effect.
+
+# Current instruction: correct P18 and claim F02 without SQL
+
+Resolve the exact pushed control descendant of acquisition
+`52cb53061527b1df9b95029bcf211fe258609368`, fetch all named remote refs, and
+verify READY identity before writing. Candidate must remain null; effect locks
+must remain empty.
+
+Run P18 on `codex/v21-p18-attendance-projection-callback` from exact held head
+`e61aaeb384201f267b528e01c780f38cfc0c984d` under claim
+`2ed4aaa7-37d2-4862-b9cb-6a85365088fa`, writer
+`codex-p18-callback-correction-2ed4aaa7`, and EMBEDDED_CLASSROOM lease
+`89692d9a-5b1f-47b3-8b41-c96286936deb`. Change only the seven READY paths.
+Require a successful projection advance for every newly inserted event unless
+the transaction proves an exact no-write replay; bind correction metadata to
+the deterministic latest stored correction; replace locale-sensitive event-ID
+ordering with one explicit order identical in domain and PostgreSQL. Preserve
+the stable callback contract byte, commit-before-callback behavior, immutable
+server-owned payload, migrations, steward requests, and effects `0/0/0`.
+Run focused verification, release the lease, push one bounded terminal, and
+stop for C00 review.
+
+Concurrently run F02 on `codex/v21-lane1-migration-correction` from exact held
+head `22ada24a0ade35e406b9d1b55cb65f396ea2162b` under claim
+`41a5ba44-435f-454f-b157-c6059d4bbc37`, writer
+`codex-f02-migrations-2254-2256-41a5ba44`, MIGRATION_AUTHORITY lease
+`c741bc95-8fc2-4d4f-aaff-a76295580468`, and SCHEMA_CONTRACT lease
+`2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`. Its first push must change exactly:
+
+- `ops/v2.1-execution/runtime/F02/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/F02/HANDOFF.md`
+- `ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md`
+
+Record the READY, fresh claim, writer, and both leases; preserve the proposal,
+all migration bytes, and protected untracked `.codex-lane1-pglite.mjs`; push
+normally and stop. Do not author proposal or SQL bytes until C00 independently
+reconciles that claim and publishes a descendant continuation.
+
+Neither worker may apply a steward result, integrate, freeze a candidate,
+inspect or mutate a provider, deploy, change DNS, send, charge, activate a
+customer, or perform any external effect.
