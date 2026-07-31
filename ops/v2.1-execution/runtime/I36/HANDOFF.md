@@ -892,3 +892,37 @@ occurred. Effects remain `0/0/0`.
 C00 must audit the exact pushed renewal checkpoint and issue a fresh claim and
 new lease against its remote head before I36 resumes any pending terminal gate.
 I36 must stop.
+
+## Parent auth/client successor terminal-validation renewal atomic claim
+
+Live control `52793910c1a8d899ae4cffc50a63bcb38a137090`, based on
+authority/control parent `11d05d1f5d05d8817139c26890b78b1aadd8faad`,
+publishes canonical READY
+`d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695`.
+I36 independently reproduced that digest from the recursively key-sorted
+canonical READY payload before writing.
+
+This runtime-triplet-only checkpoint consumes fresh claim
+`8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`, writer
+`codex-i36-parent-session-successor-8d8f5bb9`, and shared lease
+`49ae7724-b77a-4cc5-81f6-d16b6e1f5457` from
+`2026-07-31T02:21:40Z` through `2026-07-31T04:21:40Z`. The live lease binds
+SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+ACCOUNT_HOUSEHOLD_IDENTITY only to
+`parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only`.
+It is intentionally not released by this atomic claim.
+
+Exact parent `889557800bb3344392f9defc4f6e38d4c049cd0f`, its tree, all ten
+product/test blobs, completed typecheck and focused test evidence, and pending
+terminal-gate record are preserved. No native PostgreSQL, browser, build,
+lint, format, secret, or product test was rerun. Disposable PostgreSQL session
+51752 remains alive.
+
+This checkpoint changes only the I36 runtime triplet. No product/test byte,
+migration, steward result, provider state, candidate, deployment, DNS, send,
+charge, customer state, or other external effect changed. Effects remain
+`0/0/0`.
+
+I36 must stop after a normal push and clean local/tracking/live equality.
+C00 must independently reconcile the exact pushed runtime-only child before
+any pending terminal gate runs.

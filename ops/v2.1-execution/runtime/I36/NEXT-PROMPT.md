@@ -1,39 +1,42 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_RENEWAL_CHECKPOINT_RECONCILIATION
+MODE: PAUSE_FOR_C00_TERMINAL_VALIDATION_RENEWAL_CLAIM_RECONCILIATION
 
-Audit the exact pushed I36 successor security-closeout renewal checkpoint. Do
-not resume terminal validation from this prompt.
+Audit the exact pushed I36 terminal-validation renewal atomic claim. Do not run
+terminal validation from this prompt.
 
 Repository: shloimie-beep/onetimev2
 Branch: codex/v21-integration
-Exact checkpoint parent: `2e7cd5be686285ec9506bece9e0761040f881fa5`
-Authorizing control: `11d05d1f5d05d8817139c26890b78b1aadd8faad`
-Claim: `5deb22c5-dc93-4946-98f1-dd7db19ee164`
-Writer: `codex-i36-parent-session-successor-5deb22c5`
-Released shared lease: `87280cec-f71e-4dbd-91dd-38f54d0c7b93`
-Lease issued: `2026-07-31T00:58:50Z`
-Lease released: `2026-07-31T02:13:49Z`
-Lease expiry: `2026-07-31T02:28:50Z`
+Exact checkpoint parent: `889557800bb3344392f9defc4f6e38d4c049cd0f`
+Containing control: `52793910c1a8d899ae4cffc50a63bcb38a137090`
+Authority/control basis: `11d05d1f5d05d8817139c26890b78b1aadd8faad`
+Canonical READY: `d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695`
+Fresh claim: `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`
+Fresh writer: `codex-i36-parent-session-successor-8d8f5bb9`
+Live shared lease: `49ae7724-b77a-4cc5-81f6-d16b6e1f5457`
+Lease issued: `2026-07-31T02:21:40Z`
+Lease expiry: `2026-07-31T04:21:40Z`
+Atomic phase:
+`parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only`
 
-The checkpoint changes exactly four authorized product/test paths and the I36
-runtime triplet. It records passed workspace typecheck, 26 focused assertions
-with three declared native skips, three pg-mem composition assertions with one
-declared native skip, and clean diff hygiene.
+The shared lease binds exactly SERVER_COMPOSER, CLIENT_COMPOSER,
+IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY. It remains live and
+unreleased.
 
-This is `renewal_requested`, not release-ready or candidate-ready. Native
-PostgreSQL 18.4 simultaneous greater-than-five reservation/readback proof,
-real Chromium reload/logout proof, production build, changed-file lint,
-focused formatting, secret scan, and exact scope/diff/ancestry/immutable gates
-remain pending.
+The checkpoint must change only:
 
-Confirm all four slots—SERVER_COMPOSER, CLIENT_COMPOSER,
-IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY—were released together
-before expiry. Confirm the already-running disposable PostgreSQL process was
-not stopped and effects remain `0/0/0`.
+- `ops/v2.1-execution/runtime/I36/TASK-STATE.yaml`
+- `ops/v2.1-execution/runtime/I36/HANDOFF.md`
+- `ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md`
 
-C00 must independently audit the exact remote head, parent, tree, seven-path
-scope, runtime evidence, release timestamp, clean local/tracking/live equality,
-and zero effects. A fresh claim and new lease against that exact remote head
-are required before I36 resumes. Stop.
+Confirm all ten product/test blobs and the completed typecheck/focused evidence
+are preserved. Confirm native PostgreSQL, Chromium, production build,
+changed-file lint, product formatting, secret scan, and final
+scope/ancestry/immutable gates were not rerun and remain pending. Confirm
+disposable PostgreSQL session 51752 remains alive.
+
+Confirm the sole parent, exact three-path inventory, READY recomputation, fresh
+authority, live lease, product-blob preservation, clean local/tracking/live
+remote equality, and effects `0/0/0`. Only after C00 reconciles the exact
+pushed head may the same worker resume the pending terminal gates. Stop.
