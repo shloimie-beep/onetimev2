@@ -185,3 +185,42 @@ canonical name semantics, and require immutable transition and consent audit.
 
 Stop after C00 audit. Do not edit a request, proposal, SQL, product, shared
 control, integration, provider, candidate, or effect state from this prompt.
+
+# Audit the Migrations 2254-2256 P22/P12/P09 Atomic Claim
+
+Audit the exact sole-parent successor of
+`22ada24a0ade35e406b9d1b55cb65f396ea2162b` under containing control
+`864298e32e693599a804a5b152739de4ae17ee2b`, READY parent/controller
+`52cb53061527b1df9b95029bcf211fe258609368`, and authorized integration start
+`392cc119b2df65f9bd38da8c4db36113f1add967`.
+
+Require canonical READY digest
+`8abdeb3c79fdae914e86707bec541535de1d2ec3a29a5e1c155bcb9a73176f21`,
+claim `41a5ba44-435f-454f-b157-c6059d4bbc37`, writer
+`codex-f02-migrations-2254-2256-41a5ba44`, MIGRATION_AUTHORITY lease
+`c741bc95-8fc2-4d4f-aaff-a76295580468`, and SCHEMA_CONTRACT lease
+`2c7b6d40-ea5f-423a-a000-a043d2bd6f7a`, both expiring
+`2026-07-31T13:28:40Z`.
+
+Verify exactly the F02 runtime triplet changed. Reproduce prior raw Git-byte
+state/handoff digest
+`85521b85e692a2fb28d4013e49b87ab71e276bd3cb13e4f73dbc0d611a3a3733`
+and runtime-triplet digest
+`b0f6ba3cfc0bcc2b7345152253f5552dc921f44fe90c186765d0e5de17e81973`.
+Confirm the proposal remains raw SHA-256
+`f1c23180b49e21149e173a812b561813d0bc9e36adc5ea411721027b753ca643`,
+Git blob `d7c35dd21ffb5f688346d624627a58708be68a7c`, and next ordinal 2254.
+
+Confirm the immutable P22-migration-002, P12-migration-001, and
+P09-migration-002 bindings at sources `347a08b2`, `9ada912c`, and `d9a4ce80`,
+including their exact raw/canonical digests, Git blobs, ordinals 2254-2256, and
+filenames. Preserve migrations 2234-2253 byte-for-byte and preserve the
+pre-existing untracked `.codex-lane1-pglite.mjs` at exactly 1597 bytes with
+SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+Confirm YAML, formatting, exact scope, diff hygiene, secret scan, clean
+local/tracking/live equality, active lease bindings, and effects `0/0/0`.
+Stop for C00 reconciliation. No request-body, proposal, SQL, migration,
+product, shared-control, provider, deployment, send, charge, or external-effect
+authority is latent; a later descendant C00 control continuation is mandatory.
