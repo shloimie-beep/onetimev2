@@ -2997,3 +2997,56 @@ Do not write SQL, allocate/apply a migration, apply a steward result, edit
 shared registration/configuration/barrels, integrate, freeze a candidate,
 inspect or mutate a provider, deploy, change DNS, send, charge, activate a
 customer, or perform any external effect.
+
+# Current instruction: close P21 pre-approval archive and late replay
+
+Resolve the exact pushed control commit containing this instruction from
+control basis `45a6f2f589fc2fffe7c5dbd16c137282c4918185`. Verify clean
+local/tracking/live P21 head
+`3250bb761aa0d6fb84db77f637bc05eb5f1c444d`, READY
+`ccad2b56eb4b33fc7a35cfc61625dad9d9de14863823d1c0e96242924306fec5`,
+claim `cbec9b83-9d44-4d00-a797-fed83be43059`, writer
+`codex-p21-replay-archive-cbec9b83`, and sole CONTENT_PUBLICATION lease
+`f03e8f5d-10fc-40f1-8720-e39086b4a799` through
+`2026-07-31T11:18:00Z`.
+
+Change exactly these eight paths:
+
+- `apps/web/src/server/features/content/publication/service.test.ts`
+- `apps/web/src/server/features/content/publication/service.ts`
+- `ops/v2.1-execution/runtime/P21/HANDOFF.md`
+- `ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md`
+- `ops/v2.1-execution/runtime/P21/TASK-STATE.yaml`
+- `packages/contracts/src/content/publication/index.ts`
+- `packages/db/src/content/publication/repository.test.ts`
+- `packages/db/src/content/publication/repository.ts`
+
+Their newline-joined inventory digest is
+`5b93f48fdc9d709b450316ac4423f5077d39a253ca317424263433eb444e6b19`.
+Preserve P21-registration-003 byte-for-byte at raw SHA-256
+`0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16`.
+
+Correct only two independently reproduced defects. First,
+`needs_review -> archived` must derive canonical product/runtime/environment
+and source binding from the exact locked approved processing-version/source
+join even though publication approval is null; never accept caller scope.
+Second, an existing compatible canonical successor at version 4 or later must
+permit an exact registration retry after verifying the immutable source
+binding, scope, and all four ordered bootstrap events, with zero event or
+aggregate writes. Changed source/hash/scope, incompatible
+publication/canonical state, missing events, and rollback fail closed.
+
+Add service and native PostgreSQL proof for register then archive before
+approve at canonical version 5 with no provider/outbox write; register then
+approve then exact register retry with no canonical writes; and the same retry
+after publication-version-only divergence. Re-run all prior focused tests,
+native proof, typecheck, focused lint/format, schema, exact scope, immutable
+request, diff, and secret gates.
+
+Update the P21 runtime triplet truthfully, release the lease, push one normal
+terminal commit without force, verify live equality and a clean worktree, then
+stop for independent C00 review. P22 terminal `347a08b2` is independently
+admitted and waits for P21 plus ordered source/callback integration. Do not
+write SQL, allocate/apply a migration, edit or apply registration-003,
+integrate, freeze a candidate, inspect or mutate a provider, deploy, change
+DNS, send, charge, activate a customer, or perform any external effect.

@@ -3477,3 +3477,51 @@ CONTENT_PUBLICATION lease `030212ad…`. Candidate remains null; effect locks
 remain empty; no steward request is applied. No migration, integration,
 provider action, deployment, DNS, send, charge, customer activation, or other
 external effect is authorized.
+
+# P21 terminal held; exact archive/replay fix dispatched
+
+P21 pushed terminal `3250bb761aa0d6fb84db77f637bc05eb5f1c444d`
+over implementation `e4e4ef86a1ba1cd4ada1950fab13691809d7441b`.
+Local, tracking, and live heads are equal; the worktree is clean; the exact
+nine-path delta is authorized; P21-registration-003 remains schema-valid; 29
+focused tests, native PostgreSQL proof, typecheck, focused lint/format,
+diff/scope, schema, immutable migration/request, and secret gates pass.
+CONTENT_PUBLICATION lease `030212ad-7da5-4877-b29b-85de75a4380c` was
+released at `2026-07-31T09:00:00Z`; effects remain `0/0/0`.
+
+Independent review does not admit that terminal. It reproduced one P1:
+`needs_review -> archived` always rolls back because canonical scope
+derivation requires publication approval even though a review-ready record
+intentionally has `approval: null`. It also reproduced one P2: an exact
+registration retry after approval or publication fails because bootstrap
+replay accepts only canonical `needs_review` version 4.
+
+C00 therefore publishes exact-eight-path P21 READY
+`ccad2b56eb4b33fc7a35cfc61625dad9d9de14863823d1c0e96242924306fec5`,
+claim `cbec9b83-9d44-4d00-a797-fed83be43059`, writer
+`codex-p21-replay-archive-cbec9b83`, and sole CONTENT_PUBLICATION lease
+`f03e8f5d-10fc-40f1-8720-e39086b4a799` through
+`2026-07-31T11:18:00Z`. The authorized-path inventory digest is
+`5b93f48fdc9d709b450316ac4423f5077d39a253ca317424263433eb444e6b19`;
+registration-003 is excluded and must retain raw SHA-256
+`0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16`.
+
+The correction must derive pre-approval archive scope from the exact locked
+processing-version/source join without caller scope; verify immutable
+bootstrap source binding, scope, and all four events; permit compatible
+canonical successors at version 4 or later to return write-free exact
+registration replay; and add native/service proof for pre-approval archive,
+post-approval replay, and replay after publication-version-only divergence.
+
+P22 separately pushed exact-eight-path terminal
+`347a08b29b801de0a74b242d962c42a886dcd717` over implementation
+`e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6`, released its lease at
+`2026-07-31T09:20:00Z`, and passed a fresh root reproduction of all 44 focused
+tests. Independent review verified exact cardinality, scope/aggregate/source
+identity, latest repair, older attendance no-write replay, unchanged seven
+present steward requests, and no P1/P2. P22 is admitted and waits for P21,
+the exact P18 callback seam, and ordered integration.
+
+Candidate remains null; effect locks remain empty; no steward request is
+applied. No migration, integration, provider action, deployment, DNS, send,
+charge, customer activation, or other external effect is authorized.
