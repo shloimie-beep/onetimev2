@@ -2853,3 +2853,48 @@ the atomic resume winner. Do not write SQL, allocate or apply a migration,
 apply a steward request, integrate, freeze a candidate, inspect or mutate a
 provider, deploy, change DNS, send, charge, activate a customer, or perform
 any external effect.
+
+# Current instruction: continue the exact P22 substantive correction
+
+The renewal atomic winner has been independently reconciled. Resolve the exact
+pushed control commit containing this instruction from control basis
+`1fe3b53d26e9ae4dcc349f22318195dabdd804a8`. Verify consumed empty READY,
+exact clean local/tracking/live P22 head
+`9723a32f028db1791048549d9661d64bf36bc644`, claim
+`d8a3ff1d-edfd-4327-9047-3788d765f7bd`, writer
+`codex-p22-authority-successor-renewal-d8a3ff1d`, and sole
+LEARNING_ENGAGEMENT lease `706d5e11-9ba4-4a1b-83b8-4beba9779aeb`
+through `2026-07-31T08:20:00Z`. Continue directly; no additional atomic-claim
+checkpoint is required.
+
+Change exactly the 16 paths listed in the preceding substantive instruction:
+the eight learning product/test files, the five named schema-valid `-002`
+steward requests, and the P22 runtime triplet. The sorted path inventory must
+remain
+`d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3`;
+the product base manifest is
+`8077e667a05bc1f2817f36d11746255c48b9345e9a849d5131444fecabf5d4c4`.
+Preserve immutable `P22-migration-001` and `P22-registration-001` byte-for-byte.
+
+All prior scope, attendance, consent, identity, alias, atomic-ledger,
+idempotency, withdrawal, announcement, request-schema, and validation
+requirements remain mandatory. In addition, preserve type-safe compatibility
+for the two existing unmounted UI consumers without retaining prohibited
+authority:
+
+- `AttendanceRecord` may remain only as a read-only projection; no P22
+  attendance mutation, table, or write port may survive;
+- `LeaderboardEntry.displayName` must equal the privacy-safe rendered label;
+  use a full-scope opaque entry key for UI identity and never expose a
+  canonical peer Student ID.
+
+The concrete P18 adapter and central server/client/config/barrel composition
+remain future steward work. Run the three focused suites, workspace typecheck,
+scoped lint/format, YAML/request-schema, exact-scope, immutable-byte, diff, and
+secret gates. Maintain a heartbeat within 30 minutes. At terminal, update the
+runtime triplet truthfully, release the P22 lease before expiry, create one
+normal commit, push without force, verify local/tracking/live equality and a
+clean worktree, then stop for C00. Do not write SQL, allocate or apply a
+migration, edit shared registration/barrels/configuration, integrate, freeze a
+candidate, inspect or mutate a provider, deploy, change DNS, send, charge,
+activate a customer, or perform any external effect.

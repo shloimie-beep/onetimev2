@@ -3340,3 +3340,50 @@ atomic resume winner before direct continuation of the previously approved
 exact 16-path correction. No SQL, allocation, steward application,
 integration, candidate, provider, deployment, DNS, send, charge, customer
 activation, or external effect is authorized.
+
+# P22 renewal atomic claim reconciled; substantive correction resumed
+
+C00 independently reconciled renewal atomic claim
+`9723a32f028db1791048549d9661d64bf36bc644`, sole parent
+`ef3eb1356ebff095f3ba3b08afd0e54216844ed1`, tree
+`2846a7549c76ef2d54890d6cc820774c37041f6a`, at
+`2026-07-31T09:29:07+03:00`. It changes exactly the P22 runtime triplet, binds
+containing control `1fe3b53d26e9ae4dcc349f22318195dabdd804a8`, READY
+`fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be`,
+claim `d8a3ff1d-edfd-4327-9047-3788d765f7bd`, writer
+`codex-p22-authority-successor-renewal-d8a3ff1d`, and sole
+LEARNING_ENGAGEMENT lease `706d5e11-9ba4-4a1b-83b8-4beba9779aeb`
+through `2026-07-31T08:20:00Z`. Local, tracking, and live refs are equal; the
+worktree is clean; effects are `0/0/0`.
+
+Canonical TASK/HANDOFF/NEXT raw SHA-256 values are
+`a78f13ab27ccd15288d58c5f001a9820bfd283b0475e811ae60aed2bff2b904e`,
+`5f847da26ff64a3dcad6bcf09044dd8c231dcd5ff0afbe719806d72e1129e3d6`,
+and `e06454e3af58e212a8c86d88893f973940f1f9de70200422cd4dab49cb2284b0`.
+TASK+HANDOFF is
+`4916895a10382a3244c15ae24275b3ed9259e5cc754c98158acfc403972ff1df`,
+the runtime triplet is
+`7ff0cf648e8bf580adf0e1b1ea1e3965357cfd301205550b02079a2fdaa60936`,
+and the canonical path inventory remains
+`98d6da552ccf6572ee6d9c7386ace10f1522db3e76c595579d60a2f97476892f`.
+All product/test/request bytes remain unchanged.
+
+The READY entry is consumed and the queue is empty. Under the same fresh
+claim/lease, P22 may now continue directly across the previously recorded
+exact 16 paths: eight product/test files, five schema-valid `-002` requests,
+and its runtime triplet. No additional atomic metadata checkpoint is required.
+All prior substantive constraints remain binding.
+
+Repository-wide compatibility readback adds two concrete guardrails:
+
+- keep `AttendanceRecord` only as a read-only compatibility projection for
+  the existing Admin learning view; it must not retain a P22 attendance
+  writer;
+- preserve `LeaderboardEntry.displayName` as the exact safe rendered label,
+  and use a full-scope opaque entry key where a UI key is needed; never expose
+  a canonical peer Student ID.
+
+The concrete P18 adapter, shared server/client composition, config key, and
+barrel work remain steward-controlled future integration. No SQL, allocation,
+steward application, integration, candidate, provider, deployment, DNS, send,
+charge, customer activation, or external effect is authorized.
