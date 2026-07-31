@@ -3,7 +3,44 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 security-closeout and terminal-validation dispatch
+# Latest I36 terminal-validation renewal atomic claim
+
+Resume only from exact clean local/tracking/live remote
+`889557800bb3344392f9defc4f6e38d4c049cd0f`. Verify the live control branch
+contains canonical READY
+`d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695`
+authorized from control parent
+`11d05d1f5d05d8817139c26890b78b1aadd8faad`, with:
+
+- fresh claim `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`;
+- writer `codex-i36-parent-session-successor-8d8f5bb9`;
+- shared task-bound lease `49ae7724-b77a-4cc5-81f6-d16b6e1f5457`;
+- SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+  ACCOUNT_HOUSEHOLD_IDENTITY slots;
+- lease expiry `2026-07-31T04:21:40Z`;
+- exact first-push scope
+  `parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only`.
+
+For the first renewed push, change exactly the I36 `TASK-STATE.yaml`,
+`HANDOFF.md`, and `NEXT-PROMPT.md`. Set top-level
+`expected_existing_head_sha` to exact
+`889557800bb3344392f9defc4f6e38d4c049cd0f`; set top-level
+`lease_phase_scope` to the exact first-push scope above; bind the fresh
+READY/claim/writer/lease and companion runtime evidence. Preserve every
+product/test blob and every completed gate result. Do not rerun native,
+browser, build, lint, format, secret, or product tests in this atomic-claim
+push. Commit, push normally, verify local/tracking/live equality, and stop for
+C00 reconciliation.
+
+Only after C00 reconciles this runtime-only claim may the same worker run the
+pending native PostgreSQL concurrency/readback, real Chromium, production
+build, changed-file lint, product formatting, repository secret scan, and
+exact scope/ancestry/immutable-product gates. Do not edit a migration, apply a
+steward result, freeze a candidate, inspect or mutate a provider, claim a
+provider lock, deploy, change DNS, execute a live migration, send, charge,
+activate a customer, or perform any external effect.
+
+# Superseded I36 security-closeout and terminal-validation dispatch
 
 Resume only from exact clean remote-equal
 `2e7cd5be686285ec9506bece9e0761040f881fa5`, the exact

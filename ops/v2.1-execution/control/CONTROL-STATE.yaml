@@ -16,13 +16,14 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff
+controller_authorization_sha: 11d05d1f5d05d8817139c26890b78b1aadd8faad
 next_action: >-
-  I36 runtime correction 2e7cd5be is independently reconciled. Under unchanged claim 5deb22c5 and lease 87280cec
-  through 02:28:50Z, the same worker may finish exactly the six canonical auth-security closeouts and eight terminal
-  gates within the unchanged thirteen-path ceiling, then release all four slots together, push an honest terminal
-  runtime triplet, and stop for C00 audit. P08/P12 results remain assigned and unapplied. Candidate freeze, provider
-  locks/mutations, deployment, DNS, sends, charges, live migration execution, and customer activation remain gated.
+  I36 closeout checkpoint 88955780 preserves passing product semantics but is held on two stale top-level runtime
+  authority fields. Its first renewed push may change only the I36 runtime triplet to bind READY d0b0dea5, fresh
+  claim 8d8f5bb9, and lease 49ae7724, set expected_existing_head_sha to 88955780 and lease_phase_scope to the exact
+  renewal-atomic-claim scope, then push and stop for C00 reconciliation. Product/test bytes and completed gates must
+  remain frozen. Candidate freeze, providers, deployment, DNS, sends, charges, live migrations, and customers remain
+  gated.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -62,7 +63,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: parent_session_successor_metadata_corrected_security_closeout_active
+  status: parent_session_successor_security_closeout_checkpoint_metadata_hold_fresh_claim_dispatched
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -75,7 +76,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 2e7cd5be686285ec9506bece9e0761040f881fa5
+  expected_head_sha: 889557800bb3344392f9defc4f6e38d4c049cd0f
   successor_authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
   renewal_checkpoint_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
   renewal_checkpoint_implementation_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
@@ -91,11 +92,21 @@ production_completion_lanes:
   renewal_metadata_correction_tree_sha: d38090eda1cc738c90704e643030191073d92dda
   renewal_metadata_correction_state_handoff_digest: c617599390693ea9a7e7cfc273a7f2962ae360e7a744cc587a8242944d6fd3bb
   renewal_metadata_correction_runtime_triplet_digest: 424482a1e7e036d2a9b8d56967790581b0b4a34fc75b82978430197c40029879
-  prior_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
-  prior_writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
-  claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
-  writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
-  active_phase_scope: parent_session_auth_client_successor_six_security_closeouts_and_terminal_validation
+  security_closeout_renewal_checkpoint_sha: 889557800bb3344392f9defc4f6e38d4c049cd0f
+  security_closeout_renewal_checkpoint_parent_sha: 2e7cd5be686285ec9506bece9e0761040f881fa5
+  security_closeout_renewal_checkpoint_tree_sha: 8c3d1c874833ac0dc87efed9c6bc889547c162fc
+  security_closeout_renewal_checkpoint_path_count: 7
+  security_closeout_renewal_checkpoint_state_handoff_digest: 49f210856ed99ce07cc2e53c44a0a05e7efd180fd5a81bad54a577474e302208
+  security_closeout_renewal_checkpoint_runtime_triplet_digest: b6b90fc4be7e9505a6b4cc6fd555bfcf98a5c7e441b33ead6385b890c1478f73
+  security_closeout_renewal_checkpoint_manifest_digest: fe094bde8ea6ed52377616d813735f6972911f800c3a60c82313b445c6254090
+  security_closeout_renewal_checkpoint_metadata_status: held_two_stale_top_level_authority_fields
+  historical_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
+  historical_writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
+  prior_claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
+  prior_writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
+  claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
+  writer_lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
+  active_phase_scope: parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 authority_note: >-

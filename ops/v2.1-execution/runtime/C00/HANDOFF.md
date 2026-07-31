@@ -1,5 +1,44 @@
 # Parent auth/client successor — current handoff
 
+I36 security-closeout checkpoint
+`889557800bb3344392f9defc4f6e38d4c049cd0f` is the exact clean
+remote-equal seven-path child of `2e7cd5be686285ec9506bece9e0761040f881fa5`.
+Its product semantics pass; workspace typecheck, 26 focused assertions, three
+pg-mem composition assertions, diff hygiene, and runtime validation passed.
+Canonical raw-concat pair/triplet are `49f21085`/`b6b90fc4`; path-manifest
+pair/triplet are `e5cf98d5`/`ea5b29fc`. All four writer slots were released
+together at `2026-07-31T02:13:49Z`, the remote is clean, and effects remain
+`0/0/0`.
+
+Independent audit held only two active top-level I36 authority fields:
+`expected_existing_head_sha` still named `0389fe34`, and
+`lease_phase_scope` still named the superseded runtime-correction phase. C00
+issued canonical READY
+`d0b0dea5b12a09f8b37c3d1ff28dfc5290bd9ab549e01e3afbd0e583cc648695`,
+fresh claim `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`, writer
+`codex-i36-parent-session-successor-8d8f5bb9`, and shared four-slot lease
+`49ae7724-b77a-4cc5-81f6-d16b6e1f5457` through
+`2026-07-31T04:21:40Z`.
+
+The first renewed push may change only the I36 runtime triplet. It must set
+top-level `expected_existing_head_sha` to exact `88955780`, set
+`lease_phase_scope` to
+`parent_session_auth_client_successor_terminal_validation_renewal_atomic_claim_only`,
+bind the fresh READY/claim/writer/lease authority, preserve all ten
+product/test blobs and completed gate evidence, push normally, verify remote
+equality, and stop for C00 reconciliation. It must not rerun terminal gates or
+change product/test bytes in that first push.
+
+Only after C00 reconciles that runtime-only claim may the same worker finish
+the pending native PostgreSQL concurrency/readback, Chromium, build, lint,
+product-format, secret, scope, ancestry, and immutable-product gates. P08/P12
+results remain assigned and unapplied. Candidate is null, all provider locks
+remain unclaimed, and no migration, steward application, provider,
+deployment, DNS, send, charge, customer, or other external effect is
+authorized.
+
+## Superseded security-closeout dispatch
+
 I36 runtime-metadata correction
 `2e7cd5be686285ec9506bece9e0761040f881fa5` is independently accepted as
 the exact clean remote-equal runtime-triplet-only child of `0389fe34`. It has
