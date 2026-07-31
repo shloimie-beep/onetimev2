@@ -4,7 +4,6 @@ import type {
   CanonicalLearnerIdentity,
   CanonicalRecognitionConsent,
   LearningActor,
-  LearningQuestion,
   LearningScope,
   QuestionHistory,
   QuestionMutation,
@@ -53,6 +52,7 @@ function submission(id = 'question-1') {
     body: 'Why is this wording used?',
     idempotencyKey: `submit-${id}`,
     requestHash: `hash-submit-${id}`,
+    auditRef: `audit-submit-${id}`,
     occurredAt: '2026-07-01T10:00:00.000Z',
   });
   return result.mutation as QuestionMutation;
@@ -74,6 +74,8 @@ function attendance(overrides: Partial<AttendanceRecord> = {}): AttendanceRecord
     correctedAt: null,
     correctionReason: null,
     correctedBy: null,
+    correctionAuditRef: null,
+    correctionSourceDigest: null,
     ...overrides,
   };
 }
@@ -110,6 +112,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
         expectedVersion: 1,
         idempotencyKey: 'answer-1',
         requestHash: 'hash-answer-1',
+        auditRef: 'audit-answer-1',
         occurredAt: '2026-07-02T10:00:00.000Z',
       },
     ).mutation as QuestionMutation;
@@ -127,6 +130,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
         expectedVersion: 2,
         idempotencyKey: 'approve-1',
         requestHash: 'hash-approve-1',
+        auditRef: 'audit-approve-1',
         occurredAt: '2026-07-03T10:00:00.000Z',
       },
     ).mutation as QuestionMutation;
@@ -145,6 +149,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
       expectedVersion: 1,
       idempotencyKey: created.transition.idempotencyKey,
       requestHash: created.transition.requestHash,
+      auditRef: 'audit-replay',
       occurredAt: '2026-07-02T10:00:00.000Z',
     });
     expect(replay).toMatchObject({ replay: true, mutation: null });
@@ -156,6 +161,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
         expectedVersion: 1,
         idempotencyKey: created.transition.idempotencyKey,
         requestHash: 'changed',
+        auditRef: 'audit-conflict',
         occurredAt: '2026-07-02T10:00:00.000Z',
       }),
     ).toThrow(/different request hash/);
@@ -167,6 +173,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
         expectedVersion: 7,
         idempotencyKey: 'stale',
         requestHash: 'hash-stale',
+        auditRef: 'audit-stale',
         occurredAt: '2026-07-02T10:00:00.000Z',
       }),
     ).toThrow(/Reload/);
@@ -187,6 +194,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
     const qualified = {
       ...created.transition,
       sequence: 1,
+      source: 'admin_transition' as const,
       action: 'qualified' as const,
       eligible: true,
     };
@@ -201,6 +209,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
         expectedVersion: 1,
         idempotencyKey: 'correct-1',
         requestHash: 'hash-correct-1',
+        auditRef: 'audit-correct-1',
         occurredAt: '2026-07-02T10:00:00.000Z',
       },
     ).mutation!;
@@ -224,6 +233,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
         expectedVersion: 1,
         idempotencyKey: 'invalid-restore',
         requestHash: 'hash-invalid-restore',
+        auditRef: 'audit-invalid-restore',
         occurredAt: '2026-07-02T10:00:00.000Z',
       }),
     ).toThrow(/before the question first qualifies/);
@@ -231,6 +241,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
     const qualified = {
       ...submission().transition,
       sequence: 1,
+      source: 'admin_transition' as const,
       action: 'qualified' as const,
       eligible: true,
     };
@@ -245,6 +256,7 @@ describe('P22 four-scope private questions and append-only plans', () => {
         expectedVersion: 1,
         idempotencyKey: 'backdated',
         requestHash: 'hash-backdated',
+        auditRef: 'audit-backdated',
         occurredAt: '2026-06-01T10:00:00.000Z',
       },
     ).mutation!;
@@ -379,8 +391,7 @@ describe('P22 canonical read-only attendance and announcements', () => {
       studentId: 'student-1',
       scheduledOccurrenceIds: ['present', 'missed-most-recent'],
       attendance: [attendance({ occurrenceId: 'present' })],
-      questions: [],
-      recognitions: [],
+      questionRecognitionFacts: [],
       reviews: [completed, revoked],
     });
     expect(awards).toEqual([]);
@@ -403,9 +414,7 @@ describe('P22 recognition-safe leaderboard labels', () => {
     classId: 'class-a',
     learners,
     attendance: [attendance(), attendance({ studentId: 'student-2', householdId: 'household-2' })],
-    questions: [] as LearningQuestion[],
-    transitions: [],
-    recognitions: [],
+    questionRecognitionFacts: [],
     consents: [] as CanonicalRecognitionConsent[],
     asOf: '2026-07-20T10:00:00.000Z',
     aliasHmacKey: 'test-only-hmac-key',

@@ -1,9 +1,11 @@
 import type {
   AnnouncementRead,
   AttendanceRecord,
+  BadgeProjectionRecalculation,
   CanonicalLearnerIdentity,
   CanonicalRecognitionConsent,
   LearningAnnouncement,
+  LearningBadgeAwardProjection,
   LearningAttendanceReadPort,
   LearningEngagementRepository,
   LearningIdentityReadPort,
@@ -12,8 +14,10 @@ import type {
   LearningReviewItemReadPort,
   LearningScope,
   QuestionMutation,
+  QuestionRecognitionFact,
   QuestionRecognitionLedgerEntry,
   QuestionTransitionLedgerEntry,
+  PublishedQuestionRecord,
   ReviewCompletion,
   ScheduledOccurrenceCoverage,
 } from '../../../contracts/src/learning/index.ts';
@@ -27,6 +31,8 @@ export function createLearningEngagementRepository(pool: DbPool): LearningEngage
       inTransaction(pool, (db) => applyQuestionMutation(db, mutation)),
     applyReviewCompletion: (completion) =>
       inTransaction(pool, (db) => applyReviewCompletion(db, completion)),
+    applyBadgeRecalculation: (recalculation) =>
+      inTransaction(pool, (db) => applyBadgeRecalculation(db, recalculation)),
   };
 }
 
@@ -45,7 +51,9 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
                   occurrence.starts_at AS occurrence_starts_at,
                   enrollment.enrollment_key, enrollment.household_key,
                   student.product_key, student.runtime_tier,
-                  student.verification_environment_id
+                  student.verification_environment_id,
+                  correction.audit_ref AS correction_audit_ref,
+                  correction.source_event_ref_digest AS correction_source_digest
              FROM onetime.classroom_attendance_projection_v21 AS attendance
              JOIN onetime.class_occurrences AS occurrence
                ON occurrence.occurrence_key = attendance.occurrence_id
@@ -69,10 +77,31 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
               AND student.verification_environment_id =
                   attendance.verification_environment_id
               AND student.state = 'active'
+             LEFT JOIN LATERAL (
+               SELECT event.audit_ref, event.source_event_ref_digest
+                 FROM onetime.classroom_attendance_events_v21 AS event
+                WHERE event.product = attendance.product
+                  AND event.runtime_tier = attendance.runtime_tier
+                  AND event.verification_environment_id =
+                      attendance.verification_environment_id
+                  AND event.occurrence_id = attendance.occurrence_id
+                  AND event.student_id = attendance.student_id
+                  AND event.source = 'admin_correction'
+                  AND event.event_kind = 'manual_correction'
+                  AND event.correction_reason = attendance.manual_correction_reason
+                  AND event.correction_admin_id = attendance.correction_admin_id
+                  AND event.audit_ref IS NOT NULL
+                ORDER BY event.observed_at DESC, event.attendance_event_id DESC
+                LIMIT 1
+             ) AS correction ON TRUE
             WHERE occurrence.account_key = $1
               AND attendance.product = $2
               AND attendance.runtime_tier = $3
               AND attendance.verification_environment_id = $4
+              AND (
+                attendance.reconciliation_state <> 'admin_corrected'
+                OR correction.audit_ref IS NOT NULL
+              )
             ORDER BY attendance.updated_at DESC, attendance.occurrence_id,
                      attendance.student_id`,
           scopeValues(scope),
@@ -223,32 +252,48 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
     reviewItems: {
       getAdminPublishedReviewItem: async (readScope, reviewItemId) => {
         const result = await pool.query(
-          `SELECT $1::text AS account_key, $2::text AS product_key,
-                  $3::text AS runtime_tier,
-                  $4::text AS verification_environment_id,
-                  item.content_item_key,
+          `SELECT publication.account_key, state.product_key, state.runtime_tier,
+                  state.verification_environment_id,
+                  artifact.value->>'artifactId' AS review_item_key,
                   occurrence.class_series_key AS class_key,
-                  item.published_revision_key
-             FROM onetime.content_items AS item
+                  publication.approval_projection_digest AS publication_audit_ref
+             FROM onetime.content_publications AS publication
+             JOIN onetime.canonical_aggregate_states AS state
+               ON state.aggregate_kind = 'content'
+              AND state.aggregate_key = publication.content_id
+              AND state.product_key = publication.product_key
+              AND state.runtime_tier = $3
+              AND state.verification_environment_id = $4
+              AND state.current_state = 'published'
+             JOIN onetime.governed_content_occurrences AS governed
+               ON governed.account_key = publication.account_key
+              AND governed.product_key = publication.product_key
+              AND governed.occurrence_id = publication.content_id
+              AND governed.governance_state = 'governed'
+              AND governed.active = TRUE
              JOIN onetime.class_occurrences AS occurrence
-               ON occurrence.account_key = item.account_key
-              AND occurrence.product_key = item.product_key
-              AND occurrence.occurrence_key = item.occurrence_key
-            WHERE item.account_key = $1 AND item.product_key = $2
-              AND item.content_item_key = $5
-              AND item.item_type = 'review'
-              AND item.lifecycle_state = 'published'
-              AND item.retention_state = 'active'
-              AND item.published_revision_key IS NOT NULL`,
+               ON occurrence.account_key = publication.account_key
+              AND occurrence.product_key = publication.product_key
+              AND occurrence.occurrence_key = publication.content_id
+              AND occurrence.class_series_key = governed.canonical_series_id
+             CROSS JOIN LATERAL
+               jsonb_array_elements(publication.approval_projection_json->'artifacts') AS artifact(value)
+            WHERE publication.account_key = $1 AND publication.product_key = $2
+              AND publication.state = 'published'
+              AND publication.approval_projection_digest <> ''
+              AND publication.approval_projection_json->>'approvedByAdminId' <> ''
+              AND publication.approval_projection_json->>'approvedAt' <> ''
+              AND artifact.value->>'kind' = 'review_material'
+              AND artifact.value->>'artifactId' = $5`,
           [...scopeValues(readScope), reviewItemId],
         );
         const row = result.rows[0] as Record<string, unknown> | undefined;
         return row
           ? {
               ...scope(row),
-              reviewItemId: String(row.content_item_key),
+              reviewItemId: String(row.review_item_key),
               classId: String(row.class_key),
-              publicationAuditRef: String(row.published_revision_key),
+              publicationAuditRef: String(row.publication_audit_ref),
             }
           : null;
       },
@@ -258,22 +303,103 @@ export function createLearningCanonicalReadPorts(pool: DbPool): {
 
 function createUnit(
   db: Queryable,
-): Omit<LearningEngagementRepository, 'applyQuestionMutation' | 'applyReviewCompletion'> {
+): Omit<
+  LearningEngagementRepository,
+  'applyQuestionMutation' | 'applyReviewCompletion' | 'applyBadgeRecalculation'
+> {
   return {
-    getQuestion: async (scope, questionId) => loadQuestion(db, scope, questionId),
+    getQuestion: async (scope, questionId, authorizedClassIds) =>
+      loadAuthorizedQuestion(db, scope, questionId, authorizedClassIds),
     getQuestionHistory: async (scope, questionId) => ({
       transitions: await listTransitions(db, scope, questionId),
       recognitions: await listRecognitions(db, scope, questionId),
     }),
-    listQuestions: async (scope) => {
+    listQuestions: async (scope, authorizedClassIds, studentId) => {
       const result = await db.query(
         `SELECT * FROM onetime.learning_question_projection
           WHERE account_key = $1 AND product_key = $2
             AND runtime_tier = $3 AND verification_environment_id = $4
+            AND class_key = ANY($5::text[])
+            AND ($6::text IS NULL OR learner_key = $6)
           ORDER BY submitted_at DESC, question_key`,
-        scopeValues(scope),
+        [...scopeValues(scope), authorizedClassIds, studentId ?? null],
       );
       return result.rows.map((row) => mapQuestion(row as Record<string, unknown>));
+    },
+    listPublishedQuestionRecords: async (scope, classId) => {
+      const result = await db.query(
+        `SELECT question.account_key, question.product_key, question.runtime_tier,
+                question.verification_environment_id,
+                question.question_key, question.learner_key, question.household_key,
+                question.class_key,
+                question.private_body, question.private_answer,
+                publication.published_at
+           FROM onetime.learning_question_projection AS question
+           JOIN LATERAL (
+             SELECT MIN(transition.occurred_at) AS published_at
+               FROM onetime.learning_question_transition_ledger AS transition
+              WHERE transition.account_key = question.account_key
+                AND transition.product_key = question.product_key
+                AND transition.runtime_tier = question.runtime_tier
+                AND transition.verification_environment_id =
+                    question.verification_environment_id
+                AND transition.question_key = question.question_key
+                AND transition.to_state = 'published'
+           ) AS publication ON publication.published_at IS NOT NULL
+          WHERE question.account_key = $1 AND question.product_key = $2
+            AND question.runtime_tier = $3
+            AND question.verification_environment_id = $4
+            AND question.class_key = $5
+            AND question.question_state = 'published'
+          ORDER BY publication.published_at, question.question_key`,
+        [...scopeValues(scope), classId],
+      );
+      return result.rows.map((row) => mapPublishedQuestion(row as Record<string, unknown>));
+    },
+    listQuestionRecognitionFacts: async (scope, classId, studentId) => {
+      const result = await db.query(
+        `SELECT question.account_key, question.product_key, question.runtime_tier,
+                question.verification_environment_id,
+                question.question_key, question.learner_key, question.class_key,
+                question.question_state, COALESCE(recognition.eligible, FALSE) AS eligible,
+                recognition.recognition_sequence, recognition.event_source,
+                recognition.audit_ref, recognition.reason, recognition.actor_key,
+                qualification.qualified_at
+           FROM onetime.learning_question_projection AS question
+           LEFT JOIN LATERAL (
+             SELECT event.eligible, event.recognition_sequence,
+                    event.event_source, event.audit_ref, event.reason,
+                    event.actor_key
+               FROM onetime.learning_question_recognition_ledger AS event
+              WHERE event.account_key = question.account_key
+                AND event.product_key = question.product_key
+                AND event.runtime_tier = question.runtime_tier
+                AND event.verification_environment_id =
+                    question.verification_environment_id
+                AND event.question_key = question.question_key
+              ORDER BY event.recognition_sequence DESC
+              LIMIT 1
+           ) AS recognition ON TRUE
+           LEFT JOIN LATERAL (
+             SELECT MIN(event.occurred_at) AS qualified_at
+               FROM onetime.learning_question_recognition_ledger AS event
+              WHERE event.account_key = question.account_key
+                AND event.product_key = question.product_key
+                AND event.runtime_tier = question.runtime_tier
+                AND event.verification_environment_id =
+                    question.verification_environment_id
+                AND event.question_key = question.question_key
+                AND event.action = 'qualified'
+           ) AS qualification ON TRUE
+          WHERE question.account_key = $1 AND question.product_key = $2
+            AND question.runtime_tier = $3
+            AND question.verification_environment_id = $4
+            AND question.class_key = $5
+            AND ($6::text IS NULL OR question.learner_key = $6)
+          ORDER BY question.question_key`,
+        [...scopeValues(scope), classId, studentId ?? null],
+      );
+      return result.rows.map((row) => mapQuestionRecognitionFact(row as Record<string, unknown>));
     },
     listQuestionTransitions: (scope) => listTransitions(db, scope),
     listQuestionRecognitions: (scope) => listRecognitions(db, scope),
@@ -362,6 +488,174 @@ function createUnit(
   };
 }
 
+const BADGE_LEVELS = [
+  ['consistency', 'I', 1, 5],
+  ['consistency', 'II', 2, 20],
+  ['consistency', 'III', 3, 60],
+  ['curious_learner', 'I', 1, 1],
+  ['curious_learner', 'II', 2, 5],
+  ['curious_learner', 'III', 3, 15],
+  ['review_ready', 'I', 1, 1],
+  ['review_ready', 'II', 2, 4],
+  ['review_ready', 'III', 3, 12],
+] as const;
+
+async function applyBadgeRecalculation(
+  db: Queryable,
+  recalculation: BadgeProjectionRecalculation,
+): Promise<{ awards: readonly LearningBadgeAwardProjection[]; replay: boolean }> {
+  await db.query(`SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, [
+    scopedIdempotencyLockKey(
+      recalculation.scope,
+      `badge:${recalculation.classId}:${recalculation.studentId}`,
+    ),
+  ]);
+  const existing = await listBadgeProjections(
+    db,
+    recalculation.scope,
+    recalculation.classId,
+    recalculation.studentId,
+  );
+  if (
+    recalculation.allowRevocation &&
+    (!recalculation.correctionFamily ||
+      !recalculation.correctionAuditRef?.trim() ||
+      !recalculation.correctionReason?.trim() ||
+      !recalculation.correctedByAdminId?.trim())
+  ) {
+    throw new Error('learning_badge_revocation_requires_admin_audit');
+  }
+  if (
+    existing.length === BADGE_LEVELS.length &&
+    existing.every(
+      (projection) =>
+        projection.sourceDigest === recalculation.familySourceDigests[projection.family] &&
+        projection.ruleVersion === recalculation.ruleVersion &&
+        (!recalculation.allowRevocation ||
+          projection.family !== recalculation.correctionFamily ||
+          (projection.correctionAuditRef === recalculation.correctionAuditRef &&
+            projection.correctionReason === recalculation.correctionReason &&
+            projection.correctedByAdminId === recalculation.correctedByAdminId)),
+    )
+  ) {
+    return { awards: existing, replay: true };
+  }
+  const awarded = new Map(recalculation.awards.map((award) => [award.key, award]));
+  for (const [family, level, ordinal, threshold] of BADGE_LEVELS) {
+    const key = `${family}:${ordinal}` as const;
+    const award = awarded.get(key);
+    const prior = existing.find(
+      (projection) => projection.family === family && projection.level === level,
+    );
+    const auditedCorrection =
+      recalculation.allowRevocation && recalculation.correctionFamily === family;
+    const state = award
+      ? prior?.state === 'revoked' && !auditedCorrection
+        ? 'revoked'
+        : 'awarded'
+      : prior?.state === 'awarded'
+        ? auditedCorrection
+          ? 'revoked'
+          : 'awarded'
+        : prior?.state === 'revoked'
+          ? 'revoked'
+          : 'unawarded';
+    const progress = recalculation.progress[family];
+    const familyDigest = recalculation.familySourceDigests[family];
+    const familyAuditRefs = recalculation.familySourceAuditRefs[family];
+    if (
+      prior &&
+      prior.sourceDigest === familyDigest &&
+      prior.ruleVersion === recalculation.ruleVersion &&
+      !auditedCorrection
+    ) {
+      continue;
+    }
+    await db.query(
+      `INSERT INTO onetime.learning_badge_award_projection
+         (account_key, product_key, runtime_tier, verification_environment_id,
+          learner_key, class_key, badge_family, badge_level, threshold,
+          qualifying_count, source_keys, source_digest, award_state,
+          rule_version, source_audit_refs, awarded_at, revoked_at,
+          recalculated_at, correction_audit_ref, correction_reason,
+          corrected_by_admin_id, version)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12,$13,$14,
+               $15::jsonb,$16,$17,$18,$19,$20,$21,1)
+       ON CONFLICT (account_key, product_key, runtime_tier,
+                    verification_environment_id, learner_key, class_key,
+                    badge_family, badge_level)
+       DO UPDATE SET threshold = EXCLUDED.threshold,
+                     qualifying_count = EXCLUDED.qualifying_count,
+                     source_keys = EXCLUDED.source_keys,
+                     source_digest = EXCLUDED.source_digest,
+                     award_state = CASE
+                       WHEN onetime.learning_badge_award_projection.award_state = 'awarded'
+                            AND EXCLUDED.award_state = 'unawarded'
+                         THEN 'awarded'
+                       ELSE EXCLUDED.award_state
+                     END,
+                     rule_version = EXCLUDED.rule_version,
+                     source_audit_refs = EXCLUDED.source_audit_refs,
+                     awarded_at = COALESCE(
+                       onetime.learning_badge_award_projection.awarded_at,
+                       EXCLUDED.awarded_at
+                     ),
+                     revoked_at = EXCLUDED.revoked_at,
+                     recalculated_at = EXCLUDED.recalculated_at,
+                     correction_audit_ref = EXCLUDED.correction_audit_ref,
+                     correction_reason = EXCLUDED.correction_reason,
+                     corrected_by_admin_id = EXCLUDED.corrected_by_admin_id,
+                     version = onetime.learning_badge_award_projection.version + 1`,
+      [
+        ...scopeValues(recalculation.scope),
+        recalculation.studentId,
+        recalculation.classId,
+        family,
+        level,
+        award?.threshold ?? threshold,
+        progress.qualifyingCount,
+        JSON.stringify(progress.sourceKeys),
+        familyDigest,
+        state,
+        recalculation.ruleVersion,
+        JSON.stringify(familyAuditRefs),
+        award && !prior?.awardedAt ? recalculation.recalculatedAt : (prior?.awardedAt ?? null),
+        state === 'revoked' ? (prior?.revokedAt ?? recalculation.recalculatedAt) : null,
+        recalculation.recalculatedAt,
+        auditedCorrection ? recalculation.correctionAuditRef : (prior?.correctionAuditRef ?? null),
+        auditedCorrection ? recalculation.correctionReason : (prior?.correctionReason ?? null),
+        auditedCorrection ? recalculation.correctedByAdminId : (prior?.correctedByAdminId ?? null),
+      ],
+    );
+  }
+  return {
+    awards: await listBadgeProjections(
+      db,
+      recalculation.scope,
+      recalculation.classId,
+      recalculation.studentId,
+    ),
+    replay: false,
+  };
+}
+
+async function listBadgeProjections(
+  db: Queryable,
+  scopeValue: LearningScope,
+  classId: string,
+  studentId: string,
+) {
+  const result = await db.query(
+    `SELECT * FROM onetime.learning_badge_award_projection
+      WHERE account_key = $1 AND product_key = $2
+        AND runtime_tier = $3 AND verification_environment_id = $4
+        AND class_key = $5 AND learner_key = $6
+      ORDER BY badge_family, badge_level`,
+    [...scopeValues(scopeValue), classId, studentId],
+  );
+  return result.rows.map((row) => mapBadgeProjection(row as Record<string, unknown>));
+}
+
 async function applyReviewCompletion(
   db: Queryable,
   completion: ReviewCompletion,
@@ -402,13 +696,14 @@ async function applyReviewCompletion(
   const inserted = await db.query(
     `INSERT INTO onetime.learning_review_completions
        (account_key, product_key, runtime_tier, verification_environment_id,
-        review_item_key, class_key, learner_key, household_key, admin_published,
+        review_event_id, review_item_key, class_key, learner_key, household_key, admin_published,
         event_action, event_sequence, idempotency_key, request_hash, completed_by,
         completion_source, reason, audit_ref, publication_audit_ref, completed_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
      ON CONFLICT DO NOTHING`,
     [
       ...scopeValues(completion),
+      completion.eventId,
       completion.reviewItemId,
       completion.classId,
       completion.studentId,
@@ -481,18 +776,20 @@ async function applyQuestionMutation(
   await db.query(
     `INSERT INTO onetime.learning_question_transition_ledger
        (account_key, product_key, runtime_tier, verification_environment_id,
-        question_key, idempotency_key, request_hash, actor_key, from_state,
+        transition_event_id, question_key, learner_key, household_key, class_key, idempotency_key,
+        request_hash, actor_key, event_source, audit_ref, from_state,
         to_state, reason, occurred_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
     transitionValues(mutation.transition),
   );
   if (mutation.recognition) {
     await db.query(
       `INSERT INTO onetime.learning_question_recognition_ledger
        (account_key, product_key, runtime_tier, verification_environment_id,
-          question_key, recognition_sequence, idempotency_key, request_hash,
-          actor_key, action, eligible, reason, occurred_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+          recognition_event_id, question_key, learner_key, household_key, class_key,
+          recognition_sequence, idempotency_key, request_hash, actor_key,
+          event_source, audit_ref, action, eligible, reason, occurred_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)`,
       recognitionValues(mutation.recognition),
     );
   }
@@ -506,6 +803,22 @@ async function loadQuestion(db: Queryable, scope: LearningScope, questionId: str
         AND runtime_tier = $3 AND verification_environment_id = $4
         AND question_key = $5`,
     [...scopeValues(scope), questionId],
+  );
+  return result.rows[0] ? mapQuestion(result.rows[0] as Record<string, unknown>) : null;
+}
+
+async function loadAuthorizedQuestion(
+  db: Queryable,
+  scope: LearningScope,
+  questionId: string,
+  authorizedClassIds: readonly string[],
+) {
+  const result = await db.query(
+    `SELECT * FROM onetime.learning_question_projection
+      WHERE account_key = $1 AND product_key = $2
+        AND runtime_tier = $3 AND verification_environment_id = $4
+        AND question_key = $5 AND class_key = ANY($6::text[])`,
+    [...scopeValues(scope), questionId, authorizedClassIds],
   );
   return result.rows[0] ? mapQuestion(result.rows[0] as Record<string, unknown>) : null;
 }
@@ -570,10 +883,16 @@ function questionValues(question: LearningQuestion) {
 function transitionValues(entry: QuestionTransitionLedgerEntry) {
   return [
     ...scopeValues(entry),
+    entry.eventId,
     entry.questionId,
+    entry.studentId,
+    entry.householdId,
+    entry.classId,
     entry.idempotencyKey,
     entry.requestHash,
     entry.actorId,
+    entry.source,
+    entry.auditRef,
     entry.from,
     entry.to,
     entry.reason,
@@ -584,11 +903,17 @@ function transitionValues(entry: QuestionTransitionLedgerEntry) {
 function recognitionValues(entry: QuestionRecognitionLedgerEntry) {
   return [
     ...scopeValues(entry),
+    entry.eventId,
     entry.questionId,
+    entry.studentId,
+    entry.householdId,
+    entry.classId,
     entry.sequence,
     entry.idempotencyKey,
     entry.requestHash,
     entry.actorId,
+    entry.source,
+    entry.auditRef,
     entry.action,
     entry.eligible,
     entry.reason,
@@ -597,17 +922,7 @@ function recognitionValues(entry: QuestionRecognitionLedgerEntry) {
 }
 
 function mapQuestion(row: Record<string, unknown>): LearningQuestion {
-  const state = row.question_state;
-  if (
-    state !== 'submitted' &&
-    state !== 'answered_private' &&
-    state !== 'approved_for_class' &&
-    state !== 'published' &&
-    state !== 'closed' &&
-    state !== 'declined'
-  ) {
-    throw new Error('learning_unknown_question_state');
-  }
+  const state = questionState(row.question_state);
   return {
     ...scope(row),
     id: String(row.question_key),
@@ -623,13 +938,69 @@ function mapQuestion(row: Record<string, unknown>): LearningQuestion {
   };
 }
 
-function mapTransition(row: Record<string, unknown>): QuestionTransitionLedgerEntry {
+function mapPublishedQuestion(row: Record<string, unknown>): PublishedQuestionRecord {
   return {
     ...scope(row),
     questionId: String(row.question_key),
+    studentId: String(row.learner_key),
+    classId: String(row.class_key),
+    question: String(row.private_body),
+    answer: nullableString(row.private_answer),
+    publishedAt: instant(row.published_at),
+  };
+}
+
+function mapQuestionRecognitionFact(row: Record<string, unknown>): QuestionRecognitionFact {
+  return {
+    ...scope(row),
+    questionId: String(row.question_key),
+    studentId: String(row.learner_key),
+    householdId: String(row.household_key),
+    classId: String(row.class_key),
+    state: questionState(row.question_state),
+    eligible: Boolean(row.eligible),
+    qualifiedAt: nullableInstant(row.qualified_at),
+    latestSequence:
+      row.recognition_sequence === null || row.recognition_sequence === undefined
+        ? null
+        : Number(row.recognition_sequence),
+    latestSource:
+      row.event_source === null
+        ? null
+        : (row.event_source as QuestionRecognitionFact['latestSource']),
+    latestAuditRef: nullableString(row.audit_ref),
+    latestReason: nullableString(row.reason),
+    latestActorId: nullableString(row.actor_key),
+  };
+}
+
+function questionState(value: unknown): LearningQuestion['state'] {
+  if (
+    value === 'submitted' ||
+    value === 'answered_private' ||
+    value === 'approved_for_class' ||
+    value === 'published' ||
+    value === 'closed' ||
+    value === 'declined'
+  ) {
+    return value;
+  }
+  throw new Error('learning_unknown_question_state');
+}
+
+function mapTransition(row: Record<string, unknown>): QuestionTransitionLedgerEntry {
+  return {
+    ...scope(row),
+    eventId: String(row.transition_event_id),
+    questionId: String(row.question_key),
+    studentId: String(row.learner_key),
+    householdId: String(row.household_key),
+    classId: String(row.class_key),
     idempotencyKey: String(row.idempotency_key),
     requestHash: String(row.request_hash),
     actorId: String(row.actor_key),
+    source: row.event_source as QuestionTransitionLedgerEntry['source'],
+    auditRef: String(row.audit_ref),
     from:
       row.from_state === null ? null : (row.from_state as QuestionTransitionLedgerEntry['from']),
     to: row.to_state as QuestionTransitionLedgerEntry['to'],
@@ -641,11 +1012,17 @@ function mapTransition(row: Record<string, unknown>): QuestionTransitionLedgerEn
 function mapRecognition(row: Record<string, unknown>): QuestionRecognitionLedgerEntry {
   return {
     ...scope(row),
+    eventId: String(row.recognition_event_id),
     questionId: String(row.question_key),
+    studentId: String(row.learner_key),
+    householdId: String(row.household_key),
+    classId: String(row.class_key),
     sequence: Number(row.recognition_sequence),
     idempotencyKey: String(row.idempotency_key),
     requestHash: String(row.request_hash),
     actorId: String(row.actor_key),
+    source: row.event_source as QuestionRecognitionLedgerEntry['source'],
+    auditRef: String(row.audit_ref),
     action: row.action as QuestionRecognitionLedgerEntry['action'],
     eligible: Boolean(row.eligible),
     reason: nullableString(row.reason),
@@ -692,6 +1069,7 @@ function mapAnnouncementRead(row: Record<string, unknown>): AnnouncementRead {
 function mapReview(row: Record<string, unknown>): ReviewCompletion {
   return {
     ...scope(row),
+    eventId: String(row.review_event_id),
     reviewItemId: String(row.review_item_key),
     classId: String(row.class_key),
     studentId: String(row.learner_key),
@@ -707,6 +1085,32 @@ function mapReview(row: Record<string, unknown>): ReviewCompletion {
     auditRef: String(row.audit_ref),
     publicationAuditRef: String(row.publication_audit_ref),
     completedAt: instant(row.completed_at),
+  };
+}
+
+function mapBadgeProjection(row: Record<string, unknown>): LearningBadgeAwardProjection {
+  const ordinal = row.badge_level === 'I' ? 1 : row.badge_level === 'II' ? 2 : 3;
+  return {
+    ...scope(row),
+    studentId: String(row.learner_key),
+    classId: String(row.class_key),
+    key: `${String(row.badge_family)}:${ordinal}` as LearningBadgeAwardProjection['key'],
+    family: row.badge_family as LearningBadgeAwardProjection['family'],
+    level: row.badge_level as LearningBadgeAwardProjection['level'],
+    threshold: Number(row.threshold),
+    qualifyingCount: Number(row.qualifying_count),
+    sourceKeys: stringArray(row.source_keys),
+    sourceDigest: String(row.source_digest),
+    version: Number(row.version),
+    state: row.award_state as LearningBadgeAwardProjection['state'],
+    ruleVersion: String(row.rule_version),
+    sourceAuditRefs: stringArray(row.source_audit_refs),
+    awardedAt: nullableInstant(row.awarded_at),
+    revokedAt: nullableInstant(row.revoked_at),
+    recalculatedAt: instant(row.recalculated_at),
+    correctionAuditRef: nullableString(row.correction_audit_ref),
+    correctionReason: nullableString(row.correction_reason),
+    correctedByAdminId: nullableString(row.corrected_by_admin_id),
   };
 }
 
@@ -738,6 +1142,8 @@ function mapAttendance(row: Record<string, unknown>): AttendanceRecord {
     correctedAt: row.reconciliation_state === 'admin_corrected' ? instant(row.updated_at) : null,
     correctionReason: nullableString(row.manual_correction_reason),
     correctedBy: nullableString(row.correction_admin_id),
+    correctionAuditRef: nullableString(row.correction_audit_ref),
+    correctionSourceDigest: nullableString(row.correction_source_digest),
   };
 }
 
@@ -797,4 +1203,13 @@ function nullableInstant(value: unknown) {
 
 function nullableString(value: unknown) {
   return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+function stringArray(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === 'string') {
+    const parsed = JSON.parse(value) as unknown;
+    if (Array.isArray(parsed)) return parsed.map(String);
+  }
+  throw new Error('learning_invalid_string_array');
 }

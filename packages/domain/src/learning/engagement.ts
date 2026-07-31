@@ -2,6 +2,7 @@ import { createHmac } from 'node:crypto';
 import type {
   AnnouncementAudience,
   AttendanceRecord,
+  BadgeFamily,
   CanonicalLearnerIdentity,
   CanonicalRecognitionConsent,
   CorrectReviewCompletionCommand,
@@ -14,9 +15,11 @@ import type {
   LearningQuestion,
   LearningScope,
   PublishedClassQuestion,
+  PublishedQuestionRecord,
   QuestionHistory,
   QuestionMutation,
   QuestionRecognitionLedgerEntry,
+  QuestionRecognitionFact,
   QuestionState,
   QuestionTransitionLedgerEntry,
   RecordReviewCompletionCommand,
@@ -84,7 +87,14 @@ export function submitQuestion(command: SubmitQuestionCommand): PlannedQuestionM
     mutation: {
       projection,
       expectedVersion: 0,
-      transition: transitionEntry(projection, command, null, 'submitted', null),
+      transition: transitionEntry(
+        projection,
+        command,
+        'authenticated_student_submit',
+        null,
+        'submitted',
+        null,
+      ),
       recognition: null,
     },
     replay: false,
@@ -126,6 +136,7 @@ export function transitionQuestion(
       transition: transitionEntry(
         current,
         command,
+        'admin_transition',
         current.state,
         command.to,
         command.reason?.trim() || null,
@@ -135,6 +146,7 @@ export function transitionQuestion(
             current,
             command,
             nextRecognitionSequence(history.recognitions),
+            'admin_transition',
             'qualified',
             true,
             null,
@@ -173,6 +185,7 @@ export function correctQuestionRecognition(
       transition: transitionEntry(
         current,
         command,
+        'admin_correction',
         current.state,
         current.state,
         `recognition_correction:${reason}`,
@@ -181,6 +194,7 @@ export function correctQuestionRecognition(
         current,
         command,
         nextRecognitionSequence(history.recognitions),
+        'admin_correction',
         command.eligible ? 'correction_enabled' : 'correction_disabled',
         command.eligible,
         reason,
@@ -213,35 +227,43 @@ export function questionsVisibleTo(
 
 export function publishedQuestionsVisibleTo(
   actor: LearningActor,
-  questions: readonly LearningQuestion[],
-  transitions: readonly QuestionTransitionLedgerEntry[],
+  questions: readonly PublishedQuestionRecord[],
+  learners: readonly CanonicalLearnerIdentity[],
+  consents: readonly CanonicalRecognitionConsent[],
   classId: string,
+  aliasHmacKey: string,
 ): readonly PublishedClassQuestion[] {
   if ((actor.role !== 'student' && actor.role !== 'admin') || !actor.classIds.includes(classId)) {
     denied('Published questions require assignment to the requested class.');
   }
+  const cohort = learners.filter(
+    (learner) => sameScope(actor, learner) && learner.classId === classId,
+  );
+  const identities = new Map(cohort.map((learner) => [learner.studentId, learner]));
+  const labels = leaderboardLabels(
+    actor as Extract<LearningActor, { role: 'admin' | 'student' }>,
+    cohort,
+    latestConsent(consents.filter((event) => sameScope(actor, event))),
+    aliasHmacKey,
+  );
   return questions
-    .filter(
-      (question) =>
-        sameScope(actor, question) &&
-        question.classId === classId &&
-        question.state === 'published',
-    )
-    .map((question) => ({
-      questionId: question.id,
-      classId: question.classId,
-      question: question.body,
-      answer: question.answer,
-      publishedAt:
-        transitions
-          .filter(
-            (entry) =>
-              sameScope(question, entry) &&
-              entry.questionId === question.id &&
-              entry.to === 'published',
-          )
-          .sort(compareOccurred)[0]?.occurredAt ?? question.updatedAt,
-    }));
+    .filter((question) => sameScope(actor, question) && question.classId === classId)
+    .flatMap((question) => {
+      const learner = identities.get(question.studentId);
+      const authorDisplayName = labels.get(question.studentId);
+      if (!learner || !authorDisplayName) return [];
+      return [
+        {
+          questionId: question.questionId,
+          classId: question.classId,
+          question: question.question,
+          answer: question.answer,
+          authorDisplayName,
+          authorEntryKey: opaqueKey('entry', aliasHmacKey, learner),
+          publishedAt: question.publishedAt,
+        },
+      ];
+    });
 }
 
 export function attendanceVisibleTo(
@@ -260,14 +282,17 @@ export function attendanceVisibleTo(
   return valid.filter((record) => actor.householdIds.includes(record.householdId));
 }
 
-export function calculateBadges(input: {
+type BadgeCalculationInput = {
   studentId: string;
   scheduledOccurrenceIds: readonly string[];
   attendance: readonly AttendanceRecord[];
-  questions: readonly LearningQuestion[];
-  recognitions: readonly QuestionRecognitionLedgerEntry[];
+  questionRecognitionFacts: readonly QuestionRecognitionFact[];
   reviews: readonly ReviewCompletion[];
-}): readonly LearningBadgeAward[] {
+};
+
+export function calculateBadgeProgress(
+  input: BadgeCalculationInput,
+): Readonly<Record<BadgeFamily, { qualifyingCount: number; sourceKeys: readonly string[] }>> {
   const presentIds = new Set(
     input.attendance
       .filter((record) => record.studentId === input.studentId && record.present)
@@ -280,13 +305,9 @@ export function calculateBadges(input: {
   }
   const questionIds = [
     ...new Set(
-      input.questions
-        .filter(
-          (question) =>
-            question.studentId === input.studentId &&
-            recognitionEligible(question.id, input.recognitions),
-        )
-        .map((question) => question.id),
+      input.questionRecognitionFacts
+        .filter((fact) => fact.studentId === input.studentId && fact.eligible)
+        .map((fact) => fact.questionId),
     ),
   ];
   const latestReviews = new Map<string, ReviewCompletion>();
@@ -299,10 +320,37 @@ export function calculateBadges(input: {
   const reviewIds = [...latestReviews.values()]
     .filter((review) => review.action === 'completed' || review.action === 'restored')
     .map((review) => review.reviewItemId);
+  return {
+    consistency: {
+      qualifyingCount: streak,
+      sourceKeys: input.scheduledOccurrenceIds.slice(-streak),
+    },
+    curious_learner: { qualifyingCount: questionIds.length, sourceKeys: questionIds },
+    review_ready: { qualifyingCount: reviewIds.length, sourceKeys: reviewIds },
+  };
+}
+
+export function calculateBadges(input: BadgeCalculationInput): readonly LearningBadgeAward[] {
+  const progress = calculateBadgeProgress(input);
   return [
-    ...awards('consistency', streak, [5, 20, 60], input.scheduledOccurrenceIds.slice(-streak)),
-    ...awards('curious_learner', questionIds.length, [1, 5, 15], questionIds),
-    ...awards('review_ready', reviewIds.length, [1, 4, 12], reviewIds),
+    ...awards(
+      'consistency',
+      progress.consistency.qualifyingCount,
+      [5, 20, 60],
+      progress.consistency.sourceKeys,
+    ),
+    ...awards(
+      'curious_learner',
+      progress.curious_learner.qualifyingCount,
+      [1, 5, 15],
+      progress.curious_learner.sourceKeys,
+    ),
+    ...awards(
+      'review_ready',
+      progress.review_ready.qualifyingCount,
+      [1, 4, 12],
+      progress.review_ready.sourceKeys,
+    ),
   ];
 }
 
@@ -352,6 +400,7 @@ export function recordReviewCompletion(
   }
   return {
     ...scopeOf(command.actor),
+    eventId: `${command.idempotencyKey}:review`,
     reviewItemId: requiredText(command.reviewItemId, 'Review item', 512),
     classId: requiredText(command.classId, 'Class', 512),
     studentId: command.actor.studentId,
@@ -412,6 +461,7 @@ export function correctReviewCompletion(
   if (reason.length < 3) invalid('Review correction requires an audited reason.');
   return {
     ...scopeOf(command.actor),
+    eventId: `${command.idempotencyKey}:review`,
     reviewItemId: command.reviewItemId,
     classId: command.classId,
     studentId: command.studentId,
@@ -450,9 +500,7 @@ export function buildLeaderboard(input: {
   classId: string;
   learners: readonly CanonicalLearnerIdentity[];
   attendance: readonly AttendanceRecord[];
-  questions: readonly LearningQuestion[];
-  transitions: readonly QuestionTransitionLedgerEntry[];
-  recognitions: readonly QuestionRecognitionLedgerEntry[];
+  questionRecognitionFacts: readonly QuestionRecognitionFact[];
   consents: readonly CanonicalRecognitionConsent[];
   scheduledOccurrenceCoverage?: readonly ScheduledOccurrenceCoverage[];
   asOf: string;
@@ -487,19 +535,18 @@ export function buildLeaderboard(input: {
     }
   }
   const approvedQuestionCount = new Map<string, number>();
-  for (const question of input.questions) {
-    const qualifiedAt = firstApprovalAt(question, input.transitions);
+  for (const fact of input.questionRecognitionFacts) {
     if (
-      sameScope(input.actor, question) &&
-      question.classId === input.classId &&
-      (question.state === 'approved_for_class' || question.state === 'published') &&
-      recognitionEligible(question.id, input.recognitions) &&
-      qualifiedAt &&
-      inWindow(qualifiedAt, windowStarts, windowEnds)
+      sameScope(input.actor, fact) &&
+      fact.classId === input.classId &&
+      (fact.state === 'approved_for_class' || fact.state === 'published') &&
+      fact.eligible &&
+      fact.qualifiedAt &&
+      inWindow(fact.qualifiedAt, windowStarts, windowEnds)
     ) {
       approvedQuestionCount.set(
-        question.studentId,
-        (approvedQuestionCount.get(question.studentId) ?? 0) + 1,
+        fact.studentId,
+        (approvedQuestionCount.get(fact.studentId) ?? 0) + 1,
       );
     }
   }
@@ -520,8 +567,9 @@ export function buildLeaderboard(input: {
       ),
     ]),
   );
+  const labels = leaderboardLabels(viewer, learners, consents, input.aliasHmacKey);
   const label = (learner: CanonicalLearnerIdentity) =>
-    leaderboardLabel(viewer, learner, consents.get(learner.studentId), input.aliasHmacKey);
+    labels.get(learner.studentId) ?? 'Anonymous Student';
   const entry = (learner: CanonicalLearnerIdentity) =>
     opaqueKey('entry', input.aliasHmacKey, learner);
   return {
@@ -552,18 +600,26 @@ function transitionEntry(
     actor: LearningActor;
     idempotencyKey: string;
     requestHash: string;
+    auditRef: string;
     occurredAt: string;
   },
+  source: QuestionTransitionLedgerEntry['source'],
   from: QuestionState | null,
   to: QuestionState,
   reason: string | null,
 ): QuestionTransitionLedgerEntry {
   return {
     ...scopeOf(question),
+    eventId: `${command.idempotencyKey}:transition`,
     questionId: question.id,
+    studentId: question.studentId,
+    householdId: question.householdId,
+    classId: question.classId,
     idempotencyKey: command.idempotencyKey,
     requestHash: command.requestHash,
     actorId: command.actor.principalId,
+    source,
+    auditRef: command.auditRef,
     from,
     to,
     reason,
@@ -575,17 +631,24 @@ function recognitionEntry(
   question: LearningQuestion,
   command: CorrectQuestionRecognitionCommand | TransitionQuestionCommand,
   sequence: number,
+  source: QuestionRecognitionLedgerEntry['source'],
   action: QuestionRecognitionLedgerEntry['action'],
   eligible: boolean,
   reason: string | null,
 ): QuestionRecognitionLedgerEntry {
   return {
     ...scopeOf(question),
+    eventId: `${command.idempotencyKey}:recognition`,
     questionId: question.id,
+    studentId: question.studentId,
+    householdId: question.householdId,
+    classId: question.classId,
     sequence,
     idempotencyKey: command.idempotencyKey,
     requestHash: command.requestHash,
     actorId: command.actor.principalId,
+    source,
+    auditRef: command.auditRef,
     action,
     eligible,
     reason,
@@ -605,17 +668,6 @@ function isReplay(entries: readonly QuestionTransitionLedgerEntry[], key: string
   return true;
 }
 
-function recognitionEligible(
-  questionId: string,
-  entries: readonly QuestionRecognitionLedgerEntry[],
-) {
-  return (
-    entries
-      .filter((entry) => entry.questionId === questionId)
-      .sort((left, right) => right.sequence - left.sequence)[0]?.eligible ?? false
-  );
-}
-
 function nextRecognitionSequence(entries: readonly QuestionRecognitionLedgerEntry[]) {
   return Math.max(0, ...entries.map((entry) => entry.sequence)) + 1;
 }
@@ -628,30 +680,51 @@ function latestConsent(events: readonly CanonicalRecognitionConsent[]) {
   return result;
 }
 
-function firstApprovalAt(
-  question: LearningQuestion,
-  entries: readonly QuestionTransitionLedgerEntry[],
-) {
-  return entries
-    .filter(
-      (entry) =>
-        sameScope(question, entry) &&
-        entry.questionId === question.id &&
-        (entry.to === 'approved_for_class' || entry.to === 'published'),
-    )
-    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt))[0]?.occurredAt;
-}
-
-function leaderboardLabel(
+function leaderboardLabels(
   actor: Extract<LearningActor, { role: 'admin' | 'student' }>,
-  learner: CanonicalLearnerIdentity,
-  consent: CanonicalRecognitionConsent | undefined,
+  learners: readonly CanonicalLearnerIdentity[],
+  consents: ReadonlyMap<string, CanonicalRecognitionConsent>,
   key: string,
 ) {
+  const aliases = new Map(
+    learners.map((learner) => [learner.studentId, opaqueKey('alias', key, learner)] as const),
+  );
+  return new Map(
+    learners.map((learner) => {
+      if (actor.role === 'admin') return [learner.studentId, learner.actualName] as const;
+      if (actor.studentId === learner.studentId) return [learner.studentId, 'You'] as const;
+      if (consents.get(learner.studentId)?.choice === 'granted' && learner.displayName !== null) {
+        return [learner.studentId, learner.displayName] as const;
+      }
+      const hash = aliases.get(learner.studentId)!;
+      let length = 8;
+      while (
+        length < hash.length &&
+        [...aliases.entries()].some(
+          ([studentId, other]) =>
+            studentId !== learner.studentId && other.slice(0, length) === hash.slice(0, length),
+        )
+      ) {
+        length += 1;
+      }
+      const exactCollisions = [...aliases.entries()]
+        .filter(([, other]) => other === hash)
+        .map(([studentId]) => studentId)
+        .sort();
+      const collisionIndex = exactCollisions.indexOf(learner.studentId);
+      const disambiguator = exactCollisions.length > 1 ? `-${String(collisionIndex + 1)}` : '';
+      return [
+        learner.studentId,
+        `Anonymous Student - ${hash.slice(0, length).toUpperCase()}${disambiguator}`,
+      ] as const;
+    }),
+  );
+  /*
   if (actor.role === 'admin') return learner.actualName;
   if (actor.studentId === learner.studentId) return 'You';
   if (consent?.choice === 'granted' && learner.displayName !== null) return learner.displayName;
   return `Anonymous Student • ${opaqueKey('alias', key, learner).slice(0, 8).toUpperCase()}`;
+  */
 }
 
 function opaqueKey(domain: 'alias' | 'entry', key: string, learner: CanonicalLearnerIdentity) {

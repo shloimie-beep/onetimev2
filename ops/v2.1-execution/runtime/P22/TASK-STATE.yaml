@@ -54,7 +54,7 @@ writer_slot_leases:
     state_based_on_control_head_sha: 2d82c15a7af7284cacb7688b8a719da8f4f530a8
     phase_scope: P22_learning_engagement_authority_successor_renewal_atomic_claim_only
 lease_expires_at: '2026-07-31T08:20:00Z'
-last_heartbeat_at: '2026-07-31T07:11:00Z'
+last_heartbeat_at: '2026-07-31T07:36:00Z'
 controller_authorization_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
 resume_containing_control_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
 reconciled_control_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
@@ -64,12 +64,15 @@ state_based_on_head_sha: 9723a32f028db1791048549d9661d64bf36bc644
 last_implementation_commit_sha: 459e9187500477312a69542fc2b1e7d2fc552dd3
 implementation_artifact_digest: 2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967
 completed_steps:
+  - Added deterministic transition, recognition, and review event identities; fixed ledger SQL arity and identity mapping; and retained append-only atomic ordering.
+  - Added the seventh persisted badge projection with per-family evidence digests/audit references, immutable rule version, unawarded initial state, durable ordinary awards, and audited Admin-only revoke/restore fields.
+  - Bound canonical review proof to the exactly-one approved review_material artifact on the occurrence-keyed publication, governed occurrence, class series, and content aggregate; documented the fail-closed upstream content-state writer dependency.
   - C00 reconciled renewed atomic claim 9723a32f028db1791048549d9661d64bf36bc644 at control 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49 and directly continued the exact 16-path substantive ceiling.
   - Replaced two-dimensional learning scope with account, product, runtime tier, and verification environment across contracts, projections, ledgers, read ports, repository queries, domain behavior, service calls, and tests.
   - Removed P22 attendance and consent writers/storage, added identity-bound SELECT-only P18 attendance, privacy member_recognition consent, and P12 identity ports, and retained only the read-only attendance compatibility projection.
   - Replaced mutable transition JSON and recognition fields with an optimistic projection and append-only transition/recognition mutation plan executed atomically with scoped replay/hash-conflict semantics.
   - Added safe P12 actual/display-name handling, opaque leaderboard entry keys, full-scope length-prefixed HMAC aliases, latest-consent ordering, label-only withdrawal, and fail-closed audience/scope rules.
-  - Added focused repository transaction and SQL-boundary proof; all three focused suites pass, 20 tests total.
+  - Added focused repository transaction and SQL-boundary proof; all three focused suites pass, 26 tests total.
   - Hardened canonical schedule/attendance enrollment-time binding, immutable recognition append order, concurrent idempotency locking, current-owner consent, class-bound direct announcements, and Student-authenticated review completion with append-only reasoned Admin revoke/restore evidence.
   - Added the canonical published-review and completed-occurrence read seams; focused domain, service, and repository suites now cover 25 assertions.
   - Fetched renewal control 1fe3b53d26e9ae4dcc349f22318195dabdd804a8 and recomputed exact READY digest fb370deb9cc3e49470b3259003817644828fa1adf8ce4e52ce254411925b69be.

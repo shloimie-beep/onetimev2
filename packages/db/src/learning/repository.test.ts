@@ -27,10 +27,16 @@ const mutation: QuestionMutation = {
   },
   transition: {
     ...scope,
+    eventId: 'answer-1:transition',
     questionId: 'question-1',
+    studentId: 'student-1',
+    householdId: 'household-1',
+    classId: 'class-a',
     idempotencyKey: 'answer-1',
     requestHash: 'hash-answer-1',
     actorId: 'admin-1',
+    source: 'admin_transition',
+    auditRef: 'audit-answer-1',
     from: 'submitted',
     to: 'answered_private',
     reason: null,
@@ -38,11 +44,17 @@ const mutation: QuestionMutation = {
   },
   recognition: {
     ...scope,
+    eventId: 'answer-1:recognition',
     questionId: 'question-1',
+    studentId: 'student-1',
+    householdId: 'household-1',
+    classId: 'class-a',
     sequence: 1,
     idempotencyKey: 'answer-1',
     requestHash: 'hash-answer-1',
     actorId: 'admin-1',
+    source: 'admin_transition',
+    auditRef: 'audit-answer-1',
     action: 'qualified',
     eligible: true,
     reason: null,
@@ -97,6 +109,20 @@ describe('P22 PostgreSQL repository', () => {
     expect(source).toContain('student.actual_name, student.display_name');
     expect(source).toContain('listScheduledOccurrenceCoverage');
     expect(source).toContain('occurrence.starts_at >= enrollment.effective_at');
+  });
+
+  it('proves review publication from the canonical occurrence and approved review artifact', () => {
+    expect(source).toContain('state.aggregate_key = publication.content_id');
+    expect(source).toContain('governed.occurrence_id = publication.content_id');
+    expect(source).toContain("governed.governance_state = 'governed'");
+    expect(source).toContain('governed.active = TRUE');
+    expect(source).toContain('occurrence.occurrence_key = publication.content_id');
+    expect(source).toContain('occurrence.class_series_key = governed.canonical_series_id');
+    expect(source).toContain(
+      "jsonb_array_elements(publication.approval_projection_json->'artifacts')",
+    );
+    expect(source).toContain("artifact.value->>'kind' = 'review_material'");
+    expect(source).toContain("artifact.value->>'artifactId' = $5");
   });
 
   it('reserves the scoped idempotency key before mutation and appends one atomic plan', async () => {

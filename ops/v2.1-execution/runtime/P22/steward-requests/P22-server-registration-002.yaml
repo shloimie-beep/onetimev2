@@ -36,7 +36,10 @@ desired_semantic_change: >-
   authenticated server session. Inject the SELECT-only P18 attendance adapter,
   P12 identity adapter, and canonical privacy member_recognition consent
   adapter, plus LearningReviewItemReadPort for class-bound canonical
-  Admin-published review proof, and the server-side alias HMAC key. Expose no
+  Admin-published review proof from the exactly-one approved review_material
+  artifact on the occurrence-keyed content publication, and the server-side
+  alias HMAC key. Bind P18 reasoned Admin attendance-correction events to an
+  explicit audited badge-projection recalculation invocation. Expose no
   attendance record or correction route and no recognition-consent mutation route.
 proposed_symbols_routes_keys_or_dependencies:
   - createLearningEngagementService
@@ -44,16 +47,24 @@ proposed_symbols_routes_keys_or_dependencies:
   - LearningIdentityReadPort
   - LearningRecognitionConsentReadPort
   - LearningReviewItemReadPort
+  - canonical_aggregate_states content writer keyed by content_publications.content_id
+  - P18 attendance Admin-correction event to P22 badge recalculation callback
   - authenticated /api/app/learning feature registration
 compatibility_assumptions:
   - Request bodies cannot select or override any LearningScope dimension.
   - The P18 adapter reads classroom_attendance_projection_v21 and proves canonical enrollment binding.
   - Consent and identity adapters are read-only and identity-bound.
+  - >-
+    Registration remains fail-closed until I36 provides the upstream
+    canonical_aggregate_states content transition writer/populator keyed by
+    publication.content_id; no runnable non-test population path is currently present.
 verification_performed:
   - Verified service exposes attendance reads but no recordAttendance or correctAttendance method.
   - Verified service exposes no P22 consent mutation.
   - Verified cross-class question denial occurs before the atomic repository port.
 conflicts_or_risks:
   - Fail closed if any canonical read adapter or identity binding is unavailable.
+  - Do not claim the review proof seam is runnable until the canonical content-state
+    population dependency is registered.
   - Do not register legacy predecessor attendance correction or consent mutation routes.
 contains_secret_or_private_data: false

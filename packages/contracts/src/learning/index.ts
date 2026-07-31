@@ -39,10 +39,16 @@ export type LearningQuestion = LearningScope & {
 };
 
 export type QuestionTransitionLedgerEntry = LearningScope & {
+  eventId: string;
   questionId: string;
+  studentId: string;
+  householdId: string;
+  classId: string;
   idempotencyKey: string;
   requestHash: string;
   actorId: string;
+  source: 'authenticated_student_submit' | 'admin_transition' | 'admin_correction';
+  auditRef: string;
   from: QuestionState | null;
   to: QuestionState;
   reason: string | null;
@@ -50,11 +56,17 @@ export type QuestionTransitionLedgerEntry = LearningScope & {
 };
 
 export type QuestionRecognitionLedgerEntry = LearningScope & {
+  eventId: string;
   questionId: string;
+  studentId: string;
+  householdId: string;
+  classId: string;
   sequence: number;
   idempotencyKey: string;
   requestHash: string;
   actorId: string;
+  source: 'admin_transition' | 'admin_correction';
+  auditRef: string;
   action: 'qualified' | 'correction_enabled' | 'correction_disabled';
   eligible: boolean;
   reason: string | null;
@@ -83,7 +95,33 @@ export type PublishedClassQuestion = {
   classId: string;
   question: string;
   answer: string | null;
+  authorDisplayName: string;
+  authorEntryKey: string;
   publishedAt: string;
+};
+
+export type PublishedQuestionRecord = LearningScope & {
+  questionId: string;
+  studentId: string;
+  classId: string;
+  question: string;
+  answer: string | null;
+  publishedAt: string;
+};
+
+export type QuestionRecognitionFact = LearningScope & {
+  questionId: string;
+  studentId: string;
+  householdId: string;
+  classId: string;
+  state: QuestionState;
+  eligible: boolean;
+  qualifiedAt: string | null;
+  latestSequence: number | null;
+  latestSource: QuestionRecognitionLedgerEntry['source'] | null;
+  latestAuditRef: string | null;
+  latestReason: string | null;
+  latestActorId: string | null;
 };
 
 export type SubmitQuestionCommand = {
@@ -93,6 +131,7 @@ export type SubmitQuestionCommand = {
   body: string;
   idempotencyKey: string;
   requestHash: string;
+  auditRef: string;
   occurredAt: string;
 };
 
@@ -105,6 +144,7 @@ export type TransitionQuestionCommand = {
   expectedVersion: number;
   idempotencyKey: string;
   requestHash: string;
+  auditRef: string;
   occurredAt: string;
 };
 
@@ -116,6 +156,7 @@ export type CorrectQuestionRecognitionCommand = {
   expectedVersion: number;
   idempotencyKey: string;
   requestHash: string;
+  auditRef: string;
   occurredAt: string;
 };
 
@@ -159,6 +200,8 @@ export type AttendanceRecord = LearningScope & {
   correctedAt: string | null;
   correctionReason: string | null;
   correctedBy: string | null;
+  correctionAuditRef: string | null;
+  correctionSourceDigest: string | null;
 };
 
 export type ScheduledOccurrenceCoverage = LearningScope & {
@@ -171,6 +214,7 @@ export type ScheduledOccurrenceCoverage = LearningScope & {
 };
 
 export type ReviewCompletion = LearningScope & {
+  eventId: string;
   reviewItemId: string;
   classId: string;
   studentId: string;
@@ -230,6 +274,44 @@ export type LearningBadgeAward = {
   sourceKeys: readonly string[];
 };
 
+export type LearningBadgeAwardProjection = LearningScope &
+  LearningBadgeAward & {
+    studentId: string;
+    classId: string;
+    sourceDigest: string;
+    version: number;
+    state: 'unawarded' | 'awarded' | 'revoked';
+    ruleVersion: string;
+    sourceAuditRefs: readonly string[];
+    awardedAt: string | null;
+    revokedAt: string | null;
+    recalculatedAt: string;
+    correctionAuditRef: string | null;
+    correctionReason: string | null;
+    correctedByAdminId: string | null;
+  };
+
+export type BadgeProjectionRecalculation = {
+  scope: LearningScope;
+  studentId: string;
+  classId: string;
+  sourceDigest: string;
+  familySourceDigests: Readonly<Record<BadgeFamily, string>>;
+  ruleVersion: string;
+  sourceAuditRefs: readonly string[];
+  familySourceAuditRefs: Readonly<Record<BadgeFamily, readonly string[]>>;
+  progress: Readonly<
+    Record<BadgeFamily, { qualifyingCount: number; sourceKeys: readonly string[] }>
+  >;
+  awards: readonly LearningBadgeAward[];
+  recalculatedAt: string;
+  correctionAuditRef: string | null;
+  correctionReason: string | null;
+  correctedByAdminId: string | null;
+  correctionFamily: BadgeFamily | null;
+  allowRevocation: boolean;
+};
+
 export type CanonicalRecognitionConsent = LearningScope & {
   consentEventId: string;
   studentId: string;
@@ -287,16 +369,36 @@ export const LEARNING_ERROR_CODES = {
 } as const;
 
 export interface LearningEngagementRepository {
-  getQuestion(scope: LearningScope, questionId: string): Promise<LearningQuestion | null>;
+  getQuestion(
+    scope: LearningScope,
+    questionId: string,
+    authorizedClassIds: readonly string[],
+  ): Promise<LearningQuestion | null>;
   getQuestionHistory(scope: LearningScope, questionId: string): Promise<QuestionHistory>;
   applyQuestionMutation(mutation: QuestionMutation): Promise<QuestionMutationResult>;
   applyReviewCompletion(completion: ReviewCompletion): Promise<ReviewCompletionMutationResult>;
+  applyBadgeRecalculation(
+    recalculation: BadgeProjectionRecalculation,
+  ): Promise<{ awards: readonly LearningBadgeAwardProjection[]; replay: boolean }>;
   listReviewCompletionEvents(
     scope: LearningScope,
     reviewItemId: string,
     studentId: string,
   ): Promise<readonly ReviewCompletion[]>;
-  listQuestions(scope: LearningScope): Promise<readonly LearningQuestion[]>;
+  listQuestions(
+    scope: LearningScope,
+    authorizedClassIds: readonly string[],
+    studentId?: string,
+  ): Promise<readonly LearningQuestion[]>;
+  listPublishedQuestionRecords(
+    scope: LearningScope,
+    classId: string,
+  ): Promise<readonly PublishedQuestionRecord[]>;
+  listQuestionRecognitionFacts(
+    scope: LearningScope,
+    classId: string,
+    studentId?: string,
+  ): Promise<readonly QuestionRecognitionFact[]>;
   listQuestionTransitions(scope: LearningScope): Promise<readonly QuestionTransitionLedgerEntry[]>;
   listQuestionRecognitions(
     scope: LearningScope,

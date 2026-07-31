@@ -35,9 +35,16 @@ current-owner/supersession-bound consent, class-bound direct announcements,
 and Student-authenticated review completion plus append-only reasoned Admin
 revoke/restore evidence.
 
+This heartbeat also fixes explicit deterministic ledger event identities and
+SQL arity, adds the seventh stored badge projection with per-family evidence
+and audited Admin-only revocation metadata, and binds review proof to the
+validated `review_material` artifact on the occurrence-keyed canonical
+publication. Registration remains fail closed until I36 supplies the missing
+canonical content-state writer/populator.
+
 ## Verification
 
-Focused domain, service, and repository suites pass: 3 files, 25 tests.
+Focused domain, service, and repository suites pass: 3 files, 26 tests.
 Workspace typecheck reports only pre-existing Stripe Status widening and
 missing Playwright dependency diagnostics; no P22 diagnostic is present.
 

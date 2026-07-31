@@ -51,6 +51,16 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
       'authenticated Student ingestion is idempotent by scoped key and canonical request hash',
     ],
   },
+  badgeAwardProjection: {
+    table: 'onetime.learning_badge_award_projection',
+    invariants: [
+      FOUR_DIMENSION_FENCE,
+      'unique scoped Student, class, badge family, and badge level projection',
+      'deterministic source digest makes exact recalculation replay a no-write result',
+      'changed canonical attendance, question, or review evidence atomically recalculates award/revoked state and increments version',
+      'qualifying count, source keys, recalculated_at, and correction audit reference remain auditable',
+    ],
+  },
   canonicalReadSeams: {
     attendance: 'SELECT-only on onetime.classroom_attendance_projection_v21 from migration 2251',
     consent: 'SELECT-only identity-bound member_recognition events from privacy_consent_event',

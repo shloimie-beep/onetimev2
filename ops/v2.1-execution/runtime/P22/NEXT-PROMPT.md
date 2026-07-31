@@ -12,8 +12,11 @@ Fetch control and the canonical P22 branch, require clean local/tracking/live
 equality, and derive the heartbeat head from the remote. Preserve the exact
 16-path ceiling and immutable P22-migration-001/P22-registration-001 bytes.
 
-The product/test corrections, canonical read seams, successor requests, and
-three focused suites are in active post-heartbeat review. Finish the remaining
+The product/test corrections, canonical read seams, successor requests,
+deterministic ledger event identities, seven-table badge projection, and
+canonical review-material proof are in active post-heartbeat review. Treat
+the absent canonical content-state writer/populator as a fail-closed upstream
+I36 integration dependency. Finish the remaining
 authority checks, validate exactly the five authorized -002 steward requests
 with all 11 requirements and only the ten canonical AC01 cases, then run
 request-schema, focused type/lint/format, immutable predecessor, exact-scope,

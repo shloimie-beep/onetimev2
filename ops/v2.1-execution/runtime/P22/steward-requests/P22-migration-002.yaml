@@ -45,7 +45,18 @@ desired_semantic_change: >-
   publication proof, monotonic append sequence, authenticated-Student completion,
   and reasoned assigned-Admin revoke/restore evidence. Reject UPDATE/DELETE and
   derive effective completion from the latest append sequence. Use
-  transaction-compatible keys. Explicitly create no
+  transaction-compatible keys. Add the exact-scope
+  onetime.learning_badge_award_projection as the seventh P22 table, unique by
+  scoped Student, class, family, and level, with deterministic source digest,
+  version, award/revoked state, qualifying count/source keys, recalculated_at,
+  immutable rule version, per-family source digest/audit references, awarded_at,
+  revoked_at, and nullable correction audit reference. Initial under-threshold
+  rows are unawarded. Ordinary recalculation cannot revoke an award. Only an
+  explicit reasoned Admin correction with correction_audit_ref,
+  correction_reason, and corrected_by_admin_id may revoke or restore it.
+  Exact recalculation replay writes nothing;
+  changed canonical evidence atomically updates the projection without
+  deleting source events. Explicitly create no
   attendance event, attendance projection, attendance segment, consent,
   identity, actual-name, display-name, or leaderboard-learner table. Preserve
   migration 2251 as the sole attendance write authority.
@@ -56,8 +67,11 @@ proposed_symbols_routes_keys_or_dependencies:
   - onetime.learning_announcements
   - onetime.learning_announcement_reads
   - onetime.learning_review_completions
+  - onetime.learning_badge_award_projection
   - account_key + product_key + runtime_tier + verification_environment_id fences
   - append-only transition, recognition, and review-completion ledger triggers
+  - deterministic transition_event_id, recognition_event_id, and review_event_id
+  - badge correction_audit_ref + correction_reason + corrected_by_admin_id state guards
   - P22-LEARNING-ENGAGEMENT-SCHEMA-002
 compatibility_assumptions:
   - P18 migration 2251 remains the only attendance event/projection writer.
@@ -69,7 +83,7 @@ compatibility_assumptions:
   - F02 chooses the ordinal and authors SQL; P22 allocates no ordinal.
 verification_performed:
   - Verified P22-LEARNING-ENGAGEMENT-SCHEMA-002 excludes P22 attendance, consent, and name tables.
-  - Verified repository DML targets only the six requested P22-owned structures.
+  - Verified repository DML targets only the seven requested P22-owned structures.
   - Verified focused transaction tests cover replay, conflict, stale rollback, and ledger append order.
 conflicts_or_risks:
   - Withhold the immutable predecessor request; it is evidence only and must remain byte-identical.
