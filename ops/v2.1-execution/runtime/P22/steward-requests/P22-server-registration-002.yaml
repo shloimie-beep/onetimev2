@@ -1,0 +1,84 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-server-registration-002
+task_id: P22
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+rationale: >-
+  The corrected service requires server-derived four-dimensional scope and
+  four canonical read seams that cannot be wired in P22-owned files.
+desired_semantic_change: >-
+  Register the P22 learning service behind authenticated Admin, Parent, and
+  Student routes. Derive account, product, runtime tier, verification
+  environment, principal, household, Student, and class assignments from the
+  authenticated server session. Inject the SELECT-only P18 attendance adapter,
+  P12 identity adapter, and canonical privacy member_recognition consent
+  adapter, plus LearningReviewItemReadPort for class-bound canonical
+  Admin-published review proof from the exactly-one approved review_material
+  artifact on the occurrence-keyed content publication, and the server-side
+  alias HMAC key. Bind every committed canonical P18 attendance-projection
+  change to recalculateBadgesAfterAttendanceProjectionChange: ordinary changes
+  use the internal canonical_attendance_projection_change context and invoke
+  non-revoking recalculation so Consistency can be earned; they must not
+  fabricate an Admin actor. Reasoned Admin corrections use audited correction
+  mode, and their audit reference, reason, and Admin actor must exactly match
+  the matching latest canonical attendance source event.
+  Source-event exact replay must re-invoke the digest-idempotent badge
+  recalculation: an already-complete projection writes nothing, while a prior
+  post-commit projection failure is repaired. Replaying an older exact
+  correction after a successor is idempotent and must not overwrite the newer
+  projection or fail. Authorize roster membership before reading a review
+  artifact, and pass the exact class to LearningReviewItemReadPort so a
+  cross-class caller receives no record/correction oracle.
+  Expose no
+  attendance record or correction route and no recognition-consent mutation route.
+proposed_symbols_routes_keys_or_dependencies:
+  - createLearningEngagementService
+  - LearningAttendanceReadPort
+  - LearningIdentityReadPort
+  - LearningRecognitionConsentReadPort
+  - LearningReviewItemReadPort
+  - canonical_aggregate_states content writer keyed by content_publications.content_id
+  - P18 attendance projection change to P22 badge recalculation callback
+  - authenticated /api/app/learning feature registration
+compatibility_assumptions:
+  - Request bodies cannot select or override any LearningScope dimension.
+  - The P18 adapter reads classroom_attendance_projection_v21 and proves canonical enrollment binding.
+  - Ordinary P18 projection changes may award but never revoke; audited Admin corrections may revoke or restore.
+  - Consent and identity adapters are read-only and identity-bound.
+  - >-
+    Registration remains fail-closed until I36 provides the upstream
+    canonical_aggregate_states content transition writer/populator keyed by
+    publication.content_id; no runnable non-test population path is currently present.
+verification_performed:
+  - Verified service exposes attendance reads but no recordAttendance or correctAttendance method.
+  - Verified service exposes no P22 consent mutation.
+  - Verified cross-class question denial occurs before the atomic repository port.
+conflicts_or_risks:
+  - Fail closed if any canonical read adapter or identity binding is unavailable.
+  - Do not claim the review proof seam is runnable until the canonical content-state
+    population dependency is registered.
+  - Do not register legacy predecessor attendance correction or consent mutation routes.
+contains_secret_or_private_data: false

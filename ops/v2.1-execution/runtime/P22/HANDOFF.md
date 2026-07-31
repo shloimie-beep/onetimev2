@@ -1,66 +1,104 @@
-# P22 Corrected Ready-for-Review Handoff
+# P22 Canonical Correction-Identity Terminal Handoff
 
-## Identity
+## Authority
 
-- Branch: `codex/v21-p22-learning-engagement`
-- Correction claim checkpoint:
-  `0430569088aeb4f244e5540dddf778b72525bc64`
-- Corrected implementation SHA before this metadata commit:
-  `459e9187500477312a69542fc2b1e7d2fc552dd3`
-- Corrected implementation artifact digest:
-  `2552e3b9211f596e3739945fb9f4766527706eddf5fcb755338426ff572af967`
-- Reconciled containing control:
-  `ddef233830979fd2a0e2d3a146bdd389b23a9c84`
-- Claim: `e2ac53ae-128f-4d0c-b9a2-e74d05858f29`
+- Branch basis: `7730bcc2977d4e1317e7af0757be95afc0e9f47e`
+- Reconciled control: `45a6f2f589fc2fffe7c5dbd16c137282c4918185`
+- Claim: `61df7589-d694-4647-842c-ba2b02ec1911`
+- Writer: `codex-p22-attendance-replay-61df7589`
 - LEARNING_ENGAGEMENT lease:
-  `9fd6a3b7-decc-454a-9a2e-953aaaebfe63`, released at
-  `2026-07-29T04:18:18Z` for terminal `ready_for_review`.
+  `0ae4f2d7-c79c-4933-9d5e-c6d7c799a246`, released task-locally at
+  `2026-07-31T09:20:00Z`
+- Implementation head: `e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6`
+- Effects: `0/0/0`
 
-## Correction completed
+## Canonical correction identity
 
-Admin question transitions, recognition corrections, attendance recording, and
-attendance corrections now require assignment to the record's exact class in
-addition to account/product scope. Direct cross-class mutation tests fail
-closed.
+Every audited correction callback now carries an immutable server-derived
+source identity: the exact P18 attendance correction event, recognition event,
+or review event plus full-scope aggregate digest. Canonical read seams bind
+that identity to exact scope, Student, class, household, family, audit
+reference, reason, Admin, and source aggregate before any badge write.
 
-Class members receive a sanitized published-question projection containing
-only `questionId`, `classId`, approved question text, answer, and
-`publishedAt`. It exposes no Student, household, recognition, transition, or
-private moderation metadata and denies cross-class reads.
+The P18 seam derives latest status from later Admin manual-correction events
+only, with the canonical observed-time/event-ID tie break. A verified latest
+event can repair a failed post-commit projection; a verified older correction
+after a successor returns current awards without a write. Unknown identities,
+current-projection digest mismatch, reused metadata, and cross-aggregate
+identity combinations fail closed. Source event identities are also included
+in family digest preimages.
 
-`approvedQuestionCount` now counts only `approved_for_class` and `published`
-questions. First `answered_private` or approval still produces exactly one
-Curious Learner recognition event, and later approval/publication remains
-deduplicated. The rolling-window timestamp is the first transition to
-`approved_for_class` or `published`: an earlier private answer does not
-backdate leaderboard eligibility, and later publication does not refresh an
-old approval into the window.
+## Prior terminal correction
+
+The fresh terminal correction makes
+latest revoked review events canonical for badge recalculation, separates
+ordinary internal attendance projection context from audited Admin
+corrections, binds correction actor/reason/audit metadata to the latest source
+event, class-binds review-material reads after roster authorization, returns
+an explicit privacy-safe badge DTO, and rejects padded idempotency keys before
+server hashing. Older exact correction replay after a successor is a no-write
+success, and the badge repository now proves nine-row initialization,
+ordinary award preservation, audited revoke/restore, stable timestamps,
+immutable rule version, exact replay, and per-family version isolation.
+
+## Completed correction
+
+The eight authorized product/test paths now carry all four scope dimensions.
+P22 attendance, consent, and name writes are removed. Canonical P18
+attendance, privacy `member_recognition` consent, and P12 identity are
+SELECT-only identity-bound ports. Questions use a fenced projection plus
+distinct append-only transition and recognition ledgers in one transaction,
+with exact replay, changed-hash conflict, stale rollback, and first-only
+qualification recognition.
+
+Leaderboard output suppresses canonical peer Student IDs, keeps a compatibility
+opaque `studentId`, exposes `entryKey`, separates actual and display names,
+uses latest canonical consent regardless of input order, makes withdrawal
+label-only, and derives aliases from an unambiguous full-scope encoding.
+Unknown audiences and states fail closed; Admin class visibility is no longer
+unconditional.
+
+Post-checkpoint hardening adds canonical completed-occurrence schedule
+coverage with enrollment-time fences, privacy-safe peer aggregates, immutable
+recognition append sequence, scoped advisory idempotency serialization,
+current-owner/supersession-bound consent, class-bound direct announcements,
+and Student-authenticated review completion plus append-only reasoned Admin
+revoke/restore evidence.
+
+This heartbeat also fixes explicit deterministic ledger event identities and
+SQL arity, adds the seventh stored badge projection with per-family evidence
+and audited Admin-only revocation metadata, and binds review proof to the
+validated `review_material` artifact on the occurrence-keyed canonical
+publication. Registration remains fail closed until I36 supplies the missing
+canonical content-state writer/populator.
+
+Badge GET is read-only over persisted active awards. Ordinary canonical P18
+attendance changes, question qualification/correction, and review
+completion/correction drive projection recalculation. Ordinary recalculation
+can award but not revoke; only a reasoned, source-audit-bound assigned-Admin
+correction can revoke or restore. Source-event replay retriggers the
+digest-idempotent projection callback so a prior post-commit projection
+failure is repairable without rewriting an already-current projection.
+
+Approved-question leaderboard timing now uses the first immutable
+approved/published transition, distinct from answered-or-approved Curious
+qualification. Recognition facts carry the exact household binding, and
+review history is exact class, Student, and household fenced after roster
+authorization. Moderated published-question composition remains a sanitized
+server projection routed only through the client-route successor request.
 
 ## Verification
 
-- Focused Vitest: 11/11 passed across domain and service, including direct
-  cross-class question mutation, attendance correction, no-repository-save,
-  publication projection, and leaderboard state/time-basis tests.
-- Full workspace typecheck passed.
-- Focused ESLint and Prettier passed.
-- `git diff --check` passed.
-- Repository secret scan passed across 2,748 text files.
-
-## Scope and steward work
-
-The correction changes only the learning contract, domain/test, server service,
-`P22-registration-001`, and the three P22 runtime files.
-`P22-registration-001` now explicitly requests class-assigned registration of
-the sanitized projection. No migration, central composer, root barrel,
-manifest, lockfile, provider registry, or foreign runtime path changed.
-
-## Effects
-
-External authority is none; attempted/succeeded/reconciled `0/0/0`. No live or
-provider effect occurred.
+Focused domain, service, and repository suites pass: 3 files, 44 tests.
+Workspace typecheck reports only pre-existing Stripe Status widening and
+missing Playwright dependency diagnostics; no P22 diagnostic is present.
+Focused ESLint, Prettier, diff hygiene, exact eight-path correction scope,
+secret scan, and steward-request byte-preservation checks pass.
 
 ## Next action
 
-Review corrected implementation `459e9187`, then fulfill
-`P22-migration-001` and `P22-registration-001` without weakening the corrected
-class or publication boundaries.
+C00 should review the terminal branch. I36 should disposition the five exact
+`-002` successor requests and provide the canonical content-state
+writer/populator before registering the fail-closed review-material seam. The
+immutable `P22-migration-001` and `P22-registration-001` requests are evidence
+only and must not be applied.

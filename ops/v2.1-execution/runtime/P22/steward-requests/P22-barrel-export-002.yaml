@@ -1,0 +1,51 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-barrel-export-002
+task_id: P22
+kind: barrel_export
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+rationale: >-
+  Central barrels are steward-owned and must expose only the corrected
+  registration-neutral P22 contract and adapters.
+desired_semantic_change: >-
+  Export the corrected learning contract, domain functions, P22 repository,
+  schema contract, and canonical read-port factory from the appropriate
+  package barrels. Do not export an attendance writer, attendance correction,
+  consent mutation, mutable-transition saver, or secret value.
+proposed_symbols_routes_keys_or_dependencies:
+  - LEARNING_ENGAGEMENT_CONTRACT_VERSION
+  - createLearningEngagementRepository
+  - createLearningCanonicalReadPorts
+  - LEARNING_ENGAGEMENT_SCHEMA_CONTRACT_VERSION
+  - createLearningEngagementService
+compatibility_assumptions:
+  - Existing client compatibility uses opaque LeaderboardEntry.studentId and safe displayName.
+  - Concrete central composition remains the separate server/client registration requests.
+verification_performed:
+  - Verified corrected modules contain no P22 attendance or consent writer API.
+  - Verified all public scope-bearing types contain four dimensions.
+conflicts_or_risks:
+  - Do not re-export deprecated predecessor writer or mutable-history symbols.
+contains_secret_or_private_data: false
