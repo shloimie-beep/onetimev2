@@ -1,20 +1,24 @@
 import { execFileSync } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const disclosure = 'By reserving, you’ll receive emails about this event.';
+const root = process.cwd();
+const outputDir = path.resolve(root, 'dist/apps/web/public');
+const retiredOutputs = [
+  path.join(outputDir, 'tisha-bav.html'),
+  path.join(outputDir, 'tisha-bav-live.html'),
+] as const;
 
-function htmlAttribute(source: string, pattern: RegExp) {
-  const match = pattern.exec(source);
-  expect(match, `missing ${String(pattern)}`).not.toBeNull();
-  return (match?.[1] ?? '').replaceAll('&amp;', '&');
-}
+describe('Tisha BAv public-surface retirement', () => {
+  it('removes stale generated pages and leaves no active client or build hooks', async () => {
+    await mkdir(outputDir, { recursive: true });
+    await Promise.all(
+      retiredOutputs.map((output) => writeFile(output, '<h1>STALE ACTIVE EVENT PAGE</h1>')),
+    );
 
-describe('Tisha BAv public generated copy', () => {
-  it('keeps event-only disclosure and accepted rabbi spelling in generated HTML and public source', async () => {
     execFileSync(process.execPath, ['--import', 'tsx', 'scripts/build-public-pages.ts'], {
-      cwd: process.cwd(),
+      cwd: root,
       env: {
         ...process.env,
         PUBLIC_SITE_ORIGIN: 'https://join.onetimeonetime.com',
@@ -22,41 +26,46 @@ describe('Tisha BAv public generated copy', () => {
       stdio: 'pipe',
     });
 
-    const generatedHtml = await readFile(
-      path.resolve(process.cwd(), 'dist/apps/web/public/tisha-bav.html'),
-      'utf8',
+    for (const output of retiredOutputs) {
+      await expect(access(output), output).rejects.toMatchObject({ code: 'ENOENT' });
+    }
+    expect(await readFile(path.join(outputDir, 'index.html'), 'utf8')).toContain('<!doctype html>');
+
+    const [buildSource, publicEntrySource] = await Promise.all([
+      readFile(path.resolve(root, 'scripts/build-public-pages.ts'), 'utf8'),
+      readFile(path.resolve(root, 'apps/web/src/client/public/public-entry.ts'), 'utf8'),
+    ]);
+
+    expect(buildSource).not.toContain('function tishaBavLandingPage');
+    expect(buildSource).not.toContain('function tishaBavLivePage');
+    expect(buildSource).not.toMatch(
+      /writeFile\(\s*path\.join\(outDir, 'tisha-bav(?:-live)?\.html'/u,
     );
-    const publicEntrySource = await readFile(
-      path.resolve(process.cwd(), 'apps/web/src/client/public/public-entry.ts'),
-      'utf8',
-    );
+    expect(buildSource).toContain("rm(path.join(outDir, 'tisha-bav.html'), { force: true })");
+    expect(buildSource).toContain("rm(path.join(outDir, 'tisha-bav-live.html'), { force: true })");
 
-    expect(generatedHtml).toContain(disclosure);
-    expect(generatedHtml).toContain('Live class with Rabbi Eli Scheller');
-    expect(generatedHtml).toContain('Rabbi Eli Scheller');
-    expect(generatedHtml).not.toContain('Rabbi Elly');
-    expect(generatedHtml).not.toContain('newsletter');
-    expect(generatedHtml).not.toContain('marketing');
+    for (const activeHook of [
+      '[data-event-registration-form]',
+      '[data-event-join-form]',
+      '[data-event-open-modal]',
+      '/api/v1/events/tisha-bav-2026/register',
+      '/api/v1/events/tisha-bav-2026/join',
+      '/api/v1/events/tisha-bav-2026/redirect',
+      'tisha-bav-join-',
+    ]) {
+      expect(publicEntrySource, activeHook).not.toContain(activeHook);
+    }
 
-    const description = htmlAttribute(generatedHtml, /<meta name="description" content="([^"]+)">/);
-    expect(description).toContain('Rabbi Eli Scheller');
-    expect(description).not.toContain('Rabbi Elly');
-
-    const whatsAppHref = htmlAttribute(
-      generatedHtml,
-      /<a class="button button-primary event-share-button" href="([^"]+)"[^>]*>WhatsApp share<\/a>/,
-    );
-    expect(decodeURIComponent(whatsAppHref)).toContain('Rabbi Eli Scheller');
-    expect(decodeURIComponent(whatsAppHref)).not.toContain('Rabbi Elly');
-
-    const emailHref = htmlAttribute(
-      generatedHtml,
-      /<a class="button event-share-button" href="([^"]+)"[^>]*>Email a Friend<\/a>/,
-    );
-    expect(decodeURIComponent(emailHref)).toContain('Rabbi Eli Scheller');
-    expect(decodeURIComponent(emailHref)).not.toContain('Rabbi Elly');
-
-    expect(publicEntrySource).toContain('Rabbi Eli Scheller');
-    expect(publicEntrySource).not.toContain('Rabbi Elly');
+    await expect(
+      access(
+        path.resolve(
+          root,
+          'apps/web/public/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png',
+        ),
+      ),
+    ).resolves.toBeUndefined();
+    await expect(
+      access(path.resolve(root, 'ops/archive/tisha-bav-template/manifest.yaml')),
+    ).resolves.toBeUndefined();
   });
 });

@@ -40,24 +40,24 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: batch_A_terminal_evidence_manifest_correction_complete
-claimed_by: codex-i36-batch-a-evidence-be576814
-claim_time: '2026-07-31T20:30:37Z'
-claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
-lease_id: ac7fa58f-ef5f-4d02-be59-676259f10a35
-lease_issued_at: '2026-07-31T20:30:37Z'
-lease_expires_at: '2026-07-31T22:30:37Z'
-lease_released_at: '2026-07-31T20:45:09Z'
-last_heartbeat_at: '2026-07-31T20:45:09Z'
-controller_authorization_sha: f66edb4d0728b90374e56da13dbd9853657d349c
-latest_valid_observed_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
-reconciled_state_based_on_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-ready_authorization_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
-ready_entry_state_based_on_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
+phase: batch_D_P35_domain_transition_retirement_complete
+claimed_by: codex-i36-batch-d-p35-eb0bd2af
+claim_time: '2026-07-31T20:53:07Z'
+claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
+lease_id: 595bc994-56d3-4805-9e86-cf7bccc805ca
+lease_issued_at: '2026-07-31T20:53:07Z'
+lease_expires_at: '2026-08-01T00:53:07Z'
+lease_released_at: '2026-07-31T21:23:02Z'
+last_heartbeat_at: '2026-07-31T21:23:02Z'
+controller_authorization_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
+latest_valid_observed_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
+reconciled_state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+ready_authorization_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
+ready_entry_state_based_on_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+ready_entry_payload_digest: a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9
 claim_mode: new
-expected_existing_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
-lease_phase_scope: batch_A_terminal_evidence_manifest_correction_only
+expected_existing_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+lease_phase_scope: batch_D_P35_domain_transition_retirement_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -317,9 +317,14 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
-last_implementation_commit_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
+state_based_on_head_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+last_implementation_commit_sha: pending_single_terminal_commit
 completed_steps:
+  - Accepted exact Batch D P35 authority from live control 2213842965302e6c5ccbd9fd26f011681be20b1e, state basis f66edb4d0728b90374e56da13dbd9853657d349c, READY a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9, and exact clean integration start 460ba42db534e669a63e0c6e2383a0f2e8d6ac97.
+  - Reproduced the exact ten-path and seven-product path-inventory digests e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82 and e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20, all seven Git-blob preimages, and immutable raw P35 request 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2.
+  - Mounted the accepted domain-transition feature before later routes; removed active Tisha page, registration, join, redirect, share, modal, and public-build hooks; retained archived source/evidence and the no-store 404 asset deny; and made incremental public builds remove both stale generated Tisha HTML files.
+  - Passed the P35 verifier, focused unit and no-write integration proofs, both web builds, seed-free three-test Playwright retirement matrix, scoped ESLint and Prettier, and diff hygiene; exactly four unchanged workspace type diagnostics and the unchanged standard-harness seed and historical join fixtures remain outside scope.
+  - Released sole RELEASE_INTEGRATOR lease 595bc994-56d3-4805-9e86-cf7bccc805ca at 2026-07-31T21:23:02Z, before expiry; no provider, infrastructure, candidate, deployment, DNS, billing, contact, send, activation, or external effect occurred and effects remain 0/0/0.
   - Accepted exact I36 runtime-triplet-only evidence-correction authority from live control f66edb4d0728b90374e56da13dbd9853657d349c, state basis 44b9bc6d745810d74ca093d19f46806d8f58e077, READY 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861, and integration start 3ea1a32ef971947ab10c129e1de74b54e7311834.
   - Reproduced the exact three-path newline inventory digest f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176 and confirmed the correction authority excludes every product, test, config, migration, control, candidate, provider, and deployment path.
   - Recomputed every product artifact from exact Git blobs: corrected .env.example from the stale checkout-byte digest to 726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955, proved all other fifteen hashes unchanged, and reproduced canonical product manifest 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014.
@@ -1619,18 +1624,25 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently audit the exact pushed Batch A evidence-correction terminal, corrected Git-blob and manifest reproduction, exact runtime-triplet-only scope, released lease, and effects 0/0/0.
+  - C00 must independently audit the exact pushed Batch D P35 terminal, seven product/test paths plus the I36 runtime triplet, accepted route order and no-write 410 behavior, generated-output and asset denial proofs, focused validation, released lease, and effects 0/0/0.
   - P08 provider and billing-worker composition, corrected P21 registration, P22 server/client service composition and protected-secret injection, and the P30 durable adult-only worker boundary remain later-gated.
   - Candidate freeze, native PostgreSQL-server replay, provider or infrastructure inspection, deployment, DNS, billing, contact, send, activation, and every external successor action require separate exact authority.
 next_action: >-
-  STOP. C00 must independently audit the exact pushed Batch A evidence-only
-  correction, exact three-runtime-path scope, corrected .env.example Git-blob
-  hash and sixteen-product manifest, preservation of every product/test byte
-  and prior validation truth, released RELEASE_INTEGRATOR lease, clean remote
-  equality, and effects 0/0/0 before any successor action.
+  STOP. C00 must independently audit the exact pushed Batch D P35 terminal,
+  exact ten-path scope, central feature ordering, 410 no-write and archived-
+  asset denial proofs, stale generated-page convergence, documented unchanged
+  baselines, released RELEASE_INTEGRATOR lease, clean remote equality, and
+  effects 0/0/0 before any successor action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
+  - apps/web/src/client/public/public-entry.ts
+  - apps/web/src/server/app.ts
+  - scripts/build-public-pages.ts
+  - scripts/v21-migration/verify-domain-transition.ts
+  - tests/e2e/tisha-bav-funnel.spec.ts
+  - tests/integration/tisha-bav-event-funnel.test.ts
+  - tests/unit/tisha-bav-public-copy.test.ts
   - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
   - ops/v2.1-execution/runtime/I36/HANDOFF.md
   - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
@@ -4222,3 +4234,112 @@ batch_A_terminal_evidence_manifest_correction_terminal:
     recompute the exact corrected product manifest, three-path runtime scope,
     exact Git-byte runtime evidence, released lease, preserved product bytes,
     and zero effects before any successor authority.
+batch_D_P35_domain_transition_retirement_terminal:
+  containing_control_head_sha: 2213842965302e6c5ccbd9fd26f011681be20b1e
+  state_basis_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+  exact_authorized_start_sha: 460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+  ready_entry_payload_digest: a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9
+  claim_id: eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8
+  writer_id: codex-i36-batch-d-p35-eb0bd2af
+  lease_issued_at: '2026-07-31T20:53:07Z'
+  lease_expires_at: '2026-08-01T00:53:07Z'
+  lease_released_at: '2026-07-31T21:23:02Z'
+  last_heartbeat_at: '2026-07-31T21:23:02Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: 595bc994-56d3-4805-9e86-cf7bccc805ca
+  effect_lock_leases: []
+  immutable_request:
+    request_id: P35-route-registration-001
+    source_path: ops/v2.1-execution/runtime/P35/steward-requests/P35-route-registration-001.yaml
+    digest_kind: raw_git_blob_sha256
+    request_digest: 7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2
+    classification: applicable
+    fully_applied: true
+    later_exact_gate: none
+  authorized_scope:
+    product_and_test_paths: 7
+    runtime_paths: 3
+    total_paths: 10
+    exact_product_path_inventory_digest: e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20
+    exact_release_path_inventory_digest: e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82
+    path_inventory_algorithm: sha256_sorted_POSIX_paths_LF_joined_without_terminal_LF
+  product_artifact:
+    paths:
+      - path: apps/web/src/client/public/public-entry.ts
+        raw_sha256: 167bbebf939e97771cb45991ccee6afeb92861b7477bd29cd7558904921b6410
+      - path: apps/web/src/server/app.ts
+        raw_sha256: 0e28896ebe096eff9407483912e3e25904acbb83bdec8fcf8d7de47a3413bd3a
+      - path: scripts/build-public-pages.ts
+        raw_sha256: 41f35018a63f4aa6cae31128c033520806e7622fec9fe08e987309819805b54d
+      - path: scripts/v21-migration/verify-domain-transition.ts
+        raw_sha256: 4196dffd39836cfd39bd67964fbc6959224b8d8c46edf4681d91d9a7891e775c
+      - path: tests/e2e/tisha-bav-funnel.spec.ts
+        raw_sha256: 43670914569a88b6cd734ffa08c7c7058badf986d256f2ea076d8c94d48ffbb7
+      - path: tests/integration/tisha-bav-event-funnel.test.ts
+        raw_sha256: 2084a75330a7e0e76bd54800b5cafd36f150ffcbcd2f24cfbaa2d8f84dbbbfb8
+      - path: tests/unit/tisha-bav-public-copy.test.ts
+        raw_sha256: 71829e674842e5ae808057c3459d6a261c87019d8b6293e2235609c00c0876e6
+    canonical_json_manifest_digest: 347904184cf3011fc79137dab1e0f2ff73ed7a7870c7bd206ff52dd244b6b0d1
+  repository_truth:
+    domain_transition_feature_registered_first: true
+    production_unknown_host_rejection_preserved: true
+    nonproduction_unknown_host_pass_through_preserves_local_login_and_signup_tests: true
+    tisha_browser_routes_410: 4
+    tisha_endpoint_surfaces_410: 3
+    no_write_snapshot_equal: true
+    set_cookie_emitted: false
+    provider_redirect_emitted: false
+    active_client_hooks_remaining: 0
+    generated_tisha_html_files_remaining: 0
+    archived_source_assets_preserved: 9
+    archived_assets_publicly_served: 0
+    archived_manifest_preserved: true
+  completed_validation:
+    live_control_head: passed_2213842965302e6c5ccbd9fd26f011681be20b1e
+    exact_integration_start: passed_460ba42db534e669a63e0c6e2383a0f2e8d6ac97
+    canonical_ready_digest: passed_a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9
+    exact_path_inventories: passed_10_and_7
+    exact_git_blob_preimages: passed_7_of_7
+    immutable_request_digest: passed_raw_git_blob
+    domain_transition_verifier: passed
+    focused_unit_vitest: passed_1_file_1_test
+    focused_retired_HTTP_integration_vitest: passed_1_file_1_test_34_historical_tests_skipped
+    web_client_build: passed
+    public_pages_build: passed
+    generated_tisha_HTML_absence_after_build: passed_2_of_2_absent
+    seed_free_playwright: passed_1_file_3_tests
+    scoped_eslint: passed_zero_findings_7_files
+    scoped_prettier: passed_7_files
+    changed_workspace_type_diagnostics: zero
+    workspace_typecheck: baseline_blocked_exactly_4_unchanged_out_of_scope_diagnostics
+    diff_check: passed
+  unchanged_out_of_scope_baselines:
+    workspace_typecheck:
+      - packages/domain/src/billing/stripe-official-client.ts Status OtherString mismatch
+      - tests/ot-52/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/ot-83/portal-browser-harness.ts duplicate Playwright Page type
+      - tests/w12-09/portal-gamification-browser-harness.ts duplicate Playwright Page type
+    standard_playwright_webserver: >-
+      Unchanged tests/support/test-server.ts occurrence seed omits required
+      join_opens_at and fails before test execution; the bounded seed-free
+      external-base run passed all three P35 browser tests.
+    whole_historical_integration_file: >-
+      The unchanged event-join success fixture lacks the Zoom join URL and
+      throws EVENT_UNAVAILABLE; the exact retired HTTP describe passes alone.
+  migration_or_SQL_change: false
+  steward_request_bytes_changed: false
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Stop after the single terminal commit is normally pushed and clean local,
+    tracking, and live integration equality is proved. C00 must independently
+    audit and consume the immutable P35 request, exact ten-path scope, accepted
+    feature ordering, no-write 410 and archived-asset denial proofs, focused
+    validation, unchanged baselines, released lease, and effects 0/0/0 before
+    any successor authority.

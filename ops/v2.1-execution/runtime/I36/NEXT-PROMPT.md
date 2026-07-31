@@ -1,6 +1,69 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_BATCH_D_P35_DOMAIN_TRANSITION_RETIREMENT_AUDIT
+
+Audit the exact pushed I36 Batch D P35 domain-transition-retirement terminal.
+Do not perform provider or infrastructure inspection/mutation, candidate work,
+deployment, DNS, billing, contact creation, send, activation, or any external
+successor action from this prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent: `460ba42db534e669a63e0c6e2383a0f2e8d6ac97`
+Containing control: `2213842965302e6c5ccbd9fd26f011681be20b1e`
+Authority/control basis: `f66edb4d0728b90374e56da13dbd9853657d349c`
+READY: `a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9`
+Claim: `eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8`
+Writer: `codex-i36-batch-d-p35-eb0bd2af`
+RELEASE_INTEGRATOR lease: `595bc994-56d3-4805-9e86-cf7bccc805ca`
+Lease issued: `2026-07-31T20:53:07Z`
+Lease expiry: `2026-08-01T00:53:07Z`
+Lease release: `2026-07-31T21:23:02Z`
+Effects: `0/0/0`
+
+Reproduce the ten-path inventory
+`e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82`,
+the seven-product inventory
+`e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20`,
+all seven authorized Git-blob preimages, and immutable raw Git request
+`P35-route-registration-001` digest
+`7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2`.
+Confirm the terminal changes exactly those seven product/test paths and the I36
+runtime triplet, with no archive, migration, request, control, provider, or
+deployment byte changed.
+
+Confirm `domainTransitionFeatureRegistration` is centrally mounted before
+later routes, production unknown-host rejection remains fail closed, and the
+non-production compatibility wrapper only prevents localhost login/signup
+regressions. Confirm all four canonical historical browser paths return the
+accepted no-store 410 ended-event page before static serving. Confirm register,
+join, and redirect surfaces return 410 without database change, cookie, or
+provider redirect.
+
+Confirm active Tisha client and page-generation hooks are absent, incremental
+builds remove `tisha-bav.html` and `tisha-bav-live.html`, all nine archived
+source assets and the archive manifest remain, and the archived asset prefix
+returns no-store 404 even when a physical file exists.
+
+Confirm the P35 verifier, focused unit and integration tests, both web builds,
+three seed-free Playwright tests, scoped ESLint and Prettier, generated-output
+absence, and diff hygiene. Confirm workspace typecheck has zero changed-path
+diagnostics and exactly four unchanged out-of-scope Stripe/Playwright
+diagnostics. Distinguish the unchanged standard-browser missing `join_opens_at`
+seed and unchanged historical join fixture missing its Zoom URL from the green
+bounded P35 tests.
+
+Confirm the sole lease was released before expiry, local/tracking/live
+integration refs equal the terminal head, and no provider or external effect
+occurred. C00 must independently consume this terminal before any successor
+authority. Stop.
+
+---
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_BATCH_A_EVIDENCE_MANIFEST_CORRECTION_AUDIT
 
 Audit the exact pushed I36 Batch A evidence-manifest correction terminal. Do

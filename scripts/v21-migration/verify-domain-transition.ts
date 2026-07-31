@@ -48,14 +48,26 @@ assert.deepEqual(signup, {
     'https://join.onetimeonetime.com/signup?source=old-bookmark&utm_campaign=migration_2026',
 });
 
-assert.deepEqual(
-  decideDomainTransition({
-    host: 'join.onetimeonetime.com',
-    method: 'POST',
-    path: '/api/v1/events/tisha-bav-2026/register',
-  }),
-  { action: 'gone', status: 410, reason: 'tisha_bav_archived' },
-);
+for (const path of ['/tisha-bav', '/tisha-bav.html', '/tisha-bav/live', '/tisha-bav/success']) {
+  for (const method of ['GET', 'HEAD']) {
+    assert.deepEqual(
+      decideDomainTransition({ host: 'join.onetimeonetime.com', method, path }),
+      { action: 'gone', status: 410, reason: 'tisha_bav_archived' },
+      `${method} ${path} must remain retired`,
+    );
+  }
+}
+for (const probe of [
+  { method: 'POST', path: '/api/v1/events/tisha-bav-2026/register' },
+  { method: 'POST', path: '/api/v1/events/tisha-bav-2026/join' },
+  { method: 'GET', path: '/api/v1/events/tisha-bav-2026/redirect' },
+]) {
+  assert.deepEqual(
+    decideDomainTransition({ host: 'join.onetimeonetime.com', ...probe }),
+    { action: 'gone', status: 410, reason: 'tisha_bav_archived' },
+    `${probe.method} ${probe.path} must remain retired`,
+  );
+}
 assert.deepEqual(
   decideDomainTransition({
     host: 'preview.example.test',
@@ -123,6 +135,57 @@ assert.equal(
 );
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const [appSource, publicEntrySource, publicPageBuildSource] = await Promise.all([
+  readFile(path.join(root, 'apps/web/src/server/app.ts'), 'utf8'),
+  readFile(path.join(root, 'apps/web/src/client/public/public-entry.ts'), 'utf8'),
+  readFile(path.join(root, 'scripts/build-public-pages.ts'), 'utf8'),
+]);
+const defaultRegistrations = appSource.match(
+  /featureRegistrations \?\? \[([\s\S]*?)\]\s*\)\.map/u,
+)?.[1];
+assert.ok(defaultRegistrations, 'Central default feature registrations are missing');
+const domainTransitionPosition = defaultRegistrations.indexOf(
+  'domainTransitionFeatureRegistration',
+);
+const familySignupPosition = defaultRegistrations.indexOf('familySignupFeatureRegistration');
+const schoolInquiryPosition = defaultRegistrations.indexOf('schoolInquiryFeatureRegistration');
+assert.ok(domainTransitionPosition >= 0, 'P35 is not centrally registered');
+assert.ok(
+  domainTransitionPosition < familySignupPosition && familySignupPosition < schoolInquiryPosition,
+  'P35 must be mounted before the historical feature registrations',
+);
+assert.ok(
+  appSource.indexOf('installServerFeatureRouters({') <
+    appSource.indexOf('/^\\/assets\\/events\\/tisha-bav-2026'),
+  'P35 must be mounted before the archived-asset deny and public static serving',
+);
+
+for (const activeHook of [
+  '[data-event-registration-form]',
+  '[data-event-join-form]',
+  '[data-event-open-modal]',
+  '/api/v1/events/tisha-bav-2026/register',
+  '/api/v1/events/tisha-bav-2026/join',
+  '/api/v1/events/tisha-bav-2026/redirect',
+]) {
+  assert.ok(
+    !publicEntrySource.includes(activeHook),
+    `Active public client hook remains: ${activeHook}`,
+  );
+}
+assert.ok(!publicPageBuildSource.includes('function tishaBavLandingPage'));
+assert.ok(!publicPageBuildSource.includes('function tishaBavLivePage'));
+assert.doesNotMatch(
+  publicPageBuildSource,
+  /writeFile\(\s*path\.join\(outDir, 'tisha-bav(?:-live)?\.html'/u,
+);
+for (const retiredOutput of ['tisha-bav.html', 'tisha-bav-live.html']) {
+  assert.ok(
+    publicPageBuildSource.includes(`rm(path.join(outDir, '${retiredOutput}'), { force: true })`),
+    `Incremental public builds must remove stale ${retiredOutput}`,
+  );
+}
+
 const archive = await readFile(
   path.join(root, 'ops/archive/tisha-bav-template/manifest.yaml'),
   'utf8',

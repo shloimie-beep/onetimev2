@@ -299,6 +299,10 @@ import {
 import { createApprovedSchoolAdminRouter } from './features/signup/school/approved-school-router.ts';
 import { createSchoolSignupService } from './features/signup/school/service.ts';
 import {
+  classifyDomain,
+  domainTransitionFeatureRegistration,
+} from './features/domain-transition/index.ts';
+import {
   createParentHouseholdRouter,
   createParentHouseholdService,
   createPostgresParentHouseholdRepository,
@@ -416,12 +420,36 @@ export function createApp({
         sessionEstablisher: v21AdultSessionRuntime,
       }),
   };
+  const centrallyBoundDomainTransitionRegistration: ServerFeatureRegistration = {
+    ...domainTransitionFeatureRegistration,
+    createRouter: (context) => {
+      const transitionRouter = domainTransitionFeatureRegistration.createRouter(context);
+      const router = express.Router();
+      router.use((req, res, next) => {
+        if (
+          context.config.nodeEnv !== 'production' &&
+          classifyDomain(req.header('host') ?? '') === 'unknown'
+        ) {
+          next();
+          return;
+        }
+        transitionRouter(req, res, next);
+      });
+      return router;
+    },
+  };
   const centrallyBoundFeatureRegistrations: readonly ServerFeatureRegistration[] = (
-    featureRegistrations ?? [familySignupFeatureRegistration, schoolInquiryFeatureRegistration]
+    featureRegistrations ?? [
+      domainTransitionFeatureRegistration,
+      familySignupFeatureRegistration,
+      schoolInquiryFeatureRegistration,
+    ]
   ).map((registration) =>
-    registration.featureId === familySignupFeatureRegistration.featureId
-      ? centrallyBoundFamilySignupRegistration
-      : registration,
+    registration.featureId === domainTransitionFeatureRegistration.featureId
+      ? centrallyBoundDomainTransitionRegistration
+      : registration.featureId === familySignupFeatureRegistration.featureId
+        ? centrallyBoundFamilySignupRegistration
+        : registration,
   );
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
@@ -4195,8 +4223,6 @@ export function createApp({
 
   app.use((req, res, next) => {
     if (
-      /^\/tisha-bav(?:\/|\.html$|$)/u.test(req.path) ||
-      /^\/api\/v1\/events\/tisha-bav-2026(?:\/|$)/u.test(req.path) ||
       /^\/assets\/events\/tisha-bav-2026(?:\/|$)/u.test(req.path) ||
       /^\/assets\/app-experience-preview(?:-|\.|$)/u.test(req.path)
     ) {

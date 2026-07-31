@@ -1,5 +1,61 @@
 # I36 Integration Releases
 
+## Current terminal — Batch D P35 domain-transition retirement
+
+Live control `2213842965302e6c5ccbd9fd26f011681be20b1e`, based on
+`f66edb4d0728b90374e56da13dbd9853657d349c`, authorized the exact P35
+retirement from clean local, tracking, and live integration head
+`460ba42db534e669a63e0c6e2383a0f2e8d6ac97`. Canonical READY
+`a330befb939fcfda31fae9bfca1ece0b56a3ce959cb47265b45da9db42afd3d9`, the
+ten-path digest
+`e5a54c5ea6f9ee253d9f3f1835ce9b2ac91ffd20a7d149b627ed6c3a7f42ca82`, the
+seven-product digest
+`e9db03c400cbf3f797c4e5d93a0719c85330a45fec5a8da47950b292d67f0a20`, all
+seven Git-blob preimages, and raw immutable P35 request
+`7c604c8ec91fdaeeedda141b19a075bacccbe94961b420f3a85dd6bcc9ad6cf2`
+reproduced before editing.
+
+The accepted `domainTransitionFeatureRegistration` is now mounted first in the
+central composer. Production still rejects unknown hosts; non-production
+unknown hosts pass through so the existing localhost `/login` and `/signup`
+tests remain usable. On the canonical transition host, all four historical
+browser paths return the accepted no-store 410 ended-event page before any
+static file, and register, join, and redirect surfaces cannot write, set a
+cookie, or produce a provider redirect.
+
+The active public-client modal, registration, share, join, and redirect hooks
+were removed. Public-page generation no longer builds either Tisha page and
+explicitly removes both stale outputs on incremental builds. The archived
+manifest and all nine source assets remain intact, while the exact asset prefix
+remains a no-store 404 before public static serving. No historical migration,
+provider evidence, immutable request, or archive byte changed.
+
+Focused verification passed: the P35 verifier; one unit build-convergence test;
+one no-write integration test with a byte-identical database snapshot and
+physical stale page/asset fixtures; both web builds; three seed-free Playwright
+tests covering all four browser routes, all three endpoint surfaces, and all
+nine assets; scoped ESLint and Prettier; and diff hygiene. Both generated Tisha
+HTML files are absent after the final build. Workspace typecheck reports only
+the four unchanged out-of-scope Stripe and duplicate-Playwright diagnostics.
+The standard Playwright server remains blocked before tests by its unchanged
+missing `join_opens_at` seed, and the unchanged historical event-join success
+fixture still lacks a Zoom URL; the bounded P35 runs pass.
+
+Claim `eb0bd2af-26a7-448a-90d8-1a5e4ae56ce8`, writer
+`codex-i36-batch-d-p35-eb0bd2af`, and sole RELEASE_INTEGRATOR lease
+`595bc994-56d3-4805-9e86-cf7bccc805ca` bounded the exact seven product/test
+paths plus I36 runtime triplet. The lease was released at
+`2026-07-31T21:23:02Z`, before its `2026-08-01T00:53:07Z` expiry. No provider,
+infrastructure, candidate, deployment, DNS, billing, contact, send, activation,
+or external action occurred; effects remain attempted `0`, succeeded `0`,
+reconciled `0`.
+
+I36 must stop after the single terminal commit is normally pushed with clean
+local/tracking/live equality. C00 must independently audit the exact ten-path
+scope, immutable P35 request, route order, 410 no-write and asset-denial proofs,
+focused validation, unchanged baselines, lease release, and effects `0/0/0`
+before issuing any successor authority.
+
 ## Current terminal — Batch A evidence-manifest correction
 
 Control `f66edb4d0728b90374e56da13dbd9853657d349c`, based on

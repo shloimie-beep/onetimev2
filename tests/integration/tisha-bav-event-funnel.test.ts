@@ -1,4 +1,5 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { request as httpRequest } from 'node:http';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -1241,131 +1242,98 @@ describe('Tisha BAv event join access', () => {
   });
 });
 
-describe('Tisha BAv event HTTP routes', () => {
-  it('serves the production landing HTML with immediate revalidation headers', async () => {
-    const config = testConfig({
-      NODE_ENV: 'production',
-      AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-production-cache-proof',
-      MFA_SECRET_ENCRYPTION_KEY: 'test-only-32-byte-mfa-key-do-not-use',
-    });
-    const distDir = await mkdtemp(path.join(tmpdir(), 'tisha-cache-proof-'));
-    await writeFile(
-      path.join(distDir, 'tisha-bav.html'),
-      [
-        '<!doctype html><html><head><title>Tisha</title>',
-        '<meta property="og:image" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png">',
-        '<meta property="og:image:secure_url" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png">',
-        '<meta property="og:image:type" content="image/png">',
-        '<meta property="og:image:width" content="1200">',
-        '<meta property="og:image:height" content="630">',
-        '<meta property="og:image:alt" content="One Time logo for the Tisha B&#39;Av live Zoom class">',
-        '<meta name="twitter:image" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png">',
-        '<link rel="icon" type="image/png" href="/assets/events/tisha-bav-2026/tisha-bav-favicon-v20260722.png">',
-        '<link rel="apple-touch-icon" href="/assets/events/tisha-bav-2026/tisha-bav-apple-touch-icon-v20260722.png">',
-        '</head><body><p lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p><h1>Bringing Knowledge of Hashem into the World</h1><p>Live class with Rabbi Eli Scheller</p><p>3 p.m. Eastern Time</p><p>No charge</p><button>Reserve My Spot</button><p>By reserving, you’ll receive emails about this event.</p></body></html>',
-      ].join(''),
-    );
-    const server = await startServer(config, openWindow, distDir);
+describe('Tisha BAv retired HTTP surface', () => {
+  it('returns the accepted no-write 410 before any stale event page can be served', async () => {
+    const distDir = await mkdtemp(path.join(tmpdir(), 'tisha-retirement-proof-'));
+    const archivedAssetDir = path.join(distDir, 'assets/events/tisha-bav-2026');
+    await mkdir(archivedAssetDir, { recursive: true });
+    await Promise.all([
+      writeFile(path.join(distDir, 'tisha-bav.html'), '<h1>STALE ACTIVE EVENT PAGE</h1>'),
+      writeFile(path.join(distDir, 'tisha-bav-live.html'), '<h1>STALE ACTIVE JOIN PAGE</h1>'),
+      writeFile(path.join(archivedAssetDir, 'archived-proof.png'), 'ARCHIVED_ASSET_BYTES'),
+    ]);
+
+    const server = await startServer(testConfig(), openWindow, distDir);
+    const stateBefore = await stateSnapshot();
     try {
-      for (const routePath of ['/tisha-bav', '/tisha-bav.html']) {
-        const response = await fetch(`${server.baseUrl}${routePath}`);
-        expect(response.status).toBe(200);
-        expect(response.headers.get('cache-control')).toBe('no-cache, max-age=0, must-revalidate');
-        expect(response.headers.get('pragma')).toBe('no-cache');
-        expect(response.headers.get('expires')).toBe('0');
+      for (const routePath of [
+        '/tisha-bav',
+        '/tisha-bav.html',
+        '/tisha-bav/live',
+        '/tisha-bav/success',
+      ]) {
+        const response = await canonicalFetch(server.baseUrl, routePath);
+        expect(response.status, routePath).toBe(410);
+        expect(response.headers.get('cache-control'), routePath).toBe('no-store');
+        expect(response.headers.get('referrer-policy'), routePath).toBe('no-referrer');
+        expect(response.headers.get('x-content-type-options'), routePath).toBe('nosniff');
 
         const html = await response.text();
-        expect(html).toContain('כי מלאה הארץ דעה את השם');
-        expect(html).toContain('Bringing Knowledge of Hashem into the World');
-        expect(html).toContain('Live class with Rabbi Eli Scheller');
-        expect(html).toContain('3 p.m. Eastern Time');
-        expect(html).toContain('No charge');
-        expect(html).toContain('By reserving, you’ll receive emails about this event.');
-        expect(html).toContain('tisha-bav-social-card-v20260722.png');
-        expect(html).toContain('<meta property="og:image:type" content="image/png">');
-        expect(html).toContain('<meta property="og:image:width" content="1200">');
-        expect(html).toContain('<meta property="og:image:height" content="630">');
-        expect(html).toContain('tisha-bav-favicon-v20260722.png');
-        expect(html).toContain('tisha-bav-apple-touch-icon-v20260722.png');
-        expect(html).not.toContain('10:00 PM Israel');
-        expect(html).not.toContain('Ki Mala Haaretz Deas Hashem');
-        expect(html).not.toContain('Filling the World with Knowledge of Hashem');
-        expect(html).not.toContain('Rabbi Elly');
+        expect(html, routePath).toContain('This event has ended');
+        expect(html, routePath).toContain('no longer accepting registrations');
+        expect(html, routePath).not.toContain('STALE ACTIVE');
+        expect(html, routePath).not.toContain('Reserve My Spot');
+        expect(html, routePath).not.toContain('data-event-registration-form');
+        expect(html, routePath).not.toContain('data-event-join-form');
       }
+
+      const head = await canonicalFetch(server.baseUrl, '/tisha-bav', {
+        method: 'HEAD',
+      });
+      expect(head.status).toBe(410);
+      expect(await head.text()).toBe('');
+
+      for (const request of [
+        {
+          path: '/api/v1/events/tisha-bav-2026/register',
+          method: 'POST',
+          body: registrationPayload('retired-route@example.test'),
+        },
+        {
+          path: '/api/v1/events/tisha-bav-2026/join',
+          method: 'POST',
+          body: {
+            email: 'retired-route@example.test',
+            idempotency_key: 'retired-route-join',
+            homepage: '',
+          },
+        },
+      ] as const) {
+        const response = await canonicalFetch(server.baseUrl, request.path, {
+          method: request.method,
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(request.body),
+        });
+        expect(response.status, request.path).toBe(410);
+        expect(response.headers.get('set-cookie'), request.path).toBeNull();
+        expect(response.headers.get('location'), request.path).toBeNull();
+        expect(await response.json(), request.path).toEqual({
+          code: 'EVENT_ENDED',
+          message: 'This event has ended and no registration was recorded.',
+        });
+      }
+
+      const redirect = await canonicalFetch(
+        server.baseUrl,
+        '/api/v1/events/tisha-bav-2026/redirect',
+      );
+      expect(redirect.status).toBe(410);
+      expect(redirect.headers.get('set-cookie')).toBeNull();
+      expect(redirect.headers.get('location')).toBeNull();
+      expect(await redirect.text()).toContain('This event has ended');
+
+      const archivedAsset = await canonicalFetch(
+        server.baseUrl,
+        '/assets/events/tisha-bav-2026/archived-proof.png',
+      );
+      expect(archivedAsset.status).toBe(404);
+      expect(archivedAsset.headers.get('cache-control')).toContain('no-store');
+      expect(await archivedAsset.text()).not.toContain('ARCHIVED_ASSET_BYTES');
+
+      expect(await stateSnapshot()).toBe(stateBefore);
     } finally {
       await server.close();
       await rm(distDir, { recursive: true, force: true });
-    }
-  });
-
-  it('registers, rate limits, joins, and server-redirects through Express routes', async () => {
-    const config = testConfig({
-      ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: 'https://zoom.example.test/j/456?pwd=protected',
-      LEAD_RATE_LIMIT_MAX: '20',
-      LEAD_IDENTIFIER_RATE_LIMIT_MAX: '20',
-    });
-    const server = await startServer(config, openWindow);
-    try {
-      const register = await fetch(`${server.baseUrl}/api/v1/events/tisha-bav-2026/register`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(registrationPayload('route@example.test')),
-      });
-      expect(register.status).toBe(200);
-      expect(await register.json()).toMatchObject({ success: true });
-
-      const join = await fetch(`${server.baseUrl}/api/v1/events/tisha-bav-2026/join`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          email: 'route@example.test',
-          idempotency_key: 'route-join-1',
-          homepage: '',
-        }),
-      });
-      expect(join.status).toBe(200);
-      const cookie = join.headers.get('set-cookie');
-      expect(cookie).toContain('ot_tisha_bav_2026_session');
-      const joinJson = await join.json();
-      expect(joinJson.redirect_path).toBe('/api/v1/events/tisha-bav-2026/redirect');
-
-      const redirect = await fetch(`${server.baseUrl}${joinJson.redirect_path}`, {
-        redirect: 'manual',
-        headers: { cookie: cookie ?? '' },
-      });
-      expect(redirect.status).toBe(302);
-      expect(redirect.headers.get('location')).toBe(
-        'https://zoom.example.test/j/456?pwd=protected',
-      );
-    } finally {
-      await server.close();
-    }
-  });
-
-  it('uses the event route rate-limit scopes', async () => {
-    const config = testConfig({ LEAD_RATE_LIMIT_MAX: '1', LEAD_IDENTIFIER_RATE_LIMIT_MAX: '20' });
-    const server = await startServer(config, openWindow);
-    try {
-      const first = await fetch(`${server.baseUrl}/api/v1/events/tisha-bav-2026/register`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(
-          registrationPayload('rate1@example.test', { idempotency_key: 'rate-one-1' }),
-        ),
-      });
-      const second = await fetch(`${server.baseUrl}/api/v1/events/tisha-bav-2026/register`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(
-          registrationPayload('rate2@example.test', { idempotency_key: 'rate-two-2' }),
-        ),
-      });
-
-      expect(first.status).toBe(200);
-      expect(second.status).toBe(429);
-      expect(await second.json()).toMatchObject({ success: false, code: 'RATE_LIMITED' });
-    } finally {
-      await server.close();
     }
   });
 });
@@ -1717,6 +1685,53 @@ async function expectCount(table: string, expected: number) {
     ? counts.rows[0].count[0]
     : counts.rows[0].count;
   expect(count).toBe(expected);
+}
+
+async function canonicalFetch(
+  baseUrl: string,
+  routePath: string,
+  options: {
+    method?: string;
+    headers?: Readonly<Record<string, string>>;
+    body?: string;
+  } = {},
+): Promise<Response> {
+  const target = new URL(routePath, baseUrl);
+  return new Promise<Response>((resolve, reject) => {
+    const request = httpRequest(
+      target,
+      {
+        method: options.method ?? 'GET',
+        headers: {
+          ...options.headers,
+          host: 'join.onetimeonetime.com',
+        },
+      },
+      (response) => {
+        const chunks: Buffer[] = [];
+        response.on('data', (chunk: Buffer) => chunks.push(chunk));
+        response.on('end', () => {
+          const headers: [string, string][] = [];
+          for (const [name, value] of Object.entries(response.headers)) {
+            if (Array.isArray(value)) {
+              for (const entry of value) headers.push([name, entry]);
+            } else if (value !== undefined) {
+              headers.push([name, value]);
+            }
+          }
+          resolve(
+            new Response(Buffer.concat(chunks), {
+              status: response.statusCode ?? 500,
+              headers,
+            }),
+          );
+        });
+      },
+    );
+    request.on('error', reject);
+    if (options.body) request.write(options.body);
+    request.end();
+  });
 }
 
 async function startServer(config: AppConfig, now: Date, distDir?: string) {
