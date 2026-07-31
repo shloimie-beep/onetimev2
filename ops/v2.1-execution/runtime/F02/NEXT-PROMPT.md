@@ -140,3 +140,48 @@ local/tracking/live equality, active lease bindings, and effects `0/0/0`.
 Stop for C00 reconciliation. No request-body, proposal, SQL, migration,
 product, shared-control, provider, deployment, send, charge, or external-effect
 authority is latent. A separate later C00 control commit is mandatory.
+
+# Audit the Migration 2254 P22 Held-Not-Admissible Checkpoint
+
+Audit the exact sole-parent successor of
+`4007334f36c0a87b3289cb99f4a9d2f25eeda2a9` under current containing control
+`cc90f922663405d883a798db8d4278ef803bb7cb` and control state basis
+`fdcba89094f6b8f9460db3d41f3602be2d476990`.
+
+Require an empty READY queue, unchanged claim
+`8041cc43-6a31-443b-87be-ef663f767c80`, writer
+`codex-f02-migration-2254-8041cc43`, MIGRATION_AUTHORITY lease
+`55139366-ce78-4536-8cd3-33c08a1aba38`, and SCHEMA_CONTRACT lease
+`0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`. Both leases had expiry
+`2026-07-31T05:48:00Z` and must be recorded released at
+`2026-07-31T04:48:40Z`.
+
+Require disposition `held_not_admissible` for immutable
+`P22-migration-001`. Verify the exact four blocking findings:
+
+1. a writable P22 learning-attendance aggregate would compete with canonical
+   migration 2251 attendance authority;
+2. the integrated P22 scope lacks runtime-tier and verification-environment
+   isolation;
+3. required distinct first-name and last-name semantics are unavailable and
+   may not be inferred from `display_name`; and
+4. question transitions and recognition-consent changes lack append-only
+   immutable audit authority.
+
+Require exactly the F02 `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`
+to change. Verify the allocation proposal, every migration including 2251 and
+2253, all product and immutable request bytes, shared control, steward results,
+integration, and candidate state remain unchanged. Preserve the untracked
+`.codex-lane1-pglite.mjs` at exactly 1597 bytes and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+Confirm YAML, repository formatting, diff hygiene, secret scan, released
+leases, clean local/tracking/live equality, and effects `0/0/0`.
+
+C00 must reconcile this held checkpoint and obtain a new immutable P22
+successor request before issuing any migration-2254 allocation, proposal, or
+SQL authority. The successor must retain migration 2251 as the sole attendance
+write authority, add full runtime/environment isolation, bind only available
+canonical name semantics, and require immutable transition and consent audit.
+
+Stop after C00 audit. Do not edit a request, proposal, SQL, product, shared
+control, integration, provider, candidate, or effect state from this prompt.

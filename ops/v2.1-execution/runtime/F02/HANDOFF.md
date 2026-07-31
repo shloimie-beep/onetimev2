@@ -339,3 +339,62 @@ external-effect bytes.
 
 Stop for independent C00 reconciliation. No migration-2254 or proposal
 authority is latent; a separate later C00 control commit is mandatory.
+
+# F02 Migration 2254 P22 Learning-Engagement Held Not Admissible
+
+- Held checkpoint parent:
+  `4007334f36c0a87b3289cb99f4a9d2f25eeda2a9`
+- Current containing control:
+  `cc90f922663405d883a798db8d4278ef803bb7cb`
+- Control state basis:
+  `fdcba89094f6b8f9460db3d41f3602be2d476990`
+- Current READY queue: empty
+- Claim: `8041cc43-6a31-443b-87be-ef663f767c80`
+- Writer: `codex-f02-migration-2254-8041cc43`
+- MIGRATION_AUTHORITY lease:
+  `55139366-ce78-4536-8cd3-33c08a1aba38`
+- SCHEMA_CONTRACT lease:
+  `0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49`
+- Lease expiry: `2026-07-31T05:48:00Z`
+- Both leases released: `2026-07-31T04:48:40Z`
+- Disposition: `held_not_admissible`
+- Effects: `0/0/0`
+
+The immutable `P22-migration-001` cannot safely authorize migration 2254.
+Its current contract and repository write an `onetime.learning_attendance`
+aggregate keyed without runtime tier or verification environment. That would
+compete with canonical migration 2251's append-only attendance events and
+versioned, evidence-bound projection. The P22 write cannot preserve 2251
+source, digest, lineage, idempotency, version, or correction-event semantics,
+and `learning_attendance_segments` is not written by the integrated repository.
+
+The same P22 contract scopes every learning query and write only by account and
+product, despite mandatory runtime-tier and verification-environment
+isolation. Its leaderboard projection also expects distinct first and last
+names that the current identity schema does not provide; `display_name` must
+not be parsed or treated as those unavailable semantics. Finally, mutable
+question `transitions_json` and a current recognition-consent row are not
+immutable transition and consent audit authorities.
+
+P22 must publish a new immutable successor request before F02 may allocate
+ordinal 2254. The successor must:
+
+1. preserve migration 2251 as the sole attendance write authority and make any
+   P22 attendance compatibility projection read-only;
+2. add runtime-tier and verification-environment scope to every learning
+   contract, query, write, key, and index;
+3. bind leaderboard names only to canonical actual/display-name semantics that
+   exist at the successor's admitted dependency head; and
+4. require append-only question-transition and recognition-consent audit
+   events, with current rows treated only as projections.
+
+This checkpoint changes only the F02 runtime triplet and releases both bounded
+writer leases before expiry. It does not edit the allocation proposal, author
+SQL, change product or immutable request bytes, submit a steward result, merge,
+register shared state, freeze a candidate, touch a provider, or perform an
+external effect. The protected untracked `.codex-lane1-pglite.mjs` remains
+excluded at exactly 1597 bytes and SHA-256
+`11117a9144f8d2838466619ba0f3255ab18d0c164793c340fe3badb453206f17`.
+
+Stop for C00 reconciliation. No migration-2254, proposal, successor-request,
+integration, provider, candidate, or effect authority is latent.

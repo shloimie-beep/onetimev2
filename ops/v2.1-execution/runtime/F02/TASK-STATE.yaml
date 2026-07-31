@@ -491,37 +491,56 @@ migration_2254_P22_learning_engagement_atomic_claim:
   sql_authored: false
   later_migration_authority_latent: false
   effect_lock_leases: []
-status: claimed
-phase: migration_2254_P22_learning_engagement_atomic_claim_only
+migration_2254_P22_learning_engagement_hold_control:
+  containing_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+  state_based_on_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+  expected_existing_head_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
+  ready_queue_state: empty
+  prior_atomic_claim_ready_digest: d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce
+  claim_id: 8041cc43-6a31-443b-87be-ef663f767c80
+  writer_id: codex-f02-migration-2254-8041cc43
+  migration_authority_lease_id: 55139366-ce78-4536-8cd3-33c08a1aba38
+  schema_contract_lease_id: 0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49
+  lease_expires_at: '2026-07-31T05:48:00Z'
+  disposition: held_not_admissible
+  required_successor_request: pending_new_immutable_P22_successor
+  external_effects: 0/0/0
+status: held_not_admissible
+phase: migration_2254_P22_learning_engagement_held_not_admissible
 claimed_by: codex-f02-migration-2254-8041cc43
 claim_time: '2026-07-31T04:19:35Z'
 claim_id: 8041cc43-6a31-443b-87be-ef663f767c80
 writer_slot_lease_id: 55139366-ce78-4536-8cd3-33c08a1aba38
 lease_issued_at: '2026-07-31T03:48:00Z'
 lease_expires_at: '2026-07-31T05:48:00Z'
-last_heartbeat_at: '2026-07-31T04:19:35Z'
-lease_released_at: null
-controller_authorization_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
-containing_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
-ready_entry_parent_control_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
-state_based_on_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
-ready_entry_payload_digest: d227353928ba2c492ad7b0e21468bf6198634e9e800f96da507369c48ea640ce
+last_heartbeat_at: '2026-07-31T04:48:40Z'
+lease_released_at: '2026-07-31T04:48:40Z'
+controller_authorization_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+containing_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+ready_entry_parent_control_sha: null
+state_based_on_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+ready_entry_payload_digest: null
 writer_slot_leases:
   MIGRATION_AUTHORITY:
     lease_id: 55139366-ce78-4536-8cd3-33c08a1aba38
     lease_issued_at: '2026-07-31T03:48:00Z'
     lease_expires_at: '2026-07-31T05:48:00Z'
-    phase_scope: F02_migration_2254_P22_learning_engagement_atomic_claim_only
-    released_at: null
+    phase_scope: F02_migration_2254_P22_learning_engagement_conflict_review_runtime_triplet_only
+    released_at: '2026-07-31T04:48:40Z'
   SCHEMA_CONTRACT:
     lease_id: 0669b0a0-ef3e-44cd-a9d9-2cb61b9b5e49
     lease_issued_at: '2026-07-31T03:48:00Z'
     lease_expires_at: '2026-07-31T05:48:00Z'
-    phase_scope: F02_migration_2254_P22_learning_engagement_atomic_claim_only
-    released_at: null
-state_based_on_head_sha: 9754f2ae0736ace4bbf7d2a88c73f1d28b0b5a20
+    phase_scope: F02_migration_2254_P22_learning_engagement_conflict_review_runtime_triplet_only
+    released_at: '2026-07-31T04:48:40Z'
+state_based_on_head_sha: 4007334f36c0a87b3289cb99f4a9d2f25eeda2a9
 last_implementation_commit_sha: null
 completed_steps:
+  - Verified live control cc90f922, state basis fdcba890, empty READY, exact clean local/tracking/live F02 head 4007334f, unchanged claim 8041cc43, writer codex-f02-migration-2254-8041cc43, and both writer leases active through 2026-07-31T05:48:00Z.
+  - Reviewed immutable P22-migration-001, its integrated schema contract and repository, canonical migration 2251, migrations 2251/2253, the allocation proposal, and the migration harness without editing any implementation artifact.
+  - Held migration 2254 as not admissible because the requested writable learning-attendance aggregate would compete with canonical 2251 attendance authority, P22 lacks runtime-tier and verification-environment isolation, required actual-name semantics are unavailable, and question-transition plus recognition-consent audit history is not immutable.
+  - Required a new immutable P22 successor request that preserves migration 2251 as the sole attendance write authority, adds full isolation, binds available name semantics, and requires append-only transition and consent audit before any migration-2254 allocation or SQL.
+  - Released MIGRATION_AUTHORITY lease 55139366 and SCHEMA_CONTRACT lease 0669b0a0 at 2026-07-31T04:48:40Z before expiry with effects 0/0/0.
   - Verified exact containing control fdcba890, sole parent/controller ce71f41a, remote F02 head 9754f2ae, authorized integration start d89a0f38, canonical READY d2273539, claim 8041cc43, both writer leases, and zero effect locks.
   - Independently reproduced the prior F02 state/handoff and runtime-triplet raw-concatenation digests e0b2ede5 and 4059e319, the P22 request raw/blob bindings, the proposal raw/blob baseline, and F02 ancestry to the authorized start.
   - Preserved pre-existing untracked .codex-lane1-pglite.mjs at exactly 1597 bytes and SHA-256 11117a91 while excluding it from staging and the checkpoint.
@@ -639,9 +658,10 @@ completed_steps:
   - Applied the complete final 84-migration inventory to fresh native PostgreSQL 16.14, replayed migration 2253, and passed the full malformed, stale, reordered, cross-scope, mismatch, and five-guard native rejection probe batch.
   - Applied and verified the complete 84-migration repository pg-mem inventory with harness-only built-in registrations and zero pending migrations.
 remaining_steps:
-  - C00 must independently audit and reconcile this exact sole-parent runtime-triplet atomic claim.
-  - Only a separate later C00 control commit may authorize reading P22-migration-001 for implementation, editing the allocation proposal, or authoring migration 2254.
-next_action: Stop after pushing the exact runtime-triplet atomic claim. Await C00 reconciliation; no later migration authority is latent. Do not read the P22 request body for implementation, edit the proposal or SQL, merge, register, inspect providers, deploy, backfill, send, charge, or perform external effects.
+  - C00 must independently audit and reconcile this exact sole-parent held-not-admissible runtime-triplet checkpoint.
+  - P22 must issue a new immutable successor request that resolves the canonical-attendance, full-isolation, name-semantics, and immutable-audit conflicts.
+  - Only a later exact C00 control authorization may admit that successor, allocate ordinal 2254, edit the proposal, or authorize SQL.
+next_action: Stop after pushing the exact held-not-admissible runtime-triplet checkpoint. Await C00 reconciliation and a new immutable P22 successor request; no migration, proposal, SQL, product, shared-control, integration, provider, candidate, or effect authority is latent.
 requirements:
   OTV2-STATE-202: implementation_ready
 acceptance_cases:
@@ -809,6 +829,10 @@ migrations:
 steward_requests: []
 verification:
   commands_run:
+    - live control cc90f922 with state basis fdcba890, empty READY, exact local/tracking/live F02 head 4007334f, claim 8041cc43, writer codex-f02-migration-2254-8041cc43, and both active leases through 2026-07-31T05:48:00Z matched
+    - immutable P22-migration-001, integrated P22 schema/repository, canonical 2251 attendance migration/repository, migrations 2251/2253, allocation proposal, and migration harness were reviewed read-only
+    - canonical 2251 remained the sole admissible attendance write authority; P22 runtime/environment isolation, name semantics, and immutable transition/consent audit prerequisites were absent
+    - exact F02 runtime-triplet scope, YAML, repository Prettier, diff hygiene, secret scan, released dual leases, protected helper bytes, clean remote equality, and effects 0/0/0 passed without product or migration execution
     - exact live local/tracking/remote F02 head 9754f2ae and containing control fdcba890 with sole parent ce71f41a matched
     - canonical F02 READY payload digest d2273539, source/task/context/control/proposal/P22 bindings, and F02-to-authorized-start ancestry independently matched
     - prior F02 raw-concatenation state/handoff e0b2ede5 and runtime-triplet 4059e319 digests independently reproduced from exact Git bytes
@@ -902,5 +926,9 @@ external_effects:
   attempted: 0
   succeeded: 0
   reconciled: 0
-blockers: []
+blockers:
+  - Immutable P22-migration-001 would create a second writable attendance authority that competes with canonical migration 2251.
+  - P22 learning scope and repository lack mandatory runtime-tier and verification-environment isolation.
+  - The requested leaderboard first-name and last-name semantics are unavailable from the current canonical identity schema and must not be inferred from display_name.
+  - Question transitions and recognition-consent changes require append-only immutable audit authority rather than mutable projection-only history.
 out_of_scope_findings: []
