@@ -40,7 +40,7 @@ dependency_heads:
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: 705030f2d5163f95340a19dc42efd0f167259869
 status: claimed
-phase: parent_session_auth_client_successor_atomic_claim_checkpoint
+phase: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
 claimed_by: codex-i36-parent-session-successor-5deb22c5
 claim_time: '2026-07-31T00:58:50Z'
 claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
@@ -48,18 +48,18 @@ lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
 lease_issued_at: '2026-07-31T00:58:50Z'
 lease_expires_at: '2026-07-31T02:28:50Z'
 lease_released_at: null
-last_heartbeat_at: '2026-07-31T01:11:58Z'
-controller_authorization_sha: f0a73d35937a1366289ab7f733da354e65e0532b
-latest_valid_observed_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
-reconciled_state_based_on_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
+last_heartbeat_at: '2026-07-31T01:23:30Z'
+controller_authorization_sha: b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff
+latest_valid_observed_control_head_sha: b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff
+reconciled_state_based_on_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
 ready_consumed_by_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
 ready_consumed_state_based_on_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
 ready_authorization_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
 ready_entry_state_based_on_control_head_sha: 50ebdcdb345bf13bd76d9af013c25855bc369836
 ready_entry_payload_digest: 010c6e951a95840de997ec93136b5ba1f28468b8fc35498ab008a81457cc5c1f
 claim_mode: resume_existing
-expected_existing_head_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
-lease_phase_scope: parent_session_auth_client_successor
+expected_existing_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
+lease_phase_scope: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -319,7 +319,7 @@ merge_result_head_sha: 9a028e7a967221441dfd4d5cf9417eb2885a072f
 merge_parent_target_head_sha: c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9
 merge_parent_source_head_sha: 3364c1c31ef12a81abf02cf9f80f7e8008c1778f
 prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c0
-state_based_on_head_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
+state_based_on_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
 last_implementation_commit_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
 completed_steps:
   - Accepted direct C00 communications integration authority from control 4b22c4704edc8bd21b0e0242ad00debfba67f5c2 at exact integration start c19c90777e0562c6fa77e30f0e0fc7ab9ba300f9 under one phase claim and lease.
@@ -1610,8 +1610,29 @@ family_parent_session_composition_binding:
       unavailable, missing production PROTECTED_PAYLOAD_ENCRYPTION_KEY test
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
-remaining_steps: []
-next_action: C00 must independently audit the exact pushed five-path family Parent-session composition release, reconcile only P08-auth-household-002 from the recorded proof, preserve P08-config-002 and P08-registration-002 unapplied plus effects 0/0/0, and issue a new exact authorization before any broader Parent API conversion, configuration, registration, provider, candidate, deployment, or external action.
+remaining_steps:
+  - Complete and prove linearizable pre-Argon login reservations with exact release accounting, releasing all non-credential outcomes and retaining only invalid-credential attempts.
+  - Complete invalid-versus-unavailable session propagation through login preflight, bootstrap, and Parent shell without clearing valid cookies during repository outage.
+  - Prove invalid-CSRF retryability preserves browser credentials and verified logout clears cookies only after exact revocation.
+  - Propagate recovery_required for every post-establishment password-upgrade cleanup whose revoke and readback are not verified.
+  - Complete redacted v2 logout audit insertion and exact readback proof.
+  - Run the real Parent bundle through reload and logout while proving zero legacy Parent session, dashboard, contact, or shell API calls.
+  - Pass terminal native PostgreSQL session, revocation, cleanup, and redacted-audit verification.
+  - Pass terminal real-browser Parent reload and logout verification.
+  - Pass the production build.
+  - Pass workspace typecheck.
+  - Pass changed-file lint with zero findings.
+  - Pass focused formatting checks.
+  - Pass the repository secret scan without exposing credential material.
+  - Pass exact authorized-scope, diff-hygiene, and immutable-product-blob gates.
+next_action: >-
+  STOP. C00 must independently reconcile the exact runtime-metadata-correction
+  checkpoint against parent 0389fe344f27bcd44c1640e7f6ebcb90d485b213,
+  correction control b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff, the
+  unchanged fresh claim and lease, exact three-runtime-path scope, corrected
+  canonical remaining_steps and next_action fields, preserved ten product/test
+  blobs, clean remote equality, and effects 0/0/0 before any product or test
+  work resumes.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -2845,7 +2866,7 @@ external_effects:
   succeeded: 0
   reconciled: 0
 blockers:
-  - C00 must reconcile this runtime-triplet-only atomic claim checkpoint before I36 resumes product or test work.
+  - C00 must reconcile this runtime-metadata-correction-only checkpoint before I36 resumes product or test work.
 out_of_scope_findings: []
 renewal_checkpoint:
   checkpointed_at: '2026-07-31T00:54:34Z'
@@ -2919,3 +2940,39 @@ atomic_claim_checkpoint:
     verifies its exact parent, scope, fresh authority bindings, digests, clean
     remote equality, and effects 0/0/0 before authorizing I36 to resume the six
     preserved security closeout items.
+runtime_metadata_correction_checkpoint:
+  containing_control_head_sha: b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff
+  state_basis_control_head_sha: f0a73d35937a1366289ab7f733da354e65e0532b
+  exact_parent_integration_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
+  authorization: runtime_metadata_correction_only_then_stop
+  claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
+  writer_id: codex-i36-parent-session-successor-5deb22c5
+  lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
+  lease_issued_at: '2026-07-31T00:58:50Z'
+  lease_expires_at: '2026-07-31T02:28:50Z'
+  last_heartbeat_at: '2026-07-31T01:23:30Z'
+  lease_phase_scope: parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop
+  writer_slots:
+    - SERVER_COMPOSER
+    - CLIENT_COMPOSER
+    - IDENTITY_AUTH_ACCESS
+    - ACCOUNT_HOUSEHOLD_IDENTITY
+  checkpoint_scope:
+    runtime_paths: 3
+    product_or_test_paths: 0
+    total_paths: 3
+  corrected_canonical_fields:
+    - remaining_steps
+    - next_action
+  preserved_atomic_claim_checkpoint_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
+  preserved_product_checkpoint_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
+  preserved_product_and_test_blob_count: 10
+  preserved_six_security_closeout_items: true
+  prior_historical_authority_preserved: true
+  external_effects: 0/0/0
+  safe_next_action: >-
+    Stop after pushing this exact three-runtime-path correction checkpoint. C00
+    independently verifies the correction control, sole parent, unchanged fresh
+    authority, phase scope, heartbeat, corrected canonical fields, preserved
+    product/test blobs, pair/triplet digests, clean remote equality, and effects
+    0/0/0 before any product or test work resumes.

@@ -816,3 +816,41 @@ I36 must stop after pushing this exact three-runtime-path checkpoint. C00 must
 independently reconcile its exact parent, path inventory, fresh authority
 bindings, digests, heartbeat, clean remote equality, and zero effects before
 I36 resumes product or test work.
+
+## Parent auth/client successor runtime-metadata correction
+
+C00 reconciliation HOLD
+`b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff`, based on fresh-claim control
+`f0a73d35937a1366289ab7f733da354e65e0532b`, authorizes only correction of
+the stale canonical top-level `remaining_steps` and `next_action` metadata from
+exact clean, remote-equal parent
+`0389fe344f27bcd44c1640e7f6ebcb90d485b213`.
+
+Claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93` remain unchanged. The four writer
+slots are phase-scoped only to
+`parent_session_auth_client_successor_runtime_metadata_correction_only_then_stop`.
+The lease remains bounded from `2026-07-31T00:58:50Z` through
+`2026-07-31T02:28:50Z`; the actual correction heartbeat is
+`2026-07-31T01:23:30Z`.
+
+The corrected canonical `remaining_steps` now preserves all six bounded
+auth-security closeouts and the terminal native PostgreSQL, real-browser,
+production-build, workspace-typecheck, changed-file-lint, focused-format,
+secret-scan, and exact-scope gates. The canonical `next_action` is an explicit
+stop for C00 correction reconciliation before any product or test work.
+
+This checkpoint changes exactly the I36 runtime triplet. Product checkpoint
+`5285a71e86ebf80bab3332f6cc3490a380bc7890`, all ten product/test blobs, the
+fresh atomic-claim evidence, historical authority, and all product/test bytes
+remain unchanged. No substantive security work, validation rerun, destructive
+cleanup, PostgreSQL stop, provider call, migration, candidate action,
+deployment, DNS change, send, billing action, or other external effect
+occurred. Effects remain `0/0/0`.
+
+I36 must stop after pushing this correction-only checkpoint. C00 must
+independently reconcile its sole parent, correction control, exact three-path
+scope, unchanged authority, phase scope, heartbeat, corrected canonical
+fields, preserved blobs, pair/triplet digests, clean remote equality, and zero
+effects before any product or test work resumes.
