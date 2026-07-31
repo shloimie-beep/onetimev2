@@ -1,16 +1,16 @@
-# P12 Distinct-Name Migration Request Atomic Claim
+# P12 Distinct-Name Migration Request Complete
 
 ## Identity
 
 - Branch: `codex/v21-p12-parent-household`
-- Exact source/recovery head:
-  `4bc6f15c8beffb28dc845d976a62b9c4915a11dc`
-- Atomic claim commit: derive with `git rev-parse HEAD`; C00 records the exact
+- Exact request checkpoint input:
+  `8f6eacf8bc471009747225ecb1aa9c117955578b`
+- Completion commit: derive with `git rev-parse HEAD`; C00 records the exact
   observed remote head.
 - Containing controller:
+  `cc90f922663405d883a798db8d4278ef803bb7cb`
+- Sole control parent and state basis:
   `fdcba89094f6b8f9460db3d41f3602be2d476990`
-- Sole control parent and READY state basis:
-  `ce71f41af1c70f689db9b3346ae5dfc643a1344f`
 - Authorized integration start:
   `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`
 - Claim mode: `resume_existing`
@@ -20,10 +20,11 @@
   `a0982333-1f59-4949-be55-1ded851cc663`
 - Lease issued: `2026-07-31T03:48:00Z`
 - Lease expiry: `2026-07-31T05:48:00Z`
+- Lease released: `2026-07-31T04:52:40Z`
 - Phase scope:
-  `P12_distinct_actual_name_display_name_migration_request_atomic_claim_only`
-- Ready-entry digest:
-  `86d690e8c86c758daef88ce47ac315a753372ab36d83aa7b5cad2c7017ee561b`
+  `P12_distinct_actual_name_display_name_migration_request_complete`
+- The live control READY queue was empty; authority came from the reconciled
+  P12 successor dispatch in control state.
 
 ## Exact readback
 
@@ -56,39 +57,55 @@ The source head is an ancestor of the authorized integration start. The I36
 lease was released at `2026-07-31T03:31:32Z`. Effect locks are empty and both
 I36 and P12 external-effect counts are `0/0/0`.
 
-## Atomic scope and mandatory stop
+## Immutable request binding
 
-This checkpoint changes exactly P12 `TASK-STATE.yaml`, `HANDOFF.md`, and
-`NEXT-PROMPT.md`. It does not create `P12-migration-001` and changes no
-product, contract, interface, test, registration request, shared-control,
-provider, or effect artifact.
+- Path:
+  `ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml`
+- Request ID/kind: `P12-migration-001` / `migration`
+- Raw SHA-256:
+  `6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17`
+- Git blob: `92c1765089dc227f44e852857a404ab11a0e7fe2`
+- Byte count: `4387`
 
-Stop after pushing and remote-verifying this exact three-file claim. This
-READY grants no latent request authority. C00 must reconcile the claim and
-publish a separate exact authorization before `P12-migration-001` may exist.
+The request asks F02/C00 to allocate the next safe ordinal strictly after 2254.
+P12 allocates no ordinal and authors no SQL. It requests a forward-only change
+to `onetime.v21_student_profiles`: required Unicode-nonblank `actual_name`,
+exact-copy backfill from the existing `display_name`, and nullable
+`display_name` that remains Unicode-nonblank when present.
 
-On later exact authority, the immutable request must add required Unicode
-nonblank `actual_name`, backfill it from existing `display_name`, and make
-`display_name` nullable but nonblank when present. It must preserve
-relationship `self`/`dependent` and must not add date of birth, age, age band,
-grade, Hebrew-specific name, Student email, provider/GHL identity, or any
+It explicitly preserves `relationship IN ('self', 'dependent')` and exactly
+`(relationship = 'self' AND self_adult_id IS NOT NULL) OR (relationship =
+'dependent' AND self_adult_id IS NULL)`, plus the household-owner guard and
+all existing keys, references, scopes, indexes, lifecycle, version, and history
+fields. It forbids adding date of birth, age, age band, grade, a
+Hebrew-specific name field, Student email, provider/GHL identity, or any
 credential/plaintext field.
+
+This checkpoint changes exactly the immutable request plus P12
+`TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md`. It changes no product,
+contract, interface, test, registration request, shared-control, migration,
+provider, candidate, or effect artifact.
 
 ## Exact next action
 
-Push and remote-verify this exact three-file claim, then stop for C00
-reconciliation. Do not allocate an ordinal, write SQL, create the request,
-edit product/contract/shared files, integrate, freeze a candidate, or perform
-an external effect.
+Push and remote-verify this exact four-path checkpoint, then stop. C00 should
+record the immutable request digest in `STEWARD-QUEUE.yaml` and assign F02 at
+an exact migration checkpoint. P12 performs no further work without a fresh
+exact authorization and does not allocate an ordinal, write/apply/acknowledge
+SQL, edit product/contract/shared files, integrate, freeze a candidate, or
+perform an external effect.
 
 ## Verification
 
-- Canonical READY digest was independently reproduced from recursively
-  key-sorted JSON.
-- Source pair/triplet digests were independently reproduced from exact raw Git
-  bytes concatenated in TASK/HANDOFF(/NEXT) order with no separator.
-- Live branch/control/integration refs, ancestry, package/task/context, schema
-  baselines, active lease, and zero locks/effects passed readback.
+- Exact input local, remote-tracking, and live heads matched
+  `8f6eacf8bc471009747225ecb1aa9c117955578b` with a clean worktree.
+- Control `cc90f922663405d883a798db8d4278ef803bb7cb`, sole parent/state basis
+  `fdcba89094f6b8f9460db3d41f3602be2d476990`, empty READY, atomic-claim
+  bindings, active lease, and effects `0/0/0` passed readback.
+- The request passed strict YAML, canonical steward-request JSON-schema,
+  Prettier, exact scope, invariant, and forbidden-field validation.
+- The PARENT_HOUSEHOLD_UI lease was released at
+  `2026-07-31T04:52:40Z`.
 
 ## External effects
 
@@ -97,5 +114,5 @@ Authority is `none`; attempted `0`, succeeded `0`, reconciled `0`.
 ## Security and recovery
 
 No provider payload, customer or child data, credential, secret, deployment,
-mutation, or deletion was accessed or attempted. Recovery base is exact atomic
-claim input `4bc6f15c8beffb28dc845d976a62b9c4915a11dc`.
+mutation, or deletion was accessed or attempted. Recovery base is exact
+request-checkpoint input `8f6eacf8bc471009747225ecb1aa9c117955578b`.

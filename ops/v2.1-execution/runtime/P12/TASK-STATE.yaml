@@ -32,8 +32,8 @@ dependency_heads:
     interface_source_head_sha: 47a2bb6b76225951e0599683499a95f4dc9881be
     interface_implementation_head_sha: a90baae8cf69d6823af6d741161fe0e9e7441321
     interface_checkpoint_digest: 366a1b30f724afc35e525f3f3175a4c84a45b7c13681cea1a17060bee75e4188
-status: claimed
-phase: P12_distinct_actual_name_display_name_migration_request_atomic_claim_only
+status: ready_for_review
+phase: P12_distinct_actual_name_display_name_migration_request_complete
 claim_mode: resume_existing
 claimed_by: codex-p12-name-request-dc54e616
 claim_time: '2026-07-31T04:20:00Z'
@@ -45,13 +45,15 @@ writer_slot_leases:
     lease_expires_at: '2026-07-31T05:48:00Z'
     state_based_on_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
     phase_scope: P12_distinct_actual_name_display_name_migration_request_atomic_claim_only
-    state: active
+    state: released
+    released_at: '2026-07-31T04:52:40Z'
+    release_reason: immutable_request_checkpoint_complete
 lease_expires_at: '2026-07-31T05:48:00Z'
-last_heartbeat_at: '2026-07-31T04:20:00Z'
-controller_authorization_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+last_heartbeat_at: '2026-07-31T04:52:40Z'
+controller_authorization_sha: cc90f922663405d883a798db8d4278ef803bb7cb
 ready_entry_state_based_on_control_head_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
 ready_entry_payload_digest: 86d690e8c86c758daef88ce47ac315a753372ab36d83aa7b5cad2c7017ee561b
-state_based_on_head_sha: 4bc6f15c8beffb28dc845d976a62b9c4915a11dc
+state_based_on_head_sha: 8f6eacf8bc471009747225ecb1aa9c117955578b
 atomic_claim_bindings:
   containing_control_head_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
   control_parent_and_state_basis_sha: ce71f41af1c70f689db9b3346ae5dfc643a1344f
@@ -76,6 +78,29 @@ atomic_claim_bindings:
   parent_household_contract_git_blob: d98bbdb6cd4a7902c7c953164617fcdbc566531d
   ready_entry_digest_algorithm: SHA-256 over recursively key-sorted JSON of the exact P12 READY entry
   source_is_ancestor_of_authorized_start: true
+  effect_lock_count: 0
+  external_effects: 0/0/0
+request_completion_bindings:
+  containing_control_head_sha: cc90f922663405d883a798db8d4278ef803bb7cb
+  control_parent_and_state_basis_sha: fdcba89094f6b8f9460db3d41f3602be2d476990
+  expected_existing_head_sha: 8f6eacf8bc471009747225ecb1aa9c117955578b
+  expected_existing_tree_sha: 5baccff23c7343e83a80d722fc3014375674131d
+  expected_existing_path_count: 3
+  expected_existing_task_raw_sha256: 27b046b3f25c4912f176d1788967b4f45b8f32f1a9e07a7be566a2a8825ed222
+  expected_existing_handoff_raw_sha256: fa93dc81038faa935909f0b4b8d1dcb74b0a891f72b22de5aad0b7c6fe8e8d96
+  expected_existing_next_raw_sha256: 7844f8d875c6fa58d05edf7a8d0ee68e8c6da4372d771d3a05824589a1ae62a5
+  expected_existing_state_handoff_digest: ba7c4426ee27810ddfef0efe74329d6c31bde18d5189a6790dfca03da95d66c0
+  expected_existing_runtime_triplet_digest: f8a9d88ad25723df7a0ccbe3e1d57ee4069cadcb56aafd7a0238cbcc5ed04758
+  expected_existing_path_inventory_digest: 2a417eb8e524b2d68defe7fa8e6db98df9a0d410a8063784a7f2ea62972f1d64
+  expected_existing_pair_manifest_digest: 529d7f12acca6d824fe543963f94df12e49f9188a19f6e969e6d9f6a42028c13
+  expected_existing_triplet_manifest_digest: dbc81bd056677a1fda0fd4c8485dbd0a42bb357a06f629211abb96ba22de232a
+  ready_queue_empty: true
+  request_id: P12-migration-001
+  request_path: ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml
+  request_raw_sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
+  request_git_blob: 92c1765089dc227f44e852857a404ab11a0e7fe2
+  request_byte_count: 4387
+  allocated_migration_ordinal: null
   effect_lock_count: 0
   external_effects: 0/0/0
 last_implementation_commit_sha: d0ae3a1a4b1717dc28cdf7f7ebfdbeee990f27a2
@@ -122,11 +147,17 @@ completed_steps:
   - Recomputed canonical READY digest 86d690e8c86c758daef88ce47ac315a753372ab36d83aa7b5cad2c7017ee561b; reproduced source state-plus-handoff digest 9bbd2384e49b61ad5e1e345693de7ff08ddc29ceca87afa866e6db899bc4b0bb and runtime-triplet digest 6895f018cd9865307f70fba2fff9f352e9f106eac05a149426f430244dbf6bea from exact raw Git bytes with no separator.
   - Verified the source head is an ancestor of the authorized integration start and reproduced the exact root package lock, source package, task, context, migration-2235, and Parent household contract raw/blob bindings.
   - Consumed this READY only in P12 TASK-STATE, HANDOFF, and NEXT-PROMPT; P12-migration-001 was not created and no product, contract, interface, steward, shared-control, provider, or effect file was changed.
+  - Verified live control cc90f922663405d883a798db8d4278ef803bb7cb has sole parent and state basis fdcba89094f6b8f9460db3d41f3602be2d476990, an empty READY queue, and exact P12 request-only authority.
+  - Reverified clean local, remote-tracking, and live P12 head 8f6eacf8bc471009747225ecb1aa9c117955578b with the reconciled atomic-claim tree, path inventory, raw-byte bindings, pair/triplet manifests, active claim, sole lease, and effects 0/0/0.
+  - Created only immutable P12-migration-001 plus the P12 runtime triplet. The request allocates no ordinal and requests the next safe post-2254 migration without SQL, product, contract, steward-queue, integration, provider, candidate, or effect changes.
+  - Bound the request to raw SHA-256 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17 and Git blob 92c1765089dc227f44e852857a404ab11a0e7fe2 after strict YAML, canonical JSON-schema, Prettier, invariant, forbidden-field, and exact-scope validation.
+  - Released PARENT_HOUSEHOLD_UI lease a0982333-1f59-4949-be55-1ded851cc663 at 2026-07-31T04:52:40Z with no external effect attempted, succeeded, or requiring reconciliation.
 remaining_steps:
-  - C00 must reconcile this exact three-file atomic claim checkpoint.
-  - Only after a separate exact C00 authorization may P12 create immutable request P12-migration-001 plus the runtime triplet.
-  - Any later request must add required Unicode nonblank actual_name, backfill it from existing display_name, and make display_name nullable but nonblank when present, while preserving the exact forbidden-field and authority boundaries in READY.
-next_action: Stop after pushing and remote-verifying this exact three-file atomic claim; wait for C00 reconciliation and a separate exact request authority before creating P12-migration-001 or changing any non-runtime file.
+  - C00 must bind the exact immutable P12-migration-001 digest and lifecycle in STEWARD-QUEUE and assign F02 at an exact migration checkpoint.
+  - F02 and C00 may allocate the next safe ordinal strictly after 2254; P12 must not allocate, write, apply, or acknowledge migration SQL.
+  - After a steward result and separate exact C00 authority, P12 must acknowledge only the immutable applied or rejected result before completion.
+  - Concrete PostgreSQL ParentHouseholdRepository persistence and central route composition remain separate gated work; this request does not authorize either.
+next_action: Stop after pushing and remote-verifying this exact four-path checkpoint. C00 should admit immutable request digest 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17 and assign F02; P12 performs no further work without a fresh exact authorization.
 requirements:
   OTV2-PARENT-031: ready_for_review
   OTV2-PARENT-032: ready_for_review
@@ -154,6 +185,7 @@ changed_paths:
   - ops/v2.1-execution/runtime/P12/INTERFACE-CHECKPOINT.yaml
   - ops/v2.1-execution/runtime/P12/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P12/TASK-STATE.yaml
+  - ops/v2.1-execution/runtime/P12/steward-requests/P12-migration-001.yaml
   - ops/v2.1-execution/runtime/P12/steward-requests/P12-registration-001.yaml
   - packages/contracts/src/portals/parent-household/index.ts
   - packages/domain/src/portals/parent-household/aggregate.ts
@@ -164,6 +196,8 @@ migrations: []
 steward_requests:
   - id: P12-registration-001
     sha256: 501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733
+  - id: P12-migration-001
+    sha256: 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17
 verification:
   commands_run:
     - command: exact remote repository/control/integration/branch identity verification
@@ -214,6 +248,16 @@ verification:
       result: passed; exact control fdcba890, source 4bc6f15c, integration d89a0f38, READY 86d690e8, active sole PARENT_HOUSEHOLD_UI lease, and zero effects
     - command: atomic-claim runtime-triplet YAML, Prettier, diff, scope, and repository secret validation
       result: passed; exactly three P12 runtime-memory paths, no request/non-runtime change, and secret scan across 2750 text files
+    - command: reconciled atomic-claim and exact request-authorization readback
+      result: passed; live control cc90f922, state basis fdcba890, clean local/tracking/live P12 head 8f6eacf8, empty READY, active exact claim/lease, and effects 0/0/0
+    - command: P12-migration-001 strict YAML and canonical steward-request JSON-schema validation
+      result: passed; exact request identity P12-migration-001, schema-valid kind migration, 14 allowed properties, and no secret/private-data declaration
+    - command: P12-migration-001 semantic and authority ceiling inspection
+      result: passed; exact-copy backfill, Unicode nonblank names, self/dependent and self_adult_id invariant, forbidden fields, post-2254 steward allocation, and no SQL/ordinal
+    - command: exact request raw/blob binding and focused Prettier
+      result: passed; 4387 bytes, SHA-256 6f76b024f756b89ef430a21c0744b4dd43114c5d5e9213bd76582e2534d3bc17, Git blob 92c1765089dc227f44e852857a404ab11a0e7fe2
+    - command: exact four-path scope, diff hygiene, and repository secret validation
+      result: passed; only the immutable request plus P12 runtime triplet changed, git diff --check passed, and secret scan passed across 2751 repository text files
   known_baseline_failures: []
 external_effects:
   authority: none
