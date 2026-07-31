@@ -1,4 +1,4 @@
-export const PARENT_HOUSEHOLD_CONTRACT_VERSION = '1.0.1' as const;
+export const PARENT_HOUSEHOLD_CONTRACT_VERSION = '1.1.0' as const;
 export const STANDARD_FAMILY_STUDENT_ALLOWANCE = 3 as const;
 
 export const STUDENT_ACTUAL_NAME_INSTRUCTIONS = {
@@ -117,17 +117,52 @@ export type ParentHouseholdMutation = {
   credential_handoff: StudentCredentialHandoff | null;
 };
 
+export type ParentHouseholdMutationOperation = ParentHouseholdAuditEvent['action'];
+
+/**
+ * This binding is derived by the authenticated server router from the exact
+ * request and server clock. Request bodies cannot choose or override it.
+ */
+export type ParentHouseholdMutationContext = {
+  idempotency_key: string;
+  canonical_request_hash: string;
+  occurred_at: string;
+};
+
+export type ParentHouseholdMutationReceipt = {
+  disposition: 'committed' | 'replayed';
+  operation: ParentHouseholdMutationOperation;
+  student_id: string;
+  household_revision: number;
+};
+
+export type ParentHouseholdMutationResponse = Pick<
+  ParentHouseholdMutation,
+  'snapshot' | 'credential_handoff'
+>;
+
 export interface ParentHouseholdRepository {
-  loadOwnedHousehold(household_id: string): Promise<ParentHouseholdRecord | null>;
-  isUsernameAvailable(input: { username: string; except_student_id?: string }): Promise<boolean>;
+  loadOwnedHousehold(principal: ParentHouseholdPrincipal): Promise<ParentHouseholdRecord | null>;
+  isUsernameAvailable(input: {
+    principal: ParentHouseholdPrincipal;
+    username: string;
+    except_student_id?: string;
+  }): Promise<boolean>;
+  findMutation(input: {
+    principal: ParentHouseholdPrincipal;
+    operation: ParentHouseholdMutationOperation;
+    context: ParentHouseholdMutationContext;
+  }): Promise<ParentHouseholdMutationReceipt | null>;
   commitMutation(input: {
+    principal: ParentHouseholdPrincipal;
+    context: ParentHouseholdMutationContext;
     expected_revision: number;
     next: ParentHouseholdRecord;
     audit: ParentHouseholdAuditEvent;
     password_hash: string | null;
     revoke_student_sessions: boolean;
     canonical_enrollment: 'enroll' | 'disable' | 'unchanged';
-  }): Promise<void>;
+  }): Promise<ParentHouseholdMutationReceipt>;
 }
 
 export interface ParentStudentPasswordPort {
@@ -145,6 +180,8 @@ export const PARENT_HOUSEHOLD_ERROR_CODES = {
   studentMissing: 'parent_student_missing',
   seatLimit: 'parent_student_seat_limit',
   conflict: 'parent_household_revision_conflict',
+  idempotencyConflict: 'parent_household_idempotency_conflict',
+  persistenceInvariant: 'parent_household_persistence_invariant',
   usernameUnavailable: 'parent_student_username_unavailable',
   invalidInput: 'parent_student_input_invalid',
   archived: 'parent_student_archived',

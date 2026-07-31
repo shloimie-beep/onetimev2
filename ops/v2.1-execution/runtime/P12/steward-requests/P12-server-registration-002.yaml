@@ -1,0 +1,74 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P12-server-registration-002
+task_id: P12
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-PARENT-031
+  - OTV2-PARENT-032
+  - OTV2-PARENT-033
+  - OTV2-PARENT-034
+  - OTV2-PARENT-035
+  - OTV2-PARENT-036
+  - OTV2-PARENT-040
+acceptance_case_ids:
+  - OTV2-PARENT-031-AC01
+  - OTV2-PARENT-032-AC01
+  - OTV2-PARENT-033-AC01
+  - OTV2-PARENT-034-AC01
+  - OTV2-PARENT-035-AC01
+  - OTV2-PARENT-036-AC01
+  - OTV2-PARENT-040-AC01
+rationale: >-
+  P12 now owns a concrete PostgreSQL repository, service, and authenticated
+  HTTP router, but the application server composer and database/session
+  runtime are steward-owned.
+desired_semantic_change: >-
+  Supersede immutable P12-registration-001, raw SHA-256
+  501ae46b1ad26e933d2e15b4f13760f4c3c8ec93d2672dc7be0d7e372046e733;
+  never edit that predecessor. Register createPostgresParentHouseholdRepository,
+  createParentHouseholdService, and createParentHouseholdRouter under
+  /api/app/parent after the P08 authenticated adult-session runtime is ready.
+  Inject the application PostgreSQL pool, the exact v21 adult-session runtime,
+  a canonical versioned Argon2id ParentStudentPasswordPort, a collision-safe
+  server Student-ID allocator, a domain-separated HMAC-SHA256 password
+  fingerprint for idempotency using the existing server auth secret, the
+  accepted service-account version, and its immutable evidence reference.
+  Derive adult, account, role, session, and
+  household scope exclusively from the authenticated cookie/session context;
+  request bodies and paths cannot choose or override that scope. Keep inactive
+  households readable only through a status-only scoped overview with no
+  Student rows, and fail every mutation including receipt replay closed.
+  Preserve transaction-bound receipt idempotency, actual/display-name
+  persistence, the hard three-active-Student cap, canonical enrollment,
+  credential/session and classroom-access revocation readback, and canonical
+  audit evidence. A committed create/reset may return its plaintext handoff
+  exactly once; every replay returns credential_handoff null and never rehashes
+  or writes again.
+proposed_symbols_routes_keys_or_dependencies:
+  - createPostgresParentHouseholdRepository
+  - createParentHouseholdService
+  - createParentHouseholdRouter
+  - canonical v21 PostgreSQL pool
+  - V21AdultSessionRuntime bootstrapCookieHeader and verifyCsrf
+  - canonical versioned Argon2id ParentStudentPasswordPort
+  - collision-safe server ParentStudentIdPort
+  - domain-separated HMAC-SHA256 fingerprintPasswordForIdempotency
+  - accepted service-account version and immutable evidence reference
+  - authenticated /api/app/parent/household
+  - authenticated /api/app/parent/students mutation routes
+compatibility_assumptions:
+  - Migration 2255 is integrated before registration and supplies required actual_name plus nullable display_name.
+  - P08 supplies the server-authenticated Parent adult/session/household context and CSRF validation.
+  - Request bodies remain strict and reject household_id, adult_id, student_id on create, legacy date/age/grade/name fields, email, and provider identifiers.
+  - The repository remains the sole atomic writer for Student profile, service acceptance, enrollment, audit, revocation readback, credential evidence, household revision, and receipt.
+verification_performed:
+  - Focused domain, service, concrete repository, HTTP router, API, and workspace tests passed.
+  - Native PostgreSQL 16.14 tests passed through migration 2255 for the concurrent final-seat race and injected transaction rollback.
+  - Exact replay tests proved no credential redisclosure, no rehash, no duplicate Student, and no duplicate audit, including replay after a later credential reset.
+conflicts_or_risks:
+  - Do not edit, re-admit, or implement P12-registration-001; this schema-valid request supersedes it.
+  - Do not register any legacy in-memory repository or request-selected Parent scope.
+  - Do not log, persist, email, or replay a plaintext Student password.
+  - Do not derive a persisted receipt/audit hash directly from a plaintext Student password.
+contains_secret_or_private_data: false

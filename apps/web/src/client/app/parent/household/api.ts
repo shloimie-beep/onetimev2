@@ -1,0 +1,163 @@
+import type {
+  CreateParentStudentCommand,
+  ParentHouseholdMutationResponse,
+  ParentHouseholdSnapshot,
+  ParentStudentLifecycleCommand,
+  ResetParentStudentCredentialCommand,
+  UpdateParentStudentCommand,
+} from '../../../../../../../packages/contracts/src/portals/parent-household/index.ts';
+
+export type ParentHouseholdBootstrap = {
+  snapshot: ParentHouseholdSnapshot;
+  csrf_token: string;
+};
+
+export class ParentHouseholdApiError extends Error {
+  constructor(
+    readonly code: string,
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ParentHouseholdApiError';
+  }
+}
+
+export function createParentHouseholdApi(
+  input: {
+    fetcher?: typeof fetch;
+    basePath?: string;
+    idempotencyKey?: () => string;
+  } = {},
+) {
+  const fetcher = input.fetcher ?? globalThis.fetch.bind(globalThis);
+  const basePath = input.basePath ?? '/api/app/parent';
+  const nextIdempotencyKey = input.idempotencyKey ?? browserIdempotencyKey;
+
+  async function read<T>(response: Response): Promise<T> {
+    const payload = (await response.json()) as unknown;
+    if (!isRecord(payload) || payload.success !== true || !('data' in payload)) {
+      const code =
+        isRecord(payload) && typeof payload.code === 'string' ? payload.code : 'REQUEST_FAILED';
+      const message =
+        isRecord(payload) && typeof payload.message === 'string'
+          ? payload.message
+          : 'The Parent request could not be completed.';
+      throw new ParentHouseholdApiError(code, message, response.status);
+    }
+    return payload.data as T;
+  }
+
+  async function mutate<TBody>(
+    path: string,
+    method: 'POST' | 'PATCH',
+    body: TBody,
+    csrfToken: string,
+    idempotencyKey = nextIdempotencyKey(),
+  ) {
+    return read<ParentHouseholdMutationResponse>(
+      await fetcher(`${basePath}${path}`, {
+        method,
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: {
+          'content-type': 'application/json',
+          'x-csrf-token': csrfToken,
+          'x-idempotency-key': idempotencyKey,
+        },
+        body: JSON.stringify(body),
+      }),
+    );
+  }
+
+  return {
+    async load() {
+      return read<ParentHouseholdBootstrap>(
+        await fetcher(`${basePath}/household`, {
+          method: 'GET',
+          credentials: 'same-origin',
+          cache: 'no-store',
+        }),
+      );
+    },
+
+    createStudent(command: CreateParentStudentCommand, csrfToken: string, idempotencyKey?: string) {
+      return mutate('/students', 'POST', command, csrfToken, idempotencyKey);
+    },
+
+    updateStudent(command: UpdateParentStudentCommand, csrfToken: string, idempotencyKey?: string) {
+      const { student_id: studentId, ...body } = command;
+      return mutate(
+        `/students/${encodeURIComponent(studentId)}`,
+        'PATCH',
+        body,
+        csrfToken,
+        idempotencyKey,
+      );
+    },
+
+    archiveStudent(
+      command: ParentStudentLifecycleCommand,
+      csrfToken: string,
+      idempotencyKey?: string,
+    ) {
+      const { student_id: studentId, ...body } = command;
+      return mutate(
+        `/students/${encodeURIComponent(studentId)}/archive`,
+        'POST',
+        body,
+        csrfToken,
+        idempotencyKey,
+      );
+    },
+
+    restoreStudent(
+      command: ParentStudentLifecycleCommand,
+      csrfToken: string,
+      idempotencyKey?: string,
+    ) {
+      const { student_id: studentId, ...body } = command;
+      return mutate(
+        `/students/${encodeURIComponent(studentId)}/restore`,
+        'POST',
+        body,
+        csrfToken,
+        idempotencyKey,
+      );
+    },
+
+    resetStudentCredential(
+      command: ResetParentStudentCredentialCommand,
+      csrfToken: string,
+      idempotencyKey?: string,
+    ) {
+      const { student_id: studentId, ...body } = command;
+      return mutate(
+        `/students/${encodeURIComponent(studentId)}/credential-reset`,
+        'POST',
+        body,
+        csrfToken,
+        idempotencyKey,
+      );
+    },
+  };
+}
+
+export type ParentHouseholdApi = ReturnType<typeof createParentHouseholdApi>;
+
+function browserIdempotencyKey() {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return `parent-${globalThis.crypto.randomUUID()}`;
+  }
+  const bytes = new Uint8Array(24);
+  globalThis.crypto?.getRandomValues(bytes);
+  const encoded = Array.from(bytes, (value) => value.toString(16).padStart(2, '0')).join('');
+  if (!encoded || /^0+$/u.test(encoded)) {
+    throw new Error('Secure browser randomness is required for Parent mutations.');
+  }
+  return `parent-${encoded}`;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
