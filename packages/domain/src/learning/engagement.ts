@@ -4,6 +4,7 @@ import type {
   AttendanceRecord,
   CanonicalLearnerIdentity,
   CanonicalRecognitionConsent,
+  CorrectReviewCompletionCommand,
   CorrectQuestionRecognitionCommand,
   LeaderboardEntry,
   LearningActor,
@@ -18,7 +19,9 @@ import type {
   QuestionRecognitionLedgerEntry,
   QuestionState,
   QuestionTransitionLedgerEntry,
+  RecordReviewCompletionCommand,
   ReviewCompletion,
+  ScheduledOccurrenceCoverage,
   SubmitQuestionCommand,
   TransitionQuestionCommand,
 } from '../../../contracts/src/learning/index.ts';
@@ -128,7 +131,14 @@ export function transitionQuestion(
         command.reason?.trim() || null,
       ),
       recognition: firstQualification
-        ? recognitionEntry(current, command, 'qualified', true, null)
+        ? recognitionEntry(
+            current,
+            command,
+            nextRecognitionSequence(history.recognitions),
+            'qualified',
+            true,
+            null,
+          )
         : null,
     },
     replay: false,
@@ -148,6 +158,9 @@ export function correctQuestionRecognition(
   if (current.version !== command.expectedVersion) stale();
   const reason = command.reason.trim();
   if (reason.length < 3) invalid('An audited correction reason is required.');
+  if (!history.recognitions.some((entry) => entry.action === 'qualified')) {
+    invalid('Recognition cannot be corrected before the question first qualifies.');
+  }
   const projection = {
     ...current,
     version: current.version + 1,
@@ -167,6 +180,7 @@ export function correctQuestionRecognition(
       recognition: recognitionEntry(
         current,
         command,
+        nextRecognitionSequence(history.recognitions),
         command.eligible ? 'correction_enabled' : 'correction_disabled',
         command.eligible,
         reason,
@@ -275,13 +289,16 @@ export function calculateBadges(input: {
         .map((question) => question.id),
     ),
   ];
-  const reviewIds = [
-    ...new Set(
-      input.reviews
-        .filter((review) => review.studentId === input.studentId && review.adminPublished)
-        .map((review) => review.reviewItemId),
-    ),
-  ];
+  const latestReviews = new Map<string, ReviewCompletion>();
+  for (const review of input.reviews.filter(
+    (event) => event.studentId === input.studentId && event.adminPublished,
+  )) {
+    const prior = latestReviews.get(review.reviewItemId);
+    if (!prior || review.sequence > prior.sequence) latestReviews.set(review.reviewItemId, review);
+  }
+  const reviewIds = [...latestReviews.values()]
+    .filter((review) => review.action === 'completed' || review.action === 'restored')
+    .map((review) => review.reviewItemId);
   return [
     ...awards('consistency', streak, [5, 20, 60], input.scheduledOccurrenceIds.slice(-streak)),
     ...awards('curious_learner', questionIds.length, [1, 5, 15], questionIds),
@@ -300,7 +317,7 @@ export function createAnnouncement(input: {
 }): LearningAnnouncement {
   if (input.actor.role !== 'admin') denied('Only an Admin may publish an announcement.');
   if (!validAudience(input.audience)) invalid('Unknown announcement audience.');
-  if (input.audience.kind === 'class' && !input.actor.classIds.includes(input.audience.classId)) {
+  if (input.audience.kind !== 'program' && !input.actor.classIds.includes(input.audience.classId)) {
     denied('The Admin is not assigned to the announcement class.');
   }
   return {
@@ -312,6 +329,104 @@ export function createAnnouncement(input: {
     publishedBy: input.actor.principalId,
     publishedAt: input.publishedAt,
     expiresAt: input.expiresAt ?? null,
+  };
+}
+
+export function recordReviewCompletion(
+  command: RecordReviewCompletionCommand,
+  publishedItem: LearningScope & {
+    reviewItemId: string;
+    classId: string;
+    publicationAuditRef: string;
+  },
+): ReviewCompletion {
+  if (command.actor.role !== 'student' || !command.actor.classIds.includes(command.classId)) {
+    denied('Only the authenticated enrolled Student may complete a review.');
+  }
+  if (
+    publishedItem.reviewItemId !== command.reviewItemId ||
+    publishedItem.classId !== command.classId ||
+    !sameScope(command.actor, publishedItem)
+  ) {
+    denied('Review completion requires canonical Admin-published item evidence.');
+  }
+  return {
+    ...scopeOf(command.actor),
+    reviewItemId: requiredText(command.reviewItemId, 'Review item', 512),
+    classId: requiredText(command.classId, 'Class', 512),
+    studentId: command.actor.studentId,
+    householdId: command.actor.householdId,
+    adminPublished: true,
+    action: 'completed',
+    sequence: 1,
+    idempotencyKey: requiredText(command.idempotencyKey, 'Idempotency key', 512),
+    requestHash: requiredText(command.requestHash, 'Request hash', 512),
+    completedBy: command.actor.principalId,
+    source: command.source,
+    reason: null,
+    auditRef: requiredText(command.auditRef, 'Review completion audit reference', 512),
+    publicationAuditRef: requiredText(
+      publishedItem.publicationAuditRef,
+      'Review publication audit reference',
+      512,
+    ),
+    completedAt: command.completedAt,
+  };
+}
+
+export function correctReviewCompletion(
+  history: readonly ReviewCompletion[],
+  command: CorrectReviewCompletionCommand,
+  publishedItem: LearningScope & {
+    reviewItemId: string;
+    classId: string;
+    publicationAuditRef: string;
+  },
+): ReviewCompletion {
+  if (command.actor.role !== 'admin' || !command.actor.classIds.includes(command.classId)) {
+    denied('Only an assigned Admin may correct review-completion evidence.');
+  }
+  if (
+    publishedItem.reviewItemId !== command.reviewItemId ||
+    publishedItem.classId !== command.classId ||
+    !sameScope(command.actor, publishedItem)
+  ) {
+    denied('Review correction requires exact canonical published-item evidence.');
+  }
+  const scoped = history.filter(
+    (event) =>
+      sameScope(command.actor, event) &&
+      event.reviewItemId === command.reviewItemId &&
+      event.classId === command.classId &&
+      event.studentId === command.studentId &&
+      event.householdId === command.householdId,
+  );
+  const latest = [...scoped].sort((left, right) => right.sequence - left.sequence)[0];
+  if (!latest || (command.action === 'revoked' && latest.action === 'revoked')) {
+    invalid('Review correction requires active completion evidence.');
+  }
+  if (command.action === 'restored' && latest.action !== 'revoked') {
+    invalid('Review restoration requires prior revocation evidence.');
+  }
+  const reason = requiredText(command.reason, 'Review correction reason', 1_000);
+  if (reason.length < 3) invalid('Review correction requires an audited reason.');
+  return {
+    ...scopeOf(command.actor),
+    reviewItemId: command.reviewItemId,
+    classId: command.classId,
+    studentId: command.studentId,
+    householdId: command.householdId,
+    adminPublished: true,
+    action: command.action,
+    sequence: latest.sequence + 1,
+    idempotencyKey: command.idempotencyKey,
+    requestHash: command.requestHash,
+    completedBy: command.actor.principalId,
+    source: 'admin_correction',
+    reason,
+    auditRef: requiredText(command.auditRef, 'Review correction audit reference', 512),
+    publicationAuditRef: publishedItem.publicationAuditRef,
+    completedAt: command.occurredAt,
   };
 }
 
@@ -339,6 +454,7 @@ export function buildLeaderboard(input: {
   transitions: readonly QuestionTransitionLedgerEntry[];
   recognitions: readonly QuestionRecognitionLedgerEntry[];
   consents: readonly CanonicalRecognitionConsent[];
+  scheduledOccurrenceCoverage?: readonly ScheduledOccurrenceCoverage[];
   asOf: string;
   aliasHmacKey: string;
 }): LearningLeaderboard {
@@ -356,13 +472,17 @@ export function buildLeaderboard(input: {
     (learner) => sameScope(input.actor, learner) && learner.classId === input.classId,
   );
   const consents = latestConsent(input.consents.filter((event) => sameScope(input.actor, event)));
-  const attendanceCount = new Map<string, number>();
-  for (const record of attendanceVisibleTo(input.actor, input.attendance)) {
-    if (
+  // Raw peer rows remain server-internal. Only privacy-safe aggregates derived
+  // from exact-scope, identity-bound canonical rows are returned.
+  const visibleWindowAttendance = input.attendance.filter(
+    (record) =>
+      canonicalAttendanceMatches(input.actor, record) &&
       record.classId === input.classId &&
-      record.present &&
-      inWindow(record.occurredAt, windowStarts, windowEnds)
-    ) {
+      inWindow(record.occurredAt, windowStarts, windowEnds),
+  );
+  const attendanceCount = new Map<string, number>();
+  for (const record of visibleWindowAttendance) {
+    if (record.present) {
       attendanceCount.set(record.studentId, (attendanceCount.get(record.studentId) ?? 0) + 1);
     }
   }
@@ -387,8 +507,15 @@ export function buildLeaderboard(input: {
     learners.map((learner) => [
       learner.studentId,
       currentStreak(
-        input.attendance.filter(
-          (row) => row.studentId === learner.studentId && row.classId === input.classId,
+        visibleWindowAttendance.filter((row) => row.studentId === learner.studentId),
+        (input.scheduledOccurrenceCoverage ?? []).filter(
+          (occurrence) =>
+            occurrence.studentId === learner.studentId &&
+            occurrence.classId === input.classId &&
+            occurrence.identityBindingVerified === true &&
+            occurrence.enrollmentId === learner.enrollmentId &&
+            sameScope(input.actor, occurrence) &&
+            inWindow(occurrence.occurredAt, windowStarts, windowEnds),
         ),
       ),
     ]),
@@ -447,6 +574,7 @@ function transitionEntry(
 function recognitionEntry(
   question: LearningQuestion,
   command: CorrectQuestionRecognitionCommand | TransitionQuestionCommand,
+  sequence: number,
   action: QuestionRecognitionLedgerEntry['action'],
   eligible: boolean,
   reason: string | null,
@@ -454,6 +582,7 @@ function recognitionEntry(
   return {
     ...scopeOf(question),
     questionId: question.id,
+    sequence,
     idempotencyKey: command.idempotencyKey,
     requestHash: command.requestHash,
     actorId: command.actor.principalId,
@@ -481,9 +610,14 @@ function recognitionEligible(
   entries: readonly QuestionRecognitionLedgerEntry[],
 ) {
   return (
-    entries.filter((entry) => entry.questionId === questionId).sort(compareOccurred)[0]?.eligible ??
-    false
+    entries
+      .filter((entry) => entry.questionId === questionId)
+      .sort((left, right) => right.sequence - left.sequence)[0]?.eligible ?? false
   );
+}
+
+function nextRecognitionSequence(entries: readonly QuestionRecognitionLedgerEntry[]) {
+  return Math.max(0, ...entries.map((entry) => entry.sequence)) + 1;
 }
 
 function latestConsent(events: readonly CanonicalRecognitionConsent[]) {
@@ -556,14 +690,22 @@ function rank(
   });
 }
 
-function currentStreak(records: readonly AttendanceRecord[]) {
-  return [...records]
-    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
-    .findIndex((record) => !record.present) === -1
-    ? records.filter((record) => record.present).length
-    : [...records]
-        .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
-        .findIndex((record) => !record.present);
+function currentStreak(
+  records: readonly AttendanceRecord[],
+  scheduledOccurrences: readonly { occurrenceId: string; occurredAt: string }[],
+) {
+  if (scheduledOccurrences.length === 0) return 0;
+  const attendanceByOccurrence = new Map(
+    records.map((record) => [record.occurrenceId, record.present] as const),
+  );
+  let streak = 0;
+  for (const occurrence of [...scheduledOccurrences].sort((left, right) =>
+    right.occurredAt.localeCompare(left.occurredAt),
+  )) {
+    if (attendanceByOccurrence.get(occurrence.occurrenceId) !== true) break;
+    streak += 1;
+  }
+  return streak;
 }
 
 function awards(
@@ -593,21 +735,34 @@ function validAudience(value: unknown): value is AnnouncementAudience {
   const audience = value as Record<string, unknown>;
   if (audience.kind === 'program') return Object.keys(audience).length === 1;
   if (audience.kind === 'class') return typeof audience.classId === 'string';
-  if (audience.kind === 'parent') return typeof audience.householdId === 'string';
-  if (audience.kind === 'student') return typeof audience.studentId === 'string';
+  if (audience.kind === 'parent')
+    return typeof audience.classId === 'string' && typeof audience.householdId === 'string';
+  if (audience.kind === 'student')
+    return typeof audience.classId === 'string' && typeof audience.studentId === 'string';
   return false;
 }
 
 function audienceMatches(actor: LearningActor, audience: AnnouncementAudience) {
+  if (actor.role === 'admin') {
+    return audience.kind === 'program' || actor.classIds.includes(audience.classId);
+  }
   switch (audience.kind) {
     case 'program':
       return true;
     case 'class':
       return actor.classIds.includes(audience.classId);
     case 'student':
-      return actor.role === 'student' && actor.studentId === audience.studentId;
+      return (
+        actor.role === 'student' &&
+        actor.studentId === audience.studentId &&
+        actor.classIds.includes(audience.classId)
+      );
     case 'parent':
-      return actor.role === 'parent' && actor.householdIds.includes(audience.householdId);
+      return (
+        actor.role === 'parent' &&
+        actor.householdIds.includes(audience.householdId) &&
+        actor.classIds.includes(audience.classId)
+      );
     default:
       return false;
   }

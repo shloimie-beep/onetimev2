@@ -28,19 +28,27 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
       FOUR_DIMENSION_FENCE,
       'append-only: UPDATE and DELETE are rejected',
       'qualification is unique per scoped question and corrections append evidence',
+      'immutable recognition_sequence is unique and monotonic per scoped question',
       'optional recognition append shares the projection-and-transition transaction',
     ],
   },
   announcements: {
     table: 'onetime.learning_announcements',
     readTable: 'onetime.learning_announcement_reads',
-    invariants: [FOUR_DIMENSION_FENCE, 'unknown audience kinds fail closed'],
+    invariants: [
+      FOUR_DIMENSION_FENCE,
+      'unknown audience kinds fail closed',
+      'direct Student and household targets carry a roster-verified audience_class_key',
+    ],
   },
   reviews: {
     table: 'onetime.learning_review_completions',
     invariants: [
       FOUR_DIMENSION_FENCE,
-      'one qualifying completion per scoped Student and Admin-published review item',
+      'append-only Student completion and reasoned Admin revoke/restore event ledger; UPDATE and DELETE are rejected',
+      'event_action, completion_source, audit_ref, publication_audit_ref, and monotonic event_sequence are immutable',
+      'effective completion is the latest append sequence per scoped Student and Admin-published review item',
+      'authenticated Student ingestion is idempotent by scoped key and canonical request hash',
     ],
   },
   canonicalReadSeams: {
@@ -51,6 +59,7 @@ export const LEARNING_ENGAGEMENT_REQUIRED_SCHEMA = {
       'P22 creates no attendance event, attendance projection, consent, identity, or name table',
       'P22 exposes no attendance or consent mutation',
       'attendance is accepted only through canonical account, Student, class, and enrollment joins',
+      'streaks use completed in-enrollment scheduled occurrences and fail closed without coverage',
     ],
   },
 } as const;

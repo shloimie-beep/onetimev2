@@ -1,0 +1,59 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-server-registration-002
+task_id: P22
+kind: server_feature_registration
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+rationale: >-
+  The corrected service requires server-derived four-dimensional scope and
+  four canonical read seams that cannot be wired in P22-owned files.
+desired_semantic_change: >-
+  Register the P22 learning service behind authenticated Admin, Parent, and
+  Student routes. Derive account, product, runtime tier, verification
+  environment, principal, household, Student, and class assignments from the
+  authenticated server session. Inject the SELECT-only P18 attendance adapter,
+  P12 identity adapter, and canonical privacy member_recognition consent
+  adapter, plus LearningReviewItemReadPort for class-bound canonical
+  Admin-published review proof, and the server-side alias HMAC key. Expose no
+  attendance record or correction route and no recognition-consent mutation route.
+proposed_symbols_routes_keys_or_dependencies:
+  - createLearningEngagementService
+  - LearningAttendanceReadPort
+  - LearningIdentityReadPort
+  - LearningRecognitionConsentReadPort
+  - LearningReviewItemReadPort
+  - authenticated /api/app/learning feature registration
+compatibility_assumptions:
+  - Request bodies cannot select or override any LearningScope dimension.
+  - The P18 adapter reads classroom_attendance_projection_v21 and proves canonical enrollment binding.
+  - Consent and identity adapters are read-only and identity-bound.
+verification_performed:
+  - Verified service exposes attendance reads but no recordAttendance or correctAttendance method.
+  - Verified service exposes no P22 consent mutation.
+  - Verified cross-class question denial occurs before the atomic repository port.
+conflicts_or_risks:
+  - Fail closed if any canonical read adapter or identity binding is unavailable.
+  - Do not register legacy predecessor attendance correction or consent mutation routes.
+contains_secret_or_private_data: false

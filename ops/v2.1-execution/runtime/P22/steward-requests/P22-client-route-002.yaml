@@ -1,0 +1,51 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-client-route-002
+task_id: P22
+kind: client_route_registration
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+rationale: >-
+  Existing Admin and Student learning views are outside the current write
+  ceiling and require stewarded authenticated route composition.
+desired_semantic_change: >-
+  Register the existing Admin and Student learning views in the authenticated
+  application shell. Bind leaderboard rows to the new opaque entryKey. During
+  compatibility transition, treat retained LeaderboardEntry.studentId as the
+  same opaque full-scope entry key, never as a canonical peer Student ID.
+  Render only the server-provided safe displayName label.
+proposed_symbols_routes_keys_or_dependencies:
+  - AdminLearningWorkspace authenticated route
+  - StudentLearningOverview authenticated route
+  - LeaderboardEntry.entryKey
+  - opaque compatibility LeaderboardEntry.studentId
+compatibility_assumptions:
+  - The client never receives canonical peer Student IDs or actual names.
+  - Self is labelled You and peer labels are already consent-safe server projections.
+verification_performed:
+  - Verified corrected contract provides entryKey and opaque compatibility studentId.
+  - Verified displayName remains the safe rendered label consumed by the existing client.
+conflicts_or_risks:
+  - Do not key client actions or analytics to a canonical peer Student ID.
+contains_secret_or_private_data: false

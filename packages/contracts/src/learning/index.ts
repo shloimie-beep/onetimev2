@@ -1,4 +1,4 @@
-export const LEARNING_ENGAGEMENT_CONTRACT_VERSION = '2.1.1' as const;
+export const LEARNING_ENGAGEMENT_CONTRACT_VERSION = '2.1.2' as const;
 export const LEARNING_ROLLING_WINDOW_DAYS = 30 as const;
 
 export type LearningScope = {
@@ -51,6 +51,7 @@ export type QuestionTransitionLedgerEntry = LearningScope & {
 
 export type QuestionRecognitionLedgerEntry = LearningScope & {
   questionId: string;
+  sequence: number;
   idempotencyKey: string;
   requestHash: string;
   actorId: string;
@@ -121,8 +122,8 @@ export type CorrectQuestionRecognitionCommand = {
 export type AnnouncementAudience =
   | { kind: 'program' }
   | { kind: 'class'; classId: string }
-  | { kind: 'parent'; householdId: string }
-  | { kind: 'student'; studentId: string };
+  | { kind: 'parent'; classId: string; householdId: string }
+  | { kind: 'student'; classId: string; studentId: string };
 
 export type LearningAnnouncement = LearningScope & {
   id: string;
@@ -160,13 +161,61 @@ export type AttendanceRecord = LearningScope & {
   correctedBy: string | null;
 };
 
+export type ScheduledOccurrenceCoverage = LearningScope & {
+  occurrenceId: string;
+  classId: string;
+  studentId: string;
+  enrollmentId: string;
+  identityBindingVerified: true;
+  occurredAt: string;
+};
+
 export type ReviewCompletion = LearningScope & {
   reviewItemId: string;
   classId: string;
   studentId: string;
   householdId: string;
   adminPublished: boolean;
+  action: 'completed' | 'revoked' | 'restored';
+  sequence: number;
+  idempotencyKey: string;
+  requestHash: string;
+  completedBy: string;
+  source: 'authenticated_submit' | 'authenticated_mark_complete' | 'admin_correction';
+  reason: string | null;
+  auditRef: string;
+  publicationAuditRef: string;
   completedAt: string;
+};
+
+export type RecordReviewCompletionCommand = {
+  actor: LearningActor;
+  reviewItemId: string;
+  classId: string;
+  source: 'authenticated_submit' | 'authenticated_mark_complete';
+  auditRef: string;
+  idempotencyKey: string;
+  requestHash: string;
+  completedAt: string;
+};
+
+export type ReviewCompletionMutationResult = {
+  completion: ReviewCompletion;
+  replay: boolean;
+};
+
+export type CorrectReviewCompletionCommand = {
+  actor: LearningActor;
+  reviewItemId: string;
+  classId: string;
+  studentId: string;
+  householdId: string;
+  action: 'revoked' | 'restored';
+  reason: string;
+  auditRef: string;
+  idempotencyKey: string;
+  requestHash: string;
+  occurredAt: string;
 };
 
 export type BadgeFamily = 'consistency' | 'curious_learner' | 'review_ready';
@@ -241,6 +290,12 @@ export interface LearningEngagementRepository {
   getQuestion(scope: LearningScope, questionId: string): Promise<LearningQuestion | null>;
   getQuestionHistory(scope: LearningScope, questionId: string): Promise<QuestionHistory>;
   applyQuestionMutation(mutation: QuestionMutation): Promise<QuestionMutationResult>;
+  applyReviewCompletion(completion: ReviewCompletion): Promise<ReviewCompletionMutationResult>;
+  listReviewCompletionEvents(
+    scope: LearningScope,
+    reviewItemId: string,
+    studentId: string,
+  ): Promise<readonly ReviewCompletion[]>;
   listQuestions(scope: LearningScope): Promise<readonly LearningQuestion[]>;
   listQuestionTransitions(scope: LearningScope): Promise<readonly QuestionTransitionLedgerEntry[]>;
   listQuestionRecognitions(
@@ -258,6 +313,12 @@ export interface LearningEngagementRepository {
 
 export interface LearningAttendanceReadPort {
   listAttendance(scope: LearningScope): Promise<readonly AttendanceRecord[]>;
+  listScheduledOccurrenceCoverage(
+    scope: LearningScope,
+    classId: string,
+    windowStartsAt: string,
+    windowEndsAt: string,
+  ): Promise<readonly ScheduledOccurrenceCoverage[]>;
 }
 
 export interface LearningIdentityReadPort {
@@ -269,4 +330,18 @@ export interface LearningRecognitionConsentReadPort {
     scope: LearningScope,
     classId: string,
   ): Promise<readonly CanonicalRecognitionConsent[]>;
+}
+
+export interface LearningReviewItemReadPort {
+  getAdminPublishedReviewItem(
+    scope: LearningScope,
+    reviewItemId: string,
+  ): Promise<
+    | (LearningScope & {
+        reviewItemId: string;
+        classId: string;
+        publicationAuditRef: string;
+      })
+    | null
+  >;
 }

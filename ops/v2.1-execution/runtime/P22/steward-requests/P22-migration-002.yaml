@@ -1,0 +1,77 @@
+schema_version: 1
+execution_id: OT-V21-PRODUCTION
+request_id: P22-migration-002
+task_id: P22
+kind: migration
+requirement_ids:
+  - OTV2-LEARNING-093
+  - OTV2-LEARNING-094
+  - OTV2-LEARNING-095
+  - OTV2-LEARNING-096
+  - OTV2-LEARNING-097
+  - OTV2-LEARNING-098
+  - OTV2-LEARNING-099
+  - OTV2-LEARNING-100
+  - OTV2-LEARNING-196
+  - OTV2-LEARNING-197
+  - OTV2-LEARNING-238
+acceptance_case_ids:
+  - OTV2-LEARNING-093-AC01
+  - OTV2-LEARNING-094-AC01
+  - OTV2-LEARNING-095-AC01
+  - OTV2-LEARNING-096-AC01
+  - OTV2-LEARNING-097-AC01
+  - OTV2-LEARNING-098-AC01
+  - OTV2-LEARNING-099-AC01
+  - OTV2-LEARNING-100-AC01
+  - OTV2-LEARNING-196-AC01
+  - OTV2-LEARNING-197-AC01
+rationale: >-
+  The immutable predecessor request would create competing P22 attendance and
+  consent authorities and lacks runtime-tier and verification-environment
+  isolation. The corrected schema contract instead limits P22 persistence to
+  its engagement projections and append-only evidence.
+desired_semantic_change: >-
+  Allocate the next safe forward-only migration only after steward review.
+  Bind the migration to exact schema contract identity
+  P22-LEARNING-ENGAGEMENT-SCHEMA-002.
+  Create four-dimension-fenced P22 question projection, append-only question
+  transition ledger, append-only recognition ledger, announcements,
+  announcement reads, and review completions. Enforce scoped idempotency
+  request hashes, optimistic versions, ledger UPDATE/DELETE rejection, unique
+  first qualification, immutable monotonic recognition sequence,
+  roster-verified audience_class_key for direct targets, and an append-only
+  learning_review_completions event ledger with action, source, audit,
+  publication proof, monotonic append sequence, authenticated-Student completion,
+  and reasoned assigned-Admin revoke/restore evidence. Reject UPDATE/DELETE and
+  derive effective completion from the latest append sequence. Use
+  transaction-compatible keys. Explicitly create no
+  attendance event, attendance projection, attendance segment, consent,
+  identity, actual-name, display-name, or leaderboard-learner table. Preserve
+  migration 2251 as the sole attendance write authority.
+proposed_symbols_routes_keys_or_dependencies:
+  - onetime.learning_question_projection
+  - onetime.learning_question_transition_ledger
+  - onetime.learning_question_recognition_ledger
+  - onetime.learning_announcements
+  - onetime.learning_announcement_reads
+  - onetime.learning_review_completions
+  - account_key + product_key + runtime_tier + verification_environment_id fences
+  - append-only transition, recognition, and review-completion ledger triggers
+  - P22-LEARNING-ENGAGEMENT-SCHEMA-002
+compatibility_assumptions:
+  - P18 migration 2251 remains the only attendance event/projection writer.
+  - Canonical privacy consent and P12 identity remain external read-only seams.
+  - >-
+    Migration 2254 creates no view, foreign key, trigger, index, or other
+    database object that references actual_name or display_name changes
+    introduced later by P12 migration 2255.
+  - F02 chooses the ordinal and authors SQL; P22 allocates no ordinal.
+verification_performed:
+  - Verified P22-LEARNING-ENGAGEMENT-SCHEMA-002 excludes P22 attendance, consent, and name tables.
+  - Verified repository DML targets only the six requested P22-owned structures.
+  - Verified focused transaction tests cover replay, conflict, stale rollback, and ledger append order.
+conflicts_or_risks:
+  - Withhold the immutable predecessor request; it is evidence only and must remain byte-identical.
+  - Reject any migration draft containing P22 attendance, consent, identity, or name persistence.
+contains_secret_or_private_data: false

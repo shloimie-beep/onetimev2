@@ -39,6 +39,7 @@ const mutation: QuestionMutation = {
   recognition: {
     ...scope,
     questionId: 'question-1',
+    sequence: 1,
     idempotencyKey: 'answer-1',
     requestHash: 'hash-answer-1',
     actorId: 'admin-1',
@@ -89,12 +90,18 @@ describe('P22 PostgreSQL repository', () => {
     expect(source).toContain('FROM onetime.classroom_attendance_projection_v21 AS attendance');
     expect(source).toContain('JOIN onetime.class_series_enrollments AS enrollment');
     expect(source).toContain('JOIN onetime.v21_student_profiles AS student');
+    expect(source).toContain('JOIN onetime.v21_households AS household');
     expect(source).toContain("consent.scope = 'member_recognition'");
+    expect(source).toContain('successor.supersedes_consent_event_id');
+    expect(source).toContain('actor_adult_id = owner_adult_id');
     expect(source).toContain('student.actual_name, student.display_name');
+    expect(source).toContain('listScheduledOccurrenceCoverage');
+    expect(source).toContain('occurrence.starts_at >= enrollment.effective_at');
   });
 
-  it('orders one atomic projection + transition + recognition transaction', async () => {
+  it('reserves the scoped idempotency key before mutation and appends one atomic plan', async () => {
     const fake = pool([
+      () => ({ rows: [], rowCount: 0 }),
       () => ({ rows: [], rowCount: 0 }),
       () => ({ rows: [], rowCount: 1 }),
       () => ({ rows: [], rowCount: 1 }),
@@ -103,6 +110,7 @@ describe('P22 PostgreSQL repository', () => {
     await createLearningEngagementRepository(fake.value as never).applyQuestionMutation(mutation);
     expect(fake.sql.map((text) => text.split(/\s+/).slice(0, 3).join(' '))).toEqual([
       'BEGIN',
+      'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',
       'SELECT request_hash FROM',
       'UPDATE onetime.learning_question_projection SET',
       'INSERT INTO onetime.learning_question_transition_ledger',
@@ -112,7 +120,11 @@ describe('P22 PostgreSQL repository', () => {
   });
 
   it('rolls back stale projections before ledger writes', async () => {
-    const fake = pool([() => ({ rows: [], rowCount: 0 }), () => ({ rows: [], rowCount: 0 })]);
+    const fake = pool([
+      () => ({ rows: [], rowCount: 0 }),
+      () => ({ rows: [], rowCount: 0 }),
+      () => ({ rows: [], rowCount: 0 }),
+    ]);
     await expect(
       createLearningEngagementRepository(fake.value as never).applyQuestionMutation(mutation),
     ).rejects.toThrow(/stale_version/);
@@ -140,6 +152,7 @@ describe('P22 PostgreSQL repository', () => {
       updated_at: new Date('2026-07-02T10:00:00.000Z'),
     };
     const replay = pool([
+      () => ({ rows: [], rowCount: 0 }),
       () => ({ rows: [{ request_hash: mutation.transition.requestHash }], rowCount: 1 }),
       () => ({ rows: [row], rowCount: 1 }),
     ]);
@@ -148,11 +161,17 @@ describe('P22 PostgreSQL repository', () => {
     ).resolves.toMatchObject({ replay: true });
     expect(replay.sql.join('\n')).not.toMatch(/\b(?:UPDATE|INSERT)\b/);
 
-    const conflict = pool([() => ({ rows: [{ request_hash: 'different' }], rowCount: 1 })]);
+    const conflict = pool([
+      () => ({ rows: [], rowCount: 0 }),
+      () => ({ rows: [{ request_hash: 'different' }], rowCount: 1 }),
+    ]);
     await expect(
       createLearningEngagementRepository(conflict.value as never).applyQuestionMutation(mutation),
     ).rejects.toThrow(/idempotency_conflict/);
     expect(conflict.sql.at(-1)).toBe('ROLLBACK');
+    expect(conflict.sql.join('\n')).not.toMatch(
+      /UPDATE onetime\.learning_question_projection|INSERT INTO onetime\.learning_question/,
+    );
   });
 
   it('keeps ledger inserts append-only', () => {

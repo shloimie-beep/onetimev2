@@ -11,7 +11,7 @@
   `2026-07-31T08:20:00Z`
 - Effects: `0/0/0`
 
-## Implemented in this checkpoint
+## Implemented through this heartbeat
 
 The eight authorized product/test paths now carry all four scope dimensions.
 P22 attendance, consent, and name writes are removed. Canonical P18
@@ -28,14 +28,22 @@ label-only, and derives aliases from an unambiguous full-scope encoding.
 Unknown audiences and states fail closed; Admin class visibility is no longer
 unconditional.
 
+Post-checkpoint hardening adds canonical completed-occurrence schedule
+coverage with enrollment-time fences, privacy-safe peer aggregates, immutable
+recognition append sequence, scoped advisory idempotency serialization,
+current-owner/supersession-bound consent, class-bound direct announcements,
+and Student-authenticated review completion plus append-only reasoned Admin
+revoke/restore evidence.
+
 ## Verification
 
-Focused domain, service, and repository suites pass: 3 files, 20 tests.
+Focused domain, service, and repository suites pass: 3 files, 25 tests.
 Workspace typecheck reports only pre-existing Stripe Status widening and
 missing Playwright dependency diagnostics; no P22 diagnostic is present.
 
 ## Next action
 
-After pushing this heartbeat checkpoint, create and schema-validate the five
-exact successor requests, run focused lint/format plus all final integrity
-gates, update the terminal runtime triplet, release the lease, and push.
+After pushing this heartbeat checkpoint, finish the remaining live-review
+authority checks, schema-validate the five exact successor requests, run all
+final integrity gates, update the terminal runtime triplet, release the lease,
+and push.

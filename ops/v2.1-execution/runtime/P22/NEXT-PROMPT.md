@@ -12,12 +12,14 @@ Fetch control and the canonical P22 branch, require clean local/tracking/live
 equality, and derive the heartbeat head from the remote. Preserve the exact
 16-path ceiling and immutable P22-migration-001/P22-registration-001 bytes.
 
-The eight product/test corrections and three focused suites are complete.
-Create exactly the five authorized -002 steward requests with all 11
-requirements and only the ten canonical AC01 cases. Then run request-schema,
-focused type/lint/format, immutable predecessor, exact-scope, diff, and secret
-gates. Update terminal runtime evidence, release the task-local lease, commit,
-push normally, verify live equality and clean worktree, and stop for C00.
+The product/test corrections, canonical read seams, successor requests, and
+three focused suites are in active post-heartbeat review. Finish the remaining
+authority checks, validate exactly the five authorized -002 steward requests
+with all 11 requirements and only the ten canonical AC01 cases, then run
+request-schema, focused type/lint/format, immutable predecessor, exact-scope,
+diff, and secret gates. Update terminal runtime evidence, release the
+task-local lease, commit, push normally, verify live equality and clean
+worktree, and stop for C00.
 
 No SQL migration, ordinal allocation/application, shared registration/barrel/
 config edit, integration, candidate, provider, deployment, DNS, send, charge,

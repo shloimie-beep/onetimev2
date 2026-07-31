@@ -42,6 +42,8 @@ function repository(
       question: mutation.projection,
       replay: false,
     }),
+    applyReviewCompletion: async (completion) => ({ completion, replay: false }),
+    listReviewCompletionEvents: async () => [],
     listQuestions: async () => [],
     listQuestionTransitions: async () => [],
     listQuestionRecognitions: async () => [],
@@ -57,9 +59,13 @@ function repository(
 function service(repo: LearningEngagementRepository) {
   return createLearningEngagementService({
     repository: repo,
-    attendance: { listAttendance: async () => [] },
+    attendance: {
+      listAttendance: async () => [],
+      listScheduledOccurrenceCoverage: async () => [],
+    },
     identity: { listLearners: async () => [] },
     recognitionConsent: { listRecognitionConsent: async () => [] },
+    reviewItems: { getAdminPublishedReviewItem: async () => null },
     aliasHmacKey: 'test-only-hmac-key',
   });
 }
@@ -118,5 +124,78 @@ describe('P22 learning service', () => {
     expect(instance.recordAttendance).toBeUndefined();
     expect(instance.correctAttendance).toBeUndefined();
     expect(instance.setRecognitionConsent).toBeUndefined();
+  });
+
+  it('fails closed unless review completion has roster and canonical publication proof', async () => {
+    const apply = vi.fn<LearningEngagementRepository['applyReviewCompletion']>(
+      async (completion) => ({ completion, replay: false }),
+    );
+    const actor: LearningActor = {
+      ...scope,
+      role: 'student',
+      principalId: 'login-1',
+      studentId: 'student-1',
+      householdId: 'household-1',
+      classIds: ['class-a'],
+    };
+    const command = {
+      actor,
+      reviewItemId: 'review-1',
+      classId: 'class-a',
+      source: 'authenticated_submit' as const,
+      auditRef: 'audit-1',
+      idempotencyKey: 'complete-1',
+      requestHash: 'hash-complete-1',
+      completedAt: '2026-07-02T10:00:00.000Z',
+    };
+    const instance = createLearningEngagementService({
+      repository: repository({ applyReviewCompletion: apply }),
+      attendance: {
+        listAttendance: async () => [],
+        listScheduledOccurrenceCoverage: async () => [],
+      },
+      identity: {
+        listLearners: async () => [
+          {
+            ...scope,
+            studentId: 'student-1',
+            householdId: 'household-1',
+            classId: 'class-a',
+            enrollmentId: 'enrollment-1',
+            actualName: 'Student One',
+            displayName: null,
+          },
+        ],
+      },
+      recognitionConsent: { listRecognitionConsent: async () => [] },
+      reviewItems: {
+        getAdminPublishedReviewItem: async () => ({
+          ...scope,
+          reviewItemId: 'review-1',
+          classId: 'class-a',
+          publicationAuditRef: 'revision-1',
+        }),
+      },
+      aliasHmacKey: 'test-only-hmac-key',
+    });
+    await expect(instance.recordReviewCompletion(command)).resolves.toMatchObject({
+      replay: false,
+    });
+    expect(apply).toHaveBeenCalledOnce();
+
+    const deniedInstance = createLearningEngagementService({
+      repository: repository({ applyReviewCompletion: apply }),
+      attendance: {
+        listAttendance: async () => [],
+        listScheduledOccurrenceCoverage: async () => [],
+      },
+      identity: { listLearners: async () => [] },
+      recognitionConsent: { listRecognitionConsent: async () => [] },
+      reviewItems: { getAdminPublishedReviewItem: async () => null },
+      aliasHmacKey: 'test-only-hmac-key',
+    });
+    await expect(deniedInstance.recordReviewCompletion(command)).rejects.toThrow(
+      /Admin-published review item/,
+    );
   });
 });

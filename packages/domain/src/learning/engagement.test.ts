@@ -13,9 +13,12 @@ import {
   announcementsVisibleTo,
   attendanceVisibleTo,
   buildLeaderboard,
+  calculateBadges,
+  correctReviewCompletion,
   correctQuestionRecognition,
   createAnnouncement,
   questionsVisibleTo,
+  recordReviewCompletion,
   submitQuestion,
   transitionQuestion,
 } from './engagement.ts';
@@ -38,14 +41,6 @@ const student: LearningActor = {
   principalId: 'login-1',
   studentId: 'student-1',
   householdId: 'household-1',
-  classIds: ['class-a'],
-};
-const peer: LearningActor = {
-  ...scope,
-  role: 'student',
-  principalId: 'login-2',
-  studentId: 'student-2',
-  householdId: 'household-2',
   classIds: ['class-a'],
 };
 const emptyHistory: QuestionHistory = { transitions: [], recognitions: [] };
@@ -189,16 +184,26 @@ describe('P22 four-scope private questions and append-only plans', () => {
 
   it('appends recognition correction evidence without rewriting the projection', () => {
     const created = submission();
-    const result = correctQuestionRecognition(created.projection, emptyHistory, {
-      actor: admin,
-      questionId: created.projection.id,
-      eligible: false,
-      reason: 'Wrong question association',
-      expectedVersion: 1,
-      idempotencyKey: 'correct-1',
-      requestHash: 'hash-correct-1',
-      occurredAt: '2026-07-02T10:00:00.000Z',
-    }).mutation!;
+    const qualified = {
+      ...created.transition,
+      sequence: 1,
+      action: 'qualified' as const,
+      eligible: true,
+    };
+    const result = correctQuestionRecognition(
+      created.projection,
+      { transitions: [created.transition], recognitions: [qualified] },
+      {
+        actor: admin,
+        questionId: created.projection.id,
+        eligible: false,
+        reason: 'Wrong question association',
+        expectedVersion: 1,
+        idempotencyKey: 'correct-1',
+        requestHash: 'hash-correct-1',
+        occurredAt: '2026-07-02T10:00:00.000Z',
+      },
+    ).mutation!;
     expect(result.recognition).toMatchObject({
       action: 'correction_disabled',
       eligible: false,
@@ -206,6 +211,44 @@ describe('P22 four-scope private questions and append-only plans', () => {
     });
     expect(result.transition.from).toBe(result.transition.to);
     expect(result.projection).not.toHaveProperty('recognitionEligible');
+  });
+
+  it('cannot restore recognition before first qualification and sequences backdated corrections', () => {
+    const created = submission();
+    expect(() =>
+      correctQuestionRecognition(created.projection, emptyHistory, {
+        actor: admin,
+        questionId: created.projection.id,
+        eligible: true,
+        reason: 'No qualifying evidence',
+        expectedVersion: 1,
+        idempotencyKey: 'invalid-restore',
+        requestHash: 'hash-invalid-restore',
+        occurredAt: '2026-07-02T10:00:00.000Z',
+      }),
+    ).toThrow(/before the question first qualifies/);
+
+    const qualified = {
+      ...submission().transition,
+      sequence: 1,
+      action: 'qualified' as const,
+      eligible: true,
+    };
+    const corrected = correctQuestionRecognition(
+      created.projection,
+      { transitions: [created.transition], recognitions: [qualified] },
+      {
+        actor: admin,
+        questionId: created.projection.id,
+        eligible: false,
+        reason: 'Backdated correction',
+        expectedVersion: 1,
+        idempotencyKey: 'backdated',
+        requestHash: 'hash-backdated',
+        occurredAt: '2026-06-01T10:00:00.000Z',
+      },
+    ).mutation!;
+    expect(corrected.recognition).toMatchObject({ sequence: 2, eligible: false });
   });
 });
 
@@ -238,6 +281,109 @@ describe('P22 canonical read-only attendance and announcements', () => {
         '2026-07-02T10:00:00.000Z',
       ),
     ).toEqual([]);
+  });
+
+  it('binds direct audiences to class and lets only the assigned Admin inspect them', () => {
+    const targeted = createAnnouncement({
+      actor: admin,
+      id: 'student-a',
+      title: 'Student A',
+      body: 'Only the enrolled target',
+      audience: { kind: 'student', classId: 'class-a', studentId: 'student-1' },
+      publishedAt: '2026-07-01T10:00:00.000Z',
+    });
+    expect(announcementsVisibleTo(admin, [targeted], '2026-07-02T10:00:00.000Z')).toEqual([
+      targeted,
+    ]);
+    expect(
+      announcementsVisibleTo(
+        { ...admin, classIds: ['class-b'] },
+        [targeted],
+        '2026-07-02T10:00:00.000Z',
+      ),
+    ).toEqual([]);
+  });
+
+  it('records review completion only from the authenticated Student and canonical publication', () => {
+    const command = {
+      actor: student,
+      reviewItemId: 'review-1',
+      classId: 'class-a',
+      source: 'authenticated_mark_complete' as const,
+      auditRef: 'audit-review-1',
+      idempotencyKey: 'complete-review-1',
+      requestHash: 'hash-complete-review-1',
+      completedAt: '2026-07-02T10:00:00.000Z',
+    };
+    expect(
+      recordReviewCompletion(command, {
+        ...scope,
+        reviewItemId: 'review-1',
+        classId: 'class-a',
+        publicationAuditRef: 'published-revision-1',
+      }),
+    ).toMatchObject({
+      studentId: 'student-1',
+      householdId: 'household-1',
+      adminPublished: true,
+      source: 'authenticated_mark_complete',
+    });
+    expect(() =>
+      recordReviewCompletion(
+        { ...command, actor: admin },
+        {
+          ...scope,
+          reviewItemId: 'review-1',
+          classId: 'class-a',
+          publicationAuditRef: 'published-revision-1',
+        },
+      ),
+    ).toThrow(/authenticated enrolled Student/);
+
+    const completed = recordReviewCompletion(command, {
+      ...scope,
+      reviewItemId: 'review-1',
+      classId: 'class-a',
+      publicationAuditRef: 'published-revision-1',
+    });
+    const revoked = correctReviewCompletion(
+      [completed],
+      {
+        actor: admin,
+        reviewItemId: 'review-1',
+        classId: 'class-a',
+        studentId: 'student-1',
+        householdId: 'household-1',
+        action: 'revoked',
+        reason: 'Duplicate completion evidence',
+        auditRef: 'audit-revoke-1',
+        idempotencyKey: 'revoke-1',
+        requestHash: 'hash-revoke-1',
+        occurredAt: '2026-07-03T10:00:00.000Z',
+      },
+      {
+        ...scope,
+        reviewItemId: 'review-1',
+        classId: 'class-a',
+        publicationAuditRef: 'published-revision-1',
+      },
+    );
+    expect(revoked).toMatchObject({
+      action: 'revoked',
+      sequence: 2,
+      source: 'admin_correction',
+      reason: 'Duplicate completion evidence',
+    });
+
+    const awards = calculateBadges({
+      studentId: 'student-1',
+      scheduledOccurrenceIds: ['present', 'missed-most-recent'],
+      attendance: [attendance({ occurrenceId: 'present' })],
+      questions: [],
+      recognitions: [],
+      reviews: [completed, revoked],
+    });
+    expect(awards).toEqual([]);
   });
 });
 
@@ -352,5 +498,47 @@ describe('P22 recognition-safe leaderboard labels', () => {
       });
       expect(board.categories.attendanceCount[0]?.displayName).not.toBe(alias);
     }
+  });
+
+  it('uses canonical schedule coverage for peer streaks and excludes lifetime/cross-scope rows', () => {
+    const board = buildLeaderboard({
+      ...base,
+      attendance: [
+        ...base.attendance,
+        attendance({
+          occurrenceId: 'old',
+          studentId: 'student-2',
+          householdId: 'household-2',
+          occurredAt: '2026-01-01T10:00:00.000Z',
+        }),
+        attendance({
+          occurrenceId: 'cross-scope',
+          studentId: 'student-2',
+          householdId: 'household-2',
+          runtimeTier: 'production',
+          occurredAt: '2026-07-19T10:00:00.000Z',
+        }),
+      ],
+      scheduledOccurrenceCoverage: [
+        {
+          ...scope,
+          occurrenceId: 'occurrence-1',
+          classId: 'class-a',
+          studentId: 'student-2',
+          enrollmentId: 'enrollment-2',
+          identityBindingVerified: true,
+          occurredAt: '2026-07-02T10:00:00.000Z',
+        },
+      ],
+    });
+    const peerAttendance = board.categories.attendanceCount.find((entry) => entry.rank === 1);
+    expect(peerAttendance?.value).toBe(1);
+    expect(board.categories.currentAttendanceStreak.map((entry) => entry.value)).toEqual([1, 0]);
+    expect(
+      buildLeaderboard({
+        ...base,
+        scheduledOccurrenceCoverage: [],
+      }).categories.currentAttendanceStreak.every((entry) => entry.value === 0),
+    ).toBe(true);
   });
 });
