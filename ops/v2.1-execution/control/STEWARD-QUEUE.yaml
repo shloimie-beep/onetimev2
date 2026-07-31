@@ -1205,9 +1205,9 @@ items:
   status: assigned
   assigned_steward: F02
   target_checkpoint: F02_forward_migration_2254_after_P21_then_P22_source_integration
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+  acknowledgment_state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null
@@ -1235,9 +1235,9 @@ items:
   status: assigned
   assigned_steward: F02
   target_checkpoint: F02_forward_migration_2255_after_P22_2254
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+  acknowledgment_state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null
@@ -1250,9 +1250,9 @@ items:
   status: assigned
   assigned_steward: F02
   target_checkpoint: F02_forward_migration_2256_after_P10_authority_acknowledgment
-  acknowledged_by_task: false
-  acknowledgment_head_sha: null
-  acknowledgment_state_handoff_digest: null
+  acknowledged_by_task: true
+  acknowledgment_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+  acknowledgment_state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
   applied_commit_sha: null
   result_record_head_sha: null
   evaluated_target_head_sha: null

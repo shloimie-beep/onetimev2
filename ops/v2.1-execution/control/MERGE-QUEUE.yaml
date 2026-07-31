@@ -1,8 +1,115 @@
 schema_version: 1
 execution_id: OT-V21-PRODUCTION
 integration_branch: codex/v21-integration
-items: []
-item_payload_digests: {}
+items:
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: 81343d98-4027-4984-aa22-667bac140d4d
+    kind: implementation
+    task_id: F02
+    source_branch: codex/v21-lane1-migration-correction
+    source_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+    target_branch: codex/v21-integration
+    expected_target_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    source_delta_base_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    required_merge_base_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+    merge_after_heads: {}
+    allowed_paths:
+      - ops/v2.1-execution/runtime/F02/HANDOFF.md
+      - ops/v2.1-execution/runtime/F02/MIGRATION-ALLOCATIONS-PROPOSAL.yaml
+      - ops/v2.1-execution/runtime/F02/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/F02/TASK-STATE.yaml
+      - packages/db/migrations/2254_v21_learning_engagement.sql
+      - packages/db/migrations/2255_v21_student_actual_name.sql
+      - packages/db/migrations/2256_v21_approved_school_configuration_authority.sql
+    writer_slot_leases:
+      - slot: RELEASE_INTEGRATOR
+        lease_id: e5ba5eae-272b-481d-b66b-1f4957840e10
+        holder_task_id: I36
+        holder_claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
+        holder_writer_id: codex-i36-f02-p18-source-05827ada
+        state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+        lease_issued_at: '2026-07-31T13:03:39Z'
+        lease_expires_at: '2026-07-31T16:03:39Z'
+        phase_scope: F02_then_P18_lean_source_microbatch
+    task_packet_digest: 7f76d84250d7c117eb78f1bbe70419d9395f46d2ef496527332d5140ad049bce
+    task_context_digest: 0d581af766419d9c448774279a5b4bd9f7883378f91e2dcb2666ac057ff369fc
+    state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
+    runtime_triplet_digest: 1852f5414eb77a15dea67d80707fc913ea25f6fcc1c9ba50cd50e3c792f56297
+    source_path_count: 7
+    source_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
+    source_manifest_digest: 507805b23a2ba2b82e174e6f478c97cbba155e418d16511a525f01fe685f4c28
+    source_tree_sha: 597f7aaa16ba5f46cd58404079cf413c19a6bd19
+    source_diff_sha256: bf25b3b2a3897a05897cf61b66b21a687300265cee4992f68d68bc250e3c4748
+    native_postgresql_18_4:
+      apply: 87/87
+      replay: 87/87
+      ledger: 87/87
+      result: passed
+    next_migration_ordinal: 2257
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+  - schema_version: 1
+    execution_id: OT-V21-PRODUCTION
+    merge_id: 417ab877-7cdc-4244-8e40-bc268325a4de
+    kind: implementation
+    task_id: P18
+    source_branch: codex/v21-p18-attendance-projection-callback
+    source_head_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
+    target_branch: codex/v21-integration
+    expected_target_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    source_delta_base_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    required_merge_base_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    preserve_source_ancestry: true
+    required_postmerge_ancestor_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
+    merge_after_heads:
+      F02: 3ee2f651528f5170dd714b921500235d4e015c5b
+    allowed_paths:
+      - ops/v2.1-execution/runtime/P18/HANDOFF.md
+      - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
+      - packages/contracts/src/classroom/embedded/index.ts
+      - packages/db/src/classroom/attendance/repository.test.ts
+      - packages/db/src/classroom/attendance/repository.ts
+      - packages/domain/src/classroom/embedded/attendance.ts
+      - packages/domain/src/classroom/embedded/embedded-classroom.test.ts
+    writer_slot_leases:
+      - slot: RELEASE_INTEGRATOR
+        lease_id: e5ba5eae-272b-481d-b66b-1f4957840e10
+        holder_task_id: I36
+        holder_claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
+        holder_writer_id: codex-i36-f02-p18-source-05827ada
+        state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+        lease_issued_at: '2026-07-31T13:03:39Z'
+        lease_expires_at: '2026-07-31T16:03:39Z'
+        phase_scope: F02_then_P18_lean_source_microbatch
+    task_packet_digest: e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bbaa1b2
+    task_context_digest: 2385ac5d0555d75318577964ad92b850c55e8bc770127454e65afe776648142d
+    state_handoff_digest: 4b732a77050b64ed8e441573a321f74988ee96f1af1906340571e8190d91293c
+    runtime_triplet_digest: fac28c509f5d0761379a7a699b3fbaf91b2a189431cd657a2bed9c7bbfa84e3e
+    source_path_count: 8
+    source_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
+    source_manifest_digest: 749d8af2878867401f88f16eb02d2adcedc8ca9b2e41efe1245988eca6c6a437
+    source_tree_sha: 3be253c75d6f35972b895f980ee58266e5a80a05
+    source_diff_sha256: 0cdd0db59959083d20b38d63cdbefb08d4fc7106f1c039743f688e742174b802
+    focused_suite_counts:
+      repository: 21
+      domain: 10
+      server_callback_contract: 4
+      total: 35
+    external_effect_summary:
+      attempted: 0
+      succeeded: 0
+      reconciled: 0
+    state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+item_payload_digests:
+  81343d98-4027-4984-aa22-667bac140d4d: e173c6b19150ed26b0bccbda36dcdd94b7111044b2476985042d3960611006b3
+  417ab877-7cdc-4244-8e40-bc268325a4de: e83044cbb1f6b381da07521e6fd36c17418e1d820cbf371805a3feb4cab3c2ee
 completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION

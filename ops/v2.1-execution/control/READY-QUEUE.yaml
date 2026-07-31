@@ -3,98 +3,65 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-  - task_id: P18
+  - task_id: I36
     status: resume_ready
-    phase: P18_attendance_projection_callback_evidence_count_correction
-    branch: codex/v21-p18-attendance-projection-callback
+    phase: F02_then_P18_lean_source_microbatch
+    branch: codex/v21-integration
     claim_mode: resume_existing
-    state_based_on_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
-    authorized_start_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
-    expected_existing_head: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
+    state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+    authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    expected_existing_head: 392cc119b2df65f9bd38da8c4db36113f1add967
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-    task_packet_digest: e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bbaa1b2
-    task_context_digest: 2385ac5d0555d75318577964ad92b850c55e8bc770127454e65afe776648142d
-    prompt_digest: 4961cde1f9eb8ff32b68e8144dbe243c5f7f42e8c1922bbab24c39d82650d469
+    task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
+    task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
     dependency_heads_and_digests:
       C00:
-        required_state: immediate_lean_completion_mode
-        observed_state: immediate_lean_completion_mode
-        observed_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
-        control_state_raw_sha256: 618b4540026b3eab5f7a14b04edad39a07662cd5de19f53fba7665df93706851
-      I36:
-        required_state: P21_then_P22_accepted_source_microbatch_complete
-        observed_state: P21_then_P22_accepted_source_microbatch_complete
-        terminal_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
-        terminal_parent_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
-        terminal_tree_sha: 722151c1fc3db6b6d4eacb0390696efcfea3ce37
-        state_handoff_digest: 0d80a22c7b33acbae256cae4909451139aab0ceb512241e31bc9838c2773034f
-        runtime_triplet_digest: 8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5
-        lease_released_at: '2026-07-31T11:09:17Z'
-        external_effects: 0/0/0
-      P18_terminal:
-        required_state: product_semantics_passed_evidence_count_held
-        observed_state: product_semantics_passed_evidence_count_held
-        terminal_head_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
-        terminal_parent_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
-        terminal_tree_sha: 88d6c9888d2500d78d384a0d53820e750f4a2ed5
-        task_state_raw_sha256: 7dccc1d9be17cc952e9b3276b6e0284e98ee4691868e6ef6da2042de3f787112
-        handoff_raw_sha256: ce9dff7b400286da1eb005060f3ce37bc52e5636c4b14296288f0b5a6d8454b6
-        next_prompt_raw_sha256: ff0d692a65b6fb5575bf810f71b2306546df51e62be61abcf7a4c09aa673f7ca
-        state_handoff_digest: 8c1d984c50f3d20283f9648d972226379dd0336c40c71f833da43b4b35b56ffa
-        runtime_triplet_digest: 88daeba555fa488130fa54118a2510cf1dba5ae19b698b5b624b216602b1139b
-        seven_path_inventory_digest: e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b
-        seven_path_manifest_digest: 85eec35a14b7956a7986326f31e39df75ab308e66f8db58db2f1a10bc1a5de40
-        source_manifest_digest: 1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340
-        contract_raw_sha256: 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5
-        migration_tree_digest: 040376c25e645b048afeb8e08d230a3084ab8566
-        product_review: passed_both_P1_and_P2_corrections
-        evidence_hold: recorded_38_but_exact_relevant_suite_total_is_35
-        focused_suite_counts:
-          repository: 21
-          domain: 10
-          server_callback_contract: 4
-          total: 35
-        prior_lease_released_at: '2026-07-31T12:09:35Z'
-        external_effects: 0/0/0
-    authorized_paths:
-      - ops/v2.1-execution/runtime/P18/HANDOFF.md
-      - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
-      - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-    authorized_path_inventory_digest: a1faaf0d274b87576b567dcd9aa305184598dd8c7bd9d44dd526fc97cd7b76f8
-    correction_directives:
-      - >-
-        Replace every current terminal acceptance-count assertion of 38 with the exact reproduced total 35 and record
-        the component counts: repository 21, domain 10, and server callback contract 4.
-      - >-
-        Preserve all four product/test files and every contract, migration, request, configuration, composer, barrel,
-        integration, candidate, provider, and external-effect byte.
-      - >-
-        This is the one final runtime-metadata terminal for the completed product correction. Validate only YAML,
-        raw/pair/triplet digests, exact three-path scope, ancestry, expected head, and local/tracking/live equality.
-      - >-
-        Release the fresh EMBEDDED_CLASSROOM lease, push normally, report effects 0/0/0, and stop for one independent
-        C00 review. Do not create another claim-only, interim, validation-only, or release-only checkpoint.
+        required_state: operational
+        observed_state: operational
+        observed_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+        control_state_canonical_digest: b040c7c4794e83438fc53cf80ff7f3e30f13780e049e650fc0a537ae41677081
+      F02:
+        required_state: ready_for_integration
+        observed_state: ready_for_integration
+        observed_task_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+        terminal_parent_sha: b46ff339ab3d79b06547d387795e95951a200263
+        terminal_tree_sha: 597f7aaa16ba5f46cd58404079cf413c19a6bd19
+        source_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
+        source_manifest_digest: 507805b23a2ba2b82e174e6f478c97cbba155e418d16511a525f01fe685f4c28
+        state_handoff_digest: 62a0494054c46bc8ba16f8b1b57898cb3ccee19a9b324dec9201939da144c894
+        runtime_triplet_digest: 1852f5414eb77a15dea67d80707fc913ea25f6fcc1c9ba50cd50e3c792f56297
+      P18:
+        required_state: ready_for_integration
+        observed_state: ready_for_integration
+        observed_task_head_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
+        terminal_parent_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
+        terminal_tree_sha: 3be253c75d6f35972b895f980ee58266e5a80a05
+        source_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
+        source_manifest_digest: 749d8af2878867401f88f16eb02d2adcedc8ca9b2e41efe1245988eca6c6a437
+        product_artifact_manifest_digest: 1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340
+        state_handoff_digest: 4b732a77050b64ed8e441573a321f74988ee96f1af1906340571e8190d91293c
+        runtime_triplet_digest: fac28c509f5d0761379a7a699b3fbaf91b2a189431cd657a2bed9c7bbfa84e3e
     writer_slot_leases:
-      - slot: EMBEDDED_CLASSROOM
-        lease_id: 8700aa39-5041-4aa8-bf35-398cb86ba6f6
-        holder_task_id: P18
-        holder_claim_id: 1904184a-8dbd-4876-b7bd-3715ed4272c0
-        holder_writer_id: codex-p18-evidence-count-1904184a
-        state_based_on_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
-        lease_issued_at: '2026-07-31T12:26:10Z'
-        lease_expires_at: '2026-07-31T14:26:10Z'
-        phase_scope: P18_attendance_projection_callback_evidence_count_correction_only
+      - slot: RELEASE_INTEGRATOR
+        lease_id: e5ba5eae-272b-481d-b66b-1f4957840e10
+        holder_task_id: I36
+        holder_claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
+        holder_writer_id: codex-i36-f02-p18-source-05827ada
+        state_based_on_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+        lease_issued_at: '2026-07-31T13:03:39Z'
+        lease_expires_at: '2026-07-31T16:03:39Z'
+        phase_scope: F02_then_P18_lean_source_microbatch
     effect_lock_leases: []
-    claim_id: 1904184a-8dbd-4876-b7bd-3715ed4272c0
-    lease_issued_at: '2026-07-31T12:26:10Z'
-    lease_expires_at: '2026-07-31T14:26:10Z'
+    claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
+    lease_issued_at: '2026-07-31T13:03:39Z'
+    lease_expires_at: '2026-07-31T16:03:39Z'
     heartbeat_interval_minutes: 30
-    prompt_path: ops/v2.1-execution/prompts/P18-START-OR-RESUME.md
+    prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  P18: 0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb
+  I36: e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

@@ -9,14 +9,14 @@ start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
 phase: immediate_lean_completion_mode
-claimed_by: codex-c00-orchestrator-782440c2
-claim_time: '2026-07-30T16:25:00Z'
-claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-31T12:35:33Z'
-last_heartbeat_at: '2026-07-31T12:35:33Z'
-controller_authorization_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+claimed_by: codex-c00-orchestrator-1703337f
+claim_time: '2026-07-31T13:03:39Z'
+claim_id: 1703337f-8790-4b4b-8a37-0b31f37d2e38
+lease_expires_at: '2026-07-31T13:03:39Z'
+last_heartbeat_at: '2026-07-31T13:03:39Z'
+controller_authorization_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
 ready_entry_payload_digest: null
-state_based_on_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+state_based_on_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 immediate_lean_completion_mode:
   source_attachment_sha256: 6c7e65fd4c583a1aa2e115ef2132f449a9e3fd49bfcf52ec6c0c49674c467d08
@@ -24,13 +24,41 @@ immediate_lean_completion_mode:
   control_acquisition_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
   rule: one_meaningful_control_commit_per_phase_boundary
   active_lanes:
-    F02: substantive_migrations_2254_2256
-    P18: final_runtime_triplet_evidence_count_correction
-    I36: read_only_batch_preparation
+    F02: accepted_queued_for_integration
+    P18: accepted_queued_for_integration
+    I36: F02_then_P18_lean_source_microbatch_claimed
     release: read_only_preparation
   validation_policy: proportional_to_changed_bytes
   runtime_triplet_policy: update_once_at_end_of_current_run
   provider_effects: prohibited_until_dependency_candidate_authority_lock_and_fencing_gates
+  F02_P18_acceptance_boundary:
+    control_basis_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+    recorded_at: '2026-07-31T13:03:39Z'
+    integration_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+    merge_order: F02_then_P18
+    F02_terminal_head_sha: 3ee2f651528f5170dd714b921500235d4e015c5b
+    F02_source_path_inventory_digest: a28d4c79e43025499b3518d7fa194aeb4755cb903f508bc9b3c7353dadd56966
+    F02_source_manifest_digest: 507805b23a2ba2b82e174e6f478c97cbba155e418d16511a525f01fe685f4c28
+    F02_runtime_triplet_digest: 1852f5414eb77a15dea67d80707fc913ea25f6fcc1c9ba50cd50e3c792f56297
+    F02_independent_review: passed_no_P1_or_P2
+    P18_terminal_head_sha: 1926e61c793ce29d7240c1ee05d2a4879b52770b
+    P18_source_path_inventory_digest: 1dd57e7e6aed52361594eb355635aa799b9cc63aca5a52ab65f88b346d90af1a
+    P18_source_manifest_digest: 749d8af2878867401f88f16eb02d2adcedc8ca9b2e41efe1245988eca6c6a437
+    P18_runtime_triplet_digest: fac28c509f5d0761379a7a699b3fbaf91b2a189431cd657a2bed9c7bbfa84e3e
+    P18_independent_review: passed_no_P1_or_P2
+    I36_ready_entry_payload_digest: e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512
+    I36_claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
+    I36_writer_id: codex-i36-f02-p18-source-05827ada
+    I36_release_integrator_lease_id: e5ba5eae-272b-481d-b66b-1f4957840e10
+    I36_lease_expires_at: '2026-07-31T16:03:39Z'
+    F02_merge_payload_digest: e173c6b19150ed26b0bccbda36dcdd94b7111044b2476985042d3960611006b3
+    P18_merge_payload_digest: e83044cbb1f6b381da07521e6fd36c17418e1d820cbf371805a3feb4cab3c2ee
+    F02_forecast_tree_sha: 597f7aaa16ba5f46cd58404079cf413c19a6bd19
+    P18_after_F02_forecast_tree_sha: 6f3a3e8d4d9fdd6e0cb1f1ad185a107a9b3fa5f1
+    forecast_conflicts: 0
+    migration_allocations_mirrored: 2254_through_2256_next_2257
+    steward_requests_acknowledged_not_applied: P22-migration-002_P12-migration-001_P09-migration-002
+    external_effects: 0/0/0
 lean_completion_bindings:
   full_production_completion_convergence:
     prior_control_head_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73
@@ -1096,22 +1124,22 @@ completed_steps:
   - consumed only the I36 READY entry, preserved P18 READY unchanged, and rebound both ordered P21/P22 merge targets to exact claim head b87901e8 with canonical payload digests a3f43e06/c7084c74
 remaining_steps:
 - >-
-  Complete and independently reconcile the exact P18 seven-path callback correction while F02 executes only the
-  reconciled seven-path migration continuation under claim 41a5ba44 and its two bounded writer leases.
+  Run one ancestry-preserving I36 source microbatch from exact integration 392cc119, merging accepted F02 3ee2f651
+  first and accepted P18 1926e61c second under the sole RELEASE_INTEGRATOR lease.
 - >-
-  Author P22-migration-002 as 2254, P12-migration-001 as 2255, and P09-migration-002 as 2256 in exact dependency order
-  with clean native PostgreSQL-server apply/replay and focused positive/negative proof.
+  Validate the combined changed area and migrations once, update only the I36 runtime triplet at terminal, release the
+  lease, push normally, and stop for one independent review.
 - Operationalize P12's concrete PostgreSQL repository/router/forms and Student-creation journey before applying P12/P08 shared registration or closing the P08 blocker.
 - Complete P09's signed-out GET /school and Admin configuration surface after School-seat authority converges; do not over-claim P08-registration-002 or P09-registration-001.
 - Apply the remaining bounded producer adapters and shared central registrations, then run one merged workspace validation.
 - Freeze one exact candidate and run V37-V43 Phase A, R44, deferred proof, V43 Phase B, R45 certification, legal gate, cutover, and the observation window in their exact order.
 next_action: >-
-  Continue F02 from exact reconciled claim head 216c983b under claim 41a5ba44 and leases c741bc95/2c7b6d40. Create a
-  disposable worktree from integration 392cc119, merge 216c983b as the second parent, and change only the proposal,
-  migrations 2254-2256, and F02 runtime triplet. Preserve migrations 2234-2253 and the protected helper; require native
-  PostgreSQL apply/replay and focused probes. P18 remains under independent terminal audit. Candidate, shared
-  registration, providers, deployment, DNS, sends, charges, customer activation, and every external effect remain
-  prohibited.
+  I36 resolves the exact control descendant of 4105c365, verifies canonical READY e4a0f3e3 and MERGE payloads
+  e173c6b1/e83044cb, and starts from clean integration 392cc119. Preserve ancestry and merge F02 3ee2f651 before P18
+  1926e61c. Do not cherry-pick, squash, edit producer source, or apply a steward request. Run one combined changed-area
+  and native PostgreSQL verification, update the I36 runtime triplet once, release lease e5ba5eae, push one terminal,
+  verify local/tracking/live equality, and stop. Candidate, providers, deployment, DNS, sends, charges, customer
+  activation, and every external effect remain prohibited.
 orchestration:
   enabled: true
   mechanism: native_subagents
@@ -1119,13 +1147,13 @@ orchestration:
   enabled_at: '2026-07-28T15:09:35Z'
   controlling_agent: /root
   child_spawn_policy: root_C00_only
-  current_control_parent_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
+  current_control_parent_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
   current_task_branch_claim_head_map:
     C00:
       branch: codex/v21-control
-      claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-      observed_head: 70b12ea370e8430bc80c0943231af98a3f5e6265
-      lease_expires_at: '2026-07-31T12:22:35Z'
+      claim_id: 1703337f-8790-4b4b-8a37-0b31f37d2e38
+      observed_head: 4105c365a90ecb27fb930077ecaf02a9125edb38
+      lease_expires_at: '2026-07-31T13:03:39Z'
       lease_state: released_in_containing_checkpoint
     F01:
       branch: codex/v21-f01-foundation-seams
@@ -1136,18 +1164,18 @@ orchestration:
       scheduling_state: ready_for_review_all_steward_results_acknowledged
     I36:
       branch: codex/v21-integration
-      claim_id: null
+      claim_id: 05827ada-e374-43a1-b606-9fa8ace0d171
       observed_head: 392cc119b2df65f9bd38da8c4db36113f1add967
-      authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-      lease_expires_at: null
-      scheduling_state: P21_then_P22_source_microbatch_complete_and_reconciled
+      authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
+      lease_expires_at: '2026-07-31T16:03:39Z'
+      scheduling_state: claimed_F02_then_P18_lean_source_microbatch
     F02:
       branch: codex/v21-lane1-migration-correction
-      claim_id: 41a5ba44-435f-454f-b157-c6059d4bbc37
-      observed_head: 22ada24a0ade35e406b9d1b55cb65f396ea2162b
+      claim_id: null
+      observed_head: 3ee2f651528f5170dd714b921500235d4e015c5b
       authorized_start_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
-      lease_expires_at: '2026-07-31T13:28:40Z'
-      scheduling_state: resume_ready_exact_runtime_triplet_claim_only
+      lease_expires_at: null
+      scheduling_state: independently_accepted_queued_for_integration
     F07:
       branch: codex/v21-lane3-landing-campaign
       claim_id: null
@@ -1234,11 +1262,11 @@ orchestration:
       scheduling_state: ready_for_review_interface_integrated_at_972fa435
     P18:
       branch: codex/v21-p18-attendance-projection-callback
-      claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
-      observed_head: e61aaeb384201f267b528e01c780f38cfc0c984d
-      authorized_start_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
-      lease_expires_at: '2026-07-31T13:28:40Z'
-      scheduling_state: resume_ready_exact_seven_path_stale_authority_ordering_correction
+      claim_id: null
+      observed_head: 1926e61c793ce29d7240c1ee05d2a4879b52770b
+      authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+      lease_expires_at: null
+      scheduling_state: independently_accepted_queued_after_F02
     P21:
       branch: codex/v21-p21-publication-scope-correction
       claim_id: null
@@ -2024,6 +2052,13 @@ verification:
     protected normalized Git blobs, exact seven-path control diff, diff-check, and the 2,423-file secret scan. Scoped
     Prettier passes CONTROL-LEASE, READY-QUEUE, and C00 NEXT-PROMPT and preserves the four-file inherited baseline on
     CONTROL-STATE, TASK-REGISTRY, C00 HANDOFF, and C00 TASK-STATE; no broad rewrite was made.
+  - >-
+    F02/P18 lean admission boundary: independently accepted F02 3ee2f651 and P18 1926e61c with exact ancestry, source
+    inventories/manifests, raw runtime digests, released task leases, and effects 0/0/0; mirrored exact forward-only
+    allocations 2254-2256 with next 2257, acknowledged but did not apply their steward requests, consumed the completed
+    P18 READY, and dispatched one ordered F02-then-P18 I36 microbatch under canonical READY e4a0f3e3, merge payloads
+    e173c6b1/e83044cb, conflict-free forecast trees 597f7aaa/6f3a3e8d, and sole RELEASE_INTEGRATOR lease
+    e5ba5eae.
   known_baseline_failures:
   - 049be15daaa0ab5ff3bacc9743c60884002e6e856341feafcbc7a1a78cfc5d4b
 external_effects:

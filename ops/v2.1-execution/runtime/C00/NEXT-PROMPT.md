@@ -3275,3 +3275,38 @@ No claim-only, lease-only, interim, validation-only, or release-only producer
 checkpoint is allowed prospectively. Candidate, provider effects, deployment,
 DNS, sends, charges, and customer activation remain prohibited until their
 exact dependency, candidate, authority, lock, and fencing gates are satisfied.
+
+# Current instruction: integrate accepted F02 then P18
+
+Resolve the pushed control descendant of
+`4105c365a90ecb27fb930077ecaf02a9125edb38`. Verify clean live integration
+`392cc119b2df65f9bd38da8c4db36113f1add967`, canonical I36 READY
+`e4a0f3e3dcf06750bf28a4029f38ee9c0d03b74f00d3eb3e409b5bb30e246512`,
+claim `05827ada-e374-43a1-b606-9fa8ace0d171`, writer
+`codex-i36-f02-p18-source-05827ada`, and sole RELEASE_INTEGRATOR lease
+`e5ba5eae-272b-481d-b66b-1f4957840e10` through
+`2026-07-31T16:03:39Z`.
+
+Consume exactly two active MERGE-QUEUE entries while preserving source
+ancestry:
+
+1. Merge F02 `3ee2f651528f5170dd714b921500235d4e015c5b` first from required
+   base `392cc119...`. Its source delta is exactly seven paths, inventory
+   `a28d4c79...`, manifest `507805b2...`, and canonical payload
+   `e173c6b1...`.
+2. Merge P18 `1926e61c793ce29d7240c1ee05d2a4879b52770b` second from required
+   base `d89a0f38...`, after F02. Its source delta is exactly eight paths,
+   inventory `1dd57e7e...`, manifest `749d8af2...`, and canonical payload
+   `e83044cb...`.
+
+Do not cherry-pick, squash, edit producer source, apply a steward request, or
+perform central composition. Run one combined changed-area verification,
+including exact ancestry/scope/digest checks, focused F02/P18 tests, unchanged
+protected migrations, and native PostgreSQL 18.4 apply/replay/ledger. Do not
+rerun unrelated broad suites. Update only the I36 runtime triplet after both
+merges, record effects `0/0/0`, release the lease, push one terminal, verify
+local/tracking/live equality, and stop for one independent review.
+
+Candidate freeze, provider inspection or mutation, deployment, DNS, sends,
+charges, customer activation, persistent/live database effects, and every
+external effect remain prohibited.

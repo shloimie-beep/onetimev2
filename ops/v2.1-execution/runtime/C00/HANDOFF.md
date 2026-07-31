@@ -3697,3 +3697,33 @@ I36 continues read-only batch classification. Candidate remains null, effect
 locks remain empty, and no steward application, provider inspection or
 mutation, deployment, DNS, send, charge, customer activation, or other
 external effect is authorized by this checkpoint.
+
+# F02 and P18 accepted; ordered I36 microbatch dispatched
+
+F02 terminal `3ee2f651528f5170dd714b921500235d4e015c5b` and P18 terminal
+`1926e61c793ce29d7240c1ee05d2a4879b52770b` each passed their single
+independent review with no P1/P2 hold. F02 is exact seven-path source with
+inventory `a28d4c79...`, manifest `507805b2...`, native PostgreSQL 18.4
+apply/replay/ledger `87/87`, released leases, and effects `0/0/0`. P18 is
+exact eight-path source with inventory `1dd57e7e...`, manifest `749d8af2...`,
+exact focused count 35, released lease, and effects `0/0/0`.
+
+C00 mirrored forward-only allocations 2254/P22, 2255/P12, and 2256/P09,
+setting next ordinal 2257. Their three steward requests remain `assigned`;
+they are acknowledged by F02 but not applied. The prior P18 READY is consumed.
+
+I36 is claimed from exact clean integration `392cc119...` under claim
+`05827ada-e374-43a1-b606-9fa8ace0d171`, writer
+`codex-i36-f02-p18-source-05827ada`, and sole RELEASE_INTEGRATOR lease
+`e5ba5eae-272b-481d-b66b-1f4957840e10` through
+`2026-07-31T16:03:39Z`. Canonical READY is `e4a0f3e3...`; ordered merge
+payloads are `e173c6b1...` for F02 and `e83044cb...` for P18. The no-ref
+ordered merge forecast is conflict-free with trees `597f7aaa...` then
+`6f3a3e8d...`.
+
+I36 must preserve ancestry, merge F02 first and P18 second, run one combined
+changed-area and native PostgreSQL verification, update its runtime triplet
+once at terminal, release the lease, push normally, verify live equality, and
+stop for one independent review. Candidate, shared steward application,
+providers, deployment, DNS, sends, charges, customer activation, and every
+external effect remain prohibited.
