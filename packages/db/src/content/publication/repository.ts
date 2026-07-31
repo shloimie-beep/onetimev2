@@ -246,13 +246,10 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
       const bootstrap = canonicalBootstrapEvents(record, scope);
       if (current) {
         assertCanonicalStateScope(current, record, scope);
-        if (
-          record.state !== 'needs_review' ||
-          current.current_state !== 'needs_review' ||
-          canonicalVersion(current.version, 'content_canonical_state_version_invalid') !== 4
-        ) {
-          throw new Error('content_canonical_bootstrap_state_conflict');
-        }
+        const currentVersion = canonicalVersion(
+          current.version,
+          'content_canonical_state_version_invalid',
+        );
         const persisted = await client.query<CanonicalContentEventRow>(
           `SELECT transition_key, previous_state, next_state, expected_version,
                   resulting_version, product_key, runtime_tier,
@@ -273,12 +270,12 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
         ) {
           throw new Error('content_canonical_bootstrap_replay_conflict');
         }
+        if (!canonicalBootstrapReplayIsCompatible(record.state, current, currentVersion)) {
+          throw new Error('content_canonical_bootstrap_state_conflict');
+        }
         return {
           replay: true,
-          resultingVersion: canonicalVersion(
-            current.version,
-            'content_canonical_state_version_invalid',
-          ),
+          resultingVersion: currentVersion,
         };
       }
       if (record.state !== 'needs_review' || record.version !== 1) {
@@ -295,7 +292,13 @@ function createUnit(client: ContentPublicationSqlClient): ContentPublicationUnit
     },
 
     async appendCanonicalContentStateTransition(command) {
-      const scope = await resolveCanonicalContentExecutionScope(client, command.record);
+      const deriveFromApprovedProcessingSource = assertCanonicalScopeDerivation(command);
+      const scope = await resolveCanonicalContentExecutionScope(
+        client,
+        command.record,
+        undefined,
+        deriveFromApprovedProcessingSource,
+      );
       const current = await lockCanonicalContentState(client, command.record.contentId);
       if (!current) throw new Error('content_canonical_state_unavailable');
       assertCanonicalStateScope(current, command.record, scope);
@@ -1032,15 +1035,17 @@ async function resolveCanonicalContentExecutionScope(
   client: ContentPublicationSqlClient,
   record: ContentPublicationRecord,
   suppliedEvidence?: ContentApprovalEvidence,
+  allowApprovedProcessingSourceOnly = false,
 ): Promise<ResolvedCanonicalContentScope> {
   const evidence = suppliedEvidence ?? record.approval?.evidence;
   if (
-    !evidence ||
-    evidence.accountKey !== record.accountKey ||
-    evidence.productKey !== record.productKey ||
-    evidence.contentId !== record.contentId ||
-    evidence.contentVersionId !== record.contentVersionId ||
-    evidence.contentVersionDigest !== record.contentVersionDigest
+    (!evidence && !allowApprovedProcessingSourceOnly) ||
+    (evidence &&
+      (evidence.accountKey !== record.accountKey ||
+        evidence.productKey !== record.productKey ||
+        evidence.contentId !== record.contentId ||
+        evidence.contentVersionId !== record.contentVersionId ||
+        evidence.contentVersionDigest !== record.contentVersionDigest))
   ) {
     throw new Error('content_canonical_projection_binding_unavailable');
   }
@@ -1087,9 +1092,10 @@ async function resolveCanonicalContentExecutionScope(
     throw new Error('content_canonical_source_scope_conflict');
   }
   if (
-    row.source_key !== evidence.sourceId ||
-    row.source_sha256 !== evidence.sourceSha256 ||
-    row.source_object_version_id !== evidence.sourceObjectVersionId
+    evidence &&
+    (row.source_key !== evidence.sourceId ||
+      row.source_sha256 !== evidence.sourceSha256 ||
+      row.source_object_version_id !== evidence.sourceObjectVersionId)
   ) {
     throw new Error('content_canonical_source_binding_conflict');
   }
@@ -1134,6 +1140,40 @@ function assertCanonicalStateScope(
   ) {
     throw new Error('content_canonical_state_scope_conflict');
   }
+}
+
+function assertCanonicalScopeDerivation(command: CanonicalContentStateTransitionCommand) {
+  const preApprovalArchive =
+    command.operation === 'archive' &&
+    command.previousState === 'needs_review' &&
+    command.nextState === 'archived' &&
+    command.record.state === 'archived' &&
+    command.record.approval === null;
+  if (command.scopeDerivation === 'approved_processing_source') {
+    if (!preApprovalArchive) throw new Error('content_canonical_scope_derivation_conflict');
+    return true;
+  }
+  if (command.scopeDerivation !== 'approved_projection' || !command.record.approval) {
+    throw new Error('content_canonical_scope_derivation_conflict');
+  }
+  return false;
+}
+
+function canonicalBootstrapReplayIsCompatible(
+  recordState: ContentPublicationState,
+  current: CanonicalContentStateRow,
+  currentVersion: number,
+) {
+  if (current.current_state !== recordState) return false;
+  if (recordState === 'needs_review') return currentVersion === 4;
+  return (
+    currentVersion > 4 &&
+    (recordState === 'approved' ||
+      recordState === 'publishing' ||
+      recordState === 'published' ||
+      recordState === 'failed' ||
+      recordState === 'archived')
+  );
 }
 
 function canonicalBootstrapEvents(

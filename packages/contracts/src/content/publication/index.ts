@@ -25,10 +25,12 @@ export type ContentPublicationState = (typeof CONTENT_PUBLICATION_STATES)[number
 export type CanonicalContentStateActorKind = 'admin' | 'worker' | 'reconciler';
 export type CanonicalContentStateOperation =
   'approve' | 'request_publish' | 'record_published' | 'unpublish' | 'archive';
+export type CanonicalContentScopeDerivation = 'approved_projection' | 'approved_processing_source';
 
 export interface CanonicalContentStateTransitionCommand {
   record: ContentPublicationRecord;
   operation: CanonicalContentStateOperation;
+  scopeDerivation: CanonicalContentScopeDerivation;
   previousState: ContentPublicationState;
   nextState: ContentPublicationState;
   actorKind: CanonicalContentStateActorKind;

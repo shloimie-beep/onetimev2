@@ -131,6 +131,7 @@ export function createContentPublicationService(deps: {
         await unit.appendCanonicalContentStateTransition({
           record: next,
           operation: 'approve',
+          scopeDerivation: 'approved_projection',
           previousState: current.state,
           nextState: next.state,
           actorKind: 'admin',
@@ -274,6 +275,7 @@ export function createContentPublicationService(deps: {
         await unit.appendCanonicalContentStateTransition({
           record: result.record,
           operation: 'record_published',
+          scopeDerivation: 'approved_projection',
           previousState: current.state,
           nextState: result.record.state,
           actorKind: 'reconciler',
@@ -637,6 +639,13 @@ async function mutate(input: {
     await unit.appendCanonicalContentStateTransition({
       record: next,
       operation: input.operation,
+      scopeDerivation:
+        input.operation === 'archive' &&
+        current.state === 'needs_review' &&
+        next.state === 'archived' &&
+        next.approval === null
+          ? 'approved_processing_source'
+          : 'approved_projection',
       previousState: current.state,
       nextState: next.state,
       actorKind: 'admin',

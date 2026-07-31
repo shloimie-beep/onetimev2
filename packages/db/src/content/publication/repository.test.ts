@@ -79,6 +79,8 @@ describe('P21 PostgreSQL publication repository', () => {
     const record = reviewReadyRecord();
     const events: Record<string, unknown>[] = [];
     let canonicalReady = false;
+    let canonicalState: ContentPublicationRecord['state'] = 'needs_review';
+    let canonicalStateVersion = 4;
     const client = new CapturingClient(false, undefined, (text, values) => {
       if (text.includes('FROM onetime.content_processing_versions AS version_row')) {
         return [canonicalScopeRow()];
@@ -89,8 +91,8 @@ describe('P21 PostgreSQL publication repository', () => {
               {
                 aggregate_kind: 'content',
                 aggregate_key: record.contentId,
-                current_state: 'needs_review',
-                version: 4,
+                current_state: canonicalState,
+                version: canonicalStateVersion,
                 product_key: 'one_time_mishnayos',
                 runtime_tier: 'isolated_staging',
                 verification_environment_id: 'ci',
@@ -142,6 +144,25 @@ describe('P21 PostgreSQL publication repository', () => {
         unit.bootstrapCanonicalContentState(record, approvalEvidence),
       ),
     ).resolves.toEqual({ replay: true, resultingVersion: 4 });
+    canonicalState = 'approved';
+    canonicalStateVersion = 5;
+    const publicationVersionOnlyDiverged = {
+      ...record,
+      state: 'approved' as const,
+      version: 3,
+      approval: {
+        approvalId: 'approval_one',
+        approvedByAdminId: approvalEvidence.approvedByAdminId,
+        approvedAt: approvalEvidence.approvedAt,
+        policyVersion: 'content-publication-v2',
+        evidence: approvalEvidence,
+      },
+    };
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.bootstrapCanonicalContentState(publicationVersionOnlyDiverged, approvalEvidence),
+      ),
+    ).resolves.toEqual({ replay: true, resultingVersion: 5 });
 
     expect(firstWriteCount).toBe(4);
     expect(
@@ -180,6 +201,98 @@ describe('P21 PostgreSQL publication repository', () => {
     expect(readFileSync(new URL('./repository.ts', import.meta.url), 'utf8')).not.toMatch(
       /(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+onetime\.canonical_aggregate_states/i,
     );
+  });
+
+  it('derives the exact locked source scope for a pre-approval archive', async () => {
+    const archived = {
+      ...reviewReadyRecord(),
+      state: 'archived' as const,
+      version: 2,
+      archivedAt: '2026-07-29T10:44:00.000Z',
+      updatedAt: '2026-07-29T10:44:00.000Z',
+    };
+    const client = new CapturingClient(false, undefined, (text, values) => {
+      if (text.includes('FROM onetime.content_processing_versions AS version_row')) {
+        return [canonicalScopeRow()];
+      }
+      if (text.includes('FROM onetime.canonical_aggregate_states')) {
+        return [
+          {
+            aggregate_kind: 'content',
+            aggregate_key: archived.contentId,
+            current_state: 'needs_review',
+            version: 4,
+            product_key: 'one_time_mishnayos',
+            runtime_tier: 'isolated_staging',
+            verification_environment_id: 'ci',
+          },
+        ];
+      }
+      if (text.includes('INSERT INTO onetime.canonical_state_transition_events')) {
+        return [{ resulting_version: values?.[5] }];
+      }
+      return undefined;
+    });
+    const repository = createPostgresContentPublicationRepository({
+      connect: async () => client,
+    });
+
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.appendCanonicalContentStateTransition({
+          record: archived,
+          operation: 'archive',
+          scopeDerivation: 'approved_processing_source',
+          previousState: 'needs_review',
+          nextState: 'archived',
+          actorKind: 'admin',
+          actorKey: 'admin_one',
+          idempotencyKey: 'archive.before.approval',
+          requestHash: 'a'.repeat(64),
+          occurredAt: archived.updatedAt,
+        }),
+      ),
+    ).resolves.toEqual({ replay: false, resultingVersion: 5 });
+
+    const sourceRead = client.queries.find((query) =>
+      query.text.includes('FROM onetime.content_processing_versions AS version_row'),
+    );
+    expect(sourceRead?.text).toContain("version_row.processing_state = 'approved'");
+    expect(sourceRead?.text).toContain('FOR SHARE OF version_row, source_row');
+    expect(sourceRead?.values).toEqual([
+      archived.accountKey,
+      archived.productKey,
+      archived.contentVersionId,
+      archived.contentId,
+      archived.contentVersionDigest,
+    ]);
+    expect(
+      client.queries.filter((query) =>
+        query.text.includes('INSERT INTO onetime.canonical_state_transition_events'),
+      ),
+    ).toHaveLength(1);
+    await expect(
+      repository.inTransaction((unit) =>
+        unit.appendCanonicalContentStateTransition({
+          record: archived,
+          operation: 'approve',
+          scopeDerivation: 'approved_processing_source',
+          previousState: 'needs_review',
+          nextState: 'approved',
+          actorKind: 'admin',
+          actorKey: 'admin_one',
+          idempotencyKey: 'invalid.processing.source.derivation',
+          requestHash: 'b'.repeat(64),
+          occurredAt: archived.updatedAt,
+        }),
+      ),
+    ).rejects.toThrowError('content_canonical_scope_derivation_conflict');
+    expect(client.queries.at(-1)?.text).toBe('ROLLBACK');
+    expect(
+      client.queries.filter((query) =>
+        query.text.includes('INSERT INTO onetime.canonical_state_transition_events'),
+      ),
+    ).toHaveLength(1);
   });
 
   it('uses the locked canonical version and operation-namespaces raw idempotency', async () => {
@@ -226,6 +339,7 @@ describe('P21 PostgreSQL publication repository', () => {
         unit.appendCanonicalContentStateTransition({
           record: next,
           operation: 'request_publish',
+          scopeDerivation: 'approved_projection',
           previousState: 'approved',
           nextState: 'publishing',
           actorKind: 'admin',
@@ -279,6 +393,7 @@ describe('P21 PostgreSQL publication repository', () => {
         unit.appendCanonicalContentStateTransition({
           record,
           operation: 'approve',
+          scopeDerivation: 'approved_projection',
           previousState: 'needs_review',
           nextState: 'approved',
           actorKind: 'admin',
@@ -309,6 +424,7 @@ describe('P21 PostgreSQL publication repository', () => {
         unit.appendCanonicalContentStateTransition({
           record,
           operation: 'approve',
+          scopeDerivation: 'approved_projection',
           previousState: 'needs_review',
           nextState: 'approved',
           actorKind: 'admin',
@@ -357,6 +473,7 @@ describe('P21 PostgreSQL publication repository', () => {
         unit.appendCanonicalContentStateTransition({
           record,
           operation: 'approve',
+          scopeDerivation: 'approved_projection',
           previousState: 'needs_review',
           nextState: 'approved',
           actorKind: 'admin',
@@ -418,6 +535,7 @@ describe('P21 PostgreSQL publication repository', () => {
         unit.appendCanonicalContentStateTransition({
           record,
           operation: 'approve',
+          scopeDerivation: 'approved_projection',
           previousState: 'needs_review',
           nextState: 'approved',
           actorKind: 'admin',

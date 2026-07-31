@@ -5,86 +5,92 @@ task_packet_digest: c04b2cf1b742e4200fe2c38790bcfa99fb9470420c5a83b9998db4d0173e
 task_context_digest: 36e4fb76ff399ae66d3ccd9f4e5851ec31395c247d80a3d7f4392bb8ad30858e
 prompt_digest: 81b77db37a7ecd71e39c86b6cb700acafac66c05aec0a6c16b6f03a4d1b415df
 spec_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-package_lock_digest: fc85161d4691d63e5511201c066df6106bb22daf980d57bef05f4de73174848b
+package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
 branch: codex/v21-p21-publication-scope-correction
-start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-expected_existing_head: 705030f2d5163f95340a19dc42efd0f167259869
+start_sha: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
+expected_existing_head: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
 adopted_integration_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-adopted_integration_product_manifest_digest: 916f1bec4ac26c9a044afe9a8c829d306215a0e10eac72f70a77f04b1cc349c0
 status: ready_for_review
-phase: P21_canonical_content_state_writer_complete
-claim_mode: adopt_integration
-claimed_by: codex-p21-content-state-writer-06848315
-claim_time: '2026-07-31T08:08:00Z'
-claim_id: 06848315-08fd-40aa-8ff1-3c5cda4c42e4
-claim_released_at: '2026-07-31T09:00:00Z'
+phase: P21_canonical_writer_replay_and_preapproval_archive_fix_complete
+claim_mode: resume_existing_terminal
+claimed_by: codex-p21-replay-archive-cbec9b83
+claim_time: '2026-07-31T09:18:00Z'
+claim_id: cbec9b83-9d44-4d00-a797-fed83be43059
+claim_released_at: '2026-07-31T09:53:09Z'
 writer_slot_leases:
   - slot: CONTENT_PUBLICATION
-    lease_id: 030212ad-7da5-4877-b29b-85de75a4380c
+    lease_id: f03e8f5d-10fc-40f1-8720-e39086b4a799
     holder_task_id: P21
-    holder_claim_id: 06848315-08fd-40aa-8ff1-3c5cda4c42e4
-    holder_writer_id: codex-p21-content-state-writer-06848315
-    state_based_on_control_head_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
-    lease_issued_at: '2026-07-31T08:08:00Z'
-    lease_expires_at: '2026-07-31T10:08:00Z'
-    phase_scope: P21_canonical_content_state_writer
-    released_at: '2026-07-31T09:00:00Z'
+    holder_claim_id: cbec9b83-9d44-4d00-a797-fed83be43059
+    holder_writer_id: codex-p21-replay-archive-cbec9b83
+    state_based_on_control_head_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
+    lease_issued_at: '2026-07-31T09:18:00Z'
+    lease_expires_at: '2026-07-31T11:18:00Z'
+    phase_scope: P21_canonical_writer_replay_and_preapproval_archive_fix
+    released_at: '2026-07-31T09:53:09Z'
     release_reason: terminal_ready_for_review
     state: released
 effect_lock_leases: []
-lease_expires_at: '2026-07-31T10:08:00Z'
-last_heartbeat_at: '2026-07-31T09:00:00Z'
-lease_released_at: '2026-07-31T09:00:00Z'
-containing_control_sha: c22354f184f046a1cb817e0c9cd415aec7c37449
-controller_authorization_sha: 55ecbdc41e3ea7b341e000c6aeb74c7e1f8f8c49
-ready_entry_payload_digest: 84a384576cab6258cff4095bade7f3d2553288516523d6251f077c2282131e49
-authorized_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
-exact_path_ceiling: 9
-state_based_on_head_sha: e4e4ef86a1ba1cd4ada1950fab13691809d7441b
-last_implementation_checkpoint_sha: e4e4ef86a1ba1cd4ada1950fab13691809d7441b
+lease_expires_at: '2026-07-31T11:18:00Z'
+last_heartbeat_at: '2026-07-31T09:53:09Z'
+lease_released_at: '2026-07-31T09:53:09Z'
+containing_control_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+controller_authorization_sha: 45a6f2f589fc2fffe7c5dbd16c137282c4918185
+ready_entry_payload_digest: ccad2b56eb4b33fc7a35cfc61625dad9d9de14863823d1c0e96242924306fec5
+authorized_path_inventory_digest: 5b93f48fdc9d709b450316ac4423f5077d39a253ca317424263433eb444e6b19
+recomputed_lf_path_inventory_digest: d3a605c5bd24812fc87d3795b76f3b1ee92eca60f3a4595434df747d32593829
+path_inventory_digest_disposition: >-
+  The exact eight authorized paths match READY, but their stated LF-joined,
+  no-final-newline digest does not reproduce the control-recorded value. No
+  scope expansion was made; C00/I36 must disposition the control metadata
+  mismatch during independent review.
+exact_path_ceiling: 8
+state_based_on_head_sha: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
+last_implementation_checkpoint_sha: containing_commit
 checkpoint_heads:
-  first_implementation_and_heartbeat: baa506bbe5821871f294eca3a5f970c83b20ead3
-  compiling_writer_and_heartbeat: e4e4ef86a1ba1cd4ada1950fab13691809d7441b
   terminal_head: containing_commit
 dependencies:
   integration:
     head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-    disposition: adopted
+    disposition: inherited_unchanged
   migration_2253:
     path: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
-    raw_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
-    disposition: integrated_immutable_dependency
-implementation_artifact_digest: d325f64aa8dd6bb0b92f36c27c3dc0bf748cf3885722f347b185032cfec0f32d
-terminal_non_runtime_artifact_digest: ca67bcc5c50af26b918f31fe0438b3d1fbde62694749a0268142e97e679098b8
+    canonical_integrated_raw_sha256: b96fae17a3ab9a13444787f7419366b0cd997e7a2754167b3c759d7074ff2c81
+    branch_inherited_raw_sha256: b969f1872c17f5cbc7a58e26888777d92e5371a887e2c3956c077b834a144c55
+    disposition: immutable_downstream_dependency_no_P21_delta
+  registration_003:
+    path: ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-003.yaml
+    raw_sha256: 0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16
+    disposition: byte_identical_proposed_unapplied_pending_I36
+implementation_artifact_digest: 0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97
+terminal_non_runtime_artifact_digest: 0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97
 artifact_digest_algorithm: >-
   SHA-256 over UTF-8 lines containing <path>=<raw file SHA-256>, sorted
   lexicographically by path, with LF separators and no final newline.
 implementation_artifacts:
-  apps/web/src/server/features/content/publication/service.test.ts: 69d5d9214045040b16ea175eb5a05aa24146faf8e76392b945d512ce0ebd7248
-  apps/web/src/server/features/content/publication/service.ts: 881285656d0d88a4bf84bc475ec849a3bbc65d5fabac5a07ad50e0fe099cf963
-  packages/contracts/src/content/publication/index.ts: c7bef8c0a51e3d354e81c12692726acc5f4acec2316400f6d1e9e45524495ae0
-  packages/db/src/content/publication/repository.test.ts: e713188749323a875dde1509fadcc8387686fdc11e462ce7bd17093f78249469
-  packages/db/src/content/publication/repository.ts: af1dce930d40d6e1c9a2127d3209d2fd9401382875ed587cf189df9c30fdc983
+  apps/web/src/server/features/content/publication/service.test.ts: 4aa8e876139ea820df7f8122c0f6b9a7c93b1498701ca85609dac7acb2b78ecf
+  apps/web/src/server/features/content/publication/service.ts: 33accd32aad23989fa43569141da0bdaa3165978c11986380e698a73fa4da1db
+  packages/contracts/src/content/publication/index.ts: 4d19f4ad4ccd703067601f3ea4591bdd4a4eb0b57ea7c63d0ea338fbdf23f1a0
+  packages/db/src/content/publication/repository.test.ts: 5c8f55604cae62473f39463c99f384670d66113528ddfe0589d11cc57c4fa10b
+  packages/db/src/content/publication/repository.ts: 6b56e1ba11fc2c7054c9de479aac7a26679d8dd6cca4ce862548a479fe683916
 completed_steps:
-  - Verified and independently reproduced the exact READY digest, task identities, path inventory, clean existing P21 head, adopted integration head, migration-2253 dependency, sole writer lease, and zero effect locks.
-  - Fast-forward adopted exact integration d89a0f38 without merge rewriting and preserved the authorized nine-path ceiling.
-  - Implemented mandatory approval-projection and source identity binding through the exact processing-version/source join.
-  - Implemented four ordered canonical bootstrap events with exact needs_review/version-4 write-free replay and mismatch rejection.
-  - Implemented independently locked canonical versions, raw content aggregate keys, operation-namespaced idempotency, full canonical request hashes, actor ownership, and event-only aggregate mutation.
-  - Made approve, request-publish, reconciled publication, unpublish, and archive canonical events atomic with publication, provider-operation, outbox, materialization, completion, and receipt writes.
-  - Preserved zero state events for attach-occurrence and record-revoked cleanup while proving publication/canonical version divergence before and after approval and after revocation cleanup.
-  - Fenced the Vimeo binding and every locked pending provider job/readback to source-derived product, runtime tier, and verification environment before any related write.
-  - Added source, scope, state, version, idempotency, replay, mismatch, and all-five-transition rollback tests.
-  - Published only schema-valid P21-registration-003, superseding stale registration-002 and binding central registration to integrated migration 2253 plus this writer.
-  - Ran native PostgreSQL-compatible proof with real migrations 2234, 2245, and 2246: four bootstrap events, zero replay writes, canonical version 6 versus publication version 9, namespaced raw-key reuse, changed-replay rejection, and append-only rejection.
-  - Completed focused, typecheck, lint, formatting, YAML/schema, diff, scope, immutable predecessor, secret, and artifact-digest gates with zero external effects.
+  - Verified clean local, tracking, and live start head 3250bb761aa0d6fb84db77f637bc05eb5f1c444d and live control 0a2e8c390d48da157be35a2f9d06f876a70b5e62.
+  - Independently reproduced and consumed READY ccad2b56eb4b33fc7a35cfc61625dad9d9de14863823d1c0e96242924306fec5 under the sole CONTENT_PUBLICATION writer lease.
+  - Made pre-approval needs_review-to-archived derive canonical scope only from the locked approved processing-version/source join; the repository rejects that derivation mode for every other transition.
+  - Preserved approval-evidence source binding for approve and every post-approval transition, plus event-only canonical aggregate mutation.
+  - Made exact registration replay verify source binding, canonical scope, and all four immutable bootstrap events before accepting a compatible canonical successor without a write.
+  - Preserved fail-closed behavior for incompatible publication/canonical state, missing or changed bootstrap events, source/hash/scope mismatch, and transaction rollback.
+  - Added service proof for pre-approval archive at canonical version 5 with no provider/outbox work, post-approval exact retry with zero canonical writes, and retry after publication-only version divergence.
+  - Added PostgreSQL repository proof for exact approved-source scope derivation, successor replay, publication-version divergence, and invalid derivation rejection.
+  - Ran a disposable native PGlite proof over real migrations 2234, 2245, and 2246: archive reached canonical archived/version 5 with five events, both retry cases added zero writes, and append-only deletion was rejected.
+  - Preserved P21-registration-003 byte-for-byte and made no migration, steward, integration, provider, deployment, DNS, send, charge, or external-system change.
 remaining_steps:
-  - C00/I36 independently validates remote equality, exact nine-path scope, native/focused/static evidence, and P21-registration-003.
-  - C00/I36 integrates the exact terminal P21 head and dispositions the registration request without semantic weakening.
+  - C00 or I36 independently verifies remote equality, exact eight-path scope, implementation digests, focused/native/static evidence, and immutable registration-003.
+  - C00 or I36 integrates the exact verified terminal head and dispositions registration-003 without semantic weakening.
   - Candidate-bound end-to-end, provider, operator-acceptance, and production-release evidence remains downstream.
 next_action: >-
-  C00/I36 verifies and integrates the containing terminal commit and dispositions
-  P21-registration-003, or returns one bounded rejection.
+  C00 or I36 verifies and integrates the containing terminal commit, or returns
+  one bounded rejection tied to reproduced evidence.
 requirements:
   OTV2-CONTENT-087: task_implementation_verified
   OTV2-CONTENT-088: task_implementation_verified
@@ -108,47 +114,45 @@ changed_paths:
   - ops/v2.1-execution/runtime/P21/HANDOFF.md
   - ops/v2.1-execution/runtime/P21/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P21/TASK-STATE.yaml
-  - ops/v2.1-execution/runtime/P21/steward-requests/P21-registration-003.yaml
   - packages/contracts/src/content/publication/index.ts
   - packages/db/src/content/publication/repository.test.ts
   - packages/db/src/content/publication/repository.ts
 migrations: []
 steward_requests:
-  - id: P21-registration-002
-    raw_git_blob_sha256: af851f718e99945fed2d9b805a93fa20a0cea815a42ce33f2c22fda8c52ac45d
-    disposition: immutable_stale_superseded_unapplied
   - id: P21-registration-003
     raw_sha256: 0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16
-    disposition: proposed_unapplied_pending_i36
+    disposition: byte_identical_proposed_unapplied_pending_I36
 verification:
   commands_run:
-    - command: READY/control/branch/integration/migration/lease/path preflight
+    - command: READY/control/branch/lease/path preflight and canonical READY digest reproduction
       result: passed
-    - command: npx vitest run --environment node <five focused P21 files>
-      result: passed; 5 files and 29 tests
+    - command: npm exec vitest run -- <five focused P21 files>
+      result: passed; 5 files and 31 tests, retaining all prior 29 assertions
     - command: npm run typecheck
       result: passed
-    - command: focused ESLint and Prettier over exact TypeScript/runtime artifacts
+    - command: focused ESLint and Prettier over the five TypeScript artifacts
       result: passed
+    - command: disposable native PGlite repository proof with migrations 2234, 2245, and 2246
+      result: passed; archive canonical v5/events 5, successor retries zero writes, append-only rejection
     - command: P21-registration-003 committed steward-request schema validation
       result: passed
-    - command: native PGlite repository proof with real migrations 2234, 2245, and 2246
-      result: passed; four bootstrap events, zero replay writes, canonical v6 versus publication v9, namespaced reuse, changed replay and append-only rejection
-    - command: canonical aggregate DML/source/provider/static scope gates
+    - command: canonical aggregate DML/source/scope/static and exact non-runtime scope gates
       result: passed
-    - command: git diff --check and exact nine-path inventory
-      result: passed
+    - command: git diff --check and exact path-set equality against READY authorization
+      result: >-
+        passed; exact path set matches, while the candid non-reproducing
+        control inventory digest is recorded separately
     - command: npm run secret:scan
-      result: passed
-    - command: artifact and immutable predecessor digest reproduction
+      result: passed across 3111 repository text files
+    - command: implementation artifact and immutable registration digest reproduction
       result: passed
   known_baseline_failures: []
 external_effects:
-  authority: bounded_source_only
+  authority: none_for_this_correction
   attempted: 0
   succeeded: 0
   reconciled: 0
 blockers: []
 out_of_scope_findings:
-  - No migration, domain lifecycle, barrel, shared configuration, integration, candidate, deployment, DNS, provider, or external system was changed.
-  - P21-registration-002 remains immutable, stale, superseded, and unapplied.
+  - No SQL migration, domain lifecycle, shared registration, integration, candidate, deployment, DNS, provider, send, charge, customer, or external-system path changed.
+  - P21-registration-003 remains immutable and unapplied for C00/I36 disposition.

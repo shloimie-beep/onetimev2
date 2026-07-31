@@ -454,6 +454,103 @@ describe('P21 content publication service', () => {
     ]);
   });
 
+  it('archives before approval and replays exact registration after canonical successors', async () => {
+    const createHarness = () => {
+      const memory = new MemoryPublicationRepository();
+      memory.canonicalOccurrences.set(
+        'one_time_mishnayos:content_one',
+        canonicalOccurrence('content_one', 1),
+      );
+      memory.canonicalOccurrences.set(
+        'one_time_mishnayos:occurrence_two',
+        canonicalOccurrence('occurrence_two', 2),
+      );
+      return {
+        memory,
+        service: createContentPublicationService({
+          repository: memory,
+          approvedProjectionRepository: memory,
+          vimeoProviderBinding,
+          vimeoReadbackAdapter: memory,
+          createId: () => 'playback_session_001',
+        }),
+      };
+    };
+
+    const preApproval = createHarness();
+    await preApproval.service.registerApprovedProjection({
+      principal: admin,
+      contentVersionId: 'content_version_one',
+    });
+    await expect(
+      preApproval.service.archive({
+        principal: admin,
+        contentId: 'content_one',
+        binding: command(1, 'archive.before.approval', '1'),
+      }),
+    ).resolves.toMatchObject({ replay: false, record: { state: 'archived', version: 2 } });
+    expect(preApproval.memory.canonicalStates.get('content_one')).toMatchObject({
+      state: 'archived',
+      version: 5,
+    });
+    expect(preApproval.memory.providerOperations.size).toBe(0);
+    expect(preApproval.memory.intents).toHaveLength(0);
+
+    const approved = createHarness();
+    await approved.service.registerApprovedProjection({
+      principal: admin,
+      contentVersionId: 'content_version_one',
+    });
+    await approved.service.approve({
+      principal: admin,
+      contentId: 'content_one',
+      approvalId: 'approval_one',
+      policyVersion: 'content-publication-v2',
+      binding: command(1, 'approve.before.registration.replay', '2'),
+    });
+    const approvedCanonicalWrites = approved.memory.canonicalEvents.length;
+    await expect(
+      approved.service.registerApprovedProjection({
+        principal: admin,
+        contentVersionId: 'content_version_one',
+      }),
+    ).resolves.toMatchObject({ replay: true, record: { state: 'approved', version: 2 } });
+    expect(approved.memory.canonicalEvents).toHaveLength(approvedCanonicalWrites);
+    expect(approved.memory.canonicalStates.get('content_one')).toMatchObject({
+      state: 'approved',
+      version: 5,
+    });
+
+    const publicationOnly = createHarness();
+    await publicationOnly.service.registerApprovedProjection({
+      principal: admin,
+      contentVersionId: 'content_version_one',
+    });
+    await publicationOnly.service.attachOccurrence({
+      principal: admin,
+      contentId: 'content_one',
+      relation: {
+        relationId: 'relation_occurrence_two',
+        occurrenceId: 'occurrence_two',
+        occurrenceVersion: 2,
+        canonicalSeriesId: 'canonical_series_one',
+      },
+      binding: command(1, 'attach.before.registration.replay', '3'),
+    });
+    const publicationOnlyCanonicalWrites = publicationOnly.memory.canonicalEvents.length;
+    await expect(
+      publicationOnly.service.registerApprovedProjection({
+        principal: admin,
+        contentVersionId: 'content_version_one',
+      }),
+    ).resolves.toMatchObject({ replay: true, record: { state: 'needs_review', version: 2 } });
+    expect(publicationOnly.memory.canonicalEvents).toHaveLength(publicationOnlyCanonicalWrites);
+    expect(publicationOnly.memory.canonicalStates.get('content_one')).toMatchObject({
+      state: 'needs_review',
+      version: 4,
+    });
+  });
+
   it('keeps canonical versions independent when occurrence attachment advances publication only', async () => {
     const memory = new MemoryPublicationRepository();
     memory.canonicalOccurrences.set(
@@ -1278,7 +1375,6 @@ class MemoryPublicationRepository
     evidence: ContentApprovalEvidence,
   ) {
     if (
-      record.state !== 'needs_review' ||
       evidence.accountKey !== record.accountKey ||
       evidence.productKey !== record.productKey ||
       evidence.contentId !== record.contentId ||
@@ -1289,12 +1385,16 @@ class MemoryPublicationRepository
     }
     const current = this.canonicalStates.get(record.contentId);
     if (current) {
+      const bootstrap = this.canonicalEvents.slice(0, 4);
       if (
-        current.state !== 'needs_review' ||
-        current.version !== 4 ||
+        current.state !== record.state ||
+        (record.state === 'needs_review' ? current.version !== 4 : current.version <= 4) ||
+        !['needs_review', 'approved', 'publishing', 'published', 'failed', 'archived'].includes(
+          record.state,
+        ) ||
         JSON.stringify(current.scope) !== JSON.stringify(this.executionScope) ||
-        this.canonicalEvents.length !== 4 ||
-        this.canonicalEvents.some(
+        bootstrap.length !== 4 ||
+        bootstrap.some(
           (event, index) =>
             event.operation !== 'bootstrap' ||
             event.expectedVersion !== index ||
@@ -1303,7 +1403,10 @@ class MemoryPublicationRepository
       ) {
         throw new Error('canonical_bootstrap_replay_conflict');
       }
-      return { replay: true, resultingVersion: 4 };
+      return { replay: true, resultingVersion: current.version };
+    }
+    if (record.state !== 'needs_review' || record.version !== 1) {
+      throw new Error('canonical_bootstrap_fresh_record_required');
     }
     const states = ['received', 'validating', 'processing', 'needs_review'] as const;
     states.forEach((nextState, index) => {
@@ -1348,6 +1451,18 @@ class MemoryPublicationRepository
     const current = this.canonicalStates.get(command.record.contentId);
     if (!current || JSON.stringify(current.scope) !== JSON.stringify(this.executionScope)) {
       throw new Error('canonical_state_scope_conflict');
+    }
+    const preApprovalArchive =
+      command.operation === 'archive' &&
+      command.previousState === 'needs_review' &&
+      command.nextState === 'archived' &&
+      command.record.state === 'archived' &&
+      command.record.approval === null;
+    if (
+      (command.scopeDerivation === 'approved_processing_source' && !preApprovalArchive) ||
+      (command.scopeDerivation === 'approved_projection' && !command.record.approval)
+    ) {
+      throw new Error('canonical_scope_derivation_conflict');
     }
     const idempotencyKey = `content:${command.operation}:${command.idempotencyKey}`;
     const prior = this.canonicalEvents.find((event) => event.idempotencyKey === idempotencyKey);
