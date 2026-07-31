@@ -8,7 +8,7 @@ import { createParentHouseholdRouter } from './router.ts';
 import type { ParentHouseholdService } from './service.ts';
 
 const snapshot: ParentHouseholdSnapshot = {
-  contract_version: '1.1.0',
+  contract_version: '1.2.0',
   household_id: 'household-router',
   display_name: 'Router household',
   access_state: 'active',
