@@ -8,16 +8,29 @@ branch: codex/v21-control
 start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
 dependency_heads: {}
 status: operational
-phase: full_production_completion_convergence
+phase: immediate_lean_completion_mode
 claimed_by: codex-c00-orchestrator-782440c2
 claim_time: '2026-07-30T16:25:00Z'
 claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
-lease_expires_at: '2026-07-31T12:22:35Z'
-last_heartbeat_at: '2026-07-31T12:22:35Z'
-controller_authorization_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
+lease_expires_at: '2026-07-31T12:35:33Z'
+last_heartbeat_at: '2026-07-31T12:35:33Z'
+controller_authorization_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
 ready_entry_payload_digest: null
-state_based_on_head_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
+state_based_on_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
 last_implementation_commit_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
+immediate_lean_completion_mode:
+  source_attachment_sha256: 6c7e65fd4c583a1aa2e115ef2132f449a9e3fd49bfcf52ec6c0c49674c467d08
+  recorded_at: '2026-07-31T12:26:10Z'
+  control_acquisition_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+  rule: one_meaningful_control_commit_per_phase_boundary
+  active_lanes:
+    F02: substantive_migrations_2254_2256
+    P18: final_runtime_triplet_evidence_count_correction
+    I36: read_only_batch_preparation
+    release: read_only_preparation
+  validation_policy: proportional_to_changed_bytes
+  runtime_triplet_policy: update_once_at_end_of_current_run
+  provider_effects: prohibited_until_dependency_candidate_authority_lock_and_fencing_gates
 lean_completion_bindings:
   full_production_completion_convergence:
     prior_control_head_sha: 8b4d83ae15ebd5ddfc95d01e163f73d4865f4c73

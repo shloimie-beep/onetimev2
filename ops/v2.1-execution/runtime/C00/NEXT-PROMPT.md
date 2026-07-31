@@ -3244,3 +3244,34 @@ integrate, freeze a candidate, claim a provider/effect lock, inspect or mutate
 a provider, deploy, change DNS, send, charge, activate a customer, or perform
 an external effect. Release both leases, push one bounded terminal, and stop
 for independent C00 audit.
+
+# Current instruction: immediate lean completion and final P18 evidence correction
+
+Resolve the pushed descendant of control acquisition
+`3a94de302ae0f7784dd5b5e47e850df4babde74c`. Continue the active work
+without restarting or reopening accepted findings:
+
+1. F02 continues its already authorized substantive seven-path migrations
+   2254-2256 and its existing native PostgreSQL proof.
+2. P18 starts from exact clean local/tracking/live terminal
+   `abc2be5b19f5539a4e3bcea55886f5ff12d5de64`, canonical READY
+   `0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb`,
+   claim `1904184a-8dbd-4876-b7bd-3715ed4272c0`, writer
+   `codex-p18-evidence-count-1904184a`, and EMBEDDED_CLASSROOM lease
+   `8700aa39-5041-4aa8-bf35-398cb86ba6f6`. Change only the P18 runtime
+   triplet. Replace every terminal focused-test count of 38 with exact total
+   35 and record repository 21, domain 10, and server callback contract 4.
+   Preserve all product, test, contract, migration, request, configuration,
+   composer, barrel, integration, candidate, provider, and external-effect
+   bytes. Validate only YAML, exact raw/pair/triplet digests, three-path scope,
+   ancestry, expected head, and local/tracking/live equality. Release the
+   lease, push one final terminal, and stop for one independent review.
+3. I36 completes read-only classification of the live assigned steward
+   requests into dependency-safe batches A-D. Do not edit or apply a request
+   until F02 and P18 pass their single independent reviews and C00 authorizes
+   one conflict-checked microbatch.
+
+No claim-only, lease-only, interim, validation-only, or release-only producer
+checkpoint is allowed prospectively. Candidate, provider effects, deployment,
+DNS, sends, charges, and customer activation remain prohibited until their
+exact dependency, candidate, authority, lock, and fencing gates are satisfied.

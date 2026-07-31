@@ -5,12 +5,12 @@ status: operational
 ready:
   - task_id: P18
     status: resume_ready
-    phase: P18_attendance_projection_callback_stale_authority_ordering_correction
+    phase: P18_attendance_projection_callback_evidence_count_correction
     branch: codex/v21-p18-attendance-projection-callback
     claim_mode: resume_existing
-    state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
-    authorized_start_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
-    expected_existing_head: e61aaeb384201f267b528e01c780f38cfc0c984d
+    state_based_on_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+    authorized_start_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
+    expected_existing_head: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
     package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
     source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
     task_packet_digest: e9128366095ad3d2552fbe6b5389c0b4f0f03d3f32c2f6902d9d8b755bbaa1b2
@@ -18,10 +18,10 @@ ready:
     prompt_digest: 4961cde1f9eb8ff32b68e8144dbe243c5f7f42e8c1922bbab24c39d82650d469
     dependency_heads_and_digests:
       C00:
-        required_state: full_production_completion_convergence
-        observed_state: full_production_completion_convergence
-        observed_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
-        control_state_raw_sha256: f9aa2f7d8c738609afdda326b0a220959f9d07bfee2a59fe26bab70ca02a7009
+        required_state: immediate_lean_completion_mode
+        observed_state: immediate_lean_completion_mode
+        observed_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+        control_state_raw_sha256: 618b4540026b3eab5f7a14b04edad39a07662cd5de19f53fba7665df93706851
       I36:
         required_state: P21_then_P22_accepted_source_microbatch_complete
         observed_state: P21_then_P22_accepted_source_microbatch_complete
@@ -32,82 +32,69 @@ ready:
         runtime_triplet_digest: 8b3ae2dc9393d51bf52a873971b12434c588e367a37323a6ebf9d56e1538dcf5
         lease_released_at: '2026-07-31T11:09:17Z'
         external_effects: 0/0/0
-      P18_prior_callback:
-        required_state: independently_rejected_preserved_evidence
-        observed_state: independently_rejected_preserved_evidence
-        terminal_head_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
-        terminal_parent_sha: 633e3805150e9a4f4b8cce76d4304454bbb85d94
-        terminal_tree_sha: 3782d2e0206e910eafb068ca7dc3888ed0fa0d17
-        atomic_claim_head_sha: 8c48f3218c8e10aeab542fb478e87f13433f12c6
-        source_manifest_digest: 0bcc3c44d3516bb20b9a6fb9b3400e1c8c87528444b57832d7c11c4bf170ab88
-        task_state_raw_sha256: 292506b7edcd763745c4457632edf1995640042cb4a04a18b4371fd67badf3a5
-        handoff_raw_sha256: d4f61b8d554b1ba2942647eb68dc437cf279e9747375a6923f90e0182c82d1a2
-        next_prompt_raw_sha256: 12b491ce5c9e90dbb40536c20681a3f9ddb0f1f7ae069389fc7f3f273324da9e
-        prior_ready_entry_payload_digest: 565882ee24deefdc5bc3e242e62548867596e4573a9e6ee7961991c66aa4b47d
-        prior_lease_released_at: '2026-07-31T10:58:50Z'
-        focused_tests: passed_29_of_29
-        mechanical_scope_and_static_gates: passed
-        review_disposition: held_two_P1_one_P2
+      P18_terminal:
+        required_state: product_semantics_passed_evidence_count_held
+        observed_state: product_semantics_passed_evidence_count_held
+        terminal_head_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
+        terminal_parent_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+        terminal_tree_sha: 88d6c9888d2500d78d384a0d53820e750f4a2ed5
+        task_state_raw_sha256: 7dccc1d9be17cc952e9b3276b6e0284e98ee4691868e6ef6da2042de3f787112
+        handoff_raw_sha256: ce9dff7b400286da1eb005060f3ce37bc52e5636c4b14296288f0b5a6d8454b6
+        next_prompt_raw_sha256: ff0d692a65b6fb5575bf810f71b2306546df51e62be61abcf7a4c09aa673f7ca
+        state_handoff_digest: 8c1d984c50f3d20283f9648d972226379dd0336c40c71f833da43b4b35b56ffa
+        runtime_triplet_digest: 88daeba555fa488130fa54118a2510cf1dba5ae19b698b5b624b216602b1139b
+        seven_path_inventory_digest: e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b
+        seven_path_manifest_digest: 85eec35a14b7956a7986326f31e39df75ab308e66f8db58db2f1a10bc1a5de40
+        source_manifest_digest: 1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340
+        contract_raw_sha256: 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5
+        migration_tree_digest: 040376c25e645b048afeb8e08d230a3084ab8566
+        product_review: passed_both_P1_and_P2_corrections
+        evidence_hold: recorded_38_but_exact_relevant_suite_total_is_35
+        focused_suite_counts:
+          repository: 21
+          domain: 10
+          server_callback_contract: 4
+          total: 35
+        prior_lease_released_at: '2026-07-31T12:09:35Z'
         external_effects: 0/0/0
-      P22:
-        required_state: callback_consumer_source_integrated
-        observed_state: callback_consumer_source_integrated
-        source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
-        integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
-        server_registration_request_raw_sha256: f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516
     authorized_paths:
       - ops/v2.1-execution/runtime/P18/HANDOFF.md
       - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
       - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-      - packages/db/src/classroom/attendance/repository.test.ts
-      - packages/db/src/classroom/attendance/repository.ts
-      - packages/domain/src/classroom/embedded/attendance.ts
-      - packages/domain/src/classroom/embedded/embedded-classroom.test.ts
-    authorized_path_inventory_digest: e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b
+    authorized_path_inventory_digest: a1faaf0d274b87576b567dcd9aa305184598dd8c7bd9d44dd526fc97cd7b76f8
     correction_directives:
       - >-
-        A newly inserted attendance event must require a successful versioned projection advance. A zero-row
-        projection write may be accepted only for a proven exact no-write replay; identical projection bytes must
-        never allow stale new evidence to commit or invoke the callback.
+        Replace every current terminal acceptance-count assertion of 38 with the exact reproduced total 35 and record
+        the component counts: repository 21, domain 10, and server callback contract 4.
       - >-
-        Before COMMIT, query and bind the projection correction reason, correcting Admin, immutable source event,
-        and correction state to the deterministic latest stored correction. Older, different, or unprovable
-        correction authority must roll back with no callback.
+        Preserve all four product/test files and every contract, migration, request, configuration, composer, barrel,
+        integration, candidate, provider, and external-effect byte.
       - >-
-        Replace localeCompare and default-locale ordering with one explicit locale-independent canonical event-ID
-        order that is identical in the domain and PostgreSQL query/seek boundary. Add adversarial punctuation and
-        Unicode counterexamples that would reverse under locale-sensitive comparison.
+        This is the one final runtime-metadata terminal for the completed product correction. Validate only YAML,
+        raw/pair/triplet digests, exact three-path scope, ancestry, expected head, and local/tracking/live equality.
       - >-
-        Preserve the stable callback contract, commit-before-callback order, callback-failure replay repair, exact
-        older-event no-write replay, immutable server-owned payload, all migration and steward-request bytes, and
-        contract raw SHA-256 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5.
-      - >-
-        Run the focused repository/domain suites plus scoped typecheck, lint, format, YAML, exact-scope, diff, and
-        secret gates. Update only the seven authorized paths, release the lease, push one bounded terminal, and
-        record effects 0/0/0.
-      - >-
-        Do not edit a contract, migration, steward request, central composer, config, barrel, integration branch,
-        candidate, provider, deployment, DNS, send, charge, or customer state.
+        Release the fresh EMBEDDED_CLASSROOM lease, push normally, report effects 0/0/0, and stop for one independent
+        C00 review. Do not create another claim-only, interim, validation-only, or release-only checkpoint.
     writer_slot_leases:
       - slot: EMBEDDED_CLASSROOM
-        lease_id: 89692d9a-5b1f-47b3-8b41-c96286936deb
+        lease_id: 8700aa39-5041-4aa8-bf35-398cb86ba6f6
         holder_task_id: P18
-        holder_claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
-        holder_writer_id: codex-p18-callback-correction-2ed4aaa7
-        state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
-        lease_issued_at: '2026-07-31T11:28:40Z'
-        lease_expires_at: '2026-07-31T13:28:40Z'
-        phase_scope: P18_attendance_projection_callback_stale_authority_ordering_correction_only
+        holder_claim_id: 1904184a-8dbd-4876-b7bd-3715ed4272c0
+        holder_writer_id: codex-p18-evidence-count-1904184a
+        state_based_on_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+        lease_issued_at: '2026-07-31T12:26:10Z'
+        lease_expires_at: '2026-07-31T14:26:10Z'
+        phase_scope: P18_attendance_projection_callback_evidence_count_correction_only
     effect_lock_leases: []
-    claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
-    lease_issued_at: '2026-07-31T11:28:40Z'
-    lease_expires_at: '2026-07-31T13:28:40Z'
+    claim_id: 1904184a-8dbd-4876-b7bd-3715ed4272c0
+    lease_issued_at: '2026-07-31T12:26:10Z'
+    lease_expires_at: '2026-07-31T14:26:10Z'
     heartbeat_interval_minutes: 30
     prompt_path: ops/v2.1-execution/prompts/P18-START-OR-RESUME.md
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  P18: 862362d871eec64d5ad47b3399dad9672649cef2fe3cf70ed24432028322e1e7
+  P18: 0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','
   and ':', ensure_ascii=false, and no floating-point values; SHA-256 those bytes. The digest lives in this sibling map,

@@ -3670,3 +3670,30 @@ MIGRATION_AUTHORITY lease `c741bc95...`, and SCHEMA_CONTRACT lease
 migrations 2254-2256. P18 READY and its canonical digest remain unchanged.
 Candidate, provider, deployment, DNS, send, charge, customer, and external
 effect authority remain absent.
+
+# Immediate lean mode and P18 evidence-only correction
+
+C00 recorded the `STEER — IMMEDIATE LEAN COMPLETION MODE` attachment at
+SHA-256 `6c7e65fd4c583a1aa2e115ef2132f449a9e3fd49bfcf52ec6c0c49674c467d08`.
+The prospective rule is one meaningful control commit per phase boundary,
+one producer terminal per substantive correction, one independent review by
+default, validation proportional to changed bytes, and one runtime-triplet
+update at the end of the current run. Accepted work is not reopened.
+
+P18 product terminal `abc2be5b19f5539a4e3bcea55886f5ff12d5de64`
+passed the independently reviewed P1 and P2 product semantics. Its sole
+evidence defect is the recorded focused-test total: the exact reproduced
+relevant suites contain repository 21, domain 10, and server callback 4
+assertions, totaling 35 rather than 38. C00 preserved every product, test,
+contract, migration, request, and shared byte and dispatched one final
+runtime-triplet-only correction under claim
+`1904184a-8dbd-4876-b7bd-3715ed4272c0`, writer
+`codex-p18-evidence-count-1904184a`, EMBEDDED_CLASSROOM lease
+`8700aa39-5041-4aa8-bf35-398cb86ba6f6`, and canonical READY digest
+`0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb`.
+
+F02 continues substantive migrations under its already reconciled claim;
+I36 continues read-only batch classification. Candidate remains null, effect
+locks remain empty, and no steward application, provider inspection or
+mutation, deployment, DNS, send, charge, customer activation, or other
+external effect is authorized by this checkpoint.
