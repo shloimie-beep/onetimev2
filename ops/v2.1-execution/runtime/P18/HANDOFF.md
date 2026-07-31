@@ -3,16 +3,16 @@
 ## Identity
 
 - Branch: `codex/v21-p18-attendance-projection-callback`
-- Exact correction parent: `e61aaeb384201f267b528e01c780f38cfc0c984d`
-- Live control verified: `864298e32e693599a804a5b152739de4ae17ee2b`
-- Final live control revalidation: `70b12ea370e8430bc80c0943231af98a3f5e6265`; P18 READY remained unchanged.
-- READY state basis: `52cb53061527b1df9b95029bcf211fe258609368`
-- Claim: `2ed4aaa7-37d2-4862-b9cb-6a85365088fa`
-- Writer: `codex-p18-callback-correction-2ed4aaa7`
-- EMBEDDED_CLASSROOM lease: `89692d9a-5b1f-47b3-8b41-c96286936deb`
-- Lease released: `2026-07-31T12:09:35Z`, before `2026-07-31T13:28:40Z`
-- READY digest: `862362d871eec64d5ad47b3399dad9672649cef2fe3cf70ed24432028322e1e7`
-- Exact seven-path inventory digest: `e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b`
+- Product-correction terminal and exact metadata parent: `abc2be5b19f5539a4e3bcea55886f5ff12d5de64`
+- Product-correction parent: `e61aaeb384201f267b528e01c780f38cfc0c984d`
+- Containing control: `4105c365a90ecb27fb930077ecaf02a9125edb38`
+- READY state basis/acquisition: `3a94de302ae0f7784dd5b5e47e850df4babde74c`
+- Claim: `1904184a-8dbd-4876-b7bd-3715ed4272c0`
+- Writer: `codex-p18-evidence-count-1904184a`
+- EMBEDDED_CLASSROOM lease: `8700aa39-5041-4aa8-bf35-398cb86ba6f6`
+- Lease released: `2026-07-31T12:38:56Z`, before `2026-07-31T14:26:10Z`
+- READY digest: `0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb`
+- Exact three-path inventory digest: `a1faaf0d274b87576b567dcd9aa305184598dd8c7bd9d44dd526fc97cd7b76f8`
 - Terminal head: derive with `git rev-parse HEAD`; C00 records the observed remote head.
 
 ## Correction completed
@@ -52,18 +52,21 @@ The source artifact manifest is
 The terminal delta is exactly the four authorized product/test paths and P18
 runtime triplet.
 
-## Verification
+## Verification and evidence-count correction
 
-- Focused repository/domain/contract tests: 38 passed, 0 failed.
-- Workspace typecheck: passed.
-- Focused ESLint and Prettier: passed.
-- YAML, diff hygiene, exact-scope, forbidden-delta, and secret gates: passed.
-- Locked execution manifest: 200/200; source package manifest: 15/15.
-- Migration tree remains `040376c25e645b048afeb8e08d230a3084ab8566`.
+- Exact relevant focused total: 35 passed, 0 failed: repository 21, domain 10,
+  and server callback contract 4.
+- This final continuation used metadata-only validation per immediate lean steer:
+  YAML, raw/pair/triplet digests, exact three-path scope, ancestry, expected
+  head, and local/tracking/live equality. Tests, typecheck, lint, native DB,
+  full suite, and secret scan were not rerun.
+- All product/test, contract, migration, request, config, composer, barrel,
+  integration, candidate, provider, and external-effect bytes are preserved
+  from `abc2be5b19f5539a4e3bcea55886f5ff12d5de64`.
 - Effects: attempted `0`, succeeded `0`, reconciled `0`.
 
 ## Exact next action
 
-C00 independently audits the exact pushed terminal, its sole parent, seven-path
-scope, artifact digests, correction semantics, released lease, clean remote
-equality, and effects `0/0/0`. P18 must stop.
+C00 independently audits the exact pushed terminal, its sole parent, three-path
+scope, corrected count/component evidence, raw-byte composite digests, released
+lease, clean remote equality, and effects `0/0/0`. P18 must stop.

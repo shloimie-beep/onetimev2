@@ -9,13 +9,13 @@ prompt_digest: 4961cde1f9eb8ff32b68e8144dbe243c5f7f42e8c1922bbab24c39d82650d469
 branch: codex/v21-p18-attendance-projection-callback
 start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
 correction_base_sha: e61aaeb384201f267b528e01c780f38cfc0c984d
+evidence_count_correction_parent_sha: abc2be5b19f5539a4e3bcea55886f5ff12d5de64
 dependency_heads:
   C00:
-    required_state: full_production_completion_convergence
-    observed_control_head_sha: 864298e32e693599a804a5b152739de4ae17ee2b
-    final_control_revalidation_sha: 70b12ea370e8430bc80c0943231af98a3f5e6265
-    state_basis_control_sha: 52cb53061527b1df9b95029bcf211fe258609368
-    control_state_raw_sha256: f9aa2f7d8c738609afdda326b0a220959f9d07bfee2a59fe26bab70ca02a7009
+    required_state: immediate_lean_completion_mode
+    observed_control_head_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+    state_basis_control_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+    control_state_raw_sha256: 618b4540026b3eab5f7a14b04edad39a07662cd5de19f53fba7665df93706851
   I36:
     required_state: P21_then_P22_accepted_source_microbatch_complete
     terminal_head_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
@@ -33,20 +33,20 @@ dependency_heads:
     integration_release_sha: 392cc119b2df65f9bd38da8c4db36113f1add967
     server_registration_request_raw_sha256: f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516
 status: ready_for_review
-phase: P18_attendance_projection_callback_stale_authority_ordering_correction_complete
-claimed_by: codex-p18-callback-correction-2ed4aaa7
-claim_time: '2026-07-31T11:28:40Z'
-claim_id: 2ed4aaa7-37d2-4862-b9cb-6a85365088fa
+phase: P18_attendance_projection_callback_evidence_count_correction_complete
+claimed_by: codex-p18-evidence-count-1904184a
+claim_time: '2026-07-31T12:26:10Z'
+claim_id: 1904184a-8dbd-4876-b7bd-3715ed4272c0
 writer_slot: EMBEDDED_CLASSROOM
-writer_slot_lease_id: 89692d9a-5b1f-47b3-8b41-c96286936deb
-lease_issued_at: '2026-07-31T11:28:40Z'
-lease_expires_at: '2026-07-31T13:28:40Z'
-last_heartbeat_at: '2026-07-31T12:09:35Z'
-lease_released_at: '2026-07-31T12:09:35Z'
-controller_authorization_sha: 864298e32e693599a804a5b152739de4ae17ee2b
-state_based_on_control_head_sha: 52cb53061527b1df9b95029bcf211fe258609368
-ready_entry_payload_digest: 862362d871eec64d5ad47b3399dad9672649cef2fe3cf70ed24432028322e1e7
-authorized_path_inventory_digest: e2f0e38565e290e50f801cebe9e05d3a98af98af313bd9c35908538aa304925b
+writer_slot_lease_id: 8700aa39-5041-4aa8-bf35-398cb86ba6f6
+lease_issued_at: '2026-07-31T12:26:10Z'
+lease_expires_at: '2026-07-31T14:26:10Z'
+last_heartbeat_at: '2026-07-31T12:38:56Z'
+lease_released_at: '2026-07-31T12:38:56Z'
+controller_authorization_sha: 4105c365a90ecb27fb930077ecaf02a9125edb38
+state_based_on_control_head_sha: 3a94de302ae0f7784dd5b5e47e850df4babde74c
+ready_entry_payload_digest: 0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb
+authorized_path_inventory_digest: a1faaf0d274b87576b567dcd9aa305184598dd8c7bd9d44dd526fc97cd7b76f8
 correction_terminal_head_sha: derive_with_git_rev_parse_HEAD
 source_manifest_digest: 1aec3f57732e639247eb99f450f878991e197d0de866d5bbb3e2c1ac5126d340
 source_artifact_digests:
@@ -63,23 +63,20 @@ completed_steps:
   - Queried the deterministic latest stored Admin correction before projection persistence and COMMIT, using observed time then canonical UTF-8 event-ID bytes; bound correction state, reason, Admin, audit, digest, and immutable event identity, and rejected older, different, hidden, or unprovable authority.
   - Replaced locale-sensitive ordering with explicit UTF-8 byte ordering identical to PostgreSQL convert_to(..., 'UTF8') ordering and added punctuation and Unicode reversal counterexamples.
   - Preserved mandatory port injection, DB-derived immutable callback payload, COMMIT-before-callback, callback-failure replay repair, older exact replay, all migration/steward bytes, and contract raw SHA-256 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5.
-  - Passed 38 focused repository/domain/contract assertions, workspace typecheck, focused ESLint and Prettier, YAML, diff, secret, locked/source manifests, exact scope, forbidden-delta, and unchanged migration-tree checks.
-  - Released sole EMBEDDED_CLASSROOM lease 89692d9a-5b1f-47b3-8b41-c96286936deb at 2026-07-31T12:09:35Z before expiry with effects 0/0/0.
+  - Passed the exact 35 relevant focused assertions: repository 21, domain 10, and server callback contract 4; prior product-terminal typecheck, focused ESLint/Prettier, YAML, diff, secret, locked/source manifests, exact scope, forbidden-delta, and migration-tree evidence remains preserved.
+  - Reproduced the exact prior terminal raw hashes and authoritative raw-byte concatenation digests, then corrected only the runtime evidence count under canonical READY 0fe5cd8ae06a590b61a9081efd60d73569ce4a1ee785f7172f0329c57c791feb without rerunning product validation.
+  - Released sole EMBEDDED_CLASSROOM lease 8700aa39-5041-4aa8-bf35-398cb86ba6f6 at 2026-07-31T12:38:56Z before expiry with effects 0/0/0.
 remaining_steps:
-  - C00 independently audits the exact pushed seven-path correction terminal and records its Git head.
-next_action: Stop after normal push and verified local/tracking/live equality; C00 audits the exact terminal correction before any integration or external action.
+  - C00 independently audits the exact pushed three-runtime-path evidence-count correction terminal and records its Git head.
+next_action: Stop after normal push and verified local/tracking/live equality; C00 audits the exact metadata-only terminal before any integration or external action.
 requirements:
   OTV2-CLASSROOM-078: implementation_verified
 acceptance_cases:
-  OTV2-CLASSROOM-078-AC01: 38_task_owned_assertions_passed
+  OTV2-CLASSROOM-078-AC01: 35_relevant_task_owned_assertions_passed
 changed_paths:
   - ops/v2.1-execution/runtime/P18/HANDOFF.md
   - ops/v2.1-execution/runtime/P18/NEXT-PROMPT.md
   - ops/v2.1-execution/runtime/P18/TASK-STATE.yaml
-  - packages/db/src/classroom/attendance/repository.test.ts
-  - packages/db/src/classroom/attendance/repository.ts
-  - packages/domain/src/classroom/embedded/attendance.ts
-  - packages/domain/src/classroom/embedded/embedded-classroom.test.ts
 external_effects:
   authority: none
   attempted: 0
@@ -88,15 +85,22 @@ external_effects:
 blockers: []
 out_of_scope_findings: []
 verification:
-  focused_tests: 38_passed_0_failed
-  typecheck: passed
-  focused_eslint: passed
-  focused_prettier: passed
-  yaml: passed
-  diff_check: passed
-  secret_scan: 3110_text_files_passed
-  locked_manifest: 200_entries_passed
-  source_manifest: 15_entries_passed
-  migration_tree: unchanged_040376c25e645b048afeb8e08d230a3084ab8566
+  focused_tests: 35_passed_0_failed
+  focused_suite_counts:
+    repository: 21
+    domain: 10
+    server_callback_contract: 4
+    total: 35
+  current_validation_mode: metadata_only_per_immediate_lean_steer
+  tests_rerun_for_metadata_correction: false
+  typecheck: preserved_from_product_terminal_not_rerun
+  focused_eslint: preserved_from_product_terminal_not_rerun
+  focused_prettier: preserved_from_product_terminal_not_rerun
+  yaml: current_metadata_correction_passed
+  diff_check: current_exact_three_path_scope_passed
+  secret_scan: 3110_text_files_passed_product_terminal_not_rerun
+  locked_manifest: 200_entries_passed_product_terminal_not_rerun
+  source_manifest: 15_entries_passed_product_terminal_not_rerun
+  migration_tree: preserved_040376c25e645b048afeb8e08d230a3084ab8566_not_rerun
   contract_raw_sha256: 005669a0fabc71ad0f52cf48037db783fa88a62fc460e6f64b2d22250563dce5
-  exact_scope: 7_paths_passed
+  exact_scope: 3_runtime_paths_passed
