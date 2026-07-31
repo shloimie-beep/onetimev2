@@ -3578,3 +3578,23 @@ barrel/config, the integrated P18 callback, and migration 2254. Candidate
 remains null; effect locks remain empty; no SQL authoring/application, shared
 registration, provider action, deployment, DNS, send, charge, customer
 activation, or other external effect is authorized.
+
+# I36 atomic claim reconciled; ordered source targets rebound
+
+I36 pushed atomic claim `b87901e803cdd3be7e09a1143d9f23eceaf7ad78`
+as the sole child of `d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9`,
+tree `a3f5578ff5bc108f16480444e7adc66112337268`, changing exactly its
+runtime triplet. Local, tracking, and live heads are equal; P21 and P22 are not
+yet ancestors; claim `f7a26569-d4d1-4b42-9d5c-7b98377bd235` and lease
+`5e0cd656-e4eb-492d-88d8-50c792fa1a20` remain live; effects are `0/0/0`.
+The state/HANDOFF and triplet digests are `bc8f2247...f986e` and
+`2a944766...9fcd`.
+
+C00 consumed only I36 READY, preserved the concurrent P18 entry unchanged,
+and rebound both ordered merge target CAS fields to exact `b87901e8` under
+canonical payload digests `a3f43e06...1b824` and `c7084c74...abe67`. I36 may
+now merge P21 `c11dec41` then P22 `347a08b2`, preserve both source heads as
+ancestry, update only its runtime triplet after bounded validation, release its
+lease, push one terminal, and stop. No steward request, SQL, candidate,
+provider, deployment, DNS, send, charge, customer activation, or external
+effect is authorized.

@@ -2899,6 +2899,36 @@ migration, edit shared registration/barrels/configuration, integrate, freeze a
 candidate, inspect or mutate a provider, deploy, change DNS, send, charge,
 activate a customer, or perform any external effect.
 
+# Current instruction: consume rebound P21/P22 source queue
+
+I36 atomic claim `b87901e803cdd3be7e09a1143d9f23eceaf7ad78`
+is independently reconciled with sole parent `d89a0f38`, exact runtime-triplet
+scope, state/HANDOFF digest `bc8f2247...f986e`, triplet digest
+`2a944766...9fcd`, clean local/tracking/live equality, live claim/lease, no
+source ancestry, and effects `0/0/0`.
+
+Resume I36 from exact `b87901e8`. Consume only the two rebound merge entries:
+
+1. P21 `c11dec418fa3de896e96c348f87928c92c9f86b9` first;
+   canonical rebound digest
+   `a3f43e06f433e03b22c59154c278993c1f5149c153f58fde6628b6ef95b1b824`;
+2. P22 `347a08b29b801de0a74b242d962c42a886dcd717` second,
+   canonical rebound digest
+   `c7084c74468e89d688f2d319c263f089d5c0a8f6017aa87b439e97e46f8abe67`.
+
+Recompute each canonical sibling merge digest from the live control queue
+before merging. Preserve both source heads as ancestry; stop on any target,
+base, source, digest, scope, request, ancestry, remote, or conflict drift. Do
+not cherry-pick, squash, edit producer source, or apply a steward request.
+After the required changed-area validation, update only the I36 runtime
+triplet, release lease `5e0cd656-e4eb-492d-88d8-50c792fa1a20`, push one
+terminal, verify local/tracking/live equality, and stop.
+
+P18 continues independently under its unchanged READY entry and exact
+eight-path ceiling. Candidate, SQL authoring/application, shared registration,
+providers, deployment, DNS, sends, charges, customer activation, and every
+external effect remain prohibited.
+
 # Current instruction: run the P22 residual correction and P21 content-state writer
 
 Resolve the exact pushed control commit containing this instruction from

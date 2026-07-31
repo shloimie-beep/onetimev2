@@ -3,102 +3,6 @@ execution_id: OT-V21-PRODUCTION
 generated_by: C00
 status: operational
 ready:
-  - task_id: I36
-    lane: D
-    status: resume_ready
-    phase: P21_then_P22_accepted_source_microbatch
-    branch: codex/v21-integration
-    claim_mode: resume_existing
-    state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-    authorized_start_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-    expected_existing_head: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-    package_lock_digest: fc85161d1af76b48f66ffcda334c4e5c56d36f5bfd4b94af11345979f6a7dac2
-    source_package_digest: 10df0e699e9ebe88d8b9dd4a756f6110ed3292110ff138a6de5caf97f139ec3e
-    task_packet_digest: 55e261760baac780e9a4db48c328480c6f98172261ef990e563a00b25c467fc7
-    task_context_digest: 7f47da82267dec5dafe9ad53da7ece7618c331645f0591982851c47987d06813
-    prompt_digest: 9d147e60a9aac1cc606d21484d90a8933df4d5bb755c1090aa95a52e0ff70fa1
-    dependency_heads_and_digests:
-      C00:
-        required_state: full_production_completion_convergence
-        observed_state: full_production_completion_convergence
-        observed_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-        control_state_raw_sha256: 273c9346d7038120c43c0031d5e60def88baa4def1102c6564202d8f72d1313a
-      prior_release:
-        required_state: current_integration_with_2253
-        observed_state: current_integration_with_2253
-        release_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-      source_microbatch:
-        order: P21_then_P22
-        path_collisions: 0
-        P21:
-          required_state: independently_accepted
-          observed_state: independently_accepted
-          terminal_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
-          terminal_parent_sha: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
-          terminal_tree_sha: 36fbc30a09ce783d205c42c80e6925e8e9c6db68
-          required_merge_base_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
-          exact_path_count: 9
-          source_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
-          source_manifest_digest: f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585
-          implementation_artifact_digest: 0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97
-          state_handoff_digest: fa87392335a078543f3e8a03498aa47286ec887267e0757148f01f03a72cd061
-          runtime_triplet_digest: c02721665ea11e69306a5234155fad0c611eb037cf96f93c550608f7278a917c
-          registration_003_raw_sha256: 0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16
-          independent_review_status: passed_no_P1_P2_or_P3
-          native_postgresql_server_gate: required_before_candidate_freeze
-        P22:
-          required_state: independently_accepted
-          observed_state: independently_accepted
-          terminal_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
-          terminal_parent_sha: e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6
-          terminal_tree_sha: b19318f1a06b7795687c74caabba8c0f4b6623e4
-          required_merge_base_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
-          merge_after_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
-          exact_path_count: 16
-          source_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
-          source_manifest_digest: 86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea
-          implementation_artifact_digest: 19a33cf409f66b99071b4686613ed495b76ef4b9eaed8d344b2beb67446ef18b
-          state_handoff_digest: 98218f029aa918a32da8cc4f64e864d3b3b9504989c04f14817f17158d9d1f4a
-          runtime_triplet_digest: f626461d904cb202b1a4d4f20b891f79c9f14d32c8a0309ad91fe930dd454060
-          independent_review_status: passed_no_P1_or_P2
-    authorized_paths:
-      - ops/v2.1-execution/runtime/I36/HANDOFF.md
-      - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
-      - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
-    correction_directives:
-      - >-
-        Consume exactly the two MERGE-QUEUE items in P21 then P22 order. Preserve both exact terminal heads as ancestry;
-        do not cherry-pick, squash, apply any steward request, or edit producer-owned source.
-      - >-
-        Verify the P21 source delta is exactly nine paths and the P22 source delta is exactly sixteen paths with zero path
-        collisions. Stop on target, remote, base, digest, scope, ancestry, request-byte, or queue drift.
-      - >-
-        Run changed-area P21/P22 tests, workspace typecheck, focused lint/format, unchanged migration inventory, YAML,
-        diff, secret, ancestry, and exact-scope checks. Retain native PostgreSQL-server replay as a hard downstream gate.
-      - >-
-        Update only the I36 runtime triplet after both merges, record both merge heads and effects 0/0/0, release the sole
-        RELEASE_INTEGRATOR lease, push one terminal, and stop for C00 reconciliation.
-      - >-
-        Candidate freeze, SQL authoring/application, shared registration, provider effects, deployment, DNS, sends,
-        charges, customer activation, and every external effect remain prohibited in this source microbatch.
-    writer_slot_leases:
-      - slot: RELEASE_INTEGRATOR
-        lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
-        holder_task_id: I36
-        holder_claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
-        holder_writer_id: codex-i36-p21-p22-source-f7a26569
-        state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-        lease_issued_at: '2026-07-31T10:20:00Z'
-        lease_expires_at: '2026-07-31T12:20:00Z'
-        phase_scope: P21_then_P22_accepted_source_microbatch_only
-    effect_lock_leases: []
-    claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
-    lease_issued_at: '2026-07-31T10:20:00Z'
-    lease_expires_at: '2026-07-31T12:20:00Z'
-    heartbeat_interval_minutes: 30
-    prompt_path: ops/v2.1-execution/prompts/I36-START-OR-RESUME.md
-    model: GPT-5.6-SOL
-    reasoning: XHIGH
   - task_id: P18
     status: ready
     phase: P18_postcommit_attendance_projection_callback
@@ -183,7 +87,6 @@ ready:
     model: GPT-5.6-SOL
     reasoning: XHIGH
 entry_payload_digests:
-  I36: 102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89
   P18: 565882ee24deefdc5bc3e242e62548867596e4573a9e6ee7961991c66aa4b47d
 digest_algorithm: >-
   For each ready entry, parse to a data object, serialize as UTF-8 JSON with keys sorted recursively, separators ','

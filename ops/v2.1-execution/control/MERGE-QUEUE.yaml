@@ -10,7 +10,7 @@ items:
     source_branch: codex/v21-p21-publication-scope-correction
     source_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
     target_branch: codex/v21-integration
-    expected_target_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    expected_target_head_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
     source_delta_base_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     required_merge_base_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
     preserve_source_ancestry: true
@@ -32,7 +32,7 @@ items:
         holder_task_id: I36
         holder_claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
         holder_writer_id: codex-i36-p21-p22-source-f7a26569
-        state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+        state_based_on_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
         lease_issued_at: '2026-07-31T10:20:00Z'
         lease_expires_at: '2026-07-31T12:20:00Z'
         phase_scope: P21_then_P22_accepted_source_microbatch_only
@@ -55,7 +55,7 @@ items:
       attempted: 0
       succeeded: 0
       reconciled: 0
-    state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+    state_based_on_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION
     merge_id: 7711d813-f37e-4506-965c-ed594be07235
@@ -64,7 +64,7 @@ items:
     source_branch: codex/v21-p22-learning-engagement
     source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
     target_branch: codex/v21-integration
-    expected_target_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+    expected_target_head_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
     source_delta_base_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
     required_merge_base_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
     preserve_source_ancestry: true
@@ -103,10 +103,10 @@ items:
     next_prompt_raw_sha256: 3cfbb283c791dd2d10fa432414deaff16c623e13af7e63c1238bf8109fd906d8
     request_disposition_boundary: preserve_only_no_steward_application_in_source_microbatch
     external_effect_summary: *p21_p22_zero_effects
-    state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+    state_based_on_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
 item_payload_digests:
-  5ac7ed54-f75c-4aed-a87a-63478c046480: a14e9343278833e48657fc6cf428a968fc1293d243097d908ac70dd562bc324d
-  7711d813-f37e-4506-965c-ed594be07235: db8d1e7841f7343f8d1a0a6d8d82e42268e11cb27fb6413dec1cf7fe61c7e8d1
+  5ac7ed54-f75c-4aed-a87a-63478c046480: a3f43e06f433e03b22c59154c278993c1f5149c153f58fde6628b6ef95b1b824
+  7711d813-f37e-4506-965c-ed594be07235: c7084c74468e89d688f2d319c263f089d5c0a8f6017aa87b439e97e46f8abe67
 completed_items:
   - schema_version: 1
     execution_id: OT-V21-PRODUCTION
