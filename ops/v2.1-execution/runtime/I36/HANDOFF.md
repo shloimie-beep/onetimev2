@@ -1140,3 +1140,62 @@ clean local/tracking/live equality is proved. C00 must independently audit and
 consume both merge items, ancestry, exact release scope, native PostgreSQL
 evidence, runtime digests, lease release, and zero effects before successor
 authority.
+
+## P12 then P09 source microbatch with type-contract closure
+
+Live control `3c4a3aafb55ebe4745aa865733612172c9fad436`, based on
+`5c0c6c958a25ef313cb623bcfc3928899e5279ac`, authorized closure from preserved
+local P12-then-P09 head `08e26cfd9958da54b3fff95942d81f08ac7a5e09`.
+Canonical READY `c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380`
+and all three merge payloads reproduced exactly.
+
+I36 merged P12 `71fb96d60ea08e5947681e1ea1c704606ff215cc` first at
+`a6929cdddbde5282f37c10a60a5cc602cff44866`, with parents exactly remote
+integration `ae3ced8a9daa11044d4278968c14cb6baa12a480` and P12, and tree
+`5d36cf0a62b3e49bff3bbd6cfaca809a1cba1c56`. It merged P09
+`ce8df6e6d612dc935cb204fb7f7803489e90d740` second at
+`08e26cfd9958da54b3fff95942d81f08ac7a5e09`, with parents exactly the P12
+merge and P09, and tree `7bc370097d3e19d8bb762e13f118e35e920ba758`.
+
+The initial merged typecheck exposed three P12 test-only contract diagnostics:
+two stale `1.1.0` fixtures and one widened receipt disposition. I36 did not
+edit producer source or push a false terminal. C00 held the exact local merges,
+issued a six-path P12 correction, and independently accepted correction head
+`3ad55dc1de45bb11ec7ead886d88af9f592f2c18` with no P1/P2. I36 merged that
+child third at `8ab92f4b2ee26bd3838d6793b7c29d357f66c3a5`, with parents exactly the
+held P09 merge and correction head, required merge base `71fb96d6`, and
+forecast tree `ea56dee09fe9dfb5ad65b826f14684e2577821c3`.
+
+All three source heads are ancestors. The P12 and P09 original scopes are
+exactly 21 and 19 disjoint paths. The correction is exactly six paths and
+changes only three tests plus the P12 runtime triplet. The final combined
+source wave remains 40 paths with inventory
+`914134026094df5aec87c1d78f5c0b965ef8e3ba2f14a48f5e298a65b8869d31`
+and manifest
+`4da1a34b941441463527bdc4274b04273e770cbf5bc555e21cdd6b7d312f7e4e`.
+No steward request byte was edited or applied.
+
+Closure verification passed:
+
+- merged P12/P09 focused Vitest: 12 files, 67 tests passed, with three
+  declared native-only skips;
+- changed-workspace typecheck: zero P12/P09 diagnostics and exactly four
+  unchanged documented Stripe/Playwright baseline diagnostics;
+- ESLint: zero findings across all 24 changed TypeScript paths;
+- exact LF Git-blob Prettier: 24/24;
+- diff hygiene and exact merge/scope/digest gates; and
+- the already-passed web client and public-pages builds were reused because
+  the closure child changes only tests and producer runtime metadata.
+
+Claim `586989e0-52cd-4470-9ba3-ebb5689f5f14` and RELEASE_INTEGRATOR lease
+`04dfa82c-4b04-4083-8255-1b78f20f59ff` remained unchanged throughout the
+hold. The lease was released at `2026-07-31T17:23:20Z`, before its
+`2026-07-31T18:23:33Z` expiry. No shared registration, migration, SQL,
+candidate, provider, deployment, DNS, send, charge, customer activation, or
+external action occurred. Effects remain attempted `0`, succeeded `0`,
+reconciled `0`.
+
+I36 must stop after the exact runtime-triplet terminal commit is normally
+pushed with clean local/tracking/live equality. C00 must independently audit
+and consume all three merge items before issuing the next B-then-C-then-A-then-D
+microbatch authority.

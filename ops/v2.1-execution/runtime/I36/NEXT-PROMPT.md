@@ -1,7 +1,57 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
-MODE: PAUSE_FOR_C00_F02_P18_TERMINAL_AUDIT
+MODE: PAUSE_FOR_C00_P12_P09_SOURCE_MICROBATCH_TERMINAL_AUDIT
+
+Audit the exact pushed I36 P12-then-P09 source microbatch and its bounded P12
+type-contract closure. Do not perform steward, registration, SQL, candidate,
+provider, deployment, or external successor work from this prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Remote integration start: `ae3ced8a9daa11044d4278968c14cb6baa12a480`
+Containing control: `3c4a3aafb55ebe4745aa865733612172c9fad436`
+Authority/control basis: `5c0c6c958a25ef313cb623bcfc3928899e5279ac`
+READY: `c0b634ffa53ca8b6462e91645d45653d69434d4674c8a175e37e69fca76e0380`
+Claim: `586989e0-52cd-4470-9ba3-ebb5689f5f14`
+Writer: `codex-i36-p12-p09-source-586989e0`
+RELEASE_INTEGRATOR lease: `04dfa82c-4b04-4083-8255-1b78f20f59ff`
+Lease issued: `2026-07-31T16:23:33Z`
+Lease expiry: `2026-07-31T18:23:33Z`
+Lease release: `2026-07-31T17:23:20Z`
+Effects: `0/0/0`
+
+Confirm the three canonical merge payloads and ordered non-fast-forward merges:
+
+- P12 payload `3c7fd98bf1b92ac78a92122e5a291565e8cb84d227a1b4683030a07ba42a0c08`;
+  merge `a6929cdddbde5282f37c10a60a5cc602cff44866`, parents `ae3ced8a...` and
+  `71fb96d6...`, tree `5d36cf0a...`.
+- P09 payload `375db3de4a419cbf557d63c0aae1696b1a205972a5d511b9164c7c7e666d3a4d`;
+  merge `08e26cfd9958da54b3fff95942d81f08ac7a5e09`, parents `a6929cdd...` and
+  `ce8df6e6...`, tree `7bc37009...`.
+- P12 correction payload
+  `980815f9eaf8c437d78963d4650670e97dae27a10ee2785735fe92efc032ac61`;
+  merge `8ab92f4b2ee26bd3838d6793b7c29d357f66c3a5`, parents `08e26cfd...` and
+  `3ad55dc1...`, required base `71fb96d6...`, tree `ea56dee0...`.
+
+Confirm all source heads are ancestors, the original 21/19 scopes are
+disjoint, the correction is exactly six paths, no producer source edit or
+steward application occurred, and the final combined 40-path inventory and
+manifest are respectively
+`914134026094df5aec87c1d78f5c0b965ef8e3ba2f14a48f5e298a65b8869d31`
+and `4da1a34b941441463527bdc4274b04273e770cbf5bc555e21cdd6b7d312f7e4e`.
+
+Confirm 12 focused files with 67 passing tests and three declared native
+skips; zero P12/P09 typecheck diagnostics with exactly four unchanged
+Stripe/Playwright baselines; 24-file ESLint and exact Git-blob Prettier;
+reused passed web client/pages builds; exact terminal three-runtime-path
+scope; released lease; clean local/tracking/live equality; and effects 0/0/0.
+
+C00 must independently consume all three merge items and reconcile the
+terminal before issuing the next I36 authority in B then C then A then D
+order. Stop.
+
+## Historical audit targets
 
 Audit the exact pushed I36 P21-then-P22 accepted-source microbatch terminal.
 Do not perform steward, registration, SQL, candidate, provider, deployment, or
