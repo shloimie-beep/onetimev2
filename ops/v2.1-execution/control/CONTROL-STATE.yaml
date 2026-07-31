@@ -16,14 +16,15 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
+controller_authorization_sha: e621f71396b7d0a42eaead5b443eef03fadf84f2
 next_action: >-
-  I36 atomic claim 2e62d79d is independently reconciled. Under unchanged claim 8d8f5bb9 and live four-slot lease
-  49ae7724 through 04:21:40Z, the same worker may run only the seven pending native PostgreSQL, Chromium, build, lint,
-  format, secret, and exact scope/ancestry/immutable validation gates. Product/test bytes and completed evidence are
-  frozen; any discovered defect requires a stop and new bounded correction authority. At terminal, release all four
-  slots together, update only the I36 runtime triplet, push, and stop for C00 audit. Candidate freeze, providers,
-  deployment, DNS, sends, charges, live migrations, and customers remain gated.
+  I36 terminal validation stopped correctly on a reproducible three-file Prettier regression. Under unchanged claim
+  8d8f5bb9 and live four-slot lease 49ae7724 through 04:21:40Z, I36 may change only app.ts, adult-session.test.ts, and
+  the Parent composition test to their exact repository-configured Prettier hashes, plus its runtime triplet. It must
+  rerun changed-source gates and finish the pending native concurrency, Chromium, build, lint, format, secret, and
+  exact scope/ancestry gates; any hash or semantic drift requires a stop. At terminal, release all four slots
+  together, push, and stop for C00 audit. Candidate, providers, deployment, DNS, sends, charges, migrations, and
+  customers remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -63,7 +64,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: parent_session_successor_atomic_claim_reconciled_terminal_validation_active
+  status: parent_session_successor_three_file_prettier_correction_and_terminal_validation_active
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -113,13 +114,49 @@ production_completion_lanes:
   terminal_validation_renewal_atomic_claim_manifest_triplet_digest: 3a8753b73cedbdbc041a7347c446aea8cdc1f00ca2e51b55d788365563cb4939
   terminal_validation_renewal_atomic_claim_state_basis_classification: historical_safe_inherited_runtime_lineage
   terminal_validation_renewal_atomic_claim_status: independently_reconciled
+  terminal_validation_formatting_hold_reproduced_at_head_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
+  terminal_validation_formatting_hold_baseline_head_sha: 2e7cd5be686285ec9506bece9e0761040f881fa5
+  terminal_validation_formatting_hold_baseline_status: all_ten_authorized_paths_passed_repository_configured_prettier
+  terminal_validation_formatting_hold_current_status: exactly_three_paths_failed_repository_configured_prettier
+  terminal_validation_formatting_correction_paths:
+    apps/web/src/server/app.ts:
+      current_raw_sha256: ffaca0a996bbbd8538e8c319a602a0f613e00e870de000c0f64a5a30fc2a34d7
+      expected_formatted_raw_sha256: e7359091cd01372177bf99aacce1e4902d4e179793eaa1ad7b7f432886536f5a
+      expected_formatted_git_blob_sha1: f94f9e8ea0a376ba90fd07baa1aa8002d0cd63c3
+      expected_byte_delta: -7
+    apps/web/src/server/features/auth/v21-adult-session.test.ts:
+      current_raw_sha256: 41037442b1b3a7087815ba06510ab4a77ef5d431d101935f5982ee7b30b96a4c
+      expected_formatted_raw_sha256: 36dd959dfb1f88fd756cc01e3aca4ef6d26b3929638f137ad9a7bf2eb796d6ac
+      expected_formatted_git_blob_sha1: 347c7998065ae323fc7eb71a81cb0cb3a105ea41
+      expected_byte_delta: 0
+    tests/integration/accounts/v21-family-parent-session-composition.test.ts:
+      current_raw_sha256: cbada21f40c29f02914c3544e691307b27830a80653e4d0aa316df1678e7fcf9
+      expected_formatted_raw_sha256: 8a249afac0d0d6b9771444244385b3aba9d3e6ce2551efe7c0b597cb5c714f14
+      expected_formatted_git_blob_sha1: bf5e6f340ece3c66df12ef3a5b0f3736d59e78c1
+      expected_byte_delta: 25
+  terminal_validation_pre_hold_passed_gates:
+    native_postgresql_18_4_lifecycle: passed
+    production_client_and_pages_build: passed
+    changed_file_eslint: passed_zero_findings
+    repository_secret_scan: passed_3110_files
+  terminal_validation_post_correction_required_gates:
+    exact_configured_prettier_all_ten_paths: pending
+    workspace_typecheck: pending_changed_source
+    focused_auth_repository_and_composition_tests: pending_changed_source
+    native_postgresql_18_4_lifecycle: pending_changed_source
+    native_postgresql_18_4_concurrency_and_exact_bucket_readback: pending
+    real_chromium_parent_reload_logout_zero_legacy_calls: pending
+    production_build: pending_changed_source
+    changed_file_lint: pending_changed_source
+    repository_secret_scan: pending_changed_source
+    exact_scope_diff_ancestry_and_immutable_checks: pending
   historical_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
   historical_writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
   prior_claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
   prior_writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
   claim_id: 8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee
   writer_lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-  active_phase_scope: parent_session_auth_client_successor_terminal_validation_only
+  active_phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 authority_note: >-

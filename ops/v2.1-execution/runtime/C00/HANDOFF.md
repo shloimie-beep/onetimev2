@@ -1,5 +1,50 @@
 # Parent auth/client successor — current handoff
 
+I36 terminal validation stopped correctly at exact clean integration
+`2e62d79d0122360155dd10da9c2b2c13892eff89` when repository-configured
+Prettier flagged exactly three authorized files. C00 independently reproduced
+the result: all ten files passed at pre-closeout baseline `2e7cd5be`, while
+only `apps/web/src/server/app.ts`,
+`apps/web/src/server/features/auth/v21-adult-session.test.ts`, and
+`tests/integration/accounts/v21-family-parent-session-composition.test.ts`
+fail now.
+
+The exact deterministic configured-Prettier outputs are:
+
+- `app.ts`: raw SHA-256 `e7359091…`, Git blob `f94f9e8e…`, byte delta `-7`;
+- `v21-adult-session.test.ts`: raw SHA-256 `36dd959d…`, Git blob
+  `347c7998…`, byte delta `0`;
+- Parent composition test: raw SHA-256 `8a249afa…`, Git blob `bf5e6f34…`,
+  byte delta `+25`.
+
+No product byte changed during the failed gate. Native PostgreSQL 18.4
+lifecycle proof, production client/pages build, changed-file ESLint, and the
+3,110-file secret scan passed. The separate greater-than-five concurrency
+proof and real Chromium proof were not started. PostgreSQL remains alive and
+the four-slot lease remains live and unreleased.
+
+Under unchanged claim `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`, writer
+`codex-i36-parent-session-successor-8d8f5bb9`, and shared lease
+`49ae7724-b77a-4cc5-81f6-d16b6e1f5457` through
+`2026-07-31T04:21:40Z`, I36 may change only those three files to the exact
+hashes above plus its runtime triplet. No other formatting or source rewrite
+is authorized.
+
+After the deterministic correction, I36 must pass all ten configured
+Prettier checks, workspace typecheck, focused auth/repository/composition
+tests, native lifecycle and separate concurrency/readback proof, real
+Chromium, production build, changed-file lint, secret scan, and exact
+six-path/scope/ancestry/semantic-preservation checks. Any unexpected hash,
+path, or semantic drift requires a stop. At terminal, release all four slots
+together, push normally, verify local/tracking/live equality, and stop for C00
+audit.
+
+Candidate is null, all provider locks remain unclaimed, and no migration,
+steward application, provider, deployment, DNS, send, charge, customer, or
+other external effect is authorized.
+
+## Superseded terminal-validation-only authorization
+
 I36 terminal-validation renewal atomic claim
 `2e62d79d0122360155dd10da9c2b2c13892eff89` is the exact clean
 remote-equal runtime-triplet-only child of

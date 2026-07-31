@@ -13,19 +13,19 @@ tasks:
     source_microbatch_3_reconciliation_authorized_start: 1d0fb443cde2ab992215a52f09c35ae56a97458f
     parent_session_partial_reconciliation_authorized_start: 90e70b07e5b10a16342e80c4f8b537a8ea21263c
   authorized_start_sha: 73dda293079f602c83929d1bbccb8dd5b9d1a455
-  last_known_remote_head: 52793910c1a8d899ae4cffc50a63bcb38a137090
+  last_known_remote_head: e621f71396b7d0a42eaead5b443eef03fadf84f2
   active_claim_id: 782440c2-46a7-42c5-b7bc-7138685e95e6
   active_writer_id: codex-c00-orchestrator-782440c2
-  lease_expires_at: '2026-07-31T04:58:00Z'
-  last_heartbeat_at: '2026-07-31T02:58:00Z'
-  controller_authorization_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
+  lease_expires_at: '2026-07-31T05:15:00Z'
+  last_heartbeat_at: '2026-07-31T03:15:00Z'
+  controller_authorization_sha: e621f71396b7d0a42eaead5b443eef03fadf84f2
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
   status_proof:
     state: operational
     producer_task_id: C00
-    producer_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
+    producer_head_sha: e621f71396b7d0a42eaead5b443eef03fadf84f2
     canonical_candidate_digest: null
     interface_checkpoint_digest: null
     integration_or_evidence_head_sha: 2e62d79d0122360155dd10da9c2b2c13892eff89
@@ -39,8 +39,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
-    transitioned_at: '2026-07-31T02:58:00Z'
+    state_based_on_control_head_sha: e621f71396b7d0a42eaead5b443eef03fadf84f2
+    transitioned_at: '2026-07-31T03:15:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/C00/status_proof
 - task_id: F01
   status: ready_for_review
@@ -418,7 +418,7 @@ tasks:
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/F07/status_proof
 - task_id: I36
   status: claimed
-  active_phase: parent_session_auth_client_successor_terminal_validation_only
+  active_phase: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
   branch: codex/v21-integration
   phase_branches:
     integration: codex/v21-integration
@@ -476,18 +476,18 @@ tasks:
   active_writer_leases:
   - slot: SERVER_COMPOSER
     lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-    phase_scope: parent_session_auth_client_successor_terminal_validation_only
+    phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
   - slot: CLIENT_COMPOSER
     lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-    phase_scope: parent_session_auth_client_successor_terminal_validation_only
+    phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
   - slot: IDENTITY_AUTH_ACCESS
     lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-    phase_scope: parent_session_auth_client_successor_terminal_validation_only
+    phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
   - slot: ACCOUNT_HOUSEHOLD_IDENTITY
     lease_id: 49ae7724-b77a-4cc5-81f6-d16b6e1f5457
-    phase_scope: parent_session_auth_client_successor_terminal_validation_only
+    phase_scope: parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation
   last_heartbeat_at: '2026-07-31T02:44:38Z'
-  controller_authorization_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
+  controller_authorization_sha: e621f71396b7d0a42eaead5b443eef03fadf84f2
   ready_entry_payload_digest: null
   interface_checkpoint_sha: null
   implementation_head_sha: null
@@ -508,8 +508,8 @@ tasks:
       stale: 0
       waived: 0
     external_effects_reconciled: true
-    state_based_on_control_head_sha: 52793910c1a8d899ae4cffc50a63bcb38a137090
-    transitioned_at: '2026-07-31T02:58:00Z'
+    state_based_on_control_head_sha: e621f71396b7d0a42eaead5b443eef03fadf84f2
+    transitioned_at: '2026-07-31T03:15:00Z'
     proof_record_location: ops/v2.1-execution/control/TASK-REGISTRY.yaml#tasks/I36/status_proof
 - task_id: P08
   status: ready_for_review

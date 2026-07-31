@@ -3,7 +3,55 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 terminal-validation-only authorization
+# Latest I36 three-file Prettier correction and terminal validation
+
+Resume only from exact clean local/tracking/live integration
+`2e62d79d0122360155dd10da9c2b2c13892eff89` under unchanged:
+
+- claim `8d8f5bb9-c439-48b6-9c19-b3e8f809a7ee`;
+- writer `codex-i36-parent-session-successor-8d8f5bb9`;
+- shared lease `49ae7724-b77a-4cc5-81f6-d16b6e1f5457`;
+- SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+  ACCOUNT_HOUSEHOLD_IDENTITY slots;
+- expiry `2026-07-31T04:21:40Z`;
+- exact phase
+  `parent_session_auth_client_successor_three_file_prettier_correction_and_terminal_validation`.
+
+Apply repository-configured Prettier to exactly these three files and require
+the exact output bindings:
+
+1. `apps/web/src/server/app.ts`
+   - input SHA-256 `ffaca0a996bbbd8538e8c319a602a0f613e00e870de000c0f64a5a30fc2a34d7`
+   - output SHA-256 `e7359091cd01372177bf99aacce1e4902d4e179793eaa1ad7b7f432886536f5a`
+   - output Git blob `f94f9e8ea0a376ba90fd07baa1aa8002d0cd63c3`
+2. `apps/web/src/server/features/auth/v21-adult-session.test.ts`
+   - input SHA-256 `41037442b1b3a7087815ba06510ab4a77ef5d431d101935f5982ee7b30b96a4c`
+   - output SHA-256 `36dd959dfb1f88fd756cc01e3aca4ef6d26b3929638f137ad9a7bf2eb796d6ac`
+   - output Git blob `347c7998065ae323fc7eb71a81cb0cb3a105ea41`
+3. `tests/integration/accounts/v21-family-parent-session-composition.test.ts`
+   - input SHA-256 `cbada21f40c29f02914c3544e691307b27830a80653e4d0aa316df1678e7fcf9`
+   - output SHA-256 `8a249afac0d0d6b9771444244385b3aba9d3e6ce2551efe7c0b597cb5c714f14`
+   - output Git blob `bf5e6f340ece3c66df12ef3a5b0f3736d59e78c1`
+
+Do not format or edit any other source/test file. Then run all ten authorized
+paths through configured Prettier, workspace typecheck, focused
+auth/repository/composition tests, native PostgreSQL lifecycle and separate
+greater-than-five concurrency/exact bucket readback proof, real Chromium
+Parent reload/logout zero-legacy proof, production build, changed-file lint,
+repository secret scan, and exact six-path/diff/ancestry/semantic-preservation
+checks.
+
+If any expected output hash differs, any unlisted path changes, or any
+semantic gate fails, stop without broadening the correction. Otherwise update
+the I36 runtime triplet honestly, release all four slots together, commit and
+push normally, verify local/tracking/live equality and a clean worktree, then
+stop for C00 audit. Keep PostgreSQL session 51752 alive for root's independent
+native rerun.
+
+No migration, steward application, provider, candidate, deployment, DNS,
+send, charge, customer, or external effect is authorized.
+
+# Superseded I36 terminal-validation-only authorization
 
 Resume only from exact clean local/tracking/live remote
 `2e62d79d0122360155dd10da9c2b2c13892eff89`, the exact
