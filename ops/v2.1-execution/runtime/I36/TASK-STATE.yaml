@@ -39,26 +39,26 @@ dependency_heads:
   P17: 7f8a41bc09c81c53a276a32bbb667aeb1f0ee69c
   P18: 3be7bf4930a02ea5559db057ceedd6bb11a1b543
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
-status: claimed
-phase: P21_then_P22_accepted_source_microbatch_resume_atomic_claim_only
+status: ready_for_review
+phase: P21_then_P22_accepted_source_microbatch_complete
 claimed_by: codex-i36-p21-p22-source-f7a26569
 claim_time: '2026-07-31T10:20:00Z'
 claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
 lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
 lease_issued_at: '2026-07-31T10:20:00Z'
 lease_expires_at: '2026-07-31T12:20:00Z'
-lease_released_at: null
-last_heartbeat_at: '2026-07-31T10:51:37Z'
-controller_authorization_sha: ddd36a461481504219ac663cf464417eb2e6658b
-latest_valid_observed_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
-reconciled_state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
-ready_consumed_by_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
-ready_consumed_state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
+lease_released_at: '2026-07-31T11:09:17Z'
+last_heartbeat_at: '2026-07-31T11:09:17Z'
+controller_authorization_sha: 0d9274d0dbef7267d9b6671d8bbd099cba14893d
+latest_valid_observed_control_head_sha: 0d9274d0dbef7267d9b6671d8bbd099cba14893d
+reconciled_state_based_on_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
+ready_consumed_by_control_head_sha: 0d9274d0dbef7267d9b6671d8bbd099cba14893d
+ready_consumed_state_based_on_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
 ready_authorization_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
 ready_entry_state_based_on_control_head_sha: 0a2e8c390d48da157be35a2f9d06f876a70b5e62
 ready_entry_payload_digest: 102533576903c248ec018c2806191d6fbc055ef2a2dcd2438042e5129e815e89
 claim_mode: resume_existing
-expected_existing_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+expected_existing_head_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
 lease_phase_scope: P21_then_P22_accepted_source_microbatch_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
@@ -1611,14 +1611,14 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently verify this exact runtime-triplet-only resume claim checkpoint and consume READY.
-  - C00 must rebind both P21 and P22 merge-item expected-target CAS fields from d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9 to this verified claim head under the unchanged claim and lease.
-  - Only a descendant live control authorization may resume the ordered P21-then-P22 source merges and terminal validations.
+  - C00 must independently audit the exact pushed terminal, consume both merge items, and reconcile the released lease and effects 0/0/0.
+  - Native PostgreSQL-server replay remains a hard downstream gate before candidate freeze.
+  - Any steward application, shared registration, SQL, candidate, provider, deployment, or external successor requires new exact authority.
 next_action: >-
-  STOP. C00 must independently audit and consume this exact runtime-triplet-only
-  claim checkpoint, then rebind both queued P21/P22 expected-target CAS fields
-  to its verified head under the unchanged claim and RELEASE_INTEGRATOR lease.
-  Do not merge either source head under the stale d89a0f38 target.
+  STOP. C00 must independently audit the exact pushed P21-then-P22 terminal,
+  its ordered two-parent merge ancestry, exact 25-source-path plus three-runtime
+  release scope, completed validation, released RELEASE_INTEGRATOR lease, clean
+  remote equality, and effects 0/0/0 before any successor action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -3245,3 +3245,102 @@ P21_P22_source_microbatch_resume_atomic_claim_checkpoint:
     bindings, live unreleased lease, runtime digests, clean remote equality,
     and effects 0/0/0, then consume READY and rebind both merge-item target CAS
     fields before either source merge may begin.
+P21_P22_source_microbatch_terminal:
+  containing_control_head_sha: 0d9274d0dbef7267d9b6671d8bbd099cba14893d
+  state_basis_control_head_sha: ddd36a461481504219ac663cf464417eb2e6658b
+  exact_claim_checkpoint_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
+  exact_claim_checkpoint_parent_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+  claim_id: f7a26569-d4d1-4b42-9d5c-7b98377bd235
+  writer_id: codex-i36-p21-p22-source-f7a26569
+  lease_id: 5e0cd656-e4eb-492d-88d8-50c792fa1a20
+  lease_issued_at: '2026-07-31T10:20:00Z'
+  lease_expires_at: '2026-07-31T12:20:00Z'
+  lease_released_at: '2026-07-31T11:09:17Z'
+  last_heartbeat_at: '2026-07-31T11:09:17Z'
+  lease_phase_scope: P21_then_P22_accepted_source_microbatch_only
+  writer_slots_released:
+    - RELEASE_INTEGRATOR
+  merge_item_payload_digests:
+    P21: a3f43e06f433e03b22c59154c278993c1f5149c153f58fde6628b6ef95b1b824
+    P22: c7084c74468e89d688f2d319c263f089d5c0a8f6017aa87b439e97e46f8abe67
+  ordered_merges:
+    P21:
+      source_head_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+      source_parent_sha: 3250bb761aa0d6fb84db77f637bc05eb5f1c444d
+      source_tree_sha: 36fbc30a09ce783d205c42c80e6925e8e9c6db68
+      source_delta_base_head_sha: d89a0f38dfe695c323f56a28e7c2b0bd890d4ef9
+      merge_result_head_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
+      merge_parent_target_sha: b87901e803cdd3be7e09a1143d9f23eceaf7ad78
+      merge_parent_source_sha: c11dec418fa3de896e96c348f87928c92c9f86b9
+      merge_tree_sha: 3e73ea56bbdf53c18f78d04298419cda2ab3043e
+      source_path_count: 9
+      source_path_inventory_digest: c8bd8ec1db6b04cdfaa01f501224a357996b520b8034672825682a85139335a8
+      source_manifest_digest: f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585
+      implementation_artifact_digest: 0e512a204943046e3710a44cdd514f690d54e2665a02c381f36909ab84a95e97
+      state_handoff_digest: fa87392335a078543f3e8a03498aa47286ec887267e0757148f01f03a72cd061
+      runtime_triplet_digest: c02721665ea11e69306a5234155fad0c611eb037cf96f93c550608f7278a917c
+    P22:
+      source_head_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+      source_parent_sha: e185e45a2fa8900ef4b1bb3f3a5c021832bcd9e6
+      source_tree_sha: b19318f1a06b7795687c74caabba8c0f4b6623e4
+      source_delta_base_head_sha: 4d1b6dfc31d2b46f6cd530792816953d2a767fc2
+      merge_result_head_sha: 70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7
+      merge_parent_target_sha: f5172829a0df0af9fa9790cb5b88427ed3ccadc4
+      merge_parent_source_sha: 347a08b29b801de0a74b242d962c42a886dcd717
+      merge_tree_sha: 11f38d89138e8d933d7fa6195cb747f2e57a3a03
+      source_path_count: 16
+      source_path_inventory_digest: d153ca704b5275a3ccc95518b8e8a95ef08fbcc5c35177376447ac94bebf14c3
+      source_manifest_digest: 86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea
+      implementation_artifact_digest: 19a33cf409f66b99071b4686613ed495b76ef4b9eaed8d344b2beb67446ef18b
+      state_handoff_digest: 98218f029aa918a32da8cc4f64e864d3b3b9504989c04f14817f17158d9d1f4a
+      runtime_triplet_digest: f626461d904cb202b1a4d4f20b891f79c9f14d32c8a0309ad91fe930dd454060
+  scope:
+    P21_source_paths: 9
+    P22_source_paths: 16
+    combined_source_paths: 25
+    combined_source_path_inventory_digest: 1d7c540a0ecad753cca3f0fd11aed191ff20bd929d7e6d2a103eae9d1790b848
+    pairwise_path_collision_count: 0
+    terminal_runtime_paths: 3
+    release_path_count: 28
+  completed_validation:
+    P21_focused_vitest: passed_5_files_31_tests
+    P22_focused_vitest: passed_3_files_44_tests
+    P22_windows_checkout_note: >-
+      The initial CRLF checkout made one raw-source-string assertion fail; the
+      exact LF Git index blob was checked out for validation only, all 44 tests
+      passed, and the CRLF worktree checkout was restored with no Git diff.
+    workspace_typecheck: passed
+    focused_eslint: passed_zero_findings_13_typescript_files
+    focused_prettier: passed_25_source_paths_end_of_line_auto
+    merged_yaml_parse: passed_8_source_yaml_files
+    terminal_task_state_yaml_parse: passed
+    terminal_runtime_triplet_prettier: passed
+    locked_execution_manifest: passed_200_of_200
+    diff_check: passed
+    repository_secret_scan: passed_3117_text_files
+    exact_merge_parents_and_ancestry: passed
+    exact_source_scopes_and_manifests: passed_9_and_16_paths
+    exact_release_scope: passed_28_paths_from_claim_checkpoint
+    unchanged_migration_inventory:
+      result: passed
+      count: 84
+      last: packages/db/migrations/2253_v21_content_publication_projection_v2.sql
+      path_inventory_digest: 5df0ad16277ee6f67c683ed40fbb9e1a35145a5f0e9a76f16b2a57c8312ad28f
+      raw_manifest_digest: 2c3e52bd1b58293ca17173c75fb7c9f6cd3bb8f15431400c04b6e88a4201f604
+    immutable_request_git_blob_hashes:
+      P21_registration_003: 0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16
+      P22_server_registration_002: f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516
+    central_steward_application: none
+    source_merge_conflicts: 0
+    producer_source_edits_by_I36: 0
+  migration_or_SQL_change: false
+  shared_registration_or_steward_application: false
+  provider_or_candidate_action: false
+  external_effects: 0/0/0
+  native_postgresql_server_replay_gate: required_before_candidate_freeze
+  safe_next_action: >-
+    Stop after committing and normally pushing the exact three-runtime-path
+    terminal child of the ordered P21/P22 merge head. C00 must independently
+    audit and consume both merge items, exact ancestry and release scope,
+    completed validation, released lease, clean remote equality, and zero
+    effects before issuing any successor authority.

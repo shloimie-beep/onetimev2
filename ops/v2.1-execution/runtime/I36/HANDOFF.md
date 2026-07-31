@@ -1021,3 +1021,79 @@ queue identities, runtime raw/pair/triplet digests, live unreleased lease, and
 zero effects; consume READY; and publish descendant control with both P21/P22
 expected-target CAS fields rebound to this exact claim head under the same
 claim and lease before either ordered merge may begin.
+
+## P21 then P22 accepted-source microbatch terminal
+
+C00 reconciled the atomic claim and rebound both merge items at live control
+`0d9274d0dbef7267d9b6671d8bbd099cba14893d`, whose sole parent and
+state basis is `ddd36a461481504219ac663cf464417eb2e6658b`. The clean
+local/tracking/live integration CAS was exact claim checkpoint
+`b87901e803cdd3be7e09a1143d9f23eceaf7ad78`. Canonical rebound payloads
+reproduced exactly: P21
+`a3f43e06f433e03b22c59154c278993c1f5149c153f58fde6628b6ef95b1b824`
+and P22
+`c7084c74468e89d688f2d319c263f089d5c0a8f6017aa87b439e97e46f8abe67`.
+
+I36 merged P21 terminal
+`c11dec418fa3de896e96c348f87928c92c9f86b9` first at
+`f5172829a0df0af9fa9790cb5b88427ed3ccadc4`. Its parents are exactly the
+claim checkpoint and P21 source head; its tree is
+`3e73ea56bbdf53c18f78d04298419cda2ab3043e`. I36 then merged P22 terminal
+`347a08b29b801de0a74b242d962c42a886dcd717` at
+`70c48e60b2ca2177ba0eaeb606ef55a93eba0ca7`. Its parents are exactly the
+P21 merge and P22 source head; its tree is
+`11f38d89138e8d933d7fa6195cb747f2e57a3a03`. Both exact source heads are
+ancestors. No conflict or source edit occurred.
+
+The P21 first-parent scope is exactly nine paths with manifest
+`f0308424196d289516f72d76599acd98f16b2beca4d7ba61d2a57bb1bd1bf585`.
+The P22 first-parent scope is exactly sixteen paths with manifest
+`86f8154569c1fd6b56b68dc6736c84e14b2e497a25dd6619299195e0325499ea`.
+The disjoint combined source wave is 25 paths with inventory digest
+`1d7c540a0ecad753cca3f0fd11aed191ff20bd929d7e6d2a103eae9d1790b848`.
+The terminal adds only this I36 runtime triplet, for an exact 28-path release
+from the claim checkpoint.
+
+Verification passed:
+
+- P21 focused Vitest: five files, 31 tests;
+- P22 focused Vitest: three files, 44 tests;
+- workspace typecheck;
+- focused ESLint across 13 TypeScript files with zero findings;
+- focused Prettier across all 25 source paths;
+- eight merged source YAML files, diff hygiene, and repository secret scan
+  across 3,117 text files;
+- exact merge parents, ancestry, scopes, source manifests, and zero path
+  collisions;
+- unchanged 84-file migration inventory through migration 2253, with exact
+  inventory/manifest digests
+  `5df0ad16277ee6f67c683ed40fbb9e1a35145a5f0e9a76f16b2a57c8312ad28f`
+  and
+  `2c3e52bd1b58293ca17173c75fb7c9f6cd3bb8f15431400c04b6e88a4201f604`;
+  and
+- immutable raw Git hashes for P21 registration-003
+  `0100943c4acb2104fd1e5d755f860a675944ce19b1a0b92188dcac84ac19ed16`
+  and P22 server-registration-002
+  `f7a2111f38c22a2dd181804fbf495d0eb46bd8c91494d31dac2860fa976cb516`.
+
+The P22 repository test initially observed the Windows CRLF checkout rather
+than the LF Git blob and failed one literal string assertion. I36 checked out
+the exact LF index blob for validation only, passed all 44 tests, then restored
+the normal CRLF checkout with a clean Git status. No committed source byte
+changed.
+
+Claim `f7a26569-d4d1-4b42-9d5c-7b98377bd235` and the sole
+RELEASE_INTEGRATOR lease `5e0cd656-e4eb-492d-88d8-50c792fa1a20` remained
+unchanged. The lease was released at `2026-07-31T11:09:17Z`, before its
+`2026-07-31T12:20:00Z` expiry. No steward request was applied; no SQL,
+migration, shared registration, candidate, provider, deployment, DNS, send,
+charge, customer activation, or external action occurred. Effects remain
+attempted `0`, succeeded `0`, reconciled `0`. Native PostgreSQL-server replay
+remains a hard downstream gate before candidate freeze.
+
+I36 must stop after the exact runtime-triplet terminal commit is normally
+pushed with clean local/tracking/live equality. C00 must independently audit
+the ordered merge ancestry, terminal parent/tree, exact release scope and
+digests, validation evidence, lease release, unchanged requests/migrations,
+and effects `0/0/0`; consume both merge items; and issue new authority before
+any successor action.
