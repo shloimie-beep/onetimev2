@@ -16,14 +16,13 @@ integration_branch: codex/v21-integration
 integration_bootstrap_sha: ae02b193f67bf9ef04887a7b0aebb449d3fb8bc0
 candidate: null
 active_writer_limit: 4
-controller_authorization_sha: f0a73d35937a1366289ab7f733da354e65e0532b
+controller_authorization_sha: b2ddcf4c4bc132a9de9399dbd8cd66b0b46c0aff
 next_action: >-
-  I36 fresh-claim checkpoint 0389fe34 passes mechanical authority and scope gates but is held on stale canonical
-  top-level next_action and empty remaining_steps. Under unchanged fresh claim 5deb22c5 and lease 87280cec, I36 may
-  change only its runtime triplet to replace those stale fields with the six bounded security closeouts and a
-  correction-reconciliation stop, then push and stop. Product/test editing remains unauthorized until C00 accepts
-  that correction. P08/P12 results remain assigned and unapplied. Candidate freeze, provider locks/mutations,
-  deployment, DNS, sends, charges, live migration execution, and customer activation remain gated.
+  I36 runtime correction 2e7cd5be is independently reconciled. Under unchanged claim 5deb22c5 and lease 87280cec
+  through 02:28:50Z, the same worker may finish exactly the six canonical auth-security closeouts and eight terminal
+  gates within the unchanged thirteen-path ceiling, then release all four slots together, push an honest terminal
+  runtime triplet, and stop for C00 audit. P08/P12 results remain assigned and unapplied. Candidate freeze, provider
+  locks/mutations, deployment, DNS, sends, charges, live migration execution, and customer activation remain gated.
 production_completion_lanes:
 - lane: A
   owner: F02
@@ -63,7 +62,7 @@ production_completion_lanes:
   provider_effects: prohibited_until_candidate_authority_and_exact_lock
 - lane: D
   owner: I36
-  status: parent_session_successor_fresh_claim_reconciled_metadata_correction_only
+  status: parent_session_successor_metadata_corrected_security_closeout_active
   branch: codex/v21-integration
   prior_release_sha: 524563f07b3bb8544db989982dc55d4bc86a1999
   partial_checkpoint_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
@@ -76,7 +75,7 @@ production_completion_lanes:
   partial_checkpoint_runtime_triplet_digest: a877b1e24c450a599e8c9b0066345cc06d0444a4c9749aecdda0f7da0c3c628b
   partial_checkpoint_five_path_digest: c405518fb5c7a744fa24e6b4b6f88712af9de68e109920e9fad369e63374d31d
   all_producer_implementation_heads_ancestor_count: 35
-  expected_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
+  expected_head_sha: 2e7cd5be686285ec9506bece9e0761040f881fa5
   successor_authorized_start_sha: a5a2ad94b77eaf596930609d4d5abe4fa672439b
   renewal_checkpoint_sha: 0d834c0c0b0e1fd9db8b5a54076631cf1f2fe857
   renewal_checkpoint_implementation_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
@@ -87,11 +86,16 @@ production_completion_lanes:
   renewal_atomic_claim_tree_sha: 8a3aee3f833b061fc9dd278229a87d53e518d5c9
   renewal_atomic_claim_state_handoff_digest: f4ce12d651d6fbd02eb1c47b3edd15374b6f9a8dae52fbf64f3a3c4394dd5203
   renewal_atomic_claim_runtime_triplet_digest: 430c4ede4d28ad3dd6858cef7ce23aa3dd0dfd533b528179702d5304d03c95d8
+  renewal_metadata_correction_sha: 2e7cd5be686285ec9506bece9e0761040f881fa5
+  renewal_metadata_correction_parent_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
+  renewal_metadata_correction_tree_sha: d38090eda1cc738c90704e643030191073d92dda
+  renewal_metadata_correction_state_handoff_digest: c617599390693ea9a7e7cfc273a7f2962ae360e7a744cc587a8242944d6fd3bb
+  renewal_metadata_correction_runtime_triplet_digest: 424482a1e7e036d2a9b8d56967790581b0b4a34fc75b82978430197c40029879
   prior_claim_id: ef14f276-f6a2-45a5-b35d-d45d37572ca5
   prior_writer_lease_id: 21315060-463e-49a8-a246-20057483ec20
   claim_id: 5deb22c5-dc93-4946-98f1-dd7db19ee164
   writer_lease_id: 87280cec-f71e-4dbd-91dd-38f54d0c7b93
-  active_phase_scope: I36_runtime_triplet_metadata_correction_only_then_stop
+  active_phase_scope: parent_session_auth_client_successor_six_security_closeouts_and_terminal_validation
   scope: exact_v21_auth_client_lifecycle_successor_plus_native_proof_and_I36_runtime_triplet
   provider_effects: prohibited
 authority_note: >-

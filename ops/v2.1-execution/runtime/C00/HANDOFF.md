@@ -1,5 +1,37 @@
 # Parent auth/client successor — current handoff
 
+I36 runtime-metadata correction
+`2e7cd5be686285ec9506bece9e0761040f881fa5` is independently accepted as
+the exact clean remote-equal runtime-triplet-only child of `0389fe34`. It has
+tree `d38090ed`, corrected fourteen-step remaining work and a mandatory C00
+stop, canonical pair/triplet `c6175993`/`424482a1`, preserved all ten
+product/test blobs, and effects `0/0/0`.
+
+Under unchanged claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`, writer
+`codex-i36-parent-session-successor-5deb22c5`, and shared four-slot lease
+`87280cec-f71e-4dbd-91dd-38f54d0c7b93` through
+`2026-07-31T02:28:50Z`, the same worker may now finish exactly the six
+canonical security closeouts and eight terminal gates within the unchanged
+thirteen-path ceiling. It must release SERVER_COMPOSER, CLIENT_COMPOSER,
+IDENTITY_AUTH_ACCESS, and ACCOUNT_HOUSEHOLD_IDENTITY together, publish one
+honest terminal checkpoint, verify local/tracking/live equality, and stop for
+C00 audit.
+
+The six closeouts are linearizable pre-Argon reservations; invalid versus
+unavailable propagation; invalid-CSRF credential preservation and
+outcome-dependent logout clearing; recovery-required post-establishment
+cleanup; redacted logout audit/readback; and real Parent-bundle isolation
+through reload/logout. The terminal gates are native PostgreSQL, real browser,
+production build, workspace typecheck, changed-file lint, focused formatting,
+secret scan, and exact scope/diff/immutable-product-blob proof.
+
+P08/P12 results remain assigned and unapplied. Candidate is null, all provider
+locks remain unclaimed, and no migration, steward application, provider,
+deployment, DNS, send, charge, customer, or other external effect is
+authorized.
+
+## Superseded runtime-metadata correction handoff
+
 Fresh-claim checkpoint `0389fe344f27bcd44c1640e7f6ebcb90d485b213`
 is the exact clean remote-equal runtime-triplet-only child of `0d834c0c`.
 Mechanical authority, scope, blob-preservation, canonical pair/triplet

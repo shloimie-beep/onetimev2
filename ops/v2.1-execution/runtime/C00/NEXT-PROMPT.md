@@ -3,7 +3,54 @@ REASONING: XHIGH
 SERVICE TIER: PRIORITY
 MODE: START_OR_RESUME
 
-# Latest I36 runtime-metadata correction
+# Latest I36 security-closeout and terminal-validation dispatch
+
+Resume only from exact clean remote-equal
+`2e7cd5be686285ec9506bece9e0761040f881fa5`, the exact
+runtime-triplet-only child of `0389fe344f27bcd44c1640e7f6ebcb90d485b213`,
+under unchanged:
+
+- claim `5deb22c5-dc93-4946-98f1-dd7db19ee164`;
+- writer `codex-i36-parent-session-successor-5deb22c5`;
+- shared task-bound lease `87280cec-f71e-4dbd-91dd-38f54d0c7b93`;
+- SERVER_COMPOSER, CLIENT_COMPOSER, IDENTITY_AUTH_ACCESS, and
+  ACCOUNT_HOUSEHOLD_IDENTITY slots;
+- lease expiry `2026-07-31T02:28:50Z`;
+- exact thirteen-path ceiling: the ten product/test paths already recorded in
+  the I36 runtime plus its three runtime files.
+
+Finish exactly these six security closeouts:
+
+1. Make pre-Argon login-attempt reservations linearizable: atomically consume,
+   release every reservation on success, unavailable, or denied reservation,
+   retain only invalid-credential attempts, and prove more than five concurrent
+   attempts are denied.
+2. Propagate `resolved`, `invalid`, and `unavailable` through cookie resolve,
+   login preflight, bootstrap, and Parent shell; repository outage returns 503
+   without clearing a valid cookie.
+3. Preserve cookies on invalid CSRF and clear them only after exact logout
+   revocation plus readback.
+4. Report `recovery_required` with 503 and no failure-budget consumption when
+   post-establishment password-upgrade cleanup cannot prove revoke/readback.
+5. Insert and read back a redacted logout audit record, with consistent
+   rate-limit audit/outcome semantics.
+6. Run the actual Parent bundle through reload and logout and prove zero calls
+   to legacy session, dashboard, contact, or shell APIs.
+
+Then pass exactly these terminal gates: disposable native PostgreSQL
+session/revocation/cleanup/audit proof; real-browser proof; production build;
+workspace typecheck; changed-file lint; focused formatting; repository secret
+scan; and exact scope, diff-hygiene, ancestry, and immutable-product-blob
+checks.
+
+Update the I36 runtime triplet honestly, release all four slots together, push
+normally, verify local/tracking/live equality, and stop for independent C00
+audit. Do not edit a migration, apply a steward result, freeze a candidate,
+inspect or mutate a provider, claim a provider lock, deploy, change DNS,
+execute a live migration, send, charge, activate a customer, or perform any
+external effect.
+
+# Superseded I36 runtime-metadata correction
 
 Resume only from exact clean remote-equal
 `0389fe344f27bcd44c1640e7f6ebcb90d485b213` under unchanged claim
