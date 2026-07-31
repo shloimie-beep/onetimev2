@@ -40,24 +40,24 @@ dependency_heads:
   P18: 1926e61c793ce29d7240c1ee05d2a4879b52770b
   P21: c11dec418fa3de896e96c348f87928c92c9f86b9
 status: ready_for_review
-phase: batch_A_server_client_routes_barrels_and_candidate_safe_policy_binding_complete
-claimed_by: codex-i36-batch-a-b5a4907b
-claim_time: '2026-07-31T19:11:17Z'
-claim_id: b5a4907b-7915-4b7f-beda-34d58a6ff2a9
-lease_id: acf323b0-539a-4669-93cd-982f0f8495ce
-lease_issued_at: '2026-07-31T19:11:17Z'
-lease_expires_at: '2026-08-01T01:11:17Z'
-lease_released_at: '2026-07-31T20:15:30Z'
-last_heartbeat_at: '2026-07-31T20:15:30Z'
-controller_authorization_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-latest_valid_observed_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-reconciled_state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
-ready_authorization_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
-ready_entry_state_based_on_control_head_sha: 234a7c99d1c10075381749920d857f32c4c55c54
-ready_entry_payload_digest: bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
+phase: batch_A_terminal_evidence_manifest_correction_complete
+claimed_by: codex-i36-batch-a-evidence-be576814
+claim_time: '2026-07-31T20:30:37Z'
+claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
+lease_id: ac7fa58f-ef5f-4d02-be59-676259f10a35
+lease_issued_at: '2026-07-31T20:30:37Z'
+lease_expires_at: '2026-07-31T22:30:37Z'
+lease_released_at: '2026-07-31T20:45:09Z'
+last_heartbeat_at: '2026-07-31T20:45:09Z'
+controller_authorization_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+latest_valid_observed_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+reconciled_state_based_on_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+ready_authorization_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+ready_entry_state_based_on_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
 claim_mode: new
-expected_existing_head_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
-lease_phase_scope: batch_A_server_client_routes_barrels_and_candidate_safe_policy_binding_only
+expected_existing_head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+lease_phase_scope: batch_A_terminal_evidence_manifest_correction_only
 P21_publication_scope_correction_integration_binding:
   containing_control_head_sha: a58965e989a9dab81d079a8d02afe23aab146fb8
   authorized_start_sha: 7185d45b2dbcf157aa9e4f7cbcea02cc516ecf7d
@@ -320,6 +320,11 @@ prior_postmerge_integrator_fix_head_sha: e423868957f3a3cb9ddf992e39368fceb15661c
 state_based_on_head_sha: 0389fe344f27bcd44c1640e7f6ebcb90d485b213
 last_implementation_commit_sha: 5285a71e86ebf80bab3332f6cc3490a380bc7890
 completed_steps:
+  - Accepted exact I36 runtime-triplet-only evidence-correction authority from live control f66edb4d0728b90374e56da13dbd9853657d349c, state basis 44b9bc6d745810d74ca093d19f46806d8f58e077, READY 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861, and integration start 3ea1a32ef971947ab10c129e1de74b54e7311834.
+  - Reproduced the exact three-path newline inventory digest f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176 and confirmed the correction authority excludes every product, test, config, migration, control, candidate, provider, and deployment path.
+  - Recomputed every product artifact from exact Git blobs: corrected .env.example from the stale checkout-byte digest to 726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955, proved all other fifteen hashes unchanged, and reproduced canonical product manifest 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014.
+  - Preserved all product and test bytes, path inventories, immutable request dispositions, behavioral validation truth, five prior Batch A lease releases, and effects 0/0/0; no product test was rerun for this evidence-only correction.
+  - Released sole RELEASE_INTEGRATOR lease ac7fa58f-ef5f-4d02-be59-676259f10a35 at 2026-07-31T20:45:09Z, before expiry; no provider, infrastructure, candidate, deployment, DNS, billing, contact, send, activation, or external effect occurred.
   - Accepted exact repository-only Batch A authority from live control 44b9bc6d745810d74ca093d19f46806d8f58e077, state basis 234a7c99d1c10075381749920d857f32c4c55c54, READY bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d, and integration start b0cc23a05cb2f2f0ef4ee8860352320c18a8e450 under one claim and five bounded writer leases.
   - Reproduced all fourteen immutable request digests, applied the exact P12 and P09 barrel/server/client composition, satisfied the authenticated-family P08 successor, and applied only the registration-neutral P22 barrel while preserving every later-gated P08 provider/billing, P21, P22 server/client, and P30 worker boundary.
   - Added the fail-closed P12 legal-evidence configuration pair without values or placeholders, real Parent household persistence/session/workspace composition, exact active-admin legacy bridge for the approved-School Admin route, and the real six-field signed-out School inquiry page with longest-specific client routing.
@@ -1614,15 +1619,15 @@ family_parent_session_composition_binding:
       fixture, and stale login email-link-confirm markup expectation.
   external_effects: 0/0/0
 remaining_steps:
-  - C00 must independently audit the exact pushed Batch A terminal, reconcile all fourteen request dispositions, all five released leases, the exact nineteen-path release, and effects 0/0/0.
+  - C00 must independently audit the exact pushed Batch A evidence-correction terminal, corrected Git-blob and manifest reproduction, exact runtime-triplet-only scope, released lease, and effects 0/0/0.
   - P08 provider and billing-worker composition, corrected P21 registration, P22 server/client service composition and protected-secret injection, and the P30 durable adult-only worker boundary remain later-gated.
   - Candidate freeze, native PostgreSQL-server replay, provider or infrastructure inspection, deployment, DNS, billing, contact, send, activation, and every external successor action require separate exact authority.
 next_action: >-
-  STOP. C00 must independently audit the exact pushed Batch A terminal, all
-  fourteen immutable dispositions, the exact sixteen-product-path plus
-  three-runtime-path release, focused validation and documented unchanged
-  baselines, all five released leases, clean remote equality, and effects 0/0/0
-  before separately authorizing any successor action.
+  STOP. C00 must independently audit the exact pushed Batch A evidence-only
+  correction, exact three-runtime-path scope, corrected .env.example Git-blob
+  hash and sixteen-product manifest, preservation of every product/test byte
+  and prior validation truth, released RELEASE_INTEGRATOR lease, clean remote
+  equality, and effects 0/0/0 before any successor action.
 requirements: {}
 acceptance_cases: {}
 current_checkpoint_changed_paths:
@@ -4065,7 +4070,7 @@ batch_A_server_client_routes_barrels_and_candidate_safe_policy_terminal:
   product_artifact:
     paths:
       - path: .env.example
-        raw_sha256: 810adf00e3d62127689d7423cc03e79664e09f5013d51b5b62c76c88a4ded661
+        raw_sha256: 726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955
       - path: apps/web/src/client/app/portal-entry.tsx
         raw_sha256: 68d5b8d773bd3b07391f29b2bcd608b10be06302723aced268a9023989a81b84
       - path: apps/web/src/client/app/router/registry.ts
@@ -4097,7 +4102,7 @@ batch_A_server_client_routes_barrels_and_candidate_safe_policy_terminal:
       - path: tests/unit/config/runtime-classification.test.ts
         raw_sha256: b3d5c2575189e6f61f3c586cd50992cdd0559b73c8f04eadc37150c0fe8f1bf0
     canonical_json_path_inventory_digest: fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4
-    canonical_json_manifest_digest: 18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb
+    canonical_json_manifest_digest: 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
   completed_validation:
     canonical_ready_digest: passed_bde89ad33aa3e490425d9e2dd49331f555ec07f4977a84cb533f5b59b43cd93d
     immutable_request_digests: passed_all_fourteen_by_declared_digest_kind
@@ -4136,3 +4141,84 @@ batch_A_server_client_routes_barrels_and_candidate_safe_policy_terminal:
     fourteen dispositions, exact nineteen-path scope, validation and unchanged
     baselines, all five released leases, and zero effects before authorizing any
     later-gated composition, candidate, provider, or release action.
+batch_A_terminal_evidence_manifest_correction_terminal:
+  containing_control_head_sha: f66edb4d0728b90374e56da13dbd9853657d349c
+  state_basis_control_head_sha: 44b9bc6d745810d74ca093d19f46806d8f58e077
+  exact_authorized_start_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+  ready_entry_payload_digest: 7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
+  claim_id: be576814-96ef-48f2-88b5-2d3cc9b37cbb
+  writer_id: codex-i36-batch-a-evidence-be576814
+  lease_issued_at: '2026-07-31T20:30:37Z'
+  lease_expires_at: '2026-07-31T22:30:37Z'
+  lease_released_at: '2026-07-31T20:45:09Z'
+  last_heartbeat_at: '2026-07-31T20:45:09Z'
+  writer_slot_leases_released:
+    - slot: RELEASE_INTEGRATOR
+      lease_id: ac7fa58f-ef5f-4d02-be59-676259f10a35
+  effect_lock_leases: []
+  authorized_scope:
+    paths:
+      - ops/v2.1-execution/runtime/I36/HANDOFF.md
+      - ops/v2.1-execution/runtime/I36/NEXT-PROMPT.md
+      - ops/v2.1-execution/runtime/I36/TASK-STATE.yaml
+    path_count: 3
+    path_inventory_digest: f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176
+    path_inventory_algorithm: sha256_sorted_POSIX_paths_LF_joined_without_terminal_LF
+  held_product_terminal:
+    head_sha: 3ea1a32ef971947ab10c129e1de74b54e7311834
+    parent_sha: b0cc23a05cb2f2f0ef4ee8860352320c18a8e450
+    tree_sha: ca1fea5a6ae54128cd0117d949e3176176c047bc
+    timestamp: '2026-07-31T23:20:18+03:00'
+    review_status_before_correction: held_one_P2_evidence_manifest_only_no_other_P1_or_P2
+    product_path_count: 16
+    runtime_path_count: 3
+    release_path_count: 19
+    product_path_inventory_digest: fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4
+    release_path_inventory_digest: c3ae777b130405f3d34fe4d2a9b08aaca119f4dc4cf5cf1264ec4c785343bdc3
+  exact_git_blob_correction:
+    path: .env.example
+    prior_checkout_byte_sha256: 810adf00e3d62127689d7423cc03e79664e09f5013d51b5b62c76c88a4ded661
+    exact_git_blob_sha256: 726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955
+    other_product_hashes_exact: passed_15_of_15
+    prior_checkout_byte_product_manifest_digest: 18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb
+    exact_git_product_manifest_digest: 17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
+    manifest_algorithm: >-
+      SHA-256 of compact UTF-8 JSON for the path-sorted sixteen-element array
+      of exact objects shaped {"path":<POSIX path>,"sha256":<exact Git-blob
+      SHA-256>}.
+  preserved_terminal_truth:
+    product_and_test_bytes_changed: false
+    other_product_hashes_changed: false
+    path_inventories_changed: false
+    immutable_request_dispositions_changed: false
+    validation_truth_changed: false
+    product_tests_rerun: false
+    prior_five_Batch_A_lease_releases_changed: false
+    external_effects_changed: false
+  completed_validation:
+    live_control_head: passed_f66edb4d0728b90374e56da13dbd9853657d349c
+    exact_integration_start: passed_3ea1a32ef971947ab10c129e1de74b54e7311834
+    canonical_ready_digest: passed_7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861
+    exact_three_path_inventory: passed_f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176
+    exact_git_env_example_sha256: passed_726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955
+    other_product_hashes: passed_15_of_15
+    canonical_product_manifest: passed_17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014
+    product_tree_preservation: passed_runtime_triplet_only
+    task_state_yaml_parse: passed
+    runtime_triplet_prettier: passed
+    diff_check: passed
+    product_tests: not_rerun_by_directive
+    exact_git_runtime_evidence: recomputed_after_commit_from_exact_Git_bytes_and_reported_to_C00
+  provider_or_infrastructure_inspection: false
+  provider_or_candidate_action: false
+  deployment_or_DNS_action: false
+  external_effects:
+    attempted: 0
+    succeeded: 0
+    reconciled: 0
+  safe_next_action: >-
+    Stop after one normal evidence-correction commit is pushed and clean local,
+    tracking, and live integration equality is proved. C00 must independently
+    recompute the exact corrected product manifest, three-path runtime scope,
+    exact Git-byte runtime evidence, released lease, preserved product bytes,
+    and zero effects before any successor authority.

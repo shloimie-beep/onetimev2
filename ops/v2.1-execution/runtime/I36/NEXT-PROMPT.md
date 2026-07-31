@@ -1,6 +1,59 @@
 MODEL: GPT-5.6-SOL
 REASONING: XHIGH
 SERVICE TIER: PRIORITY
+MODE: PAUSE_FOR_C00_BATCH_A_EVIDENCE_MANIFEST_CORRECTION_AUDIT
+
+Audit the exact pushed I36 Batch A evidence-manifest correction terminal. Do
+not rerun product tests or perform application, test, config, migration,
+request, control, candidate, provider, infrastructure, deployment, DNS,
+billing, contact, send, activation, or external successor work from this
+prompt.
+
+Repository: shloimie-beep/onetimev2
+Branch: codex/v21-integration
+Authorized start and required sole parent: `3ea1a32ef971947ab10c129e1de74b54e7311834`
+Containing control: `f66edb4d0728b90374e56da13dbd9853657d349c`
+Authority/control basis: `44b9bc6d745810d74ca093d19f46806d8f58e077`
+READY: `7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861`
+Claim: `be576814-96ef-48f2-88b5-2d3cc9b37cbb`
+Writer: `codex-i36-batch-a-evidence-be576814`
+RELEASE_INTEGRATOR lease: `ac7fa58f-ef5f-4d02-be59-676259f10a35`
+Lease issued: `2026-07-31T20:30:37Z`
+Lease expiry: `2026-07-31T22:30:37Z`
+Lease release: `2026-07-31T20:45:09Z`
+Effects: `0/0/0`
+
+Reproduce canonical READY and the exact three-path inventory digest
+`f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176`
+from sorted POSIX paths joined with LF and no terminal LF. Confirm the correction
+commit changes only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` under
+`ops/v2.1-execution/runtime/I36`.
+
+From exact Git blobs at held product terminal
+`3ea1a32ef971947ab10c129e1de74b54e7311834`, confirm `.env.example` hashes to
+`726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955`,
+all other fifteen recorded product hashes match, and the compact path-sorted
+sixteen-object manifest shaped exactly
+`{"path":<POSIX path>,"sha256":<exact Git-blob SHA-256>}` hashes to
+`17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014`.
+
+Confirm both path inventories, every product/test byte, all fourteen immutable
+request dispositions, behavioral validation truth, documented baselines, and
+the five prior Batch A lease releases are unchanged. Confirm no product test
+was rerun. Recompute the correction terminal's exact raw TASK-STATE, HANDOFF,
+and NEXT-PROMPT Git-blob SHA-256 values plus coherent state-handoff and runtime
+triplet digests from exact Git bytes.
+
+Confirm YAML, Prettier, diff hygiene, required sole-parent ancestry, exact
+runtime-triplet-only scope, clean local/tracking/live equality, lease release
+before expiry, and no provider or external effect. C00 must independently
+consume this evidence correction before any successor authority. Stop.
+
+---
+
+MODEL: GPT-5.6-SOL
+REASONING: XHIGH
+SERVICE TIER: PRIORITY
 MODE: PAUSE_FOR_C00_BATCH_A_SHARED_COMPOSITION_TERMINAL_AUDIT
 
 Audit the exact pushed I36 repository-only Batch A shared-composition terminal.
@@ -61,7 +114,7 @@ authorized path is
 product path-inventory digest is
 `fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4`,
 the product manifest is
-`18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb`,
+`17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014`,
 and the release path-inventory digest is
 `c3ae777b130405f3d34fe4d2a9b08aaca119f4dc4cf5cf1264ec4c785343bdc3`.
 

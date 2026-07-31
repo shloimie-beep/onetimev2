@@ -1,6 +1,39 @@
 # I36 Integration Releases
 
-## Current terminal — Batch A shared composition
+## Current terminal — Batch A evidence-manifest correction
+
+Control `f66edb4d0728b90374e56da13dbd9853657d349c`, based on
+`44b9bc6d745810d74ca093d19f46806d8f58e077`, authorized an exact
+runtime-triplet-only evidence correction from held Batch A product terminal
+`3ea1a32ef971947ab10c129e1de74b54e7311834`. Canonical READY
+`7010a65000ffcccab55809c6e95961f6de0d6e4e95409020f9d610bdbf384861`
+and exact three-path inventory
+`f2ca153571210eb98426a7161043e5bf0ef163297fe8178beb6a2e974cf26176`
+reproduced before editing.
+
+The sole held P2 was evidence-only. The prior terminal recorded a checkout-byte
+hash for `.env.example`; exact Git bytes produce
+`726987ada50942d1efc5e435f8d12fa5d7f87865168e83623589104fdf671955`.
+All other fifteen product hashes match exactly. The canonical path-sorted
+sixteen-product Git-blob manifest therefore reproduces as
+`17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014`.
+Both product and release path inventories remain unchanged.
+
+Only `TASK-STATE.yaml`, `HANDOFF.md`, and `NEXT-PROMPT.md` changed. Every
+product, test, config, migration, request, disposition, and validation byte or
+truth remains frozen. No product test was rerun. The sole RELEASE_INTEGRATOR
+lease `ac7fa58f-ef5f-4d02-be59-676259f10a35` under claim
+`be576814-96ef-48f2-88b5-2d3cc9b37cbb` was released at
+`2026-07-31T20:45:09Z`, before expiry. No provider, infrastructure, candidate,
+deployment, DNS, billing, contact, send, activation, or external effect
+occurred; effects remain `0/0/0`.
+
+I36 must stop after the one normal correction commit is pushed with clean
+local/tracking/live equality. C00 must independently audit the corrected
+Git-blob manifest, exact runtime-triplet scope and Git-byte evidence, product
+immutability, released lease, and zero effects before any successor authority.
+
+## Underlying product terminal — Batch A shared composition
 
 Live control `44b9bc6d745810d74ca093d19f46806d8f58e077`, based on
 `234a7c99d1c10075381749920d857f32c4c55c54`, authorized the repository-only
@@ -40,7 +73,7 @@ of twenty authorized paths. The unchanged authorized path is
 product path-inventory digest is
 `fdf96938e88d1685d733f87db88581a52a0f172c6b7ef243f87ef7ea529725e4`
 and the product manifest digest is
-`18064b37124e3a129ff21fdb6bb6d5c163d51a7267f258781270652bf2f049fb`.
+`17c7eae7d0bfd2991abe3228a1bf8bcecf923f140d81a48d6ba1037ecfa8f014`.
 
 Verification is complete: P12/P09 modules passed 65 tests with three declared
 skips; P22 behavior passed 32/32; the combined composition integrations passed
